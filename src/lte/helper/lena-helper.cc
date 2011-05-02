@@ -50,7 +50,7 @@ NS_OBJECT_ENSURE_REGISTERED (LenaHelper);
 
 LenaHelper::LenaHelper (void)
 {
-  NS_LOG_FUNCTION (this);  
+  NS_LOG_FUNCTION (this);
 }
 
 void 
@@ -62,7 +62,9 @@ LenaHelper::DoStart (void)
   Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
   Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
-  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);  
+  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+  macStats = CreateObject<MacStatsCalculator> ();
+  rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
 }
 
@@ -364,6 +366,96 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 }
 
+void
+LenaHelper::EnableMacTraces (void)
+{
+  EnableDlMacTraces ();
+  EnableUlMacTraces ();
+}
 
+void
+DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
+                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+{
+  mac->DlScheduling(frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+}
+
+void
+LenaHelper::EnableDlMacTraces (void)
+{
+  Config::Connect("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+                  MakeBoundCallback(&DlSchedulingCallback, macStats));
+}
+
+void
+UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
+                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                      uint8_t mcs, uint16_t size)
+{
+  mac->UlScheduling(frameNo, subframeNo, rnti, mcs, size);
+}
+
+void
+LenaHelper::EnableUlMacTraces (void)
+{
+  Config::Connect("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
+                  MakeBoundCallback(&UlSchedulingCallback, macStats));
+}
+
+void
+LenaHelper::EnableRlcTraces (void)
+{
+  EnableDlRlcTraces ();
+  EnableUlRlcTraces ();
+
+}
+
+void
+DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->DlTxPdu(rnti, lcid, packetSize);
+}
+
+void
+DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
+}
+
+void
+LenaHelper::EnableDlRlcTraces (void)
+{
+  Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
+                   MakeBoundCallback(&DlTxPduCallback, rlcStats));
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
+                   MakeBoundCallback(&DlRxPduCallback, rlcStats));
+}
+
+void
+UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->UlTxPdu(rnti, lcid, packetSize);
+}
+
+void
+UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
+}
+
+
+void
+LenaHelper::EnableUlRlcTraces (void)
+{
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
+                   MakeBoundCallback(&UlTxPduCallback, rlcStats));
+  Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
+                   MakeBoundCallback(&UlRxPduCallback, rlcStats));
+}
 
 } // namespace ns3

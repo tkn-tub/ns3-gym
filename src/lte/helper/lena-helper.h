@@ -30,6 +30,8 @@
 #include <ns3/node.h>
 #include <ns3/node-container.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/mac-stats-calculator.h>
+#include <ns3/rlc-stats-calculator.h>
 
 namespace ns3 {
 
@@ -150,6 +152,35 @@ public:
    */
   void EnableLogComponents (void);
 
+  /**
+   * Enable trace sinks for MAC layer
+   */
+  void EnableMacTraces (void);
+
+  /**
+   * Enable trace sinks for DL MAC layer
+   */
+  void EnableDlMacTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlMacTraces (void);
+
+  /**
+   * Enable trace sinks for RLC layer
+   */
+  void EnableRlcTraces (void);
+
+  /**
+   * Enable trace sinks for DL RLC layer
+   */
+  void EnableDlRlcTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlRlcTraces (void);
 
 protected:
 
@@ -166,6 +197,10 @@ private:
   
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
+
+  Ptr<MacStatsCalculator> macStats;
+  Ptr<RlcStatsCalculator> rlcStats;
+
 };
 
 

@@ -47,6 +47,8 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
 
+uint64_t LteUeNetDevice::m_imsiCounter = 0;
+
 
 TypeId LteUeNetDevice::GetTypeId (void)
 {
@@ -59,6 +61,11 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteUeNetDevice::m_rrc),
                    MakePointerChecker <LteUeRrc> ())
+    .AddAttribute("Imsi",
+                  "International Mobile Subscriber Identity assigned to this UE",
+                  UintegerValue (1),
+                  MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
+                  MakeUintegerChecker<uint64_t> ())
     ;
 
   return tid;
@@ -69,6 +76,7 @@ LteUeNetDevice::LteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("This constructor should not be called");
+  m_imsi = ++m_imsiCounter;
 }
 
 
