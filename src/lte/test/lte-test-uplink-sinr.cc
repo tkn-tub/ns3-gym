@@ -23,8 +23,8 @@
 #include "ns3/log.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-ue-phy.h"
-#include "ns3/lte-test-sinr-chunk-processor.h"
+#include "ns3/lte-test-ue-phy.h"
+#include "ns3/lte-sinr-chunk-processor.h"
 
 #include "ns3/lte-test-uplink-sinr.h"
 
@@ -45,7 +45,7 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite ()
 {
   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LteTestSinrChunkProcessor", logLevel);
+  LogComponentEnable ("LteTestUePhy", logLevel);
   LogComponentEnable ("LteUplinkSinrTest", logLevel);
 
   NS_LOG_INFO ("Creating LteUplinkSinrTestSuite");
@@ -163,11 +163,11 @@ LteUplinkSinrTestCase::DoRun (void)
    */
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
-  Ptr<LteUePhy> uePhy = CreateObject<LteUePhy> (dlPhy, ulPhy);
+  Ptr<LteTestUePhy> uePhy = CreateObject<LteTestUePhy> (dlPhy, ulPhy);
 
   ulPhy->SetCellId (100);
 
-  Ptr<LteTestSinrChunkProcessor> chunkProcessor = Create<LteTestSinrChunkProcessor> (uePhy->GetObject<LtePhy> ());
+  Ptr<LteCqiSinrChunkProcessor> chunkProcessor = Create<LteCqiSinrChunkProcessor> (uePhy->GetObject<LtePhy> ());
   ulPhy->AddSinrChunkProcessor (chunkProcessor);
 
   /**
@@ -295,7 +295,7 @@ LteUplinkSinrTestCase::DoRun (void)
    * Check that the values passed to LteSinrChunkProcessor::EvaluateSinrChunk () correspond
    * to known values which have been calculated offline (with octave) for the generated signals
    */
-  SpectrumValue calculatedSinr = chunkProcessor->GetSinr ();
+  SpectrumValue calculatedSinr = uePhy->GetSinr ();
 
   NS_LOG_INFO ("Theoretical SINR: " << *m_sinr);
   NS_LOG_INFO ("Calculated SINR: " << calculatedSinr);
