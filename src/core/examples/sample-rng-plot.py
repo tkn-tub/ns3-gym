@@ -19,10 +19,10 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import ns3
+import ns.core
 
 # mu, var = 100, 225
-rng = ns3.NormalVariable(100.0, 225.0)
+rng = ns.core.NormalVariable(100.0, 225.0)
 x = [rng.GetValue() for t in range(10000)]
 
 # the histogram of the data
