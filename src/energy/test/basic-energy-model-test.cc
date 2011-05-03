@@ -186,16 +186,16 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
 
   // obtain remaining energy from source
   double remainingEnergy = source->GetRemainingEnergy ();
-  NS_LOG_UNCOND ("Remaining energy is " << remainingEnergy);
-  NS_LOG_UNCOND ("Estimated remaining energy is " << estRemainingEnergy);
-  NS_LOG_UNCOND ("Difference is " << estRemainingEnergy - remainingEnergy);
+  NS_LOG_DEBUG ("Remaining energy is " << remainingEnergy);
+  NS_LOG_DEBUG ("Estimated remaining energy is " << estRemainingEnergy);
+  NS_LOG_DEBUG ("Difference is " << estRemainingEnergy - remainingEnergy);
   // check remaining energy
   NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (remainingEnergy, estRemainingEnergy, m_tolerance,
                              "Incorrect remaining energy!");
 
   // obtain radio state
   WifiPhy::State endState = devModel->GetCurrentState ();
-  NS_LOG_UNCOND ("Radio state is " << endState);
+  NS_LOG_DEBUG ("Radio state is " << endState);
   // check end state
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (endState, state,  "Incorrect end state!");
   Simulator::Destroy ();
@@ -353,10 +353,10 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_LOG_UNCOND ("Simulation time = " << simTimeS << "s");
-  NS_LOG_UNCOND ("Update interval = " << updateIntervalS << "s");
-  NS_LOG_UNCOND ("Expected callback count is " << m_numOfNodes);
-  NS_LOG_UNCOND ("Actual callback count is " << m_callbackCount);
+  NS_LOG_DEBUG ("Simulation time = " << simTimeS << "s");
+  NS_LOG_DEBUG ("Update interval = " << updateIntervalS << "s");
+  NS_LOG_DEBUG ("Expected callback count is " << m_numOfNodes);
+  NS_LOG_DEBUG ("Actual callback count is " << m_callbackCount);
 
   // check result, call back should only be invoked once
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (m_numOfNodes, m_callbackCount, "Not all callbacks are invoked!");

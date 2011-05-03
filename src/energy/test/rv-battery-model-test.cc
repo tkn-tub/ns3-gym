@@ -640,7 +640,7 @@ BatteryLifetimeTest::CreateLoadProfiles (void)
 void
 BatteryLifetimeTest::DoRun (void)
 {
-  NS_LOG_UNCOND ("Constant load run.");
+  NS_LOG_DEBUG ("Constant load run.");
 
   // 640mA
   NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.640, Seconds (2844.0)), false,  "Problems with constant load test (640mA).");
@@ -657,13 +657,13 @@ BatteryLifetimeTest::DoRun (void)
   CreateLoadProfiles ();
 
   // variable load with Itsy battery
-  NS_LOG_UNCOND ("\n\nItsy");
+  NS_LOG_DEBUG ("\n\nItsy");
   m_alpha = 35220;
   m_beta = 0.637;
   for (uint32_t i = 0; i < m_loadProfiles.size (); i++)
     {
-      NS_LOG_UNCOND ("========");
-      NS_LOG_UNCOND ("Variable load profile C" << i + 1);
+      NS_LOG_DEBUG ("========");
+      NS_LOG_DEBUG ("Variable load profile C" << i + 1);
       if (VariableLoadTest (m_loadProfiles[i].loads,
                             m_loadProfiles[i].timeStamps,
                             m_loadProfiles[i].itsyLifetime))
@@ -673,13 +673,13 @@ BatteryLifetimeTest::DoRun (void)
     }
 
   // variable load with DUALFOIL battery
-  NS_LOG_UNCOND ("\n\nDUALFOIL");
+  NS_LOG_DEBUG ("\n\nDUALFOIL");
   m_alpha = 40027;
   m_beta = 0.276;
   for (uint32_t i = 0; i < m_loadProfiles.size (); i++)
     {
-      NS_LOG_UNCOND ("========");
-      NS_LOG_UNCOND ("Variable load profile C" << i + 1);
+      NS_LOG_DEBUG ("========");
+      NS_LOG_DEBUG ("Variable load profile C" << i + 1);
       if (VariableLoadTest (m_loadProfiles[i].loads,
                             m_loadProfiles[i].timeStamps,
                             m_loadProfiles[i].dualFoilLifeTime))
@@ -757,8 +757,8 @@ BatteryLifetimeTest::ConstantLoadTest (double load, Time expLifetime)
   Ptr<RvBatteryModel> srcPtr = DynamicCast<RvBatteryModel> (sources.Get (0));
   actualLifetime = srcPtr->GetLifetime ();
 
-  NS_LOG_UNCOND ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
-  NS_LOG_UNCOND ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
 
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
   /*
@@ -853,9 +853,9 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
     Ptr<RvBatteryModel> srcPtr = DynamicCast<RvBatteryModel> (sources.Get (0));
     actualLifetime = srcPtr->GetLifetime ();
 
-    NS_LOG_UNCOND ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
-    NS_LOG_UNCOND ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
-    NS_LOG_UNCOND ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
+    NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
+    NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
+    NS_LOG_DEBUG ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
 
     //NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
     NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds (), expLifetime.GetSeconds (),
