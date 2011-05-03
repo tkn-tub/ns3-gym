@@ -275,7 +275,7 @@ WimaxMacQueue::Dequeue (MacHeaderType::HeaderType packetType, uint32_t available
                    "\n\t\t maxFragmentSize=" << maxFragmentSize << ""
                    "\n\t\t fragmentOffset=" << fragmentOffset <<
                    "\n\t\t payloadSize=" << packet->GetSize ()
-                                           << std::endl);
+                                            << std::endl);
       Ptr<Packet> fragment = packet->CreateFragment (fragmentOffset,
                                                      maxFragmentSize);
       m_bytes -= maxFragmentSize;

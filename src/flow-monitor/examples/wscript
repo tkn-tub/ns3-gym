@@ -1,0 +1,4 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    bld.register_ns3_script('wifi-olsr-flowmon.py', ['flow-monitor', 'internet', 'wifi', 'olsr', 'applications', 'mobility'])

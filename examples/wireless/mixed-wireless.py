@@ -51,7 +51,14 @@
 #           +----------------+                       +----------------+
 # 
 
-import ns3
+import ns.applications
+import ns.core
+import ns.csma
+import ns.internet
+import ns.mobility
+import ns.network
+import ns.olsr
+import ns.wifi
 
 # # 
 # #  This function will be used below as a trace sink
@@ -77,15 +84,15 @@ def main(argv):
     #  Simulation defaults are typically set next, before command line
     #  arguments are parsed.
     # 
-    ns3.Config.SetDefault("ns3::OnOffApplication::PacketSize", ns3.StringValue("210"))
-    ns3.Config.SetDefault("ns3::OnOffApplication::DataRate", ns3.StringValue("448kb/s"))
+    ns.core.Config.SetDefault("ns3::OnOffApplication::PacketSize", ns.core.StringValue("210"))
+    ns.core.Config.SetDefault("ns3::OnOffApplication::DataRate", ns.core.StringValue("448kb/s"))
 
     # 
     #  For convenience, we add the local variables to the command line argument
     #  system so that they can be overridden with flags such as 
     #  "--backboneNodes=20"
     # 
-    cmd = ns3.CommandLine()
+    cmd = ns.core.CommandLine()
     #cmd.AddValue("backboneNodes", "number of backbone nodes", backboneNodes)
     #cmd.AddValue("infraNodes", "number of leaf nodes", infraNodes)
     #cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes)
@@ -107,27 +114,27 @@ def main(argv):
     #  Create a container to manage the nodes of the adhoc(backbone) network.
     #  Later we'll create the rest of the nodes we'll need.
     # 
-    backbone = ns3.NodeContainer()
+    backbone = ns.network.NodeContainer()
     backbone.Create(backboneNodes)
     # 
     #  Create the backbone wifi net devices and install them into the nodes in 
     #  our container
     # 
-    wifi = ns3.WifiHelper()
-    mac = ns3.NqosWifiMacHelper.Default()
+    wifi = ns.wifi.WifiHelper()
+    mac = ns.wifi.NqosWifiMacHelper.Default()
     mac.SetType("ns3::AdhocWifiMac")
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
-                                  "DataMode", ns3.StringValue("OfdmRate54Mbps"))
-    wifiPhy = ns3.YansWifiPhyHelper.Default()
-    wifiChannel = ns3.YansWifiChannelHelper.Default()
+                                  "DataMode", ns.core.StringValue("OfdmRate54Mbps"))
+    wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
+    wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
     backboneDevices = wifi.Install(wifiPhy, mac, backbone)
     # 
     #  Add the IPv4 protocol stack to the nodes in our container
     # 
     print "Enabling OLSR routing on all backbone nodes"
-    internet = ns3.InternetStackHelper()
-    olsr = ns3.OlsrHelper()
+    internet = ns.internet.InternetStackHelper()
+    olsr = ns.olsr.OlsrHelper()
     internet.SetRoutingHelper(olsr);
     internet.Install(backbone);
     # re-initialize for non-olsr routing.
@@ -136,25 +143,25 @@ def main(argv):
     #  Assign IPv4 addresses to the device drivers(actually to the associated
     #  IPv4 interfaces) we just created.
     # 
-    ipAddrs = ns3.Ipv4AddressHelper()
-    ipAddrs.SetBase(ns3.Ipv4Address("192.168.0.0"), ns3.Ipv4Mask("255.255.255.0"))
+    ipAddrs = ns.internet.Ipv4AddressHelper()
+    ipAddrs.SetBase(ns.network.Ipv4Address("192.168.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
     ipAddrs.Assign(backboneDevices)
 
     # 
     #  The ad-hoc network nodes need a mobility model so we aggregate one to 
     #  each of the nodes we just finished building.  
     # 
-    mobility = ns3.MobilityHelper()
-    positionAlloc = ns3.ListPositionAllocator()
+    mobility = ns.mobility.MobilityHelper()
+    positionAlloc = ns.mobility.ListPositionAllocator()
     x = 0.0
     for i in range(backboneNodes):
-        positionAlloc.Add(ns3.Vector(x, 0.0, 0.0))
+        positionAlloc.Add(ns.core.Vector(x, 0.0, 0.0))
         x += 5.0
     mobility.SetPositionAllocator(positionAlloc)
     mobility.SetMobilityModel("ns3::RandomDirection2dMobilityModel",
-                               "Bounds", ns3.RectangleValue(ns3.Rectangle(0, 1000, 0, 1000)),
-                               "Speed", ns3.RandomVariableValue(ns3.ConstantVariable(2000)),
-                               "Pause", ns3.RandomVariableValue(ns3.ConstantVariable(0.2)))
+                               "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(0, 1000, 0, 1000)),
+                               "Speed", ns.core.RandomVariableValue(ns.core.ConstantVariable(2000)),
+                               "Pause", ns.core.RandomVariableValue(ns.core.ConstantVariable(0.2)))
     mobility.Install(backbone)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
@@ -165,7 +172,7 @@ def main(argv):
 
     #  Reset the address base-- all of the CSMA networks will be in
     #  the "172.16 address space
-    ipAddrs.SetBase(ns3.Ipv4Address("172.16.0.0"), ns3.Ipv4Mask("255.255.255.0"))
+    ipAddrs.SetBase(ns.network.Ipv4Address("172.16.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
 
     for i in range(backboneNodes):
         print "Configuring local area network for backbone node ", i
@@ -174,17 +181,17 @@ def main(argv):
         #  two containers here; one with all of the new nodes, and one
         #  with all of the nodes including new and existing nodes
         # 
-        newLanNodes = ns3.NodeContainer()
+        newLanNodes = ns.network.NodeContainer()
         newLanNodes.Create(lanNodes - 1)
         #  Now, create the container with all nodes on this link
-        lan = ns3.NodeContainer(ns3.NodeContainer(backbone.Get(i)), newLanNodes)
+        lan = ns.network.NodeContainer(ns.network.NodeContainer(backbone.Get(i)), newLanNodes)
         # 
         #  Create the CSMA net devices and install them into the nodes in our 
         #  collection.
         # 
-        csma = ns3.CsmaHelper()
-        csma.SetChannelAttribute("DataRate", ns3.DataRateValue(ns3.DataRate(5000000)))
-        csma.SetChannelAttribute("Delay", ns3.TimeValue(ns3.MilliSeconds(2)))
+        csma = ns.csma.CsmaHelper()
+        csma.SetChannelAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate(5000000)))
+        csma.SetChannelAttribute("Delay", ns.core.TimeValue(ns.core.MilliSeconds(2)))
         lanDevices = csma.Install(lan)
         # 
         #  Add the IPv4 protocol stack to the new LAN nodes
@@ -209,7 +216,7 @@ def main(argv):
 
     #  Reset the address base-- all of the 802.11 networks will be in
     #  the "10.0" address space
-    ipAddrs.SetBase(ns3.Ipv4Address("10.0.0.0"), ns3.Ipv4Mask("255.255.255.0"))
+    ipAddrs.SetBase(ns.network.Ipv4Address("10.0.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
 
     for i in range(backboneNodes):
         print "Configuring wireless network for backbone node ", i
@@ -218,32 +225,32 @@ def main(argv):
         #  two containers here; one with all of the new nodes, and one
         #  with all of the nodes including new and existing nodes
         # 
-        stas = ns3.NodeContainer()
+        stas = ns.network.NodeContainer()
         stas.Create(infraNodes - 1)
         #  Now, create the container with all nodes on this link
-        infra = ns3.NodeContainer(ns3.NodeContainer(backbone.Get(i)), stas)
+        infra = ns.network.NodeContainer(ns.network.NodeContainer(backbone.Get(i)), stas)
         # 
         #  Create another ad hoc network and devices
         # 
-        ssid = ns3.Ssid('wifi-infra' + str(i))
-        wifiInfra = ns3.WifiHelper.Default()
+        ssid = ns.wifi.Ssid('wifi-infra' + str(i))
+        wifiInfra = ns.wifi.WifiHelper.Default()
         wifiPhy.SetChannel(wifiChannel.Create())
         wifiInfra.SetRemoteStationManager('ns3::ArfWifiManager')
-        macInfra = ns3.NqosWifiMacHelper.Default();
+        macInfra = ns.wifi.NqosWifiMacHelper.Default();
         macInfra.SetType("ns3::StaWifiMac",
-                         "Ssid", ns3.SsidValue(ssid),
-                         "ActiveProbing", ns3.BooleanValue(False))
+                         "Ssid", ns.wifi.SsidValue(ssid),
+                         "ActiveProbing", ns.core.BooleanValue(False))
 
         # setup stas
         staDevices = wifiInfra.Install(wifiPhy, macInfra, stas)
         # setup ap.
         macInfra.SetType("ns3::ApWifiMac",
-                         "Ssid", ns3.SsidValue(ssid),
-                         "BeaconGeneration", ns3.BooleanValue(True),
-                         "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
+                         "Ssid", ns.wifi.SsidValue(ssid),
+                         "BeaconGeneration", ns.core.BooleanValue(True),
+                         "BeaconInterval", ns.core.TimeValue(ns.core.Seconds(2.5)))
         apDevices = wifiInfra.Install(wifiPhy, macInfra, backbone.Get(i))
         # Collect all of these new devices
-        infraDevices = ns3.NetDeviceContainer(apDevices, staDevices)
+        infraDevices = ns.network.NetDeviceContainer(apDevices, staDevices)
 
         #  Add the IPv4 protocol stack to the nodes in our container
         # 
@@ -262,16 +269,16 @@ def main(argv):
         #  The new wireless nodes need a mobility model so we aggregate one 
         #  to each of the nodes we just finished building.
         # 
-        subnetAlloc = ns3.ListPositionAllocator()
+        subnetAlloc = ns.mobility.ListPositionAllocator()
         for j in range(infra.GetN()):
-            subnetAlloc.Add(ns3.Vector(0.0, j, 0.0))
+            subnetAlloc.Add(ns.core.Vector(0.0, j, 0.0))
 
         mobility.PushReferenceMobilityModel(backbone.Get(i))
         mobility.SetPositionAllocator(subnetAlloc)
         mobility.SetMobilityModel("ns3::RandomDirection2dMobilityModel",
-                                  "Bounds", ns3.RectangleValue(ns3.Rectangle(-25, 25, -25, 25)),
-                                  "Speed", ns3.RandomVariableValue(ns3.ConstantVariable(30)),
-                                  "Pause", ns3.RandomVariableValue(ns3.ConstantVariable(0.4)))
+                                  "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(-25, 25, -25, 25)),
+                                  "Speed", ns.core.RandomVariableValue(ns.core.ConstantVariable(30)),
+                                  "Pause", ns.core.RandomVariableValue(ns.core.ConstantVariable(0.4)))
         mobility.Install(infra)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
@@ -288,23 +295,23 @@ def main(argv):
     #  Let's make sure that the user does not define too few LAN nodes
     #  to make this example work.  We need lanNodes >= 5
     assert(lanNodes >= 5)
-    appSource = ns3.NodeList.GetNode(11)
-    appSink = ns3.NodeList.GetNode(13)
-    remoteAddr = ns3.Ipv4Address("172.16.0.5")
+    appSource = ns.network.NodeList.GetNode(11)
+    appSink = ns.network.NodeList.GetNode(13)
+    remoteAddr = ns.network.Ipv4Address("172.16.0.5")
 
-    onoff = ns3.OnOffHelper("ns3::UdpSocketFactory", 
-                            ns3.Address(ns3.InetSocketAddress(remoteAddr, port)))
-    onoff.SetAttribute("OnTime", ns3.RandomVariableValue(ns3.ConstantVariable(1)))
-    onoff.SetAttribute("OffTime", ns3.RandomVariableValue(ns3.ConstantVariable(0)))
-    apps = onoff.Install(ns3.NodeContainer(appSource))
-    apps.Start(ns3.Seconds(3.0))
-    apps.Stop(ns3.Seconds(20.0))
+    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", 
+                            ns.network.Address(ns.network.InetSocketAddress(remoteAddr, port)))
+    onoff.SetAttribute("OnTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(1)))
+    onoff.SetAttribute("OffTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(0)))
+    apps = onoff.Install(ns.network.NodeContainer(appSource))
+    apps.Start(ns.core.Seconds(3.0))
+    apps.Stop(ns.core.Seconds(20.0))
 
     #  Create a packet sink to receive these packets
-    sink = ns3.PacketSinkHelper("ns3::UdpSocketFactory", 
-                                ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), port))
-    apps = sink.Install(ns3.NodeContainer(appSink))
-    apps.Start(ns3.Seconds(3.0))
+    sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory", 
+                                ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port))
+    apps = sink.Install(ns.network.NodeContainer(appSink))
+    apps.Start(ns.core.Seconds(3.0))
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
     #                                                                        # 
@@ -317,7 +324,7 @@ def main(argv):
     #  Let's set up some ns-2-like ascii traces, using another helper class
     # 
     #std.ofstream ascii
-    #ascii = ns3.AsciiTraceHelper();
+    #ascii = ns.core.AsciiTraceHelper();
     #stream = ascii.CreateFileStream("mixed-wireless.tr");
     #wifiPhy.EnableAsciiAll(stream);
     #csma.EnableAsciiAll(stream);
@@ -329,7 +336,7 @@ def main(argv):
     #  Let's do a pcap trace on the backbone devices
     wifiPhy.EnablePcap("mixed-wireless", backboneDevices)
     #  Let's additionally trace the application Sink, ifIndex 0
-    csma = ns3.CsmaHelper()
+    csma = ns.csma.CsmaHelper()
     csma.EnablePcapAll("mixed-wireless", False)
 
 #   #ifdef ENABLE_FOR_TRACING_EXAMPLE
@@ -345,11 +352,13 @@ def main(argv):
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
 
     print "Run Simulation."
-    ns3.Simulator.Stop(ns3.Seconds(stopTime))
-    ns3.Simulator.Run()
-    ns3.Simulator.Destroy()
+    ns.core.Simulator.Stop(ns.core.Seconds(stopTime))
+    ns.core.Simulator.Run()
+    ns.core.Simulator.Destroy()
 
 
 if __name__ == '__main__':
     import sys
     main(sys.argv)
+
+

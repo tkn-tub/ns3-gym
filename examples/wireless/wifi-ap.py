@@ -21,7 +21,14 @@
 #  */
 
 import sys
-import ns3
+
+import ns.applications
+import ns.core
+import ns.internet
+import ns.mobility
+import ns.network
+import ns.point_to_point
+import ns.wifi
 
 # void
 # DevTxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
@@ -70,12 +77,12 @@ import ns3
 # }
 
 def SetPosition(node, position):
-    mobility = node.GetObject(ns3.MobilityModel.GetTypeId())
+    mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
     mobility.SetPosition(position)
 
 
 def GetPosition(node):
-    mobility = node.GetObject(ns3.MobilityModel.GetTypeId())
+    mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
     return mobility.GetPosition()
 
 def AdvancePosition(node):
@@ -84,23 +91,23 @@ def AdvancePosition(node):
     if pos.x >= 210.0:
       return
     SetPosition(node, pos)
-    ns3.Simulator.Schedule(ns3.Seconds(1.0), AdvancePosition, node)
+    ns.core.Simulator.Schedule(ns.core.Seconds(1.0), AdvancePosition, node)
 
 
 def main(argv):
-    ns3.Packet.EnablePrinting();
+    ns.network.Packet.EnablePrinting();
 
     # enable rts cts all the time.
-    ns3.Config.SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", ns3.StringValue("0"))
+    ns.core.Config.SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", ns.core.StringValue("0"))
     # disable fragmentation
-    ns3.Config.SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", ns3.StringValue("2200"))
+    ns.core.Config.SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", ns.core.StringValue("2200"))
 
-    wifi = ns3.WifiHelper.Default()
-    mobility = ns3.MobilityHelper()
-    stas = ns3.NodeContainer()
-    ap = ns3.NodeContainer()
+    wifi = ns.wifi.WifiHelper.Default()
+    mobility = ns.mobility.MobilityHelper()
+    stas = ns.network.NodeContainer()
+    ap = ns.network.NodeContainer()
     #NetDeviceContainer staDevs;
-    packetSocket = ns3.PacketSocketHelper()
+    packetSocket = ns.network.PacketSocketHelper()
 
     stas.Create(2)
     ap.Create(1)
@@ -109,46 +116,46 @@ def main(argv):
     packetSocket.Install(stas)
     packetSocket.Install(ap)
 
-    wifiPhy = ns3.YansWifiPhyHelper.Default()
-    wifiChannel = ns3.YansWifiChannelHelper.Default()
+    wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
+    wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
 
-    ssid = ns3.Ssid("wifi-default")
+    ssid = ns.wifi.Ssid("wifi-default")
     wifi.SetRemoteStationManager("ns3::ArfWifiManager")
-    wifiMac = ns3.NqosWifiMacHelper.Default()
+    wifiMac = ns.wifi.NqosWifiMacHelper.Default()
 
     # setup stas.
     wifiMac.SetType("ns3::StaWifiMac",
-                    "Ssid", ns3.SsidValue(ssid),
-                    "ActiveProbing", ns3.BooleanValue(False))
+                    "Ssid", ns.wifi.SsidValue(ssid),
+                    "ActiveProbing", ns.core.BooleanValue(False))
     staDevs = wifi.Install(wifiPhy, wifiMac, stas)
     # setup ap.
     wifiMac.SetType("ns3::ApWifiMac",
-                    "Ssid", ns3.SsidValue(ssid),
-                    "BeaconGeneration", ns3.BooleanValue(True),
-                    "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
+                    "Ssid", ns.wifi.SsidValue(ssid),
+                    "BeaconGeneration", ns.core.BooleanValue(True),
+                    "BeaconInterval", ns.core.TimeValue(ns.core.Seconds(2.5)))
     wifi.Install(wifiPhy, wifiMac, ap)
 
     # mobility.
     mobility.Install(stas)
     mobility.Install(ap)
 
-    ns3.Simulator.Schedule(ns3.Seconds(1.0), AdvancePosition, ap.Get(0))
+    ns.core.Simulator.Schedule(ns.core.Seconds(1.0), AdvancePosition, ap.Get(0))
 
-    socket = ns3.PacketSocketAddress()
+    socket = ns.network.PacketSocketAddress()
     socket.SetSingleDevice(staDevs.Get(0).GetIfIndex())
     socket.SetPhysicalAddress(staDevs.Get(1).GetAddress())
     socket.SetProtocol(1)
 
-    onoff = ns3.OnOffHelper("ns3::PacketSocketFactory", ns3.Address(socket))
-    onoff.SetAttribute("OnTime", ns3.RandomVariableValue(ns3.ConstantVariable(42)))
-    onoff.SetAttribute("OffTime", ns3.RandomVariableValue(ns3.ConstantVariable(0)))
+    onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", ns.network.Address(socket))
+    onoff.SetAttribute("OnTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(42)))
+    onoff.SetAttribute("OffTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(0)))
 
-    apps = onoff.Install(ns3.NodeContainer(stas.Get(0)))
-    apps.Start(ns3.Seconds(0.5))
-    apps.Stop(ns3.Seconds(43.0))
+    apps = onoff.Install(ns.network.NodeContainer(stas.Get(0)))
+    apps.Start(ns.core.Seconds(0.5))
+    apps.Stop(ns.core.Seconds(43.0))
 
-    ns3.Simulator.Stop(ns3.Seconds(44.0))
+    ns.core.Simulator.Stop(ns.core.Seconds(44.0))
 
   #   Config::Connect("/NodeList/*/DeviceList/*/Tx", MakeCallback(&DevTxTrace));
   #   Config::Connect("/NodeList/*/DeviceList/*/Rx", MakeCallback(&DevRxTrace));
@@ -158,8 +165,8 @@ def main(argv):
   #   Config::Connect("/NodeList/*/DeviceList/*/Phy/State", MakeCallback(&PhyStateTrace));
 
 
-    ns3.Simulator.Run()
-    ns3.Simulator.Destroy()
+    ns.core.Simulator.Run()
+    ns.core.Simulator.Destroy()
 
     return 0
 

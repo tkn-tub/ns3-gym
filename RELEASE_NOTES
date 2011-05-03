@@ -30,10 +30,45 @@ Bugs fixed
 The following lists many of the bugs fixed or small feature additions
 since ns-3.10, in many cases referencing the Bugzilla bug number.
 
-   - Fixed the UanPhyGen::IsStateBusy method, error with logical OR
+   - Bug 1019: common --> node --> common circular dependency 
+   - Fixed UanPhyGen::IsStateBusy method bug 
+   - bugfix: CsmaNetDevice ErrorModel not discarding packet (reported by
+   - Bug 1048: MatrixPropagationLossModel API changed from Ptr<Object> to
+   - Bug 1049 - Issues with OLSR HNA messages sent by multiple gateways 
+   - Bug 1052 - olsr::RoutingProtocol::LinkTupleUpdated incorrect
+   - bug 1062: fix portability issue with rescale-pdf.sh 
+   - Bug 1064: Correct Friis propagation loss equation
+   - bugfix: do not call RouteOutput() twice 
+   - Workaround gccxml bug scanning Seconds(0) as default value 
+   - Copy a bug fix from ns3modulescan.py into ns3modulescan-modular.py 
+   - Bug 1070: csma/ipv6 examples duplicate NS_LOG_COMPONENT_DEFINE 
+   - Modular Python bindings work (many bug fixes, more modules tested) 
+   - bug 1072: crash upon call to Packet::AddAtEnd of fragmented packets 
+   - Bug 1040 - Olsr and multiple interfaces 
+   - Bug 1075 - Python examples fail when static built is enabled 
+   - Bug 1076 - Waf gives an error if you enable only a single module 
+   - Modular bindings: bug fixes, more verbose scanning 
+   - bug 1078: PacketTagList::Add performs NS_ASSERT counting one byte
+   - ./waf --apiscan: fix bug in detection of whether the per-module
+   - Bug 1081 - wutils.py refers to the old directory for visualizer
+   - Bug 1083 - scratch doesn't work when only some modules are enabled 
+   - Remove the 'Modules to build' debug print 
+   - updated doxygen for Object::Dispose (bug 1086) 
+   - fixed ActiveProbing for StaWifiMac (bug 1060) 
+   - bug 1094: Object::GetObject upon dlopen 
+   - fixed Bug 1066 - Set Radiotap modulation type flags correctly 
+   - fixed Bug 1090 - WifiMacQueue is not accessible through the
+   - fix Bug 1069 - ApWifiMac unduly calls RegularWifiMac::Receive and
+   - revised fix for bug 1069 
+   - bug 1046: Check AODV LocalDeliver callback before using it 
+   - fix small bugs 
+   - work around pybindgen bug 
+   - bugs fixed 
+   - Bug 1088 - Code in scratch directory assumes all modules are enabled 
+   - testcase for bug 1072 
+   - bug 1072: crash upon call to Packet::AddAtEnd of fragmented packets 
+   - Bug 1106: Remove CanvasLocation dependencies 
    - CsmaNetDevice ReceiveErrorModel was not dropping the packet
-   - bug 1064 - Correct Friis propagation loss equation in spectrum module
-   - bug 1046 - Check Aodv LocalDeliver callback before using it
    - bug 1038 - Time::Get*Seconds () return signed integer while actually returning unsigned
    - bug 445 - Is the class name Scalar in nstime.h appropriate?
    - bug 1044 - Seconds (1e-9) creates Time that is not IsPositive ()

@@ -28,7 +28,12 @@
 # - DropTail queues 
 # - Tracing of queues and packet receptions to file "csma-bridge.tr"
 
-import ns3
+import ns.applications
+import ns.bridge
+import ns.core
+import ns.csma
+import ns.internet
+import ns.network
 
 
 def main(argv):
@@ -37,51 +42,51 @@ def main(argv):
     # Allow the user to override any of the defaults and the above Bind() at
     # run-time, via command-line arguments
     #
-    cmd = ns3.CommandLine()
+    cmd = ns.core.CommandLine()
     cmd.Parse(argv)
 
     #
     # Explicitly create the nodes required by the topology(shown above).
     #
     #print "Create nodes."
-    terminals = ns3.NodeContainer()
+    terminals = ns.network.NodeContainer()
     terminals.Create(4)
 
-    csmaSwitch = ns3.NodeContainer()
+    csmaSwitch = ns.network.NodeContainer()
     csmaSwitch.Create(1)
 
     #print "Build Topology"
-    csma = ns3.CsmaHelper()
-    csma.SetChannelAttribute("DataRate", ns3.DataRateValue(ns3.DataRate(5000000)))
-    csma.SetChannelAttribute("Delay", ns3.TimeValue(ns3.MilliSeconds(2)))
+    csma = ns.csma.CsmaHelper()
+    csma.SetChannelAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate(5000000)))
+    csma.SetChannelAttribute("Delay", ns.core.TimeValue(ns.core.MilliSeconds(2)))
 
     # Create the csma links, from each terminal to the switch
 
-    terminalDevices = ns3.NetDeviceContainer()
-    switchDevices = ns3.NetDeviceContainer()
+    terminalDevices = ns.network.NetDeviceContainer()
+    switchDevices = ns.network.NetDeviceContainer()
 
     for i in range(4):
-        link = csma.Install(ns3.NodeContainer(ns3.NodeContainer(terminals.Get(i)), csmaSwitch))
+        link = csma.Install(ns.network.NodeContainer(ns.network.NodeContainer(terminals.Get(i)), csmaSwitch))
         terminalDevices.Add(link.Get(0))
         switchDevices.Add(link.Get(1))
 
     # Create the bridge netdevice, which will do the packet switching
     switchNode = csmaSwitch.Get(0)
-    bridgeDevice = ns3.BridgeNetDevice()
+    bridgeDevice = ns.bridge.BridgeNetDevice()
     switchNode.AddDevice(bridgeDevice)
 
     for portIter in range(switchDevices.GetN()):
         bridgeDevice.AddBridgePort(switchDevices.Get(portIter))
 
     # Add internet stack to the terminals
-    internet = ns3.InternetStackHelper()
+    internet = ns.internet.InternetStackHelper()
     internet.Install(terminals)
 
     # We've got the "hardware" in place.  Now we need to add IP addresses.
     #
     #print "Assign IP Addresses."
-    ipv4 = ns3.Ipv4AddressHelper()
-    ipv4.SetBase(ns3.Ipv4Address("10.1.1.0"), ns3.Ipv4Mask("255.255.255.0"))
+    ipv4 = ns.internet.Ipv4AddressHelper()
+    ipv4.SetBase(ns.network.Ipv4Address("10.1.1.0"), ns.network.Ipv4Mask("255.255.255.0"))
     ipv4.Assign(terminalDevices)
 
     #
@@ -90,40 +95,40 @@ def main(argv):
     #print "Create Applications."
     port = 9   # Discard port(RFC 863)
 
-    onoff = ns3.OnOffHelper("ns3::UdpSocketFactory", 
-                            ns3.Address(ns3.InetSocketAddress(ns3.Ipv4Address("10.1.1.2"), port)))
-    onoff.SetAttribute("OnTime", ns3.RandomVariableValue(ns3.ConstantVariable(1)))
-    onoff.SetAttribute("OffTime", ns3.RandomVariableValue(ns3.ConstantVariable(0)))
+    onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", 
+                            ns.network.Address(ns.network.InetSocketAddress(ns.network.Ipv4Address("10.1.1.2"), port)))
+    onoff.SetAttribute("OnTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(1)))
+    onoff.SetAttribute("OffTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(0)))
 
-    app = onoff.Install(ns3.NodeContainer(terminals.Get(0)))
+    app = onoff.Install(ns.network.NodeContainer(terminals.Get(0)))
     # Start the application
-    app.Start(ns3.Seconds(1.0))
-    app.Stop(ns3.Seconds(10.0))
+    app.Start(ns.core.Seconds(1.0))
+    app.Stop(ns.core.Seconds(10.0))
 
     # Create an optional packet sink to receive these packets
-    sink = ns3.PacketSinkHelper("ns3::UdpSocketFactory",
-                                ns3.Address(ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), port)))
-    app = sink.Install(ns3.NodeContainer(terminals.Get(1)))
-    app.Start(ns3.Seconds(0.0))
+    sink = ns.applications.PacketSinkHelper("ns3::UdpSocketFactory",
+                                ns.network.Address(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), port)))
+    app = sink.Install(ns.network.NodeContainer(terminals.Get(1)))
+    app.Start(ns.core.Seconds(0.0))
 
     # 
     # Create a similar flow from n3 to n0, starting at time 1.1 seconds
     #
     onoff.SetAttribute("Remote", 
-                       ns3.AddressValue(ns3.InetSocketAddress(ns3.Ipv4Address("10.1.1.1"), port)))
-    app = onoff.Install(ns3.NodeContainer(terminals.Get(3)))
-    app.Start(ns3.Seconds(1.1))
-    app.Stop(ns3.Seconds(10.0))
+                       ns.network.AddressValue(ns.network.InetSocketAddress(ns.network.Ipv4Address("10.1.1.1"), port)))
+    app = onoff.Install(ns.network.NodeContainer(terminals.Get(3)))
+    app.Start(ns.core.Seconds(1.1))
+    app.Stop(ns.core.Seconds(10.0))
 
-    app = sink.Install(ns3.NodeContainer(terminals.Get(0)))
-    app.Start(ns3.Seconds(0.0))
+    app = sink.Install(ns.network.NodeContainer(terminals.Get(0)))
+    app.Start(ns.core.Seconds(0.0))
 
     #
     # Configure tracing of all enqueue, dequeue, and NetDevice receive events.
     # Trace output will be sent to the file "csma-bridge.tr"
     #
     #print "Configure Tracing."
-    #ascii = ns3.AsciiTraceHelper();
+    #ascii = ns.network.AsciiTraceHelper();
     #csma.EnableAsciiAll(ascii.CreateFileStream ("csma-bridge.tr"));
 
     #
@@ -139,8 +144,8 @@ def main(argv):
     # Now, do the actual simulation.
     #
     #print "Run Simulation."
-    ns3.Simulator.Run()
-    ns3.Simulator.Destroy()
+    ns.core.Simulator.Run()
+    ns.core.Simulator.Destroy()
     #print "Done."
 
 

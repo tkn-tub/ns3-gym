@@ -10,6 +10,8 @@ def build(bld):
     obj = bld.create_ns3_program('sample-simulator', ['core'])
     obj.source = 'sample-simulator.cc'
 
+    bld.register_ns3_script('sample-simulator.py', ['core'])
+
     obj = bld.create_ns3_program('main-ptr', ['core'] )
     obj.source = 'main-ptr.cc'
 

@@ -198,9 +198,9 @@ public:
 
   bool
   ServiceBandwidthRequestsBytes (ServiceFlow *serviceFlow,
-      enum ServiceFlow::SchedulingType schedulingType, OfdmUlMapIe &ulMapIe,
-      const WimaxPhy::ModulationType modulationType,
-      uint32_t &symbolsToAllocation, uint32_t &availableSymbols, uint32_t allocationSizeBytes);
+                                 enum ServiceFlow::SchedulingType schedulingType, OfdmUlMapIe &ulMapIe,
+                                 const WimaxPhy::ModulationType modulationType,
+                                 uint32_t &symbolsToAllocation, uint32_t &availableSymbols, uint32_t allocationSizeBytes);
 
 private:
   std::list<OfdmUlMapIe> m_uplinkAllocations;

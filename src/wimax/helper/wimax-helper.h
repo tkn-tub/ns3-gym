@@ -56,7 +56,7 @@ class UplinkScheduler;
  * during creation.
  */
 
-class WimaxHelper :public PcapHelperForDevice, public AsciiTraceHelperForDevice
+class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /**

@@ -113,7 +113,7 @@ int64x64_t::UmulByInvert (uint128_t a, uint128_t b)
   hi = ah * bh;
   mid = ah * bl + al * bh;
   mid >>= 64;
-  result = ah * bh + mid;
+  result = hi + mid;
   return result;
 }
 int64x64_t 

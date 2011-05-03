@@ -112,25 +112,25 @@ Ns3WimaxCsParamTlvTestCase::DoRun (void)
                 csParamsRecv.GetPacketClassifierRule ();
 
               NS_TEST_ASSERT_MSG_EQ (!classifier.CheckMatch (Ipv4Address ("10.1.1.1"),
-                                          Ipv4Address ("16.1.1.1"),
-                                          1050,
-                                          3050,
-                                          17), false, "The classifier address did not match.");
+                                                             Ipv4Address ("16.1.1.1"),
+                                                             1050,
+                                                             3050,
+                                                             17), false, "The classifier address did not match.");
               NS_TEST_ASSERT_MSG_EQ (!classifier.CheckMatch (Ipv4Address ("10.1.5.1"),
-                                          Ipv4Address ("11.1.1.23"),
-                                          1070,
-                                          3040,
-                                          6), false, "The classifier address did not match.");
+                                                             Ipv4Address ("11.1.1.23"),
+                                                             1070,
+                                                             3040,
+                                                             6), false, "The classifier address did not match.");
               NS_TEST_ASSERT_MSG_EQ (classifier.CheckMatch (Ipv4Address ("11.1.1.1"),
-                                         Ipv4Address ("17.1.1.1"),
-                                         1050,
-                                         3050,
-                                         17), false, "The classifier addresses matched.");
+                                                            Ipv4Address ("17.1.1.1"),
+                                                            1050,
+                                                            3050,
+                                                            17), false, "The classifier addresses matched.");
               NS_TEST_ASSERT_MSG_EQ (classifier.CheckMatch (Ipv4Address ("10.1.1.1"),
-                                         Ipv4Address ("16.1.1.1"),
-                                         1050,
-                                         3050,
-                                         8), false, "The classifier addresses matched.");
+                                                            Ipv4Address ("16.1.1.1"),
+                                                            1050,
+                                                            3050,
+                                                            8), false, "The classifier addresses matched.");
             }
         }
     }

@@ -17,14 +17,22 @@
 #  Authors: Gustavo Carneiro <gjc@inescporto.pt>
 
 import sys
-import ns3
+
+import ns.applications
+import ns.core
+import ns.flow_monitor
+import ns.internet
+import ns.mobility
+import ns.network
+import ns.olsr
+import ns.wifi
 
 DISTANCE = 100 # (m)
 NUM_NODES_SIDE = 3
 
 def main(argv):
 
-    cmd = ns3.CommandLine()
+    cmd = ns.core.CommandLine()
 
     cmd.NumNodesSide = None
     cmd.AddValue("NumNodesSide", "Grid side number of nodes (total number of nodes will be this number squared)")
@@ -37,33 +45,33 @@ def main(argv):
 
     cmd.Parse(argv)
 
-    wifi = ns3.WifiHelper.Default()
-    wifiMac = ns3.NqosWifiMacHelper.Default()
-    wifiPhy = ns3.YansWifiPhyHelper.Default()
-    wifiChannel = ns3.YansWifiChannelHelper.Default()
+    wifi = ns.wifi.WifiHelper.Default()
+    wifiMac = ns.wifi.NqosWifiMacHelper.Default()
+    wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
+    wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
-    ssid = ns3.Ssid("wifi-default")
+    ssid = ns.wifi.Ssid("wifi-default")
     wifi.SetRemoteStationManager("ns3::ArfWifiManager")
     wifiMac.SetType ("ns3::AdhocWifiMac",
-                     "Ssid", ns3.SsidValue(ssid))
+                     "Ssid", ns.wifi.SsidValue(ssid))
 
-    internet = ns3.InternetStackHelper()
-    list_routing = ns3.Ipv4ListRoutingHelper()
-    olsr_routing = ns3.OlsrHelper()
-    static_routing = ns3.Ipv4StaticRoutingHelper()
+    internet = ns.internet.InternetStackHelper()
+    list_routing = ns.internet.Ipv4ListRoutingHelper()
+    olsr_routing = ns.olsr.OlsrHelper()
+    static_routing = ns.internet.Ipv4StaticRoutingHelper()
     list_routing.Add(static_routing, 0)
     list_routing.Add(olsr_routing, 100)
     internet.SetRoutingHelper(list_routing)
 
-    ipv4Addresses = ns3.Ipv4AddressHelper()
-    ipv4Addresses.SetBase(ns3.Ipv4Address("10.0.0.0"), ns3.Ipv4Mask("255.255.255.0"))
+    ipv4Addresses = ns.internet.Ipv4AddressHelper()
+    ipv4Addresses.SetBase(ns.network.Ipv4Address("10.0.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
 
     port = 9   # Discard port(RFC 863)
-    onOffHelper = ns3.OnOffHelper("ns3::UdpSocketFactory",
-                                  ns3.Address(ns3.InetSocketAddress(ns3.Ipv4Address("10.0.0.1"), port)))
-    onOffHelper.SetAttribute("DataRate", ns3.DataRateValue(ns3.DataRate("100kbps")))
-    onOffHelper.SetAttribute("OnTime", ns3.RandomVariableValue(ns3.ConstantVariable(1)))
-    onOffHelper.SetAttribute("OffTime", ns3.RandomVariableValue(ns3.ConstantVariable(0)))
+    onOffHelper = ns.applications.OnOffHelper("ns3::UdpSocketFactory",
+                                  ns.network.Address(ns.network.InetSocketAddress(ns.network.Ipv4Address("10.0.0.1"), port)))
+    onOffHelper.SetAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate("100kbps")))
+    onOffHelper.SetAttribute("OnTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(1)))
+    onOffHelper.SetAttribute("OffTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(0)))
 
     addresses = []
     nodes = []
@@ -76,13 +84,13 @@ def main(argv):
     for xi in range(num_nodes_side):
         for yi in range(num_nodes_side):
 
-            node = ns3.Node()
+            node = ns.network.Node()
             nodes.append(node)
 
-            internet.Install(ns3.NodeContainer(node))
+            internet.Install(ns.network.NodeContainer(node))
 
-            mobility = ns3.ConstantPositionMobilityModel()
-            mobility.SetPosition(ns3.Vector(xi*DISTANCE, yi*DISTANCE, 0))
+            mobility = ns.mobility.ConstantPositionMobilityModel()
+            mobility.SetPosition(ns.core.Vector(xi*DISTANCE, yi*DISTANCE, 0))
             node.AggregateObject(mobility)
             
             devices = wifi.Install(wifiPhy, wifiMac, node)
@@ -92,20 +100,20 @@ def main(argv):
     for i, node in enumerate(nodes):
         destaddr = addresses[(len(addresses) - 1 - i) % len(addresses)]
         #print i, destaddr
-        onOffHelper.SetAttribute("Remote", ns3.AddressValue(ns3.InetSocketAddress(destaddr, port)))
-        app = onOffHelper.Install(ns3.NodeContainer(node))
-        app.Start(ns3.Seconds(ns3.UniformVariable(20, 30).GetValue()))
+        onOffHelper.SetAttribute("Remote", ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port)))
+        app = onOffHelper.Install(ns.network.NodeContainer(node))
+        app.Start(ns.core.Seconds(ns.core.UniformVariable(20, 30).GetValue()))
             
     #internet.EnablePcapAll("wifi-olsr")
-    flowmon_helper = ns3.FlowMonitorHelper()
-    #flowmon_helper.SetMonitorAttribute("StartTime", ns3.TimeValue(ns3.Seconds(31)))
+    flowmon_helper = ns.flow_monitor.FlowMonitorHelper()
+    #flowmon_helper.SetMonitorAttribute("StartTime", ns.core.TimeValue(ns.core.Seconds(31)))
     monitor = flowmon_helper.InstallAll()
-    monitor.SetAttribute("DelayBinWidth", ns3.DoubleValue(0.001))
-    monitor.SetAttribute("JitterBinWidth", ns3.DoubleValue(0.001))
-    monitor.SetAttribute("PacketSizeBinWidth", ns3.DoubleValue(20))
+    monitor.SetAttribute("DelayBinWidth", ns.core.DoubleValue(0.001))
+    monitor.SetAttribute("JitterBinWidth", ns.core.DoubleValue(0.001))
+    monitor.SetAttribute("PacketSizeBinWidth", ns.core.DoubleValue(20))
 
-    ns3.Simulator.Stop(ns3.Seconds(44.0))
-    ns3.Simulator.Run()
+    ns.core.Simulator.Stop(ns.core.Seconds(44.0))
+    ns.core.Simulator.Run()
 
     def print_stats(os, st):
         print >> os, "  Tx Bytes: ", st.txBytes

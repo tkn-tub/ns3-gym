@@ -532,6 +532,10 @@ def create_ns3_program(bld, name, dependencies=('core',)):
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
+def register_ns3_script(bld, name, dependencies=('core',)):
+    ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
+    bld.env.append_value('NS3_SCRIPT_DEPENDENCIES', (name, ns3_module_dependencies))
+
 def add_examples_programs(bld):
     env = bld.env_of_name('default')
     if env['ENABLE_EXAMPLES']:
@@ -565,6 +569,9 @@ def add_scratch_programs(bld):
 def build(bld):
     bld.env['NS3_MODULES_WITH_TEST_LIBRARIES'] = []
     bld.env['NS3_ENABLED_MODULE_TEST_LIBRARIES'] = []
+    bld.env['NS3_SCRIPT_DEPENDENCIES'] = []
+    bld.env['NS3_RUNNABLE_PROGRAMS'] = []
+    bld.env['NS3_RUNNABLE_SCRIPTS'] = []
 
     wutils.bld = bld
     if Options.options.no_task_lines:
@@ -575,6 +582,7 @@ def build(bld):
 
     Options.cwd_launch = bld.path.abspath()
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
+    bld.register_ns3_script = types.MethodType(register_ns3_script, bld)
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
 
     # switch default variant to the one matching our debug level
@@ -663,10 +671,17 @@ def build(bld):
             # check for programs
             if hasattr(obj, 'ns3_module_dependencies'):
                 # this is an NS-3 program (bld.create_ns3_program)
+                program_built = True
                 for dep in obj.ns3_module_dependencies:
                     if dep not in modules: # prog. depends on a module that isn't enabled?
                         exclude_taskgen(bld, obj)
+                        program_built = False
                         break
+
+                # Add this program to the list if all of its
+                # dependencies will be built.
+                if program_built:
+                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', obj.name)
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
@@ -684,6 +699,19 @@ def build(bld):
 
     if env['NS3_ENABLED_MODULES']:
         env['NS3_ENABLED_MODULES'] = list(modules)
+
+    # Determine which scripts will be runnable.
+    for (script, dependencies) in bld.env['NS3_SCRIPT_DEPENDENCIES']:
+        script_runnable = True
+        for dep in dependencies:
+            if dep not in modules:
+                script_runnable = False
+                break
+
+        # Add this script to the list if all of its dependencies will
+        # be built.
+        if script_runnable:
+            bld.env.append_value('NS3_RUNNABLE_SCRIPTS', script)
 
     bld.add_subdirs('bindings/python')
 
@@ -709,15 +737,38 @@ def shutdown(ctx):
         return
     env = bld.env
 
-    # Get the sorted list of built modules without the "ns3-" in their name.
-    modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
-    modules_without_prefix.sort()
+    # Don't print the list if this a clean or distribution clean.
+    if ('clean' not in Options.arg_line) and ('distclean' not in Options.arg_line):
 
-    # Print the list of built modules with lines wrapped at 70 characters.
-    print
-    print 'Modules built:'
-    print textwrap.fill(', '.join(modules_without_prefix))
-    print
+        # Get the sorted list of built modules without the "ns3-" in their name.
+        modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
+        modules_without_prefix.sort()
+
+        # Print the list of built modules in 3 columns.
+        print
+        print 'Modules built:'
+        i = 1
+        for mod in modules_without_prefix:
+            print mod.ljust(25),
+            if i == 3:
+                    print
+                    i = 0
+            i = i+1
+        print
+        print
+
+    # Write the build status file.
+    build_status_file = os.path.join (env['NS3_BUILDDIR'], env['NS3_ACTIVE_VARIANT'], 'build-status.py')
+    out = open(build_status_file, 'w')
+    out.write('#! /usr/bin/env python\n')
+    out.write('\n')
+    out.write('# Programs that are runnable.\n')
+    out.write('ns3_runnable_programs = ' + str(env['NS3_RUNNABLE_PROGRAMS']) + '\n')
+    out.write('\n')
+    out.write('# Scripts that are runnable.\n')
+    out.write('ns3_runnable_scripts = ' + str(env['NS3_RUNNABLE_SCRIPTS']) + '\n')
+    out.write('\n')
+    out.close()
 
     if Options.options.lcov_report:
         lcov_report()
