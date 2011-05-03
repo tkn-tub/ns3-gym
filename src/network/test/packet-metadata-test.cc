@@ -252,7 +252,7 @@ class PacketMetadataTest : public TestCase {
 public:
   PacketMetadataTest ();
   virtual ~PacketMetadataTest ();
-  bool CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
+  void CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
   virtual void DoRun (void);
 private:
   Ptr<Packet> DoAddHeader (Ptr<Packet> p);
@@ -265,7 +265,7 @@ PacketMetadataTest::PacketMetadataTest ()
 PacketMetadataTest::~PacketMetadataTest ()
 {}
 
-bool 
+void
 PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...)
 {
   std::list<int> expected;
@@ -333,7 +333,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
           goto error;
         }
     }
-  return true;
+  return;
  error:
   std::ostringstream failure;
   failure << "PacketMetadata error. Got:\"";
@@ -349,8 +349,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
       failure << *j << ", ";
     }
   failure << "\"" << std::endl;
-  ReportTestFailure ("", "", "", failure.str(), file, line);
-  return false;
+  NS_TEST_ASSERT_MSG_EQ_INTERNAL (false, true, failure.str(), file, line);
 }
 
 #define ADD_HEADER(p, n)                                           \
@@ -375,21 +374,13 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
   }
 #define CHECK_HISTORY(p, ...)                                      \
   {                                                                \
-    if (!CheckHistory (p, __FILE__,                                \
-                      __LINE__, __VA_ARGS__))                      \
-      {                                                            \
-        result = false;                                            \
-      }                                                            \
+    CheckHistory (p, __FILE__, __LINE__, __VA_ARGS__);             \
     uint32_t size = p->GetSerializedSize ();                       \
     uint8_t* buffer = new uint8_t[size];                           \
     p->Serialize (buffer, size);                                   \
     Ptr<Packet> otherPacket = Create<Packet> (buffer, size, true); \
     delete [] buffer;                                              \
-    if (!CheckHistory (otherPacket, __FILE__,                      \
-                      __LINE__, __VA_ARGS__))                      \
-      {                                                            \
-        result = false;                                            \
-      }                                                            \
+    CheckHistory (otherPacket, __FILE__, __LINE__, __VA_ARGS__);   \
   }
 
 
@@ -403,8 +394,6 @@ PacketMetadataTest::DoAddHeader (Ptr<Packet> p)
 void
 PacketMetadataTest::DoRun (void)
 {
-  bool result = true;
-
   PacketMetadata::Enable ();
 
   Ptr<Packet> p = Create<Packet> (0);
@@ -825,9 +814,6 @@ PacketMetadataTest::DoRun (void)
                                  p3->GetSize ());
   delete [] buf;
   NS_TEST_EXPECT_MSG_EQ(msg, std::string("hello world"), "Could not find original data in received packet");
-
-
-  NS_TEST_EXPECT_MSG_EQ(result, true, "PacketMetadataTest failed");
 }
 //-----------------------------------------------------------------------------
 class PacketMetadataTestSuite : public TestSuite
