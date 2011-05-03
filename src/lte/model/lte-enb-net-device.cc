@@ -111,7 +111,6 @@ LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnb
   m_rrc = rrc;
   SetNode (node);
   NS_ASSERT_MSG (m_cellIdCounter < 65535, "max num eNBs exceeded");
-  m_cellId = ++m_cellIdCounter;
 }
 
 LteEnbNetDevice::~LteEnbNetDevice (void)
@@ -224,6 +223,7 @@ LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
 void 
 LteEnbNetDevice::DoStart (void)
 {
+  m_cellId = ++m_cellIdCounter;
   UpdateConfig ();
 }
 
