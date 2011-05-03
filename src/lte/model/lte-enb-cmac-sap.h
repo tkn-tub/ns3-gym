@@ -59,7 +59,7 @@ public:
    */
   struct LcInfo
   {
-    uint16_t  rnti;   /**< C-RNTI identifying the UE */
+    uint16_t rnti;   /**< C-RNTI identifying the UE */
     uint8_t  lcId;    /**< logical channel identifier */
     uint8_t  lcGroup; /**< logical channel group */
     uint8_t  qci;     /**< QoS Class Identifier */

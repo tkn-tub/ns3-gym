@@ -40,36 +40,6 @@ NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacCheduler");
 
 using namespace ns3;
 
-
-// void
-// UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                      uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-// {
-//   rlcStats->UlTxPdu(rnti, lcid, packetSize);
-// }
-//                      
-// void 
-// UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-// {
-//   rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
-// }
-//                                           
-// void
-// DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-// {
-//   rlcStats->DlTxPdu(rnti, lcid, packetSize);
-// }
-//                                                                
-// void 
-// DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-// {
-//   rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
-// }
-
-
 LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
 : TestSuite ("lteTestPfFfMacScheduler", SYSTEM)
 {
@@ -155,11 +125,12 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
+  lena->EnableDlRlcTraces();
   
   
   Simulator::Stop (Seconds (0.005));
   
-  Ptr<RlcStatsCalculator> rlcStats = CreateObject<RlcStatsCalculator> ();
+  Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
   
   Simulator::Run ();
   
@@ -174,9 +145,9 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   //SpectrumValue theoreticalSinr = (*rxPsd) / ( ( 2 * (*rxPsd) ) + (*noisePsd) );
   //SpectrumValue calculatedSinr = p->GetSinr ();
 
-  NS_LOG_INFO ("User 1 Rx Data: " << rlcStats->GetDlRxData (1,1));
-  NS_LOG_INFO ("User 2 Rx Data: " << rlcStats->GetDlRxData (2,1));
-  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1,1), rlcStats->GetDlRxData (2,1), 100, " Unfair Throughput!");
+  NS_LOG_INFO ("User 1 Rx Data: " << rlcStats->GetDlRxData (1));
+  NS_LOG_INFO ("User 2 Rx Data: " << rlcStats->GetDlRxData (2));
+  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1), rlcStats->GetDlRxData (2), 100, " Unfair Throughput!");
 
   //NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, theoreticalSinr, 0.000001, "Wrong SINR !");
 }

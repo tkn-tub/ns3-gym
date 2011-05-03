@@ -32,7 +32,57 @@ namespace ns3 {
 
 class FfMacSchedSapProvider;
 class LteMacSapProvider;
-class UeInfo;
+class EnbRadioBearerInfo;
+
+
+/**
+ * Manages all the radio bearer information possessed by the ENB RRC for a single UE
+ *
+ */
+
+class UeInfo : public Object
+{
+public:
+  /**
+   *
+   *
+   * \param EnbRadioBearerInfo
+   *
+   * \return the allocated logical channel id; 0 is returned if it is not possible to allocate a channel id (e.g., id space exausted).
+   */
+  uint8_t AddRadioBearer (Ptr<EnbRadioBearerInfo> enbRadioBearerInfo);
+
+  /**
+   *
+   *
+   * \param uint8_t the logical channel id
+   *
+   * \return the EnbRadioBearerInfo of the selected radio bearer
+   */
+  Ptr<EnbRadioBearerInfo> GetRadioBerer (uint8_t lcid);
+
+
+  /**
+   * delete the entry of the given radio bearer
+   *
+   * \param lcid the logical channel id of the radio bearer
+   */
+  void RemoveRadioBearer (uint8_t lcid);
+
+  UeInfo (void);
+  UeInfo (uint64_t imsi);
+  virtual ~UeInfo (void);
+
+  static TypeId GetTypeId (void);
+
+  uint64_t GetImsi (void);
+
+private:
+  std::map <uint8_t, Ptr<EnbRadioBearerInfo> > m_rbMap;
+  uint8_t m_lastAllocatedId;
+  uint64_t m_imsi;
+};
+
 
 /**
  *
@@ -107,10 +157,10 @@ public:
   /**
    * Add a new UE to the cell
    *
-   *
+   * \param imsi IMSI of the attaching UE
    * \return the C-RNTI of the newly added UE
    */
-  uint16_t AddUe ();
+  uint16_t AddUe (uint64_t imsi);
 
   /**
    * remove a UE from the cell
@@ -148,7 +198,7 @@ private:
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
 
   // management of multiple UE info instances
-  uint16_t CreateUeInfo ();
+  uint16_t CreateUeInfo (uint64_t imsi);
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
 

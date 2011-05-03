@@ -291,9 +291,9 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   // setup RRC connection
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  uint16_t rnti = enbRrc->AddUe ();
+  uint16_t rnti = enbRrc->AddUe (ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
   Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
-  ueRrc->ConfigureUe (rnti);
+  ueRrc->ConfigureUe (rnti, enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId () );
 
   // attach UE to eNB
   ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
@@ -411,26 +411,73 @@ LenaHelper::EnableRlcTraces (void)
 
 }
 
+uint64_t
+FindImsiFromEnbRlcPath (std::string path)
+{
+  // Sample path input:
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
+
+  // We retrieve the UeInfo accociated to the C-RNTI and perform the IMSI lookup
+  std::string ueMapPath = path.substr (0, path.find("/RadioBearerMap"));
+  Config::MatchContainer match = Config::LookupMatches (ueMapPath);
+
+  if (match.GetN () != 0)
+    {
+       Ptr<Object> ueInfo = match.Get(0);
+       return ueInfo->GetObject<UeInfo> ()->GetImsi ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Lookup " << ueMapPath << " got no matches");
+    }
+}
+
+uint64_t
+FindImsiFromUeRlc (std::string path)
+{
+  // Sample path input:
+  // /NodeList/1/DeviceList/0/LteUeRrc/RlcMap/1/RxPDU
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RlcMap/#LCID/RxPDU
+
+  // We retrieve the LteUeNetDevice path
+  std::string lteUeNetDevicePath = path.substr (0, path.find("/LteUeRrc"));
+  Config::MatchContainer match = Config::LookupMatches (lteUeNetDevicePath);
+
+  if (match.GetN () != 0)
+    {
+       Ptr<Object> ueNetDevice = match.Get(0);
+       return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Lookup " << lteUeNetDevicePath << " got no matches");
+    }
+
+}
+
+
 void
-DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  rlcStats->DlTxPdu(rnti, lcid, packetSize);
+  uint64_t imsi = FindImsiFromEnbRlcPath (path);
+  rlcStats->DlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
-DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
+  uint64_t imsi = FindImsiFromUeRlc (path);
+  rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
 void
 LenaHelper::EnableDlRlcTraces (void)
 {
-  Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback(&DlTxPduCallback, rlcStats));
-  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
                    MakeBoundCallback(&DlRxPduCallback, rlcStats));
 }
 
@@ -438,15 +485,18 @@ void
 UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  rlcStats->UlTxPdu(rnti, lcid, packetSize);
+  uint64_t imsi = FindImsiFromUeRlc (path);
+  rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
 UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
+  uint64_t imsi = FindImsiFromEnbRlcPath (path);
+  rlcStats->UlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
+
 
 
 void
@@ -456,6 +506,12 @@ LenaHelper::EnableUlRlcTraces (void)
                    MakeBoundCallback(&UlTxPduCallback, rlcStats));
   Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback(&UlRxPduCallback, rlcStats));
+}
+
+Ptr<RlcStatsCalculator>
+LenaHelper::GetRlcStats (void)
+{
+  return rlcStats;
 }
 
 } // namespace ns3

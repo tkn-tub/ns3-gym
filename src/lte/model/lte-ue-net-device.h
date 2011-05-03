@@ -80,6 +80,8 @@ public:
    */
   Ptr<LteEnbNetDevice> GetTargetEnb (void);
 
+  uint64_t GetImsi ();
+
 
 protected:
 

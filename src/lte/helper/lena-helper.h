@@ -182,6 +182,8 @@ public:
    */
   void EnableUlRlcTraces (void);
 
+  Ptr<RlcStatsCalculator> GetRlcStats (void);
+
 protected:
 
   // inherited from Object
@@ -191,6 +193,8 @@ private:
 
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
+
+  //uint64_t FindImsiFromEnbRlcPath(std::string path);
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;

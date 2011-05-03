@@ -76,7 +76,6 @@ LteUeNetDevice::LteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("This constructor should not be called");
-  m_imsi = ++m_imsiCounter;
 }
 
 
@@ -157,11 +156,18 @@ LteUeNetDevice::GetTargetEnb (void)
   return m_targetEnb;
 }
 
+uint64_t
+LteUeNetDevice::GetImsi ()
+{
+  return m_imsi;
+}
+
 
 void 
 LteUeNetDevice::DoStart (void)
 {
   UpdateConfig ();
+  m_imsi = ++m_imsiCounter;
 }
 
 

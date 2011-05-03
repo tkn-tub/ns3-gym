@@ -32,11 +32,12 @@
 namespace ns3 {
   
 
-typedef std::map<LteFlowId_t, uint32_t> uint32Map;
-typedef std::map<LteFlowId_t, uint64_t> uint64Map;
-typedef std::map<LteFlowId_t, Ptr<MinMaxAvgTotalCalculator<uint32_t> > > uint32StatsMap;
-typedef std::map<LteFlowId_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
-typedef std::map<LteFlowId_t, double> doubleMap;
+typedef std::map<uint64_t, uint32_t> uint32Map;
+typedef std::map<uint64_t, uint64_t> uint64Map;
+typedef std::map<uint64_t, Ptr<MinMaxAvgTotalCalculator<uint32_t> > > uint32StatsMap;
+typedef std::map<uint64_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
+typedef std::map<uint64_t, double> doubleMap;
+typedef std::map<uint64_t, LteFlowId_t> flowIdMap;
 
 
 class RlcStatsCalculator : public Object
@@ -50,44 +51,28 @@ public:
   void SetUlOutputFilename (std::string outputFilename);
   void SetDlOutputFilename (std::string outputFilename);
 
-  void UlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize);
-  void UlRxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
+  void UlTxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize);
+  void UlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
-  void DlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize);
-  void DlRxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
+  void DlTxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize);
+  void DlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
-  uint32_t GetUlTxPackets (LteFlowId_t p);
-  uint32_t GetUlRxPackets (LteFlowId_t p);
-  uint64_t GetUlTxData (LteFlowId_t p);
-  uint64_t GetUlRxData (LteFlowId_t p);
-  double   GetUlDelay (LteFlowId_t p);
-  std::vector<double> GetUlDelayStats (LteFlowId_t p);
-  std::vector<double> GetUlPduSizeStats (LteFlowId_t p);
-
-  uint32_t GetUlTxPackets (uint16_t rnti, uint8_t lcid);
-  uint32_t GetUlRxPackets (uint16_t rnti, uint8_t lcid);
-  uint64_t GetUlTxData (uint16_t rnti, uint8_t lcid);
-  uint64_t GetUlRxData (uint16_t rnti, uint8_t lcid);
-  double   GetUlDelay (uint16_t rnti, uint8_t lcid);
-  std::vector<double> GetUlDelayStats (uint16_t rnti, uint8_t lcid);
-  std::vector<double> GetUlPduSizeStats (uint16_t rnti, uint8_t lcid);
+  uint32_t GetUlTxPackets (uint64_t imsi);
+  uint32_t GetUlRxPackets (uint64_t imsi);
+  uint64_t GetUlTxData (uint64_t imsi);
+  uint64_t GetUlRxData (uint64_t imsi);
+  double   GetUlDelay (uint64_t imsi);
+  std::vector<double> GetUlDelayStats (uint64_t imsi);
+  std::vector<double> GetUlPduSizeStats (uint64_t imsi);
 
 
-  uint32_t GetDlTxPackets (LteFlowId_t p);
-  uint32_t GetDlRxPackets (LteFlowId_t p);
-  uint64_t GetDlTxData (LteFlowId_t p);
-  uint64_t GetDlRxData (LteFlowId_t p);
-  double   GetDlDelay (LteFlowId_t p);
-  std::vector<double> GetDlDelayStats (LteFlowId_t p);
-  std::vector<double> GetDlPduSizeStats (LteFlowId_t p);
-
-  uint32_t GetDlTxPackets (uint16_t rnti, uint8_t lcid);
-  uint32_t GetDlRxPackets (uint16_t rnti, uint8_t lcid);
-  uint64_t GetDlTxData (uint16_t rnti, uint8_t lcid);
-  uint64_t GetDlRxData (uint16_t rnti, uint8_t lcid);
-  double   GetDlDelay (uint16_t rnti, uint8_t lcid);
-  std::vector<double> GetDlDelayStats (uint16_t rnti, uint8_t lcid);
-  std::vector<double> GetDlPduSizeStats (uint16_t rnti, uint8_t lcid);
+  uint32_t GetDlTxPackets (uint64_t imsi);
+  uint32_t GetDlRxPackets (uint64_t imsi);
+  uint64_t GetDlTxData (uint64_t imsi);
+  uint64_t GetDlRxData (uint64_t imsi);
+  double   GetDlDelay (uint64_t imsi);
+  std::vector<double> GetDlDelayStats (uint64_t imsi);
+  std::vector<double> GetDlPduSizeStats (uint64_t imsi);
 
 private:
   void ShowResults (void);
@@ -97,6 +82,8 @@ private:
 
   void StartEpoch (void);
   void CheckEpoch (void);
+
+  flowIdMap m_flowId;
 
   std::string m_dlOutputFilename;
   uint32Map m_dlTxPackets;

@@ -32,33 +32,6 @@
 
 using namespace ns3;
 
-
-
-void UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-{
-  rlcStats->UlTxPdu(rnti, lcid, packetSize);
-}
-
-void UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-{
-  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
-}
-
-void DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-{
-  rlcStats->DlTxPdu(rnti, lcid, packetSize);
-}
-
-void DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-{
-  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
-}
-
-
 int main (int argc, char *argv[])
 {
   double enbDist = 100.0;
@@ -154,21 +127,8 @@ int main (int argc, char *argv[])
   std::string ulOutFname = "UlRlcStats";
   ulOutFname.append (tag.str ());
 
-  Ptr<RlcStatsCalculator> rlcStats 
-    = CreateObjectWithAttributes<RlcStatsCalculator> ("DlOutputFilename", 
-                                                      StringValue (dlOutFname),
-                                                      "UlOutputFilename", 
-                                                      StringValue (ulOutFname));
-  
-  Config::Connect("/NodeList/*/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
-                   MakeBoundCallback(&DlTxPduCallback, rlcStats));
-  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/RxPDU",
-                   MakeBoundCallback(&DlRxPduCallback, rlcStats));
-
-  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/TxPDU",
-                   MakeBoundCallback(&UlTxPduCallback, rlcStats));
-  Config::Connect ("/NodeList/*/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
-                   MakeBoundCallback(&UlRxPduCallback, rlcStats));
+  lena->EnableMacTraces ();
+  lena->EnableRlcTraces ();
 
   Simulator::Run ();
   Simulator::Destroy ();

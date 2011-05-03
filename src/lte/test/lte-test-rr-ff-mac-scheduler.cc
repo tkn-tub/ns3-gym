@@ -41,37 +41,6 @@ NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
 using namespace ns3;
 
 
-void
-UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                     uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-{
-  rlcStats->UlTxPdu(rnti, lcid, packetSize);
-}
-                     
-void 
-UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-{
-  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
-}
-                                          
-void
-DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-{
-  rlcStats->DlTxPdu(rnti, lcid, packetSize);
-}
-                                                               
-void 
-DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-{
-  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
-}
-
-
-
-
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 : TestSuite ("lteTestRrFfMacScheduler", SYSTEM)
 {
@@ -159,18 +128,11 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
   
+  lena->EnableRlcTraces ();
+
   Simulator::Stop (Seconds (1.0));
   
-  Ptr<RlcStatsCalculator> rlcStats = CreateObject<RlcStatsCalculator> ();
-  Config::Connect("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
-                  MakeBoundCallback(&DlTxPduCallback, rlcStats));
-  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/RxPDU",
-                  MakeBoundCallback(&DlRxPduCallback, rlcStats));
-                  
-  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/TxPDU",
-                  MakeBoundCallback(&UlTxPduCallback, rlcStats));
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
-                  MakeBoundCallback(&UlRxPduCallback, rlcStats));
+  Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
   
   Simulator::Run ();
   
@@ -184,13 +146,13 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 
   //SpectrumValue theoreticalSinr = (*rxPsd) / ( ( 2 * (*rxPsd) ) + (*noisePsd) );
   //SpectrumValue calculatedSinr = p->GetSinr ();
-  double uData1 = (double)rlcStats->GetDlRxData (1,1) / 1.0;
-  double uData2 = (double)rlcStats->GetDlRxData (2,1) / 1.0;
-  double uData3 = (double)rlcStats->GetDlRxData (3,1) / 1.0;
+  double uData1 = (double)rlcStats->GetDlRxData (1) / 1.0;
+  double uData2 = (double)rlcStats->GetDlRxData (2) / 1.0;
+  double uData3 = (double)rlcStats->GetDlRxData (3) / 1.0;
   NS_LOG_INFO ("User 1 Rx Data: " << uData1);
   NS_LOG_INFO ("User 2 Rx Data: " << uData2);
   NS_LOG_INFO ("User 3 Rx Data: " << uData3);
-  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1,1), rlcStats->GetDlRxData (2,1), 0.0000001, " Unfair Throughput!");
+  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1), rlcStats->GetDlRxData (2), 0.0000001, " Unfair Throughput!");
 
   //NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, theoreticalSinr, 0.000001, "Wrong SINR !");
 }

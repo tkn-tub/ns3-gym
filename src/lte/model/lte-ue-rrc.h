@@ -91,8 +91,9 @@ public:
    * Set UE RRC parameters
    *
    * \param rnti  C-RNTI of the UE
+   * \param cellId Serving cell identifier
    */
-  void ConfigureUe (uint16_t rnti);
+  void ConfigureUe (uint16_t rnti, uint16_t cellId);
 
   /**
    * Setup a new radio bearer for the given user
@@ -131,6 +132,7 @@ private:
   LteMacSapProvider* m_macSapProvider;
 
   uint16_t m_rnti;
+  uint16_t m_cellId;
 
   std::map<uint8_t, Ptr<LteRlc> > m_rlcMap;
 

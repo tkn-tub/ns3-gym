@@ -87,7 +87,11 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth, 
                                          &LteEnbNetDevice::GetDlBandwidth),
                    MakeUintegerChecker<uint8_t> ())
-
+    .AddAttribute ("CellId",
+                   "Cell Identifier",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteEnbNetDevice::m_cellId),
+                   MakeUintegerChecker<uint16_t> ())
     ;
   return tid;
 }
