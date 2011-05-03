@@ -39,6 +39,8 @@
 
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE("WimaxPhyTest");
+
 /*
  * Configure a network with 3 SS and 1 BS
  * Install a SIMPLE OFDM PHY layer on all nodes and check that all SSs
@@ -92,7 +94,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRunOnce (double FrameDuration)
       if (ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ()->IsRegistered ()
           == false)
         {
-          std::cout << "SS[" << i << "] not registered" << std::endl;
+          NS_LOG_DEBUG ("SS[" << i << "] not registered");
           return true; // Test fail because SS[i] is not registered
         }
     }
@@ -109,7 +111,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRun (void)
   frameDuratioTab[7] = { 0.0025, 0.004, 0.005, 0.008, 0.01, 0.0125, 0.02 };
   for (int i = 0; i < 7; i++)
     {
-      std::cout << "Frame Duration = " << frameDuratioTab[i] << std::endl;
+      NS_LOG_DEBUG ("Frame Duration = " << frameDuratioTab[i]);
       if (DoRunOnce (frameDuratioTab[i]) != false)
         {
           return;
