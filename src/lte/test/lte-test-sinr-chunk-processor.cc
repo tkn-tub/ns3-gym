@@ -21,27 +21,27 @@
 
 #include <ns3/log.h>
 
-#include "lena-test-sinr-chunk-processor.h"
+#include "lte-test-sinr-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestSinrChunkProcessor");
+NS_LOG_COMPONENT_DEFINE ("LteTestSinrChunkProcessor");
 
 namespace ns3 {
 
 
-LenaTestSinrChunkProcessor::LenaTestSinrChunkProcessor (Ptr<LtePhy> p)
+LteTestSinrChunkProcessor::LteTestSinrChunkProcessor (Ptr<LtePhy> p)
   : m_phy (p)
 {
   NS_LOG_FUNCTION (this << p);
   NS_ASSERT (m_phy);
 }
 
-LenaTestSinrChunkProcessor::~LenaTestSinrChunkProcessor ()
+LteTestSinrChunkProcessor::~LteTestSinrChunkProcessor ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-LenaTestSinrChunkProcessor::Start ()
+LteTestSinrChunkProcessor::Start ()
 {
   NS_LOG_FUNCTION (this);
   m_sumSinr = 0;
@@ -49,7 +49,7 @@ LenaTestSinrChunkProcessor::Start ()
 }
 
 void
-LenaTestSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
+LteTestSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
 {
   NS_LOG_FUNCTION (this << sinr << duration);
   if (m_sumSinr == 0)
@@ -63,7 +63,7 @@ LenaTestSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time d
 }
 
 void
-LenaTestSinrChunkProcessor::End ()
+LteTestSinrChunkProcessor::End ()
 {
   NS_LOG_FUNCTION (this);
   if (m_totDuration.GetSeconds () > 0)
@@ -79,7 +79,7 @@ LenaTestSinrChunkProcessor::End ()
 }
 
 SpectrumValue
-LenaTestSinrChunkProcessor::GetSinr ()
+LteTestSinrChunkProcessor::GetSinr ()
 {
   NS_LOG_FUNCTION (this);
 
