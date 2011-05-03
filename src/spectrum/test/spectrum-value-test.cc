@@ -70,22 +70,7 @@ SpectrumValueTestCase::MoreOrLessEqual (SpectrumValue x, SpectrumValue y)
 void
 SpectrumValueTestCase::DoRun (void)
 {
-  bool error = !MoreOrLessEqual (m_a, m_b);
-  std::cerr << m_a << std::endl
-            << m_b << std::endl;
-  if (error)
-    {
-      std::ostringstream actualStream;
-      actualStream << m_a;
-      std::ostringstream limitStream;
-      limitStream << m_b;
-      UpdateErrorStatus (error);
-      ReportTestFailure (std::string ("vector elements equal"),
-                         actualStream.str (),
-                         limitStream.str (),
-                         std::string ("no message"),
-                         __FILE__, __LINE__);
-    }
+  NS_TEST_ASSERT_MSG_EQ (MoreOrLessEqual (m_a, m_b), true, m_a << "!=" << m_b);
 }
 
 
@@ -192,10 +177,10 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   tv6 = v1 / v2;
 
 
-  AddTestCase (new SpectrumValueTestCase (tv3, v3, " tv3 = v1 + v2"));
-  AddTestCase (new SpectrumValueTestCase (tv4, v4, " tv4 = v1 - v2"));
-  AddTestCase (new SpectrumValueTestCase (tv5, v5, " tv5 = v1 * v2"));
-  AddTestCase (new SpectrumValueTestCase (tv6, v6, " tv6 = v1 / v2"));
+  AddTestCase (new SpectrumValueTestCase (tv3, v3, "tv3 = v1 + v2"));
+  AddTestCase (new SpectrumValueTestCase (tv4, v4, "tv4 = v1 - v2"));
+  AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 = v1 * v2"));
+  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 = v1 div v2"));
 
   // std::cerr << v6 << std::endl;
   // std::cerr << tv6 << std::endl;
@@ -214,7 +199,7 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   AddTestCase (new SpectrumValueTestCase (tv3, v3, "tv3 += v2"));
   AddTestCase (new SpectrumValueTestCase (tv4, v4, "tv4 -= v2"));
   AddTestCase (new SpectrumValueTestCase (tv5, v5, "tv5 *= v2"));
-  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 /= v2"));
+  AddTestCase (new SpectrumValueTestCase (tv6, v6, "tv6 div= v2"));
 
   SpectrumValue tv7a (f), tv8a (f), tv9a (f), tv10a (f);
   tv7a = v1 + doubleValue;
@@ -224,7 +209,7 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   AddTestCase (new SpectrumValueTestCase (tv7a, v7, "tv7a = v1 + doubleValue"));
   AddTestCase (new SpectrumValueTestCase (tv8a, v8, "tv8a = v1 - doubleValue"));
   AddTestCase (new SpectrumValueTestCase (tv9a, v9, "tv9a = v1 * doubleValue"));
-  AddTestCase (new SpectrumValueTestCase (tv10a, v10, "tv10a = v1 / doubleValue"));
+  AddTestCase (new SpectrumValueTestCase (tv10a, v10, "tv10a = v1 div doubleValue"));
 
   SpectrumValue tv7b (f), tv8b (f), tv9b (f), tv10b (f);
   tv7b =  doubleValue + v1;
@@ -234,7 +219,7 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   AddTestCase (new SpectrumValueTestCase (tv7b, v7, "tv7b =  doubleValue + v1"));
   AddTestCase (new SpectrumValueTestCase (tv8b, v8, "tv8b =  doubleValue - v1"));
   AddTestCase (new SpectrumValueTestCase (tv9b, v9, "tv9b =  doubleValue * v1"));
-  AddTestCase (new SpectrumValueTestCase (tv10b, v10, "tv10b = doubleValue / v1"));
+  AddTestCase (new SpectrumValueTestCase (tv10b, v10, "tv10b = doubleValue div v1"));
 
 
 
