@@ -47,7 +47,6 @@ private:
   Ptr<SpectrumValue> m_s;
   uint32_t m_txBytes;
   uint32_t m_rxCorrectKnownOutcome;
-  bool m_error;
   Ptr<const SpectrumModel> m_mySpectrumModel;
 };
 
@@ -127,27 +126,7 @@ SpectrumInterferenceTestCase::DoRun (void)
 void
 SpectrumInterferenceTestCase::RetrieveTestResult (SpectrumInterference* si)
 {
-
-  bool rxOk = si->EndRx ();
-  m_error =  (m_rxCorrectKnownOutcome != rxOk);
-
-  std::ostringstream actualStream;
-  actualStream << rxOk;
-  std::ostringstream limitStream;
-  limitStream << m_rxCorrectKnownOutcome;
-
-  NS_LOG_LOGIC ("actual=" << actualStream.str () << " limit=" << limitStream.str ());
-
-  if (m_error)
-    {
-      UpdateErrorStatus (m_error);
-      ReportTestFailure (std::string ("wrong result"),
-                         actualStream.str (),
-                         limitStream.str (),
-                         std::string ("no message"),
-                         __FILE__, __LINE__);
-    }
-
+  NS_TEST_ASSERT_MSG_EQ (si->EndRx (), m_rxCorrectKnownOutcome, "no message");
 }
 
 
@@ -192,24 +171,24 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite ()
   (*s1)[0] = 1.255943215755e-15;
   (*s1)[1] = 7.204059965732e-16;
   b = 10067205.5632012;
-  AddTestCase (new SpectrumInterferenceTestCase (s1,   1, 1,            "sdBm  = [-46 -48]  tx bytes: 1"));
-  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * 0.5 + 0.5), 1,   "sdBm  = [-46 -48]  tx bytes: b*0.5"));
-  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * (1 - e) + 0.5), 1, "sdBm  = [-46 -48]  tx bytes: b*(1-e)"));
-  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * (1 + e) + 0.5), 0, "sdBm  = [-46 -48]  tx bytes: b*(1+e)"));
-  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t>(b * 1.5 + 0.5), 0,   "sdBm  = [-46 -48]  tx bytes: b*1.5"));
-  AddTestCase (new SpectrumInterferenceTestCase (s1, 0xffffffff, 0,     "sdBm  = [-46 -48]  tx bytes: 2^32-1"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1,   0, true,            "sdBm  = [-46 -48]  tx bytes: 1"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * 0.5 + 0.5), true,   "sdBm  = [-46 -48]  tx bytes: b*0.5"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * (1 - e) + 0.5), true, "sdBm  = [-46 -48]  tx bytes: b*(1-e)"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * (1 + e) + 0.5), false, "sdBm  = [-46 -48]  tx bytes: b*(1+e)"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t>(b * 1.5 + 0.5), false,   "sdBm  = [-46 -48]  tx bytes: b*1.5"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1, 0xffffffff, false,     "sdBm  = [-46 -48]  tx bytes: 2^32-1"));
 
   // Power Spectral Density of the signal of interest  =  [-63 -61] dBm;
   Ptr<SpectrumValue> s2  = Create<SpectrumValue> (m);
   (*s2)[0] = 2.505936168136e-17;
   (*s2)[1] = 3.610582885110e-17;
   b = 882401.591840728;
-  AddTestCase (new SpectrumInterferenceTestCase (s2,   1, 1,            "sdBm  = [-63 -61]  tx bytes: 1"));
-  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * 0.5 + 0.5), 1,   "sdBm  = [-63 -61]  tx bytes: b*0.5"));
-  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * (1 - e) + 0.5), 1, "sdBm  = [-63 -61]  tx bytes: b*(1-e)"));
-  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * (1 + e) + 0.5), 0, "sdBm  = [-63 -61]  tx bytes: b*(1+e)"));
-  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * 1.5 + 0.5), 0,   "sdBm  = [-63 -61]  tx bytes: b*1.5"));
-  AddTestCase (new SpectrumInterferenceTestCase (s2, 0xffffffff, 0,     "sdBm  = [-63 -61]  tx bytes: 2^32-1"));
+  AddTestCase (new SpectrumInterferenceTestCase (s2,   1, true,            "sdBm  = [-63 -61]  tx bytes: 1"));
+  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * 0.5 + 0.5), true,   "sdBm  = [-63 -61]  tx bytes: b*0.5"));
+  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * (1 - e) + 0.5), true, "sdBm  = [-63 -61]  tx bytes: b*(1-e)"));
+  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * (1 + e) + 0.5), false, "sdBm  = [-63 -61]  tx bytes: b*(1+e)"));
+  AddTestCase (new SpectrumInterferenceTestCase (s2, static_cast<uint32_t> (b * 1.5 + 0.5), false,   "sdBm  = [-63 -61]  tx bytes: b*1.5"));
+  AddTestCase (new SpectrumInterferenceTestCase (s2, 0xffffffff, false,     "sdBm  = [-63 -61]  tx bytes: 2^32-1"));
 
 }
 
