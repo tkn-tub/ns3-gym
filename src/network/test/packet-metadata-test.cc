@@ -348,7 +348,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     {
       failure << *j << ", ";
     }
-  failure << "\"" << std::endl;
+  failure << "\"";
   NS_TEST_ASSERT_MSG_EQ_INTERNAL (false, true, failure.str(), file, line);
 }
 
