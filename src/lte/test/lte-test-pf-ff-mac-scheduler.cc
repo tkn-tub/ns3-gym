@@ -29,7 +29,7 @@
 #include <iostream>
 #include "ns3/rlc-stats-calculator.h"
 
-#include "ns3/lena-test-pf-ff-mac-scheduler.h"
+#include "ns3/lte-test-pf-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>

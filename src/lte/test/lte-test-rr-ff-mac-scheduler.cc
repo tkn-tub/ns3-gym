@@ -29,7 +29,7 @@
 #include <iostream>
 #include "ns3/rlc-stats-calculator.h"
 
-#include "ns3/lena-test-rr-ff-mac-scheduler.h"
+#include "ns3/lte-test-rr-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -101,20 +101,20 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
   LogComponentEnable ("RrPacketScheduler", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
@@ -135,7 +135,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
-  ueNodes.Create (2);
+  ueNodes.Create (1);
   
   // Install Mobility Model
   MobilityHelper mobility;
@@ -152,15 +152,14 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   ueDevs = lena->InstallUeDevice (ueNodes);
   
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lena->Attach (ueDevs, enbDevs.Get (3));
   
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
   
-  
-  Simulator::Stop (Seconds (0.050));
+  Simulator::Stop (Seconds (1.0));
   
   Ptr<RlcStatsCalculator> rlcStats = CreateObject<RlcStatsCalculator> ();
   Config::Connect("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
@@ -185,9 +184,12 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 
   //SpectrumValue theoreticalSinr = (*rxPsd) / ( ( 2 * (*rxPsd) ) + (*noisePsd) );
   //SpectrumValue calculatedSinr = p->GetSinr ();
-
-  NS_LOG_INFO ("User 1 Rx Data: " << rlcStats->GetDlRxData (1,1));
-  NS_LOG_INFO ("User 2 Rx Data: " << rlcStats->GetDlRxData (2,1));
+  double uData1 = (double)rlcStats->GetDlRxData (1,1) / 1.0;
+  double uData2 = (double)rlcStats->GetDlRxData (2,1) / 1.0;
+  double uData3 = (double)rlcStats->GetDlRxData (3,1) / 1.0;
+  NS_LOG_INFO ("User 1 Rx Data: " << uData1);
+  NS_LOG_INFO ("User 2 Rx Data: " << uData2);
+  NS_LOG_INFO ("User 3 Rx Data: " << uData3);
   NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1,1), rlcStats->GetDlRxData (2,1), 0.0000001, " Unfair Throughput!");
 
   //NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, theoreticalSinr, 0.000001, "Wrong SINR !");
