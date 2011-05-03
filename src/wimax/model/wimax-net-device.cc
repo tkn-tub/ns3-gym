@@ -52,7 +52,7 @@ Time WimaxNetDevice::m_frameStartTime = Seconds (0);
 TypeId WimaxNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::WimaxNetDevice")
 
     .SetParent<NetDevice> ()

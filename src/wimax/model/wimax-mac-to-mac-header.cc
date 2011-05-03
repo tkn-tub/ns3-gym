@@ -80,11 +80,11 @@ WimaxMacToMacHeader::GetSerializedSize (void) const
   uint8_t sizeOfLen = GetSizeOfLen ();
   if (sizeOfLen==1)
     {
-      return 20 ;
+      return 20;
     }
   else
     {
-      return 20 + sizeOfLen -1 ;
+      return 20 + sizeOfLen -1;
     }
   //return 19+sizeOfLen;
 }

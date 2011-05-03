@@ -97,7 +97,7 @@ BSLinkManager::ProcessRangingRequest (Cid cid, RngReq rngreq)
 
   if (Simulator::Now () >= m_bs->GetUlSubframeStartTime () && Simulator::Now () < irIntervalBoundary)
     {
-       PerformRanging (cid, rngreq);
+      PerformRanging (cid, rngreq);
     }
 }
 
@@ -321,11 +321,11 @@ BSLinkManager::DeallocateCids (Cid cid)
 uint64_t
 BSLinkManager::SelectDlChannel (void)
 {
-	// Values according to WirelessMAN-OFDM RF profile for 10 MHz channelization
-	// Section 12.3.3.1 from IEEE 802.16-2004 standard
-	// profR10_3 :
-	// channels: 5000 + n â‹… 5 MHz, âˆ€n âˆˆ { 147, 149, 151, 153, 155, 157, 159, 161, 163, 165, 167 }
-	// temporarily set to 1 for quick scanning. To be standard compliant, use a value in the list above
+  // Values according to WirelessMAN-OFDM RF profile for 10 MHz channelization
+  // Section 12.3.3.1 from IEEE 802.16-2004 standard
+  // profR10_3 :
+  // channels: 5000 + n â‹… 5 MHz, âˆ€n âˆˆ { 147, 149, 151, 153, 155, 157, 159, 161, 163, 165, 167 }
+  // temporarily set to 1 for quick scanning. To be standard compliant, use a value in the list above
   return m_bs->GetChannel (1);
 }
 

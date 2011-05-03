@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleOfdmWimaxPhy);
 TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::SimpleOfdmWimaxPhy").SetParent<WimaxPhy> ()
 
     .AddAttribute ("NoiseFigure",
@@ -291,18 +291,18 @@ SimpleOfdmWimaxPhy::StartSendDummyFecBlock (bool isFirstBlock,
     {
       isLastFecBlock = false;
     }
-    channel->Send (m_blockTime,
-                   m_currentBurstSize,
-                   this,
-                   isFirstBlock,
-                   isLastFecBlock,
-                   GetTxFrequency (),
-                   modulationType,
-                   direction,
-                   m_txPower,
-                   m_currentBurst);
+  channel->Send (m_blockTime,
+                 m_currentBurstSize,
+                 this,
+                 isFirstBlock,
+                 isLastFecBlock,
+                 GetTxFrequency (),
+                 modulationType,
+                 direction,
+                 m_txPower,
+                 m_currentBurst);
 
-  m_nrRemainingBlocksToSend --;
+  m_nrRemainingBlocksToSend--;
   Simulator::Schedule (m_blockTime, &SimpleOfdmWimaxPhy::EndSendFecBlock, this, modulationType, direction);
 }
 
