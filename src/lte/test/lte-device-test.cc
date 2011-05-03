@@ -72,7 +72,7 @@ Ns3LteDeviceTestCase::DoRun (void)
 {
   LteHelper lte;
 
-  lte.EnableLogComponents ();
+  //lte.EnableLogComponents ();
 
   // CREATE NODE CONTAINER AND CREATE LTE NODES
   NodeContainer ueNodes;
