@@ -9,7 +9,7 @@ namespace ns3 {
 //-----------------------------------------------------------------------------
 class BufferTest : public TestCase {
 private:
-  void EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
+  void EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[], const char *file, int line);
 public:
   virtual void DoRun (void);
   BufferTest ();
@@ -21,7 +21,7 @@ BufferTest::BufferTest ()
 }
 
 void
-BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
+BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[], const char *file, int line)
 {
   bool success = true;
   uint8_t *expected = array;
@@ -53,7 +53,7 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
           failure << (uint16_t)got[j] << " ";
         }
       failure << std::endl;
-      NS_TEST_ASSERT_MSG_EQ(true, false, failure.str());
+      NS_TEST_ASSERT_MSG_EQ_INTERNAL(true, false, failure.str(), file, line);
     }
 }
 
@@ -64,7 +64,7 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
 #define ENSURE_WRITTEN_BYTES(buffer, n, ...)			\
   {								\
     uint8_t bytes[] = {__VA_ARGS__};				\
-    EnsureWrittenBytes (buffer,	n, bytes);			\
+    EnsureWrittenBytes (buffer,	n, bytes, __FILE__, __LINE__);	\
   }
 
 void
