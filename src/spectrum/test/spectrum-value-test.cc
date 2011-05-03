@@ -26,6 +26,8 @@
 #include <iostream>
 #include <math.h>
 
+#include "spectrum-value-test.h"
+
 // NS_LOG_COMPONENT_DEFINE ("SpectrumValueTest");
 
 namespace ns3 {
@@ -70,7 +72,7 @@ SpectrumValueTestCase::MoreOrLessEqual (SpectrumValue x, SpectrumValue y)
 void
 SpectrumValueTestCase::DoRun (void)
 {
-  NS_TEST_ASSERT_MSG_EQ (MoreOrLessEqual (m_a, m_b), true, m_a << "!=" << m_b);
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (m_a, m_b, TOLERANCE, GetName ());
 }
 
 
