@@ -57,7 +57,7 @@ TypeId
 SubscriberStationNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::SubscriberStationNetDevice")
 
     .SetParent<WimaxNetDevice> ()
@@ -1081,9 +1081,11 @@ SubscriberStationNetDevice::ProcessDlMap (const DlMap &dlmap)
            mechanism automatically passes it as parameter.*/
         }
 
+#if 0 /* a template for future implementation following */
       uint8_t temp = iter->GetDiuc ();
       temp = iter->GetPreamblePresent ();
       temp = iter->GetStartTime ();
+#endif
     }
 }
 

@@ -5,12 +5,15 @@ def configure(conf):
 
 def build(bld):
     ns3wifi = bld.create_ns3_module('ns3wifi', ['internet', 'mobility', 'propagation', 'wifi', 'applications'])
-    ns3wifi.source = [
-        'wifi-interference-test-suite.cc',
-        'wifi-msdu-aggregator-test-suite.cc',
-        ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'ns3wifi'
     headers.source = [
         'ns3wifi.h',
         ]
+
+    ns3wifi_test = bld.create_ns3_module_test_library('ns3wifi')
+    ns3wifi_test.source = [
+        'wifi-interference-test-suite.cc',
+        'wifi-msdu-aggregator-test-suite.cc',
+        ]
+

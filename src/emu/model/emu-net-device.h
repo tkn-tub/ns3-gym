@@ -212,6 +212,8 @@ public:
   EmuNetDevice::EncapsulationMode  GetEncapsulationMode (void) const;
 
 private:
+  EmuNetDevice (const EmuNetDevice &);
+  EmuNetDevice & operator= (const EmuNetDevice &);
 
   virtual void DoDispose (void);
 

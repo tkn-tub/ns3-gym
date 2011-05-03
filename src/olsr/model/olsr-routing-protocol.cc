@@ -74,15 +74,15 @@
 /********** Holding times **********/
 
 /// Neighbor holding time.
-#define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * OLSR_REFRESH_INTERVAL)
+#define OLSR_NEIGHB_HOLD_TIME	Time (3 * OLSR_REFRESH_INTERVAL)
 /// Top holding time.
-#define OLSR_TOP_HOLD_TIME	(Scalar (3) * m_tcInterval)
+#define OLSR_TOP_HOLD_TIME	Time (3 * m_tcInterval)
 /// Dup holding time.
 #define OLSR_DUP_HOLD_TIME	Seconds (30)
 /// MID holding time.
-#define OLSR_MID_HOLD_TIME	(Scalar (3) * m_midInterval)
+#define OLSR_MID_HOLD_TIME	Time (3 * m_midInterval)
 /// HNA holding time.
-#define OLSR_HNA_HOLD_TIME  (Scalar (3) * m_hnaInterval)
+#define OLSR_HNA_HOLD_TIME      Time (3 * m_hnaInterval)
 
 /********** Link types **********/
 
@@ -327,6 +327,7 @@ void RoutingProtocol::DoStart ()
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR socket");
         }
+      socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
       m_socketAddresses[socket] = m_ipv4->GetAddress (i, 0);
 
       canRunOlsr = true;
@@ -3292,133 +3293,6 @@ RoutingProtocol::GetRoutingTableEntries () const
       retval.push_back (iter->second);
     }
   return retval;
-}
-OlsrMprTestCase::OlsrMprTestCase ()
-  : TestCase ("Check OLSR MPR computing mechanism")
-{
-}
-OlsrMprTestCase::~OlsrMprTestCase ()
-{
-}
-void
-OlsrMprTestCase::DoRun ()
-{
-  Ptr<RoutingProtocol> protocol = CreateObject<RoutingProtocol> ();
-  protocol->m_mainAddress = Ipv4Address ("10.0.0.1");
-  OlsrState & state = protocol->m_state; 
- 
-  /*
-   *  1 -- 2 
-   *  |    |
-   *  3 -- 4
-   *
-   * Node 1 must select only one MPR (2 or 3, doesn't matter)
-   */
-  NeighborTuple neigbor;
-  neigbor.status = NeighborTuple::STATUS_SYM;
-  neigbor.willingness = OLSR_WILL_DEFAULT;
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.2");
-  protocol->m_state.InsertNeighborTuple (neigbor);
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.3");
-  protocol->m_state.InsertNeighborTuple (neigbor); 
-  TwoHopNeighborTuple tuple;
-  tuple.expirationTime = Seconds (3600);
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.2");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
-  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
-  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  
-  protocol->MprComputation ();
-  NS_TEST_EXPECT_MSG_EQ (state.GetMprSet ().size (), 1 , "An only address must be chosen.");
-  /*
-   *  1 -- 2 -- 5 
-   *  |    |
-   *  3 -- 4
-   *
-   * Node 1 must select node 2 as MPR.
-   */
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.2");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-
-  protocol->MprComputation ();
-  MprSet mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 1 , "An only address must be chosen.");
-  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.2") != mpr.end ()), true, "Node 1 must select node 2 as MPR");
-  /*
-   *  1 -- 2 -- 5 
-   *  |    |
-   *  3 -- 4
-   *  |
-   *  6
-   *
-   * Node 1 must select nodes 2 and 3 as MPRs.
-   */
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
-  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-
-  protocol->MprComputation ();
-  mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 2 , "An only address must be chosen.");
-  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.2") != mpr.end ()), true, "Node 1 must select node 2 as MPR");
-  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.3") != mpr.end ()), true, "Node 1 must select node 3 as MPR");
-  /*
-   *  7 (OLSR_WILL_ALWAYS)
-   *  |
-   *  1 -- 2 -- 5 
-   *  |    |
-   *  3 -- 4
-   *  |
-   *  6
-   *
-   * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
-   */
-  neigbor.willingness = OLSR_WILL_ALWAYS;
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.7");
-  protocol->m_state.InsertNeighborTuple (neigbor);
-
-  protocol->MprComputation ();
-  mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
-  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.7") != mpr.end ()), true, "Node 1 must select node 7 as MPR");
-  /*
-   *                7 <- WILL_ALWAYS
-   *                |
-   *      9 -- 8 -- 1 -- 2 -- 5 
-   *                |    |
-   *           ^    3 -- 4
-   *           |    |
-   *   WILL_NEVER   6
-   *
-   * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
-   * Node 1 must NOT select node 8 as MPR since it is WILL_NEVER
-   */
-  neigbor.willingness = OLSR_WILL_NEVER;
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.8");
-  protocol->m_state.InsertNeighborTuple (neigbor);
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.8");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
-  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-
-  protocol->MprComputation ();
-  mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
-  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.9") == mpr.end ()), true, "Node 1 must NOT select node 8 as MPR");
-}
-
-static class OlsrProtocolTestSuite : public TestSuite
-{
-public:
-  OlsrProtocolTestSuite ();
-} g_olsrProtocolTestSuite;
-
-OlsrProtocolTestSuite::OlsrProtocolTestSuite()
-  : TestSuite("routing-olsr", UNIT)
-{
-  AddTestCase (new OlsrMprTestCase ());
 }
 
 bool

@@ -66,7 +66,7 @@ main (int argc, char *argv[])
 // Explicitly create the channels required by the topology (shown above).
 //
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
   NetDeviceContainer d = csma.Install (n);
@@ -93,7 +93,7 @@ main (int argc, char *argv[])
 //
   uint16_t port = 4000;
   UdpServerHelper server (port);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -118,7 +118,7 @@ main (int argc, char *argv[])
 // Now, do the actual simulation.
 //
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Stop (Seconds(20.0));
+  Simulator::Stop (Seconds (20.0));
   Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");

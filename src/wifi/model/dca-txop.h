@@ -89,8 +89,7 @@ public:
    */
   void SetTxFailedCallback (TxFailed callback);
 
-  void SetMaxQueueSize (uint32_t size);
-  void SetMaxQueueDelay (Time delay);
+  Ptr<WifiMacQueue > GetQueue () const; 
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
   virtual void SetAifsn (uint32_t aifsn);

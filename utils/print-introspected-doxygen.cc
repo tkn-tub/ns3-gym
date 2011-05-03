@@ -7,10 +7,11 @@
 #include "ns3/log.h"
 #include "ns3/global-value.h"
 #include "ns3/string.h"
+#include "ns3/node-container.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Main");
+NS_LOG_COMPONENT_DEFINE ("PrintIntrospectedDoxygen");
 
 void
 PrintAttributes (TypeId tid, std::ostream &os)

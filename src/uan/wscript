@@ -7,7 +7,7 @@ def build(bld):
         'model/uan-phy-gen.cc',
         'model/uan-transducer-hd.cc',
         'model/uan-address.cc',
-	    'model/uan-net-device.cc',
+        'model/uan-net-device.cc',
         'model/uan-tx-mode.cc',
         'model/uan-prop-model.cc',
         'model/uan-prop-model-ideal.cc',
@@ -25,6 +25,10 @@ def build(bld):
         'model/acoustic-modem-energy-model.cc',
         'helper/uan-helper.cc',
         'helper/acoustic-modem-energy-model-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('uan')
+    module_test.source = [
         'test/uan-test.cc',
         'test/uan-energy-model-test.cc',
         ]
@@ -34,12 +38,12 @@ def build(bld):
         'model/uan-channel.h',
         'model/uan-phy.h',
         'model/uan-mac.h',
-	      'model/uan-net-device.h',
-	      'model/uan-prop-model.h',
-	      'model/uan-tx-mode.h',
-	      'model/uan-transducer.h',
+        'model/uan-net-device.h',
+        'model/uan-prop-model.h',
+        'model/uan-tx-mode.h',
+        'model/uan-transducer.h',
         'model/uan-phy-gen.h',
-	      'model/uan-transducer-hd.h',
+        'model/uan-transducer-hd.h',
         'model/uan-address.h',
         'model/uan-prop-model-ideal.h',
         'model/uan-mac-aloha.h',
@@ -59,3 +63,5 @@ def build(bld):
 
     if (bld.env['ENABLE_EXAMPLES']):
       bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

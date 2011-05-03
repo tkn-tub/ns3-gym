@@ -9,6 +9,12 @@ def build(bld):
        'model/rocketfuel-topology-reader.cc',
        'helper/topology-reader-helper.cc',
         ]
+
+    module_test = bld.create_ns3_module_test_library('topology-read')
+    module_test.source = [
+        'test/rocketfuel-topology-reader-test-suite.cc',
+        ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'topology-read'
     headers.source = [
@@ -22,3 +28,5 @@ def build(bld):
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

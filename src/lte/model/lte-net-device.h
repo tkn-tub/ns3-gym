@@ -55,7 +55,7 @@ public:
    * \brief set the callback used to instruct the lower layer to start a TX
    * \param c
    */
-  void SetPhyMacTxStartCallback (PhyMacTxStartCallback c);
+  void SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c);
 
 
   // inherited from NetDevice
@@ -139,7 +139,7 @@ private:
 
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
-  PhyMacTxStartCallback m_phyMacTxStartCallback;
+  GenericPhyTxStartCallback m_phyMacTxStartCallback;
   TracedCallback<> m_linkChangeCallbacks;
 
   uint32_t m_ifIndex;

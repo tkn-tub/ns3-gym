@@ -22,7 +22,7 @@
 #define UANRCEXAMPLE_H
 
 #include "ns3/network-module.h"
-#include "ns3/contrib-module.h"
+#include "ns3/tools-module.h"
 #include "ns3/uan-module.h"
 
 using namespace ns3;

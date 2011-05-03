@@ -97,6 +97,16 @@ type_annotations = {
     'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) const [member function]': {
         'params': {'return': { 'caller_owns_return': 'false',}},
         },
+
+    '::ns3::TestCase': {
+        'ignore': 'true', # we don't need to write test cases in Python
+        },
+    '::ns3::TestRunner': {
+        'ignore': 'true', # we don't need to write test cases in Python
+        },
+    '::ns3::TestSuite': {
+        'ignore': 'true', # we don't need to write test cases in Python
+        },
     
     }
 
@@ -293,7 +303,7 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
             },
-        cflags=('--gccxml-cxxflags %r' % (cflags,))
+        cflags=('--gccxml-cxxflags "%s -DPYTHON_SCAN"' % cflags)
         )
 
     module_parser.parse_init([everything_h],

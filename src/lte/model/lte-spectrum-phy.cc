@@ -59,9 +59,9 @@ void LteSpectrumPhy::DoDispose ()
   m_device = 0;
   m_interference->Dispose ();
   m_interference = 0;
-  m_phyMacTxEndCallback      = MakeNullCallback< void, Ptr<const Packet> > ();
-  m_phyMacRxEndErrorCallback = MakeNullCallback< void > ();
-  m_phyMacRxEndOkCallback    = MakeNullCallback< void, Ptr<Packet> >  ();
+  m_genericPhyTxEndCallback      = MakeNullCallback< void, Ptr<const Packet> > ();
+  m_genericPhyRxEndErrorCallback = MakeNullCallback< void > ();
+  m_genericPhyRxEndOkCallback    = MakeNullCallback< void, Ptr<Packet> >  ();
   SpectrumPhy::DoDispose ();
 } 
 
@@ -194,26 +194,26 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 
 
 void
-LteSpectrumPhy::SetPhyMacTxEndCallback (PhyMacTxEndCallback c)
+LteSpectrumPhy::SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c)
 {
   NS_LOG_FUNCTION (this);
-  m_phyMacTxEndCallback = c;
+  m_genericPhyTxEndCallback = c;
 }
 
 
 void
-LteSpectrumPhy::SetPhyMacRxEndErrorCallback (PhyMacRxEndErrorCallback c)
+LteSpectrumPhy::SetGenericPhyRxEndErrorCallback (GenericPhyRxEndErrorCallback c)
 {
   NS_LOG_FUNCTION (this);
-  m_phyMacRxEndErrorCallback = c;
+  m_genericPhyRxEndErrorCallback = c;
 }
 
 
 void
-LteSpectrumPhy::SetPhyMacRxEndOkCallback (PhyMacRxEndOkCallback c)
+LteSpectrumPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
 {
   NS_LOG_FUNCTION (this);
-  m_phyMacRxEndOkCallback = c;
+  m_genericPhyRxEndOkCallback = c;
 }
 
 
@@ -297,13 +297,13 @@ LteSpectrumPhy::EndTx ()
 
   m_phyTxEndTrace (m_txPacketBurst);
 
-  if (!m_phyMacTxEndCallback.IsNull ())
+  if (!m_genericPhyTxEndCallback.IsNull ())
     {
       for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacketBurst->Begin (); iter
            != m_txPacketBurst->End (); ++iter)
         {
           Ptr<Packet> packet = (*iter)->Copy ();
-          m_phyMacTxEndCallback (packet);
+          m_genericPhyTxEndCallback (packet);
         }
     }
 
@@ -422,9 +422,9 @@ LteSpectrumPhy::EndRx ()
           for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); 
                j != (*i)->End (); ++j)
             {                              
-              if (!m_phyMacRxEndOkCallback.IsNull ())
+              if (!m_genericPhyRxEndOkCallback.IsNull ())
                 {
-                  m_phyMacRxEndOkCallback (*j);            
+                  m_genericPhyRxEndOkCallback (*j);            
                 }
             }
         }

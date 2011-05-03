@@ -2,11 +2,11 @@
 
 def build(bld):
     obj = bld.create_ns3_program('adhoc-aloha-ideal-phy',
-                                 ['spectrum'])
+                                 ['spectrum', 'mobility'])
     obj.source = 'adhoc-aloha-ideal-phy.cc'
 
     obj = bld.create_ns3_program('adhoc-aloha-ideal-phy-with-microwave-oven',
-                                 ['spectrum'])
+                                 ['spectrum', 'mobility'])
     obj.source = 'adhoc-aloha-ideal-phy-with-microwave-oven.cc'
 
 

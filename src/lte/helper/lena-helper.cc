@@ -227,7 +227,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  ulPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
+  ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
 
   dev->Start ();
   return dev;
@@ -270,7 +270,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  dlPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
+  dlPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
 
   dev->Start ();
   return dev;

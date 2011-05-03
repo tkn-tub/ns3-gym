@@ -59,7 +59,7 @@
 #include "ns3/log.h"
 #include "ns3/config.h"
 #include "ns3/callback.h"
-#include "ns3/contrib-module.h"
+#include "ns3/tools-module.h"
 
 #include <fstream>
 

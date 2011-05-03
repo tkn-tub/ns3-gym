@@ -4,5 +4,5 @@ def build(bld):
     obj = bld.create_ns3_program('udp-client-server', ['csma', 'internet'])
     obj.source = 'udp-client-server.cc'
     
-    obj = bld.create_ns3_program('udp-trace-client-server', ['csma', 'internet'])
+    obj = bld.create_ns3_program('udp-trace-client-server', ['csma', 'internet', 'applications'])
     obj.source = 'udp-trace-client-server.cc'

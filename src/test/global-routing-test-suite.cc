@@ -398,7 +398,7 @@ public:
 };
 
 GlobalRoutingTestSuite::GlobalRoutingTestSuite ()
-  : TestSuite ("global-routing", BVT)
+  : TestSuite ("global-routing", UNIT)
 {
   AddTestCase (new DynamicGlobalRoutingTestCase);
   AddTestCase (new GlobalRoutingSlash32TestCase);

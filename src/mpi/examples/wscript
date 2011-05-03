@@ -1,0 +1,14 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_program('simple-distributed',
+                                 ['point-to-point', 'internet', 'nix-vector-routing', 'applications'])
+    obj.source = 'simple-distributed.cc'
+
+    obj = bld.create_ns3_program('third-distributed',
+                                 ['point-to-point', 'internet', 'mobility', 'wifi', 'csma', 'applications'])
+    obj.source = 'third-distributed.cc'
+
+    obj = bld.create_ns3_program('nms-p2p-nix-distributed',
+                                 ['point-to-point', 'internet', 'nix-vector-routing', 'applications'])
+    obj.source = 'nms-p2p-nix-distributed.cc'

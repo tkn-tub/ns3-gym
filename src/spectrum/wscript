@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('spectrum', ['core', 'network', 'propagation', 'applications'])
+    module = bld.create_ns3_module('spectrum', ['internet', 'propagation', 'applications'])
     module.source = [
         'model/spectrum-model.cc',
         'model/spectrum-value.cc',
@@ -30,6 +30,10 @@ def build(bld):
         'helper/adhoc-aloha-noack-ideal-phy-helper.cc',
         'helper/waveform-generator-helper.cc',
         'helper/spectrum-analyzer-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('spectrum')
+    module_test.source = [
         'test/spectrum-interference-test.cc',
         'test/spectrum-value-test.cc',
         ]
@@ -63,9 +67,11 @@ def build(bld):
         'helper/adhoc-aloha-noack-ideal-phy-helper.h',
         'helper/waveform-generator-helper.h',
         'helper/spectrum-analyzer-helper.h',
+        'test/spectrum-value-test.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.add_subdirs('examples')
 
 
+    bld.ns3_python_bindings()

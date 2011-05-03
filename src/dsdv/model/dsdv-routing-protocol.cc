@@ -226,8 +226,8 @@ RoutingProtocol::Start ()
   m_queue.SetMaxPacketsPerDst (m_maxQueuedPacketsPerDst);
   m_queue.SetMaxQueueLen (m_maxQueueLen);
   m_queue.SetQueueTimeout (m_maxQueueTime);
-  m_routingTable.Setholddowntime (Scalar (Holdtimes) * m_periodicUpdateInterval);
-  m_advRoutingTable.Setholddowntime (Scalar (Holdtimes) * m_periodicUpdateInterval);
+  m_routingTable.Setholddowntime (Time (Holdtimes * m_periodicUpdateInterval));
+  m_advRoutingTable.Setholddowntime (Time (Holdtimes * m_periodicUpdateInterval));
   m_scb = MakeCallback (&RoutingProtocol::Send,this);
   m_ecb = MakeCallback (&RoutingProtocol::Drop,this);
   m_periodicUpdateTimer.SetFunction (&RoutingProtocol::SendPeriodicUpdate,this);
@@ -1138,8 +1138,8 @@ RoutingProtocol::GetSettlingTime (Ipv4Address address)
         {
           NS_LOG_DEBUG ("Route SettlingTime: " << mainrt.GetSettlingTime ().GetSeconds ()
                                                << " and LifeTime:" << mainrt.GetLifeTime ().GetSeconds ());
-          weightedTime = (Scalar (m_weightedFactor) * mainrt.GetSettlingTime ()) + (Scalar (1.0 - m_weightedFactor)
-                                                                                    * mainrt.GetLifeTime ());
+          weightedTime = Time ((m_weightedFactor * mainrt.GetSettlingTime () + 1.0 - m_weightedFactor)
+                                * mainrt.GetLifeTime ());
           NS_LOG_DEBUG ("Calculated weightedTime:" << weightedTime.GetSeconds ());
           return weightedTime;
         }

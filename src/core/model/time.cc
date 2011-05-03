@@ -26,13 +26,10 @@
 #include "ns3/string.h"
 #include "ns3/object.h"
 #include "ns3/config.h"
-#include "ns3/log.h"
 #include <math.h>
 #include <sstream>
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE("Time");
 
 Time::Time (const std::string& s)
 {
@@ -100,7 +97,6 @@ Time::SetResolution (enum Unit resolution)
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
-  NS_LOG_FUNCTION (unit << resolution);
   int8_t power [LAST] = {15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -110,30 +106,26 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
       info->factor = factor;
       if (shift == 0)
 	{
-	  info->timeFrom = HighPrecision (1, false);
-	  info->timeTo = HighPrecision (1, false);
+	  info->timeFrom = int64x64_t (1);
+	  info->timeTo = int64x64_t (1);
 	  info->toMul = true;
 	  info->fromMul = true;
 	}
       else if (shift > 0)
 	{
-	  info->timeFrom = HighPrecision (factor, false);
-	  info->timeTo = HighPrecision::Invert (factor);
+	  info->timeFrom = int64x64_t (factor);
+	  info->timeTo = int64x64_t::Invert (factor);
 	  info->toMul = false;
 	  info->fromMul = true;
 	}
       else
 	{
 	  NS_ASSERT (shift < 0);
-	  info->timeFrom = HighPrecision::Invert (factor);
-	  info->timeTo = HighPrecision (factor, false);
+	  info->timeFrom = int64x64_t::Invert (factor);
+	  info->timeTo = int64x64_t (factor);
 	  info->toMul = true;
 	  info->fromMul = false;
 	}
-      NS_LOG_DEBUG ("i=" << i << 
-                    " shift=" << shift << 
-                    " from=" << info->timeFrom <<
-                    " to=" << info->timeTo);
     }
   resolution->unit = unit;
 }
@@ -173,7 +165,7 @@ operator<< (std::ostream& os, const Time & time)
       unit = "unreachable";
       break;
     }
-  uint64_t v = Time::ToInteger (time, Time::GetResolution ());
+  int64x64_t v = time;
   os << v << unit;
   return os;
 }
@@ -190,121 +182,3 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Time);
 
 } // namespace ns3
 
-#include "ns3/test.h"
-
-namespace ns3 {
-
-class Bug863TestCase : public TestCase
-{
-public:
-  Bug863TestCase ();
-  virtual void DoRun (void);
-};
-
-Bug863TestCase::Bug863TestCase ()
-  : TestCase ("Bug 863")
-{
-}
-
-void Bug863TestCase::DoRun (void)
-{
-  Scalar result = Scalar (0.9) / Scalar (1.0);
-  NS_TEST_ASSERT_MSG_EQ ((result == Scalar (0.9)), true, "Invalid arithmetic result");
-}
-
-class TimeSimpleTestCase : public TestCase
-{
-public:
-  TimeSimpleTestCase (enum Time::Unit resolution);
-private:
-  virtual void DoRun (void);
-  virtual void DoTearDown (void);
-  enum Time::Unit m_originalResolution;
-  enum Time::Unit m_resolution;
-};
-
-TimeSimpleTestCase::TimeSimpleTestCase (enum Time::Unit resolution)
-  : TestCase ("Sanity check of common time operations"),
-    m_resolution (resolution)
-{}
-void
-TimeSimpleTestCase::DoRun (void)
-{
-  m_originalResolution = Time::GetResolution ();
-  Time::SetResolution (m_resolution);
-  NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (1.0).GetSeconds (), 1.0, TimeStep (1).GetSeconds (), 
-                             "is 1 really 1 ?");
-  NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (10.0).GetSeconds (), 10.0, TimeStep (1).GetSeconds (), 
-                             "is 10 really 10 ?");
-  NS_TEST_ASSERT_MSG_EQ (MilliSeconds (1).GetMilliSeconds (), 1, 
-                         "is 1ms really 1ms ?");
-  NS_TEST_ASSERT_MSG_EQ (MicroSeconds (1).GetMicroSeconds (), 1, 
-                         "is 1us really 1us ?");
-#if 0
-  Time ns = NanoSeconds (1);
-  ns.GetNanoSeconds ();
-  NS_TEST_ASSERT_MSG_EQ (NanoSeconds (1).GetNanoSeconds (), 1, 
-                         "is 1ns really 1ns ?");
-  NS_TEST_ASSERT_MSG_EQ (PicoSeconds (1).GetPicoSeconds (), 1, 
-                         "is 1ps really 1ps ?");
-  NS_TEST_ASSERT_MSG_EQ (FemtoSeconds (1).GetFemtoSeconds (), 1, 
-                         "is 1fs really 1fs ?");
-#endif
-}
-
-void 
-TimeSimpleTestCase::DoTearDown (void)
-{
-  Time::SetResolution (m_originalResolution);
-}
-
-class ArithTestCase : public TestCase
-{
-public:
-  ArithTestCase ();
-private:
-  virtual void DoRun (void);
-};
-
-ArithTestCase::ArithTestCase ()
-  : TestCase ("check arithmetic operators")
-{
-}
-void
-ArithTestCase::DoRun (void)
-{
-  Time a, b, c;
-  c = a + b;
-  c = a * b;
-  c = a / Seconds (1.0);
-  c = a - b;
-  c += a;
-  c -= a;
-  c /= Seconds (1.0);
-  c *= a;
-  bool x;
-  x = a < b;
-  x = a > b;
-  x = a <= b;
-  x = a >= b;
-  x = a == b;
-  x = a != b;
-  //a = 1.0;
-  //a = 1;
-}
-
-
-
-static class TimeTestSuite : public TestSuite
-{
-public:
-  TimeTestSuite ()
-    : TestSuite ("time", UNIT)
-  {
-    AddTestCase (new Bug863TestCase ());
-    AddTestCase (new TimeSimpleTestCase (Time::US));
-    AddTestCase (new ArithTestCase ());
-  }
-} g_timeTestSuite;
-
-} // namespace ns3

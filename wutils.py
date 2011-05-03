@@ -100,7 +100,7 @@ def get_proc_env(os_env=None):
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
     pymoddir = bld.path.find_dir('bindings/python').abspath(env)
-    pyvizdir = bld.path.find_dir('src/tools/visualizer').abspath()
+    pyvizdir = bld.path.find_dir('src/visualizer').abspath()
     if 'PYTHONPATH' in proc_env:
         proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir, pyvizdir] + [proc_env['PYTHONPATH']])
     else:

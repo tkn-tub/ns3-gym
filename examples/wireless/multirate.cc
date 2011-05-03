@@ -52,7 +52,7 @@
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/contrib-module.h"
+#include "ns3/tools-module.h"
 #include "ns3/random-variable.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"

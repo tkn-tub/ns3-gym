@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Lalith Suresh 
+ * Copyright (c) 2010 Lalith Suresh
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -122,7 +122,6 @@ public:
   static Ptr<Ipv4ClickRouting> GetClickInstanceFromSimNode (simclick_node_t *simnode);
 
 public:
-
   /**
    * \brief Provides for SIMCLICK_IFID_FROM_NAME
    * \param ifname The name of the interface
@@ -174,7 +173,6 @@ private:
   void RunClickEvent ();
 
 public:
-
   /**
    * \brief Schedules simclick_click_run to run at the given time
    * \param when Time at which the simclick_click_run instance should be run
@@ -205,7 +203,7 @@ public:
    * \param src The source IP Address
    * \param dest The destination IP Address
    */
-  void Send (Ptr<Packet> p, Ipv4Address src, Ipv4Address dest); 
+  void Send (Ptr<Packet> p, Ipv4Address src, Ipv4Address dest);
 
   /**
    * \brief Allow a lower layer to send data to Click. (From Ipv4ExtRouting)
@@ -239,7 +237,7 @@ private:
   bool m_nonDefaultName;
 
   Ptr<Ipv4> m_ipv4;
-#endif //NS3_CLICK
+#endif // NS3_CLICK
 };
 
 } // namespace ns3

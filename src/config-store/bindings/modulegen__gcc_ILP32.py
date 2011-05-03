@@ -1,0 +1,755 @@
+from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
+
+
+import pybindgen.settings
+import warnings
+
+class ErrorHandler(pybindgen.settings.ErrorHandler):
+    def handle_error(self, wrapper, exception, traceback_):
+        warnings.warn("exception %r in wrapper %s" % (exception, wrapper))
+        return True
+pybindgen.settings.error_handler = ErrorHandler()
+
+
+import sys
+
+def module_init():
+    root_module = Module('ns.config_store', cpp_namespace='::ns3')
+    return root_module
+
+def register_types(module):
+    root_module = module.get_root()
+    
+    ## callback.h (module 'core'): ns3::CallbackBase [class]
+    module.add_class('CallbackBase', import_from_module='ns.core')
+    ## file-config.h (module 'config-store'): ns3::FileConfig [class]
+    module.add_class('FileConfig', allow_subclassing=True)
+    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore [class]
+    module.add_class('GtkConfigStore')
+    ## file-config.h (module 'config-store'): ns3::NoneFileConfig [class]
+    module.add_class('NoneFileConfig', parent=root_module['ns3::FileConfig'])
+    ## object-base.h (module 'core'): ns3::ObjectBase [class]
+    module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
+    ## type-id.h (module 'core'): ns3::TypeId [class]
+    module.add_class('TypeId', import_from_module='ns.core')
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
+    module.add_enum('AttributeFlag', ['ATTR_GET', 'ATTR_SET', 'ATTR_CONSTRUCT', 'ATTR_SGC'], outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo [struct]
+    module.add_class('AttributeInfo', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    ## empty.h (module 'core'): ns3::empty [class]
+    module.add_class('empty', import_from_module='ns.core')
+    ## config-store.h (module 'config-store'): ns3::ConfigStore [class]
+    module.add_class('ConfigStore', parent=root_module['ns3::ObjectBase'])
+    ## config-store.h (module 'config-store'): ns3::ConfigStore::Mode [enumeration]
+    module.add_enum('Mode', ['LOAD', 'SAVE', 'NONE'], outer_class=root_module['ns3::ConfigStore'])
+    ## config-store.h (module 'config-store'): ns3::ConfigStore::FileFormat [enumeration]
+    module.add_enum('FileFormat', ['XML', 'RAW_TEXT'], outer_class=root_module['ns3::ConfigStore'])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
+    module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
+    ## attribute.h (module 'core'): ns3::AttributeChecker [class]
+    module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
+    ## attribute.h (module 'core'): ns3::AttributeValue [class]
+    module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    ## callback.h (module 'core'): ns3::CallbackChecker [class]
+    module.add_class('CallbackChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## callback.h (module 'core'): ns3::CallbackImplBase [class]
+    module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
+    ## callback.h (module 'core'): ns3::CallbackValue [class]
+    module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
+    module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
+    module.add_class('TypeIdChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## type-id.h (module 'core'): ns3::TypeIdValue [class]
+    module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    
+    ## Register a nested module for the namespace FatalImpl
+    
+    nested_module = module.add_cpp_namespace('FatalImpl')
+    register_types_ns3_FatalImpl(nested_module)
+    
+
+def register_types_ns3_FatalImpl(module):
+    root_module = module.get_root()
+    
+
+def register_methods(root_module):
+    register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
+    register_Ns3FileConfig_methods(root_module, root_module['ns3::FileConfig'])
+    register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
+    register_Ns3NoneFileConfig_methods(root_module, root_module['ns3::NoneFileConfig'])
+    register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
+    register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
+    register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
+    register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
+    register_Ns3ConfigStore_methods(root_module, root_module['ns3::ConfigStore'])
+    register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
+    register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
+    register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
+    register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
+    register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
+    register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
+    register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
+    register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
+    register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
+    register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
+    register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
+    return
+
+def register_Ns3CallbackBase_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackBase::CallbackBase(ns3::CallbackBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackBase const &', 'arg0')])
+    ## callback.h (module 'core'): ns3::CallbackBase::CallbackBase() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::Ptr<ns3::CallbackImplBase> ns3::CallbackBase::GetImpl() const [member function]
+    cls.add_method('GetImpl', 
+                   'ns3::Ptr< ns3::CallbackImplBase >', 
+                   [], 
+                   is_const=True)
+    ## callback.h (module 'core'): ns3::CallbackBase::CallbackBase(ns3::Ptr<ns3::CallbackImplBase> impl) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::CallbackImplBase >', 'impl')], 
+                        visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackBase::Demangle(std::string const & mangled) [member function]
+    cls.add_method('Demangle', 
+                   'std::string', 
+                   [param('std::string const &', 'mangled')], 
+                   is_static=True, visibility='protected')
+    return
+
+def register_Ns3FileConfig_methods(root_module, cls):
+    ## file-config.h (module 'config-store'): ns3::FileConfig::FileConfig() [constructor]
+    cls.add_constructor([])
+    ## file-config.h (module 'config-store'): ns3::FileConfig::FileConfig(ns3::FileConfig const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FileConfig const &', 'arg0')])
+    ## file-config.h (module 'config-store'): void ns3::FileConfig::Attributes() [member function]
+    cls.add_method('Attributes', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## file-config.h (module 'config-store'): void ns3::FileConfig::Default() [member function]
+    cls.add_method('Default', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## file-config.h (module 'config-store'): void ns3::FileConfig::Global() [member function]
+    cls.add_method('Global', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## file-config.h (module 'config-store'): void ns3::FileConfig::SetFilename(std::string filename) [member function]
+    cls.add_method('SetFilename', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3GtkConfigStore_methods(root_module, cls):
+    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
+    ## gtk-config-store.h (module 'config-store'): ns3::GtkConfigStore::GtkConfigStore() [constructor]
+    cls.add_constructor([])
+    ## gtk-config-store.h (module 'config-store'): void ns3::GtkConfigStore::ConfigureAttributes() [member function]
+    cls.add_method('ConfigureAttributes', 
+                   'void', 
+                   [])
+    ## gtk-config-store.h (module 'config-store'): void ns3::GtkConfigStore::ConfigureDefaults() [member function]
+    cls.add_method('ConfigureDefaults', 
+                   'void', 
+                   [])
+    return
+
+def register_Ns3NoneFileConfig_methods(root_module, cls):
+    ## file-config.h (module 'config-store'): ns3::NoneFileConfig::NoneFileConfig(ns3::NoneFileConfig const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NoneFileConfig const &', 'arg0')])
+    ## file-config.h (module 'config-store'): ns3::NoneFileConfig::NoneFileConfig() [constructor]
+    cls.add_constructor([])
+    ## file-config.h (module 'config-store'): void ns3::NoneFileConfig::Attributes() [member function]
+    cls.add_method('Attributes', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## file-config.h (module 'config-store'): void ns3::NoneFileConfig::Default() [member function]
+    cls.add_method('Default', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## file-config.h (module 'config-store'): void ns3::NoneFileConfig::Global() [member function]
+    cls.add_method('Global', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## file-config.h (module 'config-store'): void ns3::NoneFileConfig::SetFilename(std::string filename) [member function]
+    cls.add_method('SetFilename', 
+                   'void', 
+                   [param('std::string', 'filename')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3ObjectBase_methods(root_module, cls):
+    ## object-base.h (module 'core'): ns3::ObjectBase::ObjectBase() [constructor]
+    cls.add_constructor([])
+    ## object-base.h (module 'core'): ns3::ObjectBase::ObjectBase(ns3::ObjectBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectBase const &', 'arg0')])
+    ## object-base.h (module 'core'): void ns3::ObjectBase::GetAttribute(std::string name, ns3::AttributeValue & value) const [member function]
+    cls.add_method('GetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
+                   is_const=True)
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::GetAttributeFailSafe(std::string name, ns3::AttributeValue & attribute) const [member function]
+    cls.add_method('GetAttributeFailSafe', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'attribute')], 
+                   is_const=True)
+    ## object-base.h (module 'core'): ns3::TypeId ns3::ObjectBase::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## object-base.h (module 'core'): static ns3::TypeId ns3::ObjectBase::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## object-base.h (module 'core'): void ns3::ObjectBase::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::SetAttributeFailSafe(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttributeFailSafe', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::TraceConnect(std::string name, std::string context, ns3::CallbackBase const & cb) [member function]
+    cls.add_method('TraceConnect', 
+                   'bool', 
+                   [param('std::string', 'name'), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')])
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::TraceConnectWithoutContext(std::string name, ns3::CallbackBase const & cb) [member function]
+    cls.add_method('TraceConnectWithoutContext', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::TraceDisconnect(std::string name, std::string context, ns3::CallbackBase const & cb) [member function]
+    cls.add_method('TraceDisconnect', 
+                   'bool', 
+                   [param('std::string', 'name'), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')])
+    ## object-base.h (module 'core'): bool ns3::ObjectBase::TraceDisconnectWithoutContext(std::string name, ns3::CallbackBase const & cb) [member function]
+    cls.add_method('TraceDisconnectWithoutContext', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
+    ## object-base.h (module 'core'): void ns3::ObjectBase::ConstructSelf(ns3::AttributeList const & attributes) [member function]
+    cls.add_method('ConstructSelf', 
+                   'void', 
+                   [param('ns3::AttributeList const &', 'attributes')], 
+                   visibility='protected')
+    ## object-base.h (module 'core'): void ns3::ObjectBase::NotifyConstructionCompleted() [member function]
+    cls.add_method('NotifyConstructionCompleted', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3TypeId_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('!=')
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## type-id.h (module 'core'): ns3::TypeId::TypeId(char const * name) [constructor]
+    cls.add_constructor([param('char const *', 'name')])
+    ## type-id.h (module 'core'): ns3::TypeId::TypeId() [constructor]
+    cls.add_constructor([])
+    ## type-id.h (module 'core'): ns3::TypeId::TypeId(ns3::TypeId const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TypeId const &', 'o')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('AddAttribute', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, uint32_t flags, ns3::AttributeValue const & initialValue, ns3::Ptr<ns3::AttributeAccessor const> accessor, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('AddAttribute', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
+    cls.add_method('AddTraceSource', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeAccessor const> ns3::TypeId::GetAttributeAccessor(uint32_t i) const [member function]
+    cls.add_method('GetAttributeAccessor', 
+                   'ns3::Ptr< ns3::AttributeAccessor const >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeChecker const> ns3::TypeId::GetAttributeChecker(uint32_t i) const [member function]
+    cls.add_method('GetAttributeChecker', 
+                   'ns3::Ptr< ns3::AttributeChecker const >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetAttributeFlags(uint32_t i) const [member function]
+    cls.add_method('GetAttributeFlags', 
+                   'uint32_t', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeFullName(uint32_t i) const [member function]
+    cls.add_method('GetAttributeFullName', 
+                   'std::string', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeHelp(uint32_t i) const [member function]
+    cls.add_method('GetAttributeHelp', 
+                   'std::string', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeValue const> ns3::TypeId::GetAttributeInitialValue(uint32_t i) const [member function]
+    cls.add_method('GetAttributeInitialValue', 
+                   'ns3::Ptr< ns3::AttributeValue const >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetAttributeN() const [member function]
+    cls.add_method('GetAttributeN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeName(uint32_t i) const [member function]
+    cls.add_method('GetAttributeName', 
+                   'std::string', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): ns3::Callback<ns3::ObjectBase*,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::TypeId::GetConstructor() const [member function]
+    cls.add_method('GetConstructor', 
+                   'ns3::Callback< ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetGroupName() const [member function]
+    cls.add_method('GetGroupName', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetName() const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::GetParent() const [member function]
+    cls.add_method('GetParent', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::GetRegistered(uint32_t i) [member function]
+    cls.add_method('GetRegistered', 
+                   'ns3::TypeId', 
+                   [param('uint32_t', 'i')], 
+                   is_static=True)
+    ## type-id.h (module 'core'): static uint32_t ns3::TypeId::GetRegisteredN() [member function]
+    cls.add_method('GetRegisteredN', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## type-id.h (module 'core'): ns3::Ptr<const ns3::TraceSourceAccessor> ns3::TypeId::GetTraceSourceAccessor(uint32_t i) const [member function]
+    cls.add_method('GetTraceSourceAccessor', 
+                   'ns3::Ptr< ns3::TraceSourceAccessor const >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetTraceSourceHelp(uint32_t i) const [member function]
+    cls.add_method('GetTraceSourceHelp', 
+                   'std::string', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetTraceSourceN() const [member function]
+    cls.add_method('GetTraceSourceN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeId::GetTraceSourceName(uint32_t i) const [member function]
+    cls.add_method('GetTraceSourceName', 
+                   'std::string', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): uint16_t ns3::TypeId::GetUid() const [member function]
+    cls.add_method('GetUid', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): bool ns3::TypeId::HasConstructor() const [member function]
+    cls.add_method('HasConstructor', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): bool ns3::TypeId::HasParent() const [member function]
+    cls.add_method('HasParent', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::HideFromDocumentation() [member function]
+    cls.add_method('HideFromDocumentation', 
+                   'ns3::TypeId', 
+                   [])
+    ## type-id.h (module 'core'): bool ns3::TypeId::IsChildOf(ns3::TypeId other) const [member function]
+    cls.add_method('IsChildOf', 
+                   'bool', 
+                   [param('ns3::TypeId', 'other')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): static bool ns3::TypeId::LookupAttributeByFullName(std::string fullName, ns3::TypeId::AttributeInfo * info) [member function]
+    cls.add_method('LookupAttributeByFullName', 
+                   'bool', 
+                   [param('std::string', 'fullName'), param('ns3::TypeId::AttributeInfo *', 'info')], 
+                   is_static=True)
+    ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInfo * info) const [member function]
+    cls.add_method('LookupAttributeByName', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInfo *', 'info', transfer_ownership=False)], 
+                   is_const=True)
+    ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
+    cls.add_method('LookupByName', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'name')], 
+                   is_static=True)
+    ## type-id.h (module 'core'): ns3::Ptr<const ns3::TraceSourceAccessor> ns3::TypeId::LookupTraceSourceByName(std::string name) const [member function]
+    cls.add_method('LookupTraceSourceByName', 
+                   'ns3::Ptr< ns3::TraceSourceAccessor const >', 
+                   [param('std::string', 'name')], 
+                   is_const=True)
+    ## type-id.h (module 'core'): bool ns3::TypeId::MustHideFromDocumentation() const [member function]
+    cls.add_method('MustHideFromDocumentation', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetGroupName(std::string groupName) [member function]
+    cls.add_method('SetGroupName', 
+                   'ns3::TypeId', 
+                   [param('std::string', 'groupName')])
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetParent(ns3::TypeId tid) [member function]
+    cls.add_method('SetParent', 
+                   'ns3::TypeId', 
+                   [param('ns3::TypeId', 'tid')])
+    ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t tid) [member function]
+    cls.add_method('SetUid', 
+                   'void', 
+                   [param('uint16_t', 'tid')])
+    return
+
+def register_Ns3TypeIdAttributeInfo_methods(root_module, cls):
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::AttributeInfo() [constructor]
+    cls.add_constructor([])
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::AttributeInfo(ns3::TypeId::AttributeInfo const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeId::AttributeInfo const &', 'arg0')])
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::accessor [variable]
+    cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::AttributeAccessor const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::checker [variable]
+    cls.add_instance_attribute('checker', 'ns3::Ptr< ns3::AttributeChecker const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::flags [variable]
+    cls.add_instance_attribute('flags', 'uint32_t', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::initialValue [variable]
+    cls.add_instance_attribute('initialValue', 'ns3::Ptr< ns3::AttributeValue const >', is_const=False)
+    return
+
+def register_Ns3Empty_methods(root_module, cls):
+    ## empty.h (module 'core'): ns3::empty::empty() [constructor]
+    cls.add_constructor([])
+    ## empty.h (module 'core'): ns3::empty::empty(ns3::empty const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::empty const &', 'arg0')])
+    return
+
+def register_Ns3ConfigStore_methods(root_module, cls):
+    ## config-store.h (module 'config-store'): ns3::ConfigStore::ConfigStore(ns3::ConfigStore const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ConfigStore const &', 'arg0')])
+    ## config-store.h (module 'config-store'): ns3::ConfigStore::ConfigStore() [constructor]
+    cls.add_constructor([])
+    ## config-store.h (module 'config-store'): void ns3::ConfigStore::ConfigureAttributes() [member function]
+    cls.add_method('ConfigureAttributes', 
+                   'void', 
+                   [])
+    ## config-store.h (module 'config-store'): void ns3::ConfigStore::ConfigureDefaults() [member function]
+    cls.add_method('ConfigureDefaults', 
+                   'void', 
+                   [])
+    ## config-store.h (module 'config-store'): ns3::TypeId ns3::ConfigStore::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## config-store.h (module 'config-store'): static ns3::TypeId ns3::ConfigStore::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## config-store.h (module 'config-store'): void ns3::ConfigStore::SetFileFormat(ns3::ConfigStore::FileFormat format) [member function]
+    cls.add_method('SetFileFormat', 
+                   'void', 
+                   [param('ns3::ConfigStore::FileFormat', 'format')])
+    ## config-store.h (module 'config-store'): void ns3::ConfigStore::SetFilename(std::string filename) [member function]
+    cls.add_method('SetFilename', 
+                   'void', 
+                   [param('std::string', 'filename')])
+    ## config-store.h (module 'config-store'): void ns3::ConfigStore::SetMode(ns3::ConfigStore::Mode mode) [member function]
+    cls.add_method('SetMode', 
+                   'void', 
+                   [param('ns3::ConfigStore::Mode', 'mode')])
+    return
+
+def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter< ns3::AttributeAccessor > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter< ns3::AttributeChecker > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter< ns3::AttributeValue > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::SimpleRefCount(ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter< ns3::CallbackImplBase > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3AttributeAccessor_methods(root_module, cls):
+    ## attribute.h (module 'core'): ns3::AttributeAccessor::AttributeAccessor(ns3::AttributeAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeAccessor const &', 'arg0')])
+    ## attribute.h (module 'core'): ns3::AttributeAccessor::AttributeAccessor() [constructor]
+    cls.add_constructor([])
+    ## attribute.h (module 'core'): bool ns3::AttributeAccessor::Get(ns3::ObjectBase const * object, ns3::AttributeValue & attribute) const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [param('ns3::ObjectBase const *', 'object'), param('ns3::AttributeValue &', 'attribute')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::AttributeAccessor::HasGetter() const [member function]
+    cls.add_method('HasGetter', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::AttributeAccessor::HasSetter() const [member function]
+    cls.add_method('HasSetter', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::AttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
+    cls.add_method('Set', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'object', transfer_ownership=False), param('ns3::AttributeValue const &', 'value')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3AttributeChecker_methods(root_module, cls):
+    ## attribute.h (module 'core'): ns3::AttributeChecker::AttributeChecker(ns3::AttributeChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeChecker const &', 'arg0')])
+    ## attribute.h (module 'core'): ns3::AttributeChecker::AttributeChecker() [constructor]
+    cls.add_constructor([])
+    ## attribute.h (module 'core'): bool ns3::AttributeChecker::Check(ns3::AttributeValue const & value) const [member function]
+    cls.add_method('Check', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'value')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::AttributeChecker::Copy(ns3::AttributeValue const & source, ns3::AttributeValue & destination) const [member function]
+    cls.add_method('Copy', 
+                   'bool', 
+                   [param('ns3::AttributeValue const &', 'source'), param('ns3::AttributeValue &', 'destination')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeChecker::Create() const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): std::string ns3::AttributeChecker::GetUnderlyingTypeInformation() const [member function]
+    cls.add_method('GetUnderlyingTypeInformation', 
+                   'std::string', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): std::string ns3::AttributeChecker::GetValueTypeName() const [member function]
+    cls.add_method('GetValueTypeName', 
+                   'std::string', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::AttributeChecker::HasUnderlyingTypeInformation() const [member function]
+    cls.add_method('HasUnderlyingTypeInformation', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3AttributeValue_methods(root_module, cls):
+    ## attribute.h (module 'core'): ns3::AttributeValue::AttributeValue(ns3::AttributeValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeValue const &', 'arg0')])
+    ## attribute.h (module 'core'): ns3::AttributeValue::AttributeValue() [constructor]
+    cls.add_constructor([])
+    ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::AttributeValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## attribute.h (module 'core'): std::string ns3::AttributeValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackChecker_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackChecker::CallbackChecker() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackChecker::CallbackChecker(ns3::CallbackChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackChecker const &', 'arg0')])
+    return
+
+def register_Ns3CallbackImplBase_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImplBase::CallbackImplBase() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImplBase::CallbackImplBase(ns3::CallbackImplBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackImplBase const &', 'arg0')])
+    ## callback.h (module 'core'): bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<ns3::CallbackImplBase const> other) const [member function]
+    cls.add_method('IsEqual', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackValue_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackValue::CallbackValue(ns3::CallbackValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackValue const &', 'arg0')])
+    ## callback.h (module 'core'): ns3::CallbackValue::CallbackValue() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackValue::CallbackValue(ns3::CallbackBase const & base) [constructor]
+    cls.add_constructor([param('ns3::CallbackBase const &', 'base')])
+    ## callback.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::CallbackValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): bool ns3::CallbackValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackValue::Set(ns3::CallbackBase base) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::CallbackBase', 'base')])
+    return
+
+def register_Ns3EmptyAttributeValue_methods(root_module, cls):
+    ## attribute.h (module 'core'): ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmptyAttributeValue const &', 'arg0')])
+    ## attribute.h (module 'core'): ns3::EmptyAttributeValue::EmptyAttributeValue() [constructor]
+    cls.add_constructor([])
+    ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EmptyAttributeValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## attribute.h (module 'core'): bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   visibility='private', is_virtual=True)
+    ## attribute.h (module 'core'): std::string ns3::EmptyAttributeValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3TypeIdChecker_methods(root_module, cls):
+    ## type-id.h (module 'core'): ns3::TypeIdChecker::TypeIdChecker() [constructor]
+    cls.add_constructor([])
+    ## type-id.h (module 'core'): ns3::TypeIdChecker::TypeIdChecker(ns3::TypeIdChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeIdChecker const &', 'arg0')])
+    return
+
+def register_Ns3TypeIdValue_methods(root_module, cls):
+    ## type-id.h (module 'core'): ns3::TypeIdValue::TypeIdValue() [constructor]
+    cls.add_constructor([])
+    ## type-id.h (module 'core'): ns3::TypeIdValue::TypeIdValue(ns3::TypeIdValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeIdValue const &', 'arg0')])
+    ## type-id.h (module 'core'): ns3::TypeIdValue::TypeIdValue(ns3::TypeId const & value) [constructor]
+    cls.add_constructor([param('ns3::TypeId const &', 'value')])
+    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::TypeIdValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## type-id.h (module 'core'): bool ns3::TypeIdValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeIdValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True)
+    ## type-id.h (module 'core'): std::string ns3::TypeIdValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## type-id.h (module 'core'): void ns3::TypeIdValue::Set(ns3::TypeId const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::TypeId const &', 'value')])
+    return
+
+def register_functions(root_module):
+    module = root_module
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    return
+
+def register_functions_ns3_FatalImpl(module, root_module):
+    return
+
+def main():
+    out = FileCodeSink(sys.stdout)
+    root_module = module_init()
+    register_types(root_module)
+    register_methods(root_module)
+    register_functions(root_module)
+    root_module.generate(out)
+
+if __name__ == '__main__':
+    main()
+

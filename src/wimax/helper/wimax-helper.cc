@@ -546,15 +546,15 @@ WimaxHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
 }
 
 static void PcapSniffTxRxEvent (Ptr<PcapFileWrapper> file,
-                              Ptr<const PacketBurst> burst)
+                                Ptr<const PacketBurst> burst)
 {
   std::list<Ptr<Packet> > packets = burst->GetPackets ();
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
-	  Ptr<Packet> p = (*iter)->Copy ();
-	  WimaxMacToMacHeader m2m (p->GetSize ());
-	  p->AddHeader (m2m);
-	  file->Write (Simulator::Now (), p);
+      Ptr<Packet> p = (*iter)->Copy ();
+      WimaxMacToMacHeader m2m (p->GetSize ());
+      p->AddHeader (m2m);
+      file->Write (Simulator::Now (), p);
     }
 }
 

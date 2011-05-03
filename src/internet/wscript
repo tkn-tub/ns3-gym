@@ -73,31 +73,27 @@ def configure(conf):
 
     lib_to_check = 'liblinux2.6.26.so'
 
-    if not os.path.exists(os.path.join(conf.env['WITH_NSC'], lib_to_check)):
+    found = False
+    for path in ['.', 'lib', 'lib64', 'linux-2.6.26']:
+        if os.path.exists(os.path.join(conf.env['WITH_NSC'], path, lib_to_check)):
+            # append the NSC kernel dir to the module path so that this dir
+            # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
+            # module to find the necessary NSC shared libraries.
+            found = True
+            conf.env.append_value('NS3_MODULE_PATH',
+                                  os.path.abspath(os.path.join(conf.env['WITH_NSC'], path)))
+    if not found:
         conf.env['NSC_ENABLED'] = False
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
-            "NSC library %s is missing: NSC has not been built?" % lib_to_check)
-        return
-
-    # append the NSC kernel dirs to the module path so that these dirs
-    # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
-    # module to find the necessary NSC shared libraries.
-    for nsc_module in ['linux-2.6.18', 'linux-2.6.26']:
-        conf.env.append_value('NS3_MODULE_PATH',
-                              os.path.abspath(os.path.join(conf.env['WITH_NSC'], nsc_module)))
-
-    conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
-
+                                     "NSC library %s is missing: NSC has not been built?" % lib_to_check)
+    else:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
 
 
 def build(bld):
     # bridge and mpi dependencies are due to global routing
-    obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network'])
+    obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network', 'core'])
     obj.source = [
-        'test/tcp-test.cc',
-        'test/udp-test.cc',
-        'test/ipv4-test.cc',
-        'test/ipv4-raw-test.cc',
         'model/ipv4-l4-protocol.cc',
         'model/udp-header.cc',
         'model/tcp-header.cc',
@@ -137,8 +133,6 @@ def build(bld):
         'model/ipv6-option-header.cc',
         'model/ipv6-option-demux.cc',
         'model/icmpv6-l4-protocol.cc',
-        'test/ipv6-test.cc',
-        'test/ipv6-extension-header-test-suite.cc',
         'model/tcp-socket-base.cc',
         'model/tcp-rfc793.cc',
         'model/tcp-tahoe.cc',
@@ -189,6 +183,23 @@ def build(bld):
         'helper/ipv6-address-helper.cc',
         'helper/ipv6-interface-container.cc',
         'helper/ipv6-routing-helper.cc',
+        ]
+
+    internet_test = bld.create_ns3_module_test_library('internet')
+    internet_test.source = [
+        'test/global-route-manager-impl-test-suite.cc',
+        'test/ipv4-address-generator-test-suite.cc',
+        'test/ipv4-address-helper-test-suite.cc',
+        'test/ipv4-list-routing-test-suite.cc',
+        'test/ipv4-packet-info-tag-test-suite.cc',
+        'test/ipv4-raw-test.cc',
+        'test/ipv4-test.cc',
+        'test/ipv6-extension-header-test-suite.cc',
+        'test/ipv6-list-routing-test-suite.cc',
+        'test/ipv6-packet-info-tag-test-suite.cc',
+        'test/ipv6-test.cc',
+        'test/tcp-test.cc',
+        'test/udp-test.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -249,6 +260,8 @@ def build(bld):
         'helper/ipv6-static-routing-helper.h',
         'model/global-router-interface.h',
         'model/global-route-manager.h',
+        'model/global-route-manager-impl.h',
+        'model/candidate-queue.h',
         'model/ipv4-global-routing.h',
         'helper/ipv4-global-routing-helper.h',
         'helper/internet-stack-helper.h',
@@ -267,4 +280,11 @@ def build(bld):
         obj.source.append ('model/nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('model/nsc-sysctl.cc')
         headers.source.append('model/nsc-tcp-l4-protocol.h')
-        obj.uselib = 'DL'
+        obj.uselib           = 'DL'
+        internet_test.uselib = 'DL'
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()
+

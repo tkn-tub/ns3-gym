@@ -1,8 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    node = bld.create_ns3_module('network', ['core'])
-    node.source = [
+    network = bld.create_ns3_module('network', ['core'])
+    network.source = [
         'model/address.cc',
         'model/application.cc',
         'model/buffer.cc',
@@ -29,6 +29,7 @@ def build(bld):
         'utils/error-model.cc',
         'utils/ethernet-header.cc',
         'utils/ethernet-trailer.cc',
+        'utils/flow-id-tag.cc',
         'utils/inet-socket-address.cc',
         'utils/inet6-socket-address.cc',
         'utils/ipv4-address.cc',
@@ -46,18 +47,24 @@ def build(bld):
         'utils/pcap-file-wrapper.cc',
         'utils/queue.cc',
         'utils/radiotap-header.cc',
-        'utils/sequence-number.cc',
         'utils/simple-channel.cc',
         'utils/simple-net-device.cc',
-        'test/buffer-test.cc',
-        'test/packetbb-test-suite.cc',
-        'test/packet-metadata-test.cc',
-        'test/pcap-file-test-suite.cc',
         'helper/application-container.cc',
         'helper/net-device-container.cc',
         'helper/node-container.cc',
         'helper/packet-socket-helper.cc',
         'helper/trace-helper.cc',
+        ]
+
+    network_test = bld.create_ns3_module_test_library('network')
+    network_test.source = [
+        'test/buffer-test.cc',
+        'test/drop-tail-queue-test-suite.cc',
+        'test/packetbb-test-suite.cc',
+        'test/packet-test-suite.cc',
+        'test/packet-metadata-test.cc',
+        'test/pcap-file-test-suite.cc',
+        'test/sequence-number-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -89,6 +96,7 @@ def build(bld):
         'utils/error-model.h',
         'utils/ethernet-header.h',
         'utils/ethernet-trailer.h',
+        'utils/flow-id-tag.h',
         'utils/inet-socket-address.h',
         'utils/inet6-socket-address.h',
         'utils/ipv4-address.h',
@@ -104,7 +112,7 @@ def build(bld):
         'utils/packet-socket-factory.h',
         'utils/pcap-file.h',
         'utils/pcap-file-wrapper.h',
-        'utils/phy-mac.h',
+        'utils/generic-phy.h',
         'utils/queue.h',
         'utils/radiotap-header.h',
         'utils/sequence-number.h',
@@ -117,5 +125,8 @@ def build(bld):
         'helper/packet-socket-helper.h',
         'helper/trace-helper.h',
         ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
 
     bld.ns3_python_bindings()

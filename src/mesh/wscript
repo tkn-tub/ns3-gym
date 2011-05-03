@@ -36,6 +36,11 @@ def build(bld):
         'helper/mesh-helper.cc',
         'helper/dot11s/dot11s-installer.cc',
         'helper/flame/flame-installer.cc',
+        ]
+
+    obj_test = bld.create_ns3_module_test_library('mesh')
+    obj_test.source = [
+        'test/mesh-information-element-vector-test-suite.cc',
         'test/dot11s/dot11s-test-suite.cc',
         'test/dot11s/pmp-regression.cc',
         'test/dot11s/hwmp-reactive-regression.cc',
@@ -47,6 +52,7 @@ def build(bld):
         'test/flame/flame-regression.cc',
         'test/flame/regression.cc',
         ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
     headers.source = [
@@ -85,3 +91,5 @@ def build(bld):
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

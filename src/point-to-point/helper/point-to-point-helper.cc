@@ -29,6 +29,7 @@
 #include "ns3/packet.h"
 #include "ns3/names.h"
 #include "ns3/mpi-interface.h"
+#include "ns3/mpi-receiver.h"
 
 #include "ns3/trace-helper.h"
 #include "point-to-point-helper.h"
@@ -257,6 +258,12 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   else
     {
       channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
+      Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
+      Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
+      mpiRecA->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devA));
+      mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devB));
+      devA->AggregateObject (mpiRecA);
+      devB->AggregateObject (mpiRecB);
     }
     
   devA->Attach (channel);

@@ -82,7 +82,6 @@ MapScheduler::RemoveNext (void)
   NS_LOG_FUNCTION (this);
   EventMapI i = m_list.begin ();
   NS_ASSERT (i != m_list.end ());
-  std::pair<Scheduler::EventKey, EventImpl*> next = *i;
   Event ev;
   ev.impl = i->second;
   ev.key = i->first;

@@ -10,12 +10,16 @@ def build(bld):
     headers.source = [
         'ns3tcp.h',
         ]
-    ns3tcp.source = [
+
+    ns3tcp_test = bld.create_ns3_module_test_library('ns3tcp')
+    ns3tcp_test.source = [
         'ns3tcp-socket-writer.cc',
         'ns3tcp-socket-test-suite.cc',
         'ns3tcp-loss-test-suite.cc',
         'ns3tcp-state-test-suite.cc',
         ]
+
     if bld.env['NSC_ENABLED']:
-        ns3tcp.source.append ('ns3tcp-interop-test-suite.cc')
-        ns3tcp.source.append ('ns3tcp-cwnd-test-suite.cc')
+        ns3tcp_test.source.append ('ns3tcp-interop-test-suite.cc')
+        ns3tcp_test.source.append ('ns3tcp-cwnd-test-suite.cc')
+        ns3tcp_test.source.append ('nsctcp-loss-test-suite.cc')

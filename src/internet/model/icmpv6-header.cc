@@ -1368,13 +1368,11 @@ uint32_t Icmpv6OptionHeader::GetSerializedSize () const
 
 uint32_t Icmpv6OptionHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
   return GetSerializedSize ();
 }
 
 void Icmpv6OptionHeader::Serialize (Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (Icmpv6OptionMtu);

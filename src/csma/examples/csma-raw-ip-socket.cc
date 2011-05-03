@@ -35,10 +35,11 @@
 #include "ns3/network-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/internet-module.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
+NS_LOG_COMPONENT_DEFINE ("CsmaRawIpSocketExample");
 
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {

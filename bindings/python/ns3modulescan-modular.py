@@ -4,7 +4,7 @@ import sys
 import os.path
 
 import pybindgen.settings
-from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning
+from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning, find_declaration_from_name
 from pybindgen.typehandlers.codesink import FileCodeSink
 from pygccxml.declarations import templates
 from pygccxml.declarations.enumeration import enumeration_t
@@ -35,7 +35,10 @@ def get_ns3_relative_path(path):
     l = []
     head = path
     while head:
-        head, tail = os.path.split(head)
+        new_head, tail = os.path.split(head)
+        if new_head == head:
+            raise ValueError
+        head = new_head
         if tail == 'ns3':
             return os.path.join(*l)
         l.insert(0, tail)
@@ -47,11 +50,15 @@ class PreScanHook:
         self.headers_map = headers_map
         self.module = module
 
-    def __call__(self, dummy_module_parser,
+    def __call__(self, module_parser,
                  pygccxml_definition,
                  global_annotations,
                  parameter_annotations):
-        ns3_header = get_ns3_relative_path(pygccxml_definition.location.file_name)
+        try:
+            ns3_header = get_ns3_relative_path(pygccxml_definition.location.file_name)
+        except ValueError: # the header is not from ns3
+            return # ignore the definition, it's not ns-3 def.
+
         definition_module = self.headers_map[ns3_header]
 
         ## Note: we don't include line numbers in the comments because
@@ -99,12 +106,42 @@ class PreScanHook:
 
         ## classes
         if isinstance(pygccxml_definition, class_t):
+            print >> sys.stderr, pygccxml_definition
             # no need for helper classes to allow subclassing in Python, I think...
             #if pygccxml_definition.name.endswith('Helper'):
             #    global_annotations['allow_subclassing'] = 'false'
 
+            #
+            # If a class is template instantiation, even if the
+            # template was defined in some other module, if a template
+            # argument belongs to this module then the template
+            # instantiation will belong to this module.
+            # 
+            if templates.is_instantiation(pygccxml_definition.decl_string):
+                cls_name, template_parameters = templates.split(pygccxml_definition.name)
+                template_parameters_decls = [find_declaration_from_name(module_parser.global_ns, templ_param)
+                                             for templ_param in template_parameters]
+                #print >> sys.stderr, "********************", cls_name, repr(template_parameters_decls)
+                
+                template_parameters_modules = []
+                for templ in template_parameters_decls:
+                    if not hasattr(templ, 'location'):
+                        continue
+                    try:
+                        h = get_ns3_relative_path(templ.location.file_name)
+                    except ValueError:
+                        continue
+                    template_parameters_modules.append(self.headers_map[h])
+
+                for templ_mod in template_parameters_modules:
+                    if templ_mod == self.module:
+                        definition_module = templ_mod
+                        break
+                #print >> sys.stderr, "********************", cls_name, repr(template_parameters_modules)
+
+
             if definition_module != self.module:
-                global_annotations['import_from_module'] = 'ns.%s' % definition_module
+                global_annotations['import_from_module'] = 'ns.%s' % (definition_module.replace('-', '_'),)
 
             if pygccxml_definition.decl_string.startswith('::ns3::SimpleRefCount<'):
                 global_annotations['incref_method'] = 'Ref'
@@ -186,7 +223,7 @@ def scan_callback_classes(module_parser, callback_classes_file):
 
 
 def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cflags):
-    module_parser = ModuleParser('ns.%s' % module_name, 'ns3')
+    module_parser = ModuleParser('ns.%s' % module_name.replace('-', '_'), 'ns3')
     module_parser.add_pre_scan_hook(PreScanHook(headers_map, module_name))
     #module_parser.add_post_scan_hook(post_scan_hook)
 
@@ -196,7 +233,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
             },
-        cflags=('--gccxml-cxxflags %r' % (cflags,))
+        cflags=('--gccxml-cxxflags "%s -DPYTHON_SCAN"' % cflags)
         )
 
     try:
@@ -209,16 +246,23 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
         pass
     output_file = open(output_file_name, "wt")
     output_sink = FileCodeSink(output_file)
-    module_parser.parse_init([os.path.join(top_builddir, "ns3", "%s-module.h" % module_name)],
+
+    # if there exists a scan-header.h file in src/<module>/bindings,
+    # scan it, otherwise scan ns3/xxxx-module.h.
+    scan_header = os.path.join(os.path.dirname(output_file_name), "scan-header.h")
+    if not os.path.exists(scan_header):
+        scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % module_name)
+
+    module_parser.parse_init([scan_header],
                              None, whitelist_paths=[top_builddir],
                              #includes=['"ns3/everything.h"'],
                              pygen_sink=output_sink,
                              gccxml_options=gccxml_options)
     module_parser.scan_types()
 
-    #callback_classes_file = open(os.path.join(os.path.dirname(pygen_file_name), "callbacks_list.py"), "wt")
-    #scan_callback_classes(module_parser, callback_classes_file)
-    #callback_classes_file.close()
+    callback_classes_file = open(os.path.join(os.path.dirname(output_file_name), "callbacks_list.py"), "wt")
+    scan_callback_classes(module_parser, callback_classes_file)
+    callback_classes_file.close()
 
 
     module_parser.scan_methods()
@@ -231,7 +275,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
 
 if __name__ == '__main__':
     if len(sys.argv) != 6:
-        print "ns3modulescan2.py top_builddir module_path module_headers output_file_name cflags"
+        print "ns3modulescan-modular.py top_builddir module_path module_headers output_file_name cflags"
         sys.exit(1)
     ns3_module_scan(sys.argv[1], sys.argv[2], eval(sys.argv[3]), sys.argv[4], sys.argv[5])
     sys.exit(0)

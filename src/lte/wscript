@@ -46,6 +46,10 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('lte')
+    module_test.source = [
         'test/lte-test-downlink-sinr.cc',
         'test/lte-test-uplink-sinr.cc',
         'test/lte-test-sinr-chunk-processor.cc',
@@ -109,3 +113,5 @@ def build(bld):
 
     if (bld.env['ENABLE_EXAMPLES']):
       bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

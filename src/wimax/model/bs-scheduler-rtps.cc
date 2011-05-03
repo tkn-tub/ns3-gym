@@ -627,13 +627,11 @@ BSSchedulerRtps::BSSchedulerNRTPSConnection (uint32_t &availableSymbols)
   Ptr<PacketBurst> burst = Create<PacketBurst> ();
 
   std::vector<ServiceFlow*>::iterator iter;
-  ServiceFlowRecord *serviceFlowRecord;
   std::vector<ServiceFlow*> serviceFlows;
 
   serviceFlows = GetBs ()->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_NRTPS);
   for (iter = serviceFlows.begin (); iter != serviceFlows.end (); ++iter)
     {
-      serviceFlowRecord = (*iter)->GetRecord ();
       connection = (*iter)->GetConnection ();
 
       while ((*iter)->HasPackets () && availableSymbols > 0)
@@ -684,13 +682,11 @@ BSSchedulerRtps::BSSchedulerBEConnection (uint32_t &availableSymbols)
   Ptr<PacketBurst> burst = Create<PacketBurst> ();
 
   std::vector<ServiceFlow*>::iterator iter;
-  ServiceFlowRecord *serviceFlowRecord;
   std::vector<ServiceFlow*> serviceFlows;
 
   serviceFlows = GetBs ()->GetServiceFlowManager ()->GetServiceFlows (ServiceFlow::SF_TYPE_BE);
   for (iter = serviceFlows.begin (); iter != serviceFlows.end (); ++iter)
     {
-      serviceFlowRecord = (*iter)->GetRecord ();
       connection = (*iter)->GetConnection ();
 
       while ((*iter)->HasPackets () && availableSymbols > 0)

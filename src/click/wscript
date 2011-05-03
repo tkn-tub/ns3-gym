@@ -6,7 +6,7 @@ import Options
 
 def set_options(opt):
     opt.add_option('--with-nsclick',
-                   help=('Path to Click source for NS-3 Click Integration support'),
+                   help=('Path to Click source or installation prefix for NS-3 Click Integration support'),
                    dest='with_nsclick', default=None)
 
 def configure(conf):
@@ -55,10 +55,13 @@ int main()
 '''
     conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
 
-    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'ns')))
+    for tmp in ['lib', 'ns']:
+        libdir = os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],tmp))
+        if os.path.isdir(libdir):
+            conf.env.append_value('NS3_MODULE_PATH',libdir)
+            conf.env['LIBPATH_NSCLICK'] = [libdir]
 
     conf.env['CPPPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
-    conf.env['LIBPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'ns'))]
     
     conf.env['NSCLICK'] = conf.check(fragment=test_code, lib='nsclick', uselib='NSCLICK DL')
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
@@ -74,12 +77,17 @@ def build(bld):
     module.source = [
         'model/ipv4-click-routing.cc',
         'model/ipv4-l3-click-protocol.cc',
-        'test/ipv4-click-routing-test.cc',
         'helper/click-internet-stack-helper.cc',
         ]
 
+    module_test = bld.create_ns3_module_test_library('click')
+    module_test.source = [
+        'test/ipv4-click-routing-test.cc',
+        ]
+
     if bld.env['NSCLICK'] and bld.env['DL']:
-        module.uselib = 'NSCLICK DL'
+        module.uselib      = 'NSCLICK DL'
+        module_test.uselib = 'NSCLICK DL'
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'click'
@@ -91,3 +99,5 @@ def build(bld):
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

@@ -20,7 +20,7 @@
 //
 // (Click)       CSMA    (non-Click)
 //    A   ================   B
-// (172.16.1.1)         (172.16.1.2)   
+// (172.16.1.1)         (172.16.1.2)
 //    (eth0)
 //
 //
@@ -90,8 +90,8 @@ int main (int argc, char *argv[])
   // For tracing
   csma.EnablePcap ("nsclick-simple-lan", csmaDevices, false);
 
-  Simulator::Stop (Seconds(20.0));
-  Simulator::Run();
+  Simulator::Stop (Seconds (20.0));
+  Simulator::Run ();
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use ns-3-click without NSCLICK compiled in");

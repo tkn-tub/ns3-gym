@@ -405,7 +405,6 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     {
       m_stats.recvBeacons++;
       MgtBeaconHeader beacon_hdr;
-      Mac48Address from = hdr->GetAddr2 ();
 
       packet->PeekHeader (beacon_hdr);
 

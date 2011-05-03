@@ -139,6 +139,10 @@ IeConfiguration::DeserializeInformationField (Buffer::Iterator i, uint8_t length
   Buffer::Iterator start = i;
   uint8_t version;
   version = i.ReadU8 ();
+  if (version != 1)
+    {
+      NS_FATAL_ERROR ("Other versions not supported yet");
+    }
   // Active Path Selection Protocol ID:
   m_APSPId = (dot11sPathSelectionProtocol) i.ReadLsbtohU32 ();
   // Active Path Metric ID:

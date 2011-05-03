@@ -5,3 +5,9 @@
 #
 # All modules can be enabled by choosing 'all_modules'.
 modules_enabled = ['all_modules']
+
+# Set this equal to true if you want examples to be run.
+examples_enabled = False
+
+# Set this equal to true if you want tests to be run.
+tests_enabled = False

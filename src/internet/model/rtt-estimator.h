@@ -62,7 +62,6 @@ public:
   virtual Time AckSeq(SequenceNumber32);
   virtual void ClearSent();
   virtual void   Measurement(Time t) = 0;
-  virtual Time Estimate() = 0;
   virtual Time RetransmitTimeout() = 0;
   void Init(SequenceNumber32 s) { next = s;}
   virtual Ptr<RttEstimator> Copy() const = 0;
@@ -70,13 +69,18 @@ public:
   virtual void ResetMultiplier();
   virtual void Reset();
 
+  void SetMinRto (Time minRto);
+  Time GetMinRto (void) const;
+  void SetEstimate (Time estimate);
+  Time GetEstimate (void) const;
+
 private:
   SequenceNumber32        next;    // Next expected sequence to be sent
   RttHistory_t history; // List of sent packet
   double m_maxMultiplier;
 public:
-  Time       est;     // Current estimate
-  Time       minrto; // minimum value of the timeout
+  int64x64_t       est;     // Current estimate
+  int64x64_t       minrto; // minimum value of the timeout
   uint32_t      nSamples;// Number of samples
   double       multiplier;   // RTO Multiplier
 };
@@ -100,8 +104,6 @@ public :
     //Doc:Arg1 {\tt RttMeanDeviation} object to copy.
 
   void Measurement (Time);
-  Time Estimate () { return est;}
-  Time Variance () { return variance;}
   Time RetransmitTimeout ();
   Ptr<RttEstimator> Copy () const;
   void Reset ();
@@ -109,7 +111,7 @@ public :
 
 public:
   double       gain;       // Filter gain
-  Time       variance;   // Current variance
+  int64x64_t   variance;   // Current variance
 };
 }//namespace ns3
 #endif

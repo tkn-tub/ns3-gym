@@ -192,15 +192,6 @@ public:
    * from an arbitrary, fixed reference. 
    *
    * @param signal The RF signal power at the antenna as a decibel difference
-   *               from an arbitrary, fixed reference. 
-   */
-  void SetAntennaSignalPower (int8_t signal);
-
-  /**
-   * @brief Set the RF signal power at the antenna as a decibel difference
-   * from an arbitrary, fixed reference. 
-   *
-   * @param signal The RF signal power at the antenna as a decibel difference
    *               from an arbitrary, fixed reference;
    */
   void SetAntennaSignalPower (double signal);
@@ -213,15 +204,6 @@ public:
    *          from an arbitrary, fixed reference. 
    */
   uint8_t GetAntennaSignalPower (void) const;
-
-  /**
-   * @brief Set the RF noise power at the antenna as a decibel difference
-   * from an arbitrary, fixed reference. 
-   *
-   * @param noise The RF noise power at the antenna as a decibel difference
-   *              from an arbitrary, fixed reference. 
-   */
-  void SetAntennaNoisePower (int8_t noise);
 
   /**
    * @brief Set the RF noise power at the antenna as a decibel difference

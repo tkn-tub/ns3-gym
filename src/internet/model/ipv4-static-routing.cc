@@ -371,7 +371,6 @@ Ipv4StaticRouting::GetDefaultRoute ()
     uint32_t metric = i->second;
     Ipv4Mask mask = (j)->GetDestNetworkMask ();
     uint16_t masklen = mask.GetPrefixLength ();
-    Ipv4Address entry = (j)->GetDestNetwork ();
     if (masklen != 0)
       {
         continue;

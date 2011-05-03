@@ -313,6 +313,9 @@ protected:
   /** Get accessor for the \c m_qosSupported member */
   bool GetQosSupported () const;
 private:
+  RegularWifiMac (const RegularWifiMac &);
+  RegularWifiMac & operator= (const RegularWifiMac &);
+
   /**
    * This method is a private utility invoked to configure the channel
    * access function for the specified Access Category.

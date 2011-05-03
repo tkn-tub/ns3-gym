@@ -47,16 +47,20 @@ interesting_config_items = [
     "NS3_MODULE_PATH",
     "NSC_ENABLED",
     "ENABLE_REAL_TIME",
+    "ENABLE_THREADING",
     "ENABLE_EXAMPLES",
     "EXAMPLE_DIRECTORIES",
     "ENABLE_PYTHON_BINDINGS",
     "ENABLE_CLICK",
+    "ENABLE_OPENFLOW",
 ]
 
 NSC_ENABLED = False
 ENABLE_REAL_TIME = False
+ENABLE_THREADING = False
 ENABLE_EXAMPLES = True
 ENABLE_CLICK = False
+ENABLE_OPENFLOW = False
 EXAMPLE_DIRECTORIES = []
 
 #
@@ -672,14 +676,17 @@ def make_paths():
 #
 VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
 
-def run_job_synchronously(shell_command, directory, valgrind, is_python):
+def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
     (base, build) = os.path.split (NS3_BUILDDIR)
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
         path_cmd = "python " + os.path.join (base, shell_command)
     else:
-        path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+        if len(build_path):
+            path_cmd = os.path.join (build_path, shell_command)
+        else:
+            path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
 
     if valgrind:
         cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, 
@@ -733,6 +740,7 @@ class Job:
         self.tmp_file_name = ""
         self.returncode = False
         self.elapsed_time = 0
+        self.build_path = ""
 
     #
     # A job is either a standard job or a special job indicating that a worker
@@ -774,6 +782,14 @@ class Job:
     #
     def set_shell_command(self, shell_command):
         self.shell_command = shell_command
+
+    #
+    # This is the build path where ns-3 was built.  For example,
+    #
+    #  "/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug"
+    #
+    def set_build_path(self, build_path):
+        self.build_path = build_path
 
     #
     # This is the dispaly name of the job, typically the test suite or example 
@@ -888,7 +904,7 @@ class worker_thread(threading.Thread):
                     # "examples/mixed-wireless.py"
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command, 
-                        job.cwd, options.valgrind, job.is_pyexample)
+                        job.cwd, options.valgrind, job.is_pyexample, job.build_path)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
@@ -976,6 +992,15 @@ def run_tests():
     read_waf_active_variant()
     read_waf_config()
     make_paths()
+
+    # Get the information from the build status file.
+    build_status_file = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, 'build-status.py')
+    if os.path.exists(build_status_file):
+        ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
+        ns3_runnable_scripts = get_list_from_file(build_status_file, "ns3_runnable_scripts")
+    else:
+        print >> sys.stderr, 'The build status file was not found.  You must do waf build before running test.py.'
+        sys.exit(2)
 
     # Generate the lists of examples to run as smoke tests in order to
     # ensure that they remain buildable and runnable over time.
@@ -1255,48 +1280,58 @@ def run_tests():
         if len(options.constrain) == 0 or options.constrain == "example":
             if ENABLE_EXAMPLES:
                 for test, do_run, do_valgrind_run in example_tests:
-                    if eval(do_run):
-                        job = Job()
-                        job.set_is_example(True)
-                        job.set_is_pyexample(False)
-                        job.set_display_name(test)
-                        job.set_tmp_file_name("")
-                        job.set_cwd(testpy_output_dir)
-                        job.set_basedir(os.getcwd())
-                        job.set_tempdir(testpy_output_dir)
-                        job.set_shell_command(test)
 
-                        if options.valgrind and not eval(do_valgrind_run):
-                            job.set_is_skip (True)
+                    # Don't try to run this example if it isn't runnable.
+                    if os.path.basename(test) in ns3_runnable_programs:
+                        if eval(do_run):
+                            job = Job()
+                            job.set_is_example(True)
+                            job.set_is_pyexample(False)
+                            job.set_display_name(test)
+                            job.set_tmp_file_name("")
+                            job.set_cwd(testpy_output_dir)
+                            job.set_basedir(os.getcwd())
+                            job.set_tempdir(testpy_output_dir)
+                            job.set_shell_command(test)
+                            job.set_build_path("")
 
-                        if options.verbose:
-                            print "Queue %s" % test
+                            if options.valgrind and not eval(do_valgrind_run):
+                                job.set_is_skip (True)
 
-                        input_queue.put(job)
-                        jobs = jobs + 1
-                        total_tests = total_tests + 1
+                            if options.verbose:
+                                print "Queue %s" % test
+
+                            input_queue.put(job)
+                            jobs = jobs + 1
+                            total_tests = total_tests + 1
 
     elif len(options.example):
-        #
-        # If you tell me to run an example, I will try and run the example
-        # irrespective of any condition.
-        #
-        job = Job()
-        job.set_is_example(True)
-        job.set_is_pyexample(False)
-        job.set_display_name(options.example)
-        job.set_tmp_file_name("")
-        job.set_cwd(testpy_output_dir)
-        job.set_basedir(os.getcwd())
-        job.set_tempdir(testpy_output_dir)
-        job.set_shell_command("examples/%s" % options.example)
-        
-        if options.verbose:
-            print "Queue %s" % options.example
+        # Don't try to run this example if it isn't runnable.
+        example_name = os.path.basename(options.example)
+        if example_name not in ns3_runnable_programs:
+            print "Example %s is not runnable." % example_name
+        else:
+            #
+            # If you tell me to run an example, I will try and run the example
+            # irrespective of any condition.
+            #
+            job = Job()
+            job.set_is_example(True)
+            job.set_is_pyexample(False)
+            job.set_display_name(options.example)
+            job.set_tmp_file_name("")
+            job.set_cwd(testpy_output_dir)
+            job.set_basedir(os.getcwd())
+            job.set_tempdir(testpy_output_dir)
+            job.set_shell_command(options.example)
+            job.set_build_path(options.buildpath)
 
-        input_queue.put(job)
-        jobs = jobs + 1
-        total_tests = total_tests + 1
+            if options.verbose:
+                print "Queue %s" % options.example
+
+            input_queue.put(job)
+            jobs = jobs + 1
+            total_tests = total_tests + 1
 
     #
     # Run some Python examples as smoke tests.  We have a list of all of
@@ -1322,62 +1357,72 @@ def run_tests():
         if len(options.constrain) == 0 or options.constrain == "pyexample":
             if ENABLE_EXAMPLES:
                 for test, do_run in python_tests:
-                    if eval(do_run):
-                        job = Job()
-                        job.set_is_example(False)
-                        job.set_is_pyexample(True)
-                        job.set_display_name(test)
-                        job.set_tmp_file_name("")
-                        job.set_cwd(testpy_output_dir)
-                        job.set_basedir(os.getcwd())
-                        job.set_tempdir(testpy_output_dir)
-                        job.set_shell_command(test)
 
-                        #
-                        # Python programs and valgrind do not work and play
-                        # well together, so we skip them under valgrind.
-                        # We go through the trouble of doing all of this
-                        # work to report the skipped tests in a consistent
-                        # way throught the output formatter.
-                        #
-                        if options.valgrind:
-                            job.set_is_skip (True)
+                    # Don't try to run this example if it isn't runnable.
+                    if os.path.basename(test) in ns3_runnable_scripts:
+                        if eval(do_run):
+                            job = Job()
+                            job.set_is_example(False)
+                            job.set_is_pyexample(True)
+                            job.set_display_name(test)
+                            job.set_tmp_file_name("")
+                            job.set_cwd(testpy_output_dir)
+                            job.set_basedir(os.getcwd())
+                            job.set_tempdir(testpy_output_dir)
+                            job.set_shell_command(test)
+                            job.set_build_path("")
 
-                        #
-                        # The user can disable python bindings, so we need
-                        # to pay attention to that and give some feedback
-                        # that we're not testing them
-                        #
-                        if not ENABLE_PYTHON_BINDINGS:
-                            job.set_is_skip (True)
+                            #
+                            # Python programs and valgrind do not work and play
+                            # well together, so we skip them under valgrind.
+                            # We go through the trouble of doing all of this
+                            # work to report the skipped tests in a consistent
+                            # way throught the output formatter.
+                            #
+                            if options.valgrind:
+                                job.set_is_skip (True)
 
-                        if options.verbose:
-                            print "Queue %s" % test
+                            #
+                            # The user can disable python bindings, so we need
+                            # to pay attention to that and give some feedback
+                            # that we're not testing them
+                            #
+                            if not ENABLE_PYTHON_BINDINGS:
+                                job.set_is_skip (True)
 
-                        input_queue.put(job)
-                        jobs = jobs + 1
-                        total_tests = total_tests + 1
+                            if options.verbose:
+                                print "Queue %s" % test
+
+                            input_queue.put(job)
+                            jobs = jobs + 1
+                            total_tests = total_tests + 1
 
     elif len(options.pyexample):
-        #
-        # If you tell me to run a python example, I will try and run the example
-        # irrespective of any condition.
-        #
-        job = Job()
-        job.set_is_pyexample(True)
-        job.set_display_name(options.pyexample)
-        job.set_tmp_file_name("")
-        job.set_cwd(testpy_output_dir)
-        job.set_basedir(os.getcwd())
-        job.set_tempdir(testpy_output_dir)
-        job.set_shell_command("examples/%s" % options.pyexample)
-        
-        if options.verbose:
-            print "Queue %s" % options.pyexample
+        # Don't try to run this example if it isn't runnable.
+        example_name = os.path.basename(options.pyexample)
+        if example_name not in ns3_runnable_scripts:
+            print "Example %s is not runnable." % example_name
+        else:
+            #
+            # If you tell me to run a python example, I will try and run the example
+            # irrespective of any condition.
+            #
+            job = Job()
+            job.set_is_pyexample(True)
+            job.set_display_name(options.pyexample)
+            job.set_tmp_file_name("")
+            job.set_cwd(testpy_output_dir)
+            job.set_basedir(os.getcwd())
+            job.set_tempdir(testpy_output_dir)
+            job.set_shell_command(options.pyexample)
+            job.set_build_path("")
 
-        input_queue.put(job)
-        jobs = jobs + 1
-        total_tests = total_tests + 1
+            if options.verbose:
+                print "Queue %s" % options.pyexample
+
+            input_queue.put(job)
+            jobs = jobs + 1
+            total_tests = total_tests + 1
 
     #
     # Tell the worker threads to pack up and go home for the day.  Each one
@@ -1591,13 +1636,17 @@ def run_tests():
 
 def main(argv):
     parser = optparse.OptionParser()
+    parser.add_option("-b", "--buildpath", action="store", type="string", dest="buildpath", default="",
+                      metavar="BUILDPATH",
+                      help="specify the path where ns-3 was built (defaults to the build directory for the current variant)")
+
     parser.add_option("-c", "--constrain", action="store", type="string", dest="constrain", default="",
                       metavar="KIND",
                       help="constrain the test-runner by kind of test")
 
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",
-                      help="specify a single example to run")
+                      help="specify a single example to run (with relative path)")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
                       help="run the test suites and examples using valgrind")
@@ -1616,7 +1665,7 @@ def main(argv):
 
     parser.add_option("-p", "--pyexample", action="store", type="string", dest="pyexample", default="",
                       metavar="PYEXAMPLE",
-                      help="specify a single python example to run")
+                      help="specify a single python example to run (with relative path)")
 
     parser.add_option("-r", "--retain", action="store_true", dest="retain", default=False,
                       help="retain all temporary files (which are normally deleted)")

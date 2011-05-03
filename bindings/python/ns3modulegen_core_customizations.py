@@ -237,7 +237,7 @@ public:
         class PythonCallbackParameter(Parameter):
             "Class handlers"
             CTYPES = [cls_name]
-            #print >> sys.stderr, "***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name)
+            print >> sys.stderr, "***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name)
             DIRECTIONS = [Parameter.DIRECTION_IN]
             PYTHON_CALLBACK_IMPL_NAME = class_name
             TEMPLATE_ARGS = template_parameters
@@ -331,8 +331,10 @@ def Object_customizations(module):
     ## order to support kwargs only and to translate kwargs into ns3
     ## attributes, etc.
     ## ---------------------------------------------------------------------
-    Object = module['ns3::Object']
-
+    try:
+        Object = module['ns3::Object']
+    except KeyError:
+        return
 
     ## add a GetTypeId method to all generatd helper classes
     def helper_class_hook(helper_class):
@@ -416,7 +418,11 @@ def add_std_ofstream(module):
     ofstream.add_constructor([Parameter.new("const char *", 'filename'),
                               Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
     ofstream.add_method('close', None, [])
+    
+    add_std_ios_openmode(module)
 
+
+def add_std_ios_openmode(module):
     import pybindgen.typehandlers.base
     for alias in "std::_Ios_Openmode", "std::ios::openmode":
         pybindgen.typehandlers.base.param_type_matcher.add_type_alias(alias, "int")

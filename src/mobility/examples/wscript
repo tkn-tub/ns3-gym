@@ -1,0 +1,18 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    if not bld.env['ENABLE_EXAMPLES']:
+        return;
+
+    obj = bld.create_ns3_program('main-grid-topology',
+                                 ['core', 'mobility', 'network'])
+    obj.source = 'main-grid-topology.cc'
+
+    obj = bld.create_ns3_program('main-random-topology',
+                                 ['core', 'mobility'])
+    obj.source = 'main-random-topology.cc'
+    
+    obj = bld.create_ns3_program('main-random-walk',
+                                 ['core', 'mobility'])
+    obj.source = 'main-random-walk.cc'
+

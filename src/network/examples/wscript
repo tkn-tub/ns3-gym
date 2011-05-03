@@ -1,0 +1,12 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    if not bld.env['ENABLE_EXAMPLES']:
+        return;
+
+    obj = bld.create_ns3_program('main-packet-header', ['network'])
+    obj.source = 'main-packet-header.cc'
+
+    obj = bld.create_ns3_program('main-packet-tag', ['network'])
+    obj.source = 'main-packet-tag.cc'
+

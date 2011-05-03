@@ -21,6 +21,11 @@ def build(bld):
         'model/waypoint-mobility-model.cc',
         'helper/mobility-helper.cc',
         'helper/ns2-mobility-helper.cc',
+        ]
+
+    mobility_test = bld.create_ns3_module_test_library('mobility')
+    mobility_test.source = [
+        'test/ns2-mobility-helper-test-suite.cc',
         'test/steady-state-random-waypoint-mobility-model-test.cc',
         'test/waypoint-mobility-model-test.cc',
         ]
@@ -47,3 +52,8 @@ def build(bld):
         'helper/mobility-helper.h',
         'helper/ns2-mobility-helper.h',
         ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

@@ -278,7 +278,7 @@ Default values and command-line arguments
 +++++++++++++++++++++++++++++++++++++++++
 
 Let's look at how a user script might access these values.  
-This is based on the script found at ``samples/main-attribute-value.cc``,
+This is based on the script found at ``src/core/examples/main-attribute-value.cc``,
 with some details stripped out.::
 
     //
@@ -659,7 +659,7 @@ file to the scratch directory:::
 Let's edit it to add the ConfigStore feature. First, add an include statement to
 include the contrib module, and then add these lines:::
 
-    #include "contrib-module.h"
+    #include "ns3/config-store-module.h"
     ...
     int main (...)
     {
@@ -725,7 +725,7 @@ write out the resulting attributes to a separate file called
 is sometimes helpful to run the program to generate an output xml file first,
 then hand-edit that file and re-input it for the next simulation run).::
 
-    #include "contrib-module.h"
+    #include "ns3/config-store-module.h"
     ...
     int main (...)
     {
@@ -768,7 +768,7 @@ Ubuntu installation command is:::
     sudo apt-get install libgtk2.0-0 libgtk2.0-dev
 
 To check whether it is configured or not, check the output of the
-./waf configure step:::
+./waf configure --enable-examples --enable-tests step:::
 
     ---- Summary of optional NS-3 features:
     Threading Primitives          : enabled
@@ -776,7 +776,7 @@ To check whether it is configured or not, check the output of the
     GtkConfigStore                : not enabled (library 'gtk+-2.0 >= 2.12' not found)
 
 In the above example, it was not enabled, so it cannot be used until a suitable
-version is installed and ./waf configure; ./waf is rerun.
+version is installed and ./waf configure --enable-examples --enable-tests; ./waf is rerun.
 
 Usage is almost the same as the non-GTK-based version, but there
 are no ConfigStore attributes involved:::

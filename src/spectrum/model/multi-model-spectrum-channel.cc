@@ -87,6 +87,7 @@ MultiModelSpectrumChannel::DoDispose ()
   m_txSpectrumModelInfoMap.clear ();
   m_rxSpectrumModelInfoMap.clear ();
   m_phyVector.clear ();
+  SpectrumChannel::DoDispose ();
 }
 
 TypeId

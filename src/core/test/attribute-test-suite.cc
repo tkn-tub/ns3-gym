@@ -262,18 +262,16 @@ AttributeTestCase<T>::CheckGetCodePaths (
   //
   // Get an Attribute value through its StringValue representation.
   //
-  bool ok = p->GetAttributeFailSafe (attributeName.c_str (), stringValue);
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (ok, true, "Could not GetAttributeFailSafe() " << attributeName << " from Object");
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (stringValue.Get (), expectedString, "Got unexpected StringValue representation");
+  bool ok1 = p->GetAttributeFailSafe (attributeName.c_str (), stringValue);
+  bool ok2 = stringValue.Get () == expectedString;
 
   //
   // Get the existing boolean value through its particular type representation.
   //
-  ok = p->GetAttributeFailSafe (attributeName.c_str (), actualValue);
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (ok, true, "Could not GetAttributeFailSafe() " << attributeName << " from Object");
-  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualValue.Get (), expectedValue.Get (), "Got unexpected Value from Object");
+  bool ok3 = p->GetAttributeFailSafe (attributeName.c_str (), actualValue);
+  bool ok4 = expectedValue.Get () == actualValue.Get ();
 
-  return GetErrorStatus ();
+  return ok1 && ok2 && ok3 && ok4;
 }
 
 // ===========================================================================
@@ -300,7 +298,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObjectWithAttributes");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly from CreateObjectWithAttributes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly from CreateObjectWithAttributes");
 
   //
   // Set the default value of the BooleanValue and create an object.  The new
@@ -311,7 +309,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by default value");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
 
   //
   // Set the default value of the BooleanValue the other way and create an object.
@@ -323,7 +321,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not et properly by default value");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not et properly by default value");
 
   //
   // Set the BooleanValue Attribute to true via SetAttributeFailSafe path.
@@ -332,7 +330,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() \"TestBoolName\" to true");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Set the BooleanValue to false via SetAttributeFailSafe path.
@@ -341,7 +339,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() \"TestBoolName\" to false");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Create an object using individually provided StringValue Attribute.
@@ -350,7 +348,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObjectWithAttributes");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by CreateObjectWithAttributes() with StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by CreateObjectWithAttributes() with StringValue");
 
   //
   // Create an object using individually provided BooleanValue Attribute.
@@ -359,7 +357,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObjectWithAttributes");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by CreateObjectWithAttributes() with BooleanValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by CreateObjectWithAttributes() with BooleanValue");
 
   //
   // The previous object-based tests checked access directly.  Now check through
@@ -371,7 +369,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a boolean value to true");
 
   ok = CheckGetCodePaths (p, "TestBoolA", "true", BooleanValue (true));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (getter/setter) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (getter/setter) via StringValue");
 
   //
   // Now Set the BooleanValue to false via the setter.
@@ -380,7 +378,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a boolean value to false");
 
   ok = CheckGetCodePaths (p, "TestBoolA", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (getter/setter) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (getter/setter) via StringValue");
 }
 
 template <> void
@@ -397,7 +395,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   // value.
   //
   ok = CheckGetCodePaths (p, "TestInt16", "-2", IntegerValue (-2));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by default value");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
 
   //
   // Set the Attribute to a negative value through a StringValue.
@@ -406,7 +404,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to -5");
 
   ok = CheckGetCodePaths (p, "TestInt16", "-5", IntegerValue (-5));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Set the Attribute to a positive value through a StringValue.
@@ -415,7 +413,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to +2");
 
   ok = CheckGetCodePaths (p, "TestInt16", "2", IntegerValue (2));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Set the Attribute to the most negative value of the signed 16-bit range.
@@ -424,7 +422,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to -32768");
 
   ok = CheckGetCodePaths (p, "TestInt16", "-32768", IntegerValue (-32768));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (most negative) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (most negative) via StringValue");
 
   //
   // Try to set the Attribute past the most negative value of the signed 16-bit
@@ -434,7 +432,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to -32769");
 
   ok = CheckGetCodePaths (p, "TestInt16", "-32768", IntegerValue (-32768));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 
   //
   // Set the Attribute to the most positive value of the signed 16-bit range.
@@ -443,7 +441,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to 32767");
 
   ok = CheckGetCodePaths (p, "TestInt16", "32767", IntegerValue (32767));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (most positive) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (most positive) via StringValue");
 
   //
   // Try to set the Attribute past the most positive value of the signed 16-bit
@@ -453,7 +451,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to 32768");
 
   ok = CheckGetCodePaths (p, "TestInt16", "32767", IntegerValue (32767));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 
   //
   // Attributes can have limits other than the intrinsic limits of the
@@ -463,7 +461,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 10");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "10", IntegerValue (10));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (positive limit) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (positive limit) via StringValue");
 
   //
   // Set the Attribute past the positive limit.
@@ -472,7 +470,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to 11");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "10", IntegerValue (10));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 
   //
   // Set the Attribute at the negative limit.
@@ -481,7 +479,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to -5");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "-5", IntegerValue (-5));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (negative limit) via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (negative limit) via StringValue");
 
   //
   // Set the Attribute past the negative limit.
@@ -490,7 +488,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to -6");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "-5", IntegerValue (-5));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 }
 
 template <> void
@@ -507,7 +505,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   // value.
   //
   ok = CheckGetCodePaths (p, "TestUint8", "1", UintegerValue (1));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by default value");;
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");;
 
   //
   // Set the Attribute to zero.
@@ -516,7 +514,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to 0");
 
   ok = CheckGetCodePaths (p, "TestUint8", "0", UintegerValue (0));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Set the Attribute to the most positive value of the unsigned 8-bit range.
@@ -525,7 +523,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to 255");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (positive limit) via UintegerValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() (positive limit) via UintegerValue");
 
   //
   // Try and set the Attribute past the most positive value of the unsigned 
@@ -535,7 +533,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to 256");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 
   //
   // Set the Attribute to the most positive value of the unsigned 8-bit range
@@ -545,7 +543,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to 255");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Try and set the Attribute past the most positive value of the unsigned
@@ -555,7 +553,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to 256");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 
   //
   // Try to set the Attribute to a negative StringValue.
@@ -578,7 +576,7 @@ AttributeTestCase<DoubleValue>::DoRun (void)
   // value.
   //
   ok = CheckGetCodePaths (p, "TestFloat", "-1.1", DoubleValue ((float)-1.1));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by default value");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
 
   //
   // Set the Attribute.
@@ -587,7 +585,7 @@ AttributeTestCase<DoubleValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to 2.3");
 
   ok = CheckGetCodePaths (p, "TestFloat", "2.3", DoubleValue ((float)2.3));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via DoubleValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via DoubleValue");
 }
 
 template <> void
@@ -604,7 +602,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   // value.
   //
   ok = CheckGetCodePaths (p, "TestEnum", "TestA", EnumValue (AttributeObjectTest::TEST_A));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by default value");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
 
   //
   // Set the Attribute using the EnumValue type.
@@ -613,7 +611,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to TEST_C");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestC", EnumValue (AttributeObjectTest::TEST_C));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via EnumValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via EnumValue");
 
   //
   // Set the Attribute using the StringValue type.
@@ -622,7 +620,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to TEST_B");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
   // Try to set the Attribute to a bogus enum using the StringValue type and 
@@ -632,7 +630,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to TEST_D"); // 
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 
   //
   // Try to set the Attribute to a bogus enum using an integer implicit conversion
@@ -642,7 +640,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to 5");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 }
 
 template <> void

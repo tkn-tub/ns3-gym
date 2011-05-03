@@ -173,12 +173,12 @@ WaveformGenerator::GetPeriod () const
 void
 WaveformGenerator::SetDutyCycle (double dutyCycle)
 {
-  m_dutyCycle = Scalar (dutyCycle);
+  m_dutyCycle = dutyCycle;
 }
 
 double WaveformGenerator::GetDutyCycle () const
 {
-  return m_dutyCycle.GetDouble ();
+  return m_dutyCycle;
 }
 
 
@@ -189,7 +189,7 @@ WaveformGenerator::GenerateWaveform ()
   NS_LOG_FUNCTION (this);
 
   Ptr<PacketBurst> pb = Create<PacketBurst> ();
-  Time duration = m_period * m_dutyCycle;
+  Time duration = Time (m_period * m_dutyCycle);
   
   NS_LOG_LOGIC ("generating waveform : " << *m_txPowerSpectralDensity);
   m_phyTxStartTrace (0);

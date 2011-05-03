@@ -323,8 +323,22 @@ void LogComponentDisableAll (enum LogLevel level);
     }                                   \
   while (false)
 
-namespace ns3 {
+#else /* LOG_ENABLE */
 
+#define NS_LOG_COMPONENT_DEFINE(component)
+#define NS_LOG(level, msg)
+#define NS_LOG_ERROR(msg)
+#define NS_LOG_WARN(msg)
+#define NS_LOG_DEBUG(msg)
+#define NS_LOG_INFO(msg)
+#define NS_LOG_FUNCTION_NOARGS()
+#define NS_LOG_FUNCTION(msg)
+#define NS_LOG_LOGIC(msg)
+#define NS_LOG_UNCOND(msg)
+
+#endif /* LOG_ENABLE */
+
+namespace ns3 {
 
 /**
  * \ingroup logging
@@ -385,27 +399,5 @@ public:
 
 } // namespace ns3
 
-#else /* LOG_ENABLE */
-
-#define NS_LOG_COMPONENT_DEFINE(component)
-#define NS_LOG(level, msg)
-#define NS_LOG_ERROR(msg)
-#define NS_LOG_WARN(msg)
-#define NS_LOG_DEBUG(msg)
-#define NS_LOG_INFO(msg)
-#define NS_LOG_FUNCTION_NOARGS()
-#define NS_LOG_FUNCTION(msg)
-#define NS_LOG_LOGIC(msg)
-#define NS_LOG_UNCOND(msg)
-
-#define LogComponentPrintList
-#define LogRegisterTimePrinter(printer)
-
-#define LogSetTimePrinter(printer)
-#define LogGetTimePrinter
-#define LogSetNodePrinter(printer)
-#define LogGetNodePrinter
-
-#endif /* LOG_ENABLE */
 
 #endif // __LOG_H__

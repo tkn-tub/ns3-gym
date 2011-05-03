@@ -8,6 +8,7 @@ import optparse
 import os.path
 import re
 import shlex
+import textwrap
 
 # WAF modules
 import pproc as subprocess
@@ -30,11 +31,15 @@ import Scripting
 
 from utils import read_config_file
 
-# By default, all modules will be enabled.
-modules_enabled = ['all_modules']
+# By default, all modules will be enabled, examples will be disabled,
+# and tests will be disabled.
+modules_enabled  = ['all_modules']
+examples_enabled = False
+tests_enabled    = False
 
-# Get the list of enabled modules out of the NS-3 configuration file.
-modules_enabled = read_config_file()
+# Get the information out of the NS-3 configuration file.
+config_file_exists = False
+(config_file_exists, modules_enabled, examples_enabled, tests_enabled) = read_config_file()
 
 sys.path.insert(0, os.path.abspath('waf-tools'))
 try:
@@ -157,13 +162,22 @@ def set_options(opt):
                    help=('Use sudo to setup suid bits on ns3 executables.'),
                    dest='enable_sudo', action='store_true',
                    default=False)
+    opt.add_option('--enable-tests',
+                   help=('Build the ns-3 tests.'),
+                   dest='enable_tests', action='store_true',
+                   default=False)
+    opt.add_option('--disable-tests',
+                   help=('Do not build the ns-3 tests.'),
+                   dest='disable_tests', action='store_true',
+                   default=False)
     opt.add_option('--enable-examples',
-                   help=('Build the ns-3 examples and samples.'),
+                   help=('Build the ns-3 examples.'),
                    dest='enable_examples', action='store_true',
-                   default=True)
+                   default=False)
     opt.add_option('--disable-examples',
-                   help=('Do not build the ns-3 examples and samples.'),
-                   dest='enable_examples', action='store_false')
+                   help=('Do not build the ns-3 examples.'),
+                   dest='disable_examples', action='store_true',
+                   default=False)
     opt.add_option('--check',
                    help=('DEPRECATED (run ./test.py)'),
                    default=False, dest='check', action="store_true")
@@ -280,7 +294,6 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
-    conf.sub_config('bindings/python')
 
     # Set the list of enabled modules.
     if Options.options.enable_modules:
@@ -296,28 +309,9 @@ def configure(conf):
             # Enable the modules from the list.
             conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                                modules_enabled]
+    conf.sub_config('bindings/python')
 
-    # for MPI
-    conf.find_program('mpic++', var='MPI')
-    if Options.options.enable_mpi and conf.env['MPI']:
-        p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("CXXFLAGS_MPI", flags)
-
-        p = subprocess.Popen([conf.env['MPI'], '-showme:link'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("LINKFLAGS_MPI", flags)
-
-        env.append_value('CXXDEFINES', 'NS3_MPI')
-        conf.report_optional_feature("mpi", "MPI Support", True, '')
-        conf.env['ENABLE_MPI'] = True
-    else:
-        if Options.options.enable_mpi:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
-        else:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
+    conf.sub_config('src/mpi')
 
     # for suid bits
     conf.find_program('sudo', var='SUDO')
@@ -334,12 +328,45 @@ def configure(conf):
 
     conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
 
-    if Options.options.enable_examples:
-        env['ENABLE_EXAMPLES'] = True
-        why_not_examples = "defaults to enabled"
+    # Decide if tests will be built or not.
+    if Options.options.enable_tests:
+        # Tests were explicitly enabled. 
+        env['ENABLE_TESTS'] = True
+        why_not_tests = "option --enable-tests selected"
+    elif Options.options.disable_tests:
+        # Tests were explicitly disabled. 
+        env['ENABLE_TESTS'] = False
+        why_not_tests = "option --disable-tests selected"
     else:
+        # Enable tests based on the ns3 configuration file.
+        env['ENABLE_TESTS'] = tests_enabled
+        if config_file_exists:
+            why_not_tests = "based on configuration file"
+        elif tests_enabled:
+            why_not_tests = "defaults to enabled"
+        else:
+            why_not_tests = "defaults to disabled"
+
+    conf.report_optional_feature("ENABLE_TESTS", "Build tests", env['ENABLE_TESTS'], why_not_tests)
+
+    # Decide if examples will be built or not.
+    if Options.options.enable_examples:
+        # Examples were explicitly enabled. 
+        env['ENABLE_EXAMPLES'] = True
+        why_not_examples = "option --enable-examples selected"
+    elif Options.options.disable_examples:
+        # Examples were explicitly disabled. 
         env['ENABLE_EXAMPLES'] = False
         why_not_examples = "option --disable-examples selected"
+    else:
+        # Enable examples based on the ns3 configuration file.
+        env['ENABLE_EXAMPLES'] = examples_enabled
+        if config_file_exists:
+            why_not_examples = "based on configuration file"
+        elif examples_enabled:
+            why_not_examples = "defaults to enabled"
+        else:
+            why_not_examples = "defaults to disabled"
 
     env['EXAMPLE_DIRECTORIES'] = []
     for dir in os.listdir('examples'):
@@ -348,7 +375,7 @@ def configure(conf):
         if os.path.isdir(os.path.join('examples', dir)):
             env['EXAMPLE_DIRECTORIES'].append(dir)
 
-    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples and samples", env['ENABLE_EXAMPLES'], 
+    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
     conf.find_program('valgrind', var='VALGRIND')
@@ -382,6 +409,15 @@ def configure(conf):
     else:
         conf.report_optional_feature("static", "Static build", False,
                                      "option --enable-static not selected")
+
+    # These flags are used for the implicitly dependent modules.
+    if env['ENABLE_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            env.STATICLIB_MARKER = '-Wl,-all_load'
+        else:
+            env.STATICLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
+            env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
+
     have_gsl = conf.pkg_check_modules('GSL', 'gsl', mandatory=False)
     conf.env['ENABLE_GSL'] = have_gsl
 
@@ -427,7 +463,6 @@ def configure(conf):
         else:
             status = 'not enabled (%s)' % reason_not_enabled
         print "%-30s: %s" % (caption, status)
-
 
 class SuidBuildTask(Task.TaskBase):
     """task that makes a binary Suid
@@ -482,17 +517,24 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     program.is_ns3_program = True
     program.name = name
     program.target = program.name
-    program.uselib_local = 'ns3'
+    # Each of the modules this program depends on has its own library.
+    program.uselib_local = ['ns3-' + dep for dep in dependencies]
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            program.env.append_value('LINKFLAGS', '-lns3')
+            for dep in dependencies:
+                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
         else:
             program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            program.env.append_value('LINKFLAGS', '-lns3')
+            for dep in dependencies:
+                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
+
+def register_ns3_script(bld, name, dependencies=('core',)):
+    ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
+    bld.env.append_value('NS3_SCRIPT_DEPENDENCIES', (name, ns3_module_dependencies))
 
 def add_examples_programs(bld):
     env = bld.env_of_name('default')
@@ -505,7 +547,7 @@ def add_examples_programs(bld):
 
 
 def add_scratch_programs(bld):
-    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_MODULES']]
+    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES']]
     for filename in os.listdir("scratch"):
         if filename.startswith('.') or filename == 'CVS':
 	    continue
@@ -525,6 +567,12 @@ def add_scratch_programs(bld):
 
 
 def build(bld):
+    bld.env['NS3_MODULES_WITH_TEST_LIBRARIES'] = []
+    bld.env['NS3_ENABLED_MODULE_TEST_LIBRARIES'] = []
+    bld.env['NS3_SCRIPT_DEPENDENCIES'] = []
+    bld.env['NS3_RUNNABLE_PROGRAMS'] = []
+    bld.env['NS3_RUNNABLE_SCRIPTS'] = []
+
     wutils.bld = bld
     if Options.options.no_task_lines:
         import Runner
@@ -534,6 +582,7 @@ def build(bld):
 
     Options.cwd_launch = bld.path.abspath()
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
+    bld.register_ns3_script = types.MethodType(register_ns3_script, bld)
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
 
     # switch default variant to the one matching our debug level
@@ -543,23 +592,11 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples')
-    bld.add_subdirs('utils')
 
-    add_examples_programs(bld)
-    add_scratch_programs(bld)
-
-    ## if --enabled-modules option was given, we disable building the
-    ## modules that were not enabled, and programs that depend on
-    ## disabled modules.
     env = bld.env
 
-    if Options.options.enable_modules:
-        Logs.warn("the option --enable-modules is being applied to this build only;"
-                       " to make it permanent it needs to be given to waf configure.")
-        env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
-                                      Options.options.enable_modules.split(',')]
-
+    # If modules have been enabled, then set lists of enabled modules
+    # and enabled module test libraries.
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
 
@@ -572,7 +609,8 @@ def build(bld):
                 module_obj = bld.name_to_obj(module, env)
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
-                for dep in module_obj.add_objects:
+                # Each enabled module has its own library.
+                for dep in module_obj.uselib_local:
                     if not dep.startswith('ns3-'):
                         continue
                     if dep not in modules:
@@ -580,7 +618,33 @@ def build(bld):
                         changed = True
 
         env['NS3_ENABLED_MODULES'] = modules
-        print "Modules to build:", modules
+
+        # If tests are being built, then set the list of the enabled
+        # module test libraries.
+        if env['ENABLE_TESTS']:
+            for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
+                if mod in bld.env['NS3_ENABLED_MODULES']:
+                    bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
+
+    # Process this subfolder here after the lists of enabled modules
+    # and module test libraries have been set.
+    bld.add_subdirs('utils')
+
+    add_examples_programs(bld)
+    add_scratch_programs(bld)
+
+    ## if --enabled-modules option was given, we disable building the
+    ## modules that were not enabled, and programs that depend on
+    ## disabled modules.
+
+    if Options.options.enable_modules:
+        Logs.warn("the option --enable-modules is being applied to this build only;"
+                       " to make it permanent it needs to be given to waf configure.")
+        env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
+                                      Options.options.enable_modules.split(',')]
+
+    if env['NS3_ENABLED_MODULES']:
+        modules = env['NS3_ENABLED_MODULES']
 
         def exclude_taskgen(bld, taskgen):
             # ok, so WAF does not provide an API to prevent an
@@ -607,39 +671,47 @@ def build(bld):
             # check for programs
             if hasattr(obj, 'ns3_module_dependencies'):
                 # this is an NS-3 program (bld.create_ns3_program)
+                program_built = True
                 for dep in obj.ns3_module_dependencies:
                     if dep not in modules: # prog. depends on a module that isn't enabled?
                         exclude_taskgen(bld, obj)
+                        program_built = False
                         break
+
+                # Add this program to the list if all of its
+                # dependencies will be built.
+                if program_built:
+                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', obj.name)
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
                 exclude_taskgen(bld, obj) # kill the module
+
+            # disable the module test libraries
+            if hasattr(obj, "is_ns3_module_test_library"):
+                if not env['ENABLE_TESTS'] or (obj.module_name not in modules):
+                    exclude_taskgen(bld, obj) # kill the module test library
 
             # disable the ns3header_taskgen
             if type(obj).__name__ == 'ns3header_taskgen':
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
-    ## Create a single ns3 library containing all enabled modules
-    if env['ENABLE_STATIC_NS3']:
-        lib = bld.new_task_gen('cxx', 'staticlib')
-        lib.name = 'ns3'
-        lib.target = 'ns3'
-    else:
-        lib = bld.new_task_gen('cxx', 'shlib')
-        lib.name = 'ns3'
-        lib.target = 'ns3'
-        if lib.env['CXX_NAME'] in ['gcc', 'icc'] and env['WL_SONAME_SUPPORTED']:
-            lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
-
     if env['NS3_ENABLED_MODULES']:
-        lib.add_objects = list(modules)
         env['NS3_ENABLED_MODULES'] = list(modules)
-        lib.uselib_local = list(modules)
-    else:
-        lib.add_objects = list(env['NS3_MODULES'])
-        lib.uselib_local = list(env['NS3_MODULES'])
+
+    # Determine which scripts will be runnable.
+    for (script, dependencies) in bld.env['NS3_SCRIPT_DEPENDENCIES']:
+        script_runnable = True
+        for dep in dependencies:
+            if dep not in modules:
+                script_runnable = False
+                break
+
+        # Add this script to the list if all of its dependencies will
+        # be built.
+        if script_runnable:
+            bld.env.append_value('NS3_RUNNABLE_SCRIPTS', script)
 
     bld.add_subdirs('bindings/python')
 
@@ -664,6 +736,39 @@ def shutdown(ctx):
     if wutils.bld is None:
         return
     env = bld.env
+
+    # Don't print the list if this a clean or distribution clean.
+    if ('clean' not in Options.arg_line) and ('distclean' not in Options.arg_line):
+
+        # Get the sorted list of built modules without the "ns3-" in their name.
+        modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
+        modules_without_prefix.sort()
+
+        # Print the list of built modules in 3 columns.
+        print
+        print 'Modules built:'
+        i = 1
+        for mod in modules_without_prefix:
+            print mod.ljust(25),
+            if i == 3:
+                    print
+                    i = 0
+            i = i+1
+        print
+        print
+
+    # Write the build status file.
+    build_status_file = os.path.join (env['NS3_BUILDDIR'], env['NS3_ACTIVE_VARIANT'], 'build-status.py')
+    out = open(build_status_file, 'w')
+    out.write('#! /usr/bin/env python\n')
+    out.write('\n')
+    out.write('# Programs that are runnable.\n')
+    out.write('ns3_runnable_programs = ' + str(env['NS3_RUNNABLE_PROGRAMS']) + '\n')
+    out.write('\n')
+    out.write('# Scripts that are runnable.\n')
+    out.write('ns3_runnable_scripts = ' + str(env['NS3_RUNNABLE_SCRIPTS']) + '\n')
+    out.write('\n')
+    out.close()
 
     if Options.options.lcov_report:
         lcov_report()

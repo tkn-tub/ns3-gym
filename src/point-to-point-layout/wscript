@@ -1,0 +1,23 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('point-to-point-layout', ['internet', 'point-to-point', 'mobility', 'netanim'])
+    module.includes = '.'
+    module.source = [
+        'model/point-to-point-dumbbell.cc',
+        'model/point-to-point-grid.cc',
+        'model/point-to-point-star.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'point-to-point-layout'
+    headers.source = [
+        'model/point-to-point-dumbbell.h',
+        'model/point-to-point-grid.h',
+        'model/point-to-point-star.h',
+        ]
+
+    bld.ns3_python_bindings()
+
+
+

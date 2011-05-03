@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('applications', ['internet', 'contrib'])
+    module = bld.create_ns3_module('applications', ['internet', 'config-store', 'tools'])
     module.source = [
         'model/bulk-send-application.cc',
         'model/onoff-application.cc',
@@ -25,8 +25,13 @@ def build(bld):
         'helper/udp-client-server-helper.cc',
         'helper/udp-echo-helper.cc',
         'helper/v4ping-helper.cc',
+        ]
+
+    applications_test = bld.create_ns3_module_test_library('applications')
+    applications_test.source = [
         'test/udp-client-server-test.cc',
         ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'applications'
     headers.source = [
@@ -54,3 +59,4 @@ def build(bld):
         'helper/v4ping-helper.h',
         ]
 
+    bld.ns3_python_bindings()

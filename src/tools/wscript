@@ -1,0 +1,26 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    module = bld.create_ns3_module('tools', ['network'])
+    module.source = [
+        'model/event-garbage-collector.cc',
+        'model/gnuplot.cc',
+        'model/delay-jitter-estimation.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('tools')
+    module_test.source = [
+        'test/event-garbage-collector-test-suite.cc',
+        ]
+    
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'tools'
+    headers.source = [
+        'model/average.h',
+        'model/event-garbage-collector.h',
+        'model/gnuplot.h',
+        'model/delay-jitter-estimation.h',
+        ]
+
+    bld.ns3_python_bindings()

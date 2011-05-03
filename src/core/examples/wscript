@@ -1,0 +1,28 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    if not bld.env['ENABLE_EXAMPLES']:
+        return;
+
+    obj = bld.create_ns3_program('main-callback', ['core'])
+    obj.source = 'main-callback.cc'
+
+    obj = bld.create_ns3_program('sample-simulator', ['core'])
+    obj.source = 'sample-simulator.cc'
+
+    bld.register_ns3_script('sample-simulator.py', ['core'])
+
+    obj = bld.create_ns3_program('main-ptr', ['core'] )
+    obj.source = 'main-ptr.cc'
+
+    obj = bld.create_ns3_program('main-random-variable', ['core', 'config-store', 'tools'])
+    obj.source = 'main-random-variable.cc'
+
+    obj = bld.create_ns3_program('sample-random-variable',
+                                 ['core'])
+    obj.source = 'sample-random-variable.cc'
+
+    if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
+        obj = bld.create_ns3_program('main-test-sync', ['network'])
+        obj.source = 'main-test-sync.cc'
+

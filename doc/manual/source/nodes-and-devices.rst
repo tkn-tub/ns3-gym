@@ -15,3 +15,4 @@ Node and NetDevices
     ff-api
     uan
     energy
+    openflow-switch

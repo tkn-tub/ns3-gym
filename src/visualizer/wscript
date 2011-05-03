@@ -1,0 +1,27 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'visualizer'
+    headers.source = [
+        ]
+
+    module = bld.create_ns3_module('visualizer', ['network', 'wifi'])
+    if not bld.env['ENABLE_PYTHON_BINDINGS']:
+        return
+
+    module.features.append('pyembed')
+    module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+    module.includes = '.'
+
+    if bld.env['ENABLE_PYTHON_BINDINGS']:
+        module.source = [
+            'model/pyviz.cc',
+            'model/visual-simulator-impl.cc',
+            ]
+        headers.source.append('model/pyviz.h')
+    else:
+        module.source = [
+            ]
+
+    bld.ns3_python_bindings()

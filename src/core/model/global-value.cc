@@ -22,7 +22,6 @@
 #include "attribute.h"
 #include "string.h"
 #include "uinteger.h"
-#include "test.h"
 
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
@@ -207,73 +206,6 @@ GlobalValue::GetVector (void)
   static Vector vector;
   return &vector;
 }
-
-// ===========================================================================
-// Test for the ability to get at a GlobalValue.
-// ===========================================================================
-class GlobalValueTestCase : public TestCase
-{
-public:
-  GlobalValueTestCase ();
-  virtual ~GlobalValueTestCase () {}
-
-private:
-  virtual void DoRun (void);
-};
-
-GlobalValueTestCase::GlobalValueTestCase ()
-  : TestCase ("Check GlobalValue mechanism")
-{
-}
-
-void
-GlobalValueTestCase::DoRun (void)
-{
-  //
-  // Typically these are static globals but we can make one on the stack to 
-  // keep it hidden from the documentation.
-  //
-  GlobalValue uint = GlobalValue ("TestUint", "help text",
-				  UintegerValue (10),
-				  MakeUintegerChecker<uint32_t> ());
-
-  //
-  // Make sure we can get at the value and that it was initialized correctly.
-  //
-  UintegerValue uv;
-  uint.GetValue (uv);
-  NS_TEST_ASSERT_MSG_EQ (uv.Get (), 10, "GlobalValue \"TestUint\" not initialized as expected");
-
-  //
-  // Remove the global value for a valgrind clean run
-  //
-  GlobalValue::Vector *vector = GlobalValue::GetVector ();
-  for (GlobalValue::Vector::iterator i = vector->begin (); i != vector->end (); ++i)
-    {
-      if ((*i) == &uint)
-	{
-	  vector->erase (i);
-          break;
-        }
-    }
-}
-
-// ===========================================================================
-// The Test Suite that glues all of the Test Cases together.
-// ===========================================================================
-class GlobalValueTestSuite : public TestSuite
-{
-public:
-  GlobalValueTestSuite ();
-};
-
-GlobalValueTestSuite::GlobalValueTestSuite ()
-  : TestSuite ("global-value", BVT)
-{
-  AddTestCase (new GlobalValueTestCase);
-}
-
-static GlobalValueTestSuite globalValueTestSuite;
 
 } // namespace ns3
 

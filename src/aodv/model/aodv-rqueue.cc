@@ -72,7 +72,6 @@ RequestQueue::DropPacketWithDst (Ipv4Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
   Purge ();
-  const Ipv4Address addr = dst;
   for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i
       != m_queue.end (); ++i)
     {
