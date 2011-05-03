@@ -29,8 +29,9 @@ class TimeSimpleTestCase : public TestCase
 public:
   TimeSimpleTestCase (enum Time::Unit resolution);
 private:
+  virtual void DoSetup (void);
   virtual void DoRun (void);
-  virtual void DoTearDown (void);
+  virtual void DoTeardown (void);
   enum Time::Unit m_originalResolution;
   enum Time::Unit m_resolution;
 };
@@ -39,10 +40,16 @@ TimeSimpleTestCase::TimeSimpleTestCase (enum Time::Unit resolution)
   : TestCase ("Sanity check of common time operations"),
     m_resolution (resolution)
 {}
+
+void
+TimeSimpleTestCase::DoSetup (void)
+{
+  m_originalResolution = Time::GetResolution ();
+}
+
 void
 TimeSimpleTestCase::DoRun (void)
 {
-  m_originalResolution = Time::GetResolution ();
   Time::SetResolution (m_resolution);
   NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (1.0).GetSeconds (), 1.0, TimeStep (1).GetSeconds (), 
                              "is 1 really 1 ?");
@@ -65,7 +72,7 @@ TimeSimpleTestCase::DoRun (void)
 }
 
 void 
-TimeSimpleTestCase::DoTearDown (void)
+TimeSimpleTestCase::DoTeardown (void)
 {
   Time::SetResolution (m_originalResolution);
 }
