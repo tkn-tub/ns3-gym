@@ -76,7 +76,6 @@ LteNetDevice::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   m_node = 0;
-  m_phyMacTxStartCallback = MakeNullCallback< bool, Ptr<Packet> > ();
   NetDevice::DoDispose ();
 }
 
@@ -181,14 +180,6 @@ LteNetDevice::SupportsSendFrom (void) const
 {
   NS_LOG_FUNCTION (this);
   return false;
-}
-
-
-void
-LteNetDevice::SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c)
-{
-  NS_LOG_FUNCTION (this);
-  m_phyMacTxStartCallback = c;
 }
 
 

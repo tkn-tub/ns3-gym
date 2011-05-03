@@ -51,13 +51,6 @@ public:
 
   virtual void DoDispose (void);
 
-  /**
-   * \brief set the callback used to instruct the lower layer to start a TX
-   * \param c
-   */
-  void SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c);
-
-
   // inherited from NetDevice
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
@@ -139,7 +132,7 @@ private:
 
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
-  GenericPhyTxStartCallback m_phyMacTxStartCallback;
+
   TracedCallback<> m_linkChangeCallbacks;
 
   uint32_t m_ifIndex;
