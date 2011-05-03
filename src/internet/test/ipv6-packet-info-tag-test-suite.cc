@@ -90,14 +90,12 @@ Ipv6PacketInfoTagTest::RxCb (Ptr<Socket> socket)
 
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
-  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket->GetSize (), "Did not read expected data");
 
   Ipv6PacketInfoTag tag;
   bool found;
   found = m_receivedPacket->RemovePacketTag (tag);
-  NS_ASSERT (found);
-  tag.Print (std::cout);
-  std::cout << std::endl;
+  NS_TEST_ASSERT_MSG_EQ (found, true, "Could not find tag");
 }
 
 void
