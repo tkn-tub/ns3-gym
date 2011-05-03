@@ -57,7 +57,7 @@ private:
 };
 
 Ns3WimaxFragmentationTestCase::Ns3WimaxFragmentationTestCase ()
-  : TestCase ("Test the packet fra/defragmentation.")
+  : TestCase ("Test the packet fragmentation and defragmentation.")
 {
 }
 
