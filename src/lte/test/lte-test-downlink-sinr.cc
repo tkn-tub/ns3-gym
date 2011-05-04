@@ -44,12 +44,12 @@ using namespace ns3;
 LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite ()
   : TestSuite ("lte-downlink-sinr", SYSTEM)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LteTestUePhy", logLevel);
-  LogComponentEnable ("LteDownlinkSinrTest", logLevel);
+  // LogComponentEnable ("LteTestUePhy", logLevel);
+  // LogComponentEnable ("LteDownlinkSinrTest", logLevel);
 
-  NS_LOG_INFO ("Creating LteDownlinkSinrTestSuite");
+  // NS_LOG_INFO ("Creating LteDownlinkSinrTestSuite");
 
   /**
    * Build Spectrum Model values for the TX signal
