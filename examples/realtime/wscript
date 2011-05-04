@@ -3,3 +3,5 @@
 def build(bld):
     obj = bld.create_ns3_program('realtime-udp-echo', ['csma', 'internet'])
     obj.source = 'realtime-udp-echo.cc'
+
+    bld.register_ns3_script('realtime-udp-echo.py', ['csma', 'internet', 'applications'])

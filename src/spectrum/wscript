@@ -67,7 +67,7 @@ def build(bld):
         'helper/adhoc-aloha-noack-ideal-phy-helper.h',
         'helper/waveform-generator-helper.h',
         'helper/spectrum-analyzer-helper.h',
-        'test/spectrum-value-test.h',
+        'test/spectrum-test.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
