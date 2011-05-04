@@ -27,7 +27,7 @@
 NS_LOG_COMPONENT_DEFINE("CsmaStarHelper");
 
 namespace ns3 {
-  
+
 CsmaStarHelper::CsmaStarHelper (uint32_t numSpokes,
                                 CsmaHelper csmaHelper)
 {
@@ -82,7 +82,7 @@ CsmaStarHelper::GetSpokeIpv4Address (uint32_t i) const
   return m_spokeInterfaces.GetAddress (i);
 }
 
-uint32_t  
+uint32_t
 CsmaStarHelper::SpokeCount () const
 {
   return m_spokes.GetN ();

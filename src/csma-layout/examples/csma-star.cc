@@ -112,21 +112,21 @@ main (int argc, char *argv[])
   //
   Ipv4AddressHelper address;
   for(uint32_t i = 0; i < star.SpokeCount (); ++i)
-  {
-    std::ostringstream subnet;
-    subnet << "10.1." << i << ".0";
-    NS_LOG_INFO ("Assign IP Addresses for CSMA subnet " << subnet.str ());
-    address.SetBase (subnet.str ().c_str (), "255.255.255.0", "0.0.0.3");
+    {
+      std::ostringstream subnet;
+      subnet << "10.1." << i << ".0";
+      NS_LOG_INFO ("Assign IP Addresses for CSMA subnet " << subnet.str ());
+      address.SetBase (subnet.str ().c_str (), "255.255.255.0", "0.0.0.3");
 
-    for (uint32_t j = 0; j < nFill; ++j)
-      {
-        address.Assign (fillDevices.Get (i * nFill + j));
-      }
-  }
+      for (uint32_t j = 0; j < nFill; ++j)
+        {
+          address.Assign (fillDevices.Get (i * nFill + j));
+        }
+    }
 
   NS_LOG_INFO ("Create applications.");
   //
-  // Create a packet sink on the star "hub" to receive packets.  
+  // Create a packet sink on the star "hub" to receive packets.
   // 
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
