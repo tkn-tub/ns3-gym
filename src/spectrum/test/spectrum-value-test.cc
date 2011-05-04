@@ -26,7 +26,7 @@
 #include <iostream>
 #include <math.h>
 
-#include "spectrum-value-test.h"
+#include "spectrum-test.h"
 
 // NS_LOG_COMPONENT_DEFINE ("SpectrumValueTest");
 
