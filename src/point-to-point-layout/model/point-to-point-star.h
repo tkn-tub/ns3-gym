@@ -27,7 +27,7 @@
 #include "ipv4-interface-container.h"
 
 namespace ns3 {
-  
+
 /**
  * \brief A helper to make it easier to create a star topology
  * with PointToPoint links

@@ -29,9 +29,9 @@
 NS_LOG_COMPONENT_DEFINE("PointToPointStarHelper");
 
 namespace ns3 {
-  
+
 PointToPointStarHelper::PointToPointStarHelper (uint32_t numSpokes,
-                   PointToPointHelper p2pHelper)
+                                                PointToPointHelper p2pHelper)
 {
   m_hub.Create (1);
   m_spokes.Create (numSpokes);
@@ -71,7 +71,7 @@ PointToPointStarHelper::GetSpokeIpv4Address (uint32_t i) const
   return m_spokeInterfaces.GetAddress (i);
 }
 
-uint32_t  
+uint32_t
 PointToPointStarHelper::SpokeCount () const
 {
   return m_spokes.GetN ();
@@ -149,10 +149,10 @@ PointToPointStarHelper::BoundingBox (double ulx, double uly,
           spokeLoc = CreateObject<ConstantPositionMobilityModel> ();
           spokeNode->AggregateObject (spokeLoc);
         }
-        Vector spokeVec (hubVec.x + cos (theta*i) * spokeDist, 
-                         hubVec.y + sin (theta*i) * spokeDist,
-                         0);
-        spokeLoc->SetPosition (spokeVec);
+      Vector spokeVec (hubVec.x + cos (theta*i) * spokeDist,
+                       hubVec.y + sin (theta*i) * spokeDist,
+                       0);
+      spokeLoc->SetPosition (spokeVec);
     }
 }
 

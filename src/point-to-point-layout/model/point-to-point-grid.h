@@ -28,7 +28,7 @@
 #include "net-device-container.h"
 
 namespace ns3 {
-  
+
 /**
  * \brief A helper to make it easier to create a grid topology
  * with p2p links
@@ -121,5 +121,5 @@ private:
 };
 
 } // namespace ns3
-      
+
 #endif /* POINT_TO_POINT_GRID_HELPER_H */

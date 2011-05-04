@@ -28,7 +28,7 @@
 NS_LOG_COMPONENT_DEFINE("PointToPointGridHelper");
 
 namespace ns3 {
-  
+
 PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows, 
                                                 uint32_t nCols, 
                                                 PointToPointHelper pointToPoint)
@@ -43,36 +43,36 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
   InternetStackHelper stack;
 
   for (uint32_t y = 0; y < nRows; ++y)
-  {
-    NodeContainer rowNodes;
-    NetDeviceContainer rowDevices;
-    NetDeviceContainer colDevices;
-
-    for (uint32_t x = 0; x < nCols; ++x)
     {
-      rowNodes.Create (1);
+      NodeContainer rowNodes;
+      NetDeviceContainer rowDevices;
+      NetDeviceContainer colDevices;
 
-      // install p2p links across the row
-      if (x > 0)
-      {
-        rowDevices.Add (pointToPoint.
-            Install (rowNodes.Get (x-1), rowNodes.Get (x)));
-      }
+      for (uint32_t x = 0; x < nCols; ++x)
+        {
+          rowNodes.Create (1);
 
-      // install vertical p2p links
+          // install p2p links across the row
+          if (x > 0)
+            {
+              rowDevices.Add (pointToPoint.
+                              Install (rowNodes.Get (x-1), rowNodes.Get (x)));
+            }
+
+          // install vertical p2p links
+          if (y > 0)
+            {
+              colDevices.Add(pointToPoint.
+                             Install ((m_nodes.at (y-1)).Get (x), rowNodes.Get (x)));
+            }
+        }
+
+      m_nodes.push_back (rowNodes);
+      m_rowDevices.push_back (rowDevices);
+
       if (y > 0)
-      {
-        colDevices.Add(pointToPoint.
-                      Install ((m_nodes.at (y-1)).Get (x), rowNodes.Get (x)));
-      }
+        m_colDevices.push_back (colDevices);
     }
-
-    m_nodes.push_back (rowNodes);
-    m_rowDevices.push_back (rowDevices);
-
-    if (y > 0)
-      m_colDevices.push_back (colDevices);
-  }
 }
 
 PointToPointGridHelper::~PointToPointGridHelper ()
@@ -131,7 +131,7 @@ PointToPointGridHelper::AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4Addres
 
 void
 PointToPointGridHelper::BoundingBox (double ulx, double uly,
-                         double lrx, double lry)
+                                     double lrx, double lry)
 {
   double xDist; 
   double yDist; 
@@ -155,24 +155,24 @@ PointToPointGridHelper::BoundingBox (double ulx, double uly,
   double yAdder = yDist / m_ySize;
   double yLoc = yDist / 2;
   for (uint32_t i = 0; i < m_ySize; ++i)
-  {
-    double xLoc = xDist / 2;
-    for (uint32_t j = 0; j < m_xSize; ++j)
     {
-      Ptr<Node> node = GetNode (i, j);
-      Ptr<ConstantPositionMobilityModel> loc = node->GetObject<ConstantPositionMobilityModel> ();
-      if (loc ==0)
-      {
-        loc = CreateObject<ConstantPositionMobilityModel> ();
-        node->AggregateObject (loc);
-      }
-      Vector locVec (xLoc, yLoc, 0);
-      loc->SetPosition (locVec);
+      double xLoc = xDist / 2;
+      for (uint32_t j = 0; j < m_xSize; ++j)
+        {
+          Ptr<Node> node = GetNode (i, j);
+          Ptr<ConstantPositionMobilityModel> loc = node->GetObject<ConstantPositionMobilityModel> ();
+          if (loc ==0)
+            {
+              loc = CreateObject<ConstantPositionMobilityModel> ();
+              node->AggregateObject (loc);
+            }
+          Vector locVec (xLoc, yLoc, 0);
+          loc->SetPosition (locVec);
 
-      xLoc += xAdder;
+          xLoc += xAdder;
+        }
+      yLoc += yAdder;
     }
-    yLoc += yAdder;
-  }
 }
 
 Ptr<Node> 
@@ -181,7 +181,7 @@ PointToPointGridHelper::GetNode (uint32_t row, uint32_t col)
   if (row > m_nodes.size () - 1 || 
       col > m_nodes.at (row).GetN () - 1) 
     {
-       NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetNode.");
+      NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetNode.");
     }
 
   return (m_nodes.at (row)).Get (col);
@@ -193,7 +193,7 @@ PointToPointGridHelper::GetIpv4Address (uint32_t row, uint32_t col)
   if (row > m_nodes.size () - 1 || 
       col > m_nodes.at (row).GetN () - 1) 
     {
-       NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv4Address.");
+      NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv4Address.");
     }
 
   // Right now this just gets one of the addresses of the
@@ -204,13 +204,13 @@ PointToPointGridHelper::GetIpv4Address (uint32_t row, uint32_t col)
   // in which case the right (row) device address is 
   // returned
   if (col == 0)
-  {
-    return (m_rowInterfaces.at (row)).GetAddress (0);
-  }
+    {
+      return (m_rowInterfaces.at (row)).GetAddress (0);
+    }
   else
-  {
-    return (m_rowInterfaces.at (row)).GetAddress ((2*col)-1);
-  }
+    {
+      return (m_rowInterfaces.at (row)).GetAddress ((2*col)-1);
+    }
 }
 
 } // namespace ns3

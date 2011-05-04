@@ -33,12 +33,12 @@
 NS_LOG_COMPONENT_DEFINE("PointToPointDumbbellHelper");
 
 namespace ns3 {
-  
+
 PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
-                   PointToPointHelper leftHelper,
-                   uint32_t nRightLeaf,
-                   PointToPointHelper rightHelper,
-                   PointToPointHelper bottleneckHelper)
+                                                        PointToPointHelper leftHelper,
+                                                        uint32_t nRightLeaf,
+                                                        PointToPointHelper rightHelper,
+                                                        PointToPointHelper bottleneckHelper)
 {
   // Create the bottleneck routers
   m_routers.Create (2);
@@ -52,7 +52,7 @@ PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
   for (uint32_t i = 0; i < nLeftLeaf; ++i)
     {
       NetDeviceContainer c = leftHelper.Install (m_routers.Get (0),
-                                                m_leftLeaf.Get (i));
+                                                 m_leftLeaf.Get (i));
       m_leftRouterDevices.Add (c.Get (0));
       m_leftLeafDevices.Add (c.Get(1));
     }
@@ -60,7 +60,7 @@ PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
   for (uint32_t i = 0; i < nRightLeaf; ++i)
     {
       NetDeviceContainer c = rightHelper.Install (m_routers.Get (1),
-                                                m_rightLeaf.Get (i));
+                                                  m_rightLeaf.Get (i));
       m_rightRouterDevices.Add (c.Get (0));
       m_rightLeafDevices.Add (c.Get (1));
     }
@@ -117,8 +117,8 @@ void PointToPointDumbbellHelper::InstallStack (InternetStackHelper stack)
 }
 
 void PointToPointDumbbellHelper::AssignIpv4Addresses (Ipv4AddressHelper leftIp,
-                               Ipv4AddressHelper rightIp,
-                               Ipv4AddressHelper routerIp)
+                                                      Ipv4AddressHelper rightIp,
+                                                      Ipv4AddressHelper routerIp)
 {
   // Assign the router network
   m_routerInterfaces = routerIp.Assign (m_routerDevices);
@@ -148,7 +148,7 @@ void PointToPointDumbbellHelper::AssignIpv4Addresses (Ipv4AddressHelper leftIp,
 
 
 void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper left x/y
-                           double lrx, double lry) // Lower right y
+                                              double lrx, double lry) // Lower right y
 {
   double xDist;
   double yDist;
@@ -183,7 +183,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
     }
   Vector lrl (ulx + xAdder, uly + yDist/2.0, 0);
   loc->SetPosition (lrl);
-  
+
   // Place the right router
   Ptr<Node> rr = GetRight ();
   loc = rr->GetObject<ConstantPositionMobilityModel> ();
@@ -216,7 +216,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
           ln->AggregateObject (loc);
         }
       Vector lnl (lrl.x - cos (theta) * xAdder,
-                   lrl.y + sin (theta) * xAdder, 0);  // Left Node Location
+                  lrl.y + sin (theta) * xAdder, 0);   // Left Node Location
       // Insure did not exceed bounding box
       if (lnl.y < uly) 
         {
@@ -249,7 +249,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
           rn->AggregateObject (loc);
         }
       Vector rnl (rrl.x + cos (theta) * xAdder, // Right node location
-                   rrl.y + sin (theta) * xAdder, 0);
+                  rrl.y + sin (theta) * xAdder, 0);
       // Insure did not exceed bounding box
       if (rnl.y < uly) 
         {
@@ -263,5 +263,5 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
       theta += thetaR;
     }
 }
-  
+
 } // namespace ns3

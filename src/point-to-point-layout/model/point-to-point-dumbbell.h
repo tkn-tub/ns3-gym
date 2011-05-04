@@ -29,7 +29,7 @@
 #include "ipv4-interface-container.h"
 
 namespace ns3 {
-  
+
 /**
  * \brief A helper to make it easier to create a dumbbell topology
  * with p2p links
@@ -71,7 +71,7 @@ public:
    *          router
    */
   Ptr<Node> GetLeft () const;
-  
+
   /**
    * \returns pointer to the i'th left side leaf node
    */
@@ -138,7 +138,7 @@ public:
    * \param lry lower right y value
    */
   void      BoundingBox (double ulx, double uly, double lrx, double lry);
-  
+
 private:
   NodeContainer          m_leftLeaf;
   NetDeviceContainer     m_leftLeafDevices;
