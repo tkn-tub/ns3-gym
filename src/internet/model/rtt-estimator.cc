@@ -105,7 +105,8 @@ RttEstimator::RttEstimator () : next (1), history (),
 
 RttEstimator::RttEstimator(const RttEstimator& c)
   : Object (c), next(c.next), history(c.history), 
-    m_maxMultiplier (c.m_maxMultiplier), est(c.est), nSamples(c.nSamples),
+    m_maxMultiplier (c.m_maxMultiplier), est(c.est),
+    minrto(c.minrto), nSamples(c.nSamples),
     multiplier(c.multiplier)
 {}
 
