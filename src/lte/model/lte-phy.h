@@ -159,6 +159,13 @@ public:
   */
   void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
 
+  /**  
+   *
+   * \param dlEarfcn the carrier frequency (EARFCN) in downlink
+   * \param ulEarfcn the carrier frequency (EARFCN) in downlink
+   */
+  virtual void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+
   /** 
    * 
    * \param cellId the Cell Identifier
@@ -227,6 +234,9 @@ protected:
   uint8_t m_ulBandwidth;
   uint8_t m_dlBandwidth;
   uint8_t m_rbgSize;
+  
+  uint16_t m_dlEarfcn;
+  uint16_t m_ulEarfcn;
 
   std::vector< Ptr<PacketBurst> > m_packetBurstQueue;
   std::vector< std::list<Ptr<IdealControlMessage> > > m_controlMessagesQueue;

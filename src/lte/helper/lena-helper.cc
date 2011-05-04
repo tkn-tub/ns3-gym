@@ -272,7 +272,6 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   n->AddDevice (dev);
   dlPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
 
-  dev->Start ();
   return dev;
 }
 
@@ -306,8 +305,12 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
   uePhy->SetRnti (rnti);
-  uePhy->DoSetBandwidth (enbDevice->GetObject<LteEnbNetDevice> ()->GetUlBandwidth (), 
+  uePhy->DoSetBandwidth (enbDevice->GetObject<LteEnbNetDevice> ()->GetUlBandwidth (),
                          enbDevice->GetObject<LteEnbNetDevice> ()->GetDlBandwidth ());
+  uePhy->DoSetEarfcn (enbDevice->GetObject<LteEnbNetDevice> ()->GetDlEarfcn (),
+                      enbDevice->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
+
+  ueDevice->Start ();
 }
 
 
@@ -347,7 +350,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
+  LogComponentEnable ("LteSpectrumValueHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);

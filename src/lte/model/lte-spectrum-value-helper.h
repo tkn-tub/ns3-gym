@@ -43,7 +43,7 @@ public:
    *
    * \param earfcn the EARFCN
    * 
-   * \return the carrier frequency in MHz
+   * \return the carrier frequency in Hz
    */
   static double GetCarrierFrequency (uint16_t earfcn);
 
@@ -54,7 +54,7 @@ public:
    *
    * \param earfcn the EARFCN
    * 
-   * \return the dowlink carrier frequency in MHz
+   * \return the dowlink carrier frequency in Hz
    */
   static double GetDownlinkCarrierFrequency (uint16_t earfcn);
 
@@ -65,44 +65,63 @@ public:
    *
    * \param earfcn the EARFCN
    * 
-   * \return the uplink carrier frequency in MHz
+   * \return the uplink carrier frequency in Hz
    */
   static double GetUplinkCarrierFrequency (uint16_t earfcn);  
 
-  /**
-   * \brief create spectrum value
-   * \param powerTx the power transmission in dBm
-   * \param channels the list of sub channels where the signal will be sent
-   * \return a Ptr to a newly created SpectrumValue instance
+  /** 
+   * 
+   * 
+   * \param txBandwidthConf the tranmission bandwidth
+   * configuration in number of resource blocks
+   * 
+   * \return the nominal channel bandwidth in Hz as per 3GPP TS 36.101
    */
-  static Ptr<SpectrumValue> CreateDownlinkTxPowerSpectralDensity (double powerTx, std::vector <int> channels);
+  static double GetChannelBandwidth (uint8_t txBandwidthConf);
+
+   /** 
+    * 
+    * \param earfcn the carrier frequency (EARFCN) at which reception
+    * is made
+    * \param bandwidth the Transmission Bandwidth Configuration in
+    * number of resource blocks
+    * 
+    * \return the static SpectrumModel instance corresponding to the
+    * given carrier frequency and transmission bandwidth
+    * configuration. If such SpectrumModel does not exist, it is
+    * created.  
+    */
+  static Ptr<SpectrumModel> GetSpectrumModel (uint16_t earfcn, uint8_t bandwdith);
+
 
   /**
-   * \brief create spectrum value
-   * \param powerTx the power transmission in dBm
-   * \param channels the list of sub channels where the signal will be sent
+   * create a spectrum value representing the power spectral
+   * density of a signal to be transmitted. See 3GPP TS 36.101 for 
+   * a definition of most of the parameters described here.
+   *
+   * \param earfcn the carrier frequency (EARFCN) of the transmission
+   * \param bandwidth the Transmission Bandwidth Configuration in
+   * number of resource blocks
+   * \param txPower the total power in dBm over the whole bandwidth
+   * \param ActiveRbs the list of Active Resource Blocks (PRBs) 
+   *
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  static Ptr<SpectrumValue> CreateUplinkTxPowerSpectralDensity (double powerTx, std::vector <int> channels);
+  static Ptr<SpectrumValue> CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t bandwdith, double powerTx, std::vector <int> activeRbs);
 
 
   /**
    * create a SpectrumValue that models the power spectral density of AWGN
    * 
+   * \param earfcn the carrier frequency (EARFCN) at which reception
+   * is made
+   * \param bandwidth the Transmission Bandwidth Configuration in
+   * number of resource blocks
    * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
    * 
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  static Ptr<SpectrumValue> CreateDownlinkNoisePowerSpectralDensity (double noiseFigure);
-
-  /**
-   *  create a SpectrumValue that models the power spectral density of AWGN
-   * 
-   * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
-   * 
-   * \return a Ptr to a newly created SpectrumValue instance
-   */
-  static Ptr<SpectrumValue> CreateUplinkNoisePowerSpectralDensity (double noiseFigure);
+  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint16_t earfcn, uint8_t bandwdith, double noiseFigure);
 
   /** 
    *  create a SpectrumValue that models the power spectral density of AWGN
