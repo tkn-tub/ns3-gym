@@ -107,7 +107,7 @@ UanChannel::Clear ()
       m_noise->Clear ();
       m_noise = 0;
     }
-      
+
 }
 
 void

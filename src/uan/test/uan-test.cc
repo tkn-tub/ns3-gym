@@ -150,11 +150,11 @@ UanTest::DoPhyTests ()
 
   // No collision (Get 2 packets)
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (3.001), 50, 50, prop),
-                         34, "Should have received 34 bytes from 2 disjoint packets");
+                                      34, "Should have received 34 bytes from 2 disjoint packets");
 
   // Collision (Lose both packets)
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (2.99), 50, 50, prop),
-                         0, "Expected collision resulting in loss of both packets");
+                                      0, "Expected collision resulting in loss of both packets");
 
 
   // Phy Gen / FH-FSK SINR check
@@ -172,15 +172,15 @@ UanTest::DoPhyTests ()
 
   //  No collision (Get 2 packets)
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (3.001), 50, 50, prop),
-                         34, "Should have received 34 bytes from 2 disjoint packets");
+                                      34, "Should have received 34 bytes from 2 disjoint packets");
 
   // Should correctly receive first arriving packet
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (1.0126), 50, 50, prop),
-                         17, "Should have recieved 17 bytes from first arriving packet");
+                                      17, "Should have recieved 17 bytes from first arriving packet");
 
   // Packets should collide and both be lost
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (1.0 + 7.01 * (13.0 / 80.0)), 50, 50, prop),
-                         0, "Packets should collide, but received data");
+                                      0, "Packets should collide, but received data");
 
   // Phy Dual
   UanTxMode mode00 = UanTxModeFactory::CreateMode (UanTxMode::FSK, 80, 80, 10000, 4000, 2, "TestMode00");
@@ -208,19 +208,19 @@ UanTest::DoPhyTests ()
 
   // No collision (Get 2 packets)
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (3.01), 50, 50, prop),
-                         34, "Expected no collision");
+                                      34, "Expected no collision");
 
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (2.99), 50, 50, prop, 0, 0),
-                         0, "Expected collision with both packets lost");
+                                      0, "Expected collision with both packets lost");
 
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (2.99), 50, 50, prop, 0, 2),
-                         17, "Expected collision with only one packets lost");
+                                      17, "Expected collision with only one packets lost");
 
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (2.99), 50, 50, prop, 0, 5),
-                         34, "Expected no collision");
+                                      34, "Expected no collision");
 
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (2.99), 50, 50, prop, 2, 3),
-                         34, "Expected no collision");
+                                      34, "Expected no collision");
 
   return false;
 }

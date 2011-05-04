@@ -64,7 +64,7 @@ UanMacCw::Clear ()
     }
   m_sendEvent.Cancel ();
   m_txEndEvent.Cancel ();
-}  
+}
 
 void
 UanMacCw::DoDispose ()
