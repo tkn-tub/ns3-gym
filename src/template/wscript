@@ -1,19 +1,35 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
+    # Create the module with the appropriate name and the list of
+    # modules it depends on.
     module = bld.create_ns3_module('template', ['core'])
+
+    # Set the C++ source files for this module.
     module.source = [
         ]
 
+    # Create the module's test library.
     test_library = bld.create_ns3_module_test_library('template')
+
+    # Set the C++ source files for the module's test library.
     test_library.source = [
         'test/sample-test-suite.cc',
         ]
 
+    # Make headers be installed for this module.
     headers = bld.new_task_gen('ns3header')
     headers.module = 'template'
+
+    # Set the C++ header files for this module.
     headers.source = [
         ]
 
+    # Uncomment these lines if this module needs a library such as the
+    # real-time (RT) library to be linked in at build time.
+    #module      .uselib = 'RT'
+    #test_library.uselib = 'RT'
+
+    # Look for examples if they are enabled. 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.add_subdirs('examples')
