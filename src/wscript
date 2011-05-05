@@ -59,6 +59,7 @@ all_modules = (
     'visualizer',
     'point-to-point-layout',
     'csma-layout',
+    'template',
     )
 
 def set_options(opt):

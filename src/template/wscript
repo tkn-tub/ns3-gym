@@ -1,0 +1,19 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('template', ['core'])
+    module.source = [
+        ]
+
+    test_library = bld.create_ns3_module_test_library('template')
+    test_library.source = [
+        'test/sample-test-suite.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'template'
+    headers.source = [
+        ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
