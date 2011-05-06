@@ -144,7 +144,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   mm->SetPosition (Vector (m_dist, 0.0, 0.0));
   
   lena->EnableRlcTraces ();
-  double simulationTime = 0.040;
+  double simulationTime = 0.010;
   Simulator::Stop (Seconds (simulationTime));
   
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();

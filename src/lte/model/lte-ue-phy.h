@@ -63,9 +63,10 @@ public:
   
   virtual ~LteUePhy ();
 
-  virtual void DoDispose ();
+  // inherited from Object
   static TypeId GetTypeId (void);
-
+  virtual void DoStart (void);
+  virtual void DoDispose (void);
 
   /**
    * \brief Get the PHY SAP provider

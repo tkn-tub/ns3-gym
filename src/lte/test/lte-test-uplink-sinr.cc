@@ -43,12 +43,12 @@ using namespace ns3;
 LteUplinkSinrTestSuite::LteUplinkSinrTestSuite ()
   : TestSuite ("lte-uplink-sinr", SYSTEM)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LteTestUePhy", logLevel);
-  LogComponentEnable ("LteUplinkSinrTest", logLevel);
+  // LogComponentEnable ("LteTestUePhy", logLevel);
+  // LogComponentEnable ("LteUplinkSinrTest", logLevel);
 
-  NS_LOG_INFO ("Creating LteUplinkSinrTestSuite");
+  // NS_LOG_INFO ("Creating LteUplinkSinrTestSuite");
 
   /**
    * Build Spectrum Model values for the TX signal

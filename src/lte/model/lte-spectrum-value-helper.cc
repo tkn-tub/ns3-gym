@@ -19,10 +19,10 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-
-#include <ns3/log.h>
+#include<map>
 #include <cmath>
 
+#include <ns3/log.h>
 #include "lte-spectrum-value-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumValueHelper");
@@ -103,7 +103,7 @@ LteSpectrumValueHelper::GetDownlinkCarrierFrequency (uint16_t nDl)
           (g_eutraChannelNumbers[i].rangeNdl2 >= nDl))
         {
           NS_LOG_LOGIC ("entry " << i << " fDlLow=" << g_eutraChannelNumbers[i].fDlLow);
-          return g_eutraChannelNumbers[i].fDlLow + 0.1 * (nDl - g_eutraChannelNumbers[i].nOffsDl);
+          return 1.0e6 * (g_eutraChannelNumbers[i].fDlLow + 0.1 * (nDl - g_eutraChannelNumbers[i].nOffsDl));
         }
     }
   NS_LOG_ERROR ("invalid EARFCN " << nDl);
@@ -120,134 +120,149 @@ LteSpectrumValueHelper::GetUplinkCarrierFrequency (uint16_t nUl)
           (g_eutraChannelNumbers[i].rangeNul2 >= nUl))
         {
           NS_LOG_LOGIC ("entry " << i << " fUlLow=" << g_eutraChannelNumbers[i].fUlLow);
-          return g_eutraChannelNumbers[i].fUlLow + 0.1 * (nUl - g_eutraChannelNumbers[i].nOffsUl);
+          return 1.0e6 * (g_eutraChannelNumbers[i].fUlLow + 0.1 * (nUl - g_eutraChannelNumbers[i].nOffsUl));
         }
     }
   NS_LOG_ERROR ("invalid EARFCN " << nUl);
   return 0.0;
 }
 
-
-
-Ptr<SpectrumModel> LteDownlinkSpectrumModel;
-Ptr<SpectrumModel> LteUplinkSpectrumModel;
-
-class static_LteDownlinkSpectrumModel_initializer
+double 
+LteSpectrumValueHelper::GetChannelBandwidth (uint8_t transmissionBandwidth)
 {
-public:
-  static_LteDownlinkSpectrumModel_initializer ()
-  {
-
-    /*
-     * Operating  Bands for the UL: 1920 MHz – 1980 MHz
-     * see for details TR.36.101 - Tab 5.5-1
-     *
-     */
-
-    std::vector<double> freqs;
-    /* WILD HACK
-    * banwidth 25
-    */
-    for (int i = 0; i < 25; ++i)
-      {
-
-        double centralFrequencyOfPRB = 1.920 + (i * 0.00018);
-        freqs.push_back (centralFrequencyOfPRB * 1e9);
-      }
-
-    LteDownlinkSpectrumModel = Create<SpectrumModel> (freqs);
-  }
-
-} static_LteDownlinkSpectrumModel_initializer_instance;
+  NS_LOG_FUNCTION ((uint16_t) transmissionBandwidth);
+  switch (transmissionBandwidth)
+    { 
+    case 6:
+      return 1.4e6;
+    case 15:
+      return 3.0e6;
+    case 25:
+      return 5.0e6;
+    case 50:
+      return 10.0e6;
+    case 75:
+      return 15.0e6;
+    case 100:   
+      return 20.0e6;        
+    default:
+      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) transmissionBandwidth);
+    }
+}
 
 
 
-class static_LteUplinkSpectrumModel_initializer
+
+struct LteSpectrumModelId
 {
-public:
-  static_LteUplinkSpectrumModel_initializer ()
-  {
+  LteSpectrumModelId (uint16_t f, uint8_t b);
+  uint16_t earfcn;
+  uint8_t  bandwidth;
+};
 
-    /*
-     * Operating  Bands for the DL: 2110 MHz – 2170 MHz
-     * see for details TR.36.101 - Tab 5.5-1
-     *
-     */
-
-    std::vector<double> freqs;
-    /* WILD HACK
-    * banwidth 25
-    */
-    for (int i = 0; i < 25; ++i)
-      {
-
-        double centralFrequencyOfPRB = 2.110 + (i * 0.00018);
-        freqs.push_back (centralFrequencyOfPRB * 1e9);
-      }
-
-    LteUplinkSpectrumModel = Create<SpectrumModel> (freqs);
-  }
-
-} static_LteUplinkSpectrumModel_initializer_instance;
-
-
-
-
-Ptr<SpectrumValue>
-LteSpectrumValueHelper::CreateDownlinkTxPowerSpectralDensity (double powerTx, std::vector<int> channels)
+LteSpectrumModelId::LteSpectrumModelId (uint16_t f, uint8_t b)
+  : earfcn (f), 
+    bandwidth (b)
 {
-  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (LteDownlinkSpectrumModel);
+}
+  
+bool
+operator < (const LteSpectrumModelId& a, const LteSpectrumModelId& b)
+{
+  return ( (a.earfcn < b.earfcn) || ( (a.earfcn == b.earfcn) && (a.bandwidth < b.bandwidth) ) );
+}
+ 
+
+static std::map<LteSpectrumModelId, Ptr<SpectrumModel> > g_lteSpectrumModelMap;
+
+
+Ptr<SpectrumModel>
+LteSpectrumValueHelper::GetSpectrumModel (uint16_t earfcn, uint8_t txBandwidthConfiguration)
+{
+  NS_LOG_FUNCTION (earfcn << (uint16_t) txBandwidthConfiguration);
+  Ptr<SpectrumModel> ret;
+  LteSpectrumModelId key (earfcn, txBandwidthConfiguration);
+  std::map<LteSpectrumModelId, Ptr<SpectrumModel> >::iterator it = g_lteSpectrumModelMap.find (key);
+  if (it != g_lteSpectrumModelMap.end ())
+    {
+      ret = it->second;
+    }
+  else
+    {
+      double fc = GetCarrierFrequency (earfcn);
+      NS_ASSERT_MSG (fc != 0, "invalid EARFCN=" << earfcn);
+
+      double f = fc - (txBandwidthConfiguration * 180e3 / 2.0);
+      Bands rbs;
+      for (uint8_t numrb = 0; numrb < txBandwidthConfiguration; ++numrb)
+        {
+          BandInfo rb; 
+          rb.fl = f;
+          f += 90e3;
+          rb.fc = f;
+          f += 90e3;
+          rb.fh = f;          
+          rbs.push_back (rb);
+        }            
+      ret = Create<SpectrumModel> (rbs);
+      g_lteSpectrumModelMap.insert (std::pair<LteSpectrumModelId, Ptr<SpectrumModel> > (key, ret));
+    }
+  NS_LOG_LOGIC ("returning SpectrumModel::GetUid () == " << ret->GetUid ());
+  return ret;
+}
+
+// just needed to log a std::vector<int> properly...
+std::ostream&
+operator << (std::ostream& os, const std::vector<int>& v)
+{
+  std::vector<int>::const_iterator it = v.begin ();
+  while (it != v.end ())
+    {
+      os << *it << " " ;
+      ++it;
+    }
+  os << std::endl;
+  return os;
+}
+
+
+Ptr<SpectrumValue> 
+LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t txBandwidthConfiguration, double powerTx, std::vector <int> activeRbs)
+{
+  NS_LOG_FUNCTION (earfcn << (uint16_t) txBandwidthConfiguration << powerTx << activeRbs);
+  
+  Ptr<SpectrumModel> model = GetSpectrumModel (earfcn, txBandwidthConfiguration);  
+  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (model);
 
   // powerTx is expressed in dBm. We must convert it into natural unit.
-  powerTx = pow (10., (powerTx - 30) / 10);
+  double powerTxW = pow (10., (powerTx - 30) / 10);
 
-  double txPowerDensity = (powerTx / channels.size ()) / 180000;
+  double txPowerDensity = (powerTxW / GetChannelBandwidth (txBandwidthConfiguration));
 
-  for (std::vector <int>::iterator it = channels.begin (); it != channels.end (); it++)
+  for (std::vector <int>::iterator it = activeRbs.begin (); it != activeRbs.end (); it++)
     {
-      int idSubChannel = (*it);
-      (*txPsd)[idSubChannel] = txPowerDensity;
+      int rbId = (*it);
+      (*txPsd)[rbId] = txPowerDensity;
     }
+
+  NS_LOG_LOGIC (*txPsd);
 
   return txPsd;
 }
 
 
 Ptr<SpectrumValue>
-LteSpectrumValueHelper::CreateUplinkTxPowerSpectralDensity (double powerTx, std::vector<int> channels)
+LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint16_t earfcn, uint8_t txBandwidthConfiguration, double noiseFigure)
 {
-  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (LteUplinkSpectrumModel);
-
-  // powerTx is expressed in dBm. We must convert it into natural unit.
-  powerTx = pow (10., (powerTx - 30) / 10);
-
-  double txPowerDensity = (powerTx / channels.size ()) / 180000;
-
-  for (std::vector <int>::iterator it = channels.begin (); it != channels.end (); it++)
-    {
-      int idSubChannel = (*it);
-      (*txPsd)[idSubChannel] = txPowerDensity;
-    }
-
-  return txPsd;
-}
-
-
-Ptr<SpectrumValue>
-LteSpectrumValueHelper::CreateDownlinkNoisePowerSpectralDensity (double noiseFigure)
-{
-  return  CreateNoisePowerSpectralDensity (noiseFigure, LteDownlinkSpectrumModel);
-}
-
-Ptr<SpectrumValue>
-LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity (double noiseFigure)
-{
-  return  CreateNoisePowerSpectralDensity (noiseFigure, LteUplinkSpectrumModel);
+  NS_LOG_FUNCTION (earfcn << (uint16_t) txBandwidthConfiguration << noiseFigure);
+  Ptr<SpectrumModel> model = GetSpectrumModel (earfcn, txBandwidthConfiguration);
+  return  CreateNoisePowerSpectralDensity (noiseFigure, model);
 }
 
 Ptr<SpectrumValue>
 LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, Ptr<SpectrumModel> spectrumModel)
 {
+  NS_LOG_FUNCTION (noiseFigureDb << spectrumModel);
   double noiseFigureLinear = pow (10.0, noiseFigureDb / 10.0);
   static const double BOLTZMANN = 1.3803e-23;
   static const double ROOM_TEMPERATURE = 290.0;

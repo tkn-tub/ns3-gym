@@ -57,6 +57,7 @@ def build(bld):
         'test/lte-test-rr-ff-mac-scheduler.cc',
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
+        'test/lte-test-spectrum-value-helper.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')

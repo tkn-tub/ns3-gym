@@ -159,6 +159,16 @@ LteEnbPhy::DoDispose ()
 }
 
 void
+LteEnbPhy::DoStart ()
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
+  m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
+  LtePhy::DoStart ();
+}
+
+
+void
 LteEnbPhy::SetLteEnbPhySapUser (LteEnbPhySapUser* s)
 {
   m_enbPhySapUser = s;
@@ -189,8 +199,6 @@ LteEnbPhy::SetNoiseFigure (double nf)
 {
   NS_LOG_FUNCTION (this << nf);
   m_noiseFigure = nf;  
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity (m_noiseFigure);
-  m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
 }
 
 double
@@ -268,8 +276,7 @@ LteEnbPhy::CreateTxPowerSpectralDensity ()
 {
   NS_LOG_FUNCTION (this);
 
-  LteSpectrumValueHelper psdHelper;
-  Ptr<SpectrumValue> psd = psdHelper.CreateDownlinkTxPowerSpectralDensity (GetTxPower (), GetDownlinkSubChannels ());
+  Ptr<SpectrumValue> psd = LteSpectrumValueHelper::CreateTxPowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_txPower, GetDownlinkSubChannels ());
 
   return psd;
 }

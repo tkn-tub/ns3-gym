@@ -57,7 +57,9 @@ public:
   
   virtual ~LteEnbPhy ();
 
+  // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoStart (void);
   virtual void DoDispose (void);
 
 

@@ -156,6 +156,7 @@ class Node(PyVizObject):
         try:
             ns3_node = ns3.NodeList.GetNode(self.node_index)
             ipv4 = ns3_node.GetObject(ns3.Ipv4.GetTypeId())
+            ipv6 = ns3_node.GetObject(ns3.Ipv6.GetTypeId())
             lines = ['<b><u>Node %i</u></b>' % self.node_index]
             lines.append('')
 
@@ -174,6 +175,7 @@ class Node(PyVizObject):
                     lines.append('    <b>Name:</b> %s' % name)
                 devname = dev.GetInstanceTypeId().GetName()
                 lines.append('    <b>Type:</b> %s' % devname)
+
                 if ipv4 is not None:
                     ipv4_idx = ipv4.GetInterfaceForDevice(dev)
                     if ipv4_idx != -1:
@@ -182,6 +184,15 @@ class Node(PyVizObject):
                                        ipv4.GetAddress(ipv4_idx, i).GetMask())
                             for i in range(ipv4.GetNAddresses(ipv4_idx))]
                         lines.append('    <b>IPv4 Addresses:</b> %s' % '; '.join(addresses))
+
+                if ipv6 is not None:
+                    ipv6_idx = ipv6.GetInterfaceForDevice(dev)
+                    if ipv6_idx != -1:
+                        addresses = [
+                            '%s/%s' % (ipv6.GetAddress(ipv6_idx, i).GetAddress(),
+                                       ipv6.GetAddress(ipv6_idx, i).GetPrefix())
+                            for i in range(ipv6.GetNAddresses(ipv4_idx))]
+                        lines.append('    <b>IPv6 Addresses:</b> %s' % '; '.join(addresses))
                             
                 lines.append('    <b>MAC Address:</b> %s' % (dev.GetAddress(),))
 

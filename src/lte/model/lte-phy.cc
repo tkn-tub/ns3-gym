@@ -207,6 +207,12 @@ LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
     }
 }
 
+void 
+LtePhy::DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn)
+{
+ m_dlEarfcn = dlEarfcn;
+ m_ulEarfcn = ulEarfcn;
+}
 
 uint8_t
 LtePhy::GetRbgSize (void) const

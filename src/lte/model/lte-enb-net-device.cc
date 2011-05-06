@@ -76,13 +76,13 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    MakePointerAccessor (&LteEnbNetDevice::m_phy),
                    MakePointerChecker <LteEnbPhy> ())
     .AddAttribute ("UlBandwidth",
-                   "Uplink bandwidth in number of Resource Blocks",
+                   "Uplink Transmission Bandwidth Configuration in number of Resource Blocks",
                    UintegerValue (25),
                    MakeUintegerAccessor (&LteEnbNetDevice::SetUlBandwidth, 
                                          &LteEnbNetDevice::GetUlBandwidth),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DlBandwidth",
-                   "Downlink bandwidth in number of Resource Blocks",
+                   "Downlink Transmission Bandwidth Configuration in number of Resource Blocks",
                    UintegerValue (25),
                    MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth, 
                                          &LteEnbNetDevice::GetDlBandwidth),
@@ -91,6 +91,18 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    "Cell Identifier",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_cellId),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("DlEarfcn",
+                   "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                   "as per 3GPP 36.101 Section 5.7.3. ",  
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&LteEnbNetDevice::m_dlEarfcn),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("UlEarfcn",
+                   "Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                   "as per 3GPP 36.101 Section 5.7.3. ",  
+                   UintegerValue (18100),
+                   MakeUintegerAccessor (&LteEnbNetDevice::m_ulEarfcn),
                    MakeUintegerChecker<uint16_t> ())
     ;
   return tid;
@@ -220,11 +232,39 @@ LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
     }
 }
 
+uint16_t 
+LteEnbNetDevice::GetDlEarfcn () const
+{
+  return m_dlEarfcn;
+}
+
+void 
+LteEnbNetDevice::SetDlEarfcn (uint16_t earfcn)
+{ 
+  m_dlEarfcn = earfcn;
+}
+
+uint16_t 
+LteEnbNetDevice::GetUlEarfcn () const
+{
+  return m_ulEarfcn;
+}
+
+void 
+LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
+{ 
+  m_ulEarfcn = earfcn;
+}
+
+
 void 
 LteEnbNetDevice::DoStart (void)
 {
   m_cellId = ++m_cellIdCounter;
-  UpdateConfig ();
+  UpdateConfig ();  
+  m_phy->Start ();
+  m_mac->Start ();
+  m_rrc->Start ();
 }
 
 
@@ -274,8 +314,10 @@ LteEnbNetDevice::UpdateConfig (void)
 
   m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth);
 
-  // WILD HACK -  should use the PHY SAP instead. Probably should handle this through the RRC
+  // Configuring directly for now, but ideally we should use the PHY
+  // SAP instead. Probably should handle this through the RRC.  
   m_phy->DoSetBandwidth (m_ulBandwidth, m_dlBandwidth);
+  m_phy->DoSetEarfcn (m_dlEarfcn, m_ulEarfcn);
   m_phy->DoSetCellId (m_cellId);
   
 }

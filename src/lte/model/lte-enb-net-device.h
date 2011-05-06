@@ -105,6 +105,26 @@ public:
    */
   void SetDlBandwidth (uint8_t bw);
 
+  /** 
+   * \return the downlink carrier frequency (EARFCN)
+   */
+  uint16_t GetDlEarfcn () const;
+
+  /** 
+   * \param bw the downlink carrier frequency (EARFCN)
+   */
+  void SetDlEarfcn (uint16_t earfcn);
+
+  /** 
+   * \return the uplink carrier frequency (EARFCN)
+   */
+  uint16_t GetUlEarfcn () const;
+
+  /** 
+   * \param bw the uplink carrier frequency (EARFCN)
+   */
+  void SetUlEarfcn (uint16_t earfcn);
+
 
 protected:
 
@@ -144,6 +164,9 @@ private:
 
   uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
   uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
+
+  uint16_t m_dlEarfcn;  /**< downlink carrier frequency */ 
+  uint16_t m_ulEarfcn;  /**< uplink carrier frequency */ 
   
 };
 

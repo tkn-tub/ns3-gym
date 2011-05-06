@@ -144,7 +144,7 @@ LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
   NS_LOG_FUNCTION (this << enb);
   m_targetEnb = enb;
 
-  // WILD HACK - should go through RRC and then through PHY SAP
+  // should go through RRC and then through PHY SAP
   m_phy->DoSetCellId (enb->GetCellId ());
 }
 
@@ -168,6 +168,9 @@ LteUeNetDevice::DoStart (void)
 {
   UpdateConfig ();
   m_imsi = ++m_imsiCounter;
+  m_phy->Start ();
+  m_mac->Start ();
+  m_rrc->Start ();
 }
 
 
