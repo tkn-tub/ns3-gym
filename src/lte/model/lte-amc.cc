@@ -296,28 +296,34 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
     {
       double sinr_ = (*it);
+      if (sinr_ == 0.0)
+        {
+          cqi.push_back (-1); // SINR == 0 means no signal in this RB
+        }
+      else
+        {
+          /*
+          * Compute the spectral efficiency from the SINR
+          *                                        SINR
+          * spectralEfficiency = log2 (1 + -------------------- )
+          *                                    -ln(5*BER)/1.5
+          * NB: SINR must be expressed in natural unit:
+          * (SINR)dB => 10 ^ (SINR/10)
+          */
 
-      /*
-       * Compute the spectral efficiency from the SINR
-       *                                        SINR
-       * spectralEfficiency = log2 (1 + -------------------- )
-       *                                    -ln(5*BER)/1.5
-       * NB: SINR must be expressed in natural unit:
-       * (SINR)dB => 10 ^ (SINR/10)
-       */
+          double s = log2 ( 1 + (
+                              pow (10, sinr_ / 10 )  /
+                              ( (-log (5.0 * 0.00005 )) / 1.5) ));
 
-      double s = log2 ( 1 + (
-                          pow (10, sinr_ / 10 )  /
-                          ( (-log (5.0 * 0.00005 )) / 1.5) ));
+          int cqi_ = GetCqiFromSpectralEfficiency (s);
 
-      int cqi_ = GetCqiFromSpectralEfficiency (s);
+          NS_LOG_FUNCTION ("channel_id = " << cqi.size ()
+                                          << "sinr = " << sinr_
+                                          << "spectral efficiency =" << s
+                                          << " ---- CQI = " << cqi_ );
 
-      NS_LOG_FUNCTION ("channel_id = " << cqi.size ()
-                                       << "sinr = " << sinr_
-                                       << "spectral efficiency =" << s
-                                       << " ---- CQI = " << cqi_ );
-
-      cqi.push_back (cqi_);
+          cqi.push_back (cqi_);
+        }
     }
 
   return cqi;
