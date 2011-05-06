@@ -114,7 +114,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
-  m_nUser = 8;
+  m_nUser = 6;
   ueNodes.Create (m_nUser);
   
   // Install Mobility Model
@@ -144,7 +144,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   mm->SetPosition (Vector (m_dist, 0.0, 0.0));
   
   lena->EnableRlcTraces ();
-  double simulationTime = 0.020;
+  double simulationTime = 0.040;
   Simulator::Stop (Seconds (simulationTime));
   
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();

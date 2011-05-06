@@ -431,6 +431,7 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // Get downlink transmission opportunities
   FfMacSchedSapProvider::SchedDlTriggerReqParameters params;  // to be filled
+  params.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
   m_schedSapProvider->SchedDlTriggerReq (params);
 
 
