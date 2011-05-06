@@ -107,7 +107,7 @@ Global Unicast Routing API
 
 The public API is very minimal. User scripts include the following:::
 
-    #include "ns3/helper-module.h"
+    #include "ns3/internet-module.h"
 
 If the default InternetStackHelper is used, then an instance of global routing
 will be aggregated to each node.  After IP addresses are configured, the

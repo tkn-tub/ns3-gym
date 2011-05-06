@@ -220,9 +220,10 @@ The code proper starts with a number of include statements.
 ::
 
   #include "ns3/core-module.h"
-  #include "ns3/simulator-module.h"
-  #include "ns3/node-module.h"
-  #include "ns3/helper-module.h"
+  #include "ns3/network-module.h"
+  #include "ns3/internet-module.h"
+  #include "ns3/point-to-point-module.h"
+  #include "ns3/applications-module.h"
 
 To help our high-level script users deal with the large number of include 
 files present in the system, we group includes according to relatively large 
