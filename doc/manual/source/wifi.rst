@@ -1,7 +1,7 @@
 .. include:: replace.txt
 
-Wifi NetDevice
---------------
+Wifi
+----
 
 |ns3| nodes can contain a collection of NetDevice objects, much like an actual
 computer contains separate interface cards for Ethernet, Wifi, Bluetooth, etc.
@@ -13,11 +13,11 @@ Overview of the model
 *********************
 
 The WifiNetDevice models a wireless network interface controller based
-on the IEEE 802.11 standard. We will go into more detail below but in brief,
+on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but in brief,
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a** and **802.11b** physical layers
+* **802.11a**, **802.11b** and **802.11g** physical layers
 * QoS-based EDCA and queueing extensions of **802.11e**
 * various propagation loss models including **Nakagami, Rayleigh, Friis,
   LogDistance, FixedRss, Random**
@@ -46,7 +46,7 @@ non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
 Basic Service Set (IBSS - also commonly referred to as an ad hoc
 network (``ns3::AdhocWifiMac``).
 
-The simplest of these is ``ns3::AdhocWifiMac`, which implements a
+The simplest of these is ``ns3::AdhocWifiMac``, which implements a
 Wi-Fi MAC that does not perform any kind of beacon generation,
 probing, or association. The ``ns3::StaWifiMac`` class implements
 an active probing and association state machine that handles automatic
@@ -82,12 +82,16 @@ The **MAC low layer** is split into three components:
 
 There are also several **rate control algorithms** that can be used by the Mac low layer:
 
-* ``ns3::ArfMacStations``
-* ``ns3::AArfMacStations``
-* ``ns3::IdealMacStations``
-* ``ns3::CrMacStations``
-* ``ns3::OnoeMacStations``
-* ``ns3::AmrrMacStations``
+* ``OnoeWifiManager``
+* ``IdealWifiManager``
+* ``AarfcdWifiManager``
+* ``AarfWifiManager``
+* ``ArfWifiManager``
+* ``AmrrWifiManager``
+* ``ConstantRateWifiManager``
+* ``MinstrelWifiManager``
+* ``CaraWifiManager``
+* ``RraaWifiManager``
 
 The PHY layer implements a single model in the ``ns3::WifiPhy class``: the
 physical layer model implemented there is described fully in a paper entitled
@@ -263,16 +267,9 @@ The WifiChannel and WifiPhy models
 
 The WifiChannel subclass can be used to connect together a set of
 ``ns3::WifiNetDevice`` network interfaces. The class ``ns3::WifiPhy`` is the
-object within the WifiNetDevice that receives bits from the channel.  A
-WifiChannel contains a ``ns3::PropagationLossModel`` and a
-``ns3::PropagationDelayModel`` which can be overridden by the
-WifiChannel::SetPropagationLossModel and the
-WifiChannel::SetPropagationDelayModel methods. By default, no propagation models
-are set.
+object within the WifiNetDevice that receives bits from the channel.  
+For the channel propagation modeling, the propagation module is used; see section :ref:`propagation` for details.
 
-The WifiPhy models an 802.11a channel, in terms of frequency, modulation, and
-bit rates, and interacts with the PropagationLossModel and PropagationDelayModel
-found in the channel.  
 
 This section summarizes the description of the BER calculations found in the
 yans paper taking into account the Forward Error Correction present in 802.11a
@@ -321,30 +318,13 @@ SNIR function.
    
    *SNIR function over time.*
 
-From the SNIR function we can derive bit error rates for BPSK and QAM
-modulations.  Then, for each interval l where BER is constant, we define the
-upper bound of a probability that an error is present in the chunk of bits
-located in the interval l for packet k.  If we assume an AWGN channel, binary
-convolutional coding (which is the case in 802.11a) and hard-decision Viterbi
-decoding, the error rate is thus derived, and the packet error probability for
-packet k can be computed. 
+From the SNIR function we can derive the Bit Error Rate (BER) and Packet Error Rate (PER) for the modulation and coding scheme being used for the transmission.  Please refer to [pei80211validation]_ and [lacage2006yans]_ for a detailed description of the available BER/PER models.
+
 
 WifiChannel configuration
-+++++++++++++++++++++++++
+++++++++++++++++++++++++++
 
-WifiChannel models include both a PropagationDelayModel and a 
-PropagationLossModel. The following PropagationDelayModels are available:
-
-* ConstantSpeedPropagationDelayModel
-* RandomPropagationDelayModel
-
-The following PropagationLossModels are available:
-
-* RandomPropagationLossModel
-* FriisPropagationLossModel
-* LogDistancePropagationLossModel
-* JakesPropagationLossModel
-* CompositePropagationLossModel
+The WifiChannel implementation uses the propagation loss and delay models provided within the ns-3 *propagation* module.
 
 The MAC model
 *************
@@ -352,7 +332,7 @@ The MAC model
 The 802.11 Distributed Coordination Function is used to calculate when to grant
 access to the transmission medium. While implementing the DCF would have been
 particularly easy if we had used a recurring timer that expired every slot, we
-chose to use the method described in *(missing reference here from Yans paper)*
+chose to use the method described in [ji2004sslswn]_
 where the backoff timer duration is lazily calculated whenever needed since it
 is claimed to have much better performance than the simpler recurring timer
 solution.
@@ -372,45 +352,21 @@ deal with:
 Wifi Attributes
 ***************
 
-The WifiNetDevice makes heavy use of the |ns3| :ref:`Attributes` subsystem for
-configuration and default value management. Presently, approximately 100 values
-are stored in this system.
-
-For instance, class ``ns-3::WifiMac`` exports these attributes:
-
-* CtsTimeout: When this timeout expires, the RTS/CTS handshake has failed.
-* AckTimeout: When this timeout expires, the DATA/ACK handshake has failed.
-* Sifs: The value of the SIFS constant.
-* EifsNoDifs: The value of EIFS-DIFS
-* Slot: The duration of a Slot.
-* Pifs: The value of the PIFS constant.
-* MaxPropagationDelay: The maximum propagation delay. Unused for now.
-* MaxMsduSize: The maximum size of an MSDU accepted by the MAC layer.This value
-  conforms to the specification.
-* Ssid: The ssid we want to belong to.
+Should link to the list of attributes exported by Doxygen
 
 Wifi Tracing
 ************
 
-*This needs revised/updating based on the latest Doxygen*
+Should link to the list of traces exported by Doxygen
 
-|ns3| has a sophisticated tracing infrastructure that allows users to hook into
-existing trace sources, or to define and export new ones.  
 
-Wifi-related trace sources that are available by default include:::
+References
+**********
 
-* ``ns3::WifiNetDevice``
+.. [ieee80211] IEEE Std 802.11-2007 *Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications*
 
-    * Rx: Received payload from the MAC layer.
-    * Tx: Send payload to the MAC layer.
+.. [pei80211validation] \G. Pei and Tom Henderson, `Validation of ns-3 802.11b PHY model* <http://www.nsnam.org/~pei/80211b.pdf>`__ 
 
-* ``ns3::WifiPhy``
+.. [lacage2006yans] \M. Lacage and T. Henderson, `Yet another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`__ 
 
-    * State: The WifiPhy state
-    * RxOk: A packet has been received successfully.
-    * RxError: A packet has been received unsuccessfully.
-    * Tx: Packet transmission is starting.
-
-Briefly, this means, for example, that a user can hook a processing function to
-the "State" tracing hook above and be notified whenever the WifiPhy model
-changes state.
+.. [ji2004sslswn] \Z. Ji, J. Zhou, M. Takai and R. Bagrodia, *Scalable simulation of large-scale wireless networks with bounded inaccuracies*, in Proc. of the Seventh ACM Symposium on Modeling, Analysis and Simulation of Wireless and Mobile Systems, October 2004.
