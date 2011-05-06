@@ -141,8 +141,8 @@ to these other net devices:::
 
   EmuHelper::EnablePcapAll ("emu-udp-echo-client");
 
-To see an example of a client script using the ``Emu`` net device, see
-``examples/emu-udp-echo-client.cc`` and ``examples/emu-udp-echo-server.cc``
+For examples that use the ``Emu`` net device, see
+``src/emu/examples/emu-udp-echo.cc`` and ``src/emu/examples/emu-ping.cc``
 in the repository `<http://code.nsnam.org/craigdo/ns-3-emu/>`_. 
 
 Implementation

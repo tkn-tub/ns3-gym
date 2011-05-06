@@ -267,7 +267,7 @@ Optimized Link State Routing (OLSR)
 +++++++++++++++++++++++++++++++++++
 
 This IPv4 routing protocol was originally ported from the OLSR-UM implementation
-for ns-2. The implementation is found in the src/routing/olsr directory, and an
+for ns-2. The implementation is found in the src/olsr directory, and an
 example script is in examples/simple-point-to-point-olsr.cc.
 
 Typically, OLSR is enabled in a main program by use of an OlsrHelper class that

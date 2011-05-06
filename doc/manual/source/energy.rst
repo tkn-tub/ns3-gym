@@ -7,13 +7,13 @@ Energy consumption is a key issue for wireless devices, and wireless network res
 Model Description
 =================
 
-The source code for the Energy Framework is currently at: ``src/contrib/energy``.
+The source code for the Energy Framework is currently at: ``src/energy``.
 
 Design
 ******
 
 The ns-3 Energy Framework is composed of 2 parts: Energy Source and Device Energy Model. 
-The framework will be implemented into the ``src/contrib/energy/models`` folder.
+The framework will be implemented into the ``src/energy/models`` folder.
 
 Energy Source
 #############
@@ -59,7 +59,7 @@ References
 Usage
 =====
 
-The main way that ns-3 users will typically interact with the Energy Framework is through the helper API and through the publicly visible attributes of the framework. The helper API is defined in ``src/contrib/energy/helper/*.h``.
+The main way that ns-3 users will typically interact with the Energy Framework is through the helper API and through the publicly visible attributes of the framework. The helper API is defined in ``src/energy/helper/*.h``.
 
 In order to use the energy framework, the user must install an Energy Source for the node of interest and the corresponding Device Energy Model for the network devices. Energy Source (objects) are aggregated onto each node by the Energy Source Helper. In order to allow multiple energy sources per node, we aggregate an Energy Source Container rather than directly aggregating a source object.
 
@@ -69,7 +69,9 @@ The Energy Source object also keeps a list of Device Energy Model objects using 
 Examples
 ********
 
-The example ``examples/energy/`` contain some basic code that shows how to set up the framework.
+The example directories, ``src/examples/energy`` and
+``examples/energy``, contain some basic code that shows how to set up
+the framework.
 
 Helpers
 *******

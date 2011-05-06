@@ -77,7 +77,7 @@ attributes of the model.
 
 The helper API is defined in ``src/helper/wimax-helper.{cc,h}``.
 
-The example ``examples/wimax/wimax-simple.cc`` contains some basic code that
+The example ``src/wimax/examples/wimax-simple.cc`` contains some basic code that
 shows how to set up the model:::
 
   switch (schedType)
@@ -116,7 +116,7 @@ created. The helper method ``Install`` allows the user to specify the scheduler
 type, the physical layer type, and the device type.
 
 Different variants of ``Install`` are available; for instance, the example
-``examples/wimax/wimax-multicast.cc`` shows how to specify a non-default channel
+``src/wimax/examples/wimax-multicast.cc`` shows how to specify a non-default channel
 or propagation model:::
 
   channel = CreateObject<SimpleOfdmWimaxChannel> ();
@@ -133,13 +133,13 @@ or propagation model:::
                                            scheduler);
 
 Mobility is also supported in the same way as in Wifi models; see the
-``examples/wimax/wimax-multicast.cc``.
+``src/wimax/examples/wimax-multicast.cc``.
 
 Another important concept in WiMAX is that of a service flow. This is a
 unidirectional flow of packets with a set of QoS parameters such as traffic
 priority, rate, scheduling type, etc. The base station is responsible for
 issuing service flow identifiers and mapping them to WiMAX connections. The
-following code from ``examples/wimax/wimax-multicast.cc`` shows how this is
+following code from ``src/wimax/examples/wimax-multicast.cc`` shows how this is
 configured from a helper level:::
 
  ServiceFlow MulticastServiceFlow = wimax.CreateServiceFlow (ServiceFlow::SF_DIRECTION_DOWN,

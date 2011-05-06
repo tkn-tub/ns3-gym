@@ -60,8 +60,8 @@ perspective.  Users just need to set the attribute
   GlobalValue::Bind ("SimulatorImplementationType",
     StringValue ("ns3::RealtimeSimulatorImpl"));
 
-There is a script in ``examples/realtime-udp-echo.cc`` that has an example of
-how to configure the realtime behavior.  Try: ::
+There is a script in ``examples/realtime/realtime-udp-echo.cc`` that
+has an example of how to configure the realtime behavior.  Try: ::
 
     ./waf --run realtime-udp-echo
 

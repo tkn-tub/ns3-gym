@@ -21,7 +21,7 @@ Model Description
 *****************
 
 The source code for the LTE models lives in the directory
-``src/devices/lte``.
+``src/lte``.
 
 Design
 ======
@@ -249,16 +249,16 @@ The main way that users who write simulation scripts will typically
 interact with the LTE models is through the helper API and through
 the publicly visible attributes of the model.
 
-The helper API is defined in ``src/devices/lte/helper/lte-helper.h``. 
+The helper API is defined in ``src/lte/helper/lte-helper.h``. 
 
-The example ``src/devices/lte/examples/`` contain some basic
+The example ``src/lte/examples/`` contain some basic
 code that shows how to set up the model in order to simualte an 
 E-UTRAN downlink transmission.
 
 Examples
 ========
 
-``src/devices/lte/examples/lte-device.cc`` shows how it is possible to set up the LTE module::
+``src/lte/examples/lte-device.cc`` shows how it is possible to set up the LTE module::
 
   NodeContainer ueNodes;
   NodeContainer enbNodes;
@@ -352,7 +352,7 @@ Caveats
 Validation
 **********
 
-In the  ``src/devices/lte/example/lte-amc.cc`` has been developed an important example 
+In the  ``src/lte/example/lte-amc.cc`` has been developed an important example 
 that shows the proper functioning of both AMC module and Channel model. 
 The analyzed scenario is composed by two nodes: a eNB and a single UE 
 (registered to the eNB). The UE moves into the cell using the 

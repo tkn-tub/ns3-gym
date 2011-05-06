@@ -174,7 +174,7 @@ sort, it makes sense to put it into the ``src/`` directory somewhere,
 particularly for ease of integrating with the build system.
 
 In the case of the error model, it is very related to the packet class, so it
-makes sense to implement this in the ``src/common/`` directory where |ns3|
+makes sense to implement this in the ``src/network/model/`` directory where |ns3|
 packets are implemented.  
 
 waf and wscript
@@ -186,7 +186,7 @@ want to integrate your new source files into this system. This requires that you
 add your files to the ``wscript`` file found in each directory.  
 
 Let's start with empty files error-model.h and error-model.cc, and add this to
-``src/common/wscript``. It is really just a matter of adding the .cc file to the
+``src/network/wscript``. It is really just a matter of adding the .cc file to the
 rest of the source files, and the .h file to the list of the header files. 
 
 Now, pop up to the top level directory and type "./waf --check".  You
@@ -304,8 +304,8 @@ from class Object.::
 A few things to note here. We need to include ``object.h``. The convention in
 |ns3| is that if the header file is co-located in the same directory, it may be
 included without any path prefix. Therefore, if we were implementing ErrorModel
-in ``src/core`` directory, we could have just said "``#include "object.h"``".
-But we are in ``src/common``, so we must include it as "``#include
+in ``src/core/model`` directory, we could have just said "``#include "object.h"``".
+But we are in ``src/network/model``, so we must include it as "``#include
 "ns3/object.h"``". Note also that this goes outside the namespace declaration.
  
 Second, each class must implement a static public member function called

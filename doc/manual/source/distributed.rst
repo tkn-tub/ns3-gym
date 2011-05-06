@@ -149,12 +149,12 @@ alternative way to run distributed examples is shown below:::
 
     ./waf shell
     cd build/debug
-    mpirun -np 2 examples/mpi/simple-distributed
+    mpirun -np 2 src/mpi/examples/simple-distributed
 
 Creating custom topologies
 ++++++++++++++++++++++++++
 
-The example programs in examples/mpi give a good idea of how to create different
+The example programs in src/mpi/examples give a good idea of how to create different
 topologies for distributed simulation. The main points are assigning system ids
 to individual nodes, creating point-to-point links where the simulation should
 be divided, and installing applications only on the LP associated with the

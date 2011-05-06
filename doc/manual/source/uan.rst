@@ -12,7 +12,7 @@ Model Description
 *****************
 
 The source code for the UAN Framework lives in the directory
-``src/devices/uan``, ``src/devices/uan/auv`` and in ``src/contrib/energy`` for the contribution on 
+``src/uan`` and in ``src/energy`` for the contribution on 
 the li-ion battery model.
 
 The UAN Framework is composed of two main parts:
@@ -26,7 +26,7 @@ As enabling component for the energy models, a Li-Ion batteries energy source ha
 Design
 ======
 
-The development of the UAN Framework for ns-3 is composed by three consecutive steps. The first one is the development of the AUV simulator, the second one is the development of the UAN energy models and the third one is the integration of such components with the existing modules, UAN module and Energy Model. The module is implemented into the ``/src/contrib/uan`` folder for the part regarding acoustic modem energy model and in ``/src/contrib/uan/auv`` for the part regarding the AUV simulator.
+The development of the UAN Framework for ns-3 is composed by three consecutive steps. The first one is the development of the AUV simulator, the second one is the development of the UAN energy models and the third one is the integration of such components with the existing modules, UAN module and Energy Model. The module is implemented into the ``/src/uan`` folder for the part regarding acoustic modem energy model and the part regarding the AUV simulator.
 
 
 AUV mobility models
@@ -198,10 +198,10 @@ The main way that users who write simulation scripts will typically
 interact with the UAN Framework is through the helper API and through
 the publicly visible attributes of the model.
 
-The helper API is defined in ``src/devices/uan/helper/acoustic-modem-energy-model-helper.{cc,h}`` and in ``/src/devices/uan/auv/helper/...{cc,h}``.
+The helper API is defined in ``src/uan/helper/acoustic-modem-energy-model-helper.{cc,h}`` and in ``/src/uan/helper/...{cc,h}``.
 
-The example folder ``src/devices/uan/auv/examples/`` contain some basic code that shows how to set up and use the models.
-further examples can be found into the Unit tests in ``src/devices/uan/auv/test/...cc``
+The example folder ``src/uan/examples/`` contain some basic code that shows how to set up and use the models.
+further examples can be found into the Unit tests in ``src/uan/test/...cc``
 
 Examples
 ========
@@ -363,7 +363,7 @@ Auv Energy Model
 ================
 
 Includes test cases for single packet energy consumption, energy depletion, Glider and REMUS energy consumption.
-The unit test can be found in ``src/devices/uan/auv/test/auv-energy-model-test.cc``.
+The unit test can be found in ``src/uan/test/auv-energy-model-test.cc``.
 
 The single packet energy consumption test do the following:
 
@@ -395,7 +395,7 @@ Auv Mobility
 ============
 
 Includes test cases for glider and REMUS mobility models.
-The unit test can be found in ``src/devices/uan/auv/test/auv-mobility-test.cc``.
+The unit test can be found in ``src/uan/test/auv-mobility-test.cc``.
 
 * create a node with glider capabilities
 * set a specified velocity vector and verify if the resulting buoyancy is the one that is supposed to be
@@ -415,7 +415,7 @@ Li-Ion Energy Source
 ====================
 
 Includes test case for Li-Ion energy source.
-The unit test can be found in ``src/contrib/energy/test/li-ion-energy-source-test.cc``.
+The unit test can be found in ``src/energy/test/li-ion-energy-source-test.cc``.
 
 The test case verify that after a well-known discharge time with constant current drain, the cell voltage has followed the datasheet discharge curve [9].
 
