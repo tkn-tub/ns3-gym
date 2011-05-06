@@ -642,7 +642,8 @@ GlobalRouter::DiscoverLSAs ()
       //
       if (NetDeviceIsBridged (ndLocal))
         {
-          uint32_t interfaceBridge;
+          // Initialize to value out of bounds to silence compiler
+          uint32_t interfaceBridge = ipv4Local->GetNInterfaces () + 1;
           bool rc = FindInterfaceForDevice(node, ndLocal, interfaceBridge);
           NS_ABORT_MSG_IF (rc, "GlobalRouter::DiscoverLSAs(): Bridge ports must not have an IPv4 interface index");
         }
@@ -763,12 +764,13 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
   //
   Ptr<Node> node = nd->GetNode ();
 
-  uint32_t interfaceLocal;
-  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
-  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessSingleBroadcastLink(): No interface index associated with device");
-
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessSingleBroadcastLink (): GetObject for <Ipv4> interface failed");
+
+  // Initialize to value out of bounds to silence compiler
+  uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
+  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessSingleBroadcastLink(): No interface index associated with device");
 
   if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
     {
@@ -882,13 +884,13 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
   // associated to them.
   //
   Ptr<Node> node = nd->GetNode ();
-
-  uint32_t interfaceLocal;
-  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
-  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
-
   Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessBridgedBroadcastLink (): GetObject for <Ipv4> interface failed");
+
+  // Initialize to value out of bounds to silence compiler
+  uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
+  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
 
   if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
     {
@@ -1029,12 +1031,12 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   //
   Ptr<Node> nodeLocal = ndLocal->GetNode ();
 
-  uint32_t interfaceLocal;
-  bool rc = FindInterfaceForDevice(nodeLocal, ndLocal, interfaceLocal);
-  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLink (): No interface index associated with device");
-
   Ptr<Ipv4> ipv4Local = nodeLocal->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
+
+  uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
+  bool rc = FindInterfaceForDevice(nodeLocal, ndLocal, interfaceLocal);
+  NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLink (): No interface index associated with device");
 
   if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
     {
@@ -1090,7 +1092,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // Now, just like we did above, we need to get the IP interface index for the 
   // net device on the other end of the point-to-point channel.
   //
-  uint32_t interfaceRemote;
+  uint32_t interfaceRemote = ipv4Remote->GetNInterfaces () + 1;
   rc = FindInterfaceForDevice(nodeRemote, ndRemote, interfaceRemote);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLinks(): No interface index associated with remote device");
 
@@ -1153,12 +1155,12 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       Ptr<NetDevice> ndLocal = c.Get (i);
       Ptr<Node> node = ndLocal->GetNode ();
 
-      uint32_t interfaceLocal;
-      bool rc = FindInterfaceForDevice(node, ndLocal, interfaceLocal);
-      NS_ABORT_MSG_IF (rc == false, "GlobalRouter::BuildNetworkLSAs (): No interface index associated with device");
-
       Ptr<Ipv4> ipv4Local = node->GetObject<Ipv4> ();
       NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
+
+      uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
+      bool rc = FindInterfaceForDevice(node, ndLocal, interfaceLocal);
+      NS_ABORT_MSG_IF (rc == false, "GlobalRouter::BuildNetworkLSAs (): No interface index associated with device");
 
       if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
         {
@@ -1206,7 +1208,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
           // Does the attached node have an ipv4 interface for the device we're probing?
           // If not, it can't play router.
           //
-          uint32_t tempInterface;
+          uint32_t tempInterface = 0;
           if (FindInterfaceForDevice (tempNode, tempNd, tempInterface))
             {
               Ptr<Ipv4> tempIpv4 = tempNode->GetObject<Ipv4> ();
@@ -1290,7 +1292,8 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
           Ptr<Ipv4> ipv4 = nodeOther->GetObject<Ipv4> ();
           if (rtr && ipv4)
             {
-              uint32_t interfaceOther;
+              // Initialize to value out of bounds to silence compiler
+              uint32_t interfaceOther = ipv4->GetNInterfaces () + 1;
               if (FindInterfaceForDevice(nodeOther, bnd, interfaceOther))
                 {
                   NS_LOG_LOGIC ("Found router on bridge net device " << bnd);
@@ -1343,7 +1346,8 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
           Ptr<Ipv4> ipv4 = nodeOther->GetObject<Ipv4> ();
           if (rtr && ipv4)
             {
-              uint32_t interfaceOther;
+              // Initialize to value out of bounds to silence compiler
+              uint32_t interfaceOther = ipv4->GetNInterfaces () + 1;
               if (FindInterfaceForDevice(nodeOther, ndOther, interfaceOther))
                 {
                   if (!ipv4->IsUp (interfaceOther))
