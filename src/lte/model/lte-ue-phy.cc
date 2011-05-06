@@ -102,7 +102,7 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_p10CqiPeriocity (MilliSeconds (160)),    
+    m_p10CqiPeriocity (MilliSeconds (1)),  // ideal behavior 
     m_p10CqiLast (MilliSeconds (0)),
     m_a30CqiPeriocity (MilliSeconds (1)), // ideal behavior 
     m_a30CqiLast (MilliSeconds (0))
@@ -312,15 +312,22 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
       int nbSubChannels = cqi.size ();
       double cqiSum = 0.0;
+      int activeSubChannels = 0;
       // average the CQIs of the different RBs
       for (int i = 0; i < nbSubChannels; i++)
         {
-          cqiSum += cqi.at (i);
+          if (cqi.at (i)!=-1)
+            {
+              cqiSum += cqi.at (i);
+              activeSubChannels++;
+            }
+          //NS_LOG_DEBUG (this << " subch " << i << " cqi " <<  cqi.at (i));
         }
       dlcqi.m_rnti = m_rnti;
       dlcqi.m_ri = 1; // not yet used
       dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
-      dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / nbSubChannels);
+      dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / activeSubChannels);
+      //NS_LOG_DEBUG (this << " Generate P10 CQI feedback " << (uint16_t) cqiSum / activeSubChannels);
       dlcqi.m_wbPmi = 0; // not yet used
       // dl.cqi.m_sbMeasResult others CQI report modes: not yet implemented
     }
@@ -334,7 +341,11 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       //NS_LOG_DEBUG (this << " Create A30 CQI feedback, RBG " << rbgSize << " cqiNum " << nbSubChannels << " band "  << (uint16_t)m_dlBandwidth);
       for (int i = 0; i < nbSubChannels; i++)
       {
-        cqiSum += cqi.at (i);
+        if (cqi.at (i)!=-1)
+          {
+            cqiSum += cqi.at (i);
+          }
+        // else "nothing" no CQI is treated as CQI = 0 (worst case scenario)
         cqiNum++;
         if (cqiNum == rbgSize)
           {
