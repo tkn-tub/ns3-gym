@@ -52,6 +52,7 @@ def build(bld):
     module_test.source = [
         'test/lte-test-downlink-sinr.cc',
         'test/lte-test-uplink-sinr.cc',
+        'test/lte-test-link-adaptation.cc',
         'test/lte-test-sinr-chunk-processor.cc',
         'test/lte-test-ue-phy.cc',
         'test/lte-test-rr-ff-mac-scheduler.cc',
@@ -108,6 +109,7 @@ def build(bld):
         'model/pf-ff-mac-scheduler.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
+        'test/lte-test-link-adaptation.h',
         'test/lte-test-sinr-chunk-processor.h',
         'test/lte-test-ue-phy.h',
         'test/lte-test-rr-ff-mac-scheduler.h',
