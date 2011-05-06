@@ -35,6 +35,8 @@
 #include <ns3/mobility-helper.h>
 #include <ns3/net-device-container.h>
 #include <ns3/lena-helper.h>
+#include <string.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
 
@@ -46,11 +48,20 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
-  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,0,0));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,1000,2196000));
+  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (3,0,0,1095000));
+  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (6,0,0,749000));
+  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (9,0,0,185000));
+  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (12,0,0,185000));
+  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (15,0,0,148000));
   
+  // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
-  // 2 users -> 12 PRB at Itbs 26 -> 1095 -> 1095000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
+  // 6 users -> 4 PRB at Itbs 26 -> 373 -> 373000 bytes/sec
+  // 9 user -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
+  // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
+  // 15 users -> 2 PRB at Itbs 26 * 0.8 -> 148 -> 148000 bytes/sec
   
 }
 
@@ -76,7 +87,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//    LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+//     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
 // 
 //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
@@ -114,7 +125,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
-  m_nUser = 6;
+  m_nUser = 1;
   ueNodes.Create (m_nUser);
   
   // Install Mobility Model
@@ -134,17 +145,25 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   // Attach a UE to a eNB
   lena->Attach (ueDevs, enbDevs.Get (0));
   
+  // Define the propagation model
+//   lena->SetAttribute ("PropagationModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
+//   lena->SetPropagationModelAttribute ("Loss", DoubleValue (m_loss));
+  
+  
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
   
-  
-  Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (0)->GetObject<ConstantPositionMobilityModel> ();
-  mm->SetPosition (Vector (m_dist, 0.0, 0.0));
+  // position nodes
+  for (int i = 0; i < m_nUser; i++)
+    {
+      Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
+      mm->SetPosition (Vector (m_dist, 0.0, 0.0));
+    }
   
   lena->EnableRlcTraces ();
-  double simulationTime = 0.010;
+  double simulationTime = 0.2;
   Simulator::Stop (Seconds (simulationTime));
   
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
@@ -156,19 +175,14 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   /**
    * Check that the assignation is done in a RR fashion
    */
-  //NS_TEST_ASSERT_MSG_EQ (*rxPsd, saveRxPsd, "Data signal corrupted !");
-  //NS_TEST_ASSERT_MSG_EQ (*noisePsd, saveNoisePsd, "Noise signal corrupted !");
+  
+  std::vector <uint64_t> dlDataRxed;
+  for (int i = 0; i < m_nUser; i++)
+    {
+      dlDataRxed.push_back (rlcStats->GetDlRxData (i+1));
+      NS_LOG_INFO ("User " << i << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, (double)70000, " Unfair Throughput!");
+    }
 
-  //SpectrumValue theoreticalSinr = (*rxPsd) / ( ( 2 * (*rxPsd) ) + (*noisePsd) );
-  //SpectrumValue calculatedSinr = p->GetSinr ();
-  double uData1 = (double)rlcStats->GetDlRxData (1) / simulationTime;
-  double uData2 = (double)rlcStats->GetDlRxData (2) / simulationTime;
-  double uData3 = (double)rlcStats->GetDlRxData (3) / simulationTime;
-  NS_LOG_INFO ("User 1 Rx Data: " << uData1);
-  NS_LOG_INFO ("User 2 Rx Data: " << uData2);
-  NS_LOG_INFO ("User 3 Rx Data: " << uData3);
-  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1), rlcStats->GetDlRxData (2), 0.0000001, " Unfair Throughput!");
-
-  //NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, theoreticalSinr, 0.000001, "Wrong SINR !");
 }
 
