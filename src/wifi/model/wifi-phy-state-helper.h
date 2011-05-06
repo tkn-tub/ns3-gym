@@ -27,6 +27,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi
+ * 
+ * This objects implements the PHY state machine of the Wifi device.
+ */
 class WifiPhyStateHelper : public Object
 {
 public:

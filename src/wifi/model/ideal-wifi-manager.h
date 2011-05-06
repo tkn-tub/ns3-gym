@@ -29,6 +29,7 @@ namespace ns3 {
 
 /**
  * \brief Ideal rate control algorithm
+ * \ingroup wifi
  *
  * This class implements an 'ideal' rate control algorithm
  * similar to RBAR in spirit (see <i>A rate-adaptive MAC

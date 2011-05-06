@@ -36,6 +36,7 @@ class YansWifiPhy;
 
 /**
  * \brief A Yans wifi channel
+ * \ingroup wifi
  *
  * This wifi channel implements the propagation model described in
  * "Yet Another Network Simulator", (http://cutebugs.net/files/wns2-yans.pdf).

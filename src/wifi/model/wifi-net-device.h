@@ -35,7 +35,15 @@ class WifiPhy;
 class WifiMac;
 
 /**
+ * \defgroup wifi Wifi
+ *
+ * This section documents the API of the ns-3 Wifi module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
+
+/**
  * \brief Hold together all Wifi-related objects.
+ * \ingroup wifi
  *
  * This class holds together ns3::WifiChannel, ns3::WifiPhy,
  * ns3::WifiMac, and, ns3::WifiRemoteStationManager.

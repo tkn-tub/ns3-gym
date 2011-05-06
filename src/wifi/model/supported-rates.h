@@ -39,6 +39,7 @@ class SupportedRates;
 
 /**
  * \brief The Extended Supported Rates Information Element
+ * \ingroup wifi
  *
  * This class knows how to serialise and deserialise the Extended
  * Supported Rates Element that holds (non-HT) rates beyond the 8 that
@@ -79,6 +80,7 @@ private:
 
 /**
  * \brief The Supported Rates Information Element
+ * \ingroup wifi
  *
  * This class knows how to serialise and deserialise the Supported
  * Rates Element that holds the first 8 (non-HT) supported rates.

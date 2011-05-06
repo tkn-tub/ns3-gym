@@ -28,8 +28,10 @@ namespace ns3 {
 struct OnoeWifiRemoteStation;
 
 /**
- * \brief an implementation of rate control algorithm developed 
+ * \brief an implementation of the rate control algorithm developed 
  *        by Atsushi Onoe
+ *
+ * \ingroup wifi
  *
  * This algorithm is well known because it has been used as the default
  * rate control algorithm for the madwifi driver. I am not aware of

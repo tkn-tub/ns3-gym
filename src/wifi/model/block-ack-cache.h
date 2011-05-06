@@ -27,6 +27,11 @@ namespace ns3 {
 class WifiMacHeader;
 class CtrlBAckResponseHeader;
 
+/**
+ * \ingroup wifi
+ * 
+ * 
+ */
 class BlockAckCache
 {
 public:

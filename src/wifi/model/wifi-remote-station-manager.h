@@ -74,6 +74,7 @@ private:
 
 /**
  * \brief hold a list of per-remote-station state.
+ * \ingroup wifi
  *
  * \sa ns3::WifiRemoteStation.
  */

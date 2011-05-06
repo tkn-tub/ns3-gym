@@ -53,8 +53,18 @@ class MgtAddBaResponseHeader;
 class BlockAckManager;
 class MgtDelBaHeader;
 
+enum TypeOfStation
+{
+  STA,
+  AP,
+  ADHOC_STA,
+  MESH
+};
 
-/* This queue contains packets for a particular access class.
+
+/** 
+ * \ingroup wifi
+ * This queue contains packets for a particular access class.
  * possibles access classes are:
  *
  *   -AC_VO : voice, tid = 6,7         ^
@@ -64,14 +74,6 @@ class MgtDelBaHeader;
  * 
  * For more details see section 9.1.3.1 in 802.11 standard.
  */
-enum TypeOfStation
-{
-  STA,
-  AP,
-  ADHOC_STA,
-  MESH
-};
-
 class EdcaTxopN : public Dcf
 {
 public:

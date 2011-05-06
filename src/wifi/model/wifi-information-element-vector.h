@@ -28,23 +28,17 @@
 #include "ns3/wifi-information-element.h"
 
 
-/**
- * \ingroup wifi
- *
- * \subsection wifi_ie_vector Information Element Vectors
- *
- * Information elements typically come in groups, and the
- * WifiInformationElementVector class provides a representation of a
- * series of IEs, and the facility for serialisation to and
- * deserialisation from the over-the-air format.
- */
-
 namespace ns3 {
 
 /**
  * \brief Information element vector
+ * \ingroup wifi
  *
- * Implements a vector of WifiInformationElement's
+ * Implements a vector of WifiInformationElements. 
+ * Information elements typically come in groups, and the
+ * WifiInformationElementVector class provides a representation of a
+ * series of IEs, and the facility for serialisation to and
+ * deserialisation from the over-the-air format.
  */
 class WifiInformationElementVector : public Header
 {

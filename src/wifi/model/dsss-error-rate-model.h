@@ -43,6 +43,7 @@ double IntegralFunction (double x, void *params);
 
 /**
  * \brief an implementation of DSSS error rate model
+ * \ingroup wifi
  *
  * The 802.11b modulations:
  *    - 1 Mbps mode is based on DBPSK. BER is from equation 5.2-69 from John G. Proakis

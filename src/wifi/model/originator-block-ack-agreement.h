@@ -25,8 +25,10 @@
 
 namespace ns3 {
 
-/* \brief Maintains the state and information about transmitted MPDUs with ack policy block ack
- *        for an originator station.
+/** 
+ * \ingroup wifi
+ * Maintains the state and information about transmitted MPDUs with ack policy block ack
+ * for an originator station.
  */
 class OriginatorBlockAckAgreement : public BlockAckAgreement
 {

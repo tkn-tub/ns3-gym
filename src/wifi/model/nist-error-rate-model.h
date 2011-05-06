@@ -28,7 +28,9 @@
 namespace ns3 {
 
 /**
- * Model the error rate for different modulations.  For OFDM modulation,
+ * \ingroup wifi
+ *
+ * A model for the error rate for different modulations.  For OFDM modulation,
  * the model description and validation can be found in 
  * http://www.nsnam.org/~pei/80211ofdm.pdf.  For DSSS modulations (802.11b),
  * the model uses the DsssErrorRateModel.

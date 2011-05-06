@@ -33,6 +33,10 @@ namespace ns3 {
 
 class ErrorRateModel;
 
+/**
+ * \ingroup wifi
+ * \brief handles interference calculations
+ */
 class InterferenceHelper
 {
 public:

@@ -67,6 +67,11 @@ enum WifiMacType {
   WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL,
 };
 
+/**
+ * \ingroup wifi
+ *
+ * Implements the IEEE 802.11 MAC header
+ */
 class WifiMacHeader : public Header 
 {
 public:

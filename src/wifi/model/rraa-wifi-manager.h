@@ -29,6 +29,7 @@ struct RraaWifiRemoteStation;
 
 /**
  * \brief Robust Rate Adaptation Algorithm
+ * \ingroup wifi
  *
  * This is an implementation of RRAA as described in
  * "Robust rate adaptation for 802.11 wireless networks"

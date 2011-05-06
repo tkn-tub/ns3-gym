@@ -27,6 +27,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup wifi
  * \brief use constant rates for data and control transmissions
  *
  * This class uses always the same transmission rate for every

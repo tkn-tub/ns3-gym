@@ -28,6 +28,7 @@ struct AarfcdWifiRemoteStation;
 
 /**
  * \brief an implementation of the AARF-CD algorithm
+ * \ingroup wifi
  *
  * This algorithm was first described in "Efficient Collision Detection for Auto Rate Fallback Algorithm".
  * The implementation available here was done by Federico Maguolo for a very early development

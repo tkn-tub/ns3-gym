@@ -41,6 +41,11 @@ class MgtDelBaHeader;
 class MacTxMiddle;
 class WifiMacQueue;
 
+/**
+ * \ingroup wifi
+ * \brief Block Ack Request 
+ * 
+ */
 struct Bar {
     Bar ();
     Bar (Ptr<const Packet> packet,
@@ -55,6 +60,7 @@ struct Bar {
 
 /**
  * \brief Manages all block ack agreements for an originator station.
+ * \ingroup wifi
  */
 class BlockAckManager
 {

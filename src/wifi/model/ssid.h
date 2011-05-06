@@ -28,8 +28,9 @@
 namespace ns3 {
 
 /**
- * \brief a IEEE 802.11 SSID
+ * \ingroup wifi
  *
+ * The IEEE 802.11 SSID Information Element
  */
 class Ssid : public WifiInformationElement
 {

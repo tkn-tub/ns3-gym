@@ -34,6 +34,7 @@ class MacLow;
 /**
  * \brief keep track of the state needed for a single DCF 
  * function.
+ * \ingroup wifi
  *
  * Multiple instances of a DcfState can be registered in a single
  * DcfManager to implement 802.11e-style relative QoS.
@@ -154,6 +155,7 @@ private:
 
 /**
  * \brief Manage a set of ns3::DcfState
+ * \ingroup wifi
  *
  * Handle a set of independent ns3::DcfState, each of which represents
  * a single DCF within a MAC stack. Each ns3::DcfState has a priority

@@ -48,13 +48,15 @@ enum UserPriority {
   
 
   
-  /**
-   * The aim of the QosTag is to provide means for an Application to
-   * specify the TID which will be used by a QoS-aware WifiMac for a
-   * given traffic flow. Note that the current QosTag class was
-   * designed to be completely mac/wifi specific without any attempt
-   * at being generic. 
-   */
+/**
+ * \ingroup wifi
+ *
+ * The aim of the QosTag is to provide means for an Application to
+ * specify the TID which will be used by a QoS-aware WifiMac for a
+ * given traffic flow. Note that the current QosTag class was
+ * designed to be completely mac/wifi specific without any attempt
+ * at being generic. 
+ */
 class QosTag : public Tag
 {
 public:

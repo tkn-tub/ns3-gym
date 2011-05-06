@@ -28,13 +28,6 @@
 #include "ns3/nstime.h"
 #include <vector>
 
-/**
- * \author Duy Nguyen
- * \brief Implementation of Minstrel Rate Control Algorithm 
- *
- * Porting Minstrel from Madwifi and Linux Kernel 
- * http://linuxwireless.org/en/developers/Documentation/mac80211/RateControl/minstrel
- */
 
 
 namespace ns3 {
@@ -85,7 +78,14 @@ typedef std::vector<struct RateInfo> MinstrelRate;
 typedef std::vector<std::vector<uint32_t> > SampleRate;
 
 
-
+/**
+ * \author Duy Nguyen
+ * \brief Implementation of Minstrel Rate Control Algorithm 
+ * \ingroup wifi
+ *
+ * Porting Minstrel from Madwifi and Linux Kernel 
+ * http://linuxwireless.org/en/developers/Documentation/mac80211/RateControl/minstrel
+ */
 class MinstrelWifiManager : public WifiRemoteStationManager
 {
 

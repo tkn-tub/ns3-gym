@@ -22,6 +22,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi
+ * The type of preamble to be used by an IEEE 802.11 transmission
+ */
 enum WifiPreamble {
   WIFI_PREAMBLE_LONG,
   WIFI_PREAMBLE_SHORT

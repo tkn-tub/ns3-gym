@@ -32,6 +32,11 @@ namespace ns3 {
 class WifiMacHeader;
 class OriginatorRxStatus;
 
+/**
+ * \ingroup wifi
+ * 
+ * This class handles duplicate detection and recomposition of fragments.
+ */
 class MacRxMiddle
 {
 public:

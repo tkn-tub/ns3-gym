@@ -32,6 +32,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type association request.
+ */
 class MgtAssocRequestHeader : public Header 
 {
 public:
@@ -60,6 +64,11 @@ private:
   uint16_t m_listenInterval;
 };
 
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type association response.
+ */
 class MgtAssocResponseHeader : public Header {
 public:
   MgtAssocResponseHeader ();
@@ -85,6 +94,11 @@ private:
   uint16_t m_aid;
 };
 
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type probe request.
+ */
 class MgtProbeRequestHeader : public Header {
 public:
   ~MgtProbeRequestHeader ();
@@ -106,6 +120,11 @@ private:
   SupportedRates m_rates;
 };
 
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type probe response.
+ */
 class MgtProbeResponseHeader : public Header {
 public:
   MgtProbeResponseHeader ();
@@ -134,6 +153,11 @@ private:
   CapabilityInformation m_capability;
 };
 
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type beacon.
+ */
 class MgtBeaconHeader : public MgtProbeResponseHeader {};
 
 /****************************
@@ -141,9 +165,11 @@ class MgtBeaconHeader : public MgtProbeResponseHeader {};
 *****************************/
 
 /**
- * \brief See IEEE 802.11 chapter 7.3.1.11
- *
+ * \ingroup wifi
+ * 
+ * See IEEE 802.11 chapter 7.3.1.11
  * Header format: | category: 1 | action value: 1 |
+ *
  */
 class WifiActionHeader : public Header
 {
@@ -226,6 +252,10 @@ private:
   uint8_t m_actionValue;
 };
 
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type add block ack request.
+ */
 class MgtAddBaRequestHeader : public Header {
 public:
   
@@ -268,6 +298,11 @@ private:
   uint16_t m_startingSeq;
 };
  
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type add block ack response.
+ */
 class MgtAddBaResponseHeader : public Header {
 public:
 
@@ -308,6 +343,11 @@ private:
   uint16_t m_timeoutValue;
 };
 
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type del block ack.
+ */
 class MgtDelBaHeader : public Header {
 public:
   MgtDelBaHeader ();

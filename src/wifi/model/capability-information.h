@@ -25,6 +25,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi
+ * 
+ * 
+ */
 class CapabilityInformation 
 {
 public:

@@ -31,6 +31,7 @@ namespace ns3 {
 
 /**
  * \brief Wi-Fi AP state machine
+ * \ingroup wifi
  *
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.

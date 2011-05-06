@@ -25,7 +25,11 @@
 #include "ns3/object.h"
 
 namespace ns3 {
-
+/**
+ * \ingroup wifi
+ * \brief the interface for Wifi's error models
+ * 
+ */
 class ErrorRateModel : public Object
 {
 public:

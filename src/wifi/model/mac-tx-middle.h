@@ -31,6 +31,11 @@ namespace ns3 {
 
 class WifiMacHeader;
 
+/**
+ * \ingroup wifi
+ * 
+ * Handles sequence numbering of IEEE 802.11 data frames
+ */
 class MacTxMiddle {
 public:
   MacTxMiddle ();

@@ -22,6 +22,11 @@
 
 namespace ns3 {
 
+
+/**
+ * \ingroup wifi
+ * Identifies the PHY specification that a Wifi device is configured to use.
+ */
 enum WifiPhyStandard {
   /** OFDM PHY for the 5 GHz band (Clause 17) */
   WIFI_PHY_STANDARD_80211a,

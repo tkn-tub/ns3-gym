@@ -35,6 +35,7 @@ class WifiMacParameters;
 class QosBlockedDestinations;
 
 /**
+ * \ingroup wifi
  *
  * This queue implements the timeout procedure described in IEEE
  * Std. 802.11-2007, section 9.9.1.6, paragraph 6.

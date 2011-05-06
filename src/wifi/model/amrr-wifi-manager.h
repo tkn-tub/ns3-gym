@@ -29,6 +29,7 @@ struct AmrrWifiRemoteStation;
 
 /**
  * \brief AMRR Rate control algorithm
+ * \ingroup wifi
  *
  * This class implements the AMRR rate control algorithm which
  * was initially described in <i>IEEE 802.11 Rate Adaptation:

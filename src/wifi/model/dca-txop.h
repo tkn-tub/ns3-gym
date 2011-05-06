@@ -45,6 +45,7 @@ class MacStations;
 
 /**
  * \brief handle packet fragmentation and retransmissions.
+ * \ingroup wifi
  *
  * This class implements the packet fragmentation and 
  * retransmission policy. It uses the ns3::MacLow and ns3::DcfManager

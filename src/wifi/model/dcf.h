@@ -25,6 +25,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi 
+ * 
+ */
 class Dcf : public Object
 {
  public:

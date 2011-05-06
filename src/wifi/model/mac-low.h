@@ -49,6 +49,7 @@ class WifiMac;
 class EdcaTxopN;
 
 /**
+ * \ingroup wifi
  * \brief listen to events coming from ns3::MacLow.
  */
 class MacLowTransmissionListener {
@@ -127,6 +128,7 @@ public:
 
 /**
  * \brief listen to NAV events
+ * \ingroup wifi
  *
  * This class is typically connected to an instance of ns3::Dcf
  * and calls to its methods are forwards to the corresponding
@@ -151,6 +153,7 @@ public:
 };
 
 /**
+ * \ingroup wifi
  * \brief listen for block ack events.
  */
 class MacLowBlockAckEventListener {
@@ -171,6 +174,7 @@ public:
 
 /**
  * \brief control how a packet is transmitted.
+ * \ingroup wifi
  *
  * The ns3::MacLow::StartTransmission method expects
  * an instance of this class to describe how the packet
@@ -356,6 +360,7 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
 
 
 /**
+ * \ingroup wifi
  * \brief handle RTS/CTS/DATA/ACK transactions.
  */
 class MacLow : public Object {

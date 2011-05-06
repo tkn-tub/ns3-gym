@@ -29,6 +29,7 @@ namespace ns3 {
 
 /**
  * \brief Model the error rate for different modulations.
+ * \ingroup wifi
  *
  * A packet of interest (e.g., a packet can potentially be received by the MAC) 
  * is divided into chunks. Each chunk is related to an start/end receiving event. 

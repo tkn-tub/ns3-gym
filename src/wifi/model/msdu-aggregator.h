@@ -31,8 +31,10 @@
 namespace ns3 {
 	
 class WifiMacHeader;
+
 /**
  * \brief Abstract class that concrete msdu aggregators have to implement
+ * \ingroup wifi
  */
 class MsduAggregator : public Object
 {

@@ -76,6 +76,7 @@ enum WifiCodeRate {
 
 /**
  * \brief represent a single transmission mode
+ * \ingroup wifi
  *
  * A WifiMode is implemented by a single integer which is used
  * to lookup in a global array the characteristics of the

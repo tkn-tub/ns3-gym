@@ -25,6 +25,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup wifi
  * \brief ARF Rate control algorithm
  *
  * This class implements the so-called ARF algorithm which was

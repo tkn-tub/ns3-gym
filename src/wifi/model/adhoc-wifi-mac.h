@@ -28,6 +28,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi
+ * 
+ * 
+ */
 class AdhocWifiMac : public RegularWifiMac
 {
 public:

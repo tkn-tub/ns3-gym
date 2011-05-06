@@ -24,7 +24,17 @@
 
 namespace ns3 {
 
-/** Headers for Block ack request and response.
+enum BlockAckType
+{
+  BASIC_BLOCK_ACK,
+  COMPRESSED_BLOCK_ACK,
+  MULTI_TID_BLOCK_ACK
+};
+
+/**
+ * \ingroup wifi
+ * \brief Headers for Block ack request.
+ *
  *  802.11n standard includes three types of block ack:
  *    - Basic block ack (unique type in 802.11e)
  *    - Compressed block ack
@@ -33,13 +43,6 @@ namespace ns3 {
  *  are supported.
  *  Basic block ack is also default variant.
  */
-enum BlockAckType
-{
-  BASIC_BLOCK_ACK,
-  COMPRESSED_BLOCK_ACK,
-  MULTI_TID_BLOCK_ACK
-};
-
 class CtrlBAckRequestHeader : public Header {
 public:
   CtrlBAckRequestHeader ();
@@ -84,6 +87,18 @@ private:
   uint16_t m_startingSeq;
 };
 
+/**
+ * \ingroup wifi
+ * \brief Headers for Block ack response.
+ *
+ *  802.11n standard includes three types of block ack:
+ *    - Basic block ack (unique type in 802.11e)
+ *    - Compressed block ack
+ *    - Multi-TID block ack
+ *  For now only basic block ack and compressed block ack 
+ *  are supported.
+ *  Basic block ack is also default variant.
+ */
 class CtrlBAckResponseHeader : public Header {
 public:
   CtrlBAckResponseHeader ();
@@ -130,17 +145,25 @@ private:
   /**
    * This function is used to correctly index in both bitmap
    * and compressed bitmap, one bit or one block of 16 bits respectively.
-   * If we are using basic block ack, return value represents index of 
+   *
+   * for more details see 7.2.1.8 in IEEE 802.11n/D4.00
+   *
+   * \param seq the sequence number
+   * 
+   * \return If we are using basic block ack, return value represents index of 
    * block of 16 bits for packet having sequence number equals to <i>seq</i>.
    * If we are using compressed block ack, return value represents bit 
    * to set to 1 in the compressed bitmap to indicate that packet having 
    * sequence number equals to <i>seq</i> was correctly received.
-   *
-   * for more details see 7.2.1.8 in IEEE 802.11n/D4.00
    */
   uint8_t IndexInBitmap (uint16_t seq) const;
+
   /**
    * Checks if sequence number <i>seq</i> can be acknowledged in the bitmap.
+   * 
+   * \param seq the sequence number
+   * 
+   * \return 
    */
   bool IsInBitmap (uint16_t seq) const;
 

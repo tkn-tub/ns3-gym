@@ -24,6 +24,11 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wifi
+ * Standard MSDU aggregator
+ * 
+ */
 class MsduStandardAggregator : public MsduAggregator
 {
 public:

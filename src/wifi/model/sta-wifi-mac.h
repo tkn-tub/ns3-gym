@@ -35,6 +35,11 @@ namespace ns3  {
 
 class MgtAddBaRequestHeader;
 
+/**
+ * \ingroup wifi 
+ * 
+ * The Wifi MAC high model for a non-AP STA in a BSS.
+ */
 class StaWifiMac : public RegularWifiMac
 {
 public:

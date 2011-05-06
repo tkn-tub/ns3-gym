@@ -26,6 +26,7 @@ namespace ns3 {
 
 /**
  * \brief implement the CARA rate control algorithm
+ * \ingroup wifi
  *
  * Implement the CARA algorithm from:
  * J. Kim, S. Kim, S. Choi, and D. Qiao. 

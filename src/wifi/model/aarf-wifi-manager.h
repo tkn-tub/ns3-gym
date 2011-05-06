@@ -26,6 +26,7 @@ namespace ns3 {
 
 /**
  * \brief AARF Rate control algorithm
+ * \ingroup wifi
  *
  * This class implements the AARF rate control algorithm which
  * was initially described in <i>IEEE 802.11 Rate Adaptation:

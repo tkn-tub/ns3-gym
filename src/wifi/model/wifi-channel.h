@@ -29,7 +29,8 @@ class WifiNetDevice;
 class WifiPhy;
 
 /**
- * \brief A 802.11 Channel
+ * \brief Wifi Channel interface specification
+ * \ingroup wifi
  *
  * This class works in tandem with the ns3::WifiPhy class. If you want to
  * provide a new Wifi PHY layer, you have to subclass both ns3::WifiChannel 
