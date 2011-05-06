@@ -48,13 +48,6 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
-  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,1000,2196000));
-  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (3,0,0,1095000));
-  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (6,0,0,749000));
-  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (9,0,0,185000));
-  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (12,0,0,185000));
-  //   AddTestCase (new LenaRrFfMacSchedulerTestCase (15,0,0,148000));
-  
   // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
@@ -62,6 +55,12 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   // 9 user -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
   // 15 users -> 2 PRB at Itbs 26 * 0.8 -> 148 -> 148000 bytes/sec
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,0,2196000));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (3,0,0,1095000));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (6,0,0,749000));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (9,0,0,185000));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (12,0,0,185000));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (15,0,0,148000));
   
 }
 
@@ -164,6 +163,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   
   lena->EnableRlcTraces ();
   double simulationTime = 0.2;
+  double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
   
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
@@ -181,7 +181,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
     {
       dlDataRxed.push_back (rlcStats->GetDlRxData (i+1));
       NS_LOG_INFO ("User " << i << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, (double)70000, " Unfair Throughput!");
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
     }
 
 }
