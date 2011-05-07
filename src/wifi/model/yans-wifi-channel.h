@@ -3,7 +3,7 @@
  * Copyright (c) 2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -41,7 +41,7 @@ class YansWifiPhy;
  * This wifi channel implements the propagation model described in
  * "Yet Another Network Simulator", (http://cutebugs.net/files/wns2-yans.pdf).
  *
- * This class is expected to be used in tandem with the ns3::YansWifiPhy 
+ * This class is expected to be used in tandem with the ns3::YansWifiPhy
  * class and contains a ns3::PropagationLossModel and a ns3::PropagationDelayModel.
  * By default, no propagation models are set so, it is the caller's responsability
  * to set them before using the channel.
@@ -76,8 +76,8 @@ public:
    * \param wifiMode the tx mode associated to the packet
    * \param preamble the preamble associated to the packet
    *
-   * This method should not be invoked by normal users. It is 
-   * currently invoked only from WifiPhy::Send. YansWifiChannel 
+   * This method should not be invoked by normal users. It is
+   * currently invoked only from WifiPhy::Send. YansWifiChannel
    * delivers packets only between PHYs with the same m_channelNumber,
    * e.g. PHYs that are operating on the same channel.
    */
@@ -85,7 +85,6 @@ public:
              WifiMode wifiMode, WifiPreamble preamble) const;
 
 private:
-
   YansWifiChannel& operator = (const YansWifiChannel &);
   YansWifiChannel (const YansWifiChannel &);
 

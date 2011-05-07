@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -40,12 +40,12 @@ class QosBlockedDestinations;
  * This queue implements the timeout procedure described in IEEE
  * Std. 802.11-2007, section 9.9.1.6, paragraph 6.
  *
- * When a packet is received by the MAC, to be sent to the PHY, 
- * it is queued in the internal queue after being tagged by the 
+ * When a packet is received by the MAC, to be sent to the PHY,
+ * it is queued in the internal queue after being tagged by the
  * current time.
  *
- * When a packet is dequeued, the queue checks its timestamp 
- * to verify whether or not it should be dropped. If 
+ * When a packet is dequeued, the queue checks its timestamp
+ * to verify whether or not it should be dropped. If
  * dot11EDCATableMSDULifetime has elapsed, it is dropped.
  * Otherwise, it is returned to the caller.
  */
@@ -66,19 +66,19 @@ public:
   Ptr<const Packet> Dequeue (WifiMacHeader *hdr);
   Ptr<const Packet> Peek (WifiMacHeader *hdr);
   /**
-   * Searchs and returns, if is present in this queue, first packet having 
-   * address indicated by <i>type</i> equals to <i>addr</i>, and tid 
-   * equals to <i>tid</i>. This method removes the packet from this queue. 
-   * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU 
+   * Searchs and returns, if is present in this queue, first packet having
+   * address indicated by <i>type</i> equals to <i>addr</i>, and tid
+   * equals to <i>tid</i>. This method removes the packet from this queue.
+   * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU
    * aggregation (A-MSDU).
    */
   Ptr<const Packet> DequeueByTidAndAddress (WifiMacHeader *hdr,
-                                            uint8_t tid, 
+                                            uint8_t tid,
                                             WifiMacHeader::AddressType type,
                                             Mac48Address addr);
   /**
    * Searchs and returns, if is present in this queue, first packet having
-   * address indicated by <i>type</i> equals to <i>addr</i>, and tid 
+   * address indicated by <i>type</i> equals to <i>addr</i>, and tid
    * equals to <i>tid</i>. This method doesn't remove the packet from this queue.
    * Is typically used by ns3::EdcaTxopN in order to perform correct MSDU
    * aggregation (A-MSDU).
@@ -90,7 +90,7 @@ public:
   /**
    * If exists, removes <i>packet</i> from queue and returns true. Otherwise it
    * takes no effects and return false. Deletion of the packet is
-   * performed in linear time (O(n)).  
+   * performed in linear time (O(n)).
    */
   bool Remove (Ptr<const Packet> packet);
   /**
@@ -105,7 +105,7 @@ public:
    * if it's a QoS packet with a tid and an address1 fields equal to <i>tid</i> and <i>addr</i>
    * respectively that index a pending agreement in the BlockAckManager object.
    * So that packet must not be transmitted until reception of an ADDBA response frame from station
-   * addressed by <i>addr</i>. This method removes the packet from queue. 
+   * addressed by <i>addr</i>. This method removes the packet from queue.
    */
   Ptr<const Packet> DequeueFirstAvailable (WifiMacHeader *hdr,
                                            Time &tStamp,
@@ -122,17 +122,18 @@ public:
   uint32_t GetSize (void);
 private:
   struct Item;
-  
+
   typedef std::list<struct Item> PacketQueue;
   typedef std::list<struct Item>::reverse_iterator PacketQueueRI;
   typedef std::list<struct Item>::iterator PacketQueueI;
-  
+
   void Cleanup (void);
   Mac48Address GetAddressForPacket (enum WifiMacHeader::AddressType type, PacketQueueI);
-  
-  struct Item {
-    Item (Ptr<const Packet> packet, 
-          const WifiMacHeader &hdr, 
+
+  struct Item
+  {
+    Item (Ptr<const Packet> packet,
+          const WifiMacHeader &hdr,
           Time tstamp);
     Ptr<const Packet> packet;
     WifiMacHeader hdr;

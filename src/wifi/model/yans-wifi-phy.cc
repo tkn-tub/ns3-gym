@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,7 +43,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (YansWifiPhy);
 
-TypeId 
+TypeId
 YansWifiPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::YansWifiPhy")
@@ -84,13 +84,13 @@ YansWifiPhy::GetTypeId (void)
     .AddAttribute ("TxPowerEnd",
                    "Maximum available transmission level (dbm).",
                    DoubleValue (16.0206),
-                   MakeDoubleAccessor (&YansWifiPhy::SetTxPowerEnd, 
+                   MakeDoubleAccessor (&YansWifiPhy::SetTxPowerEnd,
                                        &YansWifiPhy::GetTxPowerEnd),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerStart",
                    "Minimum available transmission level (dbm).",
                    DoubleValue (16.0206),
-                   MakeDoubleAccessor (&YansWifiPhy::SetTxPowerStart, 
+                   MakeDoubleAccessor (&YansWifiPhy::SetTxPowerStart,
                                        &YansWifiPhy::GetTxPowerStart),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxNoiseFigure",
@@ -112,24 +112,24 @@ YansWifiPhy::GetTypeId (void)
     .AddAttribute ("ChannelSwitchDelay",
                    "Delay between two short frames transmitted on different frequencies. NOTE: Unused now.",
                    TimeValue (MicroSeconds (250)),
-                   MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
+                   MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay),
                    MakeTimeChecker ())
     .AddAttribute ("ChannelNumber",
                    "Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber, 
+                   MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber,
                                          &YansWifiPhy::GetChannelNumber),
                    MakeUintegerChecker<uint16_t> ())
 
-    ;
+  ;
   return tid;
 }
 
 YansWifiPhy::YansWifiPhy ()
   :  m_channelNumber (1),
-     m_endRxEvent (),
-     m_random (0.0, 1.0),
-     m_channelStartingFrequency (0)
+    m_endRxEvent (),
+    m_random (0.0, 1.0),
+    m_channelStartingFrequency (0)
 {
   NS_LOG_FUNCTION (this);
   m_state = CreateObject<WifiPhyStateHelper> ();
@@ -155,212 +155,214 @@ void
 YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
-  switch (standard) {
-  case WIFI_PHY_STANDARD_80211a:
-    Configure80211a ();
-    break;
-  case WIFI_PHY_STANDARD_80211b:
-    Configure80211b ();
-    break;
-  case WIFI_PHY_STANDARD_80211g:
-    Configure80211g ();
-    break;
-  case WIFI_PHY_STANDARD_80211_10Mhz: 
-    Configure80211_10Mhz ();
-    break;
-  case WIFI_PHY_STANDARD_80211_5Mhz:
-    Configure80211_5Mhz ();
-    break; 
-  case WIFI_PHY_STANDARD_holland:
-    ConfigureHolland ();
-    break;
-  case WIFI_PHY_STANDARD_80211p_CCH:
-    Configure80211p_CCH ();
-    break;
-  case WIFI_PHY_STANDARD_80211p_SCH:
-    Configure80211p_SCH ();
-    break;
-  default:
-    NS_ASSERT (false);
-    break;
-  }
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211a:
+      Configure80211a ();
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      Configure80211b ();
+      break;
+    case WIFI_PHY_STANDARD_80211g:
+      Configure80211g ();
+      break;
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      Configure80211_10Mhz ();
+      break;
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      Configure80211_5Mhz ();
+      break;
+    case WIFI_PHY_STANDARD_holland:
+      ConfigureHolland ();
+      break;
+    case WIFI_PHY_STANDARD_80211p_CCH:
+      Configure80211p_CCH ();
+      break;
+    case WIFI_PHY_STANDARD_80211p_SCH:
+      Configure80211p_SCH ();
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
 }
 
 
-void 
+void
 YansWifiPhy::SetRxNoiseFigure (double noiseFigureDb)
 {
   NS_LOG_FUNCTION (this << noiseFigureDb);
   m_interference.SetNoiseFigure (DbToRatio (noiseFigureDb));
 }
-void 
+void
 YansWifiPhy::SetTxPowerStart (double start)
 {
   NS_LOG_FUNCTION (this << start);
   m_txPowerBaseDbm = start;
 }
-void 
+void
 YansWifiPhy::SetTxPowerEnd (double end)
 {
   NS_LOG_FUNCTION (this << end);
   m_txPowerEndDbm = end;
 }
-void 
+void
 YansWifiPhy::SetNTxPower (uint32_t n)
 {
   NS_LOG_FUNCTION (this << n);
   m_nTxPower = n;
 }
-void 
+void
 YansWifiPhy::SetTxGain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   m_txGainDb = gain;
 }
-void 
+void
 YansWifiPhy::SetRxGain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   m_rxGainDb = gain;
 }
-void 
+void
 YansWifiPhy::SetEdThreshold (double threshold)
 {
   NS_LOG_FUNCTION (this << threshold);
   m_edThresholdW = DbmToW (threshold);
 }
-void 
+void
 YansWifiPhy::SetCcaMode1Threshold (double threshold)
 {
   NS_LOG_FUNCTION (this << threshold);
   m_ccaMode1ThresholdW = DbmToW (threshold);
 }
-void 
+void
 YansWifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
 {
   m_interference.SetErrorRateModel (rate);
 }
-void 
+void
 YansWifiPhy::SetDevice (Ptr<Object> device)
 {
   m_device = device;
 }
-void 
+void
 YansWifiPhy::SetMobility (Ptr<Object> mobility)
 {
   m_mobility = mobility;
 }
 
-double 
+double
 YansWifiPhy::GetRxNoiseFigure (void) const
 {
   return RatioToDb (m_interference.GetNoiseFigure ());
 }
-double 
+double
 YansWifiPhy::GetTxPowerStart (void) const
 {
   return m_txPowerBaseDbm;
 }
-double 
+double
 YansWifiPhy::GetTxPowerEnd (void) const
 {
   return m_txPowerEndDbm;
 }
-double 
+double
 YansWifiPhy::GetTxGain (void) const
 {
   return m_txGainDb;
 }
-double 
+double
 YansWifiPhy::GetRxGain (void) const
 {
   return m_rxGainDb;
 }
 
-double 
+double
 YansWifiPhy::GetEdThreshold (void) const
 {
   return WToDbm (m_edThresholdW);
 }
 
-double 
+double
 YansWifiPhy::GetCcaMode1Threshold (void) const
 {
   return WToDbm (m_ccaMode1ThresholdW);
 }
 
-Ptr<ErrorRateModel> 
+Ptr<ErrorRateModel>
 YansWifiPhy::GetErrorRateModel (void) const
 {
   return m_interference.GetErrorRateModel ();
 }
-Ptr<Object> 
+Ptr<Object>
 YansWifiPhy::GetDevice (void) const
 {
   return m_device;
 }
-Ptr<Object> 
+Ptr<Object>
 YansWifiPhy::GetMobility (void)
 {
   return m_mobility;
 }
 
-double 
+double
 YansWifiPhy::CalculateSnr (WifiMode txMode, double ber) const
 {
   return m_interference.GetErrorRateModel ()->CalculateSnr (txMode, ber);
 }
 
-Ptr<WifiChannel> 
+Ptr<WifiChannel>
 YansWifiPhy::GetChannel (void) const
 {
   return m_channel;
 }
-void 
+void
 YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
 }
 
-void 
+void
 YansWifiPhy::SetChannelNumber (uint16_t nch)
 {
   if (Simulator::Now () == Seconds (0))
     {
-      // this is not channel switch, this is initialization 
-      NS_LOG_DEBUG("start at channel " << nch);
+      // this is not channel switch, this is initialization
+      NS_LOG_DEBUG ("start at channel " << nch);
       m_channelNumber = nch;
       return;
     }
 
-  NS_ASSERT (!IsStateSwitching()); 
-  switch (m_state->GetState ()) {
-  case YansWifiPhy::RX:
-    NS_LOG_DEBUG ("drop packet because of channel switching while reception");
-    m_endRxEvent.Cancel();
-    goto switchChannel;
-    break;
-  case YansWifiPhy::TX:
+  NS_ASSERT (!IsStateSwitching ());
+  switch (m_state->GetState ())
+    {
+    case YansWifiPhy::RX:
+      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
+      m_endRxEvent.Cancel ();
+      goto switchChannel;
+      break;
+    case YansWifiPhy::TX:
       NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle(), &YansWifiPhy::SetChannelNumber, this, nch);
-    break;
-  case YansWifiPhy::CCA_BUSY:
-  case YansWifiPhy::IDLE:
-    goto switchChannel;
-    break;
-  default:
-    NS_ASSERT (false);
-    break;
-  }
+      Simulator::Schedule (GetDelayUntilIdle (), &YansWifiPhy::SetChannelNumber, this, nch);
+      break;
+    case YansWifiPhy::CCA_BUSY:
+    case YansWifiPhy::IDLE:
+      goto switchChannel;
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
 
   return;
 
-  switchChannel: 
+switchChannel:
 
-  NS_LOG_DEBUG("switching channel " << m_channelNumber << " -> " << nch);
-  m_state->SwitchToChannelSwitching(m_channelSwitchDelay); 
-  m_interference.EraseEvents(); 
+  NS_LOG_DEBUG ("switching channel " << m_channelNumber << " -> " << nch);
+  m_state->SwitchToChannelSwitching (m_channelSwitchDelay);
+  m_interference.EraseEvents ();
   /*
    * Needed here to be able to correctly sensed the medium for the first
    * time after the switching. The actual switching is not performed until
@@ -371,30 +373,30 @@ YansWifiPhy::SetChannelNumber (uint16_t nch)
   m_channelNumber = nch;
 }
 
-uint16_t 
-YansWifiPhy::GetChannelNumber() const
+uint16_t
+YansWifiPhy::GetChannelNumber () const
 {
   return m_channelNumber;
 }
 
 double
-YansWifiPhy::GetChannelFrequencyMhz() const
+YansWifiPhy::GetChannelFrequencyMhz () const
 {
-  return m_channelStartingFrequency + 5 * GetChannelNumber();
+  return m_channelStartingFrequency + 5 * GetChannelNumber ();
 }
 
-void 
+void
 YansWifiPhy::SetReceiveOkCallback (RxOkCallback callback)
 {
   m_state->SetReceiveOkCallback (callback);
 }
-void 
+void
 YansWifiPhy::SetReceiveErrorCallback (RxErrorCallback callback)
 {
   m_state->SetReceiveErrorCallback (callback);
 }
-void 
-YansWifiPhy::StartReceivePacket (Ptr<Packet> packet, 
+void
+YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                                  double rxPowerDbm,
                                  WifiMode txMode,
                                  enum WifiPreamble preamble)
@@ -406,80 +408,81 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
   Time endRx = Simulator::Now () + rxDuration;
 
   Ptr<InterferenceHelper::Event> event;
-  event = m_interference.Add (packet->GetSize (), 
+  event = m_interference.Add (packet->GetSize (),
                               txMode,
                               preamble,
                               rxDuration,
                               rxPowerW);
 
-  switch (m_state->GetState ()) {
-  case YansWifiPhy::SWITCHING: 
-    NS_LOG_DEBUG ("drop packet because of channel switching");
-    NotifyRxDrop (packet);
-    /*
-     * Packets received on the upcoming channel are added to the event list
-     * during the switching state. This way the medium can be correctly sensed
-     * when the device listens to the channel for the first time after the
-     * switching e.g. after channel switching, the channel may be sensed as
-     * busy due to other devices' tramissions started before the end of
-     * the switching.
-     */
-    if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
-      {
-        // that packet will be noise _after_ the completion of the
-        // channel switching.
-        goto maybeCcaBusy;
-      }
-    break;
-  case YansWifiPhy::RX:
-    NS_LOG_DEBUG ("drop packet because already in Rx (power="<<
-                  rxPowerW<<"W)");
-    NotifyRxDrop (packet);
-    if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
-      {
-        // that packet will be noise _after_ the reception of the
-        // currently-received packet.
-        goto maybeCcaBusy;
-      }
-    break;
-  case YansWifiPhy::TX:
-    NS_LOG_DEBUG ("drop packet because already in Tx (power="<<
-                  rxPowerW<<"W)");
-    NotifyRxDrop (packet);
-    if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
-      {
-        // that packet will be noise _after_ the transmission of the
-        // currently-transmitted packet.
-        goto maybeCcaBusy;
-      }
-    break;
-  case YansWifiPhy::CCA_BUSY:
-  case YansWifiPhy::IDLE:
-    if (rxPowerW > m_edThresholdW) 
-      {
-        NS_LOG_DEBUG ("sync to signal (power="<<rxPowerW<<"W)");
-        // sync to signal
-        m_state->SwitchToRx (rxDuration);
-        NS_ASSERT (m_endRxEvent.IsExpired ());
-        NotifyRxBegin (packet);
-        m_interference.NotifyRxStart();
-        m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this, 
-                                            packet,
-                                            event);
-      }
-    else 
-      {
-        NS_LOG_DEBUG ("drop packet because signal power too Small ("<<
-                      rxPowerW<<"<"<<m_edThresholdW<<")");
-        NotifyRxDrop (packet);
-        goto maybeCcaBusy;
-      }
-    break;
-  }
+  switch (m_state->GetState ())
+    {
+    case YansWifiPhy::SWITCHING:
+      NS_LOG_DEBUG ("drop packet because of channel switching");
+      NotifyRxDrop (packet);
+      /*
+       * Packets received on the upcoming channel are added to the event list
+       * during the switching state. This way the medium can be correctly sensed
+       * when the device listens to the channel for the first time after the
+       * switching e.g. after channel switching, the channel may be sensed as
+       * busy due to other devices' tramissions started before the end of
+       * the switching.
+       */
+      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+        {
+          // that packet will be noise _after_ the completion of the
+          // channel switching.
+          goto maybeCcaBusy;
+        }
+      break;
+    case YansWifiPhy::RX:
+      NS_LOG_DEBUG ("drop packet because already in Rx (power=" <<
+                    rxPowerW << "W)");
+      NotifyRxDrop (packet);
+      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+        {
+          // that packet will be noise _after_ the reception of the
+          // currently-received packet.
+          goto maybeCcaBusy;
+        }
+      break;
+    case YansWifiPhy::TX:
+      NS_LOG_DEBUG ("drop packet because already in Tx (power=" <<
+                    rxPowerW << "W)");
+      NotifyRxDrop (packet);
+      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+        {
+          // that packet will be noise _after_ the transmission of the
+          // currently-transmitted packet.
+          goto maybeCcaBusy;
+        }
+      break;
+    case YansWifiPhy::CCA_BUSY:
+    case YansWifiPhy::IDLE:
+      if (rxPowerW > m_edThresholdW)
+        {
+          NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
+          // sync to signal
+          m_state->SwitchToRx (rxDuration);
+          NS_ASSERT (m_endRxEvent.IsExpired ());
+          NotifyRxBegin (packet);
+          m_interference.NotifyRxStart ();
+          m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this,
+                                              packet,
+                                              event);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("drop packet because signal power too Small (" <<
+                        rxPowerW << "<" << m_edThresholdW << ")");
+          NotifyRxDrop (packet);
+          goto maybeCcaBusy;
+        }
+      break;
+    }
 
   return;
 
- maybeCcaBusy:
+maybeCcaBusy:
   // We are here because we have received the first bit of a packet and we are
   // not going to be able to synchronize on it
   // In this model, CCA becomes busy when the aggregation of all signals as
@@ -492,13 +495,13 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
     }
 }
 
-void 
+void
 YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
 {
   NS_LOG_FUNCTION (this << packet << txMode << preamble << (uint32_t)txPower);
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
-   *    MAC layer to avoid doing this but the PHY does nothing to 
+   *    MAC layer to avoid doing this but the PHY does nothing to
    *    prevent it.
    *  - we are idle
    */
@@ -511,24 +514,24 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
       m_interference.NotifyRxEnd ();
     }
   NotifyTxBegin (packet);
-  uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;   
+  uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;
   bool isShortPreamble = (WIFI_PREAMBLE_SHORT == preamble);
   NotifyPromiscSniffTx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble);
   m_state->SwitchToTx (txDuration, packet, txMode, preamble, txPower);
   m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
 
-uint32_t 
+uint32_t
 YansWifiPhy::GetNModes (void) const
 {
   return m_deviceRateSet.size ();
 }
-WifiMode 
+WifiMode
 YansWifiPhy::GetMode (uint32_t mode) const
 {
   return m_deviceRateSet[mode];
 }
-uint32_t 
+uint32_t
 YansWifiPhy::GetNTxPower (void) const
 {
   return m_nTxPower;
@@ -538,7 +541,7 @@ void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; // 5.000 GHz 
+  m_channelStartingFrequency = 5e3; // 5.000 GHz
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9Mbps ());
@@ -555,7 +558,7 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 2407; // 2.407 GHz 
+  m_channelStartingFrequency = 2407; // 2.407 GHz
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
@@ -587,7 +590,7 @@ void
 YansWifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; // 5.000 GHz, suppose 802.11a 
+  m_channelStartingFrequency = 5e3; // 5.000 GHz, suppose 802.11a
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
@@ -602,7 +605,7 @@ YansWifiPhy::Configure80211_10Mhz (void)
 void
 YansWifiPhy::Configure80211_5Mhz (void)
 {
-  NS_LOG_FUNCTION (this); 
+  NS_LOG_FUNCTION (this);
   m_channelStartingFrequency = 5e3; // 5.000 GHz, suppose 802.11a
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
@@ -619,7 +622,7 @@ void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 5e3; // 5.000 GHz 
+  m_channelStartingFrequency = 5e3; // 5.000 GHz
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18Mbps ());
@@ -659,39 +662,39 @@ YansWifiPhy::Configure80211p_SCH (void)
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate27MbpsBW10MHz ());
 }
 
-void 
+void
 YansWifiPhy::RegisterListener (WifiPhyListener *listener)
 {
   m_state->RegisterListener (listener);
 }
 
-bool 
+bool
 YansWifiPhy::IsStateCcaBusy (void)
 {
   return m_state->IsStateCcaBusy ();
 }
 
-bool 
+bool
 YansWifiPhy::IsStateIdle (void)
 {
   return m_state->IsStateIdle ();
 }
-bool 
+bool
 YansWifiPhy::IsStateBusy (void)
 {
   return m_state->IsStateBusy ();
 }
-bool 
+bool
 YansWifiPhy::IsStateRx (void)
 {
   return m_state->IsStateRx ();
 }
-bool 
+bool
 YansWifiPhy::IsStateTx (void)
 {
   return m_state->IsStateTx ();
 }
-bool 
+bool
 YansWifiPhy::IsStateSwitching (void)
 {
   return m_state->IsStateSwitching ();
@@ -708,42 +711,42 @@ YansWifiPhy::GetDelayUntilIdle (void)
   return m_state->GetDelayUntilIdle ();
 }
 
-Time 
+Time
 YansWifiPhy::GetLastRxStartTime (void) const
 {
   return m_state->GetLastRxStartTime ();
 }
 
-Time 
+Time
 YansWifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const
 {
   return m_interference.CalculateTxDuration (size, payloadMode, preamble);
 }
 
-double 
+double
 YansWifiPhy::DbToRatio (double dB) const
 {
-  double ratio = pow(10.0,dB/10.0);
+  double ratio = pow (10.0,dB / 10.0);
   return ratio;
 }
 
-double 
+double
 YansWifiPhy::DbmToW (double dBm) const
 {
-  double mW = pow(10.0,dBm/10.0);
+  double mW = pow (10.0,dBm / 10.0);
   return mW / 1000.0;
 }
 
 double
 YansWifiPhy::WToDbm (double w) const
 {
-  return 10.0 * log10(w * 1000.0);
+  return 10.0 * log10 (w * 1000.0);
 }
 
 double
 YansWifiPhy::RatioToDb (double ratio) const
 {
-  return 10.0 * log10(ratio);
+  return 10.0 * log10 (ratio);
 }
 
 double
@@ -752,7 +755,7 @@ YansWifiPhy::GetEdThresholdW (void) const
   return m_edThresholdW;
 }
 
-double 
+double
 YansWifiPhy::GetPowerDbm (uint8_t power) const
 {
   NS_ASSERT (m_txPowerBaseDbm <= m_txPowerEndDbm);
@@ -762,7 +765,7 @@ YansWifiPhy::GetPowerDbm (uint8_t power) const
     {
       dbm = m_txPowerBaseDbm + power * (m_txPowerEndDbm - m_txPowerBaseDbm) / (m_nTxPower - 1);
     }
-  else 
+  else
     {
       NS_ASSERT_MSG (m_txPowerBaseDbm == m_txPowerEndDbm, "cannot have TxPowerEnd != TxPowerStart with TxPowerLevels == 1");
       dbm = m_txPowerBaseDbm;
@@ -779,21 +782,21 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
 
   struct InterferenceHelper::SnrPer snrPer;
   snrPer = m_interference.CalculateSnrPer (event);
-  m_interference.NotifyRxEnd();
+  m_interference.NotifyRxEnd ();
 
-  NS_LOG_DEBUG ("mode="<<(event->GetPayloadMode ().GetDataRate ())<<
-                ", snr="<<snrPer.snr<<", per="<<snrPer.per<<", size="<<packet->GetSize ());
-  if (m_random.GetValue () > snrPer.per) 
+  NS_LOG_DEBUG ("mode=" << (event->GetPayloadMode ().GetDataRate ()) <<
+                ", snr=" << snrPer.snr << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
+  if (m_random.GetValue () > snrPer.per)
     {
-      NotifyRxEnd (packet); 
-      uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () / 500000;   
-      bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());  
+      NotifyRxEnd (packet);
+      uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () / 500000;
+      bool isShortPreamble = (WIFI_PREAMBLE_SHORT == event->GetPreambleType ());
       double signalDbm = RatioToDb (event->GetRxPowerW ()) + 30;
-      double noiseDbm = RatioToDb(event->GetRxPowerW() / snrPer.snr) - GetRxNoiseFigure() + 30 ;
+      double noiseDbm = RatioToDb (event->GetRxPowerW () / snrPer.snr) - GetRxNoiseFigure () + 30 ;
       NotifyPromiscSniffRx (packet, (uint16_t)GetChannelFrequencyMhz (), GetChannelNumber (), dataRate500KbpsUnits, isShortPreamble, signalDbm, noiseDbm);
       m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetPayloadMode (), event->GetPreambleType ());
-    } 
-  else 
+    }
+  else
     {
       /* failure. */
       NotifyRxDrop (packet);

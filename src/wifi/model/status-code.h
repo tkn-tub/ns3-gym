@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -26,7 +26,8 @@
 
 namespace ns3 {
 
-class StatusCode {
+class StatusCode
+{
 public:
   StatusCode ();
   void SetSuccess (void);

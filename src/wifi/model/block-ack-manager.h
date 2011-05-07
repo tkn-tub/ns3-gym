@@ -3,7 +3,7 @@
  * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,19 +43,20 @@ class WifiMacQueue;
 
 /**
  * \ingroup wifi
- * \brief Block Ack Request 
- * 
+ * \brief Block Ack Request
+ *
  */
-struct Bar {
-    Bar ();
-    Bar (Ptr<const Packet> packet,
-         Mac48Address recipient,
-         uint8_t tid,
-         bool immediate);
-    Ptr<const Packet> bar;
-    Mac48Address recipient;
-    uint8_t tid;
-    bool immediate;
+struct Bar
+{
+  Bar ();
+  Bar (Ptr<const Packet> packet,
+       Mac48Address recipient,
+       uint8_t tid,
+       bool immediate);
+  Ptr<const Packet> bar;
+  Mac48Address recipient;
+  uint8_t tid;
+  bool immediate;
 };
 
 /**
@@ -75,7 +76,7 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
-   * Checks if a block ack agreement exists with station addressed by 
+   * Checks if a block ack agreement exists with station addressed by
    * <i>recipient</i> for tid <i>tid</i>.
    */
   bool ExistsAgreement (Mac48Address recipient, uint8_t tid) const;
@@ -87,17 +88,17 @@ public:
    * Checks if a block ack agreement with a state equals to <i>state</i> exists with
    * station addressed by <i>recipient</i> for tid <i>tid</i>.
    */
-  bool ExistsAgreementInState (Mac48Address recipient, uint8_t tid, 
+  bool ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
                                enum OriginatorBlockAckAgreement::State state) const;
-  /** 
+  /**
    * \param reqHdr Relative Add block ack request (action frame).
    * \param recipient Address of peer station involved in block ack mechanism.
    *
-   * Creates a new block ack agreement in pending state. When a ADDBA response 
-   * with a successful status code is received, the relative agreement becomes established. 
+   * Creates a new block ack agreement in pending state. When a ADDBA response
+   * with a successful status code is received, the relative agreement becomes established.
    */
   void CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient);
-  /** 
+  /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Tid Traffic id of transmitted packet.
    *
@@ -140,15 +141,15 @@ public:
    *
    * Invoked upon receipt of a block ack frame. Typically, this function, is called
    * by ns3::EdcaTxopN object. Performs a check on which MPDUs, previously sent
-   * with ack policy set to Block Ack, were correctly received by the recipient. 
-   * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.  
+   * with ack policy set to Block Ack, were correctly received by the recipient.
+   * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
    */
   void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
-   * Returns number of packets buffered for a specified agreement. This methods doesn't return 
+   * Returns number of packets buffered for a specified agreement. This methods doesn't return
    * number of buffered MPDUs but number of buffered MSDUs.
    */
   uint32_t GetNBufferedPackets (Mac48Address recipient, uint8_t tid) const;
@@ -166,7 +167,7 @@ public:
    * \param startingSeq starting sequence field
    *
    * Puts corresponding agreement in established state and updates number of packets
-   * and starting sequence field. Invoked typically after a block ack refresh.  
+   * and starting sequence field. Invoked typically after a block ack refresh.
    */
   void NotifyAgreementEstablished (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
   /**
@@ -192,7 +193,7 @@ public:
    * \param nPackets Minimum number of packets for use of block ack.
    *
    * Upon receipt of a block ack frame, if total number of packets (packets in WifiMacQueue
-   * and buffered packets) is greater of <i>nPackets</i>, they are transmitted using block ack mechanism.   
+   * and buffered packets) is greater of <i>nPackets</i>, they are transmitted using block ack mechanism.
    */
   void SetBlockAckThreshold (uint8_t nPackets);
   /**
@@ -215,7 +216,7 @@ public:
    */
   void TearDownBlockAck (Mac48Address recipient, uint8_t tid);
   /**
-   * \param sequenceNumber Sequence number of the packet which fragment is 
+   * \param sequenceNumber Sequence number of the packet which fragment is
    * part of.
    *
    * Returns true if another fragment with sequence number <i>sequenceNumber</i> is scheduled
@@ -228,7 +229,7 @@ public:
   uint32_t GetNextPacketSize (void) const;
   /**
    * \param maxDelay Max delay for a buffered packet.
-   * 
+   *
    * This method is always called by ns3::WifiMacQueue object and sets max delay equals
    * to ns3:WifiMacQueue delay value.
    */
@@ -241,7 +242,7 @@ public:
   /**
    * Checks if there are in the queue other packets that could be send under block ack.
    * If yes adds these packets in current block ack exchange.
-   * However, number of packets exchanged in the current block ack, will not exceed 
+   * However, number of packets exchanged in the current block ack, will not exceed
    * the value of BufferSize in the corresponding OriginatorBlockAckAgreement object.
    */
   bool SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
@@ -254,7 +255,7 @@ public:
 private:
   /**
    * Checks if all packets, for which a block ack agreement was established or refreshed,
-   * have been transmitted. If yes, adds a pair in m_bAckReqs to indicate that 
+   * have been transmitted. If yes, adds a pair in m_bAckReqs to indicate that
    * at next channel access a block ack request (for established agreement
    * <i>recipient</i>,<i>tid</i>) is needed.
    */
@@ -269,15 +270,16 @@ private:
   typedef std::list<Item> PacketQueue;
   typedef std::list<Item>::iterator PacketQueueI;
   typedef std::list<Item>::const_iterator PacketQueueCI;
-  
-  typedef std::map<std::pair<Mac48Address, uint8_t>, 
-              std::pair<OriginatorBlockAckAgreement, PacketQueue> > Agreements;
-  typedef std::map<std::pair<Mac48Address, uint8_t>, 
-              std::pair<OriginatorBlockAckAgreement, PacketQueue> >::iterator AgreementsI;
-  typedef std::map<std::pair<Mac48Address, uint8_t>, 
-              std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
 
-  struct Item {
+  typedef std::map<std::pair<Mac48Address, uint8_t>,
+                   std::pair<OriginatorBlockAckAgreement, PacketQueue> > Agreements;
+  typedef std::map<std::pair<Mac48Address, uint8_t>,
+                   std::pair<OriginatorBlockAckAgreement, PacketQueue> >::iterator AgreementsI;
+  typedef std::map<std::pair<Mac48Address, uint8_t>,
+                   std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
+
+  struct Item
+  {
     Item ();
     Item (Ptr<const Packet> packet,
           const WifiMacHeader &hdr,
@@ -286,11 +288,11 @@ private:
     WifiMacHeader hdr;
     Time timestamp;
   };
-  
+
   /**
    * This data structure contains, for each block ack agreement (recipient, tid), a set of packets
    * for which an ack by block ack is requested.
-   * Every packet or fragment indicated as correctly received in block ack frame is 
+   * Every packet or fragment indicated as correctly received in block ack frame is
    * erased from this data structure. Pushed back in retransmission queue otherwise.
    */
   Agreements m_agreements;
@@ -301,7 +303,7 @@ private:
    */
   std::list<PacketQueueI> m_retryPackets;
   std::list<Bar> m_bars;
-  
+
   uint8_t m_blockAckThreshold;
   enum BlockAckType m_blockAckType;
   Time m_maxDelay;

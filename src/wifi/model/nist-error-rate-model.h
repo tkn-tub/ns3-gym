@@ -3,7 +3,7 @@
  * Copyright (c) 2010 The Boeing Company
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,7 +31,7 @@ namespace ns3 {
  * \ingroup wifi
  *
  * A model for the error rate for different modulations.  For OFDM modulation,
- * the model description and validation can be found in 
+ * the model description and validation can be found in
  * http://www.nsnam.org/~pei/80211ofdm.pdf.  For DSSS modulations (802.11b),
  * the model uses the DsssErrorRateModel.
  */
@@ -50,13 +50,13 @@ private:
   double GetQpskBer (double snr) const;
   double Get16QamBer (double snr) const;
   double Get64QamBer (double snr) const;
-  double GetFecBpskBer (double snr, double nbits, 
+  double GetFecBpskBer (double snr, double nbits,
                         uint32_t bValue) const;
-  double GetFecQpskBer (double snr, double nbits, 
+  double GetFecQpskBer (double snr, double nbits,
                         uint32_t bValue) const;
-  double GetFec16QamBer (double snr, uint32_t nbits, 
+  double GetFec16QamBer (double snr, uint32_t nbits,
                          uint32_t bValue) const;
-  double GetFec64QamBer (double snr, uint32_t nbits, 
+  double GetFec64QamBer (double snr, uint32_t nbits,
                          uint32_t bValue) const;
 };
 

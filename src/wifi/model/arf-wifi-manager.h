@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,14 +29,14 @@ namespace ns3 {
  * \brief ARF Rate control algorithm
  *
  * This class implements the so-called ARF algorithm which was
- * initially described in <i>WaveLAN-II: A High-performance wireless 
+ * initially described in <i>WaveLAN-II: A High-performance wireless
  * LAN for the unlicensed band</i>, by A. Kamerman and L. Monteban. in
  * Bell Lab Technical Journal, pages 118-133, Summer 1997.
  *
  * This implementation differs from the initial description in that it
- * uses a packet-based timer rather than a time-based timer as described 
+ * uses a packet-based timer rather than a time-based timer as described
  * in XXX (I cannot find back the original paper which described how
- * the time-based timer could be easily replaced with a packet-based 
+ * the time-based timer could be easily replaced with a packet-based
  * timer.)
  */
 class ArfWifiManager : public WifiRemoteStationManager
@@ -48,8 +48,8 @@ public:
 
 private:
   // overriden from base class
-  virtual WifiRemoteStation *DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station, 
+  virtual WifiRemoteStation * DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
   virtual void DoReportDataFailed (WifiRemoteStation *station);

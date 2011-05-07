@@ -3,7 +3,7 @@
  * Copyright (c) 2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,7 +33,7 @@ class WifiPhy;
  * \ingroup wifi
  *
  * This class works in tandem with the ns3::WifiPhy class. If you want to
- * provide a new Wifi PHY layer, you have to subclass both ns3::WifiChannel 
+ * provide a new Wifi PHY layer, you have to subclass both ns3::WifiChannel
  * and ns3::WifiPhy.
  *
  * Typically, MyWifiChannel will define a Send method whose job is to distribute

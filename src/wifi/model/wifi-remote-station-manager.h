@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -96,12 +96,12 @@ public:
   void SetMaxSlrc (uint32_t maxSlrc);
   void SetRtsCtsThreshold (uint32_t threshold);
   void SetFragmentationThreshold (uint32_t threshold);
-  
+
   // Invoked in a STA upon dis-association
   // or in an AP upon reboot
   void Reset (void);
   // Invoked in a STA upon association to store
-  // the set of rates which belong to the 
+  // the set of rates which belong to the
   // BSSBasicRateSet of the associated AP
   // and which are supported locally.
   // Invoked in an AP to configure the BSSBasicRateSet
@@ -120,7 +120,7 @@ public:
    */
   void Reset (Mac48Address address);
   /**
-   * Invoked in a STA or AP to store the set of 
+   * Invoked in a STA or AP to store the set of
    * modes supported by a destination which is
    * also supported locally.
    * The set of supported modes includes
@@ -178,7 +178,7 @@ public:
    */
   void ReportDataFailed (Mac48Address address, const WifiMacHeader *header);
   /**
-   * Should be invoked whenever we receive the Cts associated to an RTS 
+   * Should be invoked whenever we receive the Cts associated to an RTS
    * we just sent.
    */
   void ReportRtsOk (Mac48Address address, const WifiMacHeader *header,
@@ -190,12 +190,12 @@ public:
   void ReportDataOk (Mac48Address address, const WifiMacHeader *header,
                      double ackSnr, WifiMode ackMode, double dataSnr);
   /**
-   * Should be invoked after calling ReportRtsFailed if 
+   * Should be invoked after calling ReportRtsFailed if
    * NeedRtsRetransmission returns false
    */
   void ReportFinalRtsFailed (Mac48Address address, const WifiMacHeader *header);
   /**
-   * Should be invoked after calling ReportDataFailed if 
+   * Should be invoked after calling ReportDataFailed if
    * NeedDataRetransmission returns false
    */
   void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header);
@@ -224,7 +224,7 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
-   * \returns true if we want to restart a failed RTS/CTS 
+   * \returns true if we want to restart a failed RTS/CTS
    *          handshake, false otherwise.
    */
   bool NeedRtsRetransmission (Mac48Address address, const WifiMacHeader *header,
@@ -233,7 +233,7 @@ public:
    * \param address remote address
    * \param header MAC header
    * \param packet the packet to send
-   * \returns true if we want to resend a packet 
+   * \returns true if we want to resend a packet
    *          after a failed transmission attempt, false otherwise.
    */
   bool NeedDataRetransmission (Mac48Address address, const WifiMacHeader *header,
@@ -246,7 +246,7 @@ public:
    * \returns true if this packet should be fragmented, false otherwise.
    */
   bool NeedFragmentation (Mac48Address address, const WifiMacHeader *header,
-                                  Ptr<const Packet> packet);
+                          Ptr<const Packet> packet);
   /**
    * \param address remote address
    * \param header MAC header
@@ -307,33 +307,33 @@ private:
    *
    * Note: This method is called before a unicast packet is sent on the medium.
    */
-  virtual bool DoNeedRts (WifiRemoteStation *station, 
+  virtual bool DoNeedRts (WifiRemoteStation *station,
                           Ptr<const Packet> packet, bool normally);
   /**
    * \param station the station with which we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 rts enable mechanism would
    *        request that the rts is retransmitted or not.
-   * \returns true if we want to restart a failed RTS/CTS 
+   * \returns true if we want to restart a failed RTS/CTS
    *          handshake, false otherwise.
    *
    * Note: This method is called after an rts/cts handshake has been attempted
    *       and has failed.
    */
-  virtual bool DoNeedRtsRetransmission (WifiRemoteStation *station, 
+  virtual bool DoNeedRtsRetransmission (WifiRemoteStation *station,
                                         Ptr<const Packet> packet, bool normally);
   /**
    * \param station the station with which we need to communicate
    * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 data retransmission mechanism
    *        would request that the data is retransmitted or not.
-   * \returns true if we want to resend a packet 
+   * \returns true if we want to resend a packet
    *          after a failed transmission attempt, false otherwise.
    *
    * Note: This method is called after a unicast packet transmission has been attempted
    *       and has failed.
    */
-  virtual bool DoNeedDataRetransmission (WifiRemoteStation *station, 
+  virtual bool DoNeedDataRetransmission (WifiRemoteStation *station,
                                          Ptr<const Packet> packet, bool normally);
 
   /**
@@ -345,7 +345,7 @@ private:
    *
    * Note: This method is called before sending a unicast packet.
    */
-  virtual bool DoNeedFragmentation (WifiRemoteStation *station, 
+  virtual bool DoNeedFragmentation (WifiRemoteStation *station,
                                     Ptr<const Packet> packet, bool normally);
   /**
    * \returns whether this manager is a manager designed to work in low-latency
@@ -358,7 +358,7 @@ private:
   /**
    * \return a new station data structure
    */
-  virtual WifiRemoteStation *DoCreateStation (void) const = 0;
+  virtual WifiRemoteStation* DoCreateStation (void) const = 0;
   /**
    * \param station the station with which we need to communicate
    * \param size size of the packet or fragment we want to send
@@ -388,10 +388,10 @@ private:
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode) = 0;
 
-  WifiRemoteStationState *LookupState (Mac48Address address) const;
-  WifiRemoteStation *Lookup (Mac48Address address, uint8_t tid) const;
+  WifiRemoteStationState* LookupState (Mac48Address address) const;
+  WifiRemoteStation* Lookup (Mac48Address address, uint8_t tid) const;
   /// Find a remote station by its remote address and TID taken from MAC header
-  WifiRemoteStation *Lookup (Mac48Address address, const WifiMacHeader *header) const;
+  WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
   uint32_t GetNFragments (Ptr<const Packet> packet);
 
@@ -433,7 +433,7 @@ private:
    */
   TracedCallback<Mac48Address> m_macTxRtsFailed;
   /**
-   * The trace source fired when the transmission of a single data packet has failed 
+   * The trace source fired when the transmission of a single data packet has failed
    */
   TracedCallback<Mac48Address> m_macTxDataFailed;
   /**
@@ -451,13 +451,13 @@ private:
 
 struct WifiRemoteStationState
 {
-  enum 
-    {
-      BRAND_NEW,
-      DISASSOC,
-      WAIT_ASSOC_TX_OK,
-      GOT_ASSOC_TX_OK
-    } m_state;
+  enum
+  {
+    BRAND_NEW,
+    DISASSOC,
+    WAIT_ASSOC_TX_OK,
+    GOT_ASSOC_TX_OK
+  } m_state;
 
   /**
    * This member is the list of WifiMode objects that comprise the
@@ -491,6 +491,6 @@ struct WifiRemoteStation
 };
 
 
-} // namespace ns3 
+} // namespace ns3
 
 #endif /* WIFI_REMOTE_STATION_MANAGER_H */

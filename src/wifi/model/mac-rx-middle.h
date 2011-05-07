@@ -3,7 +3,7 @@
  * Copyright (c) 2005 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -34,7 +34,7 @@ class OriginatorRxStatus;
 
 /**
  * \ingroup wifi
- * 
+ *
  * This class handles duplicate detection and recomposition of fragments.
  */
 class MacRxMiddle
@@ -50,7 +50,7 @@ public:
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 private:
   friend class MacRxMiddleTest;
-  OriginatorRxStatus *Lookup (const WifiMacHeader* hdr);
+  OriginatorRxStatus* Lookup (const WifiMacHeader* hdr);
   bool IsDuplicate (const WifiMacHeader* hdr, OriginatorRxStatus *originator) const;
   Ptr<Packet> HandleFragments (Ptr<Packet> packet, const WifiMacHeader* hdr,
                                OriginatorRxStatus *originator);

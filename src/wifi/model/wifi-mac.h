@@ -3,7 +3,7 @@
  * Copyright (c) 2008 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -45,7 +45,7 @@ class WifiMac : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  
+
   /**
    * \param slotTime the slot duration
    */
@@ -185,31 +185,31 @@ public:
   virtual Time GetCompressedBlockAckTimeout (void) const;
 
   /**
-   * Public method used to fire a MacTx trace.  Implemented for encapsulation 
+   * Public method used to fire a MacTx trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyTx (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a MacTxDrop trace.  Implemented for encapsulation 
+   * Public method used to fire a MacTxDrop trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a MacRx trace.  Implemented for encapsulation 
+   * Public method used to fire a MacRx trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyRx (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a MacPromiscRx trace.  Implemented for encapsulation 
+   * Public method used to fire a MacPromiscRx trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyPromiscRx (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a MacRxDrop trace.  Implemented for encapsulation 
+   * Public method used to fire a MacRxDrop trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
@@ -270,7 +270,7 @@ private:
 
   /**
    * The trace source fired for packets successfully received by the device
-   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * immediately before being forwarded up to higher layers (at the L2/L3
    * transition).  This is a promiscuous trace.
    *
    * \see class CallBackTraceSource
@@ -279,7 +279,7 @@ private:
 
   /**
    * The trace source fired for packets successfully received by the device
-   * immediately before being forwarded up to higher layers (at the L2/L3 
+   * immediately before being forwarded up to higher layers (at the L2/L3
    * transition).  This is a non- promiscuous trace.
    *
    * \see class CallBackTraceSource

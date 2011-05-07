@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@
 #include <list>
 
 namespace ns3 {
-	
+
 class WifiMacHeader;
 
 /**
@@ -43,7 +43,7 @@ public:
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
 
   static TypeId GetTypeId (void);
-  /* Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is 
+  /* Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
    * specified how and if <i>packet</i> can be added to <i>aggregatedPacket</i>. If <i>packet</i>
    * can be added returns true, false otherwise.
    */

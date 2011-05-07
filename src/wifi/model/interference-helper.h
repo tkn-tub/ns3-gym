@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -42,12 +42,12 @@ class InterferenceHelper
 public:
   class Event : public SimpleRefCount<InterferenceHelper::Event>
   {
-  public:
-    Event (uint32_t size, WifiMode payloadMode, 
-	     enum WifiPreamble preamble,
-	     Time duration, double rxPower);
+public:
+    Event (uint32_t size, WifiMode payloadMode,
+           enum WifiPreamble preamble,
+           Time duration, double rxPower);
     ~Event ();
-  
+
     Time GetDuration (void) const;
     Time GetStartTime (void) const;
     Time GetEndTime (void) const;
@@ -55,7 +55,7 @@ public:
     uint32_t GetSize (void) const;
     WifiMode GetPayloadMode (void) const;
     enum WifiPreamble GetPreambleType (void) const;
-  private:
+private:
     uint32_t m_size;
     WifiMode m_payloadMode;
     enum WifiPreamble m_preamble;
@@ -63,7 +63,7 @@ public:
     Time m_endTime;
     double m_rxPowerW;
   };
-  struct SnrPer 
+  struct SnrPer
   {
     double snr;
     double per;
@@ -81,34 +81,35 @@ public:
 
   /**
    * \param energyW the minimum energy (W) requested
-   * \returns the expected amount of time the observed 
+   * \returns the expected amount of time the observed
    *          energy on the medium will be higher than
    *          the requested threshold.
    */
   Time GetEnergyDuration (double energyW);
 
-  
+
   static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
   static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
   static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode mode, WifiPreamble preamble);
   static uint32_t GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode);
   static Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble);
-  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiMode payloadMode, 
-				      enum WifiPreamble preamble,
-				      Time duration, double rxPower);
+  Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiMode payloadMode,
+                                      enum WifiPreamble preamble,
+                                      Time duration, double rxPower);
 
   struct InterferenceHelper::SnrPer CalculateSnrPer (Ptr<InterferenceHelper::Event> event);
   void NotifyRxStart ();
   void NotifyRxEnd ();
-  void EraseEvents (void); 
+  void EraseEvents (void);
 private:
-  class NiChange {
-  public:
+  class NiChange
+  {
+public:
     NiChange (Time time, double delta);
     Time GetTime (void) const;
     double GetDelta (void) const;
     bool operator < (const NiChange& o) const;
-  private:
+private:
     Time m_time;
     double m_delta;
   };

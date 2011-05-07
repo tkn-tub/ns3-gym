@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,13 +32,16 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
 
-WifiMacQueue::Item::Item (Ptr<const Packet> packet, 
-                          const WifiMacHeader &hdr, 
+WifiMacQueue::Item::Item (Ptr<const Packet> packet,
+                          const WifiMacHeader &hdr,
                           Time tstamp)
-  : packet (packet), hdr (hdr), tstamp (tstamp)
-{}
+  : packet (packet),
+    hdr (hdr),
+    tstamp (tstamp)
+{
+}
 
-TypeId 
+TypeId
 WifiMacQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMacQueue")
@@ -52,20 +55,21 @@ WifiMacQueue::GetTypeId (void)
                    TimeValue (Seconds (10.0)),
                    MakeTimeAccessor (&WifiMacQueue::m_maxDelay),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
 WifiMacQueue::WifiMacQueue ()
   : m_size (0)
-{}
+{
+}
 
 WifiMacQueue::~WifiMacQueue ()
 {
   Flush ();
 }
 
-void 
+void
 WifiMacQueue::SetMaxSize (uint32_t maxSize)
 {
   m_maxSize = maxSize;
@@ -77,23 +81,23 @@ WifiMacQueue::SetMaxDelay (Time delay)
   m_maxDelay = delay;
 }
 
-uint32_t 
+uint32_t
 WifiMacQueue::GetMaxSize (void) const
 {
   return m_maxSize;
 }
 
-Time 
+Time
 WifiMacQueue::GetMaxDelay (void) const
 {
   return m_maxDelay;
 }
 
-void 
+void
 WifiMacQueue::Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   Cleanup ();
-  if (m_size == m_maxSize) 
+  if (m_size == m_maxSize)
     {
       return;
     }
@@ -105,16 +109,16 @@ WifiMacQueue::Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 void
 WifiMacQueue::Cleanup (void)
 {
-  if (m_queue.empty ()) 
+  if (m_queue.empty ())
     {
       return;
     }
 
   Time now = Simulator::Now ();
   uint32_t n = 0;
-  for (PacketQueueI i = m_queue.begin (); i != m_queue.end ();) 
+  for (PacketQueueI i = m_queue.begin (); i != m_queue.end ();)
     {
-      if (i->tstamp + m_maxDelay > now) 
+      if (i->tstamp + m_maxDelay > now)
         {
           i++;
         }
@@ -131,7 +135,7 @@ Ptr<const Packet>
 WifiMacQueue::Dequeue (WifiMacHeader *hdr)
 {
   Cleanup ();
-  if (!m_queue.empty ()) 
+  if (!m_queue.empty ())
     {
       Item i = m_queue.front ();
       m_queue.pop_front ();
@@ -146,7 +150,7 @@ Ptr<const Packet>
 WifiMacQueue::Peek (WifiMacHeader *hdr)
 {
   Cleanup ();
-  if (!m_queue.empty ()) 
+  if (!m_queue.empty ())
     {
       Item i = m_queue.front ();
       *hdr = i.hdr;
@@ -156,7 +160,7 @@ WifiMacQueue::Peek (WifiMacHeader *hdr)
 }
 
 Ptr<const Packet>
-WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid, 
+WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid,
                                       WifiMacHeader::AddressType type, Mac48Address dest)
 {
   Cleanup ();
@@ -169,8 +173,8 @@ WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid,
         {
           if (it->hdr.IsQosData ())
             {
-              if (GetAddressForPacket (type, it) == dest &&
-                  it->hdr.GetQosTid () == tid)
+              if (GetAddressForPacket (type, it) == dest
+                  && it->hdr.GetQosTid () == tid)
                 {
                   packet = it->packet;
                   *hdr = it->hdr;
@@ -185,7 +189,7 @@ WifiMacQueue::DequeueByTidAndAddress (WifiMacHeader *hdr, uint8_t tid,
 }
 
 Ptr<const Packet>
-WifiMacQueue::PeekByTidAndAddress (WifiMacHeader *hdr, uint8_t tid, 
+WifiMacQueue::PeekByTidAndAddress (WifiMacHeader *hdr, uint8_t tid,
                                    WifiMacHeader::AddressType type, Mac48Address dest)
 {
   Cleanup ();
@@ -197,8 +201,8 @@ WifiMacQueue::PeekByTidAndAddress (WifiMacHeader *hdr, uint8_t tid,
         {
           if (it->hdr.IsQosData ())
             {
-              if (GetAddressForPacket (type, it) == dest &&
-                  it->hdr.GetQosTid () == tid)
+              if (GetAddressForPacket (type, it) == dest
+                  && it->hdr.GetQosTid () == tid)
                 {
                   *hdr = it->hdr;
                   return it->packet;
@@ -308,8 +312,8 @@ WifiMacQueue::DequeueFirstAvailable (WifiMacHeader *hdr, Time &timestamp,
   Ptr<const Packet> packet = 0;
   for (PacketQueueI it = m_queue.begin (); it != m_queue.end (); it++)
     {
-      if (!it->hdr.IsQosData () ||
-          !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
+      if (!it->hdr.IsQosData ()
+          || !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
         {
           *hdr = it->hdr;
           timestamp = it->tstamp;
@@ -329,8 +333,8 @@ WifiMacQueue::PeekFirstAvailable (WifiMacHeader *hdr, Time &timestamp,
   Cleanup ();
   for (PacketQueueI it = m_queue.begin (); it != m_queue.end (); it++)
     {
-      if (!it->hdr.IsQosData () ||
-          !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
+      if (!it->hdr.IsQosData ()
+          || !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
         {
           *hdr = it->hdr;
           timestamp = it->tstamp;

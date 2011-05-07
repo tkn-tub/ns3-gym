@@ -38,12 +38,12 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiHelper");
 
 namespace ns3 {
 
-static void 
+static void
 AsciiPhyTransmitSinkWithContext (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string context, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string context,
   Ptr<const Packet> p,
-  WifiMode mode, 
+  WifiMode mode,
   WifiPreamble preamble,
   uint8_t txLevel)
 {
@@ -51,11 +51,11 @@ AsciiPhyTransmitSinkWithContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
-static void 
+static void
 AsciiPhyTransmitSinkWithoutContext (
-  Ptr<OutputStreamWrapper> stream, 
+  Ptr<OutputStreamWrapper> stream,
   Ptr<const Packet> p,
-  WifiMode mode, 
+  WifiMode mode,
   WifiPreamble preamble,
   uint8_t txLevel)
 {
@@ -63,12 +63,12 @@ AsciiPhyTransmitSinkWithoutContext (
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
-static void 
+static void
 AsciiPhyReceiveSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
-  Ptr<const Packet> p, 
-  double snr, 
+  Ptr<const Packet> p,
+  double snr,
   WifiMode mode,
   enum WifiPreamble preamble)
 {
@@ -76,11 +76,11 @@ AsciiPhyReceiveSinkWithContext (
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
-static void 
+static void
 AsciiPhyReceiveSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
-  Ptr<const Packet> p, 
-  double snr, 
+  Ptr<const Packet> p,
+  double snr,
   WifiMode mode,
   enum WifiPreamble preamble)
 {
@@ -89,9 +89,10 @@ AsciiPhyReceiveSinkWithoutContext (
 }
 
 YansWifiChannelHelper::YansWifiChannelHelper ()
-{}
+{
+}
 
-YansWifiChannelHelper 
+YansWifiChannelHelper
 YansWifiChannelHelper::Default (void)
 {
   YansWifiChannelHelper helper;
@@ -100,16 +101,16 @@ YansWifiChannelHelper::Default (void)
   return helper;
 }
 
-void 
+void
 YansWifiChannelHelper::AddPropagationLoss (std::string type,
-					   std::string n0, const AttributeValue &v0,
-					   std::string n1, const AttributeValue &v1,
-					   std::string n2, const AttributeValue &v2,
-					   std::string n3, const AttributeValue &v3,
-					   std::string n4, const AttributeValue &v4,
-					   std::string n5, const AttributeValue &v5,
-					   std::string n6, const AttributeValue &v6,
-					   std::string n7, const AttributeValue &v7)
+                                           std::string n0, const AttributeValue &v0,
+                                           std::string n1, const AttributeValue &v1,
+                                           std::string n2, const AttributeValue &v2,
+                                           std::string n3, const AttributeValue &v3,
+                                           std::string n4, const AttributeValue &v4,
+                                           std::string n5, const AttributeValue &v5,
+                                           std::string n6, const AttributeValue &v6,
+                                           std::string n7, const AttributeValue &v7)
 {
   ObjectFactory factory;
   factory.SetTypeId (type);
@@ -124,16 +125,16 @@ YansWifiChannelHelper::AddPropagationLoss (std::string type,
   m_propagationLoss.push_back (factory);
 }
 
-void 
+void
 YansWifiChannelHelper::SetPropagationDelay (std::string type,
-					    std::string n0, const AttributeValue &v0,
-					    std::string n1, const AttributeValue &v1,
-					    std::string n2, const AttributeValue &v2,
-					    std::string n3, const AttributeValue &v3,
-					    std::string n4, const AttributeValue &v4,
-					    std::string n5, const AttributeValue &v5,
-					    std::string n6, const AttributeValue &v6,
-					    std::string n7, const AttributeValue &v7)
+                                            std::string n0, const AttributeValue &v0,
+                                            std::string n1, const AttributeValue &v1,
+                                            std::string n2, const AttributeValue &v2,
+                                            std::string n3, const AttributeValue &v3,
+                                            std::string n4, const AttributeValue &v4,
+                                            std::string n5, const AttributeValue &v5,
+                                            std::string n6, const AttributeValue &v6,
+                                            std::string n7, const AttributeValue &v7)
 {
   ObjectFactory factory;
   factory.SetTypeId (type);
@@ -148,7 +149,7 @@ YansWifiChannelHelper::SetPropagationDelay (std::string type,
   m_propagationDelay = factory;
 }
 
-Ptr<YansWifiChannel> 
+Ptr<YansWifiChannel>
 YansWifiChannelHelper::Create (void) const
 {
   Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
@@ -157,13 +158,13 @@ YansWifiChannelHelper::Create (void) const
     {
       Ptr<PropagationLossModel> cur = (*i).Create<PropagationLossModel> ();
       if (prev != 0)
-	{
-	  prev->SetNext (cur);
-	}
+        {
+          prev->SetNext (cur);
+        }
       if (m_propagationLoss.begin () == i)
-	{
-	  channel->SetPropagationLossModel (cur);
-	}
+        {
+          channel->SetPropagationLossModel (cur);
+        }
       prev = cur;
     }
   Ptr<PropagationDelayModel> delay = m_propagationDelay.Create<PropagationDelayModel> ();
@@ -174,12 +175,12 @@ YansWifiChannelHelper::Create (void) const
 
 YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0),
-    m_pcapDlt(PcapHelper::DLT_IEEE802_11)
+    m_pcapDlt (PcapHelper::DLT_IEEE802_11)
 {
   m_phy.SetTypeId ("ns3::YansWifiPhy");
 }
 
-YansWifiPhyHelper 
+YansWifiPhyHelper
 YansWifiPhyHelper::Default (void)
 {
   YansWifiPhyHelper helper;
@@ -187,33 +188,33 @@ YansWifiPhyHelper::Default (void)
   return helper;
 }
 
-void 
+void
 YansWifiPhyHelper::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
 }
-void 
+void
 YansWifiPhyHelper::SetChannel (std::string channelName)
 {
   Ptr<YansWifiChannel> channel = Names::Find<YansWifiChannel> (channelName);
   m_channel = channel;
 }
-void 
+void
 YansWifiPhyHelper::Set (std::string name, const AttributeValue &v)
 {
   m_phy.Set (name, v);
 }
 
-void 
+void
 YansWifiPhyHelper::SetErrorRateModel (std::string name,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
+                                      std::string n0, const AttributeValue &v0,
+                                      std::string n1, const AttributeValue &v1,
+                                      std::string n2, const AttributeValue &v2,
+                                      std::string n3, const AttributeValue &v3,
+                                      std::string n4, const AttributeValue &v4,
+                                      std::string n5, const AttributeValue &v5,
+                                      std::string n6, const AttributeValue &v6,
+                                      std::string n7, const AttributeValue &v7)
 {
   m_errorRateModel = ObjectFactory ();
   m_errorRateModel.SetTypeId (name);
@@ -227,7 +228,7 @@ YansWifiPhyHelper::SetErrorRateModel (std::string name,
   m_errorRateModel.Set (n7, v7);
 }
 
-Ptr<WifiPhy> 
+Ptr<WifiPhy>
 YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
   Ptr<YansWifiPhy> phy = m_phy.Create<YansWifiPhy> ();
@@ -239,7 +240,7 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
   return phy;
 }
 
-static void 
+static void
 PcapSniffTxEvent (
   Ptr<PcapFileWrapper> file,
   Ptr<const Packet>   packet,
@@ -279,7 +280,7 @@ PcapSniffTxEvent (
         header.SetRate (rate);
 
         uint16_t channelFlags = 0;
-        switch (rate) 
+        switch (rate)
           {
           case 2:  // 1Mbps
           case 4:  // 2Mbps
@@ -287,10 +288,10 @@ PcapSniffTxEvent (
           case 22: // 11Mbps
             channelFlags |= RadiotapHeader::CHANNEL_FLAG_CCK;
             break;
-            
+
           default:
             channelFlags |= RadiotapHeader::CHANNEL_FLAG_OFDM;
-            break;              
+            break;
           }
 
         if (channelFreqMhz < 2500)
@@ -301,7 +302,7 @@ PcapSniffTxEvent (
           {
             channelFlags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ;
           }
-        
+
         header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
 
         p->AddHeader (header);
@@ -313,7 +314,7 @@ PcapSniffTxEvent (
     }
 }
 
-static void 
+static void
 PcapSniffRxEvent (
   Ptr<PcapFileWrapper> file,
   Ptr<const Packet> packet,
@@ -355,7 +356,7 @@ PcapSniffRxEvent (
         header.SetRate (rate);
 
         uint16_t channelFlags = 0;
-        switch (rate) 
+        switch (rate)
           {
           case 2:  // 1Mbps
           case 4:  // 2Mbps
@@ -363,10 +364,10 @@ PcapSniffRxEvent (
           case 22: // 11Mbps
             channelFlags |= RadiotapHeader::CHANNEL_FLAG_CCK;
             break;
-            
+
           default:
             channelFlags |= RadiotapHeader::CHANNEL_FLAG_OFDM;
-            break;              
+            break;
           }
 
         if (channelFreqMhz < 2500)
@@ -377,7 +378,7 @@ PcapSniffRxEvent (
           {
             channelFlags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ;
           }
-        
+
         header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
 
         header.SetAntennaSignalPower (signalDbm);
@@ -392,7 +393,7 @@ PcapSniffRxEvent (
     }
 }
 
-void 
+void
 YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
 {
   switch (dlt)
@@ -411,7 +412,7 @@ YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
     }
 }
 
-void 
+void
 YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
   //
@@ -447,10 +448,10 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
   phy->TraceConnectWithoutContext ("PromiscSnifferRx", MakeBoundCallback (&PcapSniffRxEvent, file));
 }
 
-void 
+void
 YansWifiPhyHelper::EnableAsciiInternal (
-  Ptr<OutputStreamWrapper> stream, 
-  std::string prefix, 
+  Ptr<OutputStreamWrapper> stream,
+  std::string prefix,
   Ptr<NetDevice> nd,
   bool explicitFilename)
 {
@@ -477,15 +478,15 @@ YansWifiPhyHelper::EnableAsciiInternal (
   std::ostringstream oss;
 
   //
-  // If we are not provided an OutputStreamWrapper, we are expected to create 
-  // one using the usual trace filename conventions and write our traces 
+  // If we are not provided an OutputStreamWrapper, we are expected to create
+  // one using the usual trace filename conventions and write our traces
   // without a context since there will be one file per context and therefore
   // the context would be redundant.
   //
   if (stream == 0)
     {
       //
-      // Set up an output stream object to deal with private ofstream copy 
+      // Set up an output stream object to deal with private ofstream copy
       // constructor and lifetime issues.  Let the helper decide the actual
       // name of the file given the prefix.
       //
@@ -503,8 +504,8 @@ YansWifiPhyHelper::EnableAsciiInternal (
 
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
       //
-      // We could go poking through the phy and the state looking for the 
-      // correct trace source, but we can let Config deal with that with 
+      // We could go poking through the phy and the state looking for the
+      // correct trace source, but we can let Config deal with that with
       // some search cost.  Since this is presumably happening at topology
       // creation time, it doesn't seem much of a price to pay.
       //
@@ -522,7 +523,7 @@ YansWifiPhyHelper::EnableAsciiInternal (
   //
   // If we are provided an OutputStreamWrapper, we are expected to use it, and
   // to provide a context.  We are free to come up with our own context if we
-  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for
   // compatibility and simplicity, we just use Config::Connect and let it deal
   // with coming up with a context.
   //

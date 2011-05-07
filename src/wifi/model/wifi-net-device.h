@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -48,7 +48,7 @@ class WifiMac;
  * This class holds together ns3::WifiChannel, ns3::WifiPhy,
  * ns3::WifiMac, and, ns3::WifiRemoteStationManager.
  */
-class WifiNetDevice : public NetDevice 
+class WifiNetDevice : public NetDevice
 {
 public:
   static TypeId GetTypeId (void);
@@ -83,8 +83,8 @@ public:
 
 
   // inherited from NetDevice base class.
-  virtual void SetIfIndex(const uint32_t index);
-  virtual uint32_t GetIfIndex(void) const;
+  virtual void SetIfIndex (const uint32_t index);
+  virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
   virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
@@ -98,7 +98,7 @@ public:
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
   virtual bool IsBridge (void) const;
-  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual Ptr<Node> GetNode (void) const;
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
@@ -106,12 +106,11 @@ public:
 
   virtual Address GetMulticast (Ipv6Address addr) const;
 
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
 
 private:
-
   // This value conforms to the 802.11 specification
   static const uint16_t MAX_MSDU_SIZE = 2304;
 

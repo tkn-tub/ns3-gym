@@ -30,15 +30,17 @@ namespace ns3 {
 class WifiPhy;
 class WifiMac;
 class MacLow;
+class PhyListener;
+class LowDcfListener;
 
 /**
- * \brief keep track of the state needed for a single DCF 
+ * \brief keep track of the state needed for a single DCF
  * function.
  * \ingroup wifi
  *
  * Multiple instances of a DcfState can be registered in a single
  * DcfManager to implement 802.11e-style relative QoS.
- * DcfState::SetAifsn and DcfState::SetCwBounds allow the user to 
+ * DcfState::SetAifsn and DcfState::SetCwBounds allow the user to
  * control the relative QoS differentiation.
  */
 class DcfState
@@ -101,7 +103,7 @@ private:
   void NotifyAccessGranted (void);
   void NotifyCollision (void);
   void NotifyInternalCollision (void);
-  void NotifyChannelSwitching (void); 
+  void NotifyChannelSwitching (void);
 
 
   /**
@@ -132,14 +134,14 @@ private:
    * is access is still needed.
    */
   virtual void DoNotifyCollision (void) = 0;
-   /**
-   * Called by DcfManager to notify a DcfState subclass
-   * that a channel switching occured.
-   *
-   * The subclass is expected to flush the queue of 
-   * packets.
-   */
-  virtual void DoNotifyChannelSwitching () = 0; 
+  /**
+  * Called by DcfManager to notify a DcfState subclass
+  * that a channel switching occured.
+  *
+  * The subclass is expected to flush the queue of
+  * packets.
+  */
+  virtual void DoNotifyChannelSwitching () = 0;
 
   uint32_t m_aifsn;
   uint32_t m_backoffSlots;
@@ -159,13 +161,13 @@ private:
  *
  * Handle a set of independent ns3::DcfState, each of which represents
  * a single DCF within a MAC stack. Each ns3::DcfState has a priority
- * implicitely associated with it (the priority is determined when the 
+ * implicitely associated with it (the priority is determined when the
  * ns3::DcfState is added to the DcfManager: the first DcfState to be
  * added gets the highest priority, the second, the second highest
  * priority, and so on.) which is used to handle "internal" collisions.
- * i.e., when two local DcfState are expected to get access to the 
+ * i.e., when two local DcfState are expected to get access to the
  * medium at the same time, the highest priority local DcfState wins
- * access to the medium and the other DcfState suffers a "internal" 
+ * access to the medium and the other DcfState suffers a "internal"
  * collision.
  */
 class DcfManager
@@ -212,7 +214,7 @@ public:
    * must make sure that the DcfState pointer will stay valid as long
    * as the DcfManager is valid. Note that the order in which DcfState
    * objects are added to a DcfManager matters: the first DcfState added
-   * has the highest priority, the second DcfState added, has the second 
+   * has the highest priority, the second DcfState added, has the second
    * highest priority, etc.
    */
   void Add (DcfState *dcf);
@@ -220,9 +222,9 @@ public:
   /**
    * \param state a DcfState
    *
-   * Notify the DcfManager that a specific DcfState needs access to the 
+   * Notify the DcfManager that a specific DcfState needs access to the
    * medium. The DcfManager is then responsible for starting an access
-   * timer and, invoking DcfState::DoNotifyAccessGranted when the access 
+   * timer and, invoking DcfState::DoNotifyAccessGranted when the access
    * is granted if it ever gets granted.
    */
   void RequestAccess (DcfState *state);
@@ -230,7 +232,7 @@ public:
   /**
    * \param duration expected duration of reception
    *
-   * Notify the DCF that a packet reception started 
+   * Notify the DCF that a packet reception started
    * for the expected duration.
    */
   void NotifyRxStartNow (Time duration);
@@ -265,7 +267,7 @@ public:
    * During switching state, new packets can be enqueued in DcaTxop/EdcaTxop
    * but they won't access to the medium until the end of the channel switching.
    */
-  void NotifySwitchingStartNow (Time duration); 
+  void NotifySwitchingStartNow (Time duration);
   /**
    * \param duration the value of the received NAV.
    *
@@ -288,12 +290,12 @@ private:
   Time MostRecent (Time a, Time b, Time c) const;
   Time MostRecent (Time a, Time b, Time c, Time d) const;
   Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
-  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const; 
+  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const;
   /**
    * Access will never be granted to the medium _before_
    * the time returned by this method.
-   * 
-   * \returns the absolute time at which access could start to 
+   *
+   * \returns the absolute time at which access could start to
    * be granted
    */
   Time GetAccessGrantStart (void) const;
@@ -319,16 +321,16 @@ private:
   Time m_lastTxDuration;
   Time m_lastBusyStart;
   Time m_lastBusyDuration;
-  Time m_lastSwitchingStart; 
-  Time m_lastSwitchingDuration; 
+  Time m_lastSwitchingStart;
+  Time m_lastSwitchingDuration;
   bool m_rxing;
   bool m_sleeping;
   Time m_eifsNoDifs;
   EventId m_accessTimeout;
   uint32_t m_slotTimeUs;
   Time m_sifs;
-  class PhyListener *m_phyListener;
-  class LowDcfListener *m_lowListener;
+  PhyListener* m_phyListener;
+  LowDcfListener* m_lowListener;
 };
 
 } // namespace ns3

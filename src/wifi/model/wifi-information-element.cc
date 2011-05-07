@@ -23,18 +23,20 @@
 namespace ns3 {
 
 WifiInformationElement::~WifiInformationElement ()
-{}
+{
+}
 
 void
 WifiInformationElement::Print (std::ostream &os) const
-{}
+{
+}
 
 uint16_t
 WifiInformationElement::GetSerializedSize () const
 {
   return (2 + GetInformationFieldSize ());
 }
-  
+
 Buffer::Iterator
 WifiInformationElement::Serialize (Buffer::Iterator i) const
 {
@@ -82,28 +84,32 @@ WifiInformationElement::DeserializeIfPresent (Buffer::Iterator i)
 bool
 WifiInformationElement::operator< (WifiInformationElement const & a) const
 {
-    return (ElementId () < a.ElementId ());
+  return (ElementId () < a.ElementId ());
 }
 
 bool
 WifiInformationElement::operator== (WifiInformationElement const & a) const
 {
-    if (ElementId () != a.ElementId ())
-        return false;
+  if (ElementId () != a.ElementId ())
+    {
+      return false;
+    }
 
-    if (GetInformationFieldSize () != a.GetInformationFieldSize ())
-        return false;
+  if (GetInformationFieldSize () != a.GetInformationFieldSize ())
+    {
+      return false;
+    }
 
-    uint32_t ieSize = GetInformationFieldSize ();
+  uint32_t ieSize = GetInformationFieldSize ();
 
-    Buffer myIe, hisIe;
-    myIe.AddAtEnd (ieSize);
-    hisIe.AddAtEnd (ieSize);
+  Buffer myIe, hisIe;
+  myIe.AddAtEnd (ieSize);
+  hisIe.AddAtEnd (ieSize);
 
-    SerializeInformationField (myIe.Begin ());
-    a.SerializeInformationField (hisIe.Begin ());
+  SerializeInformationField (myIe.Begin ());
+  a.SerializeInformationField (hisIe.Begin ());
 
-    return (memcmp(myIe.PeekData (), hisIe.PeekData (), ieSize) == 0);
+  return (memcmp (myIe.PeekData (), hisIe.PeekData (), ieSize) == 0);
 }
 
 }

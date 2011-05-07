@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,23 +27,22 @@ namespace ns3 {
 /**
  * \ingroup wifi
  * Standard MSDU aggregator
- * 
+ *
  */
 class MsduStandardAggregator : public MsduAggregator
 {
 public:
-
   static TypeId GetTypeId (void);
   MsduStandardAggregator ();
   ~MsduStandardAggregator ();
   /**
    * \param packet Packet we have to insert into <i>aggregatedPacket</i>.
-   * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible, 
+   * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible,
    * \param src Source address of <i>packet</i>.
    * \param dest Destination address of <i>packet</i>.
-   * 
+   *
    * This method performs an MSDU aggregation.
-   * Returns true if <i>packet</i> can be aggregated to <i>aggregatedPacket</i>, false otherwise. 
+   * Returns true if <i>packet</i> can be aggregated to <i>aggregatedPacket</i>, false otherwise.
    */
   virtual bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
                           Mac48Address src, Mac48Address dest);

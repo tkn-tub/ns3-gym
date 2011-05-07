@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -36,7 +36,7 @@ struct RraaWifiRemoteStation;
  * by "Starsky H. Y. Wong", "Hao Yang", "Songwu Lu", and,
  * "Vaduvur Bharghavan" published in Mobicom 06.
  */
-class RraaWifiManager : public WifiRemoteStationManager 
+class RraaWifiManager : public WifiRemoteStationManager
 {
 public:
   static TypeId GetTypeId (void);
@@ -45,8 +45,7 @@ public:
   virtual ~RraaWifiManager ();
 
 private:
-
-  struct ThresholdsItem 
+  struct ThresholdsItem
   {
     uint32_t datarate;
     double pori;
@@ -55,8 +54,8 @@ private:
   };
 
   // overriden from base class
-  virtual WifiRemoteStation *DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station, 
+  virtual WifiRemoteStation * DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
   virtual void DoReportDataFailed (WifiRemoteStation *station);

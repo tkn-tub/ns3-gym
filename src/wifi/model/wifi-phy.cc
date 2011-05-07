@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -42,7 +42,8 @@ namespace ns3 {
  ****************************************************************/
 
 WifiPhyListener::~WifiPhyListener ()
-{}
+{
+}
 
 /****************************************************************
  *       The actual WifiPhy class
@@ -50,36 +51,36 @@ WifiPhyListener::~WifiPhyListener ()
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 
-TypeId 
+TypeId
 WifiPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
-    .AddTraceSource ("PhyTxBegin", 
+    .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet has begun transmitting over the channel medium",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace))
-    .AddTraceSource ("PhyTxEnd", 
+    .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet has been completely transmitted over the channel. NOTE: the only official WifiPhy implementation available to this date (YansWifiPhy) never fires this trace source.",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace))
-    .AddTraceSource ("PhyTxDrop", 
+    .AddTraceSource ("PhyTxDrop",
                      "Trace source indicating a packet has been dropped by the device during transmission",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxDropTrace))
-    .AddTraceSource ("PhyRxBegin", 
+    .AddTraceSource ("PhyRxBegin",
                      "Trace source indicating a packet has begun being received from the channel medium by the device",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace))
-    .AddTraceSource ("PhyRxEnd", 
+    .AddTraceSource ("PhyRxEnd",
                      "Trace source indicating a packet has been completely received from the channel medium by the device",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxEndTrace))
-    .AddTraceSource ("PhyRxDrop", 
+    .AddTraceSource ("PhyRxDrop",
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace))
-    .AddTraceSource ("PromiscSnifferRx", 
+    .AddTraceSource ("PromiscSnifferRx",
                      "Trace source simulating a wifi device in monitor mode sniffing all received frames",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSniffRxTrace))
-    .AddTraceSource ("PromiscSnifferTx", 
+    .AddTraceSource ("PromiscSnifferTx",
                      "Trace source simulating the capability of a wifi device in monitor mode to sniff all frames being transmitted",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSniffTxTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -93,49 +94,49 @@ WifiPhy::~WifiPhy ()
   NS_LOG_FUNCTION (this);
 }
 
-void 
+void
 WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)
 {
   m_phyTxBeginTrace (packet);
 }
 
-void 
+void
 WifiPhy::NotifyTxEnd (Ptr<const Packet> packet)
 {
   m_phyTxEndTrace (packet);
 }
 
-void 
-WifiPhy::NotifyTxDrop (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyTxDrop (Ptr<const Packet> packet)
 {
   m_phyTxDropTrace (packet);
 }
 
-void 
-WifiPhy::NotifyRxBegin (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyRxBegin (Ptr<const Packet> packet)
 {
   m_phyRxBeginTrace (packet);
 }
 
-void 
-WifiPhy::NotifyRxEnd (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyRxEnd (Ptr<const Packet> packet)
 {
   m_phyRxEndTrace (packet);
 }
 
-void 
-WifiPhy::NotifyRxDrop (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 {
   m_phyRxDropTrace (packet);
 }
 
-void 
+void
 WifiPhy::NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
 {
   m_phyPromiscSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble, signalDbm, noiseDbm);
 }
 
-void 
+void
 WifiPhy::NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble)
 {
   m_phyPromiscSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble);
@@ -630,21 +631,22 @@ WifiPhy::GetOfdmRate13_5MbpsBW5MHz ()
 
 std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
 {
-  switch (state) {
-  case WifiPhy::IDLE:
-    return (os << "IDLE");
-  case WifiPhy::CCA_BUSY:
-    return (os << "CCA_BUSY");
-  case WifiPhy::TX:
-    return (os << "TX");
-  case WifiPhy::RX:
-    return (os << "RX");
-  case WifiPhy::SWITCHING: 
-    return (os << "SWITCHING");
-  default:
-    NS_FATAL_ERROR ("Invalid WifiPhy state");
-    return (os << "INVALID");
-  }
+  switch (state)
+    {
+    case WifiPhy::IDLE:
+      return (os << "IDLE");
+    case WifiPhy::CCA_BUSY:
+      return (os << "CCA_BUSY");
+    case WifiPhy::TX:
+      return (os << "TX");
+    case WifiPhy::RX:
+      return (os << "RX");
+    case WifiPhy::SWITCHING:
+      return (os << "SWITCHING");
+    default:
+      NS_FATAL_ERROR ("Invalid WifiPhy state");
+      return (os << "INVALID");
+    }
 }
 
 } // namespace ns3
@@ -654,7 +656,8 @@ namespace {
 static class Constructor
 {
 public:
-  Constructor () {
+  Constructor ()
+  {
     ns3::WifiPhy::GetDsssRate1Mbps ();
     ns3::WifiPhy::GetDsssRate2Mbps ();
     ns3::WifiPhy::GetDsssRate5_5Mbps ();

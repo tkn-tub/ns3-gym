@@ -34,7 +34,7 @@ namespace ns3 {
  * \brief Information element vector
  * \ingroup wifi
  *
- * Implements a vector of WifiInformationElements. 
+ * Implements a vector of WifiInformationElements.
  * Information elements typically come in groups, and the
  * WifiInformationElementVector class provides a representation of a
  * series of IEs, and the facility for serialisation to and

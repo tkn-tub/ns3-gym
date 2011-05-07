@@ -36,8 +36,8 @@ namespace ns3  {
 class MgtAddBaRequestHeader;
 
 /**
- * \ingroup wifi 
- * 
+ * \ingroup wifi
+ *
  * The Wifi MAC high model for a non-AP STA in a BSS.
  */
 class StaWifiMac : public RegularWifiMac
@@ -84,7 +84,8 @@ public:
   void StartActiveAssociation (void);
 
 private:
-  enum MacState {
+  enum MacState
+  {
     ASSOCIATED,
     WAIT_PROBE_RESP,
     WAIT_ASSOC_RESP,

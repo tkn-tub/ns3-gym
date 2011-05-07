@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@ namespace ns3 {
 
 /**
  * \ingroup wifi
- * 
+ *
  * This objects implements the PHY state machine of the Wifi device.
  */
 class WifiPhyStateHelper : public Object
@@ -55,7 +55,7 @@ public:
 
   void SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower);
   void SwitchToRx (Time rxDuration);
-  void SwitchToChannelSwitching (Time switchingDuration); 
+  void SwitchToChannelSwitching (Time switchingDuration);
   void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
   void SwitchFromRxEndError (Ptr<const Packet> packet, double snr);
   void SwitchMaybeToCcaBusy (Time duration);
@@ -72,18 +72,18 @@ private:
   void NotifyRxEndOk (void);
   void NotifyRxEndError (void);
   void NotifyMaybeCcaBusyStart (Time duration);
-  void NotifySwitchingStart (Time duration); 
+  void NotifySwitchingStart (Time duration);
   void DoSwitchFromRx (void);
 
   bool m_rxing;
   Time m_endTx;
   Time m_endRx;
   Time m_endCcaBusy;
-  Time m_endSwitching; 
+  Time m_endSwitching;
   Time m_startTx;
   Time m_startRx;
   Time m_startCcaBusy;
-  Time m_startSwitching; 
+  Time m_startSwitching;
   Time m_previousStateChangeTime;
 
   Listeners m_listeners;

@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,7 +32,8 @@ namespace ns3 {
  * with values corresponding to the AC index (ACI) values specified in
  * Table 7-36 of IEEE 802.11-2007.
  */
-enum AcIndex {
+enum AcIndex
+{
   /** Best Effort */
   AC_BE = 0,
   /** Background */
@@ -80,7 +81,7 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  *
  * ----- = old packets
  * +++++ = new packets
- *  
+ *
  *  CASE A:
  *
  *    0                             4095
@@ -90,7 +91,7 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  *
  *
  *  CASE B:
- * 
+ *
  *    0                            4095
  *    |------|++++++++++++++++|-----|
  *           ^                ^

@@ -3,7 +3,7 @@
  * Copyright (c) 2009 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
 namespace ns3 {
 
-class InterferenceHelperTxDurationTest : public TestCase 
+class InterferenceHelperTxDurationTest : public TestCase
 {
 public:
   InterferenceHelperTxDurationTest ();
@@ -37,32 +37,31 @@ public:
   virtual void DoRun (void);
 
 private:
-
-  /** 
+  /**
    * Check if the payload tx duration returned by InterferenceHelper
    * corresponds to a known value of the pay
-   * 
+   *
    * @param size size of payload in octets (includes everything after the PLCP header)
-   * @param payloadMode the WifiMode used 
+   * @param payloadMode the WifiMode used
    * @param knownPlcpLengthFieldValue the known value of the Length field in the PLCP header
-   * 
+   *
    * @return true if values correspond, false otherwise
    */
-  bool CheckPayloadDuration(uint32_t size, WifiMode payloadMode,  uint32_t knownDurationMicroSeconds);
+  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode,  uint32_t knownDurationMicroSeconds);
 
-  /** 
+  /**
    * Check if the overall tx duration returned by InterferenceHelper
    * corresponds to a known value of the pay
-   * 
+   *
    * @param size size of payload in octets (includes everything after the PLCP header)
-   * @param payloadMode the WifiMode used 
+   * @param payloadMode the WifiMode used
    * @param preamble the WifiPreamble used
    * @param knownPlcpLengthFieldValue the known value of the Length field in the PLCP header
-   * 
+   *
    * @return true if values correspond, false otherwise
    */
-  bool CheckTxDuration(uint32_t size, WifiMode payloadMode,  WifiPreamble preamble, uint32_t knownDurationMicroSeconds);
-  
+  bool CheckTxDuration (uint32_t size, WifiMode payloadMode,  WifiPreamble preamble, uint32_t knownDurationMicroSeconds);
+
 };
 
 
@@ -77,13 +76,13 @@ InterferenceHelperTxDurationTest::~InterferenceHelperTxDurationTest ()
 }
 
 bool
-InterferenceHelperTxDurationTest::CheckPayloadDuration(uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
+InterferenceHelperTxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
 {
-  uint32_t calculatedDurationMicroSeconds = InterferenceHelper::GetPayloadDurationMicroSeconds (size, payloadMode);  
+  uint32_t calculatedDurationMicroSeconds = InterferenceHelper::GetPayloadDurationMicroSeconds (size, payloadMode);
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
-                << " mode=" << payloadMode 
+                << " mode=" << payloadMode
                 << " known=" << knownDurationMicroSeconds
                 << " calculated=" << calculatedDurationMicroSeconds
                 << std::endl;
@@ -93,13 +92,13 @@ InterferenceHelperTxDurationTest::CheckPayloadDuration(uint32_t size, WifiMode p
 }
 
 bool
-InterferenceHelperTxDurationTest::CheckTxDuration(uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds)
+InterferenceHelperTxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds)
 {
-  uint32_t calculatedDurationMicroSeconds = InterferenceHelper::CalculateTxDuration (size, payloadMode, preamble).GetMicroSeconds ();  
+  uint32_t calculatedDurationMicroSeconds = InterferenceHelper::CalculateTxDuration (size, payloadMode, preamble).GetMicroSeconds ();
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
-                << " mode=" << payloadMode 
+                << " mode=" << payloadMode
                 << " preamble=" << preamble
                 << " known=" << knownDurationMicroSeconds
                 << " calculated=" << calculatedDurationMicroSeconds
@@ -125,7 +124,7 @@ InterferenceHelperTxDurationTest::DoRun (void)
   // Similar, but we add PLCP preamble and header durations
   // and we test different rates.
   // The payload durations for modes other than 11mbb have been
-  // calculated by hand according to  IEEE Std 802.11-2007 18.2.3.5 
+  // calculated by hand according to  IEEE Std 802.11-2007 18.2.3.5
   retval = retval
     && CheckTxDuration (1023, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_SHORT, 744 + 96)
     && CheckTxDuration (1024, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_SHORT, 745 + 96)
@@ -165,7 +164,7 @@ InterferenceHelperTxDurationTest::DoRun (void)
 
   // values from
   // http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
-  retval = retval 
+  retval = retval
     && CheckTxDuration (1536, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 1310)
     && CheckTxDuration (76, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 248)
     && CheckTxDuration (14, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 203)
@@ -193,5 +192,5 @@ TxDurationTestSuite::TxDurationTestSuite ()
 }
 
 static TxDurationTestSuite g_txDurationTestSuite;
-} //namespace ns3 
+} //namespace ns3
 

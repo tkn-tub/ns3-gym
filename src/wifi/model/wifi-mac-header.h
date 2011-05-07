@@ -29,7 +29,8 @@
 
 namespace ns3 {
 
-enum WifiMacType {
+enum WifiMacType
+{
   WIFI_MAC_CTL_RTS = 0,
   WIFI_MAC_CTL_CTS,
   WIFI_MAC_CTL_ACK,
@@ -72,18 +73,20 @@ enum WifiMacType {
  *
  * Implements the IEEE 802.11 MAC header
  */
-class WifiMacHeader : public Header 
+class WifiMacHeader : public Header
 {
 public:
-  enum QosAckPolicy {
+  enum QosAckPolicy
+  {
     NORMAL_ACK = 0,
     NO_ACK = 1,
     NO_EXPLICIT_ACK = 2,
     BLOCK_ACK = 3,
   };
-  
-  enum AddressType {
-    ADDR1,	
+
+  enum AddressType
+  {
+    ADDR1,
     ADDR2,
     ADDR3,
     ADDR4
@@ -109,7 +112,7 @@ public:
   void SetAction ();
   void SetBlockAckReq (void);
   void SetBlockAck (void);
-  void SetMultihopAction();
+  void SetMultihopAction ();
   void SetDsFrom (void);
   void SetDsNotFrom (void);
   void SetDsTo (void);
@@ -138,7 +141,7 @@ public:
   void SetQosAmsdu (void);
   void SetQosNoAmsdu (void);
   void SetQosTxopLimit (uint8_t txop);
- 
+
 
   Mac48Address GetAddr1 (void) const;
   Mac48Address GetAddr2 (void) const;
@@ -186,7 +189,7 @@ public:
   uint8_t GetQosTxopLimit (void) const;
 
   uint32_t GetSize (void) const;
-  const char *GetTypeString (void) const;
+  const char * GetTypeString (void) const;
 
 
 private:

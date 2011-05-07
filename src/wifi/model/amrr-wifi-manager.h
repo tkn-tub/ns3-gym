@@ -3,7 +3,7 @@
  * Copyright (c) 2003,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,7 +33,7 @@ struct AmrrWifiRemoteStation;
  *
  * This class implements the AMRR rate control algorithm which
  * was initially described in <i>IEEE 802.11 Rate Adaptation:
- * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and 
+ * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and
  * T. Turletti.
  */
 class AmrrWifiManager : public WifiRemoteStationManager
@@ -45,8 +45,8 @@ public:
 
 private:
   // overriden from base class
-  virtual WifiRemoteStation *DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station, 
+  virtual WifiRemoteStation * DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
   virtual void DoReportDataFailed (WifiRemoteStation *station);

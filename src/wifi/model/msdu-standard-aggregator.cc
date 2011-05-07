@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,15 +39,17 @@ MsduStandardAggregator::GetTypeId (void)
                    UintegerValue (7935),
                    MakeUintegerAccessor (&MsduStandardAggregator::m_maxAmsduLength),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
-MsduStandardAggregator::MsduStandardAggregator () 
-{}
+MsduStandardAggregator::MsduStandardAggregator ()
+{
+}
 
 MsduStandardAggregator::~MsduStandardAggregator ()
-{}
+{
+}
 
 bool
 MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
@@ -59,7 +61,7 @@ MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
 
   uint32_t padding = CalculatePadding (aggregatedPacket);
   uint32_t actualSize = aggregatedPacket->GetSize ();
-                          
+
   if ((14 + packet->GetSize () + actualSize + padding) <= m_maxAmsduLength)
     {
       if (padding)
@@ -71,7 +73,7 @@ MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
       currentHdr.SetSourceAddr (src);
       currentHdr.SetLength (packet->GetSize ());
       currentPacket = packet->Copy ();
-      
+
       currentPacket->AddHeader (currentHdr);
       aggregatedPacket->AddAtEnd (currentPacket);
       return true;
@@ -82,7 +84,7 @@ MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
 uint32_t
 MsduStandardAggregator::CalculatePadding (Ptr<const Packet> packet)
 {
-  return (4 - (packet->GetSize() %4 )) % 4;
+  return (4 - (packet->GetSize () % 4 )) % 4;
 }
 
 }  //namespace ns3

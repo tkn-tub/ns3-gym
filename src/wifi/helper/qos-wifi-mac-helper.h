@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -125,7 +125,7 @@ public:
    * block ack agreement is teared down. Timer is reset in an recipient station every time
    * that a block ack request or a MPDU with ack policy BLOCK ACK is received.
    * Timer is reset in a originator station every time that a block ack frame is received.
-   * 
+   *
    * \param ac access category for which we are setting block ack threshold. Possibilities
    * are: AC_BK, AC_BE, AC_VI, AC_VO.
    * \param timeout number of block of 1024 microseconds.
@@ -144,7 +144,7 @@ private:
 
   ObjectFactory m_mac;
   std::map<AcIndex, ObjectFactory> m_aggregators;
-  /* 
+  /*
    * Next maps contain, for every access category, the values for
    * block ack threshold and block ack inactivity timeout.
    */

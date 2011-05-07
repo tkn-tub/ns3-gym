@@ -3,7 +3,7 @@
  * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-/** 
+/**
  * \ingroup wifi
  * Maintains the state and information about transmitted MPDUs with ack policy block ack
  * for an originator station.
@@ -48,45 +48,46 @@ public:
    *                   ---------------     blockAckThreshold   /       |    |         | blockAckThreshold
    *                   | UNSUCCESSFUL |                       /        |    |         |
    *                   ---------------                       v         |    ----------|
-   *                                            --------------         |      
-   *                                            |  INACTIVE   |        |  
+   *                                            --------------         |
+   *                                            |  INACTIVE   |        |
    *                                            --------------         |
    *                        send a MPDU (Normal Ack)   |               |
    *                        retryPkts + queuePkts      |               |
    *                                  >=               |               |
    *                         blockAckThreshold         |----------------
-   */                    
-   /**
-   * Represents the state for this agreement.
-   *
-   *  PENDING:
-   *    If an agreement is in PENDING state it means that an ADDBARequest frame was sent to
-   *    recipient in order to setup the block ack and the originator is waiting for the relative
-   *    ADDBAResponse frame.
-   *  
-   *  ESTABLISHED:
-   *    The block ack is active and all packets relative to this agreement are transmitted
-   *    with ack policy set to block ack.
-   *  
-   *  INACTIVE:
-   *    In our implementation, block ack tear-down happens only if an inactivity timeout occurs
-   *    so we could have an active block ack but a number of packets that doesn't reach the value of
-   *    m_blockAckThreshold (see ns3::BlockAckManager). In these conditions the agreement becomes
-   *    INACTIVE until that the number of packets reaches the value of m_blockAckThreshold again.
-   *
-   *  UNSUCCESSFUL (not used for now):
-   *    The agreement's state becomes UNSUCCESSFUL if:
-   *     
-   *    - its previous state was PENDING and an ADDBAResponse frame wasn't received from
-   *      recipient station within an interval of time defined by m_bAckSetupTimeout attribute
-   *      in ns3::WifiMac.
-   *    - an ADDBAResponse frame is received from recipient and the Status Code field is set
-   *      to failure.
-   *    
-   *    In both cases for station addressed by BlockAckAgreement::m_peer and for
-   *    TID BlockAckAgreement::m_tid block ack mechanism won't be used.
    */
-  enum State {
+  /**
+  * Represents the state for this agreement.
+  *
+  *  PENDING:
+  *    If an agreement is in PENDING state it means that an ADDBARequest frame was sent to
+  *    recipient in order to setup the block ack and the originator is waiting for the relative
+  *    ADDBAResponse frame.
+  *
+  *  ESTABLISHED:
+  *    The block ack is active and all packets relative to this agreement are transmitted
+  *    with ack policy set to block ack.
+  *
+  *  INACTIVE:
+  *    In our implementation, block ack tear-down happens only if an inactivity timeout occurs
+  *    so we could have an active block ack but a number of packets that doesn't reach the value of
+  *    m_blockAckThreshold (see ns3::BlockAckManager). In these conditions the agreement becomes
+  *    INACTIVE until that the number of packets reaches the value of m_blockAckThreshold again.
+  *
+  *  UNSUCCESSFUL (not used for now):
+  *    The agreement's state becomes UNSUCCESSFUL if:
+  *
+  *    - its previous state was PENDING and an ADDBAResponse frame wasn't received from
+  *      recipient station within an interval of time defined by m_bAckSetupTimeout attribute
+  *      in ns3::WifiMac.
+  *    - an ADDBAResponse frame is received from recipient and the Status Code field is set
+  *      to failure.
+  *
+  *    In both cases for station addressed by BlockAckAgreement::m_peer and for
+  *    TID BlockAckAgreement::m_tid block ack mechanism won't be used.
+  */
+  enum State
+  {
     PENDING,
     ESTABLISHED,
     INACTIVE,

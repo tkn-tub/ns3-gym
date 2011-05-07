@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,7 +28,7 @@ namespace ns3 {
  * \brief Maintains information for a block ack agreement.
  * \ingroup wifi
  */
-class BlockAckAgreement 
+class BlockAckAgreement
 {
   friend class MacLow;
 public:
@@ -52,7 +52,6 @@ public:
   bool IsAmsduSupported (void) const;
 
 protected:
- 
   Mac48Address m_peer;
   uint8_t m_amsduSupported;
   uint8_t m_blockAckPolicy; /* represents type of block ack: immediate or delayed */
@@ -60,7 +59,7 @@ protected:
   uint16_t m_bufferSize;
   uint16_t m_timeout;
   uint16_t m_startingSeq;
-  
+
   EventId m_inactivityEvent;
 };
 

@@ -3,7 +3,7 @@
  * Copyright (c) 2008 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@ NS_OBJECT_ENSURE_REGISTERED (WifiMac);
 Time
 WifiMac::GetDefaultMaxPropagationDelay (void)
 {
-  // 1000m 
+  // 1000m
   return Seconds (1000.0 / 300000000.0);
 }
 Time
@@ -58,8 +58,8 @@ WifiMac::GetDefaultCtsAckDelay (void)
 Time
 WifiMac::GetDefaultCtsAckTimeout (void)
 {
-  /* Cts_Timeout and Ack_Timeout are specified in the Annex C 
-     (Formal description of MAC operation, see details on the 
+  /* Cts_Timeout and Ack_Timeout are specified in the Annex C
+     (Formal description of MAC operation, see details on the
      Trsp timer setting at page 346)
   */
   Time ctsTimeout = GetDefaultSifs ();
@@ -126,7 +126,7 @@ WifiMac::GetCompressedBlockAckTimeout (void) const
   return MicroSeconds (0);
 }
 
-TypeId 
+TypeId
 WifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
@@ -154,17 +154,17 @@ WifiMac::GetTypeId (void)
     .AddAttribute ("Sifs", "The value of the SIFS constant.",
                    TimeValue (GetDefaultSifs ()),
                    MakeTimeAccessor (&WifiMac::SetSifs,
-				     &WifiMac::GetSifs),
+                                     &WifiMac::GetSifs),
                    MakeTimeChecker ())
     .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS",
-		   TimeValue (GetDefaultEifsNoDifs ()),
-		   MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
-				     &WifiMac::GetEifsNoDifs),
-		   MakeTimeChecker ())
+                   TimeValue (GetDefaultEifsNoDifs ()),
+                   MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
+                                     &WifiMac::GetEifsNoDifs),
+                   MakeTimeChecker ())
     .AddAttribute ("Slot", "The duration of a Slot.",
                    TimeValue (GetDefaultSlot ()),
                    MakeTimeAccessor (&WifiMac::SetSlot,
-				     &WifiMac::GetSlot),
+                                     &WifiMac::GetSlot),
                    MakeTimeChecker ())
     .AddAttribute ("Pifs", "The value of the PIFS constant.",
                    TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
@@ -176,41 +176,41 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
                    MakeTimeChecker ())
     .AddAttribute ("Ssid", "The ssid we want to belong to.",
-		   SsidValue (Ssid ("default")),
-		   MakeSsidAccessor (&WifiMac::GetSsid,
-				     &WifiMac::SetSsid),
-		   MakeSsidChecker ())
-    .AddTraceSource ("MacTx", 
+                   SsidValue (Ssid ("default")),
+                   MakeSsidAccessor (&WifiMac::GetSsid,
+                                     &WifiMac::SetSsid),
+                   MakeSsidChecker ())
+    .AddTraceSource ("MacTx",
                      "A packet has been received from higher layers and is being processed in preparation for "
                      "queueing for transmission.",
                      MakeTraceSourceAccessor (&WifiMac::m_macTxTrace))
-    .AddTraceSource ("MacTxDrop", 
+    .AddTraceSource ("MacTxDrop",
                      "A packet has been dropped in the MAC layer before being queued for transmission.",
                      MakeTraceSourceAccessor (&WifiMac::m_macTxDropTrace))
-    .AddTraceSource ("MacPromiscRx", 
+    .AddTraceSource ("MacPromiscRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  This is a promiscuous trace,",
                      MakeTraceSourceAccessor (&WifiMac::m_macPromiscRxTrace))
-    .AddTraceSource ("MacRx", 
+    .AddTraceSource ("MacRx",
                      "A packet has been received by this device, has been passed up from the physical layer "
                      "and is being forwarded up the local protocol stack.  This is a non-promiscuous trace,",
                      MakeTraceSourceAccessor (&WifiMac::m_macRxTrace))
-    .AddTraceSource ("MacRxDrop", 
+    .AddTraceSource ("MacRxDrop",
                      "A packet has been dropped in the MAC layer after it has been passed up from the physical "
                      "layer.",
                      MakeTraceSourceAccessor (&WifiMac::m_macRxDropTrace))
 #if 0
     // Not currently implemented in this device
-    .AddTraceSource ("Sniffer", 
+    .AddTraceSource ("Sniffer",
                      "Trace source simulating a non-promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&WifiMac::m_snifferTrace))
 #endif
-    ;
+  ;
 
   return tid;
 }
 
-void 
+void
 WifiMac::SetMaxPropagationDelay (Time delay)
 {
   m_maxPropagationDelay = delay;
@@ -227,32 +227,32 @@ WifiMac::GetMaxPropagationDelay (void) const
   return m_maxPropagationDelay;
 }
 
-void 
+void
 WifiMac::NotifyTx (Ptr<const Packet> packet)
 {
   m_macTxTrace (packet);
 }
 
-void 
-WifiMac::NotifyTxDrop (Ptr<const Packet> packet) 
+void
+WifiMac::NotifyTxDrop (Ptr<const Packet> packet)
 {
   m_macTxDropTrace (packet);
 }
 
-void 
-WifiMac::NotifyRx (Ptr<const Packet> packet) 
+void
+WifiMac::NotifyRx (Ptr<const Packet> packet)
 {
   m_macRxTrace (packet);
 }
 
-void 
-WifiMac::NotifyPromiscRx (Ptr<const Packet> packet) 
+void
+WifiMac::NotifyPromiscRx (Ptr<const Packet> packet)
 {
   m_macPromiscRxTrace (packet);
 }
 
-void 
-WifiMac::NotifyRxDrop (Ptr<const Packet> packet) 
+void
+WifiMac::NotifyRxDrop (Ptr<const Packet> packet)
 {
   m_macRxDropTrace (packet);
 }
@@ -260,185 +260,188 @@ WifiMac::NotifyRxDrop (Ptr<const Packet> packet)
 void
 WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
 {
-  switch (standard) {
-  case WIFI_PHY_STANDARD_80211a:
-    Configure80211a ();
-    break;
-  case WIFI_PHY_STANDARD_80211b:
-    Configure80211b ();
-    break;
-  case WIFI_PHY_STANDARD_80211g:
-    Configure80211g ();
-    break;
-  case WIFI_PHY_STANDARD_80211_10Mhz: 
-    Configure80211_10Mhz ();
-    break;
-  case WIFI_PHY_STANDARD_80211_5Mhz:
-    Configure80211_5Mhz ();
-    break;
-  case WIFI_PHY_STANDARD_holland:
-    Configure80211a ();
-    break;
-  case WIFI_PHY_STANDARD_80211p_CCH:
-    Configure80211p_CCH ();
-    break;
-  case WIFI_PHY_STANDARD_80211p_SCH:
-    Configure80211p_SCH ();
-    break;
-  default:
-    NS_ASSERT (false);
-    break;
-  }
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211a:
+      Configure80211a ();
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      Configure80211b ();
+      break;
+    case WIFI_PHY_STANDARD_80211g:
+      Configure80211g ();
+      break;
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      Configure80211_10Mhz ();
+      break;
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      Configure80211_5Mhz ();
+      break;
+    case WIFI_PHY_STANDARD_holland:
+      Configure80211a ();
+      break;
+    case WIFI_PHY_STANDARD_80211p_CCH:
+      Configure80211p_CCH ();
+      break;
+    case WIFI_PHY_STANDARD_80211p_SCH:
+      Configure80211p_SCH ();
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
   FinishConfigureStandard (standard);
 }
 
 void
 WifiMac::Configure80211a (void)
 {
-  SetSifs(MicroSeconds(16));
-  SetSlot(MicroSeconds(9)); 
-  SetEifsNoDifs(MicroSeconds(16+44));
-  SetPifs(MicroSeconds(16+9));
-  SetCtsTimeout(MicroSeconds(16+44+9+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(16+44+9+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+  SetSifs (MicroSeconds (16));
+  SetSlot (MicroSeconds (9));
+  SetEifsNoDifs (MicroSeconds (16 + 44));
+  SetPifs (MicroSeconds (16 + 9));
+  SetCtsTimeout (MicroSeconds (16 + 44 + 9 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (16 + 44 + 9 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::Configure80211b (void)
 {
-  SetSifs(MicroSeconds(10));
-  SetSlot(MicroSeconds(20));
-  SetEifsNoDifs(MicroSeconds(10+304));
-  SetPifs(MicroSeconds(10+20));
-  SetCtsTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+  SetSifs (MicroSeconds (10));
+  SetSlot (MicroSeconds (20));
+  SetEifsNoDifs (MicroSeconds (10 + 304));
+  SetPifs (MicroSeconds (10 + 20));
+  SetCtsTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::Configure80211g (void)
 {
-  SetSifs(MicroSeconds(10));
+  SetSifs (MicroSeconds (10));
   // Note no support for Short Slot Time as yet
-  SetSlot(MicroSeconds(20));
-  SetEifsNoDifs(MicroSeconds(10+304));
-  SetPifs(MicroSeconds(10+20));
-  SetCtsTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetSlot (MicroSeconds (20));
+  SetEifsNoDifs (MicroSeconds (10 + 304));
+  SetPifs (MicroSeconds (10 + 20));
+  SetCtsTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::Configure80211_10Mhz (void)
 {
-  SetSifs(MicroSeconds(32));
-  SetSlot(MicroSeconds(13)); 
-  SetEifsNoDifs(MicroSeconds(32+88));
-  SetPifs(MicroSeconds(32+13));
-  SetCtsTimeout(MicroSeconds(32+88+13+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(32+88+13+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+  SetSifs (MicroSeconds (32));
+  SetSlot (MicroSeconds (13));
+  SetEifsNoDifs (MicroSeconds (32 + 88));
+  SetPifs (MicroSeconds (32 + 13));
+  SetCtsTimeout (MicroSeconds (32 + 88 + 13 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (32 + 88 + 13 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::Configure80211_5Mhz (void)
 {
-  SetSifs(MicroSeconds(64));
-  SetSlot(MicroSeconds(21));
-  SetEifsNoDifs(MicroSeconds(64+176));
-  SetPifs(MicroSeconds(64+21));
-  SetCtsTimeout(MicroSeconds(64+176+21+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(64+176+21+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+  SetSifs (MicroSeconds (64));
+  SetSlot (MicroSeconds (21));
+  SetEifsNoDifs (MicroSeconds (64 + 176));
+  SetPifs (MicroSeconds (64 + 21));
+  SetCtsTimeout (MicroSeconds (64 + 176 + 21 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (64 + 176 + 21 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::Configure80211p_CCH (void)
 {
-  SetSifs(MicroSeconds(32));
-  SetSlot(MicroSeconds(16)); 
-  SetEifsNoDifs(MicroSeconds(32+88));
-  SetPifs(MicroSeconds(32+16));
-  SetCtsTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+  SetSifs (MicroSeconds (32));
+  SetSlot (MicroSeconds (16));
+  SetEifsNoDifs (MicroSeconds (32 + 88));
+  SetPifs (MicroSeconds (32 + 16));
+  SetCtsTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::Configure80211p_SCH (void)
 {
-  SetSifs(MicroSeconds(32));
-  SetSlot(MicroSeconds(16)); 
-  SetEifsNoDifs(MicroSeconds(32+88));
-  SetPifs(MicroSeconds(32+16));
-  SetCtsTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
-  SetAckTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+  SetSifs (MicroSeconds (32));
+  SetSlot (MicroSeconds (16));
+  SetEifsNoDifs (MicroSeconds (32 + 88));
+  SetPifs (MicroSeconds (32 + 16));
+  SetCtsTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  SetAckTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
 WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac)
 {
   /* see IEE802.11 section 7.3.2.29 */
-  switch (ac) {
-  case AC_VO:
-    dcf->SetMinCw ((cwmin+1)/4-1);
-    dcf->SetMaxCw ((cwmin+1)/2-1);
-    dcf->SetAifsn (2);
-    break;
-  case AC_VI:
-    dcf->SetMinCw ((cwmin+1)/2-1);
-    dcf->SetMaxCw (cwmin);
-    dcf->SetAifsn (2);
-    break;
-  case AC_BE:
-    dcf->SetMinCw (cwmin);
-    dcf->SetMaxCw (cwmax);
-    dcf->SetAifsn (3);
-    break;
-  case AC_BK:
-    dcf->SetMinCw (cwmin);
-    dcf->SetMaxCw (cwmax);
-    dcf->SetAifsn (7);
-    break;
-  case AC_BE_NQOS:
-    dcf->SetMinCw (cwmin);
-    dcf->SetMaxCw (cwmax);
-    dcf->SetAifsn (2);    
-    break;
-  case AC_UNDEF:
-    NS_FATAL_ERROR ("I don't know what to do with this");
-    break;
-  }
+  switch (ac)
+    {
+    case AC_VO:
+      dcf->SetMinCw ((cwmin + 1) / 4 - 1);
+      dcf->SetMaxCw ((cwmin + 1) / 2 - 1);
+      dcf->SetAifsn (2);
+      break;
+    case AC_VI:
+      dcf->SetMinCw ((cwmin + 1) / 2 - 1);
+      dcf->SetMaxCw (cwmin);
+      dcf->SetAifsn (2);
+      break;
+    case AC_BE:
+      dcf->SetMinCw (cwmin);
+      dcf->SetMaxCw (cwmax);
+      dcf->SetAifsn (3);
+      break;
+    case AC_BK:
+      dcf->SetMinCw (cwmin);
+      dcf->SetMaxCw (cwmax);
+      dcf->SetAifsn (7);
+      break;
+    case AC_BE_NQOS:
+      dcf->SetMinCw (cwmin);
+      dcf->SetMaxCw (cwmax);
+      dcf->SetAifsn (2);
+      break;
+    case AC_UNDEF:
+      NS_FATAL_ERROR ("I don't know what to do with this");
+      break;
+    }
 }
 
 void
 WifiMac::ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac)
 {
   /* see IEEE 1609.4-2006 section 6.3.1, Table 1 */
-  switch (ac) {
-  case AC_VO:
-    dcf->SetMinCw ((cwmin+1)/4-1);
-    dcf->SetMaxCw ((cwmin+1)/2-1);
-    dcf->SetAifsn (2);
-    break;
-  case AC_VI:
-    dcf->SetMinCw ((cwmin+1)/4-1);
-    dcf->SetMaxCw ((cwmin+1)/2-1);
-    dcf->SetAifsn (3);
-    break;
-  case AC_BE:
-    dcf->SetMinCw ((cwmin+1)/2-1);
-    dcf->SetMaxCw (cwmin);
-    dcf->SetAifsn (6);
-    break;
-  case AC_BK:
-    dcf->SetMinCw (cwmin);
-    dcf->SetMaxCw (cwmax);
-    dcf->SetAifsn (9);
-    break;
-  case AC_BE_NQOS:
-    dcf->SetMinCw (cwmin);
-    dcf->SetMaxCw (cwmax);
-    dcf->SetAifsn (2);    
-    break;
-  case AC_UNDEF:
-    NS_FATAL_ERROR ("I don't know what to do with this");
-    break;
-  }
+  switch (ac)
+    {
+    case AC_VO:
+      dcf->SetMinCw ((cwmin + 1) / 4 - 1);
+      dcf->SetMaxCw ((cwmin + 1) / 2 - 1);
+      dcf->SetAifsn (2);
+      break;
+    case AC_VI:
+      dcf->SetMinCw ((cwmin + 1) / 4 - 1);
+      dcf->SetMaxCw ((cwmin + 1) / 2 - 1);
+      dcf->SetAifsn (3);
+      break;
+    case AC_BE:
+      dcf->SetMinCw ((cwmin + 1) / 2 - 1);
+      dcf->SetMaxCw (cwmin);
+      dcf->SetAifsn (6);
+      break;
+    case AC_BK:
+      dcf->SetMinCw (cwmin);
+      dcf->SetMaxCw (cwmax);
+      dcf->SetAifsn (9);
+      break;
+    case AC_BE_NQOS:
+      dcf->SetMinCw (cwmin);
+      dcf->SetMaxCw (cwmax);
+      dcf->SetAifsn (2);
+      break;
+    case AC_UNDEF:
+      NS_FATAL_ERROR ("I don't know what to do with this");
+      break;
+    }
 }
 } // namespace ns3

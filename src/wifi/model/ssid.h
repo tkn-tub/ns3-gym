@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,13 +43,13 @@ public:
   bool IsEqual (const Ssid& o) const;
   bool IsBroadcast (void) const;
 
-  char *PeekString (void) const;
+  char* PeekString (void) const;
 
   WifiInformationElementId ElementId () const;
   uint8_t GetInformationFieldSize () const;
   void SerializeInformationField (Buffer::Iterator start) const;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
-                                  uint8_t length);
+                                       uint8_t length);
 
 private:
   uint8_t m_ssid[33];

@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,11 +39,12 @@ enum BlockAckType
  *    - Basic block ack (unique type in 802.11e)
  *    - Compressed block ack
  *    - Multi-TID block ack
- *  For now only basic block ack and compressed block ack 
+ *  For now only basic block ack and compressed block ack
  *  are supported.
  *  Basic block ack is also default variant.
  */
-class CtrlBAckRequestHeader : public Header {
+class CtrlBAckRequestHeader : public Header
+{
 public:
   CtrlBAckRequestHeader ();
   ~CtrlBAckRequestHeader ();
@@ -67,13 +68,12 @@ public:
   bool IsMultiTid (void) const;
 
   uint16_t GetStartingSequenceControl (void) const;
-  
+
 private:
-  
   void SetStartingSequenceControl (uint16_t seqControl);
   uint16_t GetBarControl (void) const;
   void SetBarControl (uint16_t bar);
-  
+
   /**
    * The lsb bit of the BAR control field is used only for the
    * HT (High Throughput) delayed block ack configuration.
@@ -95,11 +95,12 @@ private:
  *    - Basic block ack (unique type in 802.11e)
  *    - Compressed block ack
  *    - Multi-TID block ack
- *  For now only basic block ack and compressed block ack 
+ *  For now only basic block ack and compressed block ack
  *  are supported.
  *  Basic block ack is also default variant.
  */
-class CtrlBAckResponseHeader : public Header {
+class CtrlBAckResponseHeader : public Header
+{
 public:
   CtrlBAckResponseHeader ();
   ~CtrlBAckResponseHeader ();
@@ -133,12 +134,11 @@ public:
   uint64_t GetCompressedBitmap (void) const;
 
   void ResetBitmap (void);
-  
+
 private:
-  
   uint16_t GetBaControl (void) const;
   void SetBaControl (uint16_t bar);
-  
+
   Buffer::Iterator SerializeBitmap (Buffer::Iterator start) const;
   Buffer::Iterator DeserializeBitmap (Buffer::Iterator start);
 
@@ -149,21 +149,21 @@ private:
    * for more details see 7.2.1.8 in IEEE 802.11n/D4.00
    *
    * \param seq the sequence number
-   * 
-   * \return If we are using basic block ack, return value represents index of 
+   *
+   * \return If we are using basic block ack, return value represents index of
    * block of 16 bits for packet having sequence number equals to <i>seq</i>.
-   * If we are using compressed block ack, return value represents bit 
-   * to set to 1 in the compressed bitmap to indicate that packet having 
+   * If we are using compressed block ack, return value represents bit
+   * to set to 1 in the compressed bitmap to indicate that packet having
    * sequence number equals to <i>seq</i> was correctly received.
    */
   uint8_t IndexInBitmap (uint16_t seq) const;
 
   /**
    * Checks if sequence number <i>seq</i> can be acknowledged in the bitmap.
-   * 
+   *
    * \param seq the sequence number
-   * 
-   * \return 
+   *
+   * \return
    */
   bool IsInBitmap (uint16_t seq) const;
 
@@ -179,7 +179,8 @@ private:
   uint16_t m_tidInfo;
   uint16_t m_startingSeq;
 
-  union {
+  union
+  {
     uint16_t m_bitmap[64];
     uint64_t m_compressedBitmap;
   } bitmap;

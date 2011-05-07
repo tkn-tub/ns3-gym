@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -52,7 +52,8 @@ class EdcaTxopN;
  * \ingroup wifi
  * \brief listen to events coming from ns3::MacLow.
  */
-class MacLowTransmissionListener {
+class MacLowTransmissionListener
+{
 public:
   MacLowTransmissionListener ();
   virtual ~MacLowTransmissionListener ();
@@ -76,7 +77,7 @@ public:
    *
    * ns3::MacLow received an expected ACL within
    * AckTimeout. The <i>snr</i> and <i>txMode</i>
-   * arguments are not valid when SUPER_FAST_ACK is 
+   * arguments are not valid when SUPER_FAST_ACK is
    * used.
    */
   virtual void GotAck (double snr, WifiMode txMode) = 0;
@@ -91,7 +92,7 @@ public:
    *
    * Invoked when ns3::MacLow receives a block ack frame.
    * Block ack frame is received after a block ack request
-   * and contains information about the correct reception 
+   * and contains information about the correct reception
    * of a set of packet for which a normal ack wasn't send.
    * Default implementation for this method is empty. Every
    * queue that intends to be notified by MacLow of reception
@@ -100,7 +101,7 @@ public:
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source);
   /**
    * ns3::MacLow did not receive an expected BLOCK_ACK within
-   * BlockAckTimeout. This method is used only for immediate 
+   * BlockAckTimeout. This method is used only for immediate
    * block ack variant. With delayed block ack, the MissedAck method will be
    * called instead: upon receipt of a block ack request, the rx station will
    * reply with a normal ack frame. Later, when the rx station gets a txop, it
@@ -117,7 +118,7 @@ public:
   virtual void StartNext (void) = 0;
 
   /**
-   * Invoked if this transmission was canceled 
+   * Invoked if this transmission was canceled
    * one way or another. When this method is invoked,
    * you can assume that the packet has not been passed
    * down the stack to the PHY.
@@ -134,7 +135,8 @@ public:
  * and calls to its methods are forwards to the corresponding
  * ns3::Dcf methods.
  */
-class MacLowDcfListener {
+class MacLowDcfListener
+{
 public:
   MacLowDcfListener ();
   virtual ~MacLowDcfListener ();
@@ -156,14 +158,15 @@ public:
  * \ingroup wifi
  * \brief listen for block ack events.
  */
-class MacLowBlockAckEventListener {
+class MacLowBlockAckEventListener
+{
 public:
   MacLowBlockAckEventListener ();
   virtual ~MacLowBlockAckEventListener ();
   /**
    * Typically is called in order to notify EdcaTxopN that a block ack inactivity
    * timeout occurs for the block ack agreement identified by the pair <i>originator</i>, <i>tid</i>.
-   * 
+   *
    * Rx station maintains an inactivity timer for each block ack
    * agreement. Timer is reset when a frame with ack policy block ack
    * or a block ack request are received. When this timer reaches zero
@@ -180,7 +183,8 @@ public:
  * an instance of this class to describe how the packet
  * should be transmitted.
  */
-class MacLowTransmissionParameters {
+class MacLowTransmissionParameters
+{
 public:
   MacLowTransmissionParameters ();
 
@@ -194,9 +198,9 @@ public:
    *   - wait PIFS after end-of-tx. If idle, call
    *     MacLowTransmissionListener::MissedAck.
    *   - if busy at end-of-tx+PIFS, wait end-of-rx
-   *   - if Ack ok at end-of-rx, call 
+   *   - if Ack ok at end-of-rx, call
    *     MacLowTransmissionListener::GotAck.
-   *   - if Ack not ok at end-of-rx, report call 
+   *   - if Ack not ok at end-of-rx, report call
    *     MacLowTransmissionListener::MissedAck
    *     at end-of-rx+SIFS.
    *
@@ -204,8 +208,8 @@ public:
    * proper HCCA support.
    */
   void EnableFastAck (void);
-  /** 
-   *  - if busy at end-of-tx+PIFS, call 
+  /**
+   *  - if busy at end-of-tx+PIFS, call
    *    MacLowTransmissionListener::GotAck
    *  - if idle at end-of-tx+PIFS, call
    *    MacLowTransmissionListener::MissedAck
@@ -224,7 +228,7 @@ public:
    */
   void EnableMultiTidBlockAck (void);
   /**
-   * Send a RTS, and wait CTSTimeout for a CTS. If we get a 
+   * Send a RTS, and wait CTSTimeout for a CTS. If we get a
    * CTS on time, call MacLowTransmissionListener::GotCts
    * and send data. Otherwise, call MacLowTransmissionListener::MissedCts
    * and do not send data.
@@ -234,9 +238,9 @@ public:
    * \param size size of next data to send after current packet is
    *        sent.
    *
-   * Add the transmission duration of the next data to the 
-   * durationId of the outgoing packet and call 
-   * MacLowTransmissionListener::StartNext at the end of 
+   * Add the transmission duration of the next data to the
+   * durationId of the outgoing packet and call
+   * MacLowTransmissionListener::StartNext at the end of
    * the current transmission + SIFS.
    */
   void EnableNextData (uint32_t size);
@@ -245,7 +249,7 @@ public:
    * \param durationId the value to set in the duration/Id field of
    *        the outgoing packet.
    *
-   * Ignore all other durationId calculation and simply force the 
+   * Ignore all other durationId calculation and simply force the
    * packet's durationId field to this value.
    */
   void EnableOverrideDurationId (Time durationId);
@@ -286,14 +290,14 @@ public:
    */
   bool MustWaitNormalAck (void) const;
   /**
-   * \returns true if fast ack protocol should be used, false 
+   * \returns true if fast ack protocol should be used, false
    *          otherwise.
    *
    * \sa EnableFastAck
    */
   bool MustWaitFastAck (void) const;
   /**
-   * \returns true if super fast ack protocol should be used, false 
+   * \returns true if super fast ack protocol should be used, false
    *          otherwise.
    *
    * \sa EnableSuperFastAck
@@ -318,12 +322,12 @@ public:
    */
   bool MustWaitMultiTidBlockAck (void) const;
   /**
-   * \returns true if RTS should be sent and CTS waited for before 
+   * \returns true if RTS should be sent and CTS waited for before
    *          sending data, false otherwise.
    */
   bool MustSendRts (void) const;
   /**
-   * \returns true if a duration/id was forced with 
+   * \returns true if a duration/id was forced with
    *         EnableOverrideDurationId, false otherwise.
    */
   bool HasDurationId (void) const;
@@ -343,7 +347,8 @@ public:
 private:
   friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
   uint32_t m_nextSize;
-  enum {
+  enum
+  {
     ACK_NONE,
     ACK_NORMAL,
     ACK_FAST,
@@ -363,7 +368,8 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
  * \ingroup wifi
  * \brief handle RTS/CTS/DATA/ACK transactions.
  */
-class MacLow : public Object {
+class MacLow : public Object
+{
 public:
   typedef Callback<void, Ptr<Packet>, const WifiMacHeader*> MacLowRxCallback;
 
@@ -414,7 +420,7 @@ public:
    * the next packet transmission if one was selected.
    */
   Time CalculateTransmissionTime (Ptr<const Packet> packet,
-                                  const WifiMacHeader* hdr, 
+                                  const WifiMacHeader* hdr,
                                   const MacLowTransmissionParameters& parameters) const;
 
   /**
@@ -426,8 +432,8 @@ public:
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
    */
-  void StartTransmission (Ptr<const Packet> packet, 
-                          const WifiMacHeader* hdr, 
+  void StartTransmission (Ptr<const Packet> packet,
+                          const WifiMacHeader* hdr,
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
 
@@ -456,7 +462,7 @@ public:
    * the MAC layer that a channel switching occured. When a channel switching
    * occurs, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
    */
-  void NotifySwitchingStartNow (Time duration); 
+  void NotifySwitchingStartNow (Time duration);
   /**
    * \param respHdr Add block ack response from originator (action
    * frame).
@@ -500,10 +506,10 @@ private:
   uint32_t GetCtsSize (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
-  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr, 
+  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr,
                     WifiMode txMode);
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
-                               const WifiMacHeader* hdr, 
+                               const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters &params) const;
   WifiMode GetRtsTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiMode GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
@@ -562,8 +568,8 @@ private:
    * See section 9.10.4 in IEEE802.11 standard for more details.
    */
   void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
-  /* 
-   * This method checks if exists a valid established block ack agreement. 
+  /*
+   * This method checks if exists a valid established block ack agreement.
    * If there is, store the packet without pass it up to WifiMac. The packet is buffered
    * in order of increasing sequence control field. All comparison are performed
    * circularly modulo 2^12.
@@ -588,7 +594,7 @@ private:
    */
   void ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement);
 
-  void SetupPhyMacLowListener (Ptr<WifiPhy> phy); 
+  void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
 
   Ptr<WifiPhy> m_phy;
   Ptr<WifiRemoteStationManager> m_stationManager;
@@ -626,8 +632,8 @@ private:
   Time m_lastNavStart;
   Time m_lastNavDuration;
 
-  // Listerner needed to monitor when a channel switching occurs. 
-  class PhyMacLowListener *m_phyMacLowListener; 
+  // Listerner needed to monitor when a channel switching occurs.
+  class PhyMacLowListener * m_phyMacLowListener;
 
   /*
    * BlockAck data structures.

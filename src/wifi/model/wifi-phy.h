@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -41,7 +41,8 @@ class NetDevice;
 /**
  * \brief receive notifications about phy events.
  */
-class WifiPhyListener {
+class WifiPhyListener
+{
 public:
   virtual ~WifiPhyListener ();
 
@@ -63,7 +64,7 @@ public:
    * NotifyRxStart was invoked first and, the packet has
    * been successfully received.
    */
-  virtual void NotifyRxEndOk (void) = 0;  
+  virtual void NotifyRxEndOk (void) = 0;
   /**
    * We have received the last bit of a packet for which
    * NotifyRxStart was invoked first and, the packet has
@@ -74,7 +75,7 @@ public:
    * \param duration the expected transmission duration.
    *
    * We are about to send the first bit of the packet.
-   * We do not send any event to notify the end of 
+   * We do not send any event to notify the end of
    * transmission. Listeners should assume that the
    * channel implicitely reverts to the idle state
    * unless they have received a cca busy report.
@@ -87,8 +88,8 @@ public:
    * This method does not really report a real state
    * change as opposed to the other methods in this class.
    * It merely reports that, unless the medium is reported
-   * busy through NotifyTxStart or NotifyRxStart/End, 
-   * it will be busy as defined by the currently selected 
+   * busy through NotifyTxStart or NotifyRxStart/End,
+   * it will be busy as defined by the currently selected
    * CCA mode.
    *
    * Typical client code which wants to have a clear picture
@@ -100,11 +101,11 @@ public:
   /**
    * \param duration the expected channel switching duration.
    *
-   * We do not send any event to notify the end of 
+   * We do not send any event to notify the end of
    * channel switching. Listeners should assume that the
    * channel implicitely reverts to the idle or busy states.
    */
-  virtual void NotifySwitchingStart (Time duration) = 0; 
+  virtual void NotifySwitchingStart (Time duration) = 0;
 };
 
 
@@ -119,7 +120,8 @@ public:
   /**
    * The state of the PHY layer.
    */
-  enum State {
+  enum State
+  {
     /**
      * The PHY layer is IDLE.
      */
@@ -287,20 +289,20 @@ public:
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
 
-  /** 
-   * \brief Set channel number. 
-   * 
+  /**
+   * \brief Set channel number.
+   *
    * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
-   */ 
+   */
   virtual void SetChannelNumber (uint16_t id) = 0;
   /// Return current channel number, see SetChannelNumber()
   virtual uint16_t GetChannelNumber () const = 0;
 
   virtual void ConfigureStandard (enum WifiPhyStandard standard) = 0;
-  
+
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
   static WifiMode GetDsssRate1Mbps ();
@@ -342,46 +344,46 @@ public:
 
 
   /**
-   * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation 
+   * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyTxBegin (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation 
+   * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyTxEnd (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation 
+   * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation 
+   * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyRxBegin (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation 
+   * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyRxEnd (Ptr<const Packet> packet);
 
   /**
-   * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation 
+   * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation
    * purposes.
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
 
-  /** 
-   * 
-   * Public method used to fire a PromiscSniffer trace for a wifi packet being received.  Implemented for encapsulation 
+  /**
+   *
+   * Public method used to fire a PromiscSniffer trace for a wifi packet being received.  Implemented for encapsulation
    * purposes.
-   * 
+   *
    * @param packet the packet being received
    * @param channelFreqMhz the frequency in MHz at which the packet is
    * received. Note that in real devices this is normally the
@@ -392,29 +394,29 @@ public:
    * on a nearby channel.
    * @param channelNumber the channel on which the packet is received
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
-   * units used both for the radiotap and for the prism header) 
+   * units used both for the radiotap and for the prism header)
    * @param isShortPreamble true if short preamble is used, false otherwise
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
-  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, 
+  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble,
                              double signalDbm, double noiseDbm);
 
-  /** 
-   * 
-   * Public method used to fire a PromiscSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation 
+  /**
+   *
+   * Public method used to fire a PromiscSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation
    * purposes.
-   * 
+   *
    * @param packet the packet being transmitted
    * @param channelFreqMhz the frequency in MHz at which the packet is
-   * transmitted. 
+   * transmitted.
    * @param channelNumber the channel on which the packet is transmitted
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
-   * units used both for the radiotap and for the prism header) 
+   * units used both for the radiotap and for the prism header)
    * @param isShortPreamble true if short preamble is used, false otherwise
    */
   void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble);
-  
+
 
 private:
   /**
@@ -466,8 +468,8 @@ private:
 
   /**
    * A trace source that emulates a wifi device in monitor mode
-   * sniffing a packet being received. 
-   * 
+   * sniffing a packet being received.
+   *
    * As a reference with the real world, firing this trace
    * corresponds in the madwifi driver to calling the function
    * ieee80211_input_monitor()
@@ -478,8 +480,8 @@ private:
 
   /**
    * A trace source that emulates a wifi device in monitor mode
-   * sniffing a packet being transmitted. 
-   * 
+   * sniffing a packet being transmitted.
+   *
    * As a reference with the real world, firing this trace
    * corresponds in the madwifi driver to calling the function
    * ieee80211_input_monitor()

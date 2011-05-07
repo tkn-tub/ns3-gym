@@ -3,7 +3,7 @@
  * Copyright (c) 2005 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -47,9 +47,9 @@ class MacStations;
  * \brief handle packet fragmentation and retransmissions.
  * \ingroup wifi
  *
- * This class implements the packet fragmentation and 
+ * This class implements the packet fragmentation and
  * retransmission policy. It uses the ns3::MacLow and ns3::DcfManager
- * helper classes to respectively send packets and decide when 
+ * helper classes to respectively send packets and decide when
  * to send them. Packets are stored in a ns3::WifiMacQueue until
  * they can be sent.
  *
@@ -80,17 +80,17 @@ public:
   void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
 
   /**
-   * \param callback the callback to invoke when a 
+   * \param callback the callback to invoke when a
    * packet transmission was completed successfully.
    */
   void SetTxOkCallback (TxOk callback);
   /**
-   * \param callback the callback to invoke when a 
+   * \param callback the callback to invoke when a
    * packet transmission was completed unsuccessfully.
    */
   void SetTxFailedCallback (TxFailed callback);
 
-  Ptr<WifiMacQueue > GetQueue () const; 
+  Ptr<WifiMacQueue > GetQueue () const;
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
   virtual void SetAifsn (uint32_t aifsn);
@@ -129,7 +129,7 @@ private:
   /**
   * When a channel switching occurs, enqueued packets are removed.
   */
-  void NotifyChannelSwitching (void); 
+  void NotifyChannelSwitching (void);
   /* event handlers */
   void GotCts (double snr, WifiMode txMode);
   void MissedCts (void);
@@ -162,7 +162,7 @@ private:
   Ptr<WifiRemoteStationManager> m_stationManager;
   TransmissionListener *m_transmissionListener;
   RandomStream *m_rng;
-  
+
 
   bool m_accessOngoing;
   Ptr<const Packet> m_currentPacket;

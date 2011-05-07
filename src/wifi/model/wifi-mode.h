@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,7 +33,8 @@ namespace ns3 {
  * This enumeration defines the modulation classes per IEEE
  * 802.11-2007, Section 9.6.1, Table 9-2.
  */
-enum WifiModulationClass {
+enum WifiModulationClass
+{
   /** Modulation class unknown or unspecified. A WifiMode with this
   WifiModulationClass has not been properly initialised. */
   WIFI_MOD_CLASS_UNKNOWN = 0,
@@ -63,7 +64,8 @@ enum WifiModulationClass {
  * coding stage in their generation should have this parameter set to
  * WIFI_CODE_RATE_UNDEFINED.
  */
-enum WifiCodeRate {
+enum WifiCodeRate
+{
   /** No explicit coding (e.g., DSSS rates) */
   WIFI_CODE_RATE_UNDEFINED,
   /** Rate 3/4 */
@@ -85,7 +87,7 @@ enum WifiCodeRate {
  */
 class WifiMode
 {
- public:
+public:
   /**
    * \returns the number of Hz used by this signal
    */
@@ -207,9 +209,9 @@ public:
                                   uint8_t constellationSize);
 
 private:
-  friend class WifiMode;  
+  friend class WifiMode;
   friend std::istream & operator >> (std::istream &is, WifiMode &mode);
-  static WifiModeFactory *GetFactory ();
+  static WifiModeFactory* GetFactory ();
   WifiModeFactory ();
 
   /**
@@ -217,7 +219,8 @@ private:
    * The integer stored in a WifiMode is in fact an index
    * in an array of WifiModeItem objects.
    */
-  struct WifiModeItem {
+  struct WifiModeItem
+  {
     std::string uniqueUid;
     uint32_t bandwidth;
     uint32_t dataRate;
@@ -230,7 +233,7 @@ private:
 
   WifiMode Search (std::string name);
   uint32_t AllocateUid (std::string uniqueName);
-  WifiModeItem *Get (uint32_t uid);
+  WifiModeItem* Get (uint32_t uid);
 
   typedef std::vector<struct WifiModeItem> WifiModeItemList;
   WifiModeItemList m_itemList;

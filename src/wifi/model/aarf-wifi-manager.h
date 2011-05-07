@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,10 +30,10 @@ namespace ns3 {
  *
  * This class implements the AARF rate control algorithm which
  * was initially described in <i>IEEE 802.11 Rate Adaptation:
- * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and 
+ * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and
  * T. Turletti.
  */
-class AarfWifiManager : public WifiRemoteStationManager 
+class AarfWifiManager : public WifiRemoteStationManager
 {
 public:
   static TypeId GetTypeId (void);
@@ -41,8 +41,8 @@ public:
   virtual ~AarfWifiManager ();
 private:
   // overriden from base class
-  virtual WifiRemoteStation *DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station, 
+  virtual WifiRemoteStation * DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
   virtual void DoReportDataFailed (WifiRemoteStation *station);

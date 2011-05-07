@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -26,7 +26,8 @@ namespace ns3 {
  * \ingroup wifi
  * The type of preamble to be used by an IEEE 802.11 transmission
  */
-enum WifiPreamble {
+enum WifiPreamble
+{
   WIFI_PREAMBLE_LONG,
   WIFI_PREAMBLE_SHORT
 };

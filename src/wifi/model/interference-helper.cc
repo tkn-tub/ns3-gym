@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,74 +32,78 @@ namespace ns3 {
  *       Phy event class
  ****************************************************************/
 
-InterferenceHelper::Event::Event (uint32_t size, WifiMode payloadMode, 
-					       enum WifiPreamble preamble,
-					       Time duration, double rxPower)
+InterferenceHelper::Event::Event (uint32_t size, WifiMode payloadMode,
+                                  enum WifiPreamble preamble,
+                                  Time duration, double rxPower)
   : m_size (size),
     m_payloadMode (payloadMode),
     m_preamble (preamble),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + duration),
     m_rxPowerW (rxPower)
-{}
+{
+}
 InterferenceHelper::Event::~Event ()
-{}
-  
-Time 
-InterferenceHelper::Event::GetDuration (void) const 
+{
+}
+
+Time
+InterferenceHelper::Event::GetDuration (void) const
 {
   return m_endTime - m_startTime;
 }
-Time 
+Time
 InterferenceHelper::Event::GetStartTime (void) const
 {
   return m_startTime;
 }
-Time 
+Time
 InterferenceHelper::Event::GetEndTime (void) const
 {
   return m_endTime;
 }
-double 
+double
 InterferenceHelper::Event::GetRxPowerW (void) const
 {
   return m_rxPowerW;
 }
-uint32_t 
+uint32_t
 InterferenceHelper::Event::GetSize (void) const
 {
   return m_size;
 }
-WifiMode 
+WifiMode
 InterferenceHelper::Event::GetPayloadMode (void) const
 {
   return m_payloadMode;
 }
-enum WifiPreamble 
+enum WifiPreamble
 InterferenceHelper::Event::GetPreambleType (void) const
 {
   return m_preamble;
 }
 
 /****************************************************************
- *       Class which records SNIR change events for a 
+ *       Class which records SNIR change events for a
  *       short period of time.
  ****************************************************************/
 
 InterferenceHelper::NiChange::NiChange (Time time, double delta)
-  : m_time (time), m_delta (delta) 
-{}
+  : m_time (time),
+    m_delta (delta)
+{
+}
 Time
 InterferenceHelper::NiChange::GetTime (void) const
 {
   return m_time;
 }
-double 
+double
 InterferenceHelper::NiChange::GetDelta (void) const
 {
   return m_delta;
 }
-bool 
+bool
 InterferenceHelper::NiChange::operator < (const InterferenceHelper::NiChange& o) const
 {
   return (m_time < o.m_time);
@@ -113,56 +117,56 @@ InterferenceHelper::InterferenceHelper ()
   : m_errorRateModel (0),
     m_firstPower (0.0),
     m_rxing (false)
-{}
+{
+}
 InterferenceHelper::~InterferenceHelper ()
 {
   EraseEvents ();
   m_errorRateModel = 0;
 }
 
-Ptr<InterferenceHelper::Event> 
-InterferenceHelper::Add (uint32_t size, WifiMode payloadMode, 
-			 enum WifiPreamble preamble,
-			 Time duration, double rxPowerW)
+Ptr<InterferenceHelper::Event>
+InterferenceHelper::Add (uint32_t size, WifiMode payloadMode,
+                         enum WifiPreamble preamble,
+                         Time duration, double rxPowerW)
 {
   Ptr<InterferenceHelper::Event> event;
 
-  event = Create<InterferenceHelper::Event> 
-    (size,
-     payloadMode,
-     preamble,
-     duration,
-     rxPowerW);
+  event = Create<InterferenceHelper::Event> (size,
+                                             payloadMode,
+                                             preamble,
+                                             duration,
+                                             rxPowerW);
   AppendEvent (event);
   return event;
 }
 
 
-void 
+void
 InterferenceHelper::SetNoiseFigure (double value)
 {
   m_noiseFigure = value;
 }
 
-double 
+double
 InterferenceHelper::GetNoiseFigure (void) const
 {
   return m_noiseFigure;
 }
 
-void 
+void
 InterferenceHelper::SetErrorRateModel (Ptr<ErrorRateModel> rate)
 {
   m_errorRateModel = rate;
 }
 
-Ptr<ErrorRateModel> 
+Ptr<ErrorRateModel>
 InterferenceHelper::GetErrorRateModel (void) const
 {
   return m_errorRateModel;
 }
 
-Time 
+Time
 InterferenceHelper::GetEnergyDuration (double energyW)
 {
   Time now = Simulator::Now ();
@@ -178,53 +182,54 @@ InterferenceHelper::GetEnergyDuration (double energyW)
           continue;
         }
       if (noiseInterferenceW < energyW)
-	      {
-	        break;
-	      }
+        {
+          break;
+        }
     }
   return end > now ? end - now : MicroSeconds (0);
 }
 
-WifiMode 
+WifiMode
 InterferenceHelper::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
 {
   switch (payloadMode.GetModulationClass ())
-     {
-     case WIFI_MOD_CLASS_OFDM:
-       {
-         switch (payloadMode.GetBandwidth ()) {
-         case 5000000:
-           return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
-         case 10000000:
-           return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
-         default:
-           // IEEE Std 802.11-2007, 17.3.2
-           // actually this is only the first part of the PlcpHeader,
-           // because the last 16 bits of the PlcpHeader are using the
-           // same mode of the payload
-           return WifiPhy::GetOfdmRate6Mbps ();
-         }
-       }
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 5000000:
+            return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
+          case 10000000:
+            return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
+          default:
+            // IEEE Std 802.11-2007, 17.3.2
+            // actually this is only the first part of the PlcpHeader,
+            // because the last 16 bits of the PlcpHeader are using the
+            // same mode of the payload
+            return WifiPhy::GetOfdmRate6Mbps ();
+          }
+      }
 
-     case WIFI_MOD_CLASS_ERP_OFDM:
-       return WifiPhy::GetErpOfdmRate6Mbps ();
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return WifiPhy::GetErpOfdmRate6Mbps ();
 
-     case WIFI_MOD_CLASS_DSSS:
-       if (preamble == WIFI_PREAMBLE_LONG)
-         {
-           // IEEE Std 802.11-2007, sections 15.2.3 and 18.2.2.1 
-           return WifiPhy::GetDsssRate1Mbps ();
-         }
-       else //  WIFI_PREAMBLE_SHORT
-         {
-           // IEEE Std 802.11-2007, section 18.2.2.2
-           return WifiPhy::GetDsssRate2Mbps ();
-         }
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_LONG)
+        {
+          // IEEE Std 802.11-2007, sections 15.2.3 and 18.2.2.1
+          return WifiPhy::GetDsssRate1Mbps ();
+        }
+      else  //  WIFI_PREAMBLE_SHORT
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2
+          return WifiPhy::GetDsssRate2Mbps ();
+        }
 
-     default:
-       NS_FATAL_ERROR("unsupported modulation class");
-       return WifiMode ();
-     }
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return WifiMode ();
+    }
 }
 
 uint32_t
@@ -234,23 +239,24 @@ InterferenceHelper::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, Wif
     {
     case WIFI_MOD_CLASS_OFDM:
       {
-        switch (payloadMode.GetBandwidth ()) {
-        case 20000000:
-        default:
-          // IEEE Std 802.11-2007, section 17.3.3 and figure 17-4
-          // also section 17.3.2.3, table 17-4
-          // We return the duration of the SIGNAL field only, since the
-          // SERVICE field (which strictly speaking belongs to the PLCP
-          // header, see section 17.3.2 and figure 17-1) is sent using the
-          // payload mode.
-          return 4;
-        case 10000000:
-          // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
-          return 8;
-        case 5000000:
-          // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
-          return 16;
-        }
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            // IEEE Std 802.11-2007, section 17.3.3 and figure 17-4
+            // also section 17.3.2.3, table 17-4
+            // We return the duration of the SIGNAL field only, since the
+            // SERVICE field (which strictly speaking belongs to the PLCP
+            // header, see section 17.3.2 and figure 17-1) is sent using the
+            // payload mode.
+            return 4;
+          case 10000000:
+            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            return 8;
+          case 5000000:
+            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            return 16;
+          }
       }
 
     case WIFI_MOD_CLASS_ERP_OFDM:
@@ -269,33 +275,34 @@ InterferenceHelper::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, Wif
         }
 
     default:
-      NS_FATAL_ERROR("unsupported modulation class");
+      NS_FATAL_ERROR ("unsupported modulation class");
       return 0;
     }
 }
 
-uint32_t 
+uint32_t
 InterferenceHelper::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
 {
   switch (payloadMode.GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
       {
-        switch (payloadMode.GetBandwidth ()) {
-        case 20000000:
-        default:
-          // IEEE Std 802.11-2007, section 17.3.3,  figure 17-4
-          // also section 17.3.2.3, table 17-4
-          return 16;
-        case 10000000:
-          // IEEE Std 802.11-2007, section 17.3.3, table 17-4
-          // also section 17.3.2.3, table 17-4
-          return 32;
-        case 5000000:
-          // IEEE Std 802.11-2007, section 17.3.3
-          // also section 17.3.2.3, table 17-4
-          return 64;
-        }
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            // IEEE Std 802.11-2007, section 17.3.3,  figure 17-4
+            // also section 17.3.2.3, table 17-4
+            return 16;
+          case 10000000:
+            // IEEE Std 802.11-2007, section 17.3.3, table 17-4
+            // also section 17.3.2.3, table 17-4
+            return 32;
+          case 5000000:
+            // IEEE Std 802.11-2007, section 17.3.3
+            // also section 17.3.2.3, table 17-4
+            return 64;
+          }
       }
 
     case WIFI_MOD_CLASS_ERP_OFDM:
@@ -314,15 +321,15 @@ InterferenceHelper::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, W
         }
 
     default:
-      NS_FATAL_ERROR("unsupported modulation class");
+      NS_FATAL_ERROR ("unsupported modulation class");
       return 0;
     }
 }
 
-uint32_t 
+uint32_t
 InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode)
 {
-  NS_LOG_FUNCTION(size << payloadMode);
+  NS_LOG_FUNCTION (size << payloadMode);
 
   switch (payloadMode.GetModulationClass ())
     {
@@ -333,56 +340,61 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
         // corresponds to T_{SYM} in the table
         uint32_t symbolDurationUs;
 
-        switch (payloadMode.GetBandwidth ()) {
-        case 20000000:
-        default:
-          symbolDurationUs = 4;
-          break;
-        case 10000000:
-          symbolDurationUs = 8;
-          break;
-        case 5000000:
-          symbolDurationUs = 16;
-          break;
-        }
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            symbolDurationUs = 4;
+            break;
+          case 10000000:
+            symbolDurationUs = 8;
+            break;
+          case 5000000:
+            symbolDurationUs = 16;
+            break;
+          }
 
         // IEEE Std 802.11-2007, section 17.3.2.2, table 17-3
         // corresponds to N_{DBPS} in the table
         double numDataBitsPerSymbol = payloadMode.GetDataRate ()  * symbolDurationUs / 1e6;
 
         // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
-        uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0)/numDataBitsPerSymbol));
+        uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
 
         // Add signal extension for ERP PHY
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
-          return numSymbols*symbolDurationUs + 6;
+          {
+            return numSymbols * symbolDurationUs + 6;
+          }
         else
-        return numSymbols*symbolDurationUs;
+          {
+            return numSymbols * symbolDurationUs;
+          }
       }
 
     case WIFI_MOD_CLASS_DSSS:
       // IEEE Std 802.11-2007, section 18.2.3.5
-      NS_LOG_LOGIC(" size=" << size
-                   << " mode=" << payloadMode 
-                   << " rate=" << payloadMode.GetDataRate () );
-      return lrint(ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
+      NS_LOG_LOGIC (" size=" << size
+                             << " mode=" << payloadMode
+                             << " rate=" << payloadMode.GetDataRate () );
+      return lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
 
     default:
-      NS_FATAL_ERROR("unsupported modulation class");
+      NS_FATAL_ERROR ("unsupported modulation class");
       return 0;
     }
 }
 
 Time
-InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) 
+InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble)
 {
-  uint32_t duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)     
-                      + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)  
-                      + GetPayloadDurationMicroSeconds (size, payloadMode);
+  uint32_t duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)
+    + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)
+    + GetPayloadDurationMicroSeconds (size, payloadMode);
   return MicroSeconds (duration);
 }
 
-void 
+void
 InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
 {
   Time now = Simulator::Now ();
@@ -394,13 +406,13 @@ InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
           m_firstPower += i->GetDelta ();
         }
       m_niChanges.erase (m_niChanges.begin (), nowIterator);
-      m_niChanges.insert (m_niChanges.begin (), NiChange (event->GetStartTime (), event->GetRxPowerW ())); 
+      m_niChanges.insert (m_niChanges.begin (), NiChange (event->GetStartTime (), event->GetRxPowerW ()));
     }
   else
     {
       AddNiChangeEvent (NiChange (event->GetStartTime (), event->GetRxPowerW ()));
     }
-  AddNiChangeEvent(NiChange (event->GetEndTime (), -event->GetRxPowerW ()));
+  AddNiChangeEvent (NiChange (event->GetEndTime (), -event->GetRxPowerW ()));
 
 }
 
@@ -440,21 +452,22 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> 
 double
 InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const
 {
-  if (duration == NanoSeconds (0)) {
-    return 1.0;
-  }
+  if (duration == NanoSeconds (0))
+    {
+      return 1.0;
+    }
   uint32_t rate = mode.GetPhyRate ();
   uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
   double csr = m_errorRateModel->GetChunkSuccessRate (mode, snir, (uint32_t)nbits);
   return csr;
 }
 
-double 
+double
 InterferenceHelper::CalculatePer (Ptr<const InterferenceHelper::Event> event, NiChanges *ni) const
-{  
+{
   double psr = 1.0; /* Packet Success Rate */
   NiChanges::iterator j = ni->begin ();
-  Time previous = (*j).GetTime (); 
+  Time previous = (*j).GetTime ();
   WifiMode payloadMode = event->GetPayloadMode ();
   WifiPreamble preamble = event->GetPreambleType ();
   WifiMode headerMode = GetPlcpHeaderMode (payloadMode, preamble);
@@ -464,64 +477,64 @@ InterferenceHelper::CalculatePer (Ptr<const InterferenceHelper::Event> event, Ni
   double powerW = event->GetRxPowerW ();
 
   j++;
-  while (ni->end () != j) 
+  while (ni->end () != j)
     {
       Time current = (*j).GetTime ();
       NS_ASSERT (current >= previous);
-    
-      if (previous >= plcpPayloadStart) 
+
+      if (previous >= plcpPayloadStart)
         {
-          psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                          noiseInterferenceW, 
-                                                          payloadMode), 
+          psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                          noiseInterferenceW,
+                                                          payloadMode),
                                             current - previous,
                                             payloadMode);
-        } 
-      else if (previous >= plcpHeaderStart) 
+        }
+      else if (previous >= plcpHeaderStart)
         {
-          if (current >= plcpPayloadStart) 
+          if (current >= plcpPayloadStart)
             {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
                                                 plcpPayloadStart - previous,
                                                 headerMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
                                                               payloadMode),
                                                 current - plcpPayloadStart,
                                                 payloadMode);
-            } 
-          else 
+            }
+          else
             {
               NS_ASSERT (current >= plcpHeaderStart);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
                                                 current - previous,
                                                 headerMode);
             }
-        } 
-      else 
+        }
+      else
         {
-          if (current >= plcpPayloadStart) 
+          if (current >= plcpPayloadStart)
             {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
                                                 plcpPayloadStart - plcpHeaderStart,
                                                 headerMode);
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              payloadMode), 
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              payloadMode),
                                                 current - plcpPayloadStart,
                                                 payloadMode);
-            } 
-          else if (current >= plcpHeaderStart) 
+            }
+          else if (current >= plcpHeaderStart)
             {
-              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                              noiseInterferenceW, 
-                                                              headerMode), 
+              psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
+                                                              noiseInterferenceW,
+                                                              headerMode),
                                                 current - plcpHeaderStart,
                                                 headerMode);
             }
@@ -537,7 +550,7 @@ InterferenceHelper::CalculatePer (Ptr<const InterferenceHelper::Event> event, Ni
 }
 
 
-struct InterferenceHelper::SnrPer 
+struct InterferenceHelper::SnrPer
 InterferenceHelper::CalculateSnrPer (Ptr<InterferenceHelper::Event> event)
 {
   NiChanges ni;
@@ -545,7 +558,7 @@ InterferenceHelper::CalculateSnrPer (Ptr<InterferenceHelper::Event> event)
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
                              event->GetPayloadMode ());
-  
+
   /* calculate the SNIR at the start of the packet and accumulate
    * all SNIR changes in the snir vector.
    */
@@ -558,8 +571,8 @@ InterferenceHelper::CalculateSnrPer (Ptr<InterferenceHelper::Event> event)
 }
 
 void
-InterferenceHelper::EraseEvents (void) 
-{  
+InterferenceHelper::EraseEvents (void)
+{
   m_niChanges.clear ();
   m_rxing = false;
   m_firstPower = 0.0;

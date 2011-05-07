@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -62,7 +62,7 @@ enum TypeOfStation
 };
 
 
-/** 
+/**
  * \ingroup wifi
  * This queue contains packets for a particular access class.
  * possibles access classes are:
@@ -71,13 +71,12 @@ enum TypeOfStation
  *   -AC_VI : video, tid = 4,5         |
  *   -AC_BE : best-effort, tid = 0,3   |  priority
  *   -AC_BK : background, tid = 1,2    |
- * 
+ *
  * For more details see section 9.1.3.1 in 802.11 standard.
  */
 class EdcaTxopN : public Dcf
 {
 public:
-
   typedef Callback <void, const WifiMacHeader&> TxOk;
   typedef Callback <void, const WifiMacHeader&> TxFailed;
 
@@ -95,7 +94,7 @@ public:
   void SetTypeOfStation (enum TypeOfStation type);
   enum TypeOfStation GetTypeOfStation (void) const;
 
-  Ptr<WifiMacQueue > GetQueue () const; 
+  Ptr<WifiMacQueue > GetQueue () const;
   virtual void SetMinCw (uint32_t minCw);
   virtual void SetMaxCw (uint32_t maxCw);
   virtual void SetAifsn (uint32_t aifsn);

@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -41,37 +41,37 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
   return is;
 }
 
-uint32_t 
+uint32_t
 WifiMode::GetBandwidth (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->bandwidth;
 }
-uint32_t 
+uint32_t
 WifiMode::GetPhyRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->phyRate;
 }
-uint32_t 
+uint32_t
 WifiMode::GetDataRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->dataRate;
 }
-enum WifiCodeRate 
+enum WifiCodeRate
 WifiMode::GetCodeRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->codingRate;
 }
-uint8_t 
+uint8_t
 WifiMode::GetConstellationSize (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->constellationSize;
 }
-std::string 
+std::string
 WifiMode::GetUniqueName (void) const
 {
   // needed for ostream printing of the invalid mode
@@ -84,7 +84,7 @@ WifiMode::IsMandatory (void) const
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->isMandatory;
 }
-uint32_t 
+uint32_t
 WifiMode::GetUid (void) const
 {
   return m_uid;
@@ -97,10 +97,12 @@ WifiMode::GetModulationClass () const
 }
 WifiMode::WifiMode ()
   : m_uid (0)
-{}
+{
+}
 WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
-{}
+{
+}
 WifiMode::WifiMode (std::string name)
 {
   *this = WifiModeFactory::GetFactory ()->Search (name);
@@ -109,10 +111,11 @@ WifiMode::WifiMode (std::string name)
 ATTRIBUTE_HELPER_CPP (WifiMode);
 
 WifiModeFactory::WifiModeFactory ()
-{}
+{
+}
 
 
-WifiMode 
+WifiMode
 WifiModeFactory::CreateWifiMode (std::string uniqueName,
                                  enum WifiModulationClass modClass,
                                  bool isMandatory,
@@ -134,21 +137,22 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
 
   item->codingRate = codingRate;
 
-  switch (codingRate) {
-  case WIFI_CODE_RATE_3_4:
-    item->phyRate = dataRate * 4 / 3;
-    break;
-  case WIFI_CODE_RATE_2_3:
-    item->phyRate = dataRate * 3 / 2;
-    break;
-  case WIFI_CODE_RATE_1_2:
-    item->phyRate = dataRate * 2 / 1;
-    break;
-  case WIFI_CODE_RATE_UNDEFINED:
-  default:
-    item->phyRate = dataRate;
-    break;
-  }
+  switch (codingRate)
+    {
+    case WIFI_CODE_RATE_3_4:
+      item->phyRate = dataRate * 4 / 3;
+      break;
+    case WIFI_CODE_RATE_2_3:
+      item->phyRate = dataRate * 3 / 2;
+      break;
+    case WIFI_CODE_RATE_1_2:
+      item->phyRate = dataRate * 2 / 1;
+      break;
+    case WIFI_CODE_RATE_UNDEFINED:
+    default:
+      item->phyRate = dataRate;
+      break;
+    }
 
   // Check for compatibility between modulation class and coding
   // rate. If modulation class is DSSS then coding rate must be
@@ -159,7 +163,7 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
   if ((codingRate == WIFI_CODE_RATE_UNDEFINED) != (modClass == WIFI_MOD_CLASS_DSSS))
     {
       NS_FATAL_ERROR ("Error in creation of WifiMode named " << uniqueName << std::endl
-                      << "Code rate must be WIFI_CODE_RATE_UNDEFINED iff Modulation Class is WIFI_MOD_CLASS_DSSS");
+                                                             << "Code rate must be WIFI_CODE_RATE_UNDEFINED iff Modulation Class is WIFI_MOD_CLASS_DSSS");
     }
 
   item->constellationSize = constellationSize;
@@ -176,9 +180,9 @@ WifiModeFactory::Search (std::string name)
   for (i = m_itemList.begin (); i != m_itemList.end (); i++)
     {
       if (i->uniqueUid == name)
-	{
+        {
           return WifiMode (j);
-	}
+        }
       j++;
     }
 
@@ -211,9 +215,9 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
        i != m_itemList.end (); i++)
     {
       if (i->uniqueUid == uniqueUid)
-	{
-	  return j;
-	}
+        {
+          return j;
+        }
       j++;
     }
   uint32_t uid = m_itemList.size ();
