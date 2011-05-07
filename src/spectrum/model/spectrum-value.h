@@ -76,7 +76,7 @@ public:
 
 
   SpectrumValue ();
-  
+
 
   /**
    * Access value at given frequency index

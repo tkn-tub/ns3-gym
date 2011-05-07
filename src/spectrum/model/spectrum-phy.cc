@@ -33,16 +33,16 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (SpectrumPhy);
 
 
-TypeId 
+TypeId
 SpectrumPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SpectrumPhy")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
-  
+
 SpectrumPhy::~SpectrumPhy ()
 {
   NS_LOG_FUNCTION (this);

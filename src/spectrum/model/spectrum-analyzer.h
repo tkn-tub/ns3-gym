@@ -62,11 +62,11 @@ public:
   /**
    * Set the spectrum model used by the SpectrumAnalyzer to represent incoming signals
    *
-   * @param m 
+   * @param m
    */
   void SetRxSpectrumModel (Ptr<SpectrumModel> m);
 
-  
+
   /**
    * Start the spectrum analyzer
    *
@@ -81,16 +81,13 @@ public:
 
 
 protected:
-  
   void DoDispose ();
 
-private:  
-
-
+private:
   Ptr<Object> m_mobility;
   Ptr<Object> m_netDevice;
   Ptr<SpectrumChannel> m_channel;
- 
+
   virtual void GenerateReport ();
 
   void AddSignal (Ptr<const SpectrumValue> psd);

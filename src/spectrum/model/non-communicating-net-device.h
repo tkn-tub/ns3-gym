@@ -52,7 +52,6 @@ class Queue;
 class NonCommunicatingNetDevice : public NetDevice
 {
 public:
-
   static TypeId GetTypeId (void);
 
   NonCommunicatingNetDevice ();
@@ -120,7 +119,6 @@ public:
 
 
 private:
-
   virtual void DoDispose (void);
 
   Ptr<Node>    m_node;

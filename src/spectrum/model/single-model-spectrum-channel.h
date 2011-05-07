@@ -48,10 +48,10 @@ public:
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
   virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
-  virtual void StartTx (Ptr<PacketBurst> p, 
-                        Ptr <SpectrumValue> txPsd, 
-                        SpectrumType st, 
-                        Time duration, 
+  virtual void StartTx (Ptr<PacketBurst> p,
+                        Ptr <SpectrumValue> txPsd,
+                        SpectrumType st,
+                        Time duration,
                         Ptr<SpectrumPhy> sender);
 
 
@@ -65,7 +65,6 @@ public:
   virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
 
 private:
-
   virtual void DoDispose ();
 
   /**

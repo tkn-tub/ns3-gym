@@ -43,11 +43,9 @@ class SpectrumPhy  : public Object
 {
 
 public:
-
-
   virtual ~SpectrumPhy ();
-  
-  static TypeId GetTypeId (void); 
+
+  static TypeId GetTypeId (void);
 
   /**
    * set the associated NetDevice instance
@@ -85,8 +83,8 @@ public:
    */
   virtual void SetChannel (Ptr<SpectrumChannel> c) = 0;
 
-  /** 
-   * 
+  /**
+   *
    * @return returns the SpectrumModel that this SpectrumPhy expects to be used
    * for all SpectrumValues that are passed to StartRx. If 0 is
    * returned, it means that any model will be accepted.
@@ -103,7 +101,7 @@ public:
    * @param duration the duration of the incoming waveform
    */
   virtual void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration) = 0;
-  
+
 
 };
 
@@ -115,7 +113,7 @@ public:
 
 
 
-} // namespace ns3 
+} // namespace ns3
 
 
 

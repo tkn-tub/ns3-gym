@@ -36,7 +36,7 @@ SpectrumAnalyzer::SpectrumAnalyzer ()
     m_netDevice (0),
     m_channel (0),
     m_spectrumModel (0),
-    m_sumPowerSpectralDensity (0),    
+    m_sumPowerSpectralDensity (0),
     m_resolution (MilliSeconds (50)),
     m_active (false)
 {
@@ -77,7 +77,7 @@ SpectrumAnalyzer::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("NoisePowerSpectralDensity",
                    "the power spectral density of the measuring instrument noise, in Watt/Hz. Mostly useful to make spectrograms look more similar to those obtained by real devices. Defaults to the value for thermal noise at 300K.",
-                   DoubleValue (1.38e-23*300),
+                   DoubleValue (1.38e-23 * 300),
                    MakeDoubleAccessor (&SpectrumAnalyzer::m_noisePowerSpectralDensity),
                    MakeDoubleChecker<double> ())
     .AddTraceSource ("AveragePowerSpectralDensityReport",
@@ -103,7 +103,7 @@ SpectrumAnalyzer::GetMobility ()
 }
 
 
-Ptr<const SpectrumModel> 
+Ptr<const SpectrumModel>
 SpectrumAnalyzer::GetRxSpectrumModel () const
 {
   return m_spectrumModel;
@@ -136,9 +136,9 @@ SpectrumAnalyzer::SetChannel (Ptr<SpectrumChannel> c)
 
 
 void
-SpectrumAnalyzer::StartRx (Ptr<PacketBurst> pb, 
-                           Ptr <const SpectrumValue> rxPowerSpectralDensity, 
-                           SpectrumType st, 
+SpectrumAnalyzer::StartRx (Ptr<PacketBurst> pb,
+                           Ptr <const SpectrumValue> rxPowerSpectralDensity,
+                           SpectrumType st,
                            Time duration)
 {
   NS_LOG_FUNCTION ( this << st << duration << *rxPowerSpectralDensity);
@@ -157,7 +157,7 @@ SpectrumAnalyzer::AddSignal  (Ptr<const SpectrumValue> psd)
 
 void
 SpectrumAnalyzer::SubtractSignal  (Ptr<const SpectrumValue> psd)
-{ 
+{
   NS_LOG_FUNCTION (this << *psd);
   UpdateEnergyReceivedSoFar ();
   (*m_sumPowerSpectralDensity) -= (*psd);
@@ -185,7 +185,7 @@ SpectrumAnalyzer::GenerateReport ()
 
   UpdateEnergyReceivedSoFar ();
   Ptr<SpectrumValue> avgPowerSpectralDensity = Create<SpectrumValue> (m_sumPowerSpectralDensity->GetSpectrumModel ());
-  (*avgPowerSpectralDensity) = (*m_energySpectralDensity) / m_resolution.GetSeconds ();  
+  (*avgPowerSpectralDensity) = (*m_energySpectralDensity) / m_resolution.GetSeconds ();
   (*avgPowerSpectralDensity) += m_noisePowerSpectralDensity;
   (*m_energySpectralDensity) = 0;
 

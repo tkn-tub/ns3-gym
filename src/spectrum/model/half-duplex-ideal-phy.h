@@ -83,7 +83,8 @@ public:
    *  PHY states
    *
    */
-  enum State {
+  enum State
+  {
     IDLE, TX, RX
   };
 
@@ -97,7 +98,7 @@ public:
   Ptr<Object> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
   void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
-  
+
 
 
   /**
@@ -183,9 +184,8 @@ public:
 
 
 private:
-
   virtual void DoDispose (void);
-  
+
   void ChangeState (State newState);
   void EndTx ();
   void AbortRx ();

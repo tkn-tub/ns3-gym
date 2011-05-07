@@ -75,7 +75,7 @@ public:
 
 protected:
   virtual void DoDispose ();
-  
+
 
 private:
   /**

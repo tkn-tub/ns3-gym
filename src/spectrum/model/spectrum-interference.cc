@@ -53,13 +53,13 @@ SpectrumInterference::DoDispose ()
   m_rxSignal = 0;
   m_allSignals = 0;
   m_noise = 0;
-  m_errorModel = 0;  
+  m_errorModel = 0;
   Object::DoDispose ();
 }
 
 void
 SpectrumInterference::StartRx (Ptr<const Packet> p, Ptr<const SpectrumValue> rxPsd)
-{ 
+{
   NS_LOG_FUNCTION (this << p << *rxPsd);
   m_rxSignal = rxPsd;
   m_lastChangeTime = Now ();
@@ -89,7 +89,7 @@ SpectrumInterference::AddSignal (Ptr<const SpectrumValue> spd, const Time durati
 
 void
 SpectrumInterference::DoAddSignal  (Ptr<const SpectrumValue> spd)
-{ 
+{
   NS_LOG_FUNCTION (this << *spd);
   ConditionallyEvaluateChunk ();
   (*m_allSignals) += (*spd);
@@ -98,7 +98,7 @@ SpectrumInterference::DoAddSignal  (Ptr<const SpectrumValue> spd)
 
 void
 SpectrumInterference::DoSubtractSignal  (Ptr<const SpectrumValue> spd)
-{ 
+{
   NS_LOG_FUNCTION (this << *spd);
   ConditionallyEvaluateChunk ();
   (*m_allSignals) -= (*spd);

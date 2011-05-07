@@ -57,7 +57,8 @@ class Queue;
 class AlohaNoackNetDevice : public NetDevice
 {
 public:
-  enum State {
+  enum State
+  {
     IDLE, TX, RX
   };
 

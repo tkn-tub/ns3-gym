@@ -97,7 +97,6 @@ public:
 
 
 protected:
-  
   void DoDispose ();
 
 private:

@@ -39,8 +39,8 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzerHelper");
 namespace ns3 {
 
 
-static void 
-WriteAveragePowerSpectralDensityReport (Ptr<OutputStreamWrapper> streamWrapper, 
+static void
+WriteAveragePowerSpectralDensityReport (Ptr<OutputStreamWrapper> streamWrapper,
                                         Ptr<const SpectrumValue> avgPowerSpectralDensity)
 {
   NS_LOG_FUNCTION (streamWrapper << avgPowerSpectralDensity);
@@ -62,7 +62,7 @@ WriteAveragePowerSpectralDensityReport (Ptr<OutputStreamWrapper> streamWrapper,
       *ostream << std::endl;
     }
 }
-  
+
 
 
 SpectrumAnalyzerHelper::SpectrumAnalyzerHelper ()
@@ -108,7 +108,7 @@ SpectrumAnalyzerHelper::SetDeviceAttribute (std::string name, const AttributeVal
   m_device.Set (name, v);
 }
 
- 
+
 void
 SpectrumAnalyzerHelper::SetRxSpectrumModel (Ptr<SpectrumModel> m)
 {
@@ -121,7 +121,7 @@ SpectrumAnalyzerHelper::EnableAsciiAll (std::string prefix)
 {
   NS_LOG_FUNCTION (this);
   m_prefix = prefix;
-}  
+}
 
 
 
@@ -135,7 +135,7 @@ SpectrumAnalyzerHelper::Install (NodeContainer c) const
       Ptr<Node> node = *i;
 
       Ptr<NonCommunicatingNetDevice> dev = m_device.Create ()->GetObject<NonCommunicatingNetDevice> ();
-     
+
       Ptr<SpectrumAnalyzer>  phy = m_phy.Create ()->GetObject<SpectrumAnalyzer> ();
       NS_ASSERT (phy);
 
@@ -158,7 +158,7 @@ SpectrumAnalyzerHelper::Install (NodeContainer c) const
       uint32_t devId = node->AddDevice (dev);
       devices.Add (dev);
 
-      if (! m_prefix.empty ())
+      if (!m_prefix.empty ())
         {
           NS_LOG_LOGIC ("creating new output stream and binding it to the callback");
           AsciiTraceHelper asciiTraceHelper;
@@ -170,7 +170,7 @@ SpectrumAnalyzerHelper::Install (NodeContainer c) const
 
           // the following is inspired from YansWifiPhyHelper::EnableAsciiInternal
           std::ostringstream oss;
-          oss.str (""); 
+          oss.str ("");
           oss << "/NodeList/" << node->GetId () << "/DeviceList/" << devId << "/$ns3::NonCommunicatingNetDevice/Phy/AveragePowerSpectralDensityReport";
           Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&WriteAveragePowerSpectralDensityReport, stream));
 

@@ -3,7 +3,7 @@
  * Copyright (c) 2010 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -52,7 +52,7 @@ static bool g_verbose = false;
 
 void
 PhyTxStartTrace (std::string context, Ptr<const Packet> p)
-{  
+{
   if (g_verbose)
     {
       std::cout << context << " PHY TX START p: " << p << std::endl;
@@ -62,7 +62,7 @@ PhyTxStartTrace (std::string context, Ptr<const Packet> p)
 
 void
 PhyTxEndTrace (std::string context, Ptr<const Packet> p)
-{  
+{
   if (g_verbose)
     {
       std::cout << context << " PHY TX END p: " << p << std::endl;
@@ -74,7 +74,7 @@ PhyRxStartTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX START p:" << p << std::endl; 
+      std::cout << context << " PHY RX START p:" << p << std::endl;
     }
 }
 
@@ -83,7 +83,7 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END OK p:" << p << std::endl; 
+      std::cout << context << " PHY RX END OK p:" << p << std::endl;
     }
 }
 
@@ -92,7 +92,7 @@ PhyRxEndErrorTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END ERROR p:" << p << std::endl; 
+      std::cout << context << " PHY RX END ERROR p:" << p << std::endl;
     }
 }
 
@@ -108,7 +108,7 @@ ReceivePacket (Ptr<Socket> socket)
     }
   if (g_verbose)
     {
-      std::cout << "SOCKET received " << bytes << " bytes" <<std::endl; 
+      std::cout << "SOCKET received " << bytes << " bytes" << std::endl;
     }
 }
 
@@ -127,12 +127,12 @@ int main (int argc, char** argv)
   CommandLine cmd;
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
   cmd.Parse (argc, argv);
-  
+
   NodeContainer ofdmNodes;
   NodeContainer waveformGeneratorNodes;
   NodeContainer spectrumAnalyzerNodes;
   NodeContainer allNodes;
-  
+
   ofdmNodes.Create (2);
   waveformGeneratorNodes.Create (1);
   spectrumAnalyzerNodes.Create (1);
@@ -151,7 +151,7 @@ int main (int argc, char** argv)
 
   mobility.Install (allNodes);
 
-   
+
   SpectrumChannelHelper channelHelper = SpectrumChannelHelper::Default ();
   channelHelper.SetChannel ("ns3::MultiModelSpectrumChannel");
   Ptr<SpectrumChannel> channel = channelHelper.Create ();
@@ -165,18 +165,18 @@ int main (int argc, char** argv)
 
   double txPower = 0.1; // Watts
   uint32_t channelNumber = 2;
-  Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);  
-  
+  Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);
+
   // for the noise, we use the Power Spectral Density of thermal noise
-  // at room temperature. The value of the PSD will be constant over the band of interest.  
+  // at room temperature. The value of the PSD will be constant over the band of interest.
   const double k = 1.381e-23; //Boltzmann's constant
   const double T = 290; // temperature in Kelvin
-  double noisePsdValue = k*T; // watts per hertz
-  Ptr<SpectrumValue> noisePsd = sf.CreateConstant (noisePsdValue); 
-  
+  double noisePsdValue = k * T; // watts per hertz
+  Ptr<SpectrumValue> noisePsd = sf.CreateConstant (noisePsdValue);
+
 
   AdhocAlohaNoackIdealPhyHelper adhocAlohaOfdmHelper;
-  adhocAlohaOfdmHelper.SetChannel(channel);
+  adhocAlohaOfdmHelper.SetChannel (channel);
   adhocAlohaOfdmHelper.SetTxPowerSpectralDensity (txPsd);
   adhocAlohaOfdmHelper.SetNoisePowerSpectralDensity (noisePsd);
   adhocAlohaOfdmHelper.SetPhyAttribute ("Rate", DataRateValue (DataRate ("1Mbps")));
@@ -186,7 +186,7 @@ int main (int argc, char** argv)
   packetSocket.Install (ofdmNodes);
 
   PacketSocketAddress socket;
-  socket.SetSingleDevice(ofdmDevices.Get (0)->GetIfIndex ());
+  socket.SetSingleDevice (ofdmDevices.Get (0)->GetIfIndex ());
   socket.SetPhysicalAddress (ofdmDevices.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 
@@ -199,13 +199,13 @@ int main (int argc, char** argv)
   ApplicationContainer apps = onoff.Install (ofdmNodes.Get (0));
   apps.Start (Seconds (0.0));
   apps.Stop (Seconds (2));
-  
+
   Ptr<Socket> recvSink = SetupPacketReceive (ofdmNodes.Get (1));
 
 
 
 
-  
+
   /////////////////////////////////
   // Configure waveform generator
   /////////////////////////////////
@@ -214,29 +214,29 @@ int main (int argc, char** argv)
   NS_LOG_INFO ("mwoPsd : " << *mwoPsd);
 
   WaveformGeneratorHelper waveformGeneratorHelper;
-  waveformGeneratorHelper.SetChannel(channel);
+  waveformGeneratorHelper.SetChannel (channel);
   waveformGeneratorHelper.SetTxPowerSpectralDensity (mwoPsd);
 
-  waveformGeneratorHelper.SetPhyAttribute ("Period", TimeValue(Seconds(1.0/60)));   // corresponds to 60 Hz 
-  waveformGeneratorHelper.SetPhyAttribute ("DutyCycle", DoubleValue(0.5));
+  waveformGeneratorHelper.SetPhyAttribute ("Period", TimeValue (Seconds (1.0 / 60)));   // corresponds to 60 Hz
+  waveformGeneratorHelper.SetPhyAttribute ("DutyCycle", DoubleValue (0.5));
   NetDeviceContainer waveformGeneratorDevices = waveformGeneratorHelper.Install (waveformGeneratorNodes);
-  
-  Simulator::Schedule(Seconds(0.1), &WaveformGenerator::Start, 
-  		      waveformGeneratorDevices.Get (0)->GetObject<NonCommunicatingNetDevice> ()->GetPhy ()->GetObject<WaveformGenerator> ());
+
+  Simulator::Schedule (Seconds (0.1), &WaveformGenerator::Start,
+                       waveformGeneratorDevices.Get (0)->GetObject<NonCommunicatingNetDevice> ()->GetPhy ()->GetObject<WaveformGenerator> ());
 
 
-  
+
   /////////////////////////////////
   // Configure spectrum analyzer
   /////////////////////////////////
 
 
   SpectrumAnalyzerHelper spectrumAnalyzerHelper;
-  spectrumAnalyzerHelper.SetChannel(channel);
+  spectrumAnalyzerHelper.SetChannel (channel);
   spectrumAnalyzerHelper.SetRxSpectrumModel (SpectrumModelIsm2400MhzRes1Mhz);
-  spectrumAnalyzerHelper.SetPhyAttribute ("Resolution", TimeValue(MilliSeconds (2)));   
+  spectrumAnalyzerHelper.SetPhyAttribute ("Resolution", TimeValue (MilliSeconds (2)));
   spectrumAnalyzerHelper.SetPhyAttribute ("NoisePowerSpectralDensity", DoubleValue (1e-15));  // -120 dBm/Hz
-  spectrumAnalyzerHelper.EnableAsciiAll ("spectrum-analyzer-output");   
+  spectrumAnalyzerHelper.EnableAsciiAll ("spectrum-analyzer-output");
   NetDeviceContainer spectrumAnalyzerDevices = spectrumAnalyzerHelper.Install (spectrumAnalyzerNodes);
 
 
@@ -249,15 +249,15 @@ int main (int argc, char** argv)
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxStart", MakeCallback (&PhyRxStartTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxEndOk", MakeCallback (&PhyRxEndOkTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxEndError", MakeCallback (&PhyRxEndErrorTrace));
-  
 
 
 
-Simulator::Stop (Seconds (0.3));
 
-Simulator::Run ();
+  Simulator::Stop (Seconds (0.3));
 
-Simulator::Destroy ();
+  Simulator::Run ();
+
+  Simulator::Destroy ();
 
 }
 

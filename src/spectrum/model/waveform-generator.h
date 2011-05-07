@@ -59,7 +59,7 @@ public:
   Ptr<Object> GetMobility ();
   Ptr<Object> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration); 
+  void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
 
 
   /**
@@ -88,21 +88,21 @@ public:
   void SetPeriod (Time period);
 
 
-  /** 
-   * 
+  /**
+   *
    * @return the value of the period according to which the WaveformGenerator switches
    * on and off
    */
   Time GetPeriod () const;
-  
 
-  /** 
-   * 
+
+  /**
+   *
    * @param value the value of the duty cycle
    */
   void SetDutyCycle (double value);
 
-  /** 
+  /**
    *
    * @return the value of the duty cycle
    */
@@ -125,7 +125,6 @@ public:
 
 
 private:
-
   virtual void DoDispose (void);
 
   Ptr<Object> m_mobility;
