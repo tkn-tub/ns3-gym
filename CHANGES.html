@@ -83,6 +83,16 @@ objects. The implementation of <b>int64x64_t</b> is based on the previously-exis
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li><b>Wifi TX duration calculation moved from InterferenceHelper to WifiPhy</b>
+<p>The following static methods have been moved from the InterferenceHelper class to the WifiPhy class:
+   <pre>
+static Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble);
+static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+static uint32_t GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode);
+</pre>
+</p></li>
 <li><b>Test cases no longer return a boolean value</b>
 <p>Unit test case DoRun() functions no longer return a bool value.  Now, they don't return a value at all.  The motivation for this change was to disallow users from merely returning "true" from a test case to force an error to be recorded.  Instead, test case macros should be used.
 </p></li>

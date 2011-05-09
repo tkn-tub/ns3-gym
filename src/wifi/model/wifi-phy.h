@@ -239,10 +239,44 @@ public:
    * \param size the number of bytes in the packet to send
    * \param payloadMode the transmission mode to use for this packet
    * \param preamble the type of preamble to use for this packet.
-   * \returns the total amount of time this PHY will stay busy for
+   * \return the total amount of time this PHY will stay busy for
    *          the transmission of these bytes.
    */
-  virtual Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const = 0;
+  static Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble);
+
+  /** 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble
+   * 
+   * \return the WifiMode used for the transmission of the PLCP header 
+   */
+  static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
+
+  /** 
+   * 
+   * 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble 
+   * 
+   * \return the duration of the PLCP header in microseconds
+   */
+  static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+
+  /** 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble 
+   * 
+   * \return the duration of the PLCP preamble in microseconds
+   */
+  static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
+
+  /** 
+   * \param payloadMode the WifiMode use for the transmission of the payload
+   * \param preamble the type of preamble 
+   * 
+   * \return the duration of the payload in microseconds
+   */
+  static uint32_t GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used

@@ -717,12 +717,6 @@ YansWifiPhy::GetLastRxStartTime (void) const
   return m_state->GetLastRxStartTime ();
 }
 
-Time
-YansWifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const
-{
-  return m_interference.CalculateTxDuration (size, payloadMode, preamble);
-}
-
 double
 YansWifiPhy::DbToRatio (double dB) const
 {

@@ -94,6 +94,213 @@ WifiPhy::~WifiPhy ()
   NS_LOG_FUNCTION (this);
 }
 
+
+WifiMode
+WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 5000000:
+            return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
+          case 10000000:
+            return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
+          default:
+            // IEEE Std 802.11-2007, 17.3.2
+            // actually this is only the first part of the PlcpHeader,
+            // because the last 16 bits of the PlcpHeader are using the
+            // same mode of the payload
+            return WifiPhy::GetOfdmRate6Mbps ();
+          }
+      }
+
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return WifiPhy::GetErpOfdmRate6Mbps ();
+
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_LONG)
+        {
+          // IEEE Std 802.11-2007, sections 15.2.3 and 18.2.2.1
+          return WifiPhy::GetDsssRate1Mbps ();
+        }
+      else  //  WIFI_PREAMBLE_SHORT
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2
+          return WifiPhy::GetDsssRate2Mbps ();
+        }
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return WifiMode ();
+    }
+}
+
+uint32_t
+WifiPhy::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            // IEEE Std 802.11-2007, section 17.3.3 and figure 17-4
+            // also section 17.3.2.3, table 17-4
+            // We return the duration of the SIGNAL field only, since the
+            // SERVICE field (which strictly speaking belongs to the PLCP
+            // header, see section 17.3.2 and figure 17-1) is sent using the
+            // payload mode.
+            return 4;
+          case 10000000:
+            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            return 8;
+          case 5000000:
+            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            return 16;
+          }
+      }
+
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return 16;
+
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_SHORT)
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          return 24;
+        }
+      else // WIFI_PREAMBLE_LONG
+        {
+          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          return 48;
+        }
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return 0;
+    }
+}
+
+uint32_t
+WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            // IEEE Std 802.11-2007, section 17.3.3,  figure 17-4
+            // also section 17.3.2.3, table 17-4
+            return 16;
+          case 10000000:
+            // IEEE Std 802.11-2007, section 17.3.3, table 17-4
+            // also section 17.3.2.3, table 17-4
+            return 32;
+          case 5000000:
+            // IEEE Std 802.11-2007, section 17.3.3
+            // also section 17.3.2.3, table 17-4
+            return 64;
+          }
+      }
+
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return 4;
+
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_SHORT)
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          return 72;
+        }
+      else // WIFI_PREAMBLE_LONG
+        {
+          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          return 144;
+        }
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return 0;
+    }
+}
+
+uint32_t
+WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode)
+{
+  NS_LOG_FUNCTION (size << payloadMode);
+
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      {
+        // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+        // corresponds to T_{SYM} in the table
+        uint32_t symbolDurationUs;
+
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            symbolDurationUs = 4;
+            break;
+          case 10000000:
+            symbolDurationUs = 8;
+            break;
+          case 5000000:
+            symbolDurationUs = 16;
+            break;
+          }
+
+        // IEEE Std 802.11-2007, section 17.3.2.2, table 17-3
+        // corresponds to N_{DBPS} in the table
+        double numDataBitsPerSymbol = payloadMode.GetDataRate ()  * symbolDurationUs / 1e6;
+
+        // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
+        uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
+
+        // Add signal extension for ERP PHY
+        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+          {
+            return numSymbols * symbolDurationUs + 6;
+          }
+        else
+          {
+            return numSymbols * symbolDurationUs;
+          }
+      }
+
+    case WIFI_MOD_CLASS_DSSS:
+      // IEEE Std 802.11-2007, section 18.2.3.5
+      NS_LOG_LOGIC (" size=" << size
+                             << " mode=" << payloadMode
+                             << " rate=" << payloadMode.GetDataRate () );
+      return lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return 0;
+    }
+}
+
+Time
+WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble)
+{
+  uint32_t duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)
+    + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)
+    + GetPayloadDurationMicroSeconds (size, payloadMode);
+  return MicroSeconds (duration);
+}
+
+
 void
 WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)
 {

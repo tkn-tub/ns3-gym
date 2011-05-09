@@ -135,7 +135,6 @@ public:
   virtual Time GetStateDuration (void);
   virtual Time GetDelayUntilIdle (void);
   virtual Time GetLastRxStartTime (void) const;
-  virtual Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const;
   virtual uint32_t GetNModes (void) const;
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual double CalculateSnr (WifiMode txMode, double ber) const;

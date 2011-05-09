@@ -29,11 +29,11 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
 namespace ns3 {
 
-class InterferenceHelperTxDurationTest : public TestCase
+class TxDurationTest : public TestCase
 {
 public:
-  InterferenceHelperTxDurationTest ();
-  virtual ~InterferenceHelperTxDurationTest ();
+  TxDurationTest ();
+  virtual ~TxDurationTest ();
   virtual void DoRun (void);
 
 private:
@@ -65,20 +65,20 @@ private:
 };
 
 
-InterferenceHelperTxDurationTest::InterferenceHelperTxDurationTest ()
-  : TestCase ("InterferenceHelper TX Duration")
+TxDurationTest::TxDurationTest ()
+  : TestCase ("Wifi TX Duration")
 {
 }
 
 
-InterferenceHelperTxDurationTest::~InterferenceHelperTxDurationTest ()
+TxDurationTest::~TxDurationTest ()
 {
 }
 
 bool
-InterferenceHelperTxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
+TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
 {
-  uint32_t calculatedDurationMicroSeconds = InterferenceHelper::GetPayloadDurationMicroSeconds (size, payloadMode);
+  uint32_t calculatedDurationMicroSeconds = WifiPhy::GetPayloadDurationMicroSeconds (size, payloadMode);
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -92,9 +92,9 @@ InterferenceHelperTxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode 
 }
 
 bool
-InterferenceHelperTxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds)
+TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble, uint32_t knownDurationMicroSeconds)
 {
-  uint32_t calculatedDurationMicroSeconds = InterferenceHelper::CalculateTxDuration (size, payloadMode, preamble).GetMicroSeconds ();
+  uint32_t calculatedDurationMicroSeconds = WifiPhy::CalculateTxDuration (size, payloadMode, preamble).GetMicroSeconds ();
   if (calculatedDurationMicroSeconds != knownDurationMicroSeconds)
     {
       std::cerr << " size=" << size
@@ -109,7 +109,7 @@ InterferenceHelperTxDurationTest::CheckTxDuration (uint32_t size, WifiMode paylo
 }
 
 void
-InterferenceHelperTxDurationTest::DoRun (void)
+TxDurationTest::DoRun (void)
 {
   bool retval = true;
 
@@ -188,7 +188,7 @@ public:
 TxDurationTestSuite::TxDurationTestSuite ()
   : TestSuite ("devices-wifi-tx-duration", UNIT)
 {
-  AddTestCase (new InterferenceHelperTxDurationTest);
+  AddTestCase (new TxDurationTest);
 }
 
 static TxDurationTestSuite g_txDurationTestSuite;

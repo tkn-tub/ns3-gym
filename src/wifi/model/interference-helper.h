@@ -88,11 +88,6 @@ private:
   Time GetEnergyDuration (double energyW);
 
 
-  static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
-  static uint32_t GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
-  static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode mode, WifiPreamble preamble);
-  static uint32_t GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode);
-  static Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble);
   Ptr<InterferenceHelper::Event> Add (uint32_t size, WifiMode payloadMode,
                                       enum WifiPreamble preamble,
                                       Time duration, double rxPower);
