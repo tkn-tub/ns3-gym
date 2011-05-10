@@ -16,7 +16,7 @@ of the |ns3| model are:
 * packet tracing functionality
 
 The source code for the WiMAX models lives in the directory
-``src/devices/wimax``.
+``src/wimax``.
 
 There have been two academic papers published on this model:
 

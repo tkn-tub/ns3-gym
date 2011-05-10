@@ -7,6 +7,11 @@ def build(bld):
 
     # Set the C++ source files for this module.
     module.source = [
+        # Uncomment this line to compile this model source file.
+        #'model/sample-model.cc',
+
+        # Uncomment this line to compile this helper source file.
+        #'helper/sample-helper.cc',
         ]
 
     # Create the module's test library.
@@ -23,6 +28,11 @@ def build(bld):
 
     # Set the C++ header files for this module.
     headers.source = [
+        # Uncomment this line to install this model header file.
+        #'model/sample-model.h',
+
+        # Uncomment this line to install this helper header file.
+        #'helper/sample-helper.h',
         ]
 
     # Uncomment these lines if this module needs a library such as the

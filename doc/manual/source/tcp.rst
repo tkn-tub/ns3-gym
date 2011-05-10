@@ -195,7 +195,7 @@ There are a few example files.  Try::
 These examples will deposit some ``.pcap`` files in your directory,
 which can be examined by tcpdump or wireshark.
 
-Let's look at the ``examples/tcp-nsc-zoo.cc`` file for some typical
+Let's look at the ``examples/tcp/tcp-nsc-zoo.cc`` file for some typical
 usage. How does it differ from using native |ns3| TCP? There is one main
 configuration line, when using NSC and the |ns3| helper API, that needs to be
 set:::
@@ -233,7 +233,7 @@ sockets, as described above and documented in `Doxygen
 <http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>`_
 
 Additionally, NSC TCP exports a lot of configuration variables into the 
-|ns3| :ref:`Attributes` system, via a `sysctl <http://en.wikipedia.org/wiki/Sysctl>`_-like interface. In the ``examples/tcp-nsc-zoo`` example, you
+|ns3| :ref:`Attributes` system, via a `sysctl <http://en.wikipedia.org/wiki/Sysctl>`_-like interface. In the ``examples/tcp/tcp-nsc-zoo`` example, you
 can see the following configuration:::
 
 

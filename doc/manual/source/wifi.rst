@@ -105,7 +105,7 @@ limitation found in ns-2. Presently, however, there is no model for
 cross-channel interference or coupling.
 
 The source code for the Wifi NetDevice lives in the directory
-``src/devices/wifi``.
+``src/wifi``.
 
 .. _wifi-architecture:
 

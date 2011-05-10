@@ -31,7 +31,7 @@ TestSuite), these things need to be decided up front:
   separately in src/test/ directory).  You will have to edit the wscript
   file in that directory to compile your new code, if it is a new file.
 
-See the file ``src/test/sample-test-suite.cc`` and corresponding
+See the file ``src/template/test/sample-test-suite.cc`` and corresponding
 wscript file in that directory for a simple example, and see the directories
 under ``src/test`` for more complicated examples.
 

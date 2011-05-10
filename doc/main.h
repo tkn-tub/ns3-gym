@@ -34,24 +34,14 @@
  * 
  * \section module-sec Module overview
  *
- * The ns-3 library is split across multiple modules:
+ * The ns-3 library is split across many modules.  :
  *     - core: located in src/core and contains a number of facilities which
  *       do not depend on any other module. Some of these facilities are
  *       OS-dependent.
- *     - simulator: located in src/simulator and contains event scheduling
- *       facilities.
- *     - common: located in src/common and contains facilities specific
- *       to network simulations but shared by pretty much every model
- *       of a network component.
- *     - node: located in src/node. Defines the abstract interfaces which 
- *       must be implemented by every node and more specifically, by 
- *       IPv4 and IPv6 nodes.       
- *     - devices: located in src/devices. Contains a set of MAC-level models
- *     - InternetStack: located in src/internet-stack. Contains TCP/IP models.
- *     - Applications: located in src/applications
- *     - Routing:  located in src/routing; routing protocols.
- *     - Mobility:  located in src/mobility; Mobility models for nodes
- *     - Helper:  located in src/helper; Helper API for the simulator
+ *     - network: located in src/network. Network related files.
+ *     - internet: located in src/internet. Internet related files.
+ *     - applications: located in src/applications
+ *     - mobility:  located in src/mobility; Mobility models for nodes
  *
  * More detail can be found in the <b><a href="modules.html">Modules</a></b>
  * tab.

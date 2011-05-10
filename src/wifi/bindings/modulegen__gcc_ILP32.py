@@ -1869,11 +1869,6 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('CalculateSnrPer', 
                    'ns3::InterferenceHelper::SnrPer', 
                    [param('ns3::Ptr< ns3::InterferenceHelper::Event >', 'event')])
-    ## interference-helper.h (module 'wifi'): static ns3::Time ns3::InterferenceHelper::CalculateTxDuration(uint32_t size, ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('CalculateTxDuration', 
-                   'ns3::Time', 
-                   [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_static=True)
     ## interference-helper.h (module 'wifi'): void ns3::InterferenceHelper::EraseEvents() [member function]
     cls.add_method('EraseEvents', 
                    'void', 
@@ -1892,26 +1887,6 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## interference-helper.h (module 'wifi'): static uint32_t ns3::InterferenceHelper::GetPayloadDurationMicroSeconds(uint32_t size, ns3::WifiMode payloadMode) [member function]
-    cls.add_method('GetPayloadDurationMicroSeconds', 
-                   'uint32_t', 
-                   [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode')], 
-                   is_static=True)
-    ## interference-helper.h (module 'wifi'): static uint32_t ns3::InterferenceHelper::GetPlcpHeaderDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetPlcpHeaderDurationMicroSeconds', 
-                   'uint32_t', 
-                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_static=True)
-    ## interference-helper.h (module 'wifi'): static ns3::WifiMode ns3::InterferenceHelper::GetPlcpHeaderMode(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetPlcpHeaderMode', 
-                   'ns3::WifiMode', 
-                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_static=True)
-    ## interference-helper.h (module 'wifi'): static uint32_t ns3::InterferenceHelper::GetPlcpPreambleDurationMicroSeconds(ns3::WifiMode mode, ns3::WifiPreamble preamble) [member function]
-    cls.add_method('GetPlcpPreambleDurationMicroSeconds', 
-                   'uint32_t', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_static=True)
     ## interference-helper.h (module 'wifi'): void ns3::InterferenceHelper::NotifyRxEnd() [member function]
     cls.add_method('NotifyRxEnd', 
                    'void', 
@@ -6266,11 +6241,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'double', 
                    [param('ns3::WifiMode', 'txMode'), param('double', 'ber')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::CalculateTxDuration(uint32_t size, ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) const [member function]
+    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::CalculateTxDuration(uint32_t size, ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
     cls.add_method('CalculateTxDuration', 
                    'ns3::Time', 
                    [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_static=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::ConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('ConfigureStandard', 
                    'void', 
@@ -6490,6 +6465,26 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('GetOfdmRate9MbpsBW5MHz', 
                    'ns3::WifiMode', 
                    [], 
+                   is_static=True)
+    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPayloadDurationMicroSeconds(uint32_t size, ns3::WifiMode payloadMode) [member function]
+    cls.add_method('GetPayloadDurationMicroSeconds', 
+                   'uint32_t', 
+                   [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode')], 
+                   is_static=True)
+    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpHeaderDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpHeaderDurationMicroSeconds', 
+                   'uint32_t', 
+                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   is_static=True)
+    ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetPlcpHeaderMode(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpHeaderMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   is_static=True)
+    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetPlcpPreambleDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpPreambleDurationMicroSeconds', 
+                   'uint32_t', 
+                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
     ## wifi-phy.h (module 'wifi'): ns3::Time ns3::WifiPhy::GetStateDuration() [member function]
     cls.add_method('GetStateDuration', 
@@ -7083,11 +7078,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('GetLastRxStartTime', 
                    'ns3::Time', 
                    [], 
-                   is_const=True, is_virtual=True)
-    ## yans-wifi-phy.h (module 'wifi'): ns3::Time ns3::YansWifiPhy::CalculateTxDuration(uint32_t size, ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) const [member function]
-    cls.add_method('CalculateTxDuration', 
-                   'ns3::Time', 
-                   [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_const=True, is_virtual=True)
     ## yans-wifi-phy.h (module 'wifi'): uint32_t ns3::YansWifiPhy::GetNModes() const [member function]
     cls.add_method('GetNModes', 

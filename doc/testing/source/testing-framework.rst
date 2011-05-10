@@ -421,10 +421,10 @@ size as the object name service code itself.  Unit tests are tests that
 check a single bit of functionality that are not built into the ns-3 code,
 but live in the same directory as the code it tests.  It is possible that
 these tests check integration of multiple implementation files in a module
-as well.  The file src/core/names-test-suite.cc is an example of this kind
-of test.  The file src/common/pcap-file-test-suite.cc is another example
+as well.  The file src/core/test/names-test-suite.cc is an example of this kind
+of test.  The file src/network/test/pcap-file-test-suite.cc is another example
 that uses a known good pcap file as a test vector file.  This file is stored
-locally in the src/common directory.
+locally in the src/network directory.
 
 System Tests
 ++++++++++++
@@ -742,7 +742,7 @@ arguments as needed, but basedir is the minimum needed)::
   (gdb) r --basedir=`pwd`
   Starting program: <..>/build/debug/utils/test-runner --basedir=`pwd`
   [Thread debugging using libthread_db enabled]
-  assert failed. file=../src/core/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
+  assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
   ...
 
 Here is another example of how to use valgrind to debug a memory problem

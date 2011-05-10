@@ -1766,9 +1766,9 @@ add an error model to this code also, so we wanted to demonstrate this working.
 This trace sink will be connected to the "PhyRxDrop" trace source of the 
 point-to-point NetDevice.  This trace source fires when a packet is dropped
 by the physical layer of a ``NetDevice``.  If you take a small detour to the
-source (``src/devices/point-to-point/point-to-point-net-device.cc``) you will
+source (``src/point-to-point/model/point-to-point-net-device.cc``) you will
 see that this trace source refers to ``PointToPointNetDevice::m_phyRxDropTrace``.
-If you then look in ``src/devices/point-to-point/point-to-point-net-device.h``
+If you then look in ``src/point-to-point/model/point-to-point-net-device.h``
 for this member variable, you will find that it is declared as a
 ``TracedCallback<Ptr<const Packet> >``.  This should tell you that the
 callback target should be a function that returns void and takes a single
