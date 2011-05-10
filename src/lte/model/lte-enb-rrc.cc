@@ -319,7 +319,7 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth)
 uint16_t
 LteEnbRrc::AddUe (uint64_t imsi)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << imsi);
   // no Call Admission Control for now
   uint16_t rnti = CreateUeInfo (imsi); // side effect: create UeInfo for this UE
   NS_ASSERT_MSG (rnti != 0, "CreateUeInfo returned RNTI==0");
@@ -393,7 +393,7 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 uint16_t
 LteEnbRrc::CreateUeInfo (uint64_t imsi)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << imsi);
   for (uint16_t rnti = m_lastAllocatedRnti; rnti != m_lastAllocatedRnti - 1; ++rnti)
     {
       if (rnti != 0)

@@ -63,7 +63,8 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    MakePointerChecker <LteUeRrc> ())
     .AddAttribute("Imsi",
                   "International Mobile Subscriber Identity assigned to this UE",
-                  UintegerValue (1),
+                  TypeId::ATTR_GET, 
+                  UintegerValue (0), // not used because the attribute is read-only
                   MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
                   MakeUintegerChecker<uint64_t> ())
     ;
@@ -86,6 +87,7 @@ LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac>
   m_mac = mac;
   m_rrc = rrc;
   SetNode (node);
+  m_imsi = ++m_imsiCounter;
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -159,6 +161,7 @@ LteUeNetDevice::GetTargetEnb (void)
 uint64_t
 LteUeNetDevice::GetImsi ()
 {
+  NS_LOG_FUNCTION (this);
   return m_imsi;
 }
 
@@ -166,8 +169,8 @@ LteUeNetDevice::GetImsi ()
 void 
 LteUeNetDevice::DoStart (void)
 {
+  NS_LOG_FUNCTION (this);
   UpdateConfig ();
-  m_imsi = ++m_imsiCounter;
   m_phy->Start ();
   m_mac->Start ();
   m_rrc->Start ();
