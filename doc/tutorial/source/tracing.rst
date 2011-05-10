@@ -1178,8 +1178,8 @@ through the list, you will eventually find:
   CongestionWindow: The TCP connection's congestion window
 
 It turns out that the |ns3| TCP implementation lives (mostly) in the 
-file ``src/internet-stack/tcp-socket-base.cc`` while congestion control
-variants are in files such as ``src/internet-stack/tcp-newreno.cc``.  
+file ``src/internet/tcp-socket-base.cc`` while congestion control
+variants are in files such as ``src/internet/tcp-newreno.cc``.  
 If you don't know this a priori, you can use the recursive grep trick:
 
 ::
@@ -1188,7 +1188,7 @@ If you don't know this a priori, you can use the recursive grep trick:
 
 You will find page after page of instances of tcp pointing you to that file. 
 
-If you open ``src/internet-stack/tcp-newreno.cc`` in your favorite 
+If you open ``src/internet/tcp-newreno.cc`` in your favorite 
 editor, you will see right up at the top of the file, the following declarations:
 
 ::
@@ -1207,7 +1207,7 @@ editor, you will see right up at the top of the file, the following declarations
   }
 
 This should tell you to look for the declaration of ``m_cWnd`` in the header
-file ``src/internet-stack/tcp-newreno.h``.  If you open this file in your
+file ``src/internet/tcp-newreno.h``.  If you open this file in your
 favorite editor, you will find:
 
 ::
@@ -1424,7 +1424,7 @@ we put together to allow the ``Socket`` to be created at configuration time.
   };
 
 You can see that this class inherits from the |ns3| ``Application``
-class.  Take a look at ``src/node/application.h`` if you are interested in 
+class.  Take a look at ``src/network/application.h`` if you are interested in 
 what is inherited.  The ``MyApp`` class is obligated to override the 
 ``StartApplication`` and ``StopApplication`` methods.  These methods are
 automatically called when ``MyApp`` is required to start and stop sending
@@ -1451,7 +1451,7 @@ This is done as the result of the following (hopefully) familar lines of an
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-The application container code (see ``src/helper/application-container.h`` if
+The application container code (see ``src/network/helper/application-container.h`` if
 you are interested) loops through its contained applications and calls,
 
 ::
@@ -1482,7 +1482,7 @@ ignore the implementation details of how your ``Application`` is
 "automagically" called by the simulator at the correct time.  But since
 we have already ventured deep into |ns3| already, let's go for it.
 
-If you look at ``src/node/application.cc`` you will find that the
+If you look at ``src/network/application.cc`` you will find that the
 ``SetStartTime`` method of an ``Application`` just sets the member 
 variable ``m_startTime`` and the ``SetStopTime`` method just sets 
 ``m_stopTime``.  From there, without some hints, the trail will probably
@@ -1492,7 +1492,7 @@ The key to picking up the trail again is to know that there is a global
 list of all of the nodes in the system.  Whenever you create a node in 
 a simulation, a pointer to that node is added to the global ``NodeList``.
 
-Take a look at ``src/node/node-list.cc`` and search for 
+Take a look at ``src/network/node-list.cc`` and search for 
 ``NodeList::Add``.  The public static implementation calls into a private
 implementation called ``NodeListPriv::Add``.  This is a relatively common
 idom in |ns3|.  So, take a look at ``NodeListPriv::Add``.  There
@@ -1512,7 +1512,7 @@ to start doing something.
 
 So, ``NodeList::Add`` indirectly schedules a call to ``Node::Start``
 at time zero to advise a new node that the simulation has started.  If you 
-look in ``src/node/node.h`` you will, however, not find a method called
+look in ``src/network/node.h`` you will, however, not find a method called
 ``Node::Start``.  It turns out that the ``Start`` method is inherited
 from class ``Object``.  All objects in the system can be notified when
 the simulation starts, and objects of class ``Node`` are just one kind
@@ -1530,7 +1530,7 @@ something like ``MethodName`` for the public API and ``DoMethodName`` for
 the private API.
 
 This tells us that we should look for a ``Node::DoStart`` method in 
-``src/node/node.cc`` for the method that will continue our trail.  If you
+``src/network/node.cc`` for the method that will continue our trail.  If you
 locate the code, you will find a method that loops through all of the devices
 in the node and then all of the applications in the node calling 
 ``device->Start`` and ``application->Start`` respectively.
@@ -1538,7 +1538,7 @@ in the node and then all of the applications in the node calling
 You may already know that classes ``Device`` and ``Application`` both
 inherit from class ``Object`` and so the next step will be to look at
 what happens when ``Application::DoStart`` is called.  Take a look at
-``src/node/application.cc`` and you will find:
+``src/network/application.cc`` and you will find:
 
 ::
 
@@ -2138,7 +2138,7 @@ is going to contain packets prefixed with point to point headers.  This is true
 since the packets are coming from our point-to-point device driver.  Other
 common data link types are DLT_EN10MB (10 MB Ethernet) appropriate for csma
 devices and DLT_IEEE802_11 (IEEE 802.11) appropriate for wifi devices.  These
-are defined in ``src/helper/trace-helper.h"`` if you are interested in seeing
+are defined in ``src/network/helper/trace-helper.h"`` if you are interested in seeing
 the list.  The entries in the list match those in ``bpf.h`` but we duplicate
 them to avoid a pcap source dependence.
 
@@ -2161,7 +2161,7 @@ pointer to a reference counted object that is a very lightweight thing.
 Remember to always look at the object you are referencing before making any
 assumptions about the "powers" that object may have.  
 
-For example, take a look at ``src/common/pcap-file-object.h`` in the 
+For example, take a look at ``src/network/pcap-file-object.h`` in the 
 distribution and notice, 
 
 ::
@@ -2169,7 +2169,7 @@ distribution and notice,
   class PcapFileWrapper : public Object
 
 that class ``PcapFileWrapper`` is an |ns3| Object by virtue of 
-its inheritance.  Then look at ``src/common/output-stream-wrapper.h`` and 
+its inheritance.  Then look at ``src/network/output-stream-wrapper.h`` and 
 notice,
 
 ::
@@ -2327,7 +2327,7 @@ The goal of these helpers is to make it easy to add a consistent pcap trace
 facility to an |ns3| device.  We want all of the various flavors of
 pcap tracing to work the same across all devices, so the methods of these 
 helpers are inherited by device helpers.  Take a look at 
-``src/helper/trace-helper.h`` if you want to follow the discussion while 
+``src/network/helper/trace-helper.h`` if you want to follow the discussion while 
 looking at real code.
 
 The class ``PcapHelperForDevice`` is a ``mixin`` provides the high level 
@@ -2500,7 +2500,7 @@ Ascii Tracing Device Helpers
 ++++++++++++++++++++++++++++
 
 The behavior of the ascii trace helper ``mixin`` is substantially similar to 
-the pcap version.  Take a look at ``src/helper/trace-helper.h`` if you want to 
+the pcap version.  Take a look at ``src/network/helper/trace-helper.h`` if you want to 
 follow the discussion while looking at real code.
 
 The class ``AsciiTraceHelperForDevice`` adds the high level functionality for 
@@ -2743,7 +2743,7 @@ Pcap Tracing Protocol Helpers
 The goal of these ``mixins`` is to make it easy to add a consistent pcap trace
 facility to protocols.  We want all of the various flavors of pcap tracing to 
 work the same across all protocols, so the methods of these helpers are 
-inherited by stack helpers.  Take a look at ``src/helper/trace-helper.h``
+inherited by stack helpers.  Take a look at ``src/network/helper/trace-helper.h``
 if you want to follow the discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the protocol
@@ -2909,7 +2909,7 @@ Ascii Tracing Protocol Helpers
 ++++++++++++++++++++++++++++++
 
 The behavior of the ascii trace helpers is substantially similar to the pcap
-case.  Take a look at ``src/helper/trace-helper.h`` if you want to 
+case.  Take a look at ``src/network/helper/trace-helper.h`` if you want to 
 follow the discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the protocol

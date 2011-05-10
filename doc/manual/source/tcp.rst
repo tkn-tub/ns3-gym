@@ -9,13 +9,13 @@ Generic support for TCP
 ***********************
 
 |ns3| was written to support multiple TCP implementations. The implementations
-inherit from a few common header classes in the ``src/node`` directory, so that
+inherit from a few common header classes in the ``src/network`` directory, so that
 user code can swap out implementations with minimal changes to the scripts.
 
 There are two important abstract base classes:
 
 * class :cpp:class:`TcpSocket`:  This is defined in
-  ``src/node/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
+  ``src/internet/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
   attributes that can be reused across different implementations. For instance,
   the attribute ``InitialCwnd`` can be used for any of the implementations
   that derive from class :cpp:class:`TcpSocket`.
@@ -42,18 +42,18 @@ connection setup and close logic.
 
 The implementation of TCP is contained in the following files:::
 
-    src/internet-stack/tcp-header.{cc,h}
-    src/internet-stack/tcp-l4-protocol.{cc,h}
-    src/internet-stack/tcp-socket-factory-impl.{cc,h}
-    src/internet-stack/tcp-socket-base.{cc,h}
-    src/internet-stack/tcp-tx-buffer.{cc,h}
-    src/internet-stack/tcp-rx-buffer.{cc,h}
-    src/internet-stack/tcp-rfc793.{cc,h}
-    src/internet-stack/tcp-tahoe.{cc,h}
-    src/internet-stack/tcp-reno.{cc,h}
-    src/internet-stack/tcp-newreno.{cc,h}
-    src/internet-stack/rtt-estimator.{cc,h}
-    src/common/sequence-number.{cc,h}
+    src/internet/tcp-header.{cc,h}
+    src/internet/tcp-l4-protocol.{cc,h}
+    src/internet/tcp-socket-factory-impl.{cc,h}
+    src/internet/tcp-socket-base.{cc,h}
+    src/internet/tcp-tx-buffer.{cc,h}
+    src/internet/tcp-rx-buffer.{cc,h}
+    src/internet/tcp-rfc793.{cc,h}
+    src/internet/tcp-tahoe.{cc,h}
+    src/internet/tcp-reno.{cc,h}
+    src/internet/tcp-newreno.{cc,h}
+    src/internet/rtt-estimator.{cc,h}
+    src/network/sequence-number.{cc,h}
 
 Different variants of TCP congestion control are supported by subclassing
 the common base class :cpp:class:`TcpSocketBase`.  Several variants
@@ -66,8 +66,8 @@ Usage
 In many cases, usage of TCP is set at the application layer by telling
 the |ns3| application which kind of socket factory to use.
 
-Using the helper functions defined in ``src/helper``, here is how
-one would create a TCP receiver:::
+Using the helper functions defined in ``src/applications/helper`` and
+``src/network/helper``, here is how one would create a TCP receiver:::
 
   // Create a packet sink on the star "hub" to receive these packets
   uint16_t port = 50000;
@@ -288,7 +288,7 @@ The three main parts are:
 * :cpp:class:`ns3::NscTcpSocketFactoryImpl`:  a factory to create new NSC
   sockets
 
-``src/internet-stack/nsc-tcp-l4-protocol`` is the main class. Upon
+``src/internet/nsc-tcp-l4-protocol`` is the main class. Upon
 Initialization, it loads an nsc network stack to use (via dlopen()). Each
 instance of this class may use a different stack. The stack (=shared library) to
 use is set using the SetNscLibrary() method (at this time its called indirectly
@@ -309,7 +309,7 @@ This class calls ``ns3::NscTcpSocketImpl`` both from the nsc wakeup() callback
 and from the Receive path (to ensure that possibly queued data is scheduled for
 sending).
 
-``src/internet-stack/nsc-tcp-socket-impl`` implements the nsc socket interface.
+``src/internet/nsc-tcp-socket-impl`` implements the nsc socket interface.
 Each instance has its own nscTcpSocket. Data that is Send() will be handed to
 the nsc stack via m_nscTcpSocket->send_data(). (and not to nsc-tcp-l4, this is
 the major difference compared to |ns3| TCP). The class also queues up data that

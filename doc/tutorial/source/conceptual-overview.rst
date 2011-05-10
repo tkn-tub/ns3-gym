@@ -836,5 +836,5 @@ you will find (as of this writing) is ``abort.h``.  If you click on the
 contains useful macros for exiting scripts if abnormal conditions are detected.
 
 The source code for the helpers we have used in this chapter can be found in the 
-``src/helper`` directory.  Feel free to poke around in the directory tree to
+``src/applications/helper`` directory.  Feel free to poke around in the directory tree to
 get a feel for what is there and the style of |ns3| programs.

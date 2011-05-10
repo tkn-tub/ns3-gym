@@ -9,7 +9,7 @@ Internet stack aggregation
 A bare class :cpp:class:`Node` is not very useful as-is; other objects must be
 aggregated to it to provide useful node functionality.
 
-The |ns3| source code directory ``src/internet-stack`` provides implementation
+The |ns3| source code directory ``src/internet`` provides implementation
 of TCP/IPv4- and IPv6-related components. These include IPv4, ARP, UDP, TCP,
 IPv6, Neighbor Discovery, and other related protocols.
 
@@ -72,9 +72,8 @@ Layer-3 protocols
 At the lowest layer, sitting above the NetDevices, are the "layer 3" protocols,
 including IPv4, IPv6 (in the future), and ARP. The class
 :cpp:class:`Ipv4L3Protocol` is an implementation class whose public interface is
-typically class :cpp:class:`Ipv4` (found in src/node directory), but the
-Ipv4L3Protocol public API is also used internally in the src/internet-stack
-directory at present.
+typically class :cpp:class:`Ipv4`, but the
+Ipv4L3Protocol public API is also used internally at present.
 
 In class Ipv4L3Protocol, one method described below is ``Receive ()``:::
 
@@ -199,13 +198,13 @@ Ipv4-capable Node objects are not exposed at the simulator public API. This
 allows for different implementations; for instance, replacing the native |ns3|
 models with ported TCP/IP stack code. 
  
-The C++ public APIs of all of these objects is found in the ``src/node``
+The C++ public APIs of all of these objects is found in the ``src/network``
 directory, including principally:
 
+* ``address.h``
 * ``socket.h``
-* ``tcp.h``
-* ``udp.h``
-* ``ipv4.h``
+* ``node.h``
+* ``packet.h``
 
 These are typically base class objects that implement the default values used in
 the implementation, implement access methods to get/set state variables, host

@@ -75,7 +75,7 @@ The main way that users who write simulation scripts will typically interact
 with the Wimax models is through the helper API and through the publicly visible
 attributes of the model.
 
-The helper API is defined in ``src/helper/wimax-helper.{cc,h}``.
+The helper API is defined in ``src/wimax/helper/wimax-helper.{cc,h}``.
 
 The example ``src/wimax/examples/wimax-simple.cc`` contains some basic code that
 shows how to set up the model:::
