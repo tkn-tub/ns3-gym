@@ -137,7 +137,7 @@ RlcStatsCalculator::UlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_
 void
 RlcStatsCalculator::DlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_FUNCTION (this << "UlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
+  NS_LOG_FUNCTION (this << "DlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
   if (Simulator::Now () > m_startTime )
     {
       m_dlRxPackets[imsi]++;

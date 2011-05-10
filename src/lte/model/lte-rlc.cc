@@ -145,7 +145,7 @@ LteRlc::GetLteMacSapUser ()
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcSm);
 
-LteRlcSm::LteRlcSm ()
+LteRlcSm::LteRlcSm () : bytesrxed(0)
 {
 
   NS_LOG_FUNCTION (this);
@@ -154,7 +154,7 @@ LteRlcSm::LteRlcSm ()
 
 LteRlcSm::~LteRlcSm ()
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << " bytes Rxed " << bytesrxed);
 }
 
 TypeId
@@ -179,6 +179,7 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
     }
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << delay.GetNanoSeconds ());
   m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
+  bytesrxed += p->GetSize ();
 }
 
 void

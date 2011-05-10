@@ -126,6 +126,8 @@ public:
   virtual void DoReceivePdu (Ptr<Packet> p);
 
   void Start ();
+  
+  long int bytesrxed;
 
 };
 
