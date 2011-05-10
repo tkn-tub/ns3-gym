@@ -229,7 +229,7 @@ must inherit from class Header, and implement the following methods:
 * ``Print ()``
 
 To see a simple example of how these are done, look at the UdpHeader class
-headers src/internet/udp-header.cc. There are many other examples within
+headers src/internet/model/udp-header.cc. There are many other examples within
 the source code. 
 
 Once you have a header (or you have a preexisting header), the following
@@ -291,7 +291,7 @@ will not cover those bytes.  The converse is true for the PacketTag; it covers a
 packet despite the operations on it.
 
 PacketTags are limited in size to 20 bytes. This is a modifiable compile-time
-constant in ``src/network/packet-tag-list.h``. ByteTags have no such restriction.
+constant in ``src/network/model/packet-tag-list.h``. ByteTags have no such restriction.
 
 Each tag type must subclass ``ns3::Tag``, and only one instance of
 each Tag type may be in each tag list. Here are a few differences in the
@@ -421,14 +421,14 @@ The Packet API for packet tags is given below.::
   PacketTagIterator GetPacketTagIterator (void) const;
 
 Here is a simple example illustrating the use of tags from the
-code in ``src/internet/udp-socket-impl.cc``:::
+code in ``src/internet/model/udp-socket-impl.cc``:::
 
   Ptr<Packet> p;  // pointer to a pre-existing packet
   SocketIpTtlTag tag
   tag.SetTtl (m_ipMulticastTtl); // Convey the TTL from UDP layer to IP layer
   p->AddPacketTag (tag);
 
-This tag is read at the IP layer, then stripped (``src/internet/ipv4-l3-protocol.cc``):::
+This tag is read at the IP layer, then stripped (``src/internet/model/ipv4-l3-protocol.cc``):::
 
   uint8_t ttl = m_defaultTtl;
   SocketIpTtlTag tag;

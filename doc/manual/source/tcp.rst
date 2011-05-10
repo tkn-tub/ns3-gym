@@ -15,7 +15,7 @@ user code can swap out implementations with minimal changes to the scripts.
 There are two important abstract base classes:
 
 * class :cpp:class:`TcpSocket`:  This is defined in
-  ``src/internet/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
+  ``src/internet/model/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
   attributes that can be reused across different implementations. For instance,
   the attribute ``InitialCwnd`` can be used for any of the implementations
   that derive from class :cpp:class:`TcpSocket`.
@@ -42,18 +42,18 @@ connection setup and close logic.
 
 The implementation of TCP is contained in the following files:::
 
-    src/internet/tcp-header.{cc,h}
-    src/internet/tcp-l4-protocol.{cc,h}
-    src/internet/tcp-socket-factory-impl.{cc,h}
-    src/internet/tcp-socket-base.{cc,h}
-    src/internet/tcp-tx-buffer.{cc,h}
-    src/internet/tcp-rx-buffer.{cc,h}
-    src/internet/tcp-rfc793.{cc,h}
-    src/internet/tcp-tahoe.{cc,h}
-    src/internet/tcp-reno.{cc,h}
-    src/internet/tcp-newreno.{cc,h}
-    src/internet/rtt-estimator.{cc,h}
-    src/network/sequence-number.{cc,h}
+    src/internet/model/tcp-header.{cc,h}
+    src/internet/model/tcp-l4-protocol.{cc,h}
+    src/internet/model/tcp-socket-factory-impl.{cc,h}
+    src/internet/model/tcp-socket-base.{cc,h}
+    src/internet/model/tcp-tx-buffer.{cc,h}
+    src/internet/model/tcp-rx-buffer.{cc,h}
+    src/internet/model/tcp-rfc793.{cc,h}
+    src/internet/model/tcp-tahoe.{cc,h}
+    src/internet/model/tcp-reno.{cc,h}
+    src/internet/model/tcp-newreno.{cc,h}
+    src/internet/model/rtt-estimator.{cc,h}
+    src/network/model/sequence-number.{cc,h}
 
 Different variants of TCP congestion control are supported by subclassing
 the common base class :cpp:class:`TcpSocketBase`.  Several variants
@@ -288,7 +288,7 @@ The three main parts are:
 * :cpp:class:`ns3::NscTcpSocketFactoryImpl`:  a factory to create new NSC
   sockets
 
-``src/internet/nsc-tcp-l4-protocol`` is the main class. Upon
+``src/internet/model/nsc-tcp-l4-protocol`` is the main class. Upon
 Initialization, it loads an nsc network stack to use (via dlopen()). Each
 instance of this class may use a different stack. The stack (=shared library) to
 use is set using the SetNscLibrary() method (at this time its called indirectly
@@ -309,7 +309,7 @@ This class calls ``ns3::NscTcpSocketImpl`` both from the nsc wakeup() callback
 and from the Receive path (to ensure that possibly queued data is scheduled for
 sending).
 
-``src/internet/nsc-tcp-socket-impl`` implements the nsc socket interface.
+``src/internet/model/nsc-tcp-socket-impl`` implements the nsc socket interface.
 Each instance has its own nscTcpSocket. Data that is Send() will be handed to
 the nsc stack via m_nscTcpSocket->send_data(). (and not to nsc-tcp-l4, this is
 the major difference compared to |ns3| TCP). The class also queues up data that

@@ -29,7 +29,7 @@ to understand that the semantics are *not* the exact same as
 one finds in a real system (for an API which is very much aligned
 to real systems, see the next section).
 
-:cpp:class:`ns3::Socket` is defined in ``src/network/socket.h``.
+:cpp:class:`ns3::Socket` is defined in ``src/network/model/socket.h``.
 Readers will note that many public member functions are aligned
 with real sockets function calls, and all other things being equal,
 we have tried to align with a Posix sockets API.  However, note that:

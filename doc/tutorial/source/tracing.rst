@@ -556,7 +556,7 @@ are familiar with ``GetObject``, we have asked the system to do the following:
 We are now at the last Object in the path, so we turn our attention to the 
 Attributes of that Object.  The ``MobilityModel`` class defines an Attribute 
 called "CourseChange".  You can see this by looking at the source code in
-``src/mobility/mobility-model.cc`` and searching for "CourseChange" in your
+``src/mobility/model/mobility-model.cc`` and searching for "CourseChange" in your
 favorite editor.  You should find,
 
 ::
@@ -931,7 +931,7 @@ by looking at the includes in ``mobility-model.h`` and noticing the
 include of ``traced-callback.h`` and inferring that this must be the file
 you want.
 
-In either case, the next step is to take a look at ``src/core/traced-callback.h``
+In either case, the next step is to take a look at ``src/core/model/traced-callback.h``
 in your favorite editor to see what is happening.
 
 You will see a comment at the top of the file that should be comforting:
@@ -1091,7 +1091,7 @@ Earlier in this section, we presented a simple piece of code that used a
 ``TracedValue<int32_t>`` to demonstrate the basics of the tracing code.
 We just glossed over the way to find the return type and formal arguments
 for the ``TracedValue``.  Rather than go through the whole exercise, we
-will just point you at the correct file, ``src/core/traced-value.h`` and
+will just point you at the correct file, ``src/core/model/traced-value.h`` and
 to the important piece of code:
 
 ::
@@ -1178,8 +1178,8 @@ through the list, you will eventually find:
   CongestionWindow: The TCP connection's congestion window
 
 It turns out that the |ns3| TCP implementation lives (mostly) in the 
-file ``src/internet/tcp-socket-base.cc`` while congestion control
-variants are in files such as ``src/internet/tcp-newreno.cc``.  
+file ``src/internet/model/tcp-socket-base.cc`` while congestion control
+variants are in files such as ``src/internet/model/tcp-newreno.cc``.  
 If you don't know this a priori, you can use the recursive grep trick:
 
 ::
@@ -1188,7 +1188,7 @@ If you don't know this a priori, you can use the recursive grep trick:
 
 You will find page after page of instances of tcp pointing you to that file. 
 
-If you open ``src/internet/tcp-newreno.cc`` in your favorite 
+If you open ``src/internet/model/tcp-newreno.cc`` in your favorite 
 editor, you will see right up at the top of the file, the following declarations:
 
 ::
@@ -1207,7 +1207,7 @@ editor, you will see right up at the top of the file, the following declarations
   }
 
 This should tell you to look for the declaration of ``m_cWnd`` in the header
-file ``src/internet/tcp-newreno.h``.  If you open this file in your
+file ``src/internet/model/tcp-newreno.h``.  If you open this file in your
 favorite editor, you will find:
 
 ::
@@ -1424,7 +1424,7 @@ we put together to allow the ``Socket`` to be created at configuration time.
   };
 
 You can see that this class inherits from the |ns3| ``Application``
-class.  Take a look at ``src/network/application.h`` if you are interested in 
+class.  Take a look at ``src/network/model/application.h`` if you are interested in 
 what is inherited.  The ``MyApp`` class is obligated to override the 
 ``StartApplication`` and ``StopApplication`` methods.  These methods are
 automatically called when ``MyApp`` is required to start and stop sending
@@ -1482,7 +1482,7 @@ ignore the implementation details of how your ``Application`` is
 "automagically" called by the simulator at the correct time.  But since
 we have already ventured deep into |ns3| already, let's go for it.
 
-If you look at ``src/network/application.cc`` you will find that the
+If you look at ``src/network/model/application.cc`` you will find that the
 ``SetStartTime`` method of an ``Application`` just sets the member 
 variable ``m_startTime`` and the ``SetStopTime`` method just sets 
 ``m_stopTime``.  From there, without some hints, the trail will probably
@@ -1492,7 +1492,7 @@ The key to picking up the trail again is to know that there is a global
 list of all of the nodes in the system.  Whenever you create a node in 
 a simulation, a pointer to that node is added to the global ``NodeList``.
 
-Take a look at ``src/network/node-list.cc`` and search for 
+Take a look at ``src/network/model/node-list.cc`` and search for 
 ``NodeList::Add``.  The public static implementation calls into a private
 implementation called ``NodeListPriv::Add``.  This is a relatively common
 idom in |ns3|.  So, take a look at ``NodeListPriv::Add``.  There
@@ -1512,13 +1512,13 @@ to start doing something.
 
 So, ``NodeList::Add`` indirectly schedules a call to ``Node::Start``
 at time zero to advise a new node that the simulation has started.  If you 
-look in ``src/network/node.h`` you will, however, not find a method called
+look in ``src/network/model/node.h`` you will, however, not find a method called
 ``Node::Start``.  It turns out that the ``Start`` method is inherited
 from class ``Object``.  All objects in the system can be notified when
 the simulation starts, and objects of class ``Node`` are just one kind
 of those objects.
 
-Take a look at ``src/core/object.cc`` next and search for ``Object::Start``.
+Take a look at ``src/core/model/object.cc`` next and search for ``Object::Start``.
 This code is not as straightforward as you might have expected since 
 |ns3| ``Objects`` support aggregation.  The code in 
 ``Object::Start`` then loops through all of the objects that have been
@@ -1530,7 +1530,7 @@ something like ``MethodName`` for the public API and ``DoMethodName`` for
 the private API.
 
 This tells us that we should look for a ``Node::DoStart`` method in 
-``src/network/node.cc`` for the method that will continue our trail.  If you
+``src/network/model/node.cc`` for the method that will continue our trail.  If you
 locate the code, you will find a method that loops through all of the devices
 in the node and then all of the applications in the node calling 
 ``device->Start`` and ``application->Start`` respectively.
@@ -1538,7 +1538,7 @@ in the node and then all of the applications in the node calling
 You may already know that classes ``Device`` and ``Application`` both
 inherit from class ``Object`` and so the next step will be to look at
 what happens when ``Application::DoStart`` is called.  Take a look at
-``src/network/application.cc`` and you will find:
+``src/network/model/application.cc`` and you will find:
 
 ::
 
@@ -2161,7 +2161,7 @@ pointer to a reference counted object that is a very lightweight thing.
 Remember to always look at the object you are referencing before making any
 assumptions about the "powers" that object may have.  
 
-For example, take a look at ``src/network/pcap-file-object.h`` in the 
+For example, take a look at ``src/network/model/pcap-file-object.h`` in the 
 distribution and notice, 
 
 ::
@@ -2169,7 +2169,7 @@ distribution and notice,
   class PcapFileWrapper : public Object
 
 that class ``PcapFileWrapper`` is an |ns3| Object by virtue of 
-its inheritance.  Then look at ``src/network/output-stream-wrapper.h`` and 
+its inheritance.  Then look at ``src/network/model/output-stream-wrapper.h`` and 
 notice,
 
 ::

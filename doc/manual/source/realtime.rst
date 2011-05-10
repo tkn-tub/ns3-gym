@@ -73,8 +73,8 @@ Implementation
 
 The implementation is contained in the following files:
 
-* ``src/core/realtime-simulator-impl.{cc,h}``
-* ``src/core/wall-clock-synchronizer.{cc,h}``
+* ``src/core/model/realtime-simulator-impl.{cc,h}``
+* ``src/core/model/wall-clock-synchronizer.{cc,h}``
 
 In order to create a realtime scheduler, to a first approximation you just want
 to cause simulation time jumps to consume real time. We propose doing this using
