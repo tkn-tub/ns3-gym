@@ -34,20 +34,29 @@
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/net-device-container.h>
+#include <ns3/lte-ue-net-device.h>
 #include <ns3/lena-helper.h>
-#include <string.h>
+#include "ns3/string.h"
+#include "ns3/double.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacCheduler");
 
 using namespace ns3;
 
 LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
-: TestSuite ("lteTestPfFfMacScheduler", SYSTEM)
+: TestSuite ("lte-test-pf-ff-mac-scheduler", SYSTEM)
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaPfFfMacSchedulerTestCase");
   
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,0,0));
+  //AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,1,2196000));
+  
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,0,2196000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,0,749000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,0,373000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,0,185000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,0,148000));
 }
 
 static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
@@ -72,7 +81,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
   // 
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
@@ -93,10 +102,10 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
   
-  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
+  //LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+//   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -142,26 +151,36 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
     
   lena->EnableDlRlcTraces();
   
-  double simulationTime = 0.2;
+  double simulationTime = 0.40;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
   
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
+  rlcStats->SetAttribute("EpochDuration", TimeValue(Seconds(simulationTime)));
   
   Simulator::Run ();
-  
-  Simulator::Destroy ();
 
   /**
    * Check that the assignation is done in a "proportional fair" manner
    */
+  NS_LOG_INFO("Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
   for (int i = 0; i < m_nUser; i++)
     {
-      dlDataRxed.push_back (rlcStats->GetDlRxData (i+1));
-      NS_LOG_INFO ("User " << i << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
+      // get the imsi
+      uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
+      dlDataRxed.push_back (rlcStats->GetDlRxData (imsi));
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
+      //NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
+    }
+  
+  for (int i = 0; i < m_nUser; i++)
+    {
       NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
     }
+  
+  Simulator::Destroy ();
+
 }
 
 
