@@ -105,7 +105,7 @@ public:
    * \param txPower the total power in dBm over the whole bandwidth
    * \param ActiveRbs the list of Active Resource Blocks (PRBs) 
    *
-   * \return a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
+   * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
   static Ptr<SpectrumValue> CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t bandwdith, double powerTx, std::vector <int> activeRbs);
 
@@ -119,7 +119,7 @@ public:
    * number of resource blocks
    * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
    * 
-   * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
+   * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral Density in W/Hz for each Resource Block
    */
   static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint16_t earfcn, uint8_t bandwdith, double noiseFigure);
 
@@ -129,7 +129,7 @@ public:
    * \param noiseFigure  the noise figure in dB  w.r.t. a reference temperature of 290K
    * \param spectrumModel the SpectrumModel instance to be used
    * 
-   * \return a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
+   * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral Density in W/Hz for each Resource Block
    */
   static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (double noiseFigure, Ptr<SpectrumModel> spectrumModel);
 
