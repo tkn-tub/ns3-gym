@@ -150,10 +150,10 @@ static LteSpectrumValueHelperTestSuite g_lteSpectrumValueHelperTestSuite;
 LteSpectrumValueHelperTestSuite::LteSpectrumValueHelperTestSuite ()
   : TestSuite ("lte-spectrum-value-helper", UNIT)
 {
-  //LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  //LogComponentEnable ("LteSpectrumModelTestCase", logLevel);
-  //LogComponentEnable ("LteSpectrumValueHelperTestSuite", logLevel);
-  //LogComponentEnable ("LteSpectrumValueHelper", logLevel);
+//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteSpectrumModelTestCase", logLevel);
+//   LogComponentEnable ("LteSpectrumValueHelperTestSuite", logLevel);
+//   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
 
  
   NS_LOG_INFO ("Creating LteSpectrumValueHelperTestSuite");

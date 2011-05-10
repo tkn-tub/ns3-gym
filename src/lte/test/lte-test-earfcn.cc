@@ -79,9 +79,9 @@ LteEarfcnDlTestCase::LteEarfcnDlTestCase (const char* str, uint16_t earfcn, doub
 void 
 LteEarfcnDlTestCase::DoRun (void)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);  
-  LogComponentEnable ("LteSpectrumValueHelper", logLevel);
-  LogComponentEnable ("LteTestEarfcn", logLevel);
+//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);  
+//   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
+//   LogComponentEnable ("LteTestEarfcn", logLevel);
 
   double f = LteSpectrumValueHelper::GetDownlinkCarrierFrequency (m_earfcn);
   NS_TEST_ASSERT_MSG_EQ_TOL (f, m_f, 0.0000001, "wrong frequency");
