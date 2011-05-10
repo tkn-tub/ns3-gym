@@ -424,7 +424,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   FfMacSchedSapUser::SchedDlConfigIndParameters ret;
   // round robin assignment to all UE-LC registered starting from the subsequent of the one
   // served last scheduling trigger
-  NS_LOG_DEBUG (this << " next to be served " << m_nextRnti << " nflows " << nflows);
+  //NS_LOG_DEBUG (this << " next to be served " << m_nextRnti << " nflows " << nflows);
   if (m_nextRnti!=0)
     {
       for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
@@ -480,7 +480,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       std::vector <struct RlcPduListElement_s> newRlcPduLe;
       int totRbg = lcNum * rbgPerFlow;
       int tbSize = (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (0), totRbg * rbgSize) / 8);
-      NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << totRbg * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0));
+      //NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << totRbg * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0));
       uint16_t rlcPduSize = tbSize / lcNum;
       for (int i = 0; i < lcNum ; i++)
         {
@@ -521,7 +521,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       ret.m_buildDataList.push_back (newEl);
       if (rbgAllocated == rbgNum)
         {
-          NS_LOG_DEBUG (this << " FULL " << (*it).m_rnti);
+          //NS_LOG_DEBUG (this << " FULL " << (*it).m_rnti);
           m_nextRnti = (*it).m_rnti; // store last RNTI served
           break;                       // no more RGB to be allocated
         }
