@@ -131,7 +131,7 @@ public:
 
   /**
    * \brief Compute the TX Power Spectral Density
-   * \return a Ptr to a created SpectrumValue
+   * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity () = 0;
 
