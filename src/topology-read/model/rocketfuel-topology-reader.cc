@@ -96,10 +96,14 @@ RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
   loc = argv[1];
 
   if (argv[2])
-    dns = true;
+    {
+      dns = true;
+    }
 
   if (argv[3])
-    bb = true;
+    {
+      bb = true;
+    }
 
   num_neigh_s = ::atoi (argv[4]);
   if (num_neigh_s < 0)
@@ -148,9 +152,9 @@ RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
 
   /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
   NS_LOG_INFO ("Load Node[" << uid << "]: location: " << loc << " dns: " << dns
-               << " bb: " << bb << " neighbors: " << neigh_list.size ()
-               << "(" << "%d" << ") externals: \"%s\"(%d) " 
-               << "name: " << name << " radius: " << radius); 
+                            << " bb: " << bb << " neighbors: " << neigh_list.size ()
+                            << "(" << "%d" << ") externals: \"%s\"(%d) "
+                            << "name: " << name << " radius: " << radius);
 
   // Create node and link
   if (!uid.empty ())
@@ -229,8 +233,8 @@ RocketfuelTopologyReader::GenerateFromWeightsFile (int argc, char *argv[])
       bool found = false;
       for (iter = LinksBegin (); iter != LinksEnd (); iter++)
         {
-          if ((iter->GetFromNode () == nodeMap[tname]) &&
-              (iter->GetToNode () == nodeMap[sname]))
+          if ((iter->GetFromNode () == nodeMap[tname])
+              && (iter->GetToNode () == nodeMap[sname]))
             {
               found = true;
               break;
@@ -256,7 +260,7 @@ RocketfuelTopologyReader::GetFileType (const char *line)
   char errbuf[512];
 
   // Check whether MAPS file or not
-  ret = regcomp (&regex, ROCKETFUEL_MAPS_LINE, REG_EXTENDED|REG_NEWLINE);
+  ret = regcomp (&regex, ROCKETFUEL_MAPS_LINE, REG_EXTENDED | REG_NEWLINE);
   if (ret != 0)
     {
       regerror (ret, &regex, errbuf, sizeof (errbuf));
@@ -271,7 +275,7 @@ RocketfuelTopologyReader::GetFileType (const char *line)
   regfree (&regex);
 
   // Check whether Weights file or not
-  ret = regcomp (&regex, ROCKETFUEL_WEIGHTS_LINE, REG_EXTENDED|REG_NEWLINE);
+  ret = regcomp (&regex, ROCKETFUEL_WEIGHTS_LINE, REG_EXTENDED | REG_NEWLINE);
   if (ret != 0)
     {
       regerror (ret, &regex, errbuf, sizeof (errbuf));
@@ -337,7 +341,7 @@ RocketfuelTopologyReader::Read (void)
 
       if (ftype == RF_MAPS)
         {
-          ret = regcomp (&regex, ROCKETFUEL_MAPS_LINE, REG_EXTENDED|REG_NEWLINE);
+          ret = regcomp (&regex, ROCKETFUEL_MAPS_LINE, REG_EXTENDED | REG_NEWLINE);
           if (ret != 0)
             {
               regerror (ret, &regex, errbuf, sizeof (errbuf));
@@ -355,7 +359,7 @@ RocketfuelTopologyReader::Read (void)
         }
       else if (ftype == RF_WEIGHTS)
         {
-          ret = regcomp (&regex, ROCKETFUEL_WEIGHTS_LINE, REG_EXTENDED|REG_NEWLINE);
+          ret = regcomp (&regex, ROCKETFUEL_WEIGHTS_LINE, REG_EXTENDED | REG_NEWLINE);
           if (ret != 0)
             {
               regerror (ret, &regex, errbuf, sizeof (errbuf));
@@ -380,12 +384,12 @@ RocketfuelTopologyReader::Read (void)
         {
           if (regmatch[i].rm_so == -1)
             {
-              argv[i-1] = NULL;
+              argv[i - 1] = NULL;
             }
           else
             {
               line[regmatch[i].rm_eo] = '\0';
-              argv[i-1] = &line[regmatch[i].rm_so];
+              argv[i - 1] = &line[regmatch[i].rm_so];
               argc = i;
             }
         }

@@ -31,7 +31,6 @@ namespace ns3 {
 // ------------------------------------------------------------
 // --------------------------------------------
 /**
- * \ingroup topology
  * \brief Topology file reader (Rocketfuel-format type).
  *
  * http://www.cs.washington.edu/research/networking/rocketfuel/
@@ -71,11 +70,11 @@ private:
   NodeContainer GenerateFromWeightsFile (int argc, char *argv[]);
 
   enum RF_FileType
-    {   
-      RF_MAPS,
-      RF_WEIGHTS,
-      RF_UNKNOWN
-    };
+  {
+    RF_MAPS,
+    RF_WEIGHTS,
+    RF_UNKNOWN
+  };
   enum RF_FileType GetFileType (const char *);
 
   // end class RocketfuelTopologyReader
