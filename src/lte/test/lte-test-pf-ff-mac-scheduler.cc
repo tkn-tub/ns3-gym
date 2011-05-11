@@ -50,13 +50,70 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaPfFfMacSchedulerTestCase");
   
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,8000,2196000));
-  
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,0,2196000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,0,749000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,0,373000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,0,185000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,0,148000));
+
+  // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
+  // 3 users -> 2196000 among 3 users -> 732000 bytes/sec
+  // 6 users -> 2196000 among 6 users -> 366000 bytes/sec
+  // 12 users -> 2196000 among 12 users -> 183000 bytes/sec
+  // 15 users -> 2196000 among 15 users -> 146400 bytes/sec
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,0,2196000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,0,732000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,0,366000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,0,183000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,0,146400));
+
+  // DISTANCE 6000 -> MCS 24 -> Itbs 22 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 22 -> 1572 -> 1572000 bytes/sec
+  // 3 users -> 1572000 among 3 users -> 524000 bytes/sec
+  // 6 users -> 1572000 among 6 users -> 262000 bytes/sec
+  // 12 users -> 1572000 among 12 users -> 131000 bytes/sec
+  // 15 users -> 1572000 among 15 users -> 104800 bytes/sec
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,6000,1572000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,6000,524000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,6000,262000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,6000,131000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,6000,104800));
+
+  // DISTANCE 9000 -> MCS 10 -> Itbs 9 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 9 -> 469 -> 469000 bytes/sec
+  // 3 users -> 469000 among 3 users -> 156333 bytes/sec
+  // 6 users -> 469000 among 6 users -> 78166 bytes/sec
+  // 12 users -> 469000 among 12 users -> 39083 bytes/sec
+  // 15 users -> 469000 among 15 users -> 31266 bytes/sec
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,9000,469000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,9000,156333));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,9000,78166));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,9000,39083));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,9000,31266));
+
+  // DISTANCE 15000 -> MCS 4 -> Itbs 4 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 4 -> 217 -> 217000 bytes/sec
+  // 3 users -> 217000 among 3 users -> 72333 bytes/sec
+  // 6 users -> 217000 among 6 users -> 36166 bytes/sec
+  // 12 users -> 217000 among 12 users -> 18083 bytes/sec
+  // 15 users -> 217000 among 15 users -> 14466 bytes/sec 
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,15000,217000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,15000,72333));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,15000,36166));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,15000,18083));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,15000,14466));
+
+  // DISTANCE 20000 -> MCS 2 -> Itbs 2 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 2 -> 133 -> 133000 bytes/sec
+  // 3 users -> 217000 among 3 users -> 44333 bytes/sec
+  // 6 users -> 217000 among 6 users -> 22166 bytes/sec
+  // 12 users -> 217000 among 12 users -> 11083 bytes/sec
+  // 15 users -> 217000 among 15 users -> 8866 bytes/sec  
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,20000,133000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,20000,44333));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,20000,22166));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,20000,11083));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,20000,8866));
+
+
+
+
 }
 
 static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
@@ -81,7 +138,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
   // 
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
@@ -102,10 +159,10 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
   
-  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
-  //LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -143,7 +200,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   lena->ActivateEpsBearer (ueDevs, bearer);
   
   // position nodes
-  for (int i = 1; i < m_nUser; i++)
+  for (int i = 0; i < m_nUser; i++)
     {
       Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
       mm->SetPosition (Vector (m_dist, 0.0, 0.0));
@@ -151,7 +208,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
     
   lena->EnableDlRlcTraces();
   
-  double simulationTime = 0.50;
+  double simulationTime = 2.0;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
   
@@ -171,7 +228,6 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
       uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi));
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
-      //NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
     }
   
   for (int i = 0; i < m_nUser; i++)
