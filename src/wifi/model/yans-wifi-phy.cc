@@ -77,7 +77,7 @@ YansWifiPhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerLevels",
                    "Number of transmission power levels available between "
-                   "TxPowerBase and TxPowerEnd included.",
+                   "TxPowerStart and TxPowerEnd included.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&YansWifiPhy::m_nTxPower),
                    MakeUintegerChecker<uint32_t> ())
