@@ -91,68 +91,78 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
     {
       double  snr;
       double  efficiency;
-      uint16_t  mcsIndex;
+      int  mcsIndex;
     };
 
   /**
     * Test vectors: SNR, Spectral Efficiency, MCS index
     * From XXX
     */
-  SnrEfficiencyMcs snrEfficiencyMcs[31] = {
-    { 0.00000 , 0.15698 , 1},
-    { 1.00000 , 0.19498 , 1},
-    { 2.00000 , 0.24145 , 3},
-    { 3.00000 , 0.29790 , 3},
-    { 4.00000 , 0.36596 , 5},
-    { 5.00000 , 0.44732 , 5},
-    { 6.00000 , 0.54361 , 5},
-    { 7.00000 , 0.65637 , 7},
-    { 8.00000 , 0.78683 , 7},
-    { 9.00000 , 0.93589 , 9},
-    { 10.00000 , 1.10399 , 9},
-    { 11.00000 , 1.29109 , 11},
-    { 12.00000 , 1.49662 , 13},
-    { 13.00000 , 1.71964 , 13},
-    { 14.00000 , 1.95880 , 15},
-    { 15.00000 , 2.21257 , 15},
-    { 16.00000 , 2.47928 , 17},
-    { 17.00000 , 2.75726 , 19},
-    { 18.00000 , 3.04488 , 19},
-    { 19.00000 , 3.34066 , 21},
-    { 20.00000 , 3.64327 , 21},
-    { 21.00000 , 3.95151 , 23},
-    { 22.00000 , 4.26440 , 23},
-    { 23.00000 , 4.58107 , 25},
-    { 24.00000 , 4.90081 , 25},
-    { 25.00000 , 5.22304 , 27},
-    { 26.00000 , 5.54726 , 27},
-    { 27.00000 , 5.87310 , 29},
-    { 28.00000 , 6.20022 , 29},
-    { 29.00000 , 6.52837 , 29},
-    { 30.00000 , 6.85735 , 29}
-  };
+  SnrEfficiencyMcs snrEfficiencyMcs[] = {
+    // {-5.00000,	0.08024,	-1},
+    // {-4.00000,	0.10030,	-1},
+    // {-3.00000,	0.12518,	-1},
+    {-2.00000,	0.15589,	0},
+    {-1.00000,	0.19365,	0},
+    {0.00000,	0.23983,	2},
+    {1.00000,	0.29593,	2},
+    {2.00000,	0.36360,	2},
+    {3.00000,	0.44451,	4},
+    {4.00000,	0.54031,	4},
+    {5.00000,	0.65251,	6},
+    {6.00000,	0.78240,	6},
+    {7.00000,	0.93086,	8},
+    {8.00000,	1.09835,	8},
+    {9.00000,	1.28485,	10},
+    {10.00000,	1.48981,	12},
+    {11.00000,	1.71229,	12},
+    {12.00000,	1.95096,	14},
+    {13.00000,	2.20429,	14},
+    {14.00000,	2.47062,	16},
+    {15.00000,	2.74826,	18},
+    {16.00000,	3.03560,	18},
+    {17.00000,	3.33115,	20},
+    {18.00000,	3.63355,	20},
+    {19.00000,	3.94163,	22},
+    {20.00000,	4.25439,	22},
+    {21.00000,	4.57095,	24},
+    {22.00000,	4.89060,	24},
+    {23.00000,	5.21276,	26},
+    {24.00000,	5.53693,	26},
+    {25.00000,	5.86271,	28},
+    {26.00000,	6.18980,	28},
+    {27.00000,	6.51792,	28},
+    {28.00000,	6.84687,	28},
+    {29.00000,	7.17649,	28},
+    {30.00000,	7.50663,	28},
+  };   
   int numOfTests = sizeof (snrEfficiencyMcs) / sizeof (SnrEfficiencyMcs);
 
 
-  for ( int i = 0 ; i < numOfTests ; i++ )
+  for ( int i = 0 ; i < numOfTests; i++ )
     {
       /**
        * SNR (in dB)
        *
-       *  SNR = P_tx - loss - noise
+       *  SNR = P_tx - loss - noise - receiverNoiseFigure
        *
-       *  loss = P_tx - SNR - noise
+       *  loss = P_tx - SNR - noise - receiverNoiseFigure
        *
        *  where: P_tx is transmission power
        *         loss in (dB)
        *         noise
        */
-
-      double lossDb = 30.0 - snrEfficiencyMcs[i].snr - ( -107.5 );
+      double noiseDb = -107.5;
+      double receiverNoiseFigureDb = 5.0;
+      double lossDb = 30.0 - snrEfficiencyMcs[i].snr - noiseDb - receiverNoiseFigureDb;
       double lossLinear = pow (10, lossDb / 10);
       double distance = ( ( 3e8 * sqrt ( lossLinear ) ) / ( 4.0 * M_PI * 2.160e9 ) );
 
-      AddTestCase (new LteLinkAdaptationTestCase (snrEfficiencyMcs[i].snr, lossDb, distance, snrEfficiencyMcs[i].mcsIndex));
+      std::ostringstream name;
+      name << "link adaptation"
+           << " snr= " << snrEfficiencyMcs[i].snr
+           << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
+      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snr, lossDb, distance, snrEfficiencyMcs[i].mcsIndex));
     }
 
 }
@@ -164,17 +174,18 @@ static LteLinkAdaptationTestSuite lteLinkAdaptationTestSuite;
  * TestCase
  */
 
-LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (double snr, double loss, double distance, uint16_t mcsIndex)
-  : TestCase ("Link Adaptation"),
+LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (std::string name, double snr, double loss, double distance, uint16_t mcsIndex)
+  : TestCase (name),
     m_snr (snr),
     m_loss (loss),
     m_distance (distance),
     m_mcsIndex (mcsIndex)
 {
   std::ostringstream sstream1, sstream2;
-  sstream1 << loss;
+  sstream1 << " snr=" << snr 
+           << " mcs=" << mcsIndex;
 
-  NS_LOG_INFO ("Creating LteLinkAdaptationTestCase: SNR = " + sstream1.str ());
+  NS_LOG_UNCOND ("Creating LteLinkAdaptationTestCase: " + sstream1.str ());
 }
 
 LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
@@ -184,8 +195,9 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 void
 LteLinkAdaptationTestCase::DoRun (void)
 {
-//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-
+   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+   LogComponentEnable ("LteAmc", logLevel);
+   LogComponentEnable ("LteLinkAdaptationTest", logLevel);
 //   LogComponentEnable ("LteEnbRrc", logLevel);
 //   LogComponentEnable ("LteUeRrc", logLevel);
 //   LogComponentEnable ("LteEnbMac", logLevel);
@@ -271,8 +283,8 @@ LteLinkAdaptationTestCase::DoRun (void)
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                     MakeBoundCallback(&LteTestDlSchedulingCallback, this));
 
-//   Simulator::Stop (Seconds (0.005));
-  Simulator::Stop (Seconds (0.01));
+   Simulator::Stop (Seconds (0.005));
+   //Simulator::Stop (Seconds (0.01));
 //   Simulator::Stop (Seconds (0.1));
 /*  Simulator::Stop (Seconds (2.0));*/
 //   Simulator::Stop (Seconds (10.0));
@@ -296,10 +308,8 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
 
   /**
    * Note:
-   *    For first 4 subframeNo in the first frameNo, the MCS can still not be well calculated,
-   *    because XXX
-   *    so it is not checked.
-   *    If you want XXX
+   *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
+   *    because CQI feedback is still not available at the eNB.
    */
   if ( (frameNo > 1) || (subframeNo > 4) )
 //   if ( (frameNo == 1) && (subframeNo == 10) )
