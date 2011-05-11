@@ -33,22 +33,14 @@ NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
 using namespace ns3;
 
 
-uint32_t LteLinkAdaptationTestCase::m_runId = 0;
-bool LteLinkAdaptationTestCase::m_lastTestCase = false;
-
-// GnuplotCollection LteLinkAdaptationTestCase::gnuplots("link-adaptation.ps");
-// Gnuplot           LteLinkAdaptationTestCase::plot;
-// Gnuplot2dDataset  LteLinkAdaptationTestCase::data;
-
-
 /**
  * Test 1.3 Link Adaptation
  */
 
 void
 LteTestDlSchedulingCallback (LteLinkAdaptationTestCase *testcase, std::string path,
-                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+                            uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                            uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
     testcase->DlScheduling(frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
 }
@@ -61,22 +53,19 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
   : TestSuite ("lte-link-adaptation", SYSTEM)
 {
 //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("LteTestUePhy", logLevel);
 //   LogComponentEnable ("LteLinkAdaptationTest", logLevel);
 
   NS_LOG_INFO ("Creating LteLinkAdaptionTestSuite");
 
-  int distanceMin = 10;
-  int distanceMax = 25000;
-  int distanceStep = 500;
+// Tests: distance --> loss
+#if 0
+  int distanceMin = 1;
+  int distanceMax = 2000;
+  int distanceStep = 1000;
   bool logStep = false;
-  int distance;
 
-  double lossLinear, lossDb;
-
-  for ( distance = distanceMin ;
-        distance < distanceMax ;
+  for ( int distance = distanceMin ;
+        distance <= distanceMax ;
         logStep ? ( distance *= distanceStep) : ( distance += distanceStep ) )
     {
       /**
@@ -84,32 +73,87 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
        *
        *         (  4 * PI * distance * frequency  ) 2
        *  Loss = ( ------------------------------- )
-       *         (            c                    ) 
+       *         (            c                    )
        *
        *  where: c is speed of light in vacuum = 3e8 (m/s)
        *         distance in (m)
        *         frequency in (Hz)
        */
-//       double myLoss = ( ( 4.0 * M_PI * distance * 1.92e9 ) / 3e8 );
-      lossLinear = ( ( 4.0 * M_PI * distance * 2.160e9 ) / 3e8 );
+      double lossLinear = ( ( 4.0 * M_PI * distance * 2.160e9 ) / 3e8 );
       lossLinear = lossLinear * lossLinear;
-      lossDb = 10 * log10(lossLinear);
+      double lossDb = 10 * log10(lossLinear);
 
       AddTestCase (new LteLinkAdaptationTestCase (lossDb, distance));
     }
+#endif
 
-    LteLinkAdaptationTestCase::m_lastTestCase = true;
-    distance = distanceMax;
-    lossLinear = ( ( 4.0 * M_PI * distance * 2.160e9 ) / 3e8 );
-    lossLinear = lossLinear * lossLinear;
-    lossDb = 10 * log10(lossLinear);
-    AddTestCase (new LteLinkAdaptationTestCase (lossDb, distance));
+  struct SnrEfficiencyMcs
+    {
+      double  snr;
+      double  efficiency;
+      uint16_t  mcsIndex;
+    };
 
-    // SINR = XXX
-//     AddTestCase (new LteLinkAdaptationTestCase (myLoss));
+  /**
+    * Test vectors: SNR, Spectral Efficiency, MCS index
+    * From XXX
+    */
+  SnrEfficiencyMcs snrEfficiencyMcs[31] = {
+    { 0.00000 , 0.15698 , 1},
+    { 1.00000 , 0.19498 , 1},
+    { 2.00000 , 0.24145 , 3},
+    { 3.00000 , 0.29790 , 3},
+    { 4.00000 , 0.36596 , 5},
+    { 5.00000 , 0.44732 , 5},
+    { 6.00000 , 0.54361 , 5},
+    { 7.00000 , 0.65637 , 7},
+    { 8.00000 , 0.78683 , 7},
+    { 9.00000 , 0.93589 , 9},
+    { 10.00000 , 1.10399 , 9},
+    { 11.00000 , 1.29109 , 11},
+    { 12.00000 , 1.49662 , 13},
+    { 13.00000 , 1.71964 , 13},
+    { 14.00000 , 1.95880 , 15},
+    { 15.00000 , 2.21257 , 15},
+    { 16.00000 , 2.47928 , 17},
+    { 17.00000 , 2.75726 , 19},
+    { 18.00000 , 3.04488 , 19},
+    { 19.00000 , 3.34066 , 21},
+    { 20.00000 , 3.64327 , 21},
+    { 21.00000 , 3.95151 , 23},
+    { 22.00000 , 4.26440 , 23},
+    { 23.00000 , 4.58107 , 25},
+    { 24.00000 , 4.90081 , 25},
+    { 25.00000 , 5.22304 , 27},
+    { 26.00000 , 5.54726 , 27},
+    { 27.00000 , 5.87310 , 29},
+    { 28.00000 , 6.20022 , 29},
+    { 29.00000 , 6.52837 , 29},
+    { 30.00000 , 6.85735 , 29}
+  };
+  int numOfTests = sizeof (snrEfficiencyMcs) / sizeof (SnrEfficiencyMcs);
 
-    // SINR = YYY
-//     AddTestCase (new LteLinkAdaptationTestCase (myLoss));
+
+  for ( int i = 0 ; i < numOfTests ; i++ )
+    {
+      /**
+       * SNR (in dB)
+       *
+       *  SNR = P_tx - loss - noise
+       *
+       *  loss = P_tx - SNR - noise
+       *
+       *  where: P_tx is transmission power
+       *         loss in (dB)
+       *         noise
+       */
+
+      double lossDb = 30.0 - snrEfficiencyMcs[i].snr - ( -107.5 );
+      double lossLinear = pow (10, lossDb / 10);
+      double distance = ( ( 3e8 * sqrt ( lossLinear ) ) / ( 4.0 * M_PI * 2.160e9 ) );
+
+      AddTestCase (new LteLinkAdaptationTestCase (snrEfficiencyMcs[i].snr, lossDb, distance, snrEfficiencyMcs[i].mcsIndex));
+    }
 
 }
 
@@ -120,16 +164,17 @@ static LteLinkAdaptationTestSuite lteLinkAdaptationTestSuite;
  * TestCase
  */
 
-LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (double loss, double distance)
+LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (double snr, double loss, double distance, uint16_t mcsIndex)
   : TestCase ("Link Adaptation"),
+    m_snr (snr),
     m_loss (loss),
-    m_distance (distance)
+    m_distance (distance),
+    m_mcsIndex (mcsIndex)
 {
   std::ostringstream sstream1, sstream2;
   sstream1 << loss;
-  sstream2 << ++m_runId;
 
-  NS_LOG_INFO ("Creating LteLinkAdaptationTestCase (" << sstream2.str () + "): LOSS = " + sstream1.str ());
+  NS_LOG_INFO ("Creating LteLinkAdaptationTestCase: SNR = " + sstream1.str ());
 }
 
 LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
@@ -139,7 +184,6 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 void
 LteLinkAdaptationTestCase::DoRun (void)
 {
-#if 1
 //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
 //   LogComponentEnable ("LteEnbRrc", logLevel);
@@ -177,7 +221,6 @@ LteLinkAdaptationTestCase::DoRun (void)
 //   LogComponentEnable ("ConstantPositionMobilityModel", logLevel);
 //   LogComponentEnable ("MultiModelSpectrumChannel", logLevel);
 //   LogComponentEnable ("SingleModelSpectrumChannel", logLevel);
-#endif
 
   /**
     * Simulation Topology
@@ -188,23 +231,8 @@ LteLinkAdaptationTestCase::DoRun (void)
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
-  NS_LOG_INFO ("LOSS = " << m_loss);
+  NS_LOG_INFO ("SNR = " << m_snr << "  LOSS = " << m_loss);
   lena->SetPropagationModelAttribute ("Loss", DoubleValue (m_loss));
-
-  /**
-   *  Distance (m)  PropagationLoss (XXX)
-   *      0             0.0
-   *    100             6.46814e+07
-   *    200             2.58726e+08
-   *    300             5.82133e+08
-   *    400             1.0349e+09
-   *    500             1.61704e+09
-   *    600             2.32853e+09
-   *    700             3.16939e+09
-   *    800             4.13961e+09
-   *    900             5.2392e+09
-   *   1000             6.46814e+09
-   */
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -245,13 +273,11 @@ LteLinkAdaptationTestCase::DoRun (void)
 
 //   Simulator::Stop (Seconds (0.005));
   Simulator::Stop (Seconds (0.01));
+//   Simulator::Stop (Seconds (0.1));
+/*  Simulator::Stop (Seconds (2.0));*/
+//   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
   Simulator::Destroy ();
-
-
-  NS_LOG_INFO ("Link Adaptation Test");
-
-  NS_TEST_ASSERT_MSG_EQ_TOL (1.0, 1.0, 0.0000001, "Wrong Test !");
 }
 
 
@@ -264,34 +290,26 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
   if ( firstTime )
     {
       firstTime = false;
-
-//       NS_LOG_UNCOND ("frame\tsbframe\trnti\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2");
-      NS_LOG_UNCOND ("dist\tmcsTb1\tsizeTb1");
-//       NS_LOG_UNCOND ("dist, mcsTb1, sizeTb1");
-
-//       gnuplots.SetTerminal("ps color");
-
-//       plot.SetTitle("UniformVariable");
-//       plot.AppendExtra("set yrange [0:]");
-
-//       data.SetTitle("MCS");
+//       NS_LOG_UNCOND (" Frame\tSbframe\tRnti\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2");
+      NS_LOG_UNCOND ("SNR\tRef_MCS\tCalc_MCS");
     }
 
-  if ( subframeNo == 10 )
+  /**
+   * Note:
+   *    For first 4 subframeNo in the first frameNo, the MCS can still not be well calculated,
+   *    because XXX
+   *    so it is not checked.
+   *    If you want XXX
+   */
+  if ( (frameNo > 1) || (subframeNo > 4) )
+//   if ( (frameNo == 1) && (subframeNo == 10) )
     {
 //       NS_LOG_UNCOND (" " << frameNo << "\t" << subframeNo << "\t" << rnti << "\t"
 //                         << (uint16_t)mcsTb1 << "\t" << sizeTb1 << "\t"
 //                         << (uint16_t)mcsTb2 << "\t" << sizeTb2);
 
-      NS_LOG_UNCOND (m_distance << "\t" << (uint16_t)mcsTb1 << "\t" << sizeTb1);
+      NS_LOG_UNCOND (m_snr << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
 
-//       data.Add(m_distance, mcsTb1);
+      NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
     }
-
-//   if ( LteLinkAdaptationTestCase::m_lastTestCase )
-//     {
-//       plot.AddDataset(data);
-//       gnuplots.AddPlot(plot);
-//       gnuplots.GenerateOutput(std::cout);
-//     }
 }
