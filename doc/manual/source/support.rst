@@ -7,4 +7,6 @@ Support
    animation
    statistics
    new-models
+   enable-modules
+   enable-tests
    troubleshoot
