@@ -18,6 +18,8 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
+#include <math.h>
+
 #include "ns3/log.h"
 
 #include "ns3/constant-spectrum-propagation-loss.h"
@@ -50,10 +52,28 @@ ConstantSpectrumPropagationLossModel::GetTypeId (void)
     .AddAttribute ("Loss",
                    "Path loss (dB) between transmitter and receiver",
                    DoubleValue (1.0),
-                   MakeDoubleAccessor (&ConstantSpectrumPropagationLossModel::m_loss),
+                   MakeDoubleAccessor (&ConstantSpectrumPropagationLossModel::SetLossDb,
+                                       &ConstantSpectrumPropagationLossModel::GetLossDb),
                    MakeDoubleChecker<double> ())
     ;
   return tid;
+}
+
+
+void
+ConstantSpectrumPropagationLossModel::SetLossDb (double lossDb)
+{
+  NS_LOG_FUNCTION (this);
+  m_lossDb = lossDb;
+  m_lossLinear = pow (10, m_lossDb / 10);
+}
+
+
+double
+ConstantSpectrumPropagationLossModel::GetLossDb () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_lossDb;
 }
 
 
@@ -73,7 +93,7 @@ ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const Sp
     {
       NS_ASSERT (fit != rxPsd->ConstBandsEnd ());
 //       NS_LOG_INFO ("Ptx = " << *vit);
-      *vit /= m_loss; // Prx = Ptx / loss
+      *vit /= m_lossLinear; // Prx = Ptx / loss
 //       NS_LOG_INFO ("Prx = " << *vit);
       ++vit;
       ++fit;

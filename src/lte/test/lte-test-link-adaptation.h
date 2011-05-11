@@ -22,11 +22,10 @@
 #define LTE_TEST_LINK_ADAPTATION_H
 
 #include "ns3/test.h"
+#include "ns3/gnuplot.h"
 
 
 using namespace ns3;
-
-
 
 
 /**
@@ -42,20 +41,24 @@ public:
 class LteLinkAdaptationTestCase : public TestCase
 {
   public:
-//     LteLinkAdaptationTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-    LteLinkAdaptationTestCase (double loss);
+    LteLinkAdaptationTestCase (double loss, double distance);
     LteLinkAdaptationTestCase ();
     virtual ~LteLinkAdaptationTestCase ();
+
+    void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                       uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
+
+    static bool m_lastTestCase;
+
+//     static GnuplotCollection gnuplots;
+//     static Gnuplot           plot;
+//     static Gnuplot2dDataset  data;
 
   private:
     virtual void DoRun (void);
 
-    Ptr<MacStatsCalculator> macStats;
-
     double m_loss;
-//     Ptr<SpectrumValue> m_sv;
-//     Ptr<const SpectrumModel> m_sm;
-//     Ptr<SpectrumValue> m_sinr;
+    double m_distance;
 
     static uint32_t m_runId;
 };
