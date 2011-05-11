@@ -50,13 +50,13 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaPfFfMacSchedulerTestCase");
   
-  //AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,1,2196000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,8000,2196000));
   
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,0,2196000));
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,0,749000));
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,0,373000));
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,0,185000));
-  AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,0,148000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase (1,0,0,2196000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase (3,0,0,749000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase (6,0,0,373000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase (12,0,0,185000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase (15,0,0,148000));
 }
 
 static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
@@ -102,7 +102,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
   
-  //LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
@@ -143,7 +143,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
   lena->ActivateEpsBearer (ueDevs, bearer);
   
   // position nodes
-  for (int i = 0; i < m_nUser; i++)
+  for (int i = 1; i < m_nUser; i++)
     {
       Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
       mm->SetPosition (Vector (m_dist, 0.0, 0.0));
@@ -151,7 +151,7 @@ LenaPfFfMacSchedulerTestCase::DoRun (void)
     
   lena->EnableDlRlcTraces();
   
-  double simulationTime = 0.40;
+  double simulationTime = 0.50;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
   
