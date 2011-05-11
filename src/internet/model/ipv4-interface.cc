@@ -333,6 +333,7 @@ Ipv4Interface::RemoveAddress (uint32_t index)
           return addr;
         }
        ++tmp;
+      ++i;       
     }
   NS_ASSERT_MSG (false, "Address " << index << " not found");
   Ipv4InterfaceAddress addr;
