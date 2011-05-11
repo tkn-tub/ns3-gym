@@ -37,7 +37,7 @@ class Packet;
 class Ipv4RoutingProtocol;
 
 /**
- * \ingroup node
+ * \ingroup internet
  * \defgroup ipv4 Ipv4
  */
 /**

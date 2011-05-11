@@ -38,7 +38,7 @@ namespace ns3 {
     QINQ      /**< Double tagged packet. Header includes two VLAN tags */
   };
 /**
- * \ingroup node
+ * \ingroup network
  *
  * \brief Packet header for Ethernet
  *

@@ -40,7 +40,7 @@ class Packet;
 class Ipv6RoutingProtocol;
 
 /**
- * \ingroup node
+ * \ingroup internet
  * \defgroup ipv6 Ipv6
  */
 

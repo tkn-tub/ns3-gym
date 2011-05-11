@@ -31,7 +31,7 @@
 namespace ns3 {
 
 /**
- * \ingroup simulator
+ * \ingroup core
  * \defgroup time Time
  */
 /**

@@ -30,7 +30,7 @@ namespace ns3 {
 class Packet;
 
 /**
- * \ingroup common
+ * \ingroup network
  * \defgroup errormodel Error Model
  */
 /**

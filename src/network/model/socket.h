@@ -38,7 +38,7 @@ class Node;
 class Packet;
 
 /**
- * \ingroup node
+ * \ingroup network
  * \defgroup socket Socket
  */
 

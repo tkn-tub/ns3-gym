@@ -29,7 +29,7 @@ class CallbackBase;
 
 
 /**
- * \ingroup node
+ * \ingroup network
  *
  * \brief the list of simulation channels.
  *

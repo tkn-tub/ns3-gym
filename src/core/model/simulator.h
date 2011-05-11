@@ -38,7 +38,7 @@ class SimulatorImpl;
 class Scheduler;
 
 /**
- * \ingroup simulator
+ * \ingroup core
  *
  * \brief Control the scheduling of simulation events. 
  *

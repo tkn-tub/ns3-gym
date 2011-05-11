@@ -34,7 +34,7 @@ class Ipv4Route;
 class NetDevice;
 
 /**
- * \ingroup node 
+ * \ingroup internet 
  * \defgroup ipv4Routing Ipv4RoutingProtocol 
  */
 /**

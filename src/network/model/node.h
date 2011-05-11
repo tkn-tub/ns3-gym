@@ -36,7 +36,7 @@ class Address;
 
 
 /**
- * \ingroup node
+ * \ingroup network
  *
  * \brief A network Node.
  *

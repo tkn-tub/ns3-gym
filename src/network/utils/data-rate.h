@@ -31,7 +31,7 @@
 namespace ns3 {
 
 /**
- * \ingroup common
+ * \ingroup network
  * \defgroup datarate Data Rate
  */
 /**

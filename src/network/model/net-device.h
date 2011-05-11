@@ -37,7 +37,7 @@ class Channel;
 class Packet;
 
 /**
- * \ingroup node
+ * \ingroup network
  * \defgroup netdevice NetDevice
  */
 /**

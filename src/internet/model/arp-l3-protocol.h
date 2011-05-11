@@ -36,7 +36,7 @@ class Packet;
 class Ipv4Interface;
 
 /**
- * \ingroup internetStack
+ * \ingroup internet
  * \defgroup arp Arp
  *
  * This is an overview of Arp capabilities (write me).

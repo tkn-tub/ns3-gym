@@ -20,7 +20,7 @@
  */
 
 /**
- * \ingroup internetStack
+ * \ingroup internet
  * \defgroup internetStackModel Internet Stack Model
  *
  * \section internetStackTracingModel Tracing in the Internet Stack

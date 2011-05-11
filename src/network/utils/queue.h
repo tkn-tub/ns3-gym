@@ -33,7 +33,7 @@
 namespace ns3 {
 
 /**
- * \ingroup node
+ * \ingroup network
  * \defgroup queue Queue
  */
 /**

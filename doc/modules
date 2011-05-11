@@ -33,6 +33,8 @@
  *    - models which abstract the application-layer API: ns3::Application,
  *      ns3::Socket, ns3::SocketFactory, and, ns3::Udp
  * 
+ * @defgroup devices Devices
+ *
  * @defgroup internet Internet
  * 
  * The "internet" module contains:
