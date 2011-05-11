@@ -31,42 +31,27 @@ NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 namespace ns3 {
 
+ 
 
-int CqiIndex[15] = {
-  1, 2, 3, 4, 5, 6,                    // QAM
-  7, 8, 9,                             // 4-QAM
-  10, 11, 12, 13, 14, 15               // 16QAM
-};
-
-
-double SpectralEfficiencyForCqiIndex[15] = {
+// from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
+// file TBS_support.xls
+// tab "MCS table" (rounded to 2 decimal digits)
+// the index in the vector (0-15) identifies the CQI value
+double SpectralEfficiencyForCqi[16] = {
+  0.0, // out of range
   0.15, 0.23, 0.38, 0.6, 0.88, 1.18,
   1.48, 1.91, 2.41,
   2.73, 3.32, 3.9, 4.52, 5.12, 5.55
 };
 
-int McsIndex[32] = {
-  0,                                                        // RESERVED
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,                        // QAM
-  12, 13, 14, 15, 16, 17, 18,                               // 4-QAM
-  19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,               // 16-QAM
-  30,                                                       // QAM, RESERVED
-  31                                                        // RESERVED
-};
 
-// legacy table
-// int ModulationSchemeForMcsIndex[32] = {
-//   0,                                                        // Not defined
-//   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-//   4, 4, 4, 4, 4, 4, 4,
-//   6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-//   2,
-//   0                                                         // Not defined
-// };
-
-// Table 7.1.7.1-1 of 36.213 v8.6.0
-int ModulationSchemeForMcsIndex[32] = {
-  2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+// Table 7.1.7.1-1 of 3GPP TS 36.213 v8.8.0
+// the index in the vector (range 0-31; valid values 0-28) identifies the MCS index
+// note that this is similar to the one in R1-081483 but:
+//  1) a few values are different
+//  2) in R1-081483, a valid MCS index is in the range 1-30 (not 0-28)
+int ModulationSchemeForMcs[32] = {
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
   4, 4, 4, 4, 4, 4, 4,
   6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
   2,  // reserved
@@ -74,40 +59,27 @@ int ModulationSchemeForMcsIndex[32] = {
   6,  // reserved
 };
 
-//  legacy table
-// double SpectralEfficiencyForMcsIndex[32] = {
-//   0,
-//   0.15, 0.19, 0.23, 0.31, 0.38, 0.49, 0.6, 0.74, 0.88, 1.03, 1.18,
-//   1.33, 1.48, 1.7, 1.91, 2.16, 2.41, 2.57,
-//   2.73, 3.03, 3.32, 3.61, 3.9, 4.21, 4.52, 4.82, 5.12, 5.33, 5.55,
-//   2.4,
-//   0
-// };
 
-
-double SpectralEfficiencyForMcsIndex[32] = {
+// from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
+// file TBS_support.xls
+// tab "MCS table" (rounded to 2 decimal digits)
+// the index in the table corresponds to the MCS index according to the convention in TS 36.213
+// (i.e., the MCS index reported in R1-081483 minus one)
+double SpectralEfficiencyForMcs[32] = {
   0.15, 0.19, 0.23, 0.31, 0.38, 0.49, 0.6, 0.74, 0.88, 1.03, 1.18,
   1.33, 1.48, 1.7, 1.91, 2.16, 2.41, 2.57,
   2.73, 3.03, 3.32, 3.61, 3.9, 4.21, 4.52, 4.82, 5.12, 5.33, 5.55,
   0, 0, 0
 };
 
-
-int TransportBlockSize[32] = {
-  0,
-  18, 23, 28, 37, 45, 59, 72, 89, 105, 123, 141,
-  159, 177, 203, 230, 259, 289, 288,
-  308, 328, 363, 399, 433, 468, 506, 543, 578, 614, 640,
-  667,
-  0
-};
-
+// Table 7.1.7.1-1 of 3GPP TS 36.213 v8.8.0
 int McsToItbs[29] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18,
   19, 20, 21, 22, 23, 24, 25, 26
 };
 
 
+  // 3GPP TS 36.213 v8.8.0 Table 7.1.7.2.1-1: Transport block size table (dimension 27×110)
 int TransportBlockSizeTable [110][27] = {
 
   /* NPRB 001*/ { 16, 24, 32, 40, 56, 72, 328, 104, 120, 136, 144, 176, 208, 224, 256, 280, 328, 336, 376, 408, 440, 488, 520, 552, 584, 616, 712},
@@ -229,10 +201,11 @@ int
 LteAmc::GetCqiFromSpectralEfficiency (double s)
 {
   NS_LOG_FUNCTION (s);
-  int cqi = 1; // == CqiIndex[0]
-  while (SpectralEfficiencyForCqiIndex[cqi] < s && cqi <= 14)
+  NS_ASSERT_MSG (s >= 0.0, "negative spectral efficiency = "<< s);
+  int cqi = 0;
+  while ((cqi < 15) && (SpectralEfficiencyForCqi[cqi + 1] < s))
     {
-      cqi++;
+      ++cqi;
     }
   NS_LOG_FUNCTION (s << cqi);
   return cqi;
@@ -243,30 +216,29 @@ int
 LteAmc::GetMcsFromCqi (int cqi)
 {
   NS_LOG_FUNCTION (cqi);
-  double spectralEfficiency = SpectralEfficiencyForCqiIndex[cqi - 1];
-  int mcs = 1;
-  while (SpectralEfficiencyForMcsIndex[mcs] < spectralEfficiency && mcs < 28)
+  double spectralEfficiency = SpectralEfficiencyForCqi[cqi];
+  int mcs = 0;
+  while ((mcs < 28) && (SpectralEfficiencyForMcs[mcs + 1] <= spectralEfficiency))
     {
-      mcs++;
+      ++mcs;
     }
   NS_LOG_FUNCTION (cqi << mcs);
   return mcs;
 }
 
 
-int
-LteAmc::GetTbSizeFromMcs (int mcs)
-{
-  NS_LOG_FUNCTION (mcs);
-  NS_LOG_FUNCTION (mcs << TransportBlockSize[mcs]);
-  return TransportBlockSize[mcs];
-}
+// int
+// LteAmc::GetTbSizeFromMcs (int mcs)
+// {
+//   NS_LOG_FUNCTION (mcs);
+//   NS_LOG_FUNCTION (mcs << TransportBlockSize[mcs]);
+//   return TransportBlockSize[mcs];
+// }
 
 int
 LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 {
   NS_LOG_FUNCTION (mcs);
-  NS_LOG_FUNCTION (mcs << TransportBlockSize[mcs]);
 
   NS_ASSERT_MSG (mcs < 29, "MCS=" << mcs);
   NS_ASSERT_MSG (nprb < 111, "NPRB=" << nprb);
@@ -279,9 +251,8 @@ LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 double
 LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 {
-  NS_LOG_FUNCTION (cqi);
-  NS_LOG_FUNCTION (cqi << SpectralEfficiencyForCqiIndex[cqi - 1]);
-  return SpectralEfficiencyForCqiIndex[cqi - 1];
+  NS_LOG_FUNCTION (cqi << SpectralEfficiencyForCqi[cqi]);
+  return SpectralEfficiencyForCqi[cqi];
 }
 
 
@@ -298,7 +269,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
       double sinr_ = (*it);
       if (sinr_ == 0.0)
         {
-          cqi.push_back (-1); // SINR == 0 means no signal in this RB
+          cqi.push_back (-1); // SINR == 0 (linear units) means no signal in this RB
         }
       else
         {
@@ -307,13 +278,11 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
           *                                        SINR
           * spectralEfficiency = log2 (1 + -------------------- )
           *                                    -ln(5*BER)/1.5
-          * NB: SINR must be expressed in natural unit:
-          * (SINR)dB => 10 ^ (SINR/10)
+          * NB: SINR must be expressed in linear units
           */
 
-          double s = log2 ( 1 + (
-                              pow (10, sinr_ / 10 )  /
-                              ( (-log (5.0 * 0.00005 )) / 1.5) ));
+          double s = log2 ( 1 + ( sinr_ /
+                                  ( (-log (5.0 * 0.00005 )) / 1.5) ));
 
           int cqi_ = GetCqiFromSpectralEfficiency (s);
 
