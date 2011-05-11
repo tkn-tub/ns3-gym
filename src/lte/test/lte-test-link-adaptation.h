@@ -22,7 +22,6 @@
 #define LTE_TEST_LINK_ADAPTATION_H
 
 #include "ns3/test.h"
-#include "ns3/gnuplot.h"
 
 
 using namespace ns3;
@@ -41,26 +40,20 @@ public:
 class LteLinkAdaptationTestCase : public TestCase
 {
   public:
-    LteLinkAdaptationTestCase (double loss, double distance);
+    LteLinkAdaptationTestCase (double snr, double loss, double distance, uint16_t mcsIndex);
     LteLinkAdaptationTestCase ();
     virtual ~LteLinkAdaptationTestCase ();
 
     void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                        uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
 
-    static bool m_lastTestCase;
-
-//     static GnuplotCollection gnuplots;
-//     static Gnuplot           plot;
-//     static Gnuplot2dDataset  data;
-
   private:
     virtual void DoRun (void);
 
+    double m_snr;
     double m_loss;
     double m_distance;
-
-    static uint32_t m_runId;
+    uint16_t m_mcsIndex;
 };
 
 
