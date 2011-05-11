@@ -86,13 +86,13 @@ int main(int argc, char *argv[])
     {
       // the next statement doesn't change anything for the nodes 0, 1, and 2; since they
       // already have a stack assigned.
-      internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.18.so"));
-      // this switches node 3 to NSCs Linux 2.6.18 stack.
+      internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.26.so"));
+      // this switches node 3 to NSCs Linux 2.6.26 stack.
       internetStack.Install (n.Get(3));
       // and then agains disables sack/timestamps/wscale on node 3.
-      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_sack", StringValue ("0"));
-      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_timestamps", StringValue ("0"));
-      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_window_scaling", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_sack", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", StringValue ("0"));
     }
   // the freebsd stack is not yet built by default, so its commented out for now.
   // internetStack.SetNscStack ("libfreebsd5.so");
