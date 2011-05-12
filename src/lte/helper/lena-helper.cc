@@ -92,7 +92,7 @@ TypeId LenaHelper::GetTypeId (void)
     .AddConstructor<LenaHelper> ()
     .AddAttribute ("Scheduler",
                    "The type of scheduler to be used for eNBs",               
-                   StringValue ("ns3::RrFfMacScheduler"),
+                   StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LenaHelper::SetSchedulerType),                   
                    MakeStringChecker ())
     .AddAttribute ("PropagationModel",
@@ -354,7 +354,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
- 
+
   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);

@@ -191,6 +191,17 @@ LteUeRrc::GetRnti ()
   return m_rnti;
 }
 
+std::vector<uint8_t>
+LteUeRrc::GetLcIdVector ()
+{
+  std::vector<uint8_t> v;
+  for (std::map<uint8_t, Ptr<LteRlc> >::iterator it = m_rlcMap.begin(); it != m_rlcMap.end(); ++it)
+    {
+      v.push_back(it->first);
+    }
+  return v;
+}
+
 
 } // namespace ns3
 
