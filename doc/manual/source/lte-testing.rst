@@ -49,7 +49,19 @@ Round Robin scheduler performance
 ---------------------------------
 
 This system test program creates different test cases with a single eNB and several UEs, all having the same Radio Bearer specification. In each test case, the UEs see the same SINR from the eNB; different test cases are implemented by using different distance among UEs and the eNB (i.e., therefore having different SINR values) and different numbers of UEs. The test consists on checking that the obtained throughput performance is equal among users and matches a reference throughput value obtained according to the SINR perceived within a given tolerance.
-The test vector is obtained according to the values of transport block size reported in table 7.1.7.2.1-1 of [TS36.213]_, considering an equal distribution of the physical resource block among the users. The tolerance has been introduced in order to overcome the process of initialization and quantization of the resource allocation.
+The test vector is obtained according to the values of transport block size reported in table 7.1.7.2.1-1 of [TS36.213]_, considering an equal distribution of the physical resource block among the users using Resource Allocation Type 0 as defined in Section 7.1.6.1 of [TS36.213]_.  Let :math:`\tau` be the TTI duration, :math:`N` be the number of UEs, :math:`B` the transmission bandwidth configuration in number of RBs, :math:`G` the RBG size, :math:`M` the modulation and coding scheme in use at the given SINR and :math:`S(M, B)` be the transport block size in bytes as defined by 3GPP TS 36.213. We first calculate the number :math:`L` of RBGs allocated to each user as
+
+.. math::
+
+   L = \left\lfloor \frac{B}{NG} \right\rfloor 
+
+The reference throughput :math:`T` in bps achieved by each UE is then calculated as
+
+.. math::
+
+   T =  \frac{8 \; S(M, L G)}{\tau}
+
+
 
 
 Proportional Fair scheduler performance
