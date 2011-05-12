@@ -104,9 +104,9 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
     * From XXX
     */
   SnrEfficiencyMcs snrEfficiencyMcs[] = {
-    // {-5.00000,	0.08024,	-1},
-    // {-4.00000,	0.10030,	-1},
-    // {-3.00000,	0.12518,	-1},
+    {-5.00000,	0.08024,	-1},
+    {-4.00000,	0.10030,	-1},
+    {-3.00000,	0.12518,	-1},
     {-2.00000,	0.15589,	0},
     {-1.00000,	0.19365,	0},
     {0.00000,	0.23983,	2},
@@ -156,8 +156,7 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
       double distance = ( ( 3e8 * sqrt ( lossLinear ) ) / ( 4.0 * M_PI * 2.160e9 ) );
 
       std::ostringstream name;
-      name << "link adaptation"
-           << " snr= " << snrEfficiencyMcs[i].snrDb
+      name << " snr= " << snrEfficiencyMcs[i].snrDb << " dB, "
            << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
       AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snrDb, lossDb, distance, snrEfficiencyMcs[i].mcsIndex));
     }
