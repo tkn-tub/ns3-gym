@@ -7,19 +7,23 @@ def build(bld):
 
     # Set the C++ source files for this module.
     module.source = [
-        # Uncomment this line to compile this model source file.
-        #'model/sample-model.cc',
+        # Uncomment these lines to compile these model source files.
+        #'model/sample-model-1.cc',
+        #'model/sample-model-2.cc',
 
-        # Uncomment this line to compile this helper source file.
-        #'helper/sample-helper.cc',
+        # Uncomment these lines to compile these helper source files.
+        #'helper/sample-helper-1.cc',
+        #'helper/sample-helper-2.cc',
         ]
 
     # Create the module's test library.
-    test_library = bld.create_ns3_module_test_library('template')
+    module_test = bld.create_ns3_module_test_library('template')
 
     # Set the C++ source files for the module's test library.
-    test_library.source = [
-        'test/sample-test-suite.cc',
+    module_test.source = [
+        # Uncomment these lines to compile these test suites.
+        #'test/sample-test-suite-1.cc',
+        #'test/sample-test-suite-2.cc',
         ]
 
     # Make headers be installed for this module.
@@ -28,17 +32,19 @@ def build(bld):
 
     # Set the C++ header files for this module.
     headers.source = [
-        # Uncomment this line to install this model header file.
-        #'model/sample-model.h',
+        # Uncomment these lines to install these model header files.
+        #'model/sample-model-1.h',
+        #'model/sample-model-2.h',
 
-        # Uncomment this line to install this helper header file.
-        #'helper/sample-helper.h',
+        # Uncomment these lines to install these helper header files.
+        #'helper/sample-helper-1.h',
+        #'helper/sample-helper-2.h',
         ]
 
     # Uncomment these lines if this module needs a library such as the
     # real-time (RT) library to be linked in at build time.
-    #module      .uselib = 'RT'
-    #test_library.uselib = 'RT'
+    #module     .uselib = 'RT'
+    #module_test.uselib = 'RT'
 
     # Look for examples if they are enabled. 
     if (bld.env['ENABLE_EXAMPLES']):

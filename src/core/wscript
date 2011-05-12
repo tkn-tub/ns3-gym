@@ -158,6 +158,7 @@ def build(bld):
         'test/object-test-suite.cc',
         'test/ptr-test-suite.cc',
         'test/random-variable-test-suite.cc',
+        'test/sample-test-suite.cc',
         'test/simulator-test-suite.cc',
         'test/time-test-suite.cc',
         'test/timer-test-suite.cc',
