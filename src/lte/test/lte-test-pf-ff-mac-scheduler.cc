@@ -51,19 +51,13 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaTestPfFfMacSchedulerSuite");
   
-  std::vector<uint16_t> dist;
-  dist.push_back (0);    // User 0 distance
-  dist.push_back (6000);    // User 1 distance
-  std::vector<uint32_t> estThrPf;
-  estThrPf.push_back (89000); // User 0 estimated TTI throughput from PF
-  estThrPf.push_back (28000); // User 1 estimated TTI throughput from PF
-  
-  
   // 0 mt -> mcs 28
-  // 6000 mt -> mcs 24
-  // 12000 mt -> mcs 6
-  
-  AddTestCase (new LenaPfFfMacSchedulerTestCase2 (2,dist,estThrPf));
+  // 3000 mt -> mcs 22
+  // 6000 mt -> mcs 16
+  // 9000 mt -> mcs 12
+  // 15000 mt -> mcs 6
+
+  // Test Case 1: AMC works in PF
 
 //   // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
 //   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
@@ -77,55 +71,70 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
 //   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,0,183000));
 //   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,0,146400));
 // 
-//   // DISTANCE 6000 -> MCS 24 -> Itbs 22 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 22 -> 1572 -> 1572000 bytes/sec
-//   // 3 users -> 1572000 among 3 users -> 524000 bytes/sec
-//   // 6 users -> 1572000 among 6 users -> 262000 bytes/sec
-//   // 12 users -> 1572000 among 12 users -> 131000 bytes/sec
-//   // 15 users -> 1572000 among 15 users -> 104800 bytes/sec
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,1572000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,524000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,262000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,6000,131000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,6000,104800));
+//   // DISTANCE 3000 -> MCS 24 -> Itbs 30 (from table 7.1.7.2.1-1 of 36.213)
+//   // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec
+//   // 3 users -> 1383000 among 3 users -> 461000 bytes/sec
+//   // 6 users -> 1383000 among 6 users -> 230500 bytes/sec
+//   // 12 users -> 1383000 among 12 users -> 115250 bytes/sec
+//   // 15 users -> 1383000 among 15 users -> 92200 bytes/sec
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,3000,1383000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,3000,461000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,3000,230500));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,3000,115250));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,3000,92200));
 // 
-//   // DISTANCE 9000 -> MCS 10 -> Itbs 9 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 9 -> 469 -> 469000 bytes/sec
-//   // 3 users -> 469000 among 3 users -> 156333 bytes/sec
-//   // 6 users -> 469000 among 6 users -> 78166 bytes/sec
-//   // 12 users -> 469000 among 12 users -> 39083 bytes/sec
-//   // 15 users -> 469000 among 15 users -> 31266 bytes/sec
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,9000,469000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,9000,156333));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,9000,78166));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,9000,39083));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,9000,31266));
+//   // DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
+//   // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
+//   // 3 users -> 903000 among 3 users -> 301000 bytes/sec
+//   // 6 users -> 903000 among 6 users -> 150500 bytes/sec
+//   // 12 users -> 903000 among 12 users -> 75250 bytes/sec
+//   // 15 users -> 903000 among 15 users -> 60200 bytes/sec
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,903000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,301000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,150500));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,6000,75250));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,6000,60200));
 // 
-//   // DISTANCE 15000 -> MCS 4 -> Itbs 4 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 4 -> 217 -> 217000 bytes/sec
-//   // 3 users -> 217000 among 3 users -> 72333 bytes/sec
-//   // 6 users -> 217000 among 6 users -> 36166 bytes/sec
-//   // 12 users -> 217000 among 12 users -> 18083 bytes/sec
-//   // 15 users -> 217000 among 15 users -> 14466 bytes/sec 
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,15000,217000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,15000,72333));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,15000,36166));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,15000,18083));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,15000,14466));
+//   // DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
+//   // 1 user -> 24 PRB at Itbs 11 -> 597 -> 597000 bytes/sec
+//   // 3 users -> 597000 among 3 users -> 199000 bytes/sec
+//   // 6 users -> 597000 among 6 users -> 99500 bytes/sec
+//   // 12 users -> 597000 among 12 users -> 49750 bytes/sec
+//   // 15 users -> 597000 among 15 users -> 39800 bytes/sec 
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,9000,597000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,9000,199000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,9000,99500));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,9000,49750));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,9000,39800));
 // 
-//   // DISTANCE 20000 -> MCS 2 -> Itbs 2 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 2 -> 133 -> 133000 bytes/sec
-//   // 3 users -> 217000 among 3 users -> 44333 bytes/sec
-//   // 6 users -> 217000 among 6 users -> 22166 bytes/sec
-//   // 12 users -> 217000 among 12 users -> 11083 bytes/sec
-//   // 15 users -> 217000 among 15 users -> 8866 bytes/sec  
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,20000,133000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,20000,44333));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,20000,22166));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,20000,11083));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,20000,8866));
+//   // DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
+//   // 1 user -> 24 PRB at Itbs 6 -> 309 -> 309000 bytes/sec
+//   // 3 users -> 309000 among 3 users -> 103000 bytes/sec
+//   // 6 users -> 309000 among 6 users -> 51500 bytes/sec
+//   // 12 users -> 309000 among 12 users -> 25750 bytes/sec
+//   // 15 users -> 309000 among 15 users -> 20600 bytes/sec  
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,15000,309000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,15000,103000));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,15000,51500));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,15000,25750));
+//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,15000,20600));
 
+  // Test Case 2: fairness check
+  
+  std::vector<uint16_t> dist;
+  dist.push_back (0);    // User 0 distance
+  dist.push_back (3000);    // User 1 distance
+  dist.push_back (6000);    // User 2 distance
+  dist.push_back (9000);    // User 3 distance
+  dist.push_back (15000);    // User 4 distance
+  std::vector<uint32_t> estThrPf;
+  estThrPf.push_back (89000); // User 0 estimated TTI throughput from PF
+  estThrPf.push_back (55000); // User 1 estimated TTI throughput from PF
+  estThrPf.push_back (35000); // User 2 estimated TTI throughput from PF
+  estThrPf.push_back (22000); // User 3 estimated TTI throughput from PF
+  estThrPf.push_back (11000); // User 4 estimated TTI throughput from PF
 
+  AddTestCase (new LenaPfFfMacSchedulerTestCase2 (5,dist,estThrPf));
 
 
 }
@@ -177,7 +186,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
   
-    LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+//     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
@@ -311,7 +320,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
   
-    LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+//     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);

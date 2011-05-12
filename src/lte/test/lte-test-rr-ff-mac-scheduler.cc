@@ -66,7 +66,7 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   AddTestCase (new LenaRrFfMacSchedulerTestCase (12,0,0,185000));
   AddTestCase (new LenaRrFfMacSchedulerTestCase (15,0,0,148000));
   
-  // DISTANCE 3000 -> MCS 24 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
+  // DISTANCE 3000 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec
   // 3 users -> 8 PRB at Itbs 20 -> 469 -> 469000 bytes/sec
   // 6 users -> 4 PRB at Itbs 20 -> 233 -> 233000 bytes/sec
