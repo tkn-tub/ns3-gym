@@ -286,10 +286,11 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
 
           int cqi_ = GetCqiFromSpectralEfficiency (s);
 
-          NS_LOG_FUNCTION ("channel_id = " << cqi.size ()
-                                          << "sinr = " << sinr_
-                                          << "spectral efficiency =" << s
-                                          << " ---- CQI = " << cqi_ );
+          NS_LOG_LOGIC (" PRB =" << cqi.size ()
+                        << ", sinr = " << sinr_
+                        << " (=" << pow (10.0, sinr_/10.0) << " dB)"
+                        << ", spectral efficiency =" << s
+                        << ", CQI = " << cqi_ );
 
           cqi.push_back (cqi_);
         }
