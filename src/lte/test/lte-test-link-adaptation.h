@@ -27,8 +27,6 @@
 using namespace ns3;
 
 
-
-
 /**
  * Test 1.3 Link adaptation
  */
@@ -42,22 +40,20 @@ public:
 class LteLinkAdaptationTestCase : public TestCase
 {
   public:
-//     LteLinkAdaptationTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-    LteLinkAdaptationTestCase (double loss);
+  LteLinkAdaptationTestCase (std::string name, double snr, double loss, double distance, uint16_t mcsIndex);
     LteLinkAdaptationTestCase ();
     virtual ~LteLinkAdaptationTestCase ();
+
+    void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                       uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
 
   private:
     virtual void DoRun (void);
 
-    Ptr<MacStatsCalculator> macStats;
-
+    double m_snr;
     double m_loss;
-//     Ptr<SpectrumValue> m_sv;
-//     Ptr<const SpectrumModel> m_sm;
-//     Ptr<SpectrumValue> m_sinr;
-
-    static uint32_t m_runId;
+    double m_distance;
+    uint16_t m_mcsIndex;
 };
 
 

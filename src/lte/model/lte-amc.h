@@ -41,10 +41,6 @@ class LteAmc
 {
 
 public:
-  /**
-   * \brief Initialize CQI, MCS, SpectralEfficiency e TBs values
-   */
-  static void Initialize ();
 
   /**
    * \brief Get the Modulation anc Coding Scheme for
@@ -54,12 +50,12 @@ public:
    */
   static int GetMcsFromCqi (int cqi);
 
-  /**
-   * \brief Get the Transport Block Size for a selected MCS
-   * \param mcs the mcs index
-   * \return the TBs value
-   */
-  static int GetTbSizeFromMcs (int mcs);
+  // /**
+  //  * \brief Get the Transport Block Size for a selected MCS
+  //  * \param mcs the mcs index
+  //  * \return the TBs value
+  //  */
+  // static int GetTbSizeFromMcs (int mcs);
 
   /**
   * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 7.1.7.2.1-1 of 36.213)

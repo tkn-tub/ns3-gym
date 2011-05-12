@@ -38,8 +38,13 @@ public:
                                                            Ptr<const MobilityModel> a,
                                                            Ptr<const MobilityModel> b) const;
 
+  void SetLossDb (double lossDb);
+  double GetLossDb () const;
+
+protected:
+  double m_lossDb;
+  double m_lossLinear;
 private:
-  double m_loss;
 };
 
 

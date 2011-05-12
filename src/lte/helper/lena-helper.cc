@@ -92,7 +92,7 @@ TypeId LenaHelper::GetTypeId (void)
     .AddConstructor<LenaHelper> ()
     .AddAttribute ("Scheduler",
                    "The type of scheduler to be used for eNBs",               
-                   StringValue ("ns3::RrFfMacScheduler"),
+                   StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LenaHelper::SetSchedulerType),                   
                    MakeStringChecker ())
     .AddAttribute ("PropagationModel",

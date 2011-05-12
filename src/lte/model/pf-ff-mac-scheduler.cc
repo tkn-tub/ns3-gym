@@ -210,7 +210,7 @@ PfSchedulerMemberSchedSapProvider::SchedUlCqiInfoReq (const struct SchedUlCqiInf
 PfFfMacScheduler::PfFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
-    m_timeWindow (10.0),
+    m_timeWindow (99.0),
     m_schedTtiDelay (2) // WILD ACK: based on a m_macChTtiDelay = 1 
 {
   m_cschedSapProvider = new PfSchedulerMemberCschedSapProvider (this);
@@ -485,7 +485,14 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           NS_LOG_DEBUG (this << " UE assigned " << (*itMax).first);
         }
     } // end for RBGs
-    
+  
+  // reset TTI stats of users
+  std::map <uint16_t, pfsFlowPerf_t>::iterator itStats;
+  for (itStats = m_flowStats.begin (); itStats != m_flowStats.end (); itStats++)
+    {
+      (*itStats).second.lastTtiBytesTrasmitted = 0;
+    }
+  
   // generate the transmission opportunities by grouping the RBGs of the same RNTI and
   // creating the correspondent DCIs
   FfMacSchedSapUser::SchedDlConfigIndParameters ret;
@@ -572,12 +579,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           (*it).second.lastTtiBytesTrasmitted = tbSize;
           NS_LOG_DEBUG (this << " UE bytes txed " << (*it).second.lastTtiBytesTrasmitted);
-          (*it).second.totalBytesTransmitted += (*it).second.lastTtiBytesTrasmitted;
-          // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term Evolution, Ed Wiley)
-          (*it).second.lastAveragedThroughput = ((1.0 - (1.0 / m_timeWindow)) * (*it).second.lastAveragedThroughput) + ((1.0 / m_timeWindow) * (double)((*it).second.lastTtiBytesTrasmitted / 0.001));
-          (*it).second.lastTtiBytesTrasmitted = 0;
-          NS_LOG_DEBUG (this << " UE tot bytes " << (*it).second.totalBytesTransmitted);
-          NS_LOG_DEBUG (this << " UE avg thr " << (*it).second.lastAveragedThroughput);
+         
           
         }
       else
@@ -588,6 +590,18 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       itMap++;
     } // end while allocation
   ret.m_nrOfPdcchOfdmSymbols = 1;   // TODO: check correct value according the DCIs txed
+  
+  
+  // update UEs stats
+  for (itStats = m_flowStats.begin (); itStats != m_flowStats.end (); itStats++)
+    {
+      (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTrasmitted;
+      // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term Evolution, Ed Wiley)
+      (*itStats).second.lastAveragedThroughput = ((1.0 - (1.0 / m_timeWindow)) * (*itStats).second.lastAveragedThroughput) + ((1.0 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTrasmitted / 0.001));
+      NS_LOG_DEBUG (this << " UE tot bytes " << (*itStats).second.totalBytesTransmitted);
+      NS_LOG_DEBUG (this << " UE avg thr " << (*itStats).second.lastAveragedThroughput);
+      (*itStats).second.lastTtiBytesTrasmitted = 0;
+    }
       
   m_schedSapUser->SchedDlConfigInd (ret);
   

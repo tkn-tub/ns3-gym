@@ -327,12 +327,20 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
               cqiSum += cqi.at (i);
               activeSubChannels++;
             }
-          //NS_LOG_DEBUG (this << " subch " << i << " cqi " <<  cqi.at (i));
+          NS_LOG_DEBUG (this << " subch " << i << " cqi " <<  cqi.at (i));
         }
       dlcqi.m_rnti = m_rnti;
       dlcqi.m_ri = 1; // not yet used
       dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
-      dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / activeSubChannels);
+      if (activeSubChannels>0)
+        {
+          dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / activeSubChannels);
+        }
+      else
+        {
+          // approximate with the worst case -> CQI = 1
+          dlcqi.m_wbCqi.push_back (1);
+        }
       //NS_LOG_DEBUG (this << " Generate P10 CQI feedback " << (uint16_t) cqiSum / activeSubChannels);
       dlcqi.m_wbPmi = 0; // not yet used
       // dl.cqi.m_sbMeasResult others CQI report modes: not yet implemented
