@@ -55,14 +55,14 @@ class LenaPfFfMacSchedulerTestCase1 : public TestCase
 class LenaPfFfMacSchedulerTestCase2 : public TestCase
 {
   public:
-    LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint16_t> estThrPf);
+    LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPf);
     virtual ~LenaPfFfMacSchedulerTestCase2 ();
     
   private:
     virtual void DoRun (void);
     uint16_t m_nUser;
     std::vector<uint16_t> m_dist;
-    std::vector<uint16_t> m_estThrPf;
+    std::vector<uint32_t> m_estThrPf;
 };
 
 
