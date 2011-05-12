@@ -26,7 +26,12 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/lena-helper.h"
 
+#include "ns3/lte-ue-phy.h"
+#include "ns3/lte-ue-net-device.h"
+
 #include "ns3/lte-test-link-adaptation.h"
+
+#include "lte-test-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
 
@@ -89,13 +94,13 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
 
   struct SnrEfficiencyMcs
     {
-      double  snr;
+      double  snrDb;
       double  efficiency;
       int  mcsIndex;
     };
 
   /**
-    * Test vectors: SNR, Spectral Efficiency, MCS index
+    * Test vectors: SNRDB, Spectral Efficiency, MCS index
     * From XXX
     */
   SnrEfficiencyMcs snrEfficiencyMcs[] = {
@@ -139,30 +144,22 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
   int numOfTests = sizeof (snrEfficiencyMcs) / sizeof (SnrEfficiencyMcs);
 
 
+  double txPowerDbm = 30; // default eNB TX power over whole bandwdith
+  double ktDbm = -174;    // reference LTE noise PSD
+  double noisePowerDbm = ktDbm + 10*log10(25*180000); // corresponds to kT*bandwidth in linear units
+  double receiverNoiseFigureDb = 9.0; // default UE noise figure
+ 
   for ( int i = 0 ; i < numOfTests; i++ )
-    {
-      /**
-       * SNR (in dB)
-       *
-       *  SNR = P_tx - loss - noise - receiverNoiseFigure
-       *
-       *  loss = P_tx - SNR - noise - receiverNoiseFigure
-       *
-       *  where: P_tx is transmission power
-       *         loss in (dB)
-       *         noise
-       */
-      double noiseDb = -107.5;
-      double receiverNoiseFigureDb = 5.0;
-      double lossDb = 30.0 - snrEfficiencyMcs[i].snr - noiseDb - receiverNoiseFigureDb;
+    {    
+      double lossDb = txPowerDbm - snrEfficiencyMcs[i].snrDb - noisePowerDbm - receiverNoiseFigureDb;
       double lossLinear = pow (10, lossDb / 10);
       double distance = ( ( 3e8 * sqrt ( lossLinear ) ) / ( 4.0 * M_PI * 2.160e9 ) );
 
       std::ostringstream name;
       name << "link adaptation"
-           << " snr= " << snrEfficiencyMcs[i].snr
+           << " snr= " << snrEfficiencyMcs[i].snrDb
            << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
-      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snr, lossDb, distance, snrEfficiencyMcs[i].mcsIndex));
+      AddTestCase (new LteLinkAdaptationTestCase (name.str (),  snrEfficiencyMcs[i].snrDb, lossDb, distance, snrEfficiencyMcs[i].mcsIndex));
     }
 
 }
@@ -174,15 +171,15 @@ static LteLinkAdaptationTestSuite lteLinkAdaptationTestSuite;
  * TestCase
  */
 
-LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (std::string name, double snr, double loss, double distance, uint16_t mcsIndex)
+LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (std::string name, double snrDb, double loss, double distance, uint16_t mcsIndex)
   : TestCase (name),
-    m_snr (snr),
+    m_snrDb (snrDb),
     m_loss (loss),
     m_distance (distance),
     m_mcsIndex (mcsIndex)
 {
   std::ostringstream sstream1, sstream2;
-  sstream1 << " snr=" << snr 
+  sstream1 << " snr=" << snrDb 
            << " mcs=" << mcsIndex;
 
   NS_LOG_UNCOND ("Creating LteLinkAdaptationTestCase: " + sstream1.str ());
@@ -195,44 +192,46 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 void
 LteLinkAdaptationTestCase::DoRun (void)
 {
-   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-   LogComponentEnable ("LteAmc", logLevel);
-   LogComponentEnable ("LteLinkAdaptationTest", logLevel);
-//   LogComponentEnable ("LteEnbRrc", logLevel);
-//   LogComponentEnable ("LteUeRrc", logLevel);
-//   LogComponentEnable ("LteEnbMac", logLevel);
-//   LogComponentEnable ("LteUeMac", logLevel);
-//   LogComponentEnable ("LteRlc", logLevel);
-//   LogComponentEnable ("RrPacketScheduler", logLevel);
+  //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  //    LogComponentEnable ("LteAmc", logLevel);
+  //    LogComponentEnable ("LteLinkAdaptationTest", logLevel);
+  //   LogComponentEnable ("LteEnbRrc", logLevel);
+  //   LogComponentEnable ("LteUeRrc", logLevel);
+  //   LogComponentEnable ("LteEnbMac", logLevel);
+  //   LogComponentEnable ("LteUeMac", logLevel);
+  //   LogComponentEnable ("LteRlc", logLevel);
+  //   LogComponentEnable ("RrPacketScheduler", logLevel);
 
-//   LogComponentEnable ("RrFfMacScheduler", logLevel);
+  //   LogComponentEnable ("RrFfMacScheduler", logLevel);
 
-//   LogComponentEnable ("LtePhy", logLevel);
-//   LogComponentEnable ("LteEnbPhy", logLevel);
-//   LogComponentEnable ("LteUePhy", logLevel);
+  // LogComponentEnable ("LtePhy", logLevel);
+  // LogComponentEnable ("LteEnbPhy", logLevel);
+  // LogComponentEnable ("LteUePhy", logLevel);
 
-//   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
-//   LogComponentEnable ("LteSpectrumPhy", logLevel);
-//   LogComponentEnable ("LteInterference", logLevel);
-//   LogComponentEnable ("LteSinrChunkProcessor", logLevel);
+  // LogComponentEnable ("LteSpectrumValueHelper", logLevel);
+  // LogComponentEnable ("LteSpectrumPhy", logLevel);
+  // LogComponentEnable ("LteInterference", logLevel);
+  // LogComponentEnable ("LteSinrChunkProcessor", logLevel);
+  // LogComponentEnable ("LteTestSinrChunkProcessor", logLevel);
 
-//   LogComponentEnable ("LtePropagationLossModel", logLevel);
-//   LogComponentEnable ("LossModel", logLevel);
-//   LogComponentEnable ("ShadowingLossModel", logLevel);
-//   LogComponentEnable ("PenetrationLossModel", logLevel);
-//   LogComponentEnable ("MultipathLossModel", logLevel);
-//   LogComponentEnable ("PathLossModel", logLevel);
-//   LogComponentEnable ("FriisSpectrumPropagationLossModel", logLevel);
-//   LogComponentEnable ("ConstantSpectrumPropagationLossModel", logLevel);
+  //   LogComponentEnable ("LtePropagationLossModel", logLevel);
+  //   LogComponentEnable ("LossModel", logLevel);
+  //   LogComponentEnable ("ShadowingLossModel", logLevel);
+  //   LogComponentEnable ("PenetrationLossModel", logLevel);
+  //   LogComponentEnable ("MultipathLossModel", logLevel);
+  //   LogComponentEnable ("PathLossModel", logLevel);
+  //   LogComponentEnable ("FriisSpectrumPropagationLossModel", logLevel);
+  //   LogComponentEnable ("ConstantSpectrumPropagationLossModel", logLevel);
 
-//   LogComponentEnable ("LteNetDevice", logLevel);
-//   LogComponentEnable ("LteUeNetDevice", logLevel);
-//   LogComponentEnable ("LteEnbNetDevice", logLevel);
+  //   LogComponentEnable ("LteNetDevice", logLevel);
+  //   LogComponentEnable ("LteUeNetDevice", logLevel);
+  //   LogComponentEnable ("LteEnbNetDevice", logLevel);
 
-//   LogComponentEnable ("MobilityModel", logLevel);
-//   LogComponentEnable ("ConstantPositionMobilityModel", logLevel);
-//   LogComponentEnable ("MultiModelSpectrumChannel", logLevel);
-//   LogComponentEnable ("SingleModelSpectrumChannel", logLevel);
+  //   LogComponentEnable ("MobilityModel", logLevel);
+  //   LogComponentEnable ("ConstantPositionMobilityModel", logLevel);
+  //   LogComponentEnable ("MultiModelSpectrumChannel", logLevel);
+  //   LogComponentEnable ("SingleModelSpectrumChannel", logLevel);
+   
 
   /**
     * Simulation Topology
@@ -243,7 +242,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
-  NS_LOG_INFO ("SNR = " << m_snr << "  LOSS = " << m_loss);
+  NS_LOG_INFO ("SNR = " << m_snrDb << "  LOSS = " << m_loss);
   lena->SetPropagationModelAttribute ("Loss", DoubleValue (m_loss));
 
   // Create Nodes: eNodeB and UE
@@ -280,15 +279,24 @@ LteLinkAdaptationTestCase::DoRun (void)
   lena->ActivateEpsBearer (ueDevs, bearer);
 
 
+  // this is to test that the SNR is as intended
+  Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
+  Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
+  uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testSinr);
+
+
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                     MakeBoundCallback(&LteTestDlSchedulingCallback, this));
 
-   Simulator::Stop (Seconds (0.005));
-   //Simulator::Stop (Seconds (0.01));
+  Simulator::Stop (Seconds (0.005));
+  //Simulator::Stop (Seconds (0.01));
 //   Simulator::Stop (Seconds (0.1));
 /*  Simulator::Stop (Seconds (2.0));*/
 //   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
+
+  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()[0]);
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.0000001, "Wrong SINR !");
   Simulator::Destroy ();
 }
 
@@ -318,7 +326,7 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
 //                         << (uint16_t)mcsTb1 << "\t" << sizeTb1 << "\t"
 //                         << (uint16_t)mcsTb2 << "\t" << sizeTb2);
 
-      NS_LOG_UNCOND (m_snr << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
+      NS_LOG_UNCOND (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
 
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
     }
