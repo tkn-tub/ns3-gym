@@ -53,10 +53,17 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   
   std::vector<uint16_t> dist;
   dist.push_back (0);    // User 0 distance
-  std::vector<uint16_t> estThrPf;
-  estThrPf.push_back (0); // User 0 estimated TTI throughput from PF
+  dist.push_back (6000);    // User 1 distance
+  std::vector<uint32_t> estThrPf;
+  estThrPf.push_back (89000); // User 0 estimated TTI throughput from PF
+  estThrPf.push_back (28000); // User 1 estimated TTI throughput from PF
   
-  AddTestCase (new LenaPfFfMacSchedulerTestCase2 (1,dist,estThrPf));
+  
+  // 0 mt -> mcs 28
+  // 6000 mt -> mcs 24
+  // 12000 mt -> mcs 6
+  
+  AddTestCase (new LenaPfFfMacSchedulerTestCase2 (2,dist,estThrPf));
 
 //   // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
 //   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
@@ -136,9 +143,6 @@ LenaPfFfMacSchedulerTestCase1::LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, ui
     m_thrRef (thrRef)
 {
   
-  // 0 mt -> mcs 28
-  // 6000 mt -> mcs 24
-  // 12000 mt -> mcs 6
 }
 
 LenaPfFfMacSchedulerTestCase1::~LenaPfFfMacSchedulerTestCase1 ()
@@ -265,7 +269,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 // --------------- T E S T - C A S E   # 2 ------------------------------
 
 
-LenaPfFfMacSchedulerTestCase2::LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint16_t> estThrPf)
+LenaPfFfMacSchedulerTestCase2::LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPf)
   : TestCase ("Proportional Fair (PF) Mac Scheduler Test Case"),
     m_nUser (nUser),
     m_dist (dist),
@@ -307,7 +311,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
   
-//     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+    LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
@@ -356,7 +360,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   
   lena->EnableDlRlcTraces();
   
-  double simulationTime = 2.0;
+  double simulationTime = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
   
@@ -377,7 +381,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
     uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at(0);
     dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
     totalData += (double)dlDataRxed.at (i);
-    NS_LOG_INFO ("\tUser " << i << "dist" << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_nUser);
+    NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_nUser);
     totalEstThrPf += m_estThrPf.at (i);
   }
   
@@ -390,6 +394,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   {
     double thrRatio = (double)dlDataRxed.at (i) / totalData;
     double estThrRatio = (double)m_estThrPf.at (i) / totalEstThrPf;
+    NS_LOG_INFO ("User " << i << " thrRatio " << thrRatio << " estThrRatio " << estThrRatio);
     NS_TEST_ASSERT_MSG_EQ_TOL (estThrRatio, thrRatio, tolerance, " Unfair Throughput!");      
   }
   
