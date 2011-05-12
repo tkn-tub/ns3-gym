@@ -11,11 +11,7 @@ for run = 1:2
   
   for nrbs = [6 25 100]
 
-    if (nrbs == 6)
-      chbw = 1.4e6;
-    else
-      chbw = (nrbs / 5) * 1e6;
-    endif    
+    bw = nrbs * 180000;
     
     for txpowdBm = [10 30]
 
@@ -26,7 +22,7 @@ for run = 1:2
       activeRbsMask = round (rand (1,nrbs));
       activeRbs = find (activeRbsMask) - 1;
       txpowW = (10.^(txpowdBm/10))/1000;
-      txpsd = txpowW.*activeRbsMask./chbw;
+      txpsd = txpowW.*activeRbsMask./bw;
 
       printf("std::vector<int> %s (%d);\n", arname, length(activeRbs));
       print_C_vector (activeRbs, arname);
