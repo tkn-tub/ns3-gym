@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (0.005));
+  Simulator::Stop (Seconds (4));
 
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();

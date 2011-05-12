@@ -122,6 +122,12 @@ public:
    */
   uint16_t GetRnti ();
 
+  /**
+   *
+   * @return a vector with the allocated LCID
+   */
+  std::vector<uint8_t> GetLcIdVector ();
+
 private:
   // forwarded from CMAC SAP user
   void DoLcConfigCompleted ();

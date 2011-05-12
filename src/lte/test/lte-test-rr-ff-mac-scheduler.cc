@@ -35,6 +35,7 @@
 #include <ns3/mobility-helper.h>
 #include <ns3/net-device-container.h>
 #include <ns3/lte-ue-net-device.h>
+#include <ns3/lte-ue-rrc.h>
 #include <ns3/lena-helper.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
@@ -199,7 +200,9 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
     {
       // get the imsi
       uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
-      dlDataRxed.push_back (rlcStats->GetDlRxData (imsi));
+      // get the lcId
+      uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector().at(0);
+      dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
       NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
     }

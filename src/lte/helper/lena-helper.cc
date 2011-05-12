@@ -354,7 +354,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
- 
+
   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
