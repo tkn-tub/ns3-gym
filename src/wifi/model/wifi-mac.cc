@@ -352,23 +352,13 @@ WifiMac::Configure80211_5Mhz (void)
 void
 WifiMac::Configure80211p_CCH (void)
 {
-  SetSifs (MicroSeconds (32));
-  SetSlot (MicroSeconds (16));
-  SetEifsNoDifs (MicroSeconds (32 + 88));
-  SetPifs (MicroSeconds (32 + 16));
-  SetCtsTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
-  SetAckTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  Configure80211_10Mhz ();
 }
 
 void
 WifiMac::Configure80211p_SCH (void)
 {
-  SetSifs (MicroSeconds (32));
-  SetSlot (MicroSeconds (16));
-  SetEifsNoDifs (MicroSeconds (32 + 88));
-  SetPifs (MicroSeconds (32 + 16));
-  SetCtsTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
-  SetAckTimeout (MicroSeconds (32 + 88 + 16 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
+  Configure80211_10Mhz ();
 }
 
 void
