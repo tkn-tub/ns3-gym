@@ -82,12 +82,7 @@ std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
 
 Ipv4MulticastRoute::Ipv4MulticastRoute ()
 {
-  uint32_t initial_ttl = MAX_TTL;
-  // Initialize array to MAX_TTL, which means that all interfaces are "off"
-  for (uint32_t i = 0; i < MAX_INTERFACES; i++)
-    {
-      m_ttls.push_back(initial_ttl);
-    }
+  m_ttls.clear();
 }
 
 void 
@@ -129,13 +124,36 @@ Ipv4MulticastRoute::GetParent (void) const
 void 
 Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
 {
-  m_ttls[oif] = ttl;
+  if (ttl >= MAX_TTL)
+  {
+    // This TTL value effectively disables the interface
+    std::map<uint32_t, uint32_t>::iterator iter;
+    iter = m_ttls.find(oif);
+    if (iter != m_ttls.end())
+    {
+      m_ttls.erase(iter);
+    }
+  }
+  else
+  {
+    m_ttls[oif] = ttl;
+  }
 }
 
 uint32_t
-Ipv4MulticastRoute::GetOutputTtl (uint32_t oif) const
+Ipv4MulticastRoute::GetOutputTtl (uint32_t oif)
 {
-  return m_ttls[oif];
+  // We keep this interface around for compatibility (for now)
+  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find(oif);
+  if (iter == m_ttls.end())
+    return((uint32_t)MAX_TTL);
+  return(iter->second);
+}
+
+std::map<uint32_t, uint32_t>
+Ipv4MulticastRoute::GetOutputTtlMap() const
+{
+    return(m_ttls);
 }
 
 }//namespace ns3

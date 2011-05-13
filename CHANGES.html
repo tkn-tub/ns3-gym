@@ -114,6 +114,13 @@ Time result = Time (tmp * 5);
 </pre>
 </p>
 </li>
+<li><b>Multicast GetOutputTtl() commands</b>
+<p> As part of bug 1047 rework to enable multicast routes on nodes with
+more than 16 interfaces, the methods Ipv4MulticastRoute::GetOutputTtl () 
+and Ipv6MulticastRoute::GetOutputTtl () have been modified to return
+a std::map of interface IDs and TTLs for the route.
+</p>
+</li>
 </ul>
 
 <h2>Changed behavior:</h2>

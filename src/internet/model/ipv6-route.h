@@ -22,12 +22,13 @@
 #define IPV6_ROUTE_H
 
 #include <list>
-#include <vector>
+#include <map>
 #include <ostream>
 
 #include "ns3/simple-ref-count.h"
 
 #include "ns3/ipv6-address.h"
+#include "ns3/deprecated.h"
 
 namespace ns3
 {
@@ -200,7 +201,12 @@ public:
    * \param oif outgoing interface
    * \return TTL for this route
    */
-  uint32_t GetOutputTtl (uint32_t oif) const;
+  uint32_t GetOutputTtl (uint32_t oif) NS_DEPRECATED;
+
+  /**
+   * \return map of output interface Ids and TTLs for this route
+   */
+  std::map<uint32_t, uint32_t> GetOutputTtlMap() const;
 
 private:
   /**
@@ -221,7 +227,7 @@ private:
   /**
    * \brief TTLs.
    */
-  std::vector<uint32_t> m_ttls;
+  std::map<uint32_t, uint32_t> m_ttls;
 };
 
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoute const& route);

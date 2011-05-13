@@ -910,31 +910,30 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<c
   NS_LOG_FUNCTION (this << mrtentry << p << header);
   NS_LOG_LOGIC ("Multicast forwarding logic for node: " << m_node->GetId ());
 
-  // The output interfaces we could forward this onto are encoded
-  // in the OutputTtl of the Ipv6MulticastRoute
-  for (uint32_t i = 0 ; i < Ipv6MulticastRoute::MAX_INTERFACES ; i++)
-    {
-      if (mrtentry->GetOutputTtl (i) < Ipv6MulticastRoute::MAX_TTL)
-        {
-          Ptr<Packet> packet = p->Copy ();
-          Ipv6Header h = header;
-          h.SetHopLimit (header.GetHopLimit () - 1);
-          if (h.GetHopLimit () == 0)
-            {
-              NS_LOG_WARN ("TTL exceeded.  Drop.");
-              m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), i);
-              return;
-            }
+  std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap();
+  std::map<uint32_t, uint32_t>::iterator mapIter;
 
-          NS_LOG_LOGIC ("Forward multicast via interface " << i);
-          Ptr<Ipv6Route> rtentry = Create<Ipv6Route> ();
-          rtentry->SetSource (h.GetSourceAddress ());
-          rtentry->SetDestination (h.GetDestinationAddress ());
-          rtentry->SetGateway (Ipv6Address::GetAny ());
-          rtentry->SetOutputDevice (GetNetDevice (i));
-          SendRealOut (rtentry, packet, h);
-          continue;
+  for (mapIter = ttlMap.begin(); mapIter != ttlMap.end(); mapIter++)
+    {
+      uint32_t interfaceId = mapIter->first;
+      //uint32_t outputTtl = mapIter->second;  // Unused for now
+      Ptr<Packet> packet = p->Copy ();
+      Ipv6Header h = header;
+      h.SetHopLimit (header.GetHopLimit () - 1);
+      if (h.GetHopLimit () == 0)
+        {
+          NS_LOG_WARN ("TTL exceeded.  Drop.");
+          m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), interfaceId);
+          return;
         }
+      NS_LOG_LOGIC ("Forward multicast via interface " << interfaceId);
+      Ptr<Ipv6Route> rtentry = Create<Ipv6Route> ();
+      rtentry->SetSource (h.GetSourceAddress ());
+      rtentry->SetDestination (h.GetDestinationAddress ());
+      rtentry->SetGateway (Ipv6Address::GetAny ());
+      rtentry->SetOutputDevice (GetNetDevice (interfaceId));
+      SendRealOut (rtentry, packet, h);
+      continue;
     }
 }
 

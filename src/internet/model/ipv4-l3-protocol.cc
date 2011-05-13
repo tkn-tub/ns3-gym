@@ -739,30 +739,32 @@ Ipv4L3Protocol::IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, Ptr<const 
 {
   NS_LOG_FUNCTION (this << mrtentry << p << header);
   NS_LOG_LOGIC ("Multicast forwarding logic for node: " << m_node->GetId ());
-  // The output interfaces we could forward this onto are encoded
-  // in the OutputTtl of the Ipv4MulticastRoute
-  for (uint32_t i = 0; i < Ipv4MulticastRoute::MAX_INTERFACES; i++)
+
+  std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap();
+  std::map<uint32_t, uint32_t>::iterator mapIter;
+
+  for (mapIter = ttlMap.begin(); mapIter != ttlMap.end(); mapIter++)
     {
-      if (mrtentry->GetOutputTtl (i) < Ipv4MulticastRoute::MAX_TTL)
+      uint32_t interfaceId = mapIter->first;
+      //uint32_t outputTtl = mapIter->second;  // Unused for now
+
+      Ptr<Packet> packet = p->Copy ();
+      Ipv4Header h = header;
+      h.SetTtl (header.GetTtl () - 1);
+      if (h.GetTtl () == 0)
         {
-          Ptr<Packet> packet = p->Copy ();
-          Ipv4Header h = header;
-          h.SetTtl (header.GetTtl () - 1);
-          if (h.GetTtl () == 0)
-            {
-              NS_LOG_WARN ("TTL exceeded.  Drop.");
-              m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), i);
-              return;
-            }
-          NS_LOG_LOGIC ("Forward multicast via interface " << i);
-          Ptr<Ipv4Route> rtentry = Create<Ipv4Route> ();
-          rtentry->SetSource (h.GetSource ());
-          rtentry->SetDestination (h.GetDestination ());
-          rtentry->SetGateway (Ipv4Address::GetAny ());
-          rtentry->SetOutputDevice (GetNetDevice (i));
-          SendRealOut (rtentry, packet, h);
-          continue; 
+          NS_LOG_WARN ("TTL exceeded.  Drop.");
+          m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), interfaceId);
+          return;
         }
+      NS_LOG_LOGIC ("Forward multicast via interface " << interfaceId);
+      Ptr<Ipv4Route> rtentry = Create<Ipv4Route> ();
+      rtentry->SetSource (h.GetSource ());
+      rtentry->SetDestination (h.GetDestination ());
+      rtentry->SetGateway (Ipv4Address::GetAny ());
+      rtentry->SetOutputDevice (GetNetDevice (interfaceId));
+      SendRealOut (rtentry, packet, h);
+      continue;
     }
 }
 
