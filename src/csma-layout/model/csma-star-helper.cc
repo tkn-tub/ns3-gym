@@ -62,7 +62,7 @@ CsmaStarHelper::GetSpokeNode (uint32_t i) const
 NetDeviceContainer
 CsmaStarHelper::GetHubDevices () const
 {
-  return m_spokeDevices;
+  return m_hubDevices;
 }
 
 NetDeviceContainer
