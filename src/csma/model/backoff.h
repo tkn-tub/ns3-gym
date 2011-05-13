@@ -28,11 +28,11 @@ Transmi */
 
 namespace ns3 {
 
-  /**
-   * \brief The backoff class is used for calculating backoff times
-   * when many net devices can write to the same channel
-   *
-   */
+/**
+ * \brief The backoff class is used for calculating backoff times
+ * when many net devices can write to the same channel
+ *
+ */
 
 class Backoff {
 public:
