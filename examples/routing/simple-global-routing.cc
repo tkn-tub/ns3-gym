@@ -64,7 +64,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
-  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
+  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);
 
   // Allow the user to override any of the defaults and the above
   // DefaultValue::Bind ()s at run-time, via command-line arguments
@@ -93,12 +93,12 @@ main (int argc, char *argv[])
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
-  
+
   p2p.SetDeviceAttribute ("DataRate", StringValue ("1500kbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -106,7 +106,7 @@ main (int argc, char *argv[])
 
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer i1i2 = ipv4.Assign (d1d2);
-  
+
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
   Ipv4InterfaceContainer i3i2 = ipv4.Assign (d3d2);
 
@@ -119,7 +119,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (i3i2.GetAddress (0), port)));
+                     Address (InetSocketAddress (i3i2.GetAddress (0), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   ApplicationContainer apps = onoff.Install (c.Get (0));
@@ -128,14 +128,14 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   onoff.SetAttribute ("Remote", 
-    AddressValue (InetSocketAddress (i1i2.GetAddress (0), port)));
+                      AddressValue (InetSocketAddress (i1i2.GetAddress (0), port)));
   apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
@@ -155,7 +155,7 @@ main (int argc, char *argv[])
     {
       FlowMonitorHelper flowmonHelper;
       flowmon = flowmonHelper.InstallAll ();
-    }  
+    }
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (11));

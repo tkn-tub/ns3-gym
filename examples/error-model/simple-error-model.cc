@@ -59,7 +59,7 @@ main (int argc, char *argv[])
   // Set a few attributes
   Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (0.01));
   Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", StringValue ("EU_PKT"));
-  
+
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRateValue (DataRate ("448kb/s")));
 
@@ -93,13 +93,13 @@ main (int argc, char *argv[])
   p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (1500000)));
   p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   ipv4.Assign (d0d2);
-  
+
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer i1i2 = ipv4.Assign (d1d2);
 
@@ -115,7 +115,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   OnOffHelper onoff ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (i3i2.GetAddress (1), port)));
+                     Address (InetSocketAddress (i3i2.GetAddress (1), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
 
@@ -125,7 +125,7 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (2));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
@@ -150,7 +150,7 @@ main (int argc, char *argv[])
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default classId
   Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)),
-                                                         "ErrorRate", DoubleValue (0.001));
+                                                                       "ErrorRate", DoubleValue (0.001));
   d3d2.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   // Now, let's use the ListErrorModel and explicitly force a loss
@@ -168,7 +168,7 @@ main (int argc, char *argv[])
   p2p.EnablePcapAll ("simple-error-model");
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Run ();    
+  Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
 }

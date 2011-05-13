@@ -24,7 +24,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
 
-  int 
+int
 main (int argc, char *argv[])
 {
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);

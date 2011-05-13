@@ -51,7 +51,7 @@ ReceivePacket (Ptr<Socket> socket)
         {
           InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);
           NS_LOG_UNCOND ("--\nReceived one packet! Socket: "<< iaddr.GetIpv4 ()
-                         << " port: " << iaddr.GetPort () << " at time = " <<
+                                                            << " port: " << iaddr.GetPort () << " at time = " <<
                          Simulator::Now ().GetSeconds () << "\n--");
         }
     }
@@ -68,13 +68,13 @@ ReceivePacket (Ptr<Socket> socket)
  */
 static void
 GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, Ptr<Node> n,
-    uint32_t pktCount, Time pktInterval)
+                 uint32_t pktCount, Time pktInterval)
 {
   if (pktCount > 0)
     {
       socket->Send (Create<Packet> (pktSize));
       Simulator::Schedule (pktInterval, &GenerateTraffic, socket, pktSize, n,
-          pktCount - 1, pktInterval);
+                           pktCount - 1, pktInterval);
     }
   else
     {

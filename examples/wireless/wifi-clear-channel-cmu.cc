@@ -47,14 +47,15 @@ private:
   Vector GetPosition (Ptr<Node> node);
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
   void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
-                             uint32_t pktCount, Time pktInterval );
+                        uint32_t pktCount, Time pktInterval );
 
   uint32_t m_pktsTotal;
   Gnuplot2dDataset m_output;
 };
 
 Experiment::Experiment ()
-{}
+{
+}
 
 Experiment::Experiment (std::string name)
   : m_output (name)
@@ -82,7 +83,7 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
   Ptr<Packet> packet;
   while (packet = socket->Recv ())
     {
-      m_pktsTotal ++;
+      m_pktsTotal++;
     }
 }
 
@@ -179,46 +180,46 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   Gnuplot gnuplot = Gnuplot ("clear-channel.eps");
-  
+
   for (uint32_t i = 0; i < modes.size(); i++)
-  {
-   std::cout << modes[i] << std::endl;
-   Gnuplot2dDataset dataset (modes[i]);
+    {
+      std::cout << modes[i] << std::endl;
+      Gnuplot2dDataset dataset (modes[i]);
 
-   for (double rss = -102.0; rss <= -80.0; rss += 0.5)
-   {
-     Experiment experiment;
-     dataset.SetStyle (Gnuplot2dDataset::LINES);
+      for (double rss = -102.0; rss <= -80.0; rss += 0.5)
+        {
+          Experiment experiment;
+          dataset.SetStyle (Gnuplot2dDataset::LINES);
  
-     WifiHelper wifi;
-     wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-     NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-     Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", 
-                         StringValue (modes[i]));
-     wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                   "DataMode",StringValue(modes[i]),
-                                   "ControlMode",StringValue(modes[i]));
-     wifiMac.SetType ("ns3::AdhocWifiMac");
+          WifiHelper wifi;
+          wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+          NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+          Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
+                              StringValue (modes[i]));
+          wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                        "DataMode",StringValue(modes[i]),
+                                        "ControlMode",StringValue(modes[i]));
+          wifiMac.SetType ("ns3::AdhocWifiMac");
  
-     YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-     YansWifiChannelHelper wifiChannel ;
-     wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-     wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(rss));
+          YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+          YansWifiChannelHelper wifiChannel ;
+          wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
+          wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(rss));
  
  
-     NS_LOG_DEBUG (modes[i]);
-     experiment = Experiment (modes[i]);
-     wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (-110.0) );
-     wifiPhy.Set ("CcaMode1Threshold", DoubleValue (-110.0) );
-     wifiPhy.Set ("TxPowerStart", DoubleValue (15.0) );
-     wifiPhy.Set ("RxGain", DoubleValue (0) ); 
-     wifiPhy.Set ("RxNoiseFigure", DoubleValue (7) ); 
-     uint32_t pktsRecvd = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
-     dataset.Add (rss, pktsRecvd);
-   }
+          NS_LOG_DEBUG (modes[i]);
+          experiment = Experiment (modes[i]);
+          wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (-110.0) );
+          wifiPhy.Set ("CcaMode1Threshold", DoubleValue (-110.0) );
+          wifiPhy.Set ("TxPowerStart", DoubleValue (15.0) );
+          wifiPhy.Set ("RxGain", DoubleValue (0) );
+          wifiPhy.Set ("RxNoiseFigure", DoubleValue (7) );
+          uint32_t pktsRecvd = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
+          dataset.Add (rss, pktsRecvd);
+        }
 
-   gnuplot.AddDataset (dataset);
-  }
+      gnuplot.AddDataset (dataset);
+    }
   gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
   gnuplot.SetLegend ("RSS(dBm)", "Number of packets received");
   gnuplot.SetExtra  ("set xrange [-102:-83]");

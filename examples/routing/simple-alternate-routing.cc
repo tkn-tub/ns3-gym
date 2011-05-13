@@ -109,17 +109,17 @@ main (int argc, char *argv[])
 
   InternetStackHelper internet;
   internet.Install (c);
-  
+
   // Later, we add IP addresses.  The middle two octets correspond to 
- // the channel number.  
+  // the channel number.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.0.0.0", "255.255.255.0");
   ipv4.Assign (d0d2);
-  
+
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer i1i2 = ipv4.Assign (d1d2);
-  
+
   ipv4.SetBase ("10.2.2.0", "255.255.255.0");
   ipv4.Assign (d3d2);
 
@@ -139,7 +139,7 @@ main (int argc, char *argv[])
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
   OnOffHelper onoff ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (i1i2.GetAddress (0), port)));
+                     Address (InetSocketAddress (i1i2.GetAddress (0), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
@@ -149,7 +149,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (1));
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));

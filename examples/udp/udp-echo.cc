@@ -115,7 +115,7 @@ main (int argc, char *argv[])
 
   client.SetFill(apps.Get (0), 0xa5, 1024);
 
-  uint8_t fill[] = {0, 1, 2, 3, 4, 5, 6};
+  uint8_t fill[] = { 0, 1, 2, 3, 4, 5, 6};
   client.SetFill(apps.Get (0), fill, sizeof(fill), 1024);
 #endif
 

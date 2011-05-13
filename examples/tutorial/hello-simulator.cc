@@ -20,7 +20,7 @@ NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
 
 using namespace ns3;
 
-  int 
+int
 main (int argc, char *argv[])
 {
   NS_LOG_UNCOND ("Hello Simulator");
