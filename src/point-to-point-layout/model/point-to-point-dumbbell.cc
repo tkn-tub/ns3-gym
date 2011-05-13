@@ -67,7 +67,8 @@ PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
 }
 
 PointToPointDumbbellHelper::~PointToPointDumbbellHelper ()
-{}
+{
+}
 
 Ptr<Node> PointToPointDumbbellHelper::GetLeft () const
 { // Get the left side bottleneck router

@@ -45,27 +45,28 @@ PointToPointStarHelper::PointToPointStarHelper (uint32_t numSpokes,
 }
 
 PointToPointStarHelper::~PointToPointStarHelper ()
-{}
+{
+}
 
-Ptr<Node> 
+Ptr<Node>
 PointToPointStarHelper::GetHub () const
 {
   return m_hub.Get (0);
 }
 
-Ptr<Node> 
+Ptr<Node>
 PointToPointStarHelper::GetSpokeNode (uint32_t i) const
 {
   return m_spokes.Get (i);
 }
 
-Ipv4Address 
+Ipv4Address
 PointToPointStarHelper::GetHubIpv4Address (uint32_t i) const
 {
   return m_hubInterfaces.GetAddress (i);
 }
 
-Ipv4Address 
+Ipv4Address
 PointToPointStarHelper::GetSpokeIpv4Address (uint32_t i) const
 {
   return m_spokeInterfaces.GetAddress (i);
