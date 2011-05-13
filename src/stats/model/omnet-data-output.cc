@@ -57,10 +57,29 @@ OmnetDataOutput::DoDispose()
 //----------------------------------------------
 
 inline bool isNumeric(const std::string& s) {
-  char *endp;
-  double unused = strtod(s.c_str(), &endp); // declared with warn_unused_result
-  unused = unused; // quiet compiler
-  return endp == s.c_str() + s.size();
+  bool decimalPtSeen = false;
+  bool exponentSeen = false;
+  char last = '\0';
+
+  for (std::string::const_iterator it = s.begin (); it != s.end (); it++)
+    {
+      if ((*it == '.') && (decimalPtSeen))
+        return false;
+      else if (*it == '.')
+        decimalPtSeen = true;
+      else if ((*it == 'e') && exponentSeen)
+        return false;
+      else if (*it == 'e')
+        {
+          exponentSeen = true;
+          decimalPtSeen = false;
+        }
+      else if (*it == '-' && it != s.begin () && last != 'e')
+        return false;
+
+      last = *it;
+    }
+  return true;
 }
 
 void
