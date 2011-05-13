@@ -83,7 +83,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   uint64_t result = std::numeric_limits<uint64_t>::max ();
-  
+
   char buffer[1024];
 
   if (doStream)

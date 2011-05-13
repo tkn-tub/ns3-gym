@@ -81,13 +81,13 @@ CsmaBridgeTestCase::SinkRx (Ptr<const Packet> p, const Address &ad)
 
 // Network topology
 //
-//        n0     n1  
+//        n0     n1
 //        |      | 
 //       ----------
 //       | Switch |
 //       ----------
 //        |      | 
-//        n2     n3  
+//        n2     n3
 //
 // - CBR/UDP test flow from n0 to n1; test that packets received on n1 
 //
@@ -207,8 +207,8 @@ CsmaBroadcastTestCase::DropEvent (Ptr<const Packet> p)
 // Network topology
 //     ==============
 //       |          |
-//       n0    n1   n2   
-//       |     |       
+//       n0    n1   n2
+//       |     |
 //     ==========
 //
 //   n0 originates UDP broadcast to 255.255.255.255/discard port, which 
@@ -249,7 +249,7 @@ CsmaBroadcastTestCase::DoRun (void)
   // Make packets be sent about every DefaultPacketSize / DataRate = 
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
+                     Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
@@ -261,7 +261,7 @@ CsmaBroadcastTestCase::DoRun (void)
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   app = sink.Install (c0.Get (1));
   app.Add (sink.Install (c1.Get (1)));
   app.Start (Seconds (1.0));
@@ -271,7 +271,7 @@ CsmaBroadcastTestCase::DoRun (void)
   Config::ConnectWithoutContext ("/NodeList/1/ApplicationList/0/$ns3::PacketSink/Rx", MakeCallback (&CsmaBroadcastTestCase::SinkRxNode1, this));
   Config::ConnectWithoutContext ("/NodeList/2/ApplicationList/0/$ns3::PacketSink/Rx", MakeCallback (&CsmaBroadcastTestCase::SinkRxNode2, this));
 
-  Simulator::Run ();    
+  Simulator::Run ();
   Simulator::Destroy ();
 
   // We should have sent and received 10 packets
@@ -334,17 +334,17 @@ void
 CsmaMulticastTestCase::DoRun (void)
 {
   //
-  // Set up default values for the simulation.  
+  // Set up default values for the simulation.
   //
   // Select DIX/Ethernet II-style encapsulation (no LLC/Snap header)
-  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("Dix"));  
+  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("Dix"));
 
   NodeContainer c;
   c.Create (5);
   // We will later want two subcontainers of these nodes, for the two LANs
   NodeContainer c0 = NodeContainer (c.Get (0), c.Get (1), c.Get (2));
   NodeContainer c1 = NodeContainer (c.Get (2), c.Get (3), c.Get (4));
-  
+
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
@@ -367,7 +367,7 @@ CsmaMulticastTestCase::DoRun (void)
   // source is at node zero, which we assigned the IP address of 10.1.1.1 
   // earlier.  We need to define a multicast group to send packets to.  This
   // can be any multicast address from 224.0.0.0 through 239.255.255.255
-  // (avoiding the reserved routing protocol addresses).  
+  // (avoiding the reserved routing protocol addresses).
   //
 
   Ipv4Address multicastSource ("10.1.1.1");
@@ -387,8 +387,8 @@ CsmaMulticastTestCase::DoRun (void)
   outputDevices.Add (nd1.Get (0));  // (we only need one NetDevice here)
 
   multicast.AddMulticastRoute (multicastRouter, multicastSource, 
-    multicastGroup, inputIf, outputDevices);
-  
+                               multicastGroup, inputIf, outputDevices);
+
   // 2) Set up a default multicast route on the sender n0 
   Ptr<Node> sender = c.Get (0);
   Ptr<NetDevice> senderIf = nd0.Get(0);
@@ -406,7 +406,7 @@ CsmaMulticastTestCase::DoRun (void)
   // Make packets be sent about every defaultPacketSize / dataRate = 
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (multicastGroup, multicastPort)));
+                     Address (InetSocketAddress (multicastGroup, multicastPort)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
@@ -540,7 +540,7 @@ CsmaOneSubnetTestCase::DoRun (void)
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   app = sink.Install (nodes.Get (1));
   app.Start (Seconds (0.0));
 
@@ -630,8 +630,8 @@ CsmaPacketSocketTestCase::DoRun (void)
 
   // create the shared medium used by all csma devices.
   Ptr<CsmaChannel> channel = CreateObjectWithAttributes<CsmaChannel> (
-    "DataRate", DataRateValue (DataRate(5000000)), 
-    "Delay", TimeValue (MilliSeconds(2)));
+      "DataRate", DataRateValue (DataRate(5000000)),
+      "Delay", TimeValue (MilliSeconds(2)));
 
   // use a helper function to connect our nodes to the shared channel.
   CsmaHelper csma;
@@ -1007,19 +1007,19 @@ CsmaStarTestCase::DoRun (void)
   //
   Ipv4AddressHelper address;
   for(uint32_t i = 0; i < star.SpokeCount (); ++i)
-  {
-    std::ostringstream subnet;
-    subnet << "10.1." << i << ".0";
+    {
+      std::ostringstream subnet;
+      subnet << "10.1." << i << ".0";
       address.SetBase (subnet.str ().c_str (), "255.255.255.0", "0.0.0.3");
 
-    for (uint32_t j = 0; j < nFill; ++j)
-      {
-        address.Assign (fillDevices.Get (i * nFill + j));
-      }
-  }
+      for (uint32_t j = 0; j < nFill; ++j)
+        {
+          address.Assign (fillDevices.Get (i * nFill + j));
+        }
+    }
 
   //
-  // Create a packet sink on the star "hub" to receive packets.  
+  // Create a packet sink on the star "hub" to receive packets.
   // 
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));

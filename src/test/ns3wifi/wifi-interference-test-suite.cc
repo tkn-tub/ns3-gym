@@ -61,7 +61,7 @@ private:
   static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval);
   void PrintEndSync (std::string context, uint32_t dataRate, double snr, double per);
   double WifiSimpleInterference (std::string phyMode, double Prss, double Irss, double delta, uint32_t PpacketSize, 
-    uint32_t IpacketSize, bool verbose, InternetStackHelper internet);
+                                 uint32_t IpacketSize, bool verbose, InternetStackHelper internet);
   double m_PER;
   double m_SNR;
   uint32_t m_DataRate;
@@ -112,22 +112,22 @@ WifiInterferenceTestCase::PrintEndSync (std::string context, uint32_t dataRate, 
 double 
 WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prss, double Irss, double delta, uint32_t PpacketSize, uint32_t IpacketSize, bool verbose, InternetStackHelper internet)
 {
-  
+
   uint32_t numPackets = 1;
   double interval = 1.0; // seconds
   double startTime = 10.0; // seconds
   double distanceToRx = 100.0; // meters
-  
+
   double offset = 91;  // This is a magic number used to set the 
   // transmit power, based on other configuration
-  
+
   m_PER = 0;
   m_SNR = 0;
   m_DataRate = 0;
-  
+
   // Convert to time object
   Time interPacketInterval = Seconds (interval);
-  
+
   // disable fragmentation for frames below 2200 bytes
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
   // turn off RTS/CTS for frames below 2200 bytes
@@ -135,28 +135,28 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   // Fix non-unicast data rate to be the same as that of unicast
   Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", 
                       StringValue (phyMode));
-  
+
   NodeContainer c;
   c.Create (3);
-  
+
   // The below set of helpers will help us to put together the wifi NICs we want
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-  
+
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // This is one parameter that matters when using FixedRssLossModel
   // set it to zero; otherwise, gain will be added
   wifiPhy.Set ("RxGain", DoubleValue (0) ); 
   wifiPhy.Set ("CcaMode1Threshold", DoubleValue (0.0) );
-  
+
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
   wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
-  
+
   YansWifiChannelHelper wifiChannel ;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel");
   wifiPhy.SetChannel (wifiChannel.Create ());
-  
+
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
@@ -172,7 +172,7 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   devices.Add (wifi.Install (wifiPhy, wifiMac, c.Get (1)));
   wifiPhy.Set ("TxGain", DoubleValue (offset + Irss) ); 
   devices.Add (wifi.Install (wifiPhy, wifiMac, c.Get (2)));
-  
+
   // Note that with FixedRssLossModel, the positions below are not 
   // used for received signal strength. 
   MobilityHelper mobility;
@@ -184,45 +184,45 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (c);
 
- // InternetStackHelper internet;
+  // InternetStackHelper internet;
   internet.Install (c);
  
   Ipv4AddressHelper ipv4;
   NS_LOG_INFO ("Assign IP Addresses.");
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer i = ipv4.Assign (devices);
-  
+
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
   Ptr<Socket> recvSink = Socket::CreateSocket (c.Get (0), tid);
   InetSocketAddress local = InetSocketAddress (Ipv4Address("10.1.1.1"), 80);
   recvSink->Bind (local);
   recvSink->SetRecvCallback (MakeCallback (&WifiInterferenceTestCase::ReceivePacket, this));
-  
+
   Ptr<Socket> source = Socket::CreateSocket (c.Get (1), tid);
   InetSocketAddress remote = InetSocketAddress (Ipv4Address ("255.255.255.255"), 80);
   source->Connect (remote);
-  
+
   // Interferer will send to a different port; we will not see a
   // "Received packet" message
   Ptr<Socket> interferer = Socket::CreateSocket (c.Get (2), tid);
   InetSocketAddress interferingAddr = InetSocketAddress (Ipv4Address ("255.255.255.255"), 49000);
   interferer->Connect (interferingAddr);
-  
+
   Config::Connect ("/NodeList/0/DeviceList/0/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/EndSync", MakeCallback (&WifiInterferenceTestCase::PrintEndSync, this)); 
   // Tracing
 //  wifiPhy.EnablePcap ("wifi-simple-interference", devices.Get (0));
-  
+
   Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
-				  Seconds (startTime), &GenerateTraffic, 
-				  source, PpacketSize, numPackets, interPacketInterval);
-  
+                                  Seconds (startTime), &GenerateTraffic,
+                                  source, PpacketSize, numPackets, interPacketInterval);
+
   Simulator::ScheduleWithContext (interferer->GetNode ()->GetId (),
-				  Seconds (startTime + delta/1000000.0), &GenerateTraffic, 
-				  interferer, IpacketSize, numPackets, interPacketInterval);
-  
+                                  Seconds (startTime + delta/1000000.0), &GenerateTraffic,
+                                  interferer, IpacketSize, numPackets, interPacketInterval);
+
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   return m_PER;
 }
 
@@ -239,28 +239,28 @@ WifiInterferenceTestCase::DoRun (void)
   bool verbose = false;
   double PER, PER1, PER2;
   InternetStackHelper internet;
-  
+
   // Compute the packet error rate (PER) when delta=0 microseconds.  This
   // means that the interferer arrives at exactly the same time as the
   // intended packet
   PER = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet);
-  
+
   // Now rerun this test case and compute the PER when the delta time between
   // arrival of the intended frame and interferer is 1 microsecond.
   delta = 1;
   PER1 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet);
-  
+
   // Now rerun this test case and compute the PER when the delta time between
   // arrival of the intended frame and interferer is 2 microseconds.
   delta = 2;
   PER2 = WifiSimpleInterference (phyMode,Prss,Irss,delta,PpacketSize,IpacketSize,verbose,internet);
-  
+
   double PERDiff1 = PER - PER1;
-  
+
   double PERDiff2 = PER1 - PER2;
-  
+
   NS_TEST_ASSERT_MSG_EQ (PERDiff1, PERDiff2, 
-    "The PER difference due to 1 microsecond difference in arrival shouldn't depend on absolute arrival");
+                         "The PER difference due to 1 microsecond difference in arrival shouldn't depend on absolute arrival");
 }
 
 class WifiInterferenceTestSuite : public TestSuite

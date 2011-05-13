@@ -173,8 +173,8 @@ DynamicGlobalRoutingTestCase::DoRun (void)
   csma.SetChannelAttribute ("DataRate", StringValue ("5Mbps"));
   csma.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer d2345 = csma.Install (n2345);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   ipv4.Assign (d0d2);
@@ -212,7 +212,7 @@ DynamicGlobalRoutingTestCase::DoRun (void)
   // Create a second OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   OnOffHelper onoff2 ("ns3::UdpSocketFactory",
-                     InetSocketAddress (i1i6.GetAddress (1), port));
+                      InetSocketAddress (i1i6.GetAddress (1), port));
   onoff2.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff2.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff2.SetAttribute ("DataRate", StringValue ("2kbps"));
@@ -336,7 +336,7 @@ GlobalRoutingSlash32TestCase::DoRun (void)
   deviceC->SetAddress (Mac48Address::Allocate ());
   nC->AddDevice (deviceC);
 
-  // Later, we add IP addresses.  
+  // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.252");
   Ipv4InterfaceContainer iAiB = ipv4.Assign (dAdB);
@@ -368,7 +368,7 @@ GlobalRoutingSlash32TestCase::DoRun (void)
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
+                     Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));
@@ -378,7 +378,7 @@ GlobalRoutingSlash32TestCase::DoRun (void)
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (nC);
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
