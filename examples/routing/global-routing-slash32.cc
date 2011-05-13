@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   NetDeviceContainer dAdB = p2p.Install (nAnB);
 
   NetDeviceContainer dBdC = p2p.Install (nBnC);;
-  
+
   Ptr<CsmaNetDevice> deviceA = CreateObject<CsmaNetDevice> ();
   deviceA->SetAddress (Mac48Address::Allocate ());
   nA->AddDevice (deviceA);
@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   deviceC->SetAddress (Mac48Address::Allocate ());
   nC->AddDevice (deviceC);
 
-  // Later, we add IP addresses.  
+  // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.252");
   Ipv4InterfaceContainer iAiB = ipv4.Assign (dAdB);
@@ -84,10 +84,10 @@ main (int argc, char *argv[])
 
   Ptr<Ipv4> ipv4A = nA->GetObject<Ipv4> ();
   Ptr<Ipv4> ipv4C = nC->GetObject<Ipv4> ();
-  
+
   int32_t ifIndexA = ipv4A->AddInterface (deviceA);
   int32_t ifIndexC = ipv4C->AddInterface (deviceC);
-    
+
   Ipv4InterfaceAddress ifInAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
   ipv4A->AddAddress (ifIndexA, ifInAddrA);
   ipv4A->SetMetric (ifIndexA, 1);
@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
+                     Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));
@@ -116,7 +116,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (nC);
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));

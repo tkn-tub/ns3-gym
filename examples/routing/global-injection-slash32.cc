@@ -79,7 +79,7 @@ main (int argc, char *argv[])
   NetDeviceContainer dAdB = p2p.Install (nAnB);
 
   NetDeviceContainer dBdC = p2p.Install (nBnC);;
-  
+
   Ptr<CsmaNetDevice> deviceA = CreateObject<CsmaNetDevice> ();
   deviceA->SetAddress (Mac48Address::Allocate ());
   nA->AddDevice (deviceA);
@@ -88,7 +88,7 @@ main (int argc, char *argv[])
   deviceC->SetAddress (Mac48Address::Allocate ());
   nC->AddDevice (deviceC);
 
-  // Later, we add IP addresses.  
+  // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.252");
   Ipv4InterfaceContainer iAiB = ipv4.Assign (dAdB);
@@ -99,10 +99,10 @@ main (int argc, char *argv[])
   Ptr<Ipv4> ipv4A = nA->GetObject<Ipv4> ();
   Ptr<Ipv4> ipv4B = nB->GetObject<Ipv4> ();
   Ptr<Ipv4> ipv4C = nC->GetObject<Ipv4> ();
-  
+
   int32_t ifIndexA = ipv4A->AddInterface (deviceA);
   int32_t ifIndexC = ipv4C->AddInterface (deviceC);
-    
+
   Ipv4InterfaceAddress ifInAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
   ipv4A->AddAddress (ifIndexA, ifInAddrA);
   ipv4A->SetMetric (ifIndexA, 1);
@@ -115,7 +115,7 @@ main (int argc, char *argv[])
  
   // Create router nodes, initialize routing database and set up the routing
   // tables in the nodes.
-  
+
   // Populate routing tables for nodes nA and nB
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   // Inject global routes from Node B, including transit network...
@@ -123,19 +123,19 @@ main (int argc, char *argv[])
   globalRouterB->InjectRoute ("10.1.1.4", "255.255.255.252");
   // ...and the host in network "C"
   globalRouterB->InjectRoute ("192.168.1.1", "255.255.255.255");
-  
+
   Ipv4GlobalRoutingHelper::RecomputeRoutingTables();
   // In addition, nB needs a static route to nC so it knows what to do with stuff
   // going to 192.168.1.1
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> staticRoutingB = ipv4RoutingHelper.GetStaticRouting(ipv4B);
   staticRoutingB->AddHostRouteTo (Ipv4Address ("192.168.1.1"), Ipv4Address ("10.1.1.6"),2);
-  
+
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
+                     Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (nC);
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));

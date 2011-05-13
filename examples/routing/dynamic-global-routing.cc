@@ -50,7 +50,7 @@
 //    keeps the point-to-point link "up" from n1's perspective).  Traffic will
 //    flow through the path n1-n2-n5-n6
 //  At time 8s, bring the interface back up.  Path n1-n6 is restored
-//  At time 10s, stop the first flow.  
+//  At time 10s, stop the first flow.
 //  At time 11s, start a new flow, but to n6's other IP address (the one
 //    on the n1/n6 p2p link)
 //  At time 12s, bring the n1 interface down between n1 and n6.  Packets
@@ -58,7 +58,7 @@
 //  At time 14s, re-enable the n1/n6 interface to up.  This will change 
 //    routing back to n1-n6 since the interface up notification will cause
 //    a new local interface route, at higher priority than global routing
-//  At time 16s, stop the second flow.  
+//  At time 16s, stop the second flow.
 
 // - Tracing of queues and packet receptions to file "dynamic-global-routing.tr"
 
@@ -122,8 +122,8 @@ main (int argc, char *argv[])
   csma.SetChannelAttribute ("DataRate", StringValue ("5Mbps"));
   csma.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer d2345 = csma.Install (n2345);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -163,7 +163,7 @@ main (int argc, char *argv[])
   // Create a second OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   OnOffHelper onoff2 ("ns3::UdpSocketFactory",
-                     InetSocketAddress (i1i6.GetAddress (1), port));
+                      InetSocketAddress (i1i6.GetAddress (1), port));
   onoff2.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff2.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff2.SetAttribute ("DataRate", StringValue ("2kbps"));
@@ -175,13 +175,13 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (6));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   PacketSinkHelper sink2 ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                          Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps2 = sink2.Install (c.Get (6));
   apps2.Start (Seconds (11.0));
   apps2.Stop (Seconds (16.0));

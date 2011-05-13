@@ -67,7 +67,7 @@ Sender::GetTypeId(void)
                    MakeRandomVariableChecker())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
                      MakeTraceSourceAccessor (&Sender::m_txTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -99,10 +99,10 @@ void Sender::StartApplication()
 
   if (m_socket == 0) {
       Ptr<SocketFactory> socketFactory = GetNode()->GetObject<SocketFactory>
-        (UdpSocketFactory::GetTypeId());
+              (UdpSocketFactory::GetTypeId());
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
-  }
+    }
 
   m_count = 0;
 
@@ -118,7 +118,7 @@ void Sender::StopApplication()
   Simulator::Cancel(m_sendEvent);
   // end Sender::StopApplication
 }
-  
+
 void Sender::SendPacket()
 {
   // NS_LOG_FUNCTION_NOARGS ();
@@ -139,9 +139,9 @@ void Sender::SendPacket()
   m_txTrace(packet);
 
   if (++m_count < m_numPkts) {
-    m_sendEvent = Simulator::Schedule(Seconds(m_interval.GetValue()),
-                                      &Sender::SendPacket, this);
-  }
+      m_sendEvent = Simulator::Schedule(Seconds(m_interval.GetValue()),
+                                        &Sender::SendPacket, this);
+    }
 
   // end Sender::SendPacket
 }
@@ -162,7 +162,7 @@ Receiver::GetTypeId(void)
                   UintegerValue(1603),
                   MakeUintegerAccessor(&Receiver::m_port),
                   MakeUintegerChecker<uint32_t>())
-    ;
+  ;
   return tid;
 }
 
@@ -196,12 +196,12 @@ Receiver::StartApplication()
 
   if (m_socket == 0) {
       Ptr<SocketFactory> socketFactory = GetNode()->GetObject<SocketFactory>
-        (UdpSocketFactory::GetTypeId());
+              (UdpSocketFactory::GetTypeId());
       m_socket = socketFactory->CreateSocket();
       InetSocketAddress local = 
         InetSocketAddress(Ipv4Address::GetAny(), m_port);
       m_socket->Bind(local);
-  }
+    }
 
   m_socket->SetRecvCallback(MakeCallback(&Receiver::Receive, this));
 
@@ -215,7 +215,7 @@ Receiver::StopApplication()
 
   if (m_socket != 0) {
       m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
-  }
+    }
 
   // end Receiver::StopApplication
 }
@@ -241,29 +241,29 @@ Receiver::Receive(Ptr<Socket> socket)
   Ptr<Packet> packet;
   Address from;
   while (packet = socket->RecvFrom(from)) {
-    if (InetSocketAddress::IsMatchingType (from)) {
-      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-                   address.GetIpv4());
+      if (InetSocketAddress::IsMatchingType (from)) {
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " <<
+                       address.GetIpv4());
+        }
+
+      TimestampTag timestamp;
+      // Should never not be found since the sender is adding it, but
+      // you never know.
+      if (packet->FindFirstMatchingByteTag(timestamp)) {
+          Time tx = timestamp.GetTimestamp();
+
+          if (m_delay != 0) {
+              m_delay->Update(Simulator::Now() - tx);
+            }
+        }
+
+      if (m_calc != 0) {
+          m_calc->Update();
+        }
+
+      // end receiving packets
     }
-
-    TimestampTag timestamp;
-    // Should never not be found since the sender is adding it, but
-    // you never know.
-    if (packet->FindFirstMatchingByteTag(timestamp)) {
-      Time tx = timestamp.GetTimestamp();
-
-      if (m_delay != 0) {
-        m_delay->Update(Simulator::Now() - tx);
-      }
-    }
-
-    if (m_calc != 0) {
-      m_calc->Update();
-    }
-
-    // end receiving packets
-  }
 
   // end Receiver::Receive
 }
@@ -285,7 +285,7 @@ TimestampTag::GetTypeId(void)
                    EmptyAttributeValue(),
                    MakeTimeAccessor(&TimestampTag::GetTimestamp),
                    MakeTimeChecker())
-    ;
+  ;
   return tid;
 }
 TypeId 

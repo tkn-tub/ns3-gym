@@ -69,7 +69,7 @@ public:
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
-  virtual void StartApplication (void);  
+  virtual void StartApplication (void);
   virtual void StopApplication (void);
 
   void ScheduleTx (void);
@@ -186,8 +186,8 @@ main (int argc, char *argv[])
   devices = pointToPoint.Install (nodes);
 
   Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> (
-    "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
-    "ErrorRate", DoubleValue (0.00001));
+      "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
+      "ErrorRate", DoubleValue (0.00001));
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   InternetStackHelper stack;

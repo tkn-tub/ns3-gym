@@ -22,7 +22,7 @@
                  | 10.20.1.0/24
               DSTRTR 
   10.10.1.0/24 /   \  10.10.2.0/24
-              /     \
+              / \
            Rtr1    Rtr2
  10.1.1.0/24 |      | 10.1.2.0/24
              |      /
@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   Ptr<Node> nRtr1 = CreateObject<Node> ();
   Ptr<Node> nRtr2 = CreateObject<Node> ();
   Ptr<Node> nDstRtr = CreateObject<Node> ();
-  
+
   NodeContainer c = NodeContainer (nSrc, nDst, nRtr1, nRtr2, nDstRtr);
 
   InternetStackHelper internet;
@@ -77,7 +77,7 @@ main (int argc, char *argv[])
   NodeContainer nRtr1nDstRtr = NodeContainer (nRtr1, nDstRtr);
   NodeContainer nRtr2nDstRtr = NodeContainer (nRtr2, nDstRtr);
   NodeContainer nDstRtrnDst = NodeContainer (nDstRtr, nDst);
-  
+
   // We create the channels first without any IP addressing information
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
@@ -87,11 +87,11 @@ main (int argc, char *argv[])
   NetDeviceContainer dRtr1dDstRtr = p2p.Install (nRtr1nDstRtr);
   NetDeviceContainer dRtr2dDstRtr = p2p.Install (nRtr2nDstRtr);
   NetDeviceContainer dDstRtrdDst = p2p.Install (nDstRtrnDst);
-  
+
   Ptr<NetDevice> SrcToRtr1=dSrcdRtr1.Get (0);
   Ptr<NetDevice> SrcToRtr2=dSrcdRtr2.Get (0);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer iSrciRtr1 = ipv4.Assign (dSrcdRtr1);
@@ -109,7 +109,7 @@ main (int argc, char *argv[])
   Ptr<Ipv4> ipv4Rtr2 = nRtr2->GetObject<Ipv4> ();
   Ptr<Ipv4> ipv4DstRtr = nDstRtr->GetObject<Ipv4> ();
   Ptr<Ipv4> ipv4Dst = nDst->GetObject<Ipv4> ();
-  
+
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> staticRoutingSrc = ipv4RoutingHelper.GetStaticRouting (ipv4Src);
   Ptr<Ipv4StaticRouting> staticRoutingRtr1 = ipv4RoutingHelper.GetStaticRouting (ipv4Rtr1);
@@ -120,33 +120,33 @@ main (int argc, char *argv[])
   // Create static routes from Src to Dst
   staticRoutingRtr1->AddHostRouteTo (Ipv4Address ("10.20.1.2"), Ipv4Address ("10.10.1.2"), 2);
   staticRoutingRtr2->AddHostRouteTo (Ipv4Address ("10.20.1.2"), Ipv4Address ("10.10.2.2"), 2);
-  
+
   // Two routes to same destination - setting separate metrics. 
   // You can switch these to see how traffic gets diverted via different routes
   staticRoutingSrc->AddHostRouteTo (Ipv4Address ("10.20.1.2"), Ipv4Address ("10.1.1.2"), 1,5);
   staticRoutingSrc->AddHostRouteTo (Ipv4Address ("10.20.1.2"), Ipv4Address ("10.1.2.2"), 2,10);
-  
+
   // Creating static routes from DST to Source pointing to Rtr1 VIA Rtr2(!)
   staticRoutingDst->AddHostRouteTo (Ipv4Address ("10.1.1.1"), Ipv4Address ("10.20.1.1"), 1);
   staticRoutingDstRtr->AddHostRouteTo (Ipv4Address ("10.1.1.1"), Ipv4Address ("10.10.2.1"), 2);
   staticRoutingRtr2->AddHostRouteTo (Ipv4Address ("10.1.1.1"), Ipv4Address ("10.1.2.1"), 1);
-  
+
   Ipv4InterfaceAddress ifInAddrSrc=ipv4Src->GetAddress (1,0);
-  
+
   // There are no apps that can utilize the Socket Option so doing the work directly..
   // Taken from tcp-large-transfer example
 
   Ptr<Socket> srcSocket = Socket::CreateSocket (nSrc, TypeId::LookupByName ("ns3::UdpSocketFactory"));
   srcSocket->Bind ();
   srcSocket->SetRecvCallback (MakeCallback (&srcSocketRecv));
-  
+
   Ptr<Socket> dstSocket = Socket::CreateSocket (nDst, TypeId::LookupByName ("ns3::UdpSocketFactory"));
   uint16_t dstport = 12345;
   Ipv4Address dstaddr ("10.20.1.2");
   InetSocketAddress dst = InetSocketAddress (dstaddr, dstport);
   dstSocket->Bind (dst);
   dstSocket->SetRecvCallback (MakeCallback (&dstSocketRecv));
-  
+
   AsciiTraceHelper ascii;
   p2p.EnableAsciiAll (ascii.CreateFileStream ("socket-bound-static-routing.tr"));
   p2p.EnablePcapAll ("socket-bound-static-routing");
@@ -201,7 +201,7 @@ srcSocketRecv (Ptr<Socket> socket)
     {
       NS_LOG_INFO ("Socket was bound");
     } 
-    else 
+  else
     {
       NS_LOG_INFO ("Socket was not bound");
     }

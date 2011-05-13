@@ -21,7 +21,7 @@
 // This program configures a grid (default 5x5) of nodes on an 
 // 802.11b physical layer, with
 // 802.11b NICs in adhoc mode, and by default, sends one packet of 1000 
-// (application) bytes to node 1.  
+// (application) bytes to node 1.
 //
 // The default layout is like this, on a 2-D grid.
 //
@@ -134,7 +134,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("numNodes", "number of nodes", numNodes);
   cmd.AddValue ("sinkNode", "Receiver node number", sinkNode);
   cmd.AddValue ("sourceNode", "Sender node number", sourceNode);
-  
+
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);
@@ -173,19 +173,19 @@ int main (int argc, char *argv[])
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue(phyMode),
-                                   "ControlMode",StringValue(phyMode));
+                                "ControlMode",StringValue(phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);
 
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-    "MinX", DoubleValue (0.0),
-    "MinY", DoubleValue (0.0),
-    "DeltaX", DoubleValue (distance),
-    "DeltaY", DoubleValue (distance),
-    "GridWidth", UintegerValue (5),
-    "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (distance),
+                                 "DeltaY", DoubleValue (distance),
+                                 "GridWidth", UintegerValue (5),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (c);
 
@@ -227,7 +227,7 @@ int main (int argc, char *argv[])
 
       // To do-- enable an IP-level trace that shows forwarding events only
     }
-  
+
   // Give OLSR time to converge-- 30 seconds perhaps
   Simulator::Schedule (Seconds (30.0), &GenerateTraffic, 
                        source, packetSize, numPackets, interPacketInterval);
