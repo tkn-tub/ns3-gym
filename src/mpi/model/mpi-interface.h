@@ -97,7 +97,12 @@ public:
    * Sets up MPI interface
    */
   static void Enable (int* pargc, char*** pargv);
-
+  /**
+   * Terminates the MPI environment by calling MPI_Finalize
+   * This function must be called after Destroy ()
+   * It also resets m_initialized, m_enabled
+   */
+  static void Disable ();
   /**
    * \param p packet to send
    * \param rxTime received time at destination node

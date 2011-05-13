@@ -601,7 +601,8 @@ main (int argc, char *argv[])
   TIMER_NOW (t2);
   cout << "Simulator finished." << endl;
   Simulator::Destroy ();
-
+  // Exit the MPI execution environment
+  MpiInterface::Disable ();
   double d1 = TIMER_DIFF (t1, t0), d2 = TIMER_DIFF (t2, t1);
   cout << "-----" << endl << "Runtime Stats:" << endl;
   cout << "Simulator init time: " << d1 << endl;

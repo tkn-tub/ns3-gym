@@ -245,6 +245,8 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (5));
   Simulator::Run ();
   Simulator::Destroy ();
+  // Exit the MPI execution environment
+  MpiInterface::Disable ();
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
