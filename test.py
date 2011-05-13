@@ -174,7 +174,12 @@ def get_node_text(node):
 #
 def translate_to_text(results_file, text_file):
     f = open(text_file, 'w')
-    dom = xml.dom.minidom.parse(results_file)
+    try:
+      dom = xml.dom.minidom.parse(results_file)
+    except xml.parsers.expat.error:
+      print "\nAn error was encountered while parsing the XML file %s." % (results_file)
+      sys.exit(1)
+
     for suite in dom.getElementsByTagName("TestSuite"):
         result = get_node_text(suite.getElementsByTagName("SuiteResult")[0])
         name = get_node_text(suite.getElementsByTagName("SuiteName")[0])
