@@ -47,12 +47,12 @@ public:
    * \param time                Simulation time
    */
   Bug772ChainTest (const char * const prefix, const char * const proto, Time time, uint32_t size);
-  ~Bug772ChainTest ();  
-  
+  ~Bug772ChainTest ();
+
 private:
   /// XXX It is important to have pointers here
   NodeContainer * m_nodes;
-  
+
   /// PCAP file names prefix
   const std::string m_prefix;
   /// Socket factory TID
@@ -63,7 +63,7 @@ private:
   const uint32_t m_size;
   /// Chain step, meters
   const double m_step;
-  
+
   /// Create test topology
   void CreateNodes ();
   /// Create devices, install TCP/IP stack and applications

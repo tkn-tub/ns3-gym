@@ -64,8 +64,8 @@ public:
   //\{
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
   bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                           UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                           LocalDeliverCallback lcb, ErrorCallback ecb);  
+                   UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                   LocalDeliverCallback lcb, ErrorCallback ecb);
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
@@ -73,7 +73,7 @@ public:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
   //\}
-  
+
   ///\name Handle protocol parameters
   //\{
   Time GetMaxQueueTime () const { return MaxQueueTime; }
@@ -137,7 +137,7 @@ private:
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
   /// Loopback device used to defer RREQ until packet will be fully formed
   Ptr<NetDevice> m_lo; 
-  
+
   /// Routing table
   RoutingTable m_routingTable;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
@@ -190,7 +190,7 @@ private:
   void ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   /// Create loopback route for given header
   Ptr<Ipv4Route> LoopbackRoute (const Ipv4Header & header, Ptr<NetDevice> oif) const;
-  
+
   ///\name Receive control packets
   //\{
   /// Receive and process control packet
@@ -198,13 +198,13 @@ private:
   /// Receive RREQ
   void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src);
   /// Receive RREP
-  void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
+  void RecvReply (Ptr<Packet> p, Ipv4Address my,Ipv4Address src);
   /// Receive RREP_ACK
   void RecvReplyAck (Ipv4Address neighbor);
   /// Receive RERR from node with address src
   void RecvError (Ptr<Packet> p, Ipv4Address src);
   //\}
-  
+
   ///\name Send
   //\{
   /// Forward packet from route request queue
@@ -235,7 +235,7 @@ private:
    */
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
   //\}
-  
+
   /// Hello timer
   Timer m_htimer;
   /// Schedule next send of hello message

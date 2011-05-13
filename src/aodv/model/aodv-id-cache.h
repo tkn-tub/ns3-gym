@@ -46,7 +46,7 @@ class IdCache
 {
 public:
   /// c-tor
-  IdCache (Time lifetime): m_lifetime (lifetime) {}
+  IdCache (Time lifetime) : m_lifetime (lifetime) {}
   /// Check that entry (addr, id) exists in cache. Add entry, if it doesn't exist.
   bool IsDuplicate (Ipv4Address addr, uint32_t id);
   /// Remove all expired entries

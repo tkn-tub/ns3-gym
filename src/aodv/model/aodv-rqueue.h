@@ -49,8 +49,8 @@ public:
   QueueEntry (Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header (),
               UnicastForwardCallback ucb = UnicastForwardCallback (),
               ErrorCallback ecb = ErrorCallback (), Time exp = Simulator::Now ()) :
-              m_packet (pa), m_header (h), m_ucb (ucb), m_ecb (ecb),
-              m_expire (exp + Simulator::Now ())
+    m_packet (pa), m_header (h), m_ucb (ucb), m_ecb (ecb),
+    m_expire (exp + Simulator::Now ())
   {}
 
   /**
@@ -132,6 +132,7 @@ private:
 };
 
 
-}}
+}
+}
 
 #endif /* AODV_RQUEUE_H */

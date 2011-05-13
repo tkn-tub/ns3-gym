@@ -94,10 +94,10 @@ ChainRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
   Config::SetDefault ("ns3::ArpCache::AliveTimeout", TimeValue (m_arpAliveTimeout));
-  
+
   CreateNodes ();
   CreateDevices ();
-  
+
   // At m_time / 3 move central node away and see what will happen
   Ptr<Node> node = m_nodes->Get (m_size / 2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
@@ -106,9 +106,9 @@ ChainRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS) CheckResults ();
-  
+
   delete m_nodes, m_nodes = 0;
 }
 
@@ -119,12 +119,12 @@ ChainRegressionTest::CreateNodes ()
   m_nodes->Create (m_size);
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                "MinX", DoubleValue (0.0),
-                                "MinY", DoubleValue (0.0),
-                                "DeltaX", DoubleValue (m_step),
-                                "DeltaY", DoubleValue (0),
-                                "GridWidth", UintegerValue (m_size),
-                                "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (m_step),
+                                 "DeltaY", DoubleValue (0),
+                                 "GridWidth", UintegerValue (m_size),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (*m_nodes);
 }
@@ -138,12 +138,12 @@ ChainRegressionTest::CreateDevices ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  // This test suite output was originally based on YansErrorRateModel   
+  // This test suite output was originally based on YansErrorRateModel
   wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel"); 
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes); 
-  
+
   // 2. Setup TCP/IP & AODV
   AodvHelper aodv; // Use default parameters here
   InternetStackHelper internetStack;
@@ -152,14 +152,14 @@ ChainRegressionTest::CreateDevices ()
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
-  
+
   // 3. Setup ping
   V4PingHelper ping (interfaces.GetAddress (m_size - 1));
   ping.SetAttribute ("Verbose", BooleanValue (false)); // don't need verbose ping in regression test
   ApplicationContainer p = ping.Install (m_nodes->Get (0));
   p.Start (Seconds (0));
   p.Stop (m_time);
-  
+
   // 4. write PCAP
   std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + m_prefix;
   wifiPhy.EnablePcapAll (prefix);
@@ -174,11 +174,11 @@ ChainRegressionTest::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << m_prefix << "-" << i << "-0.pcap";
       os2 << GetTempDir () << m_prefix << "-" << i << "-0.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

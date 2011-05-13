@@ -52,7 +52,7 @@ public:
   void Run ();
   /// Report results
   void Report (std::ostream & os);
-  
+
 private:
   ///\name parameters
   //\{
@@ -67,14 +67,14 @@ private:
   /// Print routes if true
   bool printRoutes;
   //\}
-  
+
   ///\name network
   //\{
   NodeContainer nodes;
   NetDeviceContainer devices;
   Ipv4InterfaceContainer interfaces;
   //\}
-  
+
 private:
   void CreateNodes ();
   void CreateDevices ();
@@ -85,9 +85,9 @@ private:
 int main (int argc, char **argv)
 {
   AodvExample test;
-  if (! test.Configure(argc, argv)) 
+  if (!test.Configure(argc, argv))
     NS_FATAL_ERROR ("Configuration failed. Aborted.");
-  
+
   test.Run ();
   test.Report (std::cout);
   return 0;
@@ -108,16 +108,16 @@ AodvExample::Configure (int argc, char **argv)
 {
   // Enable AODV logs by default. Comment this if too noisy
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
-  
+
   SeedManager::SetSeed(12345);
   CommandLine cmd;
-  
+
   cmd.AddValue ("pcap", "Write PCAP traces.", pcap);
   cmd.AddValue ("printRoutes", "Print routing table dumps.", printRoutes);
   cmd.AddValue ("size", "Number of nodes.", size);
   cmd.AddValue ("time", "Simulation time, s.", totalTime);
   cmd.AddValue ("step", "Grid step, m", step);
-  
+
   cmd.Parse (argc, argv);
   return true;
 }
@@ -130,9 +130,9 @@ AodvExample::Run ()
   CreateDevices ();
   InstallInternetStack ();
   InstallApplications ();
-  
+
   std::cout << "Starting simulation for " << totalTime << " s ...\n";
-  
+
   Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
@@ -150,20 +150,20 @@ AodvExample::CreateNodes ()
   nodes.Create (size);
   // Name nodes
   for (uint32_t i = 0; i < size; ++i)
-     {
-       std::ostringstream os;
-       os << "node-" << i;
-       Names::Add (os.str (), nodes.Get (i));
-     }
+    {
+      std::ostringstream os;
+      os << "node-" << i;
+      Names::Add (os.str (), nodes.Get (i));
+    }
   // Create static grid
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                "MinX", DoubleValue (0.0),
-                                "MinY", DoubleValue (0.0),
-                                "DeltaX", DoubleValue (step),
-                                "DeltaY", DoubleValue (0),
-                                "GridWidth", UintegerValue (size),
-                                "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (step),
+                                 "DeltaY", DoubleValue (0),
+                                 "GridWidth", UintegerValue (size),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
 }
@@ -179,7 +179,7 @@ AodvExample::CreateDevices ()
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
   devices = wifi.Install (wifiPhy, wifiMac, nodes); 
-  
+
   if (pcap)
     {
       wifiPhy.EnablePcapAll (std::string ("aodv"));
@@ -210,11 +210,11 @@ AodvExample::InstallApplications ()
 {
   V4PingHelper ping (interfaces.GetAddress (size - 1));
   ping.SetAttribute ("Verbose", BooleanValue (true));
-  
+
   ApplicationContainer p = ping.Install (nodes.Get (0));
   p.Start (Seconds (0));
   p.Stop (Seconds (totalTime) - Seconds(0.001));
-  
+
   // move node away
   Ptr<Node> node = nodes.Get (size/2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
