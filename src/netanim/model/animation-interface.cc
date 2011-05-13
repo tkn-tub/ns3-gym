@@ -104,7 +104,7 @@ void AnimationInterface::StartAnimation ()
           Vector v = loc->GetPosition ();
           ostringstream oss;
           oss << "0.0 N " << n->GetId () 
-               << " " << v.x << " " << v.y << endl;
+              << " " << v.x << " " << v.y << endl;
           WriteN (m_fHandle, oss.str ().c_str (), oss.str ().length ());
         }
     }
@@ -136,7 +136,7 @@ void AnimationInterface::StartAnimation ()
                       ostringstream oss;
                       oss << "0.0 L "  << n1Id << " " << n2Id << endl;
                       WriteN (m_fHandle, oss.str ().c_str (),
-                             oss.str ().length ());
+                              oss.str ().length ());
                     }
                 }
             }
@@ -146,7 +146,7 @@ void AnimationInterface::StartAnimation ()
             }
         }
     }
-  
+
   // Connect the callback for packet tx events
   Config::Connect ("/ChannelList/*/TxRxPointToPoint",
                    MakeCallback (&AnimationInterface::DevTxTrace, this));
@@ -181,7 +181,7 @@ int AnimationInterface::WriteN (int h, const char* data, uint32_t count)
     }
   return written;
 }
-  
+
 void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
                                      Ptr<NetDevice> tx, Ptr<NetDevice> rx,
                                      Time txTime, Time rxTime)

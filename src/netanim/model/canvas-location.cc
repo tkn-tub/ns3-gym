@@ -33,25 +33,27 @@ CanvasLocation::GetTypeId (void)
                    TypeId::ATTR_SET | TypeId::ATTR_GET,
                    VectorValue (Vector (0.0, 0.0, 0.0)),
                    MakeVectorAccessor (&CanvasLocation::SetLocation,
-                                        &CanvasLocation::GetLocation),
+                                       &CanvasLocation::GetLocation),
                    MakeVectorChecker ())
-    ;
+  ;
   return tid;
 }
 
 CanvasLocation::CanvasLocation ()
-{}
+{
+}
 
 CanvasLocation::~CanvasLocation ()
-{}
+{
+}
 
-Vector 
+Vector
 CanvasLocation::GetLocation (void) const
 {
   return m_location;
 }
 
-void 
+void
 CanvasLocation::SetLocation (const Vector &location)
 {
   m_location = location;
