@@ -26,18 +26,21 @@ namespace ns3 {
 
 ConstantVelocityHelper::ConstantVelocityHelper ()
   : m_paused (true)
-{}
+{
+}
 ConstantVelocityHelper::ConstantVelocityHelper (const Vector &position)
   : m_position (position),
     m_paused (true)
-{}
+{
+}
 ConstantVelocityHelper::ConstantVelocityHelper (const Vector &position,
-				      const Vector &vel)
+                                                const Vector &vel)
   : m_position (position),
     m_velocity (vel),
     m_paused (true)
-{}
-void 
+{
+}
+void
 ConstantVelocityHelper::SetPosition (const Vector &position)
 {
   m_position = position;
@@ -54,7 +57,7 @@ ConstantVelocityHelper::GetCurrentPosition (void) const
 Vector 
 ConstantVelocityHelper::GetVelocity (void) const
 {
-  return m_paused? Vector (0.0, 0.0, 0.0) : m_velocity;
+  return m_paused ? Vector (0.0, 0.0, 0.0) : m_velocity;
 }
 void 
 ConstantVelocityHelper::SetVelocity (const Vector &vel)

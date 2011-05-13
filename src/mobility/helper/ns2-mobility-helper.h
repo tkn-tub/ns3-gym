@@ -54,7 +54,7 @@ class ConstantVelocityMobilityModel;
  *  - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/
  *  - SUMO http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page
  *  - TraNS http://trans.epfl.ch/ 
- *  
+ *
  *  See usage example in examples/mobility/ns2-mobility-trace.cc
  */
 class Ns2MobilityHelper
@@ -90,7 +90,7 @@ public:
 private:
   class ObjectStore
   {
-  public:
+public:
     virtual ~ObjectStore () {}
     virtual Ptr<Object> Get (uint32_t i) const = 0;
   };
@@ -109,11 +109,11 @@ Ns2MobilityHelper::Install (T begin, T end) const
 {
   class MyObjectStore : public ObjectStore
   {
-  public:
+public:
     MyObjectStore (T begin, T end)
       : m_begin (begin),
-      m_end (end)
-        {}
+        m_end (end)
+    {}
     virtual Ptr<Object> Get (uint32_t i) const {
       T iterator = m_begin;
       iterator += i;
@@ -123,7 +123,7 @@ Ns2MobilityHelper::Install (T begin, T end) const
         }
       return *iterator;
     }
-  private:
+private:
     T m_begin;
     T m_end;
   };

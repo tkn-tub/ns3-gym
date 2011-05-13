@@ -28,29 +28,31 @@
 namespace ns3 {
 
 Rectangle::Rectangle (double _xMin, double _xMax,
-		      double _yMin, double _yMax)
+                      double _yMin, double _yMax)
   : xMin (_xMin),
     xMax (_xMax),
     yMin (_yMin),
     yMax (_yMax)
-{}
+{
+}
 
 Rectangle::Rectangle ()
   : xMin (0.0),
     xMax (0.0),
     yMin (0.0),
     yMax (0.0)
-{}
+{
+}
 
-bool 
+bool
 Rectangle::IsInside (const Vector &position) const
 {
-  return 
+  return
     position.x <= this->xMax && position.x >= this->xMin &&
     position.y <= this->yMax && position.y >= this->yMin;
 }
 
-Rectangle::Side 
+Rectangle::Side
 Rectangle::GetClosestSide (const Vector &position) const
 {
   double xMinDist = std::abs (position.x - this->xMin);
@@ -130,7 +132,7 @@ operator << (std::ostream &os, const Rectangle &rectangle)
 }
 std::istream &
 operator >> (std::istream &is, Rectangle &rectangle)
- {
+{
   char c1, c2, c3;
   is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 >> rectangle.yMax;
   if (c1 != '|' ||

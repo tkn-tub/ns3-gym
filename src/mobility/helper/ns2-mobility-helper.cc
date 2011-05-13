@@ -188,7 +188,7 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
           iNodeId = GetNodeIdInt (pr);
           if (iNodeId == -1)
             {
-        	  NS_LOG_ERROR ("Node number couldn't be obtained (corrupted file?): " << line << "\n");
+              NS_LOG_ERROR ("Node number couldn't be obtained (corrupted file?): " << line << "\n");
               continue;
             }
 

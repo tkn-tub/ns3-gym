@@ -33,12 +33,14 @@ TypeId ConstantVelocityMobilityModel::GetTypeId (void)
 }
 
 ConstantVelocityMobilityModel::ConstantVelocityMobilityModel ()
-{}
+{
+}
 
 ConstantVelocityMobilityModel::~ConstantVelocityMobilityModel ()
-{}
+{
+}
 
-void 
+void
 ConstantVelocityMobilityModel::SetVelocity (const Vector &speed)
 {
   m_helper.Update ();

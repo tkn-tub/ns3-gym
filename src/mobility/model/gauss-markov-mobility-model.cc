@@ -53,17 +53,17 @@ GaussMarkovMobilityModel::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MeanVelocity",
                    "A random variable used to assign the average velocity.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),  
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
                    MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_rndMeanVelocity),
                    MakeRandomVariableChecker ())
     .AddAttribute ("MeanDirection",
                    "A random variable used to assign the average direction.",
-                   RandomVariableValue (UniformVariable (0.0, 6.283185307)),  
+                   RandomVariableValue (UniformVariable (0.0, 6.283185307)),
                    MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_rndMeanDirection),
                    MakeRandomVariableChecker ())
     .AddAttribute ("MeanPitch",
                    "A random variable used to assign the average pitch.",
-                   RandomVariableValue (ConstantVariable (0.0)),  
+                   RandomVariableValue (ConstantVariable (0.0)),
                    MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_rndMeanPitch),
                    MakeRandomVariableChecker ())
     .AddAttribute ("NormalVelocity",
@@ -81,7 +81,7 @@ GaussMarkovMobilityModel::GetTypeId (void)
                    RandomVariableValue (NormalVariable (0.0, 1.0, 10.0)),
                    MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_normalPitch),
                    MakeRandomVariableChecker ());
-  
+
   return tid;
 }
 
@@ -122,7 +122,7 @@ GaussMarkovMobilityModel::Start (void)
   double rp = m_normalPitch.GetValue ();
 
   //Calculate the NEW velocity, direction, and pitch values using the Gauss-Markov formula:
-  //newVal = alpha*oldVal + (1-alpha)*meanVal + sqrt(1-alpha^2)*rv  
+  //newVal = alpha*oldVal + (1-alpha)*meanVal + sqrt(1-alpha^2)*rv
   //where rv is a random number from a normal (gaussian) distribution
   double one_minus_alpha = 1 - m_alpha;
   double sqrt_alpha = std::sqrt (1 - m_alpha*m_alpha);
@@ -167,20 +167,20 @@ GaussMarkovMobilityModel::DoWalk (Time delayLeft)
     {
       if (nextPosition.x > m_bounds.xMax || nextPosition.x < m_bounds.xMin) 
         {
-          speed.x = - speed.x;
+          speed.x = -speed.x;
           m_meanDirection = 3.14159265 - m_meanDirection;
         }
 
       if (nextPosition.y > m_bounds.yMax || nextPosition.y < m_bounds.yMin) 
         {
-          speed.y = - speed.y;
-          m_meanDirection = - m_meanDirection;
+          speed.y = -speed.y;
+          m_meanDirection = -m_meanDirection;
         }
 
       if (nextPosition.z > m_bounds.zMax || nextPosition.z < m_bounds.zMin) 
         {
-          speed.z = - speed.z;
-          m_meanPitch = - m_meanPitch;
+          speed.z = -speed.z;
+          m_meanPitch = -m_meanPitch;
         }
 
       m_Direction = m_meanDirection;

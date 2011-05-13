@@ -50,7 +50,7 @@ RandomWaypointMobilityModel::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&RandomWaypointMobilityModel::m_position),
                    MakePointerChecker<PositionAllocator> ());
-  
+
   return tid;
 }
 
@@ -71,7 +71,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
   m_event.Cancel ();
   m_event = Simulator::Schedule (travelDelay,
-				 &RandomWaypointMobilityModel::DoStartPrivate, this);
+                                 &RandomWaypointMobilityModel::DoStartPrivate, this);
   NotifyCourseChange ();
 }
 
