@@ -44,15 +44,16 @@ CsmaStarHelper::CsmaStarHelper (uint32_t numSpokes,
 }
 
 CsmaStarHelper::~CsmaStarHelper ()
-{}
+{
+}
 
-Ptr<Node> 
+Ptr<Node>
 CsmaStarHelper::GetHub () const
 {
   return m_hub.Get (0);
 }
 
-Ptr<Node> 
+Ptr<Node>
 CsmaStarHelper::GetSpokeNode (uint32_t i) const
 {
   return m_spokes.Get (i);
