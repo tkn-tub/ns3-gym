@@ -36,8 +36,8 @@ required files: ::
 
 Not all directories will be present in each module.
 
-Step 2 - Copy the template module
-*********************************
+Step 2 - Create your new module based on the template module
+************************************************************
 
 The template module ::
 
@@ -55,6 +55,24 @@ Now you will need to open the following file in your favorite text editor: ::
 
 and replace all of the occurrences of "template" in this wscript file with the name of your new module, i.e. "new-module" for our assumed module name.
 
+You will also need to specify the |ns3| modules your new module will
+depend on.  Let's assume that "new-module" depends on the internet,
+mobility, and aodv modules.  Then the call to the function that will
+create this module should look like this when you are done with this
+step: ::
+
+    module = bld.create_ns3_module('new-module', ['internet', 'mobility', 'aodv'])
+
+As an example, the dependencies for the spectrum module are specified
+in ::
+
+  src/spectrum/wscript
+
+with the following function call: ::
+
+    module = bld.create_ns3_module('spectrum', ['internet', 'propagation',
+        'applications'])
+
 If your module will have model source files, then create the following directory where they will go: :: 
 
   mkdir src/new-module/model
@@ -66,6 +84,11 @@ If your module will have helper source files, then create the following director
   mkdir src/new-module/helper
 
 Copy all of your module's helper source files to the above directory.
+
+If your module will have tests, then copy all of your module's test files to the following directory: :: 
+
+  mkdir src/new-module/test
+
 
 Step 3 - Specify your module's source files
 *******************************************
@@ -82,13 +105,7 @@ in ::
 
   src/spectrum/wscript
 
-with the following function call and list
-of source files.  Note that the second argument for the function
-create_ns3_module() is the list of modules that the module being created
-depends on: ::
-
-    module = bld.create_ns3_module('spectrum', ['internet', 'propagation',
-        'applications'])
+with the following list of source files: ::
 
     module.source = [
         'model/spectrum-model.cc',
@@ -264,7 +281,7 @@ depend on waf configuration variables.  For example, ::
 
 
 Step 8 - Add your module to the list on |ns3| modules
-****************************************************
+*****************************************************
 
 Your new module must be added to the current list of |ns3| modules by modifying the following wscript file with your text editor: ::
 
