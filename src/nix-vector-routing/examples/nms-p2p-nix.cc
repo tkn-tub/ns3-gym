@@ -83,7 +83,7 @@ main (int argc, char *argv[])
   if (nCN < 2) 
     {
       cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
-        << endl;
+           << endl;
       return 1;
     }
 
@@ -336,7 +336,7 @@ main (int argc, char *argv[])
           ifs3[z][i] = address.Assign (ndc3[i]);
         }
     }
-    // Create Ring Links
+  // Create Ring Links
   if (nCN > 1) 
     {
       cout << "Forming Ring Topology..." << endl;
@@ -363,11 +363,11 @@ main (int argc, char *argv[])
   cout << "Creating TCP Traffic Flows:" << endl;
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes", UintegerValue (500000));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
-      RandomVariableValue (ConstantVariable (1)));
+                      RandomVariableValue (ConstantVariable (1)));
   Config::SetDefault ("ns3::OnOffApplication::OffTime",
-      RandomVariableValue (ConstantVariable (0)));
+                      RandomVariableValue (ConstantVariable (0)));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (512));
-  
+
   UniformVariable urng;
   int r1;
   double r2;
@@ -386,7 +386,7 @@ main (int argc, char *argv[])
             {
               // Sinks
               PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory",
-                  InetSocketAddress (Ipv4Address::GetAny (), 9999));
+                                           InetSocketAddress (Ipv4Address::GetAny (), 9999));
               ApplicationContainer sinkApp = sinkHelper.Install (
                   nodes_net2LAN[z][i][j].Get (0));
               sinkApp.Start (Seconds (0.0));
@@ -395,12 +395,12 @@ main (int argc, char *argv[])
               r2 = 10 * urng.GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
               AddressValue remoteAddress(InetSocketAddress (
-                  ifs2LAN[z][i][j].GetAddress (0), 9999));
-            client.SetAttribute ("Remote", remoteAddress);
-            ApplicationContainer clientApp;
-            clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));
-            clientApp.Start (Seconds (r2));
-          }
+                                           ifs2LAN[z][i][j].GetAddress (0), 9999));
+              client.SetAttribute ("Remote", remoteAddress);
+              ApplicationContainer clientApp;
+              clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));
+              clientApp.Start (Seconds (r2));
+            }
         }
       // Subnet 3 LANs
       cout << "Net3 ]" << endl;
@@ -410,7 +410,7 @@ main (int argc, char *argv[])
             {
               // Sinks
               PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory",
-                  InetSocketAddress (Ipv4Address::GetAny (), 9999));
+                                           InetSocketAddress (Ipv4Address::GetAny (), 9999));
               ApplicationContainer sinkApp = sinkHelper.Install (
                   nodes_net3LAN[z][i][j].Get (0));
               sinkApp.Start (Seconds (0.0));
@@ -419,7 +419,7 @@ main (int argc, char *argv[])
               r2 = 10 * urng.GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
               AddressValue remoteAddress (InetSocketAddress (
-                  ifs3LAN[z][i][j].GetAddress (0), 9999));
+                                            ifs3LAN[z][i][j].GetAddress (0), 9999));
               client.SetAttribute ("Remote", remoteAddress);
               ApplicationContainer clientApp;
               clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));

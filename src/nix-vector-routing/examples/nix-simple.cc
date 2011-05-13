@@ -42,7 +42,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("NixSimpleExample");
 
-  int 
+int
 main (int argc, char *argv[])
 {
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
@@ -64,7 +64,7 @@ main (int argc, char *argv[])
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
 
   NodeContainer allNodes = NodeContainer (nodes12, nodes23.Get (1), nodes34.Get (1));
-  
+
   // NixHelper to install nix-vector routing
   // on all nodes
   Ipv4NixVectorHelper nixRouting;
