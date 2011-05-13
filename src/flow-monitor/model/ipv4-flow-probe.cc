@@ -34,9 +34,9 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
 
-            //////////////////////////////////////
-            // Ipv4FlowProbeTag class implementation //
-            //////////////////////////////////////
+//////////////////////////////////////
+// Ipv4FlowProbeTag class implementation //
+//////////////////////////////////////
 
 class Ipv4FlowProbeTag : public Tag
 {
@@ -59,7 +59,7 @@ private:
   uint32_t m_flowId;
   uint32_t m_packetId;
   uint32_t m_packetSize;
-  
+
 };
 
 TypeId 
@@ -68,7 +68,7 @@ Ipv4FlowProbeTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4FlowProbeTag")
     .SetParent<Tag> ()
     .AddConstructor<Ipv4FlowProbeTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -104,11 +104,13 @@ Ipv4FlowProbeTag::Print (std::ostream &os) const
 }
 Ipv4FlowProbeTag::Ipv4FlowProbeTag ()
   : Tag () 
-{}
+{
+}
 
 Ipv4FlowProbeTag::Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize)
   : Tag (), m_flowId (flowId), m_packetId (packetId), m_packetSize (packetSize)
-{}
+{
+}
 
 void
 Ipv4FlowProbeTag::SetFlowId (uint32_t id)
@@ -129,7 +131,7 @@ uint32_t
 Ipv4FlowProbeTag::GetFlowId (void) const
 {
   return m_flowId;
-}  
+}
 uint32_t
 Ipv4FlowProbeTag::GetPacketId (void) const
 {
@@ -141,9 +143,9 @@ Ipv4FlowProbeTag::GetPacketSize (void) const
   return m_packetSize;
 } 
 
-            ////////////////////////////////////////
-            // Ipv4FlowProbe class implementation //
-            ////////////////////////////////////////
+////////////////////////////////////////
+// Ipv4FlowProbe class implementation //
+////////////////////////////////////////
 
 Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
                               Ptr<Ipv4FlowClassifier> classifier,
@@ -192,12 +194,12 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
 {
   FlowId flowId;
   FlowPacketId packetId;
-  
+
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("ReportFirstTx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<"); "
-                    << ipHeader << *ipPayload);
+                                     << ipHeader << *ipPayload);
       m_flowMonitor->ReportFirstTx (this, flowId, packetId, size);
 
       // tag the packet with the flow id and packet id, so that the packet can be identified even
@@ -212,7 +214,7 @@ Ipv4FlowProbe::ForwardLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
 {
   FlowId flowId;
   FlowPacketId packetId;
-  
+
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
@@ -224,10 +226,10 @@ Ipv4FlowProbe::ForwardLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
 
 void
 Ipv4FlowProbe::ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
-{  
+{
   FlowId flowId;
   FlowPacketId packetId;
-  
+
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
       // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
@@ -251,7 +253,7 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
     {
     case Ipv4L3Protocol::DROP_NO_ROUTE:
       break;
-      
+
     case Ipv4L3Protocol::DROP_TTL_EXPIRED:
     case Ipv4L3Protocol::DROP_BAD_CHECKSUM:
       Ipv4Address addri = m_ipv4->GetAddress (ifIndex);
@@ -277,8 +279,8 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << reason 
-                    << ", destIp=" << ipHeader.GetDestination () << "); " 
-                    << "HDR: " << ipHeader << " PKT: " << *ipPayload);
+                            << ", destIp=" << ipHeader.GetDestination () << "); "
+                            << "HDR: " << ipHeader << " PKT: " << *ipPayload);
 
       DropReason myReason;
 
@@ -325,13 +327,13 @@ Ipv4FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
   bool tagFound;
   tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
   NS_ASSERT_MSG (tagFound, "FlowProbeTag is missing");
-  
+
   FlowId flowId = fTag.GetFlowId ();
   FlowPacketId packetId = fTag.GetPacketId ();
   uint32_t size = fTag.GetPacketSize ();
 
   NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << DROP_QUEUE 
-                << "); ");
+                        << "); ");
 
   m_flowMonitor->ReportDrop (this, flowId, packetId, size, DROP_QUEUE);
 }

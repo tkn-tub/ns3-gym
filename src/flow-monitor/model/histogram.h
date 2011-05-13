@@ -42,10 +42,10 @@ public:
   double GetBinWidth (uint32_t index) const;
   void SetDefaultBinWidth (double binWidth);
   uint32_t GetBinCount (uint32_t index);
-  
+
   // Method for adding values
   void AddValue (double value);
-  
+
 
   void SerializeToXmlStream (std::ostream &os, int indent, std::string elementName) const;
 

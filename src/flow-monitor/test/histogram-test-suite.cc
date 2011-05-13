@@ -34,7 +34,8 @@ public:
 
 HistogramTestCase::HistogramTestCase ()
   : ns3::TestCase ("Histogram")
-{}
+{
+}
 
 
 void
@@ -47,19 +48,19 @@ HistogramTestCase::DoRun (void)
       { 
         h0.AddValue (3.4);
       }
-    
+
     for (int i=1; i <= 5; i++)
-      {    
+      {
         h0.AddValue (3.6);
       }
-    
+
     NS_TEST_EXPECT_MSG_EQ_TOL (h0.GetBinWidth (0),  3.5, 1e-6, "");
     NS_TEST_EXPECT_MSG_EQ (h0.GetNBins (),  2, "");
     NS_TEST_EXPECT_MSG_EQ_TOL (h0.GetBinStart (1),  3.5, 1e-6, "");
     NS_TEST_EXPECT_MSG_EQ (h0.GetBinCount (0),  10, "");
     NS_TEST_EXPECT_MSG_EQ (h0.GetBinCount (1),  5, "");
   }
-  
+
   {
     // Testing bin expansion
     h0.AddValue (74.3);

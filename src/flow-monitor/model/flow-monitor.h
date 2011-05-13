@@ -54,7 +54,7 @@ public:
     /// was received by an end node, i.e. the time when the flow
     /// reception starts
     Time     timeFirstRxPacket;
-    
+
     /// Contains the absolute time when the last packet in the flow
     /// was transmitted, i.e. the time when the flow transmission
     /// ends
@@ -133,7 +133,7 @@ public:
 
   /// Set the FlowClassifier to be used by the flow monitor.
   void SetFlowClassifier (Ptr<FlowClassifier> classifier);
-  
+
   /// Set the time, counting from the current time, from which to start monitoring flows
   void Start (const Time &time);
   /// Set the time, counting from the current time, from which to stop monitoring flows
@@ -171,7 +171,7 @@ public:
   /// Check right now for packets that appear to be lost, considering
   /// packets as lost if not seen in the network for a time larger
   /// than maxDelay
-  void CheckForLostPackets (Time maxDelay);  
+  void CheckForLostPackets (Time maxDelay);
 
   // --- methods to get the results ---
   /// Retrieve all collected the flow statistics.  Note, if the
