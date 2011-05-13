@@ -188,7 +188,7 @@ int main (int argc, char *argv[])
   list.Add (olsr, 10);
 
   InternetStackHelper internet_olsr;
-  internet_olsr.SetRoutingHelper (list);
+  internet_olsr.SetRoutingHelper (list); // has effect on the next Install ()
   internet_olsr.Install (olsrNodes);
 
   InternetStackHelper internet_csma;

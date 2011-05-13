@@ -69,7 +69,7 @@ main (int argc, char *argv[])
   Ipv4ListRoutingHelper staticonly;
   Ipv4ListRoutingHelper staticRouting;
   staticonly.Add(staticRouting, 0);
-  internet.SetRoutingHelper(staticonly);
+  internet.SetRoutingHelper(staticonly);  // has effect on the next Install ()
   internet.Install(NodeContainer(nC));
 
   // We create the channels first without any IP addressing information

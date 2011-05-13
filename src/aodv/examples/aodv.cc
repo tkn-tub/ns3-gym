@@ -192,7 +192,7 @@ AodvExample::InstallInternetStack ()
   AodvHelper aodv;
   // you can configure AODV attributes here using aodv.Set(name, value)
   InternetStackHelper stack;
-  stack.SetRoutingHelper (aodv);
+  stack.SetRoutingHelper (aodv); // has effect on the next Install ()
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.0.0.0");

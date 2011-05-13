@@ -95,7 +95,7 @@ main (int argc, char *argv[])
   list.Add (olsr, 10);
 
   InternetStackHelper internet;
-  internet.SetRoutingHelper (list);
+  internet.SetRoutingHelper (list); // has effect on the next Install ()
   internet.Install (c);
 
   // We create the channels first without any IP addressing information

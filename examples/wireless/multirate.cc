@@ -383,7 +383,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableRouting)
     {
-      internet.SetRoutingHelper(list);
+      internet.SetRoutingHelper(list);  // has effect on the next Install ()
     }
   internet.Install (c);
 

@@ -116,7 +116,7 @@ main (int argc, char *argv[])
 
   if (nix)
     {
-      stack.SetRoutingHelper (list);
+      stack.SetRoutingHelper (list); // has effect on the next Install ()
     }
 
   // Create Campus Networks

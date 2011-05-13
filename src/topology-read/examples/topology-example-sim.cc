@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
   listRH.Add (staticRouting, 0);
   listRH.Add (nixRouting, 10);
 
-  stack.SetRoutingHelper (listRH);
+  stack.SetRoutingHelper (listRH);  // has effect on the next Install ()
   stack.Install (nodes);
 
   NS_LOG_INFO ("creating ip4 addresses");

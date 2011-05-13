@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   list.Add (nixRouting, 10);
 
   InternetStackHelper stack;
-  stack.SetRoutingHelper (list);
+  stack.SetRoutingHelper (list); // has effect on the next Install ()
   stack.Install (allNodes);
 
   NetDeviceContainer devices12;

@@ -135,7 +135,7 @@ def main(argv):
     print "Enabling OLSR routing on all backbone nodes"
     internet = ns.internet.InternetStackHelper()
     olsr = ns.olsr.OlsrHelper()
-    internet.SetRoutingHelper(olsr);
+    internet.SetRoutingHelper(olsr); # has effect on the next Install ()
     internet.Install(backbone);
     # re-initialize for non-olsr routing.
     internet.Reset()
