@@ -57,67 +57,67 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // 9000 mt -> mcs 12
   // 15000 mt -> mcs 6
 
-  // Test Case 1: AMC works in PF
+  //Test Case 1: AMC works in PF
 
-//   // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
-//   // 3 users -> 2196000 among 3 users -> 732000 bytes/sec
-//   // 6 users -> 2196000 among 6 users -> 366000 bytes/sec
-//   // 12 users -> 2196000 among 12 users -> 183000 bytes/sec
-//   // 15 users -> 2196000 among 15 users -> 146400 bytes/sec
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,0,2196000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,0,732000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,0,366000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,0,183000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,0,146400));
-// 
-//   // DISTANCE 3000 -> MCS 24 -> Itbs 30 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec
-//   // 3 users -> 1383000 among 3 users -> 461000 bytes/sec
-//   // 6 users -> 1383000 among 6 users -> 230500 bytes/sec
-//   // 12 users -> 1383000 among 12 users -> 115250 bytes/sec
-//   // 15 users -> 1383000 among 15 users -> 92200 bytes/sec
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,3000,1383000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,3000,461000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,3000,230500));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,3000,115250));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,3000,92200));
-// 
-//   // DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
-//   // 3 users -> 903000 among 3 users -> 301000 bytes/sec
-//   // 6 users -> 903000 among 6 users -> 150500 bytes/sec
-//   // 12 users -> 903000 among 12 users -> 75250 bytes/sec
-//   // 15 users -> 903000 among 15 users -> 60200 bytes/sec
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,903000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,301000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,150500));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,6000,75250));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,6000,60200));
-// 
-//   // DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 11 -> 597 -> 597000 bytes/sec
-//   // 3 users -> 597000 among 3 users -> 199000 bytes/sec
-//   // 6 users -> 597000 among 6 users -> 99500 bytes/sec
-//   // 12 users -> 597000 among 12 users -> 49750 bytes/sec
-//   // 15 users -> 597000 among 15 users -> 39800 bytes/sec 
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,9000,597000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,9000,199000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,9000,99500));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,9000,49750));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,9000,39800));
-// 
-//   // DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
-//   // 1 user -> 24 PRB at Itbs 6 -> 309 -> 309000 bytes/sec
-//   // 3 users -> 309000 among 3 users -> 103000 bytes/sec
-//   // 6 users -> 309000 among 6 users -> 51500 bytes/sec
-//   // 12 users -> 309000 among 12 users -> 25750 bytes/sec
-//   // 15 users -> 309000 among 15 users -> 20600 bytes/sec  
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,15000,309000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,15000,103000));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,15000,51500));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,15000,25750));
-//   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,15000,20600));
+  // DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
+  // 3 users -> 2196000 among 3 users -> 732000 bytes/sec
+  // 6 users -> 2196000 among 6 users -> 366000 bytes/sec
+  // 12 users -> 2196000 among 12 users -> 183000 bytes/sec
+  // 15 users -> 2196000 among 15 users -> 146400 bytes/sec
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,0,2196000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,0,732000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,0,366000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,0,183000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,0,146400));
+ 
+  // DISTANCE 3000 -> MCS 24 -> Itbs 30 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec
+  // 3 users -> 1383000 among 3 users -> 461000 bytes/sec
+  // 6 users -> 1383000 among 6 users -> 230500 bytes/sec
+  // 12 users -> 1383000 among 12 users -> 115250 bytes/sec
+  // 15 users -> 1383000 among 15 users -> 92200 bytes/sec
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,3000,1383000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,3000,461000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,3000,230500));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,3000,115250));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,3000,92200));
+ 
+  // DISTANCE 6000 -> MCS 16 -> Itbs 15 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 15 -> 903 -> 903000 bytes/sec
+  // 3 users -> 903000 among 3 users -> 301000 bytes/sec
+  // 6 users -> 903000 among 6 users -> 150500 bytes/sec
+  // 12 users -> 903000 among 12 users -> 75250 bytes/sec
+  // 15 users -> 903000 among 15 users -> 60200 bytes/sec
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,903000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,301000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,150500));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,6000,75250));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,6000,60200));
+ 
+  // DISTANCE 9000 -> MCS 12 -> Itbs 11 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 11 -> 597 -> 597000 bytes/sec
+  // 3 users -> 597000 among 3 users -> 199000 bytes/sec
+  // 6 users -> 597000 among 6 users -> 99500 bytes/sec
+  // 12 users -> 597000 among 12 users -> 49750 bytes/sec
+  // 15 users -> 597000 among 15 users -> 39800 bytes/sec 
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,9000,597000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,9000,199000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,9000,99500));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,9000,49750));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,9000,39800));
+ 
+  // DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
+  // 1 user -> 24 PRB at Itbs 6 -> 309 -> 309000 bytes/sec
+  // 3 users -> 309000 among 3 users -> 103000 bytes/sec
+  // 6 users -> 309000 among 6 users -> 51500 bytes/sec
+  // 12 users -> 309000 among 12 users -> 25750 bytes/sec
+  // 15 users -> 309000 among 15 users -> 20600 bytes/sec  
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,15000,309000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,15000,103000));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,15000,51500));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,15000,25750));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,15000,20600));
 
   // Test Case 2: fairness check
   
