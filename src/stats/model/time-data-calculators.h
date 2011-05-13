@@ -28,34 +28,34 @@
 
 namespace ns3 {
 
-  //------------------------------------------------------------
-  //--------------------------------------------
-  /**
-   * Unfortunately, templating the base MinMaxAvgTotalCalculator to
-   * operate over Time values isn't straightforward.  The main issues
-   * are setting the maximum value, which can be worked around easily
-   * as it done here, and dividing to get the average, which is not as
-   * easily worked around.
-  */
-  class TimeMinMaxAvgTotalCalculator : public DataCalculator {
-  public:
-    TimeMinMaxAvgTotalCalculator();
-    virtual ~TimeMinMaxAvgTotalCalculator();
+//------------------------------------------------------------
+//--------------------------------------------
+/**
+ * Unfortunately, templating the base MinMaxAvgTotalCalculator to
+ * operate over Time values isn't straightforward.  The main issues
+ * are setting the maximum value, which can be worked around easily
+ * as it done here, and dividing to get the average, which is not as
+ * easily worked around.
+*/
+class TimeMinMaxAvgTotalCalculator : public DataCalculator {
+public:
+  TimeMinMaxAvgTotalCalculator();
+  virtual ~TimeMinMaxAvgTotalCalculator();
 
-    void Update(const Time i);
+  void Update(const Time i);
 
-    virtual void Output(DataOutputCallback &callback) const;
+  virtual void Output(DataOutputCallback &callback) const;
 
-  protected:
-    virtual void DoDispose(void);
+protected:
+  virtual void DoDispose(void);
 
-    uint32_t m_count;
-    Time m_total, m_min, m_max;
+  uint32_t m_count;
+  Time m_total, m_min, m_max;
 
-    // end class TimeMinMaxAvgTotalCalculator
-  };
+  // end class TimeMinMaxAvgTotalCalculator
+};
 
-  // end namespace ns3
+// end namespace ns3
 };
 
 

@@ -27,59 +27,59 @@
 
 namespace ns3 {
 
-  class DataCollector;
+class DataCollector;
 
-  //------------------------------------------------------------
-  //--------------------------------------------
-  class DataOutputInterface : public Object {
-  public:
-    DataOutputInterface();
-    virtual ~DataOutputInterface();
+//------------------------------------------------------------
+//--------------------------------------------
+class DataOutputInterface : public Object {
+public:
+  DataOutputInterface();
+  virtual ~DataOutputInterface();
 
-    virtual void Output(DataCollector &dc) = 0;
+  virtual void Output(DataCollector &dc) = 0;
 
-    void SetFilePrefix(const std::string prefix);
-    std::string GetFilePrefix() const;
+  void SetFilePrefix(const std::string prefix);
+  std::string GetFilePrefix() const;
 
-  protected:
-    virtual void DoDispose();
+protected:
+  virtual void DoDispose();
 
-    std::string m_filePrefix;
+  std::string m_filePrefix;
 
-    // end class DataOutputInterface
-  };
+  // end class DataOutputInterface
+};
 
-  class DataOutputCallback {
-  public:
-    virtual ~DataOutputCallback() {}
+class DataOutputCallback {
+public:
+  virtual ~DataOutputCallback() {}
 
-    virtual void OutputStatistic(std::string key,
-                                 std::string variable,
-                                 const StatisticalSummary *statSum) = 0;
+  virtual void OutputStatistic(std::string key,
+                               std::string variable,
+                               const StatisticalSummary *statSum) = 0;
 
-    virtual void OutputSingleton(std::string key,
-                                 std::string variable,
-                                 int val) = 0;
+  virtual void OutputSingleton(std::string key,
+                               std::string variable,
+                               int val) = 0;
 
-    virtual void OutputSingleton(std::string key,
-                                 std::string variable,
-                                 uint32_t val) = 0;
+  virtual void OutputSingleton(std::string key,
+                               std::string variable,
+                               uint32_t val) = 0;
 
-    virtual void OutputSingleton(std::string key,
-                                 std::string variable,
-                                 double val) = 0;
+  virtual void OutputSingleton(std::string key,
+                               std::string variable,
+                               double val) = 0;
 
-    virtual void OutputSingleton(std::string key,
-                                 std::string variable,
-                                 std::string val) = 0;
+  virtual void OutputSingleton(std::string key,
+                               std::string variable,
+                               std::string val) = 0;
 
-    virtual void OutputSingleton(std::string key,
-                                 std::string variable,
-                                 Time val) = 0;
-    // end class DataOutputCallback
-  };
+  virtual void OutputSingleton(std::string key,
+                               std::string variable,
+                               Time val) = 0;
+  // end class DataOutputCallback
+};
 
-  // end namespace ns3
+// end namespace ns3
 };
 
 

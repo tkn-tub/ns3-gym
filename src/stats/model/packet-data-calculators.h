@@ -28,40 +28,40 @@
 
 namespace ns3 {
 
-  class PacketCounterCalculator : public CounterCalculator<uint32_t> {
-  public:
-    PacketCounterCalculator();
-    virtual ~PacketCounterCalculator();
+class PacketCounterCalculator : public CounterCalculator<uint32_t> {
+public:
+  PacketCounterCalculator();
+  virtual ~PacketCounterCalculator();
 
-    void PacketUpdate(std::string path, Ptr<const Packet> packet);
-    void FrameUpdate(std::string path, Ptr<const Packet> packet,
-                     Mac48Address realto);
+  void PacketUpdate(std::string path, Ptr<const Packet> packet);
+  void FrameUpdate(std::string path, Ptr<const Packet> packet,
+                   Mac48Address realto);
 
-  protected:
-    virtual void DoDispose(void);
+protected:
+  virtual void DoDispose(void);
 
-    // end class PacketCounterCalculator
-  };
-
-
-  class PacketSizeMinMaxAvgTotalCalculator :
-    public MinMaxAvgTotalCalculator<uint32_t> {
-  public:
-    PacketSizeMinMaxAvgTotalCalculator();
-    virtual ~PacketSizeMinMaxAvgTotalCalculator();
-
-    void PacketUpdate(std::string path, Ptr<const Packet> packet);
-    void FrameUpdate(std::string path, Ptr<const Packet> packet,
-                     Mac48Address realto);
-
-  protected:
-    virtual void DoDispose(void);
-
-    // end class PacketSizeMinMaxAvgTotalCalculator
-  };
+  // end class PacketCounterCalculator
+};
 
 
-  // end namespace ns3
+class PacketSizeMinMaxAvgTotalCalculator :
+  public MinMaxAvgTotalCalculator<uint32_t> {
+public:
+  PacketSizeMinMaxAvgTotalCalculator();
+  virtual ~PacketSizeMinMaxAvgTotalCalculator();
+
+  void PacketUpdate(std::string path, Ptr<const Packet> packet);
+  void FrameUpdate(std::string path, Ptr<const Packet> packet,
+                   Mac48Address realto);
+
+protected:
+  virtual void DoDispose(void);
+
+  // end class PacketSizeMinMaxAvgTotalCalculator
+};
+
+
+// end namespace ns3
 };
 
 

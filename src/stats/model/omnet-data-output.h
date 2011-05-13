@@ -28,56 +28,56 @@
 namespace ns3 {
 
 
-  //------------------------------------------------------------
-  //--------------------------------------------
-  class OmnetDataOutput : public DataOutputInterface {
-  public:
-    OmnetDataOutput();
-    virtual ~OmnetDataOutput();
+//------------------------------------------------------------
+//--------------------------------------------
+class OmnetDataOutput : public DataOutputInterface {
+public:
+  OmnetDataOutput();
+  virtual ~OmnetDataOutput();
 
-    virtual void Output(DataCollector &dc);
+  virtual void Output(DataCollector &dc);
 
-  protected:
-    virtual void DoDispose();
+protected:
+  virtual void DoDispose();
 
-  private:
-    class OmnetOutputCallback : public DataOutputCallback {
-    public:
-      OmnetOutputCallback(std::ostream *scalar);
+private:
+  class OmnetOutputCallback : public DataOutputCallback {
+public:
+    OmnetOutputCallback(std::ostream *scalar);
 
-      void OutputStatistic(std::string context,
-                           std::string name,
-                           const StatisticalSummary *statSum);
+    void OutputStatistic(std::string context,
+                         std::string name,
+                         const StatisticalSummary *statSum);
 
-      void OutputSingleton(std::string context,
-                           std::string name,
-                           int val);
+    void OutputSingleton(std::string context,
+                         std::string name,
+                         int val);
 
-      void OutputSingleton(std::string context,
-                           std::string name,
-                           uint32_t val);
+    void OutputSingleton(std::string context,
+                         std::string name,
+                         uint32_t val);
 
-      void OutputSingleton(std::string context,
-                           std::string name,
-                           double val);
+    void OutputSingleton(std::string context,
+                         std::string name,
+                         double val);
 
-      void OutputSingleton(std::string context,
-                           std::string name,
-                           std::string val);
+    void OutputSingleton(std::string context,
+                         std::string name,
+                         std::string val);
 
-      void OutputSingleton(std::string context,
-                           std::string name,
-                           Time val);
+    void OutputSingleton(std::string context,
+                         std::string name,
+                         Time val);
 
-    private:
-      std::ostream *m_scalar;
-      // end class OmnetOutputCallback
-    };
-
-    // end class OmnetDataOutput
+private:
+    std::ostream *m_scalar;
+    // end class OmnetOutputCallback
   };
 
-  // end namespace ns3
+  // end class OmnetDataOutput
+};
+
+// end namespace ns3
 };
 
 
