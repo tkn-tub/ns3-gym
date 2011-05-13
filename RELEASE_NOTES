@@ -78,6 +78,11 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1042 - AODV RERR implosion (missing RERR_RATELIMIT) 
    - bug 1097 - AODV routing entry set to be VALID mistakenly
    - bug 1047 - Multicast routes on nodes with >16 interfaces
+   - bug 1088 - Code in scratch directory assumes all modules are enabled
+   - bug 1108 - test.py -e option needs repair
+   - bug 1110 - Sort alphabetically and display Modules built in columns
+   - bug 957 - Issue with test.py 
+   - bug 1103 - Useless assignment in omnet-data-output.cc
 
 Known issues
 ------------
