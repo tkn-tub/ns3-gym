@@ -22,13 +22,13 @@
 // Packets destined for the CSMA device on node zero will be sent to the
 // device "thetap" on the linux Host.
 //
-//  +----------+                                                                  
-//  | external |                                                                  
-//  |  Linux   |                                                                  
-//  |   Host   |                                                                  
+//  +----------+
+//  | external |
+//  |  Linux   |
+//  |   Host   |
 //  |          |
-//  | "thetap" |                                                                  
-//  +----------+                                                                  
+//  | "thetap" |
+//  +----------+
 //       |           n0            n1            n2            n3
 //       |       +--------+    +--------+    +--------+    +--------+
 //       +-------|  tap   |    |        |    |        |    |        |

@@ -33,7 +33,7 @@ namespace ns3 {
  * \param len The length of the input buffer.
  * \returns A string containing a hex representation of the data in buffer.
  */
-  std::string
+std::string
 TapBufferToString (uint8_t *buffer, uint32_t len)
 {
   std::ostringstream oss;
@@ -63,7 +63,7 @@ TapBufferToString (uint8_t *buffer, uint32_t len)
  * \param len The length of the data that is valid in the buffer.
  * \returns True indicates a successful conversion.
  */
-  bool
+bool
 TapStringToBuffer (std::string s, uint8_t *buffer, uint32_t *len)
 {
   //
@@ -94,7 +94,7 @@ TapStringToBuffer (std::string s, uint8_t *buffer, uint32_t *len)
         {
           return false;
         }
-      
+
       //
       // And then read in the real bits and convert them.
       //
