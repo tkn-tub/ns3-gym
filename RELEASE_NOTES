@@ -74,6 +74,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1044 - Seconds (1e-9) creates Time that is not IsPositive ()
    - bug 1056 - CSMA: padding not handled correctly for LLC encapsulation
    - bug 1058 - documentation help to avoid InternetStackHelper pitfall
+   - bug 1054 - ipv6 InternetStackHelper EnablePcapIpv6All() broken
 
 Known issues
 ------------

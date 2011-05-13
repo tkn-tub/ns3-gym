@@ -657,7 +657,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   else
     {
       NS_LOG_WARN ("No route to host, drop!");
-      m_dropTrace (hdr, packet, DROP_NO_ROUTE, GetInterfaceForDevice(oif));
+      m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), GetInterfaceForDevice(oif));
     }
 }
 
@@ -677,7 +677,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
         {
           if (ipv6Interface->IsUp ())
             {
-              m_rxTrace (packet, interface);
+              m_rxTrace (packet, m_node->GetObject<Ipv6> (), interface);
               break;
             }
           else
@@ -685,7 +685,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
               NS_LOG_LOGIC ("Dropping received packet-- interface is down");
               Ipv6Header hdr;
               packet->RemoveHeader (hdr);
-              m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, interface);
+              m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
               return;
             }
         }
@@ -735,7 +735,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
                                  MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
     {
       NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
-      m_dropTrace (hdr, packet, DROP_NO_ROUTE, interface);
+      m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), interface);
     }
 }
 
@@ -789,21 +789,21 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
               /* IPv6 header is already added in fragments */
               for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
                 {
-                  m_txTrace (*it, interface);
+                  m_txTrace (*it, m_node->GetObject<Ipv6> (), interface);
                   outInterface->Send (*it, route->GetGateway ());
                 }
             }
           else
             {
               packet->AddHeader (ipHeader);
-              m_txTrace (packet, interface);
+              m_txTrace (packet, m_node->GetObject<Ipv6> (), interface);
               outInterface->Send (packet, route->GetGateway ());
             }
         }
       else
         {
           NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
-          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
+          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
         }
     }
   else
@@ -819,21 +819,21 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
               /* IPv6 header is already added in fragments */
               for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
                 {
-                  m_txTrace (*it, interface);
+                  m_txTrace (*it, m_node->GetObject<Ipv6> (), interface);
                   outInterface->Send (*it, ipHeader.GetDestinationAddress ());
                 }
             }
           else
             {
               packet->AddHeader (ipHeader);
-              m_txTrace (packet, interface);
+              m_txTrace (packet, m_node->GetObject<Ipv6> (), interface);
               outInterface->Send (packet, ipHeader.GetDestinationAddress ());
             }
         }
       else
         {
           NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << ipHeader.GetDestinationAddress ());
-          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
+          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv6> (), interface);
         }
     }
 }
@@ -857,7 +857,7 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
   if (ipHeader.GetHopLimit () == 0)
     {
       NS_LOG_WARN ("TTL exceeded.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, 0);
+      m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), 0);
       // Do not reply to ICMPv6 or to multicast IPv6 address
       if (ipHeader.GetNextHeader () != Icmpv6L4Protocol::PROT_NUMBER &&
           ipHeader.GetDestinationAddress ().IsMulticast () == false)
@@ -922,7 +922,7 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<c
           if (h.GetHopLimit () == 0)
             {
               NS_LOG_WARN ("TTL exceeded.  Drop.");
-              m_dropTrace (header, packet, DROP_TTL_EXPIRED, i);
+              m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), i);
               return;
             }
 
@@ -993,7 +993,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
                 {
                   GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, ip.GetSerializedSize () + nextHeaderPosition);
                 }
-              m_dropTrace (ip, p, DROP_UNKNOWN_PROTOCOL, iif);
+              m_dropTrace (ip, p, DROP_UNKNOWN_PROTOCOL, m_node->GetObject<Ipv6> (), iif);
               break;
             }
           else
@@ -1030,7 +1030,7 @@ void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipH
 {
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno);
-  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, 0);
+  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv6> (), 0);
 }
 
 Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol, uint16_t payloadSize, uint8_t ttl)
