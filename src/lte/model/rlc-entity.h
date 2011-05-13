@@ -40,7 +40,7 @@ public:
   static TypeId GetTypeId (void);
 
   RlcEntity (void);
-  
+
   /**
    * \brief Create the RLC entity
    * \param d the device where the RLC entity is created
@@ -67,7 +67,7 @@ public:
    */
   Ptr<Packet> Dequeue ();
 
-  
+
   /** 
    * \brief Set the bearer where the rlc entity is attached 
    * \param b the radio bearer

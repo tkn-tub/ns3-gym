@@ -53,7 +53,7 @@ public:
     /** the cqi feedback */
     int m_cqi; 
   };
-  
+
   /**
    * \brief a list of CQI feedbacks
    */

@@ -57,7 +57,7 @@ RrcEntity::RrcEntity ()
   m_downlinkNgbrBearersContainer = new BearersContainer ();
   m_uplinkGbrBearersContainer = new BearersContainer ();
   m_uplinkNgbrBearersContainer = new BearersContainer ();
-  
+
   m_defaultBearer = CreateObject<RadioBearerInstance> ();
 }
 
@@ -86,7 +86,7 @@ RrcEntity::DoDispose ()
   delete m_downlinkNgbrBearersContainer;
   delete m_uplinkGbrBearersContainer;
   delete m_uplinkNgbrBearersContainer;
-  
+
   m_defaultBearer->Dispose ();
   m_defaultBearer = 0;
   Object::DoDispose ();
@@ -100,7 +100,7 @@ RrcEntity::DisposeAllElements (BearersContainer *c)
       (*it)->Dispose ();
     }
 }
-    
+
 
 RrcEntity::BearersContainer*
 RrcEntity::GetDownlinkGbrBearers (void) const
@@ -169,7 +169,7 @@ RrcEntity::AddUplinkNgbrBearer (Ptr<RadioBearerInstance> bearer)
 Ptr<RadioBearerInstance>
 RrcEntity::Classify (Ptr<Packet> p) const
 {
-  
+
   NS_LOG_FUNCTION (this);
 
   Ptr<Packet> C_Packet = p->Copy ();
@@ -181,7 +181,7 @@ RrcEntity::Classify (Ptr<Packet> p) const
   LlcSnapHeader llc;
   C_Packet->RemoveHeader (llc);
 
-  
+
   Ipv4Header ipv4Header;
   C_Packet->RemoveHeader (ipv4Header);
   Ipv4Address source_address = ipv4Header.GetSource ();
@@ -258,7 +258,7 @@ RrcEntity::Classify (Ptr<Packet> p) const
     }
 
   NS_LOG_INFO ("\t\t\tError during the packet classification"); 
-  return 0;  
+  return 0;
 }
 
 

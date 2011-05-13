@@ -42,7 +42,7 @@ class PacketScheduler : public Object
 
 public:
   PacketScheduler ();
-  
+
   /**
    * Create a packet scheduler
    * \param enb the device where the packet scheduler works

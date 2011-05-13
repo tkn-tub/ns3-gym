@@ -81,21 +81,21 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
   Ptr<PdcchMapIdealControlMessage> msg = Create<PdcchMapIdealControlMessage> ();
 
-  
+
   //This scheduler takes one packet from each bearer
 
   std::vector< Ptr<RadioBearerInstance> >::iterator it;
-  
+
   //default bearer
-  if (!enb->GetRrcEntity ()->GetDefaultBearer ()->GetQueue ()->IsEmpty ())  
+  if (!enb->GetRrcEntity ()->GetDefaultBearer ()->GetQueue ()->IsEmpty ())
     {
       Ptr<Packet> p = enb->GetRrcEntity ()->GetDefaultBearer ()->GetRlcEntity ()->Dequeue ();
       pb->AddPacket (p);
     }
-  
+
   // GBR bearers
   for (it = enb->GetRrcEntity ()->GetDownlinkGbrBearers ()->begin (); 
-      it != enb->GetRrcEntity ()->GetDownlinkGbrBearers ()->end (); it++)
+       it != enb->GetRrcEntity ()->GetDownlinkGbrBearers ()->end (); it++)
     {
       if ((*it)->GetQueue ()->IsEmpty ())
         {
@@ -107,7 +107,7 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
 
   // NGBR bearers
   for (it = enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->begin (); 
-      it != enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->end (); it++)
+       it != enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->end (); it++)
     {
       if ((*it)->GetQueue ()->IsEmpty ())
         {
@@ -117,7 +117,7 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
         }
     }
 
-  
+
   if (pb->GetNPackets () == 0)
     {
       // The eNB Sends a virtual packet in order to allow UEs to compute SINR
@@ -136,11 +136,11 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
     }
 
 
-   enb->SetPacketToSend (pb);
+  enb->SetPacketToSend (pb);
 
-   GetMacEntity ()->GetObject<EnbMacEntity> ()->SendPdcchMapIdealControlMessage (msg);
+  GetMacEntity ()->GetObject<EnbMacEntity> ()->SendPdcchMapIdealControlMessage (msg);
 
-   enb->StartTransmission ();
+  enb->StartTransmission ();
 }
 
 

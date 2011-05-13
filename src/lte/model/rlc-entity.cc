@@ -103,7 +103,7 @@ RlcEntity::SetRadioBearer (Ptr<RadioBearerInstance> b)
   NS_LOG_FUNCTION (this << b);
   m_bearer = b;
 }
-  
+
 Ptr<RadioBearerInstance> 
 RlcEntity::GetRadioBearer (void)
 {

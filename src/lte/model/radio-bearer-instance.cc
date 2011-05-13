@@ -187,8 +187,8 @@ RadioBearerInstance::SetIpcsClassifierRecord (IpcsClassifierRecord* c)
   NS_LOG_FUNCTION (this << c);
   NS_ASSERT (m_ipcsClassifierRecord == 0);
   m_ipcsClassifierRecord = c;
-}  
-  
+}
+
 IpcsClassifierRecord* 
 RadioBearerInstance::GetIpcsClassifierRecord (void)
 {

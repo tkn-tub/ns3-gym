@@ -144,11 +144,11 @@ public:
     /** the direction */
     Direction m_direction;
     /** the sub channel */ 
-    int m_idSubChannel;     
+    int m_idSubChannel;
     /** the ue that receive the mapping */
     Ptr<LteNetDevice> m_ue;
     /** the selected msc */
-    double m_mcsIndex;     
+    double m_mcsIndex;
   };
 
   /**

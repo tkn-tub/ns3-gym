@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
   for (int i = 0; i < nbUE; i++)
     {
       ue.at (i) = ueDevs.Get (i)->GetObject<UeNetDevice> ();
-      lte.RegisterUeToTheEnb (ue. at (i), enb);
+      lte.RegisterUeToTheEnb (ue.at (i), enb);
     }
 
 
@@ -151,14 +151,14 @@ int main (int argc, char *argv[])
                                                          "255.255.255.0",
                                                          ENBinterface.GetAddress (0),
                                                          "255.255.255.0",
-                                                          100, 100, 0, 10000, 17, 1); 
+                                                         100, 100, 0, 10000, 17, 1);
   bearer->SetIpcsClassifierRecord (ipcs);
 
   enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer);
 
   bearer = 0;
 
-  
+
 
 
 

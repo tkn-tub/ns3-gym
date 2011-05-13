@@ -141,15 +141,15 @@ int main (int argc, char *argv[])
   bearer_1->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
   bearer_1->SetBearerType (RadioBearerInstance::BEARER_TYPE_DRB);
   IpcsClassifierRecord *ipcs_1 = new IpcsClassifierRecord (UEinterfaces.GetAddress (0),
-                                                                     "255.255.255.0",
-                                                                     ENBinterface.GetAddress (0),
-                                                                     "255.255.255.0",
-                                                                     100, 100, 0, 10000, 17, 1); 
+                                                           "255.255.255.0",
+                                                           ENBinterface.GetAddress (0),
+                                                           "255.255.255.0",
+                                                           100, 100, 0, 10000, 17, 1);
   bearer_1->SetIpcsClassifierRecord (ipcs_1);
   enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer_1);
 
 
-  
+
 
 
   //******* FLOW N° 2 *********
@@ -175,10 +175,10 @@ int main (int argc, char *argv[])
   bearer_2->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
   bearer_2->SetBearerType (RadioBearerInstance::BEARER_TYPE_DRB);
   IpcsClassifierRecord *ipcs_2 = new IpcsClassifierRecord (UEinterfaces.GetAddress (1),
-                                                                     "255.255.255.0",
-                                                                     ENBinterface.GetAddress (0),
-                                                                     "255.255.255.0",
-                                                                     100, 100, 0, 10000, 17, 1); 
+                                                           "255.255.255.0",
+                                                           ENBinterface.GetAddress (0),
+                                                           "255.255.255.0",
+                                                           100, 100, 0, 10000, 17, 1);
   bearer_2->SetIpcsClassifierRecord (ipcs_2);
   enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer_2);
 
@@ -208,10 +208,10 @@ int main (int argc, char *argv[])
   bearer_3->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
   bearer_3->SetBearerType (RadioBearerInstance::BEARER_TYPE_DRB);
   IpcsClassifierRecord *ipcs_3 = new IpcsClassifierRecord (UEinterfaces.GetAddress (2),
-                                                                     "255.255.255.0",
-                                                                     ENBinterface.GetAddress (0),
-                                                                     "255.255.255.0",
-                                                                     100, 100, 0, 10000, 17, 1); 
+                                                           "255.255.255.0",
+                                                           ENBinterface.GetAddress (0),
+                                                           "255.255.255.0",
+                                                           100, 100, 0, 10000, 17, 1);
   bearer_3->SetIpcsClassifierRecord (ipcs_3);
   enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer_3);
 

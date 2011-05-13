@@ -38,7 +38,7 @@ class LteMacQueue : public Object
 public:
   static TypeId GetTypeId (void);
   LteMacQueue (void);
-  
+
   /**
    * Create the Mac queue defining its maximum size
    * \param maxSize the maximum size of the queue

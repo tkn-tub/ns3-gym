@@ -67,11 +67,11 @@ public:
   ~LteHelper (void);
 
 
-   /**
-   * \brief Add mobility model to a physical device
-   * \param phy the physical device
-   * \param m the mobility model 
-   */ 
+  /**
+  * \brief Add mobility model to a physical device
+  * \param phy the physical device
+  * \param m the mobility model
+  */
   void AddMobility (Ptr<LtePhy> phy, Ptr<MobilityModel>m);
 
 
@@ -94,16 +94,16 @@ public:
    */
   void EnableLogComponents (void);
 
-   /**
-   * \brief Create a downlink channel realization between eNB and UE
-   * \param enbMobility the enb mobility model
-   * \param ueMobility the ue mobility model
-   * \param phy the physical layer of the UE 
-   */
+  /**
+  * \brief Create a downlink channel realization between eNB and UE
+  * \param enbMobility the enb mobility model
+  * \param ueMobility the ue mobility model
+  * \param phy the physical layer of the UE
+  */
   void AddDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, 
-                                         Ptr<MobilityModel> ueMobility,
-                                         Ptr<LtePhy> phy);
-   
+                                      Ptr<MobilityModel> ueMobility,
+                                      Ptr<LtePhy> phy);
+
 
 private:
   /**

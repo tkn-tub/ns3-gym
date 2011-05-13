@@ -65,7 +65,7 @@ LteHelper::CreatePhy (Ptr<SpectrumChannel> dlChannel, Ptr<SpectrumChannel> ulCha
   if (t == LteHelper::DEVICE_TYPE_ENODEB)
     {
       phy =  CreateObject<EnbLtePhy> ();
-      
+
       dl = CreateObject<EnbLteSpectrumPhy> ();
       ul = CreateObject<EnbLteSpectrumPhy> ();
     }
@@ -73,7 +73,7 @@ LteHelper::CreatePhy (Ptr<SpectrumChannel> dlChannel, Ptr<SpectrumChannel> ulCha
   if (t == LteHelper::DEVICE_TYPE_USER_EQUIPMENT)
     {
       phy =  CreateObject<UeLtePhy> ();
-      
+
       dl = CreateObject<UeLteSpectrumPhy> ();
       ul = CreateObject<UeLteSpectrumPhy> ();
     }
@@ -83,22 +83,22 @@ LteHelper::CreatePhy (Ptr<SpectrumChannel> dlChannel, Ptr<SpectrumChannel> ulCha
 
   if (t == LteHelper::DEVICE_TYPE_ENODEB)
     {
-       dl->SetChannel (dlChannel);
-       ul->SetChannel (ulChannel);
+      dl->SetChannel (dlChannel);
+      ul->SetChannel (ulChannel);
 
-       m_downlinkChannel->AddRx (dl);
-       m_uplinkChannel->AddRx (ul);
+      m_downlinkChannel->AddRx (dl);
+      m_uplinkChannel->AddRx (ul);
     }
   else if (t == LteHelper::DEVICE_TYPE_USER_EQUIPMENT)
     {
-       dl->SetChannel (dlChannel);
-       ul->SetChannel (ulChannel);
+      dl->SetChannel (dlChannel);
+      ul->SetChannel (ulChannel);
 
-       m_downlinkChannel->AddRx (dl);
+      m_downlinkChannel->AddRx (dl);
     }
   else
     {
-       NS_FATAL_ERROR ("LteHelper: Invalid Device type");
+      NS_FATAL_ERROR ("LteHelper: Invalid Device type");
     }
 
   return phy;
@@ -117,7 +117,7 @@ LteHelper::CreatePhy (NetDeviceType t)
   if (t == LteHelper::DEVICE_TYPE_ENODEB)
     {
       phy =  CreateObject<EnbLtePhy> ();
-      
+
       dl = CreateObject<EnbLteSpectrumPhy> ();
       ul = CreateObject<EnbLteSpectrumPhy> ();
     }
@@ -125,7 +125,7 @@ LteHelper::CreatePhy (NetDeviceType t)
   if (t == LteHelper::DEVICE_TYPE_USER_EQUIPMENT)
     {
       phy =  CreateObject<UeLtePhy> ();
-      
+
       dl = CreateObject<UeLteSpectrumPhy> ();
       ul = CreateObject<UeLteSpectrumPhy> ();
     }
@@ -135,22 +135,22 @@ LteHelper::CreatePhy (NetDeviceType t)
 
   if (t == LteHelper::DEVICE_TYPE_ENODEB)
     {
-       dl->SetChannel (m_downlinkChannel);
-       ul->SetChannel (m_uplinkChannel);
+      dl->SetChannel (m_downlinkChannel);
+      ul->SetChannel (m_uplinkChannel);
 
-       m_downlinkChannel->AddRx (dl);
-       m_uplinkChannel->AddRx (ul);
+      m_downlinkChannel->AddRx (dl);
+      m_uplinkChannel->AddRx (ul);
     }
   else if (t == LteHelper::DEVICE_TYPE_USER_EQUIPMENT)
     {
-       dl->SetChannel (m_downlinkChannel);
-       ul->SetChannel (m_uplinkChannel);
+      dl->SetChannel (m_downlinkChannel);
+      ul->SetChannel (m_uplinkChannel);
 
-       m_downlinkChannel->AddRx (dl);
+      m_downlinkChannel->AddRx (dl);
     }
   else
     {
-       NS_FATAL_ERROR ("LteHelper: Invalid Device type");
+      NS_FATAL_ERROR ("LteHelper: Invalid Device type");
     }
 
   return phy;
@@ -236,12 +236,12 @@ LteHelper::Install (NodeContainer c, NetDeviceType type)
           device = dev;
           phy = p;
         }
-     else
-       {
-         NS_FATAL_ERROR ("LteHelper: Invalid Device type");
-       }
+      else
+        {
+          NS_FATAL_ERROR ("LteHelper: Invalid Device type");
+        }
 
-      
+
 
       device->SetAddress (Mac48Address::Allocate ());
       phy->SetDevice (device);
@@ -289,7 +289,7 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("EnbLteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("UeLteSpectrumPhy", LOG_LEVEL_ALL);
-  
+
   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
@@ -313,8 +313,8 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("UeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("UeRecord", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("PacketScheduler", LOG_LEVEL_ALL);  
-  LogComponentEnable ("SimplePacketScheduler", LOG_LEVEL_ALL);  
+  LogComponentEnable ("PacketScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("SimplePacketScheduler", LOG_LEVEL_ALL);
 
 
 }

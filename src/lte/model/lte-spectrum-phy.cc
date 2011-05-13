@@ -173,7 +173,7 @@ LteSpectrumPhy::GetSpectrumType ()
   return st;
 }
 
-     
+
 void
 LteSpectrumPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
 {

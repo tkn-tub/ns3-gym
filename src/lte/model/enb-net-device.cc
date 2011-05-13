@@ -172,7 +172,7 @@ EnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
 
   if (protocolNumber != 2048 || bearer == 0)
     {
-       bearer = GetRrcEntity ()->GetDefaultBearer (); 
+      bearer = GetRrcEntity ()->GetDefaultBearer ();
     }
 
   return bearer->Enqueue (packet);
