@@ -61,7 +61,7 @@ public:
   // Run simulation until a given (simulated, absolute) time is reached
   void SimulatorRunUntil (Time time);
 
-  static void Pause (std::string const &message);  
+  static void Pause (std::string const &message);
   std::vector<std::string> GetPauseMessages () const;
 
   struct TransmissionSample
@@ -124,7 +124,7 @@ public:
     uint32_t nodeId;
     std::vector<NetDeviceStatistics> statistics;
   };
-  
+
   std::vector<NodeStatistics> GetNodesStatistics () const;
 
   enum PacketCaptureMode {
@@ -147,7 +147,7 @@ public:
 
   // -#- @lineX1(direction=inout); @lineY1(direction=inout); @lineX2(direction=inout); @lineY2(direction=inout) -#-
   static void LineClipping (double boundsX1, double boundsY1, double boundsX2, double boundsY2, double &lineX1, double &lineY1, double &lineX2, double &lineY2); // don't break this line or pybindgen will not be able to pick up the above annotation :(
-  
+
 
 private:
 
