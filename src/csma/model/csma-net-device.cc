@@ -322,6 +322,13 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
         p->AddHeader (llc);
 
         //
+        // This corresponds to the length interpretation of the lengthType 
+        // field but with an LLC/SNAP header added to the payload as in 
+        // IEEE 802.2
+        //
+        lengthType = p->GetSize ();
+
+        //
         // All Ethernet frames must carry a minimum payload of 46 bytes.  The 
         // LLC SNAP header counts as part of this payload.  We need to padd out
         // if we don't have enough bytes.  These must be real bytes since they 
@@ -335,12 +342,7 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
             p->AddAtEnd (padd);
           }
 
-        //
-        // This corresponds to the length interpretation of the lengthType field,
-        // but with an LLC/SNAP header added to the payload as in IEEE 802.2
-        //      
-        lengthType = p->GetSize ();
-        NS_ASSERT_MSG (lengthType <= GetMtu (),
+        NS_ASSERT_MSG (p->GetSize () <= GetMtu (),
           "CsmaNetDevice::AddHeader(): 802.3 Length/Type field with LLC/SNAP: "
           "length interpretation must not exceed device frame size minus overhead");
       }
@@ -721,6 +723,14 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   //
   if (header.GetLengthType () <= 1500)
     {
+      NS_ASSERT (packet->GetSize () >= header.GetLengthType ());
+      uint32_t padlen = packet->GetSize () - header.GetLengthType ();
+      NS_ASSERT (padlen <= 46);
+      if (padlen > 0)
+        {
+          packet->RemoveAtEnd (padlen);
+        }
+
       LlcSnapHeader llc;
       packet->RemoveHeader (llc);
       protocol = llc.GetType ();
