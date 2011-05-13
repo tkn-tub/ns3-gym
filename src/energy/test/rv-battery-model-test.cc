@@ -780,91 +780,91 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
   NS_ASSERT (loads.size () == timeStamps.size ());
 
   // create single node
-    NodeContainer c;
-    c.Create (1);
+  NodeContainer c;
+  c.Create (1);
 
-    std::string phyMode ("DsssRate1Mbps");
+  std::string phyMode ("DsssRate1Mbps");
 
-    // disable fragmentation for frames below 2200 bytes
-    Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold",
-                        StringValue ("2200"));
-    // turn off RTS/CTS for frames below 2200 bytes
-    Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold",
-                        StringValue ("2200"));
-    // Fix non-unicast data rate to be the same as that of unicast
-    Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
-                        StringValue (phyMode));
+  // disable fragmentation for frames below 2200 bytes
+  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold",
+                      StringValue ("2200"));
+  // turn off RTS/CTS for frames below 2200 bytes
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold",
+                      StringValue ("2200"));
+  // Fix non-unicast data rate to be the same as that of unicast
+  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
+                      StringValue (phyMode));
 
-    // install YansWifiPhy
-    WifiHelper wifi;
-    wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  // install YansWifiPhy
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
 
-    YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-    /*
-     * This is one parameter that matters when using FixedRssLossModel, set it to
-     * zero; otherwise, gain will be added.
-     */
-    wifiPhy.Set ("RxGain", DoubleValue (0));
-    // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
-    wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
+  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
+  /*
+   * This is one parameter that matters when using FixedRssLossModel, set it to
+   * zero; otherwise, gain will be added.
+   */
+  wifiPhy.Set ("RxGain", DoubleValue (0));
+  // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
-    YansWifiChannelHelper wifiChannel ;
-    wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-    wifiPhy.SetChannel (wifiChannel.Create ());
+  YansWifiChannelHelper wifiChannel ;
+  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
+  wifiPhy.SetChannel (wifiChannel.Create ());
 
-    // Add a non-QoS upper MAC, and disable rate control
-    NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-    wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                  "DataMode", StringValue(phyMode),
-                                  "ControlMode", StringValue(phyMode));
-    // Set it to ad-hoc mode
-    wifiMac.SetType ("ns3::AdhocWifiMac");
-    NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);
+  // Add a non-QoS upper MAC, and disable rate control
+  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue(phyMode),
+                                "ControlMode", StringValue(phyMode));
+  // Set it to ad-hoc mode
+  wifiMac.SetType ("ns3::AdhocWifiMac");
+  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);
 
-    // Create and install battery model and device models
-    // RV battery model
-    RvBatteryModelHelper rvModelHelper;
-    // Set alpha & beta values
-    rvModelHelper.Set ("RvBatteryModelAlphaValue", DoubleValue (m_alpha));
-    rvModelHelper.Set ("RvBatteryModelBetaValue", DoubleValue (m_beta));
-    // install source
-    EnergySourceContainer sources = rvModelHelper.Install (c);
-    // device energy model
-    WifiRadioEnergyModelHelper radioEnergyHelper;
-    // set VariableLoadTestIDLE current, which will be the constant load
-    radioEnergyHelper.Set ("IdleCurrentA", DoubleValue (loads[0]));
-    // install on node
-    DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install (devices, sources);
+  // Create and install battery model and device models
+  // RV battery model
+  RvBatteryModelHelper rvModelHelper;
+  // Set alpha & beta values
+  rvModelHelper.Set ("RvBatteryModelAlphaValue", DoubleValue (m_alpha));
+  rvModelHelper.Set ("RvBatteryModelBetaValue", DoubleValue (m_beta));
+  // install source
+  EnergySourceContainer sources = rvModelHelper.Install (c);
+  // device energy model
+  WifiRadioEnergyModelHelper radioEnergyHelper;
+  // set VariableLoadTestIDLE current, which will be the constant load
+  radioEnergyHelper.Set ("IdleCurrentA", DoubleValue (loads[0]));
+  // install on node
+  DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install (devices, sources);
 
 
-    Ptr<WifiRadioEnergyModel> wifiDevicePtr = DynamicCast<WifiRadioEnergyModel> (deviceModels.Get (0));
-    // schedule load change events
-    for (uint32_t i = 1; i < loads.size (); i++)
-      {
-        Simulator::Schedule (timeStamps[i], &WifiRadioEnergyModel::SetIdleCurrentA,
-                             wifiDevicePtr, loads[i]);
-      }
+  Ptr<WifiRadioEnergyModel> wifiDevicePtr = DynamicCast<WifiRadioEnergyModel> (deviceModels.Get (0));
+  // schedule load change events
+  for (uint32_t i = 1; i < loads.size (); i++)
+    {
+      Simulator::Schedule (timeStamps[i], &WifiRadioEnergyModel::SetIdleCurrentA,
+                           wifiDevicePtr, loads[i]);
+    }
 
-    // run simulation
-    Simulator::Stop (Seconds (70000.0));
-    Simulator::Run ();
+  // run simulation
+  Simulator::Stop (Seconds (70000.0));
+  Simulator::Run ();
 
-    Time actualLifetime;
-    Ptr<RvBatteryModel> srcPtr = DynamicCast<RvBatteryModel> (sources.Get (0));
-    actualLifetime = srcPtr->GetLifetime ();
+  Time actualLifetime;
+  Ptr<RvBatteryModel> srcPtr = DynamicCast<RvBatteryModel> (sources.Get (0));
+  actualLifetime = srcPtr->GetLifetime ();
 
-    NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
-    NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
-    NS_LOG_DEBUG ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
 
-    //NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
-    NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds (), expLifetime.GetSeconds (),
-                               120, // error tolerance = 120s
-                               "Incorrect lifetime!");
+  //NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
+  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds (), expLifetime.GetSeconds (),
+                                          120, // error tolerance = 120s
+                                          "Incorrect lifetime!");
 
-    Simulator::Destroy ();
+  Simulator::Destroy ();
 
-    return false; // error free
+  return false;   // error free
 }
 
 // -------------------------------------------------------------------------- //

@@ -121,7 +121,7 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (false, (models.GetN () == 0), "Model list is empty!");
   // get pointer
   Ptr<WifiRadioEnergyModel> devModel =
-      DynamicCast<WifiRadioEnergyModel> (models.Get (0));
+    DynamicCast<WifiRadioEnergyModel> (models.Get (0));
   // check pointer
   NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (0, devModel, "NULL pointer to device model!");
 
@@ -191,7 +191,7 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   NS_LOG_DEBUG ("Difference is " << estRemainingEnergy - remainingEnergy);
   // check remaining energy
   NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (remainingEnergy, estRemainingEnergy, m_tolerance,
-                             "Incorrect remaining energy!");
+                                          "Incorrect remaining energy!");
 
   // obtain radio state
   WifiPhy::State endState = devModel->GetCurrentState ();
