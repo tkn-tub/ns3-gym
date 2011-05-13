@@ -65,7 +65,7 @@ UdpEchoClient::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("Tx", "A new packet is created and is sent",
                      MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -301,7 +301,7 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " <<
-            address.GetIpv4());
+                       address.GetIpv4());
         }
     }
 }

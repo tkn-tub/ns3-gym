@@ -45,7 +45,7 @@ UdpEchoServer::GetTypeId (void)
                    UintegerValue (9),
                    MakeUintegerAccessor (&UdpEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -119,7 +119,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-            address.GetIpv4());
+                       address.GetIpv4());
 
           packet->RemoveAllPacketTags ();
           packet->RemoveAllByteTags ();

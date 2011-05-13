@@ -56,12 +56,12 @@ UdpServer::GetTypeId (void)
                    MakeUintegerAccessor (&UdpServer::GetPacketWindowSize,
                                          &UdpServer::SetPacketWindowSize),
                    MakeUintegerChecker<uint16_t> (8,256))
-    ;
+  ;
   return tid;
 }
 
 UdpServer::UdpServer ()
- : m_lossCounter (0)
+  : m_lossCounter (0)
 {
   NS_LOG_FUNCTION (this);
   m_received=0;

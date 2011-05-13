@@ -51,7 +51,7 @@ public:
   Time GetTs (void) const;
 
   static TypeId GetTypeId (void);
- private:
+private:
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;

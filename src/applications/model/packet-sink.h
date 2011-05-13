@@ -99,7 +99,7 @@ private:
   void HandleAccept (Ptr<Socket>, const Address& from);
   void HandlePeerClose(Ptr<Socket>);
   void HandlePeerError(Ptr<Socket>);
-  
+
   // In the case of TCP, each socket accept returns a new socket, so the 
   // listening socket is stored seperately from the accepted sockets
   Ptr<Socket>     m_socket;       // Listening socket
@@ -109,7 +109,7 @@ private:
   uint32_t        m_totalRx;      // Total bytes received
   TypeId          m_tid;          // Protocol TypeId
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
-  
+
 };
 
 } // namespace ns3

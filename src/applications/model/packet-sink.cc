@@ -54,7 +54,7 @@ PacketSink::GetTypeId (void)
                    MakeTypeIdChecker ())
     .AddTraceSource ("Rx", "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSink::m_rxTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -74,7 +74,7 @@ uint32_t PacketSink::GetTotalRx() const
 {
   return m_totalRx;
 }
-  
+
 Ptr<Socket>
 PacketSink::GetListeningSocket (void) const
 {
@@ -128,22 +128,22 @@ void PacketSink::StartApplication()    // Called at time specified by Start
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
-            MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
-            MakeCallback(&PacketSink::HandleAccept, this));
+    MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
+    MakeCallback(&PacketSink::HandleAccept, this));
   m_socket->SetCloseCallbacks (
-            MakeCallback(&PacketSink::HandlePeerClose, this),
-            MakeCallback(&PacketSink::HandlePeerError, this));
+    MakeCallback(&PacketSink::HandlePeerClose, this),
+    MakeCallback(&PacketSink::HandlePeerError, this));
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
   NS_LOG_FUNCTION (this);
   while(!m_socketList.empty()) //these are accepted sockets, close them
-  {
-    Ptr<Socket> acceptedSocket = m_socketList.front();
-    m_socketList.pop_front();
-    acceptedSocket->Close();
-  }
+    {
+      Ptr<Socket> acceptedSocket = m_socketList.front();
+      m_socketList.pop_front();
+      acceptedSocket->Close();
+    }
   if (m_socket) 
     {
       m_socket->Close ();
@@ -160,7 +160,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
     {
       if (packet->GetSize() == 0)
         { //EOF
-	  break;
+          break;
         }
       if (InetSocketAddress::IsMatchingType (from))
         {
@@ -168,8 +168,8 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
           m_totalRx += packet->GetSize();
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
                        address.GetIpv4() << " [" << address << "]" 
-                       << " total Rx " << m_totalRx);
-        }    
+                                   << " total Rx " << m_totalRx);
+        }
       m_rxTrace (packet, from);
     }
 }

@@ -37,10 +37,10 @@ V4Ping::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<V4Ping> ()
     .AddAttribute ("Remote", 
-		   "The address of the machine we want to ping.",
-		   Ipv4AddressValue (),
-		   MakeIpv4AddressAccessor (&V4Ping::m_remote),
-		   MakeIpv4AddressChecker ())
+                   "The address of the machine we want to ping.",
+                   Ipv4AddressValue (),
+                   MakeIpv4AddressAccessor (&V4Ping::m_remote),
+                   MakeIpv4AddressChecker ())
     .AddAttribute ("Verbose",
                    "Produce usual output.",
                    BooleanValue (false),
@@ -55,9 +55,9 @@ V4Ping::GetTypeId (void)
                    MakeUintegerAccessor (&V4Ping::m_size),
                    MakeUintegerChecker<uint32_t> (16))
     .AddTraceSource ("Rtt",
-		     "The rtt calculated by the ping.",
-		     MakeTraceSourceAccessor (&V4Ping::m_traceRtt));
-    ;
+                     "The rtt calculated by the ping.",
+                     MakeTraceSourceAccessor (&V4Ping::m_traceRtt));
+  ;
   return tid;
 }
 
@@ -71,7 +71,8 @@ V4Ping::V4Ping ()
 {
 }
 V4Ping::~V4Ping ()
-{}
+{
+}
 
 void
 V4Ping::DoDispose (void)
@@ -88,9 +89,9 @@ V4Ping::GetApplicationId (void) const
   for (uint32_t i = 0; i < node->GetNApplications (); ++i)
     {
       if (node->GetApplication (i) == this)
-	{
-	  return i;
-	}
+        {
+          return i;
+        }
     }
   NS_ASSERT_MSG (false, "forgot to add application to node");
   return 0; // quiet compiler
@@ -115,46 +116,46 @@ V4Ping::Receive (Ptr<Socket> socket)
       Icmpv4Header icmp;
       p->RemoveHeader (icmp);
       if (icmp.GetType () == Icmpv4Header::ECHO_REPLY)
-	{
-	  Icmpv4Echo echo;
-	  p->RemoveHeader (echo);
-	  std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
+        {
+          Icmpv4Echo echo;
+          p->RemoveHeader (echo);
+          std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
 
-	  if (i != m_sent.end () && echo.GetIdentifier () == 0)
-	    {
+          if (i != m_sent.end () && echo.GetIdentifier () == 0)
+            {
               uint32_t buf[m_size / 4];
-	      uint32_t dataSize = echo.GetDataSize ();
+              uint32_t dataSize = echo.GetDataSize ();
               uint32_t nodeId;
               uint32_t appId;
-	      if (dataSize == sizeof(buf))
-		{
+              if (dataSize == sizeof(buf))
+                {
                   echo.GetData ((uint8_t *)buf);
                   Read32 ((const uint8_t *) &buf[0], nodeId);
                   Read32 ((const uint8_t *) &buf[1], appId);
 
-		  if (nodeId == GetNode ()->GetId () &&
-		      appId == GetApplicationId ())
-		    {
-		      Time sendTime = i->second;
-		      NS_ASSERT (Simulator::Now () >= sendTime);
-		      Time delta = Simulator::Now () - sendTime;
-		      
-		      m_sent.erase (i);
-		      m_avgRtt.Update (delta.GetMilliSeconds());
-		      m_recv++;
-		      m_traceRtt (delta);
-		      
-		      if (m_verbose)
-		        {
-		          std::cout << recvSize << " bytes from " << realFrom.GetIpv4() << ":"
+                  if (nodeId == GetNode ()->GetId () &&
+                      appId == GetApplicationId ())
+                    {
+                      Time sendTime = i->second;
+                      NS_ASSERT (Simulator::Now () >= sendTime);
+                      Time delta = Simulator::Now () - sendTime;
+
+                      m_sent.erase (i);
+                      m_avgRtt.Update (delta.GetMilliSeconds());
+                      m_recv++;
+                      m_traceRtt (delta);
+
+                      if (m_verbose)
+                        {
+                          std::cout << recvSize << " bytes from " << realFrom.GetIpv4() << ":"
                                     << " icmp_seq=" << echo.GetSequenceNumber ()
                                     << " ttl=" << (unsigned)ipv4.GetTtl ()
                                     << " time=" << delta.GetMilliSeconds() << " ms\n";
-		        }
-		    }
-		}
-	    }
-	}
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -195,7 +196,7 @@ V4Ping::Send ()
   uint8_t data[m_size];
   for (uint32_t i = 0; i < m_size; ++i) data[i] = 0;
   NS_ASSERT (m_size >= 16);
-  
+
   uint32_t tmp = GetNode ()->GetId ();
   Write32 (&data[0 * sizeof(uint32_t)], tmp);
 
@@ -215,20 +216,20 @@ V4Ping::Send ()
   p->AddHeader (header);
   m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now()));
   m_socket->Send (p, 0);
-  m_next = Simulator::Schedule (m_interval, & V4Ping::Send, this);
+  m_next = Simulator::Schedule (m_interval, &V4Ping::Send, this);
 }
 
 void 
 V4Ping::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_started = Simulator::Now ();
   if (m_verbose)
     {
       std::cout << "PING  " << m_remote << " 56(84) bytes of data.\n";
     }
-  
+
   m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
   NS_ASSERT (m_socket != 0);
   m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
@@ -240,7 +241,7 @@ V4Ping::StartApplication (void)
   InetSocketAddress dst = InetSocketAddress (m_remote, 0);
   status = m_socket->Connect (dst);
   NS_ASSERT (status != -1);
-  
+
   Send ();
 }
 void 
@@ -249,20 +250,20 @@ V4Ping::StopApplication (void)
   NS_LOG_FUNCTION (this);
   m_next.Cancel();
   m_socket->Close ();
-  
+
   if (m_verbose)
     {
       std::ostringstream os;
       os.precision (4);
       os << "--- " << m_remote << " ping statistics ---\n" 
-                << m_seq << " packets transmitted, " << m_recv << " received, " 
-                << ((m_seq - m_recv) * 100 / m_seq) << "% packet loss, "
-                << "time " << (Simulator::Now () - m_started).GetMilliSeconds () << "ms\n";
-      
+         << m_seq << " packets transmitted, " << m_recv << " received, "
+         << ((m_seq - m_recv) * 100 / m_seq) << "% packet loss, "
+         << "time " << (Simulator::Now () - m_started).GetMilliSeconds () << "ms\n";
+
       if (m_avgRtt.Count () > 0)
         os << "rtt min/avg/max/mdev = " << m_avgRtt.Min() << "/" << m_avgRtt.Avg() << "/"
-                                               << m_avgRtt.Max() << "/" << m_avgRtt.Stddev()
-                                               << " ms\n";
+           << m_avgRtt.Max() << "/" << m_avgRtt.Stddev()
+           << " ms\n";
       std::cout << os.str();
     }
 }
