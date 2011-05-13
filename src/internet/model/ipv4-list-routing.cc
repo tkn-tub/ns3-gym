@@ -36,13 +36,13 @@ Ipv4ListRouting::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4ListRouting")
     .SetParent<Ipv4RoutingProtocol> ()
     .AddConstructor<Ipv4ListRouting> ()
-    ;
+  ;
   return tid;
 }
 
 
 Ipv4ListRouting::Ipv4ListRouting () 
- : m_ipv4 (0)
+  : m_ipv4 (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -72,14 +72,14 @@ void
 Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () 
-    << " Time: " << Simulator::Now().GetSeconds () << "s " 
-    << "Ipv4ListRouting table" << std::endl;
+                        << " Time: " << Simulator::Now().GetSeconds () << "s "
+                        << "Ipv4ListRouting table" << std::endl;
   for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
-      i != m_routingProtocols.end (); i++)
-      {
-        *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
-        (*i).second->PrintRoutingTable (stream);
-      }
+       i != m_routingProtocols.end (); i++)
+    {
+      *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
+      (*i).second->PrintRoutingTable (stream);
+    }
   *stream->GetStream () << std::endl;
 }
 
@@ -179,7 +179,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
           return true;
         }
     }
-  // No routing protocol has found a route.  
+  // No routing protocol has found a route.
   return retVal;
 }
 
@@ -193,7 +193,7 @@ Ipv4ListRouting::NotifyInterfaceUp (uint32_t interface)
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyInterfaceUp (interface);
-    }  
+    }
 }
 void 
 Ipv4ListRouting::NotifyInterfaceDown (uint32_t interface)
@@ -205,7 +205,7 @@ Ipv4ListRouting::NotifyInterfaceDown (uint32_t interface)
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyInterfaceDown (interface);
-    }  
+    }
 }
 void 
 Ipv4ListRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
@@ -217,7 +217,7 @@ Ipv4ListRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress addr
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyAddAddress (interface, address);
-    }  
+    }
 }
 void 
 Ipv4ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
@@ -229,7 +229,7 @@ Ipv4ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress a
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyRemoveAddress (interface, address);
-    }  
+    }
 }
 void 
 Ipv4ListRouting::SetIpv4 (Ptr<Ipv4> ipv4)
@@ -242,7 +242,7 @@ Ipv4ListRouting::SetIpv4 (Ptr<Ipv4> ipv4)
        rprotoIter++)
     {
       (*rprotoIter).second->SetIpv4 (ipv4);
-    }  
+    }
   m_ipv4 = ipv4;
 }
 

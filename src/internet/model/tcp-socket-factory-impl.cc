@@ -26,13 +26,14 @@ namespace ns3 {
 
 TcpSocketFactoryImpl::TcpSocketFactoryImpl ()
   : m_tcp (0)
-{}
+{
+}
 TcpSocketFactoryImpl::~TcpSocketFactoryImpl ()
 {
   NS_ASSERT (m_tcp == 0);
 }
 
-void 
+void
 TcpSocketFactoryImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
 {
   m_tcp = tcp;

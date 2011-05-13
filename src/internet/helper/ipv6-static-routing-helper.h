@@ -80,31 +80,31 @@ public:
    * \brief Add a multicast route to a node and net device using explicit 
    * Ptr<Node> and Ptr<NetDevice>
    */
-  void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,  
-    Ptr<NetDevice> input, NetDeviceContainer output);
+  void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,
+                          Ptr<NetDevice> input, NetDeviceContainer output);
 
   /**
    * \brief Add a multicast route to a node and device using a name string 
    * previously associated to the node using the Object Name Service and a
    * Ptr<NetDevice>
    */
-  void AddMulticastRoute (std::string n, Ipv6Address source, Ipv6Address group,  
-    Ptr<NetDevice> input, NetDeviceContainer output);
+  void AddMulticastRoute (std::string n, Ipv6Address source, Ipv6Address group,
+                          Ptr<NetDevice> input, NetDeviceContainer output);
 
   /**
    * \brief Add a multicast route to a node and device using a Ptr<Node> and a 
    * name string previously associated to the device using the Object Name Service.
    */
-  void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,  
-    std::string inputName, NetDeviceContainer output);
+  void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,
+                          std::string inputName, NetDeviceContainer output);
 
   /**
    * \brief Add a multicast route to a node and device using name strings
    * previously associated to both the node and device using the Object Name 
    * Service.
    */
-  void AddMulticastRoute (std::string nName, Ipv6Address source, Ipv6Address group,  
-    std::string inputName, NetDeviceContainer output);
+  void AddMulticastRoute (std::string nName, Ipv6Address source, Ipv6Address group,
+                          std::string inputName, NetDeviceContainer output);
 
 #if 0
   /**

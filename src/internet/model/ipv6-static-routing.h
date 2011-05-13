@@ -152,7 +152,7 @@ public:
 
   /**
    * \brief Get a metric for route from the static unicast routing table.
-   * \param index The index (into the routing table) of the route to retrieve.  
+   * \param index The index (into the routing table) of the route to retrieve.
    * \return If route is set, the metric is returned. If not, an infinity metric (0xffffffff) is returned
    */
   uint32_t GetMetric (uint32_t index);

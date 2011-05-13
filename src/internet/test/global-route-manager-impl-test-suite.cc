@@ -39,7 +39,8 @@ public:
 
 GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()
   : TestCase("GlobalRouteManagerImplTestCase")
-{}
+{
+}
 void
 GlobalRouteManagerImplTestCase::DoRun(void)
 {
@@ -79,16 +80,16 @@ GlobalRouteManagerImplTestCase::DoRun(void)
   //
   // Router 0
   GlobalRoutingLinkRecord* lr0 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::PointToPoint, 
-    "0.0.0.2",  // router ID 0.0.0.2
-    "10.1.1.1", // local ID
-    1);         // metric
+      GlobalRoutingLinkRecord::PointToPoint,
+      "0.0.0.2", // router ID 0.0.0.2
+      "10.1.1.1", // local ID
+      1);       // metric
 
   GlobalRoutingLinkRecord* lr1 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::StubNetwork,
-    "10.1.1.1",
-    "255.255.255.252",
-    1);
+      GlobalRoutingLinkRecord::StubNetwork,
+      "10.1.1.1",
+      "255.255.255.252",
+      1);
 
   GlobalRoutingLSA* lsa0 = new GlobalRoutingLSA ();
   lsa0->SetLSType (GlobalRoutingLSA::RouterLSA);
@@ -99,16 +100,16 @@ GlobalRouteManagerImplTestCase::DoRun(void)
 
   // Router 1
   GlobalRoutingLinkRecord* lr2 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::PointToPoint,
-    "0.0.0.2",
-    "10.1.2.1",
-    1);
+      GlobalRoutingLinkRecord::PointToPoint,
+      "0.0.0.2",
+      "10.1.2.1",
+      1);
 
   GlobalRoutingLinkRecord* lr3 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::StubNetwork,
-    "10.1.2.1",
-    "255.255.255.252",
-    1);
+      GlobalRoutingLinkRecord::StubNetwork,
+      "10.1.2.1",
+      "255.255.255.252",
+      1);
 
   GlobalRoutingLSA* lsa1 = new GlobalRoutingLSA ();
   lsa1->SetLSType (GlobalRoutingLSA::RouterLSA);
@@ -116,43 +117,43 @@ GlobalRouteManagerImplTestCase::DoRun(void)
   lsa1->SetAdvertisingRouter ("0.0.0.1");
   lsa1->AddLinkRecord (lr2);
   lsa1->AddLinkRecord (lr3);
-  
+
   // Router 2 
   GlobalRoutingLinkRecord* lr4 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::PointToPoint,
-    "0.0.0.0",
-    "10.1.1.2",
-    1);
+      GlobalRoutingLinkRecord::PointToPoint,
+      "0.0.0.0",
+      "10.1.1.2",
+      1);
 
   GlobalRoutingLinkRecord* lr5 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::StubNetwork,
-    "10.1.1.2",
-    "255.255.255.252",
-    1);
+      GlobalRoutingLinkRecord::StubNetwork,
+      "10.1.1.2",
+      "255.255.255.252",
+      1);
 
   GlobalRoutingLinkRecord* lr6 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::PointToPoint,
-    "0.0.0.1",
-    "10.1.2.2",
-    1);
+      GlobalRoutingLinkRecord::PointToPoint,
+      "0.0.0.1",
+      "10.1.2.2",
+      1);
 
   GlobalRoutingLinkRecord* lr7 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::StubNetwork,
-    "10.1.2.2",
-    "255.255.255.252",
-    1);
+      GlobalRoutingLinkRecord::StubNetwork,
+      "10.1.2.2",
+      "255.255.255.252",
+      1);
 
   GlobalRoutingLinkRecord* lr8 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::PointToPoint,
-    "0.0.0.3",
-    "10.1.3.2",
-    1);
+      GlobalRoutingLinkRecord::PointToPoint,
+      "0.0.0.3",
+      "10.1.3.2",
+      1);
 
   GlobalRoutingLinkRecord* lr9 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::StubNetwork,
-    "10.1.3.2",
-    "255.255.255.252",
-    1);
+      GlobalRoutingLinkRecord::StubNetwork,
+      "10.1.3.2",
+      "255.255.255.252",
+      1);
 
   GlobalRoutingLSA* lsa2 = new GlobalRoutingLSA ();
   lsa2->SetLSType (GlobalRoutingLSA::RouterLSA);
@@ -167,16 +168,16 @@ GlobalRouteManagerImplTestCase::DoRun(void)
 
   // Router 3
   GlobalRoutingLinkRecord* lr10 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::PointToPoint,
-    "0.0.0.2",
-    "10.1.2.1",
-    1);
+      GlobalRoutingLinkRecord::PointToPoint,
+      "0.0.0.2",
+      "10.1.2.1",
+      1);
 
   GlobalRoutingLinkRecord* lr11 = new GlobalRoutingLinkRecord (
-    GlobalRoutingLinkRecord::StubNetwork,
-    "10.1.2.1",
-    "255.255.255.252",
-    1);
+      GlobalRoutingLinkRecord::StubNetwork,
+      "10.1.2.1",
+      "255.255.255.252",
+      1);
 
   GlobalRoutingLSA* lsa3 = new GlobalRoutingLSA ();
   lsa3->SetLSType (GlobalRoutingLSA::RouterLSA);

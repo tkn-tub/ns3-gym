@@ -210,8 +210,8 @@ namespace ns3 {
 // bill.
 //
 typedef std::pair<Ptr<Ipv4>, uint32_t> InterfacePairIpv4; 
-typedef std::map<InterfacePairIpv4, Ptr<PcapFileWrapper> > InterfaceFileMapIpv4;  
-typedef std::map<InterfacePairIpv4, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv4;  
+typedef std::map<InterfacePairIpv4, Ptr<PcapFileWrapper> > InterfaceFileMapIpv4;
+typedef std::map<InterfacePairIpv4, Ptr<OutputStreamWrapper> > InterfaceStreamMapIpv4;
 
 static InterfaceFileMapIpv4 g_interfaceFileMapIpv4; /**< A mapping of Ipv4/interface pairs to pcap files */
 static InterfaceStreamMapIpv4 g_interfaceStreamMapIpv4; /**< A mapping of Ipv4/interface pairs to ascii streams */
@@ -225,9 +225,9 @@ static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; /**< A mapping of Ipv6/i
 
 InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
-  m_routingv6 (0),
-  m_ipv4Enabled (true),
-  m_ipv6Enabled (true)
+    m_routingv6 (0),
+    m_ipv4Enabled (true),
+    m_ipv6Enabled (true)
 {
   Initialize ();
 }
@@ -384,7 +384,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
                           "an InternetStack to a node with an existing Ipv6 object");
           return;
         }
-    
+
       CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
       CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
       /* TODO add UdpL4Protocol/TcpL4Protocol for IPv6 */
@@ -432,7 +432,7 @@ InternetStackHelper::PcapHooked (Ptr<Ipv4> ipv4)
 {
   for (  InterfaceFileMapIpv4::const_iterator i = g_interfaceFileMapIpv4.begin (); 
          i != g_interfaceFileMapIpv4.end (); 
-         ++i)  
+         ++i)
     {
       if ((*i).first.first == ipv4)
         {
@@ -524,7 +524,7 @@ InternetStackHelper::PcapHooked (Ptr<Ipv6> ipv6)
 {
   for (  InterfaceFileMapIpv6::const_iterator i = g_interfaceFileMapIpv6.begin (); 
          i != g_interfaceFileMapIpv6.end (); 
-         ++i)  
+         ++i)
     {
       if ((*i).first.first == ipv6)
         {
@@ -643,7 +643,7 @@ Ipv4L3ProtocolDropSinkWithContext (
   p->AddHeader (header);
 #ifdef INTERFACE_CONTEXT
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
-    << *p << std::endl;
+                        << *p << std::endl;
 #else
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " "  << *p << std::endl;
 #endif
@@ -654,7 +654,7 @@ InternetStackHelper::AsciiHooked (Ptr<Ipv4> ipv4)
 {
   for (  InterfaceStreamMapIpv4::const_iterator i = g_interfaceStreamMapIpv4.begin (); 
          i != g_interfaceStreamMapIpv4.end (); 
-         ++i)  
+         ++i)
     {
       if ((*i).first.first == ipv4)
         {
@@ -728,7 +728,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
           //
           Ptr<ArpL3Protocol> arpL3Protocol = ipv4->GetObject<ArpL3Protocol> ();
           asciiTraceHelper.HookDefaultDropSinkWithoutContext<ArpL3Protocol> (arpL3Protocol, "Drop", theStream);
-          
+
           //
           // The drop sink for the Ipv4L3Protocol uses a different signature than
           // the default sink, so we have to cook one up for ourselves.  We can get
@@ -737,7 +737,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
           //
           Ptr<Ipv4L3Protocol> ipv4L3Protocol = ipv4->GetObject<Ipv4L3Protocol> ();
           bool __attribute__ ((unused)) result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop", 
-            MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext, theStream));
+                                                                                             MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext, theStream));
           NS_ASSERT_MSG (result == true, "InternetStackHelper::EanableAsciiIpv4Internal():  "
                          "Unable to connect ipv4L3Protocol \"Drop\"");
         }
@@ -771,7 +771,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
       //
       oss << "/NodeList/" << node->GetId () << "/$ns3::ArpL3Protocol/Drop";
       Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
-      
+
       //
       // This has all kinds of parameters coming with, so we have to cook up our
       // own sink.
@@ -838,7 +838,7 @@ Ipv6L3ProtocolDropSinkWithContext (
   p->AddHeader (header);
 #ifdef INTERFACE_CONTEXT
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
-    << *p << std::endl;
+                        << *p << std::endl;
 #else
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 #endif
@@ -849,7 +849,7 @@ InternetStackHelper::AsciiHooked (Ptr<Ipv6> ipv6)
 {
   for (  InterfaceStreamMapIpv6::const_iterator i = g_interfaceStreamMapIpv6.begin (); 
          i != g_interfaceStreamMapIpv6.end (); 
-         ++i)  
+         ++i)
     {
       if ((*i).first.first == ipv6)
         {
@@ -924,7 +924,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
           //
           Ptr<Ipv6L3Protocol> ipv6L3Protocol = ipv6->GetObject<Ipv6L3Protocol> ();
           bool __attribute__ ((unused)) result = ipv6L3Protocol->TraceConnectWithoutContext ("Drop", 
-            MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithoutContext, theStream));
+                                                                                             MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithoutContext, theStream));
           NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv6Internal():  "
                          "Unable to connect ipv6L3Protocol \"Drop\"");
         }
@@ -949,7 +949,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
     {
       Ptr<Node> node = ipv6->GetObject<Node> ();
       std::ostringstream oss;
-      
+
       oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Drop";
       Config::Connect (oss.str (), MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithContext, stream));
     }

@@ -209,21 +209,21 @@ private:
  *
  * For Type 3 link (Stub), set m_linkId to neighbor's IP address
  */
-  Ipv4Address m_linkId;         
+  Ipv4Address m_linkId;
 
 /**
  * m_linkId and m_linkData are defined by OSPF to have different meanings 
  * depending on the type of link a given link records represents.  They work
  * together.
  *
- * For Type 1 link (PointToPoint), set m_linkData to local IP address  
+ * For Type 1 link (PointToPoint), set m_linkData to local IP address
  *
  * For Type 3 link (Stub), set m_linkData to mask
  */
   Ipv4Address m_linkData;    // for links to RouterLSA, 
 
 /**
- * The type of the Global Routing Link Record.  Defined in the OSPF spec.  
+ * The type of the Global Routing Link Record.  Defined in the OSPF spec.
  * We currently only use PointToPoint and StubNetwork types.
  */
   LinkType m_linkType;
@@ -237,10 +237,10 @@ private:
  * of two hops relate to the cost of sending a packet); rather you should
  * use something like delay.
  */
-  uint16_t m_metric;  
+  uint16_t m_metric;
 };
 
-/**  
+/**
  * @brief a Link State Advertisement (LSA) for a router, used in global 
  * routing.
  * 
@@ -269,12 +269,12 @@ public:
  * Link State Advertisements.
  */
   enum SPFStatus {
-    LSA_SPF_NOT_EXPLORED = 0,	/**< New vertex not yet considered */
-    LSA_SPF_CANDIDATE,		/**< Vertex is in the SPF candidate queue */
-    LSA_SPF_IN_SPFTREE		/**< Vertex is in the SPF tree */
+    LSA_SPF_NOT_EXPLORED = 0,   /**< New vertex not yet considered */
+    LSA_SPF_CANDIDATE,          /**< Vertex is in the SPF candidate queue */
+    LSA_SPF_IN_SPFTREE          /**< Vertex is in the SPF tree */
   };
 /**
- * @brief Create a blank Global Routing Link State Advertisement.  
+ * @brief Create a blank Global Routing Link State Advertisement.
  *
  * On completion Ipv4Address variables initialized to 0.0.0.0 and the 
  * list of Link State Records is empty.
@@ -282,7 +282,7 @@ public:
   GlobalRoutingLSA();
 
 /**
- * @brief Create an initialized Global Routing Link State Advertisement.  
+ * @brief Create an initialized Global Routing Link State Advertisement.
  *
  * On completion the list of Link State Records is empty.
  *
@@ -291,7 +291,7 @@ public:
  * @param advertisingRtr The Ipv4Address for the advertising router field.
  */
   GlobalRoutingLSA(SPFStatus status, Ipv4Address linkStateId, 
-    Ipv4Address advertisingRtr);
+                   Ipv4Address advertisingRtr);
 
 /**
  * @brief Copy constructor for a Global Routing Link State Advertisement.
@@ -326,7 +326,7 @@ public:
 
 /**
  * @brief Copy any Global Routing Link Records in a given Global Routing Link
- * State Advertisement to the current LSA.  
+ * State Advertisement to the current LSA.
  * 
  * Existing Link Records are not deleted -- this is a concatenation of Link 
  * Records.
@@ -647,7 +647,7 @@ public:
  *
  * You must call GlobalRouter::GetNumLSAs before calling this method in 
  * order to discover the adjacent routers and build the advertisements.
- * GetNumLSAs will return the number of LSAs this router advertises.  
+ * GetNumLSAs will return the number of LSAs this router advertises.
  * The parameter n (requested LSA number) must be in the range 0 to 
  * GetNumLSAs() - 1.
  *
@@ -690,7 +690,7 @@ public:
  * index i to have their index decremented.  For instance, it is possible to
  * remove N injected routes by calling RemoveInjectedRoute (0) N times.
  *
- * @param i The index (into the injected routing list) of the route to remove.  
+ * @param i The index (into the injected routing list) of the route to remove.
  *
  * @see GlobalRouter::WithdrawRoute ()
  */

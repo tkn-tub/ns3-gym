@@ -50,11 +50,11 @@
  * Users must include ns3/global-route-manager.h header file.  After the
  * IPv4 topology has been built and addresses assigned, users call
  * ns3::GlobalRouteManager::PopulateRoutingTables (), prior to the 
- * ns3::Simulator::Run() call.  
+ * ns3::Simulator::Run() call.
  *
  * There are two attributes of Ipv4GlobalRouting that govern behavior.
  * - Ipv4GlobalRouting::RandomEcmpRouting
- * - Ipv4GlobalRouting::RespondToInterfaceEvents  
+ * - Ipv4GlobalRouting::RespondToInterfaceEvents
  *
  * \section impl Implementation
  *
@@ -75,7 +75,7 @@
  * The format of the data exported conforms to the OSPFv2 standard
  * (http://www.ietf.org/rfc/rfc2328.txt).  In particular, the
  * information is exported in the form of ns3::GlobalLSA objects that
- * semantically match the Link State Advertisements of OSPF.  
+ * semantically match the Link State Advertisements of OSPF.
  *
  * By using a standard data format for reporting topology, existing 
  * OSPF route computation code can be reused, and that is what is done

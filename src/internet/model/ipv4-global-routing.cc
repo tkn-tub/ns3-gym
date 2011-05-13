@@ -51,13 +51,13 @@ Ipv4GlobalRouting::GetTypeId (void)
                    BooleanValue(false),
                    MakeBooleanAccessor (&Ipv4GlobalRouting::m_respondToInterfaceEvents),
                    MakeBooleanChecker ())
-    ;
+  ;
   return tid;
 }
 
 Ipv4GlobalRouting::Ipv4GlobalRouting () 
-: m_randomEcmpRouting (false),
-  m_respondToInterfaceEvents (false) 
+  : m_randomEcmpRouting (false),
+    m_respondToInterfaceEvents (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -97,9 +97,9 @@ Ipv4GlobalRouting::AddNetworkRouteTo (Ipv4Address network,
   NS_LOG_FUNCTION (network << networkMask << nextHop << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
-                                            networkMask,
-                                            nextHop,
-                                            interface);
+                                                        networkMask,
+                                                        nextHop,
+                                                        interface);
   m_networkRoutes.push_back (route);
 }
 
@@ -111,8 +111,8 @@ Ipv4GlobalRouting::AddNetworkRouteTo (Ipv4Address network,
   NS_LOG_FUNCTION (network << networkMask << interface);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
-                                            networkMask,
-                                            interface);
+                                                        networkMask,
+                                                        interface);
   m_networkRoutes.push_back (route);
 }
 
@@ -125,9 +125,9 @@ Ipv4GlobalRouting::AddASExternalRouteTo (Ipv4Address network,
   NS_LOG_FUNCTION (network << networkMask << nextHop);
   Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
-      networkMask,
-      nextHop,
-      interface);
+                                                        networkMask,
+                                                        nextHop,
+                                                        interface);
   m_ASexternalRoutes.push_back (route);
 }
 
@@ -275,8 +275,8 @@ Ipv4GlobalRouting::GetRoute (uint32_t index) const
   if (index < m_networkRoutes.size())
     {
       for (NetworkRoutesCI j = m_networkRoutes.begin (); 
-          j != m_networkRoutes.end (); 
-          j++) 
+           j != m_networkRoutes.end ();
+           j++)
         {
           if (tmp == index)
             {
@@ -290,13 +290,13 @@ Ipv4GlobalRouting::GetRoute (uint32_t index) const
   for (ASExternalRoutesCI k = m_ASexternalRoutes.begin (); 
        k != m_ASexternalRoutes.end (); 
        k++) 
-  {
-    if (tmp == index)
     {
-      return *k;
+      if (tmp == index)
+        {
+          return *k;
+        }
+      tmp++;
     }
-    tmp++;
-  }
   NS_ASSERT (false);
   // quiet compiler.
   return 0;
@@ -342,17 +342,17 @@ Ipv4GlobalRouting::RemoveRoute (uint32_t index)
   index -= m_networkRoutes.size ();
   tmp = 0;
   for (ASExternalRoutesI k = m_ASexternalRoutes.begin (); 
-         k != m_ASexternalRoutes.end (); 
-         k++) 
+       k != m_ASexternalRoutes.end ();
+       k++)
     {
       if (tmp == index)
-      {
-        NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_ASexternalRoutes.size());
-        delete *k;
-        m_ASexternalRoutes.erase (k);
-        NS_LOG_LOGIC ("Done removing network route " << index << "; network route remaining size = " << m_networkRoutes.size());
-        return;
-      }
+        {
+          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_ASexternalRoutes.size());
+          delete *k;
+          m_ASexternalRoutes.erase (k);
+          NS_LOG_LOGIC ("Done removing network route " << index << "; network route remaining size = " << m_networkRoutes.size());
+          return;
+        }
       tmp++;
     }
   NS_ASSERT (false);
@@ -375,8 +375,8 @@ Ipv4GlobalRouting::DoDispose (void)
       delete (*j);
     }
   for (ASExternalRoutesI l = m_ASexternalRoutes.begin (); 
-         l != m_ASexternalRoutes.end (); 
-         l = m_ASexternalRoutes.erase (l)) 
+       l != m_ASexternalRoutes.end ();
+       l = m_ASexternalRoutes.erase (l))
     {
       delete (*l);
     }
@@ -433,7 +433,7 @@ Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
 
 Ptr<Ipv4Route>
 Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
-{      
+{
 
 //
 // First, see if this is a multicast packet we have a route for.  If we
@@ -462,7 +462,7 @@ Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<Net
 
 bool 
 Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                             LocalDeliverCallback lcb, ErrorCallback ecb) 
+                                LocalDeliverCallback lcb, ErrorCallback ecb)
 { 
 
   NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
@@ -597,4 +597,4 @@ Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 }
 
 
-}//namespace ns3
+} //namespace ns3

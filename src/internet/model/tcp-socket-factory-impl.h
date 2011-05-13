@@ -31,7 +31,7 @@ class TcpL4Protocol;
  * \ingroup internet
  * \defgroup tcp Tcp
  *
- * This class serves to create sockets of the TcpSocketBase type.  
+ * This class serves to create sockets of the TcpSocketBase type.
  */
 
 /**

@@ -201,11 +201,11 @@ private:
    * \brief IPv6 raw data and additionnal information.
    */
   struct Data
-    {
-      Ptr<Packet> packet; /**< Packet data */
-      Ipv6Address fromIp; /**< Source address */
-      uint16_t fromProtocol; /**< Protocol used */
-    };
+  {
+    Ptr<Packet> packet;   /**< Packet data */
+    Ipv6Address fromIp;   /**< Source address */
+    uint16_t fromProtocol;   /**< Protocol used */
+  };
 
   /**
    * \brief Dispose object.

@@ -47,8 +47,8 @@ Ipv4Interface::GetTypeId (void)
                    MakePointerAccessor (&Ipv4Interface::SetArpCache, 
                                         &Ipv4Interface::GetArpCache),
                    MakePointerChecker<ArpCache> ())
-    ;
-    ;
+  ;
+  ;
   return tid;
 }
 
@@ -213,7 +213,7 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
       if (dest == (*i).GetLocal ())
         {
           Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-        
+
           ipv4->Receive (m_device, p, Ipv4L3Protocol::PROT_NUMBER, 
                          m_device->GetBroadcast (),
                          m_device->GetBroadcast (),
@@ -238,8 +238,8 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
         {
           NS_LOG_LOGIC ("IsMulticast");
           NS_ASSERT_MSG(m_device->IsMulticast (),
-            "ArpIpv4Interface::SendTo (): Sending multicast packet over "
-            "non-multicast device");
+                        "ArpIpv4Interface::SendTo (): Sending multicast packet over "
+                        "non-multicast device");
 
           hardwareDestination = m_device->GetMulticast(dest);
           found = true;
@@ -266,8 +266,8 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
       if (found)
         {
           NS_LOG_LOGIC ("Address Resolved.  Send.");
-          m_device ->Send (p, hardwareDestination, 
-                              Ipv4L3Protocol::PROT_NUMBER);
+          m_device->Send (p, hardwareDestination,
+                          Ipv4L3Protocol::PROT_NUMBER);
         }
     }
   else
@@ -332,8 +332,8 @@ Ipv4Interface::RemoveAddress (uint32_t index)
           m_ifaddrs.erase (i);
           return addr;
         }
-       ++tmp;
-      ++i;       
+      ++tmp;
+      ++i;
     }
   NS_ASSERT_MSG (false, "Address " << index << " not found");
   Ipv4InterfaceAddress addr;

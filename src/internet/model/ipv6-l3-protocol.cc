@@ -70,7 +70,7 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace))
     .AddTraceSource ("Drop", "Drop IPv6 packet",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -728,11 +728,11 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
         }
     }
 
-  if (! m_routingProtocol->RouteInput (packet, hdr, device,
-                                 MakeCallback (&Ipv6L3Protocol::IpForward, this),
-                                 MakeCallback (&Ipv6L3Protocol::IpMulticastForward, this),
-                                 MakeCallback (&Ipv6L3Protocol::LocalDeliver, this),
-                                 MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
+  if (!m_routingProtocol->RouteInput (packet, hdr, device,
+                                      MakeCallback (&Ipv6L3Protocol::IpForward, this),
+                                      MakeCallback (&Ipv6L3Protocol::IpMulticastForward, this),
+                                      MakeCallback (&Ipv6L3Protocol::LocalDeliver, this),
+                                      MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
     {
       NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
       m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), interface);
@@ -1022,7 +1022,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
                 }
             }
         }
-  } while (ipv6Extension);
+    } while (ipv6Extension);
 }
 
 void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipHeader, Socket::SocketErrno sockErrno)

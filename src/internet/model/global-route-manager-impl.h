@@ -342,14 +342,14 @@ public:
  * forwarding packets to the host or network represented by "this" SPFVertex.
  */
   void SetRootExitDirection (SPFVertex::NodeExit_t exit);
- /**
-  * \brief Obtain a pair indicating the exit direction from the root
-  *
-  * \param i An index to a pair
-  * \return A pair of next-hop-IP and outgoing-interface-index for 
-  * indicating an exit direction from the root. It is 0 if the index 'i'
-  * is out-of-range
-  */
+  /**
+   * \brief Obtain a pair indicating the exit direction from the root
+   *
+   * \param i An index to a pair
+   * \return A pair of next-hop-IP and outgoing-interface-index for
+   * indicating an exit direction from the root. It is 0 if the index 'i'
+   * is out-of-range
+   */
   NodeExit_t GetRootExitDirection (uint32_t i) const;
   /**
    * \brief Obtain a pair indicating the exit direction from the root
@@ -533,9 +533,9 @@ public:
    * @returns value of underlying flag
    */ 
   bool IsVertexProcessed (void) const;
-  
+
   void ClearVertexProcessed (void);
-      
+
 private:
   VertexType m_vertexType;
   Ipv4Address m_vertexId;
@@ -663,10 +663,10 @@ public:
  * @see SPFVertex
  */
   void Initialize ();
-  
+
   GlobalRoutingLSA* GetExtLSA (uint32_t index) const;
   uint32_t GetNumExtLSAs () const;
-      
+
 
 private:
   typedef std::map<Ipv4Address, GlobalRoutingLSA*> LSDBMap_t;
@@ -674,7 +674,7 @@ private:
 
   LSDBMap_t m_database;
   std::vector<GlobalRoutingLSA*> m_extdatabase;
-  
+
 /**
  * @brief GlobalRouteManagerLSDB copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
@@ -764,16 +764,16 @@ private:
   void ProcessASExternals (SPFVertex* v, GlobalRoutingLSA* extlsa);
   void SPFNext (SPFVertex*, CandidateQueue&);
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
-    GlobalRoutingLinkRecord* l, uint32_t distance);
+                             GlobalRoutingLinkRecord* l, uint32_t distance);
   void SPFVertexAddParent (SPFVertex* v);
   GlobalRoutingLinkRecord* SPFGetNextLink (SPFVertex* v, SPFVertex* w, 
-    GlobalRoutingLinkRecord* prev_link);
+                                           GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
   void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
   void SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v);
   int32_t FindOutgoingInterfaceId (Ipv4Address a, 
-    Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+                                   Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 };
 
 } // namespace ns3

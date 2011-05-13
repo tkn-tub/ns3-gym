@@ -580,7 +580,7 @@ TcpSocketBase::OutOfRange (SequenceNumber32 s) const
       // sequence number must equals to m_rxBuffer.NextRxSequence ()
       return (m_rxBuffer.NextRxSequence () != s);
     };
-  
+
   // In all other cases, check if the sequence number is in range
   return (m_rxBuffer.MaxRxSequence () < s || m_rxBuffer.NextRxSequence () > s);
 }
@@ -620,9 +620,9 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   if (OutOfRange (tcpHeader.GetSequenceNumber ()))
     {
       NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
-          " received packet of seq " << tcpHeader.GetSequenceNumber () <<
-          " out of range [" << m_rxBuffer.NextRxSequence () << ":" <<
-          m_rxBuffer.MaxRxSequence () << "]");
+                    " received packet of seq " << tcpHeader.GetSequenceNumber () <<
+                    " out of range [" << m_rxBuffer.NextRxSequence () << ":" <<
+                    m_rxBuffer.MaxRxSequence () << "]");
       return;
     }
 
@@ -1056,7 +1056,7 @@ TcpSocketBase::PeerClose (Ptr<Packet> p, const TcpHeader& tcpHeader)
       ReceivedData (p, tcpHeader);
     }
   // Return if FIN is out of sequence, otherwise move to CLOSE_WAIT state by DoPeerClose
-  if (! m_rxBuffer.Finished ())
+  if (!m_rxBuffer.Finished ())
     {
       return;
     };
@@ -1422,7 +1422,7 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
       else if (m_delAckEvent.IsExpired ())
         {
           m_delAckEvent = Simulator::Schedule (m_delAckTimeout,
-              &TcpSocketBase::DelAckTimeout, this);
+                                               &TcpSocketBase::DelAckTimeout, this);
         }
     }
   // Notify app to receive if necessary
@@ -1747,7 +1747,7 @@ bool
 TcpSocketBase::SetAllowBroadcast (bool allowBroadcast)
 {
   // Broadcast is not implemented. Return true only if allowBroadcast==false
-  return (! allowBroadcast);
+  return (!allowBroadcast);
 }
 
 bool

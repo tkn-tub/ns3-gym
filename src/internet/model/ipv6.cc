@@ -47,15 +47,17 @@ TypeId Ipv6::GetTypeId (void)
                                         &UdpSocket::GetMtuDiscover),
                    MakeBooleanChecker ())
 #endif
-    ;
+  ;
   return tid;
 }
 
 Ipv6::Ipv6 ()
-{}
+{
+}
 
 Ipv6::~Ipv6 ()
-{}
+{
+}
 
 } /* namespace ns3 */
 

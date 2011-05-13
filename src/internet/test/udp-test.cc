@@ -73,7 +73,7 @@ AddInternetStack (Ptr<Node> node)
 }
 
 
-class UdpSocketLoopbackTest: public TestCase
+class UdpSocketLoopbackTest : public TestCase
 {
 public:
   UdpSocketLoopbackTest ();
@@ -114,7 +114,7 @@ UdpSocketLoopbackTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
 }
 
-class UdpSocketImplTest: public TestCase
+class UdpSocketImplTest : public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
@@ -184,7 +184,7 @@ void
 UdpSocketImplTest::DoRun (void)
 {
   // Create topology
-  
+
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<Node> ();
   AddInternetStack (rxNode);
@@ -210,7 +210,7 @@ UdpSocketImplTest::DoRun (void)
     ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
-  
+
   // Sender Node
   Ptr<Node> txNode = CreateObject<Node> ();
   AddInternetStack (txNode);

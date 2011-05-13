@@ -147,14 +147,14 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
 void
 TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
 {
-  if (count == 3 && ! m_inFastRec)
+  if (count == 3 && !m_inFastRec)
     { // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
       m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
       m_cWnd = m_ssThresh + 3 * m_segmentSize;
       m_recover = m_highTxMark;
       m_inFastRec = true;
       NS_LOG_INFO ("Triple dupack. Enter fast recovery mode. Reset cwnd to " << m_cWnd <<
-                    ", ssthresh to " << m_ssThresh << " at fast recovery seqnum " << m_recover);
+                   ", ssthresh to " << m_ssThresh << " at fast recovery seqnum " << m_recover);
       DoRetransmit ();
     }
   else if (m_inFastRec)
@@ -185,7 +185,7 @@ TcpNewReno::Retransmit (void)
   m_cWnd = m_segmentSize;
   m_nextTxSequence = m_txBuffer.HeadSequence (); // Restart from highest Ack
   NS_LOG_INFO ("RTO. Reset cwnd to " << m_cWnd <<
-                ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
+               ", ssthresh to " << m_ssThresh << ", restart from seqnum " << m_nextTxSequence);
   m_rtt->IncreaseMultiplier ();             // Double the next RTO
   DoRetransmit ();                          // Retransmit the packet
 }

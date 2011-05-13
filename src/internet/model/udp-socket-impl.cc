@@ -52,7 +52,7 @@ UdpSocketImpl::GetTypeId (void)
                    CallbackValue (),
                    MakeCallbackAccessor (&UdpSocketImpl::m_icmpCallback),
                    MakeCallbackChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -264,10 +264,10 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
-       {
+        {
           NS_ASSERT (m_endPoint == 0);
-         return -1;
-       }
+          return -1;
+        }
       NS_ASSERT (m_endPoint != 0);
     }
   if (m_shutdownSend)
@@ -275,7 +275,7 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
       m_errno = ERROR_SHUTDOWN;
       return -1;
     } 
-  
+
   return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
 
@@ -311,10 +311,10 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
-	{
+        {
           NS_ASSERT (m_endPoint == 0);
-	  return -1;
-	}
+          return -1;
+        }
       NS_ASSERT (m_endPoint != 0);
     }
   if (m_shutdownSend)
@@ -336,7 +336,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   // The destination can be either multicast, unicast/anycast, or
   // either all-hosts broadcast or limited (subnet-directed) broadcast.
   // For the latter two broadcast types, the TTL will later be set to one
-  // irrespective of what is set in these socket options.  So, this tagging  
+  // irrespective of what is set in these socket options.  So, this tagging
   // may end up setting the TTL of a limited broadcast packet to be
   // the same as a unicast, but it will be fixed further down the stack
   if (m_ipMulticastTtl != 0 && dest.IsMulticast ())
@@ -402,7 +402,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
             {
               // if the network mask is 255.255.255.255, do not convert dest
               NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << dest
-                            << " (mask is " << maski << ")");
+                                                     << " (mask is " << maski << ")");
               m_udp->Send (p->Copy (), addri, dest,
                            m_endPoint->GetLocalPort (), port);
               NotifyDataSent (p->GetSize ());
@@ -413,7 +413,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
               // Convert to subnet-directed broadcast
               Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
               NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
-                            << " (mask is " << maski << ")");
+                                                     << " (mask is " << maski << ")");
               m_udp->Send (p->Copy (), addri, bcast,
                            m_endPoint->GetLocalPort (), port);
               NotifyDataSent (p->GetSize ());
@@ -458,7 +458,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
                     }
                 }
             }
-          
+
           header.SetSource (route->GetSource ());
           m_udp->Send (p->Copy (), header.GetSource (), header.GetDestination (),
                        m_endPoint->GetLocalPort (), port, route);
@@ -474,11 +474,11 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
         }
     }
   else
-   {
+    {
       NS_LOG_ERROR ("ERROR_NOROUTETOHOST");
       m_errno = ERROR_NOROUTETOHOST;
       return -1;
-   }
+    }
 
   return 0;
 }
@@ -537,7 +537,7 @@ UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 
 Ptr<Packet>
 UdpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, 
-  Address &fromAddress)
+                         Address &fromAddress)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
@@ -605,10 +605,10 @@ UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
-       {
-         NS_ASSERT (m_endPoint == 0);
-         return;
-       }
+        {
+          NS_ASSERT (m_endPoint == 0);
+          return;
+        }
       NS_ASSERT (m_endPoint != 0);
     }
   m_endPoint->BindToNetDevice (netdevice);

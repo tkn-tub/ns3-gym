@@ -95,15 +95,15 @@ public:
    * \param interface Outgoing interface 
    */
   static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest, 
-				      Ipv4Address nextHop, 
-				      uint32_t interface);
+                                                  Ipv4Address nextHop,
+                                                  uint32_t interface);
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param dest Ipv4Address of the destination
    * \param interface Outgoing interface 
    */
   static Ipv4RoutingTableEntry CreateHostRouteTo (Ipv4Address dest, 
-				      uint32_t interface);
+                                                  uint32_t interface);
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param network Ipv4Address of the destination network
@@ -112,9 +112,9 @@ public:
    * \param interface Outgoing interface 
    */
   static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network, 
-					 Ipv4Mask networkMask, 
-					 Ipv4Address nextHop, 
-					 uint32_t interface);
+                                                     Ipv4Mask networkMask,
+                                                     Ipv4Address nextHop,
+                                                     uint32_t interface);
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input parameters.
    * \param network Ipv4Address of the destination network
@@ -122,8 +122,8 @@ public:
    * \param interface Outgoing interface 
    */
   static Ipv4RoutingTableEntry CreateNetworkRouteTo (Ipv4Address network, 
-					 Ipv4Mask networkMask, 
-					 uint32_t interface);
+                                                     Ipv4Mask networkMask,
+                                                     uint32_t interface);
   /**
    * \return An Ipv4RoutingTableEntry object corresponding to the input 
    * parameters.  This route is distinguished; it will match any 
@@ -132,21 +132,21 @@ public:
    * \param interface Outgoing interface 
    */
   static Ipv4RoutingTableEntry CreateDefaultRoute (Ipv4Address nextHop, 
-				       uint32_t interface);
-  
+                                                   uint32_t interface);
+
 private:
   Ipv4RoutingTableEntry (Ipv4Address network,
-	     Ipv4Mask mask,
-	     Ipv4Address gateway,
-	     uint32_t interface);
+                         Ipv4Mask mask,
+                         Ipv4Address gateway,
+                         uint32_t interface);
   Ipv4RoutingTableEntry (Ipv4Address dest,
-	     Ipv4Mask mask,
-	     uint32_t interface);
+                         Ipv4Mask mask,
+                         uint32_t interface);
   Ipv4RoutingTableEntry (Ipv4Address dest,
-	     Ipv4Address gateway,
-	     uint32_t interface);
+                         Ipv4Address gateway,
+                         uint32_t interface);
   Ipv4RoutingTableEntry (Ipv4Address dest,
-	     uint32_t interface);
+                         uint32_t interface);
 
   Ipv4Address m_dest;
   Ipv4Mask m_destNetworkMask;
@@ -211,12 +211,12 @@ public:
    * \param outputInterfaces vector of output interfaces to copy and forward the datagram to
    */
   static Ipv4MulticastRoutingTableEntry CreateMulticastRoute (Ipv4Address origin, 
-    Ipv4Address group, uint32_t inputInterface,
-    std::vector<uint32_t> outputInterfaces);
+                                                              Ipv4Address group, uint32_t inputInterface,
+                                                              std::vector<uint32_t> outputInterfaces);
 
 private:
   Ipv4MulticastRoutingTableEntry (Ipv4Address origin, Ipv4Address group, 
-    uint32_t inputInterface, std::vector<uint32_t> outputInterfaces);
+                                  uint32_t inputInterface, std::vector<uint32_t> outputInterfaces);
 
   Ipv4Address m_origin;
   Ipv4Address m_group;
@@ -226,6 +226,6 @@ private:
 
 std::ostream& operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route);
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* IPV4_ROUTING_TABLE_ENTRY_H */

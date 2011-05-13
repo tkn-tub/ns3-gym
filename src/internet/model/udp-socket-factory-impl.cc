@@ -26,13 +26,14 @@ namespace ns3 {
 
 UdpSocketFactoryImpl::UdpSocketFactoryImpl ()
   : m_udp (0)
-{}
+{
+}
 UdpSocketFactoryImpl::~UdpSocketFactoryImpl ()
 {
   NS_ASSERT (m_udp == 0);
 }
 
-void 
+void
 UdpSocketFactoryImpl::SetUdp (Ptr<UdpL4Protocol> udp)
 {
   m_udp = udp;

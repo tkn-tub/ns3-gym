@@ -45,7 +45,7 @@ class Ipv4RoutingProtocol;
  * \brief Access to the Ipv4 forwarding table, interfaces, and configuration
  *
  * This class defines the API to manipulate the following aspects of
- * the Ipv4 implementation:  
+ * the Ipv4 implementation:
  * -# set/get an Ipv4RoutingProtocol 
  * -# register a NetDevice for use by the Ipv4 layer (basically, to
  * create Ipv4-related state such as addressing and neighbor cache that 
@@ -81,7 +81,7 @@ public:
 
   /**
    * \brief Register a new routing protocol to be used by this Ipv4 stack
-   *   
+   *
    * This call will replace any routing protocol that has been previously 
    * registered.  If you want to add multiple routing protocols, you must
    * add them to a Ipv4ListRoutingProtocol directly.
@@ -111,7 +111,7 @@ public:
   /**
    * \returns the number of interfaces added by the user.
    */
-  virtual uint32_t GetNInterfaces (void) const = 0;  
+  virtual uint32_t GetNInterfaces (void) const = 0;
 
   /**
    * \brief Return the interface number of the interface that has been
@@ -121,7 +121,7 @@ public:
    * \returns The interface number of the Ipv4 interface with the given 
    *          address or -1 if not found.
    *
-   * Each IP interface has one or more IP addresses associated with it.  
+   * Each IP interface has one or more IP addresses associated with it.
    * This method searches the list of interfaces for one that holds a
    * particular address.  This call takes an IP address as a parameter and
    * returns the interface number of the first interface that has been assigned
@@ -141,7 +141,7 @@ public:
    * down the stack to the MAC and PHY layers.
    */
   virtual void Send (Ptr<Packet> packet, Ipv4Address source,
-       Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route) = 0; 
+                     Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route) = 0;
 
   /**
    * \param protocol a pointer to the protocol to add to this L4 Demux.
@@ -182,14 +182,14 @@ public:
    * \returns The interface number of the Ipv4 interface with the given 
    *          address or -1 if not found.
    *
-   * Each IP interface has one or more IP addresses associated with it.  
+   * Each IP interface has one or more IP addresses associated with it.
    * This method searches the list of interfaces for the first one found
    * that holds an address that is included within the prefix 
    * formed by the input address and mask parameters.  The value -1 is
    * returned if no match is found.
    */
   virtual int32_t GetInterfaceForPrefix (Ipv4Address address,
-    Ipv4Mask mask) const = 0;
+                                         Ipv4Mask mask) const = 0;
 
   /**
    * \param interface The interface number of an Ipv4 interface.
@@ -230,7 +230,7 @@ public:
    * Remove the address at addressIndex on named interface.  The addressIndex
    * for all higher indices will decrement by one after this method is called;
    * so, for example, to remove 5 addresses from an interface i, one could
-   * call RemoveAddress (i, 0); 5 times.  
+   * call RemoveAddress (i, 0); 5 times.
    * 
    * \param interface Interface number of an Ipv4 interface
    * \param addressIndex index of Ipv4InterfaceAddress to remove 
@@ -253,7 +253,7 @@ public:
    * return a primary address that is configured on that device, and whose
    * subnet matches that of dst and whose scope is less than or equal to
    * the requested scope.  If a primary address does not match the
-   * subnet of dst but otherwise matches the scope, it is returned.  
+   * subnet of dst but otherwise matches the scope, it is returned.
    * If no such address on the device is found, the other devices are 
    * searched in order of their interface index, but not considering dst
    * as a factor in the search.  Because a loopback interface is typically 
@@ -274,7 +274,7 @@ public:
    * \returns the first primary Ipv4Address that meets the search criteria
    */
   virtual Ipv4Address SelectSourceAddress (Ptr<const NetDevice> device, 
-    Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope) = 0;
+                                           Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope) = 0;
 
   /**
    * \param interface The interface number of an Ipv4 interface

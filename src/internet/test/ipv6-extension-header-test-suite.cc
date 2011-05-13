@@ -136,7 +136,7 @@ public:
 
   virtual Alignment GetAlignment() const
   {
-    return (Alignment){4,0};
+    return (Alignment){ 4,0};
   }
 };
 

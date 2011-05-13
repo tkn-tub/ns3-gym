@@ -44,7 +44,7 @@ class TcpHeader;
  * \ingroup socket
  * \ingroup nsctcp
  *
- * \brief Socket logic for the NSC TCP sockets.  
+ * \brief Socket logic for the NSC TCP sockets.
  * 
  * Most of the TCP internal
  * logic is handled by the NSC tcp library itself; this class maps ns3::Socket
@@ -80,7 +80,7 @@ public:
   virtual uint32_t GetRxAvailable (void) const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
-    Address &fromAddress);
+                                Address &fromAddress);
   virtual int GetSockName (Address &address) const; 
   virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
@@ -145,7 +145,7 @@ private:
   bool m_shutdownSend;
   bool m_shutdownRecv;
   bool m_connected;
-  
+
   //manage the state information
   TracedValue<TcpStates_t> m_state;
   bool m_closeOnEmpty;
@@ -180,6 +180,6 @@ private:
   uint32_t m_rcvBufSize;   // maximum receive socket buffer size
 };
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* NSC_TCP_SOCKET_IMPL_H */

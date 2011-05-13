@@ -49,7 +49,7 @@ class Ipv6RoutingProtocol;
  * \brief Access to the IPv6 forwarding table, interfaces, and configuration
  *
  * This class defines the API to manipulate the following aspects of
- * the IPv6 implementation:  
+ * the IPv6 implementation:
  * -# set/get an Ipv6RoutingProtocol 
  * -# register a NetDevice for use by the IPv6 layer (basically, to
  * create IPv6-related state such as addressing and neighbor cache that 
@@ -80,7 +80,7 @@ class Ipv6 : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  
+
   /**
    * \brief Constructor.
    */
@@ -93,7 +93,7 @@ public:
 
   /**
    * \brief Register a new routing protocol to be used by this IPv6 stack
-   *   
+   *
    * This call will replace any routing protocol that has been previously 
    * registered.  If you want to add multiple routing protocols, you must
    * add them to a Ipv6ListRoutingProtocol directly.
@@ -125,7 +125,7 @@ public:
    * \brief Get number of interfaces.
    * \returns the number of interfaces added by the user.
    */
-  virtual uint32_t GetNInterfaces (void) const = 0;  
+  virtual uint32_t GetNInterfaces (void) const = 0;
 
   /**
    * \brief Return the interface number of the interface that has been
@@ -135,7 +135,7 @@ public:
    * \returns The interface number of the IPv6 interface with the given 
    *          address or -1 if not found.
    *
-   * Each IP interface has one or more IP addresses associated with it.  
+   * Each IP interface has one or more IP addresses associated with it.
    * This method searches the list of interfaces for one that holds a
    * particular address.  This call takes an IP address as a parameter and
    * returns the interface number of the first interface that has been assigned
@@ -153,14 +153,14 @@ public:
    * \returns The interface number of the IPv6 interface with the given 
    *          address or -1 if not found.
    *
-   * Each IP interface has one or more IP addresses associated with it.  
+   * Each IP interface has one or more IP addresses associated with it.
    * This method searches the list of interfaces for the first one found
    * that holds an address that is included within the prefix 
    * formed by the input address and mask parameters.  The value -1 is
    * returned if no match is found.
    */
   virtual int32_t GetInterfaceForPrefix (Ipv6Address address,
-    Ipv6Prefix mask) const = 0;
+                                         Ipv6Prefix mask) const = 0;
 
   /**
    * \brief Get the NetDevice of the specified interface number.
@@ -209,7 +209,7 @@ public:
    * Remove the address at addressIndex on named interface.  The addressIndex
    * for all higher indices will decrement by one after this method is called;
    * so, for example, to remove 5 addresses from an interface i, one could
-   * call RemoveAddress (i, 0); 5 times.  
+   * call RemoveAddress (i, 0); 5 times.
    * 
    * \param interface Interface number of an IPv6 interface
    * \param addressIndex index of Ipv6InterfaceAddress to remove 

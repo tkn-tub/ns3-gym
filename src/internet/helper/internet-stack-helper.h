@@ -53,7 +53,7 @@ class Ipv6RoutingHelper;
  * may be of interest to many other classes.
  */
 class InternetStackHelper : public PcapHelperForIpv4, public PcapHelperForIpv6, 
-                              public AsciiTraceHelperForIpv4, public AsciiTraceHelperForIpv6
+                            public AsciiTraceHelperForIpv4, public AsciiTraceHelperForIpv6
 {
 public:
   /**
@@ -89,7 +89,7 @@ public:
    * ns3::Ipv4::SetRoutingProtocol.
    */
   void SetRoutingHelper (const Ipv4RoutingHelper &routing);
-  
+
   /**
    * \brief Set IPv6 routing helper.
    * \param routing IPv6 routing helper
@@ -131,7 +131,7 @@ public:
   void InstallAll (void) const;
 
   /**
-   * \brief set the Tcp stack which will not need any other parameter.  
+   * \brief set the Tcp stack which will not need any other parameter.
    *
    * This function sets up the tcp stack to the given TypeId. It should not be 
    * used for NSC stack setup because the nsc stack needs the Library attribute
@@ -142,7 +142,7 @@ public:
    * \param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
    */
   void SetTcp(std::string tid);
-   
+
   /**
    * \brief This function is used to setup the Network Simulation Cradle stack with library value.
    * 
@@ -231,7 +231,7 @@ private:
   void Initialize (void);
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
-  
+
   /**
    * \internal
    * \brief IPv6 routing helper.

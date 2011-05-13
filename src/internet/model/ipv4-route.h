@@ -127,7 +127,7 @@ public:
    * \return Ipv4Address of the origin address
    */
   Ipv4Address GetOrigin (void) const; 
-  
+
   /**
    * \param iif Parent (input interface) for this route
    */
@@ -152,7 +152,7 @@ public:
    * \return map of output interface Ids and TTLs for this route
    */
   std::map<uint32_t, uint32_t> GetOutputTtlMap() const;
-  
+
   static const uint32_t MAX_INTERFACES = 16;  // Maximum number of multicast interfaces on a router
   static const uint32_t MAX_TTL = 255;  // Maximum time-to-live (TTL)
 
@@ -163,6 +163,6 @@ private:
   std::map<uint32_t, uint32_t> m_ttls;
 };
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* IPV4_ROUTE_H */

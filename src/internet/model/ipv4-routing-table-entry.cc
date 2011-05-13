@@ -28,112 +28,119 @@ namespace ns3 {
  *****************************************************/
 
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry ()
-{}
+{
+}
 
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4RoutingTableEntry const &route)
   : m_dest (route.m_dest),
     m_destNetworkMask (route.m_destNetworkMask),
     m_gateway (route.m_gateway),
     m_interface (route.m_interface)
-{}
+{
+}
 
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4RoutingTableEntry const *route)
   : m_dest (route->m_dest),
     m_destNetworkMask (route->m_destNetworkMask),
     m_gateway (route->m_gateway),
     m_interface (route->m_interface)
-{}
+{
+}
 
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address dest,
-                      Ipv4Address gateway,
-                      uint32_t interface)
+                                              Ipv4Address gateway,
+                                              uint32_t interface)
   : m_dest (dest),
     m_destNetworkMask (Ipv4Mask::GetOnes ()),
     m_gateway (gateway),
     m_interface (interface)
-{}
+{
+}
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address dest,
-                      uint32_t interface)
+                                              uint32_t interface)
   : m_dest (dest),
     m_destNetworkMask (Ipv4Mask::GetOnes ()),
     m_gateway (Ipv4Address::GetZero ()),
     m_interface (interface)
-{}
+{
+}
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address network,
-                      Ipv4Mask networkMask,
-                      Ipv4Address gateway,
-                      uint32_t interface)
+                                              Ipv4Mask networkMask,
+                                              Ipv4Address gateway,
+                                              uint32_t interface)
   : m_dest (network),
     m_destNetworkMask (networkMask),
     m_gateway (gateway),
     m_interface (interface)
-{}
+{
+}
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address network,
-                      Ipv4Mask networkMask,
-                      uint32_t interface)
+                                              Ipv4Mask networkMask,
+                                              uint32_t interface)
   : m_dest (network),
     m_destNetworkMask (networkMask),
     m_gateway (Ipv4Address::GetZero ()),
     m_interface (interface)
-{}
+{
+}
 
-bool 
+bool
 Ipv4RoutingTableEntry::IsHost (void) const
 {
-  if (m_destNetworkMask.IsEqual (Ipv4Mask::GetOnes ())) 
+  if (m_destNetworkMask.IsEqual (Ipv4Mask::GetOnes ()))
     {
       return true;
-    } 
-  else 
+    }
+  else
     {
       return false;
     }
 }
-Ipv4Address 
+Ipv4Address
 Ipv4RoutingTableEntry::GetDest (void) const
 {
   return m_dest;
 }
-bool 
+bool
 Ipv4RoutingTableEntry::IsNetwork (void) const
 {
   return !IsHost ();
 }
-bool 
+bool
 Ipv4RoutingTableEntry::IsDefault (void) const
 {
-  if (m_dest.IsEqual (Ipv4Address::GetZero ())) 
+  if (m_dest.IsEqual (Ipv4Address::GetZero ()))
     {
       return true;
-    } 
-  else 
+    }
+  else
     {
       return false;
     }
 }
-Ipv4Address 
+Ipv4Address
 Ipv4RoutingTableEntry::GetDestNetwork (void) const
 {
   return m_dest;
 }
-Ipv4Mask 
+Ipv4Mask
 Ipv4RoutingTableEntry::GetDestNetworkMask (void) const
 {
   return m_destNetworkMask;
 }
-bool 
+bool
 Ipv4RoutingTableEntry::IsGateway (void) const
 {
-  if (m_gateway.IsEqual (Ipv4Address::GetZero ())) 
+  if (m_gateway.IsEqual (Ipv4Address::GetZero ()))
     {
       return false;
-    } 
-  else 
+    }
+  else
     {
       return true;
     }
 }
-Ipv4Address 
+Ipv4Address
 Ipv4RoutingTableEntry::GetGateway (void) const
 {
   return m_gateway;
@@ -146,37 +153,37 @@ Ipv4RoutingTableEntry::GetInterface (void) const
 
 Ipv4RoutingTableEntry 
 Ipv4RoutingTableEntry::CreateHostRouteTo (Ipv4Address dest, 
-			      Ipv4Address nextHop, 
-			      uint32_t interface)
+                                          Ipv4Address nextHop,
+                                          uint32_t interface)
 {
   return Ipv4RoutingTableEntry (dest, nextHop, interface);
 }
 Ipv4RoutingTableEntry 
 Ipv4RoutingTableEntry::CreateHostRouteTo (Ipv4Address dest,
-			      uint32_t interface)
+                                          uint32_t interface)
 {
   return Ipv4RoutingTableEntry (dest, interface);
 }
 Ipv4RoutingTableEntry 
 Ipv4RoutingTableEntry::CreateNetworkRouteTo (Ipv4Address network, 
-				 Ipv4Mask networkMask, 
-				 Ipv4Address nextHop, 
-				 uint32_t interface)
+                                             Ipv4Mask networkMask,
+                                             Ipv4Address nextHop,
+                                             uint32_t interface)
 {
   return Ipv4RoutingTableEntry (network, networkMask, 
-                    nextHop, interface);
+                                nextHop, interface);
 }
 Ipv4RoutingTableEntry 
 Ipv4RoutingTableEntry::CreateNetworkRouteTo (Ipv4Address network, 
-				 Ipv4Mask networkMask, 
-				 uint32_t interface)
+                                             Ipv4Mask networkMask,
+                                             uint32_t interface)
 {
   return Ipv4RoutingTableEntry (network, networkMask, 
-                    interface);
+                                interface);
 }
 Ipv4RoutingTableEntry 
 Ipv4RoutingTableEntry::CreateDefaultRoute (Ipv4Address nextHop, 
-			       uint32_t interface)
+                                           uint32_t interface)
 {
   return Ipv4RoutingTableEntry (Ipv4Address::GetZero (), nextHop, interface);
 }
@@ -194,13 +201,13 @@ std::ostream& operator<< (std::ostream& os, Ipv4RoutingTableEntry const& route)
       if (route.IsGateway ())
         {
           os << "host="<< route.GetDest () << 
-            ", out=" << route.GetInterface () << 
-            ", next hop=" << route.GetGateway ();
+          ", out=" << route.GetInterface () <<
+          ", next hop=" << route.GetGateway ();
         }
       else
         {
           os << "host="<< route.GetDest () << 
-            ", out=" << route.GetInterface ();
+          ", out=" << route.GetInterface ();
         }
     }
   else if (route.IsNetwork ()) 
@@ -208,15 +215,15 @@ std::ostream& operator<< (std::ostream& os, Ipv4RoutingTableEntry const& route)
       if (route.IsGateway ())
         {
           os << "network=" << route.GetDestNetwork () <<
-            ", mask=" << route.GetDestNetworkMask () <<
-            ",out=" << route.GetInterface () <<
-            ", next hop=" << route.GetGateway ();
+          ", mask=" << route.GetDestNetworkMask () <<
+          ",out=" << route.GetInterface () <<
+          ", next hop=" << route.GetGateway ();
         }
       else
         {
           os << "network=" << route.GetDestNetwork () <<
-            ", mask=" << route.GetDestNetworkMask () <<
-            ",out=" << route.GetInterface ();
+          ", mask=" << route.GetDestNetworkMask () <<
+          ",out=" << route.GetInterface ();
         }
     }
   else
@@ -235,20 +242,20 @@ Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry ()
 }
 
 Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry (Ipv4MulticastRoutingTableEntry const &route)
-: 
-  m_origin (route.m_origin),
-  m_group (route.m_group),
-  m_inputInterface (route.m_inputInterface),
-  m_outputInterfaces (route.m_outputInterfaces)
+  :
+    m_origin (route.m_origin),
+    m_group (route.m_group),
+    m_inputInterface (route.m_inputInterface),
+    m_outputInterfaces (route.m_outputInterfaces)
 {
 }
 
 Ipv4MulticastRoutingTableEntry::Ipv4MulticastRoutingTableEntry (Ipv4MulticastRoutingTableEntry const *route)
-: 
-  m_origin (route->m_origin),
-  m_group (route->m_group),
-  m_inputInterface (route->m_inputInterface),
-  m_outputInterfaces (route->m_outputInterfaces)
+  :
+    m_origin (route->m_origin),
+    m_group (route->m_group),
+    m_inputInterface (route->m_inputInterface),
+    m_outputInterfaces (route->m_outputInterfaces)
 {
 }
 
@@ -292,7 +299,7 @@ uint32_t
 Ipv4MulticastRoutingTableEntry::GetOutputInterface (uint32_t n) const
 {
   NS_ASSERT_MSG(n < m_outputInterfaces.size (), 
-    "Ipv4MulticastRoutingTableEntry::GetOutputInterface (): index out of bounds");
+                "Ipv4MulticastRoutingTableEntry::GetOutputInterface (): index out of bounds");
 
   return m_outputInterfaces[n];
 }
@@ -317,9 +324,9 @@ std::ostream&
 operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route)
 {
   os << "origin=" << route.GetOrigin () << 
-    ", group=" << route.GetGroup () <<
-    ", input interface=" << route.GetInputInterface () <<
-    ", output interfaces=";
+  ", group=" << route.GetGroup () <<
+  ", input interface=" << route.GetInputInterface () <<
+  ", output interfaces=";
 
   for (uint32_t i = 0; i < route.GetNOutputInterfaces (); ++i)
     {
@@ -330,4 +337,4 @@ operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route)
   return os;
 }
 
-}//namespace ns3
+} //namespace ns3

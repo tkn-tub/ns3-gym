@@ -56,18 +56,18 @@ public:
   /**
    * \brief Constructor.
    */
-  Ipv6ListRouting ();  
+  Ipv6ListRouting ();
 
   /**
    * \brief Destructor.
    */
-  virtual ~Ipv6ListRouting ();  
+  virtual ~Ipv6ListRouting ();
 
   /**
    * \brief Register a new routing protocol to be used in this IPv4 stack
    * \param routingProtocol new routing protocol implementation object
    * \param priority priority to give to this routing protocol.
-   * Values may range between -32768 and +32767.  
+   * Values may range between -32768 and +32767.
    */
   virtual void AddRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol, int16_t priority);
 

@@ -73,9 +73,9 @@ public:
    * \return 
    */
   bool Lookup (Ptr<Packet> p, Ipv4Address destination, 
-	       Ptr<NetDevice> device,
+               Ptr<NetDevice> device,
                Ptr<ArpCache> cache,
-	       Address *hardwareDestination);
+               Address *hardwareDestination);
 protected:
   virtual void DoDispose (void);
   /*
@@ -95,7 +95,7 @@ private:
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 };
 
-}//namespace ns3
+} //namespace ns3
 
 
 #endif /* ARP_L3_PROTOCOL_H */

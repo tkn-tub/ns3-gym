@@ -34,7 +34,8 @@ private:
 
 NetworkAllocatorHelperTestCase::NetworkAllocatorHelperTestCase ()
   : TestCase ("Make sure the network allocator part is working on some common network prefixes.")
-{}
+{
+}
 
 void
 NetworkAllocatorHelperTestCase::DoTeardown (void)
@@ -79,7 +80,8 @@ private:
 
 AddressAllocatorHelperTestCase::AddressAllocatorHelperTestCase ()
   : TestCase ("Make sure the address allocator part is working")
-{}
+{
+}
 
 void
 AddressAllocatorHelperTestCase::DoTeardown (void)
@@ -124,7 +126,8 @@ public:
 
 ResetAllocatorHelperTestCase::ResetAllocatorHelperTestCase ()
   : TestCase ("Make sure the reset to base behavior is working")
-{}
+{
+}
 
 void
 ResetAllocatorHelperTestCase::DoRun (void)

@@ -31,74 +31,74 @@ Ipv6RoutingTableEntry::Ipv6RoutingTableEntry ()
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6RoutingTableEntry const& route)
   : m_dest (route.m_dest),
-  m_destNetworkPrefix (route.m_destNetworkPrefix),
-  m_gateway (route.m_gateway),
-  m_interface (route.m_interface),
-  m_prefixToUse (route.m_prefixToUse)
+    m_destNetworkPrefix (route.m_destNetworkPrefix),
+    m_gateway (route.m_gateway),
+    m_interface (route.m_interface),
+    m_prefixToUse (route.m_prefixToUse)
 {
 }
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6RoutingTableEntry const* route) 
   : m_dest (route->m_dest),
-  m_destNetworkPrefix (route->m_destNetworkPrefix),
-  m_gateway (route->m_gateway),
-  m_interface (route->m_interface),
-  m_prefixToUse (route->m_prefixToUse)
+    m_destNetworkPrefix (route->m_destNetworkPrefix),
+    m_gateway (route->m_gateway),
+    m_interface (route->m_interface),
+    m_prefixToUse (route->m_prefixToUse)
 {
 }
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address dest, Ipv6Address gateway, uint32_t interface)
   : m_dest (dest),
-  m_destNetworkPrefix (Ipv6Prefix::GetZero ()),
-  m_gateway (gateway),
-  m_interface (interface),
-  m_prefixToUse (Ipv6Address ("::"))
+    m_destNetworkPrefix (Ipv6Prefix::GetZero ()),
+    m_gateway (gateway),
+    m_interface (interface),
+    m_prefixToUse (Ipv6Address ("::"))
 {
 }
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address dest, uint32_t interface)
   : m_dest (dest),
-  m_destNetworkPrefix (Ipv6Prefix::GetOnes ()),
-  m_gateway (Ipv6Address::GetZero ()),
-  m_interface (interface),
-  m_prefixToUse (Ipv6Address ("::"))
+    m_destNetworkPrefix (Ipv6Prefix::GetOnes ()),
+    m_gateway (Ipv6Address::GetZero ()),
+    m_interface (interface),
+    m_prefixToUse (Ipv6Address ("::"))
 {
 }
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address gateway, uint32_t interface, Ipv6Address prefixToUse)
   : m_dest (network),
-  m_destNetworkPrefix (networkPrefix),
-  m_gateway (gateway),
-  m_interface (interface),
-  m_prefixToUse (prefixToUse)
+    m_destNetworkPrefix (networkPrefix),
+    m_gateway (gateway),
+    m_interface (interface),
+    m_prefixToUse (prefixToUse)
 {
 }
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address gateway, uint32_t interface)
   : m_dest (network),
-  m_destNetworkPrefix (networkPrefix),
-  m_gateway (gateway),
-  m_interface (interface),
-  m_prefixToUse (Ipv6Address::GetZero ())
+    m_destNetworkPrefix (networkPrefix),
+    m_gateway (gateway),
+    m_interface (interface),
+    m_prefixToUse (Ipv6Address::GetZero ())
 {
 }
 
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface, Ipv6Address prefixToUse)
   : m_dest (network),
-  m_destNetworkPrefix (networkPrefix),
-  m_gateway (Ipv6Address::GetZero ()),
-  m_interface (interface),
-  m_prefixToUse (prefixToUse)
+    m_destNetworkPrefix (networkPrefix),
+    m_gateway (Ipv6Address::GetZero ()),
+    m_interface (interface),
+    m_prefixToUse (prefixToUse)
 {
 }
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface)
   : m_dest (network),
-  m_destNetworkPrefix (networkPrefix),
-  m_gateway (Ipv6Address::GetZero ()),
-  m_interface (interface),
-  m_prefixToUse (Ipv6Address ("::"))
+    m_destNetworkPrefix (networkPrefix),
+    m_gateway (Ipv6Address::GetZero ()),
+    m_interface (interface),
+    m_prefixToUse (Ipv6Address ("::"))
 {
 }
 
@@ -215,13 +215,13 @@ std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route)
       if (route.IsGateway ())
         {
           os << "host ="<< route.GetDest () <<
-            ", out =" << route.GetInterface () <<
-            ", next hop =" << route.GetGateway ();
+          ", out =" << route.GetInterface () <<
+          ", next hop =" << route.GetGateway ();
         }
       else
         {
           os << "host =" << route.GetDest () <<
-            ", out =" << route.GetInterface ();
+          ", out =" << route.GetInterface ();
         }
     }
   else if (route.IsNetwork ())
@@ -229,15 +229,15 @@ std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route)
       if (route.IsGateway ())
         {
           os << "network =" << route.GetDestNetwork () <<
-            ", mask =" << route.GetDestNetworkPrefix () <<
-            ",out =" << route.GetInterface () <<
-            ", next hop =" << route.GetGateway ();
+          ", mask =" << route.GetDestNetworkPrefix () <<
+          ",out =" << route.GetInterface () <<
+          ", next hop =" << route.GetGateway ();
         }
       else
         {
           os << "network =" << route.GetDestNetwork () <<
-            ", mask =" << route.GetDestNetworkPrefix () <<
-            ",out =" << route.GetInterface ();
+          ", mask =" << route.GetDestNetworkPrefix () <<
+          ",out =" << route.GetInterface ();
         }
     }
   else
@@ -253,25 +253,25 @@ Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry ()
 
 Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry (Ipv6MulticastRoutingTableEntry const & route) 
   : m_origin (route.m_origin),
-  m_group (route.m_group),
-  m_inputInterface (route.m_inputInterface),
-  m_outputInterfaces (route.m_outputInterfaces)
+    m_group (route.m_group),
+    m_inputInterface (route.m_inputInterface),
+    m_outputInterfaces (route.m_outputInterfaces)
 {
 }
 
 Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry (Ipv6MulticastRoutingTableEntry const* route)
   : m_origin (route->m_origin),
-  m_group (route->m_group),
-  m_inputInterface (route->m_inputInterface),
-  m_outputInterfaces (route->m_outputInterfaces)
+    m_group (route->m_group),
+    m_inputInterface (route->m_inputInterface),
+    m_outputInterfaces (route->m_outputInterfaces)
 {
 }
 
 Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry (Ipv6Address origin, Ipv6Address group, uint32_t inputInterface, std::vector<uint32_t> outputInterfaces)
   : m_origin (origin),
-  m_group (group),
-  m_inputInterface (inputInterface),
-  m_outputInterfaces (outputInterfaces)
+    m_group (group),
+    m_inputInterface (inputInterface),
+    m_outputInterfaces (outputInterfaces)
 {
 }
 
@@ -315,9 +315,9 @@ Ipv6MulticastRoutingTableEntry Ipv6MulticastRoutingTableEntry::CreateMulticastRo
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoutingTableEntry const& route)
 {
   os << "origin =" << route.GetOrigin () <<
-    ", group =" << route.GetGroup () <<
-    ", input interface =" << route.GetInputInterface () <<
-    ", output interfaces =";
+  ", group =" << route.GetGroup () <<
+  ", input interface =" << route.GetInputInterface () <<
+  ", output interfaces =";
 
   for (uint32_t i = 0; i < route.GetNOutputInterfaces (); ++i)
     {

@@ -130,7 +130,7 @@ public:
    */
   class Entry
   {
-  public:
+public:
     /**
      * \brief Constructor.
      * \param nd The NdiscCache this entry belongs to.
@@ -337,7 +337,7 @@ public:
      */
     void SetIpv6Address (Ipv6Address ipv6Address);
 
-  private:
+private:
     /**
      * \brief The IPv6 address.
      */

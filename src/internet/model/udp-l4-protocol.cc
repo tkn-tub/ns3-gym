@@ -53,7 +53,7 @@ UdpL4Protocol::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&UdpL4Protocol::m_sockets),
                    MakeObjectVectorChecker<UdpSocketImpl> ())
-    ;
+  ;
   return tid;
 }
 
@@ -81,7 +81,7 @@ UdpL4Protocol::SetNode (Ptr<Node> node)
  */
 void
 UdpL4Protocol::NotifyNewAggregate ()
-{  
+{
   if (m_node == 0)
     {
       Ptr<Node> node = this->GetObject<Node> ();
@@ -193,7 +193,7 @@ UdpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                             const uint8_t payload[8])
 {
   NS_LOG_FUNCTION (this << icmpSource << icmpTtl << icmpType << icmpCode << icmpInfo 
-                   << payloadSource << payloadDestination);
+                        << payloadSource << payloadDestination);
   uint16_t src, dst;
   src = payload[0] << 8;
   src |= payload[1];
@@ -221,19 +221,19 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
   NS_LOG_FUNCTION (this << packet << header);
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
-  {
-    udpHeader.EnableChecksums();
-  }
+    {
+      udpHeader.EnableChecksums();
+    }
 
   udpHeader.InitializeChecksum (header.GetSource (), header.GetDestination (), PROT_NUMBER);
 
   packet->RemoveHeader (udpHeader);
 
   if(!udpHeader.IsChecksumOk ())
-  {
-    NS_LOG_INFO("Bad checksum : dropping packet!");
-    return Ipv4L4Protocol::RX_CSUM_FAILED;
-  }
+    {
+      NS_LOG_INFO("Bad checksum : dropping packet!");
+      return Ipv4L4Protocol::RX_CSUM_FAILED;
+    }
 
   NS_LOG_DEBUG ("Looking up dst " << header.GetDestination () << " port " << udpHeader.GetDestinationPort ()); 
   Ipv4EndPointDemux::EndPoints endPoints =
@@ -262,12 +262,12 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
-  {
-    udpHeader.EnableChecksums();
-    udpHeader.InitializeChecksum (saddr,
-                                  daddr,
-                                  PROT_NUMBER);
-  }
+    {
+      udpHeader.EnableChecksums();
+      udpHeader.InitializeChecksum (saddr,
+                                    daddr,
+                                    PROT_NUMBER);
+    }
   udpHeader.SetDestinationPort (dport);
   udpHeader.SetSourcePort (sport);
 
@@ -285,12 +285,12 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
-  {
-    udpHeader.EnableChecksums();
-    udpHeader.InitializeChecksum (saddr,
-                                  daddr,
-                                  PROT_NUMBER);
-  }
+    {
+      udpHeader.EnableChecksums();
+      udpHeader.InitializeChecksum (saddr,
+                                    daddr,
+                                    PROT_NUMBER);
+    }
   udpHeader.SetDestinationPort (dport);
   udpHeader.SetSourcePort (sport);
 

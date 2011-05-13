@@ -53,7 +53,7 @@ class Node;
  * \brief Static routing protocol for IP version 4 stacks.
  *
  * This class provides a basic set of methods for inserting static
- * unicast and multicast routes into the Ipv4 routing system.  
+ * unicast and multicast routes into the Ipv4 routing system.
  * This particular protocol is designed to be inserted into an 
  * Ipv4ListRouting protocol but can be used also as a standalone
  * protocol.
@@ -77,8 +77,8 @@ public:
   virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
 
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                             LocalDeliverCallback lcb, ErrorCallback ecb);
+                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                            LocalDeliverCallback lcb, ErrorCallback ecb);
 
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);
@@ -195,9 +195,9 @@ public:
  * \brief Get a route from the static unicast routing table.
  *
  * Externally, the unicast static routing table appears simply as a table with
- * n entries.  
+ * n entries.
  *
- * \param i The index (into the routing table) of the route to retrieve.  
+ * \param i The index (into the routing table) of the route to retrieve.
  * \return If route is set, a pointer to that Ipv4RoutingTableEntry is returned, otherwise
  * a zero pointer is returned.
  *
@@ -209,19 +209,19 @@ public:
 /**
  * \brief Get a metric for route from the static unicast routing table.
  *
- * \param index The index (into the routing table) of the route to retrieve.  
+ * \param index The index (into the routing table) of the route to retrieve.
  * \return If route is set, the metric is returned. If not, an infinity metric (0xffffffff) is returned
  *
  */
   uint32_t GetMetric (uint32_t index);
-  
+
 /**
  * \brief Remove a route from the static unicast routing table.
  *
  * Externally, the unicast static routing table appears simply as a table with
- * n entries.  
+ * n entries.
  *
- * \param i The index (into the routing table) of the route to remove.  
+ * \param i The index (into the routing table) of the route to remove.
  *
  * \see Ipv4RoutingTableEntry
  * \see Ipv4StaticRouting::GetRoute
@@ -315,10 +315,10 @@ public:
  * \brief Get a route from the static multicast routing table.
  *
  * Externally, the multicast static routing table appears simply as a table 
- * with n entries.  
+ * with n entries.
  * 
  * \param i The index (into the routing table) of the multicast route to
- * retrieve.  
+ * retrieve.
  * \return If route \e i is set, a pointer to that Ipv4MulticastRoutingTableEntry is
  * returned, otherwise a zero pointer is returned.
  *
@@ -331,7 +331,7 @@ public:
  * \brief Remove a route from the static multicast routing table.
  *
  * Externally, the multicast static routing table appears simply as a table 
- * with n entries.  
+ * with n entries.
  * This method causes the multicast routing table to be searched for the first
  * route that matches the parameters and removes it.
  *
@@ -360,10 +360,10 @@ public:
  * \brief Remove a route from the static multicast routing table.
  *
  * Externally, the multicast static routing table appears simply as a table 
- * with n entries.  
+ * with n entries.
  *
  * \param index The index (into the multicast routing table) of the route to
- * remove.  
+ * remove.
  *
  * \see Ipv4RoutingTableEntry
  * \see Ipv4StaticRouting::GetRoute
@@ -382,10 +382,10 @@ private:
   typedef std::list<Ipv4MulticastRoutingTableEntry *> MulticastRoutes;
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
-  
+
   Ptr<Ipv4Route> LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif = 0);
   Ptr<Ipv4MulticastRoute> LookupStatic (Ipv4Address origin, Ipv4Address group,
-                                    uint32_t interface);
+                                        uint32_t interface);
 
   Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
 

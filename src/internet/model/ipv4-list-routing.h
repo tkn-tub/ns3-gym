@@ -47,15 +47,15 @@ class Ipv4ListRouting : public Ipv4RoutingProtocol
 public:
   static TypeId GetTypeId (void);
 
-  Ipv4ListRouting ();  
-  virtual ~Ipv4ListRouting ();  
+  Ipv4ListRouting ();
+  virtual ~Ipv4ListRouting ();
 
   /**
    * \brief Register a new routing protocol to be used in this IPv4 stack
    *
    * \param routingProtocol new routing protocol implementation object
    * \param priority priority to give to this routing protocol.
-   * Values may range between -32768 and +32767.  
+   * Values may range between -32768 and +32767.
    */
   virtual void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol, int16_t priority);
   /**

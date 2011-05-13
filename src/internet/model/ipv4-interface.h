@@ -66,7 +66,7 @@ public:
    * \return ARP cache used by this interface
    */
   Ptr<ArpCache> GetArpCache () const;
-  
+
   /**
    * \param metric configured routing metric (cost) of this interface
    *
@@ -114,7 +114,7 @@ public:
    * \returns true if this interface is enabled for IP forwarding of input datagrams
    */
   bool IsForwarding (void) const;
-  
+
   /**
    * \param val Whether to enable or disable IP forwarding for input datagrams
    */

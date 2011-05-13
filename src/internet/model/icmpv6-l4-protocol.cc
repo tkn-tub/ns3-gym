@@ -72,7 +72,7 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
                    BooleanValue (true),
                    MakeBooleanAccessor (&Icmpv6L4Protocol::m_alwaysDad),
                    MakeBooleanChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -127,7 +127,7 @@ void Icmpv6L4Protocol::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
   m_node = node;
-}  
+}
 
 uint16_t Icmpv6L4Protocol::GetStaticProtocolNumber ()
 {
@@ -167,7 +167,7 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
 
   /* TODO : disable multicast loopback to prevent NS probing to be received by the sender */
 
-  Ptr<Packet> p = ForgeNS ("::" ,Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
+  Ptr<Packet> p = ForgeNS ("::",Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
 
   /* update last packet UID */
   interface->SetNsDadUid (target, p->GetUid ());
@@ -284,7 +284,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
           /* take in account the first LLA option */
           if (!hasLla)
             {
-              p->RemoveHeader (llaHdr);                   
+              p->RemoveHeader (llaHdr);
               ReceiveLLA (llaHdr, src, dst, interface);
               hasLla = true;
             }
@@ -311,9 +311,9 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
       entry = cache->Add (src);
       entry->SetRouter (true);
       entry->SetMacAddress (lla.GetAddress ());
-      entry->MarkReachable ();  
-      entry->StartReachableTimer ();        
-    }                    
+      entry->MarkReachable ();
+      entry->StartReachableTimer ();
+    }
   else
     {
       std::list<Ptr<Packet> > waiting;
@@ -338,7 +338,7 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
               entry->SetMacAddress (lla.GetAddress ());
               entry->MarkStale ();
               entry->SetRouter (true);
-            }  
+            }
           else
             {
               if (!entry->IsReachable ())
@@ -355,7 +355,7 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
                     }
                   entry->StopReachableTimer ();
                   entry->StartReachableTimer ();
-                }    
+                }
             }
         }
     }
@@ -904,7 +904,7 @@ void Icmpv6L4Protocol::SendErrorTooBig (Ptr<Packet> malformedPacket, Ipv6Address
   NS_LOG_LOGIC ("Send Too Big ( to " << dst << " )");
 
   /* 48 = sizeof IPv6 header + sizeof ICMPv6 error header */
-  if (malformedPacketSize <= 1280 - 48)  
+  if (malformedPacketSize <= 1280 - 48)
     {
       header.SetPacket (malformedPacket);
     }

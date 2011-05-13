@@ -50,9 +50,9 @@ public:
    */
   void EnableChecksums (void);
 //Setters
-  /**
-   * \param port The source port for this TcpHeader
-   */
+/**
+ * \param port The source port for this TcpHeader
+ */
   void SetSourcePort (uint16_t port);
   /**
    * \param port the destination port for this TcpHeader
@@ -85,9 +85,9 @@ public:
 
 
 //Getters
-  /**
-   * \return The source port for this TcpHeader
-   */
+/**
+ * \return The source port for this TcpHeader
+ */
   uint16_t GetSourcePort () const;
   /**
    * \return the destination port for this TcpHeader
@@ -134,7 +134,7 @@ public:
                            uint8_t protocol);
 
   typedef enum { NONE = 0, FIN = 1, SYN = 2, RST = 4, PSH = 8, ACK = 16, 
-    URG = 32} Flags_t;
+                 URG = 32} Flags_t;
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;

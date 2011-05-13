@@ -38,7 +38,7 @@ TypeId Icmpv6Header::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6Header")
     .SetParent<Header> ()
     .AddConstructor<Icmpv6Header> ()
-    ;
+  ;
   return tid;
 }
 
@@ -49,9 +49,9 @@ TypeId Icmpv6Header::GetInstanceTypeId () const
 
 Icmpv6Header::Icmpv6Header ()
   : m_calcChecksum (true),
-  m_checksum (0),
-  m_type (0),
-  m_code (0)
+    m_checksum (0),
+    m_type (0),
+    m_code (0)
 {
 }
 
@@ -172,7 +172,7 @@ TypeId Icmpv6NS::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6NS")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6NS> ()
-    ;
+  ;
   return tid;
 }
 
@@ -275,7 +275,7 @@ TypeId Icmpv6NA::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6NA")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6NA> ()
-    ;
+  ;
   return tid;
 }
 
@@ -441,7 +441,7 @@ TypeId Icmpv6RA::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6RA")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6RA> ()
-    ;
+  ;
   return tid;
 }
 
@@ -637,7 +637,7 @@ TypeId Icmpv6RS::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6RS")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6RS> ()
-    ;
+  ;
   return tid;
 }
 
@@ -719,7 +719,7 @@ TypeId Icmpv6Redirection::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6Redirection")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6Redirection> ()
-    ;
+  ;
   return tid;
 }
 
@@ -730,8 +730,8 @@ TypeId Icmpv6Redirection::GetInstanceTypeId () const
 
 Icmpv6Redirection::Icmpv6Redirection ()
   : m_target (Ipv6Address ("")),
-  m_destination (Ipv6Address ("")),
-  m_reserved (0)
+    m_destination (Ipv6Address ("")),
+    m_reserved (0)
 {
   SetType (ICMPV6_ND_REDIRECTION);
   SetCode (0);
@@ -836,7 +836,7 @@ TypeId Icmpv6Echo::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6Echo")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6Echo> ()
-    ;
+  ;
   return tid;
 }
 
@@ -890,8 +890,8 @@ void Icmpv6Echo::SetSeq (uint16_t seq)
 void Icmpv6Echo::Print (std::ostream& os) const
 {
   os << "( type = " << (GetType () == 128 ? "128 (Request)" : "129 (Reply)") << 
-    " code = " << (uint32_t)GetCode () << 
-    " checksum = "  << (uint32_t)GetChecksum () << ")";
+  " code = " << (uint32_t)GetCode () <<
+  " checksum = "  << (uint32_t)GetChecksum () << ")";
 }
 
 uint32_t Icmpv6Echo::GetSerializedSize () const
@@ -941,7 +941,7 @@ TypeId Icmpv6DestinationUnreachable::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6DestinationUnreachable")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6DestinationUnreachable> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1028,7 +1028,7 @@ TypeId Icmpv6TooBig::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6TooBig")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6TooBig> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1039,7 +1039,7 @@ TypeId Icmpv6TooBig::GetInstanceTypeId () const
 
 Icmpv6TooBig::Icmpv6TooBig ()
   : m_packet (0),
-  m_mtu (0)
+    m_mtu (0)
 {
   SetType (ICMPV6_ERROR_PACKET_TOO_BIG);
 }
@@ -1126,7 +1126,7 @@ TypeId Icmpv6TimeExceeded::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6TimeExceeded")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6TimeExceeded> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1213,7 +1213,7 @@ TypeId Icmpv6ParameterError::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6ParameterError")
     .SetParent<Icmpv6Header> ()
     .AddConstructor<Icmpv6ParameterError> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1224,7 +1224,7 @@ TypeId Icmpv6ParameterError::GetInstanceTypeId () const
 
 Icmpv6ParameterError::Icmpv6ParameterError ()
   : m_packet (0),
-  m_ptr (0)
+    m_ptr (0)
 {
   SetType (ICMPV6_ERROR_PARAMETER_ERROR);
 }
@@ -1311,7 +1311,7 @@ TypeId Icmpv6OptionHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6OptionHeader")
     .SetParent<Header> ()
     .AddConstructor<Icmpv6OptionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1382,7 +1382,7 @@ TypeId Icmpv6OptionMtu::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6OptionMtu")
     .SetParent<Icmpv6OptionHeader> ()
     .AddConstructor<Icmpv6OptionMtu> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1466,7 +1466,7 @@ TypeId Icmpv6OptionPrefixInformation::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6OptionPrefixInformation")
     .SetParent<Icmpv6OptionHeader> ()
     .AddConstructor<Icmpv6OptionPrefixInformation> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1619,7 +1619,7 @@ TypeId Icmpv6OptionLinkLayerAddress::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6OptionLinkLayerAddress")
     .SetParent<Icmpv6OptionHeader> ()
     .AddConstructor<Icmpv6OptionLinkLayerAddress> ()
-    ;
+  ;
   return tid;
 }
 
@@ -1706,7 +1706,7 @@ TypeId Icmpv6OptionRedirected::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6OptionRedirected")
     .SetParent<Icmpv6OptionHeader> ()
     .AddConstructor<Icmpv6OptionRedirected> ()
-    ;
+  ;
   return tid;
 }
 

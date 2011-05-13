@@ -35,7 +35,7 @@ TypeId Ipv6ExtensionHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionHeader")
     .AddConstructor<Ipv6ExtensionHeader> ()
     .SetParent<Header> ()
-    ;
+  ;
   return tid;
 }
 
@@ -46,8 +46,8 @@ TypeId Ipv6ExtensionHeader::GetInstanceTypeId () const
 
 Ipv6ExtensionHeader::Ipv6ExtensionHeader ()
   : m_nextHeader (0),
-  m_length (0),
-  m_data (0)
+    m_length (0),
+    m_data (0)
 {
 }
 
@@ -122,7 +122,7 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
 
 OptionField::OptionField (uint32_t optionsOffset)
   : m_optionData (0),
-  m_optionsOffset (optionsOffset)
+    m_optionsOffset (optionsOffset)
 {
 }
 
@@ -132,21 +132,21 @@ OptionField::~OptionField ()
 
 uint32_t OptionField::GetSerializedSize () const
 {
-  return m_optionData.GetSize () + CalculatePad ((Ipv6OptionHeader::Alignment) {8,0});
+  return m_optionData.GetSize () + CalculatePad ((Ipv6OptionHeader::Alignment) { 8,0});
 }
 
 void OptionField::Serialize (Buffer::Iterator start) const
 {
   start.Write (m_optionData.Begin (), m_optionData.End ());
-  uint32_t fill = CalculatePad ((Ipv6OptionHeader::Alignment) {8,0});
+  uint32_t fill = CalculatePad ((Ipv6OptionHeader::Alignment) { 8,0});
   NS_LOG_LOGIC ("fill with " << fill << " bytes padding");
   switch (fill)
     {
     case 0: return;
     case 1: Ipv6OptionPad1Header ().Serialize (start);
-            return;
+      return;
     default: Ipv6OptionPadnHeader (fill).Serialize (start);
-             return;
+      return;
     }
 }
 
@@ -170,9 +170,9 @@ void OptionField::AddOption (Ipv6OptionHeader const& option)
     {
     case 0: break; //no padding needed
     case 1: AddOption (Ipv6OptionPad1Header ());
-            break;
+      break;
     default: AddOption (Ipv6OptionPadnHeader (pad));
-             break;
+      break;
     }
 
   m_optionData.AddAtEnd (option.GetSerializedSize ());
@@ -204,7 +204,7 @@ TypeId Ipv6ExtensionHopByHopHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionHopByHopHeader")
     .AddConstructor<Ipv6ExtensionHopByHopHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -214,7 +214,7 @@ TypeId Ipv6ExtensionHopByHopHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionHopByHopHeader::Ipv6ExtensionHopByHopHeader ()
-: OptionField (2)
+  : OptionField (2)
 {
 }
 
@@ -259,7 +259,7 @@ TypeId Ipv6ExtensionDestinationHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionDestinationHeader")
     .AddConstructor<Ipv6ExtensionDestinationHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -269,7 +269,7 @@ TypeId Ipv6ExtensionDestinationHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionDestinationHeader::Ipv6ExtensionDestinationHeader ()
-: OptionField (2)
+  : OptionField (2)
 {
 }
 
@@ -315,7 +315,7 @@ TypeId Ipv6ExtensionFragmentHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionFragmentHeader")
     .AddConstructor<Ipv6ExtensionFragmentHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -326,7 +326,7 @@ TypeId Ipv6ExtensionFragmentHeader::GetInstanceTypeId () const
 
 Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader ()
   : m_offset (0),
-  m_identification (0)
+    m_identification (0)
 {
 }
 
@@ -369,7 +369,7 @@ uint32_t Ipv6ExtensionFragmentHeader::GetIdentification () const
 void Ipv6ExtensionFragmentHeader::Print (std::ostream &os) const
 {
   os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " << (uint32_t)GetLength () 
-    << " offset = " << (uint32_t)GetOffset () << " MF = " << (uint32_t)GetMoreFragment () << " identification = " << (uint32_t)m_identification << " )";
+     << " offset = " << (uint32_t)GetOffset () << " MF = " << (uint32_t)GetMoreFragment () << " identification = " << (uint32_t)m_identification << " )";
 }
 
 uint32_t Ipv6ExtensionFragmentHeader::GetSerializedSize () const
@@ -406,7 +406,7 @@ TypeId Ipv6ExtensionRoutingHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionRoutingHeader")
     .AddConstructor<Ipv6ExtensionRoutingHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -417,7 +417,7 @@ TypeId Ipv6ExtensionRoutingHeader::GetInstanceTypeId () const
 
 Ipv6ExtensionRoutingHeader::Ipv6ExtensionRoutingHeader ()
   : m_typeRouting (0),
-  m_segmentsLeft (0)
+    m_segmentsLeft (0)
 {
 }
 
@@ -448,7 +448,7 @@ uint8_t Ipv6ExtensionRoutingHeader::GetSegmentsLeft () const
 void Ipv6ExtensionRoutingHeader::Print (std::ostream &os) const
 {
   os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " << (uint32_t)GetLength () 
-    << " typeRouting = " << (uint32_t)m_typeRouting << " segmentsLeft = " << (uint32_t)m_segmentsLeft << " )";
+     << " typeRouting = " << (uint32_t)m_typeRouting << " segmentsLeft = " << (uint32_t)m_segmentsLeft << " )";
 }
 
 uint32_t Ipv6ExtensionRoutingHeader::GetSerializedSize () const
@@ -485,7 +485,7 @@ TypeId Ipv6ExtensionLooseRoutingHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionLooseRoutingHeader")
     .AddConstructor<Ipv6ExtensionLooseRoutingHeader> ()
     .SetParent<Ipv6ExtensionRoutingHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -532,7 +532,7 @@ Ipv6Address Ipv6ExtensionLooseRoutingHeader::GetRouterAddress (uint8_t index) co
 void Ipv6ExtensionLooseRoutingHeader::Print (std::ostream &os) const
 {
   os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " <<  (uint32_t)GetLength () 
-    << " typeRouting = " << (uint32_t)GetTypeRouting () << " segmentsLeft = " << (uint32_t)GetSegmentsLeft () << " ";
+     << " typeRouting = " << (uint32_t)GetTypeRouting () << " segmentsLeft = " << (uint32_t)GetSegmentsLeft () << " ";
 
   for (std::vector<Ipv6Address>::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
     {
@@ -592,7 +592,7 @@ TypeId Ipv6ExtensionESPHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionESPHeader")
     .AddConstructor<Ipv6ExtensionESPHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -638,7 +638,7 @@ TypeId Ipv6ExtensionAHHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionAHHeader")
     .AddConstructor<Ipv6ExtensionAHHeader> ()
     .SetParent<Ipv6ExtensionHeader> ()
-    ;
+  ;
   return tid;
 }
 

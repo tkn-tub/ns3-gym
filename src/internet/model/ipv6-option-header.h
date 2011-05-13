@@ -34,117 +34,117 @@ namespace ns3
  */
 class Ipv6OptionHeader : public Header 
 {
-  public:
+public:
 
-    /**
-     * \struct Alignment
-     * \brief represents the alignment requirements of an option header
-     *
-     * Represented as factor*n+offset (eg. 8n+2) See RFC 2460.
-     * No alignment is represented as 1n+0.
-     */
-    struct Alignment
-    {
-      uint8_t factor; /**< Factor */
-      uint8_t offset; /**< Offset */
-    };
+  /**
+   * \struct Alignment
+   * \brief represents the alignment requirements of an option header
+   *
+   * Represented as factor*n+offset (eg. 8n+2) See RFC 2460.
+   * No alignment is represented as 1n+0.
+   */
+  struct Alignment
+  {
+    uint8_t factor;   /**< Factor */
+    uint8_t offset;   /**< Offset */
+  };
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
-     */
-    virtual TypeId GetInstanceTypeId () const;
+  /**
+   * \brief Get the instance type ID.
+   * \return instance type ID
+   */
+  virtual TypeId GetInstanceTypeId () const;
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionHeader ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionHeader ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6OptionHeader ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6OptionHeader ();
 
-    /**
-     * \brief Set the type of the option.
-     * \param type the type of the option
-     */
-    void SetType (uint8_t type);
+  /**
+   * \brief Set the type of the option.
+   * \param type the type of the option
+   */
+  void SetType (uint8_t type);
 
-    /**
-     * \brief Get the type of the option.
-     * \return the type of the option
-     */
-    uint8_t GetType () const;
+  /**
+   * \brief Get the type of the option.
+   * \return the type of the option
+   */
+  uint8_t GetType () const;
 
-    /**
-     * \brief Set the option length.
-     * \param length the option length
-     */
-    void SetLength (uint8_t length);
+  /**
+   * \brief Set the option length.
+   * \param length the option length
+   */
+  void SetLength (uint8_t length);
 
-    /**
-     * \brief Get the option length.
-     * \return the option length
-     */
-    uint8_t GetLength () const;
+  /**
+   * \brief Get the option length.
+   * \return the option length
+   */
+  uint8_t GetLength () const;
 
-    /**
-     * \brief Print some informations about the packet.
-     * \param os output stream
-     * \return info about this packet
-     */
-    virtual void Print (std::ostream &os) const;
+  /**
+   * \brief Print some informations about the packet.
+   * \param os output stream
+   * \return info about this packet
+   */
+  virtual void Print (std::ostream &os) const;
 
-    /**
-     * \brief Get the serialized size of the packet.
-     * \return size
-     */
-    virtual uint32_t GetSerializedSize () const;
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return size
+   */
+  virtual uint32_t GetSerializedSize () const;
 
-    /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
-     */
-    virtual void Serialize (Buffer::Iterator start) const;
+  /**
+   * \brief Serialize the packet.
+   * \param start Buffer iterator
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
 
-    /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
-     */
-    virtual uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * \brief Deserialize the packet.
+   * \param start Buffer iterator
+   * \return size of the packet
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 
-    /**
-     * \brief Get the Alignment requirement of this option header
-     * \return The required alignment
-     *
-     * Subclasses should only implement this method, if special alignment is
-     * required. Default is no alignment (1n+0).
-     */
-    virtual Alignment GetAlignment () const;
+  /**
+   * \brief Get the Alignment requirement of this option header
+   * \return The required alignment
+   *
+   * Subclasses should only implement this method, if special alignment is
+   * required. Default is no alignment (1n+0).
+   */
+  virtual Alignment GetAlignment () const;
 
-  private:
-    /**
-     * \brief The type of the option.
-     */
-    uint8_t m_type;
+private:
+  /**
+   * \brief The type of the option.
+   */
+  uint8_t m_type;
 
-    /**
-     * \brief The option length.
-     */
-    uint8_t m_length;
+  /**
+   * \brief The option length.
+   */
+  uint8_t m_length;
 
-    /**
-     * \brief The anonymous data of this option
-     */
-    Buffer m_data;
+  /**
+   * \brief The anonymous data of this option
+   */
+  Buffer m_data;
 };
 
 /**
@@ -153,54 +153,54 @@ class Ipv6OptionHeader : public Header
  */
 class Ipv6OptionPad1Header : public Ipv6OptionHeader
 {
-  public:
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
-     */
-    virtual TypeId GetInstanceTypeId () const;
+  /**
+   * \brief Get the instance type ID.
+   * \return instance type ID
+   */
+  virtual TypeId GetInstanceTypeId () const;
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionPad1Header ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionPad1Header ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6OptionPad1Header ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6OptionPad1Header ();
 
-    /**
-     * \brief Print some informations about the packet.
-     * \param os output stream
-     * \return info about this packet
-     */
-    virtual void Print (std::ostream &os) const;
+  /**
+   * \brief Print some informations about the packet.
+   * \param os output stream
+   * \return info about this packet
+   */
+  virtual void Print (std::ostream &os) const;
 
-    /**
-     * \brief Get the serialized size of the packet.
-     * \return size
-     */
-    virtual uint32_t GetSerializedSize () const;
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return size
+   */
+  virtual uint32_t GetSerializedSize () const;
 
-    /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
-     */
-    virtual void Serialize (Buffer::Iterator start) const;
+  /**
+   * \brief Serialize the packet.
+   * \param start Buffer iterator
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
 
-    /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
-     */
-    virtual uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * \brief Deserialize the packet.
+   * \param start Buffer iterator
+   * \return size of the packet
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 };
 
 /**
@@ -209,55 +209,55 @@ class Ipv6OptionPad1Header : public Ipv6OptionHeader
  */
 class Ipv6OptionPadnHeader : public Ipv6OptionHeader
 {
-  public:
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
-     */
-    virtual TypeId GetInstanceTypeId () const;
+  /**
+   * \brief Get the instance type ID.
+   * \return instance type ID
+   */
+  virtual TypeId GetInstanceTypeId () const;
 
-    /**
-     * \brief Constructor.
-     * \param pad Number of bytes to pad (>=2)
-     */
-    Ipv6OptionPadnHeader (uint32_t pad = 2);
+  /**
+   * \brief Constructor.
+   * \param pad Number of bytes to pad (>=2)
+   */
+  Ipv6OptionPadnHeader (uint32_t pad = 2);
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6OptionPadnHeader ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6OptionPadnHeader ();
 
-    /**
-     * \brief Print some informations about the packet.
-     * \param os output stream
-     * \return info about this packet
-     */
-    virtual void Print (std::ostream &os) const;
+  /**
+   * \brief Print some informations about the packet.
+   * \param os output stream
+   * \return info about this packet
+   */
+  virtual void Print (std::ostream &os) const;
 
-    /**
-     * \brief Get the serialized size of the packet.
-     * \return size
-     */
-    virtual uint32_t GetSerializedSize () const;
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return size
+   */
+  virtual uint32_t GetSerializedSize () const;
 
-    /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
-     */
-    virtual void Serialize (Buffer::Iterator start) const;
+  /**
+   * \brief Serialize the packet.
+   * \param start Buffer iterator
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
 
-    /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
-     */
-    virtual uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * \brief Deserialize the packet.
+   * \param start Buffer iterator
+   * \return size of the packet
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 };
 
 /**
@@ -266,78 +266,78 @@ class Ipv6OptionPadnHeader : public Ipv6OptionHeader
  */
 class Ipv6OptionJumbogramHeader : public Ipv6OptionHeader
 {
-  public:
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
-     */
-    virtual TypeId GetInstanceTypeId () const;
+  /**
+   * \brief Get the instance type ID.
+   * \return instance type ID
+   */
+  virtual TypeId GetInstanceTypeId () const;
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionJumbogramHeader ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionJumbogramHeader ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6OptionJumbogramHeader ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6OptionJumbogramHeader ();
 
-    /**
-     * \brief Set the data length.
-     * \param dataLength the data length
-     */
-    void SetDataLength (uint32_t dataLength);
+  /**
+   * \brief Set the data length.
+   * \param dataLength the data length
+   */
+  void SetDataLength (uint32_t dataLength);
 
-    /**
-     * \brief Get the data length.
-     * \return the data length
-     */
-    uint32_t GetDataLength () const;
+  /**
+   * \brief Get the data length.
+   * \return the data length
+   */
+  uint32_t GetDataLength () const;
 
-    /**
-     * \brief Print some informations about the packet.
-     * \param os output stream
-     * \return info about this packet
-     */
-    virtual void Print (std::ostream &os) const;
+  /**
+   * \brief Print some informations about the packet.
+   * \param os output stream
+   * \return info about this packet
+   */
+  virtual void Print (std::ostream &os) const;
 
-    /**
-     * \brief Get the serialized size of the packet.
-     * \return size
-     */
-    virtual uint32_t GetSerializedSize () const;
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return size
+   */
+  virtual uint32_t GetSerializedSize () const;
 
-    /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
-     */
-    virtual void Serialize (Buffer::Iterator start) const;
+  /**
+   * \brief Serialize the packet.
+   * \param start Buffer iterator
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
 
-    /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
-     */
-    virtual uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * \brief Deserialize the packet.
+   * \param start Buffer iterator
+   * \return size of the packet
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 
-    /**
-     * \brief Get the Alignment requirement of this option header
-     * \return The required alignment
-     */
-    virtual Alignment GetAlignment () const;
+  /**
+   * \brief Get the Alignment requirement of this option header
+   * \return The required alignment
+   */
+  virtual Alignment GetAlignment () const;
 
-  private:
-    /**
-     * \brief The data length.
-     */
-    uint32_t m_dataLength;
+private:
+  /**
+   * \brief The data length.
+   */
+  uint32_t m_dataLength;
 };
 
 /**
@@ -346,77 +346,77 @@ class Ipv6OptionJumbogramHeader : public Ipv6OptionHeader
  */
 class Ipv6OptionRouterAlertHeader : public Ipv6OptionHeader
 {
-  public:
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Get the instance type ID.
-     * \return instance type ID
-     */
-    virtual TypeId GetInstanceTypeId () const;
+  /**
+   * \brief Get the instance type ID.
+   * \return instance type ID
+   */
+  virtual TypeId GetInstanceTypeId () const;
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionRouterAlertHeader ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionRouterAlertHeader ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6OptionRouterAlertHeader ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6OptionRouterAlertHeader ();
 
-    /**
-     * \brief Set the field "value".
-     */
-    void SetValue (uint16_t value);
+  /**
+   * \brief Set the field "value".
+   */
+  void SetValue (uint16_t value);
 
-    /**
-     * \brief Get the field "value".
-     * \return the field "value"
-     */
-    uint16_t GetValue () const;
+  /**
+   * \brief Get the field "value".
+   * \return the field "value"
+   */
+  uint16_t GetValue () const;
 
-    /**
-     * \brief Print some informations about the packet.
-     * \param os output stream
-     * \return info about this packet
-     */
-    virtual void Print (std::ostream &os) const;
+  /**
+   * \brief Print some informations about the packet.
+   * \param os output stream
+   * \return info about this packet
+   */
+  virtual void Print (std::ostream &os) const;
 
-    /**
-     * \brief Get the serialized size of the packet.
-     * \return size
-     */
-    virtual uint32_t GetSerializedSize () const;
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return size
+   */
+  virtual uint32_t GetSerializedSize () const;
 
-    /**
-     * \brief Serialize the packet.
-     * \param start Buffer iterator
-     */
-    virtual void Serialize (Buffer::Iterator start) const;
+  /**
+   * \brief Serialize the packet.
+   * \param start Buffer iterator
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
 
-    /**
-     * \brief Deserialize the packet.
-     * \param start Buffer iterator
-     * \return size of the packet
-     */
-    virtual uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * \brief Deserialize the packet.
+   * \param start Buffer iterator
+   * \return size of the packet
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 
-    /**
-     * \brief Get the Alignment requirement of this option header
-     * \return The required alignment
-     */
-    virtual Alignment GetAlignment () const;
+  /**
+   * \brief Get the Alignment requirement of this option header
+   * \return The required alignment
+   */
+  virtual Alignment GetAlignment () const;
 
-  private:
-    /**
-     * \brief The value.
-     */
-    uint16_t m_value;
+private:
+  /**
+   * \brief The value.
+   */
+  uint16_t m_value;
 };
 
 } // namespace ns3

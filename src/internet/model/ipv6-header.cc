@@ -33,11 +33,11 @@ NS_OBJECT_ENSURE_REGISTERED (Ipv6Header);
 
 Ipv6Header::Ipv6Header ()
   : m_version (6),
-  m_trafficClass (0),
-  m_flowLabel (1),
-  m_payloadLength (0),
-  m_nextHeader (0),
-  m_hopLimit (0)
+    m_trafficClass (0),
+    m_flowLabel (1),
+    m_payloadLength (0),
+    m_nextHeader (0),
+    m_hopLimit (0)
 {
   SetSourceAddress (Ipv6Address ("::"));
   SetDestinationAddress (Ipv6Address ("::"));
@@ -118,7 +118,7 @@ TypeId Ipv6Header::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv6Header")
     .SetParent<Header> ()
     .AddConstructor<Ipv6Header> ()
-    ;
+  ;
   return tid;
 }
 
@@ -130,14 +130,14 @@ TypeId Ipv6Header::GetInstanceTypeId (void) const
 void Ipv6Header::Print (std::ostream& os) const
 {
   os << "("
-    "Version " << m_version << " "
-    << "Traffic class 0x" << std::hex << m_trafficClass << std::dec << " "
-    << "Flow Label 0x" << std::hex << m_flowLabel << std::dec << " "
-    << "Payload Length " << m_payloadLength << " "
-    << "Next Header " << std::dec << (uint32_t) m_nextHeader << " "
-    << "Hop Limit " << std::dec << (uint32_t)m_hopLimit << " )"
-    <<  m_sourceAddress << " > " <<  m_destinationAddress
-    ;
+  "Version " << m_version << " "
+     << "Traffic class 0x" << std::hex << m_trafficClass << std::dec << " "
+     << "Flow Label 0x" << std::hex << m_flowLabel << std::dec << " "
+     << "Payload Length " << m_payloadLength << " "
+     << "Next Header " << std::dec << (uint32_t) m_nextHeader << " "
+     << "Hop Limit " << std::dec << (uint32_t)m_hopLimit << " )"
+     <<  m_sourceAddress << " > " <<  m_destinationAddress
+  ;
 }
 
 uint32_t Ipv6Header::GetSerializedSize () const

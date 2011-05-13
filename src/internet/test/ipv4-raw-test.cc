@@ -69,7 +69,7 @@ AddInternetStack (Ptr<Node> node)
 }
 
 
-class Ipv4RawSocketImplTest: public TestCase
+class Ipv4RawSocketImplTest : public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
@@ -175,7 +175,7 @@ void
 Ipv4RawSocketImplTest::DoRun (void)
 {
   // Create topology
-  
+
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<Node> ();
   AddInternetStack (rxNode);
@@ -201,7 +201,7 @@ Ipv4RawSocketImplTest::DoRun (void)
     ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
-  
+
   // Sender Node
   Ptr<Node> txNode = CreateObject<Node> ();
   AddInternetStack (txNode);
