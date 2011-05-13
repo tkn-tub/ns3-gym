@@ -41,24 +41,26 @@ PropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PropagationLossModel")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
 PropagationLossModel::PropagationLossModel ()
   : m_next (0)
-{}
+{
+}
 
 PropagationLossModel::~PropagationLossModel ()
-{}
+{
+}
 
-void 
+void
 PropagationLossModel::SetNext (Ptr<PropagationLossModel> next)
 {
   m_next = next;
 }
 
-double 
+double
 PropagationLossModel::CalcRxPower (double txPowerDbm,
                                    Ptr<MobilityModel> a,
                                    Ptr<MobilityModel> b) const
@@ -85,17 +87,19 @@ RandomPropagationLossModel::GetTypeId (void)
                    RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())
-    ;
+  ;
   return tid;
 }
 RandomPropagationLossModel::RandomPropagationLossModel ()
   : PropagationLossModel ()
-{}
+{
+}
 
 RandomPropagationLossModel::~RandomPropagationLossModel ()
-{}
+{
+}
 
-double 
+double
 RandomPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                            Ptr<MobilityModel> a,
                                            Ptr<MobilityModel> b) const
@@ -132,49 +136,50 @@ FriisPropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&FriisPropagationLossModel::SetMinDistance,
                                        &FriisPropagationLossModel::GetMinDistance),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 
 FriisPropagationLossModel::FriisPropagationLossModel ()
-{}
-void 
+{
+}
+void
 FriisPropagationLossModel::SetSystemLoss (double systemLoss)
 {
   m_systemLoss = systemLoss;
 }
-double 
+double
 FriisPropagationLossModel::GetSystemLoss (void) const
 {
   return m_systemLoss;
 }
-void 
+void
 FriisPropagationLossModel::SetMinDistance (double minDistance)
 {
   m_minDistance = minDistance;
 }
-double 
+double
 FriisPropagationLossModel::GetMinDistance (void) const
 {
   return m_minDistance;
 }
-void 
+void
 FriisPropagationLossModel::SetLambda (double frequency, double speed)
 {
   m_lambda = speed / frequency;
 }
-void 
+void
 FriisPropagationLossModel::SetLambda (double lambda)
 {
   m_lambda = lambda;
 }
-double 
+double
 FriisPropagationLossModel::GetLambda (void) const
 {
   return m_lambda;
 }
 
-double 
+double
 FriisPropagationLossModel::DbmToW (double dbm) const
 {
   double mw = pow(10.0,dbm/10.0);
@@ -429,32 +434,33 @@ LogDistancePropagationLossModel::GetTypeId (void)
                    DoubleValue (46.6777),
                    MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceLoss),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
-                   
+
 }
 
 LogDistancePropagationLossModel::LogDistancePropagationLossModel ()
-{}
+{
+}
 
-void 
+void
 LogDistancePropagationLossModel::SetPathLossExponent (double n)
 {
   m_exponent = n;
 }
-void 
+void
 LogDistancePropagationLossModel::SetReference (double referenceDistance, double referenceLoss)
 {
   m_referenceDistance = referenceDistance;
   m_referenceLoss = referenceLoss;
 }
-double 
+double
 LogDistancePropagationLossModel::GetPathLossExponent (void) const
 {
   return m_exponent;
 }
-  
-double 
+
+double
 LogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                                 Ptr<MobilityModel> a,
                                                 Ptr<MobilityModel> b) const
@@ -480,8 +486,8 @@ LogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
    */
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxc = -m_referenceLoss - pathLossDb;
-  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<<-m_referenceLoss<<"dB, "<<
-		"attenuation coefficient="<<rxc<<"db");
+  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
+                "attenuation coefficient="<<rxc<<"db");
   return txPowerDbm + rxc;
 }
 
@@ -530,9 +536,9 @@ ThreeLogDistancePropagationLossModel::GetTypeId (void)
                    DoubleValue (46.6777),
                    MakeDoubleAccessor (&ThreeLogDistancePropagationLossModel::m_referenceLoss),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
-                   
+
 }
 
 ThreeLogDistancePropagationLossModel::ThreeLogDistancePropagationLossModel ()
@@ -615,15 +621,16 @@ NakagamiPropagationLossModel::GetTypeId (void)
                    DoubleValue (0.75),
                    MakeDoubleAccessor (&NakagamiPropagationLossModel::m_m2),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
-                   
+
 }
 
 NakagamiPropagationLossModel::NakagamiPropagationLossModel ()
-{}
+{
+}
 
-double 
+double
 NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                              Ptr<MobilityModel> a,
                                              Ptr<MobilityModel> b) const
@@ -646,7 +653,7 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
     {
       m = m_m2;
     }
-  
+
   // the current power unit is dBm, but Watt is put into the Nakagami /
   // Rayleigh distribution.
   double powerW = pow(10, (txPowerDbm - 30) / 10);
@@ -689,26 +696,28 @@ FixedRssLossModel::GetTypeId (void)
                    DoubleValue (-150.0),
                    MakeDoubleAccessor (&FixedRssLossModel::m_rss),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 FixedRssLossModel::FixedRssLossModel ()
   : PropagationLossModel ()
-{}
+{
+}
 
 FixedRssLossModel::~FixedRssLossModel ()
-{}
+{
+}
 
-void 
+void
 FixedRssLossModel::SetRss (double rss)
 {
   m_rss = rss;
 }
 
-double 
+double
 FixedRssLossModel::DoCalcRxPower (double txPowerDbm,
-                                           Ptr<MobilityModel> a,
-                                           Ptr<MobilityModel> b) const
+                                  Ptr<MobilityModel> a,
+                                  Ptr<MobilityModel> b) const
 {
   return m_rss;
 }
@@ -727,7 +736,7 @@ MatrixPropagationLossModel::GetTypeId (void)
                    DoubleValue (std::numeric_limits<double>::max ()),
                    MakeDoubleAccessor (&MatrixPropagationLossModel::m_default),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 
@@ -753,7 +762,7 @@ MatrixPropagationLossModel::SetLoss (Ptr<MobilityModel> ma, Ptr<MobilityModel> m
 
   MobilityPair p = std::make_pair(ma, mb);
   std::map<MobilityPair, double>::iterator i = m_loss.find (p);
-  
+
   if (i == m_loss.end ())
     {
       m_loss.insert (std::make_pair (p, loss));
@@ -775,7 +784,7 @@ MatrixPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                            Ptr<MobilityModel> b) const
 {
   std::map<MobilityPair, double>::const_iterator i = m_loss.find (std::make_pair (a, b));
-  
+
   if (i != m_loss.end ())
     {
       return txPowerDbm - i->second;

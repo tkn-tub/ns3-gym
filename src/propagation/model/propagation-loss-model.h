@@ -319,7 +319,7 @@ public:
   double GetPathLossExponent (void) const;
 
   void SetReference (double referenceDistance, double referenceLoss);
-  
+
 private:
   LogDistancePropagationLossModel (const LogDistancePropagationLossModel &o);
   LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &o);
@@ -353,9 +353,9 @@ private:
  *
  * \f[\displaystyle L =
 \begin{cases}
-0 & d < d_0 \\
-L_0 + 10 \cdot n_0 \log_{10}(\frac{d}{d_0}) & d_0 \leq d < d_1 \\
-L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d}{d_1}) & d_1 \leq d < d_2 \\
+0 & d < d_0 \ \
+L_0 + 10 \cdot n_0 \log_{10}(\frac{d}{d_0}) & d_0 \leq d < d_1 \ \
+L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d}{d_1}) & d_1 \leq d < d_2 \ \
 L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d_2}{d_1}) + 10 \cdot n_2 \log_{10}(\frac{d}{d_2})& d_2 \leq d
 \end{cases}\f]
  *
@@ -489,10 +489,10 @@ class MatrixPropagationLossModel : public PropagationLossModel
 {
 public:
   static TypeId GetTypeId (void);
-  
+
   MatrixPropagationLossModel ();
   virtual ~MatrixPropagationLossModel ();
-  
+
   /**
    * \brief Set loss (in dB, positive) between pair of ns-3 objects
    * (typically, nodes).
@@ -505,15 +505,15 @@ public:
   void SetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b, double loss, bool symmetric = true);
   /// Set default loss (in dB, positive) to be used, infinity if not set
   void SetDefaultLoss (double);
-  
+
 private:
   virtual double DoCalcRxPower (double txPowerDbm,
-                               Ptr<MobilityModel> a,
-                               Ptr<MobilityModel> b) const;
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
 private:
   /// default loss
   double m_default; 
-  
+
   typedef std::pair< Ptr<MobilityModel>, Ptr<MobilityModel> > MobilityPair; 
   /// Fixed loss between pair of nodes
   std::map<MobilityPair, double> m_loss;

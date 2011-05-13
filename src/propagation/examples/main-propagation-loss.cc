@@ -121,7 +121,7 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
 
   dataset.SetStyle("with linespoints");
   dataset.SetExtra("pointtype 3 pointsize 0.5");
-  
+
   typedef std::map<double, unsigned int> rxPowerMapType;
 
   // Take given number of samples from CalcRxPower() and show probability
@@ -141,7 +141,7 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
             double rxPowerDbm = model->CalcRxPower (txPowerDbm, a, b);
             rxPowerDbm = dround(rxPowerDbm, 1.0);
 
-            rxPowerMap[ rxPowerDbm ] ++;
+            rxPowerMap[ rxPowerDbm ]++;
 
             Simulator::Stop (Seconds (0.01));
             Simulator::Run ();
