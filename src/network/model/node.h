@@ -145,7 +145,7 @@ public:
    * \param packetType type of packet received
    *                   (broadcast/multicast/unicast/otherhost); Note:
    *                   this value is only valid for promiscuous mode
-   *                   protocol handlers.  
+   *                   protocol handlers.
    */
   typedef Callback<void,Ptr<NetDevice>, Ptr<const Packet>,uint16_t,const Address &,
                    const Address &, NetDevice::PacketType> ProtocolHandler;
@@ -174,7 +174,7 @@ public:
    */
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
-  
+
   /**
    * \returns true if checksums are enabled, false otherwise.
    */

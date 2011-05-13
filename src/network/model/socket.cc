@@ -289,7 +289,7 @@ Socket::NotifyDataRecv (void)
 void 
 Socket::DoDispose (void)
 {
-  
+
   m_connectionSucceeded = MakeNullCallback<void,Ptr<Socket> > ();
   m_connectionFailed = MakeNullCallback<void,Ptr<Socket> > ();
   m_connectionRequest = MakeNullCallback<bool,Ptr<Socket>, const Address &> ();
@@ -313,7 +313,7 @@ Socket::BindToNetDevice (Ptr<NetDevice> netdevice)
               break;
             }
         }
-        NS_ASSERT_MSG (found, "Socket cannot be bound to a NetDevice not existing on the Node");
+      NS_ASSERT_MSG (found, "Socket cannot be bound to a NetDevice not existing on the Node");
     }
   m_boundnetdevice = netdevice;
   return;
@@ -336,7 +336,7 @@ Socket::SetRecvPktInfo (bool flag)
  *           Socket Tags
  ***************************************************************/
 
-SocketAddressTag::SocketAddressTag ()  
+SocketAddressTag::SocketAddressTag ()
 {
 }
 
@@ -360,7 +360,7 @@ SocketAddressTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SocketAddressTag")
     .SetParent<Tag> ()
     .AddConstructor<SocketAddressTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId
@@ -389,7 +389,7 @@ SocketAddressTag::Print (std::ostream &os) const
   os << "address=" << m_address;
 }
 
-SocketIpTtlTag::SocketIpTtlTag ()  
+SocketIpTtlTag::SocketIpTtlTag ()
 {
 }
 
@@ -413,7 +413,7 @@ SocketIpTtlTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SocketIpTtlTag")
     .SetParent<Tag> ()
     .AddConstructor<SocketIpTtlTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId
@@ -445,18 +445,19 @@ SocketIpTtlTag::Print (std::ostream &os) const
 
 
 SocketSetDontFragmentTag::SocketSetDontFragmentTag ()
-{}
-void 
+{
+}
+void
 SocketSetDontFragmentTag::Enable (void)
 {
   m_dontFragment = true;
 }
-void 
+void
 SocketSetDontFragmentTag::Disable (void)
 {
   m_dontFragment = false;
 }
-bool 
+bool
 SocketSetDontFragmentTag::IsEnabled (void) const
 {
   return m_dontFragment;
@@ -470,7 +471,7 @@ SocketSetDontFragmentTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SocketSetDontFragmentTag")
     .SetParent<Tag> ()
     .AddConstructor<SocketSetDontFragmentTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -486,17 +487,17 @@ SocketSetDontFragmentTag::GetSerializedSize (void) const
 void 
 SocketSetDontFragmentTag::Serialize (TagBuffer i) const
 {
-  i.WriteU8 (m_dontFragment?1:0);
+  i.WriteU8 (m_dontFragment ? 1 : 0);
 }
 void 
 SocketSetDontFragmentTag::Deserialize (TagBuffer i)
 {
-  m_dontFragment = (i.ReadU8 () == 1)?true:false;
+  m_dontFragment = (i.ReadU8 () == 1) ? true : false;
 }
 void 
 SocketSetDontFragmentTag::Print (std::ostream &os) const
 {
-  os << (m_dontFragment?"true":"false");
+  os << (m_dontFragment ? "true" : "false");
 }
 
-}//namespace ns3
+} //namespace ns3

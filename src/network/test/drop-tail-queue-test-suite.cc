@@ -31,14 +31,15 @@ public:
 
 DropTailQueueTestCase::DropTailQueueTestCase ()
   : TestCase ("Sanity check on the drop tail queue implementation")
-{}
-void 
+{
+}
+void
 DropTailQueueTestCase::DoRun (void)
 {
   Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (3)), true, 
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (3)), true,
                          "Verify that we can actually set the attribute");
-  
+
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();
   p2 = Create<Packet> ();

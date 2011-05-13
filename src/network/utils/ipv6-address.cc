@@ -47,15 +47,15 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
 {
 #define mix(a, b, c) \
   ({ \
-   (a) -= (b); (a) -= (c); (a) ^= ((c) >> 13); \
-   (b) -= (c); (b) -= (a); (b) ^= ((a) << 8);  \
-   (c) -= (a); (c) -= (b); (c) ^= ((b) >> 13); \
-   (a) -= (b); (a) -= (c); (a) ^= ((c) >> 12); \
-   (b) -= (c); (b) -= (a); (b) ^= ((a) << 16); \
-   (c) -= (a); (c) -= (b); (c) ^= ((b) >> 5);  \
-   (a) -= (b); (a) -= (c); (a) ^= ((c) >> 3);  \
-   (b) -= (c); (b) -= (a); (b) ^= ((a) << 10); \
-   (c) -= (a); (c) -= (b); (c) ^= ((b) >> 15); \
+     (a) -= (b); (a) -= (c); (a) ^= ((c) >> 13); \
+     (b) -= (c); (b) -= (a); (b) ^= ((a) << 8);  \
+     (c) -= (a); (c) -= (b); (c) ^= ((b) >> 13); \
+     (a) -= (b); (a) -= (c); (a) ^= ((c) >> 12); \
+     (b) -= (c); (b) -= (a); (b) ^= ((a) << 16); \
+     (c) -= (a); (c) -= (b); (c) ^= ((b) >> 5);  \
+     (a) -= (b); (a) -= (c); (a) ^= ((c) >> 3);  \
+     (b) -= (c); (b) -= (a); (b) ^= ((a) << 10); \
+     (c) -= (a); (c) -= (b); (c) ^= ((b) >> 15); \
    })
 
   typedef uint32_t  ub4;   /* unsigned 4-byte quantities */
@@ -87,16 +87,16 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
     {
     case 11: c += ((ub4)k[10] << 24);
     case 10: c += ((ub4)k[9] << 16);
-    case 9 : c += ((ub4)k[8] << 8); /* the first byte of c is reserved for the length */
-    case 8 : b += ((ub4)k[7] << 24);
-    case 7 : b += ((ub4)k[6] << 16);
-    case 6 : b += ((ub4)k[5] << 8);
-    case 5 : b += k[4];
-    case 4 : a += ((ub4)k[3] << 24);
-    case 3 : a += ((ub4)k[2] << 16);
-    case 2 : a += ((ub4)k[1] << 8);
-    case 1 : a += k[0];
-             /* case 0: nothing left to add */
+    case 9: c += ((ub4)k[8] << 8);  /* the first byte of c is reserved for the length */
+    case 8: b += ((ub4)k[7] << 24);
+    case 7: b += ((ub4)k[6] << 16);
+    case 6: b += ((ub4)k[5] << 8);
+    case 5: b += k[4];
+    case 4: a += ((ub4)k[3] << 24);
+    case 3: a += ((ub4)k[2] << 16);
+    case 2: a += ((ub4)k[1] << 8);
+    case 1: a += k[0];
+      /* case 0: nothing left to add */
     }
   mix (a, b, c);
 
@@ -180,7 +180,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
               return (0);
             }
 
-          *tp++ = (unsigned char) (val >> 8) & 0xff;
+          *tp++ = (unsigned char)(val >> 8) & 0xff;
           *tp++ = (unsigned char) val & 0xff;
           seen_xdigits = 0;
           val = 0;
@@ -194,7 +194,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
         {
           tp += 4 /*NS_INADDRSZ*/;
           seen_xdigits = 0;
-          break;/* '\0' was seen by inet_pton4(). */
+          break; /* '\0' was seen by inet_pton4(). */
         }
 #endif
       return (0);
@@ -206,7 +206,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
         {
           return (0);
         }
-      *tp++ = (unsigned char) (val >> 8) & 0xff;
+      *tp++ = (unsigned char)(val >> 8) & 0xff;
       *tp++ = (unsigned char) val & 0xff;
     }
 
@@ -226,7 +226,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 
       for (i = 1; i <= n; i++)
         {
-          endp[- i] = colonp[n - i];
+          endp[-i] = colonp[n - i];
           colonp[n - i] = 0;
         }
 
@@ -359,22 +359,22 @@ Ipv6Address Ipv6Address::MakeSolicitedAddress (Ipv6Address addr)
 void Ipv6Address::Print (std::ostream& os) const
 {
   os << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[0]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[1] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[2] 
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[3] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[4]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[5] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[6]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[7] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[8]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[9] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[10]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[11] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[12]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[13] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[14]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[15] 
-    << std::dec << std::setfill (' ');
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[1] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[2]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[3] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[4]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[5] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[6]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[7] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[8]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[9] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[10]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[11] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[12]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[13] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[14]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_address[15]
+     << std::dec << std::setfill (' ');
 }
 
 bool Ipv6Address::IsLocalhost () const
@@ -645,21 +645,21 @@ bool Ipv6Prefix::IsMatch (Ipv6Address a, Ipv6Address b) const
 void Ipv6Prefix::Print (std::ostream &os) const
 {
   os << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[0]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[1] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[2]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[3] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[4]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[5] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[6]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[7] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[8]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[9] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[10]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[11] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[12]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[13] << ":"
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[14]
-    << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[15];
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[1] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[2]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[3] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[4]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[5] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[6]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[7] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[8]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[9] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[10]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[11] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[12]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[13] << ":"
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[14]
+     << std::hex << std::setw (2) << std::setfill ('0') << (unsigned int) m_prefix[15];
 }
 
 Ipv6Prefix Ipv6Prefix::GetLoopback ()

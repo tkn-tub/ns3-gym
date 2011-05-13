@@ -37,7 +37,7 @@ Queue::GetTypeId (void)
                      MakeTraceSourceAccessor (&Queue::m_traceDequeue))
     .AddTraceSource ("Drop", "Drop a packet stored in the queue.",
                      MakeTraceSourceAccessor (&Queue::m_traceDrop))
-    ;
+  ;
   return tid;
 }
 
@@ -75,7 +75,7 @@ Queue::Enqueue (Ptr<Packet> p)
       uint32_t size = p->GetSize ();
       m_nBytes += size;
       m_nTotalReceivedBytes += size;
-      
+
       m_nPackets++;
       m_nTotalReceivedPackets++;
     }

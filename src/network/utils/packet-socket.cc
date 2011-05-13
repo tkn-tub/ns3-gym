@@ -48,7 +48,7 @@ PacketSocket::GetTypeId (void)
                    UintegerValue (131072),
                    MakeUintegerAccessor (&PacketSocket::m_rcvBufSize),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -233,7 +233,7 @@ PacketSocket::Connect(const Address &ad)
   m_state = STATE_CONNECTED;
   NotifyConnectionSucceeded ();
   return 0;
- error:
+error:
   NotifyConnectionFailed ();
   return -1;
 }
@@ -282,7 +282,7 @@ PacketSocket::GetTxAvailable (void) const
 {
   if (m_state == STATE_CONNECTED)
     {
-      PacketSocketAddress ad = PacketSocketAddress::ConvertFrom (m_destAddr);      
+      PacketSocketAddress ad = PacketSocketAddress::ConvertFrom (m_destAddr);
       return GetMinMtu (ad);
     }
   // If we are not connected, we return a 'safe' value by default.
@@ -318,7 +318,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
       m_errno = ERROR_MSGSIZE;
       return -1;
     }
-  
+
   bool error = false;
   Address dest = ad.GetPhysicalAddress ();
   if (ad.IsSingleDevice ())
@@ -451,21 +451,21 @@ PacketSocket::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION (this << address);
   PacketSocketAddress ad = PacketSocketAddress::ConvertFrom(address);
-  
+
   ad.SetProtocol (m_protocol);
   if (m_isSingleDevice)
     {
       Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
-      ad.SetPhysicalAddress(device->GetAddress());      
+      ad.SetPhysicalAddress(device->GetAddress());
       ad.SetSingleDevice (m_device);
     }
   else
     {
-      ad.SetPhysicalAddress(Address());   
+      ad.SetPhysicalAddress(Address());
       ad.SetAllDevices ();
-    }  
+    }
   address = ad;
-  
+
   return 0;
 }
 
@@ -485,4 +485,4 @@ PacketSocket::GetAllowBroadcast () const
   return false;
 }
 
-}//namespace ns3
+} //namespace ns3

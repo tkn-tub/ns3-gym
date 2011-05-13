@@ -24,7 +24,8 @@
 namespace ns3 {
 
 ApplicationContainer::ApplicationContainer ()
-{}
+{
+}
 
 ApplicationContainer::ApplicationContainer (Ptr<Application> app)
 {

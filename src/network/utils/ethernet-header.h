@@ -27,16 +27,16 @@
 
 namespace ns3 {
 
-  /**
-   * Types of ethernet packets. Indicates the type of the current
-   * header.
-   */
-  enum ethernet_header_t {
-    LENGTH,   /**< Basic ethernet packet, no tags, type/length field
+/**
+ * Types of ethernet packets. Indicates the type of the current
+ * header.
+ */
+enum ethernet_header_t {
+  LENGTH,     /**< Basic ethernet packet, no tags, type/length field
                  indicates packet length or IP/ARP packet */
-    VLAN,     /**< Single tagged packet. Header includes VLAN tag */
-    QINQ      /**< Double tagged packet. Header includes two VLAN tags */
-  };
+  VLAN,       /**< Single tagged packet. Header includes VLAN tag */
+  QINQ        /**< Double tagged packet. Header includes two VLAN tags */
+};
 /**
  * \ingroup network
  *
@@ -93,7 +93,7 @@ public:
   /**
    * \return The destination address of this packet
    */
-  Mac48Address GetDestination (void) const;  
+  Mac48Address GetDestination (void) const;
   /**
    * \return The value of the PreambleSfd field
    */

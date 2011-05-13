@@ -51,7 +51,7 @@ public:
   enum Mode {
     ILLEGAL,     /**< Mode not set */
     PACKETS,     /**< Use number of packets for maximum queue size */
-    BYTES,       /**< Use number of bytes for maximum queue size */  
+    BYTES,       /**< Use number of bytes for maximum queue size */
   };
 
   /**

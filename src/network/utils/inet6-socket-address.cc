@@ -27,31 +27,31 @@ namespace ns3
 
 Inet6SocketAddress::Inet6SocketAddress (Ipv6Address ipv6, uint16_t port)
   : m_ipv6(ipv6),
-  m_port(port)
+    m_port(port)
 {
 }
 
 Inet6SocketAddress::Inet6SocketAddress (Ipv6Address ipv6)
   : m_ipv6(ipv6),
-  m_port(0)
+    m_port(0)
 {
 }
 
 Inet6SocketAddress::Inet6SocketAddress (const char* ipv6, uint16_t port)
   : m_ipv6(Ipv6Address(ipv6)),
-  m_port(port)
+    m_port(port)
 {
 }
 
 Inet6SocketAddress::Inet6SocketAddress (const char* ipv6)
   : m_ipv6(Ipv6Address(ipv6)),
-  m_port(0)
+    m_port(0)
 {
 }
 
 Inet6SocketAddress::Inet6SocketAddress (uint16_t port)
   : m_ipv6(Ipv6Address::GetAny()),
-  m_port(port)
+    m_port(port)
 {
 }
 

@@ -29,7 +29,7 @@ FlowIdTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::FlowIdTag")
     .SetParent<Tag> ()
     .AddConstructor<FlowIdTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -59,12 +59,14 @@ FlowIdTag::Print (std::ostream &os) const
 }
 FlowIdTag::FlowIdTag ()
   : Tag () 
-{}
+{
+}
 
 FlowIdTag::FlowIdTag (uint32_t id)
   : Tag (),
     m_flowId (id)
-{}
+{
+}
 
 void
 FlowIdTag::SetFlowId (uint32_t id)

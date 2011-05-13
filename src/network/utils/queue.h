@@ -49,7 +49,7 @@ public:
 
   Queue ();
   virtual ~Queue ();
-  
+
   /**
    * \return true if the queue is empty; false otherwise
    */

@@ -101,7 +101,7 @@ public:
   virtual uint32_t GetRxAvailable (void) const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
-    Address &fromAddress);
+                                Address &fromAddress);
   virtual int GetSockName (Address &address) const; 
   virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
@@ -132,15 +132,15 @@ private:
 
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
-  
+
   TracedCallback<Ptr<const Packet> > m_dropTrace;
-  
+
   // Socket options (attributes)
   uint32_t m_rcvBufSize;
 
 };
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* PACKET_SOCKET_H */
 

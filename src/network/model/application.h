@@ -50,14 +50,14 @@ class RandomVariable;
  * the previous blocking call would normally exit.  THis is documented
  * in more detail Socket class in socket.h.
  *
- * The main purpose of the base class application public API is to  
+ * The main purpose of the base class application public API is to
  * provide a uniform way to start and stop applications.
  */
 
- /**
- * \brief The base class for all ns3 applications
- * 
- */
+/**
+* \brief The base class for all ns3 applications
+*
+*/
 class Application : public Object
 {
 public:
@@ -77,7 +77,7 @@ public:
    * time specified, to cause the application to begin.
    */
   void SetStartTime (Time start);
-  
+
   /**
    * \brief Specify application stop time
    * \param stop Stop time for this application, relative to the
@@ -90,7 +90,7 @@ public:
    * time has come.
    */
   void SetStopTime (Time stop);
-  
+
   /**
    * \returns the Node to which this Application object is attached.
    */
@@ -100,7 +100,7 @@ public:
    * \param node the node to which this Application object is attached.
    */
   void SetNode (Ptr<Node> node);
-  
+
 private:
   /**
    * \brief Application specific startup code

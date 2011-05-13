@@ -32,9 +32,10 @@ NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer);
 EthernetTrailer::EthernetTrailer ()
   : m_calcFcs (false),
     m_fcs (0)
-{}
+{
+}
 
-void 
+void
 EthernetTrailer::EnableFcs (bool enable)
 {
   m_calcFcs = enable;
@@ -100,7 +101,7 @@ EthernetTrailer::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::EthernetTrailer")
     .SetParent<Trailer> ()
     .AddConstructor<EthernetTrailer> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -124,7 +125,7 @@ EthernetTrailer::Serialize (Buffer::Iterator end) const
 {
   Buffer::Iterator i = end;
   i.Prev(GetSerializedSize());
-  
+
   i.WriteU32 (m_fcs);
 }
 uint32_t
@@ -152,8 +153,8 @@ EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
       crc ^= *buffer++;
       for (i = 0; i < 8; i++)
         {
-	  crc = (crc >> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
-	}
+          crc = (crc >> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+        }
     }
   return ~crc;
 }

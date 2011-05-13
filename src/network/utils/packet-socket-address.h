@@ -37,7 +37,7 @@ class NetDevice;
  */
 class PacketSocketAddress
 {
- public:
+public:
   PacketSocketAddress ();
   void SetProtocol (uint16_t protocol);
 
@@ -68,7 +68,7 @@ class PacketSocketAddress
    * \returns true if the address matches, false otherwise.
    */
   static bool IsMatchingType (const Address &address);
- private:
+private:
   static uint8_t GetType (void);
   Address ConvertTo (void) const;
   uint16_t m_protocol;

@@ -279,7 +279,7 @@ operator<< (std::ostream& os, const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> &v
   os << val.m_value;
   return os;
 }
-  
+
 template<typename NUMERIC_TYPE, typename SIGNED_TYPE>
 std::istream & operator >> (std::istream &is, const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> &val)
 {

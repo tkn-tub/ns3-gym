@@ -946,7 +946,7 @@ public:
    * \return an iterator pointing to the next address block in the message.
    */
   AddressBlockIterator AddressBlockErase (AddressBlockIterator first,
-      AddressBlockIterator last);
+                                          AddressBlockIterator last);
 
   /**
    * \brief Removes all address blocks from this message.
@@ -1173,7 +1173,7 @@ public:
    * \return An iterator pointing to the newly inserted address.
    */
   AddressIterator AddressInsert (AddressIterator position,
-      const Address value);
+                                 const Address value);
 
   /**
    * \brief Removes the address at the specified position.
@@ -1453,7 +1453,7 @@ protected:
 private:
   uint8_t GetPrefixFlags (void) const;
   void GetHeadTail (uint8_t *head, uint8_t &headlen,
-      uint8_t *tail, uint8_t &taillen) const;
+                    uint8_t *tail, uint8_t &taillen) const;
   bool HasZeroTail (const uint8_t *tail, uint8_t taillen) const;
 
   std::list<Address> m_addressList;

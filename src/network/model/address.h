@@ -159,7 +159,7 @@ public:
    * \param len the length of the buffer
    * \returns the number of bytes copied.
    *
-   * The inverse of CopyAllTo().  
+   * The inverse of CopyAllTo().
    *
    * \see CopyAllTo
    */

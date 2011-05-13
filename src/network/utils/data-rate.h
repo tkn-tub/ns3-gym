@@ -82,14 +82,14 @@ public:
    */
   DataRate (uint64_t bps);
   DataRate (std::string rate);
-    
+
   bool operator <  (const DataRate& rhs) const;
   bool operator <= (const DataRate& rhs) const;
   bool operator >  (const DataRate& rhs) const;
   bool operator >= (const DataRate& rhs) const;
   bool operator == (const DataRate& rhs) const;
   bool operator != (const DataRate& rhs) const;
-  
+
   /**
    * \brief Calculate transmission time
    *
@@ -98,7 +98,7 @@ public:
    * \return The transmission time in seconds for the number of bytes specified
    */
   double CalculateTxTime(uint32_t bytes) const;
-  
+
   /**
    * Get the underlying bitrate
    * \return The underlying bitrate in bits per second

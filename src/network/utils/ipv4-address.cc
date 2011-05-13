@@ -55,18 +55,20 @@ AsciiToIpv4Host (char const *address)
   return host;
 }
 
-}//namespace ns3
+} //namespace ns3
 
 namespace ns3 {
 
-  
+
 Ipv4Mask::Ipv4Mask ()
   : m_mask (0x66666666)
-{}
+{
+}
 
 Ipv4Mask::Ipv4Mask (uint32_t mask)
   : m_mask (mask)
-{}
+{
+}
 
 Ipv4Mask::Ipv4Mask (char const *mask)
 {
@@ -93,20 +95,20 @@ bool
 Ipv4Mask::IsEqual (Ipv4Mask other) const
 {
   if (other.m_mask == m_mask) {
-    return true;
-  } else {
-    return false;
-  }
+      return true;
+    } else {
+      return false;
+    }
 }
 
 bool 
 Ipv4Mask::IsMatch (Ipv4Address a, Ipv4Address b) const
 {
   if ((a.Get () & m_mask) == (b.Get () & m_mask)) {
-    return true;
-  } else {
-    return false;
-  }
+      return true;
+    } else {
+      return false;
+    }
 }
 
 uint32_t 
@@ -160,17 +162,18 @@ Ipv4Mask::GetPrefixLength (void) const
   uint16_t tmp = 0;
   uint32_t mask = m_mask;
   while (mask != 0 ) 
-  {
-    mask = mask << 1;
-    tmp++;
-  }
+    {
+      mask = mask << 1;
+      tmp++;
+    }
   return tmp; 
 }
 
 
 Ipv4Address::Ipv4Address ()
   : m_address (0x66666666)
-{}
+{
+}
 Ipv4Address::Ipv4Address (uint32_t address)
 {
   m_address = address;

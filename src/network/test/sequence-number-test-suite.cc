@@ -37,7 +37,7 @@ public:
   {
     m_testTracedSequenceNumber = SequenceNumber32 (0);
   }
-  
+
   static TypeId GetTypeId (void)
   {
     static TypeId tid = TypeId("ns3::SequenceNumberTestObj")
@@ -46,10 +46,10 @@ public:
                        "A traceable sequence number",
                        MakeTraceSourceAccessor (&SequenceNumberTestObj::m_testTracedSequenceNumber))
       .AddConstructor<SequenceNumberTestObj> ()
-      ;
+    ;
     return tid;
   }
-  
+
   TypeId GetInstanceTypeId (void) const
   {
     return GetTypeId ();
@@ -59,7 +59,7 @@ public:
   {
     m_testTracedSequenceNumber += 1;
   }
-  
+
 
 };
 
@@ -85,10 +85,11 @@ SequenceNumberTestCase::SequenceNumberTestCase ()
 }
 
 SequenceNumberTestCase::~SequenceNumberTestCase ()
-{}
+{
+}
 
 void
-SequenceNumberTestCase::SequenceNumberTracer (SequenceNumber32 oldval, SequenceNumber32 newval) 
+SequenceNumberTestCase::SequenceNumberTracer (SequenceNumber32 oldval, SequenceNumber32 newval)
 {
   m_oldval = oldval;
   m_newval = newval;
@@ -100,55 +101,55 @@ void SequenceNumberTestCase::DoRun (void)
 #define NS_TEST_ASSERT(a) NS_TEST_ASSERT_MSG_EQ(bool(a), true, "foo")
 
   {
-      SequenceNumber32 num1 (3), num2 (5);
-      uint32_t value;
+    SequenceNumber32 num1 (3), num2 (5);
+    uint32_t value;
 
-      value = (num1 + num2).GetValue ();
-      NS_TEST_ASSERT_EQUAL (value, 8);
+    value = (num1 + num2).GetValue ();
+    NS_TEST_ASSERT_EQUAL (value, 8);
 
-      num1 += num2.GetValue ();
-      NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (8));
-      
-      ++num1;
-      NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (9));
+    num1 += num2.GetValue ();
+    NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (8));
 
-      --num1;
-      NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (8));
+    ++num1;
+    NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (9));
 
-      num1++;
-      NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (9));
+    --num1;
+    NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (8));
 
-      num1--;
-      NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (8));
-      
+    num1++;
+    NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (9));
+
+    num1--;
+    NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (8));
+
   }
 
   {
-      SequenceNumber16 num1 (60900), num2 (5), num3 (10000);
+    SequenceNumber16 num1 (60900), num2 (5), num3 (10000);
 
-      NS_TEST_ASSERT (num1 == num1);
+    NS_TEST_ASSERT (num1 == num1);
 
-      NS_TEST_ASSERT (num2 != num1);
+    NS_TEST_ASSERT (num2 != num1);
 
-      NS_TEST_ASSERT (num3 > num2);
-      NS_TEST_ASSERT (num3 >= num2);
-      NS_TEST_ASSERT (num1 < num3);
-      NS_TEST_ASSERT (num1 <= num3);
+    NS_TEST_ASSERT (num3 > num2);
+    NS_TEST_ASSERT (num3 >= num2);
+    NS_TEST_ASSERT (num1 < num3);
+    NS_TEST_ASSERT (num1 <= num3);
 
-      NS_TEST_ASSERT (num1 < num2);
-      NS_TEST_ASSERT (num1 <= num2);
-      NS_TEST_ASSERT (num2 > num1);
-      NS_TEST_ASSERT (num2 >= num1);
+    NS_TEST_ASSERT (num1 < num2);
+    NS_TEST_ASSERT (num1 <= num2);
+    NS_TEST_ASSERT (num2 > num1);
+    NS_TEST_ASSERT (num2 >= num1);
 
-      NS_TEST_ASSERT (num1+num2 > num1);
-      NS_TEST_ASSERT (num1+num2 >= num1);
-      NS_TEST_ASSERT (num1 < num1+num2);
-      NS_TEST_ASSERT (num1 <= num1+num2);
+    NS_TEST_ASSERT (num1+num2 > num1);
+    NS_TEST_ASSERT (num1+num2 >= num1);
+    NS_TEST_ASSERT (num1 < num1+num2);
+    NS_TEST_ASSERT (num1 <= num1+num2);
 
-      NS_TEST_ASSERT (num1 < num1+num3);
-      NS_TEST_ASSERT (num1 <= num1+num3);
-      NS_TEST_ASSERT (num1+num3 > num1);
-      NS_TEST_ASSERT (num1+num3 >= num1);
+    NS_TEST_ASSERT (num1 < num1+num3);
+    NS_TEST_ASSERT (num1 <= num1+num3);
+    NS_TEST_ASSERT (num1+num3 > num1);
+    NS_TEST_ASSERT (num1+num3 >= num1);
   }
 
   {
@@ -157,14 +158,14 @@ void SequenceNumberTestCase::DoRun (void)
     NS_TEST_ASSERT_EQUAL (SequenceNumber16 (1000) - SequenceNumber16 (6000), -5000);
     NS_TEST_ASSERT_EQUAL ((SequenceNumber16 (60000) + SequenceNumber16 (1000)) - SequenceNumber16 (65000), -4000);
   }
-  
+
   {
     SequenceNumber32 num1 (3);
-    
+
     NS_TEST_ASSERT_EQUAL (num1 + 10, SequenceNumber32 (13));
     num1 += -1;
     NS_TEST_ASSERT_EQUAL (num1, SequenceNumber32 (2));
-    
+
     NS_TEST_ASSERT_EQUAL (num1 - (num1 - 100), 100);
   }
 
@@ -176,7 +177,7 @@ void SequenceNumberTestCase::DoRun (void)
     NS_TEST_ASSERT_EQUAL (m_newval, SequenceNumber32 (1));
     obj->Dispose ();
   }
-  
+
 }
 
 static class SequenceNumberTestSuite : public TestSuite

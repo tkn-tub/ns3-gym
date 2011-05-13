@@ -47,7 +47,7 @@ class Packet;
  * data buffer errored or not, or side information may be returned to
  * the client in the form of a packet tag.  (Note:  No such error models
  * that actually error the bits in a packet presently exist).
- * The object can have state (resettable by Reset()).  
+ * The object can have state (resettable by Reset()).
  * The object can also be enabled and disabled via two public member functions.
  * 
  * Typical code (simplified) to use an ErrorModel may look something like 
@@ -66,36 +66,36 @@ class Packet;
  *   }
  * \endcode
  *
- * Two practical error models, a ListErrorModel and a RateErrorModel,  
+ * Two practical error models, a ListErrorModel and a RateErrorModel,
  * are currently implemented. 
  */
 class ErrorModel : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  
+
   ErrorModel ();
   virtual ~ErrorModel ();
 
- /**
-  * Note:  Depending on the error model, this function may or may not
-  * alter the contents of the packet upon returning true.
-  *
-  * \returns true if the Packet is to be considered as errored/corrupted
-  * \param pkt Packet to apply error model to
-  */
+  /**
+   * Note:  Depending on the error model, this function may or may not
+   * alter the contents of the packet upon returning true.
+   *
+   * \returns true if the Packet is to be considered as errored/corrupted
+   * \param pkt Packet to apply error model to
+   */
   bool IsCorrupt (Ptr<Packet> pkt);
- /**
-  * Reset any state associated with the error model
-  */
+  /**
+   * Reset any state associated with the error model
+   */
   void Reset (void);
- /**
-  * Enable the error model
-  */
+  /**
+   * Enable the error model
+   */
   void Enable (void);
- /**
-  * Disable the error model
-  */
+  /**
+   * Disable the error model
+   */
   void Disable (void);
   /**
    * \return true if error model is enabled; false otherwise
@@ -113,11 +113,11 @@ private:
 };
 
 enum ErrorUnit
-  {   
-    EU_BIT,
-    EU_BYTE,
-    EU_PKT
-  };
+{
+  EU_BIT,
+  EU_BYTE,
+  EU_PKT
+};
 
 /**
  * \brief Determine which packets are errored corresponding to an underlying
@@ -226,7 +226,7 @@ private:
   typedef std::list<uint32_t>::const_iterator PacketListCI;
 
   PacketList m_packetList;
-  
+
 };
 
 /**
@@ -268,7 +268,7 @@ private:
 
   PacketList m_packetList;
   uint32_t m_timesInvoked;
-  
+
 };
 
 

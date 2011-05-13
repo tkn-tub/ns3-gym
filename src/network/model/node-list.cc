@@ -48,7 +48,7 @@ public:
   uint32_t GetNNodes (void);
 
   static Ptr<NodeListPriv> Get (void);
-  
+
 private:
   virtual void DoDispose (void);
   static Ptr<NodeListPriv> *DoGet (void);
@@ -67,7 +67,7 @@ NodeListPriv::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&NodeListPriv::m_nodes),
                    MakeObjectVectorChecker<Node> ())
-    ;
+  ;
   return tid;
 }
 
@@ -75,7 +75,7 @@ Ptr<NodeListPriv>
 NodeListPriv::Get (void)
 {
   return *DoGet ();
-}  
+}
 Ptr<NodeListPriv> *
 NodeListPriv::DoGet (void)
 {
@@ -102,7 +102,8 @@ NodeListPriv::NodeListPriv ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 NodeListPriv::~NodeListPriv ()
-{}
+{
+}
 void
 NodeListPriv::DoDispose (void)
 {
@@ -126,7 +127,7 @@ NodeListPriv::Add (Ptr<Node> node)
   m_nodes.push_back (node);
   Simulator::ScheduleWithContext (index, TimeStep (0), &Node::Start, node);
   return index;
-  
+
 }
 NodeList::Iterator 
 NodeListPriv::Begin (void) const
@@ -187,4 +188,4 @@ NodeList::GetNNodes (void)
   return NodeListPriv::Get ()->GetNNodes ();
 }
 
-}//namespace ns3
+} //namespace ns3
