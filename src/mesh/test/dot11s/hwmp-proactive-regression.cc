@@ -44,8 +44,8 @@ const char * const PREFIX = "hwmp-proactive-regression-test";
 
 
 HwmpProactiveRegressionTest::HwmpProactiveRegressionTest () : TestCase ("HWMP proactive regression test"),
-  m_nodes (0),
-  m_time (Seconds (5))
+                                                              m_nodes (0),
+                                                              m_time (Seconds (5))
 {
 }
 
@@ -64,7 +64,7 @@ HwmpProactiveRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS) CheckResults ();
 
   delete m_nodes, m_nodes = 0;
@@ -76,12 +76,12 @@ HwmpProactiveRegressionTest::CreateNodes ()
   m_nodes->Create (5);
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                "MinX", DoubleValue (0.0),
-                                "MinY", DoubleValue (0.0),
-                                "DeltaX", DoubleValue (100),
-                                "DeltaY", DoubleValue (0),
-                                "GridWidth", UintegerValue (5),
-                                "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (100),
+                                 "DeltaY", DoubleValue (0),
+                                 "GridWidth", UintegerValue (5),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (*m_nodes);
 }
@@ -105,8 +105,8 @@ HwmpProactiveRegressionTest::CreateDevices ()
 {
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-  // This test suite output was originally based on YansErrorRateModel     
-  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");   
+  // This test suite output was originally based on YansErrorRateModel
+  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   // 2. setup mesh
@@ -114,7 +114,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   mesh.SetStackInstaller ("ns3::Dot11sStack", "Root", Mac48AddressValue (Mac48Address ("00:00:00:00:00:0d")));
   mesh.SetMacType ("RandomStart", TimeValue (Seconds(0.1)));
   mesh.SetNumberOfInterfaces (1);
-  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);  
+  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);
@@ -125,7 +125,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string(GetTempDir ())) + PREFIX;
   wifiPhy.EnablePcapAll (prefix);
 }
-  
+
 void
 HwmpProactiveRegressionTest::CheckResults ()
 {
@@ -135,11 +135,11 @@ HwmpProactiveRegressionTest::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec); // TODO support default PcapWriter snap length here
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

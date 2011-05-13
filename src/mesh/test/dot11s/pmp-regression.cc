@@ -40,8 +40,8 @@ const bool WRITE_VECTORS = false;
 const char * const PREFIX = "pmp-regression-test";
 
 PeerManagementProtocolRegressionTest::PeerManagementProtocolRegressionTest () : TestCase ("PMP regression test"),
-  m_nodes (0),
-  m_time (Seconds (1))
+                                                                                m_nodes (0),
+                                                                                m_time (Seconds (1))
 {
 }
 
@@ -60,9 +60,9 @@ PeerManagementProtocolRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS) CheckResults ();
-  
+
   delete m_nodes, m_nodes = 0;
 }
 
@@ -73,12 +73,12 @@ PeerManagementProtocolRegressionTest::CreateNodes ()
   m_nodes->Create (2);
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                "MinX", DoubleValue (0.0),
-                                "MinY", DoubleValue (0.0),
-                                "DeltaX", DoubleValue (1 /*meter*/),
-                                "DeltaY", DoubleValue (0),
-                                "GridWidth", UintegerValue (2),
-                                "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (1 /*meter*/),
+                                 "DeltaY", DoubleValue (0),
+                                 "GridWidth", UintegerValue (2),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (*m_nodes);
 }
@@ -110,11 +110,11 @@ PeerManagementProtocolRegressionTest::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec); // TODO support default PcapWriter snap length here
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

@@ -68,7 +68,7 @@ FlameProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 }
 bool
 FlameProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from,
-    Mac48Address to)
+                                        Mac48Address to)
 {
   if (!header.IsData ())
     {
@@ -104,18 +104,18 @@ void
 FlameProtocolMac::Statistics::Print (std::ostream &os) const
 {
   os << "<Statistics "
-    "txUnicast=\"" << txUnicast << "\" "
-    "txBroadcast=\"" << txBroadcast << "\" "
-    "txBytes=\"" << txBytes << "\" "
-    "rxUnicast=\"" << rxUnicast << "\" "
-    "rxBroadcast=\"" << rxBroadcast << "\" "
-    "rxBytes=\"" << rxBytes << "\"/>" << std::endl;
+  "txUnicast=\"" << txUnicast << "\" "
+  "txBroadcast=\"" << txBroadcast << "\" "
+  "txBytes=\"" << txBytes << "\" "
+  "rxUnicast=\"" << rxUnicast << "\" "
+  "rxBroadcast=\"" << rxBroadcast << "\" "
+  "rxBytes=\"" << rxBytes << "\"/>" << std::endl;
 }
 void
 FlameProtocolMac::Report (std::ostream & os) const
 {
   os << "<FlameProtocolMac" << std::endl << 
-    "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
+  "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
   os << "</FlameProtocolMac>" << std::endl;
 

@@ -60,10 +60,10 @@ public:
   } FailedDestination;
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-      Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
+                     Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
   /// Cleanup packet from all tags
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
-      const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
+                           const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
   /**
    * \brief Install HWMP on given mesh point.
    *
@@ -75,7 +75,7 @@ public:
   bool Install (Ptr<MeshPointDevice>);
   void PeerLinkStatus (Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
   ///\brief This callback is used to obtain active neighbours on a given interface
-  ///\param cb is a callback, which returns a list of addresses on given interface (uint32_t)  
+  ///\param cb is a callback, which returns a list of addresses on given interface (uint32_t)
   void SetNeighboursCallback (Callback<std::vector<Mac48Address>, uint32_t> cb);
   ///\name Proactive PREQ mechanism:
   ///\{
@@ -115,7 +115,7 @@ private:
   typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
   /// Like RequestRoute, but for unicast packets
   bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-      Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
+                       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
 
   ///\name Interaction with HWMP MAC plugin
   //\{
@@ -123,14 +123,14 @@ private:
   void ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
   void ReceivePerr (std::vector<FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
   void SendPrep (
-      Mac48Address src,
-      Mac48Address dst,
-      Mac48Address retransmitter,
-      uint32_t initMetric,
-      uint32_t originatorDsn,
-      uint32_t destinationSN,
-      uint32_t lifetime,
-      uint32_t interface);
+    Mac48Address src,
+    Mac48Address dst,
+    Mac48Address retransmitter,
+    uint32_t initMetric,
+    uint32_t originatorDsn,
+    uint32_t destinationSN,
+    uint32_t lifetime,
+    uint32_t interface);
   /**
    * \brief forms a path error information element when list of destination fails on a given interface
    * \attention removes all entries from routing table!

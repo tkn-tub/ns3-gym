@@ -45,41 +45,41 @@ TypeId
 PeerManagementProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::dot11s::PeerManagementProtocol")
-  .SetParent<Object> ()
-  .AddConstructor<PeerManagementProtocol> ()
-  // maximum number of peer links. Now we calculate the total
-  // number of peer links on all interfaces
-  .AddAttribute ( "MaxNumberOfPeerLinks",
-                  "Maximum number of peer links",
-                  UintegerValue (32),
-                  MakeUintegerAccessor (
+    .SetParent<Object> ()
+    .AddConstructor<PeerManagementProtocol> ()
+    // maximum number of peer links. Now we calculate the total
+    // number of peer links on all interfaces
+    .AddAttribute ( "MaxNumberOfPeerLinks",
+                    "Maximum number of peer links",
+                    UintegerValue (32),
+                    MakeUintegerAccessor (
                       &PeerManagementProtocol::m_maxNumberOfPeerLinks),
-                  MakeUintegerChecker<uint8_t> ()
-                )
-  .AddAttribute ( "MaxBeaconShiftValue",
-                  "Maximum number of TUs for beacon shifting",
-                  UintegerValue (15),
-                  MakeUintegerAccessor (
+                    MakeUintegerChecker<uint8_t> ()
+                    )
+    .AddAttribute ( "MaxBeaconShiftValue",
+                    "Maximum number of TUs for beacon shifting",
+                    UintegerValue (15),
+                    MakeUintegerAccessor (
                       &PeerManagementProtocol::m_maxBeaconShift),
-                  MakeUintegerChecker<uint16_t> ()
-                )
-  .AddAttribute ( "EnableBeaconCollisionAvoidance",
-                  "Enable/Disable Beacon collision avoidance.",
-                  BooleanValue (true),
-                  MakeBooleanAccessor (
-                    &PeerManagementProtocol::SetBeaconCollisionAvoidance, &PeerManagementProtocol::GetBeaconCollisionAvoidance),
+                    MakeUintegerChecker<uint16_t> ()
+                    )
+    .AddAttribute ( "EnableBeaconCollisionAvoidance",
+                    "Enable/Disable Beacon collision avoidance.",
+                    BooleanValue (true),
+                    MakeBooleanAccessor (
+                      &PeerManagementProtocol::SetBeaconCollisionAvoidance, &PeerManagementProtocol::GetBeaconCollisionAvoidance),
                     MakeBooleanChecker ()
-                  )
-  .AddTraceSource ("LinkOpen",
-                      "New peer link opened",
-                      MakeTraceSourceAccessor (&PeerManagementProtocol::m_linkOpenTraceSrc)
-                  )
-  .AddTraceSource ("LinkClose",
-                      "New peer link closed",
-                      MakeTraceSourceAccessor (&PeerManagementProtocol::m_linkCloseTraceSrc)
-                  )
-                 
-                ;
+                    )
+    .AddTraceSource ("LinkOpen",
+                     "New peer link opened",
+                     MakeTraceSourceAccessor (&PeerManagementProtocol::m_linkOpenTraceSrc)
+                     )
+    .AddTraceSource ("LinkClose",
+                     "New peer link closed",
+                     MakeTraceSourceAccessor (&PeerManagementProtocol::m_linkCloseTraceSrc)
+                     )
+
+  ;
   return tid;
 }
 PeerManagementProtocol::PeerManagementProtocol () :
@@ -155,7 +155,7 @@ PeerManagementProtocol::GetBeaconTimingElement (uint32_t interface)
           continue;
         }
       retval->AddNeighboursTimingElementUnit ((*i)->GetLocalAid (), (*i)->GetLastBeacon (),
-          (*i)->GetBeaconInterval ());
+                                              (*i)->GetBeaconInterval ());
     }
   return retval;
 }
@@ -190,8 +190,8 @@ PeerManagementProtocol::ReceiveBeacon (uint32_t interface, Mac48Address peerAddr
 
 void
 PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address peerAddress,
-    Mac48Address peerMeshPointAddress, uint16_t aid, IePeerManagement peerManagementElement,
-    IeConfiguration meshConfig)
+                                              Mac48Address peerMeshPointAddress, uint16_t aid, IePeerManagement peerManagementElement,
+                                              IeConfiguration meshConfig)
 {
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
   if (peerManagementElement.SubtypeIsOpen ())
@@ -209,7 +209,7 @@ PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address p
       else
         {
           peerLink->OpenReject (peerManagementElement.GetLocalLinkId (), meshConfig, peerMeshPointAddress,
-              reasonCode);
+                                reasonCode);
         }
     }
   if (peerLink == 0)
@@ -219,12 +219,12 @@ PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address p
   if (peerManagementElement.SubtypeIsConfirm ())
     {
       peerLink->ConfirmAccept (peerManagementElement.GetLocalLinkId (),
-          peerManagementElement.GetPeerLinkId (), aid, meshConfig, peerMeshPointAddress);
+                               peerManagementElement.GetPeerLinkId (), aid, meshConfig, peerMeshPointAddress);
     }
   if (peerManagementElement.SubtypeIsClose ())
     {
       peerLink->Close (peerManagementElement.GetLocalLinkId (), peerManagementElement.GetPeerLinkId (),
-          peerManagementElement.GetReasonCode ());
+                       peerManagementElement.GetReasonCode ());
     }
 }
 void
@@ -258,7 +258,7 @@ PeerManagementProtocol::TransmissionSuccess (uint32_t interface, Mac48Address pe
 }
 Ptr<PeerLink>
 PeerManagementProtocol::InitiateLink (uint32_t interface, Mac48Address peerAddress,
-    Mac48Address peerMeshPointAddress)
+                                      Mac48Address peerMeshPointAddress)
 {
   Ptr<PeerLink> new_link = CreateObject<PeerLink> ();
   //find a peer link  - it must not exist
@@ -307,7 +307,7 @@ PeerManagementProtocol::FindPeerLink (uint32_t interface, Mac48Address peerAddre
 }
 void
 PeerManagementProtocol::SetPeerLinkStatusCallback (
-    Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb)
+  Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb)
 {
   m_peerStatusCallback = cb;
 }
@@ -336,7 +336,7 @@ PeerManagementProtocol::GetPeerLinks () const
   for (PeerLinksMap::const_iterator iface = m_peerLinks.begin (); iface != m_peerLinks.end (); ++iface)
     {
       for (PeerLinksOnInterface::const_iterator i = iface->second.begin ();
-      i != iface->second.end (); i++)
+           i != iface->second.end (); i++)
         if ((*i)->LinkIsEstab ())
           links.push_back (*i);
     }
@@ -360,7 +360,7 @@ PeerManagementProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAdd
 
 bool
 PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress,
-    PmpReasonCode & reasonCode)
+                                          PmpReasonCode & reasonCode)
 {
   if (m_stats.linksTotal > m_maxNumberOfPeerLinks)
     {
@@ -402,7 +402,7 @@ PeerManagementProtocol::DoShiftBeacon (uint32_t interface)
       neighbours = (*i)->GetBeaconTimingElement ().GetNeighboursTimingElementsList ();
       //Going through all my timing elements and detecting future beacon collisions
       for (IeBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j
-          != neighbours.end (); j++)
+           != neighbours.end (); j++)
         {
           if ((*i)->GetPeerAid () == (*j)->GetAid ())
             {
@@ -415,22 +415,22 @@ PeerManagementProtocol::DoShiftBeacon (uint32_t interface)
               continue;
             }
           //Timing element keeps beacon receiving times in 256us units, TU=1024us
-          if ((int) ((int)(*j)->GetLastBeacon () / 4 - (int)TimeToTu (lastBeacon->second)) % TimeToTu (
-              beaconInterval->second)
+          if ((int)((int)(*j)->GetLastBeacon () / 4 - (int)TimeToTu (lastBeacon->second)) % TimeToTu (
+                beaconInterval->second)
               != 0)
             {
               continue;
             }
-              int shift = 0;
-              do
-                {
-                  shift = (int) beaconShift.GetValue ();
-                }
-              while (shift == 0);
-              PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
-              NS_ASSERT (plugin != m_plugins.end ());
-              plugin->second->SetBeaconShift (TuToTime (shift));
-              return;
+          int shift = 0;
+          do
+            {
+              shift = (int) beaconShift.GetValue ();
+            }
+          while (shift == 0);
+          PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
+          NS_ASSERT (plugin != m_plugins.end ());
+          plugin->second->SetBeaconShift (TuToTime (shift));
+          return;
         }
     }
 }
@@ -442,7 +442,7 @@ PeerManagementProtocol::TuToTime (uint32_t x)
 uint32_t
 PeerManagementProtocol::TimeToTu (Time x)
 {
-  return (uint32_t) (x.GetMicroSeconds () / 1024);
+  return (uint32_t)(x.GetMicroSeconds () / 1024);
 }
 
 void
@@ -473,13 +473,13 @@ PeerManagementProtocol::NotifyLinkClose (Mac48Address peerMp, Mac48Address peerI
 
 void
 PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress,
-    Mac48Address peerMeshPointAddress, PeerLink::PeerState ostate, PeerLink::PeerState nstate)
+                                        Mac48Address peerMeshPointAddress, PeerLink::PeerState ostate, PeerLink::PeerState nstate)
 {
   PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end ());
   NS_LOG_DEBUG ("Link between me:" << m_address << " my interface:" << plugin->second->GetAddress ()
-      << " and peer mesh point:" << peerMeshPointAddress << " and its interface:" << peerAddress
-      << ", at my interface ID:" << interface << ". State movement:" << ostate << " -> " << nstate);
+                                   << " and peer mesh point:" << peerMeshPointAddress << " and its interface:" << peerAddress
+                                   << ", at my interface ID:" << interface << ". State movement:" << ostate << " -> " << nstate);
   if ((nstate == PeerLink::ESTAB) && (ostate != PeerLink::ESTAB))
     {
       NotifyLinkOpen (peerMeshPointAddress, peerAddress, plugin->second->GetAddress (), interface);
@@ -529,9 +529,9 @@ void
 PeerManagementProtocol::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "linksTotal=\"" << linksTotal << "\" "
-    "linksOpened=\"" << linksOpened << "\" "
-    "linksClosed=\"" << linksClosed << "\"/>" << std::endl;
+  "linksTotal=\"" << linksTotal << "\" "
+  "linksOpened=\"" << linksOpened << "\" "
+  "linksClosed=\"" << linksClosed << "\"/>" << std::endl;
 }
 void
 PeerManagementProtocol::Report (std::ostream & os) const

@@ -72,7 +72,7 @@ public:
     bool rfFlag,
     Mac48Address dest_address,
     uint32_t dest_seq_number
-  );
+    );
   /// Delete a destination address unit by destination
   void DelDestinationAddressElement (Mac48Address dest_address);
   /// Clear PREQ: remove all destinations
@@ -101,7 +101,7 @@ public:
   bool  IsUnicastPreq () const;
   bool  IsNeedNotPrep () const;
   uint8_t  GetHopCount () const;
-  uint8_t  GetTtl ()const ;
+  uint8_t  GetTtl () const ;
   uint32_t GetPreqID () const;
   Mac48Address GetOriginatorAddress () const;
   uint32_t GetOriginatorSeqNumber () const;

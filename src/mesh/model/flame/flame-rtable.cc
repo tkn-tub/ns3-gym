@@ -34,15 +34,15 @@ TypeId
 FlameRtable::GetTypeId ()
 {
   static TypeId tid =
-      TypeId ("ns3::flame::FlameRtable")
-      .SetParent<Object> () .AddConstructor<FlameRtable> ()
-      .AddAttribute ( "Lifetime",
-                      "The lifetime of the routing enrty",
-                      TimeValue (Seconds (120)), MakeTimeAccessor (
-                          &FlameRtable::m_lifetime),
-                      MakeTimeChecker ()
-                      )
-                      ;
+    TypeId ("ns3::flame::FlameRtable")
+    .SetParent<Object> ().AddConstructor<FlameRtable> ()
+    .AddAttribute ( "Lifetime",
+                    "The lifetime of the routing enrty",
+                    TimeValue (Seconds (120)), MakeTimeAccessor (
+                      &FlameRtable::m_lifetime),
+                    MakeTimeChecker ()
+                    )
+  ;
   return tid;
 }
 FlameRtable::FlameRtable () :
@@ -59,7 +59,7 @@ FlameRtable::DoDispose ()
 }
 void
 FlameRtable::AddPath (const Mac48Address destination, const Mac48Address retransmitter,
-    const uint32_t interface, const uint8_t cost, const uint16_t seqnum)
+                      const uint32_t interface, const uint8_t cost, const uint16_t seqnum)
 {
   std::map<Mac48Address, Route>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
@@ -106,7 +106,7 @@ bool
 FlameRtable::LookupResult::IsValid () const
 {
   return !(retransmitter == Mac48Address::GetBroadcast () && ifIndex == INTERFACE_ANY && cost == MAX_COST
-      && seqnum == 0);
+           && seqnum == 0);
 }
 
 } //namespace flame

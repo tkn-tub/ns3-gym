@@ -60,11 +60,11 @@ public:
 private:
   PeerManagementProtocolMac& operator= (const PeerManagementProtocolMac &);
   PeerManagementProtocolMac (const PeerManagementProtocolMac &);
-  
+
   friend class PeerManagementProtocol;
   friend class PeerLink;
-   ///\name Create peer link management frames:
-   ///\{
+  ///\name Create peer link management frames:
+  ///\{
   struct PlinkFrameStart
   {
     uint8_t subtype;
@@ -90,12 +90,12 @@ private:
   void SetBeaconShift (Time shift);
   void SetPeerManagerProtcol (Ptr<PeerManagementProtocol> protocol);
   void SendPeerLinkManagementFrame (
-      Mac48Address peerAddress,
-      Mac48Address peerMpAddress,
-      uint16_t aid,
-      IePeerManagement peerElement,
-      IeConfiguration meshConfig
-      );
+    Mac48Address peerAddress,
+    Mac48Address peerMpAddress,
+    uint16_t aid,
+    IePeerManagement peerElement,
+    IeConfiguration meshConfig
+    );
   ///\brief DUBUG only - to print established links
   Mac48Address GetAddress () const;
   ///\name Statistics
@@ -126,7 +126,7 @@ private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
   Ptr<PeerManagementProtocol> m_protocol;
-   ///\}
+  ///\}
 };
 
 } // namespace dot11s
