@@ -96,6 +96,7 @@ struct DeferredRouteOutputTag : public Tag
 RoutingProtocol::RoutingProtocol () :
   RreqRetries (2),
   RreqRateLimit (10),
+  RerrRateLimit (10),
   ActiveRouteTimeout (Seconds (3)),
   NetDiameter (35),
   NodeTraversalTime (MilliSeconds (40)),
@@ -121,8 +122,10 @@ RoutingProtocol::RoutingProtocol () :
   m_dpd (PathDiscoveryTime),
   m_nb(HelloInterval),
   m_rreqCount (0),
+  m_rerrCount (0),
   m_htimer (Timer::CANCEL_ON_DESTROY),
-  m_rreqRateLimitTimer (Timer::CANCEL_ON_DESTROY)
+  m_rreqRateLimitTimer (Timer::CANCEL_ON_DESTROY),
+  m_rerrRateLimitTimer (Timer::CANCEL_ON_DESTROY)
 {
   if (EnableHello)
     {
@@ -147,6 +150,10 @@ RoutingProtocol::GetTypeId (void)
       .AddAttribute ("RreqRateLimit", "Maximum number of RREQ per second.",
                      UintegerValue (10),
                      MakeUintegerAccessor (&RoutingProtocol::RreqRateLimit),
+                     MakeUintegerChecker<uint32_t> ())
+      .AddAttribute ("RerrRateLimit", "Maximum number of RERR per second.",
+                     UintegerValue (10),
+                     MakeUintegerAccessor (&RoutingProtocol::RerrRateLimit),
                      MakeUintegerChecker<uint32_t> ())
       .AddAttribute ("NodeTraversalTime", "Conservative estimate of the average one hop traversal time for packets and should include "
                      "queuing delays, interrupt processing times and transfer times.",
@@ -278,6 +285,11 @@ RoutingProtocol::Start ()
   m_rreqRateLimitTimer.SetFunction (&RoutingProtocol::RreqRateLimitTimerExpire,
       this);
   m_rreqRateLimitTimer.Schedule (Seconds (1));
+
+  m_rerrRateLimitTimer.SetFunction (&RoutingProtocol::RerrRateLimitTimerExpire,
+      this);
+  m_rerrRateLimitTimer.Schedule (Seconds (1));
+
 }
 
 Ptr<Ipv4Route>
@@ -1494,6 +1506,14 @@ RoutingProtocol::RreqRateLimitTimerExpire ()
 }
 
 void
+RoutingProtocol::RerrRateLimitTimerExpire ()
+{
+  NS_LOG_FUNCTION (this);
+  m_rerrCount = 0;
+  m_rerrRateLimitTimer.Schedule (Seconds (1));
+}
+
+void
 RoutingProtocol::AckTimerExpire (Ipv4Address neighbor, Time blacklistTimeout)
 {
   NS_LOG_FUNCTION (this);
@@ -1610,6 +1630,17 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst,
     uint32_t dstSeqNo, Ipv4Address origin)
 {
   NS_LOG_FUNCTION (this);
+  // A node SHOULD NOT originate more than RERR_RATELIMIT RERR messages per second.
+  if (m_rerrCount == RerrRateLimit)
+    {
+      // Just make sure that the RerrRateLimit timer is running and will expire
+      NS_ASSERT (m_rerrRateLimitTimer.IsRunning ());
+      // discard the packet and return
+      NS_LOG_LOGIC ("RerrRateLimit reached at " << Simulator::Now ().GetSeconds () << " with timer delay left " 
+                    << m_rerrRateLimitTimer.GetDelayLeft ().GetSeconds ()
+                    << "; suppressing RERR");
+      return;
+    }
   RerrHeader rerrHeader;
   rerrHeader.AddUnDestination (dst, dstSeqNo);
   RoutingTableEntry toOrigin;
@@ -1658,6 +1689,17 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       NS_LOG_LOGIC ("No precursors");
       return;
     }
+  // A node SHOULD NOT originate more than RERR_RATELIMIT RERR messages per second.
+  if (m_rerrCount == RerrRateLimit)
+    {
+      // Just make sure that the RerrRateLimit timer is running and will expire
+      NS_ASSERT (m_rerrRateLimitTimer.IsRunning ());
+      // discard the packet and return
+      NS_LOG_LOGIC ("RerrRateLimit reached at " << Simulator::Now ().GetSeconds () << " with timer delay left " 
+                    << m_rerrRateLimitTimer.GetDelayLeft ().GetSeconds ()
+                    << "; suppressing RERR");
+      return;
+    }
   // If there is only one precursor, RERR SHOULD be unicast toward that precursor
   if (precursors.size () == 1)
     {
@@ -1668,6 +1710,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
           NS_ASSERT (socket);
           NS_LOG_LOGIC ("one precursor => unicast RERR to " << toPrecursor.GetDestination() << " from " << toPrecursor.GetInterface ().GetLocal ());
           socket->SendTo (packet, 0, InetSocketAddress (precursors.front (), AODV_PORT));
+          m_rerrCount++;
         }
       return;
     }
@@ -1700,6 +1743,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
           destination = i->GetBroadcast ();
         }
       socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
+      m_rerrCount++;
     }
 }
 

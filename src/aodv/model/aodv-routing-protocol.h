@@ -94,6 +94,7 @@ private:
   //\{
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
+  uint16_t RerrRateLimit;           ///< Maximum number of REER per second.
   Time ActiveRouteTimeout;          ///< Period of time during which the route is considered to be valid.
   uint32_t NetDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
   /**
@@ -153,6 +154,8 @@ private:
   Neighbors m_nb;
   /// Number of RREQs used for RREQ rate control
   uint16_t m_rreqCount;
+  /// Number of RERRs used for RERR rate control
+  uint16_t m_rerrCount;
 
 private:
   /// Start protocol operation
@@ -241,6 +244,10 @@ private:
   Timer m_rreqRateLimitTimer;
   /// Reset RREQ count and schedule RREQ rate limit timer with delay 1 sec.
   void RreqRateLimitTimerExpire ();
+  /// RERR rate limit timer
+  Timer m_rerrRateLimitTimer;
+  /// Reset RERR count and schedule RERR rate limit timer with delay 1 sec.
+  void RerrRateLimitTimerExpire ();
   /// Map IP address + RREQ timer.
   std::map<Ipv4Address, Timer> m_addressReqTimer;
   /// Handle route discovery process
