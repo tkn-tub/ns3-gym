@@ -75,8 +75,8 @@ class Tunnel
   Ptr<VirtualNetDevice> m_n0Tap;
   Ptr<VirtualNetDevice> m_n1Tap;
   Ptr<VirtualNetDevice> m_n3Tap;
-  
-  
+
+
   bool
   N0VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
   {
@@ -137,23 +137,23 @@ class Tunnel
   }
 
 public:
-  
+
   Tunnel (Ptr<Node> n3, Ptr<Node> n0, Ptr<Node> n1,
           Ipv4Address n3Addr, Ipv4Address n0Addr, Ipv4Address n1Addr)
     : m_n3Address (n3Addr), m_n0Address (n0Addr), m_n1Address (n1Addr)
   {
     m_n3Socket = Socket::CreateSocket (n3, TypeId::LookupByName ("ns3::UdpSocketFactory"));
     m_n3Socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 667));
-    m_n3Socket->SetRecvCallback (MakeCallback (&Tunnel::N3SocketRecv, this));    
-    
+    m_n3Socket->SetRecvCallback (MakeCallback (&Tunnel::N3SocketRecv, this));
+
     m_n0Socket = Socket::CreateSocket (n0, TypeId::LookupByName ("ns3::UdpSocketFactory"));
     m_n0Socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 667));
-    m_n0Socket->SetRecvCallback (MakeCallback (&Tunnel::N0SocketRecv, this));    
-    
+    m_n0Socket->SetRecvCallback (MakeCallback (&Tunnel::N0SocketRecv, this));
+
     m_n1Socket = Socket::CreateSocket (n1, TypeId::LookupByName ("ns3::UdpSocketFactory"));
     m_n1Socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 667));
     m_n1Socket->SetRecvCallback (MakeCallback (&Tunnel::N1SocketRecv, this));
-    
+
     // n0 tap device
     m_n0Tap = CreateObject<VirtualNetDevice> ();
     m_n0Tap->SetAddress (Mac48Address ("11:00:01:02:03:01"));
@@ -163,7 +163,7 @@ public:
     uint32_t i = ipv4->AddInterface (m_n0Tap);
     ipv4->AddAddress (i, Ipv4InterfaceAddress (Ipv4Address ("11.0.0.1"), Ipv4Mask ("255.255.255.0")));
     ipv4->SetUp (i);
-    
+
     // n1 tap device
     m_n1Tap = CreateObject<VirtualNetDevice> ();
     m_n1Tap->SetAddress (Mac48Address ("11:00:01:02:03:02"));
@@ -183,13 +183,13 @@ public:
     i = ipv4->AddInterface (m_n3Tap);
     ipv4->AddAddress (i, Ipv4InterfaceAddress (Ipv4Address ("11.0.0.254"), Ipv4Mask ("255.255.255.0")));
     ipv4->SetUp (i);
-    
+
   }
-  
-  
+
+
 };
 
-  
+
 
 int 
 main (int argc, char *argv[])
@@ -200,13 +200,13 @@ main (int argc, char *argv[])
   LogComponentEnable ("VirtualNetDeviceExample", LOG_LEVEL_INFO);
 #endif
   Packet::EnablePrinting ();
-  
+
 
   // Set up some default values for the simulation.  Use the 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
-  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
+  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);
 
   // Allow the user to override any of the defaults and the above
   // DefaultValue::Bind ()s at run-time, via command-line arguments
@@ -233,12 +233,12 @@ main (int argc, char *argv[])
   NetDeviceContainer d0d2 = p2p.Install (n0n2);
 
   NetDeviceContainer d1d2 = p2p.Install (n1n2);
-  
+
   p2p.SetDeviceAttribute ("DataRate", StringValue ("1500kbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer d3d2 = p2p.Install (n3n2);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -246,7 +246,7 @@ main (int argc, char *argv[])
 
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer i1i2 = ipv4.Assign (d1d2);
-  
+
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
   Ipv4InterfaceContainer i3i2 = ipv4.Assign (d3d2);
 
@@ -272,7 +272,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   apps = sink.Install (c.Get (3));
   apps.Start (Seconds (1.0));
   //apps.Stop (Seconds (10.0));
