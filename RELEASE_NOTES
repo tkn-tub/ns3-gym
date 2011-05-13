@@ -76,6 +76,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1058 - documentation help to avoid InternetStackHelper pitfall
    - bug 1054 - ipv6 InternetStackHelper EnablePcapIpv6All() broken
    - bug 1042 - AODV RERR implosion (missing RERR_RATELIMIT) 
+   - bug 1097 - AODV routing entry set to be VALID mistakenly
 
 Known issues
 ------------

@@ -947,11 +947,14 @@ RoutingProtocol::UpdateRouteLifeTime (Ipv4Address addr, Time lifetime)
   RoutingTableEntry rt;
   if (m_routingTable.LookupRoute (addr, rt))
     {
-      rt.SetFlag (VALID);
-      rt.SetRreqCnt (0);
-      rt.SetLifeTime (std::max (lifetime, rt.GetLifeTime ()));
-      m_routingTable.Update (rt);
-      return true;
+      if (rt.GetFlag () == VALID)
+        {
+          NS_LOG_DEBUG ("Updating VALID route");
+          rt.SetRreqCnt (0);
+          rt.SetLifeTime (std::max (lifetime, rt.GetLifeTime ()));
+          m_routingTable.Update (rt);
+          return true;
+        }
     }
   return false;
 }
