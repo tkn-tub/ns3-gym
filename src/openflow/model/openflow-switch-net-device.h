@@ -101,7 +101,7 @@ public:
   static const char * GetSoftwareDescription ();
   static const char * GetSerialNumber ();
   //\}
-  
+
   OpenFlowSwitchNetDevice ();
   virtual ~OpenFlowSwitchNetDevice ();
 
@@ -238,7 +238,7 @@ public:
   virtual bool SupportsSendFrom () const;
   virtual Address GetMulticast (Ipv6Address addr) const;
   //\}
-  
+
 protected:
   virtual void DoDispose (void);
 
@@ -292,7 +292,7 @@ private:
    * \return 0 if everything's ok, otherwise an error number.
    */
   int ModFlow (const ofp_flow_mod *ofm);
-  
+
   /**
    * \internal
    * 
@@ -444,7 +444,7 @@ private:
    * \return 0 if everything's ok, otherwise an error number.
    */
   int RunThroughVPortTable (uint32_t packet_uid, int port, uint32_t vport);
-  
+
   /**
    * \internal
    *
@@ -514,7 +514,7 @@ private:
   int ReceiveVPortMod (const void *msg);
   int ReceiveVPortTableFeaturesRequest (const void *msg);
   //\}
-  
+
   /// Callbacks
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
@@ -536,7 +536,7 @@ private:
   uint64_t m_id;                        ///< Unique identifier for this switch, needed for OpenFlow
   Time m_lookupDelay;                   ///< Flow Table Lookup Delay [overhead].
 
-  Time m_lastExecute;			///< Last time the periodic execution occurred.
+  Time m_lastExecute;                   ///< Last time the periodic execution occurred.
   uint16_t m_flags;                     ///< Flags; configurable by the controller.
   uint16_t m_missSendLen;               ///< Flow Table Miss Send Length; configurable by the controller.
 

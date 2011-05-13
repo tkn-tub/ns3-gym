@@ -25,14 +25,14 @@ namespace ns3 {
 namespace ofi {
 
 NS_LOG_COMPONENT_DEFINE ("OpenFlowInterface");
-  
+
 Stats::Stats (ofp_stats_types _type, size_t body_len)
 {
   type = _type;
   size_t min_body = 0, max_body = 0;
-  
+
   switch (type)
-  {
+    {
     case OFPST_DESC:
       break;
     case OFPST_FLOW:
@@ -51,13 +51,13 @@ Stats::Stats (ofp_stats_types _type, size_t body_len)
       break;
     default:
       NS_LOG_ERROR ("received stats request of unknown type " << type);
-      return;// -EINVAL;
-  }
-  
+      return; // -EINVAL;
+    }
+
   if ((min_body != 0 || max_body != 0) && (body_len < min_body || body_len > max_body))
     {
       NS_LOG_ERROR ("stats request type " << type << " with bad body length " << body_len);
-      return;// -EINVAL;
+      return; // -EINVAL;
     }
 }
 
@@ -65,7 +65,7 @@ int
 Stats::DoInit (const void *body, int body_len, void **state)
 {
   switch (type)
-  {
+    {
     case OFPST_DESC:
       return 0;
     case OFPST_FLOW:
@@ -80,8 +80,8 @@ Stats::DoInit (const void *body, int body_len, void **state)
       return 0;
     case OFPST_VENDOR:
       return 0;
-  }
-  
+    }
+
   return 0;
 }
 
@@ -89,7 +89,7 @@ int
 Stats::DoDump (Ptr<OpenFlowSwitchNetDevice> swtch, void *state, ofpbuf *buffer)
 {
   switch (type)
-  {
+    {
     case OFPST_DESC:
       return DescStatsDump (state, buffer);
     case OFPST_FLOW:
@@ -104,8 +104,8 @@ Stats::DoDump (Ptr<OpenFlowSwitchNetDevice> swtch, void *state, ofpbuf *buffer)
       return PortTableStatsDump (swtch, state, buffer);
     case OFPST_VENDOR:
       return 0;
-  }
-  
+    }
+
   return 0;
 }
 
@@ -113,7 +113,7 @@ void
 Stats::DoCleanup (void *state)
 {
   switch (type)
-  {
+    {
     case OFPST_DESC:
       break;
     case OFPST_FLOW:
@@ -132,9 +132,9 @@ Stats::DoCleanup (void *state)
       break;
     case OFPST_VENDOR:
       break;
-  }
+    }
 }
-  
+
 int
 Stats::DescStatsDump (void *state, ofpbuf *buffer)
 {
@@ -245,10 +245,10 @@ Stats::AggregateStatsDump (Ptr<OpenFlowSwitchNetDevice> swtch, ofp_aggregate_sta
   sw_flow_key match_key;
   flow_extract_match (&match_key, &rq->match);
   int table_idx = rq->table_id == 0xff ? 0 : rq->table_id;
-  
+
   sw_table_position position;
   memset (&position, 0, sizeof position);
-  
+
   while (table_idx < swtch->GetChain ()->n_tables
          && (rq->table_id == 0xff || rq->table_id == table_idx))
     {
@@ -722,14 +722,14 @@ Controller::StartDump (StatsDumpCallback* cb)
     {
       int error = 1;
       while (error > 0) // Switch's StatsDump returns 1 if the reply isn't complete.
-	{
-	  error = cb->swtch->StatsDump (cb);
-	}
+        {
+          error = cb->swtch->StatsDump (cb);
+        }
 	
       if (error != 0) // When the reply is complete, error will equal zero if there's no errors.
-	{
-	  NS_LOG_WARN ("Dump Callback Error: " << strerror (-error));
-	}
+        {
+          NS_LOG_WARN ("Dump Callback Error: " << strerror (-error));
+        }
 	
       // Clean up
       cb->swtch->StatsDone (cb);
@@ -766,13 +766,13 @@ DropController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* b
 TypeId LearningController::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ofi::LearningController")
-  .SetParent (Controller::GetTypeId())
-  .AddConstructor<LearningController> ()
-  .AddAttribute ("ExpirationTime",
-		  "Time it takes for learned MAC state entry/created flow to expire.",
-		  TimeValue (Seconds (0)),
-		  MakeTimeAccessor (&LearningController::m_expirationTime),
-		  MakeTimeChecker ())
+    .SetParent (Controller::GetTypeId())
+    .AddConstructor<LearningController> ()
+    .AddAttribute ("ExpirationTime",
+                   "Time it takes for learned MAC state entry/created flow to expire.",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&LearningController::m_expirationTime),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -810,7 +810,7 @@ LearningController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbu
           LearnState_t::iterator st = m_learnState.find (dst_addr);
           if (st != m_learnState.end ())
             {
-	      out_port = st->second.port;
+              out_port = st->second.port;
             }
           else
             {
@@ -829,7 +829,7 @@ LearningController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbu
       x[0].port = out_port;
 
       // Create a new flow that outputs matched packets to a learned port, OFPP_FLOOD if there's no learned port.
-      ofp_flow_mod* ofm = BuildFlow (key, opi->buffer_id, OFPFC_ADD, x, sizeof(x), OFP_FLOW_PERMANENT, m_expirationTime.IsZero ()?OFP_FLOW_PERMANENT:m_expirationTime.GetSeconds ());
+      ofp_flow_mod* ofm = BuildFlow (key, opi->buffer_id, OFPFC_ADD, x, sizeof(x), OFP_FLOW_PERMANENT, m_expirationTime.IsZero () ? OFP_FLOW_PERMANENT : m_expirationTime.GetSeconds ());
       SendToSwitch (swtch, ofm, ofm->header.length);
 
       // We can learn a specific port for the source address for future use.
@@ -853,7 +853,7 @@ LearningController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbu
           src_addr.CopyTo (key.flow.dl_dst);
           dst_addr.CopyTo (key.flow.dl_src);
           key.flow.in_port = out_port;
-          ofp_flow_mod* ofm2 = BuildFlow (key, -1, OFPFC_MODIFY, x2, sizeof(x2), OFP_FLOW_PERMANENT, m_expirationTime.IsZero ()?OFP_FLOW_PERMANENT:m_expirationTime.GetSeconds ());
+          ofp_flow_mod* ofm2 = BuildFlow (key, -1, OFPFC_MODIFY, x2, sizeof(x2), OFP_FLOW_PERMANENT, m_expirationTime.IsZero () ? OFP_FLOW_PERMANENT : m_expirationTime.GetSeconds ());
           SendToSwitch (swtch, ofm2, ofm2->header.length);
         }
     }
