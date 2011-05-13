@@ -15,8 +15,8 @@ CbOne (double a, double b)
 class MyCb {
 public:
   int CbTwo (double a) {
-      std::cout << "invoke cbTwo a=" << a << std::endl;
-      return -5;
+    std::cout << "invoke cbTwo a=" << a << std::endl;
+    return -5;
   }
 };
 
@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
   NS_ASSERT (!two.IsNull ());
   // invoke MyCb::cbTwo through callback instance
   int retTwo;
-  retTwo = two (10.0);    
+  retTwo = two (10.0);
 
   two = MakeNullCallback<int, double> ();
   // invoking a null callback is just like

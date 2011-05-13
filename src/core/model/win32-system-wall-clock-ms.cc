@@ -110,10 +110,11 @@ SystemWallClockMsPrivate::GetElapsedSystem (void) const
 {
   return m_elapsedSystem;
 }
-  
+
 SystemWallClockMs::SystemWallClockMs ()
   : m_priv (new SystemWallClockMsPrivate ())
-{}
+{
+}
 
 SystemWallClockMs::~SystemWallClockMs ()
 {

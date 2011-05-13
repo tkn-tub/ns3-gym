@@ -35,46 +35,48 @@ namespace ns3 {
 namespace Config {
 
 MatchContainer::MatchContainer ()
-{}
-MatchContainer::MatchContainer (const std::vector<Ptr<Object> > &objects, 
+{
+}
+MatchContainer::MatchContainer (const std::vector<Ptr<Object> > &objects,
                                 const std::vector<std::string> &contexts,
                                 std::string path)
   : m_objects (objects),
     m_contexts (contexts),
     m_path (path)
-{}
-MatchContainer::Iterator 
+{
+}
+MatchContainer::Iterator
 MatchContainer::Begin (void) const
 {
   return m_objects.begin ();
 }
-MatchContainer::Iterator 
+MatchContainer::Iterator
 MatchContainer::End (void) const
 {
   return m_objects.end ();
 }
-uint32_t 
+uint32_t
 MatchContainer::GetN (void) const
 {
   return m_objects.size ();
 }
-Ptr<Object> 
+Ptr<Object>
 MatchContainer::Get (uint32_t i) const
 {
   return m_objects[i];
 }
-std::string 
+std::string
 MatchContainer::GetMatchedPath (uint32_t i) const
 {
   return m_contexts[i];
 }
-std::string 
+std::string
 MatchContainer::GetPath (void) const
 {
   return m_path;
 }
 
-void 
+void
 MatchContainer::Set (std::string name, const AttributeValue &value)
 {
   for (Iterator tmp = Begin (); tmp != End (); ++tmp)
@@ -139,8 +141,9 @@ private:
 
 ArrayMatcher::ArrayMatcher (std::string element)
   : m_element (element)
-{}
-bool 
+{
+}
+bool
 ArrayMatcher::Matches (uint32_t i) const
 {
   if (m_element == "*")
@@ -156,16 +159,16 @@ ArrayMatcher::Matches (uint32_t i) const
       std::string right = m_element.substr (tmp+1, m_element.size () - (tmp + 1));
       ArrayMatcher matcher = ArrayMatcher (left);
       if (matcher.Matches (i))
-	{
-	  NS_LOG_DEBUG ("Array "<<i<<" matches "<<left);
-	  return true;
-	}
+        {
+          NS_LOG_DEBUG ("Array "<<i<<" matches "<<left);
+          return true;
+        }
       matcher = ArrayMatcher (right);
       if (matcher.Matches (i))
-	{
-	  NS_LOG_DEBUG ("Array "<<i<<" matches "<<right);
-	  return true;
-	}
+        {
+          NS_LOG_DEBUG ("Array "<<i<<" matches "<<right);
+          return true;
+        }
       NS_LOG_DEBUG ("Array "<<i<<" does not match "<<m_element);
       return false;
     }
@@ -180,17 +183,17 @@ ArrayMatcher::Matches (uint32_t i) const
       uint32_t min;
       uint32_t max;
       if (StringToUint32 (lowerBound, &min) && 
-	  StringToUint32 (upperBound, &max) &&
-	  i >= min && i <= max)
+          StringToUint32 (upperBound, &max) &&
+          i >= min && i <= max)
         {
-	  NS_LOG_DEBUG ("Array "<<i<<" matches "<<m_element);
+          NS_LOG_DEBUG ("Array "<<i<<" matches "<<m_element);
           return true;
         }
       else
-	{
-	  NS_LOG_DEBUG ("Array "<<i<<" does not "<<m_element);
-	  return false;
-	}
+        {
+          NS_LOG_DEBUG ("Array "<<i<<" does not "<<m_element);
+          return false;
+        }
     }
   uint32_t value;
   if (StringToUint32 (m_element, &value) &&
@@ -237,7 +240,8 @@ Resolver::Resolver (std::string path)
   Canonicalize ();
 }
 Resolver::~Resolver ()
-{}
+{
+}
 void
 Resolver::Canonicalize (void)
 {
@@ -363,10 +367,10 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
       TypeId tid = TypeId::LookupByName (tidString);
       Ptr<Object> object = root->GetObject<Object> (tid);
       if (object == 0)
-	{
-	  NS_LOG_DEBUG ("GetObject ("<<tidString<<") failed on path="<<GetResolvedPath ());
-	  return;
-	}
+        {
+          NS_LOG_DEBUG ("GetObject ("<<tidString<<") failed on path="<<GetResolvedPath ());
+          return;
+        }
       m_workStack.push_back (item);
       DoResolve (pathLeft, object);
       m_workStack.pop_back ();
@@ -377,40 +381,40 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
       TypeId tid = root->GetInstanceTypeId ();
       struct TypeId::AttributeInfo info;
       if (!tid.LookupAttributeByName (item, &info))
-	{
-	  NS_LOG_DEBUG ("Requested item="<<item<<" does not exist on path="<<GetResolvedPath ());
-	  return;
-	}
+        {
+          NS_LOG_DEBUG ("Requested item="<<item<<" does not exist on path="<<GetResolvedPath ());
+          return;
+        }
       // attempt to cast to a pointer checker.
       const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
       if (ptr != 0)
-	{
-	  NS_LOG_DEBUG ("GetAttribute(ptr)="<<item<<" on path="<<GetResolvedPath ());
+        {
+          NS_LOG_DEBUG ("GetAttribute(ptr)="<<item<<" on path="<<GetResolvedPath ());
           PointerValue ptr;
           root->GetAttribute (item, ptr);
-	  Ptr<Object> object = ptr.Get<Object> ();
-	  if (object == 0)
-	    {
-	      NS_LOG_ERROR ("Requested object name=\""<<item<<
-			    "\" exists on path=\""<<GetResolvedPath ()<<"\""
-			    " but is null.");
-	      return;
-	    }
-	  m_workStack.push_back (item);
-	  DoResolve (pathLeft, object);
-	  m_workStack.pop_back ();
-	}
+          Ptr<Object> object = ptr.Get<Object> ();
+          if (object == 0)
+            {
+              NS_LOG_ERROR ("Requested object name=\""<<item<<
+                            "\" exists on path=\""<<GetResolvedPath ()<<"\""
+                            " but is null.");
+              return;
+            }
+          m_workStack.push_back (item);
+          DoResolve (pathLeft, object);
+          m_workStack.pop_back ();
+        }
       // attempt to cast to an object vector.
       const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (info.checker));
       if (vectorChecker != 0)
-	{
-	  NS_LOG_DEBUG ("GetAttribute(vector)="<<item<<" on path="<<GetResolvedPath ());
-	  ObjectVectorValue vector;
+        {
+          NS_LOG_DEBUG ("GetAttribute(vector)="<<item<<" on path="<<GetResolvedPath ());
+          ObjectVectorValue vector;
           root->GetAttribute (item, vector);
-	  m_workStack.push_back (item);
-	  DoArrayResolve (pathLeft, vector);
-	  m_workStack.pop_back ();
-	}
+          m_workStack.push_back (item);
+          DoArrayResolve (pathLeft, vector);
+          m_workStack.pop_back ();
+        }
       // this could be anything else and we don't know what to do with it.
       // So, we just ignore it.
     }
@@ -435,13 +439,13 @@ Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
   for (uint32_t i = 0; i < vector.GetN (); i++)
     {
       if (matcher.Matches (i))
-	{
-	  std::ostringstream oss;
-	  oss << i;
-	  m_workStack.push_back (oss.str ());
-	  DoResolve (pathLeft, vector.Get (i));
-	  m_workStack.pop_back ();
-	}
+        {
+          std::ostringstream oss;
+          oss << i;
+          m_workStack.push_back (oss.str ());
+          DoResolve (pathLeft, vector.Get (i));
+          m_workStack.pop_back ();
+        }
     }
 }
 
@@ -461,7 +465,7 @@ public:
 
   uint32_t GetRootNamespaceObjectN (void) const;
   Ptr<Object> GetRootNamespaceObject (uint32_t i) const;
-  
+
 private:
   void ParsePath (std::string path, std::string *root, std::string *leaf) const;
   typedef std::vector<Ptr<Object> > Roots;
@@ -525,7 +529,7 @@ ConfigImpl::LookupMatches (std::string path)
   NS_LOG_FUNCTION (path);
   class LookupMatchesResolver : public Resolver 
   {
-  public:
+public:
     LookupMatchesResolver (std::string path)
       : Resolver (path)
     {}
@@ -563,10 +567,10 @@ ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
   for (std::vector<Ptr<Object> >::iterator i = m_roots.begin (); i != m_roots.end (); i++)
     {
       if (*i == obj)
-	{
-	  m_roots.erase (i);
-	  return;
-	}
+        {
+          m_roots.erase (i);
+          return;
+        }
     }
 }
 

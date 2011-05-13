@@ -87,16 +87,16 @@ class APointerChecker : public PointerChecker
     const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
     if (value == 0)
       {
-	return false;
+        return false;
       }
     if (value->GetObject () == 0)
       {
-	return true;
+        return true;
       }
     T *ptr = dynamic_cast<T*> (PeekPointer (value->GetObject ()));
     if (ptr == 0)
       {
-	return false;
+        return false;
       }
     return true;
   }

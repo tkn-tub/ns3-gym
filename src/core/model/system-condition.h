@@ -85,7 +85,7 @@ public:
   void Broadcast (void);
 
   /**
-   * Wait, possibly forever, for the condition to be true.  
+   * Wait, possibly forever, for the condition to be true.
    */
   void Wait (void);
 	
@@ -98,7 +98,7 @@ public:
 	
 
 private:
-  SystemConditionPrivate * m_priv;    
+  SystemConditionPrivate * m_priv;
 };
 
 } //namespace ns3

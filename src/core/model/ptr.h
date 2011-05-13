@@ -61,7 +61,7 @@ class Ptr
 private:
   T *m_ptr;
   class Tester {
-  private:
+private:
     void operator delete (void *);
   };
   friend class Ptr<const T>;
@@ -86,12 +86,12 @@ public:
    * same, so that object is deleted if no more references to it
    * remain.
    */
-  Ptr (T *ptr);  
+  Ptr (T *ptr);
   /**
    * \param ptr raw pointer to manage
    * \param ref if set to true, this method calls Ref, otherwise,
    *        it does not call Ref.
-   *    
+   *
    * Create a smart pointer which points to the object pointed to by
    * the input raw pointer ptr.
    */
@@ -223,9 +223,9 @@ struct EventMemberImplObjTraits<Ptr<T> >
 
 namespace ns3 {
 
-  /*************************************************
-   *  friend non-member function implementations
-   ************************************************/
+/*************************************************
+ *  friend non-member function implementations
+ ************************************************/
 
 template <typename T>
 Ptr<T> Create (void)
@@ -408,23 +408,24 @@ Ptr<T>::Acquire (void) const
   if (m_ptr != 0)
     {
       m_ptr->Ref ();
-    }  
+    }
 }
 
 template <typename T>
 Ptr<T>::Ptr ()
   : m_ptr (0)
-{}
+{
+}
 
 template <typename T>
-Ptr<T>::Ptr (T *ptr) 
+Ptr<T>::Ptr (T *ptr)
   : m_ptr (ptr)
 {
   Acquire ();
 }
 
 template <typename T>
-Ptr<T>::Ptr (T *ptr, bool ref) 
+Ptr<T>::Ptr (T *ptr, bool ref)
   : m_ptr (ptr)
 {
   if (ref)

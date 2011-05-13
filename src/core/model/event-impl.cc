@@ -23,28 +23,30 @@
 namespace ns3 {
 
 EventImpl::~EventImpl ()
-{}
+{
+}
 
 EventImpl::EventImpl ()
   : m_cancel (false)
-{}
+{
+}
 
-void 
+void
 EventImpl::Invoke (void)
 {
-  if (!m_cancel) 
+  if (!m_cancel)
     {
       Notify ();
     }
 }
 
-void 
+void
 EventImpl::Cancel (void)
 {
   m_cancel = true;
 }
 
-bool 
+bool
 EventImpl::IsCancelled (void)
 {
   return m_cancel;

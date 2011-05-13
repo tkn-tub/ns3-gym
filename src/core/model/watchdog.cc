@@ -25,14 +25,15 @@ Watchdog::Watchdog ()
   : m_impl (0),
     m_event (),
     m_end (MicroSeconds (0))
-{}
+{
+}
 
 Watchdog::~Watchdog ()
 {
   delete m_impl;
 }
 
-void 
+void
 Watchdog::Ping (Time delay)
 {
   Time end = Simulator::Now () + delay;

@@ -7,7 +7,7 @@
 // to use the using directive to access the ns3 namespace directly
 using namespace ns3;
 
-// This is an example TestCase.  
+// This is an example TestCase.
 class SampleTestCase1 : public TestCase
 {
 public:

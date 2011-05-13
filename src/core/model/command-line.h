@@ -58,8 +58,8 @@ public:
    */
   template <typename T>
   void AddValue (const std::string &name,
-		 const std::string &help,
-		 T &value);
+                 const std::string &help,
+                 T &value);
 
 
   /**
@@ -69,7 +69,7 @@ public:
    * and collect the value.  This normally used by language bindings.
    */
   void AddValue (const std::string &name,
-		 const std::string &help,
+                 const std::string &help,
                  Callback<bool, std::string> callback);
 
   /**
@@ -85,7 +85,7 @@ public:
 private:
   class Item 
   {
-  public:
+public:
     std::string m_name;
     std::string m_help;
     virtual ~Item ();
@@ -94,13 +94,13 @@ private:
   template <typename T>
   class UserItem : public Item
   {
-  public:
+public:
     virtual bool Parse (std::string value);
     T *m_valuePtr;
   };
   class CallbackItem : public Item
   {
-  public:
+public:
     virtual bool Parse (std::string value);
     Callback<bool, std::string> m_callback;
   };
@@ -126,8 +126,8 @@ namespace ns3 {
 template <typename T>
 void 
 CommandLine::AddValue (const std::string &name,
-		   const std::string &help,
-		   T &value)
+                       const std::string &help,
+                       T &value)
 {
   UserItem<T> *item = new UserItem<T> ();
   item->m_name = name;

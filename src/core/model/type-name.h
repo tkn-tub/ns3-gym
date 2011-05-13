@@ -14,10 +14,10 @@ std::string TypeNameGet (void)
   return "unknown";
 }
 
-#define DEF_TYPE(x)				\
-  template <>					\
-    std::string TypeNameGet<x> (void)
-  
+#define DEF_TYPE(x)                             \
+  template <>                                   \
+  std::string TypeNameGet<x> (void)
+
 DEF_TYPE (uint8_t);
 DEF_TYPE (uint16_t);
 DEF_TYPE (uint32_t);
@@ -31,6 +31,6 @@ DEF_TYPE (double);
 
 #undef DEF_TYPE
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* TYPE_NAME_H */

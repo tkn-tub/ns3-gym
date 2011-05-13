@@ -60,23 +60,23 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)                                  \
   do {                                                                                                  \
-    if (!((actual) == (limit)))                                                                         \
-      {                                                                                                 \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
-        std::ostringstream msgStream;                                                                   \
-        msgStream << msg;                                                                               \
-        std::ostringstream actualStream;                                                                \
-        actualStream << actual;                                                                         \
-        std::ostringstream limitStream;                                                                 \
-        limitStream << limit;                                                                           \
-        ReportTestFailure (std::string (#actual) + " (actual) == " + std::string (#limit) + " (limit)", \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-        if (!ContinueOnFailure ())                                                                      \
-          {                                                                                             \
-            return;                                                                                \
-          }                                                                                             \
-      }                                                                                                 \
-  } while (false)
+      if (!((actual) == (limit)))                                                                         \
+        {                                                                                                 \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                           \
+          std::ostringstream msgStream;                                                                   \
+          msgStream << msg;                                                                               \
+          std::ostringstream actualStream;                                                                \
+          actualStream << actual;                                                                         \
+          std::ostringstream limitStream;                                                                 \
+          limitStream << limit;                                                                           \
+          ReportTestFailure (std::string (# actual) + " (actual) == " + std::string (# limit) + " (limit)", \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+          if (!ContinueOnFailure ())                                                                      \
+            {                                                                                             \
+              return;                                                                                \
+            }                                                                                             \
+        }                                                                                                 \
+    } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -112,23 +112,23 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line)                                  \
   do {                                                                                                  \
-    if (!((actual) == (limit)))                                                                         \
-      {                                                                                                 \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
-        std::ostringstream msgStream;                                                                   \
-        msgStream << msg;                                                                               \
-        std::ostringstream actualStream;                                                                \
-        actualStream << actual;                                                                         \
-        std::ostringstream limitStream;                                                                 \
-        limitStream << limit;                                                                           \
-        ReportTestFailure (std::string (#actual) + " (actual) == " + std::string (#limit) + " (limit)", \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-        if (!ContinueOnFailure ())                                                                      \
-          {                                                                                             \
-            return true;                                                                                \
-          }                                                                                             \
-      }                                                                                                 \
-  } while (false)
+      if (!((actual) == (limit)))                                                                         \
+        {                                                                                                 \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                           \
+          std::ostringstream msgStream;                                                                   \
+          msgStream << msg;                                                                               \
+          std::ostringstream actualStream;                                                                \
+          actualStream << actual;                                                                         \
+          std::ostringstream limitStream;                                                                 \
+          limitStream << limit;                                                                           \
+          ReportTestFailure (std::string (# actual) + " (actual) == " + std::string (# limit) + " (limit)", \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+          if (!ContinueOnFailure ())                                                                      \
+            {                                                                                             \
+              return true;                                                                                \
+            }                                                                                             \
+        }                                                                                                 \
+    } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -170,19 +170,19 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_EXPECT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)                                  \
   do {                                                                                                  \
-    if (!((actual) == (limit)))                                                                         \
-      {                                                                                                 \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
-        std::ostringstream msgStream;                                                                   \
-        msgStream << msg;                                                                               \
-        std::ostringstream actualStream;                                                                \
-        actualStream << actual;                                                                         \
-        std::ostringstream limitStream;                                                                 \
-        limitStream << limit;                                                                           \
-        ReportTestFailure (std::string (#actual) + " (actual) == " + std::string (#limit) + " (limit)", \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-      }                                                                                                 \
-  } while (false)
+      if (!((actual) == (limit)))                                                                         \
+        {                                                                                                 \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                           \
+          std::ostringstream msgStream;                                                                   \
+          msgStream << msg;                                                                               \
+          std::ostringstream actualStream;                                                                \
+          actualStream << actual;                                                                         \
+          std::ostringstream limitStream;                                                                 \
+          limitStream << limit;                                                                           \
+          ReportTestFailure (std::string (# actual) + " (actual) == " + std::string (# limit) + " (limit)", \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+        }                                                                                                 \
+    } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -223,25 +223,25 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
   do {                                                                                                                \
-    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
-      {                                                                                                               \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                                         \
-        std::ostringstream msgStream;                                                                                 \
-        msgStream << msg;                                                                                             \
-        std::ostringstream actualStream;                                                                              \
-        actualStream << actual;                                                                                       \
-        std::ostringstream limitStream;                                                                               \
-        limitStream << limit << " +- " << tol;                                                                        \
-        std::ostringstream condStream;                                                                                \
-        condStream << #actual << " (actual) < " << #limit << " (limit) + " << #tol << " (tol) && " <<                 \
-                      #actual << " (actual) > " << #limit << " (limit) - " << #tol << " (tol)";                       \
-        ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
-        if (!ContinueOnFailure ())                                                                                    \
-          {                                                                                                           \
-            return;                                                                                              \
-          }                                                                                                           \
-      }                                                                                                               \
-  } while (false)
+      if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
+        {                                                                                                               \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                                         \
+          std::ostringstream msgStream;                                                                                 \
+          msgStream << msg;                                                                                             \
+          std::ostringstream actualStream;                                                                              \
+          actualStream << actual;                                                                                       \
+          std::ostringstream limitStream;                                                                               \
+          limitStream << limit << " +- " << tol;                                                                        \
+          std::ostringstream condStream;                                                                                \
+          condStream << # actual << " (actual) < " << # limit << " (limit) + " << # tol << " (tol) && " <<                 \
+          # actual << " (actual) > " << # limit << " (limit) - " << # tol << " (tol)";                       \
+          ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
+          if (!ContinueOnFailure ())                                                                                    \
+            {                                                                                                           \
+              return;                                                                                              \
+            }                                                                                                           \
+        }                                                                                                               \
+    } while (false)
 
 /**
  * \brief Test that actual and expected (limit) values are equal to plus or minus
@@ -299,25 +299,25 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
   do {                                                                                                                \
-    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
-      {                                                                                                               \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                                         \
-        std::ostringstream msgStream;                                                                                 \
-        msgStream << msg;                                                                                             \
-        std::ostringstream actualStream;                                                                              \
-        actualStream << actual;                                                                                       \
-        std::ostringstream limitStream;                                                                               \
-        limitStream << limit << " +- " << tol;                                                                        \
-        std::ostringstream condStream;                                                                                \
-        condStream << #actual << " (actual) < " << #limit << " (limit) + " << #tol << " (tol) && " <<                 \
-                      #actual << " (actual) > " << #limit << " (limit) - " << #tol << " (tol)";                       \
-        ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
-        if (!ContinueOnFailure ())                                                                                    \
-          {                                                                                                           \
-            return true;                                                                                              \
-          }                                                                                                           \
-      }                                                                                                               \
-  } while (false)
+      if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
+        {                                                                                                               \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                                         \
+          std::ostringstream msgStream;                                                                                 \
+          msgStream << msg;                                                                                             \
+          std::ostringstream actualStream;                                                                              \
+          actualStream << actual;                                                                                       \
+          std::ostringstream limitStream;                                                                               \
+          limitStream << limit << " +- " << tol;                                                                        \
+          std::ostringstream condStream;                                                                                \
+          condStream << # actual << " (actual) < " << # limit << " (limit) + " << # tol << " (tol) && " <<                 \
+          # actual << " (actual) > " << # limit << " (limit) - " << # tol << " (tol)";                       \
+          ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
+          if (!ContinueOnFailure ())                                                                                    \
+            {                                                                                                           \
+              return true;                                                                                              \
+            }                                                                                                           \
+        }                                                                                                               \
+    } while (false)
 
 /**
  * \brief Test that actual and expected (limit) values are equal to plus or minus
@@ -381,21 +381,21 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
   do {                                                                                                                \
-    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
-      {                                                                                                               \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                                         \
-        std::ostringstream msgStream;                                                                                 \
-        msgStream << msg;                                                                                             \
-        std::ostringstream actualStream;                                                                              \
-        actualStream << actual;                                                                                       \
-        std::ostringstream limitStream;                                                                               \
-        limitStream << limit << " +- " << tol;                                                                        \
-        std::ostringstream condStream;                                                                                \
-        condStream << #actual << " (actual) < " << #limit << " (limit) + " << #tol << " (tol) && " <<                 \
-                      #actual << " (actual) > " << #limit << " (limit) - " << #tol << " (tol)";                       \
-        ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
-      }                                                                                                               \
-  } while (false)
+      if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
+        {                                                                                                               \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                                         \
+          std::ostringstream msgStream;                                                                                 \
+          msgStream << msg;                                                                                             \
+          std::ostringstream actualStream;                                                                              \
+          actualStream << actual;                                                                                       \
+          std::ostringstream limitStream;                                                                               \
+          limitStream << limit << " +- " << tol;                                                                        \
+          std::ostringstream condStream;                                                                                \
+          condStream << # actual << " (actual) < " << # limit << " (limit) + " << # tol << " (tol) && " <<                 \
+          # actual << " (actual) > " << # limit << " (limit) - " << # tol << " (tol)";                       \
+          ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
+        }                                                                                                               \
+    } while (false)
 
 /**
  * \brief Test that actual and expected (limit) values are equal to plus or minus
@@ -457,23 +457,23 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_NE_INTERNAL(actual, limit, msg, file, line)                                  \
   do {                                                                                                  \
-    if (!((actual) != (limit)))                                                                         \
-      {                                                                                                 \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
-        std::ostringstream msgStream;                                                                   \
-        msgStream << msg;                                                                               \
-        std::ostringstream actualStream;                                                                \
-        actualStream << actual;                                                                         \
-        std::ostringstream limitStream;                                                                 \
-        limitStream << limit;                                                                           \
-        ReportTestFailure (std::string (#actual) + " (actual) != " + std::string (#limit) + " (limit)", \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-        if (!ContinueOnFailure ())                                                                      \
-          {                                                                                             \
-            return;                                                                                \
-          }                                                                                             \
-      }                                                                                                 \
-  } while (false)
+      if (!((actual) != (limit)))                                                                         \
+        {                                                                                                 \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                           \
+          std::ostringstream msgStream;                                                                   \
+          msgStream << msg;                                                                               \
+          std::ostringstream actualStream;                                                                \
+          actualStream << actual;                                                                         \
+          std::ostringstream limitStream;                                                                 \
+          limitStream << limit;                                                                           \
+          ReportTestFailure (std::string (# actual) + " (actual) != " + std::string (# limit) + " (limit)", \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+          if (!ContinueOnFailure ())                                                                      \
+            {                                                                                             \
+              return;                                                                                \
+            }                                                                                             \
+        }                                                                                                 \
+    } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -508,23 +508,23 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line)                                  \
   do {                                                                                                  \
-    if (!((actual) != (limit)))                                                                         \
-      {                                                                                                 \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
-        std::ostringstream msgStream;                                                                   \
-        msgStream << msg;                                                                               \
-        std::ostringstream actualStream;                                                                \
-        actualStream << actual;                                                                         \
-        std::ostringstream limitStream;                                                                 \
-        limitStream << limit;                                                                           \
-        ReportTestFailure (std::string (#actual) + " (actual) != " + std::string (#limit) + " (limit)", \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-        if (!ContinueOnFailure ())                                                                      \
-          {                                                                                             \
-            return true;                                                                                \
-          }                                                                                             \
-      }                                                                                                 \
-  } while (false)
+      if (!((actual) != (limit)))                                                                         \
+        {                                                                                                 \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                           \
+          std::ostringstream msgStream;                                                                   \
+          msgStream << msg;                                                                               \
+          std::ostringstream actualStream;                                                                \
+          actualStream << actual;                                                                         \
+          std::ostringstream limitStream;                                                                 \
+          limitStream << limit;                                                                           \
+          ReportTestFailure (std::string (# actual) + " (actual) != " + std::string (# limit) + " (limit)", \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+          if (!ContinueOnFailure ())                                                                      \
+            {                                                                                             \
+              return true;                                                                                \
+            }                                                                                             \
+        }                                                                                                 \
+    } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -565,19 +565,19 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_EXPECT_MSG_NE_INTERNAL(actual, limit, msg, file, line)                                  \
   do {                                                                                                  \
-    if (!((actual) != (limit)))                                                                         \
-      {                                                                                                 \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
-        std::ostringstream msgStream;                                                                   \
-        msgStream << msg;                                                                               \
-        std::ostringstream actualStream;                                                                \
-        actualStream << actual;                                                                         \
-        std::ostringstream limitStream;                                                                 \
-        limitStream << limit;                                                                           \
-        ReportTestFailure (std::string (#actual) + " (actual) != " + std::string (#limit) + " (limit)", \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-      }                                                                                                 \
-  } while (false)
+      if (!((actual) != (limit)))                                                                         \
+        {                                                                                                 \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                           \
+          std::ostringstream msgStream;                                                                   \
+          msgStream << msg;                                                                               \
+          std::ostringstream actualStream;                                                                \
+          actualStream << actual;                                                                         \
+          std::ostringstream limitStream;                                                                 \
+          limitStream << limit;                                                                           \
+          ReportTestFailure (std::string (# actual) + " (actual) != " + std::string (# limit) + " (limit)", \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+        }                                                                                                 \
+    } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -616,23 +616,23 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_LT_INTERNAL(actual, limit, msg, file, line)                                   \
   do {                                                                                                   \
-    if (!((actual) < (limit)))                                                                           \
-      {                                                                                                  \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
-        std::ostringstream msgStream;                                                                    \
-        msgStream << msg;                                                                                \
-        std::ostringstream actualStream;                                                                 \
-        actualStream << actual;                                                                          \
-        std::ostringstream limitStream;                                                                  \
-        limitStream << limit;                                                                            \
-        ReportTestFailure (std::string (#actual) + " (actual) < " + std::string (#limit) + " (limit)",   \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-        if (!ContinueOnFailure ())                                                                       \
-          {                                                                                              \
-            return;                                                                                 \
-          }                                                                                              \
-      }                                                                                                  \
-  } while (false)
+      if (!((actual) < (limit)))                                                                           \
+        {                                                                                                  \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                            \
+          std::ostringstream msgStream;                                                                    \
+          msgStream << msg;                                                                                \
+          std::ostringstream actualStream;                                                                 \
+          actualStream << actual;                                                                          \
+          std::ostringstream limitStream;                                                                  \
+          limitStream << limit;                                                                            \
+          ReportTestFailure (std::string (# actual) + " (actual) < " + std::string (# limit) + " (limit)",   \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
+          if (!ContinueOnFailure ())                                                                       \
+            {                                                                                              \
+              return;                                                                                 \
+            }                                                                                              \
+        }                                                                                                  \
+    } while (false)
 
 /**
  * \brief Test that an actual value is less than a limit and report and abort
@@ -660,19 +660,19 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_EXPECT_MSG_LT_INTERNAL(actual, limit, msg, file, line)                                   \
   do {                                                                                                   \
-    if (!((actual) < (limit)))                                                                           \
-      {                                                                                                  \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
-        std::ostringstream msgStream;                                                                    \
-        msgStream << msg;                                                                                \
-        std::ostringstream actualStream;                                                                 \
-        actualStream << actual;                                                                          \
-        std::ostringstream limitStream;                                                                  \
-        limitStream << limit;                                                                            \
-        ReportTestFailure (std::string (#actual) + " (actual) < " + std::string (#limit) + " (limit)",   \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-      }                                                                                                  \
-  } while (false)
+      if (!((actual) < (limit)))                                                                           \
+        {                                                                                                  \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                            \
+          std::ostringstream msgStream;                                                                    \
+          msgStream << msg;                                                                                \
+          std::ostringstream actualStream;                                                                 \
+          actualStream << actual;                                                                          \
+          std::ostringstream limitStream;                                                                  \
+          limitStream << limit;                                                                            \
+          ReportTestFailure (std::string (# actual) + " (actual) < " + std::string (# limit) + " (limit)",   \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
+        }                                                                                                  \
+    } while (false)
 
 /**
  * \brief Test that an actual value is less than a limit and report if not.
@@ -700,23 +700,23 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_GT_INTERNAL(actual, limit, msg, file, line)                                   \
   do {                                                                                                   \
-    if (!((actual) > (limit)))                                                                           \
-      {                                                                                                  \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
-        std::ostringstream msgStream;                                                                    \
-        msgStream << msg;                                                                                \
-        std::ostringstream actualStream;                                                                 \
-        actualStream << actual;                                                                          \
-        std::ostringstream limitStream;                                                                  \
-        limitStream << limit;                                                                            \
-        ReportTestFailure (std::string (#actual) + " (actual) > " + std::string (#limit) + " (limit)",   \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-        if (!ContinueOnFailure ())                                                                       \
-          {                                                                                              \
-            return;                                                                                 \
-          }                                                                                              \
-      }                                                                                                  \
-  } while (false)
+      if (!((actual) > (limit)))                                                                           \
+        {                                                                                                  \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                            \
+          std::ostringstream msgStream;                                                                    \
+          msgStream << msg;                                                                                \
+          std::ostringstream actualStream;                                                                 \
+          actualStream << actual;                                                                          \
+          std::ostringstream limitStream;                                                                  \
+          limitStream << limit;                                                                            \
+          ReportTestFailure (std::string (# actual) + " (actual) > " + std::string (# limit) + " (limit)",   \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
+          if (!ContinueOnFailure ())                                                                       \
+            {                                                                                              \
+              return;                                                                                 \
+            }                                                                                              \
+        }                                                                                                  \
+    } while (false)
 
 /**
  * \brief Test that an actual value is greater than a limit and report and abort
@@ -744,19 +744,19 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_EXPECT_MSG_GT_INTERNAL(actual, limit, msg, file, line)                                   \
   do {                                                                                                   \
-    if (!((actual) > (limit)))                                                                           \
-      {                                                                                                  \
-        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
-        std::ostringstream msgStream;                                                                    \
-        msgStream << msg;                                                                                \
-        std::ostringstream actualStream;                                                                 \
-        actualStream << actual;                                                                          \
-        std::ostringstream limitStream;                                                                  \
-        limitStream << limit;                                                                            \
-        ReporTesttFailure (std::string (#actual) + " (actual) > " + std::string (#limit) + " (limit)",   \
-                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-      }                                                                                                  \
-  } while (false)
+      if (!((actual) > (limit)))                                                                           \
+        {                                                                                                  \
+          if (gBreakOnFailure) { *(int *)0 = 0;}                                                            \
+          std::ostringstream msgStream;                                                                    \
+          msgStream << msg;                                                                                \
+          std::ostringstream actualStream;                                                                 \
+          actualStream << actual;                                                                          \
+          std::ostringstream limitStream;                                                                  \
+          limitStream << limit;                                                                            \
+          ReporTesttFailure (std::string (# actual) + " (actual) > " + std::string (# limit) + " (limit)",   \
+                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
+        }                                                                                                  \
+    } while (false)
 
 /**
  * \brief Test that an actual value is greater than a limit and report if not.
@@ -795,7 +795,7 @@ namespace ns3 {
  * \param epsilon The second of double precision floating point numberss to compare
  * \returns Returns true if the doubles are equal to a precision defined by epsilon
  */
-  bool TestDoubleIsEqual (const double a, const double b, const double epsilon = std::numeric_limits<double>::epsilon ());
+bool TestDoubleIsEqual (const double a, const double b, const double epsilon = std::numeric_limits<double>::epsilon ());
 
 /**
  * \brief A single test case.
@@ -843,7 +843,7 @@ public:
   /**
    * \brief Get the name of this test case.
    */
-   std::string GetName (void);
+  std::string GetName (void);
 
   /**
    * \brief Set the base directory of the ns-3 distribution.
@@ -962,7 +962,7 @@ public:
    * report the details.
    */
   void ReportTestFailure (std::string cond, std::string actual, std::string limit, std::string message, 
-    std::string file, int32_t line);
+                          std::string file, int32_t line);
 
   /**
    * \brief Issue a test report than the test case has completed its run.
@@ -993,7 +993,7 @@ protected:
    * \brief Implementation of reporting method for failure of the test case.
    */
   virtual void DoReportTestFailure (std::string cond, std::string actual, std::string limit, std::string message, 
-    std::string file, int32_t line);
+                                    std::string file, int32_t line);
 
   /**
    * \internal
@@ -1133,7 +1133,7 @@ public:
   /**
    * \brief Get the name of this test suite.
    */
-   std::string GetName (void);
+  std::string GetName (void);
 
   /**
    * \brief Set the base directory of the ns-3 distribution.
@@ -1275,7 +1275,7 @@ private:
   std::ofstream *m_ofs;
   bool m_error;
   TestType m_type;
-  
+
   typedef std::vector<TestCase *> TestCaseVector_t;
   TestCaseVector_t m_tests;
 };

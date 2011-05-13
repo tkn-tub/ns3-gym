@@ -67,7 +67,7 @@
       if (!(condition))                                         \
         {                                                       \
           std::cerr << "assert failed. cond=\"" <<              \
-            #condition << "\", ";                               \
+          # condition << "\", ";                               \
           NS_FATAL_ERROR_NO_MSG();                              \
         }                                                       \
     }                                                           \
@@ -89,7 +89,7 @@
       if (!(condition))                               \
         {                                             \
           std::cerr << "assert failed. cond=\"" <<    \
-            #condition << "\", ";                     \
+          # condition << "\", ";                     \
           NS_FATAL_ERROR (message);                   \
         }                                             \
     }                                                 \

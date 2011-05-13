@@ -153,15 +153,15 @@ public:
    * The unit to use to interpret a number representing time
    */
   enum Unit
-    {
-      S  = 0,
-      MS = 1,
-      US = 2,
-      NS = 3,
-      PS = 4,
-      FS = 5,
-      LAST = 6
-    };
+  {
+    S  = 0,
+    MS = 1,
+    US = 2,
+    NS = 3,
+    PS = 4,
+    FS = 5,
+    LAST = 6
+  };
 
   inline Time &operator = (const Time &o)
   {
@@ -252,7 +252,7 @@ public:
 
   inline int Compare (const Time &o) const
   {
-    return (m_data < o.m_data)?-1:(m_data == o.m_data)?0:1;
+    return (m_data < o.m_data) ? -1 : (m_data == o.m_data) ? 0 : 1;
   }
 
   /**
@@ -544,7 +544,7 @@ inline Time &operator -= (Time &lhs, const Time &rhs)
  */
 inline Time Abs (const Time &time)
 {
-  return Time ((time.m_data < 0)?-time.m_data:time.m_data);
+  return Time ((time.m_data < 0) ? -time.m_data : time.m_data);
 }
 /**
  * \anchor ns3-Time-Max
@@ -555,7 +555,7 @@ inline Time Abs (const Time &time)
  */
 inline Time Max (const Time &ta, const Time &tb)
 {
-  return Time ((ta.m_data < tb.m_data)?tb:ta);
+  return Time ((ta.m_data < tb.m_data) ? tb : ta);
 }
 /**
  * \anchor ns3-Time-Min
@@ -566,7 +566,7 @@ inline Time Max (const Time &ta, const Time &tb)
  */
 inline Time Min (const Time &ta, const Time &tb)
 {
-  return Time ((ta.m_data > tb.m_data)?tb:ta);
+  return Time ((ta.m_data > tb.m_data) ? tb : ta);
 }
 
 

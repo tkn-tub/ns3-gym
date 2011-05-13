@@ -115,7 +115,7 @@ public:
   UnsafeAttributeList (const UnsafeAttributeList &o);
   UnsafeAttributeList &operator = (const UnsafeAttributeList &o);
   ~UnsafeAttributeList ();
-  
+
   void Set (std::string name, const AttributeValue &param);
 
   AttributeList GetSafe (std::string name) const;

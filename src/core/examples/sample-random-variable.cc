@@ -31,7 +31,7 @@ using namespace std;
  * pseudo-random number generator, this program should always output the
  * same number.  Likewise, ns-3 simulations using random variables will
  * behave deterministically unless the user changes the RunNumber or the
- * Seed.  
+ * Seed.
  * 
  * There are three primary mechanisms to change the seed or run numbers
  * from their default integer value of 1
@@ -59,5 +59,5 @@ int main (int argc, char *argv[])
   UniformVariable uv;
 
   cout << uv.GetValue () << endl;
-  
+
 }

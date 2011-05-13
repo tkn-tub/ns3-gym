@@ -23,24 +23,25 @@
 namespace ns3 {
 
 ObjectFactory::ObjectFactory ()
-{}
+{
+}
 
-void 
+void
 ObjectFactory::SetTypeId (TypeId tid)
 {
   m_tid = tid;
 }
-void 
+void
 ObjectFactory::SetTypeId (std::string tid)
 {
   m_tid = TypeId::LookupByName (tid);
 }
-void 
+void
 ObjectFactory::SetTypeId (const char *tid)
 {
   m_tid = TypeId::LookupByName (tid);
 }
-void 
+void
 ObjectFactory::Set (std::string name, const AttributeValue &value)
 {
   if (name == "")

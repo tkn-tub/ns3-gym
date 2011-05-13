@@ -903,20 +903,20 @@ AlternateFindTestCase::DoRun (void)
 
   foundTestObject = Names::Find<TestObject> ("Test Object");
   NS_TEST_ASSERT_MSG_EQ (foundTestObject, testObject, 
-               "Could not find a previously named TestObject via GetObject");
+                         "Could not find a previously named TestObject via GetObject");
 
   foundAlternateTestObject = Names::Find<AlternateTestObject> ("Alternate Test Object");
   NS_TEST_ASSERT_MSG_EQ (foundAlternateTestObject, alternateTestObject, 
-               "Could not find a previously named AlternateTestObject via GetObject");
+                         "Could not find a previously named AlternateTestObject via GetObject");
 
 
   foundAlternateTestObject = Names::Find<AlternateTestObject> ("Test Object");
   NS_TEST_ASSERT_MSG_EQ (foundAlternateTestObject, 0, 
-               "Unexpectedly able to GetObject<AlternateTestObject> on a TestObject");
+                         "Unexpectedly able to GetObject<AlternateTestObject> on a TestObject");
 
   foundTestObject = Names::Find<TestObject> ("Alternate Test Object");
   NS_TEST_ASSERT_MSG_EQ (foundTestObject, 0, 
-               "Unexpectedly able to GetObject<TestObject> on an AlternateTestObject");
+                         "Unexpectedly able to GetObject<TestObject> on an AlternateTestObject");
 }
 
 class NamesTestSuite : public TestSuite

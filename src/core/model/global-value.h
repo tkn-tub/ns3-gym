@@ -95,7 +95,7 @@ public:
    * This method cannot fail. It will crash if the input is not valid.
    */
   static void Bind (std::string name, const AttributeValue &value);
-  
+
   /**
    * \param name the name of the global value
    * \param value the value to set in the requested global value.
@@ -136,7 +136,7 @@ public:
    * 
    */
   static void GetValueByName (std::string name, AttributeValue &value);
-  
+
 
 private:
   friend class GlobalValueTestCase;

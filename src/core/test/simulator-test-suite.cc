@@ -53,13 +53,14 @@ SimulatorEventsTestCase::SimulatorEventsTestCase (ObjectFactory schedulerFactory
   : TestCase ("Check that basic event handling is working with " + 
               schedulerFactory.GetTypeId ().GetName ()),
     m_schedulerFactory (schedulerFactory)
-{}
+{
+}
 uint64_t
 SimulatorEventsTestCase::NowUs (void)
 {
   uint64_t ns = Now ().GetNanoSeconds ();
   return ns / 1000;
-}  
+}
 
 void
 SimulatorEventsTestCase::A (int a)
@@ -249,7 +250,8 @@ static void cber5 (const int &, const int &, const int &, const int &, const int
 
 SimulatorTemplateTestCase::SimulatorTemplateTestCase ()
   : TestCase ("Check that all templates are instanciated correctly. This is a compilation test, it cannot fail at runtime.")
-{}
+{
+}
 void
 SimulatorTemplateTestCase::DoRun (void)
 {

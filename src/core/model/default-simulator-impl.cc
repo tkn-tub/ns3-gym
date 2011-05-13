@@ -42,7 +42,7 @@ DefaultSimulatorImpl::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::DefaultSimulatorImpl")
     .SetParent<SimulatorImpl> ()
     .AddConstructor<DefaultSimulatorImpl> ()
-    ;
+  ;
   return tid;
 }
 
@@ -62,9 +62,10 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
 }
 
 DefaultSimulatorImpl::~DefaultSimulatorImpl ()
-{}
+{
+}
 
-void 
+void
 DefaultSimulatorImpl::DoDispose (void)
 {
   while (!m_events->IsEmpty ())
@@ -272,7 +273,7 @@ DefaultSimulatorImpl::Remove (const EventId &id)
               m_destroyEvents.erase (i);
               break;
             }
-         }
+        }
       return;
     }
   if (IsExpired (id))
@@ -318,7 +319,7 @@ DefaultSimulatorImpl::IsExpired (const EventId &ev) const
             {
               return false;
             }
-         }
+        }
       return true;
     }
   if (ev.PeekEventImpl () == 0 ||

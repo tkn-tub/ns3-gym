@@ -64,7 +64,7 @@ public:
   void Unlock ();
 	
 private:
-  SystemMutexPrivate * m_priv;    
+  SystemMutexPrivate * m_priv;
 };
 
 /**
