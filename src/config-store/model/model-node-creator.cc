@@ -116,8 +116,8 @@ ModelCreator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t i
   node->index = index;
   gtk_tree_store_append (m_treestore, current, parent);
   gtk_tree_store_set (m_treestore, current,
-              COL_NODE, node,
-                     -1);
+                      COL_NODE, node,
+                      -1);
   m_iters.push_back (current);
 }
 void 
@@ -125,6 +125,6 @@ ModelCreator::DoEndVisitArrayItem (void)
 {
   GtkTreeIter *iter = m_iters.back ();
   g_free (iter);
-  m_iters.pop_back ();  
+  m_iters.pop_back ();
 }
-}//end namespace ns3
+} //end namespace ns3
