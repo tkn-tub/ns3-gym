@@ -39,10 +39,12 @@ public:
 
 EventGarbageCollectorTestCase::EventGarbageCollectorTestCase ()
   : TestCase ("EventGarbageCollector"), m_counter (0), m_events (0)
-{}
+{
+}
 
 EventGarbageCollectorTestCase::~EventGarbageCollectorTestCase ()
-{}
+{
+}
 
 void
 EventGarbageCollectorTestCase::EventGarbageCollectorCallback ()
@@ -63,9 +65,9 @@ void EventGarbageCollectorTestCase::DoRun (void)
   for (int n = 0; n < 100; n++)
     {
       m_events->Track (Simulator::Schedule
-                       (Simulator::Now (),
-                        &EventGarbageCollectorTestCase::EventGarbageCollectorCallback,
-                        this));
+                             (Simulator::Now (),
+                             &EventGarbageCollectorTestCase::EventGarbageCollectorCallback,
+                             this));
     }
   Simulator::Run ();
   NS_TEST_EXPECT_MSG_EQ (m_events, 0, "");
@@ -82,6 +84,6 @@ public:
     AddTestCase (new EventGarbageCollectorTestCase ());
   }
 } g_eventGarbageCollectorTests;
-    
+
 }
 

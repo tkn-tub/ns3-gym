@@ -28,7 +28,8 @@ namespace ns3 {
 
 EventGarbageCollector::EventGarbageCollector () :
   m_nextCleanupSize (CLEANUP_CHUNK_MIN_SIZE)
-{}
+{
+}
 
 void
 EventGarbageCollector::Track (EventId event)
@@ -41,7 +42,7 @@ EventGarbageCollector::Track (EventId event)
 void
 EventGarbageCollector::Grow ()
 {
-  m_nextCleanupSize += (m_nextCleanupSize < CLEANUP_CHUNK_MAX_SIZE?
+  m_nextCleanupSize += (m_nextCleanupSize < CLEANUP_CHUNK_MAX_SIZE ?
                         m_nextCleanupSize : CLEANUP_CHUNK_MAX_SIZE);
 }
 

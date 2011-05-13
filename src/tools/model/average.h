@@ -75,10 +75,10 @@ public:
   /// Standard deviation
   double   Stddev  () const { return sqrt (Var ());}
   //\}
-  
+
   /** 
    * \name Error of the mean estimates
-   *  
+   *
    * Note that estimates are valid for 
    *   - uncorrelated measurements, 
    *   - normal distribution and
