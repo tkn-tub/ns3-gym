@@ -27,15 +27,15 @@
 /********** Willingness **********/
 
 /// Willingness for forwarding packets from other nodes: never.
-#define OLSR_WILL_NEVER		0
+#define OLSR_WILL_NEVER         0
 /// Willingness for forwarding packets from other nodes: low.
-#define OLSR_WILL_LOW		1
+#define OLSR_WILL_LOW           1
 /// Willingness for forwarding packets from other nodes: medium.
-#define OLSR_WILL_DEFAULT	3
+#define OLSR_WILL_DEFAULT       3
 /// Willingness for forwarding packets from other nodes: high.
-#define OLSR_WILL_HIGH		6
+#define OLSR_WILL_HIGH          6
 /// Willingness for forwarding packets from other nodes: always.
-#define OLSR_WILL_ALWAYS	7
+#define OLSR_WILL_ALWAYS        7
 
 namespace ns3 {
 namespace olsr {
@@ -87,9 +87,9 @@ OlsrMprTestCase::DoRun ()
   tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
   protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  
+
   protocol->MprComputation ();
-  NS_TEST_EXPECT_MSG_EQ (state.GetMprSet ().size (), 1 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ (state.GetMprSet ().size (), 1, "An only address must be chosen.");
   /*
    *  1 -- 2 -- 5 
    *  |    |
@@ -103,7 +103,7 @@ OlsrMprTestCase::DoRun ()
 
   protocol->MprComputation ();
   MprSet mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 1 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 1, "An only address must be chosen.");
   NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.2") != mpr.end ()), true, "Node 1 must select node 2 as MPR");
   /*
    *  1 -- 2 -- 5 
@@ -120,7 +120,7 @@ OlsrMprTestCase::DoRun ()
 
   protocol->MprComputation ();
   mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 2 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 2, "An only address must be chosen.");
   NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.2") != mpr.end ()), true, "Node 1 must select node 2 as MPR");
   NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.3") != mpr.end ()), true, "Node 1 must select node 3 as MPR");
   /*
@@ -140,7 +140,7 @@ OlsrMprTestCase::DoRun ()
 
   protocol->MprComputation ();
   mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3, "An only address must be chosen.");
   NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.7") != mpr.end ()), true, "Node 1 must select node 7 as MPR");
   /*
    *                7 <- WILL_ALWAYS
@@ -163,7 +163,7 @@ OlsrMprTestCase::DoRun ()
 
   protocol->MprComputation ();
   mpr = state.GetMprSet ();
-  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3, "An only address must be chosen.");
   NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.9") == mpr.end ()), true, "Node 1 must NOT select node 8 as MPR");
 }
 
@@ -179,6 +179,7 @@ OlsrProtocolTestSuite::OlsrProtocolTestSuite()
   AddTestCase (new OlsrMprTestCase ());
 }
 
-}} // namespace olsr, ns3
+}
+}  // namespace olsr, ns3
 
 

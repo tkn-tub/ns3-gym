@@ -51,14 +51,14 @@ namespace olsr {
 /// An %OLSR's routing table entry.
 struct RoutingTableEntry
 {
-  Ipv4Address destAddr;	///< Address of the destination node.
-  Ipv4Address nextAddr;	///< Address of the next hop.
+  Ipv4Address destAddr; ///< Address of the destination node.
+  Ipv4Address nextAddr; ///< Address of the next hop.
   uint32_t interface; ///< Interface index
   uint32_t distance; ///< Distance in hops to the destination.
 
   RoutingTableEntry () : // default values
-    destAddr (), nextAddr (),
-    interface (0), distance (0) {};
+                         destAddr (), nextAddr (),
+                         interface (0), distance (0) {};
 };
 
 class RoutingProtocol;
@@ -105,9 +105,9 @@ private:
 
 public:
   std::set<uint32_t> GetInterfaceExclusions () const
-    {
-      return m_interfaceExclusions;
-    }
+  {
+    return m_interfaceExclusions;
+  }
   void SetInterfaceExclusions (std::set<uint32_t> exceptions);
 
   /// Inject Association to be sent in HNA message
@@ -133,7 +133,7 @@ private:
   uint16_t m_messageSequenceNumber;
   /// Advertised Neighbor Set sequence number.
   uint16_t m_ansn;
-  
+
   /// HELLO messages' emission interval.
   Time m_helloInterval;
   /// TC messages' emission interval.
@@ -299,6 +299,7 @@ private:
 
 };
 
-}} // namespace ns3
+}
+}  // namespace ns3
 
 #endif

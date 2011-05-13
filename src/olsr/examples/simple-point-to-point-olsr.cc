@@ -67,7 +67,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
-  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
+  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);
 
   // Allow the user to override any of the defaults and the above
   // DefaultValue::Bind ()s at run-time, via command-line arguments
@@ -109,8 +109,8 @@ main (int argc, char *argv[])
   p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer nd32 = p2p.Install (n32);
   NetDeviceContainer nd34 = p2p.Install (n34);
-  
-  // Later, we add IP addresses.  
+
+  // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
@@ -118,7 +118,7 @@ main (int argc, char *argv[])
 
   ipv4.SetBase ("10.1.2.0", "255.255.255.0");
   Ipv4InterfaceContainer i12 = ipv4.Assign (nd12);
-  
+
   ipv4.SetBase ("10.1.3.0", "255.255.255.0");
   Ipv4InterfaceContainer i32 = ipv4.Assign (nd32);
 

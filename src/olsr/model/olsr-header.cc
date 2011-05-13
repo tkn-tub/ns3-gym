@@ -46,7 +46,7 @@ uint8_t
 SecondsToEmf (double seconds)
 {
   int a, b = 0;
-  
+
   // find the largest integer 'b' such that: T/C >= 2^b
   for (b = 0; (seconds/OLSR_C) >= (1 << b); ++b)
     ;
@@ -72,7 +72,7 @@ SecondsToEmf (double seconds)
   NS_ASSERT (b >= 0 && b < 16);
 
   // the field will be a byte holding the value a*16+b
-  return (uint8_t) ((a << 4) | b);
+  return (uint8_t)((a << 4) | b);
 }
 
 ///
@@ -97,10 +97,12 @@ EmfToSeconds (uint8_t olsrFormat)
 NS_OBJECT_ENSURE_REGISTERED (PacketHeader);
 
 PacketHeader::PacketHeader ()
-{}
+{
+}
 
 PacketHeader::~PacketHeader ()
-{}
+{
+}
 
 TypeId
 PacketHeader::GetTypeId (void)
@@ -108,7 +110,7 @@ PacketHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::olsr::PacketHeader")
     .SetParent<Header> ()
     .AddConstructor<PacketHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId
@@ -153,10 +155,12 @@ NS_OBJECT_ENSURE_REGISTERED (MessageHeader);
 
 MessageHeader::MessageHeader ()
   : m_messageType (MessageHeader::MessageType (0))
-{}
+{
+}
 
 MessageHeader::~MessageHeader ()
-{}
+{
+}
 
 TypeId
 MessageHeader::GetTypeId (void)
@@ -164,7 +168,7 @@ MessageHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::olsr::MessageHeader")
     .SetParent<Header> ()
     .AddConstructor<MessageHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId
@@ -304,12 +308,12 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 
   this->interfaceAddresses.clear ();
   NS_ASSERT (messageSize % IPV4_ADDRESS_SIZE == 0);
-  
+
   int numAddresses = messageSize / IPV4_ADDRESS_SIZE;
   this->interfaceAddresses.erase (this->interfaceAddresses.begin(),
                                   this->interfaceAddresses.end ());
   for (int n = 0; n < numAddresses; ++n)
-      this->interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+    this->interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
   return GetSerializedSize ();
 }
 
@@ -345,7 +349,7 @@ MessageHeader::Hello::Serialize (Buffer::Iterator start) const
   i.WriteU16 (0); // Reserved
   i.WriteU8 (this->hTime);
   i.WriteU8 (this->willingness);
-  
+
   for (std::vector<LinkMessage>::const_iterator iter = this->linkMessages.begin ();
        iter != this->linkMessages.end (); iter++)
     {
@@ -359,7 +363,7 @@ MessageHeader::Hello::Serialize (Buffer::Iterator start) const
       // next "Link Code" field (or - if there are no more link types
       // - the end of the message).
       i.WriteHtonU16 (4 + lm.neighborInterfaceAddresses.size () * IPV4_ADDRESS_SIZE);
-      
+
       for (std::vector<Ipv4Address>::const_iterator neigh_iter = lm.neighborInterfaceAddresses.begin ();
            neigh_iter != lm.neighborInterfaceAddresses.end (); neigh_iter++)
         {
@@ -376,13 +380,13 @@ MessageHeader::Hello::Deserialize (Buffer::Iterator start, uint32_t messageSize)
   NS_ASSERT (messageSize >= 4);
 
   this->linkMessages.clear ();
-  
+
   uint16_t helloSizeLeft = messageSize;
-  
+
   i.ReadNtohU16 (); // Reserved
   this->hTime = i.ReadU8 ();
   this->willingness = i.ReadU8 ();
-  
+
   helloSizeLeft -= 4;
 
   while (helloSizeLeft)
@@ -445,7 +449,7 @@ MessageHeader::Tc::Deserialize (Buffer::Iterator start, uint32_t messageSize)
 
   this->ansn = i.ReadNtohU16 ();
   i.ReadNtohU16 (); // Reserved
-  
+
   NS_ASSERT ((messageSize - 4) % IPV4_ADDRESS_SIZE == 0);
   int numAddresses = (messageSize - 4) / IPV4_ADDRESS_SIZE;
   this->neighborAddresses.clear ();
@@ -494,10 +498,11 @@ MessageHeader::Hna::Deserialize (Buffer::Iterator start, uint32_t messageSize)
     {
       Ipv4Address address (i.ReadNtohU32 ());
       Ipv4Mask mask (i.ReadNtohU32 ());
-      this->associations.push_back ((Association) {address, mask});
+      this->associations.push_back ((Association) { address, mask});
     }
   return messageSize;
 }
 
-}} // namespace olsr, ns3
+}
+}  // namespace olsr, ns3
 

@@ -81,7 +81,7 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
     {
       socket->Send (Create<Packet> (pktSize));
       Simulator::Schedule (pktInterval, &GenerateTraffic, 
-                                      socket, pktSize,pktCount-1, pktInterval);
+                           socket, pktSize,pktCount-1, pktInterval);
     }
   else
     {
@@ -111,7 +111,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
   cmd.AddValue ("assocMethod1", "Use SetRoutingTableAssociation () method", assocMethod1);
   cmd.AddValue ("assocMethod2", "Use AddHostNetworkAssociation () method", assocMethod2);
-  
+
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);
@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue(phyMode),
-                                   "ControlMode",StringValue(phyMode));
+                                "ControlMode",StringValue(phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, olsrNodes);
@@ -214,7 +214,7 @@ int main (int argc, char *argv[])
 
   // Obtain olsr::RoutingProtocol instance of gateway node
   // (namely, node B) and add the required association
-  Ptr<Ipv4> stack = olsrNodes.Get (1) -> GetObject<Ipv4> ();
+  Ptr<Ipv4> stack = olsrNodes.Get (1)->GetObject<Ipv4> ();
   Ptr<Ipv4RoutingProtocol> rp_Gw = (stack->GetRoutingProtocol ());
   Ptr<Ipv4ListRouting> lrp_Gw = DynamicCast<Ipv4ListRouting> (rp_Gw);
 

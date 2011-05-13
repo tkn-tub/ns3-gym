@@ -44,7 +44,7 @@
 /// Set to true to rewrite reference traces, leave false to run regression tests
 namespace 
 {
-  const bool WRITE_VECTORS = false;
+const bool WRITE_VECTORS = false;
 }
 
 
@@ -79,14 +79,14 @@ Bug780Test::DoRun ()
 {
   SeedManager::SetSeed(123);
   CreateNodes ();
-  
+
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS)
     {
-      CheckResults ();  
+      CheckResults ();
     }
 }
 
@@ -116,8 +116,8 @@ Bug780Test::CreateNodes (void)
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-      "DataMode",StringValue(phyMode),
-      "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue(phyMode),
+                                "ControlMode",StringValue(phyMode));
 
   //set the tx range to 300
   wifiPhy.Set ("TxPowerStart",DoubleValue (-0.1615));
@@ -143,7 +143,7 @@ Bug780Test::CreateNodes (void)
   Ptr<ListPositionAllocator> positionAlloc_Adhoc =
     CreateObject<ListPositionAllocator>();
   double distance = 0.0;
-  for (uint32_t i = 0;i <= adhocNodes.GetN();i++)
+  for (uint32_t i = 0; i <= adhocNodes.GetN(); i++)
     {
       positionAlloc_Adhoc->Add(Vector(distance,0.0,0.0));
       distance += 250.0;
@@ -156,7 +156,7 @@ Bug780Test::CreateNodes (void)
   //At 50 sec node 3 moves towards node 2
   Simulator::Schedule (Seconds (50.0), &SetVelocity, adhocNodes.Get(2),Vector(-5.0,0.0,0.0));
   //AT 100 sec set node 3 with zero velocity
-  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get(2) ,Vector(0.0,0.0,0.0));
+  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get(2),Vector(0.0,0.0,0.0));
   //Move node2 away from node 3
   Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get(1),Vector(5.0,0.0,0.0));
   //AT 150 sec set node 2 with zero velocity
@@ -185,11 +185,11 @@ Bug780Test::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-0.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-0.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

@@ -100,7 +100,7 @@ OlsrState::PrintMprSelectorSet () const
   os << "]";
   return os.str ();
 }
-  
+
 
 /********** Neighbor Set Manipulation **********/
 
@@ -198,7 +198,7 @@ OlsrState::FindTwoHopNeighborTuple (Ipv4Address const &neighborMainAddr,
         {
           return &(*it);
         }
-  }
+    }
   return NULL;
 }
 
@@ -493,14 +493,14 @@ AssociationTuple*
 OlsrState::FindAssociationTuple (const Ipv4Address &gatewayAddr, const Ipv4Address &networkAddr, const Ipv4Mask &netmask)
 {
   for (AssociationSet::iterator it = m_associationSet.begin ();
-	it != m_associationSet.end (); it++)
+       it != m_associationSet.end (); it++)
     {
       if (it->gatewayAddr == gatewayAddr and it->networkAddr == networkAddr and it->netmask == netmask)
         {
           return &(*it);
         }
     }
-   return NULL;
+  return NULL;
 }
 
 void
