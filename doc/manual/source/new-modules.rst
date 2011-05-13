@@ -87,7 +87,8 @@ of source files.  Note that the second argument for the function
 create_ns3_module() is the list of modules that the module being created
 depends on: ::
 
-    module = bld.create_ns3_module('spectrum', ['internet', 'propagation', 'applications'])
+    module = bld.create_ns3_module('spectrum', ['internet', 'propagation',
+        'applications'])
 
     module.source = [
         'model/spectrum-model.cc',
@@ -118,7 +119,8 @@ in  ::
   src/spectrum/wscript
 
 with the following function call, module name, and list of header
-files: ::
+files.  Note that the argument for the function new_task_gen() tells
+waf to install this module's headers with the other |ns3| headers: ::
 
     headers = bld.new_task_gen('ns3header')
 
@@ -174,12 +176,14 @@ As an example, the examples for the core module are specified in ::
   src/core/examples/wscript
 
 The core module's C++ examples are specified using the following
-function call and source file name.  Note that the second argument for
-the function create_ns3_program() is the list of modules that the
+function calls and source file names.  Note that the second argument
+for the function create_ns3_program() is the list of modules that the
 program being created depends on: ::
 
-    obj = bld.create_ns3_program('sample-simulator', ['core'])
+    obj = bld.create_ns3_program('main-callback', ['core'])
+    obj.source = 'main-callback.cc'
 
+    obj = bld.create_ns3_program('sample-simulator', ['core'])
     obj.source = 'sample-simulator.cc'
 
 The core module's Python examples are specified using the following
@@ -231,7 +235,74 @@ using the following two lists of C++ and Python examples: ::
       ("sample-simulator.py", "True"),
   ]
 
-Step 8 - Build and test your new module
+Each tuple in the C++ list of examples to run contains ::
+
+    (example_name, do_run, do_valgrind_run)
+
+where example_name is the executable to be run, do_run is a
+condition under which to run the example, and do_valgrind_run is
+a condition under which to run the example under valgrind.  This
+is needed because NSC causes illegal instruction crashes with
+some tests when they are run under valgrind.
+
+Note that the two conditions are Python statements that
+can depend on waf configuration variables.  For example, ::
+
+    ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
+
+Each tuple in the Python list of examples to run contains ::
+
+    (example_name, do_run)
+
+where example_name is the Python script to be run and
+do_run is a condition under which to run the example.
+
+Note that the condition is a Python statement that can
+depend on waf configuration variables.  For example, ::
+
+    ("realtime-udp-echo.py", "ENABLE_REAL_TIME == False"),
+
+
+Step 8 - Add your module to the list on |ns3| modules
+****************************************************
+
+Your new module must be added to the current list of |ns3| modules by modifying the following wscript file with your text editor: ::
+
+  src/wscript
+
+In that file, you will find the following list of modules ::
+
+  all_modules = (
+      'core',
+      'network',
+      'config-store',
+      'internet',
+          .
+          .
+          .
+      'point-to-point-layout',
+      'csma-layout',
+      'template',
+      )
+
+Add your new module's name to the list like this ::
+
+  all_modules = (
+      'core',
+      'network',
+      'config-store',
+      'internet',
+          .
+          .
+          .
+      'point-to-point-layout',
+      'csma-layout',
+      'template',
+      'new-module',
+      )
+
+
+Step 9 - Build and test your new module
 ***************************************
 
 You can now build and test your module as normal: ::
