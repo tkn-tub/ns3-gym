@@ -1043,7 +1043,6 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
       NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
     }
   Ipv4Address addrLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetLocal ();
-  Ipv4Mask maskLocal = ipv4Local->GetAddress (interfaceLocal, 0).GetMask ();
   NS_LOG_LOGIC ("Working with local address " << addrLocal);
   uint16_t metricLocal = ipv4Local->GetMetric (interfaceLocal);
 
