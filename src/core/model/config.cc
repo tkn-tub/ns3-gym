@@ -288,9 +288,7 @@ void
 Resolver::DoResolve (std::string path, Ptr<Object> root)
 {
   NS_LOG_FUNCTION (path << root);
-  std::string::size_type tmp;
-  tmp = path.find ("/");
-  NS_ASSERT (tmp == 0);
+  NS_ASSERT ((path.find ("/")) == 0);
   std::string::size_type next = path.find ("/", 1);
 
   if (next == std::string::npos)
@@ -424,9 +422,7 @@ void
 Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
 {
   NS_ASSERT (path != "");
-  std::string::size_type tmp;
-  tmp = path.find ("/");
-  NS_ASSERT (tmp == 0);
+  NS_ASSERT ((path.find ("/")) == 0);
   std::string::size_type next = path.find ("/", 1);
   if (next == std::string::npos)
     {
