@@ -492,6 +492,9 @@ InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4,
       result = ipv4L3Protocol->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv4L3ProtocolRxTxSink));
       NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapIpv4Internal():  "
                      "Unable to connect ipv4L3Protocol \"Rx\"");
+      // cast result to void, to suppress ‘result’ set but not used compiler-warning
+      // for optimized builds
+      (void) result;
     }
 
   g_interfaceFileMapIpv4[std::make_pair (ipv4, interface)] = file;
@@ -584,6 +587,9 @@ InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6,
       result = ipv6L3Protocol->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv6L3ProtocolRxTxSink));
       NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapIpv6Internal():  "
                      "Unable to connect ipv6L3Protocol \"Rx\"");
+      // cast found to void, to suppress ‘result’ set but not used compiler-warning
+      // for optimized builds
+      (void) result;
     }
 
   g_interfaceFileMapIpv6[std::make_pair (ipv6, interface)] = file;
