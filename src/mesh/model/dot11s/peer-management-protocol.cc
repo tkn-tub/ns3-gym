@@ -385,6 +385,9 @@ PeerManagementProtocol::DoShiftBeacon (uint32_t interface)
   NS_ASSERT (iface != m_peerLinks.end ());
   PeerManagementProtocolMacMap::const_iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end ());
+  // cast plugin to void, to suppress 'plugin' set but not used, compiler warning
+  // in optimized builds
+  (void) plugin;
   std::map<uint32_t, Time>::const_iterator lastBeacon = m_lastBeacon.find (interface);
   std::map<uint32_t, Time>::const_iterator beaconInterval = m_beaconInterval.find (interface);
   if ((lastBeacon == m_lastBeacon.end ()) || (beaconInterval == m_beaconInterval.end ()))
