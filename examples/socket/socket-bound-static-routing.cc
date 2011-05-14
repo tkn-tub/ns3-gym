@@ -193,8 +193,7 @@ srcSocketRecv (Ptr<Socket> socket)
   Ptr<Packet> packet = socket->RecvFrom (from);
   packet->RemoveAllPacketTags ();
   packet->RemoveAllByteTags ();
-  InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-  NS_LOG_INFO ("Source Received " << packet->GetSize () << " bytes from " << address.GetIpv4());
+  NS_LOG_INFO ("Source Received " << packet->GetSize () << " bytes from " << InetSocketAddress::ConvertFrom (from).GetIpv4());
   if (socket->GetBoundNetDevice ())
     {
       NS_LOG_INFO ("Socket was bound");
