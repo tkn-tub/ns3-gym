@@ -131,8 +131,6 @@ main (int argc, char *argv[])
   staticRoutingDstRtr->AddHostRouteTo (Ipv4Address ("10.1.1.1"), Ipv4Address ("10.10.2.1"), 2);
   staticRoutingRtr2->AddHostRouteTo (Ipv4Address ("10.1.1.1"), Ipv4Address ("10.1.2.1"), 1);
 
-  Ipv4InterfaceAddress ifInAddrSrc=ipv4Src->GetAddress (1,0);
-
   // There are no apps that can utilize the Socket Option so doing the work directly..
   // Taken from tcp-large-transfer example
 
