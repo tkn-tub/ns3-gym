@@ -3,12 +3,12 @@
 ns-3 Model Library
 ==================
 
-This is the *ns-3 manual*. Primary documentation for the ns-3 project is 
-available in four forms:
+This is the *ns-3 Model Library* documentation. Primary documentation for the ns-3 project is 
+available in five forms:
 
 * `ns-3 Doxygen <http://www.nsnam.org/doxygen/index.html>`_: Documentation of the public APIs of the simulator
 * `Tutorial <http://www.nsnam.org/tutorials.html>`_
-* `Developers Manual <http://www.nsnam.org/tutorials.html>`_
+* `Manual <http://www.nsnam.org/tutorials.html>`_
 * `Model Library <http://www.nsnam.org/tutorials.html>`_: *(this document)*
 * `ns-3 wiki <http://www.nsnam.org/wiki/index.php/Main_Page>`_ 
 
