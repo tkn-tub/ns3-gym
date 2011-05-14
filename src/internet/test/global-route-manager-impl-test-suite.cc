@@ -53,12 +53,9 @@ GlobalRouteManagerImplTestCase::DoRun(void)
       candidate.Push (v);
     }
 
-  uint32_t lastDistance = 0;
-
   for (int i = 0; i < 100; ++i)
     {
       SPFVertex *v = candidate.Pop ();
-      lastDistance = v->GetDistanceFromRoot ();
       delete v;
       v = 0;
     }
