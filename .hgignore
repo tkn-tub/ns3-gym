@@ -17,6 +17,8 @@
 ^doc/manual/build
 ^doc/tutorial/build
 ^doc/testing/build
+^doc/models/build
+^doc/models/source-temp
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png

@@ -1,7 +1,7 @@
 .. include:: replace.txt
 
-Distributed
------------
+MPI for Distributed Simulation
+------------------------------
 
 Parallel and distributed discrete event simulation allows the execution of a
 single simulation program on multiple processors. By splitting up the simulation

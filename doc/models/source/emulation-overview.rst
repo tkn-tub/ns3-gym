@@ -69,3 +69,8 @@ channel.
 We expect the typical use case for this environment will be to analyze the
 behavior of native applications and protocol suites in the presence of large
 simulated |ns3| networks.
+
+.. toctree::
+
+  emu
+  tap

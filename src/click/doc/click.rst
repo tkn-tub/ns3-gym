@@ -1,5 +1,5 @@
 Click Modular Router Integration
-----------------------
+--------------------------------
 
 Click is a software architecture for building configurable routers.
 By using different combinations of packet processing units called elements,
