@@ -164,10 +164,9 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         }
       if (InetSocketAddress::IsMatchingType (from))
         {
-          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           m_totalRx += packet->GetSize();
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-                       address.GetIpv4() << " [" << address << "]" 
+                       address.GetIpv4() << " [" << InetSocketAddress::ConvertFrom (from) << "]" 
                                    << " total Rx " << m_totalRx);
         }
       m_rxTrace (packet, from);

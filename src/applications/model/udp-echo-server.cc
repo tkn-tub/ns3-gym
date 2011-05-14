@@ -117,9 +117,8 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-                       address.GetIpv4());
+                       InetSocketAddress::ConvertFrom (from).GetIpv4());
 
           packet->RemoveAllPacketTags ();
           packet->RemoveAllByteTags ();
