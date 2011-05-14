@@ -3314,9 +3314,8 @@ RoutingProtocol::IsMyOwnAddress (const Ipv4Address & a) const
 void
 RoutingProtocol::Dump (void)
 {
-  Time now = Simulator::Now ();
-
 #ifdef NS3_LOG_ENABLE
+  Time now = Simulator::Now ();
   NS_LOG_DEBUG ("Dumping for node with main address " << m_mainAddress);
   NS_LOG_DEBUG (" Neighbor set");
   for (NeighborSet::const_iterator iter = m_state.GetNeighbors ().begin ();
