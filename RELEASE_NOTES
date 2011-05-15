@@ -25,64 +25,79 @@ New user-visible features
   - int64x64_t is a new type which allows portable and easy to write arithmetic
     calculations that require a high degree of fractional precision.
 
+  - interface to the Click Modular Router and an Ipv4ClickRouting
+    class to allow a node to use Click for external routing
+
+  - interface to an OpenFlow software implementation distribution to allow the 
+    simulation of OpenFlow switches in ns-3
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
 since ns-3.10, in many cases referencing the Bugzilla bug number.
 
-   - Bug 1019: common --> node --> common circular dependency 
-   - Fixed UanPhyGen::IsStateBusy method bug 
-   - bugfix: CsmaNetDevice ErrorModel not discarding packet (reported by
-   - Bug 1048: MatrixPropagationLossModel API changed from Ptr<Object> to
-   - Bug 1049 - Issues with OLSR HNA messages sent by multiple gateways 
-   - Bug 1052 - olsr::RoutingProtocol::LinkTupleUpdated incorrect
-   - bug 1062: fix portability issue with rescale-pdf.sh 
-   - Bug 1064: Correct Friis propagation loss equation
+   - bugfix: CsmaNetDevice ErrorModel not discarding packet
    - bugfix: do not call RouteOutput() twice 
    - Workaround gccxml bug scanning Seconds(0) as default value 
    - Copy a bug fix from ns3modulescan.py into ns3modulescan-modular.py 
-   - Bug 1070: csma/ipv6 examples duplicate NS_LOG_COMPONENT_DEFINE 
    - Modular Python bindings work (many bug fixes, more modules tested) 
-   - bug 1072: crash upon call to Packet::AddAtEnd of fragmented packets 
-   - Bug 1040 - Olsr and multiple interfaces 
-   - Bug 1075 - Python examples fail when static built is enabled 
-   - Bug 1076 - Waf gives an error if you enable only a single module 
    - Modular bindings: bug fixes, more verbose scanning 
-   - bug 1078: PacketTagList::Add performs NS_ASSERT counting one byte
    - ./waf --apiscan: fix bug in detection of whether the per-module
-   - Bug 1081 - wutils.py refers to the old directory for visualizer
-   - Bug 1083 - scratch doesn't work when only some modules are enabled 
    - Remove the 'Modules to build' debug print 
-   - updated doxygen for Object::Dispose (bug 1086) 
-   - fixed ActiveProbing for StaWifiMac (bug 1060) 
-   - bug 1094: Object::GetObject upon dlopen 
-   - fixed Bug 1066 - Set Radiotap modulation type flags correctly 
-   - fixed Bug 1090 - WifiMacQueue is not accessible through the
-   - fix Bug 1069 - ApWifiMac unduly calls RegularWifiMac::Receive and
-   - revised fix for bug 1069 
-   - bug 1046: Check AODV LocalDeliver callback before using it 
-   - fix small bugs 
-   - work around pybindgen bug 
-   - bugs fixed 
-   - Bug 1088 - Code in scratch directory assumes all modules are enabled 
-   - testcase for bug 1072 
-   - bug 1072: crash upon call to Packet::AddAtEnd of fragmented packets 
-   - Bug 1106: Remove CanvasLocation dependencies 
    - CsmaNetDevice ReceiveErrorModel was not dropping the packet
-   - bug 1038 - Time::Get*Seconds () return signed integer while actually returning unsigned
+
    - bug 445 - Is the class name Scalar in nstime.h appropriate?
-   - bug 1044 - Seconds (1e-9) creates Time that is not IsPositive ()
-   - bug 1056 - CSMA: padding not handled correctly for LLC encapsulation
-   - bug 1058 - documentation help to avoid InternetStackHelper pitfall
-   - bug 1054 - ipv6 InternetStackHelper EnablePcapIpv6All() broken
+   - bug 699 - TestCase::DoRun probably should not return a bool
+   - bug 957 - Issue with test.py
+   - bug 1017 - node --> internet-stack --> node
+   - bug 1018 - mobility --> helper --> mobility circular dependency
+   - bug 1019 - common --> node --> common circular dependency
+   - bug 1038 - Time::Get*Seconds () return signed integer while actually returning unsigned.
+   - bug 1040 - Olsr and multiple interfaces
    - bug 1042 - AODV RERR implosion (missing RERR_RATELIMIT) 
-   - bug 1097 - AODV routing entry set to be VALID mistakenly
+   - bug 1044 - Seconds (1e-9) creates Time that is not IsPositive ()
    - bug 1047 - Multicast routes on nodes with >16 interfaces
+   - bug 1048 - suggested MatrixPropagationLossModel::SetLoss() API change
+   - bug 1049 - Issues with OLSR HNA messages sent by multiple gateways
+   - bug 1052 - olsr::RoutingProtocol::LinkTupleUpdated incorrect detection of asymetric link with multiple interface nodes
+   - bug 1054 - ipv6 InternetStackHelper EnablePcapIpv6All() broken
+   - bug 1056 - CSMA: padding not handled correctly for LLC encapsulation
+   - bug 1058 - InternetStackHelper pitfall: calling Install before adding routing protocols
+   - bug 1060 - Setting NqStaWifiMac Active Probing true, crashes simulation
+   - bug 1061 - Title level inconsistent in click.rst
+   - bug 1062 - rescale-pdf not working
+   - bug 1064 - Correct Friis propagation loss equation in spectrum module
+   - bug 1066 - Set Radiotap modulation type flags correctly
+   - bug 1069 - ApWifiMac unduly calls RegularWifiMac::Receive and crashes
+   - bug 1070 - csma/ipv6 examples duplicate NS_LOG_COMPONENT_DEFINE
+   - bug 1072 - crash upon call to Packet::AddAtEnd of fragmented packets 
+   - bug 1075 - Python examples fail when static built is enabled
+   - bug 1076 - Waf gives an error if you enable only a single module
+   - bug 1078 - PacketTagList::Add performs NS_ASSERT counting one byte too few
+   - bug 1079 - MPI code doesn't compile
+   - bug 1081 - wutils.py refers to the old directory for visualizer module
+   - bug 1083 - scratch doesn't work when only some modules are enabled
+   - bug 1085 - Build failed: list index out of range
+   - bug 1086 - sanity check for not calling Object::Dispose () twice
+   - bug 1087 - Call MPI_Finalize to exit MPI environment
    - bug 1088 - Code in scratch directory assumes all modules are enabled
-   - bug 1108 - test.py -e option needs repair
-   - bug 1110 - Sort alphabetically and display Modules built in columns
-   - bug 957 - Issue with test.py 
+   - bug 1089 - lwip build issue
+   - bug 1090 - WifiMacQueue is not accessible through the attribute path
+   - bug 1092 - Problem building FreeBSD stack with g++ 4.5.2 (Ubuntu)
+   - bug 1094 - Object::GetObject upon dlopen 
+   - bug 1097 - AODV routing entry set to be VALID mistakenly.
+   - bug 1098 - when to show users which modules are enabled?
    - bug 1103 - Useless assignment in omnet-data-output.cc
+   - bug 1105 - Move topology helpers into separate per-device modules
+   - bug 1106 - Remove "CanvasLocation" dependencies in p2p helpers
+   - bug 1108 - test.py -e option needs repair
+   - bug 1110 - Sort alphabetically and display "Modules built" in columns
+   - bug 1117 - bindings failures on selected platforms
+   - bug 1122 - spectrum-value test should check tolerance on a per-value basis
+   - bug 1125 - ./waf --enable-modules fails
+   - bug 1131 - Bug in Ipv4L3Protocol::RemoveAddress()
+   - bug 1133 - DSDV: Possible bug in settling time calc
+   - bug 1142 - Wrong 802.11p Slot time
 
 Known issues
 ------------
