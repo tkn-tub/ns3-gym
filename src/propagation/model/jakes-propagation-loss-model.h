@@ -41,22 +41,22 @@ namespace ns3 {
  * \f[ u_s(t) = \frac{2}{\sqrt{N}}\sum_{n=0}^{M}b_n\cos(\omega_n t+\phi_n)\f]
  * where
  * \f[ a_n=\left \{ \begin{array}{ll}
- * \sqrt{2}\cos\beta_0 & n=0 \ \
+ * \sqrt{2}\cos\beta_0 & n=0 \\
  * 2\cos\beta_n & n=1,2,\ldots,M
  * \end{array}
  * \right .\f]
  * \f[ b_n=\left \{ \begin{array}{ll}
- * \sqrt{2}\sin\beta_0 & n=0 \ \
+ * \sqrt{2}\sin\beta_0 & n=0 \\
  * 2\sin\beta_n & n=1,2,\ldots,M
  * \end{array}
  * \right .\f]
  * \f[ \beta_n=\left \{ \begin{array}{ll}
- * \frac{\pi}{4} & n=0 \ \
+ * \frac{\pi}{4} & n=0 \\
  * \frac{\pi n}{M} & n=1,2,\ldots,M
  * \end{array}
  * \right .\f]
  * \f[ \omega_n=\left \{ \begin{array}{ll}
- * 2\pi f_d & n=0 \ \
+ * 2\pi f_d & n=0 \\
  * 2\pi f_d \cos\frac{2\pi n}{N} & n=1,2,\ldots,M
  * \end{array}
  * \right .\f]
