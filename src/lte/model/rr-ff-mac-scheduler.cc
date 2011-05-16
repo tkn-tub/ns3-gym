@@ -586,7 +586,7 @@ void
 RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params)
 {
   NS_LOG_FUNCTION (this << " Frame no. " << (params.m_sfnSf>>4) << " subframe no. " << (0xF & params.m_sfnSf));
-  // TODO: Implementation of the API
+
   
   std::map <uint16_t,uint8_t>::iterator it; 
   int nflows = 0;
@@ -616,7 +616,6 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
   
   FfMacSchedSapUser::SchedUlConfigIndParameters ret;
   std::vector <uint16_t> rbgAllocationMap;
-  NS_LOG_DEBUG (this << " Next is be " << m_nextRntiUl);
   if (m_nextRntiUl!=0)
     {
       for (it = m_ceBsrRxed.begin (); it != m_ceBsrRxed.end (); it++)
@@ -626,7 +625,6 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               break;
             }
         }
-        NS_LOG_DEBUG (this << " found  " << (*it).first);
         if (it == m_ceBsrRxed.end ())
           {
             NS_LOG_ERROR (this << " no user found");
@@ -637,7 +635,6 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
     it = m_ceBsrRxed.begin ();
     m_nextRntiUl = (*it).first;
   }
-  //for (it = m_ceBsrRxed.begin (); it != m_ceBsrRxed.end (); it++)
   do
     {
       if (rbAllocated + rbPerFlow > m_cschedCellConfig.m_ulBandwidth)
@@ -684,6 +681,12 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           cqi = LteAmc::GetCqiFromSpectralEfficiency (s);
           if (cqi == 0)
             {
+              it++;
+              if (it==m_ceBsrRxed.end ())
+                {
+                  // restart from the first
+                  it = m_ceBsrRxed.begin ();
+                }
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = LteAmc::GetMcsFromCqi (cqi);
@@ -715,7 +718,6 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           // Stop allocation: no more PRBs
           m_nextRntiUl = (*it).first;
-          NS_LOG_DEBUG (this << " Next will be " << m_nextRntiUl);
           break;
         }
     } while ((*it).first != m_nextRntiUl);
