@@ -75,7 +75,7 @@ configure ns-3 with Click Integration support::
 
   $: ./waf configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
 
-If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good to go.
+If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good to go. Note: If running modular ns-3, the minimum set of modules required to run all ns-3-click examples is wifi, csma and config-store.
 
 Next, try running one of the examples::
 
