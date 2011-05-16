@@ -59,7 +59,7 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   // 9 user -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
   // 12 users -> 2 PRB at Itbs 26 -> 185 -> 185000 bytes/sec
   // 15 users -> 2 PRB at Itbs 26 * 0.8 -> 148 -> 148000 bytes/sec
-  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,0,2196000));
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (26,0,0,2196000));
   AddTestCase (new LenaRrFfMacSchedulerTestCase (3,0,0,749000));
   AddTestCase (new LenaRrFfMacSchedulerTestCase (6,0,0,373000));
   AddTestCase (new LenaRrFfMacSchedulerTestCase (9,0,0,185000));
@@ -230,7 +230,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   /**
    * Check that the assignation is done in a RR fashion
    */
-  NS_LOG_INFO("Test with " << m_nUser << " user(s) at distance " << m_dist);
+  NS_LOG_INFO("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
   for (int i = 0; i < m_nUser; i++)
     {
@@ -242,6 +242,19 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
       NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
     }
+    
+//   NS_LOG_INFO("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
+//   std::vector <uint64_t> ulDataRxed;
+//   for (int i = 0; i < m_nUser; i++)
+//     {
+//       // get the imsi
+//       uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
+//       // get the lcId
+//       uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector().at(0);
+//       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
+//       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRef);
+// //       NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRef, m_thrRef * tolerance, " Unfair Throughput!");      
+//     }
 
   Simulator::Destroy ();
 }
