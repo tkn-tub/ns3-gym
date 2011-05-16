@@ -160,7 +160,8 @@ private:
   
   uint8_t m_schedTtiDelay; // delay between scheduling and reception (based on m_macChTtiDelay)
   
-  uint16_t m_nextRnti; // RNTI of the next user to be served next scheduling
+  uint16_t m_nextRntiDl; // RNTI of the next user to be served next scheduling in DL
+  uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
 
 };
 
