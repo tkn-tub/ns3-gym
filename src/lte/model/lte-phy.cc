@@ -107,6 +107,18 @@ LtePhy::GetDevice ()
   NS_LOG_FUNCTION (this);
   return m_netDevice;
 }
+  
+Ptr<LteSpectrumPhy> 
+LtePhy::GetDownlinkSpectrumPhy ()
+{
+  return m_downlinkSpectrumPhy;
+}
+
+Ptr<LteSpectrumPhy> 
+LtePhy::GetUplinkSpectrumPhy ()
+{
+  return m_uplinkSpectrumPhy;
+}
 
 
 void

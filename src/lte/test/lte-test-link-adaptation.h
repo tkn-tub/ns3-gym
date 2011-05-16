@@ -40,7 +40,7 @@ public:
 class LteLinkAdaptationTestCase : public TestCase
 {
   public:
-  LteLinkAdaptationTestCase (std::string name, double snr, double loss, double distance, uint16_t mcsIndex);
+  LteLinkAdaptationTestCase (std::string name, double snrDb, double loss, double distance, uint16_t mcsIndex);
     LteLinkAdaptationTestCase ();
     virtual ~LteLinkAdaptationTestCase ();
 
@@ -50,7 +50,7 @@ class LteLinkAdaptationTestCase : public TestCase
   private:
     virtual void DoRun (void);
 
-    double m_snr;
+    double m_snrDb;
     double m_loss;
     double m_distance;
     uint16_t m_mcsIndex;

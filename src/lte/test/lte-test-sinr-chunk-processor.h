@@ -46,6 +46,7 @@ public:
 
 private:
   Ptr<SpectrumValue> m_sumSinr;
+  Ptr<SpectrumValue> m_sinr;
   Time m_totDuration;
   Ptr<LtePhy> m_phy;
 };

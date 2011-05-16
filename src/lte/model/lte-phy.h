@@ -75,6 +75,19 @@ public:
    */
   Ptr<LteNetDevice> GetDevice ();
 
+  /** 
+   * 
+   * \return a pointer to the LteSpectrumPhy instance that manages the downlink
+   */
+  Ptr<LteSpectrumPhy> GetDownlinkSpectrumPhy ();
+
+
+  /** 
+   * 
+   * \return a pointer to the LteSpectrumPhy instance that manages the uplink
+   */
+  Ptr<LteSpectrumPhy> GetUplinkSpectrumPhy ();
+  
   /**
   * \brief Queue the MAC PDU to be sent (according to m_macChTtiDelay)
   * \param p the MAC PDU to sent

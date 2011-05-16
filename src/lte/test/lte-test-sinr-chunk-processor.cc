@@ -70,7 +70,8 @@ LteTestSinrChunkProcessor::End ()
     {
       NS_LOG_LOGIC (this << " m_sumSinr = " << *m_sumSinr);
       NS_LOG_LOGIC (this << " m_totDuration = " << m_totDuration);
-      NS_LOG_LOGIC (this << " m_sumSinr / m_totDuration = " << (*m_sumSinr) / m_totDuration.GetSeconds ());
+      m_sinr = Create<SpectrumValue> ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      NS_LOG_LOGIC (this << " m_sumSinr / m_totDuration = " << *m_sinr);
     }
   else
     {
@@ -83,7 +84,7 @@ LteTestSinrChunkProcessor::GetSinr ()
 {
   NS_LOG_FUNCTION (this);
 
-  return (*m_sumSinr) / m_totDuration.GetSeconds ();
+  return *m_sinr;
 }
 
 } // namespace ns3

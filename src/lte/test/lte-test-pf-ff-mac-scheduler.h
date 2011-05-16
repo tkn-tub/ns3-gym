@@ -37,11 +37,11 @@ using namespace ns3;
 * is equal among users is consistent with the definition of proportional 
 * fair scheduling
 */
-class LenaPfFfMacSchedulerTestCase : public TestCase
+class LenaPfFfMacSchedulerTestCase1 : public TestCase
 {
   public:
-    LenaPfFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRef);
-    virtual ~LenaPfFfMacSchedulerTestCase ();
+    LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRef);
+    virtual ~LenaPfFfMacSchedulerTestCase1 ();
 
   private:
     virtual void DoRun (void);
@@ -50,6 +50,21 @@ class LenaPfFfMacSchedulerTestCase : public TestCase
     uint16_t m_dist;
     double m_thrRef;
 };
+
+
+class LenaPfFfMacSchedulerTestCase2 : public TestCase
+{
+  public:
+    LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPf);
+    virtual ~LenaPfFfMacSchedulerTestCase2 ();
+    
+  private:
+    virtual void DoRun (void);
+    uint16_t m_nUser;
+    std::vector<uint16_t> m_dist;
+    std::vector<uint32_t> m_estThrPf;
+};
+
 
 
 

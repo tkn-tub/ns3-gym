@@ -48,5 +48,45 @@ Adaptive Modulation and Coding
 Round Robin scheduler performance
 ---------------------------------
 
+This system test program creates different test cases with a single eNB and several UEs, all having the same Radio Bearer specification. In each test case, the UEs see the same SINR from the eNB; different test cases are implemented by using different distance among UEs and the eNB (i.e., therefore having different SINR values) and different numbers of UEs. The test consists on checking that the obtained throughput performance is equal among users and matches a reference throughput value obtained according to the SINR perceived within a given tolerance.
+The test vector is obtained according to the values of transport block size reported in table 7.1.7.2.1-1 of [TS36.213]_, considering an equal distribution of the physical resource block among the users using Resource Allocation Type 0 as defined in Section 7.1.6.1 of [TS36.213]_.  Let :math:`\tau` be the TTI duration, :math:`N` be the number of UEs, :math:`B` the transmission bandwidth configuration in number of RBs, :math:`G` the RBG size, :math:`M` the modulation and coding scheme in use at the given SINR and :math:`S(M, B)` be the transport block size in bits as defined by 3GPP TS 36.213. We first calculate the number :math:`L` of RBGs allocated to each user as
+
+.. math::
+
+   L = \left\lfloor \frac{B}{NG} \right\rfloor 
+
+The reference throughput (in bytes per second) :math:`T` in bps achieved by each UE is then calculated as
+
+.. math::
+
+   T =  \frac{S(M, L G)}{8 \; \tau}
+
+
+
+
 Proportional Fair scheduler performance
 ---------------------------------------
+
+This system test program creates different test cases with a single eNB, using the Proportional Fair (PF) scheduler, and several UEs, all having the same Radio Bearer specification. The test cases are grouped in two categories in order to evaluate both the performance in terms of adaptation to channel condition and from fairness perspective.
+
+In the first category of test cases, the UEs are all placed at the same distance from the eNB, and hence all placed in order to have the same SINR. Different test cases are implemented by using a different SINR value and a different number of UEs. The test consists on checking that the obtained throughput performance matches with the known reference throughput up to a given tolerance. The expected behavior of the PF scheduler when all UEs have the same SNR is that each UE should get an equal fraction of the throughput obtainable by a single UE when using all the resources. We calculate the reference throughput value by dividing the throughput achievable by a single UE at the given SNR by the total number of UEs. Let :math:`\tau` be the TTI duration, :math:`B` the transmission bandwidth configuration in number of RBs, :math:`M` the modulation and coding scheme in use at the given SINR and :math:`S(M, B)` be the transport block size as defined in [TS36.213]_. The reference throughput :math:`T` achieved by each UE is calculated as
+
+.. math::
+
+   T = \frac{S(M,B)}{\tau N}
+
+The second category of tests is aimed at verify the fairness behavior in presence of UEs with different SINRs (and therefore different estimated throughput from PFS). The test consists of checking whether the throughput obtained by each UE over the whole simulation matches with the steady-state throughput expected by the PF scheduler according to the theory (see for instance [Kushner2004cpfsa]_). 
+Let :math:`Ri` the estimation done by PFS of the throughput of the :math:`i` UE for the next TTI according to the CQIs received and :math:`Ti` the throughput preceived by the :math:`i` UE . The test verifies that the ratio of the obtained throughput value respect to the global one (i.e. the sum of the ones of all users) is equal to the steady-state throughput of the PFS, that is
+
+.. math::
+
+   K = \frac{Ri}{\sum_{k=1}^N Ri} = \frac{Ti}{\sum_{k=1}^N Ti}
+
+
+
+References
+**********
+
+.. [TS36.213] 3GPP TS 36.213 "LTE Physical layer procedures"
+
+.. [Kushner2004cpfsa] H.J. Kushner and P.A. Whiting, "Convergence of proportional-fair sharing algorithms under general conditions", IEEE Trans. on Wireless Communications, July 2004 
