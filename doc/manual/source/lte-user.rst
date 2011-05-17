@@ -68,4 +68,3 @@ Example simulation program
     lena.ActivateEpsBearer (ueDevs, bearer);
 
 
-``src/lte/examples/lena-first-sim.cc`` shows how to build a simple but complete simulation with one LTE eNB and one LTE UE. The detail explanation of the code follows:

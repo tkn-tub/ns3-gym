@@ -5,41 +5,75 @@
  LTE Design Documentation
 ++++++++++++++++++++++++++
 
------------------------------------------------------------------------------
 
-* the new eutra stack diagram with all SAPs, differentiated between eNB and UE
-* the explanation of the new example program
+An overview of the LTE module
+*****************************
 
 
------------------------------------------------------------------------------
+Design Criteria
+~~~~~~~~~~~~~~~
+
+The LTE module has the long term objective of supporting the evaluation of the following aspects of LTE systems:
+
+ * LTE Radio Resource Management
+ * QoS-aware Packet Scheduling
+ * Call Admission Control
+ * Inter-cell Interference Coordination
+ * Load Balancing 
+ * Mobility 
+
+
+In order to model LTE systems to a level of detail that is sufficient to allow a correct evaluation of the above mentioned aspects, the following assumptions have been made:
+
+ #. At the radio level, the granularity of the model should be at least that of the Resource Block. In fact, this is the fundamental unit being used for resource allocation. Without this minimum level of granularity, it is not possible to model accurately, for example, packet scheduling and inter-cell-interference solutions. Note that this design choice rules out system level simulator, which work at the granularity of call / bearer establishment.
+ #. The simulator should scale up to tens of eNBs and hundreds of UEs. This rules out the use of a link level simulator, i.e., a simulator whose radio interface is modeled with a granularity up to the symbol level. This is becaise a symbol layer model needs to implement all the PHY layer signal processing, whose huge complexity severely limits scalability in terms of number of eNBs and UEs. In fact, link-level simulators are normally limited to a single eNB and one or a few UEs.
+#. The simulator should provide meaningful application-layer Key Performance Indicator, to effectively allow an evaluation of the Quality of Experience (QoE) perceived by the end user. For this purpose, the LTE user plane protocol stack should be modeled accurately, and in particular it should include the RLC protocol. Otherwise, only MAC-level KPIs could be extracted, which cannot be mapped directly to QoE without some gross approximation.
+#. The control plane should be modeled for those parts which affect resource management. This because the control plane can be the bottleneck in several scenarios.
+
+
+Module Architecture
+~~~~~~~~~~~~~~~~~~~
+
+
+The overall architecture of the LTE module is represented in the following figure.
+
+.. figure:: figures/lte-enb-architecture.png
+   :align: right
+
+   The architecture of the eNB
+
+
+Detailed description of the components
+**************************************
+
 
 Radio Resource Management and Packet Scheduling
-###############################################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For how the ns-3 LTE module handles Radio Resource Management and Packet Scheduling at the eNB, please see the :ref:`ff-mac-sched-api`.
 
 
 Physical layer
-##############
+~~~~~~~~~~~~~~
 
-A :cpp:class:`ns3::LtePhy` class models the LTE PHY layer. 
+The `ns3::LtePhy` class models the LTE PHY layer. 
 
 Basic functionalities of the PHY layer are: (i) transmit packets coming from the device to the channel; (ii) receive packets from the channel; (ii) evaluate the quality of the channel from the Signal To Noise ratio of the received signal; and (iii) forward received packets to the device.
 
-Both the PHY and channel have been developed extending :cpp:class:`ns3::SpectrumPhy` and 
-:cpp:class:`ns3::SpectrumChannel` classes, respectively, which are provided by the Spectrum Framework [1]_.
+Both the PHY and channel have been developed extending `ns3::SpectrumPhy` and 
+`ns3::SpectrumChannel` classes, respectively, which are provided by the Spectrum Framework [1]_.
  
 The module implements an FDD channel access. In FDD channel access, downlink and uplink 
 transmissions work together in the time but using a different set of frequencies.  
 Since DL and UL are indipendent between them, the PHY is composed by couple of 
-:cpp:class:`ns3::LteSpectrumPhy` object, one for the downlink and one for the uplink.
-The :cpp:class:`ns3::LtePhy` stores and manages both downlink and uplink 
-:cpp:class:`ns3::LteSpectrumPhy` elements. 
+`ns3::LteSpectrumPhy` object, one for the downlink and one for the uplink.
+The `ns3::LtePhy` stores and manages both downlink and uplink 
+`ns3::LteSpectrumPhy` elements. 
 
 In order to customize all physical functionalities for both UE and eNB devices, dedicated 
 classes have been inherited from ones described before. In particular, 
-:cpp:class:`ns3::LteUePhy` and :cpp:class:`ns3::LteEnbPhy` classes, inherited from 
-the :cpp:class:`ns3::LtePhy` class, implement the PHY layer for the UE and the 
+`ns3::LteUePhy` and `ns3::LteEnbPhy` classes, inherited from 
+the `ns3::LtePhy` class, implement the PHY layer for the UE and the 
 eNB, respectively. 
 
 The figure below shows how UE and eNB can exchange packets through the considered PHY layer.
@@ -52,7 +86,7 @@ The figure below shows how UE and eNB can exchange packets through the considere
 
 For the downlink, when the eNB whants to send packets, it calls the ``StartTx`` function to 
 send them into the downlink channel. Then, the downlink channel delivers the burst 
-of packets to all the :cpp:class:`ns3::UeLteSpectrumPhy` attached to it, handling the 
+of packets to all the `ns3::UeLteSpectrumPhy` attached to it, handling the 
 ``StartRx`` function. 
 When the UE receives packets, it executes the following tasks:
 
@@ -65,7 +99,7 @@ When the UE receives packets, it executes the following tasks:
 The uplink works similary.
 
 Propagation Loss Models
-#######################
+~~~~~~~~~~~~~~~~~~~~~~~
 
 A proper propagation loss model has been developed for the LTE E-UTRAN interface (see [2]_ and [3]_).
 It is used by the PHY layer to compute the loss due to the propagation. 
