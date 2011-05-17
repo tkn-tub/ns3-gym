@@ -55,7 +55,6 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
   
-  //AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,15000,0,0));
   
   // DOWNLINK- DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
