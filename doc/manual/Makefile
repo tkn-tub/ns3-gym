@@ -23,6 +23,7 @@ IMAGES_EPS = \
         $(FIGURES)/auvmobility-classes.eps \
         $(FIGURES)/ff-mac-saps.eps \
         $(FIGURES)/ff-example.eps \
+        $(FIGURES)/lte-enb-architecture.eps \
 
 # missing figure 
 #        $(FIGURES)/lte-transmission.eps
@@ -41,6 +42,8 @@ $(FIGURES)/sockets-overview.pdf_width = 10cm
 $(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-transmission.pdf_width = 3in
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/lte-enb-architecture.pdf_width = 10cm
+
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
