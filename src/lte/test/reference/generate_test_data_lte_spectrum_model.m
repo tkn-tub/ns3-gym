@@ -4,8 +4,8 @@ close all;
 
 for nrbs = [6 15 25 50 75 100]
 
-##  earfcn = 500;
-##  fcMHz = 2160;
+%%  earfcn = 500;
+%%  fcMHz = 2160;
 
   earfcn = 19400;
   fcMHz = 1730;
