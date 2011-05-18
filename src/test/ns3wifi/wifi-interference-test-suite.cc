@@ -82,7 +82,11 @@ WifiInterferenceTestCase::ReceivePacket (Ptr<Socket> socket)
 {
   Address addr;
   socket->GetSockName (addr);
-  NS_LOG_UNCOND ("Received one packet!  Socket: " << InetSocketAddress::ConvertFrom (addr).GetIpv4 () << " port: " << iaddr.GetPort ());
+  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
+  NS_LOG_UNCOND ("Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ());
+  //cast iaddr to void, to suppress 'iaddr' set but not used compiler warning 
+  //in optimized builds
+  (void) iaddr;
 }
 
 void 
