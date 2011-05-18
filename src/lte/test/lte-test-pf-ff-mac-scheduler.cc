@@ -54,12 +54,6 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaTestPfFfMacSchedulerSuite");
   
-  // 0 mt -> mcs 28
-  // 3000 mt -> mcs 22
-  // 6000 mt -> mcs 16
-  // 9000 mt -> mcs 12
-  // 15000 mt -> mcs 6
-
   //Test Case 1: AMC works in PF
 
   // DOWNLINK - DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
@@ -171,7 +165,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   estThrPfUl.push_back (249000); // User 1 estimated TTI throughput from PF
   estThrPfUl.push_back (125000); // User 2 estimated TTI throughput from PF
   estThrPfUl.push_back (85000); // User 3 estimated TTI throughput from PF
-  estThrPfUl.push_back (32000); // User 4 estimated TTI throughput from PF
+  estThrPfUl.push_back (41000); // User 4 estimated TTI throughput from PF
   AddTestCase (new LenaPfFfMacSchedulerTestCase2 (5,dist,estThrPfDl,estThrPfUl));
 
 
@@ -204,7 +198,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+//     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
   // 
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
@@ -228,7 +222,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+//     LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -281,9 +275,9 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
     
-  lena->EnableDlRlcTraces();
+  lena->EnableRlcTraces();
   
-  double simulationTime = 2.0;
+  double simulationTime = 1.0;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
   
@@ -304,7 +298,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       // get the lcId
       uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at(0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
     }
   /**
   * Check that the assignation is done in a "proportional fair" manner among users
@@ -355,7 +349,7 @@ LenaPfFfMacSchedulerTestCase2::LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, st
     m_nUser (nUser),
     m_dist (dist),
     m_estThrPfDl (estThrPfDl),
-    m_estThrPfUl (estThrPfDl)
+    m_estThrPfUl (estThrPfUl)
 {
 }
 
@@ -447,7 +441,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
   
-  lena->EnableDlRlcTraces();
+  lena->EnableRlcTraces();
   
   double simulationTime = 0.4;
   double tolerance = 0.1;
@@ -483,7 +477,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
     {
       double thrRatio = (double)dlDataRxed.at (i) / totalData;
       double estThrRatio = (double)m_estThrPfDl.at (i) / totalEstThrPf;
-      NS_LOG_INFO ("User " << i << " thrRatio " << thrRatio << " estThrRatio " << estThrRatio);
+      NS_LOG_INFO ("\tUser " << i << " thrRatio " << thrRatio << " estThrRatio " << estThrRatio);
       NS_TEST_ASSERT_MSG_EQ_TOL (estThrRatio, thrRatio, tolerance, " Unfair Throughput!");      
     }
    
@@ -503,7 +497,6 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
         NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << (double)m_estThrPfUl.at (i));
         NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, (double)m_estThrPfUl.at (i), (double)m_estThrPfUl.at (i) * tolerance, " Unfair Throughput!");      
       }
-  
   Simulator::Destroy ();
   
 }
