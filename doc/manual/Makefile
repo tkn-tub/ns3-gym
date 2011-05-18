@@ -24,6 +24,7 @@ IMAGES_EPS = \
         $(FIGURES)/ff-mac-saps.eps \
         $(FIGURES)/ff-example.eps \
         $(FIGURES)/lte-enb-architecture.eps \
+        $(FIGURES)/lte-ue-architecture.eps \
 
 # missing figure 
 #        $(FIGURES)/lte-transmission.eps

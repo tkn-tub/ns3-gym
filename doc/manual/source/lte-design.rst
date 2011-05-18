@@ -27,20 +27,26 @@ In order to model LTE systems to a level of detail that is sufficient to allow a
 
  #. At the radio level, the granularity of the model should be at least that of the Resource Block. In fact, this is the fundamental unit being used for resource allocation. Without this minimum level of granularity, it is not possible to model accurately, for example, packet scheduling and inter-cell-interference solutions. Note that this design choice rules out system level simulator, which work at the granularity of call / bearer establishment.
  #. The simulator should scale up to tens of eNBs and hundreds of UEs. This rules out the use of a link level simulator, i.e., a simulator whose radio interface is modeled with a granularity up to the symbol level. This is becaise a symbol layer model needs to implement all the PHY layer signal processing, whose huge complexity severely limits scalability in terms of number of eNBs and UEs. In fact, link-level simulators are normally limited to a single eNB and one or a few UEs.
-#. The simulator should provide meaningful application-layer Key Performance Indicator, to effectively allow an evaluation of the Quality of Experience (QoE) perceived by the end user. For this purpose, the LTE user plane protocol stack should be modeled accurately, and in particular it should include the RLC protocol. Otherwise, only MAC-level KPIs could be extracted, which cannot be mapped directly to QoE without some gross approximation.
-#. The control plane should be modeled for those parts which affect resource management. This because the control plane can be the bottleneck in several scenarios.
+#. MAC-level KPIs (e.g., per-UE and per-bearer throughput, delay and loss rate measured at the RLC PDU level) are probably the most straightforward KPIs that can be extracted by the simulator. Still, these KPIs cannot be mapped directly to the Quality of Experience (QoE) perceived by the end user, at least without some gross approximation. Hence, to allow a proper evaluation of the QoE, the LTE user plane protocol stack should be modeled accurately. In particular, the RLC protocol should be modeled: in fact, since the RLC takes care of fragmentation, concatenation & fragment retransmission of user-plane IP packets, it  
+#. While it is acceptable to idealize some aspects of the control plane for ease of simulations, there are some other aspects that need to be modeled in order to obtain accurate simulation results. For example, control signaling consumes radio resources and can be the cause of a limitation in the user-perceived performance; furthermore, the correct or erroneous reception of the control signalling affects important aspects of LTE such as cell selection by the UEs and the neighbor relation function of the eNBs.
 
 
 Module Architecture
 ~~~~~~~~~~~~~~~~~~~
 
 
-The overall architecture of the LTE module is represented in the following figure.
+The overall architecture of the LTE module is represented in the following figures.
 
 .. figure:: figures/lte-enb-architecture.png
    :align: right
 
-   The architecture of the eNB
+   The architecture of the LTE eNB
+
+.. figure:: figures/lte-ue-architecture.png
+   :align: right
+
+   The architecture of the LTE UE
+
 
 
 Detailed description of the components
@@ -78,11 +84,6 @@ eNB, respectively.
 
 The figure below shows how UE and eNB can exchange packets through the considered PHY layer.
 
-.. _lte-transmission:
-
-.. figure:: figures/lte-transmission.png
-
-    DL and UL transmision on the LTE network
 
 For the downlink, when the eNB whants to send packets, it calls the ``StartTx`` function to 
 send them into the downlink channel. Then, the downlink channel delivers the burst 
