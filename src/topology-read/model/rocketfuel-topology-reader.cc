@@ -156,6 +156,11 @@ RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
                             << "(" << "%d" << ") externals: \"%s\"(%d) "
                             << "name: " << name << " radius: " << radius);
 
+  //cast bb and dns to void, to suppress variable set but not used compiler warning
+  //in optimized builds
+  (void) bb;
+  (void) dns;
+
   // Create node and link
   if (!uid.empty ())
     {
