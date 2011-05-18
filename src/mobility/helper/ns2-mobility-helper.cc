@@ -399,7 +399,9 @@ bool
 IsNumber (const string& s)
 {
   char *endp;
-  (void) strtod (s.c_str (), &endp); // declared with warn_unused_result
+  double v = strtod (s.c_str (), &endp); // declared with warn_unused_result
+  //cast v to void, to suppress v set but not used compiler warning
+  (void) v;
   return endp == s.c_str () + s.size ();
 }
 

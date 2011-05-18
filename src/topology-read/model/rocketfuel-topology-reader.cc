@@ -208,7 +208,9 @@ RocketfuelTopologyReader::GenerateFromWeightsFile (int argc, char *argv[])
 
   sname = argv[0];
   tname = argv[1];
-  (void) strtod (argv[2], &endptr); // weight
+  double v = strtod (argv[2], &endptr); // weight
+  // cast v to void , to suppress 'v' set but not used compiler warning
+  (void) v;
   if (*endptr != '\0')
     {
       NS_LOG_WARN ("invalid weight: " << argv[2]);
