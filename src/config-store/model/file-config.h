@@ -5,6 +5,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup configstore
+ *
+ */
 class FileConfig
 {
 public:
@@ -15,6 +19,10 @@ public:
   virtual void Attributes (void) = 0;
 };
 
+/**
+ * \ingroup configstore
+ *
+ */
 class NoneFileConfig : public FileConfig
 {
 public:

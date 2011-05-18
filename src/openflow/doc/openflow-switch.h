@@ -21,7 +21,7 @@
  */
 
 /**
- * \defgroup OpenFlowSwitchModel OpenFlow Switch Model
+ * \defgroup OpenFlowSwitchModel OpenFlow Switch Device
  *
  * \section OpenFlowSwitchModelOverview OpenFlow Switch Model Overview
  *

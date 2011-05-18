@@ -29,6 +29,13 @@
 namespace ns3 {
 
 /**
+ * \defgroup csmastarhelper CSMA Star Helper
+ *
+ */
+
+/**
+ * \ingroup csmastarhelper
+ *
  * \brief A helper to make it easier to create a star topology
  * with Csma links
  */

@@ -47,6 +47,10 @@ struct ModelNode
   Ptr<Object> object;
   uint32_t index;
 };
+/**
+ * \ingroup configstore
+ *
+ */
 class ModelCreator : public AttributeIterator
 {
 public:
