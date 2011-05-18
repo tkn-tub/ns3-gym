@@ -53,6 +53,9 @@ ReceivePacket (Ptr<Socket> socket)
           NS_LOG_UNCOND ("--\nReceived one packet! Socket: "<< iaddr.GetIpv4 ()
                                                             << " port: " << iaddr.GetPort () << " at time = " <<
                          Simulator::Now ().GetSeconds () << "\n--");
+          //cast iaddr to void, to suppress 'iaddr' set but not used compiler warning
+          //in optimized builds
+          (void) iaddr;
         }
     }
 }

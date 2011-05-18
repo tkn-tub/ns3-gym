@@ -102,6 +102,9 @@ void ReceivePacket (Ptr<Socket> socket)
   socket->GetSockName (addr);
   InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
   NS_LOG_UNCOND ("Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ());
+  //cast iaddr to void, to suppress iaddr set but not used compiler warning
+  //in optimized builds
+  (void) iaddr;
 }
 
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 

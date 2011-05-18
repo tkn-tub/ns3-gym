@@ -242,9 +242,8 @@ Receiver::Receive(Ptr<Socket> socket)
   Address from;
   while (packet = socket->RecvFrom(from)) {
       if (InetSocketAddress::IsMatchingType (from)) {
-          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " <<
-                       address.GetIpv4());
+                       InetSocketAddress::ConvertFrom (from).GetIpv4());
         }
 
       TimestampTag timestamp;

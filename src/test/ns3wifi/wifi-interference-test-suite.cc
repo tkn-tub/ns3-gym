@@ -82,8 +82,7 @@ WifiInterferenceTestCase::ReceivePacket (Ptr<Socket> socket)
 {
   Address addr;
   socket->GetSockName (addr);
-  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
-  NS_LOG_UNCOND ("Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ());
+  NS_LOG_UNCOND ("Received one packet!  Socket: " << InetSocketAddress::ConvertFrom (addr).GetIpv4 () << " port: " << iaddr.GetPort ());
 }
 
 void 

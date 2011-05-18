@@ -165,9 +165,13 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
       if (InetSocketAddress::IsMatchingType (from))
         {
           m_totalRx += packet->GetSize();
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-                       address.GetIpv4() << " [" << InetSocketAddress::ConvertFrom (from) << "]" 
+                       address.GetIpv4() << " [" << address << "]" 
                                    << " total Rx " << m_totalRx);
+          //cast address to void , to suppress 'address' set but not used 
+          //compiler warning in optimized builds
+          (void) address;
         }
       m_rxTrace (packet, from);
     }
