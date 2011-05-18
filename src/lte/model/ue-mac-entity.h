@@ -31,9 +31,10 @@ namespace ns3 {
 class CqiIdealControlMessage;
 
 /**
+ * \ingroup lte
+ *
  * This class implements the MAC layer of the UE device
  */
-
 class UeMacEntity : public MacEntity
 {
 public:

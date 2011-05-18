@@ -30,6 +30,8 @@ class PacketBurst;
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * EnbLtePhy models the physical layer for the eNodeB
  */
 class EnbLtePhy : public LtePhy

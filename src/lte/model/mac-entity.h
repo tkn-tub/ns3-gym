@@ -31,6 +31,8 @@ class LteNetDevice;
 class AmcModule;
 
 /**
+ * \ingroup lte
+ *
  * This class provides a basi implementation of the MAC
  * layer
  */

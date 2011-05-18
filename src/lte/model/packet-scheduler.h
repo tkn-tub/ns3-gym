@@ -35,6 +35,8 @@ class UeNetDevice;
 class MacEntity;
 
 /**
+ * \ingroup lte
+ *
  * This class represents the basic implementation of the LTE packet scheduler
  */
 class PacketScheduler : public Object

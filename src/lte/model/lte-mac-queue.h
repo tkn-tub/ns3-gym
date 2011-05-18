@@ -31,6 +31,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lte
+ *
  * The MAC queue for each bearer
  */
 class LteMacQueue : public Object

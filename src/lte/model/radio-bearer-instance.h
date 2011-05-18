@@ -31,6 +31,8 @@ class BearerQosParameters;
 class RlcEntity;
 
 /**
+ * \ingroup lte
+ *
  * This class implements the LTE radio bearer in which
  * a data flow between UE and eNB will be mapped.
  */

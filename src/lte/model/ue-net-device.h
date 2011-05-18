@@ -41,6 +41,8 @@ class EnbNetDevice;
 class UeMacEntity;
 
 /**
+ * \ingroup lte
+ *
  * The UeNetDevice class implements the UE net device
  */
 class UeNetDevice : public LteNetDevice

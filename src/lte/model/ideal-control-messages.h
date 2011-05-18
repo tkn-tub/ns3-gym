@@ -31,6 +31,8 @@ class LteNetDevice;
 
 
 /**
+ * \ingroup lte
+ *
  * The IdealControlMessage provides a basic implementations for
  * control messages (such as PDCCH allocation map, CQI feedbacks)
  * that are exchanged among eNodeB and UEs.
@@ -109,6 +111,8 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * \brief The PdcchMapIdealControlMessage defines an ideal allocation map
  * for both UL and DL sends by the eNodeB to all UE,
  * using an ideal PDCCH control channel.
@@ -197,6 +201,8 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * The CqiIdealControlMessage defines an ideal list of feedback about
  * the channel quality sent by the UE to the eNodeB.
  */

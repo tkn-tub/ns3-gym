@@ -31,12 +31,14 @@ namespace ns3 {
 class EnergySource;
 
 /**
+ * \ingroup energy
  * \brief Base class for device energy models.
  *
  * A device energy model should represent the energy consumption behavior of a
  * specific device. It will update remaining energy stored in the EnergySource
  * object installed on node. When energy is depleted, each DeviceEnergyModel
  * object installed on the same node will be informed by the EnergySource.
+ *
  */
 class DeviceEnergyModel : public Object
 {

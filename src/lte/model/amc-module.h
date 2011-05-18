@@ -28,6 +28,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
+ *
  * \brief The AMC module attached to the LTE networ device
  * AmcModule class implements the Adaptive Modulation And Coding Scheme
  * as proposed in 3GPP TSG-RAN WG1 - R1-081483

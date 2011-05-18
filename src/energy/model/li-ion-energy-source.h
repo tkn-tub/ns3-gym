@@ -29,6 +29,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * \brief Model a generic Lithium Ion Battery basing on [1][2].
  *
  * The model can be fitted to any type of Li-Ion Battery, simply changing the
@@ -66,6 +67,7 @@ namespace ns3 {
  * [1] C. M. Shepherd, "Design of Primary and Secondary Cells - Part 3. Battery discharge equation," U.S. Naval Research Laboratory, 1963
  * [2] Tremblay, O.; Dessaint, L.-A.; Dekkiche, A.-I., "A Generic Battery Model for the Dynamic Simulation of Hybrid Electric Vehicles," Ecole de Technologie Superieure, Universite du Quebec, 2007
  * [3] http://www.panasonic.com/industrial/includes/pdf/Panasonic_LiIon_CGR18650DA.pdf
+ *
  */
 class LiIonEnergySource : public EnergySource
 {

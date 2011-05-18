@@ -30,6 +30,8 @@ class PacketBurst;
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * The LteSpectrumPhy models the physical layer of LTE
  */
 class UeLtePhy : public LtePhy

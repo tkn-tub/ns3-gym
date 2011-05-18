@@ -31,6 +31,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * \brief Holds a vector of ns3::EnergySource pointers.
  *
  * EnergySourceHelper returns a list of EnergySource pointers installed onto a
@@ -38,6 +39,7 @@ namespace ns3 {
  * energy consumption on a node easily.
  *
  * \see NetDeviceContainer
+ *
  */
 class EnergySourceContainer : public Object
 {

@@ -33,9 +33,10 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
+ *
  * This class implements a simple packet scheduler
  */
-
 class SimplePacketScheduler : public PacketScheduler
 {
 

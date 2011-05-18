@@ -32,6 +32,8 @@ class CqiIdealControlMessage;
 class PdcchMapIdealControlMessage;
 
 /**
+ * \ingroup lte
+ *
  * This class implements the MAC layer of the eNodeB device
  */
 class EnbMacEntity : public MacEntity

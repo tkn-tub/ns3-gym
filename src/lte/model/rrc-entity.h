@@ -33,6 +33,8 @@ class BearerManager;
 class Bearer;
 
 /**
+ * \ingroup lte
+ *
  * \brief This class implements the RRC entity
  */
 class RrcEntity : public Object

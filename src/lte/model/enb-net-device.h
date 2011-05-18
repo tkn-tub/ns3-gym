@@ -42,6 +42,8 @@ class EnbMacEntity;
 
 
 /**
+ * \ingroup lte
+ *
  * The eNodeB device implementation
  */
 class EnbNetDevice : public LteNetDevice

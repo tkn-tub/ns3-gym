@@ -30,6 +30,8 @@ class UeNetDevice;
 class EnbNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * \brief this class allow the eNodeb to manage in a very simple way all registered UE.
  * In particular, to each registered UE, a new UeRecord is created.
  * \see UeRecord

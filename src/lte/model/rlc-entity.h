@@ -32,6 +32,8 @@ class LteNetDevice;
 class RadioBearerInstance;
 
 /**
+ * \ingroup lte
+ *
  * This class implements the RLC entity
  */
 class RlcEntity : public Object

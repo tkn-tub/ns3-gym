@@ -30,6 +30,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * \brief Holds a vector of ns3::DeviceEnergyModel pointers.
  *
  * DeviceEnergyModelContainer returns a list of DeviceEnergyModel pointers
@@ -37,6 +38,7 @@ namespace ns3 {
  * objects to obtain total device energy consumption on a node easily.
  *
  * \see NetDeviceContainer
+ *
  */
 class DeviceEnergyModelContainer
 {

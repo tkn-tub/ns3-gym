@@ -41,12 +41,12 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
  * \brief helps to manage and create LteNetDevice objects
  *
  * This class can help to create a LteNetDevice objects 
  * and to configure their attributes during creation.
  */
-
 class LteHelper 
 {
 public:

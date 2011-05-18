@@ -30,6 +30,8 @@ class LteNetDevice;
 class EnbNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * The UeLteSpectrumPhy models the UL/DL physical layer for the UE
  */
 class UeLteSpectrumPhy : public LteSpectrumPhy

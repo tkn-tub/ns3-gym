@@ -42,6 +42,8 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * The LteSpectrumPhy models the physical layer of LTE
  */
 class LteSpectrumPhy : public SpectrumPhy

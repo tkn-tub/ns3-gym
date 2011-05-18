@@ -28,6 +28,8 @@
 
 namespace ns3 {
 /**
+ * \ingroup lte
+ *
  * This class implements the LTE MAC header
  */
 class LteMacHeader : public Header

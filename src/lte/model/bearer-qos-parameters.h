@@ -27,6 +27,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
+ *
  * \brief the BearerQosParameters class implements a set of Qos
  * parameters associated to the bearer.
  * Bearer Level Qos (TS 23.401, Clause 4.7.3)

@@ -30,6 +30,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lte
+ *
  * \brief The UeRecord class is developerd in order to store at the eNodeB
  * all information (such as feedback cqi, mac address etc...) of a UE registered
  * into that eNodeB. All UE records are managed by the UeManager class
