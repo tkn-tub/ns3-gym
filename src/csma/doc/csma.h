@@ -1,5 +1,5 @@
 /**
- * \defgroup CsmaModel CSMA Model
+ * \defgroup CsmaModel CSMA Device
  *
  * \section CsmaModelOverview CSMA Model Overview
  *

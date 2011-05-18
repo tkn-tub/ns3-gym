@@ -1,5 +1,5 @@
 /**
- * \defgroup PointToPointModel Point-to-Point Model
+ * \defgroup PointToPointModel Point-to-Point Device
  *
  * \section PointToPointPointOverview Point-to-Point Model Overview
  *

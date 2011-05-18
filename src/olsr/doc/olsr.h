@@ -22,7 +22,7 @@
 #define OLSR_H
 
 /**
- * \defgroup olsr OLSR
+ * \defgroup olsr OLSR Routing
  *
  * \section model Model
  *

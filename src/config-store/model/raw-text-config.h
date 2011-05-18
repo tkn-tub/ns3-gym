@@ -7,6 +7,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup configstore
+ *
+ */
 class RawTextConfigSave : public FileConfig
 {
 public:
@@ -20,6 +24,10 @@ private:
   std::ofstream *m_os;
 };
 
+/**
+ * \ingroup configstore
+ *
+ */
 class RawTextConfigLoad : public FileConfig
 {
 public:

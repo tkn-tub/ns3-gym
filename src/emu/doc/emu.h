@@ -1,5 +1,5 @@
 /**
- * \defgroup EmuModel Emulated Net Device Model
+ * \defgroup EmuModel Emulated Device
  *
  * \section EmuModelOverview Emulated Net Device Model Overview
  *
