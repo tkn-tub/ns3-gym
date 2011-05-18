@@ -88,6 +88,7 @@ def configure(conf):
     conf.sub_config('test')
     conf.sub_config('click')
     conf.sub_config('openflow')
+    conf.sub_config('stats')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
