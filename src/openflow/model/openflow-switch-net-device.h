@@ -47,7 +47,6 @@
 namespace ns3 {
 
 /**
- * \ingroup devices
  * \defgroup openflow OpenFlow
  *
  * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table

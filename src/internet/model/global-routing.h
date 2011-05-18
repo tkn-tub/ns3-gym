@@ -18,7 +18,7 @@
  */
 
 /**
- * \ingroup routing
+ * \ingroup internet
  * \defgroup globalrouting Global Routing
  *
  * \section model Model

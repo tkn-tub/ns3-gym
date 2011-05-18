@@ -1,5 +1,4 @@
 /**
- * \ingroup devices
  * \defgroup PointToPointModel Point-to-Point Model
  *
  * \section PointToPointPointOverview Point-to-Point Model Overview

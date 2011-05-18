@@ -33,8 +33,7 @@
 #define DSDV_H_
 
 /**
- * \ingroup routing
- * \defgroup dsdv
+ * \defgroup dsdv DSDV
  * 
  * \brief Destination-Sequenced Distance Vector (DSDV) routing protocol is a pro-active, table-driven routing protocol
  *  for MANETs developed by Charles E. Perkins and Pravin Bhagwat in 1994. It uses the hop count as metric in route

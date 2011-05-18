@@ -34,14 +34,46 @@
  * 
  * \section module-sec Module overview
  *
- * The ns-3 library is split across many modules.  :
- *     - core: located in src/core and contains a number of facilities which
- *       do not depend on any other module. Some of these facilities are
- *       OS-dependent.
- *     - network: located in src/network. Network related files.
- *     - internet: located in src/internet. Internet related files.
- *     - applications: located in src/applications
- *     - mobility:  located in src/mobility; Mobility models for nodes
+ * The ns-3 library is split across many modules:
+ *     - aodv
+ *     - applications
+ *     - bridge
+ *     - click
+ *     - config-store
+ *     - core
+ *     - csma
+ *     - csma-layout
+ *     - dsdv
+ *     - emu
+ *     - energy
+ *     - flow-monitor
+ *     - internet
+ *     - lte
+ *     - mesh
+ *     - mobility
+ *     - mpi
+ *     - netanim
+ *     - network
+ *     - nix-vector-routing
+ *     - ns3tcp
+ *     - ns3wifi
+ *     - olsr
+ *     - openflow
+ *     - point-to-point
+ *     - point-to-point-layout
+ *     - propagation
+ *     - spectrum
+ *     - stats
+ *     - tap-bridge
+ *     - template
+ *     - test
+ *     - tools
+ *     - topology-read
+ *     - uan
+ *     - virtual-net-device
+ *     - visualizer
+ *     - wifi
+ *     - wimax
  *
  * More detail can be found in the <b><a href="modules.html">Modules</a></b>
  * tab.

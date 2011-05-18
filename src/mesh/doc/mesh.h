@@ -23,7 +23,6 @@
  */
 
 /**
- * \ingroup devices
  * \defgroup mesh Mesh
  *
  * \brief MAC-layer mobile mesh networking.

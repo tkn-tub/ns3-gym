@@ -26,7 +26,7 @@
 namespace ns3 {
 
 /**
- * \ingroup routing 
+ * \ingroup internet 
  * \defgroup ipv4ListRouting Ipv4 List Routing
  */
 /**

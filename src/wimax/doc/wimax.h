@@ -1,5 +1,4 @@
 /**
- * \ingroup devices
  * \defgroup WiMAX WiMAX Models
  *
  * \section WiMAXModelOverview WiMAX Model Overview

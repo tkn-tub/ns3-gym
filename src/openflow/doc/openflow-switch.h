@@ -21,7 +21,6 @@
  */
 
 /**
- * \ingroup devices
  * \defgroup OpenFlowSwitchModel OpenFlow Switch Model
  *
  * \section OpenFlowSwitchModelOverview OpenFlow Switch Model Overview

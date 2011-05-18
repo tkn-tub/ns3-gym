@@ -43,7 +43,7 @@ class Ipv6RoutingTableEntry;
 class Ipv6MulticastRoutingTableEntry;
 
 /**
- * \ingroup routing
+ * \ingroup internet
  * \defgroup ipv6StaticRouting Ipv6StaticRouting
  */
 /**

@@ -30,7 +30,6 @@
 #define AODV_H
 
 /**
- * \ingroup routing
  * \defgroup aodv AODV
  * 
  * This model implements the base specification of the Ad hoc on demand distance vector (AODV)
