@@ -50,7 +50,7 @@ using namespace ns3;
 
 
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
-: TestSuite ("lte-test-rr-ff-mac-scheduler", SYSTEM)
+: TestSuite ("lte-rr-ff-mac-scheduler", SYSTEM)
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
