@@ -278,7 +278,7 @@ int main (int argc, char *argv[])
   bool animEnabled = false;
   AnimationInterface anim;
   if (anim.SetServerPort (9) && anim.SetOutputFile (anim_name.c_str ()))
-    {  
+    {
       NS_LOG_INFO ("Animation Interface Enabled.");
       animEnabled = true;
       anim.StartAnimation ();

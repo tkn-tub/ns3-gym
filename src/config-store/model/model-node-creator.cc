@@ -32,7 +32,7 @@ ModelCreator::Build (GtkTreeStore *treestore)
   //this function will go through all the objects and call on them
   //DoStartVisitObject, DoIterate and DoEndVisitObject
   Iterate ();
-  //NS_ASSERT (m_iters.size () == 1);
+  NS_ASSERT (m_iters.size () == 1);
 }
 
 
@@ -116,8 +116,8 @@ ModelCreator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t i
   node->index = index;
   gtk_tree_store_append (m_treestore, current, parent);
   gtk_tree_store_set (m_treestore, current,
-              COL_NODE, node,
-                     -1);
+                      COL_NODE, node,
+                      -1);
   m_iters.push_back (current);
 }
 void 
@@ -125,7 +125,7 @@ ModelCreator::DoEndVisitArrayItem (void)
 {
   GtkTreeIter *iter = m_iters.back ();
   g_free (iter);
-  m_iters.pop_back ();  
+  m_iters.pop_back ();
 }
 
 void
@@ -165,4 +165,4 @@ ModelCreator::DoEndVisitMapItem (void)
   m_iters.pop_back ();
 }
 
-}//end namespace ns3
+} //end namespace ns3

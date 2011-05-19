@@ -35,7 +35,8 @@ public:
 
 WatchdogTestCase::WatchdogTestCase()
   : TestCase ("Check that we can keepalive a watchdog")
-{}
+{
+}
 
 void
 WatchdogTestCase::Expire (Time expected)

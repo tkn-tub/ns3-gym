@@ -24,7 +24,8 @@
 namespace ns3 {
 
 NetDeviceContainer::NetDeviceContainer ()
-{}
+{
+}
 NetDeviceContainer::NetDeviceContainer (Ptr<NetDevice> dev)
 {
   m_devices.push_back (dev);

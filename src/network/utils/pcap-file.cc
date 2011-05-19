@@ -443,7 +443,7 @@ PcapFile::Read (
 
   //
   // We don't always want to force the client to keep a maximum length buffer 
-  // around so we allow her to specify a minimum number of bytes to read.  
+  // around so we allow her to specify a minimum number of bytes to read.
   // Usually 64 bytes is enough information to print all of the headers, so
   // it isn't typically necessary to read all thousand bytes of an echo packet,
   // for example, to figure out what is going on.
@@ -474,7 +474,7 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
     {
       return true;
     }
-  
+
   uint8_t *data1 = new uint8_t [snapLen] ();
   uint8_t *data2 = new uint8_t [snapLen] ();
   uint32_t tsSec1, tsSec2;
@@ -483,7 +483,7 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
   uint32_t origLen1, origLen2;
   uint32_t readLen1, readLen2;
   bool diff = false;
-  
+
   while (!pcap1.Eof () && !pcap2.Eof ())
     {
       pcap1.Read (data1, snapLen, tsSec1, tsUsec1, inclLen1, origLen1, readLen1);
@@ -505,19 +505,19 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
           diff = true; // Next packet timestamps do not match
           break;
         }
-      
+
       if (readLen1 != readLen2)
         {
           diff = true; // Packet lengths do not match
           break;
         }
-      
+
       if (std::memcmp(data1, data2, readLen1) != 0)
         {
           diff = true; // Packet data do not match
           break;
         }
-    }  
+    }
   sec = tsSec1;
   usec = tsUsec1;
 

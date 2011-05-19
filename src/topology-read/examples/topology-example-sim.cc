@@ -80,12 +80,12 @@ int main (int argc, char *argv[])
 
   Ptr<TopologyReader> inFile = 0;
   TopologyReaderHelper topoHelp;
-  
+
   NodeContainer nodes;
-  
-  topoHelp.SetFileName(input);
-  topoHelp.SetFileType(format);
-  inFile = topoHelp.GetTopologyReader();
+
+  topoHelp.SetFileName (input);
+  topoHelp.SetFileType (format);
+  inFile = topoHelp.GetTopologyReader ();
 
   if (inFile != 0)
     {
@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
   listRH.Add (staticRouting, 0);
   listRH.Add (nixRouting, 10);
 
-  stack.SetRoutingHelper (listRH);
+  stack.SetRoutingHelper (listRH);  // has effect on the next Install ()
   stack.Install (nodes);
 
   NS_LOG_INFO ("creating ip4 addresses");

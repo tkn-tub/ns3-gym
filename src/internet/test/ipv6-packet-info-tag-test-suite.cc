@@ -68,7 +68,7 @@ AddInternetStack (Ptr<Node> node)
   ipv6->RegisterOptions ();
 }
 
-class Ipv6PacketInfoTagTest: public TestCase 
+class Ipv6PacketInfoTagTest : public TestCase
 {
 public:
   Ipv6PacketInfoTagTest ();
@@ -80,7 +80,8 @@ private:
 
 Ipv6PacketInfoTagTest::Ipv6PacketInfoTagTest ()
   : TestCase ("Ipv6PacketInfoTagTest") 
-{}
+{
+}
 
 void
 Ipv6PacketInfoTagTest::RxCb (Ptr<Socket> socket)

@@ -35,7 +35,8 @@ UdpHeader::UdpHeader ()
     m_payloadSize (0xfffd),
     m_calcChecksum(false),
     m_goodChecksum(true)
-{}
+{
+}
 UdpHeader::~UdpHeader ()
 {
   m_sourcePort = 0xfffe;
@@ -71,8 +72,8 @@ UdpHeader::GetDestinationPort (void) const
 }
 void 
 UdpHeader::InitializeChecksum (Ipv4Address source, 
-                              Ipv4Address destination,
-                              uint8_t protocol)
+                               Ipv4Address destination,
+                               uint8_t protocol)
 {
   m_source = source;
   m_destination = destination;
@@ -110,7 +111,7 @@ UdpHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpHeader")
     .SetParent<Header> ()
     .AddConstructor<UdpHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -124,7 +125,7 @@ UdpHeader::Print (std::ostream &os) const
   os << "length: " << m_payloadSize + GetSerializedSize ()
      << " " 
      << m_sourcePort << " > " << m_destinationPort
-    ;
+  ;
 }
 
 uint32_t 
@@ -164,13 +165,13 @@ UdpHeader::Deserialize (Buffer::Iterator start)
   i.Next (2);
 
   if(m_calcChecksum)
-  {
+    {
       uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
       i = start;
       uint16_t checksum = i.CalculateIpChecksum (start.GetSize (), headerChecksum);
 
       m_goodChecksum = (checksum == 0);
-  }
+    }
 
   return GetSerializedSize ();
 }

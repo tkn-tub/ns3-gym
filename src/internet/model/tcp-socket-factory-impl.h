@@ -28,10 +28,10 @@ namespace ns3 {
 class TcpL4Protocol;
 
 /**
- * \ingroup internetStack
+ * \ingroup internet
  * \defgroup tcp Tcp
  *
- * This class serves to create sockets of the TcpSocketBase type.  
+ * This class serves to create sockets of the TcpSocketBase type.
  */
 
 /**

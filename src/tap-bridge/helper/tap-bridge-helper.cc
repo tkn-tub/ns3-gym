@@ -57,7 +57,7 @@ TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd, const AttributeValu
   return Install (node, nd);
 }
 
-  Ptr<NetDevice>
+Ptr<NetDevice>
 TapBridgeHelper::Install (Ptr<Node> node, Ptr<NetDevice> nd)
 {
   NS_LOG_FUNCTION (node << nd);

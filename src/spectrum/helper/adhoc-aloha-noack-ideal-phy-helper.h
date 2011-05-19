@@ -36,6 +36,8 @@ class SpectrumValue;
 class SpectrumChannel;
 
 /**
+ * \ingroup spectrum
+ *
  *
  * create the NetDevice depicted in the figure
  * @image html HdOfdmAlohaNoAck.png

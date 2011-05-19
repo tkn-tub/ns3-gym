@@ -31,6 +31,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * @brief SpectrumChannel implementation which handles a single spectrum model
  *
  * All SpectrumPhy layers attached to this SpectrumChannel
@@ -48,10 +50,10 @@ public:
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
   virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
-  virtual void StartTx (Ptr<PacketBurst> p, 
-                        Ptr <SpectrumValue> txPsd, 
-                        SpectrumType st, 
-                        Time duration, 
+  virtual void StartTx (Ptr<PacketBurst> p,
+                        Ptr <SpectrumValue> txPsd,
+                        SpectrumType st,
+                        Time duration,
                         Ptr<SpectrumPhy> sender);
 
 
@@ -65,7 +67,6 @@ public:
   virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
 
 private:
-
   virtual void DoDispose ();
 
   /**

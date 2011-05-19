@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleOfdmWimaxPhy);
 TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 {
   static TypeId
-    tid =
+  tid =
     TypeId ("ns3::SimpleOfdmWimaxPhy").SetParent<WimaxPhy> ()
 
     .AddAttribute ("NoiseFigure",

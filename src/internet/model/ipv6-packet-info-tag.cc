@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-Ipv6PacketInfoTag::Ipv6PacketInfoTag ()  
+Ipv6PacketInfoTag::Ipv6PacketInfoTag ()
   : m_addr (Ipv6Address ()),
     m_ifindex (0),
     m_hoplimit (0),
@@ -88,7 +88,7 @@ Ipv6PacketInfoTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv6PacketInfoTag")
     .SetParent<Tag> ()
     .AddConstructor<Ipv6PacketInfoTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId
@@ -101,9 +101,9 @@ uint32_t
 Ipv6PacketInfoTag::GetSerializedSize (void) const
 { 
   return 16
-    + sizeof (uint8_t)
-    + sizeof (uint8_t)
-    + sizeof (uint8_t);
+         + sizeof (uint8_t)
+         + sizeof (uint8_t)
+         + sizeof (uint8_t);
 }
 void 
 Ipv6PacketInfoTag::Serialize (TagBuffer i) const
@@ -134,5 +134,5 @@ Ipv6PacketInfoTag::Print (std::ostream &os) const
   os << ", TClass:" << (uint32_t) m_tclass;
   os << "] ";
 }
-}//namespace ns3
+} //namespace ns3
 

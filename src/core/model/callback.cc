@@ -4,30 +4,33 @@ namespace ns3 {
 
 CallbackValue::CallbackValue ()
   : m_value ()
-{}
+{
+}
 CallbackValue::CallbackValue (const CallbackBase &base)
   : m_value (base)
-{}
+{
+}
 CallbackValue::~CallbackValue ()
-{}
-void 
+{
+}
+void
 CallbackValue::Set (CallbackBase base)
 {
   m_value = base;
 }
-Ptr<AttributeValue> 
+Ptr<AttributeValue>
 CallbackValue::Copy (void) const
 {
   return Create<CallbackValue> (m_value);
 }
-std::string 
+std::string
 CallbackValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::ostringstream oss;
   oss << PeekPointer (m_value.GetImpl ());
   return oss.str ();
 }
-bool 
+bool
 CallbackValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   return false;
@@ -48,36 +51,36 @@ namespace ns3 {
 std::string
 CallbackBase::Demangle(const std::string& mangled)
 {
-    int status;
-    char* demangled = abi::__cxa_demangle(mangled.c_str(),
-                                          NULL, NULL, &status);
+  int status;
+  char* demangled = abi::__cxa_demangle(mangled.c_str(),
+                                        NULL, NULL, &status);
 
-    std::string ret;
-    if (status == 0) {
-        NS_ASSERT(demangled);
-        ret = demangled;
+  std::string ret;
+  if (status == 0) {
+      NS_ASSERT(demangled);
+      ret = demangled;
     }
-    else if (status == -1) {
-        NS_LOG_UNCOND("Callback demangling failed: Memory allocation failure occured.");
-        ret = mangled;
+  else if (status == -1) {
+      NS_LOG_UNCOND("Callback demangling failed: Memory allocation failure occured.");
+      ret = mangled;
     }
-    else if (status == -2) {
-        NS_LOG_UNCOND("Callback demangling failed: Mangled name is not a valid under the C++ ABI mangling rules.");
-        ret = mangled;
+  else if (status == -2) {
+      NS_LOG_UNCOND("Callback demangling failed: Mangled name is not a valid under the C++ ABI mangling rules.");
+      ret = mangled;
     }
-    else if (status == -3) {
-        NS_LOG_UNCOND("Callback demangling failed: One of the arguments is invalid.");
-        ret = mangled;
+  else if (status == -3) {
+      NS_LOG_UNCOND("Callback demangling failed: One of the arguments is invalid.");
+      ret = mangled;
     }
-    else {
-        NS_LOG_UNCOND("Callback demangling failed: status " << status);
-        ret = mangled;
+  else {
+      NS_LOG_UNCOND("Callback demangling failed: status " << status);
+      ret = mangled;
     }
 
-    if (demangled) {
-        free(demangled);
+  if (demangled) {
+      free(demangled);
     }
-    return ret;
+  return ret;
 }
 
 } // namespace ns3
@@ -87,7 +90,7 @@ CallbackBase::Demangle(const std::string& mangled)
 std::string
 ns3::CallbackBase::Demangle(const std::string& mangled)
 {
-    return mangled;
+  return mangled;
 }
 
 #endif

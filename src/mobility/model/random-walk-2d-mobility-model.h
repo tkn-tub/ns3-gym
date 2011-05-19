@@ -45,7 +45,7 @@ namespace ns3 {
  */
 class RandomWalk2dMobilityModel : public MobilityModel 
 {
- public:
+public:
   static TypeId GetTypeId (void);
 
   enum Mode  {
@@ -53,7 +53,7 @@ class RandomWalk2dMobilityModel : public MobilityModel
     MODE_TIME
   };
 
- private:
+private:
   void Rebound (Time timeLeft);
   void DoWalk (Time timeLeft);
   void DoStartPrivate (void);

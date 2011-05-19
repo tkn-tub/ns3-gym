@@ -3,12 +3,15 @@
 namespace ns3 {
 
 FileConfig::~FileConfig ()
-{}
+{
+}
 
 NoneFileConfig::NoneFileConfig ()
-{}
+{
+}
 NoneFileConfig::~NoneFileConfig ()
-{}
+{
+}
 void 
 NoneFileConfig::SetFilename (std::string filename)
 {}
@@ -18,7 +21,7 @@ NoneFileConfig::Default (void)
 void 
 NoneFileConfig::Global (void)
 {}
-void 
+void
 NoneFileConfig::Attributes (void)
 {}
 

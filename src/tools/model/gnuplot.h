@@ -28,6 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tools
+ *
  * \brief Abstract class to store a plot line to be used by ns3::Gnuplot.
  *
  * This class contains a reference counted data object in m_data. The data

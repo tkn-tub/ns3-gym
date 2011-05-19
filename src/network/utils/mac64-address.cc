@@ -37,12 +37,12 @@ static char
 AsciiToLowCase (char c)
 {
   if (c >= ASCII_a && c <= ASCII_z) {
-    return c;
-  } else if (c >= ASCII_A && c <= ASCII_Z) {
-    return c + (ASCII_a - ASCII_A);
-  } else {
-    return c;
-  }
+      return c;
+    } else if (c >= ASCII_A && c <= ASCII_Z) {
+      return c + (ASCII_a - ASCII_A);
+    } else {
+      return c;
+    }
 }
 
 
@@ -57,25 +57,25 @@ Mac64Address::Mac64Address (const char *str)
     {
       uint8_t byte = 0;
       while (*str != ASCII_COLON && *str != 0) 
-	{
-	  byte <<= 4;
-	  char low = AsciiToLowCase (*str);
-	  if (low >= ASCII_a) 
-	    {
-	      byte |= low - ASCII_a + 10;
-	    } 
-	  else 
-	    {
-	      byte |= low - ASCII_ZERO;
-	    }
-	  str++;
-	}
+        {
+          byte <<= 4;
+          char low = AsciiToLowCase (*str);
+          if (low >= ASCII_a)
+            {
+              byte |= low - ASCII_a + 10;
+            }
+          else
+            {
+              byte |= low - ASCII_ZERO;
+            }
+          str++;
+        }
       m_address[i] = byte;
       i++;
       if (*str == 0) 
-	{
-	  break;
-	}
+        {
+          break;
+        }
       str++;
     }
   NS_ASSERT (i == 6);
@@ -147,7 +147,7 @@ bool operator == (const Mac64Address &a, const Mac64Address &b)
 }
 bool operator != (const Mac64Address &a, const Mac64Address &b)
 {
-  return ! (a == b);
+  return !(a == b);
 }
 
 std::ostream& operator<< (std::ostream& os, const Mac64Address & address)

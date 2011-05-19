@@ -56,8 +56,8 @@ private:
   std::vector<HwmpProtocol::FailedDestination> m_addressUnits;
   friend bool operator== (const IePerr & a, const IePerr & b);
 };
-  bool operator== (const IePerr & a, const IePerr & b);
-  std::ostream &operator << (std::ostream &os, const IePerr &perr);
+bool operator== (const IePerr & a, const IePerr & b);
+std::ostream &operator << (std::ostream &os, const IePerr &perr);
 } // namespace dot11s
 } //namespace ns3
 #endif

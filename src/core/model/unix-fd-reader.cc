@@ -82,7 +82,7 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
   // scheduling a "destroy time" method to make sure the thread exits before
   // proceeding.
   //
-  if (! m_destroyEvent.IsRunning ())
+  if (!m_destroyEvent.IsRunning ())
     {
       // hold a reference to ensure that this object is not
       // deallocated before the destroy-time event fires
@@ -162,7 +162,7 @@ void FdReader::Run (void)
       if (r == -1 && errno != EINTR)
         {
           NS_FATAL_ERROR ("select() failed: " << strerror (errno));
-	}
+        }
 
       if (FD_ISSET (m_evpipe[0], &readfds))
         {
@@ -187,7 +187,7 @@ void FdReader::Run (void)
               NS_LOG_WARN ("read() failed: " << strerror (errno));
               break;
             }
-	}
+        }
 
       if (m_stop)
         {

@@ -19,8 +19,7 @@
  */
 
 /**
-* \ingroup routing
-* \defgroup click Click
+* \defgroup click Click Routing
 *
 * \section model Model
 *

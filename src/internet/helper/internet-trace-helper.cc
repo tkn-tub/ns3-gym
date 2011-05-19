@@ -93,7 +93,7 @@ PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t
         {
           continue;
         }
-      
+
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       if (ipv4)
         {
@@ -356,7 +356,7 @@ PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t
         {
           continue;
         }
-      
+
       Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
       if (ipv6)
         {

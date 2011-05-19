@@ -41,7 +41,7 @@ using namespace ns3;
  * correctly received by an udpServer application
  */
 
-class UdpClientServerTestCase: public TestCase
+class UdpClientServerTestCase : public TestCase
 {
 public:
   UdpClientServerTestCase ();
@@ -115,7 +115,7 @@ void UdpClientServerTestCase::DoRun (void)
  * correctly received by an udpServer application
  */
 
-class UdpTraceClientServerTestCase: public TestCase
+class UdpTraceClientServerTestCase : public TestCase
 {
 public:
   UdpTraceClientServerTestCase ();
@@ -184,7 +184,7 @@ void UdpTraceClientServerTestCase::DoRun (void)
  * Test that all the PacketLossCounter class checks loss correctly in different cases
  */
 
-class PacketLossCounterTestCase: public TestCase
+class PacketLossCounterTestCase : public TestCase
 {
 public:
   PacketLossCounterTestCase ();
@@ -208,20 +208,20 @@ void PacketLossCounterTestCase::DoRun (void)
 {
   PacketLossCounter lossCounter(32);
   lossCounter.NotifyReceived(32); //out of order
-  for (uint32_t i=0;i<64;i++)
+  for (uint32_t i=0; i<64; i++)
     {
       lossCounter.NotifyReceived(i);
     }
 
   NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 0, "Check that 0 packets are lost");
 
-  for (uint32_t i=65;i<128;i++) // drop (1) seqNum 64
+  for (uint32_t i=65; i<128; i++) // drop (1) seqNum 64
     {
       lossCounter.NotifyReceived(i);
     }
   NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 1, "Check that 1 packet is lost");
 
-  for (uint32_t i=134;i<200;i++) // drop seqNum 128,129,130,131,132,133
+  for (uint32_t i=134; i<200; i++) // drop seqNum 128,129,130,131,132,133
     {
       lossCounter.NotifyReceived(i);
     }
@@ -236,7 +236,7 @@ void PacketLossCounterTestCase::DoRun (void)
   lossCounter.NotifyReceived(202);
   lossCounter.NotifyReceived(203);
   lossCounter.NotifyReceived(204);
-  for (uint32_t i=205;i<250;i++)
+  for (uint32_t i=205; i<250; i++)
     {
       lossCounter.NotifyReceived(i);
     }
@@ -248,13 +248,13 @@ void PacketLossCounterTestCase::DoRun (void)
   lossCounter.NotifyReceived(252);
   lossCounter.NotifyReceived(253);
   lossCounter.NotifyReceived(254);
-  for (uint32_t i=256;i<300;i++)
+  for (uint32_t i=256; i<300; i++)
     {
       lossCounter.NotifyReceived(i);
     }
   NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 9, "Check that 9 (6+1+2) packet are lost");
 }
-class UdpClientServerTestSuite: public TestSuite
+class UdpClientServerTestSuite : public TestSuite
 {
 public:
   UdpClientServerTestSuite ();

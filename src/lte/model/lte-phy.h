@@ -41,6 +41,8 @@ class LteNetDevice;
 class IdealControlMessage;
 
 /**
+ * \ingroup lte
+ *
  * The LtePhy models the physical layer of LTE. It is composed by two
  * LteSpectrumPhy, one for the downlink and one for the uplink.
  */

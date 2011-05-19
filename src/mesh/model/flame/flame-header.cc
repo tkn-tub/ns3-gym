@@ -52,17 +52,17 @@ void
 FlameHeader::Print (std::ostream &os) const
 {
   os << "Cost             = " << (uint16_t) m_cost << std::endl << "Sequence number  = " << m_seqno
-      << std::endl << "Orig Destination = " << m_origDst << std::endl << "Orig Source      = " << m_origSrc << std::endl;
+     << std::endl << "Orig Destination = " << m_origDst << std::endl << "Orig Source      = " << m_origSrc << std::endl;
 }
 uint32_t
 FlameHeader::GetSerializedSize (void) const
 {
   return 1 // Reserved
-      + 1 // Cost
-      + 2 // Seqno
-      + 6 // Orig Dst
-      + 6 // Orig Src
-      + 2 // Flame Port
+         + 1 // Cost
+         + 2 // Seqno
+         + 6 // Orig Dst
+         + 6 // Orig Src
+         + 2 // Flame Port
   ;
 }
 void
@@ -142,7 +142,7 @@ bool
 operator== (const FlameHeader & a, const FlameHeader & b)
 {
   return ((a.m_cost == b.m_cost) && (a.m_seqno == b.m_seqno) && (a.m_origDst == b.m_origDst) && (a.m_origSrc
-      == b.m_origSrc) && (a.m_protocol == b.m_protocol));
+                                                                                                 == b.m_origSrc) && (a.m_protocol == b.m_protocol));
 }
 
 } //namespace flame

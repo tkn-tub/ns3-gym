@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,6 +39,7 @@ class SupportedRates;
 
 /**
  * \brief The Extended Supported Rates Information Element
+ * \ingroup wifi
  *
  * This class knows how to serialise and deserialise the Extended
  * Supported Rates Element that holds (non-HT) rates beyond the 8 that
@@ -48,7 +49,8 @@ class SupportedRates;
  * instance of \c ExtendedSupportedRatesIE lies within \c
  * SupportedRates.
  */
-class ExtendedSupportedRatesIE : public WifiInformationElement {
+class ExtendedSupportedRatesIE : public WifiInformationElement
+{
 public:
   ExtendedSupportedRatesIE ();
   ExtendedSupportedRatesIE (SupportedRates *rates);
@@ -79,6 +81,7 @@ private:
 
 /**
  * \brief The Supported Rates Information Element
+ * \ingroup wifi
  *
  * This class knows how to serialise and deserialise the Supported
  * Rates Element that holds the first 8 (non-HT) supported rates.
@@ -86,7 +89,8 @@ private:
  * The \c ExtendedSupportedRatesIE class (of which an instance exists
  * in objects of this class) deals with rates beyond the first 8.
  */
-class SupportedRates : public WifiInformationElement {
+class SupportedRates : public WifiInformationElement
+{
 public:
   SupportedRates ();
 
@@ -103,7 +107,7 @@ public:
   uint8_t GetInformationFieldSize () const;
   void SerializeInformationField (Buffer::Iterator start) const;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
-                                  uint8_t length);
+                                       uint8_t length);
 
   /*
    * We support the Extended Supported Rates Information Element

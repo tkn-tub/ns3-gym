@@ -44,7 +44,7 @@ public:
   bool Get (void) const;
   template <typename T>
   bool GetAccessor (T &v) const;
-  
+
   operator bool () const;
 
   virtual Ptr<AttributeValue> Copy (void) const;

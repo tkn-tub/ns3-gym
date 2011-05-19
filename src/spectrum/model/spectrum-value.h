@@ -33,6 +33,8 @@ namespace ns3 {
 typedef std::vector<double> Values;
 
 /**
+ * \ingroup spectrum
+ *
  * \brief Set of values corresponding to a given SpectrumModel
  *
  * This class implements a Function Space which can represent any
@@ -76,7 +78,7 @@ public:
 
 
   SpectrumValue ();
-  
+
 
   /**
    * Access value at given frequency index

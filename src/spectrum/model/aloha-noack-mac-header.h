@@ -28,6 +28,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class AlohaNoackMacHeader : public Header
 {
 public:

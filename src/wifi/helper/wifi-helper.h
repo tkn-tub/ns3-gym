@@ -98,7 +98,7 @@ public:
    * \returns a new WifiHelper in a default state
    *
    * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
-   * and both objects using their default attribute values. By default, configure MAC and PHY 
+   * and both objects using their default attribute values. By default, configure MAC and PHY
    * for 802.11a.
    */
   static WifiHelper Default (void);
@@ -167,7 +167,7 @@ public:
   void SetStandard (enum WifiPhyStandard standard);
 
   /**
-   * Helper to enable all WifiNetDevice log components with one statement 
+   * Helper to enable all WifiNetDevice log components with one statement
    */
   static void EnableLogComponents (void);
 

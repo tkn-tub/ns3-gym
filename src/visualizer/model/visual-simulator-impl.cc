@@ -31,16 +31,16 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (VisualSimulatorImpl);
 
 namespace
-{    
-  ObjectFactory
-  GetDefaultSimulatorImplFactory ()
-  {
-    ObjectFactory factory;
-    factory.SetTypeId (DefaultSimulatorImpl::GetTypeId ());
-    return factory;
-  }
+{
+ObjectFactory
+GetDefaultSimulatorImplFactory ()
+{
+  ObjectFactory factory;
+  factory.SetTypeId (DefaultSimulatorImpl::GetTypeId ());
+  return factory;
 }
-  
+}
+
 
 TypeId
 VisualSimulatorImpl::GetTypeId (void)
@@ -53,7 +53,7 @@ VisualSimulatorImpl::GetTypeId (void)
                    ObjectFactoryValue (GetDefaultSimulatorImplFactory ()),
                    MakeObjectFactoryAccessor (&VisualSimulatorImpl::m_simulatorImplFactory),
                    MakeObjectFactoryChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -63,9 +63,10 @@ VisualSimulatorImpl::VisualSimulatorImpl ()
 }
 
 VisualSimulatorImpl::~VisualSimulatorImpl ()
-{}
+{
+}
 
-void 
+void
 VisualSimulatorImpl::DoDispose (void)
 {
   if (m_simulator)
@@ -119,14 +120,14 @@ VisualSimulatorImpl::Run (void)
 {
   if (!Py_IsInitialized ()) 
     {
-      const char *argv[] = {"python", NULL};
+      const char *argv[] = { "python", NULL};
       Py_Initialize();
       PySys_SetArgv(1, (char**) argv);
     }
   PyRun_SimpleString(
-                     "import visualizer\n"
-                     "visualizer.start();\n"
-                     );
+    "import visualizer\n"
+    "visualizer.start();\n"
+    );
 }
 
 void
@@ -171,7 +172,7 @@ VisualSimulatorImpl::ScheduleNow (EventImpl *event)
 EventId
 VisualSimulatorImpl::ScheduleDestroy (EventImpl *event)
 {
-  return m_simulator->ScheduleDestroy (event);  
+  return m_simulator->ScheduleDestroy (event);
 }
 
 Time

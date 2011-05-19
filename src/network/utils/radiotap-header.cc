@@ -23,7 +23,7 @@
 #include "ns3/log.h"
 #include "radiotap-header.h"
 
-NS_LOG_COMPONENT_DEFINE ("RadiotapHeader");  
+NS_LOG_COMPONENT_DEFINE ("RadiotapHeader");
 
 namespace ns3 {
 
@@ -39,7 +39,7 @@ RadiotapHeader::RadiotapHeader()
     m_channelFlags(CHANNEL_FLAG_NONE),
     m_antennaSignal(0),
     m_antennaNoise(0)
-{       
+{
   NS_LOG_FUNCTION (this);
 }
  
@@ -48,7 +48,7 @@ TypeId RadiotapHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::RadiotapHeader")
     .SetParent<Header> ()
     .AddConstructor<RadiotapHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -59,14 +59,14 @@ RadiotapHeader::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-uint32_t  
+uint32_t
 RadiotapHeader::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_length;
 }
 
-void  
+void
 RadiotapHeader::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this);
@@ -75,7 +75,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   start.WriteU8 (0); // pad field
   start.WriteU16 (m_length); // entire length of radiotap data + header
   start.WriteU32 (m_present); // bits describing which fields follow header
-  
+
   //
   // Time Synchronization Function Timer (when the first bit of the MPDU 
   // arrived at the MAC)
@@ -129,20 +129,20 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
     }
 }
 
-uint32_t  
+uint32_t
 RadiotapHeader::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this);
-    
+
   uint8_t __attribute__ ((unused)) tmp = start.ReadU8 (); // major version of radiotap header
   NS_ASSERT_MSG (tmp == 0x00, "RadiotapHeader::Deserialize(): Unexpected major version");
   start.ReadU8 (); // pad field
-  
+
   m_length = start.ReadU16 (); // entire length of radiotap data + header
   m_present = start.ReadU32 (); // bits describing which fields follow header
-  
+
   uint32_t bytesRead = 8;
-  
+
   //
   // Time Synchronization Function Timer (when the first bit of the MPDU arrived at the MAC)
   //
@@ -209,12 +209,12 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
       m_antennaNoise = start.ReadU8();
       ++bytesRead;
     }
-  
+
   NS_ASSERT_MSG(m_length == bytesRead, "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
   return bytesRead;
 }
 
-void  
+void
 RadiotapHeader::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this);
@@ -227,7 +227,7 @@ RadiotapHeader::Print (std::ostream &os) const
      << " noise=" << (int16_t) m_antennaNoise;
 }
 
-void  
+void
 RadiotapHeader::SetTsft (uint64_t value)
 {
   NS_LOG_FUNCTION (this << value);
@@ -242,7 +242,7 @@ RadiotapHeader::SetTsft (uint64_t value)
   NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
 }
 
-uint64_t  
+uint64_t
 RadiotapHeader::GetTsft () const
 {
   NS_LOG_FUNCTION (this);
@@ -346,16 +346,17 @@ RadiotapHeader::SetAntennaSignalPower (double signal)
       m_antennaSignal = static_cast<int8_t> (floor(signal + 0.5));
     }
 
-  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);}
+  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
+}
 
-uint8_t 
+uint8_t
 RadiotapHeader::GetAntennaSignalPower (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_antennaSignal;
 }
 
-void 
+void
 RadiotapHeader::SetAntennaNoisePower (double noise)
 {
   NS_LOG_FUNCTION (this << noise);

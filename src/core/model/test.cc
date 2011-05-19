@@ -36,7 +36,7 @@ std::string
 ReplaceXmlSpecialCharacters (std::string xml)
 {
   std::string specials = "<>&\"'";
-  std::string replacements[] = {"&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
+  std::string replacements[] = { "&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
   std::string result;
   std::size_t index, length = xml.length ();
 
@@ -385,8 +385,8 @@ TestCase::DoReportEnd  (void)
   const double MS_PER_SEC = 1000.;
 
   *m_ofs << "    <CaseTime>" << "real " << m_msClock.GetElapsedReal () / MS_PER_SEC
-                             << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
-                             << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
+         << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
+         << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
          << "</CaseTime>" << std::endl;
 
   *m_ofs << "  </TestCase>" << std::endl;
@@ -604,7 +604,7 @@ void
 TestSuite::DoReportStart (void)
 {
   m_msClock.Start ();
-  
+
   if (m_ofs == 0)
     {
       return;
@@ -637,7 +637,7 @@ void
 TestSuite::DoReportEnd (void)
 {
   m_msClock.End ();
-  
+
   if (m_ofs == 0)
     {
       return;
@@ -649,8 +649,8 @@ TestSuite::DoReportEnd (void)
   const double MS_PER_SEC = 1000.;
 
   *m_ofs << "  <SuiteTime>" << "real " << m_msClock.GetElapsedReal () / MS_PER_SEC
-                            << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
-                            << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
+         << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
+         << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
          << "</SuiteTime>" << std::endl;
 
   *m_ofs << "</TestSuite>" << std::endl;

@@ -172,7 +172,7 @@ AdhocWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     {
       if (hdr->IsQosData () && hdr->IsQosAmsdu ())
         {
-          NS_LOG_DEBUG ("Received A-MSDU from"<<from);
+          NS_LOG_DEBUG ("Received A-MSDU from" << from);
           DeaggregateAmsduAndForward (packet, hdr);
         }
       else

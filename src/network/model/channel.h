@@ -27,7 +27,7 @@ namespace ns3 {
 class NetDevice;
 
 /**
- * \ingroup node
+ * \ingroup network
  * \defgroup channel Channel
  */
 /**

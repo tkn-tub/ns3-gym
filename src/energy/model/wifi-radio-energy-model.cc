@@ -179,7 +179,7 @@ WifiRadioEnergyModel::GetCurrentState (void) const
 
 void
 WifiRadioEnergyModel::SetEnergyDepletionCallback (
-    WifiRadioEnergyDepletionCallback callback)
+  WifiRadioEnergyDepletionCallback callback)
 {
   NS_LOG_FUNCTION (this);
   if (callback.IsNull ())

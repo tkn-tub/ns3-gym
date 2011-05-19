@@ -31,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("CommandLine");
 namespace ns3 {
 
 CommandLine::CommandLine ()
-{}
+{
+}
 CommandLine::CommandLine (const CommandLine &cmd)
 {
   Copy (cmd);
@@ -67,9 +68,10 @@ CommandLine::Clear (void)
 }
 
 CommandLine::Item::~Item ()
-{}
+{
+}
 
-void 
+void
 CommandLine::Parse (int iargc, char *argv[]) const
 {
   int argc = iargc;
@@ -79,28 +81,28 @@ CommandLine::Parse (int iargc, char *argv[]) const
       std::string param = *argv;
       std::string::size_type cur = param.find ("--");
       if (cur == 0)
-	{
-	  param = param.substr (2, param.size () - 2);
-	}
+        {
+          param = param.substr (2, param.size () - 2);
+        }
       else
-	{
-	  cur = param.find ("-");
-	  if (cur == 0)
-	    {
-	      param = param.substr (1, param.size () - 1);
-	    }
-	  else
-	    {
-	      // invalid argument. ignore.
-	      continue;
-	    }
-	}
+        {
+          cur = param.find ("-");
+          if (cur == 0)
+            {
+              param = param.substr (1, param.size () - 1);
+            }
+          else
+            {
+              // invalid argument. ignore.
+              continue;
+            }
+        }
       cur = param.find ("=");
       std::string name, value;
       if (cur == std::string::npos)
         {
-	  name = param;
-	  value = "";
+          name = param;
+          value = "";
         }
       else
         {
@@ -116,7 +118,7 @@ CommandLine::PrintHelp (void) const
 {
   std::cout << "--PrintHelp: Print this help message." << std::endl;
   std::cout << "--PrintGroups: Print the list of groups." << std::endl;
-  std::cout << "--PrintTypeIds: Print all TypeIds." << std::endl;  
+  std::cout << "--PrintTypeIds: Print all TypeIds." << std::endl;
   std::cout << "--PrintGroup=[group]: Print all TypeIds of group." << std::endl;
   std::cout << "--PrintAttributes=[typeid]: Print all attributes of typeid." << std::endl;
   std::cout << "--PrintGlobals: Print the list of globals." << std::endl;
@@ -124,9 +126,9 @@ CommandLine::PrintHelp (void) const
     {
       std::cout << "User Arguments:" << std::endl;
       for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
-	{
-	  std::cout << "    --" << (*i)->m_name << ": " << (*i)->m_help << std::endl;
-	}
+        {
+          std::cout << "    --" << (*i)->m_name << ": " << (*i)->m_help << std::endl;
+        }
     }
 }
 
@@ -140,7 +142,7 @@ CommandLine::PrintGlobals (void) const
       StringValue v;
       (*i)->GetValue (v);
       std::cout << v.Get () << "]:  "
-		<< (*i)->GetHelp () << std::endl;      
+                << (*i)->GetHelp () << std::endl;
     }
 }
 
@@ -158,7 +160,7 @@ CommandLine::PrintAttributes (std::string type) const
       Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
       Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
       std::cout << initial->SerializeToString (checker) << "]:  "
-		<< tid.GetAttributeHelp (i) << std::endl;
+                << tid.GetAttributeHelp (i) << std::endl;
     }
 }
 
@@ -170,9 +172,9 @@ CommandLine::PrintGroup (std::string group) const
     {
       TypeId tid = TypeId::GetRegistered (i);
       if (tid.GetGroupName () == group)
-	{
-	  std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
-	}
+        {
+          std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
+        }
     }
 }
 
@@ -195,22 +197,22 @@ CommandLine::PrintGroups (void) const
       TypeId tid = TypeId::GetRegistered (i);
       std::string group = tid.GetGroupName ();
       if (group == "")
-	{
-	  continue;
-	}
+        {
+          continue;
+        }
       bool found = false;
       for (std::list<std::string>::const_iterator j = groups.begin (); j != groups.end (); ++j)
-	{
-	  if (*j == group)
-	    {
-	      found = true;
-	      break;
-	    }
-	}
+        {
+          if (*j == group)
+            {
+              found = true;
+              break;
+            }
+        }
       if (!found)
-	{
-	  groups.push_back (group);
-	}
+        {
+          groups.push_back (group);
+        }
     }
   for (std::list<std::string>::const_iterator k = groups.begin (); k != groups.end (); ++k)
     {

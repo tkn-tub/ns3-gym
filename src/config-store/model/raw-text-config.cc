@@ -12,7 +12,8 @@ namespace ns3 {
 
 RawTextConfigSave::RawTextConfigSave ()
   : m_os (0)
-{}
+{
+}
 RawTextConfigSave::~RawTextConfigSave ()
 {
   if (m_os != 0)
@@ -33,11 +34,11 @@ RawTextConfigSave::Default (void)
 {
   class RawTextDefaultIterator : public AttributeDefaultIterator
   {
-  public:
+public:
     RawTextDefaultIterator (std::ostream *os) {
       m_os = os;
     }
-  private:
+private:
     virtual void StartVisitTypeId (std::string name) {
       m_typeId = name;
     }
@@ -66,10 +67,10 @@ RawTextConfigSave::Attributes (void)
 {
   class RawTextAttributeIterator : public AttributeIterator
   {
-  public:
+public:
     RawTextAttributeIterator (std::ostream *os)
       : m_os (os) {}
-  private:
+private:
     virtual void DoVisitAttribute (Ptr<Object> object, std::string name) {
       StringValue str;
       object->GetAttribute (name, str);
@@ -84,7 +85,8 @@ RawTextConfigSave::Attributes (void)
 
 RawTextConfigLoad::RawTextConfigLoad ()
   : m_is (0)
-{}
+{
+}
 RawTextConfigLoad::~RawTextConfigLoad ()
 {
   if (m_is != 0)
@@ -121,9 +123,9 @@ RawTextConfigLoad::Default (void)
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
       if (type == "default")
-	{
-	  Config::SetDefault (name, StringValue (value));
-	}
+        {
+          Config::SetDefault (name, StringValue (value));
+        }
       *m_is >> type >> name >> value;
     }
 }
@@ -138,9 +140,9 @@ RawTextConfigLoad::Global (void)
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
       if (type == "global")
-	{
-	  Config::SetGlobal (name, StringValue (value));
-	}
+        {
+          Config::SetGlobal (name, StringValue (value));
+        }
       *m_is >> type >> name >> value;
     }
 }
@@ -155,9 +157,9 @@ RawTextConfigLoad::Attributes (void)
       NS_LOG_DEBUG ("type=" << type << ", path=" << path << ", value=" << value);
       value = Strip (value);
       if (type == "value")
-	{
-	  Config::Set (path, StringValue (value));
-	}
+        {
+          Config::Set (path, StringValue (value));
+        }
       *m_is >> type >> path >> value;
     }
 }

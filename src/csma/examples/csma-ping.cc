@@ -121,7 +121,7 @@ main (int argc, char *argv[])
                    MakeCallback (&PingRtt));
 
   Packet::EnablePrinting ();
-  
+
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

@@ -61,10 +61,10 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[], const cha
  * available which is the case for gcc.
  * XXX
  */
-#define ENSURE_WRITTEN_BYTES(buffer, n, ...)			\
-  {								\
-    uint8_t bytes[] = {__VA_ARGS__};				\
-    EnsureWrittenBytes (buffer,	n, bytes, __FILE__, __LINE__);	\
+#define ENSURE_WRITTEN_BYTES(buffer, n, ...)                    \
+  {                                                             \
+    uint8_t bytes[] = { __VA_ARGS__};                            \
+    EnsureWrittenBytes (buffer, n, bytes, __FILE__, __LINE__);  \
   }
 
 void

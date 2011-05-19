@@ -45,29 +45,29 @@ namespace FatalImpl {
 
 /* File-scope */
 namespace {
-  std::list<std::ostream*> **PeekStreamList (void)
-  {
-    static std::list<std::ostream*> *streams = 0;
-    return &streams;
-  }
-  std::list<std::ostream*> *GetStreamList (void)
+std::list<std::ostream*> **PeekStreamList (void)
+{
+  static std::list<std::ostream*> *streams = 0;
+  return &streams;
+}
+std::list<std::ostream*> *GetStreamList (void)
+{
+  std::list<std::ostream*> **pstreams = PeekStreamList ();
+  if (*pstreams == 0)
+    {
+      *pstreams = new std::list<std::ostream*> ();
+    }
+  return *pstreams;
+}
+struct destructor
+{
+  ~destructor ()
   {
     std::list<std::ostream*> **pstreams = PeekStreamList ();
-    if (*pstreams == 0)
-      {
-        *pstreams = new std::list<std::ostream*> ();
-      }
-    return *pstreams;
+    delete *pstreams;
+    *pstreams = 0;
   }
-  struct destructor
-  {
-    ~destructor ()
-    {
-      std::list<std::ostream*> **pstreams = PeekStreamList ();
-      delete *pstreams;
-      *pstreams = 0;
-    }
-  };
+};
 }
 
 void
@@ -94,13 +94,13 @@ UnregisterStream (std::ostream* stream)
 
 
 namespace {
-  /* Overrides normal SIGSEGV handler once the
-   * HandleTerminate function is run. */
-  void sigHandler(int sig) 
-  {
-    FlushStreams (); 
-    std::abort ();
-  }
+/* Overrides normal SIGSEGV handler once the
+ * HandleTerminate function is run. */
+void sigHandler(int sig)
+{
+  FlushStreams ();
+  std::abort ();
+}
 }
 
 void 

@@ -72,7 +72,7 @@ AddInternetStack (Ptr<Node> node)
   node->AggregateObject(udp); 
 }
 
-class Ipv4PacketInfoTagTest: public TestCase 
+class Ipv4PacketInfoTagTest : public TestCase
 {
 public:
   Ipv4PacketInfoTagTest ();
@@ -84,7 +84,8 @@ private:
 
 Ipv4PacketInfoTagTest::Ipv4PacketInfoTagTest ()
   : TestCase ("Ipv4PacketInfoTagTest") 
-{}
+{
+}
 
 void
 Ipv4PacketInfoTagTest::RxCb (Ptr<Socket> socket)

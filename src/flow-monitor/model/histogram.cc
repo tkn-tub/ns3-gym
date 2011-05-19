@@ -23,7 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
-#define DEFAULT_BIN_WIDTH	1
+#define DEFAULT_BIN_WIDTH       1
 // #define RESERVED_BINS_INC	10
 
 
@@ -42,7 +42,7 @@ Histogram::GetNBins () const
 {
   return m_histogram.size ();
 }
-  
+
 double 
 Histogram::GetBinStart (uint32_t index)
 {
@@ -74,22 +74,22 @@ Histogram::GetBinCount (uint32_t index)
   NS_ASSERT (index < m_histogram.size ());
   return m_histogram[index];
 }
-  
+
 void 
 Histogram::AddValue (double value)
 {
   uint32_t index = (uint32_t)floor (value/m_binWidth);
-  
+
   //check if we need to resize the vector
   NS_LOG_DEBUG ("AddValue: index=" << index << ", m_histogram.size()=" << m_histogram.size ());
-  
+
   if (index >= m_histogram.size ())
     {
       m_histogram.resize (index + 1, 0);
     }
   m_histogram[index]++;
 }
-  
+
 Histogram::Histogram (double binWidth)
 {
   m_binWidth = binWidth;
@@ -105,12 +105,12 @@ void
 Histogram::SerializeToXmlStream (std::ostream &os, int indent, std::string elementName) const
 {
 #define INDENT(level) for (int __xpto = 0; __xpto < level; __xpto++) os << ' ';
-  
+
   INDENT(indent); os << "<" << elementName // << " binWidth=\"" << m_binWidth << "\""
                      << " nBins=\"" << m_histogram.size () << "\""
                      << " >\n";
   indent += 2;
-  
+
 #if 1 // two alternative forms of representing bin data, one more verbose than the other one
   for (uint32_t index = 0; index < m_histogram.size (); index++)
     {

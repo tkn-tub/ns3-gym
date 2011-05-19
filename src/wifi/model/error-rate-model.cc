@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,11 +27,11 @@ TypeId ErrorRateModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ErrorRateModel")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
-double 
+double
 ErrorRateModel::CalculateSnr (WifiMode txMode, double ber) const
 {
   // This is a very simple binary search.
@@ -39,15 +39,15 @@ ErrorRateModel::CalculateSnr (WifiMode txMode, double ber) const
   low = 1e-25;
   high = 1e25;
   precision = 1e-12;
-  while (high - low > precision) 
+  while (high - low > precision)
     {
       NS_ASSERT (high >= low);
       double middle = low + (high - low) / 2;
-      if ((1 - GetChunkSuccessRate (txMode, middle, 1)) > ber) 
+      if ((1 - GetChunkSuccessRate (txMode, middle, 1)) > ber)
         {
           low = middle;
-        } 
-      else 
+        }
+      else
         {
           high = middle;
         }

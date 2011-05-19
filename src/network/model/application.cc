@@ -48,24 +48,26 @@ Application::GetTypeId (void)
                    TimeValue (TimeStep (0)),
                    MakeTimeAccessor (&Application::m_stopTime),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
 // \brief Application Constructor
 Application::Application()
-{}
-  
+{
+}
+
 // \brief Application Destructor
 Application::~Application()
-{}
+{
+}
 
-void 
+void
 Application::SetStartTime (Time start)
 {
   m_startTime = start;
 }
-void 
+void
 Application::SetStopTime (Time stop)
 {
   m_stopTime = stop;
@@ -79,7 +81,7 @@ Application::DoDispose (void)
   m_startEvent.Cancel ();
   m_stopEvent.Cancel ();
   Object::DoDispose ();
-}  
+}
 
 void
 Application::DoStart (void)
@@ -91,7 +93,7 @@ Application::DoStart (void)
     }
   Object::DoStart ();
 }
-     
+
 Ptr<Node> Application::GetNode() const
 {
   return m_node;
@@ -114,5 +116,5 @@ void Application::StopApplication()
 }
 
 } //namespace ns3
-      
-  
+
+

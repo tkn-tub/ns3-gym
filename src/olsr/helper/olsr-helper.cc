@@ -51,7 +51,7 @@ OlsrHelper::ExcludeInterface (Ptr<Node> node, uint32_t interface)
     {
       std::set<uint32_t> interfaces;
       interfaces.insert (interface);
-    
+
       m_interfaceExclusions.insert (std::make_pair (node, std::set<uint32_t> (interfaces) ));
     }
   else

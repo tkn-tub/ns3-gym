@@ -35,19 +35,20 @@ NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 MobilityHelper::MobilityHelper ()
 {
   m_position = CreateObjectWithAttributes<RandomRectanglePositionAllocator> 
-    ("X", RandomVariableValue (ConstantVariable (0.0)),
-     "Y", RandomVariableValue (ConstantVariable (0.0)));
+          ("X", RandomVariableValue (ConstantVariable (0.0)),
+          "Y", RandomVariableValue (ConstantVariable (0.0)));
   m_mobility.SetTypeId ("ns3::ConstantPositionMobilityModel");
 }
 MobilityHelper::~MobilityHelper ()
-{}
-void 
+{
+}
+void
 MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 {
   m_position = allocator;
 }
 
-void 
+void
 MobilityHelper::SetPositionAllocator (std::string type,
                                       std::string n1, const AttributeValue &v1,
                                       std::string n2, const AttributeValue &v2,
@@ -148,7 +149,7 @@ MobilityHelper::Install (Ptr<Node> node) const
           Ptr<MobilityModel> parent = m_mobilityStack.back ();
           Ptr<MobilityModel> hierarchical = 
             CreateObjectWithAttributes<HierarchicalMobilityModel> ("Child", PointerValue (model),
-                                                     "Parent", PointerValue (parent));
+                                                                   "Parent", PointerValue (parent));
           object->AggregateObject (hierarchical);
           NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
         }

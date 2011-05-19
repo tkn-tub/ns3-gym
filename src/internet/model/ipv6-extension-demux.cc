@@ -38,7 +38,7 @@ TypeId Ipv6ExtensionDemux::GetTypeId ()
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6ExtensionDemux::m_extensions),
                    MakeObjectVectorChecker<Ipv6Extension> ())
-    ;
+  ;
   return tid;
 }
 

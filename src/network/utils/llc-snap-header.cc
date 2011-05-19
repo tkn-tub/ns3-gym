@@ -27,9 +27,10 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader);
 
 LlcSnapHeader::LlcSnapHeader ()
-{}
+{
+}
 
-void 
+void
 LlcSnapHeader::SetType (uint16_t type)
 {
   m_etherType = type;
@@ -52,7 +53,7 @@ LlcSnapHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LlcSnapHeader")
     .SetParent<Header> ()
     .AddConstructor<LlcSnapHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -73,7 +74,7 @@ void
 LlcSnapHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  uint8_t buf[] = {0xaa, 0xaa, 0x03, 0, 0, 0};
+  uint8_t buf[] = { 0xaa, 0xaa, 0x03, 0, 0, 0};
   i.Write (buf, 6);
   i.WriteHtonU16 (m_etherType);
 }

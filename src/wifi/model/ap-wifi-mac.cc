@@ -68,9 +68,9 @@ ApWifiMac::ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   m_beaconDca = CreateObject<DcaTxop> ();
-  m_beaconDca->SetAifsn(1);
-  m_beaconDca->SetMinCw(0);
-  m_beaconDca->SetMaxCw(0);
+  m_beaconDca->SetAifsn (1);
+  m_beaconDca->SetMinCw (0);
+  m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
 
@@ -374,10 +374,10 @@ ApWifiMac::TxOk (const WifiMacHeader &hdr)
   NS_LOG_FUNCTION (this);
   RegularWifiMac::TxOk (hdr);
 
-  if (hdr.IsAssocResp () &&
-      m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
+  if (hdr.IsAssocResp ()
+      && m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
     {
-      NS_LOG_DEBUG ("associated with sta="<<hdr.GetAddr1 ());
+      NS_LOG_DEBUG ("associated with sta=" << hdr.GetAddr1 ());
       m_stationManager->RecordGotAssocTxOk (hdr.GetAddr1 ());
     }
 }
@@ -388,10 +388,10 @@ ApWifiMac::TxFailed (const WifiMacHeader &hdr)
   NS_LOG_FUNCTION (this);
   RegularWifiMac::TxFailed (hdr);
 
-  if (hdr.IsAssocResp () &&
-      m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
+  if (hdr.IsAssocResp ()
+      && m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
     {
-      NS_LOG_DEBUG ("assoc failed with sta="<<hdr.GetAddr1 ());
+      NS_LOG_DEBUG ("assoc failed with sta=" << hdr.GetAddr1 ());
       m_stationManager->RecordGotAssocTxFailed (hdr.GetAddr1 ());
     }
 }
@@ -406,20 +406,20 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   if (hdr->IsData ())
     {
       Mac48Address bssid = hdr->GetAddr1 ();
-      if (!hdr->IsFromDs () &&
-          hdr->IsToDs () &&
-          bssid == GetAddress () &&
-          m_stationManager->IsAssociated (from))
+      if (!hdr->IsFromDs ()
+          && hdr->IsToDs ()
+          && bssid == GetAddress ()
+          && m_stationManager->IsAssociated (from))
         {
           Mac48Address to = hdr->GetAddr3 ();
           if (to == GetAddress ())
             {
-              NS_LOG_DEBUG ("frame for me from="<<from);
+              NS_LOG_DEBUG ("frame for me from=" << from);
               if (hdr->IsQosData ())
                 {
                   if (hdr->IsQosAmsdu ())
                     {
-                      NS_LOG_DEBUG ("Received A-MSDU from="<<from<<", size="<<packet->GetSize ());
+                      NS_LOG_DEBUG ("Received A-MSDU from=" << from << ", size=" << packet->GetSize ());
                       DeaggregateAmsduAndForward (packet, hdr);
                       packet = 0;
                     }
@@ -433,10 +433,10 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   ForwardUp (packet, from, bssid);
                 }
             }
-          else if (to.IsGroup () ||
-                   m_stationManager->IsAssociated (to))
+          else if (to.IsGroup ()
+                   || m_stationManager->IsAssociated (to))
             {
-              NS_LOG_DEBUG ("forwarding frame from="<<from<<", to="<<to);
+              NS_LOG_DEBUG ("forwarding frame from=" << from << ", to=" << to);
               Ptr<Packet> copy = packet->Copy ();
 
               // If the frame we are forwarding is of type QoS Data,
@@ -457,8 +457,8 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               ForwardUp (packet, from, to);
             }
         }
-      else if (hdr->IsFromDs () &&
-               hdr->IsToDs ())
+      else if (hdr->IsFromDs ()
+               && hdr->IsToDs ())
         {
           // this is an AP-to-AP frame
           // we ignore for now.
@@ -557,7 +557,7 @@ ApWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
         {
           Mac48Address from = (*i).second.GetSourceAddr ();
           Mac48Address to = (*i).second.GetDestinationAddr ();
-          NS_LOG_DEBUG ("forwarding QoS frame from="<<from<<", to="<<to);
+          NS_LOG_DEBUG ("forwarding QoS frame from=" << from << ", to=" << to);
           ForwardDown ((*i).first, from, to, hdr->GetQosTid ());
         }
     }

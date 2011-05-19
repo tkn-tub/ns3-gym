@@ -61,11 +61,11 @@ class RoutingTableEntry
 public:
   /// c-to
   RoutingTableEntry (Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, uint32_t m_seqNo = 0,
-                    Ipv4InterfaceAddress iface = Ipv4InterfaceAddress(), uint16_t  hops = 0,
-                    Ipv4Address nextHop = Ipv4Address(), Time lifetime = Simulator::Now());
+                     Ipv4InterfaceAddress iface = Ipv4InterfaceAddress(), uint16_t  hops = 0,
+                     Ipv4Address nextHop = Ipv4Address(), Time lifetime = Simulator::Now());
 
   ~RoutingTableEntry ();
-  
+
   ///\name Precursors management
   //\{
   /**
@@ -104,7 +104,7 @@ public:
   ///\name Fields
   //\{
   Ipv4Address GetDestination () const { return m_ipv4Route->GetDestination(); }
-  Ptr<Ipv4Route> GetRoute () const { return  m_ipv4Route; }
+  Ptr<Ipv4Route> GetRoute () const { return m_ipv4Route; }
   void SetRoute (Ptr<Ipv4Route> r) { m_ipv4Route = r; }
   void SetNextHop (Ipv4Address nextHop) { m_ipv4Route->SetGateway(nextHop); }
   Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
@@ -117,7 +117,7 @@ public:
   void SetSeqNo (uint32_t sn) { m_seqNo = sn; }
   uint32_t GetSeqNo () const { return m_seqNo; }
   void SetHop (uint16_t hop) { m_hops = hop; }
-  uint16_t GetHop () const {return m_hops; }
+  uint16_t GetHop () const { return m_hops; }
   void SetLifeTime (Time lt) { m_lifeTime = lt + Simulator::Now(); }
   Time GetLifeTime () const { return m_lifeTime - Simulator::Now(); }
   void SetFlag (RouteFlags flag) { m_flag = flag; }
@@ -253,6 +253,7 @@ private:
   void Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const;
 };
 
-}}
+}
+}
 
 #endif /* AODV_RTABLE_H */

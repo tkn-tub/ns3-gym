@@ -25,35 +25,38 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (WifiMacTrailer);
 
 WifiMacTrailer::WifiMacTrailer ()
-{}
+{
+}
 
 WifiMacTrailer::~WifiMacTrailer ()
-{}
+{
+}
 
-TypeId 
+TypeId
 WifiMacTrailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMacTrailer")
     .SetParent<Trailer> ()
     .AddConstructor<WifiMacTrailer> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 WifiMacTrailer::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
-void 
+void
 WifiMacTrailer::Print (std::ostream &os) const
-{}
-uint32_t 
+{
+}
+uint32_t
 WifiMacTrailer::GetSerializedSize (void) const
 {
   return WIFI_MAC_FCS_LENGTH;
 }
-void 
+void
 WifiMacTrailer::Serialize (Buffer::Iterator start) const
 {
   start.Prev (WIFI_MAC_FCS_LENGTH);

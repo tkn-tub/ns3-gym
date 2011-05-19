@@ -61,7 +61,7 @@ ApplicationContainer Ping6Helper::Install (NodeContainer c)
       node->AddApplication (client);
       apps.Add (client);
     }
-  return apps;  
+  return apps;
 }
 
 void Ping6Helper::SetIfIndex (uint32_t ifIndex)

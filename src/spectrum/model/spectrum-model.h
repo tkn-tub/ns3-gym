@@ -26,9 +26,14 @@
 
 namespace ns3 {
 
-
+/**
+ * \defgroup spectrum Spectrum Models
+ *
+ */
 
 /**
+ * \ingroup spectrum
+ *
  * The building block of a SpectrumModel. This struct models
  * a frequency band defined by the frequency interval [fl, fc] and
  * with center frequency fc. Typically, the center frequency will be

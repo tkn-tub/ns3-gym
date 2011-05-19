@@ -37,7 +37,7 @@
 namespace ns3 {
 
 /**
- * \ingroup common
+ * \ingroup network
  * \defgroup packet Packet
  */
 
@@ -572,7 +572,7 @@ private:
 std::ostream& operator<< (std::ostream& os, const Packet &packet);
 
 /**
- * \ingroup common
+ * \ingroup network
  * \defgroup packetperf Packet Performance
  * The current implementation of the byte buffers and tag list is based
  * on COW (Copy On Write. An introduction to COW can be found in Scott 

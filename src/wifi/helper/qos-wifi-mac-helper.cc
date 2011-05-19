@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -128,11 +128,11 @@ QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrN
     }
   if (m_bAckThresholds.find (ac) != m_bAckThresholds.end ())
     {
-      edca->SetBlockAckThreshold (m_bAckThresholds.find(ac)->second);
+      edca->SetBlockAckThreshold (m_bAckThresholds.find (ac)->second);
     }
   if (m_bAckInactivityTimeouts.find (ac) != m_bAckInactivityTimeouts.end ())
     {
-      edca->SetBlockAckInactivityTimeout (m_bAckInactivityTimeouts.find(ac)->second);
+      edca->SetBlockAckInactivityTimeout (m_bAckInactivityTimeouts.find (ac)->second);
     }
 }
 

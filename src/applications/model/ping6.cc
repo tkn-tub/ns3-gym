@@ -72,7 +72,7 @@ TypeId Ping6::GetTypeId ()
                    UintegerValue (100),
                    MakeUintegerAccessor (&Ping6::m_size),
                    MakeUintegerChecker<uint32_t>())
-    ;
+  ;
   return tid;
 }
 

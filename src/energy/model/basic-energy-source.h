@@ -29,8 +29,10 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * BasicEnergySource decreases/increases remaining energy stored in itself in
  * linearly.
+ *
  */
 class BasicEnergySource : public EnergySource
 {

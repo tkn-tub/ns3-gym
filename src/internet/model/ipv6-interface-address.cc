@@ -32,10 +32,10 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6InterfaceAddress");
 
 Ipv6InterfaceAddress::Ipv6InterfaceAddress () 
   : m_address (Ipv6Address ()),
-  m_prefix (Ipv6Prefix ()),
-  m_state (TENTATIVE_OPTIMISTIC),
-  m_scope (HOST),
-  m_nsDadUid (0)
+    m_prefix (Ipv6Prefix ()),
+    m_state (TENTATIVE_OPTIMISTIC),
+    m_scope (HOST),
+    m_nsDadUid (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -60,11 +60,12 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress (Ipv6Address address, Ipv6Prefix pref
 
 Ipv6InterfaceAddress::Ipv6InterfaceAddress (const Ipv6InterfaceAddress& o) 
   : m_address (o.m_address),
-  m_prefix (o.m_prefix),
-  m_state (o.m_state),
-  m_scope (o.m_scope),
-  m_nsDadUid (o.m_nsDadUid)
-{}
+    m_prefix (o.m_prefix),
+    m_state (o.m_state),
+    m_scope (o.m_scope),
+    m_nsDadUid (o.m_nsDadUid)
+{
+}
 
 Ipv6InterfaceAddress::~Ipv6InterfaceAddress ()
 {
@@ -133,7 +134,7 @@ Ipv6InterfaceAddress::Scope_e Ipv6InterfaceAddress::GetScope () const
 std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr)
 {
   os << "address=" << addr.GetAddress () << "; prefix=" <<
-    addr.GetPrefix () << "; scope=" << addr.GetScope ();
+  addr.GetPrefix () << "; scope=" << addr.GetScope ();
   return os;
 }
 

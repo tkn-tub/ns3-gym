@@ -97,7 +97,7 @@ PacketSizeMinMaxAvgTotalCalculator::DoDispose(void)
 
 void
 PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path,
-                                      Ptr<const Packet> packet)
+                                                 Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION_NOARGS();
 
@@ -107,8 +107,8 @@ PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path,
 }
 void
 PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path,
-                                     Ptr<const Packet> packet,
-                                     Mac48Address realto)
+                                                Ptr<const Packet> packet,
+                                                Mac48Address realto)
 {
   NS_LOG_FUNCTION_NOARGS();
 

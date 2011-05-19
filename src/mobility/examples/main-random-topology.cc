@@ -31,12 +31,12 @@ int main (int argc, char *argv[])
   mobility.Install (c);
 
   Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
-                              MakeCallback (&CourseChange));
-  
+                   MakeCallback (&CourseChange));
+
   Simulator::Stop (Seconds (100.0));
 
   Simulator::Run ();
-  
+
   Simulator::Destroy ();
   return 0;
 }

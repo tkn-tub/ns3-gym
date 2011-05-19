@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -42,7 +42,8 @@ namespace ns3 {
  ****************************************************************/
 
 WifiPhyListener::~WifiPhyListener ()
-{}
+{
+}
 
 /****************************************************************
  *       The actual WifiPhy class
@@ -50,36 +51,36 @@ WifiPhyListener::~WifiPhyListener ()
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 
-TypeId 
+TypeId
 WifiPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
-    .AddTraceSource ("PhyTxBegin", 
+    .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet has begun transmitting over the channel medium",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace))
-    .AddTraceSource ("PhyTxEnd", 
+    .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet has been completely transmitted over the channel. NOTE: the only official WifiPhy implementation available to this date (YansWifiPhy) never fires this trace source.",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace))
-    .AddTraceSource ("PhyTxDrop", 
+    .AddTraceSource ("PhyTxDrop",
                      "Trace source indicating a packet has been dropped by the device during transmission",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxDropTrace))
-    .AddTraceSource ("PhyRxBegin", 
+    .AddTraceSource ("PhyRxBegin",
                      "Trace source indicating a packet has begun being received from the channel medium by the device",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace))
-    .AddTraceSource ("PhyRxEnd", 
+    .AddTraceSource ("PhyRxEnd",
                      "Trace source indicating a packet has been completely received from the channel medium by the device",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxEndTrace))
-    .AddTraceSource ("PhyRxDrop", 
+    .AddTraceSource ("PhyRxDrop",
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxDropTrace))
-    .AddTraceSource ("PromiscSnifferRx", 
+    .AddTraceSource ("PromiscSnifferRx",
                      "Trace source simulating a wifi device in monitor mode sniffing all received frames",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSniffRxTrace))
-    .AddTraceSource ("PromiscSnifferTx", 
+    .AddTraceSource ("PromiscSnifferTx",
                      "Trace source simulating the capability of a wifi device in monitor mode to sniff all frames being transmitted",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyPromiscSniffTxTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -93,49 +94,256 @@ WifiPhy::~WifiPhy ()
   NS_LOG_FUNCTION (this);
 }
 
-void 
+
+WifiMode
+WifiPhy::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 5000000:
+            return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
+          case 10000000:
+            return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
+          default:
+            // IEEE Std 802.11-2007, 17.3.2
+            // actually this is only the first part of the PlcpHeader,
+            // because the last 16 bits of the PlcpHeader are using the
+            // same mode of the payload
+            return WifiPhy::GetOfdmRate6Mbps ();
+          }
+      }
+
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return WifiPhy::GetErpOfdmRate6Mbps ();
+
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_LONG)
+        {
+          // IEEE Std 802.11-2007, sections 15.2.3 and 18.2.2.1
+          return WifiPhy::GetDsssRate1Mbps ();
+        }
+      else  //  WIFI_PREAMBLE_SHORT
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2
+          return WifiPhy::GetDsssRate2Mbps ();
+        }
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return WifiMode ();
+    }
+}
+
+uint32_t
+WifiPhy::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            // IEEE Std 802.11-2007, section 17.3.3 and figure 17-4
+            // also section 17.3.2.3, table 17-4
+            // We return the duration of the SIGNAL field only, since the
+            // SERVICE field (which strictly speaking belongs to the PLCP
+            // header, see section 17.3.2 and figure 17-1) is sent using the
+            // payload mode.
+            return 4;
+          case 10000000:
+            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            return 8;
+          case 5000000:
+            // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+            return 16;
+          }
+      }
+
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return 16;
+
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_SHORT)
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          return 24;
+        }
+      else // WIFI_PREAMBLE_LONG
+        {
+          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          return 48;
+        }
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return 0;
+    }
+}
+
+uint32_t
+WifiPhy::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble)
+{
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+      {
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            // IEEE Std 802.11-2007, section 17.3.3,  figure 17-4
+            // also section 17.3.2.3, table 17-4
+            return 16;
+          case 10000000:
+            // IEEE Std 802.11-2007, section 17.3.3, table 17-4
+            // also section 17.3.2.3, table 17-4
+            return 32;
+          case 5000000:
+            // IEEE Std 802.11-2007, section 17.3.3
+            // also section 17.3.2.3, table 17-4
+            return 64;
+          }
+      }
+
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return 4;
+
+    case WIFI_MOD_CLASS_DSSS:
+      if (preamble == WIFI_PREAMBLE_SHORT)
+        {
+          // IEEE Std 802.11-2007, section 18.2.2.2 and figure 18-2
+          return 72;
+        }
+      else // WIFI_PREAMBLE_LONG
+        {
+          // IEEE Std 802.11-2007, sections 18.2.2.1 and figure 18-1
+          return 144;
+        }
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return 0;
+    }
+}
+
+uint32_t
+WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode)
+{
+  NS_LOG_FUNCTION (size << payloadMode);
+
+  switch (payloadMode.GetModulationClass ())
+    {
+    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      {
+        // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
+        // corresponds to T_{SYM} in the table
+        uint32_t symbolDurationUs;
+
+        switch (payloadMode.GetBandwidth ())
+          {
+          case 20000000:
+          default:
+            symbolDurationUs = 4;
+            break;
+          case 10000000:
+            symbolDurationUs = 8;
+            break;
+          case 5000000:
+            symbolDurationUs = 16;
+            break;
+          }
+
+        // IEEE Std 802.11-2007, section 17.3.2.2, table 17-3
+        // corresponds to N_{DBPS} in the table
+        double numDataBitsPerSymbol = payloadMode.GetDataRate ()  * symbolDurationUs / 1e6;
+
+        // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
+        uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
+
+        // Add signal extension for ERP PHY
+        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+          {
+            return numSymbols * symbolDurationUs + 6;
+          }
+        else
+          {
+            return numSymbols * symbolDurationUs;
+          }
+      }
+
+    case WIFI_MOD_CLASS_DSSS:
+      // IEEE Std 802.11-2007, section 18.2.3.5
+      NS_LOG_LOGIC (" size=" << size
+                             << " mode=" << payloadMode
+                             << " rate=" << payloadMode.GetDataRate () );
+      return lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
+
+    default:
+      NS_FATAL_ERROR ("unsupported modulation class");
+      return 0;
+    }
+}
+
+Time
+WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble)
+{
+  uint32_t duration = GetPlcpPreambleDurationMicroSeconds (payloadMode, preamble)
+    + GetPlcpHeaderDurationMicroSeconds (payloadMode, preamble)
+    + GetPayloadDurationMicroSeconds (size, payloadMode);
+  return MicroSeconds (duration);
+}
+
+
+void
 WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)
 {
   m_phyTxBeginTrace (packet);
 }
 
-void 
+void
 WifiPhy::NotifyTxEnd (Ptr<const Packet> packet)
 {
   m_phyTxEndTrace (packet);
 }
 
-void 
-WifiPhy::NotifyTxDrop (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyTxDrop (Ptr<const Packet> packet)
 {
   m_phyTxDropTrace (packet);
 }
 
-void 
-WifiPhy::NotifyRxBegin (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyRxBegin (Ptr<const Packet> packet)
 {
   m_phyRxBeginTrace (packet);
 }
 
-void 
-WifiPhy::NotifyRxEnd (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyRxEnd (Ptr<const Packet> packet)
 {
   m_phyRxEndTrace (packet);
 }
 
-void 
-WifiPhy::NotifyRxDrop (Ptr<const Packet> packet) 
+void
+WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 {
   m_phyRxDropTrace (packet);
 }
 
-void 
+void
 WifiPhy::NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
 {
   m_phyPromiscSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble, signalDbm, noiseDbm);
 }
 
-void 
+void
 WifiPhy::NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble)
 {
   m_phyPromiscSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble);
@@ -630,21 +838,22 @@ WifiPhy::GetOfdmRate13_5MbpsBW5MHz ()
 
 std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
 {
-  switch (state) {
-  case WifiPhy::IDLE:
-    return (os << "IDLE");
-  case WifiPhy::CCA_BUSY:
-    return (os << "CCA_BUSY");
-  case WifiPhy::TX:
-    return (os << "TX");
-  case WifiPhy::RX:
-    return (os << "RX");
-  case WifiPhy::SWITCHING: 
-    return (os << "SWITCHING");
-  default:
-    NS_FATAL_ERROR ("Invalid WifiPhy state");
-    return (os << "INVALID");
-  }
+  switch (state)
+    {
+    case WifiPhy::IDLE:
+      return (os << "IDLE");
+    case WifiPhy::CCA_BUSY:
+      return (os << "CCA_BUSY");
+    case WifiPhy::TX:
+      return (os << "TX");
+    case WifiPhy::RX:
+      return (os << "RX");
+    case WifiPhy::SWITCHING:
+      return (os << "SWITCHING");
+    default:
+      NS_FATAL_ERROR ("Invalid WifiPhy state");
+      return (os << "INVALID");
+    }
 }
 
 } // namespace ns3
@@ -654,7 +863,8 @@ namespace {
 static class Constructor
 {
 public:
-  Constructor () {
+  Constructor ()
+  {
     ns3::WifiPhy::GetDsssRate1Mbps ();
     ns3::WifiPhy::GetDsssRate2Mbps ();
     ns3::WifiPhy::GetDsssRate5_5Mbps ();

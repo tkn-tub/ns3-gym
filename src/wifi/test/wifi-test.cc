@@ -4,7 +4,7 @@
  *               2010      NICTA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -153,7 +153,9 @@ WifiTest::DoRun (void)
 class QosUtilsIsOldPacketTest : public TestCase
 {
 public:
-  QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket") {}
+  QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket")
+  {
+  }
   virtual void DoRun (void)
   {
     // startingSeq=0, seqNum=2047
@@ -257,7 +259,7 @@ InterferenceHelperSequenceTest::DoRun (void)
   Ptr<Node> senderA = CreateOne (Vector (5.0, 0.0, 0.0), channel);
   Ptr<Node> senderB = CreateOne (Vector (-5.0, 0.0, 0.0), channel);
 
-  propLoss->SetLoss (senderB->GetObject<MobilityModel>(), rxOnly->GetObject<MobilityModel>(), 0, true);
+  propLoss->SetLoss (senderB->GetObject<MobilityModel> (), rxOnly->GetObject<MobilityModel> (), 0, true);
   propLoss->SetDefaultLoss (999);
 
   Simulator::Schedule (Seconds (1.0),

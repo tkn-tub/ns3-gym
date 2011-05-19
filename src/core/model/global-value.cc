@@ -31,8 +31,8 @@
 namespace ns3 {
 
 GlobalValue::GlobalValue (std::string name, std::string help,
-			  const AttributeValue &initialValue,
-			  Ptr<const AttributeChecker> checker)
+                          const AttributeValue &initialValue,
+                          Ptr<const AttributeChecker> checker)
   : m_name (name),
     m_help (help),
     m_initialValue (initialValue.Copy ()),
@@ -107,7 +107,7 @@ GlobalValue::GetChecker (void) const
 {
   return m_checker;
 }
-  
+
 bool
 GlobalValue::SetValue (const AttributeValue &value)
 {
@@ -144,13 +144,13 @@ GlobalValue::Bind (std::string name, const AttributeValue &value)
   for (Iterator i = Begin (); i != End (); i++)
     {
       if ((*i)->GetName () == name)
-	{
-	  if (!(*i)->SetValue (value))
-	    {
-	      NS_FATAL_ERROR ("Invalid new value for global value: "<<name);
-	    }
-	  return;
-	}
+        {
+          if (!(*i)->SetValue (value))
+            {
+              NS_FATAL_ERROR ("Invalid new value for global value: "<<name);
+            }
+          return;
+        }
     }
   NS_FATAL_ERROR ("Non-existant global value: "<<name);
 }
@@ -160,9 +160,9 @@ GlobalValue::BindFailSafe (std::string name, const AttributeValue &value)
   for (Iterator i = Begin (); i != End (); i++)
     {
       if ((*i)->GetName () == name)
-	{
-	  return (*i)->SetValue (value);
-	}
+        {
+          return (*i)->SetValue (value);
+        }
     }
   return false;
 }
@@ -183,10 +183,10 @@ GlobalValue::GetValueByNameFailSafe (std::string name, AttributeValue &value)
   for (GlobalValue::Iterator gvit = GlobalValue::Begin (); gvit != GlobalValue::End (); ++gvit)
     {
       if ((*gvit)->GetName () == name)
-         {
-           (*gvit)->GetValue (value);  
-           return true;
-         }
+        {
+          (*gvit)->GetValue (value);
+          return true;
+        }
     } 
   return false; // not found
 }
@@ -194,7 +194,7 @@ GlobalValue::GetValueByNameFailSafe (std::string name, AttributeValue &value)
 void
 GlobalValue::GetValueByName (std::string name, AttributeValue &value)
 {
-  if (! GetValueByNameFailSafe (name, value))
+  if (!GetValueByNameFailSafe (name, value))
     {
       NS_FATAL_ERROR ("Could not find GlobalValue named \"" << name << "\"");
     }

@@ -35,11 +35,11 @@ class Rectangle;
  */
 class ConstantVelocityHelper
 {
- public:
+public:
   ConstantVelocityHelper ();
   ConstantVelocityHelper (const Vector &position);
   ConstantVelocityHelper (const Vector &position,
-		     const Vector &vel);
+                          const Vector &vel);
 
   void SetPosition (const Vector &position);
   Vector GetCurrentPosition (void) const;
@@ -51,7 +51,7 @@ class ConstantVelocityHelper
   void UpdateWithBounds (const Rectangle &rectangle) const;
   void UpdateWithBounds (const Box &bounds) const;
   void Update (void) const;
- private:
+private:
   mutable Time m_lastUpdate;
   mutable Vector m_position;
   Vector m_velocity;

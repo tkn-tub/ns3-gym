@@ -36,7 +36,7 @@ MobilityModel::GetTypeId (void)
                    TypeId::ATTR_SET | TypeId::ATTR_GET,
                    VectorValue (Vector (0.0, 0.0, 0.0)),
                    MakeVectorAccessor (&MobilityModel::SetPosition,
-                                        &MobilityModel::GetPosition),
+                                       &MobilityModel::GetPosition),
                    MakeVectorChecker ())
     .AddAttribute ("Velocity", "The current velocity of the mobility model.",
                    TypeId::ATTR_GET,
@@ -46,15 +46,17 @@ MobilityModel::GetTypeId (void)
     .AddTraceSource ("CourseChange", 
                      "The value of the position and/or velocity vector changed",
                      MakeTraceSourceAccessor (&MobilityModel::m_courseChangeTrace))
-    ;
+  ;
   return tid;
 }
 
 MobilityModel::MobilityModel ()
-{}
+{
+}
 
 MobilityModel::~MobilityModel ()
-{}
+{
+}
 
 Vector
 MobilityModel::GetPosition (void) const

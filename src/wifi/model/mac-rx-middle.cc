@@ -3,7 +3,7 @@
  * Copyright (c) 2005 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,7 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
 namespace ns3 {
 
 
-class OriginatorRxStatus {
+class OriginatorRxStatus
+{
 private:
   typedef std::list<Ptr<const Packet> > Fragments;
   typedef std::list<Ptr<const Packet> >::const_iterator FragmentsCI;
@@ -42,58 +43,65 @@ private:
   uint16_t m_lastSequenceControl;
   Fragments m_fragments;
 public:
-  OriginatorRxStatus () {
+  OriginatorRxStatus ()
+  {
     /* this is a magic value necessary. */
     m_lastSequenceControl = 0xffff;
     m_defragmenting = false;
   }
-  ~OriginatorRxStatus () {
+  ~OriginatorRxStatus ()
+  {
     m_fragments.clear ();
   }
-  bool IsDeFragmenting (void) {
+  bool IsDeFragmenting (void)
+  {
     return m_defragmenting;
   }
-  void AccumulateFirstFragment (Ptr<const Packet> packet) {
+  void AccumulateFirstFragment (Ptr<const Packet> packet)
+  {
     NS_ASSERT (!m_defragmenting);
     m_defragmenting = true;
     m_fragments.push_back (packet);
   }
-  Ptr<Packet> AccumulateLastFragment (Ptr<const Packet> packet) {
+  Ptr<Packet> AccumulateLastFragment (Ptr<const Packet> packet)
+  {
     NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
     m_defragmenting = false;
     Ptr<Packet> full = Create<Packet> ();
-    for (FragmentsCI i = m_fragments.begin (); i != m_fragments.end (); i++) 
+    for (FragmentsCI i = m_fragments.begin (); i != m_fragments.end (); i++)
       {
         full->AddAtEnd (*i);
       }
     m_fragments.erase (m_fragments.begin (), m_fragments.end ());
     return full;
   }
-  void AccumulateFragment (Ptr<const Packet> packet) {
+  void AccumulateFragment (Ptr<const Packet> packet)
+  {
     NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
   }
-  bool IsNextFragment (uint16_t sequenceControl) {
-    if ((sequenceControl >> 4) == (m_lastSequenceControl >> 4) &&
-        (sequenceControl & 0x0f) == ((m_lastSequenceControl & 0x0f)+1)) 
+  bool IsNextFragment (uint16_t sequenceControl)
+  {
+    if ((sequenceControl >> 4) == (m_lastSequenceControl >> 4)
+        && (sequenceControl & 0x0f) == ((m_lastSequenceControl & 0x0f) + 1))
       {
         return true;
-      } 
-    else 
+      }
+    else
       {
         return false;
       }
   }
-  uint16_t GetLastSequenceControl (void) 
+  uint16_t GetLastSequenceControl (void)
   {
     return m_lastSequenceControl;
   }
-  void SetSequenceControl (uint16_t sequenceControl) 
+  void SetSequenceControl (uint16_t sequenceControl)
   {
     m_lastSequenceControl = sequenceControl;
   }
-  
+
 };
 
 
@@ -106,14 +114,14 @@ MacRxMiddle::~MacRxMiddle ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (OriginatorsI i = m_originatorStatus.begin ();
-       i != m_originatorStatus.end (); i++) 
+       i != m_originatorStatus.end (); i++)
     {
       delete (*i).second;
     }
   m_originatorStatus.erase (m_originatorStatus.begin (),
                             m_originatorStatus.end ());
   for (QosOriginatorsI i = m_qosOriginatorStatus.begin ();
-       i != m_qosOriginatorStatus.end (); i++) 
+       i != m_qosOriginatorStatus.end (); i++)
     {
       delete (*i).second;
     }
@@ -121,7 +129,7 @@ MacRxMiddle::~MacRxMiddle ()
                                m_qosOriginatorStatus.end ());
 }
 
-void 
+void
 MacRxMiddle::SetForwardCallback (ForwardUpCallback callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -134,17 +142,17 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
   NS_LOG_FUNCTION (hdr);
   OriginatorRxStatus *originator;
   Mac48Address source = hdr->GetAddr2 ();
-  if (hdr->IsQosData () &&
-      !hdr->GetAddr2 ().IsGroup ()) 
+  if (hdr->IsQosData ()
+      && !hdr->GetAddr2 ().IsGroup ())
     {
       /* only for qos data non-broadcast frames */
-      originator = m_qosOriginatorStatus[std::make_pair(source, hdr->GetQosTid ())];
-      if (originator == 0) 
+      originator = m_qosOriginatorStatus[std::make_pair (source, hdr->GetQosTid ())];
+      if (originator == 0)
         {
           originator = new OriginatorRxStatus ();
-          m_qosOriginatorStatus[std::make_pair(source, hdr->GetQosTid ())] = originator;
+          m_qosOriginatorStatus[std::make_pair (source, hdr->GetQosTid ())] = originator;
         }
-    } 
+    }
   else
     {
       /* - management frames
@@ -153,7 +161,7 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
        * see section 7.1.3.4.1
        */
       originator = m_originatorStatus[source];
-      if (originator == 0) 
+      if (originator == 0)
         {
           originator = new OriginatorRxStatus ();
           m_originatorStatus[source] = originator;
@@ -163,12 +171,12 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
 }
 
 bool
-MacRxMiddle::IsDuplicate (const WifiMacHeader* hdr, 
+MacRxMiddle::IsDuplicate (const WifiMacHeader* hdr,
                           OriginatorRxStatus *originator) const
 {
   NS_LOG_FUNCTION (hdr << originator);
-  if (hdr->IsRetry () &&
-      originator->GetLastSequenceControl () == hdr->GetSequenceControl ()) 
+  if (hdr->IsRetry ()
+      && originator->GetLastSequenceControl () == hdr->GetSequenceControl ())
     {
       return true;
     }
@@ -180,54 +188,54 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, const WifiMacHeader *hdr,
                               OriginatorRxStatus *originator)
 {
   NS_LOG_FUNCTION (packet << hdr << originator);
-  if (originator->IsDeFragmenting ()) 
+  if (originator->IsDeFragmenting ())
     {
-      if (hdr->IsMoreFragments ()) 
+      if (hdr->IsMoreFragments ())
         {
-          if (originator->IsNextFragment (hdr->GetSequenceControl ())) 
+          if (originator->IsNextFragment (hdr->GetSequenceControl ()))
             {
-              NS_LOG_DEBUG ("accumulate fragment seq="<<hdr->GetSequenceNumber ()<<
-                     ", frag="<<hdr->GetFragmentNumber ()<<
-                     ", size="<<packet->GetSize ());
+              NS_LOG_DEBUG ("accumulate fragment seq=" << hdr->GetSequenceNumber () <<
+                            ", frag=" << hdr->GetFragmentNumber () <<
+                            ", size=" << packet->GetSize ());
               originator->AccumulateFragment (packet);
               originator->SetSequenceControl (hdr->GetSequenceControl ());
-            } 
-          else 
+            }
+          else
             {
               NS_LOG_DEBUG ("non-ordered fragment");
             }
           return 0;
-        } 
-      else 
+        }
+      else
         {
-          if (originator->IsNextFragment (hdr->GetSequenceControl ())) 
+          if (originator->IsNextFragment (hdr->GetSequenceControl ()))
             {
-              NS_LOG_DEBUG ("accumulate last fragment seq="<<hdr->GetSequenceNumber ()<<
-                     ", frag="<<hdr->GetFragmentNumber ()<<
-                     ", size="<<hdr->GetSize ());
+              NS_LOG_DEBUG ("accumulate last fragment seq=" << hdr->GetSequenceNumber () <<
+                            ", frag=" << hdr->GetFragmentNumber () <<
+                            ", size=" << hdr->GetSize ());
               Ptr<Packet> p = originator->AccumulateLastFragment (packet);
               originator->SetSequenceControl (hdr->GetSequenceControl ());
               return p;
-            } 
-          else 
+            }
+          else
             {
               NS_LOG_DEBUG ("non-ordered fragment");
               return 0;
             }
         }
-    } 
-  else 
+    }
+  else
     {
-      if (hdr->IsMoreFragments ()) 
+      if (hdr->IsMoreFragments ())
         {
-          NS_LOG_DEBUG ("accumulate first fragment seq="<<hdr->GetSequenceNumber ()<<
-                 ", frag="<<hdr->GetFragmentNumber ()<<
-                 ", size="<<packet->GetSize ());
+          NS_LOG_DEBUG ("accumulate first fragment seq=" << hdr->GetSequenceNumber () <<
+                        ", frag=" << hdr->GetFragmentNumber () <<
+                        ", size=" << packet->GetSize ());
           originator->AccumulateFirstFragment (packet);
           originator->SetSequenceControl (hdr->GetSequenceControl ());
           return 0;
-        } 
-      else 
+        }
+      else
         {
           return packet;
         }
@@ -242,34 +250,34 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   OriginatorRxStatus *originator = Lookup (hdr);
   /**
    * The check below is really uneeded because it can fail in a lot of
-   * normal cases. Specifically, it is possible for sequence numbers to 
-   * loop back to zero once they reach 0xfff0 and to go up to 0xf7f0 in 
-   * which case the check below will report the two sequence numbers to 
+   * normal cases. Specifically, it is possible for sequence numbers to
+   * loop back to zero once they reach 0xfff0 and to go up to 0xf7f0 in
+   * which case the check below will report the two sequence numbers to
    * not have the correct order relationship.
    * So, this check cannot be used to discard old duplicate frames. It is
    * thus here only for documentation purposes.
    */
   if (!(SequenceNumber16 (originator->GetLastSequenceControl ()) < SequenceNumber16 (hdr->GetSequenceControl ())))
     {
-      NS_LOG_DEBUG ("Sequence numbers have looped back. last recorded="<<originator->GetLastSequenceControl ()<<
-                    " currently seen="<< hdr->GetSequenceControl ());
+      NS_LOG_DEBUG ("Sequence numbers have looped back. last recorded=" << originator->GetLastSequenceControl () <<
+                    " currently seen=" << hdr->GetSequenceControl ());
     }
   // filter duplicates.
-  if (IsDuplicate (hdr, originator)) 
+  if (IsDuplicate (hdr, originator))
     {
-      NS_LOG_DEBUG ("duplicate from="<<hdr->GetAddr2 ()<<
-                    ", seq="<<hdr->GetSequenceNumber ()<<
-                    ", frag="<<hdr->GetFragmentNumber ());
+      NS_LOG_DEBUG ("duplicate from=" << hdr->GetAddr2 () <<
+                    ", seq=" << hdr->GetSequenceNumber () <<
+                    ", frag=" << hdr->GetFragmentNumber ());
       return;
     }
   Ptr<Packet> agregate = HandleFragments (packet, hdr, originator);
-  if (agregate == 0) 
+  if (agregate == 0)
     {
       return;
     }
-  NS_LOG_DEBUG ("forwarding data from="<<hdr->GetAddr2 ()<<
-                ", seq="<<hdr->GetSequenceNumber ()<<
-                ", frag="<<hdr->GetFragmentNumber ());
+  NS_LOG_DEBUG ("forwarding data from=" << hdr->GetAddr2 () <<
+                ", seq=" << hdr->GetSequenceNumber () <<
+                ", frag=" << hdr->GetFragmentNumber ());
   if (!hdr->GetAddr1 ().IsGroup ())
     {
       originator->SetSequenceControl (hdr->GetSequenceControl ());

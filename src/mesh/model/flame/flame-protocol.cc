@@ -45,7 +45,7 @@ NS_OBJECT_ENSURE_REGISTERED (FlameProtocol);
 TypeId
 FlameTag::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::flame::FlameTag") .SetParent<Tag> () .AddConstructor<FlameTag> ();
+  static TypeId tid = TypeId ("ns3::flame::FlameTag").SetParent<Tag> ().AddConstructor<FlameTag> ();
   return tid;
 }
 
@@ -114,22 +114,22 @@ FlameProtocol::GetTypeId ()
                     "How often we must send broadcast packets",
                     TimeValue (Seconds (5)),
                     MakeTimeAccessor (
-                        &FlameProtocol::m_broadcastInterval),
+                      &FlameProtocol::m_broadcastInterval),
                     MakeTimeChecker ()
                     )
     .AddAttribute ( "MaxCost",
                     "Cost threshold after which packet will be dropped",
                     UintegerValue (32),
                     MakeUintegerAccessor (
-                        &FlameProtocol::m_maxCost),
+                      &FlameProtocol::m_maxCost),
                     MakeUintegerChecker<uint8_t> (3)
                     )
-                    ;
+  ;
   return tid;
 }
 FlameProtocol::FlameProtocol () :
   m_address (Mac48Address ()), m_broadcastInterval (Seconds (5)), m_lastBroadcast (Seconds (0)),
-      m_maxCost (32), m_myLastSeqno (1), m_rtable (CreateObject<FlameRtable> ())
+  m_maxCost (32), m_myLastSeqno (1), m_rtable (CreateObject<FlameRtable> ())
 {
 }
 FlameProtocol::~FlameProtocol ()
@@ -144,7 +144,7 @@ FlameProtocol::DoDispose ()
 }
 bool
 FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination,
-    Ptr<const Packet> const_packet, uint16_t protocolType, RouteReplyCallback routeReply)
+                             Ptr<const Packet> const_packet, uint16_t protocolType, RouteReplyCallback routeReply)
 {
   Ptr<Packet> packet = const_packet->Copy ();
   if (sourceIface == m_mp->GetIfIndex ())
@@ -224,7 +224,7 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
               if (result.retransmitter == Mac48Address::GetBroadcast ())
                 {
                   NS_LOG_DEBUG ("unicast packet dropped, because no route! I am " << GetAddress ()
-                      << ", RA = " << tag.receiver << ", TA = " << tag.transmitter);
+                                                                                  << ", RA = " << tag.receiver << ", TA = " << tag.transmitter);
                   m_stats.totalDropped++;
                   return false;
                 }
@@ -255,7 +255,7 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
 }
 bool
 FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
-    const Mac48Address destination, Ptr<Packet> packet, uint16_t& protocolType)
+                                   const Mac48Address destination, Ptr<Packet> packet, uint16_t& protocolType)
 {
   //Filter seqno:
   if (source == GetAddress ())
@@ -277,7 +277,7 @@ FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source
   // Start PATH_UPDATE procedure if destination is our own address and last broadcast was sent more
   // than broadcast interval ago or was not sent at all
   if ((destination == GetAddress ()) && ((m_lastBroadcast + m_broadcastInterval < Simulator::Now ())
-      || (m_lastBroadcast == Seconds (0))))
+                                         || (m_lastBroadcast == Seconds (0))))
     {
       Ptr<Packet> packet = Create<Packet> ();
       m_mp->Send (packet, Mac48Address::GetBroadcast (), 0);
@@ -314,7 +314,7 @@ FlameProtocol::Install (Ptr<MeshPointDevice> mp)
   mp->SetRoutingProtocol (this);
   // Mesh point aggregates all installed protocols
   mp->AggregateObject (this);
-  m_address = Mac48Address::ConvertFrom (mp->GetAddress ());//* address;
+  m_address = Mac48Address::ConvertFrom (mp->GetAddress ()); //* address;
   return true;
 }
 Mac48Address
@@ -324,7 +324,7 @@ FlameProtocol::GetAddress ()
 }
 bool
 FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const FlameHeader flameHdr,
-    Mac48Address receiver, uint32_t fromInterface)
+                                Mac48Address receiver, uint32_t fromInterface)
 {
   if (source == GetAddress ())
     {
@@ -353,19 +353,19 @@ void
 FlameProtocol::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "txUnicast=\"" << txUnicast << "\" "
-    "txBroadcast=\"" << txBroadcast << "\" "
-    "txBytes=\"" << txBytes << "\" "
-    "droppedTtl=\"" << droppedTtl << "\" "
-    "totalDropped=\"" << totalDropped << "\"/>" << std::endl;
+  "txUnicast=\"" << txUnicast << "\" "
+  "txBroadcast=\"" << txBroadcast << "\" "
+  "txBytes=\"" << txBytes << "\" "
+  "droppedTtl=\"" << droppedTtl << "\" "
+  "totalDropped=\"" << totalDropped << "\"/>" << std::endl;
 }
 void
 FlameProtocol::Report (std::ostream & os) const
 {
   os << "<Flame "
-    "address=\"" << m_address << "\"" << std::endl << 
-    "broadcastInterval=\"" << m_broadcastInterval.GetSeconds () << "\"" << std::endl << 
-    "maxCost=\"" << (uint16_t) m_maxCost << "\">" << std::endl;
+  "address=\"" << m_address << "\"" << std::endl <<
+  "broadcastInterval=\"" << m_broadcastInterval.GetSeconds () << "\"" << std::endl <<
+  "maxCost=\"" << (uint16_t) m_maxCost << "\">" << std::endl;
   m_stats.Print (os);
   for (FlamePluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin++)
     {

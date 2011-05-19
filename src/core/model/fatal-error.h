@@ -45,7 +45,7 @@
   do                                                      \
     {                                                     \
       std::cerr << "file=" << __FILE__ << ", line=" <<    \
-        __LINE__ << std::endl;                            \
+      __LINE__ << std::endl;                            \
       ::ns3::FatalImpl::FlushStreams ();                  \
       std::terminate ();                                  \
     }                                                     \

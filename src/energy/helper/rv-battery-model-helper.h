@@ -27,7 +27,9 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * \brief Creates a RvBatteryModel object.
+ *
  */
 class RvBatteryModelHelper : public EnergySourceHelper
 {

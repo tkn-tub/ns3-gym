@@ -105,9 +105,10 @@ private:
 };
 
 IidManager::IidManager ()
-{}
+{
+}
 
-uint16_t 
+uint16_t
 IidManager::AllocateUid (std::string name)
 {
   uint16_t j = 1;
@@ -433,8 +434,9 @@ TypeId::TypeId (const char *name)
 
 TypeId::TypeId (uint16_t tid)
   : m_tid (tid)
-{}
-TypeId 
+{
+}
+TypeId
 TypeId::LookupByName (std::string name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
@@ -488,21 +490,21 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *i
   TypeId tid;
   TypeId nextTid = *this;
   do {
-    tid = nextTid;
-    for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
-      {
-        std::string paramName = tid.GetAttributeName (i);
-        if (paramName == name)
-          {
-            info->accessor = tid.GetAttributeAccessor (i);
-            info->flags = tid.GetAttributeFlags (i);
-            info->initialValue = tid.GetAttributeInitialValue (i);
-            info->checker = tid.GetAttributeChecker (i);
-            return true;
-          }
-      }
-    nextTid = tid.GetParent ();
-  } while (nextTid != tid);
+      tid = nextTid;
+      for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
+        {
+          std::string paramName = tid.GetAttributeName (i);
+          if (paramName == name)
+            {
+              info->accessor = tid.GetAttributeAccessor (i);
+              info->flags = tid.GetAttributeFlags (i);
+              info->initialValue = tid.GetAttributeInitialValue (i);
+              info->checker = tid.GetAttributeChecker (i);
+              return true;
+            }
+        }
+      nextTid = tid.GetParent ();
+    } while (nextTid != tid);
   return false;
 }
 
@@ -699,17 +701,17 @@ TypeId::LookupTraceSourceByName (std::string name) const
   TypeId tid;
   TypeId nextTid = *this;
   do {
-    tid = nextTid;
-    for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
-      {
-        std::string srcName = tid.GetTraceSourceName (i);
-        if (srcName == name)
-          {
-            return tid.GetTraceSourceAccessor (i);
-          }
-      }
-    nextTid = tid.GetParent ();
-  } while (nextTid != tid);
+      tid = nextTid;
+      for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
+        {
+          std::string srcName = tid.GetTraceSourceName (i);
+          if (srcName == name)
+            {
+              return tid.GetTraceSourceAccessor (i);
+            }
+        }
+      nextTid = tid.GetParent ();
+    } while (nextTid != tid);
   return 0;
 }
 

@@ -38,7 +38,7 @@ Ipv6AutoconfiguredPrefix::Ipv6AutoconfiguredPrefix (Ptr<Node> node, uint32_t int
   m_validLifeTime = validLifeTime;
   m_preferredLifeTime = preferredLifeTime;
   m_id = m_prefixId;
-  m_prefixId ++;
+  m_prefixId++;
   m_preferred = false;
   m_valid = false;
   m_prefix = prefix;

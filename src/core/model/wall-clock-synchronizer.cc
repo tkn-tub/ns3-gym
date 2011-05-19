@@ -73,21 +73,21 @@ WallClockSynchronizer::~WallClockSynchronizer ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-  bool
+bool
 WallClockSynchronizer::DoRealtime (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
-  uint64_t
+uint64_t
 WallClockSynchronizer::DoGetCurrentRealtime (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetNormalizedRealtime ();
 }
 
-  void
+void
 WallClockSynchronizer::DoSetOrigin (uint64_t ns)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -103,7 +103,7 @@ WallClockSynchronizer::DoSetOrigin (uint64_t ns)
   NS_LOG_INFO ("origin = " << m_realtimeOriginNano);
 }
 
-  int64_t
+int64_t
 WallClockSynchronizer::DoGetDrift (uint64_t ns)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -143,7 +143,7 @@ WallClockSynchronizer::DoGetDrift (uint64_t ns)
     }
 }
 
-  bool
+bool
 WallClockSynchronizer::DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -209,7 +209,7 @@ WallClockSynchronizer::DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay)
     {
       NS_LOG_INFO ("SleepWait for " << numberJiffies * m_jiffy << " ns");
       NS_LOG_INFO ("SleepWait until " << nsCurrent + numberJiffies * m_jiffy 
-        << " ns");
+                                      << " ns");
 //
 // SleepWait is interruptible.  If it returns true it meant that the sleep
 // went until the end.  If it returns false, it means that the sleep was 
@@ -261,7 +261,7 @@ WallClockSynchronizer::DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay)
   return SpinWait (nsCurrent + nsDelay);
 }
 
-  void
+void
 WallClockSynchronizer::DoSignal (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -270,28 +270,28 @@ WallClockSynchronizer::DoSignal (void)
   m_condition.Signal ();
 }
 
-  void
+void
 WallClockSynchronizer::DoSetCondition (bool cond)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_condition.SetCondition (cond);
 }
 
-  void
+void
 WallClockSynchronizer::DoEventStart (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_nsEventStart = GetNormalizedRealtime ();
 }
 
-  uint64_t
+uint64_t
 WallClockSynchronizer::DoEventEnd (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetNormalizedRealtime () - m_nsEventStart;
 }
 
-  bool
+bool
 WallClockSynchronizer::SpinWait (uint64_t ns)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -319,7 +319,7 @@ WallClockSynchronizer::SpinWait (uint64_t ns)
   return true;
 }
 
-  bool
+bool
 WallClockSynchronizer::SleepWait (uint64_t ns)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -345,7 +345,7 @@ WallClockSynchronizer::SleepWait (uint64_t ns)
   return m_condition.TimedWait (ns);
 }
 
-  uint64_t
+uint64_t
 WallClockSynchronizer::DriftCorrect (uint64_t nsNow, uint64_t nsDelay)
 {
   int64_t drift = DoGetDrift (nsNow);
@@ -375,7 +375,7 @@ WallClockSynchronizer::DriftCorrect (uint64_t nsNow, uint64_t nsDelay)
     }
 }
 
-  uint64_t
+uint64_t
 WallClockSynchronizer::GetRealtime (void)
 {
   struct timeval tvNow;
@@ -383,13 +383,13 @@ WallClockSynchronizer::GetRealtime (void)
   return TimevalToNs (&tvNow);
 }
 
-  uint64_t
+uint64_t
 WallClockSynchronizer::GetNormalizedRealtime (void)
 {
   return GetRealtime () - m_realtimeOriginNano;
 }
 
-  void
+void
 WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
 {
   NS_ASSERT ((ns % US_PER_NS) == 0);
@@ -397,7 +397,7 @@ WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
   tv->tv_usec = (ns % NS_PER_SEC) / US_PER_NS;
 }
 
-  uint64_t
+uint64_t
 WallClockSynchronizer::TimevalToNs (struct timeval *tv)
 {
   uint64_t nsResult = tv->tv_sec * NS_PER_SEC + tv->tv_usec * US_PER_NS;
@@ -405,7 +405,7 @@ WallClockSynchronizer::TimevalToNs (struct timeval *tv)
   return nsResult;
 }
 
-  void
+void
 WallClockSynchronizer::TimevalAdd (
   struct timeval *tv1, 
   struct timeval *tv2,

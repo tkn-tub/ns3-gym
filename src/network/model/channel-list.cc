@@ -47,7 +47,7 @@ public:
   uint32_t GetNChannels (void);
 
   static Ptr<ChannelListPriv> Get (void);
-  
+
 private:
   static Ptr<ChannelListPriv> *DoGet (void);
   static void Delete (void);
@@ -66,7 +66,7 @@ ChannelListPriv::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&ChannelListPriv::m_channels),
                    MakeObjectVectorChecker<Channel> ())
-    ;
+  ;
   return tid;
 }
 
@@ -74,7 +74,7 @@ Ptr<ChannelListPriv>
 ChannelListPriv::Get (void)
 {
   return *DoGet ();
-}  
+}
 
 Ptr<ChannelListPriv> *
 ChannelListPriv::DoGet (void)
@@ -103,7 +103,8 @@ ChannelListPriv::ChannelListPriv ()
 }
 
 ChannelListPriv::~ChannelListPriv ()
-{}
+{
+}
 void
 ChannelListPriv::DoDispose (void)
 {
@@ -125,7 +126,7 @@ ChannelListPriv::Add (Ptr<Channel> channel)
   uint32_t index = m_channels.size ();
   m_channels.push_back (channel);
   return index;
-  
+
 }
 
 ChannelList::Iterator 

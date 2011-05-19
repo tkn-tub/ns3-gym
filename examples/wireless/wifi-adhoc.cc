@@ -50,7 +50,8 @@ private:
 };
 
 Experiment::Experiment ()
-{}
+{
+}
 
 Experiment::Experiment (std::string name)
   : m_output (name)

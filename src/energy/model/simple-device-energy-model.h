@@ -14,10 +14,12 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  *
  * A simple device energy model where current drain can be set by the user.
  *
  * It is supposed to be used as a testing model for energy sources.
+ *
  */
 class SimpleDeviceEnergyModel : public DeviceEnergyModel
 {

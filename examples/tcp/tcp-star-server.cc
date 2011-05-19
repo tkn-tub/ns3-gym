@@ -22,7 +22,7 @@
            \ | /
             \|/
        n1---n0---n5
-            /|\
+            /| \
            / | \
           n8 n7 n6
 */
@@ -96,9 +96,9 @@ main (int argc, char *argv[])
   //Collect an adjacency list of nodes for the p2p topology
   std::vector<NodeContainer> nodeAdjacencyList(N-1);
   for(uint32_t i=0; i<nodeAdjacencyList.size(); ++i)
-  {
-    nodeAdjacencyList[i] = NodeContainer (serverNode, clientNodes.Get (i));
-  }
+    {
+      nodeAdjacencyList[i] = NodeContainer (serverNode, clientNodes.Get (i));
+    }
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
@@ -107,21 +107,21 @@ main (int argc, char *argv[])
   p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   std::vector<NetDeviceContainer> deviceAdjacencyList(N-1);
   for(uint32_t i=0; i<deviceAdjacencyList.size(); ++i)
-  {
-    deviceAdjacencyList[i] = p2p.Install (nodeAdjacencyList[i]);
-  }
+    {
+      deviceAdjacencyList[i] = p2p.Install (nodeAdjacencyList[i]);
+    }
 
-  // Later, we add IP addresses.  
+  // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
   std::vector<Ipv4InterfaceContainer> interfaceAdjacencyList(N-1);
   for(uint32_t i=0; i<interfaceAdjacencyList.size(); ++i)
-  {
-    std::ostringstream subnet;
-    subnet<<"10.1."<<i+1<<".0";
-    ipv4.SetBase (subnet.str().c_str(), "255.255.255.0");
-    interfaceAdjacencyList[i] = ipv4.Assign (deviceAdjacencyList[i]);
-  }
+    {
+      std::ostringstream subnet;
+      subnet<<"10.1."<<i+1<<".0";
+      ipv4.SetBase (subnet.str().c_str(), "255.255.255.0");
+      interfaceAdjacencyList[i] = ipv4.Assign (deviceAdjacencyList[i]);
+    }
 
   //Turn on global static routing
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
@@ -137,19 +137,19 @@ main (int argc, char *argv[])
   // Create the OnOff applications to send TCP to the server
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
   clientHelper.SetAttribute 
-      ("OnTime", RandomVariableValue (ConstantVariable (1)));
+            ("OnTime", RandomVariableValue (ConstantVariable (1)));
   clientHelper.SetAttribute 
-      ("OffTime", RandomVariableValue (ConstantVariable (0)));
+            ("OffTime", RandomVariableValue (ConstantVariable (0)));
   //normally wouldn't need a loop here but the server IP address is different
   //on each p2p subnet
   ApplicationContainer clientApps;
   for(uint32_t i=0; i<clientNodes.GetN(); ++i)
-  {
-    AddressValue remoteAddress
-        (InetSocketAddress (interfaceAdjacencyList[i].GetAddress (0), port));
-    clientHelper.SetAttribute ("Remote", remoteAddress);
-    clientApps.Add(clientHelper.Install (clientNodes.Get(i)));
-  }
+    {
+      AddressValue remoteAddress
+              (InetSocketAddress (interfaceAdjacencyList[i].GetAddress (0), port));
+      clientHelper.SetAttribute ("Remote", remoteAddress);
+      clientApps.Add(clientHelper.Install (clientNodes.Get(i)));
+    }
   clientApps.Start (Seconds (1.0));
   clientApps.Stop (Seconds (10.0));
 

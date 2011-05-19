@@ -15,8 +15,8 @@ CbOne (double a, double b)
 class MyCb {
 public:
   int CbTwo (double a) {
-      std::cout << "invoke cbTwo a=" << a << std::endl;
-      return -5;
+    std::cout << "invoke cbTwo a=" << a << std::endl;
+    return -5;
   }
 };
 
@@ -34,6 +34,9 @@ int main (int argc, char *argv[])
   // invoke cbOne function through callback instance
   double retOne;
   retOne = one (10.0, 20.0);
+  // cast retOne to void, to suppress variable ‘retOne’ set but
+  // not used compiler warning
+  (void) retOne; 
 
   // return type: int
   // first arg type: double
@@ -45,8 +48,10 @@ int main (int argc, char *argv[])
   NS_ASSERT (!two.IsNull ());
   // invoke MyCb::cbTwo through callback instance
   int retTwo;
-  retTwo = two (10.0);    
-
+  retTwo = two (10.0);
+  // cast retTwo to void, to suppress variable ‘retTwo’ set but
+  // not used compiler warning
+  (void) retTwo;
   two = MakeNullCallback<int, double> ();
   // invoking a null callback is just like
   // invoking a null function pointer:

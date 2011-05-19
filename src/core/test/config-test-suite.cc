@@ -69,36 +69,36 @@ ConfigTestObject::GetTypeId (void)
   static TypeId tid = TypeId ("ConfigTestObject")
     .SetParent<Object> ()
     .AddAttribute ("NodesA", "",
-		   ObjectVectorValue (),
-		   MakeObjectVectorAccessor (&ConfigTestObject::m_nodesA),
-		   MakeObjectVectorChecker<ConfigTestObject> ())
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&ConfigTestObject::m_nodesA),
+                   MakeObjectVectorChecker<ConfigTestObject> ())
     .AddAttribute ("NodesB", "",
-		   ObjectVectorValue (),
-		   MakeObjectVectorAccessor (&ConfigTestObject::m_nodesB),
-		   MakeObjectVectorChecker<ConfigTestObject> ())
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&ConfigTestObject::m_nodesB),
+                   MakeObjectVectorChecker<ConfigTestObject> ())
     .AddAttribute ("NodeA", "",
                    PointerValue (),
-		   MakePointerAccessor (&ConfigTestObject::m_nodeA),
-		   MakePointerChecker<ConfigTestObject> ())
+                   MakePointerAccessor (&ConfigTestObject::m_nodeA),
+                   MakePointerChecker<ConfigTestObject> ())
     .AddAttribute ("NodeB", "",
                    PointerValue (),
-		   MakePointerAccessor (&ConfigTestObject::m_nodeB),
-		   MakePointerChecker<ConfigTestObject> ())
+                   MakePointerAccessor (&ConfigTestObject::m_nodeB),
+                   MakePointerChecker<ConfigTestObject> ())
     .AddAttribute ("A", "",
-		   IntegerValue (10),
-		   MakeIntegerAccessor (&ConfigTestObject::m_a),
-		   MakeIntegerChecker<int8_t> ())
+                   IntegerValue (10),
+                   MakeIntegerAccessor (&ConfigTestObject::m_a),
+                   MakeIntegerChecker<int8_t> ())
     .AddAttribute ("B", "",
-		   IntegerValue (9),
-		   MakeIntegerAccessor (&ConfigTestObject::m_b),
-		   MakeIntegerChecker<int8_t> ())
+                   IntegerValue (9),
+                   MakeIntegerAccessor (&ConfigTestObject::m_b),
+                   MakeIntegerChecker<int8_t> ())
     .AddAttribute ("Source", "XX",
-		   IntegerValue (-1),
-		   MakeIntegerAccessor (&ConfigTestObject::m_trace),
-		   MakeIntegerChecker<int16_t> ())
+                   IntegerValue (-1),
+                   MakeIntegerAccessor (&ConfigTestObject::m_trace),
+                   MakeIntegerChecker<int16_t> ())
     .AddTraceSource ("Source", "XX",
-		     MakeTraceSourceAccessor (&ConfigTestObject::m_trace))
-    ;
+                     MakeTraceSourceAccessor (&ConfigTestObject::m_trace))
+  ;
   return tid;
 }
 
@@ -457,8 +457,8 @@ public:
   ObjectVectorTraceConfigTestCase ();
   virtual ~ObjectVectorTraceConfigTestCase () {}
 
-  void Trace (int16_t oldValue, int16_t newValue) {m_newValue = newValue;}
-  void TraceWithPath (std::string path, int16_t old, int16_t newValue) {m_newValue = newValue; m_path = path;}
+  void Trace (int16_t oldValue, int16_t newValue) { m_newValue = newValue;}
+  void TraceWithPath (std::string path, int16_t old, int16_t newValue) { m_newValue = newValue; m_path = path;}
 
 private:
   virtual void DoRun (void);

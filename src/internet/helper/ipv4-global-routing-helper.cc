@@ -28,23 +28,24 @@ NS_LOG_COMPONENT_DEFINE("GlobalRoutingHelper");
 namespace ns3 {
 
 Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper ()
-{}
+{
+}
 
 Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &o)
 {
 }
 
-Ipv4GlobalRoutingHelper* 
-Ipv4GlobalRoutingHelper::Copy (void) const 
+Ipv4GlobalRoutingHelper*
+Ipv4GlobalRoutingHelper::Copy (void) const
 {
-  return new Ipv4GlobalRoutingHelper (*this); 
+  return new Ipv4GlobalRoutingHelper (*this);
 }
 
-Ptr<Ipv4RoutingProtocol> 
+Ptr<Ipv4RoutingProtocol>
 Ipv4GlobalRoutingHelper::Create (Ptr<Node> node) const
 {
-  NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
-		node->GetId ());
+  NS_LOG_LOGIC ("Adding GlobalRouter interface to node " <<
+                node->GetId ());
 
   Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
   node->AggregateObject (globalRouter);

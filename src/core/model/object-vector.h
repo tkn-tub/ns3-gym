@@ -56,13 +56,13 @@ MakeObjectVectorAccessor (U T::*memberVector);
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
-			  INDEX (T::*getN) (void) const);
+MakeObjectVectorAccessor (Ptr<U> (T::*get)(INDEX) const,
+                          INDEX (T::*getN)(void) const);
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
-			  Ptr<U> (T::*get) (INDEX) const);
+MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
+                          Ptr<U> (T::*get)(INDEX) const);
 
 class ObjectVectorChecker : public AttributeChecker
 {
@@ -106,10 +106,10 @@ public:
     ObjectVectorValue *dst = dynamic_cast<ObjectVectorValue *> (&destination);
     if (src == 0 || dst == 0)
       {
-	return false;
+        return false;
       }
     *dst = *src;
-    return true;    
+    return true;
   }
 };
 
@@ -137,9 +137,9 @@ MakeObjectVectorAccessor (U T::*memberVector)
     virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       *n = (obj->*m_memberVector).size ();
       return true;
     }
@@ -149,13 +149,13 @@ MakeObjectVectorAccessor (U T::*memberVector)
       typename U::const_iterator end = (obj->*m_memberVector).end ();
       uint32_t k = 0;
       for (typename U::const_iterator j = begin; j != end; j++, k++)
-	{
-	  if (k == i)
-	    {
-	      return *j;
-	      break;
-	    }
-	}
+        {
+          if (k == i)
+            {
+              return *j;
+              break;
+            }
+        }
       NS_ASSERT (false);
       // quiet compiler.
       return 0;
@@ -168,26 +168,26 @@ MakeObjectVectorAccessor (U T::*memberVector)
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
-			   INDEX (T::*getN) (void) const)
+MakeObjectVectorAccessor (Ptr<U> (T::*get)(INDEX) const,
+                          INDEX (T::*getN)(void) const)
 {
   struct MemberGetters : public ObjectVectorAccessor
   {
     virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
-	{
-	  return false;
-	}
-      *n = (obj->*m_getN) ();
+        {
+          return false;
+        }
+      *n = (obj->*m_getN)();
       return true;
     }
     virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const {
       const T *obj = static_cast<const T *> (object);
-      return (obj->*m_get) (i);
+      return (obj->*m_get)(i);
     }
-    Ptr<U> (T::*m_get) (INDEX) const;
-    INDEX (T::*m_getN) (void) const;
+    Ptr<U> (T::*m_get)(INDEX) const;
+    INDEX (T::*m_getN)(void) const;
   } *spec = new MemberGetters ();
   spec->m_get = get;
   spec->m_getN = getN;
@@ -196,8 +196,8 @@ MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
-			   Ptr<U> (T::*get) (INDEX) const)
+MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
+                          Ptr<U> (T::*get)(INDEX) const)
 {
   return MakeObjectVectorAccessor (get, getN);
 }

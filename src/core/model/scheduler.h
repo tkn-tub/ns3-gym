@@ -29,7 +29,7 @@ namespace ns3 {
 class EventImpl;
 
 /**
- * \ingroup simulator
+ * \ingroup core
  * \defgroup scheduler Scheduler
  */
 /**

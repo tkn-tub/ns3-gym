@@ -38,7 +38,7 @@ namespace ns3
 {
 
 PendingData::PendingData () : size (0), data (0),
-               msgSize (0), responseSize (0)
+                              msgSize (0), responseSize (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -102,13 +102,13 @@ void PendingData::Add (uint32_t s, const uint8_t* d)
 {
   NS_LOG_FUNCTION (this << s);
   if (d == 0)
-  {
-    data.push_back(Create<Packet> (d,s));
-  }
+    {
+      data.push_back(Create<Packet> (d,s));
+    }
   else
-  {
-    data.push_back(Create<Packet> (s));
-  }
+    {
+      data.push_back(Create<Packet> (s));
+    }
   size += s;
 }
 
@@ -161,7 +161,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
       std::vector<Ptr<Packet> >::size_type end = 0;
       Ptr<Packet> outPacket;
       Ptr<Packet> endFragment;
-      for (std::vector<Ptr<Packet> >::size_type i=0;i<data.size();++i)
+      for (std::vector<Ptr<Packet> >::size_type i=0; i<data.size(); ++i)
         {
           count+=data[i]->GetSize();
           if (!beginFound)
@@ -169,13 +169,13 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
               if (count > o)
                 {
                   if (count >= o + s1) //then just copy within this packet
-                  {
-                    Ptr<Packet> toFragment = data[i];
-                    uint32_t packetStart = count - toFragment->GetSize();
-                    uint32_t packetOffset = o - packetStart;
-                    outPacket = toFragment->CreateFragment (packetOffset, s1);
-                    return outPacket;
-                  }
+                    {
+                      Ptr<Packet> toFragment = data[i];
+                      uint32_t packetStart = count - toFragment->GetSize();
+                      uint32_t packetOffset = o - packetStart;
+                      outPacket = toFragment->CreateFragment (packetOffset, s1);
+                      return outPacket;
+                    }
                   begin = i;
                   beginFound = true;
                   Ptr<Packet> toFragment = data[begin];
@@ -198,7 +198,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
                 }
             }
         }
-      for (std::vector<Ptr<Packet> >::size_type i=begin+1;i<end;++i)
+      for (std::vector<Ptr<Packet> >::size_type i=begin+1; i<end; ++i)
         {
           outPacket->AddAtEnd (data[i]);
         }
@@ -252,4 +252,4 @@ PendingData::RemoveToSeq (const SequenceNumber32& seqFront, const SequenceNumber
   return current;
 }
 
-}//namepsace ns3
+} //namepsace ns3

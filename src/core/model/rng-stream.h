@@ -33,7 +33,7 @@ namespace ns3 {
  * This class is the combined multiple-recursive random number
  * generator called MRG32k3a.  The ns3::RandomVariableBase class
  * holds a static instance of this class.  The details of this
- * class are explained in:  
+ * class are explained in:
  * http://www.iro.umontreal.ca/~lecuyer/myftp/papers/streams00.pdf
  */
 class RngStream {

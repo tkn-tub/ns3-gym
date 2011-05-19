@@ -81,18 +81,18 @@ private:
 public:
   int64x64_t       est;     // Current estimate
   int64x64_t       minrto; // minimum value of the timeout
-  uint32_t      nSamples;// Number of samples
+  uint32_t      nSamples; // Number of samples
   double       multiplier;   // RTO Multiplier
 };
 
 // The "Mean-Deviation" estimator, as discussed by Van Jacobson
 // "Congestion Avoidance and Control", SIGCOMM 88, Appendix A
 
-  //Doc:Class Class {\tt RttMeanDeviation} implements the "Mean--Deviation" estimator
-  //Doc:Class as described by Van Jacobson 
-  //Doc:Class "Congestion Avoidance and Control", SIGCOMM 88, Appendix A
+//Doc:Class Class {\tt RttMeanDeviation} implements the "Mean--Deviation" estimator
+//Doc:Class as described by Van Jacobson
+//Doc:Class "Congestion Avoidance and Control", SIGCOMM 88, Appendix A
 class RttMeanDeviation : public RttEstimator {
-public :
+public:
   static TypeId GetTypeId (void);
 
   RttMeanDeviation ();
@@ -100,8 +100,8 @@ public :
 
   //Doc:Method
   RttMeanDeviation (const RttMeanDeviation&); // Copy constructor
-    //Doc:Desc Copy constructor.
-    //Doc:Arg1 {\tt RttMeanDeviation} object to copy.
+  //Doc:Desc Copy constructor.
+  //Doc:Arg1 {\tt RttMeanDeviation} object to copy.
 
   void Measurement (Time);
   Time RetransmitTimeout ();
@@ -113,7 +113,7 @@ public:
   double       gain;       // Filter gain
   int64x64_t   variance;   // Current variance
 };
-}//namespace ns3
+} //namespace ns3
 #endif
 
 

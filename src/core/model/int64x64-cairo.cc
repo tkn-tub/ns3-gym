@@ -27,14 +27,14 @@
 namespace ns3 {
 
 #define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
-  ({bool negA, negB;                                                    \
-  negA = _cairo_int128_negative (sa);                                   \
-  negB = _cairo_int128_negative (sb);                                   \
-  ua = _cairo_int128_to_uint128 (sa);                                   \
-  ub = _cairo_int128_to_uint128 (sb);                                   \
-  ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
-  ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
-  (negA && !negB) || (!negA && negB);})
+  ({ bool negA, negB;                                                    \
+     negA = _cairo_int128_negative (sa);                                   \
+     negB = _cairo_int128_negative (sb);                                   \
+     ua = _cairo_int128_to_uint128 (sa);                                   \
+     ub = _cairo_int128_to_uint128 (sb);                                   \
+     ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
+     ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
+     (negA && !negB) || (!negA && negB);})
 
 void
 int64x64_t::Mul (int64x64_t const &o)
@@ -114,10 +114,10 @@ void
 int64x64_t::MulByInvert (const int64x64_t &o)
 {
   bool negResult = _cairo_int128_negative (_v);
-  cairo_uint128_t a = negResult?_cairo_int128_negate(_v):_v;
+  cairo_uint128_t a = negResult ? _cairo_int128_negate(_v) : _v;
   cairo_uint128_t result = UmulByInvert (a, o._v);
 
-  _v = negResult?_cairo_int128_negate(result):result;
+  _v = negResult ? _cairo_int128_negate(result) : result;
 }
 cairo_uint128_t
 int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
@@ -126,7 +126,7 @@ int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
   cairo_uint128_t hi, mid;
   hi = _cairo_uint64x64_128_mul (a.hi, b.hi);
   mid = _cairo_uint128_add (_cairo_uint64x64_128_mul (a.hi, b.lo),
-                           _cairo_uint64x64_128_mul (a.lo, b.hi));
+                            _cairo_uint64x64_128_mul (a.lo, b.hi));
   mid.lo = mid.hi;
   mid.hi = 0;
   result = _cairo_uint128_add (hi,mid);
@@ -147,7 +147,7 @@ int64x64_t::Invert (uint64_t v)
   tmp.MulByInvert (result);
   if (tmp.GetHigh () != 1)
     {
-      cairo_uint128_t one = {1, 0};
+      cairo_uint128_t one = { 1, 0};
       result._v = _cairo_uint128_add (result._v, one);
     }
   return result;

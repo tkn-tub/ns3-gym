@@ -37,6 +37,8 @@ class SpectrumErrorModel;
 
 
 /**
+ * \ingroup spectrum
+ *
  * This class implements a gaussian interference model, i.e., all
  * incoming signals are added to the total interference.
  *
@@ -97,7 +99,6 @@ public:
 
 
 protected:
-  
   void DoDispose ();
 
 private:

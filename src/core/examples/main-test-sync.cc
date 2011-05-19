@@ -24,7 +24,7 @@ inserted_function (void)
 {
   NS_ASSERT (gFirstRun);
   NS_LOG_UNCOND ("inserted_function() called at " << 
-    Simulator::Now ().GetSeconds () << " s");
+                 Simulator::Now ().GetSeconds () << " s");
 }
 
 void 
@@ -32,14 +32,14 @@ background_function (void)
 {
   NS_ASSERT (gFirstRun);
   NS_LOG_UNCOND ("background_function() called at " << 
-    Simulator::Now ().GetSeconds () << " s");
+                 Simulator::Now ().GetSeconds () << " s");
 }
 
 void 
 first_function (void)
 {
   NS_LOG_UNCOND ("first_function() called at " << 
-    Simulator::Now ().GetSeconds () << " s");
+                 Simulator::Now ().GetSeconds () << " s");
   gFirstRun = true;
 }
 
@@ -90,7 +90,7 @@ void
 test (void)
 {
   GlobalValue::Bind ("SimulatorImplementationType", 
-    StringValue ("ns3::RealtimeSimulatorImpl"));
+                     StringValue ("ns3::RealtimeSimulatorImpl"));
 
   FakeNetDevice fnd;
 
@@ -108,11 +108,11 @@ test (void)
     }
 
   Ptr<SystemThread> st3 = Create<SystemThread> (
-    MakeCallback (&FakeNetDevice::Doit3, &fnd));
+      MakeCallback (&FakeNetDevice::Doit3, &fnd));
   st3->Start ();
 
   Ptr<SystemThread> st4 = Create<SystemThread> (
-    MakeCallback (&FakeNetDevice::Doit4, &fnd));
+      MakeCallback (&FakeNetDevice::Doit4, &fnd));
   st4->Start ();
 
   Simulator::Stop (Seconds (15.0));

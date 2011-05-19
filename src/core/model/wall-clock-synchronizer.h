@@ -37,7 +37,7 @@ namespace ns3 {
  * The simulation clock is maintained as a 64-bit integer in a unit specified
  * by the user through the TimeStepPrecision::Set function. This means that
  * it is not possible to specify event expiration times with anything better
- * than this user-specified accuracy.  
+ * than this user-specified accuracy.
  *
  * There are a couple of more issues at this level.  Posix clocks provide
  * access to several clocks we could use as a wall clock.  We don't care about

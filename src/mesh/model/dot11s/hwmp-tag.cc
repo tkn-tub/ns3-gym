@@ -85,7 +85,7 @@ HwmpTag::GetSeqno ()
 TypeId
 HwmpTag::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::dot11s::HwmpTag") .SetParent<Tag> () .AddConstructor<HwmpTag> ();
+  static TypeId tid = TypeId ("ns3::dot11s::HwmpTag").SetParent<Tag> ().AddConstructor<HwmpTag> ();
   return tid;
 }
 
@@ -99,9 +99,9 @@ uint32_t
 HwmpTag::GetSerializedSize () const
 {
   return 6 //address
-      + 1 //ttl
-      + 4 //metric
-      + 4; //seqno
+         + 1 //ttl
+         + 4 //metric
+         + 4; //seqno
 }
 
 void

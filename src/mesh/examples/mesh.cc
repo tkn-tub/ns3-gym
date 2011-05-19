@@ -62,43 +62,43 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TestMeshScript");
 class MeshTest
 {
-  public:
-    /// Init test
-    MeshTest ();
-    /// Configure test from command line arguments
-    void Configure (int argc, char ** argv);
-    /// Run test
-    int Run ();
-  private:
-    int       m_xSize;
-    int       m_ySize;
-    double    m_step;
-    double    m_randomStart;
-    double    m_totalTime;
-    double    m_packetInterval;
-    uint16_t  m_packetSize;
-    uint32_t  m_nIfaces;
-    bool      m_chan;
-    bool      m_pcap;
-    std::string m_stack;
-    std::string m_root;
-    /// List of network nodes
-    NodeContainer nodes;
-    /// List of all mesh point devices
-    NetDeviceContainer meshDevices;
-    //Addresses of interfaces:
-    Ipv4InterfaceContainer interfaces;
-    // MeshHelper. Report is not static methods
-    MeshHelper mesh;
-  private:
-    /// Create nodes and setup their mobility
-    void CreateNodes ();
-    /// Install internet m_stack on nodes
-    void InstallInternetStack ();
-    /// Install applications
-    void InstallApplication ();
-    /// Print mesh devices diagnostics
-    void Report ();  
+public:
+  /// Init test
+  MeshTest ();
+  /// Configure test from command line arguments
+  void Configure (int argc, char ** argv);
+  /// Run test
+  int Run ();
+private:
+  int       m_xSize;
+  int       m_ySize;
+  double    m_step;
+  double    m_randomStart;
+  double    m_totalTime;
+  double    m_packetInterval;
+  uint16_t  m_packetSize;
+  uint32_t  m_nIfaces;
+  bool      m_chan;
+  bool      m_pcap;
+  std::string m_stack;
+  std::string m_root;
+  /// List of network nodes
+  NodeContainer nodes;
+  /// List of all mesh point devices
+  NetDeviceContainer meshDevices;
+  //Addresses of interfaces:
+  Ipv4InterfaceContainer interfaces;
+  // MeshHelper. Report is not static methods
+  MeshHelper mesh;
+private:
+  /// Create nodes and setup their mobility
+  void CreateNodes ();
+  /// Install internet m_stack on nodes
+  void InstallInternetStack ();
+  /// Install applications
+  void InstallApplication ();
+  /// Print mesh devices diagnostics
+  void Report ();
 };
 MeshTest::MeshTest () :
   m_xSize (3),
@@ -135,7 +135,7 @@ MeshTest::Configure (int argc, char *argv[])
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", m_pcap);
   cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", m_stack);
   cmd.AddValue ("root", "Mac address of root mesh point in HWMP", m_root);
-  
+
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << m_xSize << "*" << m_ySize);
   NS_LOG_DEBUG ("Simulation time: " << m_totalTime << " s");
@@ -224,7 +224,7 @@ MeshTest::Run ()
   CreateNodes ();
   InstallInternetStack ();
   InstallApplication ();
-  Simulator::Schedule (Seconds(m_totalTime), & MeshTest::Report, this);
+  Simulator::Schedule (Seconds(m_totalTime), &MeshTest::Report, this);
   Simulator::Stop (Seconds (m_totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
@@ -235,20 +235,20 @@ MeshTest::Report ()
 {
   unsigned n (0);
   for (NetDeviceContainer::Iterator i = meshDevices.Begin (); i != meshDevices.End (); ++i, ++n)
-  {
-    std::ostringstream os;
-    os << "mp-report-" << n << ".xml";
-    std::cerr << "Printing mesh point device #" << n << " diagnostics to " << os.str () << "\n";
-    std::ofstream of;
-    of.open (os.str().c_str());
-    if (! of.is_open ())
     {
-      std::cerr << "Error: Can't open file " << os.str() << "\n";
-      return;
+      std::ostringstream os;
+      os << "mp-report-" << n << ".xml";
+      std::cerr << "Printing mesh point device #" << n << " diagnostics to " << os.str () << "\n";
+      std::ofstream of;
+      of.open (os.str().c_str());
+      if (!of.is_open ())
+        {
+          std::cerr << "Error: Can't open file " << os.str() << "\n";
+          return;
+        }
+      mesh.Report (*i, of);
+      of.close ();
     }
-    mesh.Report (*i, of);
-    of.close ();
-  }
 }
 int
 main (int argc, char *argv[])

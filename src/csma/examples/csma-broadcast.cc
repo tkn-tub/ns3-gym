@@ -20,8 +20,8 @@
 // Network topology
 //     ==============
 //       |          |
-//       n0    n1   n2   
-//       |     |       
+//       n0    n1   n2
+//       |     |
 //     ==========
 //
 //   n0 originates UDP broadcast to 255.255.255.255/discard port, which 
@@ -91,7 +91,7 @@ main (int argc, char *argv[])
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
+                     Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
@@ -99,10 +99,10 @@ main (int argc, char *argv[])
   // Start the application
   app.Start (Seconds (1.0));
   app.Stop (Seconds (10.0));
-  
+
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-    Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
+                         Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
   app = sink.Install (c0.Get (1));
   app.Add (sink.Install (c1.Get (1)));
   app.Start (Seconds (1.0));
@@ -121,7 +121,7 @@ main (int argc, char *argv[])
   csma.EnablePcapAll ("csma-broadcast", false);
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Run ();    
+  Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
 }

@@ -64,13 +64,13 @@ public:
 private:
 
   std::map<FiveTuple, FlowId> m_flowMap;
-  
+
 };
 
 
 bool operator < (const Ipv4FlowClassifier::FiveTuple &t1, const Ipv4FlowClassifier::FiveTuple &t2);
 bool operator == (const Ipv4FlowClassifier::FiveTuple &t1, const Ipv4FlowClassifier::FiveTuple &t2);
-  
+
 
 } // namespace ns3
 

@@ -26,7 +26,10 @@
 
 namespace ns3 {
 
+
 /**
+ * \ingroup netanim
+ *
  * \brief Keep track of the current location of an object
  *
  * This can be used anytime a logical node location is needed

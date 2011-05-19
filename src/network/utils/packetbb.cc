@@ -257,8 +257,8 @@ PbbTlvBlock::operator== (const PbbTlvBlock &other) const
 
   ConstIterator ti, oi;
   for (ti = Begin (), oi = other.Begin ();
-      ti != End () && oi != other.End ();
-      ti++, oi++)
+       ti != End () && oi != other.End ();
+       ti++, oi++)
     {
       if (**ti != **oi)
         {
@@ -429,11 +429,11 @@ PbbAddressTlvBlock::Deserialize (Buffer::Iterator &start)
   if (size > 0)
     {
       while (start.GetDistanceFrom (tlvstart) < size)
-      {
-        Ptr<PbbAddressTlv> newtlv = Create<PbbAddressTlv> ();
-        newtlv->Deserialize (start);
-        PushBack (newtlv);
-      }
+        {
+          Ptr<PbbAddressTlv> newtlv = Create<PbbAddressTlv> ();
+          newtlv->Deserialize (start);
+          PushBack (newtlv);
+        }
     }
 }
 
@@ -475,8 +475,8 @@ PbbAddressTlvBlock::operator== (const PbbAddressTlvBlock &other) const
 
   ConstIterator it, ot;
   for (it = Begin (), ot = other.Begin ();
-      it != End () && ot != other.End ();
-      it++, ot++)
+       it != End () && ot != other.End ();
+       it++, ot++)
     {
       if (**it != **ot)
         {
@@ -730,7 +730,7 @@ PbbPacket::Erase (PbbPacket::MessageIterator position)
 
 PbbPacket::MessageIterator
 PbbPacket::Erase (PbbPacket::MessageIterator first,
-    PbbPacket::MessageIterator last)
+                  PbbPacket::MessageIterator last)
 {
   return m_messageList.erase (first, last);
 }
@@ -779,8 +779,8 @@ PbbPacket::GetSerializedSize (void) const
     }
 
   for (ConstMessageIterator iter = MessageBegin ();
-      iter != MessageEnd ();
-      iter++)
+       iter != MessageEnd ();
+       iter++)
     {
       size += (*iter)->GetSerializedSize ();
     }
@@ -815,8 +815,8 @@ PbbPacket::Serialize (Buffer::Iterator start) const
   bufref.WriteU8(flags);
 
   for (ConstMessageIterator iter = MessageBegin ();
-      iter != MessageEnd ();
-      iter++)
+       iter != MessageEnd ();
+       iter++)
     {
       (*iter)->Serialize (start);
     }
@@ -870,8 +870,8 @@ PbbPacket::Print (std::ostream &os) const
   m_tlvList.Print (os, 1);
 
   for (ConstMessageIterator iter = MessageBegin ();
-      iter != MessageEnd ();
-      iter++)
+       iter != MessageEnd ();
+       iter++)
     {
       (*iter)->Print (os, 1);
     }
@@ -905,13 +905,13 @@ PbbPacket::operator== (const PbbPacket &other) const
 
   if (MessageSize () != other.MessageSize ())
     {
-        return false;
+      return false;
     }
 
   ConstMessageIterator tmi, omi;
   for (tmi = MessageBegin (), omi = other.MessageBegin ();
-    tmi != MessageEnd () && omi != other.MessageEnd ();
-    tmi++, omi++)
+       tmi != MessageEnd () && omi != other.MessageEnd ();
+       tmi++, omi++)
     {
       if (**tmi != **omi)
         {
@@ -1240,7 +1240,7 @@ PbbMessage::AddressBlockErase (PbbMessage::AddressBlockIterator position)
 
 PbbMessage::AddressBlockIterator
 PbbMessage::AddressBlockErase (PbbMessage::AddressBlockIterator first,
-    PbbMessage::AddressBlockIterator last)
+                               PbbMessage::AddressBlockIterator last)
 {
   return m_addressBlockList.erase(first, last);
 }
@@ -1249,8 +1249,8 @@ void
 PbbMessage::AddressBlockClear (void)
 {
   for (AddressBlockIterator iter = AddressBlockBegin ();
-      iter != AddressBlockEnd ();
-      iter++)
+       iter != AddressBlockEnd ();
+       iter++)
     {
       *iter = 0;
     }
@@ -1286,8 +1286,8 @@ PbbMessage::GetSerializedSize (void) const
   size += m_tlvList.GetSerializedSize ();
 
   for (ConstAddressBlockIterator iter = AddressBlockBegin ();
-      iter != AddressBlockEnd ();
-      iter++)
+       iter != AddressBlockEnd ();
+       iter++)
     {
       size += (*iter)->GetSerializedSize ();
     }
@@ -1342,8 +1342,8 @@ PbbMessage::Serialize (Buffer::Iterator &start) const
   m_tlvList.Serialize (start);
 
   for (ConstAddressBlockIterator iter = AddressBlockBegin ();
-      iter != AddressBlockEnd ();
-      iter++)
+       iter != AddressBlockEnd ();
+       iter++)
     {
       (*iter)->Serialize (start);
     }
@@ -1368,16 +1368,16 @@ PbbMessage::DeserializeMessage (Buffer::Iterator &start)
 
   switch (addrlen)
     {
-      case 0:
-      case IPV4:
-        newmsg = Create<PbbMessageIpv4> ();
-        break;
-      case IPV6:
-        newmsg = Create<PbbMessageIpv6> ();
-        break;
-      default:
-        return 0;
-        break;
+    case 0:
+    case IPV4:
+      newmsg = Create<PbbMessageIpv4> ();
+      break;
+    case IPV6:
+      newmsg = Create<PbbMessageIpv6> ();
+      break;
+    default:
+      return 0;
+      break;
     }
   newmsg->Deserialize (start);
   return newmsg;
@@ -1469,8 +1469,8 @@ PbbMessage::Print (std::ostream &os, int level) const
   m_tlvList.Print (os, level+1);
 
   for (ConstAddressBlockIterator iter = AddressBlockBegin ();
-      iter != AddressBlockEnd ();
-      iter++)
+       iter != AddressBlockEnd ();
+       iter++)
     {
       (*iter)->Print (os, level+1);
     }
@@ -1554,8 +1554,8 @@ PbbMessage::operator== (const PbbMessage &other) const
 
   ConstAddressBlockIterator tai, oai;
   for (tai = AddressBlockBegin (), oai = other.AddressBlockBegin ();
-      tai != AddressBlockEnd () && oai != other.AddressBlockEnd ();
-      tai++, oai++)
+       tai != AddressBlockEnd () && oai != other.AddressBlockEnd ();
+       tai++, oai++)
     {
       if (**tai != **oai)
         {
@@ -1666,10 +1666,12 @@ PbbMessageIpv6::AddressBlockDeserialize (Buffer::Iterator &start) const
 /* End PbbMessageIpv6 Class */
 
 PbbAddressBlock::PbbAddressBlock ()
-{}
+{
+}
 
 PbbAddressBlock::~PbbAddressBlock ()
-{}
+{
+}
 
 /* Manipulating the address block */
 
@@ -1753,12 +1755,12 @@ PbbAddressBlock::AddressErase (PbbAddressBlock::AddressIterator position)
 
 PbbAddressBlock::AddressIterator
 PbbAddressBlock::AddressErase (PbbAddressBlock::AddressIterator first,
-    PbbAddressBlock::AddressIterator last)
+                               PbbAddressBlock::AddressIterator last)
 {
   return m_addressList.erase(first, last);
 }
 
-  void
+void
 PbbAddressBlock::AddressClear (void)
 {
   return m_addressList.clear();
@@ -1956,7 +1958,7 @@ PbbAddressBlock::TlvErase (PbbAddressBlock::TlvIterator position)
 
 PbbAddressBlock::TlvIterator
 PbbAddressBlock::TlvErase (PbbAddressBlock::TlvIterator first,
-    PbbAddressBlock::TlvIterator last)
+                           PbbAddressBlock::TlvIterator last)
 {
   return m_addressTlvList.Erase(first, last);
 }
@@ -2066,8 +2068,8 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
         {
           uint8_t mid[GetAddressLength ()];
           for (PbbAddressBlock::ConstAddressIterator iter = AddressBegin ();
-              iter != AddressEnd ();
-              iter++)
+               iter != AddressEnd ();
+               iter++)
             {
               SerializeAddress (mid, iter);
               start.Write (mid + headlen, GetAddressLength () - headlen - taillen);
@@ -2078,13 +2080,13 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
       bufref.WriteU8 (flags);
 
       for (ConstPrefixIterator iter = PrefixBegin ();
-          iter != PrefixEnd ();
-          iter++)
+           iter != PrefixEnd ();
+           iter++)
         {
           start.WriteU8 (*iter);
         }
     }
-  
+
   m_addressTlvList.Serialize (start);
 }
 
@@ -2110,7 +2112,7 @@ PbbAddressBlock::Deserialize (Buffer::Iterator &start)
       if ((flags & AHAS_FULL_TAIL) ^ (flags & AHAS_ZERO_TAIL))
         {
           taillen = start.ReadU8 ();
-          
+
           if (flags & AHAS_FULL_TAIL)
             {
               start.Read (addrtmp + GetAddressLength () - taillen, taillen);
@@ -2157,8 +2159,8 @@ PbbAddressBlock::Print (std::ostream &os, int level) const
   os << prefix << "PbbAddressBlock {" << std::endl;
   os << prefix << "\taddresses = " << std::endl;
   for (ConstAddressIterator iter = AddressBegin ();
-      iter != AddressEnd ();
-      iter++)
+       iter != AddressEnd ();
+       iter++)
     {
       os << prefix << "\t\t";
       PrintAddress(os, iter);
@@ -2167,8 +2169,8 @@ PbbAddressBlock::Print (std::ostream &os, int level) const
 
   os << prefix << "\tprefixes = " << std::endl;
   for (ConstPrefixIterator iter = PrefixBegin ();
-      iter != PrefixEnd ();
-      iter++)
+       iter != PrefixEnd ();
+       iter++)
     {
       os << prefix << "\t\t" << (int)(*iter) << std::endl;
     }
@@ -2186,8 +2188,8 @@ PbbAddressBlock::operator== (const PbbAddressBlock &other) const
 
   ConstAddressIterator tai, oai;
   for (tai = AddressBegin (), oai = other.AddressBegin ();
-      tai != AddressEnd () && oai != other.AddressEnd ();
-      tai++, oai++)
+       tai != AddressEnd () && oai != other.AddressEnd ();
+       tai++, oai++)
     {
       if (*tai != *oai)
         {
@@ -2202,8 +2204,8 @@ PbbAddressBlock::operator== (const PbbAddressBlock &other) const
 
   ConstPrefixIterator tpi, opi;
   for (tpi = PrefixBegin (), opi = other.PrefixBegin ();
-      tpi != PrefixEnd () && opi != other.PrefixEnd ();
-      tpi++, opi++)
+       tpi != PrefixEnd () && opi != other.PrefixEnd ();
+       tpi++, opi++)
     {
       if (*tpi != *opi)
         {
@@ -2230,15 +2232,15 @@ PbbAddressBlock::GetPrefixFlags (void) const
 {
   switch (PrefixSize ())
     {
-      case 0:
-        return 0;
-        break;
-      case 1:
-        return AHAS_SINGLE_PRE_LEN;
-        break;
-      default:
-        return AHAS_MULTI_PRE_LEN;
-        break;
+    case 0:
+      return 0;
+      break;
+    case 1:
+      return AHAS_SINGLE_PRE_LEN;
+      break;
+    default:
+      return AHAS_MULTI_PRE_LEN;
+      break;
     }
 
   /* Quiet compiler */
@@ -2247,7 +2249,7 @@ PbbAddressBlock::GetPrefixFlags (void) const
 
 void
 PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
-    uint8_t *tail, uint8_t &taillen) const
+                              uint8_t *tail, uint8_t &taillen) const
 {
   headlen = GetAddressLength ();
   taillen = headlen;
@@ -2261,8 +2263,8 @@ PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
 
   /* Skip the first item */
   for (PbbAddressBlock::ConstAddressIterator iter = AddressBegin ()++;
-      iter != AddressEnd ();
-      iter++)
+       iter != AddressEnd ();
+       iter++)
     {
       SerializeAddress (bufcur, iter);
 
@@ -2280,8 +2282,8 @@ PbbAddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
       if (headlen <= GetAddressLength () - 1)
         {
           for (i = GetAddressLength () - 1;
-              GetAddressLength () - 1 - i <= taillen && i > headlen;
-              i--)
+               GetAddressLength () - 1 - i <= taillen && i > headlen;
+               i--)
             {
               if (buflast[i] != bufcur[i])
                 {
@@ -2692,7 +2694,7 @@ PbbTlv::Print (std::ostream &os, int level) const
 
   if (HasValue ())
     {
-      os << prefix << "\thas value; size = " << GetValue (). GetSize () << std::endl;
+      os << prefix << "\thas value; size = " << GetValue ().GetSize () << std::endl;
     }
 
   os << prefix << "}" << std::endl;

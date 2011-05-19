@@ -42,7 +42,7 @@ PointToPointChannel::GetTypeId (void)
     .AddTraceSource ("TxRxPointToPoint",
                      "Trace source indicating transmission of packet from the PointToPointChannel, used by the Animation interface.",
                      MakeTraceSourceAccessor (&PointToPointChannel::m_txrxPointToPoint))
-    ;
+  ;
   return tid;
 }
 
@@ -50,10 +50,10 @@ PointToPointChannel::GetTypeId (void)
 // By default, you get a channel that 
 // has an "infitely" fast transmission speed and zero delay.
 PointToPointChannel::PointToPointChannel()
-: 
-  Channel (), 
-  m_delay (Seconds (0.)),
-  m_nDevices (0)
+  :
+    Channel (),
+    m_delay (Seconds (0.)),
+    m_nDevices (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }

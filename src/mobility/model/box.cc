@@ -37,7 +37,8 @@ Box::Box (double _xMin, double _xMax,
     yMax (_yMax),
     zMin (_zMin),
     zMax (_zMax)
-{}
+{
+}
 
 Box::Box ()
   : xMin (0.0),
@@ -46,18 +47,19 @@ Box::Box ()
     yMax (0.0),
     zMin (0.0),
     zMax (0.0)
-{}
+{
+}
 
-bool 
+bool
 Box::IsInside (const Vector &position) const
 {
-  return 
+  return
     position.x <= this->xMax && position.x >= this->xMin &&
     position.y <= this->yMax && position.y >= this->yMin &&
     position.z <= this->zMax && position.z >= this->zMin;
 }
 
-Box::Side 
+Box::Side
 Box::GetClosestSide (const Vector &position) const
 {
   double xMinDist = std::abs (position.x - this->xMin);
@@ -151,7 +153,7 @@ operator << (std::ostream &os, const Box &box)
 }
 std::istream &
 operator >> (std::istream &is, Box &box)
- {
+{
   char c1, c2, c3, c4, c5;
   is >> box.xMin >> c1 >> box.xMax >> c2 >> box.yMin >> c3 >> box.yMax >> c4 >> box.zMin >> c5 >> box.zMax;
   if (c1 != '|' ||

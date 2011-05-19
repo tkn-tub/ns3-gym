@@ -42,7 +42,7 @@ IePerr::Print (std::ostream &os) const
   for (unsigned int j = 0; j < m_addressUnits.size (); j++)
     {
       os << "Failed destination address: = " << m_addressUnits[j].destination << ", sequence number = "
-          << m_addressUnits[j].seqnum;
+         << m_addressUnits[j].seqnum;
     }
   os << std::endl << "</information_element>" << std::endl;
 }
@@ -84,8 +84,8 @@ uint8_t
 IePerr::GetInformationFieldSize () const
 {
   uint8_t retval = 1 //ModeFlags
-      + 1 //NumOfDests
-      + (6 + 4) * m_addressUnits.size ();
+    + 1   //NumOfDests
+    + (6 + 4) * m_addressUnits.size ();
   return retval;
 }
 
@@ -119,7 +119,7 @@ void
 IePerr::DeleteAddressUnit (Mac48Address address)
 {
   for (std::vector<HwmpProtocol::FailedDestination>::iterator i = m_addressUnits.begin (); i
-      != m_addressUnits.end (); i++)
+       != m_addressUnits.end (); i++)
     {
       if (i->destination == address)
         {

@@ -45,9 +45,9 @@ TypeId
 TypeHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::TypeHeader")
-      .SetParent<Header> ()
-      .AddConstructor<TypeHeader> ()
-      ;
+    .SetParent<Header> ()
+    .AddConstructor<TypeHeader> ()
+  ;
   return tid;
 }
 
@@ -141,8 +141,8 @@ operator<< (std::ostream & os, TypeHeader const & h)
 //-----------------------------------------------------------------------------
 RreqHeader::RreqHeader (uint8_t flags, uint8_t reserved, uint8_t hopCount, uint32_t requestID, Ipv4Address dst,
                         uint32_t dstSeqNo, Ipv4Address origin, uint32_t originSeqNo) :
-                       m_flags (flags), m_reserved (reserved), m_hopCount (hopCount), m_requestID (requestID), m_dst(dst),
-                       m_dstSeqNo (dstSeqNo), m_origin(origin),  m_originSeqNo (originSeqNo)
+  m_flags (flags), m_reserved (reserved), m_hopCount (hopCount), m_requestID (requestID), m_dst(dst),
+  m_dstSeqNo (dstSeqNo), m_origin(origin),  m_originSeqNo (originSeqNo)
 {
 }
 
@@ -152,9 +152,9 @@ TypeId
 RreqHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RreqHeader")
-      .SetParent<Header> ()
-      .AddConstructor<RreqHeader> ()
-      ;
+    .SetParent<Header> ()
+    .AddConstructor<RreqHeader> ()
+  ;
   return tid;
 }
 
@@ -205,11 +205,11 @@ void
 RreqHeader::Print (std::ostream &os) const
 {
   os << "RREQ ID " << m_requestID << " destination: ipv4 " << m_dst
-      << " sequence number " << m_dstSeqNo << " source: ipv4 "
-      << m_origin << " sequence number " << m_originSeqNo
-      << " flags:" << " Gratuitous RREP " << (*this).GetGratiousRrep ()
-      << " Destination only " << (*this).GetDestinationOnly ()
-      << " Unknown sequence number " << (*this).GetUnknownSeqno ();
+     << " sequence number " << m_dstSeqNo << " source: ipv4 "
+     << m_origin << " sequence number " << m_originSeqNo
+     << " flags:" << " Gratuitous RREP " << (*this).GetGratiousRrep ()
+     << " Destination only " << (*this).GetDestinationOnly ()
+     << " Unknown sequence number " << (*this).GetUnknownSeqno ();
 }
 
 std::ostream &
@@ -279,8 +279,8 @@ RreqHeader::operator== (RreqHeader const & o) const
 
 RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
                         uint32_t dstSeqNo, Ipv4Address origin, Time lifeTime) :
-                        m_flags (0), m_prefixSize (prefixSize), m_hopCount (hopCount),
-                        m_dst (dst), m_dstSeqNo (dstSeqNo), m_origin (origin)
+  m_flags (0), m_prefixSize (prefixSize), m_hopCount (hopCount),
+  m_dst (dst), m_dstSeqNo (dstSeqNo), m_origin (origin)
 {
   m_lifeTime = uint32_t (lifeTime.GetMilliSeconds ());
 }
@@ -291,9 +291,9 @@ TypeId
 RrepHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RrepHeader")
-      .SetParent<Header> ()
-      .AddConstructor<RrepHeader> ()
-      ;
+    .SetParent<Header> ()
+    .AddConstructor<RrepHeader> ()
+  ;
   return tid;
 }
 
@@ -348,7 +348,7 @@ RrepHeader::Print (std::ostream &os) const
       os << " prefix size " << m_prefixSize;
     }
   os << " source ipv4 " << m_origin << " lifetime " << m_lifeTime
-      << " acknowledgment required flag " << (*this).GetAckRequired ();
+     << " acknowledgment required flag " << (*this).GetAckRequired ();
 }
 
 void
@@ -432,9 +432,9 @@ TypeId
 RrepAckHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RrepAckHeader")
-      .SetParent<Header> ()
-      .AddConstructor<RrepAckHeader> ()
-      ;
+    .SetParent<Header> ()
+    .AddConstructor<RrepAckHeader> ()
+  ;
   return tid;
 }
 
@@ -498,9 +498,9 @@ TypeId
 RerrHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::RerrHeader")
-      .SetParent<Header> ()
-      .AddConstructor<RerrHeader> ()
-      ;
+    .SetParent<Header> ()
+    .AddConstructor<RerrHeader> ()
+  ;
   return tid;
 }
 

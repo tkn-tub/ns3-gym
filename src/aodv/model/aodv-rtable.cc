@@ -45,10 +45,10 @@ namespace aodv
 
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, uint32_t seqNo,
                                       Ipv4InterfaceAddress iface, uint16_t hops, Ipv4Address nextHop, Time lifetime) :
-                                      m_ackTimer (Timer::CANCEL_ON_DESTROY),
-                                      m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops),
-                                      m_lifeTime (lifetime + Simulator::Now ()), m_iface (iface), m_flag (VALID),
-                                      m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ())
+  m_ackTimer (Timer::CANCEL_ON_DESTROY),
+  m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops),
+  m_lifeTime (lifetime + Simulator::Now ()), m_iface (iface), m_flag (VALID),
+  m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ())
 {
   m_ipv4Route = Create<Ipv4Route> ();
   m_ipv4Route->SetDestination (dst);
@@ -79,7 +79,7 @@ RoutingTableEntry::LookupPrecursor (Ipv4Address id)
 {
   NS_LOG_FUNCTION (this << id);
   for (std::vector<Ipv4Address>::const_iterator i = m_precursorList.begin (); i
-      != m_precursorList.end (); ++i)
+       != m_precursorList.end (); ++i)
     {
       if (*i == id)
         {
@@ -96,7 +96,7 @@ RoutingTableEntry::DeletePrecursor (Ipv4Address id)
 {
   NS_LOG_FUNCTION (this << id);
   std::vector<Ipv4Address>::iterator i = std::remove (m_precursorList.begin (),
-      m_precursorList.end (), id);
+                                                      m_precursorList.end (), id);
   if (i == m_precursorList.end ())
     {
       NS_LOG_LOGIC ("Precursor " << id << " not found");
@@ -130,11 +130,11 @@ RoutingTableEntry::GetPrecursors (std::vector<Ipv4Address> & prec) const
   if (IsPrecursorListEmpty ())
     return;
   for (std::vector<Ipv4Address>::const_iterator i = m_precursorList.begin (); i
-      != m_precursorList.end (); ++i)
+       != m_precursorList.end (); ++i)
     {
       bool result = true;
       for (std::vector<Ipv4Address>::const_iterator j = prec.begin (); j
-          != prec.end (); ++j)
+           != prec.end (); ++j)
         {
           if (*j == *i)
             result = false;
@@ -181,8 +181,8 @@ RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream) const
     }
   *os << "\t";
   *os << std::setiosflags (std::ios::fixed) << 
-    std::setiosflags (std::ios::left) << std::setprecision (2) << 
-    std::setw (14) << (m_lifeTime - Simulator::Now ()).GetSeconds (); 
+  std::setiosflags (std::ios::left) << std::setprecision (2) <<
+  std::setw (14) << (m_lifeTime - Simulator::Now ()).GetSeconds ();
   *os << "\t" << m_hops << "\n";
 }
 
@@ -206,12 +206,12 @@ RoutingTable::LookupRoute (Ipv4Address id, RoutingTableEntry & rt)
       return false;
     }
   std::map<Ipv4Address, RoutingTableEntry>::const_iterator i =
-      m_ipv4AddressEntry.find (id);
+    m_ipv4AddressEntry.find (id);
   if (i == m_ipv4AddressEntry.end ())
-      {
-        NS_LOG_LOGIC ("Route to " << id << " not found");
-        return false;
-      }
+    {
+      NS_LOG_LOGIC ("Route to " << id << " not found");
+      return false;
+    }
   rt = i->second;
   NS_LOG_LOGIC ("Route to " << id << " found");
   return true;
@@ -221,7 +221,7 @@ bool
 RoutingTable::LookupValidRoute (Ipv4Address id, RoutingTableEntry & rt)
 {
   NS_LOG_FUNCTION (this << id);
-  if (! LookupRoute (id, rt))
+  if (!LookupRoute (id, rt))
     {
       NS_LOG_LOGIC ("Route to " << id << " not found");
       return false;
@@ -252,7 +252,7 @@ RoutingTable::AddRoute (RoutingTableEntry & rt)
   if (rt.GetFlag () != IN_SEARCH)
     rt.SetRreqCnt (0);
   std::pair<std::map<Ipv4Address, RoutingTableEntry>::iterator, bool> result =
-      m_ipv4AddressEntry.insert (std::make_pair (rt.GetDestination (), rt));
+    m_ipv4AddressEntry.insert (std::make_pair (rt.GetDestination (), rt));
   return result.second;
 }
 
@@ -261,7 +261,7 @@ RoutingTable::Update (RoutingTableEntry & rt)
 {
   NS_LOG_FUNCTION (this);
   std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      m_ipv4AddressEntry.find (rt.GetDestination ());
+    m_ipv4AddressEntry.find (rt.GetDestination ());
   if (i == m_ipv4AddressEntry.end ())
     {
       NS_LOG_LOGIC ("Route update to " << rt.GetDestination () << " fails; not found");
@@ -281,7 +281,7 @@ RoutingTable::SetEntryState (Ipv4Address id, RouteFlags state)
 {
   NS_LOG_FUNCTION (this);
   std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      m_ipv4AddressEntry.find (id);
+    m_ipv4AddressEntry.find (id);
   if (i == m_ipv4AddressEntry.end ())
     {
       NS_LOG_LOGIC ("Route set entry state to " << id << " fails; not found");
@@ -300,7 +300,7 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv
   Purge ();
   unreachable.clear ();
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i =
-      m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
+         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
     {
       if (i->second.GetNextHop () == nextHop)
         {
@@ -316,10 +316,10 @@ RoutingTable::InvalidateRoutesWithDst (const std::map<Ipv4Address, uint32_t> & u
   NS_LOG_FUNCTION (this);
   Purge ();
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
+         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
     {
       for (std::map<Ipv4Address, uint32_t>::const_iterator j =
-          unreachable.begin (); j != unreachable.end (); ++j)
+             unreachable.begin (); j != unreachable.end (); ++j)
         {
           if ((i->first == j->first) && (i->second.GetFlag () == VALID))
             {
@@ -337,7 +337,7 @@ RoutingTable::DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface)
   if (m_ipv4AddressEntry.empty ())
     return;
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
+         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
     {
       if (i->second.GetInterface () == iface)
         {
@@ -357,7 +357,7 @@ RoutingTable::Purge ()
   if (m_ipv4AddressEntry.empty ())
     return;
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
+         m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
     {
       if (i->second.GetLifeTime () < Seconds (0))
         {
@@ -390,7 +390,7 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const
   if (table.empty ())
     return;
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      table.begin (); i != table.end ();)
+         table.begin (); i != table.end ();)
     {
       if (i->second.GetLifeTime () < Seconds (0))
         {
@@ -421,7 +421,7 @@ RoutingTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTime
 {
   NS_LOG_FUNCTION (this << neighbor << blacklistTimeout.GetSeconds ());
   std::map<Ipv4Address, RoutingTableEntry>::iterator i =
-      m_ipv4AddressEntry.find (neighbor);
+    m_ipv4AddressEntry.find (neighbor);
   if (i == m_ipv4AddressEntry.end ())
     {
       NS_LOG_LOGIC ("Mark link unidirectional to  " << neighbor << " fails; not found");
@@ -440,9 +440,9 @@ RoutingTable::Print (Ptr<OutputStreamWrapper> stream) const
   std::map<Ipv4Address, RoutingTableEntry> table = m_ipv4AddressEntry;
   Purge (table);
   *stream->GetStream () << "\nAODV Routing table\n"
-      << "Destination\tGateway\t\tInterface\tFlag\tExpire\t\tHops\n";
+                        << "Destination\tGateway\t\tInterface\tFlag\tExpire\t\tHops\n";
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i =
-      table.begin (); i != table.end (); ++i)
+         table.begin (); i != table.end (); ++i)
     {
       i->second.Print (stream);
     }

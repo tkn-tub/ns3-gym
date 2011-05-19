@@ -52,10 +52,10 @@ main (int argc, char *argv[])
   // LogComponentEnable ("CsmaMulticastExample", LOG_LEVEL_INFO);
 
   //
-  // Set up default values for the simulation.  
+  // Set up default values for the simulation.
   //
   // Select DIX/Ethernet II-style encapsulation (no LLC/Snap header)
-  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("Dix"));  
+  Config::SetDefault ("ns3::CsmaNetDevice::EncapsulationMode", StringValue ("Dix"));
 
   // Allow the user to override any of the defaults at
   // run-time, via command-line arguments
@@ -68,7 +68,7 @@ main (int argc, char *argv[])
   // We will later want two subcontainers of these nodes, for the two LANs
   NodeContainer c0 = NodeContainer (c.Get (0), c.Get (1), c.Get (2));
   NodeContainer c1 = NodeContainer (c.Get (2), c.Get (3), c.Get (4));
-  
+
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
@@ -95,7 +95,7 @@ main (int argc, char *argv[])
   // source is at node zero, which we assigned the IP address of 10.1.1.1 
   // earlier.  We need to define a multicast group to send packets to.  This
   // can be any multicast address from 224.0.0.0 through 239.255.255.255
-  // (avoiding the reserved routing protocol addresses).  
+  // (avoiding the reserved routing protocol addresses).
   //
 
   Ipv4Address multicastSource ("10.1.1.1");
@@ -115,8 +115,8 @@ main (int argc, char *argv[])
   outputDevices.Add (nd1.Get (0));  // (we only need one NetDevice here)
 
   multicast.AddMulticastRoute (multicastRouter, multicastSource, 
-    multicastGroup, inputIf, outputDevices);
-  
+                               multicastGroup, inputIf, outputDevices);
+
   // 2) Set up a default multicast route on the sender n0 
   Ptr<Node> sender = c.Get (0);
   Ptr<NetDevice> senderIf = nd0.Get(0);
@@ -133,7 +133,7 @@ main (int argc, char *argv[])
   // Configure a multicast packet generator that generates a packet
   // every few seconds
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-    Address (InetSocketAddress (multicastGroup, multicastPort)));
+                     Address (InetSocketAddress (multicastGroup, multicastPort)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate ("255b/s")));

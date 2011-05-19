@@ -23,8 +23,9 @@
 namespace ns3 {
 
 PacketSocketAddress::PacketSocketAddress ()
-{}
-void 
+{
+}
+void
 PacketSocketAddress::SetProtocol (uint16_t protocol)
 {
   m_protocol = protocol;
@@ -84,7 +85,7 @@ PacketSocketAddress::ConvertTo (void) const
   buffer[3] = (m_device >> 16) & 0xff;
   buffer[4] = (m_device >> 8) & 0xff;
   buffer[5] = (m_device >> 0) & 0xff;
-  buffer[6] = m_isSingleDevice?1:0;
+  buffer[6] = m_isSingleDevice ? 1 : 0;
   uint32_t copied = m_address.CopyAllTo (buffer + 7, Address::MAX_SIZE - 7);
   return Address (GetType (), buffer, 7 + copied);
 }
@@ -103,7 +104,7 @@ PacketSocketAddress::ConvertFrom (const Address &address)
   device |= buffer[4];
   device <<= 8;
   device |= buffer[5];
-  bool isSingleDevice = (buffer[6] == 1)?true:false;
+  bool isSingleDevice = (buffer[6] == 1) ? true : false;
   Address physical;
   physical.CopyAllFrom (buffer + 7, Address::MAX_SIZE - 7);
   PacketSocketAddress ad;

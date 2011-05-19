@@ -25,16 +25,18 @@ namespace ns3 {
 
 EnumValue::EnumValue ()
   : m_v ()
-{}
+{
+}
 EnumValue::EnumValue (int v)
   : m_v (v)
-{}
-void 
+{
+}
+void
 EnumValue::Set (int v)
 {
   m_v = v;
 }
-int 
+int
 EnumValue::Get (void) const
 {
   return m_v;
@@ -52,11 +54,11 @@ EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
   for (EnumChecker::ValueSet::const_iterator i = p->m_valueSet.begin (); i != p->m_valueSet.end (); i++)
     {
       if (i->first == m_v)
-	{
-	  return i->second;
-	}
+        {
+          return i->second;
+        }
     }
-  
+
   NS_FATAL_ERROR ("The user has set an invalid C++ value in this Enum");
   // quiet compiler.
   return "";
@@ -69,28 +71,29 @@ EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
   for (EnumChecker::ValueSet::const_iterator i = p->m_valueSet.begin (); i != p->m_valueSet.end (); i++)
     {
       if (i->second == value)
-	{
-	  m_v = i->first;
-	  return true;
-	}
+        {
+          m_v = i->first;
+          return true;
+        }
     }
   return false;
 }
 
 EnumChecker::EnumChecker ()
-{}
+{
+}
 
-void 
+void
 EnumChecker::AddDefault (int v, std::string name)
 {
   m_valueSet.push_front (std::make_pair (v, name));
 }
-void 
+void
 EnumChecker::Add (int v, std::string name)
 {
   m_valueSet.push_back (std::make_pair (v, name));
 }
-bool 
+bool
 EnumChecker::Check (const AttributeValue &value) const
 {
   const EnumValue *p = dynamic_cast<const EnumValue *> (&value);
@@ -101,9 +104,9 @@ EnumChecker::Check (const AttributeValue &value) const
   for (ValueSet::const_iterator i = m_valueSet.begin (); i != m_valueSet.end (); i++)
     {
       if (i->first == p->Get ())
-	{
-	  return true;
-	}
+        {
+          return true;
+        }
     }
   return false;
 }
@@ -235,52 +238,52 @@ MakeEnumChecker (int v1, std::string n1,
   checker->Add (v12, n12);
   if (n13 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v13, n13);
   if (n14 == "")
-        {
-          return checker;
-        }
+    {
+      return checker;
+    }
   checker->Add (v14, n14);
   if (n15 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v15, n15);
   if (n16 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v16, n16);
   if (n17 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v17, n17);
   if (n18 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v18, n18);
   if (n19 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v19, n19);
   if (n20 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v20, n20);
   if (n21 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v21, n21);
   if (n22 == "")
     {
-          return checker;
+      return checker;
     }
   checker->Add (v22, n22);
   return checker;

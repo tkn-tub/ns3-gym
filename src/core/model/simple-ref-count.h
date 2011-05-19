@@ -97,7 +97,7 @@ public:
   }
 
   /**
-   * Get the reference count of the object.  
+   * Get the reference count of the object.
    * Normally not needed; for language bindings.
    */
   inline uint32_t GetReferenceCount (void) const

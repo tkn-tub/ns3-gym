@@ -19,7 +19,8 @@ private:
 
 PointToPointTest::PointToPointTest ()
   : TestCase ("PointToPoint")
-{}
+{
+}
 
 void
 PointToPointTest::SendOnePacket (Ptr<PointToPointNetDevice> device)

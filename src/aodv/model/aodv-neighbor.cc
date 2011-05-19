@@ -41,7 +41,7 @@ Neighbors::Neighbors (Time delay) :
 {
   m_ntimer.SetDelay(delay);
   m_ntimer.SetFunction(&Neighbors::Purge, this);
-  m_txErrorCallback = MakeCallback (& Neighbors::ProcessTxError, this);
+  m_txErrorCallback = MakeCallback (&Neighbors::ProcessTxError, this);
 }
 
 bool
@@ -49,7 +49,7 @@ Neighbors::IsNeighbor (Ipv4Address addr)
 {
   Purge ();
   for (std::vector<Neighbor>::const_iterator i = m_nb.begin ();
-      i != m_nb.end (); ++i)
+       i != m_nb.end (); ++i)
     {
       if (i->m_neighborAddress == addr)
         return true;
@@ -62,7 +62,7 @@ Neighbors::GetExpireTime (Ipv4Address addr)
 {
   Purge ();
   for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i
-      != m_nb.end (); ++i)
+       != m_nb.end (); ++i)
     {
       if (i->m_neighborAddress == addr)
         return (i->m_expireTime - Simulator::Now ());
@@ -77,7 +77,7 @@ Neighbors::Update (Ipv4Address addr, Time expire)
     if (i->m_neighborAddress == addr)
       {
         i->m_expireTime
-            = std::max (expire + Simulator::Now (), i->m_expireTime);
+          = std::max (expire + Simulator::Now (), i->m_expireTime);
         if (i->m_hardwareAddress == Mac48Address ())
           i->m_hardwareAddress = LookupMacAddress (i->m_neighborAddress);
         return;
@@ -144,7 +144,7 @@ Neighbors::LookupMacAddress (Ipv4Address addr)
 {
   Mac48Address hwaddr;
   for (std::vector<Ptr<ArpCache> >::const_iterator i = m_arp.begin ();
-      i != m_arp.end (); ++i)
+       i != m_arp.end (); ++i)
     {
       ArpCache::Entry * entry = (*i)->Lookup (addr);
       if (entry != 0 && entry->IsAlive () && !entry->IsExpired ())

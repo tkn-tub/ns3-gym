@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,25 +32,26 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (MgtProbeRequestHeader);
 
 MgtProbeRequestHeader::~MgtProbeRequestHeader ()
-{}
+{
+}
 
-void 
+void
 MgtProbeRequestHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
-Ssid 
+Ssid
 MgtProbeRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
-void 
+void
 MgtProbeRequestHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
 
-SupportedRates 
+SupportedRates
 MgtProbeRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;
@@ -64,29 +65,29 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   size += m_rates.extended.GetSerializedSize ();
   return size;
 }
-TypeId 
+TypeId
 MgtProbeRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtProbeRequestHeader")
     .SetParent<Header> ()
     .AddConstructor<MgtProbeRequestHeader> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 MgtProbeRequestHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-void 
+void
 MgtProbeRequestHeader::Print (std::ostream &os) const
 {
-  os << "ssid="<<m_ssid<<", "
-     << "rates="<<m_rates;
+  os << "ssid=" << m_ssid << ", "
+     << "rates=" << m_rates;
 }
 void
 MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
-{  
+{
   Buffer::Iterator i = start;
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
@@ -110,36 +111,38 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
 NS_OBJECT_ENSURE_REGISTERED (MgtProbeResponseHeader);
 
 MgtProbeResponseHeader::MgtProbeResponseHeader ()
-{}
+{
+}
 MgtProbeResponseHeader::~MgtProbeResponseHeader ()
-{}
+{
+}
 uint64_t
-MgtProbeResponseHeader::GetTimestamp()
+MgtProbeResponseHeader::GetTimestamp ()
 {
   return m_timestamp;
 }
-Ssid 
+Ssid
 MgtProbeResponseHeader::GetSsid (void) const
 {
   return m_ssid;
 }
-uint64_t 
+uint64_t
 MgtProbeResponseHeader::GetBeaconIntervalUs (void) const
 {
   return m_beaconInterval;
 }
-SupportedRates 
+SupportedRates
 MgtProbeResponseHeader::GetSupportedRates (void) const
 {
   return m_rates;
 }
 
-void 
+void
 MgtProbeResponseHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
-void 
+void
 MgtProbeResponseHeader::SetBeaconIntervalUs (uint64_t us)
 {
   m_beaconInterval = us;
@@ -149,16 +152,16 @@ MgtProbeResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
-TypeId 
+TypeId
 MgtProbeResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtProbeResponseHeader")
     .SetParent<Header> ()
     .AddConstructor<MgtProbeResponseHeader> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 MgtProbeResponseHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
@@ -177,13 +180,13 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   // xxx
   return size;
 }
-void 
+void
 MgtProbeResponseHeader::Print (std::ostream &os) const
 {
-  os << "ssid="<<m_ssid<<", "
-     << "rates="<<m_rates;
+  os << "ssid=" << m_ssid << ", "
+     << "rates=" << m_rates;
 }
-void 
+void
 MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
 {
   // timestamp
@@ -209,7 +212,7 @@ uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  m_timestamp = i.ReadLsbtohU64();
+  m_timestamp = i.ReadLsbtohU64 ();
   m_beaconInterval = i.ReadLsbtohU16 ();
   m_beaconInterval *= 1024;
   i = m_capability.Deserialize (i);
@@ -228,16 +231,18 @@ NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader);
 
 MgtAssocRequestHeader::MgtAssocRequestHeader ()
   : m_listenInterval (0)
-{}
+{
+}
 MgtAssocRequestHeader::~MgtAssocRequestHeader ()
-{}
+{
+}
 
-void 
+void
 MgtAssocRequestHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
-void 
+void
 MgtAssocRequestHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
@@ -247,12 +252,12 @@ MgtAssocRequestHeader::SetListenInterval (uint16_t interval)
 {
   m_listenInterval = interval;
 }
-Ssid 
+Ssid
 MgtAssocRequestHeader::GetSsid (void) const
 {
   return m_ssid;
 }
-SupportedRates 
+SupportedRates
 MgtAssocRequestHeader::GetSupportedRates (void) const
 {
   return m_rates;
@@ -263,21 +268,21 @@ MgtAssocRequestHeader::GetListenInterval (void) const
   return m_listenInterval;
 }
 
-TypeId 
+TypeId
 MgtAssocRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAssocRequestHeader")
     .SetParent<Header> ()
     .AddConstructor<MgtAssocRequestHeader> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 MgtAssocRequestHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-uint32_t 
+uint32_t
 MgtAssocRequestHeader::GetSerializedSize (void) const
 {
   uint32_t size = 0;
@@ -288,13 +293,13 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   size += m_rates.extended.GetSerializedSize ();
   return size;
 }
-void 
+void
 MgtAssocRequestHeader::Print (std::ostream &os) const
 {
-  os << "ssid="<<m_ssid<<", "
-     << "rates="<<m_rates;
+  os << "ssid=" << m_ssid << ", "
+     << "rates=" << m_rates;
 }
-void 
+void
 MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
@@ -324,41 +329,43 @@ NS_OBJECT_ENSURE_REGISTERED (MgtAssocResponseHeader);
 
 MgtAssocResponseHeader::MgtAssocResponseHeader ()
   : m_aid (0)
-{}
+{
+}
 MgtAssocResponseHeader::~MgtAssocResponseHeader ()
-{}
+{
+}
 
-StatusCode 
+StatusCode
 MgtAssocResponseHeader::GetStatusCode (void)
 {
   return m_code;
 }
-SupportedRates 
+SupportedRates
 MgtAssocResponseHeader::GetSupportedRates (void)
 {
   return m_rates;
 }
-void 
+void
 MgtAssocResponseHeader::SetStatusCode (StatusCode code)
 {
   m_code = code;
 }
-void 
+void
 MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
 
-TypeId 
+TypeId
 MgtAssocResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAssocResponseHeader")
     .SetParent<Header> ()
     .AddConstructor<MgtAssocResponseHeader> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 MgtAssocResponseHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
@@ -375,13 +382,13 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   return size;
 }
 
-void 
+void
 MgtAssocResponseHeader::Print (std::ostream &os) const
 {
-  os << "status code="<<m_code<<", "
-     << "rates="<<m_rates;
+  os << "status code=" << m_code << ", "
+     << "rates=" << m_rates;
 }
-void 
+void
 MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
@@ -413,32 +420,32 @@ WifiActionHeader::~WifiActionHeader ()
 }
 void
 WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
-    WifiActionHeader::ActionValue action)
+                             WifiActionHeader::ActionValue action)
 {
   m_category = type;
 
   switch (type)
     {
-  case BLOCK_ACK:
-    {
-      m_actionValue = action.blockAck;
+    case BLOCK_ACK:
+      {
+        m_actionValue = action.blockAck;
+        break;
+      }
+    case MESH_PEERING_MGT:
+      {
+        m_actionValue = action.peerLink;
+        break;
+      }
+    case MESH_PATH_SELECTION:
+      {
+        m_actionValue = action.pathSelection;
+        break;
+      }
+    case MESH_LINK_METRIC:
+    case MESH_INTERWORKING:
+    case MESH_RESOURCE_COORDINATION:
+    case MESH_PROXY_FORWARDING:
       break;
-    }
-  case MESH_PEERING_MGT:
-    {
-      m_actionValue = action.peerLink;
-      break;
-    }
-  case MESH_PATH_SELECTION:
-    {
-      m_actionValue = action.pathSelection;
-      break;
-    }
-  case MESH_LINK_METRIC:
-  case MESH_INTERWORKING:
-  case MESH_RESOURCE_COORDINATION:
-  case MESH_PROXY_FORWARDING:
-    break;
     }
 }
 WifiActionHeader::CategoryValue
@@ -446,23 +453,23 @@ WifiActionHeader::GetCategory ()
 {
   switch (m_category)
     {
-  case BLOCK_ACK:
-    return BLOCK_ACK;
-  case MESH_PEERING_MGT:
-    return MESH_PEERING_MGT;
-  case MESH_LINK_METRIC:
-    return MESH_LINK_METRIC;
-  case MESH_PATH_SELECTION:
-    return MESH_PATH_SELECTION;
-  case MESH_INTERWORKING:
-    return MESH_INTERWORKING;
-  case MESH_RESOURCE_COORDINATION:
-    return MESH_RESOURCE_COORDINATION;
-  case MESH_PROXY_FORWARDING:
-    return MESH_PROXY_FORWARDING;
-  default:
-    NS_FATAL_ERROR ("Unknown action value");
-    return MESH_PEERING_MGT;
+    case BLOCK_ACK:
+      return BLOCK_ACK;
+    case MESH_PEERING_MGT:
+      return MESH_PEERING_MGT;
+    case MESH_LINK_METRIC:
+      return MESH_LINK_METRIC;
+    case MESH_PATH_SELECTION:
+      return MESH_PATH_SELECTION;
+    case MESH_INTERWORKING:
+      return MESH_INTERWORKING;
+    case MESH_RESOURCE_COORDINATION:
+      return MESH_RESOURCE_COORDINATION;
+    case MESH_PROXY_FORWARDING:
+      return MESH_PROXY_FORWARDING;
+    default:
+      NS_FATAL_ERROR ("Unknown action value");
+      return MESH_PEERING_MGT;
     }
 }
 WifiActionHeader::ActionValue
@@ -472,65 +479,65 @@ WifiActionHeader::GetAction ()
   retval.peerLink = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
   switch (m_category)
     {
-  case BLOCK_ACK:
-    switch (m_actionValue)
-      {
-    case BLOCK_ACK_ADDBA_REQUEST:
-      retval.blockAck = BLOCK_ACK_ADDBA_REQUEST;
-      return retval;
-    case BLOCK_ACK_ADDBA_RESPONSE:
-      retval.blockAck = BLOCK_ACK_ADDBA_RESPONSE;
-      return retval;
-    case BLOCK_ACK_DELBA:
-      retval.blockAck = BLOCK_ACK_DELBA;
-      return retval;
-      }
-  case MESH_PEERING_MGT:
-    switch (m_actionValue)
-      {
-    case PEER_LINK_OPEN:
-      retval.peerLink = PEER_LINK_OPEN;
-      return retval;
-    case PEER_LINK_CONFIRM:
-      retval.peerLink = PEER_LINK_CONFIRM;
-      return retval;
-    case PEER_LINK_CLOSE:
-      retval.peerLink = PEER_LINK_CLOSE;
-      return retval;
+    case BLOCK_ACK:
+      switch (m_actionValue)
+        {
+        case BLOCK_ACK_ADDBA_REQUEST:
+          retval.blockAck = BLOCK_ACK_ADDBA_REQUEST;
+          return retval;
+        case BLOCK_ACK_ADDBA_RESPONSE:
+          retval.blockAck = BLOCK_ACK_ADDBA_RESPONSE;
+          return retval;
+        case BLOCK_ACK_DELBA:
+          retval.blockAck = BLOCK_ACK_DELBA;
+          return retval;
+        }
+    case MESH_PEERING_MGT:
+      switch (m_actionValue)
+        {
+        case PEER_LINK_OPEN:
+          retval.peerLink = PEER_LINK_OPEN;
+          return retval;
+        case PEER_LINK_CONFIRM:
+          retval.peerLink = PEER_LINK_CONFIRM;
+          return retval;
+        case PEER_LINK_CLOSE:
+          retval.peerLink = PEER_LINK_CLOSE;
+          return retval;
+        default:
+          NS_FATAL_ERROR ("Unknown mesh peering management action code");
+          retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
+          return retval;
+        }
+    case MESH_PATH_SELECTION:
+      switch (m_actionValue)
+        {
+        case PATH_SELECTION:
+          retval.pathSelection = PATH_SELECTION;
+          return retval;
+        default:
+          NS_FATAL_ERROR ("Unknown mesh path selection action code");
+          retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
+          return retval;
+        }
+    case MESH_LINK_METRIC:
+    // not yet supported
+    case MESH_INTERWORKING:
+    // not yet supported
+    case MESH_RESOURCE_COORDINATION:
+    // not yet supported
     default:
-      NS_FATAL_ERROR ("Unknown mesh peering management action code");
-      retval.peerLink = PEER_LINK_OPEN;  /* quiet compiler */
+      NS_FATAL_ERROR ("Unsupported mesh action");
+      retval.peerLink = PEER_LINK_OPEN; /* quiet compiler */
       return retval;
-      }
-  case MESH_PATH_SELECTION:
-    switch (m_actionValue)
-      {
-    case PATH_SELECTION:
-      retval.pathSelection = PATH_SELECTION;
-      return retval;
-    default:
-      NS_FATAL_ERROR ("Unknown mesh path selection action code");
-      retval.peerLink = PEER_LINK_OPEN;  /* quiet compiler */
-      return retval;
-      }
-  case MESH_LINK_METRIC:
-    // not yet supported
-  case MESH_INTERWORKING:
-    // not yet supported
-  case MESH_RESOURCE_COORDINATION:
-    // not yet supported
-  default:
-    NS_FATAL_ERROR ("Unsupported mesh action");
-    retval.peerLink = PEER_LINK_OPEN;  /* quiet compiler */
-    return retval;
     }
 }
 TypeId
 WifiActionHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiActionHeader")
-  .SetParent<Header> ()
-  .AddConstructor<WifiActionHeader> ();
+    .SetParent<Header> ()
+    .AddConstructor<WifiActionHeader> ();
   return tid;
 }
 TypeId
@@ -569,10 +576,11 @@ WifiActionHeader::Deserialize (Buffer::Iterator start)
 NS_OBJECT_ENSURE_REGISTERED (MgtAddBaRequestHeader);
 
 MgtAddBaRequestHeader::MgtAddBaRequestHeader ()
- : m_dialogToken (1),
-   m_amsduSupport (1),
-   m_bufferSize (0)
-{}
+  : m_dialogToken (1),
+    m_amsduSupport (1),
+    m_bufferSize (0)
+{
+}
 
 TypeId
 MgtAddBaRequestHeader::GetTypeId (void)
@@ -580,7 +588,6 @@ MgtAddBaRequestHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MgtAddBaRequestHeader")
     .SetParent<Header> ()
     .AddConstructor<MgtAddBaRequestHeader> ();
-  ;
   return tid;
 }
 
@@ -592,7 +599,8 @@ MgtAddBaRequestHeader::GetInstanceTypeId (void) const
 
 void
 MgtAddBaRequestHeader::Print (std::ostream &os) const
-{}
+{
+}
 
 uint32_t
 MgtAddBaRequestHeader::GetSerializedSize (void) const
@@ -637,7 +645,7 @@ MgtAddBaRequestHeader::SetImmediateBlockAck ()
 {
   m_policy = 1;
 }
-  
+
 void
 MgtAddBaRequestHeader::SetTid (uint8_t tid)
 {
@@ -678,7 +686,7 @@ MgtAddBaRequestHeader::GetTid (void) const
 bool
 MgtAddBaRequestHeader::IsImmediateBlockAck (void) const
 {
-  return (m_policy == 1)?true:false;
+  return (m_policy == 1) ? true : false;
 }
 
 uint16_t
@@ -696,7 +704,7 @@ MgtAddBaRequestHeader::GetBufferSize (void) const
 bool
 MgtAddBaRequestHeader::IsAmsduSupported (void) const
 {
-  return (m_amsduSupport == 1)?true:false;
+  return (m_amsduSupport == 1) ? true : false;
 }
 
 uint16_t
@@ -747,7 +755,8 @@ MgtAddBaResponseHeader::MgtAddBaResponseHeader ()
   : m_dialogToken (1),
     m_amsduSupport (1),
     m_bufferSize (0)
-{}
+{
+}
 
 TypeId
 MgtAddBaResponseHeader::GetTypeId ()
@@ -768,7 +777,7 @@ MgtAddBaResponseHeader::GetInstanceTypeId (void) const
 void
 MgtAddBaResponseHeader::Print (std::ostream &os) const
 {
-  os <<"status code="<<m_code;
+  os << "status code=" << m_code;
 }
 
 uint32_t
@@ -861,7 +870,7 @@ MgtAddBaResponseHeader::GetTid (void) const
 bool
 MgtAddBaResponseHeader::IsImmediateBlockAck (void) const
 {
-  return (m_policy == 1)?true:false;
+  return (m_policy == 1) ? true : false;
 }
 
 uint16_t
@@ -879,7 +888,7 @@ MgtAddBaResponseHeader::GetBufferSize (void) const
 bool
 MgtAddBaResponseHeader::IsAmsduSupported (void) const
 {
-  return (m_amsduSupport == 1)?true:false; 
+  return (m_amsduSupport == 1) ? true : false;
 }
 
 uint16_t
@@ -910,7 +919,8 @@ NS_OBJECT_ENSURE_REGISTERED (MgtDelBaHeader);
 
 MgtDelBaHeader::MgtDelBaHeader ()
   : m_reasonCode (1)
-{}
+{
+}
 
 TypeId
 MgtDelBaHeader::GetTypeId (void)
@@ -930,7 +940,8 @@ MgtDelBaHeader::GetInstanceTypeId (void) const
 
 void
 MgtDelBaHeader::Print (std::ostream &os) const
-{}
+{
+}
 
 uint32_t
 MgtDelBaHeader::GetSerializedSize (void) const
@@ -961,7 +972,7 @@ MgtDelBaHeader::Deserialize (Buffer::Iterator start)
 bool
 MgtDelBaHeader::IsByOriginator (void) const
 {
-  return (m_initiator == 1)?true:false;
+  return (m_initiator == 1) ? true : false;
 }
 
 uint8_t

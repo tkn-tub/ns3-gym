@@ -43,45 +43,45 @@ PeerLink::GetTypeId ()
                     "Retry timeout",
                     TimeValue (TimeValue (MicroSeconds (40 * 1024))),
                     MakeTimeAccessor (
-                        &PeerLink::m_dot11MeshRetryTimeout),
+                      &PeerLink::m_dot11MeshRetryTimeout),
                     MakeTimeChecker ()
-                  )
+                    )
     .AddAttribute ( "HoldingTimeout",
                     "Holding timeout",
                     TimeValue (TimeValue (MicroSeconds (40 * 1024))),
                     MakeTimeAccessor (
-                        &PeerLink::m_dot11MeshHoldingTimeout),
+                      &PeerLink::m_dot11MeshHoldingTimeout),
                     MakeTimeChecker ()
-                  )
+                    )
     .AddAttribute ( "ConfirmTimeout",
                     "Confirm timeout",
                     TimeValue (TimeValue (MicroSeconds (40 * 1024))),
                     MakeTimeAccessor (
-                        &PeerLink::m_dot11MeshConfirmTimeout),
+                      &PeerLink::m_dot11MeshConfirmTimeout),
                     MakeTimeChecker ()
-                  )
+                    )
     .AddAttribute ( "MaxRetries",
                     "Maximum number of retries",
                     UintegerValue (4),
                     MakeUintegerAccessor (
-                        &PeerLink::m_dot11MeshMaxRetries),
+                      &PeerLink::m_dot11MeshMaxRetries),
                     MakeUintegerChecker<uint16_t> ()
-                  )
+                    )
     .AddAttribute ( "MaxBeaconLoss",
                     "Maximum number of lost beacons before link will be closed",
                     UintegerValue (2),
                     MakeUintegerAccessor (
-                        &PeerLink::m_maxBeaconLoss),
+                      &PeerLink::m_maxBeaconLoss),
                     MakeUintegerChecker<uint16_t> (1)
-                  )
+                    )
     .AddAttribute ( "MaxPacketFailure",
                     "Maximum number of failed packets before link will be closed",
                     UintegerValue (2),
                     MakeUintegerAccessor (
-                        &PeerLink::m_maxPacketFail),
+                      &PeerLink::m_maxPacketFail),
                     MakeUintegerChecker<uint16_t> (1)
-                  )
-                  ;
+                    )
+  ;
   return tid;
 }
 
@@ -169,7 +169,7 @@ PeerLink::TransmissionSuccess ()
 void
 PeerLink::TransmissionFailure ()
 {
-  m_packetFail ++;
+  m_packetFail++;
   if (m_packetFail == m_maxPacketFail)
     {
       StateMachine (CNCL);
@@ -283,7 +283,7 @@ PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration conf, Mac48Address p
 }
 void
 PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t peerAid, IeConfiguration conf,
-    Mac48Address peerMp)
+                         Mac48Address peerMp)
 {
   if (m_localLinkId != peerLinkId)
     {
@@ -314,7 +314,7 @@ PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t pee
 }
 void
 PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId, IeConfiguration conf,
-    Mac48Address peerMp, PmpReasonCode reason)
+                         Mac48Address peerMp, PmpReasonCode reason)
 {
   if (m_localLinkId != peerLinkId)
     {
@@ -362,245 +362,245 @@ PeerLink::StateMachine (PeerEvent event, PmpReasonCode reasoncode)
 {
   switch (m_state)
     {
-  case IDLE:
-    switch (event)
-      {
-    case CNCL:
-    case CLS_ACPT:
-      m_state = IDLE;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, IDLE, IDLE);
+    case IDLE:
+      switch (event)
+        {
+        case CNCL:
+        case CLS_ACPT:
+          m_state = IDLE;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, IDLE, IDLE);
+          break;
+        case REQ_RJCT:
+          SendPeerLinkClose (reasoncode);
+          break;
+        case ACTOPN:
+          m_state = OPN_SNT;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, IDLE, OPN_SNT);
+          SendPeerLinkOpen ();
+          SetRetryTimer ();
+          break;
+        case OPN_ACPT:
+          m_state = OPN_RCVD;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, IDLE, OPN_RCVD);
+          SendPeerLinkConfirm ();
+          SendPeerLinkOpen ();
+          SetRetryTimer ();
+          break;
+        default:
+          //11B.5.3.4 of 802.11s Draft D3.0
+          //All other events shall be ignored in this state
+          break;
+        }
       break;
-    case REQ_RJCT:
-      SendPeerLinkClose (reasoncode);
+    case OPN_SNT:
+      switch (event)
+        {
+        case TOR1:
+          SendPeerLinkOpen ();
+          m_retryCounter++;
+          SetRetryTimer ();
+          break;
+        case CNF_ACPT:
+          m_state = CNF_RCVD;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, CNF_RCVD);
+          ClearRetryTimer ();
+          SetConfirmTimer ();
+          break;
+        case OPN_ACPT:
+          m_state = OPN_RCVD;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, OPN_RCVD);
+          SendPeerLinkConfirm ();
+          break;
+        case CLS_ACPT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
+          SetHoldingTimer ();
+          break;
+        case OPN_RJCT:
+        case CNF_RJCT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (reasoncode);
+          SetHoldingTimer ();
+          break;
+        case TOR2:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (REASON11S_MESH_MAX_RETRIES);
+          SetHoldingTimer ();
+          break;
+        case CNCL:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
+          SetHoldingTimer ();
+          break;
+        default:
+          //11B.5.3.5 of 802.11s Draft D3.0
+          //All other events shall be ignored in this state
+          break;
+        }
       break;
-    case ACTOPN:
-      m_state = OPN_SNT;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, IDLE, OPN_SNT);
-      SendPeerLinkOpen ();
-      SetRetryTimer ();
+    case CNF_RCVD:
+      switch (event)
+        {
+        case CNF_ACPT:
+          break;
+        case OPN_ACPT:
+          m_state = ESTAB;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, ESTAB);
+          ClearConfirmTimer ();
+          SendPeerLinkConfirm ();
+          NS_ASSERT (m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
+          break;
+        case CLS_ACPT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
+          ClearConfirmTimer ();
+          SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
+          SetHoldingTimer ();
+          break;
+        case CNF_RJCT:
+        case OPN_RJCT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
+          ClearConfirmTimer ();
+          SendPeerLinkClose (reasoncode);
+          SetHoldingTimer ();
+          break;
+        case CNCL:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
+          ClearConfirmTimer ();
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
+          SetHoldingTimer ();
+          break;
+        case TOC:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
+          SendPeerLinkClose (REASON11S_MESH_CONFIRM_TIMEOUT);
+          SetHoldingTimer ();
+          break;
+        default:
+          //11B.5.3.6 of 802.11s Draft D3.0
+          //All other events shall be ignored in this state
+          break;
+        }
       break;
-    case OPN_ACPT:
-      m_state = OPN_RCVD;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, IDLE, OPN_RCVD);
-      SendPeerLinkConfirm ();
-      SendPeerLinkOpen ();
-      SetRetryTimer ();
+    case OPN_RCVD:
+      switch (event)
+        {
+        case TOR1:
+          SendPeerLinkOpen ();
+          m_retryCounter++;
+          SetRetryTimer ();
+          break;
+        case CNF_ACPT:
+          m_state = ESTAB;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, ESTAB);
+          ClearRetryTimer ();
+          NS_ASSERT (m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
+          break;
+        case CLS_ACPT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
+          SetHoldingTimer ();
+          break;
+        case OPN_RJCT:
+        case CNF_RJCT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (reasoncode);
+          SetHoldingTimer ();
+          break;
+        case TOR2:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (REASON11S_MESH_MAX_RETRIES);
+          SetHoldingTimer ();
+          break;
+        case CNCL:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
+          SetHoldingTimer ();
+          break;
+        default:
+          //11B.5.3.7 of 802.11s Draft D3.0
+          //All other events shall be ignored in this state
+          break;
+        }
       break;
-    default:
-      //11B.5.3.4 of 802.11s Draft D3.0
-      //All other events shall be ignored in this state
+    case ESTAB:
+      switch (event)
+        {
+        case OPN_ACPT:
+          SendPeerLinkConfirm ();
+          break;
+        case CLS_ACPT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, ESTAB, HOLDING);
+          SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
+          SetHoldingTimer ();
+          break;
+        case OPN_RJCT:
+        case CNF_RJCT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, ESTAB, HOLDING);
+          ClearRetryTimer ();
+          SendPeerLinkClose (reasoncode);
+          SetHoldingTimer ();
+          break;
+        case CNCL:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, ESTAB, HOLDING);
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
+          SetHoldingTimer ();
+          break;
+        default:
+          //11B.5.3.8 of 802.11s Draft D3.0
+          //All other events shall be ignored in this state
+          break;
+        }
       break;
-      }
-    break;
-  case OPN_SNT:
-    switch (event)
-      {
-    case TOR1:
-      SendPeerLinkOpen ();
-      m_retryCounter++;
-      SetRetryTimer ();
+    case HOLDING:
+      switch (event)
+        {
+        case CLS_ACPT:
+          ClearHoldingTimer ();
+        case TOH:
+          m_state = IDLE;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, HOLDING, IDLE);
+          break;
+        case OPN_ACPT:
+        case CNF_ACPT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, HOLDING, HOLDING);
+          // reason not spec in D2.0
+          SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
+          break;
+        case OPN_RJCT:
+        case CNF_RJCT:
+          m_state = HOLDING;
+          m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, HOLDING, HOLDING);
+          SendPeerLinkClose (reasoncode);
+          break;
+        default:
+          //11B.5.3.9 of 802.11s Draft D3.0
+          //All other events shall be ignored in this state
+          break;
+        }
       break;
-    case CNF_ACPT:
-      m_state = CNF_RCVD;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, CNF_RCVD);
-      ClearRetryTimer ();
-      SetConfirmTimer ();
-      break;
-    case OPN_ACPT:
-      m_state = OPN_RCVD;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, OPN_RCVD);
-      SendPeerLinkConfirm ();
-      break;
-    case CLS_ACPT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
-      SetHoldingTimer ();
-      break;
-    case OPN_RJCT:
-    case CNF_RJCT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (reasoncode);
-      SetHoldingTimer ();
-      break;
-    case TOR2:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (REASON11S_MESH_MAX_RETRIES);
-      SetHoldingTimer ();
-      break;
-    case CNCL:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_SNT, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
-      SetHoldingTimer ();
-      break;
-    default:
-      //11B.5.3.5 of 802.11s Draft D3.0
-      //All other events shall be ignored in this state
-      break;
-      }
-    break;
-  case CNF_RCVD:
-    switch (event)
-      {
-    case CNF_ACPT:
-      break;
-    case OPN_ACPT:
-      m_state = ESTAB;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, ESTAB);
-      ClearConfirmTimer ();
-      SendPeerLinkConfirm ();
-      NS_ASSERT (m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
-      break;
-    case CLS_ACPT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
-      ClearConfirmTimer ();
-      SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
-      SetHoldingTimer ();
-      break;
-    case CNF_RJCT:
-    case OPN_RJCT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
-      ClearConfirmTimer ();
-      SendPeerLinkClose (reasoncode);
-      SetHoldingTimer ();
-      break;
-    case CNCL:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
-      ClearConfirmTimer ();
-      SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
-      SetHoldingTimer ();
-      break;
-    case TOC:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, CNF_RCVD, HOLDING);
-      SendPeerLinkClose (REASON11S_MESH_CONFIRM_TIMEOUT);
-      SetHoldingTimer ();
-      break;
-    default:
-      //11B.5.3.6 of 802.11s Draft D3.0
-      //All other events shall be ignored in this state
-      break;
-      }
-    break;
-  case OPN_RCVD:
-    switch (event)
-      {
-    case TOR1:
-      SendPeerLinkOpen ();
-      m_retryCounter++;
-      SetRetryTimer ();
-      break;
-    case CNF_ACPT:
-      m_state = ESTAB;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, ESTAB);
-      ClearRetryTimer ();
-      NS_ASSERT (m_peerMeshPointAddress != Mac48Address::GetBroadcast ());
-      break;
-    case CLS_ACPT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
-      SetHoldingTimer ();
-      break;
-    case OPN_RJCT:
-    case CNF_RJCT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (reasoncode);
-      SetHoldingTimer ();
-      break;
-    case TOR2:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (REASON11S_MESH_MAX_RETRIES);
-      SetHoldingTimer ();
-      break;
-    case CNCL:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, OPN_RCVD, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
-      SetHoldingTimer ();
-      break;
-    default:
-      //11B.5.3.7 of 802.11s Draft D3.0
-      //All other events shall be ignored in this state
-      break;
-      }
-    break;
-  case ESTAB:
-    switch (event)
-      {
-    case OPN_ACPT:
-      SendPeerLinkConfirm ();
-      break;
-    case CLS_ACPT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, ESTAB, HOLDING);
-      SendPeerLinkClose (REASON11S_MESH_CLOSE_RCVD);
-      SetHoldingTimer ();
-      break;
-    case OPN_RJCT:
-    case CNF_RJCT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, ESTAB, HOLDING);
-      ClearRetryTimer ();
-      SendPeerLinkClose (reasoncode);
-      SetHoldingTimer ();
-      break;
-    case CNCL:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, ESTAB, HOLDING);
-      SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
-      SetHoldingTimer ();
-      break;
-    default:
-      //11B.5.3.8 of 802.11s Draft D3.0
-      //All other events shall be ignored in this state
-      break;
-      }
-    break;
-  case HOLDING:
-    switch (event)
-      {
-    case CLS_ACPT:
-      ClearHoldingTimer ();
-    case TOH:
-      m_state = IDLE;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, HOLDING, IDLE);
-      break;
-    case OPN_ACPT:
-    case CNF_ACPT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, HOLDING, HOLDING);
-      // reason not spec in D2.0
-      SendPeerLinkClose (REASON11S_PEERING_CANCELLED);
-      break;
-    case OPN_RJCT:
-    case CNF_RJCT:
-      m_state = HOLDING;
-      m_linkStatusCallback (m_interface, m_peerAddress, m_peerMeshPointAddress, HOLDING, HOLDING);
-      SendPeerLinkClose (reasoncode);
-      break;
-    default:
-      //11B.5.3.9 of 802.11s Draft D3.0
-      //All other events shall be ignored in this state
-      break;
-      }
-    break;
     }
 }
 void
@@ -624,7 +624,7 @@ PeerLink::SendPeerLinkClose (PmpReasonCode reasoncode)
   IePeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      m_configuration);
+                                            m_configuration);
 }
 void
 PeerLink::SendPeerLinkOpen ()
@@ -633,7 +633,7 @@ PeerLink::SendPeerLinkOpen ()
   peerElement.SetPeerOpen (m_localLinkId);
   NS_ASSERT (m_macPlugin != 0);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      m_configuration);
+                                            m_configuration);
 }
 void
 PeerLink::SendPeerLinkConfirm ()
@@ -641,7 +641,7 @@ PeerLink::SendPeerLinkConfirm ()
   IePeerManagement peerElement;
   peerElement.SetPeerConfirm (m_localLinkId, m_peerLinkId);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      m_configuration);
+                                            m_configuration);
 }
 void
 PeerLink::SetHoldingTimer ()
@@ -691,15 +691,15 @@ PeerLink::Report (std::ostream & os) const
       return;
     }
   os << "<PeerLink" << std::endl <<
-    "localAddress=\"" << m_macPlugin->GetAddress () << "\"" << std::endl <<
-    "peerInterfaceAddress=\"" << m_peerAddress << "\"" << std::endl <<
-    "peerMeshPointAddress=\"" << m_peerMeshPointAddress << "\"" << std::endl <<
-    "metric=\"" << m_macPlugin->GetLinkMetric (m_peerAddress) << "\"" << std::endl <<
-    "lastBeacon=\"" << m_lastBeacon.GetSeconds () << "\"" << std::endl <<
-    "localLinkId=\"" << m_localLinkId << "\"" << std::endl <<
-    "peerLinkId=\"" << m_peerLinkId << "\"" << std::endl <<
-    "assocId=\"" << m_assocId << "\"" << std::endl <<
-    "/>" << std::endl;
+  "localAddress=\"" << m_macPlugin->GetAddress () << "\"" << std::endl <<
+  "peerInterfaceAddress=\"" << m_peerAddress << "\"" << std::endl <<
+  "peerMeshPointAddress=\"" << m_peerMeshPointAddress << "\"" << std::endl <<
+  "metric=\"" << m_macPlugin->GetLinkMetric (m_peerAddress) << "\"" << std::endl <<
+  "lastBeacon=\"" << m_lastBeacon.GetSeconds () << "\"" << std::endl <<
+  "localLinkId=\"" << m_localLinkId << "\"" << std::endl <<
+  "peerLinkId=\"" << m_peerLinkId << "\"" << std::endl <<
+  "assocId=\"" << m_assocId << "\"" << std::endl <<
+  "/>" << std::endl;
 }
 } // namespace dot11s
 } //namespace ns3

@@ -32,7 +32,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocket);
 
-const char* const TcpSocket::TcpStateName[LAST_STATE] = {"CLOSED", "LISTEN", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "CLOSE_WAIT", "LAST_ACK", "FIN_WAIT_1", "FIN_WAIT_2", "CLOSING", "TIME_WAIT" };
+const char* const TcpSocket::TcpStateName[LAST_STATE] = { "CLOSED", "LISTEN", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "CLOSE_WAIT", "LAST_ACK", "FIN_WAIT_1", "FIN_WAIT_2", "CLOSING", "TIME_WAIT" };
 
 TypeId
 TcpSocket::GetTypeId (void)
@@ -99,7 +99,7 @@ TcpSocket::GetTypeId (void)
                    MakeTimeAccessor (&TcpSocket::GetPersistTimeout,
                                      &TcpSocket::SetPersistTimeout),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 

@@ -182,7 +182,7 @@ public:
    *
    * Connect the specified sink to all the objects stored in this
    * container.
-   * \sa ns3::Config::ConnectWithoutContext     
+   * \sa ns3::Config::ConnectWithoutContext
    */
   void ConnectWithoutContext (std::string name, const CallbackBase &cb);
   /**

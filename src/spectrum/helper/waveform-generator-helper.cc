@@ -91,7 +91,7 @@ WaveformGeneratorHelper::Install (NodeContainer c) const
       Ptr<Node> node = *i;
 
       Ptr<NonCommunicatingNetDevice> dev = m_device.Create ()->GetObject<NonCommunicatingNetDevice> ();
-     
+
       Ptr<WaveformGenerator>  phy = m_phy.Create ()->GetObject<WaveformGenerator> ();
       NS_ASSERT (phy);
 

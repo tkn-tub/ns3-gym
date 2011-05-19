@@ -73,7 +73,7 @@ public:
 
   void DeAllocate (Ipv4EndPoint *endPoint);
 
- private:
+private:
   uint16_t AllocateEphemeralPort (void);
 
   uint16_t m_ephemeral;

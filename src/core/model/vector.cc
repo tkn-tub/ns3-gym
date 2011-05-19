@@ -26,7 +26,7 @@ namespace ns3 {
 
 ATTRIBUTE_HELPER_CPP (Vector3D);
 ATTRIBUTE_HELPER_CPP (Vector2D);
-  // compatibility for mobility code
+// compatibility for mobility code
 Ptr<const AttributeChecker> MakeVectorChecker (void)
 {
   return MakeVector3DChecker ();
@@ -37,25 +37,29 @@ Vector3D::Vector3D (double _x, double _y, double _z)
   : x (_x),
     y (_y),
     z (_z)
-{}
+{
+}
 
 Vector3D::Vector3D ()
   : x (0.0),
     y (0.0),
     z (0.0)
-{}
+{
+}
 
 Vector2D::Vector2D (double _x, double _y)
   : x (_x),
     y (_y)
-{}
+{
+}
 
 Vector2D::Vector2D ()
   : x (0.0),
     y (0.0)
-{}
+{
+}
 
-double 
+double
 CalculateDistance (const Vector3D &a, const Vector3D &b)
 {
   double dx = b.x - a.x;

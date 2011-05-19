@@ -3,24 +3,25 @@
 namespace ns3 {
 
 ObjectVectorValue::ObjectVectorValue ()
-{}
+{
+}
 
-ObjectVectorValue::Iterator 
+ObjectVectorValue::Iterator
 ObjectVectorValue::Begin (void) const
 {
   return m_objects.begin ();
 }
-ObjectVectorValue::Iterator 
+ObjectVectorValue::Iterator
 ObjectVectorValue::End (void) const
 {
   return m_objects.end ();
 }
-uint32_t 
+uint32_t
 ObjectVectorValue::GetN (void) const
 {
   return m_objects.size ();
 }
-Ptr<Object> 
+Ptr<Object>
 ObjectVectorValue::Get (uint32_t i) const
 {
   return m_objects[i];
@@ -39,9 +40,9 @@ ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const
     {
       oss << m_objects[i];
       if (i != m_objects.size () - 1)
-	{
-	  oss << " ";
-	}
+        {
+          oss << " ";
+        }
     }
   return oss.str ();
 }

@@ -82,39 +82,39 @@ XmlConfigSave::Default (void)
 {
   class XmlDefaultIterator : public AttributeDefaultIterator
   {
-  public:
+public:
     XmlDefaultIterator (xmlTextWriterPtr writer) {
       m_writer = writer;
     }
-  private:
+private:
     virtual void StartVisitTypeId (std::string name) {
       m_typeid = name;
     }
     virtual void DoVisitAttribute (std::string name, std::string defaultValue) {
       int rc;
       rc = xmlTextWriterStartElement(m_writer, BAD_CAST "default");
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
-	 }
-       std::string fullname = m_typeid + "::" + name;
-       rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "name",
-					BAD_CAST fullname.c_str ());
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
-	 }
-       rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "value",
-					BAD_CAST defaultValue.c_str ());
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
-	 }
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
+        }
+      std::string fullname = m_typeid + "::" + name;
+      rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "name",
+                                       BAD_CAST fullname.c_str ());
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
+        }
+      rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "value",
+                                       BAD_CAST defaultValue.c_str ());
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
+        }
       rc = xmlTextWriterEndElement(m_writer);
       if (rc < 0) 
-	{
-	  NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
-	}
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
+        }
     }
     xmlTextWriterPtr m_writer;
     std::string m_typeid;
@@ -128,36 +128,36 @@ XmlConfigSave::Attributes (void)
 {
   class XmlTextAttributeIterator : public AttributeIterator
   {
-  public:
+public:
     XmlTextAttributeIterator (xmlTextWriterPtr writer)
       : m_writer (writer) {}
-  private:
+private:
     virtual void DoVisitAttribute (Ptr<Object> object, std::string name) {
       StringValue str;
       object->GetAttribute (name, str);
       int rc;
       rc = xmlTextWriterStartElement(m_writer, BAD_CAST "value");
       if (rc < 0) 
-	{
-	  NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
-	}
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
+        }
       rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "path",
-				       BAD_CAST GetCurrentPath ().c_str ());
+                                       BAD_CAST GetCurrentPath ().c_str ());
       if (rc < 0) 
-	{
-	  NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
-	}
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
+        }
       rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "value",
-				       BAD_CAST str.Get ().c_str ());
+                                       BAD_CAST str.Get ().c_str ());
       if (rc < 0) 
-	{
-	  NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
-	}
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
+        }
       rc = xmlTextWriterEndElement(m_writer);
       if (rc < 0) 
-	{
-	  NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
-	}
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
+        }
     }
     xmlTextWriterPtr m_writer;
   };
@@ -176,27 +176,27 @@ XmlConfigSave::Global (void)
       (*i)->GetValue (value);
 
       rc = xmlTextWriterStartElement(m_writer, BAD_CAST "global");
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
-	 }
-       rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "name",
-					BAD_CAST (*i)->GetName ().c_str ());
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
-	 }
-       rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "value",
-					BAD_CAST value.Get ().c_str ());
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
-	 }
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterStartElement");
+        }
+      rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "name",
+                                       BAD_CAST (*i)->GetName ().c_str ());
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
+        }
+      rc = xmlTextWriterWriteAttribute(m_writer, BAD_CAST "value",
+                                       BAD_CAST value.Get ().c_str ());
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterWriteAttribute");
+        }
       rc = xmlTextWriterEndElement(m_writer);
-       if (rc < 0) 
-	 {
-	   NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
-	 }
+      if (rc < 0)
+        {
+          NS_FATAL_ERROR ("Error at xmlTextWriterEndElement");
+        }
     }
 }
 
@@ -229,26 +229,26 @@ XmlConfigLoad::Default (void)
     {
       const xmlChar *type = xmlTextReaderConstName(reader);
       if (type == 0)
-	{
-	  NS_FATAL_ERROR ("Invalid value");
-	}
+        {
+          NS_FATAL_ERROR ("Invalid value");
+        }
       if (std::string ((char*)type) == "default")
-	{
-	  xmlChar *name = xmlTextReaderGetAttribute (reader, BAD_CAST "name");
-	  if (name == 0)
-	    {
-	      NS_FATAL_ERROR ("Error getting attribute 'name'");
-	    }
-	  xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
-	  if (value == 0)
-	    {
-	      NS_FATAL_ERROR ("Error getting attribute 'value'");
-	    }
-	  NS_LOG_DEBUG ("default="<<(char*)name<<", value=" <<value);
-	  Config::SetDefault ((char*)name, StringValue ((char*)value));
-	  xmlFree (name);
-	  xmlFree (value);
-	}
+        {
+          xmlChar *name = xmlTextReaderGetAttribute (reader, BAD_CAST "name");
+          if (name == 0)
+            {
+              NS_FATAL_ERROR ("Error getting attribute 'name'");
+            }
+          xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
+          if (value == 0)
+            {
+              NS_FATAL_ERROR ("Error getting attribute 'value'");
+            }
+          NS_LOG_DEBUG ("default="<<(char*)name<<", value=" <<value);
+          Config::SetDefault ((char*)name, StringValue ((char*)value));
+          xmlFree (name);
+          xmlFree (value);
+        }
       rc = xmlTextReaderRead (reader);
     }
   xmlFreeTextReader (reader);
@@ -267,26 +267,26 @@ XmlConfigLoad::Global (void)
     {
       const xmlChar *type = xmlTextReaderConstName(reader);
       if (type == 0)
-	{
-	  NS_FATAL_ERROR ("Invalid value");
-	}
+        {
+          NS_FATAL_ERROR ("Invalid value");
+        }
       if (std::string ((char*)type) == "global")
-	{
-	  xmlChar *name = xmlTextReaderGetAttribute (reader, BAD_CAST "name");
-	  if (name == 0)
-	    {
-	      NS_FATAL_ERROR ("Error getting attribute 'name'");
-	    }
-	  xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
-	  if (value == 0)
-	    {
-	      NS_FATAL_ERROR ("Error getting attribute 'value'");
-	    }
-	  NS_LOG_DEBUG ("global="<<(char*)name<<", value=" <<value);
-	  Config::SetGlobal ((char*)name, StringValue ((char*)value));
-	  xmlFree (name);
-	  xmlFree (value);
-	}
+        {
+          xmlChar *name = xmlTextReaderGetAttribute (reader, BAD_CAST "name");
+          if (name == 0)
+            {
+              NS_FATAL_ERROR ("Error getting attribute 'name'");
+            }
+          xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
+          if (value == 0)
+            {
+              NS_FATAL_ERROR ("Error getting attribute 'value'");
+            }
+          NS_LOG_DEBUG ("global="<<(char*)name<<", value=" <<value);
+          Config::SetGlobal ((char*)name, StringValue ((char*)value));
+          xmlFree (name);
+          xmlFree (value);
+        }
       rc = xmlTextReaderRead (reader);
     }
   xmlFreeTextReader (reader);
@@ -305,26 +305,26 @@ XmlConfigLoad::Attributes (void)
     {
       const xmlChar *type = xmlTextReaderConstName(reader);
       if (type == 0)
-	{
-	  NS_FATAL_ERROR ("Invalid value");
-	}
+        {
+          NS_FATAL_ERROR ("Invalid value");
+        }
       if (std::string ((char*)type) == "value")
-	{
-	  xmlChar *path = xmlTextReaderGetAttribute (reader, BAD_CAST "path");
-	  if (path == 0)
-	    {
-	      NS_FATAL_ERROR ("Error getting attribute 'path'");
-	    }
-	  xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
-	  if (value == 0)
-	    {
-	      NS_FATAL_ERROR ("Error getting attribute 'value'");
-	    }
-	  NS_LOG_DEBUG ("path="<<(char*)path << ", value=" << (char*)value);
-	  Config::Set ((char*)path, StringValue ((char*)value));
-	  xmlFree (path);
-	  xmlFree (value);
-	}
+        {
+          xmlChar *path = xmlTextReaderGetAttribute (reader, BAD_CAST "path");
+          if (path == 0)
+            {
+              NS_FATAL_ERROR ("Error getting attribute 'path'");
+            }
+          xmlChar *value = xmlTextReaderGetAttribute (reader, BAD_CAST "value");
+          if (value == 0)
+            {
+              NS_FATAL_ERROR ("Error getting attribute 'value'");
+            }
+          NS_LOG_DEBUG ("path="<<(char*)path << ", value=" << (char*)value);
+          Config::Set ((char*)path, StringValue ((char*)value));
+          xmlFree (path);
+          xmlFree (value);
+        }
       rc = xmlTextReaderRead (reader);
     }
   xmlFreeTextReader (reader);

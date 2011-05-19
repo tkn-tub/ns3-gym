@@ -154,7 +154,7 @@ main (int argc, char *argv[])
 
   if (nix)
     {
-      stack.SetRoutingHelper (list);
+      stack.SetRoutingHelper (list); // has effect on the next Install ()
     }
 
   stack.InstallAll ();
@@ -226,15 +226,15 @@ main (int argc, char *argv[])
     {
       OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
       clientHelper.SetAttribute
-                          ("OnTime", RandomVariableValue (ConstantVariable (1)));
+                                ("OnTime", RandomVariableValue (ConstantVariable (1)));
       clientHelper.SetAttribute
-                          ("OffTime", RandomVariableValue (ConstantVariable (0)));
+                                ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
       ApplicationContainer clientApps;
       for (uint32_t i = 0; i < 4; ++i)
         {
           AddressValue remoteAddress
-                          (InetSocketAddress (rightLeafInterfaces.GetAddress (i), port));
+                                (InetSocketAddress (rightLeafInterfaces.GetAddress (i), port));
           clientHelper.SetAttribute ("Remote", remoteAddress);
           clientApps.Add (clientHelper.Install (leftLeafNodes.Get (i)));
         }
@@ -245,6 +245,8 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (5));
   Simulator::Run ();
   Simulator::Destroy ();
+  // Exit the MPI execution environment
+  MpiInterface::Disable ();
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");

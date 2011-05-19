@@ -10,7 +10,7 @@ def build(bld):
     obj.source = 'tcp-nsc-lfn.cc'
 
     obj = bld.create_ns3_program('tcp-nsc-zoo',
-                                 ['csma', 'internet'])
+                                 ['csma', 'internet', 'applications'])
     obj.source = 'tcp-nsc-zoo.cc'
 
     obj = bld.create_ns3_program('tcp-star-server',

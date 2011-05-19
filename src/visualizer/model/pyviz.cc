@@ -85,7 +85,7 @@ PyVizPacketTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PyVizPacketTag")
     .SetParent<Tag> ()
     .AddConstructor<PyVizPacketTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -115,7 +115,8 @@ PyVizPacketTag::Print (std::ostream &os) const
 }
 PyVizPacketTag::PyVizPacketTag ()
   : Tag () 
-{}
+{
+}
 
 
 
@@ -210,9 +211,9 @@ void
 PyViz::SetPacketCaptureOptions (uint32_t nodeId, PacketCaptureOptions options)
 {
   NS_LOG_DEBUG ("  SetPacketCaptureOptions " << nodeId
-                << " PacketCaptureOptions (headers size = " << options.headers.size ()
-                << " mode = " << options.mode << " numLastPackets = " << options.numLastPackets
-                << ")");
+                                             << " PacketCaptureOptions (headers size = " << options.headers.size ()
+                                             << " mode = " << options.mode << " numLastPackets = " << options.numLastPackets
+                                             << ")");
   m_packetCaptureOptions[nodeId] = options;
 }
 
@@ -225,7 +226,7 @@ PyViz::RegisterDropTracePath (std::string const &tracePath)
 PyViz::~PyViz ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  
+
   NS_ASSERT (g_visualizer == this);
   g_visualizer = NULL;
 }
@@ -235,7 +236,7 @@ void PyViz::DoPause (std::string const &message)
   m_pauseMessages.push_back (message);
   m_stop = true;
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": Have "
-                << g_visualizer->m_pauseMessages.size () << " pause messages");
+                                                << g_visualizer->m_pauseMessages.size () << " pause messages");
 }
 
 void PyViz::Pause (std::string const &message)
@@ -248,10 +249,10 @@ std::vector<std::string>
 PyViz::GetPauseMessages () const
 {
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": GetPauseMessages: have "
-                << g_visualizer->m_pauseMessages.size () << " pause messages");
+                                                << g_visualizer->m_pauseMessages.size () << " pause messages");
   return m_pauseMessages;
 }
-    
+
 
 void
 PyViz::CallbackStopSimulation ()
@@ -336,7 +337,8 @@ bool PyViz::TransmissionSampleKey::operator < (PyViz::TransmissionSampleKey cons
     }
   if (this->receiver < other.receiver)
     {
-      return true;}
+      return true;
+    }
   if (this->receiver != other.receiver)
     {
       return false;
@@ -498,7 +500,7 @@ PyViz::TraceIpv4Drop (std::string context, ns3::Ipv4Header const &hdr, Ptr<const
 }
 
 
-  // --------- TX device tracing -------------------  
+// --------- TX device tracing -------------------
 
 void
 PyViz::TraceNetDevTxCommon (std::string const &context, Ptr<const Packet> packet,
@@ -578,7 +580,7 @@ PyViz::TraceNetDevTxWifi (std::string context, Ptr<const Packet> packet)
    *    0        1       Destination  BSSID         Source        N/A
    *    1        0       BSSID        Source        Destination   N/A
    *    1        1       Receiver     Transmitter   Destination   Source
-   */  
+   */
   WifiMacHeader hdr;
   NS_ABORT_IF (packet->PeekHeader (hdr) == 0);
   Mac48Address destinationAddress;
@@ -619,7 +621,7 @@ PyViz::TraceNetDevTxPointToPoint (std::string context, Ptr<const Packet> packet)
 
 
 
-  // --------- RX device tracing -------------------  
+// --------- RX device tracing -------------------
 
 void
 PyViz::TraceNetDevRxCommon (std::string const &context, Ptr<const Packet> packet, Mac48Address const &from)
@@ -684,13 +686,13 @@ PyViz::TraceNetDevRxCommon (std::string const &context, Ptr<const Packet> packet
       NS_LOG_DEBUG ("RX Packet " << uid << " was not transmitted?!");
       return;
     }
-  
+
   TxRecordValue &record = recordIter->second;
-  
+
   if (record.srcNode == node)
     {
       NS_LOG_WARN ("Node " << node->GetId () << " receiving back the same packet (UID=" << uid
-                   << ") it had previously transmitted, on the same channel!");
+                           << ") it had previously transmitted, on the same channel!");
       return;
     }
 
@@ -704,32 +706,32 @@ PyViz::TraceNetDevRxCommon (std::string const &context, Ptr<const Packet> packet
              = m_transmissionSamples.begin (); iter != m_transmissionSamples.end (); iter++)
         {
           NS_LOG_DEBUG(iter->first.transmitter<<"/"<<iter->first.transmitter->GetId () << ", "
-                       << iter->first.receiver<<"/"<<iter->first.receiver->GetId ()
-                       << ", " << iter->first.channel << " => " << iter->second.bytes << " (@ " << &iter->second << ")");
+                                              << iter->first.receiver<<"/"<<iter->first.receiver->GetId ()
+                                              << ", " << iter->first.channel << " => " << iter->second.bytes << " (@ " << &iter->second << ")");
         }
     }
   NS_LOG_DEBUG("m_transmissionSamples end.");
 #endif
 
   std::map<TransmissionSampleKey,TransmissionSampleValue>::iterator
-    iter = m_transmissionSamples.find (key);
+  iter = m_transmissionSamples.find (key);
 
   if (iter == m_transmissionSamples.end ())
     {
       TransmissionSampleValue sample = { packet->GetSize () };
       NS_LOG_DEBUG ("RX: from " << key.transmitter<<"/"<<key.transmitter->GetId() << " to "
-                    << key.receiver<<"/"<<key.receiver->GetId()
-                    << " channel " << channel << ": " << packet->GetSize ()
-                    << " bytes more. => new sample with " << packet->GetSize () << " bytes.");
+                                << key.receiver<<"/"<<key.receiver->GetId()
+                                << " channel " << channel << ": " << packet->GetSize ()
+                                << " bytes more. => new sample with " << packet->GetSize () << " bytes.");
       m_transmissionSamples[key] = sample;
     }
   else
     {
       TransmissionSampleValue &sample = iter->second;
       NS_LOG_DEBUG ("RX: from " << key.transmitter<<"/"<<key.transmitter->GetId() << " to "
-                    << key.receiver<<"/"<<key.receiver->GetId()
-                    << " channel " << channel << ": " << packet->GetSize ()
-                    << " bytes more. => sample " << &sample << " with bytes " << sample.bytes);
+                                << key.receiver<<"/"<<key.receiver->GetId()
+                                << " channel " << channel << ": " << packet->GetSize ()
+                                << " bytes more. => sample " << &sample << " with bytes " << sample.bytes);
 
       sample.bytes += packet->GetSize ();
     }
@@ -748,7 +750,7 @@ PyViz::TraceNetDevRxWifi (std::string context, Ptr<const Packet> packet)
    *    0        1       Destination  BSSID         Source        N/A
    *    1        0       BSSID        Source        Destination   N/A
    *    1        1       Receiver     Transmitter   Destination   Source
-   */  
+   */
   WifiMacHeader hdr;
   NS_ABORT_IF (packet->PeekHeader (hdr) == 0);
   Mac48Address sourceAddress;
@@ -795,7 +797,7 @@ PyViz::TraceNetDevPromiscRxCsma (std::string context, Ptr<const Packet> packet)
   NS_ABORT_IF (packet->PeekHeader (ethernetHeader) == 0);
 
   NetDevice::PacketType packetType = NetDevice::PACKET_OTHERHOST; // FIXME
-  
+
   // Other packet types are already being received by
   // TraceNetDevRxCsma; we don't want to receive them twice.
   if (packetType == NetDevice::PACKET_OTHERHOST)
@@ -819,7 +821,7 @@ PyViz::TraceNetDevRxWimax (std::string context, Ptr<const Packet> packet, Mac48A
 }
 
 
-  // ---------------------
+// ---------------------
 
 PyViz::TransmissionSampleList
 PyViz::GetTransmissionSamples () const
@@ -827,7 +829,7 @@ PyViz::GetTransmissionSamples () const
   NS_LOG_DEBUG ("GetTransmissionSamples BEGIN");
   TransmissionSampleList list;
   for (std::map<TransmissionSampleKey, TransmissionSampleValue>::const_iterator
-         iter = m_transmissionSamples.begin ();
+       iter = m_transmissionSamples.begin ();
        iter !=  m_transmissionSamples.end ();
        iter++)
     {
@@ -837,7 +839,7 @@ PyViz::GetTransmissionSamples () const
       sample.channel = iter->first.channel;
       sample.bytes = iter->second.bytes;
       NS_LOG_DEBUG ("from " << sample.transmitter->GetId() << " to " << sample.receiver->GetId()
-                    << ": " << sample.bytes << " bytes.");
+                            << ": " << sample.bytes << " bytes.");
       list.push_back (sample);
     }
   NS_LOG_DEBUG ("GetTransmissionSamples END");
@@ -850,7 +852,7 @@ PyViz::GetPacketDropSamples () const
   NS_LOG_DEBUG ("GetPacketDropSamples BEGIN");
   PacketDropSampleList list;
   for (std::map<Ptr<Node>, uint32_t>::const_iterator
-         iter = m_packetDrops.begin ();
+       iter = m_packetDrops.begin ();
        iter !=  m_packetDrops.end ();
        iter++)
     {
@@ -858,7 +860,7 @@ PyViz::GetPacketDropSamples () const
       sample.transmitter = iter->first;
       sample.bytes = iter->second;
       NS_LOG_DEBUG ("in " << sample.transmitter->GetId() 
-                    << ": " << sample.bytes << " bytes dropped.");
+                          << ": " << sample.bytes << " bytes dropped.");
       list.push_back (sample);
     }
   NS_LOG_DEBUG ("GetPacketDropSamples END");
@@ -889,9 +891,9 @@ PyViz::LastPacketsSample
 PyViz::GetLastPackets (uint32_t nodeId) const
 {
   NS_LOG_DEBUG ("GetLastPackets: " << nodeId);
-  
+
   std::map<uint32_t, LastPacketsSample>::const_iterator
-    iter = m_lastPackets.find(nodeId);
+  iter = m_lastPackets.find(nodeId);
   if (iter != m_lastPackets.end ())
     {
       return iter->second;
@@ -909,488 +911,488 @@ PyViz::GetLastPackets (uint32_t nodeId) const
 
 namespace
 {
-  // Adapted from http://en.wikipedia.org/w/index.php?title=Line_clipping&oldid=248609574
-  class FastClipping
+// Adapted from http://en.wikipedia.org/w/index.php?title=Line_clipping&oldid=248609574
+class FastClipping
+{
+public:
+  struct Vector2
   {
-  public:
-    struct Vector2 
-    {
-      double x;
-      double y;
-    };
-      
-    Vector2 m_clipMin, m_clipMax;
-
-    struct Line
-    {
-      Vector2 start, end;
-      double dx, dy;
-    };
-
-  private:
-
-    void ClipStartTop (Line &line)
-    {
-      line.start.x += line.dx * (m_clipMin.y - line.start.y) / line.dy;
-      line.start.y = m_clipMin.y;
-    }
- 
-    void ClipStartBottom (Line &line)
-    {
-      line.start.x += line.dx * (m_clipMax.y - line.start.y) / line.dy;
-      line.start.y = m_clipMax.y;
-    }
- 
-    void ClipStartRight (Line &line)
-    {
-      line.start.y += line.dy * (m_clipMax.x - line.start.x) / line.dx;
-      line.start.x = m_clipMax.x;
-    }
- 
-    void ClipStartLeft (Line &line)
-    {
-      line.start.y += line.dy * (m_clipMin.x - line.start.x) / line.dx;
-      line.start.x = m_clipMin.x;
-    }
- 
-    void ClipEndTop (Line &line)
-    {
-      line.end.x += line.dx * (m_clipMin.y - line.end.y) / line.dy;
-      line.end.y = m_clipMin.y;
-    }
-    
-    void ClipEndBottom (Line &line) {
-      line.end.x += line.dx * (m_clipMax.y - line.end.y) / line.dy;
-      line.end.y = m_clipMax.y;
-    }
- 
-    void ClipEndRight (Line &line)
-    {
-      line.end.y += line.dy * (m_clipMax.x - line.end.x) / line.dx;
-      line.end.x = m_clipMax.x;
-    }
- 
-    void ClipEndLeft (Line &line)
-    {
-      line.end.y += line.dy * (m_clipMin.x - line.end.x) / line.dx;
-      line.end.x = m_clipMin.x;
-    }
-
-  public:
-    FastClipping (Vector2 clipMin, Vector2 clipMax)
-      : m_clipMin (clipMin), m_clipMax (clipMax)
-    {
-    }
-    
- 
-    bool ClipLine (Line &line)
-    {
-      uint8_t lineCode = 0;
- 
-      if (line.end.y < m_clipMin.y)
-        lineCode |= 8;
-      else if (line.end.y > m_clipMax.y)
-        lineCode |= 4;
- 
-      if (line.end.x > m_clipMax.x)
-        lineCode |= 2;
-      else if (line.end.x < m_clipMin.x)
-        lineCode |= 1;
- 
-      if (line.start.y < m_clipMin.y)
-        lineCode |= 128;
-      else if (line.start.y > m_clipMax.y)
-        lineCode |= 64;
- 
-      if (line.start.x > m_clipMax.x)
-        lineCode |= 32;
-      else if (line.start.x < m_clipMin.x)
-        lineCode |= 16;
- 
-      // 9 - 8 - A
-      // |   |   |
-      // 1 - 0 - 2
-      // |   |   |
-      // 5 - 4 - 6
-      switch (lineCode)
-        {
-          // center
-        case 0x00:
-          return true;
- 
-        case 0x01:
-          ClipEndLeft (line);
-          return true;
- 
-        case 0x02:
-          ClipEndRight (line);
-          return true;
- 
-        case 0x04:
-          ClipEndBottom (line);
-          return true;
- 
-        case 0x05:
-          ClipEndLeft (line);
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          return true;
- 
-        case 0x06:
-          ClipEndRight (line);
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          return true;
- 
-        case 0x08:
-          ClipEndTop (line);
-          return true;
- 
-        case 0x09:
-          ClipEndLeft (line);
-          if (line.end.y < m_clipMin.y)
-            ClipEndTop (line);
-          return true;
- 
-        case 0x0A:
-          ClipEndRight (line);
-          if (line.end.y < m_clipMin.y)
-            ClipEndTop (line);
-          return true;
- 
-          // left
-        case 0x10:
-          ClipStartLeft (line);
-          return true;
- 
-        case 0x12:
-          ClipStartLeft (line);
-          ClipEndRight (line);
-          return true;
- 
-        case 0x14:
-          ClipStartLeft (line);
-          if (line.start.y > m_clipMax.y)
-            return false;
-          ClipEndBottom (line);
-          return true;
- 
-        case 0x16:
-          ClipStartLeft (line);
-          if (line.start.y > m_clipMax.y)
-            return false;
-          ClipEndBottom (line);
-          if (line.end.x > m_clipMax.x)
-            ClipEndRight (line);
-          return true;
- 
-        case 0x18:
-          ClipStartLeft (line);
-          if (line.start.y < m_clipMin.y)
-            return false;
-          ClipEndTop (line);
-          return true;
- 
-        case 0x1A:
-          ClipStartLeft (line);
-          if (line.start.y < m_clipMin.y)
-            return false;
-          ClipEndTop (line);
-          if (line.end.x > m_clipMax.x)
-            ClipEndRight (line);
-          return true;
- 
-          // right
-        case 0x20:
-          ClipStartRight (line);
-          return true;
- 
-        case 0x21:
-          ClipStartRight (line);
-          ClipEndLeft (line);
-          return true;
- 
-        case 0x24:
-          ClipStartRight (line);
-          if (line.start.y > m_clipMax.y)
-            return false;
-          ClipEndBottom (line);
-          return true;
- 
-        case 0x25:
-          ClipStartRight (line);
-          if (line.start.y > m_clipMax.y)
-            return false;
-          ClipEndBottom (line);
-          if (line.end.x < m_clipMin.x)
-            ClipEndLeft (line);
-          return true;
- 
-        case 0x28:
-          ClipStartRight (line);
-          if (line.start.y < m_clipMin.y)
-            return false;
-          ClipEndTop (line);
-          return true;
- 
-        case 0x29:
-          ClipStartRight (line);
-          if (line.start.y < m_clipMin.y)
-            return false;
-          ClipEndTop (line);
-          if (line.end.x < m_clipMin.x)
-            ClipEndLeft (line);
-          return true;
- 
-          // bottom
-        case 0x40:
-          ClipStartBottom (line);
-          return true;
- 
-        case 0x41:
-          ClipStartBottom (line);
-          if (line.start.x < m_clipMin.x)
-            return false;
-          ClipEndLeft (line);
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          return true;
- 
-        case 0x42:
-          ClipStartBottom (line);
-          if (line.start.x > m_clipMax.x)
-            return false;
-          ClipEndRight (line);
-          return true;
- 
-        case 0x48:
-          ClipStartBottom (line);
-          ClipEndTop (line);
-          return true;
- 
-        case 0x49:
-          ClipStartBottom (line);
-          if (line.start.x < m_clipMin.x)
-            return false;
-          ClipEndLeft (line);
-          if (line.end.y < m_clipMin.y)
-            ClipEndTop (line);
-          return true;
- 
-        case 0x4A:
-          ClipStartBottom (line);
-          if (line.start.x > m_clipMax.x)
-            return false;
-          ClipEndRight (line);
-          if (line.end.y < m_clipMin.y)
-            ClipEndTop (line);
-          return true;
- 
-          // bottom-left
-        case 0x50:
-          ClipStartLeft (line);
-          if (line.start.y > m_clipMax.y)
-            ClipStartBottom (line);
-          return true;
- 
-        case 0x52:
-          ClipEndRight (line);
-          if (line.end.y > m_clipMax.y)
-            return false;
-          ClipStartBottom (line);
-          if (line.start.x < m_clipMin.x)
-            ClipStartLeft (line);
-          return true;
- 
-        case 0x58:
-          ClipEndTop (line);
-          if (line.end.x < m_clipMin.x)
-            return false;
-          ClipStartBottom (line);
-          if (line.start.x < m_clipMin.x)
-            ClipStartLeft (line);
-          return true;
- 
-        case 0x5A:
-          ClipStartLeft (line);
-          if (line.start.y < m_clipMin.y)
-            return false;
-          ClipEndRight (line);
-          if (line.end.y > m_clipMax.y)
-            return false;
-          if (line.start.y > m_clipMax.y)
-            ClipStartBottom (line);
-          if (line.end.y < m_clipMin.y)
-            ClipEndTop (line);
-          return true;
- 
-          // bottom-right
-        case 0x60:
-          ClipStartRight (line);
-          if (line.start.y > m_clipMax.y)
-            ClipStartBottom (line);
-          return true;
- 
-        case 0x61:
-          ClipEndLeft (line);
-          if (line.end.y > m_clipMax.y)
-            return false;
-          ClipStartBottom (line);
-          if (line.start.x > m_clipMax.x)
-            ClipStartRight (line);
-          return true;
- 
-        case 0x68:
-          ClipEndTop (line);
-          if (line.end.x > m_clipMax.x)
-            return false;
-          ClipStartRight (line);
-          if (line.start.y > m_clipMax.y)
-            ClipStartBottom (line);
-          return true;
- 
-        case 0x69:
-          ClipEndLeft (line);
-          if (line.end.y > m_clipMax.y)
-            return false;
-          ClipStartRight (line);
-          if (line.start.y < m_clipMin.y)
-            return false;
-          if (line.end.y < m_clipMin.y)
-            ClipEndTop (line);
-          if (line.start.y > m_clipMax.y)
-            ClipStartBottom (line);
-          return true;
- 
-          // top
-        case 0x80:
-          ClipStartTop (line);
-          return true;
- 
-        case 0x81:
-          ClipStartTop (line);
-          if (line.start.x < m_clipMin.x)
-            return false;
-          ClipEndLeft (line);
-          return true;
- 
-        case 0x82:
-          ClipStartTop (line);
-          if (line.start.x > m_clipMax.x)
-            return false;
-          ClipEndRight (line);
-          return true;
- 
-        case 0x84:
-          ClipStartTop (line);
-          ClipEndBottom (line);
-          return true;
- 
-        case 0x85:
-          ClipStartTop (line);
-          if (line.start.x < m_clipMin.x)
-            return false;
-          ClipEndLeft (line);
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          return true;
- 
-        case 0x86:
-          ClipStartTop (line);
-          if (line.start.x > m_clipMax.x)
-            return false;
-          ClipEndRight (line);
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          return true;
- 
-          // top-left
-        case 0x90:
-          ClipStartLeft (line);
-          if (line.start.y < m_clipMin.y)
-            ClipStartTop (line);
-          return true;
- 
-        case 0x92:
-          ClipEndRight (line);
-          if (line.end.y < m_clipMin.y)
-            return false;
-          ClipStartTop (line);
-          if (line.start.x < m_clipMin.x)
-            ClipStartLeft (line);
-          return true;
- 
-        case 0x94:
-          ClipEndBottom (line);
-          if (line.end.x < m_clipMin.x)
-            return false;
-          ClipStartLeft (line);
-          if (line.start.y < m_clipMin.y)
-            ClipStartTop (line);
-          return true;
- 
-        case 0x96:
-          ClipStartLeft (line);
-          if (line.start.y > m_clipMax.y)
-            return false;
-          ClipEndRight (line);
-          if (line.end.y < m_clipMin.y)
-            return false;
-          if (line.start.y < m_clipMin.y)
-            ClipStartTop (line);
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          return true;
- 
-          // top-right
-        case 0xA0:
-          ClipStartRight (line);
-          if (line.start.y < m_clipMin.y)
-            ClipStartTop (line);
-          return true;
- 
-        case 0xA1:
-          ClipEndLeft (line);
-          if (line.end.y < m_clipMin.y)
-            return false;
-          ClipStartTop (line);
-          if (line.start.x > m_clipMax.x)
-            ClipStartRight (line);
-          return true;
- 
-        case 0xA4:
-          ClipEndBottom (line);
-          if (line.end.x > m_clipMax.x)
-            return false;
-          ClipStartRight (line);
-          if (line.start.y < m_clipMin.y)
-            ClipStartTop (line);
-          return true;
- 
-        case 0xA5:
-          ClipEndLeft (line);
-          if (line.end.y < m_clipMin.y)
-            return false;
-          ClipStartRight (line);
-          if (line.start.y > m_clipMax.y)
-            return false;
-          if (line.end.y > m_clipMax.y)
-            ClipEndBottom (line);
-          if (line.start.y < m_clipMin.y)
-            ClipStartTop (line);
-          return true;
-        }
- 
-      return false;
-    }
+    double x;
+    double y;
   };
+
+  Vector2 m_clipMin, m_clipMax;
+
+  struct Line
+  {
+    Vector2 start, end;
+    double dx, dy;
+  };
+
+private:
+
+  void ClipStartTop (Line &line)
+  {
+    line.start.x += line.dx * (m_clipMin.y - line.start.y) / line.dy;
+    line.start.y = m_clipMin.y;
+  }
+ 
+  void ClipStartBottom (Line &line)
+  {
+    line.start.x += line.dx * (m_clipMax.y - line.start.y) / line.dy;
+    line.start.y = m_clipMax.y;
+  }
+ 
+  void ClipStartRight (Line &line)
+  {
+    line.start.y += line.dy * (m_clipMax.x - line.start.x) / line.dx;
+    line.start.x = m_clipMax.x;
+  }
+ 
+  void ClipStartLeft (Line &line)
+  {
+    line.start.y += line.dy * (m_clipMin.x - line.start.x) / line.dx;
+    line.start.x = m_clipMin.x;
+  }
+ 
+  void ClipEndTop (Line &line)
+  {
+    line.end.x += line.dx * (m_clipMin.y - line.end.y) / line.dy;
+    line.end.y = m_clipMin.y;
+  }
+
+  void ClipEndBottom (Line &line) {
+    line.end.x += line.dx * (m_clipMax.y - line.end.y) / line.dy;
+    line.end.y = m_clipMax.y;
+  }
+ 
+  void ClipEndRight (Line &line)
+  {
+    line.end.y += line.dy * (m_clipMax.x - line.end.x) / line.dx;
+    line.end.x = m_clipMax.x;
+  }
+ 
+  void ClipEndLeft (Line &line)
+  {
+    line.end.y += line.dy * (m_clipMin.x - line.end.x) / line.dx;
+    line.end.x = m_clipMin.x;
+  }
+
+public:
+  FastClipping (Vector2 clipMin, Vector2 clipMax)
+    : m_clipMin (clipMin), m_clipMax (clipMax)
+  {
+  }
+
+ 
+  bool ClipLine (Line &line)
+  {
+    uint8_t lineCode = 0;
+ 
+    if (line.end.y < m_clipMin.y)
+      lineCode |= 8;
+    else if (line.end.y > m_clipMax.y)
+      lineCode |= 4;
+ 
+    if (line.end.x > m_clipMax.x)
+      lineCode |= 2;
+    else if (line.end.x < m_clipMin.x)
+      lineCode |= 1;
+ 
+    if (line.start.y < m_clipMin.y)
+      lineCode |= 128;
+    else if (line.start.y > m_clipMax.y)
+      lineCode |= 64;
+ 
+    if (line.start.x > m_clipMax.x)
+      lineCode |= 32;
+    else if (line.start.x < m_clipMin.x)
+      lineCode |= 16;
+ 
+    // 9 - 8 - A
+    // |   |   |
+    // 1 - 0 - 2
+    // |   |   |
+    // 5 - 4 - 6
+    switch (lineCode)
+      {
+      // center
+      case 0x00:
+        return true;
+ 
+      case 0x01:
+        ClipEndLeft (line);
+        return true;
+ 
+      case 0x02:
+        ClipEndRight (line);
+        return true;
+ 
+      case 0x04:
+        ClipEndBottom (line);
+        return true;
+ 
+      case 0x05:
+        ClipEndLeft (line);
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        return true;
+ 
+      case 0x06:
+        ClipEndRight (line);
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        return true;
+ 
+      case 0x08:
+        ClipEndTop (line);
+        return true;
+ 
+      case 0x09:
+        ClipEndLeft (line);
+        if (line.end.y < m_clipMin.y)
+          ClipEndTop (line);
+        return true;
+ 
+      case 0x0A:
+        ClipEndRight (line);
+        if (line.end.y < m_clipMin.y)
+          ClipEndTop (line);
+        return true;
+ 
+      // left
+      case 0x10:
+        ClipStartLeft (line);
+        return true;
+ 
+      case 0x12:
+        ClipStartLeft (line);
+        ClipEndRight (line);
+        return true;
+ 
+      case 0x14:
+        ClipStartLeft (line);
+        if (line.start.y > m_clipMax.y)
+          return false;
+        ClipEndBottom (line);
+        return true;
+ 
+      case 0x16:
+        ClipStartLeft (line);
+        if (line.start.y > m_clipMax.y)
+          return false;
+        ClipEndBottom (line);
+        if (line.end.x > m_clipMax.x)
+          ClipEndRight (line);
+        return true;
+ 
+      case 0x18:
+        ClipStartLeft (line);
+        if (line.start.y < m_clipMin.y)
+          return false;
+        ClipEndTop (line);
+        return true;
+ 
+      case 0x1A:
+        ClipStartLeft (line);
+        if (line.start.y < m_clipMin.y)
+          return false;
+        ClipEndTop (line);
+        if (line.end.x > m_clipMax.x)
+          ClipEndRight (line);
+        return true;
+ 
+      // right
+      case 0x20:
+        ClipStartRight (line);
+        return true;
+ 
+      case 0x21:
+        ClipStartRight (line);
+        ClipEndLeft (line);
+        return true;
+ 
+      case 0x24:
+        ClipStartRight (line);
+        if (line.start.y > m_clipMax.y)
+          return false;
+        ClipEndBottom (line);
+        return true;
+ 
+      case 0x25:
+        ClipStartRight (line);
+        if (line.start.y > m_clipMax.y)
+          return false;
+        ClipEndBottom (line);
+        if (line.end.x < m_clipMin.x)
+          ClipEndLeft (line);
+        return true;
+ 
+      case 0x28:
+        ClipStartRight (line);
+        if (line.start.y < m_clipMin.y)
+          return false;
+        ClipEndTop (line);
+        return true;
+ 
+      case 0x29:
+        ClipStartRight (line);
+        if (line.start.y < m_clipMin.y)
+          return false;
+        ClipEndTop (line);
+        if (line.end.x < m_clipMin.x)
+          ClipEndLeft (line);
+        return true;
+ 
+      // bottom
+      case 0x40:
+        ClipStartBottom (line);
+        return true;
+ 
+      case 0x41:
+        ClipStartBottom (line);
+        if (line.start.x < m_clipMin.x)
+          return false;
+        ClipEndLeft (line);
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        return true;
+ 
+      case 0x42:
+        ClipStartBottom (line);
+        if (line.start.x > m_clipMax.x)
+          return false;
+        ClipEndRight (line);
+        return true;
+ 
+      case 0x48:
+        ClipStartBottom (line);
+        ClipEndTop (line);
+        return true;
+ 
+      case 0x49:
+        ClipStartBottom (line);
+        if (line.start.x < m_clipMin.x)
+          return false;
+        ClipEndLeft (line);
+        if (line.end.y < m_clipMin.y)
+          ClipEndTop (line);
+        return true;
+ 
+      case 0x4A:
+        ClipStartBottom (line);
+        if (line.start.x > m_clipMax.x)
+          return false;
+        ClipEndRight (line);
+        if (line.end.y < m_clipMin.y)
+          ClipEndTop (line);
+        return true;
+ 
+      // bottom-left
+      case 0x50:
+        ClipStartLeft (line);
+        if (line.start.y > m_clipMax.y)
+          ClipStartBottom (line);
+        return true;
+ 
+      case 0x52:
+        ClipEndRight (line);
+        if (line.end.y > m_clipMax.y)
+          return false;
+        ClipStartBottom (line);
+        if (line.start.x < m_clipMin.x)
+          ClipStartLeft (line);
+        return true;
+ 
+      case 0x58:
+        ClipEndTop (line);
+        if (line.end.x < m_clipMin.x)
+          return false;
+        ClipStartBottom (line);
+        if (line.start.x < m_clipMin.x)
+          ClipStartLeft (line);
+        return true;
+ 
+      case 0x5A:
+        ClipStartLeft (line);
+        if (line.start.y < m_clipMin.y)
+          return false;
+        ClipEndRight (line);
+        if (line.end.y > m_clipMax.y)
+          return false;
+        if (line.start.y > m_clipMax.y)
+          ClipStartBottom (line);
+        if (line.end.y < m_clipMin.y)
+          ClipEndTop (line);
+        return true;
+ 
+      // bottom-right
+      case 0x60:
+        ClipStartRight (line);
+        if (line.start.y > m_clipMax.y)
+          ClipStartBottom (line);
+        return true;
+ 
+      case 0x61:
+        ClipEndLeft (line);
+        if (line.end.y > m_clipMax.y)
+          return false;
+        ClipStartBottom (line);
+        if (line.start.x > m_clipMax.x)
+          ClipStartRight (line);
+        return true;
+ 
+      case 0x68:
+        ClipEndTop (line);
+        if (line.end.x > m_clipMax.x)
+          return false;
+        ClipStartRight (line);
+        if (line.start.y > m_clipMax.y)
+          ClipStartBottom (line);
+        return true;
+ 
+      case 0x69:
+        ClipEndLeft (line);
+        if (line.end.y > m_clipMax.y)
+          return false;
+        ClipStartRight (line);
+        if (line.start.y < m_clipMin.y)
+          return false;
+        if (line.end.y < m_clipMin.y)
+          ClipEndTop (line);
+        if (line.start.y > m_clipMax.y)
+          ClipStartBottom (line);
+        return true;
+ 
+      // top
+      case 0x80:
+        ClipStartTop (line);
+        return true;
+ 
+      case 0x81:
+        ClipStartTop (line);
+        if (line.start.x < m_clipMin.x)
+          return false;
+        ClipEndLeft (line);
+        return true;
+ 
+      case 0x82:
+        ClipStartTop (line);
+        if (line.start.x > m_clipMax.x)
+          return false;
+        ClipEndRight (line);
+        return true;
+ 
+      case 0x84:
+        ClipStartTop (line);
+        ClipEndBottom (line);
+        return true;
+ 
+      case 0x85:
+        ClipStartTop (line);
+        if (line.start.x < m_clipMin.x)
+          return false;
+        ClipEndLeft (line);
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        return true;
+ 
+      case 0x86:
+        ClipStartTop (line);
+        if (line.start.x > m_clipMax.x)
+          return false;
+        ClipEndRight (line);
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        return true;
+ 
+      // top-left
+      case 0x90:
+        ClipStartLeft (line);
+        if (line.start.y < m_clipMin.y)
+          ClipStartTop (line);
+        return true;
+ 
+      case 0x92:
+        ClipEndRight (line);
+        if (line.end.y < m_clipMin.y)
+          return false;
+        ClipStartTop (line);
+        if (line.start.x < m_clipMin.x)
+          ClipStartLeft (line);
+        return true;
+ 
+      case 0x94:
+        ClipEndBottom (line);
+        if (line.end.x < m_clipMin.x)
+          return false;
+        ClipStartLeft (line);
+        if (line.start.y < m_clipMin.y)
+          ClipStartTop (line);
+        return true;
+ 
+      case 0x96:
+        ClipStartLeft (line);
+        if (line.start.y > m_clipMax.y)
+          return false;
+        ClipEndRight (line);
+        if (line.end.y < m_clipMin.y)
+          return false;
+        if (line.start.y < m_clipMin.y)
+          ClipStartTop (line);
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        return true;
+ 
+      // top-right
+      case 0xA0:
+        ClipStartRight (line);
+        if (line.start.y < m_clipMin.y)
+          ClipStartTop (line);
+        return true;
+ 
+      case 0xA1:
+        ClipEndLeft (line);
+        if (line.end.y < m_clipMin.y)
+          return false;
+        ClipStartTop (line);
+        if (line.start.x > m_clipMax.x)
+          ClipStartRight (line);
+        return true;
+ 
+      case 0xA4:
+        ClipEndBottom (line);
+        if (line.end.x > m_clipMax.x)
+          return false;
+        ClipStartRight (line);
+        if (line.start.y < m_clipMin.y)
+          ClipStartTop (line);
+        return true;
+ 
+      case 0xA5:
+        ClipEndLeft (line);
+        if (line.end.y < m_clipMin.y)
+          return false;
+        ClipStartRight (line);
+        if (line.start.y > m_clipMax.y)
+          return false;
+        if (line.end.y > m_clipMax.y)
+          ClipEndBottom (line);
+        if (line.start.y < m_clipMin.y)
+          ClipStartTop (line);
+        return true;
+      }
+ 
+    return false;
+  }
+};
 }
 
 void
 PyViz::LineClipping (double boundsX1, double boundsY1, double boundsX2, double boundsY2,
                      double &lineX1, double &lineY1, double &lineX2, double &lineY2)
 {
-  FastClipping::Vector2 clipMin = {boundsX1, boundsY1}, clipMax = {boundsX2, boundsY2};
+  FastClipping::Vector2 clipMin = { boundsX1, boundsY1}, clipMax = { boundsX2, boundsY2};
   FastClipping::Line line = { { lineX1, lineY1 }, { lineX2, lineY2 }, (lineX2-lineX1), (lineY2-lineY1) };
 
   FastClipping clipper (clipMin, clipMax);

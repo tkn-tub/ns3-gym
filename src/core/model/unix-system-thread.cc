@@ -74,22 +74,22 @@ SystemThreadImpl::SystemThreadImpl (Callback<void> callback)
   sigaction (SIGALRM, &act, 0);
 }
 
-  void
+void
 SystemThreadImpl::Start (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   int rc = pthread_create (&m_thread, NULL, &SystemThreadImpl::DoRun,
-    (void *)this);
+                           (void *)this);
 
   if (rc) 
     {
       NS_FATAL_ERROR ("pthread_create failed: " << rc << "=\"" << 
-        strerror(rc) << "\".");
+                      strerror(rc) << "\".");
     }
 }
 
-  void 
+void
 SystemThreadImpl::Join (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -99,11 +99,11 @@ SystemThreadImpl::Join (void)
   if (rc) 
     {
       NS_FATAL_ERROR ("pthread_join failed: " << rc << "=\"" << 
-        strerror(rc) << "\".");
+                      strerror(rc) << "\".");
     }
 }
 
-  void 
+void
 SystemThreadImpl::Shutdown (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -115,7 +115,7 @@ SystemThreadImpl::Shutdown (void)
   pthread_kill (m_thread, SIGALRM);
 }
 
-  bool
+bool
 SystemThreadImpl::Break (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -123,7 +123,7 @@ SystemThreadImpl::Break (void)
   return m_break;
 }
 
-  void *
+void *
 SystemThreadImpl::DoRun (void *arg)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -145,39 +145,39 @@ SystemThread::SystemThread (Callback<void> callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
-  
+
 SystemThread::~SystemThread() 
 {
   NS_LOG_FUNCTION_NOARGS ();
   delete m_impl;
 }
-  
-  void 
+
+void
 SystemThread::Start (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_impl->Start ();
 }
-  
-  void 
+
+void
 SystemThread::Join (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_impl->Join ();
-}  
+}
 
-  void 
+void
 SystemThread::Shutdown (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_impl->Shutdown ();
-}  
+}
 
-  bool 
+bool
 SystemThread::Break (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_impl->Break ();
-}  
+}
 
 } // namespace ns3

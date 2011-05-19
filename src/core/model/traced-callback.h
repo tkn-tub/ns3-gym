@@ -88,7 +88,7 @@ public:
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const;
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const;
 
-private:  
+private:
   typedef std::list<Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> > CallbackList;
   CallbackList m_callbackList;
 };
@@ -105,23 +105,24 @@ template<typename T1, typename T2,
          typename T7, typename T8>
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback ()
   : m_callbackList () 
-{}
-template<typename T1, typename T2, 
+{
+}
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext (const CallbackBase & callback)
 {
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   cb.Assign (callback);
   m_callbackList.push_back (cb);
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackBase & callback, std::string path)
 {
   Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
@@ -140,13 +141,13 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext (const Callbac
        i != m_callbackList.end (); /* empty */)
     {
       if ((*i).IsEqual (callback))
-	{
-	  i = m_callbackList.erase (i);
-	}
+        {
+          i = m_callbackList.erase (i);
+        }
       else
-	{
-	  i++;
-	}
+        {
+          i++;
+        }
     }
 }
 template<typename T1, typename T2, 
@@ -171,7 +172,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (void) const
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) ();
+      (*i)();
     }
 }
 template<typename T1, typename T2, 
@@ -184,7 +185,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1);
+      (*i)(a1);
     }
 }
 template<typename T1, typename T2, 
@@ -197,7 +198,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2) const
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2);
+      (*i)(a1, a2);
     }
 }
 template<typename T1, typename T2, 
@@ -210,7 +211,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3) const
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2, a3);
+      (*i)(a1, a2, a3);
     }
 }
 template<typename T1, typename T2, 
@@ -223,7 +224,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4)
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2, a3, a4);
+      (*i)(a1, a2, a3, a4);
     }
 }
 template<typename T1, typename T2, 
@@ -236,7 +237,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2, a3, a4, a5);
+      (*i)(a1, a2, a3, a4, a5);
     }
 }
 template<typename T1, typename T2, 
@@ -249,7 +250,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2, a3, a4, a5, a6);
+      (*i)(a1, a2, a3, a4, a5, a6);
     }
 }
 template<typename T1, typename T2, 
@@ -262,7 +263,7 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2, a3, a4, a5, a6, a7);
+      (*i)(a1, a2, a3, a4, a5, a6, a7);
     }
 }
 template<typename T1, typename T2, 
@@ -275,10 +276,10 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
     {
-      (*i) (a1, a2, a3, a4, a5, a6, a7, a8);
+      (*i)(a1, a2, a3, a4, a5, a6, a7, a8);
     }
 }
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* TRACED_CALLBACK_H */

@@ -27,8 +27,11 @@
 
 namespace ns3 {
 
-/*
+/**
+ * \ingroup propagation
+ *
  *  \brief The COST-Hata-Model is the most often cited of the COST 231 models.
+ *
  *  Also called the Hata Model PCS Extension, it is a radio propagation model
  *  that extends the Hata Model (which in turn is based on the Okumura Model)
  *  to cover a more elaborated range of frequencies. COST (COperation

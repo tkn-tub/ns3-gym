@@ -45,7 +45,7 @@ TypeId ErrorModel::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&ErrorModel::m_enable),
                    MakeBooleanChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -124,7 +124,7 @@ TypeId RateErrorModel::GetTypeId (void)
                    RandomVariableValue (UniformVariable (0.0, 1.0)),
                    MakeRandomVariableAccessor (&RateErrorModel::m_ranvar),
                    MakeRandomVariableChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -180,7 +180,7 @@ RateErrorModel::DoCorrupt (Ptr<Packet> p)
   NS_LOG_FUNCTION_NOARGS ();
   if (!IsEnabled ())
     {
-      return false;  
+      return false;
     }
   switch (m_unit) 
     {
@@ -240,11 +240,11 @@ TypeId ListErrorModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ListErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<ListErrorModel> ()
-    ;
+  ;
   return tid;
 }
 
-ListErrorModel::ListErrorModel ()  
+ListErrorModel::ListErrorModel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -277,16 +277,16 @@ ListErrorModel::DoCorrupt (Ptr<Packet> p)
   NS_LOG_FUNCTION_NOARGS ();
   if (!IsEnabled ())
     {
-      return false;  
+      return false;
     }
   uint32_t uid = p->GetUid ();
   for (PacketListCI i = m_packetList.begin (); 
-    i != m_packetList.end (); i++) 
+       i != m_packetList.end (); i++)
     {
       if (uid == *i)
-      {
-        return true;
-      }
+        {
+          return true;
+        }
     }
   return false;
 }
@@ -309,7 +309,7 @@ TypeId ReceiveListErrorModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ReceiveListErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<ReceiveListErrorModel> ()
-    ;
+  ;
   return tid;
 }
 
@@ -345,16 +345,16 @@ ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p)
   NS_LOG_FUNCTION_NOARGS ();
   if (!IsEnabled ())
     {
-      return false;  
+      return false;
     }
   m_timesInvoked += 1;
   for (PacketListCI i = m_packetList.begin (); 
-    i != m_packetList.end (); i++) 
+       i != m_packetList.end (); i++)
     {
       if (m_timesInvoked - 1 == *i)
-      {
-        return true;
-      }
+        {
+          return true;
+        }
     }
   return false;
 }

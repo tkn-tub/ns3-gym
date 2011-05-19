@@ -13,7 +13,7 @@ namespace ns3 {
  */
 class Chunk : public ObjectBase
 {
- public:
+public:
   static TypeId GetTypeId (void); 
 
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;

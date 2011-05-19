@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,15 +22,16 @@
 namespace ns3 {
 
 BlockAckAgreement::BlockAckAgreement ()
- : m_amsduSupported (0),
-   m_blockAckPolicy (1),
-   m_inactivityEvent ()
-{}
+  : m_amsduSupported (0),
+    m_blockAckPolicy (1),
+    m_inactivityEvent ()
+{
+}
 
 BlockAckAgreement::BlockAckAgreement (Mac48Address peer, uint8_t tid)
- : m_amsduSupported (0),
-   m_blockAckPolicy (1),
-   m_inactivityEvent ()
+  : m_amsduSupported (0),
+    m_blockAckPolicy (1),
+    m_inactivityEvent ()
 {
   m_tid = tid;
   m_peer = peer;
@@ -103,7 +104,7 @@ BlockAckAgreement::GetStartingSequence (void) const
 uint16_t
 BlockAckAgreement::GetStartingSequenceControl (void) const
 {
-  uint16_t seqControl = (m_startingSeq<<4) | 0xfff0;
+  uint16_t seqControl = (m_startingSeq << 4) | 0xfff0;
   return seqControl;
 }
 bool
@@ -114,7 +115,7 @@ BlockAckAgreement::IsImmediateBlockAck (void) const
 bool
 BlockAckAgreement::IsAmsduSupported (void) const
 {
-  return (m_amsduSupported == 1)?true:false;
+  return (m_amsduSupported == 1) ? true : false;
 }
 
 } //namespace ns3

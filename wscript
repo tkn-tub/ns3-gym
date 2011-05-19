@@ -567,6 +567,12 @@ def add_scratch_programs(bld):
 
 
 def build(bld):
+    # If --enabled-modules option was given, then print a warning
+    # message and exit this function.
+    if Options.options.enable_modules:
+        Logs.warn("No modules were built.  Use waf configure --enable-modules to enable modules.")
+        return
+
     bld.env['NS3_MODULES_WITH_TEST_LIBRARIES'] = []
     bld.env['NS3_ENABLED_MODULE_TEST_LIBRARIES'] = []
     bld.env['NS3_SCRIPT_DEPENDENCIES'] = []
@@ -632,16 +638,6 @@ def build(bld):
 
     add_examples_programs(bld)
     add_scratch_programs(bld)
-
-    ## if --enabled-modules option was given, we disable building the
-    ## modules that were not enabled, and programs that depend on
-    ## disabled modules.
-
-    if Options.options.enable_modules:
-        Logs.warn("the option --enable-modules is being applied to this build only;"
-                       " to make it permanent it needs to be given to waf configure.")
-        env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
-                                      Options.options.enable_modules.split(',')]
 
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']

@@ -38,9 +38,9 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std
     virtual bool Check (const AttributeValue &value) const {
       const UintegerValue *v = dynamic_cast<const UintegerValue *> (&value);
       if (v == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
     virtual std::string GetValueTypeName (void) const {

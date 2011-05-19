@@ -31,16 +31,17 @@ PropagationDelayModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PropagationDelayModel")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
 PropagationDelayModel::~PropagationDelayModel ()
-{}
+{
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomPropagationDelayModel);
 
-TypeId 
+TypeId
 RandomPropagationDelayModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
@@ -51,15 +52,17 @@ RandomPropagationDelayModel::GetTypeId (void)
                    RandomVariableValue (UniformVariable (0.0, 1.0)),
                    MakeRandomVariableAccessor (&RandomPropagationDelayModel::m_variable),
                    MakeRandomVariableChecker ())
-    ;
+  ;
   return tid;
 }
 
 RandomPropagationDelayModel::RandomPropagationDelayModel ()
-{}
+{
+}
 RandomPropagationDelayModel::~RandomPropagationDelayModel ()
-{}
-Time 
+{
+}
+Time
 RandomPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
   return Seconds (m_variable.GetValue ());
@@ -77,25 +80,26 @@ ConstantSpeedPropagationDelayModel::GetTypeId (void)
                    DoubleValue (300000000.0),
                    MakeDoubleAccessor (&ConstantSpeedPropagationDelayModel::m_speed),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 
 ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel ()
-{}
-Time 
+{
+}
+Time
 ConstantSpeedPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
   double seconds = distance / m_speed;
   return Seconds (seconds);
 }
-void 
+void
 ConstantSpeedPropagationDelayModel::SetSpeed (double speed)
 {
   m_speed = speed;
 }
-double 
+double
 ConstantSpeedPropagationDelayModel::GetSpeed (void) const
 {
   return m_speed;

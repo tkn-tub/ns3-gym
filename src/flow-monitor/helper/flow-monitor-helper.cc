@@ -46,7 +46,7 @@ Ptr<FlowMonitor>
 FlowMonitorHelper::GetMonitor ()
 {
   if (!m_flowMonitor)
-    {   
+    {
       m_flowMonitor = m_monitorFactory.Create<FlowMonitor> ();
       m_flowClassifier = Create<Ipv4FlowClassifier> ();
       m_flowMonitor->SetFlowClassifier (m_flowClassifier);
@@ -59,7 +59,7 @@ Ptr<FlowClassifier>
 FlowMonitorHelper::GetClassifier ()
 {
   if (!m_flowClassifier)
-    {   
+    {
       m_flowClassifier = Create<Ipv4FlowClassifier> ();
     }
   return m_flowClassifier;
@@ -103,7 +103,7 @@ FlowMonitorHelper::InstallAll ()
           Install (node);
         }
     }
-  return m_flowMonitor;  
+  return m_flowMonitor;
 }
 
 

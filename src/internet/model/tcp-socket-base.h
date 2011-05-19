@@ -77,7 +77,7 @@ public:
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
-  virtual enum SocketType GetSocketType (void) const;// returns socket type 
+  virtual enum SocketType GetSocketType (void) const; // returns socket type
   virtual Ptr<Node> GetNode (void) const;            // returns m_node
   virtual int Bind (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
   virtual int Bind (const Address &address);         // ... endpoint of specific addr or port

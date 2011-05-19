@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,10 +27,12 @@ NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 namespace ns3 {
 
 SupportedRates::SupportedRates ()
-  : extended (this), m_nRates (0)
-{}
+  : extended (this),
+    m_nRates (0)
+{
+}
 
-void 
+void
 SupportedRates::AddSupportedRate (uint32_t bs)
 {
   NS_ASSERT (m_nRates < MAX_SUPPORTED_RATES);
@@ -38,11 +40,11 @@ SupportedRates::AddSupportedRate (uint32_t bs)
     {
       return;
     }
-  m_rates[m_nRates] = bs/500000;
+  m_rates[m_nRates] = bs / 500000;
   m_nRates++;
-  NS_LOG_DEBUG ("add rate="<<bs<<", n rates="<<(uint32_t)m_nRates);
+  NS_LOG_DEBUG ("add rate=" << bs << ", n rates=" << (uint32_t)m_nRates);
 }
-void 
+void
 SupportedRates::SetBasicRate (uint32_t bs)
 {
   uint8_t rate = bs / 500000;
@@ -54,7 +56,7 @@ SupportedRates::SetBasicRate (uint32_t bs)
         }
       if (rate == m_rates[i])
         {
-          NS_LOG_DEBUG ("set basic rate="<<bs<<", n rates="<<(uint32_t)m_nRates);
+          NS_LOG_DEBUG ("set basic rate=" << bs << ", n rates=" << (uint32_t)m_nRates);
           m_rates[i] |= 0x80;
           return;
         }
@@ -62,7 +64,7 @@ SupportedRates::SetBasicRate (uint32_t bs)
   AddSupportedRate (bs);
   SetBasicRate (bs);
 }
-bool 
+bool
 SupportedRates::IsBasicRate (uint32_t bs) const
 {
   uint8_t rate = (bs / 500000) | 0x80;
@@ -75,29 +77,29 @@ SupportedRates::IsBasicRate (uint32_t bs) const
     }
   return false;
 }
-bool 
+bool
 SupportedRates::IsSupportedRate (uint32_t bs) const
 {
   uint8_t rate = bs / 500000;
-  for (uint8_t i = 0; i < m_nRates; i++) 
+  for (uint8_t i = 0; i < m_nRates; i++)
     {
-      if (rate == m_rates[i] ||
-          (rate|0x80) == m_rates[i]) 
+      if (rate == m_rates[i]
+          || (rate | 0x80) == m_rates[i])
         {
           return true;
         }
     }
   return false;
 }
-uint8_t 
+uint8_t
 SupportedRates::GetNRates (void) const
 {
   return m_nRates;
 }
-uint32_t 
+uint32_t
 SupportedRates::GetRate (uint8_t i) const
 {
-  return (m_rates[i]&0x7f) * 500000;
+  return (m_rates[i] & 0x7f) * 500000;
 }
 
 WifiInformationElementId
@@ -123,7 +125,7 @@ SupportedRates::SerializeInformationField (Buffer::Iterator start) const
 }
 uint8_t
 SupportedRates::DeserializeInformationField (Buffer::Iterator start,
-                                        uint8_t length)
+                                             uint8_t length)
 {
   NS_ASSERT (length <= 8);
   m_nRates = length;
@@ -132,7 +134,8 @@ SupportedRates::DeserializeInformationField (Buffer::Iterator start,
 }
 
 ExtendedSupportedRatesIE::ExtendedSupportedRatesIE ()
-{}
+{
+}
 
 ExtendedSupportedRatesIE::ExtendedSupportedRatesIE (SupportedRates *sr)
 {
@@ -153,7 +156,7 @@ ExtendedSupportedRatesIE::GetInformationFieldSize () const
   // overriding the GetSerializedSize() method, so if this function is
   // invoked in that case then it indicates a programming error. Hence
   // we have an assertion on that condition.
-  NS_ASSERT(m_supportedRates->m_nRates > 8);
+  NS_ASSERT (m_supportedRates->m_nRates > 8);
 
   // The number of rates we have beyond the initial 8 is the size of
   // the information field.
@@ -170,7 +173,7 @@ ExtendedSupportedRatesIE::SerializeInformationField (Buffer::Iterator start) con
   // Our overridden version of the Serialize() method should ensure
   // that this routine is never invoked in that case (by ensuring that
   // WifiInformationElement::Serialize() is not invoked).
-  NS_ASSERT(m_supportedRates->m_nRates > 8);
+  NS_ASSERT (m_supportedRates->m_nRates > 8);
   start.Write (m_supportedRates->m_rates + 8, m_supportedRates->m_nRates - 8);
 }
 

@@ -34,7 +34,8 @@ PacketSocketFactory::GetTypeId (void)
 }
 
 PacketSocketFactory::PacketSocketFactory ()
-{}
+{
+}
 
 Ptr<Socket> PacketSocketFactory::CreateSocket (void)
 {

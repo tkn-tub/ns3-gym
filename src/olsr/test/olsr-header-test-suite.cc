@@ -32,7 +32,8 @@ public:
 
 OlsrEmfTestCase::OlsrEmfTestCase ()
   : TestCase ("Check Emf olsr time conversion")
-{}
+{
+}
 void
 OlsrEmfTestCase::DoRun (void)
 {
@@ -54,7 +55,8 @@ public:
 
 OlsrMidTestCase::OlsrMidTestCase ()
   : TestCase ("Check Mid olsr messages")
-{}
+{
+}
 void
 OlsrMidTestCase::DoRun (void)
 {
@@ -66,7 +68,7 @@ OlsrMidTestCase::DoRun (void)
     olsr::MessageHeader::Mid &mid1 = msg1.GetMid ();
     olsr::MessageHeader msg2;
     olsr::MessageHeader::Mid &mid2 = msg2.GetMid ();
-    
+
     // MID message #1
     {
       std::vector<Ipv4Address> &addresses = mid1.interfaceAddresses;
@@ -97,13 +99,13 @@ OlsrMidTestCase::DoRun (void)
     // Build an OLSR packet header
     hdr.SetPacketLength (hdr.GetSerializedSize () + msg1.GetSerializedSize () + msg2.GetSerializedSize ());
     hdr.SetPacketSequenceNumber (123);
-    
+
 
     // Now add all the headers in the correct order
     packet.AddHeader (msg2);
     packet.AddHeader (msg1);
     packet.AddHeader (hdr);
-  }    
+  }
 
   {
     olsr::PacketHeader hdr;
@@ -112,9 +114,9 @@ OlsrMidTestCase::DoRun (void)
     uint32_t sizeLeft = hdr.GetPacketLength () - hdr.GetSerializedSize ();
     {
       olsr::MessageHeader msg1;
-      
+
       packet.RemoveHeader (msg1);
-        
+
       NS_TEST_ASSERT_MSG_EQ (msg1.GetTimeToLive (),  255, "XXX");
       NS_TEST_ASSERT_MSG_EQ (msg1.GetOriginatorAddress (), Ipv4Address ("11.22.33.44"), "XXX");
       NS_TEST_ASSERT_MSG_EQ (msg1.GetVTime (), Seconds (9), "XXX");
@@ -133,7 +135,7 @@ OlsrMidTestCase::DoRun (void)
       olsr::MessageHeader msg2;
 
       packet.RemoveHeader (msg2);
-        
+
       NS_TEST_ASSERT_MSG_EQ (msg2.GetTimeToLive (),  254, "XXX");
       NS_TEST_ASSERT_MSG_EQ (msg2.GetOriginatorAddress (), Ipv4Address ("12.22.33.44"), "XXX");
       NS_TEST_ASSERT_MSG_EQ (msg2.GetVTime (), Seconds (10), "XXX");
@@ -159,7 +161,8 @@ public:
 
 OlsrHelloTestCase::OlsrHelloTestCase ()
   : TestCase ("Check Hello olsr messages")
-{}
+{
+}
 void
 OlsrHelloTestCase::DoRun (void)
 {
@@ -176,7 +179,7 @@ OlsrHelloTestCase::DoRun (void)
     lm1.neighborInterfaceAddresses.push_back (Ipv4Address ("1.2.3.4"));
     lm1.neighborInterfaceAddresses.push_back (Ipv4Address ("1.2.3.5"));
     helloIn.linkMessages.push_back (lm1);
-    
+
     olsr::MessageHeader::Hello::LinkMessage lm2;
     lm2.linkCode = 3;
     lm2.neighborInterfaceAddresses.push_back (Ipv4Address ("2.2.3.4"));
@@ -189,11 +192,11 @@ OlsrHelloTestCase::DoRun (void)
   olsr::MessageHeader msgOut;
   packet.RemoveHeader (msgOut);
   olsr::MessageHeader::Hello &helloOut = msgOut.GetHello ();
-    
+
   NS_TEST_ASSERT_MSG_EQ (helloOut.GetHTime (), Seconds (7), "XXX");
   NS_TEST_ASSERT_MSG_EQ (helloOut.willingness, 66, "XXX");
   NS_TEST_ASSERT_MSG_EQ (helloOut.linkMessages.size (), 2, "XXX");
-  
+
   NS_TEST_ASSERT_MSG_EQ (helloOut.linkMessages[0].linkCode, 2, "XXX");
   NS_TEST_ASSERT_MSG_EQ (helloOut.linkMessages[0].neighborInterfaceAddresses[0],
                          Ipv4Address ("1.2.3.4"), "XXX");
@@ -218,26 +221,27 @@ public:
 
 OlsrTcTestCase::OlsrTcTestCase ()
   : TestCase ("Check Tc olsr messages")
-{}
+{
+}
 void
 OlsrTcTestCase::DoRun (void)
 {
   Packet packet;
   olsr::MessageHeader msgIn;
   olsr::MessageHeader::Tc &tcIn = msgIn.GetTc ();
-  
+
   tcIn.ansn = 0x1234;
   tcIn.neighborAddresses.push_back (Ipv4Address ("1.2.3.4"));
   tcIn.neighborAddresses.push_back (Ipv4Address ("1.2.3.5"));
   packet.AddHeader (msgIn);
-  
+
   olsr::MessageHeader msgOut;
   packet.RemoveHeader (msgOut);
   olsr::MessageHeader::Tc &tcOut = msgOut.GetTc ();
-  
+
   NS_TEST_ASSERT_MSG_EQ (tcOut.ansn, 0x1234, "XXX");
   NS_TEST_ASSERT_MSG_EQ (tcOut.neighborAddresses.size (), 2, "XXX");
-  
+
   NS_TEST_ASSERT_MSG_EQ (tcOut.neighborAddresses[0],
                          Ipv4Address ("1.2.3.4"), "XXX");
   NS_TEST_ASSERT_MSG_EQ (tcOut.neighborAddresses[1],
@@ -255,7 +259,8 @@ public:
 
 OlsrHnaTestCase::OlsrHnaTestCase ()
   : TestCase ("Check Hna olsr messages")
-{}
+{
+}
 
 void
 OlsrHnaTestCase::DoRun (void)
@@ -263,29 +268,29 @@ OlsrHnaTestCase::DoRun (void)
   Packet packet;
   olsr::MessageHeader msgIn;
   olsr::MessageHeader::Hna &hnaIn = msgIn.GetHna ();
-  
+
   hnaIn.associations.push_back ((olsr::MessageHeader::Hna::Association)
                                 { Ipv4Address ("1.2.3.4"), Ipv4Mask ("255.255.255.0")});
   hnaIn.associations.push_back ((olsr::MessageHeader::Hna::Association)
-                                {Ipv4Address ("1.2.3.5"), Ipv4Mask ("255.255.0.0")});
+                                { Ipv4Address ("1.2.3.5"), Ipv4Mask ("255.255.0.0")});
   packet.AddHeader (msgIn);
-  
+
   olsr::MessageHeader msgOut;
   packet.RemoveHeader (msgOut);
   olsr::MessageHeader::Hna &hnaOut = msgOut.GetHna ();
-  
+
   NS_TEST_ASSERT_MSG_EQ (hnaOut.associations.size (), 2, "XXX");
-  
+
   NS_TEST_ASSERT_MSG_EQ (hnaOut.associations[0].address,
-                        Ipv4Address ("1.2.3.4"), "XXX");
+                         Ipv4Address ("1.2.3.4"), "XXX");
   NS_TEST_ASSERT_MSG_EQ (hnaOut.associations[0].mask,
-                        Ipv4Mask ("255.255.255.0"), "XXX");
+                         Ipv4Mask ("255.255.255.0"), "XXX");
 
   NS_TEST_ASSERT_MSG_EQ (hnaOut.associations[1].address,
-                        Ipv4Address ("1.2.3.5"), "XXX");
+                         Ipv4Address ("1.2.3.5"), "XXX");
   NS_TEST_ASSERT_MSG_EQ (hnaOut.associations[1].mask,
-                        Ipv4Mask ("255.255.0.0"), "XXX");
-  
+                         Ipv4Mask ("255.255.0.0"), "XXX");
+
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "All bytes in packet were not read");
 
 }

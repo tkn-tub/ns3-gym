@@ -42,14 +42,14 @@ NS_LOG_COMPONENT_DEFINE ("Simulator");
 namespace ns3 {
 
 GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType", 
-  "The object class to use as the simulator implementation",
-  StringValue ("ns3::DefaultSimulatorImpl"),
-  MakeStringChecker ());
+                                         "The object class to use as the simulator implementation",
+                                         StringValue ("ns3::DefaultSimulatorImpl"),
+                                         MakeStringChecker ());
 
 GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType", 
-  "The object class to use as the scheduler implementation",
-  TypeIdValue (MapScheduler::GetTypeId ()),
-  MakeTypeIdChecker ());
+                                           "The object class to use as the scheduler implementation",
+                                           TypeIdValue (MapScheduler::GetTypeId ()),
+                                           MakeTypeIdChecker ());
 
 static void
 TimePrinter (std::ostream &os)
@@ -87,7 +87,7 @@ static SimulatorImpl * GetImpl (void)
       {
         ObjectFactory factory;
         StringValue s;
-        
+
         g_simTypeImpl.GetValue (s);
         factory.SetTypeId (s.Get ());
         *pimpl = GetPointer (factory.Create<SimulatorImpl> ());
@@ -242,28 +242,28 @@ Simulator::DoScheduleDestroy (EventImpl *impl)
 
 
 EventId
-Simulator::Schedule (Time const &time, void (*f) (void))
+Simulator::Schedule (Time const &time, void (*f)(void))
 {
   NS_LOG_FUNCTION (time << f);
   return DoSchedule (time, MakeEvent (f));
 }
 
 void
-Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (void))
+Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f)(void))
 {
   NS_LOG_FUNCTION (time << context << f);
   return ScheduleWithContext (context, time, MakeEvent (f));
 }
 
 EventId
-Simulator::ScheduleNow (void (*f) (void))
+Simulator::ScheduleNow (void (*f)(void))
 {
   NS_LOG_FUNCTION (f);
   return DoScheduleNow (MakeEvent (f));
 }
 
 EventId
-Simulator::ScheduleDestroy (void (*f) (void))
+Simulator::ScheduleDestroy (void (*f)(void))
 {
   NS_LOG_FUNCTION (f);
   return DoScheduleDestroy (MakeEvent (f));

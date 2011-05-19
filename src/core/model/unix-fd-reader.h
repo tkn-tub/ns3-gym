@@ -110,4 +110,4 @@ private:
 
 } // namespace ns3
 
-#endif	// UNIX_FD_READER_H
+#endif  // UNIX_FD_READER_H

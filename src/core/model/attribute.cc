@@ -27,34 +27,41 @@ NS_LOG_COMPONENT_DEFINE ("AttributeValue");
 namespace ns3 {
 
 AttributeValue::AttributeValue ()
-{}
+{
+}
 AttributeValue::~AttributeValue ()
-{}
+{
+}
 
 
 AttributeAccessor::AttributeAccessor ()
-{}
+{
+}
 AttributeAccessor::~AttributeAccessor ()
-{}
+{
+}
 
 AttributeChecker::AttributeChecker ()
-{}
+{
+}
 AttributeChecker::~AttributeChecker ()
-{}
+{
+}
 
 EmptyAttributeValue::EmptyAttributeValue ()
-{}
-Ptr<AttributeValue> 
+{
+}
+Ptr<AttributeValue>
 EmptyAttributeValue::Copy (void) const
 {
   return Create<EmptyAttributeValue> ();
 }
-std::string 
+std::string
 EmptyAttributeValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   return "";
 }
-bool 
+bool
 EmptyAttributeValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   return true;

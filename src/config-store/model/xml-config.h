@@ -8,6 +8,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup configstore
+ *
+ */
 class XmlConfigSave : public FileConfig
 {
 public:
@@ -22,6 +26,10 @@ private:
   xmlTextWriterPtr m_writer;
 };
 
+/**
+ * \ingroup configstore
+ *
+ */
 class XmlConfigLoad : public FileConfig
 {
 public:

@@ -70,14 +70,14 @@ public:
    *
    * \param uint32_t    outcoming interface to use or 0xffffffff if packet should be sent by ALL interfaces
    */
-  typedef Callback<void,/* return type */
-          bool,        /* flag */
-          Ptr<Packet>, /* packet */
-          Mac48Address,/* src */
-          Mac48Address,/* dst */
-          uint16_t,    /* protocol */
-          uint32_t     /* out interface ID */
-          > RouteReplyCallback;
+  typedef Callback<void, /* return type */
+                   bool, /* flag */
+                   Ptr<Packet>, /* packet */
+                   Mac48Address, /* src */
+                   Mac48Address, /* dst */
+                   uint16_t, /* protocol */
+                   uint32_t /* out interface ID */
+                   > RouteReplyCallback;
   /**
    * Request routing information, all packets must go through this request.
    *
@@ -95,7 +95,7 @@ public:
    *                      to really send packet using routing information.
    */
   virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, Ptr<
-      const Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply) = 0;
+                               const Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply) = 0;
   /**
    * \brief When packet is ready to go to upper layer, protocol must
    * remove all its information: tags, header, etc. So,
@@ -111,7 +111,7 @@ public:
    * changed
    */
   virtual bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source, const Mac48Address destination, Ptr<
-      Packet> packet, uint16_t & protocolType) = 0;
+                                     Packet> packet, uint16_t & protocolType) = 0;
   /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
   void
   SetMeshPoint (Ptr<MeshPointDevice> mp);
@@ -122,5 +122,5 @@ protected:
   /// Host mesh point
   Ptr<MeshPointDevice> m_mp;
 };
-}//namespace ns3
+} //namespace ns3
 #endif

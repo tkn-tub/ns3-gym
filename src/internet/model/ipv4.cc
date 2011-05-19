@@ -50,14 +50,16 @@ Ipv4::GetTypeId (void)
                                         &UdpSocket::GetMtuDiscover),
                    MakeBooleanChecker ())
 #endif
-    ;
+  ;
   return tid;
 }
 
 Ipv4::Ipv4 ()
-{}
+{
+}
 
 Ipv4::~Ipv4 ()
-{}
+{
+}
 
 } // namespace ns3

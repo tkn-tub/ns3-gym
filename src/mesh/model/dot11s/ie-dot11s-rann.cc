@@ -31,7 +31,7 @@ IeRann::~IeRann ()
 }
 IeRann::IeRann () :
   m_flags (0), m_hopcount (0), m_ttl (0), m_originatorAddress (Mac48Address::GetBroadcast ()),
-      m_destSeqNumber (0), m_metric (0)
+  m_destSeqNumber (0), m_metric (0)
 {
 }
 WifiInformationElementId
@@ -140,11 +140,11 @@ uint8_t
 IeRann::GetInformationFieldSize () const
 {
   uint8_t retval = 1 //Flags
-      + 1 //Hopcount
-      + 1 //TTL
-      + 6 //OriginatorAddress
-      + 4 //DestSeqNumber
-      + 4;//Metric
+    + 1   //Hopcount
+    + 1   //TTL
+    + 6   //OriginatorAddress
+    + 4   //DestSeqNumber
+    + 4;  //Metric
   return retval;
 }
 
@@ -165,8 +165,8 @@ bool
 operator== (const IeRann & a, const IeRann & b)
 {
   return (a.m_flags == b.m_flags && a.m_hopcount == b.m_hopcount && a.m_ttl == b.m_ttl
-      && a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
-      && a.m_metric == b.m_metric);
+          && a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
+          && a.m_metric == b.m_metric);
 }
 std::ostream &
 operator << (std::ostream &os, const IeRann &a)

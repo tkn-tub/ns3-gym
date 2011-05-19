@@ -69,9 +69,9 @@ bool
 SetTimeout (std::string value)
 {
   try {
-    timeout = ns3::Seconds (atof (value.c_str ()));
-    return true;
-  }
+      timeout = ns3::Seconds (atof (value.c_str ()));
+      return true;
+    }
   catch (...) { return false; }
   return false;
 }
@@ -91,7 +91,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("drop", "Use Drop Controller (Learning if not specified).", MakeCallback (&SetDrop));
   cmd.AddValue ("t", "Learning Controller Timeout (has no effect if drop controller is specified).", MakeCallback( &SetTimeout));
   cmd.AddValue ("timeout", "Learning Controller Timeout (has no effect if drop controller is specified).", MakeCallback( &SetTimeout));
-  
+
   cmd.Parse (argc, argv);
 
   if (verbose)
@@ -129,18 +129,18 @@ main (int argc, char *argv[])
   // Create the switch netdevice, which will do the packet switching
   Ptr<Node> switchNode = csmaSwitch.Get (0);
   OpenFlowSwitchHelper swtch;
-  
+
   if (use_drop)
-  {
-    Ptr<ns3::ofi::DropController> controller = CreateObject<ns3::ofi::DropController> ();
-    swtch.Install (switchNode, switchDevices, controller);
-  }
+    {
+      Ptr<ns3::ofi::DropController> controller = CreateObject<ns3::ofi::DropController> ();
+      swtch.Install (switchNode, switchDevices, controller);
+    }
   else
-  {
-    Ptr<ns3::ofi::LearningController> controller = CreateObject<ns3::ofi::LearningController> ();
-    if (!timeout.IsZero ()) controller->SetAttribute ("ExpirationTime", TimeValue (timeout));
-    swtch.Install (switchNode, switchDevices, controller);
-  }
+    {
+      Ptr<ns3::ofi::LearningController> controller = CreateObject<ns3::ofi::LearningController> ();
+      if (!timeout.IsZero ()) controller->SetAttribute ("ExpirationTime", TimeValue (timeout));
+      swtch.Install (switchNode, switchDevices, controller);
+    }
 
   // Add internet stack to the terminals
   InternetStackHelper internet;

@@ -37,17 +37,17 @@ PppHeader::~PppHeader ()
 {
 }
 
-  TypeId 
+TypeId
 PppHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PppHeader")
     .SetParent<Header> ()
     .AddConstructor<PppHeader> ()
-    ;
+  ;
   return tid;
 }
 
-  TypeId 
+TypeId
 PppHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
@@ -57,9 +57,9 @@ void
 PppHeader::Print (std::ostream &os) const
 {
   std::string proto;
-  
+
   switch(m_protocol)
-  {
+    {
     case 0x0021: /* IPv4 */
       proto = "IP (0x0021)";
       break;
@@ -68,36 +68,36 @@ PppHeader::Print (std::ostream &os) const
       break;
     default:
       NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
-  }
+    }
   os << "Point-to-Point Protocol: " << proto; 
 }
 
-  uint32_t
+uint32_t
 PppHeader::GetSerializedSize (void) const
 {
   return 2;
 }
 
-  void
+void
 PppHeader::Serialize (Buffer::Iterator start) const
 {
   start.WriteHtonU16 (m_protocol);
 }
 
-  uint32_t
+uint32_t
 PppHeader::Deserialize (Buffer::Iterator start)
 {
   m_protocol = start.ReadNtohU16 ();
   return GetSerializedSize();
 }
 
-  void
+void
 PppHeader::SetProtocol (uint16_t protocol)
 {
   m_protocol=protocol;
 }
 
-  uint16_t
+uint16_t
 PppHeader::GetProtocol (void)
 {
   return m_protocol;

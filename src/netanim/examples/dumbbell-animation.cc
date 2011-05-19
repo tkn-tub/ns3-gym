@@ -52,7 +52,7 @@ int main (int argc, char *argv[])
       nLeftLeaf = nLeaf;
       nRightLeaf = nLeaf;
     }
-  
+
   // Create the point-to-point link helpers
   PointToPointHelper pointToPointRouter;
   pointToPointRouter.SetDeviceAttribute  ("DataRate", StringValue ("10Mbps"));
@@ -62,8 +62,8 @@ int main (int argc, char *argv[])
   pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("1ms"));
 
   PointToPointDumbbellHelper d(nLeftLeaf, pointToPointLeaf,
-                   nRightLeaf, pointToPointLeaf,
-                   pointToPointRouter);
+                               nRightLeaf, pointToPointLeaf,
+                               pointToPointRouter);
 
   // Install Stack
   InternetStackHelper stack;
@@ -71,15 +71,15 @@ int main (int argc, char *argv[])
 
   // Assign IP Addresses
   d.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
-                    Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
-                    Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
-  
+                         Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
+                         Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
+
   // Install on/off app on all right side nodes
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
   clientHelper.SetAttribute 
-    ("OnTime", RandomVariableValue (UniformVariable (0, 1)));
+          ("OnTime", RandomVariableValue (UniformVariable (0, 1)));
   clientHelper.SetAttribute 
-    ("OffTime", RandomVariableValue (UniformVariable (0, 1)));
+          ("OffTime", RandomVariableValue (UniformVariable (0, 1)));
   ApplicationContainer clientApps;
 
   for (uint32_t i = 0; i < d.RightCount (); ++i)
@@ -107,7 +107,7 @@ int main (int argc, char *argv[])
       anim.SetOutputFile (animFile);
     }
   anim.StartAnimation ();
-  
+
   // Set up the acutal simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

@@ -408,7 +408,7 @@ in the following code,
 
 ::
 
-    int
+  int
   main (int argc, char *argv[])
   {
     ...  

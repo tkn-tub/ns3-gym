@@ -62,11 +62,11 @@ public:
  
   void SetScope (Ipv4InterfaceAddress::InterfaceAddressScope_e scope);
   Ipv4InterfaceAddress::InterfaceAddressScope_e GetScope (void) const;
-  
+
   bool IsSecondary (void) const;
   void SetSecondary (void);
   void SetPrimary (void);
-  
+
 private:
 
   Ipv4Address m_local;     // Interface address
@@ -75,7 +75,7 @@ private:
   Ipv4Mask m_mask;         // Network mask
   Ipv4Address m_broadcast; // Broadcast address
 
-  InterfaceAddressScope_e m_scope;   
+  InterfaceAddressScope_e m_scope;
   bool m_secondary;        // For use in multihoming
 
   friend bool operator == (Ipv4InterfaceAddress const &a, Ipv4InterfaceAddress const &b);
@@ -87,12 +87,12 @@ std::ostream& operator<< (std::ostream& os, const Ipv4InterfaceAddress &addr);
 inline bool operator == (const Ipv4InterfaceAddress &a, const Ipv4InterfaceAddress &b)
 {
   return (a.m_local == b.m_local && a.m_mask == b.m_mask &&
-    a.m_broadcast == b.m_broadcast && a.m_scope == b.m_scope && a.m_secondary == b.m_secondary);
+          a.m_broadcast == b.m_broadcast && a.m_scope == b.m_scope && a.m_secondary == b.m_secondary);
 }
 inline bool operator != (const Ipv4InterfaceAddress &a, const Ipv4InterfaceAddress &b)
 {
   return (a.m_local != b.m_local || a.m_mask != b.m_mask ||
-    a.m_broadcast != b.m_broadcast || a.m_scope != b.m_scope || a.m_secondary != b.m_secondary);
+          a.m_broadcast != b.m_broadcast || a.m_scope != b.m_scope || a.m_secondary != b.m_secondary);
 }
 
 

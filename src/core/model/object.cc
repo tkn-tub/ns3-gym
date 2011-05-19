@@ -43,14 +43,15 @@ NS_OBJECT_ENSURE_REGISTERED (Object);
 Object::AggregateIterator::AggregateIterator ()
   : m_object (0),
     m_current (0)
-{}
+{
+}
 
-bool 
+bool
 Object::AggregateIterator::HasNext (void) const
 {
   return m_current < m_object->m_aggregates->n;
 }
-Ptr<const Object> 
+Ptr<const Object>
 Object::AggregateIterator::Next (void)
 {
   Object *object = m_object->m_aggregates->buffer[m_current];
@@ -60,21 +61,22 @@ Object::AggregateIterator::Next (void)
 Object::AggregateIterator::AggregateIterator (Ptr<const Object> object)
   : m_object (object),
     m_current (0)
-{}
+{
+}
 
 
-TypeId 
+TypeId
 Object::GetInstanceTypeId (void) const
 {
   return m_tid;
 }
 
-TypeId 
+TypeId
 Object::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Object")
     .SetParent<ObjectBase> ()
-    ;
+  ;
   return tid;
 }
 
@@ -83,7 +85,7 @@ Object::Object ()
   : m_tid (Object::GetTypeId ()),
     m_disposed (false),
     m_started (false),
-    m_aggregates ((struct Aggregates *)malloc (sizeof (struct Aggregates))),
+    m_aggregates ((struct Aggregates *) malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
   m_aggregates->n = 1;
@@ -116,7 +118,7 @@ Object::Object (const Object &o)
   : m_tid (o.m_tid),
     m_disposed (false),
     m_started (false),
-    m_aggregates ((struct Aggregates *)malloc (sizeof (struct Aggregates))),
+    m_aggregates ((struct Aggregates *) malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
   m_aggregates->n = 1;
@@ -172,7 +174,7 @@ Object::Start (void)
    * object at the end of the array. To be safe, we restart iteration over the 
    * array whenever we call some user code, just in case.
    */
- restart:
+restart:
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
@@ -196,7 +198,7 @@ Object::Dispose (void)
    * So, to be safe, we restart the iteration over the array whenever we call some
    * user code.
    */
- restart:
+restart:
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {

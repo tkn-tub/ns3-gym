@@ -44,7 +44,7 @@ namespace addressUtils {
  * \brief Address family-independent test for a multicast address
  */
 bool IsMulticast (const Address &ad);
-};  
+};
 
 };
 

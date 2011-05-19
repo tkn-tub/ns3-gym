@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,7 +25,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (QosTag);
 
-TypeId 
+TypeId
 QosTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::QosTag")
@@ -35,7 +35,7 @@ QosTag::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&QosTag::GetTid),
                    MakeUintegerChecker<uint8_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -45,13 +45,15 @@ QosTag::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-QosTag::QosTag ():
-  m_tid (0)
-{}
-QosTag::QosTag (uint8_t tid):
-  m_tid (tid)
-{}
-  
+QosTag::QosTag ()
+  : m_tid (0)
+{
+}
+QosTag::QosTag (uint8_t tid)
+  : m_tid (tid)
+{
+}
+
 void
 QosTag::SetTid (uint8_t tid)
 {
@@ -64,7 +66,7 @@ QosTag::SetUserPriority (UserPriority up)
   m_tid = up;
 }
 
-uint32_t 
+uint32_t
 QosTag::GetSerializedSize (void) const
 {
   return 1;

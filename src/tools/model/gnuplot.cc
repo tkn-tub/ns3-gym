@@ -55,7 +55,7 @@ struct GnuplotDataset::Data
    * m_extra in the output.
    */
   virtual void PrintExpression(std::ostream &os) const = 0;
-    
+
   /**
    * Print the inline data file contents trailing the plot command. Empty for
    * functions.
@@ -130,7 +130,7 @@ GnuplotDataset::SetExtra (const std::string& extra)
 struct Gnuplot2dDataset::Data2d : public GnuplotDataset::Data
 {
   // *** Data Variables ***
-    
+
   enum Style  m_style;
   enum ErrorBars m_errorBars;
 
@@ -168,59 +168,59 @@ Gnuplot2dDataset::Data2d::PrintExpression(std::ostream &os) const
     os << " title '" << m_title << "'";
 
   switch (m_style) {
-  case LINES:
-    os << " with lines";
-    break;
-  case POINTS:
-    switch (m_errorBars)
-      {
-      case NONE:
-        os << " with points";
-        break;
-      case X:
-        os << " with xerrorbars";
-        break;
-      case Y:
-        os << " with yerrorbars";
-        break;
-      case XY:
-        os << " with xyerrorbars";
-        break;
-      }
-    break;
-  case LINES_POINTS:
-    switch (m_errorBars)
-      {
-      case NONE:
-        os << " with linespoints";
-        break;
-      case X:
-        os << " with errorlines";
-        break;
-      case Y:
-        os << " with yerrorlines";
-        break;
-      case XY:
-        os << " with xyerrorlines";
-        break;
-      }
-    break;
-  case DOTS:
-    os << " with dots";
-    break;
-  case IMPULSES:
-    os << " with impulses";
-    break;
-  case STEPS:
-    os << " with steps";
-    break;
-  case FSTEPS:
-    os << " with fsteps";
-    break;
-  case HISTEPS:
-    os << " with histeps";
-    break;
-  }
+    case LINES:
+      os << " with lines";
+      break;
+    case POINTS:
+      switch (m_errorBars)
+        {
+        case NONE:
+          os << " with points";
+          break;
+        case X:
+          os << " with xerrorbars";
+          break;
+        case Y:
+          os << " with yerrorbars";
+          break;
+        case XY:
+          os << " with xyerrorbars";
+          break;
+        }
+      break;
+    case LINES_POINTS:
+      switch (m_errorBars)
+        {
+        case NONE:
+          os << " with linespoints";
+          break;
+        case X:
+          os << " with errorlines";
+          break;
+        case Y:
+          os << " with yerrorlines";
+          break;
+        case XY:
+          os << " with xyerrorlines";
+          break;
+        }
+      break;
+    case DOTS:
+      os << " with dots";
+      break;
+    case IMPULSES:
+      os << " with impulses";
+      break;
+    case STEPS:
+      os << " with steps";
+      break;
+    case FSTEPS:
+      os << " with fsteps";
+      break;
+    case HISTEPS:
+      os << " with histeps";
+      break;
+    }
 
   if (m_extra.size())
     os << " " << m_extra;
@@ -233,24 +233,24 @@ Gnuplot2dDataset::Data2d::PrintDatafile(std::ostream &os) const
        i != m_pointset.end (); ++i)
     {
       if (i->empty) {
-        os << std::endl;
-        continue;
-      }
+          os << std::endl;
+          continue;
+        }
 
       switch (m_errorBars) {
-      case NONE:
-        os << i->x << " " << i->y << std::endl;
-        break;
-      case X:
-        os << i->x << " " << i->y << " " << i->dx << std::endl;
-        break;
-      case Y:
-        os << i->x << " " << i->y << " " << i->dy << std::endl;
-        break;
-      case XY:
-        os << i->x << " " << i->y << " " << i->dx << " " << i->dy << std::endl;
-        break;
-      }
+        case NONE:
+          os << i->x << " " << i->y << std::endl;
+          break;
+        case X:
+          os << i->x << " " << i->y << " " << i->dx << std::endl;
+          break;
+        case Y:
+          os << i->x << " " << i->y << " " << i->dy << std::endl;
+          break;
+        case XY:
+          os << i->x << " " << i->y << " " << i->dx << " " << i->dy << std::endl;
+          break;
+        }
     }
   os << "e" << std::endl;
 }
@@ -404,7 +404,7 @@ Gnuplot2dFunction::SetFunction (const std::string& function)
 struct Gnuplot3dDataset::Data3d : public GnuplotDataset::Data
 {
   // *** Data Variables ***
-    
+
   std::string   m_style;
 
   PointSet      m_pointset;
@@ -453,9 +453,9 @@ Gnuplot3dDataset::Data3d::PrintDatafile(std::ostream &os) const
        i != m_pointset.end (); ++i)
     {
       if (i->empty) {
-        os << std::endl;
-        continue;
-      }
+          os << std::endl;
+          continue;
+        }
 
       os << i->x << " " << i->y << " " << i->z << std::endl;
     }
@@ -576,11 +576,11 @@ std::string Gnuplot::DetectTerminal (const std::string& filename)
   if (dotpos == std::string::npos) return "";
 
   if (filename.substr(dotpos) == ".png") {
-    return "png";
-  }
+      return "png";
+    }
   else if (filename.substr(dotpos) == ".pdf") {
-    return "pdf";
-  }
+      return "pdf";
+    }
 
   return "";
 }
@@ -634,7 +634,7 @@ Gnuplot::GenerateOutput (std::ostream &os) const
 
   if (m_title.size())
     os << "set title '" << m_title << "'" << std::endl;
-  
+
   if (m_xLegend.size())
     os << "set xlabel '" << m_xLegend << "'" << std::endl;
 
@@ -670,9 +670,9 @@ Gnuplot::GenerateOutput (std::ostream &os) const
       i++;
 
       if (i != m_datasets.end ())
-	{
-	  os << ", ";
-	}
+        {
+          os << ", ";
+        }
     }
   os << std::endl;
 

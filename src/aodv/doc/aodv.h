@@ -30,8 +30,7 @@
 #define AODV_H
 
 /**
- * \ingroup routing
- * \defgroup aodv AODV
+ * \defgroup aodv AODV Routing
  * 
  * This model implements the base specification of the Ad hoc on demand distance vector (AODV)
  * protocol. Implementation is based on RFC3561.

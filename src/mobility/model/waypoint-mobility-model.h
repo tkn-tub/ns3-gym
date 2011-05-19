@@ -55,7 +55,7 @@ namespace ns3 {
  *
  * The model has two attributes with methods that allow clients to get 
  * the next waypoint value (NextWaypoint) and the number of waypoints left 
- * (WaypointsLeft) beyond (but not including) the next waypoint.  
+ * (WaypointsLeft) beyond (but not including) the next waypoint.
  *
  * In addition, there are two attributes that govern model behavior.  The
  * first, LazyNotify, governs how the model calls the CourseChange trace.

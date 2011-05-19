@@ -40,6 +40,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * This PHY layer implementation realizes an ideal OFDM PHY which
  * transmits half-duplex (i.e., it can either receive or transmit at a
  * given time). The device is ideal in the sense that:
@@ -83,7 +85,8 @@ public:
    *  PHY states
    *
    */
-  enum State {
+  enum State
+  {
     IDLE, TX, RX
   };
 
@@ -97,7 +100,7 @@ public:
   Ptr<Object> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
   void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
-  
+
 
 
   /**
@@ -183,9 +186,8 @@ public:
 
 
 private:
-
   virtual void DoDispose (void);
-  
+
   void ChangeState (State newState);
   void EndTx ();
   void AbortRx ();
