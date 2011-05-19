@@ -16,7 +16,7 @@ def configure(conf):
 
     if conf.env['ENABLE_TAP']:
         blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
-        tapcreatordir = os.path.abspath(os.path.join(blddir, "src/devices/tap-bridge"))
+        tapcreatordir = os.path.abspath(os.path.join(blddir, "src/tap-bridge"))
         conf.env.append_value('NS3_EXECUTABLE_PATH', tapcreatordir)
 
 def build(bld):
