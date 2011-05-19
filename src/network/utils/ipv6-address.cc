@@ -595,8 +595,12 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
   nb = prefix / 8;
   mod = prefix % 8;
 
-  memset (m_prefix, 0xff, nb);
-
+  // protect memset with 'nb > 0' check to suppress
+  // __warn_memset_zero_len compiler errors in some gcc>4.5.x 
+  if (nb > 0)
+    {
+      memset (m_prefix, 0xff, nb);
+    }
   if (mod)
     {
       m_prefix[nb] = 0xff << (8-mod);
