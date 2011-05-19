@@ -18,6 +18,10 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
+#include <iostream>
+#include <sstream>
+#include <string>
+
 #include <ns3/object.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-error-model.h>
@@ -26,7 +30,6 @@
 #include <ns3/simulator.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
-#include <iostream>
 #include "ns3/rlc-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
 #include "ns3/lte-test-pf-ff-mac-scheduler.h"
@@ -49,7 +52,7 @@ NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacCheduler");
 using namespace ns3;
 
 LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
-: TestSuite ("lte-test-pf-ff-mac-scheduler", SYSTEM)
+: TestSuite ("lte-pf-ff-mac-scheduler", SYSTEM)
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaTestPfFfMacSchedulerSuite");
@@ -177,14 +180,16 @@ static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
 // --------------- T E S T - C A S E   # 1 ------------------------------
 
 LenaPfFfMacSchedulerTestCase1::LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl)
-: TestCase ("Proportional Fair (PF) Mac Scheduler Test Case"),
+  : TestCase (""),
     m_nUser (nUser),
     m_nLc (nLc),
     m_dist (dist),
     m_thrRefDl (thrRefDl),
     m_thrRefUl (thrRefUl)
 {
-  
+  std::ostringstream oss;
+  oss << nUser << " UEs, distance " << dist << " m" ;
+  SetName (oss.str ());
 }
 
 LenaPfFfMacSchedulerTestCase1::~LenaPfFfMacSchedulerTestCase1 ()
@@ -347,12 +352,20 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 
 
 LenaPfFfMacSchedulerTestCase2::LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl)
-  : TestCase ("Proportional Fair (PF) Mac Scheduler Test Case"),
+  : TestCase (""),
     m_nUser (nUser),
     m_dist (dist),
     m_estThrPfDl (estThrPfDl),
     m_estThrPfUl (estThrPfUl)
 {
+  std::ostringstream oss;
+  oss << nUser << " UEs, distances (m) = [ " ;
+  for (std::vector<uint16_t>::iterator it = m_dist.begin (); it != m_dist.end (); ++it)
+    {
+      oss << *it << " ";
+    }
+  oss << "]";
+  SetName (oss.str ());
 }
 
 LenaPfFfMacSchedulerTestCase2::~LenaPfFfMacSchedulerTestCase2 ()
