@@ -9,7 +9,7 @@
 Overview
 ********
 
-The tests for the ns-3 LTE module are integrated with the ns-3 test framework.
+To test and validate the ns-3 LTE module, several test suites are provided which are integrated with the ns-3 test framework.
 To run them, you need to have configured the build of the simulator in this way::
 
     ./waf configure --enable-tests --enable-modules=lte --enable-examples
@@ -21,13 +21,18 @@ You can get a more detailed report in HTML format in this way::
 
     ./test.py -w results.html
 
-After the above command has run, you can view the detailed result for each test by opening the file ``results.html`` with a web browser.
+After the above command has run, you can view the detailed result for each test by opening the file ``results.html`` with a web browser. 
+
+You can run each test suite separately using this command::
+
+    ./test.py -s test-suite-name
+
+For more details about ``test.py`` and the ns-3 testing framework, please refer to the ns-3 manual.
 
 
 
-
-Description of the tests
-************************
+Description of the test suites
+******************************
 
 Unit Tests
 ~~~~~~~~~~
@@ -35,7 +40,7 @@ Unit Tests
 SINR calculation in the Downlink
 --------------------------------
 
-This unit test program checks that the SINR calculation in downlink is performed correctly. The SINR in the downlink is calculated for each Resource Block assigned to data transmissions by dividing the power of the intended signal from the considered eNB by the sum of the noise power plus all the transmissions on the same RB coming from other eNBs (the interference signals).
+The test suite ``lte-downlink-sinr`` checks that the SINR calculation in downlink is performed correctly. The SINR in the downlink is calculated for each Resource Block assigned to data transmissions by dividing the power of the intended signal from the considered eNB by the sum of the noise power plus all the transmissions on the same RB coming from other eNBs (the interference signals).
 
 .. math::
 
@@ -49,13 +54,15 @@ The unit test program includes two test cases with random transmited signals and
 
 The test vectors are obtained by an Octave script that applies the described algorithm. The unit test program checks that the SINR calculation in downlink is performed correctly in the :cpp:class:`ns3::LtePhy` interface. It implements this interface in the :cpp:class:`ns3::LteTestUePhy` test class.
 
+The test passes if the calculated values are equal to the test vector within a tolerance of :math:`10^{-7}`. The tolerance is meant to account for the approximation errors typical of floating point arithmetic.
+
 
 
 
 SINR calculation in the Uplink
 ------------------------------
 
-This unit test program checks that the SINR calculation in uplink is performed correctly. The SINR in the uplink is calculated for each Resource Block assigned to data transmissions by dividing the power of the intended signal from the considered UE by the sum of the noise power plus all the transmissions on the same RB coming from other UEs (the interference signals).
+The test suite ``lte-uplink-sinr`` checks that the SINR calculation in uplink is performed correctly. The SINR in the uplink is calculated for each Resource Block assigned to data transmissions by dividing the power of the intended signal from the considered UE by the sum of the noise power plus all the transmissions on the same RB coming from other UEs belonging to different cells (the interference signals).
 
 .. math::
 
@@ -69,6 +76,7 @@ The unit test program includes two test cases with random transmited signals and
 
 The test vectors are obtained by an Octave script that applies the described algorithm. The unit test program checks that the SINR calculation in uplink is performed correctly in the :cpp:class:`ns3::LtePhy` interface. It implements this interface in the :cpp:class:`ns3::LteTestUePhy` test class.
 
+The test passes if the calculated values are equal to the test vector within a tolerance of :math:`10^{-7}`. The tolerance is meant to account for the approximation errors typical of floating point arithmetic.
 
 
 System Tests
@@ -77,9 +85,9 @@ System Tests
 Adaptive Modulation and Coding
 ------------------------------
 
-This system test is run consisting of a single eNB and a single UE, with different test cases corresponding to different SINR values perceived by the UE; the test checks that in each test case the chosen MCS corresponds to the values in a known test vector.
+The test suite ``lte-link-adaptation`` provides system tests recreating a scenario with a single eNB and a single UE. Different test cases are created corresponding to different SINR values perceived by the UE. The aim of the test is to check that in each test case the chosen MCS corresponds to the values in a known test vector.
 
-The test vector is obtained with the model described in [Piro2011]_ which cites [Seo2004]_. Here we described how this model works. We get the spectral efficiency :math:`\eta_i` for each value of the SNR in dB using Shannon's theorem:
+The test vector is obtained with the model described in [Piro2011]_ which cites [Seo2004]_. Here we described how this model works. We get the spectral efficiency :math:`\eta_i` for each value of the SINR in dB using Shannon's theorem:
 
 .. math::
 
@@ -96,6 +104,11 @@ The test vector is obtained with the model described in [Piro2011]_ which cites 
 Then, 3GPP [R1-081483]_ document (its XLS sheet annexed file) is used to get the corresponding MCS scheme. The spectral efficiency is quantized based on the CQI (rounding to the lowest value) and is mapped to the corresponding MCS scheme (i.e. the MCS index that appears on the same line looking at the MCS table on the right). Note that the quantization of the CQI is coarser than the spectral efficiency reported in the CQI table.
 
 Finally, note that there are some discrepancies between the MCS index in [R1-081483]_ and that indicated by the standard: [TS36.213]_ Table 7.1.7.1-1 says that the MCS index goes from 0 to 31, and 0 appears to be a valid MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS index is 1. Hence to get the value as intended by the standard we need to subtract 1 from the index reported in [R1-081483]_.
+
+The test passes if both the following conditions are verified:
+
+ #. the SINR calculated by the UE corresponds to the value intended for the given test case within a tolerance of :math:`10^{-7}`.  The tolerance is meant to account for the approximation errors typical of floating point arithmetic. This test condition acts as a system test of the SINR calculation. This is needed because the other test suites that deal with the SINR calculation are unit tests, and hence might not be able to detect system-level bugs in the SINR calculation.
+ #. the MCS index chosen by the scheduler matches exactly with the MCS index in the test vector, determined using the above described procedure.
 
 
 
