@@ -31,7 +31,7 @@
 #include "ns3/simulator.h"
 #include "ns3/double.h"
 
-namespace ns3{
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (RttEstimator);
 
@@ -58,7 +58,7 @@ RttEstimator::GetTypeId (void)
                    MakeTimeAccessor (&RttEstimator::SetMinRto,
                                      &RttEstimator::GetMinRto),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -87,18 +87,18 @@ RttEstimator::GetEstimate (void) const
 //RttHistory methods
 RttHistory::RttHistory (SequenceNumber32 s, uint32_t c, Time t)
   : seq (s), count (c), time (t), retx (false)
-  {
-  }
+{
+}
 
 RttHistory::RttHistory (const RttHistory& h)
   : seq (h.seq), count (h.count), time (h.time), retx (h.retx)
-  {
-  }
+{
+}
 
 // Base class methods
 
 RttEstimator::RttEstimator () : next (1), history (),
-    nSamples (0), multiplier (1.0) 
+                                nSamples (0), multiplier (1.0)
 { 
   //note next=1 everywhere since first segment will have sequence 1
 }
@@ -108,7 +108,8 @@ RttEstimator::RttEstimator(const RttEstimator& c)
     m_maxMultiplier (c.m_maxMultiplier), est(c.est),
     minrto(c.minrto), nSamples(c.nSamples),
     multiplier(c.multiplier)
-{}
+{
+}
 
 RttEstimator::~RttEstimator ()
 {
@@ -207,7 +208,7 @@ RttMeanDeviation::GetTypeId (void)
                    DoubleValue (0.1),
                    MakeDoubleAccessor (&RttMeanDeviation::gain),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 
@@ -240,7 +241,7 @@ void RttMeanDeviation::Measurement (Time m)
 
 Time RttMeanDeviation::RetransmitTimeout ()
 {
-  // If not enough samples, justjust return 2 times estimate   
+  // If not enough samples, justjust return 2 times estimate
   //if (nSamples < 2) return est * 2;
   int64x64_t retval;
   if (variance < est / 4.0)
@@ -265,4 +266,4 @@ void RttMeanDeviation::Reset ()
   variance = 0;
   RttEstimator::Reset ();
 }
-}//namepsace ns3
+} //namepsace ns3

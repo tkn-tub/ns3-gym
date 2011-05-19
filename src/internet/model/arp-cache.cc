@@ -51,12 +51,12 @@ ArpCache::GetTypeId (void)
                    MakeTimeAccessor (&ArpCache::m_deadTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("WaitReplyTimeout",
-                   "When this timeout expires, the cache entries will be scanned and entries in WaitReply state will resend ArpRequest unless MaxRetries has been exceeded, in which case the entry is marked dead",           
+                   "When this timeout expires, the cache entries will be scanned and entries in WaitReply state will resend ArpRequest unless MaxRetries has been exceeded, in which case the entry is marked dead",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&ArpCache::m_waitReplyTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxRetries",                   
-                   "Number of retransmissions of ArpRequest before marking dead",                  
+    .AddAttribute ("MaxRetries",
+                   "Number of retransmissions of ArpRequest before marking dead",
                    UintegerValue (3),
                    MakeUintegerAccessor (&ArpCache::m_maxRetries),
                    MakeUintegerChecker<uint32_t> ())
@@ -65,10 +65,10 @@ ArpCache::GetTypeId (void)
                    UintegerValue (3),
                    MakeUintegerAccessor (&ArpCache::m_pendingQueueSize),
                    MakeUintegerChecker<uint32_t> ())
-    .AddTraceSource ("Drop",                     
+    .AddTraceSource ("Drop",
                      "Packet dropped due to ArpCache entry in WaitReply expiring.",
                      MakeTraceSourceAccessor (&ArpCache::m_dropTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -155,7 +155,7 @@ ArpCache::GetWaitReplyTimeout (void) const
 
 void 
 ArpCache::SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
-                                 Ipv4Address> arpRequestCallback)
+                                          Ipv4Address> arpRequestCallback)
 {
   NS_LOG_FUNCTION (this);
   m_arpRequestCallback = arpRequestCallback;
@@ -184,13 +184,13 @@ ArpCache::HandleWaitReplyTimeout (void)
     {
       entry = (*i).second;
       if (entry != 0 && entry->IsWaitReply ())
-          {
+        {
           if (entry->GetRetries () < m_maxRetries)
             {
               NS_LOG_LOGIC ("node="<< m_device->GetNode ()->GetId () <<
-                ", ArpWaitTimeout for " << entry->GetIpv4Address () <<
-                " expired -- retransmitting arp request since retries = " << 
-                entry->GetRetries ());
+                            ", ArpWaitTimeout for " << entry->GetIpv4Address () <<
+                            " expired -- retransmitting arp request since retries = " <<
+                            entry->GetRetries ());
               m_arpRequestCallback (this, entry->GetIpv4Address ());
               restartWaitReplyTimer = true;
               entry->IncrementRetries ();
@@ -198,9 +198,9 @@ ArpCache::HandleWaitReplyTimeout (void)
           else
             {
               NS_LOG_LOGIC ("node="<<m_device->GetNode ()->GetId () <<
-                ", wait reply for " << entry->GetIpv4Address () << 
-                " expired -- drop since max retries exceeded: " << 
-                 entry->GetRetries ());
+                            ", wait reply for " << entry->GetIpv4Address () <<
+                            " expired -- drop since max retries exceeded: " <<
+                            entry->GetRetries ());
               entry->MarkDead ();
               entry->ClearRetries ();
               Ptr<Packet> pending = entry->DequeuePending();
@@ -210,14 +210,14 @@ ArpCache::HandleWaitReplyTimeout (void)
                   pending = entry->DequeuePending();
                 }
             }
-       }
+        }
 
     }
   if (restartWaitReplyTimer)
     {
       NS_LOG_LOGIC ("Restarting WaitReplyTimer at " << Simulator::Now ().GetSeconds ());
       m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout, 
-        &ArpCache::HandleWaitReplyTimeout, this);
+                                              &ArpCache::HandleWaitReplyTimeout, this);
     }
 }
 
@@ -255,7 +255,7 @@ ArpCache::Add (Ipv4Address to)
   NS_ASSERT (m_arpCache.find (to) == m_arpCache.end ());
 
   ArpCache::Entry *entry = new ArpCache::Entry (this);
-  m_arpCache[to] = entry;  
+  m_arpCache[to] = entry;
   entry->SetIpv4Address (to);
   return entry;
 }
@@ -272,17 +272,17 @@ ArpCache::Entry::Entry (ArpCache *arp)
 bool 
 ArpCache::Entry::IsDead (void)
 {
-  return (m_state == DEAD)?true:false;
+  return (m_state == DEAD) ? true : false;
 }
 bool 
 ArpCache::Entry::IsAlive (void)
 {
-  return (m_state == ALIVE)?true:false;
+  return (m_state == ALIVE) ? true : false;
 }
 bool
 ArpCache::Entry::IsWaitReply (void)
 {
-  return (m_state == WAIT_REPLY)?true:false;
+  return (m_state == WAIT_REPLY) ? true : false;
 }
 
 
@@ -354,17 +354,17 @@ Time
 ArpCache::Entry::GetTimeout (void) const
 {
   switch (m_state) {
-  case ArpCache::Entry::WAIT_REPLY:
-    return m_arp->GetWaitReplyTimeout ();
-  case ArpCache::Entry::DEAD:
-    return m_arp->GetDeadTimeout ();
-  case ArpCache::Entry::ALIVE:
-    return m_arp->GetAliveTimeout ();
-  default:
-    NS_ASSERT (false);
-    return Seconds (0);
-    /* NOTREACHED */
-  }
+    case ArpCache::Entry::WAIT_REPLY:
+      return m_arp->GetWaitReplyTimeout ();
+    case ArpCache::Entry::DEAD:
+      return m_arp->GetDeadTimeout ();
+    case ArpCache::Entry::ALIVE:
+      return m_arp->GetAliveTimeout ();
+    default:
+      NS_ASSERT (false);
+      return Seconds (0);
+      /* NOTREACHED */
+    }
 }
 bool 
 ArpCache::Entry::IsExpired (void) const

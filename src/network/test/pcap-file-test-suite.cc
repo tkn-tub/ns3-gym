@@ -51,7 +51,7 @@ CheckFileExists (std::string filename)
     {
       return false;
     }
-  
+
   fclose (p);
   return true;
 }
@@ -65,7 +65,7 @@ CheckFileLength (std::string filename, uint64_t sizeExpected)
     {
       return false;
     }
-  
+
   fseek (p, 0, SEEK_END);
 
   uint64_t sizeActual = ftell (p);
@@ -451,7 +451,7 @@ FileHeaderTestCase::DoRun (void)
   f.Open (m_testFilename, std::ios::out);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Open (" << m_testFilename << 
                          ", \"std::ios::out\") returns error");
-  
+
   //
   // Initialize the pcap file header.
   //
@@ -553,7 +553,7 @@ FileHeaderTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (f.GetSnapLen (), 5678, "Read back snap len incorrectly");
   NS_TEST_ASSERT_MSG_EQ (f.GetDataLinkType (), 1234, "Read back data link type incorrectly");
   f.Close ();
-  
+
   //
   // Re-open the file to erase its contents.
   //
@@ -595,7 +595,7 @@ FileHeaderTestCase::DoRun (void)
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() time zone correction");
   NS_TEST_ASSERT_MSG_EQ (val32, Swap(uint32_t (7)), "Version minor written incorrectly");
-                                         
+
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() sig figs");
   NS_TEST_ASSERT_MSG_EQ (val32, 0, "Sig figs written incorrectly");
@@ -631,7 +631,7 @@ FileHeaderTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (f.GetSigFigs (), 0, "Read back sig figs incorrectly");
   NS_TEST_ASSERT_MSG_EQ (f.GetSnapLen (), 5678, "Read back snap len incorrectly");
   NS_TEST_ASSERT_MSG_EQ (f.GetDataLinkType (), 1234, "Read back data link type incorrectly");
-  
+
   f.Close ();
 }
 
@@ -986,18 +986,18 @@ typedef struct PACKET_ENTRY {
 } PacketEntry;
 
 PacketEntry knownPackets[] = {
-  {2, 3696,   46,   46, {0x0001, 0x0800, 0x0604, 0x0001, 0x0000, 0x0000, 0x0003, 0x0a01, 
-                         0x0201, 0xffff, 0xffff, 0xffff, 0x0a01, 0x0204, 0x0000, 0x0000}},
-  {2, 3707,   46,   46, {0x0001, 0x0800, 0x0604, 0x0002, 0x0000, 0x0000, 0x0006, 0x0a01,
-                         0x0204, 0x0000, 0x0000, 0x0003, 0x0a01, 0x0201, 0x0000, 0x0000}},
-  {2, 3801, 1070, 1070, {0x4500, 0x041c, 0x0000, 0x0000, 0x3f11, 0x0000, 0x0a01, 0x0101, 
-                         0x0a01, 0x0204, 0xc001, 0x0009, 0x0408, 0x0000, 0x0000, 0x0000}},
-  {2, 3811,   46,   46, {0x0001, 0x0800, 0x0604, 0x0001, 0x0000, 0x0000, 0x0006, 0x0a01, 
-                         0x0204, 0xffff, 0xffff, 0xffff, 0x0a01, 0x0201, 0x0000, 0x0000}},
-  {2, 3822,   46,   46, {0x0001, 0x0800, 0x0604, 0x0002, 0x0000, 0x0000, 0x0003, 0x0a01, 
-                         0x0201, 0x0000, 0x0000, 0x0006, 0x0a01, 0x0204, 0x0000, 0x0000}},
-  {2, 3915, 1070, 1070, {0x4500, 0x041c, 0x0000, 0x0000, 0x4011, 0x0000, 0x0a01, 0x0204, 
-                         0x0a01, 0x0101, 0x0009, 0xc001, 0x0408, 0x0000, 0x0000, 0x0000}}
+  { 2, 3696,   46,   46, { 0x0001, 0x0800, 0x0604, 0x0001, 0x0000, 0x0000, 0x0003, 0x0a01,
+                           0x0201, 0xffff, 0xffff, 0xffff, 0x0a01, 0x0204, 0x0000, 0x0000}},
+  { 2, 3707,   46,   46, { 0x0001, 0x0800, 0x0604, 0x0002, 0x0000, 0x0000, 0x0006, 0x0a01,
+                           0x0204, 0x0000, 0x0000, 0x0003, 0x0a01, 0x0201, 0x0000, 0x0000}},
+  { 2, 3801, 1070, 1070, { 0x4500, 0x041c, 0x0000, 0x0000, 0x3f11, 0x0000, 0x0a01, 0x0101,
+                           0x0a01, 0x0204, 0xc001, 0x0009, 0x0408, 0x0000, 0x0000, 0x0000}},
+  { 2, 3811,   46,   46, { 0x0001, 0x0800, 0x0604, 0x0001, 0x0000, 0x0000, 0x0006, 0x0a01,
+                           0x0204, 0xffff, 0xffff, 0xffff, 0x0a01, 0x0201, 0x0000, 0x0000}},
+  { 2, 3822,   46,   46, { 0x0001, 0x0800, 0x0604, 0x0002, 0x0000, 0x0000, 0x0003, 0x0a01,
+                           0x0201, 0x0000, 0x0000, 0x0006, 0x0a01, 0x0204, 0x0000, 0x0000}},
+  { 2, 3915, 1070, 1070, { 0x4500, 0x041c, 0x0000, 0x0000, 0x4011, 0x0000, 0x0a01, 0x0204,
+                           0x0a01, 0x0101, 0x0009, 0xc001, 0x0408, 0x0000, 0x0000, 0x0000}}
 };
 
 
@@ -1080,16 +1080,16 @@ DiffTestCase::DoRun (void)
   //
   std::string filename2 = "different.pcap";
   PcapFile f;
-  
+
   f.Open (filename2, std::ios::out);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Open (" << filename2 << ", \"std::ios::out\") returns error");
   f.Init (1, N_PACKET_BYTES);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Init (1, " << N_PACKET_BYTES << ") returns error");
-  
+
   for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i)
     {
       PacketEntry const & p = knownPackets[i];
-      
+
       f.Write (p.tsSec, p.tsUsec, (uint8_t const *)p.data, p.origLen);
       NS_TEST_EXPECT_MSG_EQ (f.Fail (), false, "Write must not fail");
     }

@@ -446,7 +446,7 @@ PcapHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t d
         {
           continue;
         }
-      
+
       NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), "PcapHelperForDevice::EnablePcap(): Unknown deviceid = " 
                        << deviceid);
       Ptr<NetDevice> nd = node->GetDevice (deviceid);
@@ -632,7 +632,7 @@ AsciiTraceHelperForDevice::EnableAsciiImpl (
         {
           continue;
         }
-      
+
       NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), 
                        "AsciiTraceHelperForDevice::EnableAscii(): Unknown deviceid = " << deviceid);
 

@@ -32,7 +32,7 @@ namespace ns3 {
 class Ipv4AddressGenerator {
 public:
   static void Init (const Ipv4Address net, const Ipv4Mask mask, 
-    const Ipv4Address addr = "0.0.0.1");
+                    const Ipv4Address addr = "0.0.0.1");
 
   static Ipv4Address NextNetwork (const Ipv4Mask mask);
   static Ipv4Address GetNetwork (const Ipv4Mask mask);

@@ -75,7 +75,7 @@ public:
   virtual uint32_t GetRxAvailable (void) const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
-    Address &fromAddress);
+                                Address &fromAddress);
   virtual int GetSockName (Address &address) const; 
   virtual int MulticastJoinGroup (uint32_t interfaceIndex, const Address &groupAddress);
   virtual int MulticastLeaveGroup (uint32_t interfaceIndex, const Address &groupAddress);
@@ -124,10 +124,10 @@ private:
   bool m_shutdownRecv;
   bool m_connected;
   bool m_allowBroadcast;
-  
+
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
-  
+
   // Socket attributes
   uint32_t m_rcvBufSize;
   uint8_t m_ipTtl;
@@ -138,6 +138,6 @@ private:
   Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
 };
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* UDP_SOCKET_IMPL_H */

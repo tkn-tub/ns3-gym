@@ -239,6 +239,8 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
   Simulator::Destroy ();
+  // Exit the MPI execution environment
+  MpiInterface::Disable ();
   return 0;
 
 #else

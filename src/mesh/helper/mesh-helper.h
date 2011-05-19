@@ -52,7 +52,7 @@ public:
    * \brief Set the helper to the default values for the MAC type,  remote
    * station manager and channel policy.
    */
-   static MeshHelper Default ();
+  static MeshHelper Default ();
 
   /**
    * \param n0 the name of the attribute to set
@@ -76,13 +76,13 @@ public:
    * in the requested mac.
    */
   void SetMacType (std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                   std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                   std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                   std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                   std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                   std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                   std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                   std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * \param type the type of ns3::WifiRemoteStationManager to create.
    * \param n0 the name of the attribute to set
@@ -107,14 +107,14 @@ public:
    */
   void
   SetRemoteStationManager (std::string type,
-      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),    
-      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-      std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-      std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-      std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-      std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-      std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * Set PHY standard
    */
@@ -141,7 +141,7 @@ public:
    * \param nInterfaces is the number of interfaces
    */
   void SetNumberOfInterfaces (uint32_t nInterfaces);
-  
+
   /** 
    * \brief Install 802.11s mesh device & protocols on given node list
    * 
@@ -172,14 +172,14 @@ public:
    * \param v7 the value of the attribute to set
    */
   void SetStackInstaller (std::string type,
-                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                          std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                          std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                          std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                          std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                          std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                          std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                          std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                          std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
    * \brief Print statistics.
@@ -205,7 +205,7 @@ private:
   ObjectFactory m_mac;
   ObjectFactory m_stationManager;
   enum WifiPhyStandard m_standard;
-    ///\}
+  ///\}
 };
 } //namespace ns3
 

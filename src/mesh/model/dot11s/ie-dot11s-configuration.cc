@@ -26,7 +26,7 @@ namespace dot11s {
 
 Dot11sMeshCapability::Dot11sMeshCapability () :
   acceptPeerLinks (true), MCCASupported (false), MCCAEnabled (false), forwarding (true), beaconTimingReport (
-      true), TBTTAdjustment (true), powerSaveLevel (false)
+    true), TBTTAdjustment (true), powerSaveLevel (false)
 {
 }
 uint8_t
@@ -101,20 +101,20 @@ IeConfiguration::ElementId () const
 
 IeConfiguration::IeConfiguration () :
   m_APSPId (PROTOCOL_HWMP), m_APSMId (METRIC_AIRTIME), m_CCMId (CONGESTION_NULL), m_SPId (
-      SYNC_NEIGHBOUR_OFFSET), m_APId (AUTH_NULL), m_neighbors (0)
+    SYNC_NEIGHBOUR_OFFSET), m_APId (AUTH_NULL), m_neighbors (0)
 {
 }
 uint8_t
 IeConfiguration::GetInformationFieldSize () const
 {
   return 1 // Version
-      + 4 // APSPId
-      + 4 // APSMId
-      + 4 // CCMId
-      + 4 // SPId
-      + 4 // APId
-      + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
-      + m_meshCap.GetSerializedSize ();
+         + 4 // APSPId
+         + 4 // APSMId
+         + 4 // CCMId
+         + 4 // SPId
+         + 4 // APId
+         + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
+         + m_meshCap.GetSerializedSize ();
 }
 void
 IeConfiguration::SerializeInformationField (Buffer::Iterator i) const
@@ -160,12 +160,12 @@ IeConfiguration::Print (std::ostream& os) const
 {
   os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Number of neighbors:               = " << (uint16_t) m_neighbors
-      << std::endl << "Active Path Selection Protocol ID: = " << (uint32_t) m_APSPId
-      << std::endl << "Active Path Selection Metric ID:   = " << (uint32_t) m_APSMId
-      << std::endl << "Congestion Control Mode ID:        = " << (uint32_t) m_CCMId
-      << std::endl << "Synchronize protocol ID:           = " << (uint32_t) m_SPId
-      << std::endl << "Authentication protocol ID:        = " << (uint32_t) m_APId
-      << std::endl << "Capabilities:                      = " << m_meshCap.GetUint16 () << std::endl;
+     << std::endl << "Active Path Selection Protocol ID: = " << (uint32_t) m_APSPId
+     << std::endl << "Active Path Selection Metric ID:   = " << (uint32_t) m_APSMId
+     << std::endl << "Congestion Control Mode ID:        = " << (uint32_t) m_CCMId
+     << std::endl << "Synchronize protocol ID:           = " << (uint32_t) m_SPId
+     << std::endl << "Authentication protocol ID:        = " << (uint32_t) m_APId
+     << std::endl << "Capabilities:                      = " << m_meshCap.GetUint16 () << std::endl;
   os << "</information_element>" << std::endl;
 }
 void
@@ -207,15 +207,15 @@ bool
 operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b)
 {
   return ((a.acceptPeerLinks == b.acceptPeerLinks) && (a.MCCASupported == b.MCCASupported) && (a.MCCAEnabled
-      == b.MCCAEnabled) && (a.forwarding == b.forwarding) && (a.beaconTimingReport == b.beaconTimingReport)
-      && (a.TBTTAdjustment == b.TBTTAdjustment) && (a.powerSaveLevel == b.powerSaveLevel));
+                                                                                               == b.MCCAEnabled) && (a.forwarding == b.forwarding) && (a.beaconTimingReport == b.beaconTimingReport)
+          && (a.TBTTAdjustment == b.TBTTAdjustment) && (a.powerSaveLevel == b.powerSaveLevel));
 }
 bool
 operator== (const IeConfiguration & a, const IeConfiguration & b)
 {
   return ((a.m_APSPId == b.m_APSPId) && (a.m_APSMId == b.m_APSMId) && (a.m_CCMId == b.m_CCMId) && (a.m_SPId
-      == b.m_SPId) && (a.m_APId == b.m_APId) && (a.m_neighbors == b.m_neighbors) && (a.m_meshCap
-      == b.m_meshCap));
+                                                                                                   == b.m_SPId) && (a.m_APId == b.m_APId) && (a.m_neighbors == b.m_neighbors) && (a.m_meshCap
+                                                                                                                                                                                  == b.m_meshCap));
 }
 std::ostream &
 operator << (std::ostream &os, const IeConfiguration &a)

@@ -211,7 +211,8 @@ void
 StaWifiMac::TryToEnsureAssociated (void)
 {
   NS_LOG_FUNCTION (this);
-  switch (m_state) {
+  switch (m_state)
+    {
     case ASSOCIATED:
       return;
       break;
@@ -283,8 +284,8 @@ StaWifiMac::RestartBeaconWatchdog (Time delay)
 {
   NS_LOG_FUNCTION (this << delay);
   m_beaconWatchdogEnd = std::max (Simulator::Now () + delay, m_beaconWatchdogEnd);
-  if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay &&
-      m_beaconWatchdog.IsExpired ())
+  if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay
+      && m_beaconWatchdog.IsExpired ())
     {
       NS_LOG_DEBUG ("really restart watchdog.");
       m_beaconWatchdog = Simulator::Schedule (delay, &StaWifiMac::MissedBeacons, this);
@@ -379,8 +380,8 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       NS_LOG_LOGIC ("packet sent by us.");
       return;
     }
-  else if (hdr->GetAddr1 () != GetAddress () &&
-           !hdr->GetAddr1 ().IsGroup ())
+  else if (hdr->GetAddr1 () != GetAddress ()
+           && !hdr->GetAddr1 ().IsGroup ())
     {
       NS_LOG_LOGIC ("packet is not for us");
       NotifyRxDrop (packet);
@@ -426,8 +427,8 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         }
       return;
     }
-  else if (hdr->IsProbeReq () ||
-           hdr->IsAssocReq ())
+  else if (hdr->IsProbeReq ()
+           || hdr->IsAssocReq ())
     {
       // This is a frame aimed at an AP, so we can safely ignore it.
       NotifyRxDrop (packet);
@@ -438,8 +439,8 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       MgtBeaconHeader beacon;
       packet->RemoveHeader (beacon);
       bool goodBeacon = false;
-      if (GetSsid ().IsBroadcast () ||
-          beacon.GetSsid ().IsEqual (GetSsid ()))
+      if (GetSsid ().IsBroadcast ()
+          || beacon.GetSsid ().IsEqual (GetSsid ()))
         {
           goodBeacon = true;
         }
@@ -545,13 +546,13 @@ StaWifiMac::GetSupportedRates (void) const
 void
 StaWifiMac::SetState (MacState value)
 {
-  if (value == ASSOCIATED &&
-      m_state != ASSOCIATED)
+  if (value == ASSOCIATED
+      && m_state != ASSOCIATED)
     {
       m_assocLogger (GetBssid ());
     }
-  else if (value != ASSOCIATED &&
-           m_state == ASSOCIATED)
+  else if (value != ASSOCIATED
+           && m_state == ASSOCIATED)
     {
       m_deAssocLogger (GetBssid ());
     }

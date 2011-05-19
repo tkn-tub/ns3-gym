@@ -29,7 +29,7 @@
 namespace ns3 {
 
 class AttributeValue;
-class Ipv4FlowClassifier;  
+class Ipv4FlowClassifier;
 
 /// \brief Helper to enable IPv4 flow monitoring on a set of Nodes
 class FlowMonitorHelper
@@ -38,7 +38,7 @@ public:
   /// \brief Construct a FlowMonitorHelper class which makes it easier to 
   /// configure and use the FlowMonitor
   FlowMonitorHelper ();
-  
+
   /// \brief Set an attribute for the to-be-created FlowMonitor object
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);
 
@@ -56,7 +56,7 @@ public:
 
   /// \brief Retrieve the FlowClassifier object created by the Install* methods
   Ptr<FlowClassifier> GetClassifier ();
-  
+
 private:
   ObjectFactory m_monitorFactory;
   Ptr<FlowMonitor> m_flowMonitor;

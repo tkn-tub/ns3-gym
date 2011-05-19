@@ -25,49 +25,50 @@ private:
 
 DelayJitterEstimationTimestampTag::DelayJitterEstimationTimestampTag ()
   : m_creationTime (Simulator::Now ().GetTimeStep ())
-{}
+{
+}
 
-TypeId 
+TypeId
 DelayJitterEstimationTimestampTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("anon::DelayJitterEstimationTimestampTag")
     .SetParent<Tag> ()
     .AddConstructor<DelayJitterEstimationTimestampTag> ()
     .AddAttribute ("CreationTime",
-		   "The time at which the timestamp was created",
-		   StringValue ("0.0s"),
-		   MakeTimeAccessor (&DelayJitterEstimationTimestampTag::GetTxTime),
-		   MakeTimeChecker ())
-    ;
+                   "The time at which the timestamp was created",
+                   StringValue ("0.0s"),
+                   MakeTimeAccessor (&DelayJitterEstimationTimestampTag::GetTxTime),
+                   MakeTimeChecker ())
+  ;
   return tid;
 }
-TypeId 
+TypeId
 DelayJitterEstimationTimestampTag::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
-uint32_t 
+uint32_t
 DelayJitterEstimationTimestampTag::GetSerializedSize (void) const
 {
   return 8;
 }
-void 
+void
 DelayJitterEstimationTimestampTag::Serialize (TagBuffer i) const
 {
   i.WriteU64 (m_creationTime);
 }
-void 
+void
 DelayJitterEstimationTimestampTag::Deserialize (TagBuffer i)
 {
   m_creationTime = i.ReadU64 ();
 }
-void 
+void
 DelayJitterEstimationTimestampTag::Print (std::ostream &os) const
 {
   os << "CreationTime=" << m_creationTime;
 }
-Time 
+Time
 DelayJitterEstimationTimestampTag::GetTxTime (void) const
 {
   return TimeStep (m_creationTime);
@@ -78,14 +79,15 @@ DelayJitterEstimation::DelayJitterEstimation ()
     m_previousRxTx (Simulator::Now ()),
     m_jitter (0),
     m_delay (Seconds (0.0))
-{}
-void 
+{
+}
+void
 DelayJitterEstimation::PrepareTx (Ptr<const Packet> packet)
 {
   DelayJitterEstimationTimestampTag tag;
   packet->AddByteTag (tag);
 }
-void 
+void
 DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 {
   DelayJitterEstimationTimestampTag tag;

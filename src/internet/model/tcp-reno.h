@@ -47,8 +47,8 @@ public:
   virtual ~TcpReno (void);
 
   // From TcpSocketBase
-  virtual int Connect (const Address &address);      
-  virtual int Listen (void);  
+  virtual int Connect (const Address &address);
+  virtual int Listen (void);
 
 protected:
   virtual uint32_t Window (void); // Return the max possible number of unacked bytes

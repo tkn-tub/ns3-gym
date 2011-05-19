@@ -29,6 +29,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup mpi
+ *
  * \brief Structure used for all-reduce LBTS computation
  */
 class LbtsMessage
@@ -82,6 +84,8 @@ private:
 };
 
 /**
+ * \ingroup mpi
+ *
  * \brief distributed simulator implementation using lookahead
  */
 class DistributedSimulatorImpl : public SimulatorImpl

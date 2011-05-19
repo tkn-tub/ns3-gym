@@ -31,6 +31,8 @@ namespace ns3 {
 class LtePhy;
 
 /**
+ * \ingroup lte
+ *
  * \brief JakesFadingLossModel class implements a loss model due to the fast fading.
  * In particular, the fast fading is modeled using a Jakes Model
  */

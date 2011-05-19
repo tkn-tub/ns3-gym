@@ -69,7 +69,7 @@ UdpEchoServerHelper::InstallPriv (Ptr<Node> node) const
 {
   Ptr<Application> app = m_factory.Create<UdpEchoServer> ();
   node->AddApplication (app);
-  
+
   return app;
 }
 
@@ -136,7 +136,7 @@ UdpEchoClientHelper::InstallPriv (Ptr<Node> node) const
 {
   Ptr<Application> app = m_factory.Create<UdpEchoClient> ();
   node->AddApplication (app);
-  
+
   return app;
 }
 

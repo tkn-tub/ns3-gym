@@ -226,10 +226,10 @@ public:
    */
   static const uint8_t EXT_NUMBER = 44;
 
- /**
-   * \brief Get the type identificator.
-   * \return type identificator
-   */
+  /**
+    * \brief Get the type identificator.
+    * \return type identificator
+    */
   static TypeId GetTypeId ();
 
   /**
@@ -282,7 +282,7 @@ private:
    */
   class Fragments : public SimpleRefCount<Fragments>
   {
-  public:
+public:
     /**
      * \brief Constructor.
      */
@@ -319,7 +319,7 @@ private:
      */
     Ptr<Packet> GetPacket () const;
 
-  private:
+private:
     /**
      * \brief If other fragments will be sent.
      */
@@ -377,7 +377,7 @@ public:
   /**
    * \brief Destructor.
    */
- ~Ipv6ExtensionRouting ();
+  ~Ipv6ExtensionRouting ();
 
   /**
    * \brief Get the extension number.
@@ -454,7 +454,7 @@ public:
    */
   void Remove (Ptr<Ipv6ExtensionRouting> extensionRouting);
 
-protected:   
+protected:
   /**
    * \brief Dispose this object.
    */

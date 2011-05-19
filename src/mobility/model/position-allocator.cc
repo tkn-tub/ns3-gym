@@ -44,33 +44,35 @@ PositionAllocator::PositionAllocator ()
 }
 
 PositionAllocator::~PositionAllocator ()
-{}
+{
+}
 
 NS_OBJECT_ENSURE_REGISTERED (ListPositionAllocator);
 
-TypeId 
+TypeId
 ListPositionAllocator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ListPositionAllocator")
     .SetParent<PositionAllocator> ()
     .AddConstructor<ListPositionAllocator> ()
-    ;
+  ;
   return tid;
 }
 ListPositionAllocator::ListPositionAllocator ()
-{}
-void 
+{
+}
+void
 ListPositionAllocator::Add (Vector v)
 {
   m_positions.push_back (v);
   m_current = m_positions.begin ();
 }
-Vector 
+Vector
 ListPositionAllocator::GetNext (void) const
 {
   Vector v = *m_current;
   m_current++;
-  if (m_current == m_positions.end()) 
+  if (m_current == m_positions.end())
     {
       m_current = m_positions.begin ();
     }
@@ -111,89 +113,90 @@ GridPositionAllocator::GetTypeId (void)
                    MakeEnumAccessor (&GridPositionAllocator::m_layoutType),
                    MakeEnumChecker (ROW_FIRST, "RowFirst",
                                     COLUMN_FIRST, "ColumnFirst"))
-    ;
+  ;
   return tid;
 }
 GridPositionAllocator::GridPositionAllocator ()
   : m_current (0)
-{}
+{
+}
 
-void 
+void
 GridPositionAllocator::SetMinX (double xMin)
 {
   m_xMin = xMin;
 }
-void 
+void
 GridPositionAllocator::SetMinY (double yMin)
 {
   m_yMin = yMin;
 }
-void 
+void
 GridPositionAllocator::SetDeltaX (double deltaX)
 {
   m_deltaX = deltaX;
 }
-void 
+void
 GridPositionAllocator::SetDeltaY (double deltaY)
 {
   m_deltaY = deltaY;
 }
-void 
+void
 GridPositionAllocator::SetN (uint32_t n)
 {
   m_n = n;
 }
-void 
+void
 GridPositionAllocator::SetLayoutType (enum LayoutType layoutType)
 {
   m_layoutType = layoutType;
 }
 
-double 
+double
 GridPositionAllocator::GetMinX (void) const
 {
   return m_xMin;
 }
-double 
+double
 GridPositionAllocator::GetMinY (void) const
 {
   return m_yMin;
 }
-double 
+double
 GridPositionAllocator::GetDeltaX (void) const
 {
   return m_deltaX;
 }
-double 
+double
 GridPositionAllocator::GetDeltaY (void) const
 {
   return m_deltaY;
 }
-uint32_t 
+uint32_t
 GridPositionAllocator::GetN (void) const
 {
   return m_n;
 }
-enum GridPositionAllocator::LayoutType 
+enum GridPositionAllocator::LayoutType
 GridPositionAllocator::GetLayoutType (void) const
 {
   return m_layoutType;
 }
 
-Vector 
+Vector
 GridPositionAllocator::GetNext (void) const
 {
   double x = 0.0, y = 0.0;
   switch (m_layoutType) {
-  case ROW_FIRST:
-    x = m_xMin + m_deltaX * (m_current % m_n);
-    y = m_yMin + m_deltaY * (m_current / m_n);
-    break;
-  case COLUMN_FIRST:
-    x = m_xMin + m_deltaX * (m_current / m_n);
-    y = m_yMin + m_deltaY * (m_current % m_n);
-    break;
-  }
+    case ROW_FIRST:
+      x = m_xMin + m_deltaX * (m_current % m_n);
+      y = m_yMin + m_deltaY * (m_current / m_n);
+      break;
+    case COLUMN_FIRST:
+      x = m_xMin + m_deltaX * (m_current / m_n);
+      y = m_yMin + m_deltaY * (m_current % m_n);
+      break;
+    }
   m_current++;
   return Vector (x, y, 0.0);
 }
@@ -222,16 +225,18 @@ RandomRectanglePositionAllocator::GetTypeId (void)
 }
 
 RandomRectanglePositionAllocator::RandomRectanglePositionAllocator ()
-{}
+{
+}
 RandomRectanglePositionAllocator::~RandomRectanglePositionAllocator ()
-{}
+{
+}
 
-void 
+void
 RandomRectanglePositionAllocator::SetX (RandomVariable x)
 {
   m_x = x;
 }
-void 
+void
 RandomRectanglePositionAllocator::SetY (RandomVariable y)
 {
   m_y = y;
@@ -274,21 +279,23 @@ RandomBoxPositionAllocator::GetTypeId (void)
 }
 
 RandomBoxPositionAllocator::RandomBoxPositionAllocator ()
-{}
+{
+}
 RandomBoxPositionAllocator::~RandomBoxPositionAllocator ()
-{}
+{
+}
 
-void 
+void
 RandomBoxPositionAllocator::SetX (RandomVariable x)
 {
   m_x = x;
 }
-void 
+void
 RandomBoxPositionAllocator::SetY (RandomVariable y)
 {
   m_y = y;
 }
-void 
+void
 RandomBoxPositionAllocator::SetZ (RandomVariable z)
 {
   m_z = z;
@@ -334,31 +341,33 @@ RandomDiscPositionAllocator::GetTypeId (void)
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&RandomDiscPositionAllocator::m_y),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
-}   
+}
 
 RandomDiscPositionAllocator::RandomDiscPositionAllocator ()
-{}
+{
+}
 RandomDiscPositionAllocator::~RandomDiscPositionAllocator ()
-{}
+{
+}
 
-void 
+void
 RandomDiscPositionAllocator::SetTheta (RandomVariable theta)
 {
   m_theta = theta;
 }
-void 
+void
 RandomDiscPositionAllocator::SetRho (RandomVariable rho)
 {
   m_rho = rho;
 }
-void 
+void
 RandomDiscPositionAllocator::SetX (double x)
 {
   m_x = x;
 }
-void 
+void
 RandomDiscPositionAllocator::SetY (double y)
 {
   m_y = y;
@@ -400,26 +409,28 @@ UniformDiscPositionAllocator::GetTypeId (void)
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&UniformDiscPositionAllocator::m_y),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
-}   
+}
 
 UniformDiscPositionAllocator::UniformDiscPositionAllocator ()
-{}
+{
+}
 UniformDiscPositionAllocator::~UniformDiscPositionAllocator ()
-{}
+{
+}
 
-void 
+void
 UniformDiscPositionAllocator::SetRho (double rho)
 {
   m_rho = rho;
 }
-void 
+void
 UniformDiscPositionAllocator::SetX (double x)
 {
   m_x = x;
 }
-void 
+void
 UniformDiscPositionAllocator::SetY (double y)
 {
   m_y = y;
@@ -435,7 +446,7 @@ UniformDiscPositionAllocator::GetNext (void) const
       y = r.GetValue ();
     }
   while (sqrt(x*x + y*y) > m_rho);
-  
+
   x += m_x;
   y += m_y;
   NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);

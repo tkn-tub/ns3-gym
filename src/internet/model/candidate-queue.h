@@ -29,12 +29,12 @@ namespace ns3 {
 
 class SPFVertex;
 
-/**  
+/**
  * \brief A Candidate Queue used in static routing.
  *
  * The CandidateQueue is used in the OSPF shortest path computations.  It
  * is a priority queue used to store candidates for the shortest path to a
- * given network.  
+ * given network.
  *
  * The queue holds Shortest Path First Vertex pointers and orders them
  * according to the lowest value of the field m_distanceFromRoot.  Remaining
@@ -50,7 +50,7 @@ class CandidateQueue
 {
 public:
 /**
- * @brief Create an empty SPF Candidate Queue.  
+ * @brief Create an empty SPF Candidate Queue.
  * @internal
  *
  * @see SPFVertex
@@ -105,7 +105,7 @@ public:
 
 /**
  * @brief Return the Shortest Path First Vertex pointer at the top of the 
- * queue.  
+ * queue.
  * @internal
  *
  * This method does not pop the SPFVertex* off of the queue, it simply 
@@ -147,7 +147,7 @@ public:
   SPFVertex* Find (const Ipv4Address addr) const;
 
 /**
- * @brief Reorders the Candidate Queue according to the priority scheme.  
+ * @brief Reorders the Candidate Queue according to the priority scheme.
  * @internal
  * 
  * On completion, the top of the queue will hold the Shortest Path First

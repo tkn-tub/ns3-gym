@@ -3,6 +3,7 @@
 namespace ns3 {
 
 RefCountBase::~RefCountBase ()
-{}
+{
+}
 
 } // namespace ns3

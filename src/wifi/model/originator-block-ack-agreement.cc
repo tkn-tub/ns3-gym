@@ -3,7 +3,7 @@
  * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,15 +27,18 @@ OriginatorBlockAckAgreement::OriginatorBlockAckAgreement ()
     m_state (PENDING),
     m_sentMpdus (0),
     m_needBlockAckReq (false)
-{}
+{
+}
 OriginatorBlockAckAgreement::OriginatorBlockAckAgreement (Mac48Address recipient, uint8_t tid)
   : BlockAckAgreement (recipient, tid),
     m_state (PENDING),
     m_sentMpdus (0),
     m_needBlockAckReq (false)
-{}
+{
+}
 OriginatorBlockAckAgreement::~OriginatorBlockAckAgreement ()
-{}
+{
+}
 void
 OriginatorBlockAckAgreement::SetState (enum State state)
 {
@@ -49,22 +52,22 @@ OriginatorBlockAckAgreement::SetState (enum State state)
 bool
 OriginatorBlockAckAgreement::IsPending (void) const
 {
-  return (m_state == PENDING)?true:false;
+  return (m_state == PENDING) ? true : false;
 }
 bool
 OriginatorBlockAckAgreement::IsEstablished (void) const
 {
-  return (m_state == ESTABLISHED)?true:false;
+  return (m_state == ESTABLISHED) ? true : false;
 }
 bool
 OriginatorBlockAckAgreement::IsInactive (void) const
 {
-  return (m_state == INACTIVE)?true:false;
+  return (m_state == INACTIVE) ? true : false;
 }
 bool
 OriginatorBlockAckAgreement::IsUnsuccessful (void) const
 {
-  return (m_state == UNSUCCESSFUL)?true:false;
+  return (m_state == UNSUCCESSFUL) ? true : false;
 }
 void
 OriginatorBlockAckAgreement::NotifyMpduTransmission (uint16_t nextSeqNumber)

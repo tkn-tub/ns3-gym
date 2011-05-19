@@ -55,8 +55,8 @@ Ipv4AddressHelper::Ipv4AddressHelper (
   NS_LOG_FUNCTION_NOARGS ();
   SetBase (network, mask, address);
 }
-  
-  void
+
+void
 Ipv4AddressHelper::SetBase (
   const Ipv4Address network, 
   const Ipv4Mask mask,
@@ -72,7 +72,7 @@ Ipv4AddressHelper::SetBase (
 // Some quick reasonableness testing.
 //
   NS_ASSERT_MSG((m_network & ~m_mask) == 0,
-    "Ipv4AddressHelper::SetBase(): Inconsistent network and mask");
+                "Ipv4AddressHelper::SetBase(): Inconsistent network and mask");
 
 //
 // Figure out how much to shift network numbers to get them aligned, and what
@@ -82,7 +82,7 @@ Ipv4AddressHelper::SetBase (
   m_max = (1 << m_shift) - 2;
 
   NS_ASSERT_MSG(m_shift <= 32,
-    "Ipv4AddressHelper::SetBase(): Unreasonable address length");
+                "Ipv4AddressHelper::SetBase(): Unreasonable address length");
 
 //
 // Shift the network down into the normalized position.
@@ -94,7 +94,7 @@ Ipv4AddressHelper::SetBase (
   NS_LOG_LOGIC ("m_address == " << m_address);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressHelper::NewAddress (void)
 {
 //
@@ -105,7 +105,7 @@ Ipv4AddressHelper::NewAddress (void)
 // This implies that this operation is a post-increment.
 //
   NS_ASSERT_MSG (m_address <= m_max,
-    "Ipv4AddressHelper::NewAddress(): Address overflow");
+                 "Ipv4AddressHelper::NewAddress(): Address overflow");
 
   Ipv4Address addr ((m_network << m_shift) | m_address);
   ++m_address;
@@ -118,7 +118,7 @@ Ipv4AddressHelper::NewAddress (void)
   return addr;
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressHelper::NewNetwork (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -133,37 +133,37 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
   NS_LOG_FUNCTION_NOARGS ();
   Ipv4InterfaceContainer retval;
   for (uint32_t i = 0; i < c.GetN (); ++i) {
-    Ptr<NetDevice> device = c.Get (i);
+      Ptr<NetDevice> device = c.Get (i);
 
-    Ptr<Node> node = device->GetNode ();
-    NS_ASSERT_MSG (node, "Ipv4AddressHelper::Assign(): NetDevice is not not associated "
-                   "with any node -> fail");
+      Ptr<Node> node = device->GetNode ();
+      NS_ASSERT_MSG (node, "Ipv4AddressHelper::Assign(): NetDevice is not not associated "
+                     "with any node -> fail");
 
-    Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-    NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Assign(): NetDevice is associated"
-                   " with a node without IPv4 stack installed -> fail "
-                   "(maybe need to use InternetStackHelper?)");
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Assign(): NetDevice is associated"
+                     " with a node without IPv4 stack installed -> fail "
+                     "(maybe need to use InternetStackHelper?)");
 
-    int32_t interface = ipv4->GetInterfaceForDevice (device);
-    if (interface == -1)
-      {
-        interface = ipv4->AddInterface (device);
-      }
-    NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Assign(): "
-      "Interface index not found");
+      int32_t interface = ipv4->GetInterfaceForDevice (device);
+      if (interface == -1)
+        {
+          interface = ipv4->AddInterface (device);
+        }
+      NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Assign(): "
+                     "Interface index not found");
 
-    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (NewAddress (), m_mask);
-    ipv4->AddAddress (interface, ipv4Addr);
-    ipv4->SetMetric (interface, 1);
-    ipv4->SetUp (interface);
-    retval.Add (ipv4, interface);
-  }
+      Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (NewAddress (), m_mask);
+      ipv4->AddAddress (interface, ipv4Addr);
+      ipv4->SetMetric (interface, 1);
+      ipv4->SetUp (interface);
+      retval.Add (ipv4, interface);
+    }
   return retval;
 }
 
 const uint32_t N_BITS = 32;
 
-  uint32_t
+uint32_t
 Ipv4AddressHelper::NumAddressBits (uint32_t maskbits) const
 {
   NS_LOG_FUNCTION_NOARGS ();

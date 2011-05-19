@@ -33,8 +33,8 @@
 // //  +------------+  |        |                    |
 // //  |   Host 1   |--|        |   +------------+   |
 // //  [------------]           |---|  Router 3  |---|
-// //                               [------------]   
-// //                                     
+// //                               [------------]
+// //
 // //
 // // - Tracing of queues and packet receptions to file "loose-routing-ipv6.tr"
 

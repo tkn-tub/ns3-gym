@@ -31,10 +31,12 @@ TypeId ConstantAccelerationMobilityModel::GetTypeId (void)
 }
 
 ConstantAccelerationMobilityModel::ConstantAccelerationMobilityModel ()
-{}
+{
+}
 
 ConstantAccelerationMobilityModel::~ConstantAccelerationMobilityModel ()
-{}
+{
+}
 
 inline Vector
 ConstantAccelerationMobilityModel::DoGetVelocity (void) const

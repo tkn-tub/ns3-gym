@@ -74,7 +74,7 @@ TcpTxBuffer::TailSequence (void) const
 uint32_t
 TcpTxBuffer::Size (void) const
 {
-    return m_size;
+  return m_size;
 }
 
 uint32_t
@@ -100,7 +100,7 @@ TcpTxBuffer::Add (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
   NS_LOG_LOGIC ("Packet of size " << p->GetSize () << " appending to window starting at "
-                << m_firstByteSeq << ", availSize="<< Available ());
+                                  << m_firstByteSeq << ", availSize="<< Available ());
   if (p->GetSize () <= Available ())
     {
       if (p->GetSize () > 0)
@@ -158,7 +158,7 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
           if (count + pktSize > offset)
             {
               NS_LOG_LOGIC ("First byte found in packet #" << pktCount << " at buffer offset " << count
-                            << ", packet len=" << pktSize);
+                                                           << ", packet len=" << pktSize);
               beginFound = true;
               uint32_t packetOffset = offset - count;
               uint32_t fragmentLength = count + pktSize - offset;
@@ -176,7 +176,7 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
       else if (count + pktSize >= offset + s)
         { // Last packet fragment found
           NS_LOG_LOGIC ("Last byte found in packet #" << pktCount << " at buffer offset " << count
-                        << ", packet len=" << pktSize);
+                                                      << ", packet len=" << pktSize);
           uint32_t fragmentLength = offset + s - count;
           Ptr<Packet> endFragment = (*i)->CreateFragment (0, fragmentLength);
           outPacket->AddAtEnd (endFragment);
@@ -207,7 +207,7 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
 {
   NS_LOG_FUNCTION (this << seq);
   NS_LOG_LOGIC ("current data size=" << m_size << ", headSeq=" << m_firstByteSeq << ", maxBuffer=" << m_maxBuffer
-                << ", numPkts=" << m_data.size ());
+                                     << ", numPkts=" << m_data.size ());
   // Cases do not need to scan the buffer
   if (m_firstByteSeq >= seq) return;
 
@@ -243,7 +243,7 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
       m_firstByteSeq = seq;
     }
   NS_LOG_LOGIC ("size=" << m_size << " headSeq=" << m_firstByteSeq << " maxBuffer=" << m_maxBuffer
-                <<" numPkts="<< m_data.size ());
+                        <<" numPkts="<< m_data.size ());
   NS_ASSERT (m_firstByteSeq == seq);
 }
 

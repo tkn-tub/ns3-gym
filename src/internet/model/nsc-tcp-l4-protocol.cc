@@ -68,19 +68,20 @@ private:
 
 NscInterfaceImpl::NscInterfaceImpl (Ptr<NscTcpL4Protocol> prot)
   : m_prot (prot)
-{}
+{
+}
 
-void 
+void
 NscInterfaceImpl::send_callback(const void *data, int datalen)
 {
   m_prot->send_callback (data, datalen);
 }
-void 
+void
 NscInterfaceImpl::wakeup()
 {
   m_prot->wakeup ();
 }
-void 
+void
 NscInterfaceImpl::gettime(unsigned int *sec, unsigned int *usec)
 {
   m_prot->gettime (sec,usec);
@@ -107,13 +108,13 @@ NscTcpL4Protocol::GetTypeId (void)
                    StringValue("liblinux2.6.26.so"),
                    MakeStringAccessor (&NscTcpL4Protocol::GetNscLibrary,&NscTcpL4Protocol::SetNscLibrary),
                    MakeStringChecker ())
-    ;
+  ;
   return tid;
 }
 
 int external_rand()
 {
-    return 1; // TODO
+  return 1;   // TODO
 }
 
 NscTcpL4Protocol::NscTcpL4Protocol ()
@@ -134,7 +135,7 @@ NscTcpL4Protocol::~NscTcpL4Protocol ()
 
 void
 NscTcpL4Protocol::SetNscLibrary(const std::string &soname)
-{    
+{
   if (soname!="")
     {
       m_nscLibrary = soname;
@@ -286,7 +287,7 @@ NscTcpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 
 Ipv4EndPoint *
 NscTcpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
-                         Ipv4Address peerAddress, uint16_t peerPort)
+                            Ipv4Address peerAddress, uint16_t peerPort)
 {
   NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
   return m_endPoints->Allocate (localAddress, localPort,
@@ -302,8 +303,8 @@ NscTcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 
 Ipv4L4Protocol::RxStatus
 NscTcpL4Protocol::Receive (Ptr<Packet> packet,
-             Ipv4Header const &header,
-             Ptr<Ipv4Interface> incomingInterface)
+                           Ipv4Header const &header,
+                           Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION (this << packet << header << incomingInterface);
   Ipv4Header ipHeader;
@@ -384,9 +385,9 @@ void NscTcpL4Protocol::wakeup()
   Ipv4EndPointDemux::EndPoints endPoints = m_endPoints->GetAllEndPoints ();
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++) {
-          // NSC HACK: (ab)use TcpSocket::ForwardUp for signalling
-          (*endPoint)->ForwardUp (NULL, Ipv4Header(), 0, 0);
-  }
+      // NSC HACK: (ab)use TcpSocket::ForwardUp for signalling
+      (*endPoint)->ForwardUp (NULL, Ipv4Header(), 0, 0);
+    }
 }
 
 void NscTcpL4Protocol::gettime(unsigned int* sec, unsigned int* usec)
@@ -432,27 +433,27 @@ void NscTcpL4Protocol::AddInterface(void)
       m_nscStack->if_attach(addrCStr, maskCStr, mtu);
 
       if (i == 1)
-      {
-        // We need to come up with a default gateway here. Can't guarantee this to be
-        // correct really...
+        {
+          // We need to come up with a default gateway here. Can't guarantee this to be
+          // correct really...
 
-        uint8_t addrBytes[4];
-        addr.Serialize(addrBytes);
+          uint8_t addrBytes[4];
+          addr.Serialize(addrBytes);
 
-        // XXX: this is all a bit of a horrible hack
-        //
-        // Just increment the last octet, this gives a decent chance of this being
-        // 'enough'.
-        //
-        // All we need is another address on the same network as the interface. This
-        // will force the stack to output the packet out of the network interface.
-        addrBytes[3]++;
-        addr.Deserialize(addrBytes);
-        addrOss.str("");
-        addr.Print(addrOss);
-        m_nscStack->add_default_gateway(addrOss.str().c_str());
-      }
-  }
+          // XXX: this is all a bit of a horrible hack
+          //
+          // Just increment the last octet, this gives a decent chance of this being
+          // 'enough'.
+          //
+          // All we need is another address on the same network as the interface. This
+          // will force the stack to output the packet out of the network interface.
+          addrBytes[3]++;
+          addr.Deserialize(addrBytes);
+          addrOss.str("");
+          addr.Print(addrOss);
+          m_nscStack->add_default_gateway(addrOss.str().c_str());
+        }
+    }
 }
 
 void

@@ -131,7 +131,7 @@ private:
   /// Forward packet down to interfaces
   void Forward (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                 uint16_t protocol, const Mac48Address src,
-      const Mac48Address dst);
+                const Mac48Address dst);
   /**
    * \brief Response callback for L2 routing protocol. This will be executed when routing information is ready.
    *
@@ -144,7 +144,7 @@ private:
    */
   void
   DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol,
-      uint32_t iface);
+          uint32_t iface);
 
 private:
   /// Receive action

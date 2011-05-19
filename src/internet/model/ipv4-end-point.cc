@@ -32,7 +32,8 @@ Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port)
     m_localPort (port),
     m_peerAddr (Ipv4Address::GetAny ()),
     m_peerPort (0)
-{}
+{
+}
 Ipv4EndPoint::~Ipv4EndPoint ()
 {
   if (!m_destroyCallback.IsNull ())
@@ -85,7 +86,7 @@ Ipv4EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
 Ptr<NetDevice> 
 Ipv4EndPoint::GetBoundNetDevice (void)
 {
- return m_boundnetdevice;
+  return m_boundnetdevice;
 }
 
 void 

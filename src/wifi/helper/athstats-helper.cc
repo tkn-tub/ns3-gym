@@ -3,7 +3,7 @@
  * Copyright (c) 2009 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,7 +30,7 @@
 #include <fstream>
 
 
-NS_LOG_COMPONENT_DEFINE("Athstats");
+NS_LOG_COMPONENT_DEFINE ("Athstats");
 
 namespace ns3 {
 
@@ -43,10 +43,10 @@ AthstatsHelper::AthstatsHelper ()
 void
 AthstatsHelper::EnableAthstats (std::string filename,  uint32_t nodeid, uint32_t deviceid)
 {
-   Ptr<AthstatsWifiTraceSink> athstats = CreateObject<AthstatsWifiTraceSink> ();
+  Ptr<AthstatsWifiTraceSink> athstats = CreateObject<AthstatsWifiTraceSink> ();
   std::ostringstream oss;
   oss << filename
-      << "_" << std::setfill ('0') << std::setw (3) << std::right <<  nodeid 
+      << "_" << std::setfill ('0') << std::setw (3) << std::right <<  nodeid
       << "_" << std::setfill ('0') << std::setw (3) << std::right << deviceid;
   athstats->Open (oss.str ());
 
@@ -75,7 +75,7 @@ AthstatsHelper::EnableAthstats (std::string filename, Ptr<NetDevice> nd)
 }
 
 
-void 
+void
 AthstatsHelper::EnableAthstats (std::string filename, NetDeviceContainer d)
 {
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
@@ -107,7 +107,7 @@ AthstatsHelper::EnableAthstats (std::string filename, NodeContainer n)
 
 NS_OBJECT_ENSURE_REGISTERED (AthstatsWifiTraceSink);
 
-TypeId 
+TypeId
 AthstatsWifiTraceSink::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AthstatsWifiTraceSink")
@@ -115,23 +115,23 @@ AthstatsWifiTraceSink::GetTypeId (void)
     .AddConstructor<AthstatsWifiTraceSink> ()
     .AddAttribute ("Interval",
                    "Time interval between reports",
-                   TimeValue (Seconds(1.0)),
+                   TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&AthstatsWifiTraceSink::m_interval),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
 AthstatsWifiTraceSink::AthstatsWifiTraceSink ()
   :   m_txCount (0),
-      m_rxCount (0),
-      m_shortRetryCount (0),
-      m_longRetryCount (0),
-      m_exceededRetryCount (0),
-      m_phyRxOkCount (0),
-      m_phyRxErrorCount (0),
-      m_phyTxCount (0),
-      m_writer (0)
+    m_rxCount (0),
+    m_shortRetryCount (0),
+    m_longRetryCount (0),
+    m_exceededRetryCount (0),
+    m_phyRxOkCount (0),
+    m_phyRxErrorCount (0),
+    m_phyTxCount (0),
+    m_writer (0)
 {
   Simulator::ScheduleNow (&AthstatsWifiTraceSink::WriteStats, this);
 }
@@ -161,7 +161,7 @@ AthstatsWifiTraceSink::~AthstatsWifiTraceSink ()
     }
 }
 
-void    
+void
 AthstatsWifiTraceSink::ResetCounters ()
 {
   m_txCount = 0;
@@ -177,14 +177,14 @@ AthstatsWifiTraceSink::ResetCounters ()
 void
 AthstatsWifiTraceSink::DevTxTrace (std::string context, Ptr<const Packet> p)
 {
-  NS_LOG_FUNCTION (this << context <<p);
+  NS_LOG_FUNCTION (this << context << p);
   ++m_txCount;
 }
 
 void
 AthstatsWifiTraceSink::DevRxTrace (std::string context, Ptr<const Packet> p)
 {
-  NS_LOG_FUNCTION (this << context <<p);
+  NS_LOG_FUNCTION (this << context << p);
   ++m_rxCount;
 }
 
@@ -222,14 +222,14 @@ AthstatsWifiTraceSink::TxFinalDataFailedTrace (std::string context, Mac48Address
 void
 AthstatsWifiTraceSink::PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
-  NS_LOG_FUNCTION (this << context <<packet<< " mode=" << mode << " snr=" << snr );
+  NS_LOG_FUNCTION (this << context << packet << " mode=" << mode << " snr=" << snr );
   ++m_phyRxOkCount;
 }
 
 void
 AthstatsWifiTraceSink::PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr)
 {
-  NS_LOG_FUNCTION (this << context <<packet <<" snr=" << snr );
+  NS_LOG_FUNCTION (this << context << packet << " snr=" << snr );
   ++m_phyRxErrorCount;
 }
 
@@ -278,24 +278,24 @@ AthstatsWifiTraceSink::WriteStats ()
   // I know C strings are ugly but that's the quickest way to use exactly the same format as in madwifi
   char str[200];
   snprintf (str, 200, "%8u %8u %7u %7u %7u %6u %6u %6u %7u %4u %3uM\n",
-           (unsigned int) m_txCount, // /proc/net/dev transmitted packets to which we should subract mgmt frames
-           (unsigned int) m_rxCount, // /proc/net/dev received packets but subracts mgmt frames from it
-           (unsigned int) 0,         // ast_tx_altrate,
-           (unsigned int) m_shortRetryCount,     // ast_tx_shortretry,
-           (unsigned int) m_longRetryCount,      // ast_tx_longretry,
-           (unsigned int) m_exceededRetryCount,  // ast_tx_xretries,
-           (unsigned int) m_phyRxErrorCount,     // ast_rx_crcerr,
-           (unsigned int) 0,         // ast_rx_badcrypt,
-           (unsigned int) 0,         // ast_rx_phyerr,
-           (unsigned int) 0,         // ast_rx_rssi,
-           (unsigned int) 0          // rate
-           );
+            (unsigned int) m_txCount, // /proc/net/dev transmitted packets to which we should subract mgmt frames
+            (unsigned int) m_rxCount, // /proc/net/dev received packets but subracts mgmt frames from it
+            (unsigned int) 0,        // ast_tx_altrate,
+            (unsigned int) m_shortRetryCount,    // ast_tx_shortretry,
+            (unsigned int) m_longRetryCount,     // ast_tx_longretry,
+            (unsigned int) m_exceededRetryCount, // ast_tx_xretries,
+            (unsigned int) m_phyRxErrorCount,    // ast_rx_crcerr,
+            (unsigned int) 0,        // ast_rx_badcrypt,
+            (unsigned int) 0,        // ast_rx_phyerr,
+            (unsigned int) 0,        // ast_rx_rssi,
+            (unsigned int) 0         // rate
+            );
 
   if (m_writer)
     {
-      
+
       *m_writer << str;
-      
+
       ResetCounters ();
       Simulator::Schedule (m_interval, &AthstatsWifiTraceSink::WriteStats, this);
     }

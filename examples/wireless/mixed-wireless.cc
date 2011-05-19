@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   // Add the IPv4 protocol stack to the nodes in our container
   //
   InternetStackHelper internet;
-  internet.SetRoutingHelper (olsr);
+  internet.SetRoutingHelper (olsr); // has effect on the next Install ()
   internet.Install (backbone);
 
   // re-initialize for non-olsr routing.

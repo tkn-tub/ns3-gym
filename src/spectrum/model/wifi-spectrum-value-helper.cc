@@ -23,7 +23,7 @@
 
 namespace ns3 {
 
-  
+
 Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz;
 
 WifiSpectrumValueHelper::~WifiSpectrumValueHelper ()
@@ -40,12 +40,12 @@ public:
   WifiSpectrumModel5MhzInitializer ()
   {
     Bands bands;
-    for (int i = -4; i < 13+7; i++)
+    for (int i = -4; i < 13 + 7; i++)
       {
         BandInfo bi;
         bi.fl = 2407.0e6 + i * 5.0e6;
-        bi.fh = 2407.0e6 + (i+1) * 5.0e6;
-        bi.fc = (bi.fl +  bi.fh)/2;
+        bi.fh = 2407.0e6 + (i + 1) * 5.0e6;
+        bi.fc = (bi.fl +  bi.fh) / 2;
         bands.push_back (bi);
       }
     g_WifiSpectrumModel5Mhz = Create<SpectrumModel> (bands);
@@ -54,18 +54,18 @@ public:
 
 
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 WifiSpectrumValue5MhzFactory::CreateConstant (double v)
-{  
+{
   Ptr<SpectrumValue> c = Create <SpectrumValue> (g_WifiSpectrumModel5Mhz);
   (*c) = v;
   return c;
 }
 
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity (double txPower, uint32_t channel)
-{  
+{
   Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (g_WifiSpectrumModel5Mhz);
 
   // since the spectrum model has a resolution of 5 MHz, we model
@@ -75,10 +75,10 @@ WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity (double txPower, uint
   // calculated considering the transmit spectrum mask, see IEEE
   // Std. 802.11-2007, Annex I
 
-  double txPowerDensity = txPower / 20e6; 
+  double txPowerDensity = txPower / 20e6;
 
-  NS_ASSERT(channel >= 1);
-  NS_ASSERT(channel <= 13);
+  NS_ASSERT (channel >= 1);
+  NS_ASSERT (channel <= 13);
 
   (*txPsd)[channel - 1] = txPowerDensity * 1e-4;      // -40dB
   (*txPsd)[channel]     = txPowerDensity * 1e-4;      // -40dB
@@ -97,13 +97,13 @@ WifiSpectrumValue5MhzFactory::CreateTxPowerSpectralDensity (double txPower, uint
 }
 
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 WifiSpectrumValue5MhzFactory::CreateRfFilter (uint32_t channel)
-{  
+{
   Ptr<SpectrumValue> rf = Create <SpectrumValue> (g_WifiSpectrumModel5Mhz);
 
-  NS_ASSERT(channel >= 1);
-  NS_ASSERT(channel <= 13);
+  NS_ASSERT (channel >= 1);
+  NS_ASSERT (channel <= 13);
 
   (*rf)[channel - 1] = 1;
   (*rf)[channel    ] = 1;

@@ -39,6 +39,13 @@ class PacketBurst;
 
 
 /**
+ * \defgroup lte LTE Models
+ *
+ */
+
+/**
+ * \ingroup lte
+ *
  * LteNetDevice provides  basic implementation for all LTE network devices
  */
 class LteNetDevice : public NetDevice

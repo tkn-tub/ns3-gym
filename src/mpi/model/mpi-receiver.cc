@@ -42,7 +42,7 @@ MpiReceiver::SetReceiveCallback (Callback<void, Ptr<Packet> > callback)
 void 
 MpiReceiver::Receive (Ptr<Packet> p)
 {
-  NS_ASSERT (! m_rxCallback.IsNull ());
+  NS_ASSERT (!m_rxCallback.IsNull ());
   m_rxCallback (p);
 }
 

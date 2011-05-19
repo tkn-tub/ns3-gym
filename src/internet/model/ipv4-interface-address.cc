@@ -133,8 +133,8 @@ Ipv4InterfaceAddress::SetPrimary (void)
 std::ostream& operator<< (std::ostream& os, const Ipv4InterfaceAddress &addr)
 { 
   os << "m_local=" << addr.GetLocal () << "; m_mask=" <<
-    addr.GetMask () << "; m_broadcast=" << addr.GetBroadcast () << "; m_scope=" << addr.GetScope() <<
-    "; m_secondary=" << addr.IsSecondary ();
+  addr.GetMask () << "; m_broadcast=" << addr.GetBroadcast () << "; m_scope=" << addr.GetScope() <<
+  "; m_secondary=" << addr.IsSecondary ();
   return os;
 } 
 

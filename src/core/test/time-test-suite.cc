@@ -39,7 +39,8 @@ private:
 TimeSimpleTestCase::TimeSimpleTestCase (enum Time::Unit resolution)
   : TestCase ("Sanity check of common time operations"),
     m_resolution (resolution)
-{}
+{
+}
 
 void
 TimeSimpleTestCase::DoSetup (void)

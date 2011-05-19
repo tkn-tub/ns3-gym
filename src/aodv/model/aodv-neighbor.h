@@ -58,7 +58,7 @@ public:
     Mac48Address m_hardwareAddress;
     Time m_expireTime;
     bool close;
-    
+
     Neighbor (Ipv4Address ip, Mac48Address mac, Time t) :
       m_neighborAddress (ip), m_hardwareAddress (mac), m_expireTime (t),
       close (false)
@@ -77,7 +77,7 @@ public:
   void ScheduleTimer ();
   /// Remove all entries
   void Clear () { m_nb.clear (); }
-  
+
   /// Add ARP cache to be used to allow layer 2 notifications processing
   void AddArpCache (Ptr<ArpCache>);
   /// Don't use given ARP cache any more (interface is down)
@@ -101,7 +101,7 @@ private:
   std::vector<Neighbor> m_nb;
   /// list of ARP cached to be used for layer 2 notifications processing
   std::vector<Ptr<ArpCache> > m_arp;
-  
+
   /// Find MAC address by IP using list of ARP caches
   Mac48Address LookupMacAddress (Ipv4Address);
   /// Process layer 2 TX error notification

@@ -51,7 +51,7 @@ static uint32_t g_count (0);
 static void 
 PingRtt (std::string context, Time rtt)
 {
-  g_count ++;
+  g_count++;
 }
 
 void
@@ -80,7 +80,7 @@ LoopbackTestCase::DoRun ()
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
-  
+
   // Setup ping
   Ptr<V4Ping> ping = CreateObject<V4Ping> ();
   ping->SetAttribute ("Remote", Ipv4AddressValue (Ipv4Address::GetLoopback ()));
@@ -89,12 +89,12 @@ LoopbackTestCase::DoRun ()
   ping->SetStopTime (Seconds (4));
   Names::Add ("ping", ping);
   Config::Connect ("/Names/ping/Rtt", MakeCallback (&PingRtt));
-    
+
   // Run 
   Simulator::Stop (Seconds (5));
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   // Check that 4 packets delivered
   NS_TEST_ASSERT_MSG_EQ (g_count, 4, "Exactly 4 ping replies must be delivered.");
 }

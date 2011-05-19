@@ -50,7 +50,7 @@ using namespace ns3;
 
 
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
-: TestSuite ("lte-test-rr-ff-mac-scheduler", SYSTEM)
+: TestSuite ("lte-rr-ff-mac-scheduler", SYSTEM)
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
@@ -166,13 +166,16 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 static LenaTestRrFfMacSchedulerSuite lenaTestRrFfMacSchedulerSuite;
 
 LenaRrFfMacSchedulerTestCase::LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl)
-  : TestCase ("Round Robin (RR) Mac Scheduler Test Case"),
+  : TestCase (""),
   m_nUser (nUser),
   m_nLc (nLc),
   m_dist (dist),
   m_thrRefDl (thrRefDl),
   m_thrRefUl (thrRefUl)
 {
+  std::ostringstream oss;
+  oss << nUser << " UEs, distance " << dist << " m" ;
+  SetName (oss.str ());
 }
 
 LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()

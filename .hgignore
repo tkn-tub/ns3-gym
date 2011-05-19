@@ -17,10 +17,15 @@
 ^doc/manual/build
 ^doc/tutorial/build
 ^doc/testing/build
+^doc/models/build
+^doc/models/source-temp
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
-^bindings/python/pybindgen/
+^src/.*/doc/build
+^src/.*/doc/source/figures/.*.eps
+^src/.*/doc/source/figures/.*.pdf
+^src/.*/doc/source/figures/.*.png
 ms_print.*
 massif.*
 \.patch$

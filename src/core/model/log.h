@@ -123,7 +123,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * logging components to enable. For example (using bash syntax), 
  * NS_LOG="OlsrAgent" would enable one component at all log levels. 
  * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
- * at all log levels, etc.  
+ * at all log levels, etc.
  * NS_LOG="*" will enable all available log components at all levels.
  *
  * To control more selectively the log levels for each component, use
@@ -156,7 +156,7 @@ void LogComponentDisableAll (enum LogLevel level);
       ns3::LogTimePrinter printer = ns3::LogGetTimePrinter ();  \
       if (printer != 0)                                         \
         {                                                       \
-          (*printer) (std::clog);                               \
+          (*printer)(std::clog);                               \
           std::clog << " ";                                     \
         }                                                       \
     }
@@ -167,7 +167,7 @@ void LogComponentDisableAll (enum LogLevel level);
       ns3::LogNodePrinter printer = ns3::LogGetNodePrinter ();  \
       if (printer != 0)                                         \
         {                                                       \
-          (*printer) (std::clog);                               \
+          (*printer)(std::clog);                               \
           std::clog << " ";                                     \
         }                                                       \
     }
@@ -176,7 +176,7 @@ void LogComponentDisableAll (enum LogLevel level);
   if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
     {                                                           \
       std::clog << g_log.Name () << ":" <<                      \
-        __FUNCTION__ << "(): ";                                 \
+      __FUNCTION__ << "(): ";                                 \
     }                                                           \
 
 #ifndef NS_LOG_APPEND_CONTEXT
@@ -349,8 +349,8 @@ namespace ns3 {
  */
 void LogComponentPrintList (void);
 
-typedef void (*LogTimePrinter) (std::ostream &os);
-typedef void (*LogNodePrinter) (std::ostream &os);
+typedef void (*LogTimePrinter)(std::ostream &os);
+typedef void (*LogNodePrinter)(std::ostream &os);
 
 void LogSetTimePrinter (LogTimePrinter);
 LogTimePrinter LogGetTimePrinter(void);

@@ -84,7 +84,7 @@ Time::Time (const std::string& s)
 
 struct Time::Resolution
 Time::GetNsResolution (void)
-{  
+{
   struct Resolution resolution;
   SetResolution (Time::NS, &resolution);
   return resolution;
@@ -97,7 +97,7 @@ Time::SetResolution (enum Unit resolution)
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
-  int8_t power [LAST] = {15, 12, 9, 6, 3, 0};
+  int8_t power [LAST] = { 15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
       int shift = power[i] - power[(int)unit];
@@ -105,27 +105,27 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
       struct Information *info = &resolution->info[i];
       info->factor = factor;
       if (shift == 0)
-	{
-	  info->timeFrom = int64x64_t (1);
-	  info->timeTo = int64x64_t (1);
-	  info->toMul = true;
-	  info->fromMul = true;
-	}
+        {
+          info->timeFrom = int64x64_t (1);
+          info->timeTo = int64x64_t (1);
+          info->toMul = true;
+          info->fromMul = true;
+        }
       else if (shift > 0)
-	{
-	  info->timeFrom = int64x64_t (factor);
-	  info->timeTo = int64x64_t::Invert (factor);
-	  info->toMul = false;
-	  info->fromMul = true;
-	}
+        {
+          info->timeFrom = int64x64_t (factor);
+          info->timeTo = int64x64_t::Invert (factor);
+          info->toMul = false;
+          info->fromMul = true;
+        }
       else
-	{
-	  NS_ASSERT (shift < 0);
-	  info->timeFrom = int64x64_t::Invert (factor);
-	  info->timeTo = int64x64_t (factor);
-	  info->toMul = true;
-	  info->fromMul = false;
-	}
+        {
+          NS_ASSERT (shift < 0);
+          info->timeFrom = int64x64_t::Invert (factor);
+          info->timeTo = int64x64_t (factor);
+          info->toMul = true;
+          info->fromMul = false;
+        }
     }
   resolution->unit = unit;
 }

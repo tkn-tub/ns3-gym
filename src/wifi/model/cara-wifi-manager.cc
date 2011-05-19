@@ -3,7 +3,7 @@
  * Copyright (c) 2004,2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -34,47 +34,49 @@ struct CaraWifiRemoteStation : public WifiRemoteStation
 {
   uint32_t m_timer;
   uint32_t m_success;
-  uint32_t m_failed;  
+  uint32_t m_failed;
   uint32_t m_rate;
 };
 
-NS_OBJECT_ENSURE_REGISTERED(CaraWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (CaraWifiManager);
 
-TypeId 
+TypeId
 CaraWifiManager::GetTypeId (void)
 {
- static TypeId tid = TypeId ("ns3::CaraWifiManager")
-   .SetParent<WifiRemoteStationManager> ()
-   .AddConstructor<CaraWifiManager> ()
-   .AddAttribute ("ProbeThreshold",
-                  "The number of consecutive transmissions failure to activate the RTS probe.",
-                  UintegerValue (1),
-                  MakeUintegerAccessor (&CaraWifiManager::m_probeThreshold),
-                  MakeUintegerChecker<uint32_t> ())
-   .AddAttribute ("FailureThreshold",
-                  "The number of consecutive transmissions failure to decrease the rate.",
-                  UintegerValue (2),
-                  MakeUintegerAccessor (&CaraWifiManager::m_failureThreshold),
-                  MakeUintegerChecker<uint32_t> ())
-   .AddAttribute ("SuccessThreshold",
-                  "The minimum number of sucessfull transmissions to try a new rate.",
-                  UintegerValue (10),
-                  MakeUintegerAccessor (&CaraWifiManager::m_successThreshold),
-                  MakeUintegerChecker<uint32_t> ())
-   .AddAttribute ("Timeout",
-                  "The 'timer' in the CARA algorithm",
-                  UintegerValue (15),
-                  MakeUintegerAccessor (&CaraWifiManager::m_timerTimeout),
-                  MakeUintegerChecker<uint32_t> ())
- ;
- return tid;
+  static TypeId tid = TypeId ("ns3::CaraWifiManager")
+    .SetParent<WifiRemoteStationManager> ()
+    .AddConstructor<CaraWifiManager> ()
+    .AddAttribute ("ProbeThreshold",
+                   "The number of consecutive transmissions failure to activate the RTS probe.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&CaraWifiManager::m_probeThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("FailureThreshold",
+                   "The number of consecutive transmissions failure to decrease the rate.",
+                   UintegerValue (2),
+                   MakeUintegerAccessor (&CaraWifiManager::m_failureThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("SuccessThreshold",
+                   "The minimum number of sucessfull transmissions to try a new rate.",
+                   UintegerValue (10),
+                   MakeUintegerAccessor (&CaraWifiManager::m_successThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Timeout",
+                   "The 'timer' in the CARA algorithm",
+                   UintegerValue (15),
+                   MakeUintegerAccessor (&CaraWifiManager::m_timerTimeout),
+                   MakeUintegerChecker<uint32_t> ())
+  ;
+  return tid;
 }
 
 CaraWifiManager::CaraWifiManager ()
   : WifiRemoteStationManager ()
-{}
+{
+}
 CaraWifiManager::~CaraWifiManager ()
-{}
+{
+}
 
 WifiRemoteStation *
 CaraWifiManager::DoCreateStation (void) const
@@ -87,11 +89,12 @@ CaraWifiManager::DoCreateStation (void) const
   return station;
 }
 
-void 
+void
 CaraWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
-{}
+{
+}
 
-void 
+void
 CaraWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
@@ -99,9 +102,9 @@ CaraWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   station->m_timer++;
   station->m_failed++;
   station->m_success = 0;
-  if (station->m_failed >= m_failureThreshold) 
+  if (station->m_failed >= m_failureThreshold)
     {
-      NS_LOG_DEBUG ("self="<<station<<" dec rate");
+      NS_LOG_DEBUG ("self=" << station << " dec rate");
       if (station->m_rate != 0)
         {
           station->m_rate--;
@@ -110,47 +113,50 @@ CaraWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       station->m_timer = 0;
     }
 }
-void 
+void
 CaraWifiManager::DoReportRxOk (WifiRemoteStation *st,
-                                     double rxSnr, WifiMode txMode)
-{}
-void 
-CaraWifiManager::DoReportRtsOk (WifiRemoteStation *st,
-                                      double ctsSnr, WifiMode ctsMode, double rtsSnr)
+                               double rxSnr, WifiMode txMode)
 {
-  NS_LOG_DEBUG ("self="<<st<<" rts ok");
 }
-void 
+void
+CaraWifiManager::DoReportRtsOk (WifiRemoteStation *st,
+                                double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  NS_LOG_DEBUG ("self=" << st << " rts ok");
+}
+void
 CaraWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                       double ackSnr, WifiMode ackMode, double dataSnr)
+                                 double ackSnr, WifiMode ackMode, double dataSnr)
 {
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
   station->m_timer++;
   station->m_success++;
   station->m_failed = 0;
-  NS_LOG_DEBUG ("self="<<station<<" data ok success="<<station->m_success<<", timer="<<station->m_timer);
-  if ((station->m_success == m_successThreshold ||
-       station->m_timer >= m_timerTimeout))
+  NS_LOG_DEBUG ("self=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
+  if ((station->m_success == m_successThreshold
+       || station->m_timer >= m_timerTimeout))
     {
       if (station->m_rate < GetNSupported (station) - 1)
         {
           station->m_rate++;
         }
-      NS_LOG_DEBUG ("self="<<station<<" inc rate=" << station->m_rate);
+      NS_LOG_DEBUG ("self=" << station << " inc rate=" << station->m_rate);
       station->m_timer = 0;
       station->m_success = 0;
     }
 }
-void 
+void
 CaraWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
-{}
-void 
+{
+}
+void
 CaraWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
-{}
+{
+}
 
 WifiMode
 CaraWifiManager::DoGetDataMode (WifiRemoteStation *st,
-                                      uint32_t size)
+                                uint32_t size)
 {
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
   return GetSupported (station, station->m_rate);
@@ -165,13 +171,13 @@ CaraWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 
 bool
 CaraWifiManager::DoNeedRts (WifiRemoteStation *st,
-                                  Ptr<const Packet> packet, bool normally)
+                            Ptr<const Packet> packet, bool normally)
 {
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
   return normally || station->m_failed >= m_probeThreshold;
 }
 
-bool 
+bool
 CaraWifiManager::IsLowLatency (void) const
 {
   return true;

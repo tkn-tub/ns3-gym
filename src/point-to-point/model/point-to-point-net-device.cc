@@ -46,7 +46,7 @@ PointToPointNetDevice::GetTypeId (void)
                    UintegerValue (DEFAULT_MTU),
                    MakeUintegerAccessor (&PointToPointNetDevice::SetMtu,
                                          &PointToPointNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> ())                   
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("Address", 
                    "The MAC address of this device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
@@ -139,17 +139,17 @@ PointToPointNetDevice::GetTypeId (void)
     .AddTraceSource ("PromiscSniffer", 
                      "Trace source simulating a promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_promiscSnifferTrace))
-    ;
+  ;
   return tid;
 }
 
 
 PointToPointNetDevice::PointToPointNetDevice () 
-: 
-  m_txMachineState (READY),
-  m_channel (0), 
-  m_linkUp (false),
-  m_currentPkt (0)
+  :
+    m_txMachineState (READY),
+    m_channel (0),
+    m_linkUp (false),
+    m_currentPkt (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -159,7 +159,7 @@ PointToPointNetDevice::~PointToPointNetDevice ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-  void 
+void
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -168,7 +168,7 @@ PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
   p->AddHeader (ppp);
 }
 
-  bool 
+bool
 PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -178,7 +178,7 @@ PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
   return true;
 }
 
-  void 
+void
 PointToPointNetDevice::DoDispose()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -189,21 +189,21 @@ PointToPointNetDevice::DoDispose()
   NetDevice::DoDispose ();
 }
 
-  void 
+void
 PointToPointNetDevice::SetDataRate(DataRate bps)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_bps = bps;
 }
 
-  void 
+void
 PointToPointNetDevice::SetInterframeGap(Time t)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_tInterframeGap = t;
 }
 
-  bool
+bool
 PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
@@ -233,7 +233,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   return result;
 }
 
-  void 
+void
 PointToPointNetDevice::TransmitComplete (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -269,7 +269,7 @@ PointToPointNetDevice::TransmitComplete (void)
   TransmitStart(p);
 }
 
-  bool 
+bool
 PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_LOG_FUNCTION (this << &ch);
@@ -287,21 +287,21 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
   return true;
 }
 
-  void
+void
 PointToPointNetDevice::SetQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION (this << q);
   m_queue = q;
 }
 
-  void
+void
 PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION (this << em);
   m_receiveErrorModel = em;
 }
 
- void
+void
 PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
@@ -345,33 +345,33 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
     }
 }
 
-  Ptr<Queue> 
+Ptr<Queue>
 PointToPointNetDevice::GetQueue(void) const 
 { 
   NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
 }
 
-  void
+void
 PointToPointNetDevice::NotifyLinkUp (void)
 {
   m_linkUp = true;
   m_linkChangeCallbacks ();
 }
 
-  void 
+void
 PointToPointNetDevice::SetIfIndex(const uint32_t index)
 {
   m_ifIndex = index;
 }
 
-  uint32_t 
+uint32_t
 PointToPointNetDevice::GetIfIndex(void) const
 {
   return m_ifIndex;
 }
 
-  Ptr<Channel> 
+Ptr<Channel>
 PointToPointNetDevice::GetChannel (void) const
 {
   return m_channel;
@@ -383,25 +383,25 @@ PointToPointNetDevice::GetChannel (void) const
 // methods to get and set the address.  Rather than be rude and assert, we let
 // clients get and set the address, but simply ignore them.
 
-  void 
+void
 PointToPointNetDevice::SetAddress (Address address)
 {
   m_address = Mac48Address::ConvertFrom (address);
 }
 
-  Address 
+Address
 PointToPointNetDevice::GetAddress (void) const
 {
   return m_address;
 }
 
-  bool 
+bool
 PointToPointNetDevice::IsLinkUp (void) const
 {
   return m_linkUp;
 }
 
-  void 
+void
 PointToPointNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
   m_linkChangeCallbacks.ConnectWithoutContext (callback);
@@ -411,7 +411,7 @@ PointToPointNetDevice::AddLinkChangeCallback (Callback<void> callback)
 // This is a point-to-point device, so every transmission is a broadcast to
 // all of the devices on the network.
 //
-  bool 
+bool
 PointToPointNetDevice::IsBroadcast (void) const
 {
   return true;
@@ -422,19 +422,19 @@ PointToPointNetDevice::IsBroadcast (void) const
 // point-to-point device.  The base class NetDevice wants us to return a
 // broadcast address, so we make up something reasonable.
 //
-  Address
+Address
 PointToPointNetDevice::GetBroadcast (void) const
 {
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
-  bool 
+bool
 PointToPointNetDevice::IsMulticast (void) const
 {
   return true;
 }
 
-  Address 
+Address
 PointToPointNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address ("01:00:5e:00:00:00");
@@ -447,19 +447,19 @@ PointToPointNetDevice::GetMulticast (Ipv6Address addr) const
   return Mac48Address ("33:33:00:00:00:00");
 }
 
-  bool 
+bool
 PointToPointNetDevice::IsPointToPoint (void) const
 {
   return true;
 }
 
-  bool 
+bool
 PointToPointNetDevice::IsBridge (void) const
 {
   return false;
 }
 
-  bool 
+bool
 PointToPointNetDevice::Send(
   Ptr<Packet> packet, 
   const Address &dest, 
@@ -526,25 +526,25 @@ PointToPointNetDevice::SendFrom (Ptr<Packet> packet,
   return false;
 }
 
-  Ptr<Node> 
+Ptr<Node>
 PointToPointNetDevice::GetNode (void) const
 {
   return m_node;
 }
 
-  void 
+void
 PointToPointNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
 }
 
-  bool 
+bool
 PointToPointNetDevice::NeedsArp (void) const
 {
   return false;
 }
 
-  void 
+void
 PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_rxCallback = cb;
@@ -556,7 +556,7 @@ PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallb
   m_promiscCallback = cb;
 }
 
-  bool
+bool
 PointToPointNetDevice::SupportsSendFrom (void) const
 {
   return false;
@@ -585,7 +585,7 @@ PointToPointNetDevice::GetRemote (void) const
   return Address ();
 }
 
-  bool
+bool
 PointToPointNetDevice::SetMtu (uint16_t mtu)
 {
   NS_LOG_FUNCTION (this << mtu);
@@ -593,33 +593,33 @@ PointToPointNetDevice::SetMtu (uint16_t mtu)
   return true;
 }
 
-  uint16_t
+uint16_t
 PointToPointNetDevice::GetMtu (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_mtu;
 }
 
-  uint16_t
+uint16_t
 PointToPointNetDevice::PppToEther(uint16_t proto)
 {
   switch(proto)
     {
-      case 0x0021: return 0x0800; //IPv4
-      case 0x0057: return 0x86DD; //IPv6
-      default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+    case 0x0021: return 0x0800;   //IPv4
+    case 0x0057: return 0x86DD;   //IPv6
+    default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
     }
   return 0;
 }
 
-  uint16_t
+uint16_t
 PointToPointNetDevice::EtherToPpp(uint16_t proto)
 {
   switch(proto)
     {
-      case 0x0800: return 0x0021; //IPv4
-      case 0x86DD: return 0x0057; //IPv6
-      default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+    case 0x0800: return 0x0021;   //IPv4
+    case 0x86DD: return 0x0057;   //IPv6
+    default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
     }
   return 0;
 }

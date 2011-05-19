@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   UintegerValue limit;
   dtq->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("1.  dtq limit: " << limit.Get () << " packets");
-  
+
   // Note that the above downcast is not really needed; we could have
   // done the same using the Ptr<Queue> even though the attribute
   // is a member of the subclass
@@ -124,7 +124,7 @@ main (int argc, char *argv[])
   // namespace.  Here, this attribute resides on a known path in this
   // namespace; this approach is useful if one doesn't have access to
   // the underlying pointers and would like to configure a specific
-  // attribute with a single statement.  
+  // attribute with a single statement.
   Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", UintegerValue (25));
   txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("4.  txQueue limit changed through namespace: " << 

@@ -36,19 +36,20 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRoutingHelper");
 namespace ns3 {
 
 Ipv6StaticRoutingHelper::Ipv6StaticRoutingHelper ()
-{}
+{
+}
 
 Ipv6StaticRoutingHelper::Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &o)
 {
 }
 
-Ipv6StaticRoutingHelper* 
-Ipv6StaticRoutingHelper::Copy (void) const 
+Ipv6StaticRoutingHelper*
+Ipv6StaticRoutingHelper::Copy (void) const
 {
-  return new Ipv6StaticRoutingHelper (*this); 
+  return new Ipv6StaticRoutingHelper (*this);
 }
 
-Ptr<Ipv6RoutingProtocol> 
+Ptr<Ipv6RoutingProtocol>
 Ipv6StaticRoutingHelper::Create (Ptr<Node> node) const
 {
   return CreateObject<Ipv6StaticRouting> ();
@@ -84,11 +85,11 @@ Ipv6StaticRoutingHelper::GetStaticRouting (Ptr<Ipv6> ipv6) const
   return 0;
 }
 
-void  
+void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   Ptr<Node> n,
   Ipv6Address source, 
-  Ipv6Address group,  
+  Ipv6Address group,
   Ptr<NetDevice> input, 
   NetDeviceContainer output)
 {
@@ -102,31 +103,31 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
       Ptr<NetDevice> nd = *i;
       int32_t interface = ipv6->GetInterfaceForDevice (nd);
       NS_ASSERT_MSG (interface >= 0, 
-        "Ipv6StaticRoutingHelper::AddMulticastRoute (): "
-        "Expected an interface associated with the device nd");
+                     "Ipv6StaticRoutingHelper::AddMulticastRoute (): "
+                     "Expected an interface associated with the device nd");
       outputInterfaces.push_back (interface);
     }
 
   int32_t inputInterface = ipv6->GetInterfaceForDevice (input);
   NS_ASSERT_MSG (inputInterface >= 0, 
-    "Ipv6StaticRoutingHelper::AddMulticastRoute (): "
-    "Expected an interface associated with the device input");
+                 "Ipv6StaticRoutingHelper::AddMulticastRoute (): "
+                 "Expected an interface associated with the device input");
   Ipv6StaticRoutingHelper helper;
   Ptr<Ipv6StaticRouting> ipv6StaticRouting = helper.GetStaticRouting (ipv6);
   if (!ipv6StaticRouting)
     {
-  NS_ASSERT_MSG (ipv6StaticRouting, 
-    "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
-    "Expected an Ipv6StaticRouting associated with this node");
+      NS_ASSERT_MSG (ipv6StaticRouting,
+                     "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
+                     "Expected an Ipv6StaticRouting associated with this node");
     }
   ipv6StaticRouting->AddMulticastRoute (source, group, inputInterface, outputInterfaces);
 }
 
-void  
+void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   Ptr<Node> n,
   Ipv6Address source, 
-  Ipv6Address group,  
+  Ipv6Address group,
   std::string inputName, 
   NetDeviceContainer output)
 {
@@ -134,11 +135,11 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
   AddMulticastRoute (n, source, group, input, output);
 }
 
-void  
+void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   std::string nName,
   Ipv6Address source, 
-  Ipv6Address group,  
+  Ipv6Address group,
   Ptr<NetDevice> input, 
   NetDeviceContainer output)
 {
@@ -146,11 +147,11 @@ Ipv6StaticRoutingHelper::AddMulticastRoute (
   AddMulticastRoute (n, source, group, input, output);
 }
 
-void  
+void
 Ipv6StaticRoutingHelper::AddMulticastRoute (
   std::string nName,
   Ipv6Address source, 
-  Ipv6Address group,  
+  Ipv6Address group,
   std::string inputName, 
   NetDeviceContainer output)
 {
@@ -168,15 +169,15 @@ Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
   Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
   int32_t interfaceSrc = ipv6->GetInterfaceForDevice (nd);
   NS_ASSERT_MSG (interfaceSrc >= 0, 
-    "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
-    "Expected an interface associated with the device");
+                 "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
+                 "Expected an interface associated with the device");
   Ipv6StaticRoutingHelper helper;
   Ptr<Ipv6StaticRouting> ipv6StaticRouting = helper.GetStaticRouting (ipv6);
   if (!ipv6StaticRouting)
     {
       NS_ASSERT_MSG (ipv6StaticRouting, 
-        "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
-        "Expected an Ipv6StaticRouting associated with this node");
+                     "Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (): "
+                     "Expected an Ipv6StaticRouting associated with this node");
     }
   ipv6StaticRouting->SetDefaultMulticastRoute (interfaceSrc);
 }

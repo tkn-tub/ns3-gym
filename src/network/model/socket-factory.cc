@@ -31,6 +31,7 @@ TypeId SocketFactory::GetTypeId (void)
 }
 
 SocketFactory::SocketFactory ()
-{}
+{
+}
 
 } // namespace ns3

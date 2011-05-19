@@ -121,8 +121,8 @@ RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
       nextPosition = m_bounds.CalculateIntersection (position, speed);
       Time delay = Seconds ((nextPosition.x - position.x) / speed.x);
       m_event = Simulator::Schedule (delay, &RandomWalk2dMobilityModel::Rebound, this,
-                                     delayLeft - delay);      
-    }  
+                                     delayLeft - delay);
+    }
   NotifyCourseChange ();
 }
 
@@ -136,11 +136,11 @@ RandomWalk2dMobilityModel::Rebound (Time delayLeft)
     {
     case Rectangle::RIGHT:
     case Rectangle::LEFT:
-      speed.x = - speed.x;
+      speed.x = -speed.x;
       break;
     case Rectangle::TOP:
     case Rectangle::BOTTOM:
-      speed.y = - speed.y;
+      speed.y = -speed.y;
       break;
     }
   m_helper.SetVelocity (speed);

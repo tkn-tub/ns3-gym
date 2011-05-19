@@ -122,7 +122,7 @@ private:
 private:
   friend class TcpSocketBase;
   void SendPacket (Ptr<Packet>, const TcpHeader &,
-                  Ipv4Address, Ipv4Address, Ptr<NetDevice> oif = 0);
+                   Ipv4Address, Ipv4Address, Ptr<NetDevice> oif = 0);
   TcpL4Protocol (const TcpL4Protocol &o);
   TcpL4Protocol &operator = (const TcpL4Protocol &o);
 

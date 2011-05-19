@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,7 +25,7 @@ namespace ns3 {
 Ssid::Ssid ()
 {
   m_length = 0;
-  for (uint8_t i = 0; i < 33; i++) 
+  for (uint8_t i = 0; i < 33; i++)
     {
       m_ssid[i] = 0;
     }
@@ -35,7 +35,7 @@ Ssid::Ssid (std::string s)
   NS_ASSERT (s.size () < 32);
   const char *ssid = s.c_str ();
   uint8_t len = 0;
-  while (*ssid != 0 && len < 32) 
+  while (*ssid != 0 && len < 32)
     {
       m_ssid[len] = *ssid;
       ssid++;
@@ -43,7 +43,7 @@ Ssid::Ssid (std::string s)
     }
   NS_ASSERT (len <= 32);
   m_length = len;
-  while (len < 33) 
+  while (len < 33)
     {
       m_ssid[len] = 0;
       len++;
@@ -53,38 +53,38 @@ Ssid::Ssid (char const ssid[32], uint8_t length)
 {
   NS_ASSERT (length <= 32);
   uint8_t len = 0;
-  while (len < length) 
+  while (len < length)
     {
       m_ssid[len] = ssid[len];
       len++;
     }
   m_length = length;
-  while (len < 33) 
+  while (len < 33)
     {
       m_ssid[len] = 0;
       len++;
     }
 }
-bool 
+bool
 Ssid::IsEqual (const Ssid& o) const
 {
   uint8_t i = 0;
-  while (i < 32 && 
-         m_ssid[i] == o.m_ssid[i] &&
-         m_ssid[i] != 0) 
+  while (i < 32
+         && m_ssid[i] == o.m_ssid[i]
+         && m_ssid[i] != 0)
     {
       i++;
     }
-  if (m_ssid[i] != o.m_ssid[i]) 
+  if (m_ssid[i] != o.m_ssid[i])
     {
       return false;
     }
   return true;
 }
-bool 
+bool
 Ssid::IsBroadcast (void) const
 {
-  if (m_ssid[0] == 0) 
+  if (m_ssid[0] == 0)
     {
       return true;
     }
@@ -119,7 +119,7 @@ Ssid::SerializeInformationField (Buffer::Iterator start) const
 }
 uint8_t
 Ssid::DeserializeInformationField (Buffer::Iterator start,
-                              uint8_t length)
+                                   uint8_t length)
 {
   m_length = length;
   NS_ASSERT (m_length <= 32);

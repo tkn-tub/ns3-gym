@@ -193,7 +193,7 @@ public:
    * See http://wiki.wireshark.org/Development/LibpcapFileFormat
    */ 
   uint32_t GetDataLinkType (void);
-  
+
 private:
   PcapFile m_file;
   uint32_t m_snapLen;

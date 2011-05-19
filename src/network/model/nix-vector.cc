@@ -50,7 +50,8 @@ NixVector::NixVector (const NixVector &o)
     m_used (o.m_used),
     m_currentVectorBitSize (o.m_currentVectorBitSize),
     m_totalBitSize (o.m_totalBitSize)
-{}
+{
+}
 
 NixVector &
 NixVector::operator = (const NixVector &o)
@@ -124,7 +125,7 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
           // there
           newBits = newBits >> (32 - m_currentVectorBitSize);
           m_nixVector.push_back (newBits);
-    
+
           // also reset number of bits in
           // m_currentVectorBitSize
           // because we are working with a new 
@@ -142,7 +143,7 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
       // NixVector
       newBits = newBits << m_currentVectorBitSize;
       newBits |= m_nixVector.back ();
-  
+
       // Now insert the new NixVector and 
       // increment number of bits for
       // m_currentVectorBitSize and m_totalBitSize
@@ -170,7 +171,7 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
   if (numberOfBits > totalRemainingBits)
     {
       NS_FATAL_ERROR ("You've tried to extract too many bits of the Nix-vector, " << this << ". NumberBits: " 
-                      << numberOfBits << " Remaining: " << totalRemainingBits);
+                                                                                  << numberOfBits << " Remaining: " << totalRemainingBits);
     }
 
   if (numberOfBits <= 0)
@@ -212,7 +213,7 @@ NixVector::GetSerializedSize (void) const
 {
   uint32_t totalSizeInBytes = 0;
   totalSizeInBytes = sizeof (m_used) + sizeof (m_currentVectorBitSize) + 
-                     sizeof (m_totalBitSize) + (4 * m_nixVector.size ());
+    sizeof (m_totalBitSize) + (4 * m_nixVector.size ());
 
   return totalSizeInBytes;
 }
@@ -323,7 +324,7 @@ NixVector::DumpNixVector (std::ostream &os) const
 
       // all this work just to get the nix 
       // vector to print out neat
-    
+
       // if it's not the first entry in the vector, 
       // we may have to add some zeros and fill 
       // out the vector
@@ -365,7 +366,7 @@ NixVector::BitCount (uint32_t numberOfNeighbors) const
   // Given the numberOfNeighbors, return the number 
   // of bits needed (essentially, log2(numberOfNeighbors-1)
   uint32_t bitCount = 0;
-  
+
   if (numberOfNeighbors < 2) 
     {
       return 1;

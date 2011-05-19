@@ -32,28 +32,28 @@ namespace ns3 {
 //
 // ---------------------------------------------------------------------------
 
-  void
+void
 GlobalRouteManager::DeleteGlobalRoutes ()
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
-    DeleteGlobalRoutes ();
+  DeleteGlobalRoutes ();
 }
 
-  void
+void
 GlobalRouteManager::BuildGlobalRoutingDatabase (void) 
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
-    BuildGlobalRoutingDatabase ();
+  BuildGlobalRoutingDatabase ();
 }
 
-  void
+void
 GlobalRouteManager::InitializeRoutes (void)
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
-    InitializeRoutes ();
+  InitializeRoutes ();
 }
 
-  uint32_t
+uint32_t
 GlobalRouteManager::AllocateRouterId (void)
 {
   static uint32_t routerId = 0;

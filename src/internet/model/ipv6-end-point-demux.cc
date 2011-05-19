@@ -182,15 +182,15 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
     {
       Ipv6EndPoint* endP = *i;
       NS_LOG_DEBUG ("Looking at endpoint dport=" << endP->GetLocalPort ()
-                    << " daddr=" << endP->GetLocalAddress ()
-                    << " sport=" << endP->GetPeerPort ()
-                    << " saddr=" << endP->GetPeerAddress ());
+                                                 << " daddr=" << endP->GetLocalAddress ()
+                                                 << " sport=" << endP->GetPeerPort ()
+                                                 << " saddr=" << endP->GetPeerAddress ());
       if (endP->GetLocalPort () != dport) 
         {
           NS_LOG_LOGIC ("Skipping endpoint " << &endP
-                        << " because endpoint dport "
-                        << endP->GetLocalPort ()
-                        << " does not match packet dport " << dport);
+                                             << " because endpoint dport "
+                                             << endP->GetLocalPort ()
+                                             << " does not match packet dport " << dport);
           continue;
         }
 
@@ -273,12 +273,12 @@ Ipv6EndPoint* Ipv6EndPointDemux::SimpleLookup (Ipv6Address dst, uint16_t dport, 
 
       if ((*i)->GetLocalAddress () == Ipv6Address::GetAny ())
         {
-          tmp ++;
+          tmp++;
         }
 
       if ((*i)->GetPeerAddress () == Ipv6Address::GetAny ())
         {
-          tmp ++;
+          tmp++;
         }
 
       if (tmp < genericity)

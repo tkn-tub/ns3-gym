@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("SystemCondition");
 
 namespace ns3 {
 
-class SystemConditionPrivate {    
+class SystemConditionPrivate {
 public: 
   static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
 
@@ -71,7 +71,7 @@ SystemConditionPrivate::SystemConditionPrivate ()
   pthread_condattr_setpshared (&cAttr, PTHREAD_PROCESS_PRIVATE);
   pthread_cond_init (&m_cond, &cAttr);
 }
-    
+
 SystemConditionPrivate::~SystemConditionPrivate() 
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -79,21 +79,21 @@ SystemConditionPrivate::~SystemConditionPrivate()
   pthread_cond_destroy (&m_cond);
 }
 	
-  void 
+void
 SystemConditionPrivate::SetCondition (bool condition)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_condition = condition;
 }
 	
-  bool
+bool
 SystemConditionPrivate::GetCondition (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_condition;
 }
 	
-  void 
+void
 SystemConditionPrivate::Signal (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -103,7 +103,7 @@ SystemConditionPrivate::Signal (void)
   pthread_mutex_unlock (&m_mutex);
 }
 	
-  void 
+void
 SystemConditionPrivate::Broadcast (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -113,7 +113,7 @@ SystemConditionPrivate::Broadcast (void)
   pthread_mutex_unlock (&m_mutex);
 }
 
-  void 
+void
 SystemConditionPrivate::Wait (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -127,7 +127,7 @@ SystemConditionPrivate::Wait (void)
   pthread_mutex_unlock (&m_mutex);
 }
 
-  bool
+bool
 SystemConditionPrivate::TimedWait (uint64_t ns)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -156,7 +156,7 @@ SystemConditionPrivate::TimedWait (uint64_t ns)
       if (rc == ETIMEDOUT)
         {
           pthread_mutex_unlock (&m_mutex); 
-         return true;
+          return true;
         }
     }
   pthread_mutex_unlock (&m_mutex);
@@ -175,46 +175,46 @@ SystemCondition::~SystemCondition ()
   delete m_priv;
 }
 
-  void 
+void
 SystemCondition::SetCondition (bool condition) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->SetCondition (condition);
 }
 
-  bool
+bool
 SystemCondition::GetCondition (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_priv->GetCondition ();
 }
 
-  void 
+void
 SystemCondition::Signal (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Signal ();
 }
 
-  void 
+void
 SystemCondition::Broadcast (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Broadcast ();
-}  
+}
 
-  void 
+void
 SystemCondition::Wait (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Wait ();
-}  
+}
 
-  bool
+bool
 SystemCondition::TimedWait (uint64_t ns) 
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_priv->TimedWait (ns);
-}  
+}
 
 } // namespace ns3

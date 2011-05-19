@@ -29,6 +29,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
+ *
  * \brief This class defines all functions to create spectrum model for lte
  */
 class LteSpectrumValueHelper

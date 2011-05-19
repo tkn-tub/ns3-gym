@@ -39,7 +39,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (CsmaNetDevice);
 
-  TypeId 
+TypeId
 CsmaNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CsmaNetDevice")
@@ -148,12 +148,12 @@ CsmaNetDevice::GetTypeId (void)
     .AddTraceSource ("PromiscSniffer", 
                      "Trace source simulating a promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_promiscSnifferTrace))
-    ;
+  ;
   return tid;
 }
 
 CsmaNetDevice::CsmaNetDevice ()
- : m_linkUp (false)
+  : m_linkUp (false)
 {
   NS_LOG_FUNCTION (this);
   m_txMachineState = READY;
@@ -180,7 +180,7 @@ CsmaNetDevice::~CsmaNetDevice()
   m_queue = 0;
 }
 
-  void 
+void
 CsmaNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -189,7 +189,7 @@ CsmaNetDevice::DoDispose ()
   NetDevice::DoDispose ();
 }
 
-  void 
+void
 CsmaNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
 {
   NS_LOG_FUNCTION (mode);
@@ -200,13 +200,13 @@ CsmaNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
   NS_LOG_LOGIC ("m_mtu = " << m_mtu);
 }
 
-  CsmaNetDevice::EncapsulationMode
+CsmaNetDevice::EncapsulationMode
 CsmaNetDevice::GetEncapsulationMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_encapMode;
 }
-  
+
 bool
 CsmaNetDevice::SetMtu (uint16_t mtu)
 {
@@ -219,7 +219,7 @@ CsmaNetDevice::SetMtu (uint16_t mtu)
   return true;
 }
 
-  uint16_t
+uint16_t
 CsmaNetDevice::GetMtu (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -227,42 +227,42 @@ CsmaNetDevice::GetMtu (void) const
 }
 
 
-  void
+void
 CsmaNetDevice::SetSendEnable (bool sendEnable)
 {
   NS_LOG_FUNCTION (sendEnable);
   m_sendEnable = sendEnable;
 }
 
-  void
+void
 CsmaNetDevice::SetReceiveEnable (bool receiveEnable)
 {
   NS_LOG_FUNCTION (receiveEnable);
   m_receiveEnable = receiveEnable;
 }
 
-  bool
+bool
 CsmaNetDevice::IsSendEnabled (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_sendEnable;
 }
 
-  bool
+bool
 CsmaNetDevice::IsReceiveEnabled (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_receiveEnable;
 }
 
-  void 
+void
 CsmaNetDevice::SetInterframeGap (Time t)
 {
   NS_LOG_FUNCTION (t);
   m_tInterframeGap = t;
 }
 
-  void 
+void
 CsmaNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t ceiling, uint32_t maxRetries)
 {
   NS_LOG_FUNCTION (slotTime << minSlots << maxSlots << ceiling << maxRetries);
@@ -273,7 +273,7 @@ CsmaNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots, uint32_t maxS
   m_backoff.m_maxRetries = maxRetries;
 }
 
-  void 
+void
 CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address dest,  uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (p << source << dest << protocolNumber);
@@ -322,6 +322,13 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
         p->AddHeader (llc);
 
         //
+        // This corresponds to the length interpretation of the lengthType 
+        // field but with an LLC/SNAP header added to the payload as in 
+        // IEEE 802.2
+        //
+        lengthType = p->GetSize ();
+
+        //
         // All Ethernet frames must carry a minimum payload of 46 bytes.  The 
         // LLC SNAP header counts as part of this payload.  We need to padd out
         // if we don't have enough bytes.  These must be real bytes since they 
@@ -335,14 +342,9 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
             p->AddAtEnd (padd);
           }
 
-        //
-        // This corresponds to the length interpretation of the lengthType field,
-        // but with an LLC/SNAP header added to the payload as in IEEE 802.2
-        //      
-        lengthType = p->GetSize ();
-        NS_ASSERT_MSG (lengthType <= GetMtu (),
-          "CsmaNetDevice::AddHeader(): 802.3 Length/Type field with LLC/SNAP: "
-          "length interpretation must not exceed device frame size minus overhead");
+        NS_ASSERT_MSG (p->GetSize () <= GetMtu (),
+                       "CsmaNetDevice::AddHeader(): 802.3 Length/Type field with LLC/SNAP: "
+                       "length interpretation must not exceed device frame size minus overhead");
       }
       break;
     case ILLEGAL:
@@ -364,7 +366,7 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
 }
 
 #if 0
-  bool 
+bool
 CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 {
   NS_LOG_FUNCTION (p << param);
@@ -402,7 +404,7 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 }
 #endif
 
-  void
+void
 CsmaNetDevice::TransmitStart (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -495,7 +497,7 @@ CsmaNetDevice::TransmitStart (void)
     }
 }
 
-  void
+void
 CsmaNetDevice::TransmitAbort (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -539,7 +541,7 @@ CsmaNetDevice::TransmitAbort (void)
     }
 }
 
-  void
+void
 CsmaNetDevice::TransmitCompleteEvent (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -571,7 +573,7 @@ CsmaNetDevice::TransmitCompleteEvent (void)
   Simulator::Schedule (m_tInterframeGap, &CsmaNetDevice::TransmitReadyEvent, this);
 }
 
-  void
+void
 CsmaNetDevice::TransmitReadyEvent (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -607,7 +609,7 @@ CsmaNetDevice::TransmitReadyEvent (void)
     }
 }
 
-  bool
+bool
 CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 {
   NS_LOG_FUNCTION (this << &ch);
@@ -633,21 +635,21 @@ CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
   return true;
 }
 
-  void
+void
 CsmaNetDevice::SetQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION (q);
   m_queue = q;
 }
 
-  void
+void
 CsmaNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION (em);
   m_receiveErrorModel = em; 
 }
 
-  void
+void
 CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
 {
   NS_LOG_FUNCTION (packet << senderDevice);
@@ -721,6 +723,14 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   //
   if (header.GetLengthType () <= 1500)
     {
+      NS_ASSERT (packet->GetSize () >= header.GetLengthType ());
+      uint32_t padlen = packet->GetSize () - header.GetLengthType ();
+      NS_ASSERT (padlen <= 46);
+      if (padlen > 0)
+        {
+          packet->RemoveAtEnd (padlen);
+        }
+
       LlcSnapHeader llc;
       packet->RemoveHeader (llc);
       protocol = llc.GetType ();
@@ -741,7 +751,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     }
   else if (header.GetDestination ().IsGroup ())
     {
-      packetType = PACKET_MULTICAST;          
+      packetType = PACKET_MULTICAST;
     }
   else if (header.GetDestination () == m_address)
     {
@@ -777,14 +787,14 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     }
 }
 
-  Ptr<Queue>
+Ptr<Queue>
 CsmaNetDevice::GetQueue (void) const 
 { 
   NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
 }
 
-  void
+void
 CsmaNetDevice::NotifyLinkUp (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -792,77 +802,77 @@ CsmaNetDevice::NotifyLinkUp (void)
   m_linkChangeCallbacks ();
 }
 
-  void 
+void
 CsmaNetDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION (index);
   m_ifIndex = index;
 }
 
-  uint32_t 
+uint32_t
 CsmaNetDevice::GetIfIndex (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;
 }
 
-  Ptr<Channel> 
+Ptr<Channel>
 CsmaNetDevice::GetChannel (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_channel;
 }
 
-  void
+void
 CsmaNetDevice::SetAddress (Address address)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_address = Mac48Address::ConvertFrom (address);
 }
 
-  Address 
+Address
 CsmaNetDevice::GetAddress (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_address;
 }
 
-  bool 
+bool
 CsmaNetDevice::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_linkUp;
 }
 
-  void 
+void
 CsmaNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
   NS_LOG_FUNCTION (&callback);
   m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
-  bool 
+bool
 CsmaNetDevice::IsBroadcast (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
-  Address
+Address
 CsmaNetDevice::GetBroadcast (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
-  bool 
+bool
 CsmaNetDevice::IsMulticast (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
-  Address 
+Address
 CsmaNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION (multicastGroup);
@@ -879,28 +889,28 @@ CsmaNetDevice::GetMulticast (Ipv4Address multicastGroup) const
   return ad;
 }
 
-  bool 
+bool
 CsmaNetDevice::IsPointToPoint (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;
 }
 
-  bool 
+bool
 CsmaNetDevice::IsBridge (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return false;
 }
 
-  bool
+bool
 CsmaNetDevice::Send (Ptr<Packet> packet,const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << dest << protocolNumber);
   return SendFrom (packet, m_address, dest, protocolNumber);
 }
 
-  bool
+bool
 CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << src << dest << protocolNumber);
@@ -953,14 +963,14 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
   return true;
 }
 
-  Ptr<Node> 
+Ptr<Node>
 CsmaNetDevice::GetNode (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_node;
 }
 
-  void 
+void
 CsmaNetDevice::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (node);
@@ -968,14 +978,14 @@ CsmaNetDevice::SetNode (Ptr<Node> node)
   m_node = node;
 }
 
-  bool 
+bool
 CsmaNetDevice::NeedsArp (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return true;
 }
 
-  void 
+void
 CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   NS_LOG_FUNCTION (&cb);
@@ -990,14 +1000,14 @@ Address CsmaNetDevice::GetMulticast (Ipv6Address addr) const
   return ad;
 }
 
-  void 
+void
 CsmaNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
   NS_LOG_FUNCTION (&cb);
   m_promiscRxCallback = cb;
 }
 
-  bool 
+bool
 CsmaNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION_NOARGS ();

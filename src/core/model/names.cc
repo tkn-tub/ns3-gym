@@ -35,7 +35,7 @@ public:
   NameNode (NameNode *parent, std::string name, Ptr<Object> object);
   NameNode &operator = (const NameNode &rhs);
 
- ~NameNode ();
+  ~NameNode ();
 
   NameNode *m_parent;
   std::string m_name;
@@ -178,7 +178,7 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   if (offset != 0)
     {
       //
-      // This must be a name that has the "/Names" namespace prefix omitted.  
+      // This must be a name that has the "/Names" namespace prefix omitted.
       // Do some reasonableness checking on the rest of the name.
       //
       offset = name.find ("/");
@@ -190,7 +190,7 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
 
       name = "/Names/" + name;
     }
-  
+
   //
   // There must now be a fully qualified path in the string.  All fully 
   // qualified names begin with "/Names".  We have to split off the final 
@@ -287,7 +287,7 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
   if (offset != 0)
     {
       //
-      // This must be a name that has the "/Names" namespace prefix omitted.  
+      // This must be a name that has the "/Names" namespace prefix omitted.
       // Do some reasonableness checking on the rest of the name.
       //
       offset = oldpath.find ("/");
@@ -299,7 +299,7 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
 
       oldpath = "/Names/" + oldpath;
     }
-  
+
   //
   // There must now be a fully qualified path in the oldpath string.  All 
   // fully qualified names begin with "/Names".  We have to split off the final 

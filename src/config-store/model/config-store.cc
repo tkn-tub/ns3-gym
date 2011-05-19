@@ -30,24 +30,24 @@ ConfigStore::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ConfigStore")
     .SetParent<ObjectBase> ()
     .AddAttribute ("Mode", 
-		   "Configuration mode",
-		   EnumValue (ConfigStore::NONE),
-		   MakeEnumAccessor (&ConfigStore::SetMode),
-		   MakeEnumChecker (ConfigStore::NONE, "None",
-				    ConfigStore::LOAD, "Load",
-				    ConfigStore::SAVE, "Save"))
+                   "Configuration mode",
+                   EnumValue (ConfigStore::NONE),
+                   MakeEnumAccessor (&ConfigStore::SetMode),
+                   MakeEnumChecker (ConfigStore::NONE, "None",
+                                    ConfigStore::LOAD, "Load",
+                                    ConfigStore::SAVE, "Save"))
     .AddAttribute ("Filename", 
-		   "The file where the configuration should be saved to or loaded from.",
-		   StringValue (""),
-		   MakeStringAccessor (&ConfigStore::SetFilename),
-		   MakeStringChecker ())
+                   "The file where the configuration should be saved to or loaded from.",
+                   StringValue (""),
+                   MakeStringAccessor (&ConfigStore::SetFilename),
+                   MakeStringChecker ())
     .AddAttribute ("FileFormat",
-		   "Type of file format",
-		   EnumValue (ConfigStore::RAW_TEXT),
-		   MakeEnumAccessor (&ConfigStore::SetFileFormat),
-		   MakeEnumChecker (ConfigStore::RAW_TEXT, "RawText",
-				    ConfigStore::XML, "Xml"))
-    ;
+                   "Type of file format",
+                   EnumValue (ConfigStore::RAW_TEXT),
+                   MakeEnumAccessor (&ConfigStore::SetFileFormat),
+                   MakeEnumChecker (ConfigStore::RAW_TEXT, "RawText",
+                                    ConfigStore::XML, "Xml"))
+  ;
   return tid;
 }
 TypeId 
@@ -65,34 +65,34 @@ ConfigStore::ConfigStore ()
   if (m_fileFormat == ConfigStore::XML)
     {
       if (m_mode == ConfigStore::SAVE)
-	{
-	  m_file = new XmlConfigSave ();
-	}
+        {
+          m_file = new XmlConfigSave ();
+        }
       else if (m_mode == ConfigStore::LOAD)
-	{
-	  m_file = new XmlConfigLoad ();
-	}
+        {
+          m_file = new XmlConfigLoad ();
+        }
       else 
-	{
-	  m_file = new NoneFileConfig ();
-	}
+        {
+          m_file = new NoneFileConfig ();
+        }
     }
   else 
 #endif /* HAVE_LIBXML2 */
   if (m_fileFormat == ConfigStore::RAW_TEXT)
     {
       if (m_mode == ConfigStore::SAVE)
-	{
-	  m_file = new RawTextConfigSave ();
-	}
+        {
+          m_file = new RawTextConfigSave ();
+        }
       else if (m_mode == ConfigStore::LOAD)
-	{
-	  m_file = new RawTextConfigLoad ();
-	}
+        {
+          m_file = new RawTextConfigLoad ();
+        }
       else
-	{
-	  m_file = new NoneFileConfig ();
-	}
+        {
+          m_file = new NoneFileConfig ();
+        }
     }
   m_file->SetFilename (m_filename);
 }

@@ -51,7 +51,7 @@ RandomDirection2dMobilityModel::GetTypeId (void)
                    RandomVariableValue (ConstantVariable (2.0)),
                    MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_pause),
                    MakeRandomVariableChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -102,14 +102,14 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
   Time delay = Seconds (CalculateDistance (position, next) / speed);
   m_event.Cancel ();
   m_event = Simulator::Schedule (delay,
-				 &RandomDirection2dMobilityModel::BeginPause, this);
+                                 &RandomDirection2dMobilityModel::BeginPause, this);
   NotifyCourseChange ();
 }
 void
 RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 {
   double direction = m_direction.GetValue (0, PI);
-  
+
   m_helper.UpdateWithBounds (m_bounds);
   Vector position = m_helper.GetCurrentPosition ();
   switch (m_bounds.GetClosestSide (position))
@@ -118,7 +118,7 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
       direction += PI / 2;
       break;
     case Rectangle::LEFT:
-      direction += - PI / 2;
+      direction += -PI / 2;
       break;
     case Rectangle::TOP:
       direction += PI;

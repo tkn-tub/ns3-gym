@@ -55,7 +55,7 @@ public:
    * Object support.
    */
   void DoDispose ();
-  
+
   /**
    * \brief Install a flame stack on the given MeshPointDevice
    * \param mp The Ptr<MeshPointDevice> to use.

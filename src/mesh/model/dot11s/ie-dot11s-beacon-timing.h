@@ -76,12 +76,12 @@ public:
     uint16_t aid,
     Time last_beacon,
     Time beacon_interval
-  );
+    );
   void   DelNeighboursTimingElementUnit (
     uint16_t aid,
     Time  last_beacon,
     Time  beacon_interval
-  );
+    );
   void   ClearTimingElement ();
   /**
    * \name Inherited from WifiInformationElement

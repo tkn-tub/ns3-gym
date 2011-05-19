@@ -41,7 +41,7 @@ namespace ns3 {
  * When writing traced information to a file, the tempting ns-3 idiom is to 
  * create a bound callback with an ofstream as the bound object.  Unfortunately,
  * this implies a copy construction in order to get the ofstream object into the
- * callback.  This operation, as mentioned above, is forbidden by the STL.  
+ * callback.  This operation, as mentioned above, is forbidden by the STL.
  * Using this class in ns-3 APIs is generally preferable to passing global 
  * pointers to ostream objects, or passing a pointer to a stack allocated 
  * ostream (which creates object lifetime issues). 
@@ -82,7 +82,7 @@ public:
    * \returns a pointer to the encapsulated std::ostream
    */
   std::ostream *GetStream (void);
-  
+
 private:
   std::ostream *m_ostream;
   bool m_destroyable;

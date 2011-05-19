@@ -60,8 +60,8 @@ perspective.  Users just need to set the attribute
   GlobalValue::Bind ("SimulatorImplementationType",
     StringValue ("ns3::RealtimeSimulatorImpl"));
 
-There is a script in ``examples/realtime-udp-echo.cc`` that has an example of
-how to configure the realtime behavior.  Try: ::
+There is a script in ``examples/realtime/realtime-udp-echo.cc`` that
+has an example of how to configure the realtime behavior.  Try: ::
 
     ./waf --run realtime-udp-echo
 
@@ -73,8 +73,8 @@ Implementation
 
 The implementation is contained in the following files:
 
-* ``src/simulator/realtime-simulator-impl.{cc,h}``
-* ``src/simulator/wall-clock-synchronizer.{cc,h}``
+* ``src/core/model/realtime-simulator-impl.{cc,h}``
+* ``src/core/model/wall-clock-synchronizer.{cc,h}``
 
 In order to create a realtime scheduler, to a first approximation you just want
 to cause simulation time jumps to consume real time. We propose doing this using

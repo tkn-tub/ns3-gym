@@ -46,7 +46,7 @@ class Packet;
 class UdpSocket : public Socket
 {
 public:
- static TypeId GetTypeId (void);
+  static TypeId GetTypeId (void);
  
   UdpSocket (void);
   virtual ~UdpSocket (void);

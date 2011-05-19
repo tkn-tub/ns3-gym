@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -34,7 +34,7 @@ class NqosWifiMacHelper : public WifiMacHelper
 {
 public:
   /**
-   * Create a NqosWifiMacHelper to make life easier for people who want to 
+   * Create a NqosWifiMacHelper to make life easier for people who want to
    * work with non-QOS Wifi MAC layers.
    */
   NqosWifiMacHelper ();

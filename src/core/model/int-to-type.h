@@ -11,7 +11,7 @@ namespace ns3 {
 template <int v>
 struct IntToType
 {
-  enum v_e {value = v};
+  enum v_e { value = v};
 };
 
 } // namespace ns3

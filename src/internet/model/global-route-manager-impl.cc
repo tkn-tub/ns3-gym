@@ -119,15 +119,15 @@ SPFVertex::SPFVertex (GlobalRoutingLSA* lsa) :
 SPFVertex::~SPFVertex ()
 {
   NS_LOG_FUNCTION (m_vertexId);
-  
+
   NS_LOG_LOGIC ("Children vertices - " << m_children);
   NS_LOG_LOGIC ("Parent verteices - " << m_parents);
 
   // find this node from all its parents and remove the entry of this node
   // from all its parents
   for (ListOfSPFVertex_t::iterator piter = m_parents.begin (); 
-      piter != m_parents.end (); 
-      piter++)
+       piter != m_parents.end ();
+       piter++)
     {
       // remove the current vertex from its parent's children list. Check
       // if the size of the list is reduced, or the child<->parent relation
@@ -167,63 +167,63 @@ SPFVertex::~SPFVertex ()
   NS_LOG_LOGIC ("Vertex-" << m_vertexId << " completed deleted");
 }
 
-  void 
+void
 SPFVertex::SetVertexType (SPFVertex::VertexType type)
 {
   NS_LOG_FUNCTION (type);
   m_vertexType = type;
 }
 
-  SPFVertex::VertexType 
+SPFVertex::VertexType
 SPFVertex::GetVertexType (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_vertexType;
 }
 
-  void 
+void
 SPFVertex::SetVertexId (Ipv4Address id)
 {
   NS_LOG_FUNCTION (id);
   m_vertexId = id;
 }
 
-  Ipv4Address
+Ipv4Address
 SPFVertex::GetVertexId (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_vertexId;
 }
 
-  void 
+void
 SPFVertex::SetLSA (GlobalRoutingLSA* lsa)
 {
   NS_LOG_FUNCTION (lsa);
   m_lsa = lsa;
 }
 
-  GlobalRoutingLSA* 
+GlobalRoutingLSA*
 SPFVertex::GetLSA (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_lsa;
 }
 
-  void 
+void
 SPFVertex::SetDistanceFromRoot (uint32_t distance)
 {
   NS_LOG_FUNCTION (distance);
   m_distanceFromRoot = distance;
 }
 
-  uint32_t
+uint32_t
 SPFVertex::GetDistanceFromRoot (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_distanceFromRoot;
 }
 
-  void
+void
 SPFVertex::SetParent (SPFVertex* parent)
 {
   NS_LOG_FUNCTION (parent);
@@ -233,7 +233,7 @@ SPFVertex::SetParent (SPFVertex* parent)
   m_parents.push_back (parent);
 }
 
-  SPFVertex* 
+SPFVertex*
 SPFVertex::GetParent (uint32_t i) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -260,7 +260,7 @@ SPFVertex::MergeParent (const SPFVertex* v)
   NS_LOG_LOGIC ("Before merge, list of parents = " << m_parents);
   // combine the two lists first, and then remove any duplicated after
   m_parents.insert (m_parents.end (), 
-    v->m_parents.begin (), v->m_parents.end ());
+                    v->m_parents.begin (), v->m_parents.end ());
   // remove duplication
   m_parents.sort ();
   m_parents.unique ();
@@ -271,7 +271,7 @@ void
 SPFVertex::SetRootExitDirection (Ipv4Address nextHop, int32_t id)
 {
   NS_LOG_FUNCTION (nextHop << id);
-  
+
   // always maintain only one root's exit
   m_ecmpRootExits.clear ();
   m_ecmpRootExits.push_back (NodeExit_t (nextHop, id));
@@ -296,7 +296,7 @@ SPFVertex::GetRootExitDirection (uint32_t i) const
 
   NS_ASSERT_MSG (i < m_ecmpRootExits.size (), "Index out-of-range when accessing SPFVertex::m_ecmpRootExits!");
   CIter_t iter = m_ecmpRootExits.begin ();
-  while (i-- > 0) {iter++;}
+  while (i-- > 0) { iter++;}
 
   return *iter;
 }
@@ -320,7 +320,7 @@ SPFVertex::MergeRootExitDirections (const SPFVertex* vertex)
   // Append the external list into 'this' and remove duplication afterward
   const ListOfNodeExit_t& extList = vertex->m_ecmpRootExits;
   m_ecmpRootExits.insert (m_ecmpRootExits.end (), 
-    extList.begin(), extList.end ());
+                          extList.begin(), extList.end ());
   m_ecmpRootExits.sort ();
   m_ecmpRootExits.unique ();
 }
@@ -338,7 +338,7 @@ SPFVertex::InheritAllRootExitDirections (const SPFVertex* vertex)
     }
   m_ecmpRootExits.clear ();
   m_ecmpRootExits.insert (m_ecmpRootExits.end (), 
-      vertex->m_ecmpRootExits.begin (), vertex->m_ecmpRootExits.end ());
+                          vertex->m_ecmpRootExits.begin (), vertex->m_ecmpRootExits.end ());
 }
 
 uint32_t 
@@ -355,7 +355,7 @@ SPFVertex::GetNChildren (void) const
   return m_children.size ();
 }
 
-  SPFVertex* 
+SPFVertex*
 SPFVertex::GetChild (uint32_t n) const
 {
   NS_LOG_FUNCTION (n);
@@ -374,7 +374,7 @@ SPFVertex::GetChild (uint32_t n) const
   return 0;
 }
 
-  uint32_t 
+uint32_t
 SPFVertex::AddChild (SPFVertex* child)
 {
   NS_LOG_FUNCTION (child);
@@ -411,9 +411,9 @@ SPFVertex::ClearVertexProcessed (void)
 // ---------------------------------------------------------------------------
 
 GlobalRouteManagerLSDB::GlobalRouteManagerLSDB ()
-:
-  m_database (),
-  m_extdatabase ()
+  :
+    m_database (),
+    m_extdatabase ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -438,7 +438,7 @@ GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ()
   m_database.clear ();
 }
 
-  void
+void
 GlobalRouteManagerLSDB::Initialize ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -450,7 +450,7 @@ GlobalRouteManagerLSDB::Initialize ()
     }
 }
 
-  void
+void
 GlobalRouteManagerLSDB::Insert (Ipv4Address addr, GlobalRoutingLSA* lsa)
 {
   NS_LOG_FUNCTION (addr << lsa);
@@ -464,19 +464,19 @@ GlobalRouteManagerLSDB::Insert (Ipv4Address addr, GlobalRoutingLSA* lsa)
     }
 }
 
-  GlobalRoutingLSA*
+GlobalRoutingLSA*
 GlobalRouteManagerLSDB::GetExtLSA (uint32_t index) const
 {
   return m_extdatabase.at (index);
 }
 
-  uint32_t
+uint32_t
 GlobalRouteManagerLSDB::GetNumExtLSAs () const
 {
   return m_extdatabase.size ();
 }
 
-  GlobalRoutingLSA*
+GlobalRoutingLSA*
 GlobalRouteManagerLSDB::GetLSA (Ipv4Address addr) const
 {
   NS_LOG_FUNCTION (addr);
@@ -485,16 +485,16 @@ GlobalRouteManagerLSDB::GetLSA (Ipv4Address addr) const
 //
   LSDBMap_t::const_iterator i;
   for (i= m_database.begin (); i!= m_database.end (); i++)
-  {
-    if (i->first == addr)
     {
-      return i->second;
+      if (i->first == addr)
+        {
+          return i->second;
+        }
     }
-  }
   return 0;
 }
 
-  GlobalRoutingLSA*
+GlobalRoutingLSA*
 GlobalRouteManagerLSDB::GetLSAByLinkData (Ipv4Address addr) const
 {
   NS_LOG_FUNCTION (addr);
@@ -526,8 +526,8 @@ GlobalRouteManagerLSDB::GetLSAByLinkData (Ipv4Address addr) const
 // ---------------------------------------------------------------------------
 
 GlobalRouteManagerImpl::GlobalRouteManagerImpl () 
-: 
-  m_spfroot (0)
+  :
+    m_spfroot (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_lsdb = new GlobalRouteManagerLSDB ();
@@ -542,7 +542,7 @@ GlobalRouteManagerImpl::~GlobalRouteManagerImpl ()
     }
 }
 
-  void
+void
 GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
 {
   NS_LOG_FUNCTION (lsdb);
@@ -553,7 +553,7 @@ GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
   m_lsdb = lsdb;
 }
 
-  void
+void
 GlobalRouteManagerImpl::DeleteGlobalRoutes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -576,7 +576,7 @@ GlobalRouteManagerImpl::DeleteGlobalRoutes ()
       for (j = 0; j < nRoutes; j++)
         {
           NS_LOG_LOGIC ("Deleting global route " << j << " from node " << node->GetId ());
-          gr->RemoveRoute (0);        
+          gr->RemoveRoute (0);
         }
       NS_LOG_LOGIC ("Deleted " << j << " global routes from node "<< node->GetId ());
     }
@@ -597,7 +597,7 @@ GlobalRouteManagerImpl::DeleteGlobalRoutes ()
 // add them to the Link State DataBase (LSDB) from which the routes will 
 // ultimately be computed.
 //
-  void
+void
 GlobalRouteManagerImpl::BuildGlobalRoutingDatabase () 
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -611,7 +611,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
       Ptr<Node> node = *i;
 
       Ptr<GlobalRouter> rtr = node->GetObject<GlobalRouter> ();
-//      
+//
 // Ignore nodes that aren't participating in routing.
 //
       if (!rtr)
@@ -665,8 +665,8 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
 // leaves are added to the tree by considering the links to stub
 // networks.
 //
-// The area's link state database is represented as a directed graph.  
-// The graph's vertices are routers, transit networks and stub networks.  
+// The area's link state database is represented as a directed graph.
+// The graph's vertices are routers, transit networks and stub networks.
 //
 // The first stage of the procedure (i.e., the Dijkstra algorithm)
 // can now be summarized as follows. At each iteration of the
@@ -680,7 +680,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
 // algorithm then iterates again.  It terminates when the candidate
 // list becomes empty. 
 //
-  void
+void
 GlobalRouteManagerImpl::InitializeRoutes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -704,7 +704,7 @@ GlobalRouteManagerImpl::InitializeRoutes ()
         {
           continue;
         }
-      
+
 //
 // if the node has a global router interface, then run the global routing
 // algorithms.
@@ -730,7 +730,7 @@ GlobalRouteManagerImpl::InitializeRoutes ()
 // vertices not already on the list.  If a lower-cost path is found to a
 // vertex already on the candidate list, store the new (lower) cost.
 //
-  void
+void
 GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 {
   NS_LOG_FUNCTION (v << &candidate);
@@ -759,8 +759,8 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
       if (v->GetVertexType () == SPFVertex::VertexRouter) 
         {
           NS_LOG_LOGIC ("Examining link " << i << " of " << 
-            v->GetVertexId () << "'s " <<
-            v->GetLSA ()->GetNLinkRecords () << " link records");
+                        v->GetVertexId () << "'s " <<
+                        v->GetLSA ()->GetNLinkRecords () << " link records");
 //
 // (a) If this is a link to a stub network, examine the next link in V's LSA.
 // Links to stub networks will be considered in the second stage of the
@@ -786,15 +786,15 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
               w_lsa = m_lsdb->GetLSA (l->GetLinkId ());
               NS_ASSERT (w_lsa);
               NS_LOG_LOGIC ("Found a P2P record from " << 
-                v->GetVertexId () << " to " << w_lsa->GetLinkStateId ());
+                            v->GetVertexId () << " to " << w_lsa->GetLinkStateId ());
             }
           else if (l->GetLinkType () == 
-            GlobalRoutingLinkRecord::TransitNetwork)
+                   GlobalRoutingLinkRecord::TransitNetwork)
             {
               w_lsa = m_lsdb->GetLSA (l->GetLinkId ());
               NS_ASSERT (w_lsa);
               NS_LOG_LOGIC ("Found a Transit record from " << 
-                v->GetVertexId () << " to " << w_lsa->GetLinkStateId ());
+                            v->GetVertexId () << " to " << w_lsa->GetLinkStateId ());
             }
           else 
             {
@@ -805,13 +805,13 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
       if (v->GetVertexType () == SPFVertex::VertexNetwork) 
         {
           w_lsa = m_lsdb->GetLSAByLinkData 
-            (v->GetLSA ()->GetAttachedRouter (i)); 
+                  (v->GetLSA ()->GetAttachedRouter (i));
           if (!w_lsa)
             {
               continue;
             }
           NS_LOG_LOGIC ("Found a Network LSA from " << 
-            v->GetVertexId () << " to " << w_lsa->GetLinkStateId ());
+                        v->GetVertexId () << " to " << w_lsa->GetLinkStateId ());
         }
 
 // Note:  w_lsa at this point may be either RouterLSA or NetworkLSA
@@ -825,14 +825,14 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
       if (w_lsa->GetStatus () == GlobalRoutingLSA::LSA_SPF_IN_SPFTREE) 
         {
           NS_LOG_LOGIC ("Skipping ->  LSA "<< 
-            w_lsa->GetLinkStateId () << " already in SPF tree");
+                        w_lsa->GetLinkStateId () << " already in SPF tree");
           continue;
         }
 //
 // (d) Calculate the link state cost D of the resulting path from the root to 
 // vertex W.  D is equal to the sum of the link state cost of the (already 
 // calculated) shortest path to vertex V and the advertised cost of the link
-// between vertices V and W.  
+// between vertices V and W.
 //
       if (v->GetLSA ()->GetLSType () == GlobalRoutingLSA::RouterLSA)
         {
@@ -865,9 +865,9 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
               candidate.Push (w);
               NS_LOG_LOGIC ("Pushing " << 
-                w->GetVertexId () << ", parent vertexId: " << 
-                v->GetVertexId () << ", distance: " <<
-                w->GetDistanceFromRoot ());
+                            w->GetVertexId () << ", parent vertexId: " <<
+                            v->GetVertexId () << ", distance: " <<
+                            w->GetDistanceFromRoot ());
             }
           else
             NS_ASSERT_MSG (0, "SPFNexthopCalculation never " 
@@ -900,7 +900,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
           else if (cw->GetDistanceFromRoot () == distance)
             {
 //
-// This path is one with an equal cost.  
+// This path is one with an equal cost.
 //
               NS_LOG_LOGIC ("Equal cost multiple paths found.");
 
@@ -947,13 +947,13 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
                   candidate.Reorder ();
                 }
-            } // new lower cost path found  
+            } // new lower cost path found
         } // end W is already on the candidate list
     } // end loop over the links in V's LSA
 }
 
 //
-// This method is derived from quagga ospf_nexthop_calculation() 16.1.1.  
+// This method is derived from quagga ospf_nexthop_calculation() 16.1.1.
 //
 // Calculate nexthop from root through V (parent) to vertex W (destination)
 // with given distance from root->W.
@@ -961,8 +961,8 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // As appropriate, set w's parent, distance, and nexthop information
 //
 // For now, this is greatly simplified from the quagga code
-//                  
-  int
+//
+int
 GlobalRouteManagerImpl::SPFNexthopCalculation (
   SPFVertex* v, 
   SPFVertex* w,
@@ -1053,10 +1053,10 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
           w->SetDistanceFromRoot (distance);
           w->SetParent (v);
           NS_LOG_LOGIC ("Next hop from " << 
-            v->GetVertexId () << " to " << w->GetVertexId () << 
-            " goes through next hop " << nextHop <<
-            " via outgoing interface " << outIf <<
-            " with distance " << distance);
+                        v->GetVertexId () << " to " << w->GetVertexId () <<
+                        " goes through next hop " << nextHop <<
+                        " via outgoing interface " << outIf <<
+                        " with distance " << distance);
         }  // end W is a router vertes
       else 
         {
@@ -1066,16 +1066,16 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
           NS_ASSERT (w_lsa->GetLSType () == GlobalRoutingLSA::NetworkLSA);
 // Find outgoing interface ID for this network
           uint32_t outIf = FindOutgoingInterfaceId (w_lsa->GetLinkStateId (), 
-            w_lsa->GetNetworkLSANetworkMask () );
+                                                    w_lsa->GetNetworkLSANetworkMask () );
 // Set the next hop to 0.0.0.0 meaning "not exist"
           Ipv4Address nextHop = Ipv4Address::GetZero ();
           w->SetRootExitDirection (nextHop, outIf);
           w->SetDistanceFromRoot (distance);
           w->SetParent (v);
           NS_LOG_LOGIC ("Next hop from " << 
-            v->GetVertexId () << " to network " << w->GetVertexId () << 
-            " via outgoing interface " << outIf <<
-            " with distance " << distance);
+                        v->GetVertexId () << " to network " << w->GetVertexId () <<
+                        " via outgoing interface " << outIf <<
+                        " with distance " << distance);
           return 1;
         }
     } // end v is the root
@@ -1098,13 +1098,13 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
  * use can then be derived from the next hop IP address (or 
  * it can be inherited from the parent network).
  */
-                Ipv4Address nextHop = linkRemote->GetLinkData ();
-                uint32_t outIf = v->GetRootExitDirection ().second;
-                w->SetRootExitDirection (nextHop, outIf);
-                NS_LOG_LOGIC ("Next hop from " << 
-                  v->GetVertexId () << " to " << w->GetVertexId () << 
-                  " goes through next hop " << nextHop <<
-                  " via outgoing interface " << outIf);
+              Ipv4Address nextHop = linkRemote->GetLinkData ();
+              uint32_t outIf = v->GetRootExitDirection ().second;
+              w->SetRootExitDirection (nextHop, outIf);
+              NS_LOG_LOGIC ("Next hop from " <<
+                            v->GetVertexId () << " to " << w->GetVertexId () <<
+                            " goes through next hop " << nextHop <<
+                            " via outgoing interface " << outIf);
             }
         }
       else 
@@ -1122,7 +1122,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // root on the path toward <w>.
 //
 // Above, when we were considering the root node, we calculated the next hop
-// address and outgoing interface required to get off of the root network.  
+// address and outgoing interface required to get off of the root network.
 // At this point, we are further away from the root network along one of the
 // (shortest) paths.  So the next hop and outoing interface remain the same
 // (are inherited).
@@ -1150,7 +1150,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // to <w>.  If prev_link is not NULL, we return a Global Router Link Record
 // representing a possible *second* link from <v> to <w>.
 //
-  GlobalRoutingLinkRecord* 
+GlobalRoutingLinkRecord*
 GlobalRouteManagerImpl::SPFGetNextLink (
   SPFVertex* v,
   SPFVertex* w,
@@ -1170,7 +1170,7 @@ GlobalRouteManagerImpl::SPFGetNextLink (
       skip = false;
       found_prev_link = true;
     }
-//  
+//
 // Iterate through the Global Router Link Records advertised by the vertex
 // <v> looking for records representing the point-to-point links off of this
 // vertex.
@@ -1194,9 +1194,9 @@ GlobalRouteManagerImpl::SPFGetNextLink (
               found_prev_link = true;
               continue;
             }
-        
+
           NS_LOG_LOGIC ("Found matching link l:  linkId = " <<
-          l->GetLinkId () << " linkData = " << l->GetLinkData ());
+                        l->GetLinkId () << " linkData = " << l->GetLinkData ());
 //
 // If skip is false, don't (not too surprisingly) skip the link found -- it's 
 // the one we're interested in.  That's either because we didn't pass in a 
@@ -1204,31 +1204,31 @@ GlobalRouteManagerImpl::SPFGetNextLink (
 // skipped a previous link and moved forward to the next (which is then the
 // one we want).
 //
-        if (skip == false) 
-          {
-            NS_LOG_LOGIC ("Returning the found link");
-            return l;
-          }
-        else
-          {
+          if (skip == false)
+            {
+              NS_LOG_LOGIC ("Returning the found link");
+              return l;
+            }
+          else
+            {
 //
 // Skip is true and we've found a link from <v> to <w>.  We want the next one.
 // Setting skip to false gets us the next point-to-point global router link
 // record in the LSA from <v>.
 //
-            NS_LOG_LOGIC ("Skipping the found link");
-            skip = false;
-            continue;
-          }
-      }
+              NS_LOG_LOGIC ("Skipping the found link");
+              skip = false;
+              continue;
+            }
+        }
     }
   return 0;
 }
-  
+
 //
 // Used for unit tests.
 //
-  void
+void
 GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
 {
   NS_LOG_FUNCTION (root);
@@ -1323,7 +1323,7 @@ GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
 }
 
 // quagga ospf_spf_calculate
-  void
+void
 GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 {
   NS_LOG_FUNCTION (this << root);
@@ -1470,7 +1470,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 
     }  // end for loop
 
-// Second stage of SPF calculation procedure  
+// Second stage of SPF calculation procedure
   SPFProcessStubs (m_spfroot);
   for (uint32_t i = 0; i < m_lsdb->GetNumExtLSAs (); i++)
     {
@@ -1494,9 +1494,9 @@ GlobalRouteManagerImpl::ProcessASExternals (SPFVertex* v, GlobalRoutingLSA* extl
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("Processing external for destination " << 
-      extlsa->GetLinkStateId () <<
-      ", for router "  << v->GetVertexId () << 
-      ", advertised by " << extlsa->GetAdvertisingRouter ());
+                extlsa->GetLinkStateId () <<
+                ", for router "  << v->GetVertexId () <<
+                ", advertised by " << extlsa->GetAdvertisingRouter ());
   if (v->GetVertexType () == SPFVertex::VertexRouter)
     {
       GlobalRoutingLSA *rlsa = v->GetLSA ();
@@ -1540,7 +1540,7 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
     }
   NS_LOG_LOGIC ("External is on remote host: " 
     << extlsa->GetAdvertisingRouter () << "; installing");
-  
+
   Ipv4Address routerId = m_spfroot->GetVertexId ();
 
   NS_LOG_LOGIC ("Vertex ID = " << routerId);
@@ -1583,7 +1583,7 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
-                     "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+                         "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
                          "QI for <Ipv4> interface failed");
 //
 // Get the Global Router Link State Advertisement from the vertex we're
@@ -1592,7 +1592,7 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
 // to be interested in the records corresponding to point-to-point links.
 //
           NS_ASSERT_MSG (v->GetLSA (), 
-                     "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+                         "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
                          "Expected valid LSA in SPFVertex* v");
           Ipv4Mask tempmask = extlsa->GetNetworkLSANetworkMask ();
           Ipv4Address tempip = extlsa->GetLinkStateId ();
@@ -1629,16 +1629,16 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
                 {
                   gr->AddASExternalRouteTo (tempip, tempmask, nextHop, outIf);
                   NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                    " add external network route to " << tempip <<
-                    " using next hop " << nextHop <<
-                    " via interface " << outIf);
+                                " add external network route to " << tempip <<
+                                " using next hop " << nextHop <<
+                                " via interface " << outIf);
                 }
               else
                 {
                   NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                    " NOT able to add network route to " << tempip <<
-                    " using next hop " << nextHop <<
-                    " since outgoing interface id is negative");
+                                " NOT able to add network route to " << tempip <<
+                                " using next hop " << nextHop <<
+                                " since outgoing interface id is negative");
                 }
             }
           return;
@@ -1662,8 +1662,8 @@ GlobalRouteManagerImpl::SPFProcessStubs (SPFVertex* v)
       for (uint32_t i = 0; i < rlsa->GetNLinkRecords (); i++)
         {
           NS_LOG_LOGIC ("Examining link " << i << " of " << 
-            v->GetVertexId () << "'s " <<
-            v->GetLSA ()->GetNLinkRecords () << " link records");
+                        v->GetVertexId () << "'s " <<
+                        v->GetLSA ()->GetNLinkRecords () << " link records");
           GlobalRoutingLinkRecord *l = v->GetLSA ()->GetLinkRecord (i);
           if (l->GetLinkType () == GlobalRoutingLinkRecord::StubNetwork)
             {
@@ -1673,14 +1673,14 @@ GlobalRouteManagerImpl::SPFProcessStubs (SPFVertex* v)
             }
         }
     }
-    for (uint32_t i = 0; i < v->GetNChildren (); i++)
-      {
-        if (!v->GetChild (i)->IsVertexProcessed ())
-          {
-            SPFProcessStubs (v->GetChild (i));
-            v->GetChild (i)->SetVertexProcessed (true);
-          }
-      }
+  for (uint32_t i = 0; i < v->GetNChildren (); i++)
+    {
+      if (!v->GetChild (i)->IsVertexProcessed ())
+        {
+          SPFProcessStubs (v->GetChild (i));
+          v->GetChild (i)->SetVertexProcessed (true);
+        }
+    }
 }
 
 // RFC2328 16.1. second stage. 
@@ -1690,7 +1690,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
   NS_LOG_FUNCTION_NOARGS ();
 
   NS_ASSERT_MSG (m_spfroot, 
-    "GlobalRouteManagerImpl::SPFIntraAddStub (): Root pointer not set");
+                 "GlobalRouteManagerImpl::SPFIntraAddStub (): Root pointer not set");
 
   // XXX simplifed logic for the moment.  There are two cases to consider:
   // 1) the stub network is on this router; do nothing for now
@@ -1702,7 +1702,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
       NS_LOG_LOGIC ("Stub is on local host: " << v->GetVertexId () << "; returning");
       return;
     }
-      NS_LOG_LOGIC ("Stub is on remote host: " << v->GetVertexId () << "; installing");
+  NS_LOG_LOGIC ("Stub is on remote host: " << v->GetVertexId () << "; installing");
 //
 // The root of the Shortest Path First tree is the router to which we are 
 // going to write the actual routing table entries.  The vertex corresponding
@@ -1734,7 +1734,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
       if (rtr == 0)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " << 
-            node->GetId ());
+                        node->GetId ());
           continue;
         }
 //
@@ -1754,8 +1754,8 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
-            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
-            "QI for <Ipv4> interface failed");
+                         "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+                         "QI for <Ipv4> interface failed");
 //
 // Get the Global Router Link State Advertisement from the vertex we're
 // adding the routes to.  The LSA will have a number of attached Global Router
@@ -1763,8 +1763,8 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 // to be interested in the records corresponding to point-to-point links.
 //
           NS_ASSERT_MSG (v->GetLSA (), 
-            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
-            "Expected valid LSA in SPFVertex* v");
+                         "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+                         "Expected valid LSA in SPFVertex* v");
           Ipv4Mask tempmask (l->GetLinkData ().Get ());
           Ipv4Address tempip = l->GetLinkId ();
           tempip = tempip.CombineMask (tempmask);
@@ -1781,7 +1781,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 // Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
 // which the packets should be send for forwarding.
 //
-          
+
           Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
           if (router == 0)
             {
@@ -1800,16 +1800,16 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
                 {
                   gr->AddNetworkRouteTo (tempip, tempmask, nextHop, outIf);
                   NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                    " add network route to " << tempip <<
-                    " using next hop " << nextHop <<
-                    " via interface " << outIf);
+                                " add network route to " << tempip <<
+                                " using next hop " << nextHop <<
+                                " via interface " << outIf);
                 }
               else
                 {
                   NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                    " NOT able to add network route to " << tempip <<
-                    " using next hop " << nextHop <<
-                    " since outgoing interface id is negative");
+                                " NOT able to add network route to " << tempip <<
+                                " using next hop " << nextHop <<
+                                " since outgoing interface id is negative");
                 }
             }
           return;
@@ -1829,7 +1829,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 {
   NS_LOG_FUNCTION (a << amask);
 //
-// We have an IP address <a> and a vertex ID of the root of the SPF tree.  
+// We have an IP address <a> and a vertex ID of the root of the SPF tree.
 // The question is what interface index does this address correspond to.
 // The answer is a little complicated since we have to find a pointer to
 // the node corresponding to the vertex ID, find the Ipv4 interface on that
@@ -1869,8 +1869,8 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
-            "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
-            "GetObject for <Ipv4> interface failed");
+                         "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
+                         "GetObject for <Ipv4> interface failed");
 //
 // Look through the interfaces on this node for one that has the IP address
 // we're looking for.  If we find one, return the corresponding interface
@@ -1882,7 +1882,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
           if (interface < 0)
             {
               NS_FATAL_ERROR ("GlobalRouteManagerImpl::FindOutgoingInterfaceId(): "
-                "Expected an interface associated with address a:" << a);
+                              "Expected an interface associated with address a:" << a);
             }
 #endif 
           return interface;
@@ -1911,13 +1911,13 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // a destination IP address, reachable from the root, to which we add a host
 // route.
 //
-  void
+void
 GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 {
   NS_LOG_FUNCTION (v);
 
   NS_ASSERT_MSG (m_spfroot, 
-    "GlobalRouteManagerImpl::SPFIntraAddRouter (): Root pointer not set");
+                 "GlobalRouteManagerImpl::SPFIntraAddRouter (): Root pointer not set");
 //
 // The root of the Shortest Path First tree is the router to which we are 
 // going to write the actual routing table entries.  The vertex corresponding
@@ -1949,7 +1949,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
       if (rtr == 0)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " << 
-            node->GetId ());
+                        node->GetId ());
           continue;
         }
 //
@@ -1969,8 +1969,8 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
-            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
-            "GetObject for <Ipv4> interface failed");
+                         "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+                         "GetObject for <Ipv4> interface failed");
 //
 // Get the Global Router Link State Advertisement from the vertex we're
 // adding the routes to.  The LSA will have a number of attached Global Router
@@ -1979,8 +1979,8 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 //
           GlobalRoutingLSA *lsa = v->GetLSA ();
           NS_ASSERT_MSG (lsa, 
-            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
-            "Expected valid LSA in SPFVertex* v");
+                         "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+                         "Expected valid LSA in SPFVertex* v");
 
           uint32_t nLinkRecords = lsa->GetNLinkRecords ();
 //
@@ -1992,7 +1992,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // the vertex <v>.
 //
           NS_LOG_LOGIC (" Node " << node->GetId () <<
-             " found " << nLinkRecords << " link records in LSA " << lsa << "with LinkStateId "<< lsa->GetLinkStateId ());
+                        " found " << nLinkRecords << " link records in LSA " << lsa << "with LinkStateId "<< lsa->GetLinkStateId ());
           for (uint32_t j = 0; j < nLinkRecords; ++j)
             {
 //
@@ -2027,27 +2027,27 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
               // and add host route for each of the exit direction toward
               // the vertex 'v'
               for (uint32_t i = 0; i < v->GetNRootExitDirections (); i++)
-              {
-                SPFVertex::NodeExit_t exit = v->GetRootExitDirection (i);
-                Ipv4Address nextHop = exit.first;
-                int32_t outIf = exit.second;
-                if (outIf >= 0)
-                  {
-                    gr->AddHostRouteTo (lr->GetLinkData (), nextHop,
-                      outIf);
-                    NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                      " adding host route to " << lr->GetLinkData () <<
-                      " using next hop " << nextHop <<
-                      " and outgoing interface " << outIf);
-                  }
-                else
-                  {
-                    NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                      " NOT able to add host route to " << lr->GetLinkData () <<
-                      " using next hop " << nextHop <<
-                      " since outgoing interface id is negative " << outIf);
-                  }
-              } // for all routes from the root the vertex 'v'
+                {
+                  SPFVertex::NodeExit_t exit = v->GetRootExitDirection (i);
+                  Ipv4Address nextHop = exit.first;
+                  int32_t outIf = exit.second;
+                  if (outIf >= 0)
+                    {
+                      gr->AddHostRouteTo (lr->GetLinkData (), nextHop,
+                                          outIf);
+                      NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                                    " adding host route to " << lr->GetLinkData () <<
+                                    " using next hop " << nextHop <<
+                                    " and outgoing interface " << outIf);
+                    }
+                  else
+                    {
+                      NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                                    " NOT able to add host route to " << lr->GetLinkData () <<
+                                    " using next hop " << nextHop <<
+                                    " since outgoing interface id is negative " << outIf);
+                    }
+                } // for all routes from the root the vertex 'v'
             }
 //
 // Done adding the routes for the selected node.
@@ -2056,13 +2056,13 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
         }
     }
 }
-  void
+void
 GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 {
   NS_LOG_FUNCTION (v);
 
   NS_ASSERT_MSG (m_spfroot, 
-    "GlobalRouteManagerImpl::SPFIntraAddTransit (): Root pointer not set");
+                 "GlobalRouteManagerImpl::SPFIntraAddTransit (): Root pointer not set");
 //
 // The root of the Shortest Path First tree is the router to which we are 
 // going to write the actual routing table entries.  The vertex corresponding
@@ -2094,7 +2094,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
       if (rtr == 0)
         {
           NS_LOG_LOGIC ("No GlobalRouter interface on node " << 
-            node->GetId ());
+                        node->GetId ());
           continue;
         }
 //
@@ -2114,8 +2114,8 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 //
           Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
-            "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
-            "GetObject for <Ipv4> interface failed");
+                         "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
+                         "GetObject for <Ipv4> interface failed");
 //
 // Get the Global Router Link State Advertisement from the vertex we're
 // adding the routes to.  The LSA will have a number of attached Global Router
@@ -2124,8 +2124,8 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 //
           GlobalRoutingLSA *lsa = v->GetLSA ();
           NS_ASSERT_MSG (lsa, 
-            "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
-            "Expected valid LSA in SPFVertex* v");
+                         "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
+                         "Expected valid LSA in SPFVertex* v");
           Ipv4Mask tempmask = lsa->GetNetworkLSANetworkMask ();
           Ipv4Address tempip = lsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
@@ -2140,26 +2140,26 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           // and add host route for each of the exit direction toward
           // the vertex 'v'
           for (uint32_t i = 0; i < v->GetNRootExitDirections (); i++)
-          {
-            SPFVertex::NodeExit_t exit = v->GetRootExitDirection (i);
-            Ipv4Address nextHop = exit.first;
-            int32_t outIf = exit.second;
+            {
+              SPFVertex::NodeExit_t exit = v->GetRootExitDirection (i);
+              Ipv4Address nextHop = exit.first;
+              int32_t outIf = exit.second;
 
-            if (outIf >= 0)
-              {
-                gr->AddNetworkRouteTo (tempip, tempmask, nextHop, outIf);
-                NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                  " add network route to " << tempip <<
-                  " using next hop " << nextHop <<
-                  " via interface " << outIf);
-              }
-            else
-              {
-                NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
-                  " NOT able to add network route to " << tempip <<
-                  " using next hop " << nextHop <<
-                  " since outgoing interface id is negative " << outIf);
-              }
+              if (outIf >= 0)
+                {
+                  gr->AddNetworkRouteTo (tempip, tempmask, nextHop, outIf);
+                  NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                                " add network route to " << tempip <<
+                                " using next hop " << nextHop <<
+                                " via interface " << outIf);
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                                " NOT able to add network route to " << tempip <<
+                                " using next hop " << nextHop <<
+                                " since outgoing interface id is negative " << outIf);
+                }
             }
         }
     } 
@@ -2174,7 +2174,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // Given a pointer to a vertex, it links back to the vertex's parent that it
 // already has set and adds itself to that vertex's list of children.
 //
-  void
+void
 GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 {
   NS_LOG_FUNCTION (v);

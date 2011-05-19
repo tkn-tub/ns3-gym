@@ -50,18 +50,18 @@ public:
    * \return If the net device pointed to by the devicePtr is active
    * and ready to RX/TX.
    */
-  bool IsActive();                   
+  bool IsActive();
 };
 
 /**
  * Current state of the channel
  */ 
 enum WireState
-  {
-    IDLE,          /**< Channel is IDLE, no packet is being transmitted */
-    TRANSMITTING,  /**< Channel is BUSY, a packet is being written by a net device */
-    PROPAGATING    /**< Channel is BUSY, packet is propagating to all attached net devices */
-  };
+{
+  IDLE,            /**< Channel is IDLE, no packet is being transmitted */
+  TRANSMITTING,    /**< Channel is BUSY, a packet is being written by a net device */
+  PROPAGATING      /**< Channel is BUSY, packet is propagating to all attached net devices */
+};
 
 /**
  * \brief Csma Channel.
@@ -210,7 +210,7 @@ public:
    * free.
    */
   bool IsBusy ();
-  
+
   /**
    * \brief Indicates if a net device is currently attached or
    * detached from the channel.

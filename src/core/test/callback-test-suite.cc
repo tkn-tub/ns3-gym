@@ -31,10 +31,10 @@ public:
   BasicCallbackTestCase ();
   virtual ~BasicCallbackTestCase () {}
 
-  void Target1 (void) {m_test1 = true;}
-  int Target2 (void) {m_test2 = true; return 2;}
-  void Target3 (double a) {m_test3 = true;}
-  int Target4 (double a, int b) {m_test4 = true; return 4;}
+  void Target1 (void) { m_test1 = true;}
+  int Target2 (void) { m_test2 = true; return 2;}
+  void Target3 (double a) { m_test3 = true;}
+  int Target4 (double a, int b) { m_test4 = true; return 4;}
 
 private:
   virtual void DoRun (void);
@@ -135,7 +135,7 @@ BasicCallbackTestCase::DoRun (void)
 
   //
   // Make sure we can declare and compile a Callback pointing to a non-member 
-  // function that returns void, takes one integer argument and execute it.  
+  // function that returns void, takes one integer argument and execute it.
   // We also need to provide two dummy arguments to the constructor here.
   //
   Callback<void, int> target6 = Callback<void, int> (&BasicCallbackTarget6, true, true);
@@ -144,7 +144,7 @@ BasicCallbackTestCase::DoRun (void)
 
   //
   // Make sure we can declare and compile a Callback pointing to a non-member 
-  // function that returns int, takes one integer argument and execute it.  
+  // function that returns int, takes one integer argument and execute it.
   // We also need to provide two dummy arguments to the constructor here.
   //
   Callback<int, int> target7 = Callback<int, int> (&BasicCallbackTarget7, true, true);
@@ -161,10 +161,10 @@ public:
   MakeCallbackTestCase ();
   virtual ~MakeCallbackTestCase () {}
 
-  void Target1 (void) {m_test1 = true;}
-  int Target2 (void) {m_test2 = true; return 2;}
-  void Target3 (double a) {m_test3 = true;}
-  int Target4 (double a, int b) {m_test4 = true; return 4;}
+  void Target1 (void) { m_test1 = true;}
+  int Target2 (void) { m_test2 = true; return 2;}
+  void Target3 (double a) { m_test3 = true;}
+  int Target4 (double a, int b) { m_test4 = true; return 4;}
 
 private:
   virtual void DoRun (void);
@@ -263,7 +263,7 @@ MakeCallbackTestCase::DoRun (void)
 
   //
   // Make sure we can declare and compile a Callback pointing to a non-member 
-  // function that returns void, takes one integer argument and execute it.  
+  // function that returns void, takes one integer argument and execute it.
   // This uses a higher level call than in the basic tests so we do not need to 
   // include any dummy arguments here.
   //
@@ -273,7 +273,7 @@ MakeCallbackTestCase::DoRun (void)
 
   //
   // Make sure we can declare and compile a Callback pointing to a non-member 
-  // function that returns int, takes one integer argument and execute it.  
+  // function that returns int, takes one integer argument and execute it.
   // This uses a higher level call than in the basic tests so we do not need to 
   // include any dummy arguments here.
   //
@@ -387,7 +387,7 @@ public:
   NullifyCallbackTestCase ();
   virtual ~NullifyCallbackTestCase () {}
 
-  void Target1 (void) {m_test1 = true;}
+  void Target1 (void) { m_test1 = true;}
 
 private:
   virtual void DoRun (void);
@@ -435,7 +435,7 @@ public:
   MakeCallbackTemplatesTestCase ();
   virtual ~MakeCallbackTemplatesTestCase () {}
 
-  void Target1 (void) {m_test1 = true;}
+  void Target1 (void) { m_test1 = true;}
 
 private:
   virtual void DoRun (void);

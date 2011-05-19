@@ -3,7 +3,7 @@
  * Copyright (c) 2009 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,7 +21,7 @@
 #ifndef ATHSTATS_HELPER_H
 #define ATHSTATS_HELPER_H
 
-#include<string>
+#include <string>
 #include "ns3/object.h"
 #include "ns3/attribute.h"
 #include "ns3/object-factory.h"
@@ -40,7 +40,7 @@ class NetDevice;
 /**
  * @brief create AthstatsWifiTraceSink instances and connect them to wifi devices
  *
- * 
+ *
  */
 class AthstatsHelper
 {
@@ -50,9 +50,9 @@ public:
   void EnableAthstats (std::string filename, Ptr<NetDevice> nd);
   void EnableAthstats (std::string filename, NetDeviceContainer d);
   void EnableAthstats (std::string filename, NodeContainer n);
-  
+
 private:
-  Time m_interval;    
+  Time m_interval;
 };
 
 
@@ -67,8 +67,8 @@ private:
  * driver. In particular, the reproduced behavior is that obtained
  * when executing athstats without parameters: a report written in
  * text format is produced every fixed interval, based on the events
- * observed by the wifi device. 
- * 
+ * observed by the wifi device.
+ *
  * Differences with the "real" athstats:
  *
  * - AthstatsWifiTraceSink is expected to write its output to a file
@@ -76,130 +76,129 @@ private:
  *
  * - only a subset of the metrics supported by athstats is supported
  *   by AthstatsWifiTraceSink
- * 
+ *
  * - AthstatsWifiTraceSink does never produce a cumulative report.
  */
 class AthstatsWifiTraceSink  : public Object
 {
-public: 
+public:
   static TypeId GetTypeId (void);
   AthstatsWifiTraceSink ();
   virtual ~AthstatsWifiTraceSink ();
-    
 
-  /** 
+
+  /**
    * function to be called when the net device transmits a packet
-   * 
-   * @param context 
+   *
+   * @param context
    * @param p the packet being transmitted
    */
   void DevTxTrace (std::string context, Ptr<const Packet> p);
 
-  /** 
+  /**
    * function to be called when the net device receives a packet
-   * 
-   * @param context 
+   *
+   * @param context
    * @param p the packet being received
    */
   void DevRxTrace (std::string context, Ptr<const Packet> p);
 
-  /** 
+  /**
    * Function to be called when a RTS frame transmission by the considered
    * device has failed
-   * 
-   * @param context 
+   *
+   * @param context
    * @param address the MAC address of the remote station
    */
-  void TxRtsFailedTrace (std::string context, Mac48Address address);  
+  void TxRtsFailedTrace (std::string context, Mac48Address address);
 
-  /** 
+  /**
    * Function to be called when a data frame transmission by the considered
    * device has failed
-   * 
-   * @param context 
+   *
+   * @param context
    * @param address the MAC address of the remote station
    */
-  void TxDataFailedTrace (std::string context, Mac48Address address);  
+  void TxDataFailedTrace (std::string context, Mac48Address address);
 
-  /** 
+  /**
    * Function to be called when the transmission of a RTS frame has
    * exceeded the retry limit
-   * 
-   * @param context 
+   *
+   * @param context
    * @param address the MAC address of the remote station
    */
-  void TxFinalRtsFailedTrace (std::string context, Mac48Address address);  
+  void TxFinalRtsFailedTrace (std::string context, Mac48Address address);
 
-  /** 
+  /**
    * Function to be called when the transmission of a data frame has
    * exceeded the retry limit
-   * 
-   * @param context 
+   *
+   * @param context
    * @param address the MAC address of the remote station
-   */  
-  void TxFinalDataFailedTrace (std::string context, Mac48Address address);    
+   */
+  void TxFinalDataFailedTrace (std::string context, Mac48Address address);
 
-  /** 
+  /**
    * Function to be called when the PHY layer  of the considered
    * device receives a frame
-   * 
-   * @param context 
-   * @param packet 
-   * @param snr 
-   * @param mode 
-   * @param preamble 
+   *
+   * @param context
+   * @param packet
+   * @param snr
+   * @param mode
+   * @param preamble
    */
   void PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
 
-  /** 
+  /**
    * Function to be called when a frame reception by the PHY
    * layer  of the considered device resulted in an error due to a failure in the CRC check of
    * the frame
-   * 
-   * @param context 
-   * @param packet 
-   * @param snr 
+   *
+   * @param context
+   * @param packet
+   * @param snr
    */
   void PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr);
 
-  /** 
+  /**
    * Function to be called when a frame is being transmitted by the
    * PHY layer of the considered device
-   * 
-   * @param context 
-   * @param packet 
-   * @param mode 
-   * @param preamble 
-   * @param txPower 
+   *
+   * @param context
+   * @param packet
+   * @param mode
+   * @param preamble
+   * @param txPower
    */
   void PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower);
 
-  /** 
+  /**
    * Function to be called when the PHY layer of the considered device
    * changes state
-   * 
-   * @param context 
-   * @param start 
-   * @param duration 
-   * @param state 
+   *
+   * @param context
+   * @param start
+   * @param duration
+   * @param state
    */
   void PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state);
 
-  /** 
+  /**
    * Open a file for output
-   * 
+   *
    * @param name the name of the file to be opened.
    */
   void Open (std::string const& name);
 
 private:
-
-  /** 
+  /**
    * @internal
    */
   void WriteStats ();
 
-  /** 
+  /**
    * @internal
    */
   void ResetCounters ();
@@ -215,13 +214,13 @@ private:
 
   std::ofstream *m_writer;
 
-  Time m_interval;    
+  Time m_interval;
 
 }; // class AthstatsWifiTraceSink
 
 
 
-  
+
 } // namespace ns3
 
 

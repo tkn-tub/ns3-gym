@@ -39,12 +39,12 @@ static char
 AsciiToLowCase (char c)
 {
   if (c >= ASCII_a && c <= ASCII_z) {
-    return c;
-  } else if (c >= ASCII_A && c <= ASCII_Z) {
-    return c + (ASCII_a - ASCII_A);
-  } else {
-    return c;
-  }
+      return c;
+    } else if (c >= ASCII_A && c <= ASCII_Z) {
+      return c + (ASCII_a - ASCII_A);
+    } else {
+      return c;
+    }
 }
 
 
@@ -59,25 +59,25 @@ Mac48Address::Mac48Address (const char *str)
     {
       uint8_t byte = 0;
       while (*str != ASCII_COLON && *str != 0) 
-	{
-	  byte <<= 4;
-	  char low = AsciiToLowCase (*str);
-	  if (low >= ASCII_a) 
-	    {
-	      byte |= low - ASCII_a + 10;
-	    } 
-	  else 
-	    {
-	      byte |= low - ASCII_ZERO;
-	    }
-	  str++;
-	}
+        {
+          byte <<= 4;
+          char low = AsciiToLowCase (*str);
+          if (low >= ASCII_a)
+            {
+              byte |= low - ASCII_a + 10;
+            }
+          else
+            {
+              byte |= low - ASCII_ZERO;
+            }
+          str++;
+        }
       m_address[i] = byte;
       i++;
       if (*str == 0) 
-	{
-	  break;
-	}
+        {
+          break;
+        }
       str++;
     }
   NS_ASSERT (i == 6);
@@ -261,17 +261,17 @@ std::istream& operator>> (std::istream& is, Mac48Address & address)
       std::string::size_type next;
       next = v.find (":", col);
       if (next == std::string::npos)
-	{
-	  tmp = v.substr (col, v.size ()-col);
-	  address.m_address[i] = AsInt (tmp);
-	  break;
-	}
+        {
+          tmp = v.substr (col, v.size ()-col);
+          address.m_address[i] = AsInt (tmp);
+          break;
+        }
       else
-	{
-	  tmp = v.substr (col, next-col);
-	  address.m_address[i] = AsInt (tmp);
-	  col = next + 1;
-	}
+        {
+          tmp = v.substr (col, next-col);
+          address.m_address[i] = AsInt (tmp);
+          col = next + 1;
+        }
     }
   return is;
 }

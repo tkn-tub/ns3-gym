@@ -39,9 +39,9 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
     virtual bool Check (const AttributeValue &value) const {
       const IntegerValue *v = dynamic_cast<const IntegerValue *> (&value);
       if (v == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
     virtual std::string GetValueTypeName (void) const {

@@ -27,7 +27,7 @@ Synchronizer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Synchronizer")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
@@ -40,32 +40,32 @@ Synchronizer::~Synchronizer ()
 {
 }
 
-  bool
+bool
 Synchronizer::Realtime (void)
 {
   return DoRealtime ();
 }
 
-  uint64_t
+uint64_t
 Synchronizer::GetCurrentRealtime (void)
 {
   return NanosecondToTimeStep (DoGetCurrentRealtime ());
 }
 
-  void
+void
 Synchronizer::SetOrigin (uint64_t ts)
 {
   m_simOriginNano = TimeStepToNanosecond (ts);
   DoSetOrigin (m_simOriginNano);
 }
 
-  uint64_t
+uint64_t
 Synchronizer::GetOrigin (void)
 {
   return NanosecondToTimeStep (m_simOriginNano);
 }
 
-  int64_t
+int64_t
 Synchronizer::GetDrift (uint64_t ts)
 {
   int64_t tDrift = DoGetDrift (TimeStepToNanosecond (ts));
@@ -75,47 +75,47 @@ Synchronizer::GetDrift (uint64_t ts)
       return -NanosecondToTimeStep (-tDrift);
     } else {
       return NanosecondToTimeStep (tDrift);
-  }
+    }
 }
 
-  bool
+bool
 Synchronizer::Synchronize (uint64_t tsCurrent, uint64_t tsDelay)
 {
   return DoSynchronize (TimeStepToNanosecond (tsCurrent), 
-    TimeStepToNanosecond (tsDelay));
+                        TimeStepToNanosecond (tsDelay));
 }
 
-  void
+void
 Synchronizer::Signal (void)
 {
   DoSignal ();
 }
 
-  void
+void
 Synchronizer::SetCondition (bool cond)
 {
   DoSetCondition (cond);
 }
 
-  void
+void
 Synchronizer::EventStart (void)
 {
   DoEventStart ();
 }
 
-  uint64_t
+uint64_t
 Synchronizer::EventEnd (void)
 {
   return NanosecondToTimeStep (DoEventEnd ());
 }
 
-  uint64_t
+uint64_t
 Synchronizer::TimeStepToNanosecond (uint64_t ts)
 {
   return TimeStep (ts).GetNanoSeconds ();
 }
 
-  uint64_t
+uint64_t
 Synchronizer::NanosecondToTimeStep (uint64_t ns)
 {
   return NanoSeconds (ns).GetTimeStep ();

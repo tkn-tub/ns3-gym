@@ -121,7 +121,8 @@ TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
     m_sourceReadSize (sourceReadSize),
     m_serverWriteSize (serverWriteSize),
     m_serverReadSize (serverReadSize)
-{}
+{
+}
 
 void
 TcpTestCase::DoRun (void)
@@ -330,16 +331,16 @@ static class TcpTestSuite : public TestSuite
 public:
   TcpTestSuite ()
     : TestSuite ("tcp", UNIT)
-    {
-      // Arguments to these test cases are 1) totalStreamSize, 
-      // 2) source write size, 3) source read size
-      // 4) server write size, and 5) server read size
-      // with units of bytes
-      AddTestCase (new TcpTestCase (13, 200, 200, 200, 200));
-      AddTestCase (new TcpTestCase (13, 1, 1, 1, 1));
-      AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20));
-    }
-  
+  {
+    // Arguments to these test cases are 1) totalStreamSize,
+    // 2) source write size, 3) source read size
+    // 4) server write size, and 5) server read size
+    // with units of bytes
+    AddTestCase (new TcpTestCase (13, 200, 200, 200, 200));
+    AddTestCase (new TcpTestCase (13, 1, 1, 1, 1));
+    AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20));
+  }
+
 } g_tcpTestSuite;
 
 } // namespace ns3

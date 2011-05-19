@@ -32,13 +32,13 @@ TypeId
 MeshHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Dot11sMacHeader")
-  .SetParent<Header> ()
-  .AddConstructor<MeshHeader> ();
+    .SetParent<Header> ()
+    .AddConstructor<MeshHeader> ();
   return tid;
 }
 MeshHeader::MeshHeader () :
   m_meshFlags (0), m_meshTtl (0), m_meshSeqno (0), m_addr4 (Mac48Address ()), m_addr5 (Mac48Address ()),
-      m_addr6 (Mac48Address ())
+  m_addr6 (Mac48Address ())
 {
 }
 MeshHeader::~MeshHeader ()
@@ -164,15 +164,15 @@ void
 MeshHeader::Print (std::ostream &os) const
 {
   os << "flags = " << (uint16_t) m_meshFlags << std::endl << "ttl = " << (uint16_t) m_meshTtl 
-    << std::endl << "seqno = " << m_meshSeqno << std::endl<< "addr4 = " << m_addr4 << std::endl
-    << "addr5 = " << m_addr5 << std::endl << "addr6 = " << m_addr6 << std::endl;
+     << std::endl << "seqno = " << m_meshSeqno << std::endl<< "addr4 = " << m_addr4 << std::endl
+     << "addr5 = " << m_addr5 << std::endl << "addr6 = " << m_addr6 << std::endl;
 }
 bool
 operator== (const MeshHeader & a, const MeshHeader & b)
 {
   return ((a.m_meshFlags == b.m_meshFlags) && (a.m_meshTtl == b.m_meshTtl)
-      && (a.m_meshSeqno == b.m_meshSeqno) && (a.m_addr4 == b.m_addr4) && (a.m_addr5 == b.m_addr5)
-      && (a.m_addr6 == b.m_addr6));
+          && (a.m_meshSeqno == b.m_meshSeqno) && (a.m_addr4 == b.m_addr4) && (a.m_addr5 == b.m_addr5)
+          && (a.m_addr6 == b.m_addr6));
 }
 } //namespace dot11s
 } // namespace ns3

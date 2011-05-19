@@ -84,7 +84,7 @@ int main (int argc, char *argv[])
 
   EventId id = Simulator::Schedule (Seconds (30.0), &CancelledEvent);
   Simulator::Cancel (id);
-  
+
   Simulator::Run ();
 
   Simulator::Destroy ();

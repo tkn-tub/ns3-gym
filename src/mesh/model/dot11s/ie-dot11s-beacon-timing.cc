@@ -134,8 +134,8 @@ IeBeaconTiming::Print (std::ostream& os) const
   os << "Number of units: " << (uint16_t) m_numOfUnits << std::endl;
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
-      os << "AID=" << (uint16_t) (*j)->GetAid () << ", Last beacon was at " << (*j)->GetLastBeacon ()
-          << ", with beacon interval " << (*j)->GetBeaconInterval () << std::endl;
+      os << "AID=" << (uint16_t)(*j)->GetAid () << ", Last beacon was at " << (*j)->GetLastBeacon ()
+         << ", with beacon interval " << (*j)->GetBeaconInterval () << std::endl;
     }
   os << "</information_element>" << std::endl;
 }
@@ -168,49 +168,49 @@ IeBeaconTiming::DeserializeInformationField (Buffer::Iterator start, uint8_t len
 uint16_t
 IeBeaconTiming::TimestampToU16 (Time t)
 {
-  return ((uint16_t) ((t.GetMicroSeconds () >> 8) & 0xffff));
+  return ((uint16_t)((t.GetMicroSeconds () >> 8) & 0xffff));
 }
 ;
 
 uint16_t
 IeBeaconTiming::BeaconIntervalToU16 (Time t)
 {
-  return ((uint16_t) (t.GetMicroSeconds () >> 10) & 0xffff);
+  return ((uint16_t)(t.GetMicroSeconds () >> 10) & 0xffff);
 }
 uint8_t
 IeBeaconTiming::AidToU8 (uint16_t x)
 {
-  return (uint8_t) (x & 0xff);
+  return (uint8_t)(x & 0xff);
 }
 bool
 operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b)
 {
   return ((a.GetAid () == b.GetAid ()) && (a.GetLastBeacon () == b.GetLastBeacon ())
-      && (a.GetBeaconInterval () == b.GetBeaconInterval ()));
+          && (a.GetBeaconInterval () == b.GetBeaconInterval ()));
 }
 bool
 IeBeaconTiming::operator== (WifiInformationElement const & a)
 {
   try {
-    IeBeaconTiming const & aa = dynamic_cast<IeBeaconTiming const &>(a);
-    
-    if (m_numOfUnits != aa.m_numOfUnits)
-      {
-        return false;
-      }
+      IeBeaconTiming const & aa = dynamic_cast<IeBeaconTiming const &>(a);
+
+      if (m_numOfUnits != aa.m_numOfUnits)
+        {
+          return false;
+        }
       for (unsigned int i = 0; i < m_neighbours.size (); i++)
-      {
-        if (!(*PeekPointer (m_neighbours[i]) == *PeekPointer (aa.m_neighbours[i])))
-          {
-            return false;
-          }
-      }
+        {
+          if (!(*PeekPointer (m_neighbours[i]) == *PeekPointer (aa.m_neighbours[i])))
+            {
+              return false;
+            }
+        }
       return true;
-  } 
+    }
   catch (std::bad_cast)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 }
 std::ostream &
 operator << (std::ostream &os, const IeBeaconTiming &a)

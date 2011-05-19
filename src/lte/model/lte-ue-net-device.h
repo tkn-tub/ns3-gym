@@ -44,6 +44,7 @@ class LteUeMac;
 class LteUeRrc;
 
 /**
+ * \ingroup lte
  * The LteUeNetDevice class implements the UE net device
  */
 class LteUeNetDevice : public LteNetDevice

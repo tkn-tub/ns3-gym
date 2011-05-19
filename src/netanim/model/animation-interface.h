@@ -31,9 +31,17 @@
 
 
 namespace ns3 {
+
+/**
+ * \defgroup netanim Animation
+ *
+ */
+
 class NetModel;
 
 /**
+ * \ingroup netanim
+ *
  * \brief Interface to network animator
  *
  * Provides functions that facilitate communications with an
@@ -98,8 +106,8 @@ public:
 private:
   // Packet tx animation callback
   void DevTxTrace (std::string context, Ptr<const Packet> p,
-                 Ptr<NetDevice> tx, Ptr<NetDevice> rx,
-                 Time txTime, Time rxTime);
+                   Ptr<NetDevice> tx, Ptr<NetDevice> rx,
+                   Time txTime, Time rxTime);
   // Write specified amount of data to the specified handle
   int  WriteN (int, const char*, uint32_t);
 private:

@@ -32,8 +32,8 @@ IePrep::~IePrep ()
 }
 IePrep::IePrep () :
   m_flags (0), m_hopcount (0), m_ttl (0), m_destinationAddress (Mac48Address::GetBroadcast ()),
-      m_destSeqNumber (0), m_lifetime (0), m_metric (0), m_originatorAddress (Mac48Address::GetBroadcast ()),
-      m_originatorSeqNumber (0)
+  m_destSeqNumber (0), m_lifetime (0), m_metric (0), m_originatorAddress (Mac48Address::GetBroadcast ()),
+  m_originatorSeqNumber (0)
 {
 }
 WifiInformationElementId
@@ -135,7 +135,7 @@ void
 IePrep::DecrementTtl ()
 {
   m_ttl--;
-  m_hopcount ++;
+  m_hopcount++;
 }
 
 void
@@ -176,14 +176,14 @@ uint8_t
 IePrep::GetInformationFieldSize () const
 {
   uint32_t retval = 1 //Flags
-      + 1 //Hopcount
-      + 1 //Ttl
-      + 6 //Dest address
-      + 4 //Dest seqno
-      + 4 //Lifetime
-      + 4 //metric
-      + 6 //Originator address
-      + 4; //Originator seqno
+    + 1   //Hopcount
+    + 1   //Ttl
+    + 6   //Dest address
+    + 4   //Dest seqno
+    + 4   //Lifetime
+    + 4   //metric
+    + 6   //Originator address
+    + 4;   //Originator seqno
   return retval;
 }
 void
@@ -191,18 +191,18 @@ IePrep::Print (std::ostream& os) const
 {
   os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Flags:        = " << m_flags << std::endl << "Hopcount:     = " << m_hopcount << std::endl << "TTL:          = " << m_ttl
-      << std::endl<< "Destination:  = " << m_destinationAddress << std::endl << "Dest. seqnum: = " << m_destSeqNumber
-      << std::endl << "Lifetime:     = " << m_lifetime << std::endl<< "Metric:       = " << m_metric << std::endl << "Originator:   = "
-      << m_originatorAddress << std::endl << "Orig. seqnum: = " << m_originatorSeqNumber << std::endl;
+     << std::endl<< "Destination:  = " << m_destinationAddress << std::endl << "Dest. seqnum: = " << m_destSeqNumber
+     << std::endl << "Lifetime:     = " << m_lifetime << std::endl<< "Metric:       = " << m_metric << std::endl << "Originator:   = "
+     << m_originatorAddress << std::endl << "Orig. seqnum: = " << m_originatorSeqNumber << std::endl;
   os << "</information_element>" << std::endl;
 }
 bool
 operator== (const IePrep & a, const IePrep & b)
 {
   return ((a.m_flags == b.m_flags) && (a.m_hopcount == b.m_hopcount) && (a.m_ttl == b.m_ttl)
-      && (a.m_destinationAddress == b.m_destinationAddress) && (a.m_destSeqNumber == b.m_destSeqNumber)
-      && (a.m_lifetime == b.m_lifetime) && (a.m_metric == b.m_metric) && (a.m_originatorAddress
-      == b.m_originatorAddress) && (a.m_originatorSeqNumber == b.m_originatorSeqNumber));
+          && (a.m_destinationAddress == b.m_destinationAddress) && (a.m_destSeqNumber == b.m_destSeqNumber)
+          && (a.m_lifetime == b.m_lifetime) && (a.m_metric == b.m_metric) && (a.m_originatorAddress
+                                                                              == b.m_originatorAddress) && (a.m_originatorSeqNumber == b.m_originatorSeqNumber));
 }
 std::ostream &
 operator << (std::ostream &os, const IePrep &a)

@@ -31,7 +31,7 @@ static uint64_t PowerOfTen (uint8_t n)
 std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
   int64_t hi = value.GetHigh ();
-  os << ((hi<0)?"-":"+") << ((hi<0)?-hi:hi) << ".";
+  os << ((hi<0) ? "-" : "+") << ((hi<0) ? -hi : hi) << ".";
   uint64_t low = value.GetLow ();
   uint8_t msd = MostSignificantDigit (~((uint64_t)0));
   do
@@ -80,13 +80,13 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
     {
       next = str.find ("+", cur);
       if (next != std::string::npos)
-	{
-	  next++;
-	}
+        {
+          next++;
+        }
       else
-	{
-	  next = cur;
-	}
+        {
+          next = cur;
+        }
       negative = false;
     }
   cur = next;
@@ -103,7 +103,7 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
       hi = ReadDigits (str.substr (cur, str.size ()-cur));
       lo = 0;
     }
-  hi = negative?-hi:hi;
+  hi = negative ? -hi : hi;
   value = int64x64_t (hi, lo);
   return is;
 }

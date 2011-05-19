@@ -49,7 +49,8 @@ ObjectBase::GetTypeId (void)
 }
 
 ObjectBase::~ObjectBase () 
-{}
+{
+}
 
 void
 ObjectBase::NotifyConstructionCompleted (void)
@@ -61,106 +62,106 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
   // loop over the inheritance tree back to the Object base class.
   TypeId tid = GetInstanceTypeId ();
   do {
-    // loop over all attributes in object type
-    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
-    for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
-      {
-        Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
-        Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
-        Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
-        NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
-                      tid.GetAttributeName (i)<<"\"");
-        if (!(tid.GetAttributeFlags (i) & TypeId::ATTR_CONSTRUCT))
-          {
-            continue;
-          }
-        bool found = false;
-        // is this attribute stored in this AttributeList instance ?
-        for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
-             j != attributes.m_attributes.end (); j++)
-          {
-            if (j->checker == checker)
-              {
-                // We have a matching attribute value.
-                if (DoSet (accessor, checker, *j->value))
-                  {
-                    NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                  tid.GetAttributeName (i)<<"\"");
-                    found = true;
-                    break;
-                  }
-              }
-          }
-        if (!found)
-          {
-            // is this attribute stored in the global instance ?
-            for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
-                 j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
-              {
-                if (j->checker == checker)
-                  {
-                    // We have a matching attribute value.
-                    if (DoSet (accessor, checker, *j->value))
-                      {
-                        NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                      tid.GetAttributeName (i)<<"\" from global");
-                        found = true;
-                        break;
-                      }
-                  }
-              }
-          }
-        if (!found)
-          {
-            // No matching attribute value so we try to look at the env var.
+      // loop over all attributes in object type
+      NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
+      for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
+        {
+          Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
+          Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
+          Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
+          NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
+                        tid.GetAttributeName (i)<<"\"");
+          if (!(tid.GetAttributeFlags (i) & TypeId::ATTR_CONSTRUCT))
+            {
+              continue;
+            }
+          bool found = false;
+          // is this attribute stored in this AttributeList instance ?
+          for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
+               j != attributes.m_attributes.end (); j++)
+            {
+              if (j->checker == checker)
+                {
+                  // We have a matching attribute value.
+                  if (DoSet (accessor, checker, *j->value))
+                    {
+                      NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
+                                    tid.GetAttributeName (i)<<"\"");
+                      found = true;
+                      break;
+                    }
+                }
+            }
+          if (!found)
+            {
+              // is this attribute stored in the global instance ?
+              for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
+                   j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
+                {
+                  if (j->checker == checker)
+                    {
+                      // We have a matching attribute value.
+                      if (DoSet (accessor, checker, *j->value))
+                        {
+                          NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
+                                        tid.GetAttributeName (i)<<"\" from global");
+                          found = true;
+                          break;
+                        }
+                    }
+                }
+            }
+          if (!found)
+            {
+              // No matching attribute value so we try to look at the env var.
 #ifdef HAVE_GETENV
-            char *envVar = getenv ("NS_ATTRIBUTE_DEFAULT");
-            if (envVar != 0)
-              {
-                std::string env = std::string (envVar);
-                std::string::size_type cur = 0;
-                std::string::size_type next = 0;
-                while (next != std::string::npos)
-                  {
-                    next = env.find (";", cur);
-                    std::string tmp = std::string (env, cur, next-cur);
-                    std::string::size_type equal = tmp.find ("=");
-                    if (equal != std::string::npos)
-                      {
-                        std::string name = tmp.substr (0, equal);
-                        std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
-                        if (name == tid.GetAttributeFullName (i))
-                          {
-                            if (DoSet (accessor, checker, StringValue (value)))
-                              {
-                                NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                              tid.GetAttributeName (i)<<"\" from env var");
-                                found = true;
-                                break;
-                              }
-                          }
-                      }
-                    cur = next + 1;
-                  }
-              }
+              char *envVar = getenv ("NS_ATTRIBUTE_DEFAULT");
+              if (envVar != 0)
+                {
+                  std::string env = std::string (envVar);
+                  std::string::size_type cur = 0;
+                  std::string::size_type next = 0;
+                  while (next != std::string::npos)
+                    {
+                      next = env.find (";", cur);
+                      std::string tmp = std::string (env, cur, next-cur);
+                      std::string::size_type equal = tmp.find ("=");
+                      if (equal != std::string::npos)
+                        {
+                          std::string name = tmp.substr (0, equal);
+                          std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
+                          if (name == tid.GetAttributeFullName (i))
+                            {
+                              if (DoSet (accessor, checker, StringValue (value)))
+                                {
+                                  NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
+                                                tid.GetAttributeName (i)<<"\" from env var");
+                                  found = true;
+                                  break;
+                                }
+                            }
+                        }
+                      cur = next + 1;
+                    }
+                }
 #endif /* HAVE_GETENV */
-          }
-        if (!found)
-          {
-            // No matching attribute value so we try to set the default value.
-            DoSet (accessor, checker, *initial);
-            NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                          tid.GetAttributeName (i)<<"\" from initial value.");
-          }
-      }
-    tid = tid.GetParent ();
-  } while (tid != ObjectBase::GetTypeId ());
+            }
+          if (!found)
+            {
+              // No matching attribute value so we try to set the default value.
+              DoSet (accessor, checker, *initial);
+              NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
+                            tid.GetAttributeName (i)<<"\" from initial value.");
+            }
+        }
+      tid = tid.GetParent ();
+    } while (tid != ObjectBase::GetTypeId ());
   NotifyConstructionCompleted ();
 }
 
 bool
 ObjectBase::DoSet (Ptr<const AttributeAccessor> spec, 
-		   Ptr<const AttributeChecker> checker, 
+                   Ptr<const AttributeChecker> checker,
                    const AttributeValue &value)
 {
   bool ok = checker->Check (value);

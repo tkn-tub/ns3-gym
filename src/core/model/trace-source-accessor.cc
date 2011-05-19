@@ -22,8 +22,10 @@
 namespace ns3 {
 
 TraceSourceAccessor::TraceSourceAccessor ()
-{}
+{
+}
 TraceSourceAccessor::~TraceSourceAccessor ()
-{}
+{
+}
 
 } // namespace ns3

@@ -62,15 +62,17 @@ private:
 
 Base::Base ()
   : m_count (1)
-{}
+{
+}
 Base::~Base ()
-{}
-void 
+{
+}
+void
 Base::Ref (void) const
 {
   m_count++;
 }
-void 
+void
 Base::Unref (void) const
 {
   m_count--;
@@ -82,7 +84,8 @@ Base::Unref (void) const
 
 NoCount::NoCount (PtrTestCase *test)
   : m_test (test)
-{}
+{
+}
 NoCount::~NoCount ()
 {
   m_test->DestroyNotify ();
@@ -95,19 +98,20 @@ NoCount::Nothing () const
 
 PtrTestCase::PtrTestCase (void)
   : TestCase ("Sanity checking of Ptr<>")
-{}
-void 
+{
+}
+void
 PtrTestCase::DestroyNotify (void)
 {
   m_nDestroyed++;
 }
-Ptr<NoCount> 
+Ptr<NoCount>
 PtrTestCase::CallTest (Ptr<NoCount> p)
 {
   return p;
 }
 
-Ptr<NoCount> const 
+Ptr<NoCount> const
 PtrTestCase::CallTestConst (Ptr<NoCount> const p)
 {
   return p;
@@ -263,7 +267,7 @@ static class PtrTestSuite : public TestSuite
 {
 public:
   PtrTestSuite ()
-  : TestSuite ("ptr", UNIT)
+    : TestSuite ("ptr", UNIT)
   {
     AddTestCase (new PtrTestCase ());
   }

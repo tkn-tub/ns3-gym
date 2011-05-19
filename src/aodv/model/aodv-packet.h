@@ -104,9 +104,9 @@ class RreqHeader : public Header
 public:
   /// c-tor
   RreqHeader (uint8_t flags = 0, uint8_t reserved = 0, uint8_t hopCount = 0,
-      uint32_t requestID = 0, Ipv4Address dst = Ipv4Address (),
-      uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
-      uint32_t originSeqNo = 0);
+              uint32_t requestID = 0, Ipv4Address dst = Ipv4Address (),
+              uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
+              uint32_t originSeqNo = 0);
 
   ///\name Header serialization/deserialization
   //\{
@@ -182,8 +182,8 @@ class RrepHeader : public Header
 public:
   /// c-tor
   RrepHeader (uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst =
-      Ipv4Address (), uint32_t dstSeqNo = 0, Ipv4Address origin =
-      Ipv4Address (), Time lifetime = MilliSeconds (0));
+                Ipv4Address (), uint32_t dstSeqNo = 0, Ipv4Address origin =
+                Ipv4Address (), Time lifetime = MilliSeconds (0));
   ///\name Header serialization/deserialization
   //\{
   static TypeId GetTypeId ();
@@ -221,12 +221,12 @@ public:
 
   bool operator== (RrepHeader const & o) const;
 private:
-  uint8_t       m_flags;	          ///< A - acknowledgment required flag
-  uint8_t       m_prefixSize;	      ///< Prefix Size
-  uint8_t	      m_hopCount;         ///< Hop Count
+  uint8_t       m_flags;                  ///< A - acknowledgment required flag
+  uint8_t       m_prefixSize;         ///< Prefix Size
+  uint8_t             m_hopCount;         ///< Hop Count
   Ipv4Address   m_dst;              ///< Destination IP Address
   uint32_t      m_dstSeqNo;         ///< Destination Sequence Number
-  Ipv4Address	  m_origin;           ///< Source IP Address
+  Ipv4Address     m_origin;           ///< Source IP Address
   uint32_t      m_lifeTime;         ///< Lifetime (in milliseconds)
 };
 

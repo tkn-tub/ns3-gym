@@ -99,21 +99,21 @@ int main(int argc, char *argv[]) {
   cmd.Parse (argc, argv);
 
   if (format != "omnet" && format != "db") {
-    NS_LOG_ERROR("Unknown output format '" << format << "'");
-    return -1;
-  }
+      NS_LOG_ERROR("Unknown output format '" << format << "'");
+      return -1;
+    }
 
   #ifndef STATS_HAS_SQLITE3
   if (format == "db") {
       NS_LOG_ERROR("sqlite support not compiled in.");
       return -1;
-  }
+    }
   #endif
 
   {
-  stringstream sstr("");
-  sstr << distance;
-  input = sstr.str();
+    stringstream sstr("");
+    sstr << distance;
+    input = sstr.str();
   }
 
 
@@ -163,12 +163,12 @@ int main(int argc, char *argv[]) {
   //-- Create a custom traffic source and sink
   //--------------------------------------------
   NS_LOG_INFO ("Create traffic source & sink.");
-  Ptr<Node> appSource = NodeList::GetNode(0);  
+  Ptr<Node> appSource = NodeList::GetNode(0);
   Ptr<Sender> sender = CreateObject<Sender>();
   appSource->AddApplication(sender);
   sender->SetStartTime(Seconds(1));
 
-  Ptr<Node> appSink = NodeList::GetNode(1);  
+  Ptr<Node> appSink = NodeList::GetNode(1);
   Ptr<Receiver> receiver = CreateObject<Receiver>();
   appSink->AddApplication(receiver);
   receiver->SetStartTime(Seconds(0));
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
   appTx->SetContext("node[0]");
   Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
                   MakeCallback(&PacketCounterCalculator::PacketUpdate,
-                                    appTx));
+                               appTx));
   data.AddDataCalculator(appTx);
 
   // Here a counter for received packets is directly manipulated by
@@ -271,8 +271,8 @@ int main(int argc, char *argv[]) {
   appTxPkts->SetContext("node[0]");
   Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
                   MakeCallback
-                    (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
-                    appTxPkts));
+                          (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
+                          appTxPkts));
   data.AddDataCalculator(appTxPkts);
 
 
@@ -294,7 +294,7 @@ int main(int argc, char *argv[]) {
   //-- Run the simulation
   //--------------------------------------------
   NS_LOG_INFO("Run Simulation.");
-  Simulator::Run();    
+  Simulator::Run();
   Simulator::Destroy();
 
 
@@ -307,16 +307,16 @@ int main(int argc, char *argv[]) {
   // Pick an output writer based in the requested format.
   Ptr<DataOutputInterface> output = 0;
   if (format == "omnet") {
-    NS_LOG_INFO("Creating omnet formatted data output.");
-    output = CreateObject<OmnetDataOutput>();
-  } else if (format == "db") {
+      NS_LOG_INFO("Creating omnet formatted data output.");
+      output = CreateObject<OmnetDataOutput>();
+    } else if (format == "db") {
     #ifdef STATS_HAS_SQLITE3
       NS_LOG_INFO("Creating sqlite formatted data output.");
       output = CreateObject<SqliteDataOutput>();
     #endif
-  } else {
-    NS_LOG_ERROR("Unknown output format " << format);
-  }
+    } else {
+      NS_LOG_ERROR("Unknown output format " << format);
+    }
 
   // Finally, have that writer interrogate the DataCollector and save
   // the results.

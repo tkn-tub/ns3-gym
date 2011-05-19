@@ -67,7 +67,7 @@ EmuNetDevice::GetTypeId (void)
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (0), // arbitrary un-used value because no setter
                    MakeUintegerAccessor (&EmuNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> ())                   
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("Address", 
                    "The ns-3 MAC address of this (virtual) device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
@@ -180,21 +180,21 @@ EmuNetDevice::GetTypeId (void)
     .AddTraceSource ("PromiscSniffer", 
                      "Trace source simulating a promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&EmuNetDevice::m_promiscSnifferTrace))
-    ;
+  ;
   return tid;
 }
 
 EmuNetDevice::EmuNetDevice () 
-: 
-  m_startEvent (),
-  m_stopEvent (),
-  m_sock (-1),
-  m_readThread (0),
-  m_ifIndex (std::numeric_limits<uint32_t>::max ()),  // absurdly large value
-  m_sll_ifindex (-1),
-  m_isBroadcast (true),
-  m_isMulticast (false),
-  m_pendingReadCount (0)
+  :
+    m_startEvent (),
+    m_stopEvent (),
+    m_sock (-1),
+    m_readThread (0),
+    m_ifIndex (std::numeric_limits<uint32_t>::max ()), // absurdly large value
+    m_sll_ifindex (-1),
+    m_isBroadcast (true),
+    m_isMulticast (false),
+    m_pendingReadCount (0)
 {
   NS_LOG_FUNCTION (this);
   m_packetBuffer = new uint8_t[65536];
@@ -246,7 +246,7 @@ EmuNetDevice::Start (Time tStart)
   m_startEvent = Simulator::Schedule (tStart, &EmuNetDevice::StartDevice, this);
 }
 
-  void
+void
 EmuNetDevice::Stop (Time tStop)
 {
   NS_LOG_FUNCTION (tStop);
@@ -257,7 +257,7 @@ EmuNetDevice::Stop (Time tStop)
   m_startEvent = Simulator::Schedule (tStop, &EmuNetDevice::StopDevice, this);
 }
 
-  void
+void
 EmuNetDevice::StartDevice (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -349,7 +349,7 @@ EmuNetDevice::StartDevice (void)
     {
       NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Can't get interface flags");
     }
-  
+
   //
   // This device only works if the underlying interface is up in promiscuous 
   // mode.  We could have turned it on in the socket creator, but the situation
@@ -477,9 +477,9 @@ EmuNetDevice::CreateSocket (void)
       // Execute the socket creation process image.
       //
       status = ::execlp ("emu-sock-creator", 
-                        "emu-sock-creator",                             // argv[0] (filename)
-                        oss.str ().c_str (),                            // argv[1] (-p<path?
-                        (char *)NULL);
+                         "emu-sock-creator",                            // argv[0] (filename)
+                         oss.str ().c_str (),                           // argv[1] (-p<path?
+                         (char *)NULL);
 
       //
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
@@ -497,9 +497,9 @@ EmuNetDevice::CreateSocket (void)
       int st;
       pid_t waited = waitpid (pid, &st, 0);
       if (waited == -1)
-	{
-	  NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): waitpid() fails, errno = " << strerror (errno));
-	}
+        {
+          NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): waitpid() fails, errno = " << strerror (errno));
+        }
       NS_ASSERT_MSG (pid == waited, "EmuNetDevice::CreateSocket(): pid mismatch");
 
       //
@@ -508,17 +508,17 @@ EmuNetDevice::CreateSocket (void)
       // even exit normally, we bail too.
       //
       if (WIFEXITED (st))
-	{
+        {
           int exitStatus = WEXITSTATUS (st);
           if (exitStatus != 0)
             {
               NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): socket creator exited normally with status " << exitStatus);
             }
-	}
+        }
       else 
-	{
+        {
           NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): socket creator exited abnormally");
-	}
+        }
 
       //
       // At this point, the socket creator has run successfully and should 
@@ -552,7 +552,7 @@ EmuNetDevice::CreateSocket (void)
 
       //
       // There is a msghdr that is used to minimize the number of parameters
-      // passed to recvmsg (which we will use to receive our ancillary data).  
+      // passed to recvmsg (which we will use to receive our ancillary data).
       // This structure uses terminology corresponding to control messages, so
       // you'll see msg_control, which is the pointer to the ancillary data and 
       // controllen which is the size of the ancillary data array.
@@ -575,9 +575,9 @@ EmuNetDevice::CreateSocket (void)
       //
       ssize_t bytesRead = recvmsg (sock, &msg, 0);
       if (bytesRead != sizeof(int))
-	{
+        {
           NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Wrong byte count from socket creator");
-	}
+        }
 
       //
       // There may be a number of message headers/ancillary data arrays coming in.
@@ -586,10 +586,10 @@ EmuNetDevice::CreateSocket (void)
       //
       struct cmsghdr *cmsg;
       for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg, cmsg)) 
-	{
-	  if (cmsg->cmsg_level == SOL_SOCKET &&
-	      cmsg->cmsg_type == SCM_RIGHTS)
-	    {
+        {
+          if (cmsg->cmsg_level == SOL_SOCKET &&
+              cmsg->cmsg_type == SCM_RIGHTS)
+            {
               //
               // This is the type of message we want.  Check to see if the magic 
               // number is correct and then pull out the socket we care about if
@@ -605,10 +605,10 @@ EmuNetDevice::CreateSocket (void)
                 }
               else
                 {
-                  NS_LOG_INFO ("Got SCM_RIGHTS, but with bad magic " << magic);                  
+                  NS_LOG_INFO ("Got SCM_RIGHTS, but with bad magic " << magic);
                 }
-	    }
-	}
+            }
+        }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
 }
@@ -672,7 +672,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 
   uint16_t protocol;
-  
+
   switch (m_encapMode)
     {
     case LLC:
@@ -721,7 +721,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
     }
   else if (header.GetDestination ().IsGroup ())
     {
-      packetType = NS3_PACKET_MULTICAST;          
+      packetType = NS3_PACKET_MULTICAST;
     }
   else if (header.GetDestination () == m_address)
     {
@@ -778,9 +778,9 @@ EmuNetDevice::ReadThread (void)
       // Too many pending reads at the same time leads to excessive memory allocations.  This counter prevents it.
       // 
       bool skip = false;
-      
+
       {
-        CriticalSection cs (m_pendingReadMutex);            
+        CriticalSection cs (m_pendingReadMutex);
         //std::cerr << std::endl << "EmuNetDevice read thread: m_pendingReadCount is " << m_pendingReadCount << std::endl;
         if (m_pendingReadCount >= m_maxPendingReads)
           {
@@ -792,8 +792,8 @@ EmuNetDevice::ReadThread (void)
           }
       }
 
-      if (skip)  
-        {           
+      if (skip)
+        {
           struct timespec time = { 0, 100000000L }; // 100 ms
           nanosleep (&time, NULL);
           continue;
@@ -889,15 +889,15 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
         header.SetLengthType (packet->GetSize ());
       }
       break;
-      
+
     case DIX:
       header.SetLengthType (protocolNumber);
       break;
-      
+
     default:
       NS_FATAL_ERROR ("invalid encapsulation mode");
     }
-  
+
   packet->AddHeader (header);
 
   //
@@ -1054,7 +1054,7 @@ EmuNetDevice::IsMulticast (void) const
   return m_isMulticast;
 }
 
-  Address 
+Address
 EmuNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION (multicastGroup);
@@ -1100,7 +1100,7 @@ EmuNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
   m_promiscRxCallback = cb;
 }
 
-  bool 
+bool
 EmuNetDevice::SupportsSendFrom () const
 {
   NS_LOG_FUNCTION_NOARGS ();

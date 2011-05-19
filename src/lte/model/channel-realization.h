@@ -34,6 +34,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
+ *
  * \brief the ChannelRealization class implements a complete propagation model
  * used by the channel to compute the loss due to the propagation of the signal.
  * A ChannelRealization object is created for each couple of UE - eNB.

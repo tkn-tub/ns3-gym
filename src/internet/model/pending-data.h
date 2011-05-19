@@ -50,8 +50,8 @@ public:
   // Serialization
   uint8_t*  Serialize (uint8_t*, uint32_t&); // Serialize to a buffer
   uint8_t*  Construct (uint8_t*, uint32_t&); // Construct from buffer
-  virtual void Clear ();// Remove all associated data
-  virtual void Add (uint32_t s, const uint8_t* d = 0);// Add some data to end
+  virtual void Clear (); // Remove all associated data
+  virtual void Add (uint32_t s, const uint8_t* d = 0); // Add some data to end
   virtual void Add (Ptr<Packet> p);
   /**
    * This method returns the number of bytes in the PendingData buffer
@@ -110,9 +110,9 @@ public:
   std::vector<Ptr<Packet> > data;         // Corresponding data (may be null)
   // The next two fields allow simulated applications to exchange some info
   uint32_t msgSize;     // Total size of message
-  uint32_t responseSize;// Size of response requested
+  uint32_t responseSize; // Size of response requested
 };
 
-}//namepsace ns3
+} //namepsace ns3
 #endif
 

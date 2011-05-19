@@ -174,7 +174,7 @@ Experiment::Run (UanHelper &uan)
     mobility.Install (sink);
 
     NS_LOG_DEBUG ("Position of sink: "
-                    << sink.Get (0)->GetObject<MobilityModel> ()->GetPosition ());
+                  << sink.Get (0)->GetObject<MobilityModel> ()->GetPosition ());
     mobility.Install (nc);
 
     PacketSocketAddress socket;
@@ -223,7 +223,7 @@ Experiment::Run (UanHelper &uan)
     if (!ascii.is_open ())
       {
         NS_FATAL_ERROR ("Could not open ascii trace file: "
-                          << m_asciitracefile);
+                        << m_asciitracefile);
       }
     uan.EnableAsciiAll (ascii);
 
@@ -239,7 +239,7 @@ Experiment::Run (UanHelper &uan)
       }
     for (uint32_t i=0; i < sink.GetN (); i++)
       {
-       sink.Get (i) = 0;
+        sink.Get (i) = 0;
       }
 
     for (uint32_t i=0; i < devices.GetN (); i++)

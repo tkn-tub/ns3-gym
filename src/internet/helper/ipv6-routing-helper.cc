@@ -23,6 +23,7 @@
 namespace ns3 {
 
 Ipv6RoutingHelper::~Ipv6RoutingHelper ()
-{}
+{
+}
 
 } // namespace ns3

@@ -372,7 +372,7 @@ UanMacRcGw::StartCycle (void)
     }
   else
     {
-      m_currentRetryRate = (uint16_t)((thX - m_minRetryRate) / m_retryStep + 0.5) ;
+      m_currentRetryRate = (uint16_t)((thX - m_minRetryRate) / m_retryStep + 0.5);
     }
 
   double actualX = m_currentRetryRate * m_retryStep + m_minRetryRate;

@@ -49,10 +49,10 @@ public:
     uint32_t seqnum;
     Time lifetime;
     LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
-                 uint32_t i = INTERFACE_ANY,
-                 uint32_t m = MAX_METRIC,
-                 uint32_t s = 0,
-                 Time l = Seconds (0.0));
+                  uint32_t i = INTERFACE_ANY,
+                  uint32_t m = MAX_METRIC,
+                  uint32_t s = 0,
+                  Time l = Seconds (0.0));
     /// True for valid route
     bool IsValid () const;
     /// Compare route lookup results, used by tests
@@ -76,7 +76,7 @@ public:
     uint32_t metric,
     Time  lifetime,
     uint32_t seqnum
-  );
+    );
   void AddProactivePath (
     uint32_t metric,
     Mac48Address root,
@@ -84,7 +84,7 @@ public:
     uint32_t interface,
     Time  lifetime,
     uint32_t seqnum
-  );
+    );
   void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress, Time lifetime);
   PrecursorList GetPrecursors (Mac48Address destination);
   void DeleteProactivePath ();

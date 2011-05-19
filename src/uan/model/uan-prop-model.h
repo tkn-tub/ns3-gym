@@ -245,7 +245,7 @@ public:
    * Clears all pointer references
    */
   virtual void Clear (void);
-  
+
   virtual void DoDispose (void);
 };
 

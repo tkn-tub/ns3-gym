@@ -106,7 +106,7 @@ AlohaNoackNetDevice::AlohaNoackNetDevice ()
 {
   NS_LOG_FUNCTION (this);
 }
-  
+
 AlohaNoackNetDevice::~AlohaNoackNetDevice ()
 {
   NS_LOG_FUNCTION (this);

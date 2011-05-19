@@ -40,16 +40,17 @@ HierarchicalMobilityModel::GetTypeId (void)
                    MakePointerAccessor (&HierarchicalMobilityModel::SetParent,
                                         &HierarchicalMobilityModel::GetParent),
                    MakePointerChecker<MobilityModel> ())
-    ;
+  ;
   return tid;
 }
 
 HierarchicalMobilityModel::HierarchicalMobilityModel ()
   : m_child (0),
     m_parent (0)
-{}
+{
+}
 
-void 
+void
 HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
 {
   Ptr<MobilityModel> oldChild = m_child;
@@ -117,8 +118,8 @@ HierarchicalMobilityModel::DoGetPosition (void) const
   Vector parentPosition = m_parent->GetPosition ();
   Vector childPosition = m_child->GetPosition ();
   return Vector (parentPosition.x + childPosition.x,
-		   parentPosition.y + childPosition.y,
-		   parentPosition.z + childPosition.z);
+                 parentPosition.y + childPosition.y,
+                 parentPosition.z + childPosition.z);
 }
 void 
 HierarchicalMobilityModel::DoSetPosition (const Vector &position)

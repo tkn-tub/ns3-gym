@@ -37,20 +37,20 @@ TypeId
 MeshPointDevice::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshPointDevice")
-  .SetParent<NetDevice> ()
-  .AddConstructor<MeshPointDevice> ()
-  .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
-                 UintegerValue (0xffff),
-                 MakeUintegerAccessor (&MeshPointDevice::SetMtu,
-                                       &MeshPointDevice::GetMtu),
-                 MakeUintegerChecker<uint16_t> ())                   
-  .AddAttribute ( "RoutingProtocol",
-                  "The mesh routing protocol used by this mesh point.",
-                  PointerValue (),
-                  MakePointerAccessor (
+    .SetParent<NetDevice> ()
+    .AddConstructor<MeshPointDevice> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (0xffff),
+                   MakeUintegerAccessor (&MeshPointDevice::SetMtu,
+                                         &MeshPointDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ( "RoutingProtocol",
+                    "The mesh routing protocol used by this mesh point.",
+                    PointerValue (),
+                    MakePointerAccessor (
                       &MeshPointDevice::GetRoutingProtocol, &MeshPointDevice::SetRoutingProtocol),
-                  MakePointerChecker<
-                  MeshL2RoutingProtocol> ());
+                    MakePointerChecker<
+                      MeshL2RoutingProtocol> ());
   return tid;
 }
 
@@ -91,7 +91,7 @@ MeshPointDevice::DoDispose ()
 
 void
 MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet, uint16_t protocol,
-    Address const &src, Address const &dst, PacketType packetType)
+                                    Address const &src, Address const &dst, PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_DEBUG ("UID is " << packet->GetUid ());
@@ -133,11 +133,11 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
 
 void
 MeshPointDevice::Forward (Ptr<NetDevice> inport, Ptr<const Packet> packet, uint16_t protocol,
-    const Mac48Address src, const Mac48Address dst)
+                          const Mac48Address src, const Mac48Address dst)
 {
   // pass through routing protocol
   m_routingProtocol->RequestRoute (inport->GetIfIndex (), src, dst, packet, protocol, MakeCallback (
-      &MeshPointDevice::DoSend, this));
+                                     &MeshPointDevice::DoSend, this));
 }
 
 void
@@ -251,17 +251,17 @@ MeshPointDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 {
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
   return m_routingProtocol->RequestRoute (m_ifIndex, m_address, dst48, packet, protocolNumber, MakeCallback (
-      &MeshPointDevice::DoSend, this));
+                                            &MeshPointDevice::DoSend, this));
 }
 
 bool
 MeshPointDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& dest,
-    uint16_t protocolNumber)
+                           uint16_t protocolNumber)
 {
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
   return m_routingProtocol->RequestRoute (m_ifIndex, src48, dst48, packet, protocolNumber, MakeCallback (
-      &MeshPointDevice::DoSend, this));
+                                            &MeshPointDevice::DoSend, this));
 }
 
 Ptr<Node>
@@ -370,13 +370,13 @@ MeshPointDevice::AddInterface (Ptr<NetDevice> iface)
   if (ifaceMac == 0)
     {
       NS_FATAL_ERROR (
-          "WiFi device doesn't have correct MAC installed: cannot be used as a mesh point interface.");
+        "WiFi device doesn't have correct MAC installed: cannot be used as a mesh point interface.");
     }
   ifaceMac->SetMeshPointAddress (m_address);
 
   // Receive frames from this interface
   m_node->RegisterProtocolHandler (MakeCallback (&MeshPointDevice::ReceiveFromDevice, this), 0, iface, /*promiscuous = */
-      true);
+                                   true);
   m_ifaces.push_back (iface);
   m_channel->AddChannel (iface->GetChannel ());
 }
@@ -390,7 +390,7 @@ MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG (PeekPointer (protocol->GetMeshPoint ()) == this,
-      "Routing protocol must be installed on mesh point to be useful.");
+                 "Routing protocol must be installed on mesh point to be useful.");
   m_routingProtocol = protocol;
 }
 
@@ -402,7 +402,7 @@ MeshPointDevice::GetRoutingProtocol () const
 
 void
 MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst,
-    uint16_t protocol, uint32_t outIface)
+                         uint16_t protocol, uint32_t outIface)
 {
   if (!success)
     {
@@ -433,7 +433,7 @@ MeshPointDevice::DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac
     {
       for (std::vector<Ptr<NetDevice> >::iterator i = m_ifaces.begin (); i != m_ifaces.end (); i++)
         {
-          (*i) -> SendFrom (packet->Copy (), src, dst, protocol);
+          (*i)->SendFrom (packet->Copy (), src, dst, protocol);
         }
     }
 }
@@ -446,19 +446,19 @@ void
 MeshPointDevice::Report (std::ostream & os) const
 {
   os << "<Statistics" << std::endl <<
-    "txUnicastData=\"" << m_txStats.unicastData << "\"" << std::endl <<
-    "txUnicastDataBytes=\"" << m_txStats.unicastDataBytes << "\"" << std::endl <<
-    "txBroadcastData=\"" << m_txStats.broadcastData << "\"" << std::endl <<
-    "txBroadcastDataBytes=\"" << m_txStats.broadcastDataBytes << "\"" << std::endl <<
-    "rxUnicastData=\"" << m_rxStats.unicastData << "\"" << std::endl <<
-    "rxUnicastDataBytes=\"" << m_rxStats.unicastDataBytes << "\"" << std::endl <<
-    "rxBroadcastData=\"" << m_rxStats.broadcastData << "\"" << std::endl <<
-    "rxBroadcastDataBytes=\"" << m_rxStats.broadcastDataBytes << "\"" << std::endl <<
-    "fwdUnicastData=\"" << m_fwdStats.unicastData << "\"" << std::endl <<
-    "fwdUnicastDataBytes=\"" << m_fwdStats.unicastDataBytes << "\"" << std::endl <<
-    "fwdBroadcastData=\"" << m_fwdStats.broadcastData << "\"" << std::endl <<
-    "fwdBroadcastDataBytes=\"" << m_fwdStats.broadcastDataBytes << "\"" << std::endl <<
-    "/>" << std::endl;
+  "txUnicastData=\"" << m_txStats.unicastData << "\"" << std::endl <<
+  "txUnicastDataBytes=\"" << m_txStats.unicastDataBytes << "\"" << std::endl <<
+  "txBroadcastData=\"" << m_txStats.broadcastData << "\"" << std::endl <<
+  "txBroadcastDataBytes=\"" << m_txStats.broadcastDataBytes << "\"" << std::endl <<
+  "rxUnicastData=\"" << m_rxStats.unicastData << "\"" << std::endl <<
+  "rxUnicastDataBytes=\"" << m_rxStats.unicastDataBytes << "\"" << std::endl <<
+  "rxBroadcastData=\"" << m_rxStats.broadcastData << "\"" << std::endl <<
+  "rxBroadcastDataBytes=\"" << m_rxStats.broadcastDataBytes << "\"" << std::endl <<
+  "fwdUnicastData=\"" << m_fwdStats.unicastData << "\"" << std::endl <<
+  "fwdUnicastDataBytes=\"" << m_fwdStats.unicastDataBytes << "\"" << std::endl <<
+  "fwdBroadcastData=\"" << m_fwdStats.broadcastData << "\"" << std::endl <<
+  "fwdBroadcastDataBytes=\"" << m_fwdStats.broadcastDataBytes << "\"" << std::endl <<
+  "/>" << std::endl;
 }
 
 void

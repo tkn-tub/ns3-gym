@@ -53,7 +53,7 @@ TypeId Ipv6RawSocketImpl::GetTypeId ()
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6RawSocketImpl::m_icmpFilter),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 

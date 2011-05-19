@@ -71,7 +71,7 @@ def build(bld):
     obj_test.source = [
         'test/block-ack-test-suite.cc',
         'test/dcf-manager-test.cc',
-        'test/interference-helper-tx-duration-test.cc',
+        'test/tx-duration-test.cc',
         'test/wifi-test.cc',
         ]
 

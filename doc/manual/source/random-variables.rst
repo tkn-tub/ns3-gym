@@ -193,7 +193,7 @@ Types of RandomVariables
 ************************
 
 The following types of random variables are provided, and are documented in the
-|ns3| Doxygen or by reading ``src/core/random-variable.h``.  Users can also
+|ns3| Doxygen or by reading ``src/core/model/random-variable.h``.  Users can also
 create their own custom random variables by deriving from class
 :cpp:class:`RandomVariable`.
 

@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,27 +23,28 @@ namespace ns3 {
 
 CapabilityInformation::CapabilityInformation ()
   : m_capability (0)
-{}
+{
+}
 
-void 
+void
 CapabilityInformation::SetEss (void)
 {
   Set (0);
   Clear (1);
 }
-void 
+void
 CapabilityInformation::SetIbss (void)
 {
   Clear (0);
   Set (1);
 }
 
-bool 
+bool
 CapabilityInformation::IsEss (void) const
 {
   return Is (0);
 }
-bool 
+bool
 CapabilityInformation::IsIbss (void) const
 {
   return Is (1);
@@ -52,37 +53,37 @@ CapabilityInformation::IsIbss (void) const
 void
 CapabilityInformation::Set (uint8_t n)
 {
-  uint32_t mask = 1<<n;
+  uint32_t mask = 1 << n;
   m_capability |= mask;
 }
 
 void
 CapabilityInformation::Clear (uint8_t n)
 {
-  uint32_t mask = 1<<n;
+  uint32_t mask = 1 << n;
   m_capability &= ~mask;
 }
 
 bool
 CapabilityInformation::Is (uint8_t n) const
 {
-  uint32_t mask = 1<<n;
+  uint32_t mask = 1 << n;
   return (m_capability & mask) == mask;
 }
 
 
-uint32_t 
+uint32_t
 CapabilityInformation::GetSerializedSize (void) const
 {
   return 2;
 }
-Buffer::Iterator 
+Buffer::Iterator
 CapabilityInformation::Serialize (Buffer::Iterator start) const
 {
   start.WriteHtolsbU16 (m_capability);
   return start;
 }
-Buffer::Iterator 
+Buffer::Iterator
 CapabilityInformation::Deserialize (Buffer::Iterator start)
 {
   m_capability = start.ReadLsbtohU16 ();

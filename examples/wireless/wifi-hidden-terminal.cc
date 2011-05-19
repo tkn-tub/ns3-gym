@@ -46,17 +46,17 @@ void experiment (bool enableCtsRts)
   // 0. Enable or disable CTS/RTS
   UintegerValue ctsThr = (enableCtsRts ? UintegerValue (100) : UintegerValue (2200));
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", ctsThr);
-  
+
   // 1. Create 3 nodes 
   NodeContainer nodes;
   nodes.Create (3);
-  
+
   // 2. Place nodes somehow, this is required by every wireless simulation
   for (size_t i = 0; i < 3; ++i)
     {
       nodes.Get(i)->AggregateObject (CreateObject<ConstantPositionMobilityModel> ());
     }
-  
+
   // 3. Create propagation loss matrix
   Ptr<MatrixPropagationLossModel> lossModel = CreateObject<MatrixPropagationLossModel> ();
   lossModel->SetDefaultLoss (200); // set default loss to 200 dB (no link)
@@ -67,7 +67,7 @@ void experiment (bool enableCtsRts)
   Ptr<YansWifiChannel> wifiChannel = CreateObject <YansWifiChannel> ();
   wifiChannel->SetPropagationLossModel (lossModel);
   wifiChannel->SetPropagationDelayModel (CreateObject <ConstantSpeedPropagationDelayModel> ());
-   
+
   // 5. Install wireless devices
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
@@ -94,7 +94,7 @@ void experiment (bool enableCtsRts)
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.0.0.0", "255.0.0.0");
   ipv4.Assign (devices);
-  
+
   // 7. Install applications: two CBR streams each saturating the channel 
   ApplicationContainer cbrApps;
   uint16_t cbrPort = 12345;
@@ -120,7 +120,7 @@ void experiment (bool enableCtsRts)
   // we also use separate UDP applications that will send a single
   // packet before the CBR flows start. 
   // This is a workround for the lack of perfect ARP, see Bug 187
-  // http://www.nsnam.org/bugzilla/show_bug.cgi?id=187   
+  // http://www.nsnam.org/bugzilla/show_bug.cgi?id=187
 
   uint16_t  echoPort = 9;
   UdpEchoClientHelper echoClientHelper (Ipv4Address ("10.0.0.2"), echoPort);
@@ -128,24 +128,24 @@ void experiment (bool enableCtsRts)
   echoClientHelper.SetAttribute ("Interval", TimeValue (Seconds (0.1)));
   echoClientHelper.SetAttribute ("PacketSize", UintegerValue (10));
   ApplicationContainer pingApps;
-  
+
   // again using different start times to workaround Bug 388 and Bug 912
   echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.001)));
   pingApps.Add (echoClientHelper.Install (nodes.Get (0))); 
   echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.006)));
-  pingApps.Add (echoClientHelper.Install (nodes.Get (2)));   
+  pingApps.Add (echoClientHelper.Install (nodes.Get (2)));
 
 
 
-  
+
   // 8. Install FlowMonitor on all nodes
   FlowMonitorHelper flowmon;
   Ptr<FlowMonitor> monitor = flowmon.InstallAll();
-  
+
   // 9. Run simulation for 10 seconds
   Simulator::Stop (Seconds (10));
   Simulator::Run ();
-  
+
   // 10. Print per flow statistics
   monitor->CheckForLostPackets ();
   Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier ());
@@ -161,7 +161,7 @@ void experiment (bool enableCtsRts)
           std::cout << "  Throughput: " << i->second.rxBytes * 8.0 / 10.0 / 1024 / 1024  << " Mbps\n";
         }
     }
-  
+
   // 11. Cleanup
   Simulator::Destroy ();
 }
@@ -173,6 +173,6 @@ int main (int argc, char **argv)
   std::cout << "------------------------------------------------\n";
   std::cout << "Hidden station experiment with RTS/CTS enabled:\n";
   experiment (true);
-  
+
   return 0;
 }

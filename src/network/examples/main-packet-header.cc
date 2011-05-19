@@ -34,24 +34,25 @@ MyHeader::MyHeader ()
   // implicit or explicit, but never private.
 }
 MyHeader::~MyHeader ()
-{}
+{
+}
 
-TypeId 
+TypeId
 MyHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MyHeader")
     .SetParent<Header> ()
     .AddConstructor<MyHeader> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 MyHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
-void 
+void
 MyHeader::Print (std::ostream &os) const
 {
   // This method is invoked by the packet printing
@@ -111,7 +112,7 @@ int main (int argc, char *argv[])
 
   // print the content of my packet on the standard output.
   p->Print (std::cout);
-  std::cout << std::endl;  
+  std::cout << std::endl;
 
   // you can now remove the header from the packet:
   MyHeader destinationHeader;

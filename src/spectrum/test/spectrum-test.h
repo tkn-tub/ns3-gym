@@ -17,99 +17,99 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
- * part of the code copied from test.h        
+ * part of the code copied from test.h
  */
 
 #include <ns3/test.h>
 #include <ns3/spectrum-value.h>
 
 
-/** 
+/**
  * \brief Test if two SpectrumModel instances are equal within a given tolerance.
  *
  * This test compares component-by-component the two SpectrumModel
  * instances; if any pair of components differs by more than the given
- * tolerance, the test fails. 
- * 
+ * tolerance, the test fails.
+ *
  * \param actual the actual value obtained by the simulator
  * \param expected the expected value obtained by off-line calculations
  * \param tol the tolerance
  * \param msg the message to print if the test fails
- * 
+ *
  */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL(actual, expected, tol, msg) \
-  NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL_INTERNAL(actual, expected, tol, msg, __FILE__, __LINE__)
+  NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL_INTERNAL (actual, expected, tol, msg, __FILE__, __LINE__)
 
 
 /**
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL_INTERNAL(actual, expected, tol, msg, file, line) \
-  do					                                       \
-    {									       \
-      Bands::const_iterator i = (actual).Begin ();			\
-      Bands::const_iterator j = (expected).Begin ();			\
+  do                                                                           \
+    {                                                                          \
+      Bands::const_iterator i = (actual).Begin ();                      \
+      Bands::const_iterator j = (expected).Begin ();                    \
       uint32_t k = 0;                                                          \
-      while (i != (actual).End () && j != (expected).End ())		\
+      while (i != (actual).End () && j != (expected).End ())            \
         {                                                                      \
-          if ((i->fl > j->fl + (tol)) || (i->fl < j->fl - (tol)) ||	\
-	      (i->fc > j->fc + (tol)) || (i->fc < j->fc - (tol)) ||	\
-	      (i->fh > j->fh + (tol)) || (i->fh < j->fh - (tol)))	\
+          if ((i->fl > j->fl + (tol)) || (i->fl < j->fl - (tol))        \
+              || (i->fc > j->fc + (tol)) || (i->fc < j->fc - (tol))        \
+              || (i->fh > j->fh + (tol)) || (i->fh < j->fh - (tol)))       \
             {                                           \
-              if (gBreakOnFailure) {*(int *)0 = 0;}     \
-              std::ostringstream indexStream;       	\
-              indexStream << "[" << k << "]";   	\
-              std::ostringstream msgStream;   	\
-              msgStream << (msg);		\
-              std::ostringstream actualStream;	\
+              if (gBreakOnFailure) { *(int *)0 = 0;}     \
+              std::ostringstream indexStream;           \
+              indexStream << "[" << k << "]";           \
+              std::ostringstream msgStream;     \
+              msgStream << (msg);               \
+              std::ostringstream actualStream;  \
               actualStream << i->fl << " <-- " << i->fc << " --> " << i->fh; \
-              std::ostringstream expectedStream;	\
-              expectedStream << j->fl << " <-- " << j->fc << " --> " << j->fh;		\
-              ReportTestFailure (std::string (#actual) + indexStream.str () + " == " + std::string (#expected) + indexStream.str (), 	\
+              std::ostringstream expectedStream;        \
+              expectedStream << j->fl << " <-- " << j->fc << " --> " << j->fh;          \
+              ReportTestFailure (std::string (# actual) + indexStream.str () + " == " + std::string (# expected) + indexStream.str (),    \
                                  actualStream.str (), expectedStream.str (), msgStream.str (), (file), (line)); \
-            }           	\
-          ++i;	 \
-          ++j;	 \
-          ++k;	 \
-        }	 \
+            }                   \
+          ++i;   \
+          ++j;   \
+          ++k;   \
+        }        \
       if (i != (actual).End () || j != (expected).End ())       \
-	{ \
-              std::ostringstream msgStream;   	\
-              msgStream << (msg);		\
-              std::ostringstream actualStream;	\
-              actualStream << (i != (actual).End ());   \
-              std::ostringstream expectedStream;	\
-              expectedStream <<  (j != (expected).End ());              \
-              ReportTestFailure ("Bands::iterator == End ()" ,					\
-                                 actualStream.str (), expectedStream.str (), msgStream.str (), (file), (line)); \
-	} \
-    }		 \
+        { \
+          std::ostringstream msgStream;     \
+          msgStream << (msg);               \
+          std::ostringstream actualStream;  \
+          actualStream << (i != (actual).End ());   \
+          std::ostringstream expectedStream;        \
+          expectedStream <<  (j != (expected).End ());              \
+          ReportTestFailure ("Bands::iterator == End ()",                                  \
+                             actualStream.str (), expectedStream.str (), msgStream.str (), (file), (line)); \
+        } \
+    }            \
   while (false); \
 
 
-/** 
+/**
  * \brief Test if two SpectrumValue instances are equal within a given tolerance.
  *
  * This test compares component-by-component the two SpectrumValue
  * instances; if any pair of components differs by more than the given
- * tolerance, the test fails. 
- * 
+ * tolerance, the test fails.
+ *
  * \param actual the actual value obtained by the simulator
  * \param expected the expected value obtained by off-line calculations
  * \param tol the tolerance
  * \param msg the message to print if the test fails
- * 
+ *
  */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL(actual, expected, tol, msg) \
-  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL_INTERNAL(actual, expected, tol, msg, __FILE__, __LINE__)
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL_INTERNAL (actual, expected, tol, msg, __FILE__, __LINE__)
 
 
 /**
  * \internal
  */
 #define NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL_INTERNAL(actual, expected, tol, msg, file, line) \
-  do					                                       \
-    {									       \
+  do                                                                           \
+    {                                                                          \
       Values::const_iterator i = (actual).ConstValuesBegin ();          \
       Values::const_iterator j = (expected).ConstValuesBegin ();        \
       uint32_t k = 0;                                                          \
@@ -117,36 +117,36 @@
         {                                                                      \
           if ((*i) > (*j) + (tol) || (*i) < (*j) - (tol))                      \
             {                                           \
-              if (gBreakOnFailure) {*(int *)0 = 0;}     \
-              std::ostringstream indexStream;       	\
-              indexStream << "[" << k << "]";   	\
-              std::ostringstream msgStream;   	\
-              msgStream << msg;		        \
-              std::ostringstream actualStream;	\
-              actualStream << actual;       	\
-              std::ostringstream expectedStream;	\
-              expectedStream << expected;		\
-              ReportTestFailure (std::string (#actual) + indexStream.str () + " == " + std::string (#expected) + indexStream.str (), 	\
-                                 actualStream.str (), expectedStream.str (), msgStream.str (), file, line); 	\
-            }           	\
-          ++i;	 \
-          ++j;	 \
-          ++k;	 \
-        }	 \
+              if (gBreakOnFailure) { *(int *)0 = 0;}     \
+              std::ostringstream indexStream;           \
+              indexStream << "[" << k << "]";           \
+              std::ostringstream msgStream;     \
+              msgStream << msg;                 \
+              std::ostringstream actualStream;  \
+              actualStream << actual;           \
+              std::ostringstream expectedStream;        \
+              expectedStream << expected;               \
+              ReportTestFailure (std::string (# actual) + indexStream.str () + " == " + std::string (# expected) + indexStream.str (),    \
+                                 actualStream.str (), expectedStream.str (), msgStream.str (), file, line);     \
+            }                   \
+          ++i;   \
+          ++j;   \
+          ++k;   \
+        }        \
       if (i != (actual).ConstValuesEnd () || j != (expected).ConstValuesEnd ()) \
-	{ \
-              std::ostringstream msgStream;   	\
-              msgStream << (msg);		\
-              std::ostringstream actualStream;	\
-              actualStream << (i != (actual).ConstValuesEnd ());        \
-              std::ostringstream expectedStream;	\
-              expectedStream <<  (j != (expected).ConstValuesEnd ());   \
-              ReportTestFailure ("Values::const_iterator == ConstValuesEnd ()" ,					\
-                                 actualStream.str (), expectedStream.str (), msgStream.str (), (file), (line)); \
-	} \
-    }		 \
+        { \
+          std::ostringstream msgStream;     \
+          msgStream << (msg);               \
+          std::ostringstream actualStream;  \
+          actualStream << (i != (actual).ConstValuesEnd ());        \
+          std::ostringstream expectedStream;        \
+          expectedStream <<  (j != (expected).ConstValuesEnd ());   \
+          ReportTestFailure ("Values::const_iterator == ConstValuesEnd ()",                                        \
+                             actualStream.str (), expectedStream.str (), msgStream.str (), (file), (line)); \
+        } \
+    }            \
   while (false); \
 
-    
+
 
 

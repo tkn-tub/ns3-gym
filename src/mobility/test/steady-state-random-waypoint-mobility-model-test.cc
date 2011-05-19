@@ -73,8 +73,8 @@ SteadyStateRandomWaypointTest::DoRun (void)
       Simulator::Schedule (Seconds (0.0), &Object::Start, model);
     } 
 
-  Simulator::Schedule (Seconds (0.001), & SteadyStateRandomWaypointTest::DistribCompare, this);
-  Simulator::Schedule (Seconds (totalTime), & SteadyStateRandomWaypointTest::DistribCompare, this);
+  Simulator::Schedule (Seconds (0.001), &SteadyStateRandomWaypointTest::DistribCompare, this);
+  Simulator::Schedule (Seconds (totalTime), &SteadyStateRandomWaypointTest::DistribCompare, this);
   Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
   Simulator::Destroy ();

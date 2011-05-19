@@ -208,7 +208,7 @@ private:
    * \param interface the interface index
    * \param prefixToUse prefix to use
    */
-  Ipv6RoutingTableEntry (Ipv6Address network, Ipv6Prefix prefix, Ipv6Address gateway, uint32_t interface, Ipv6Address prefixToUse);  
+  Ipv6RoutingTableEntry (Ipv6Address network, Ipv6Prefix prefix, Ipv6Address gateway, uint32_t interface, Ipv6Address prefixToUse);
 
   /**
    * \brief Constructor.

@@ -31,7 +31,7 @@
 namespace ns3 {
 
 class FlowMonitor;
-  
+
 /// The FlowProbe class is responsible for listening for packet events
 /// in a specific point of the simulated space, report those events to
 /// the global FlowMonitor, and collect its own flow statistics
@@ -41,11 +41,11 @@ class FlowProbe : public SimpleRefCount<FlowProbe>
 private:
   FlowProbe (FlowProbe const &);
   FlowProbe& operator= (FlowProbe const &);
-  
+
 protected:
-  
+
   FlowProbe (Ptr<FlowMonitor> flowMonitor);
-  
+
 public:
   virtual ~FlowProbe ();
 
@@ -65,9 +65,9 @@ public:
     /// Number of packets seen of this flow
     uint32_t packets;
   };
-  
+
   typedef std::map<FlowId, FlowStats> Stats;
-  
+
   void AddPacketStats (FlowId flowId, uint32_t packetSize, Time delayFromFirstProbe);
   void AddPacketDropStats (FlowId flowId, uint32_t packetSize, uint32_t reasonCode);
 

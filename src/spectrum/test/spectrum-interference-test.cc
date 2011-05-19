@@ -175,7 +175,7 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite ()
   AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * 0.5 + 0.5), true,   "sdBm  = [-46 -48]  tx bytes: b*0.5"));
   AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * (1 - e) + 0.5), true, "sdBm  = [-46 -48]  tx bytes: b*(1-e)"));
   AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * (1 + e) + 0.5), false, "sdBm  = [-46 -48]  tx bytes: b*(1+e)"));
-  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t>(b * 1.5 + 0.5), false,   "sdBm  = [-46 -48]  tx bytes: b*1.5"));
+  AddTestCase (new SpectrumInterferenceTestCase (s1, static_cast<uint32_t> (b * 1.5 + 0.5), false,   "sdBm  = [-46 -48]  tx bytes: b*1.5"));
   AddTestCase (new SpectrumInterferenceTestCase (s1, 0xffffffff, false,     "sdBm  = [-46 -48]  tx bytes: 2^32-1"));
 
   // Power Spectral Density of the signal of interest  =  [-63 -61] dBm;

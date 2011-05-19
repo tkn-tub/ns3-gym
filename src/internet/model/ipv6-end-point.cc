@@ -31,18 +31,18 @@ NS_LOG_COMPONENT_DEFINE ("Ipv6EndPoint");
 
 Ipv6EndPoint::Ipv6EndPoint (Ipv6Address addr, uint16_t port)
   : m_localAddr (addr),
-  m_localPort (port),
-  m_peerAddr (Ipv6Address::GetAny ()),
-  m_peerPort (0)
+    m_localPort (port),
+    m_peerAddr (Ipv6Address::GetAny ()),
+    m_peerPort (0)
 {
 }
 
 Ipv6EndPoint::~Ipv6EndPoint ()
 {
   if (!m_destroyCallback.IsNull ())
-  {
-    m_destroyCallback ();
-  }
+    {
+      m_destroyCallback ();
+    }
 }
 
 Ipv6Address Ipv6EndPoint::GetLocalAddress ()
@@ -99,19 +99,19 @@ void Ipv6EndPoint::SetDestroyCallback (Callback<void> callback)
 void Ipv6EndPoint::ForwardUp (Ptr<Packet> p, Ipv6Address addr, uint16_t port)
 {
   if (!m_rxCallback.IsNull ())
-  {
-    m_rxCallback (p, addr, port);
-  }
+    {
+      m_rxCallback (p, addr, port);
+    }
 }
 
 void Ipv6EndPoint::ForwardIcmp (Ipv6Address src, uint8_t ttl, uint8_t type, 
                                 uint8_t code, uint32_t info)
 {
   if (!m_icmpCallback.IsNull ())
-  {
-    Simulator::ScheduleNow (&Ipv6EndPoint::DoForwardIcmp, this,
-                           src, ttl, type, code, info);
-  }
+    {
+      Simulator::ScheduleNow (&Ipv6EndPoint::DoForwardIcmp, this,
+                              src, ttl, type, code, info);
+    }
 }
 
 void Ipv6EndPoint::DoForwardUp (Ptr<Packet> p, Ipv6Address saddr, uint16_t sport)

@@ -34,6 +34,8 @@ namespace ns3 {
 class MobilityModel;
 
 /**
+ * \ingroup lte
+ *
  * \brief propagation loss model for LTE
  */
 class LtePropagationLossModel : public SpectrumPropagationLossModel

@@ -73,7 +73,7 @@ AddInternetStack (Ptr<Node> node)
 }
 
 
-class UdpSocketLoopbackTest: public TestCase
+class UdpSocketLoopbackTest : public TestCase
 {
 public:
   UdpSocketLoopbackTest ();
@@ -94,6 +94,9 @@ void UdpSocketLoopbackTest::ReceivePkt (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
 }
 
 void
@@ -114,7 +117,7 @@ UdpSocketLoopbackTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
 }
 
-class UdpSocketImplTest: public TestCase
+class UdpSocketImplTest : public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
@@ -152,6 +155,9 @@ void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
 }
 
 void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
@@ -160,6 +166,9 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
 }
 
 void
@@ -184,7 +193,7 @@ void
 UdpSocketImplTest::DoRun (void)
 {
   // Create topology
-  
+
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<Node> ();
   AddInternetStack (rxNode);
@@ -210,7 +219,7 @@ UdpSocketImplTest::DoRun (void)
     ipv4->AddAddress (netdev_idx, ipv4Addr);
     ipv4->SetUp (netdev_idx);
   }
-  
+
   // Sender Node
   Ptr<Node> txNode = CreateObject<Node> ();
   AddInternetStack (txNode);

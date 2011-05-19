@@ -54,9 +54,9 @@ private:
 
 
 JakesPropagationLossModel::PathCoefficients::PathCoefficients (Ptr<const JakesPropagationLossModel> jakes, 
-                                                           Ptr<MobilityModel> receiver, 
-                                                           uint8_t nRays, 
-							   uint8_t nOscillators)
+                                                               Ptr<MobilityModel> receiver,
+                                                               uint8_t nRays,
+                                                               uint8_t nOscillators)
   : m_receiver (receiver),
     m_nOscillators (nOscillators),
     m_nRays (nRays)
@@ -99,7 +99,7 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (Ptr<const JakesPropagation
 {
   uint16_t N = 4 * m_nOscillators + 2;
   Time interval = Simulator::Now () - m_lastUpdate;
-  ComplexNumber coef= {0.0, 0.0};
+  ComplexNumber coef= { 0.0, 0.0};
   ComplexNumber fading;
   double norm = 0.0;
   for (uint8_t i = 0; i < m_nRays; i++) 
@@ -116,8 +116,8 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (Ptr<const JakesPropagation
           fading.imag += jakes->m_amp[j].imag * cos (m_phases[i][j]);
           norm += sqrt(pow (jakes->m_amp[j].real, 2) + pow(jakes->m_amp[j].imag, 2));
         }
-    coef.real += fading.real;
-    coef.imag += fading.imag;
+      coef.real += fading.real;
+      coef.imag += fading.imag;
     }
   m_lastUpdate = Simulator::Now ();
   double k = sqrt (pow (coef.real, 2) + pow (coef.imag, 2)) / norm;
@@ -136,27 +136,27 @@ JakesPropagationLossModel::GetTypeId (void)
     .AddAttribute ("NumberOfRaysPerPath",
                    "The number of rays to use by default for compute the fading coeficent for a given path (default is 1)",
                    UintegerValue (1),
-		   MakeUintegerAccessor (&JakesPropagationLossModel::SetNRays,
+                   MakeUintegerAccessor (&JakesPropagationLossModel::SetNRays,
                                          &JakesPropagationLossModel::GetNRays),
-		   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("NumberOfOscillatorsPerRay",
                    "The number of oscillators to use by default for compute the coeficent for a given ray of a given "
                    "path (default is 4)",
                    UintegerValue (4),
-		   MakeUintegerAccessor (&JakesPropagationLossModel::SetNOscillators,
+                   MakeUintegerAccessor (&JakesPropagationLossModel::SetNOscillators,
                                          &JakesPropagationLossModel::GetNOscillators),
-		   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DopplerFreq",
                    "The doppler frequency in Hz (f_d = v / lambda = v * f / c), the default is 0)",
                    DoubleValue (0.0),
-		   MakeDoubleAccessor (&JakesPropagationLossModel::m_fd),
-		   MakeDoubleChecker<double> ())
+                   MakeDoubleAccessor (&JakesPropagationLossModel::m_fd),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("Distribution",
                    "The distribution to choose the initial phases.",
                    RandomVariableValue (ConstantVariable (1.0)),
                    MakeRandomVariableAccessor (&JakesPropagationLossModel::m_variable),
                    MakeRandomVariableChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -164,15 +164,16 @@ JakesPropagationLossModel::JakesPropagationLossModel ()
   : m_amp (0),
     m_nRays (0),
     m_nOscillators (0)
-{}
+{
+}
 
 JakesPropagationLossModel::~JakesPropagationLossModel ()
 {
   delete [] m_amp;
-  for (PathsList::reverse_iterator i = m_paths.rbegin (); i != m_paths.rend (); i++) 
+  for (PathsList::reverse_iterator i = m_paths.rbegin (); i != m_paths.rend (); i++)
     {
       PathsSet *ps = *i;
-      for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
+      for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++)
         {
           PathCoefficients *pc = *r;
           delete pc;

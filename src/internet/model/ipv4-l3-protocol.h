@@ -78,13 +78,13 @@ public:
    * \brief Reason why a packet has been dropped.
    */
   enum DropReason 
-    {
-      DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
-      DROP_NO_ROUTE, /**< No route to host */
-      DROP_BAD_CHECKSUM, /**< Bad checksum */
-      DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
-      DROP_ROUTE_ERROR, /**< Route error */
-    };
+  {
+    DROP_TTL_EXPIRED = 1,   /**< Packet TTL has expired */
+    DROP_NO_ROUTE,   /**< No route to host */
+    DROP_BAD_CHECKSUM,   /**< Bad checksum */
+    DROP_INTERFACE_DOWN,   /**< Interface is down so can not send packet */
+    DROP_ROUTE_ERROR,   /**< Route error */
+  };
 
   void SetNode (Ptr<Node> node);
 
@@ -160,7 +160,7 @@ public:
    * down the stack to the MAC and PHY layers.
    */
   void Send (Ptr<Packet> packet, Ipv4Address source, 
-	     Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
+             Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
   /**
    * \param packet packet to send
    * \param ipHeader IP Header
@@ -185,7 +185,7 @@ public:
   uint32_t GetNAddresses (uint32_t interface) const;
   bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
   Ipv4Address SelectSourceAddress (Ptr<const NetDevice> device,
-    Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope);
+                                   Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope);
 
 
   void SetMetric (uint32_t i, uint16_t metric);
@@ -219,12 +219,12 @@ private:
   virtual bool GetWeakEsModel (void) const;
 
   Ipv4Header BuildHeader (
-            Ipv4Address source,
-            Ipv4Address destination,
-            uint8_t protocol,
-            uint16_t payloadSize,
-            uint8_t ttl,
-            bool mayFragment);
+    Ipv4Address source,
+    Ipv4Address destination,
+    uint8_t protocol,
+    uint16_t payloadSize,
+    uint8_t ttl,
+    bool mayFragment);
 
   void
   SendRealOut (Ptr<Ipv4Route> route,

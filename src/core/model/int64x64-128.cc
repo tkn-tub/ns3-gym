@@ -4,13 +4,13 @@
 
 namespace ns3 {
 
-#define OUTPUT_SIGN(sa,sb,ua,ub)					\
-  ({bool negA, negB;							\
-    negA = sa < 0;							\
-    negB = sb < 0;							\
-    ua = negA?-sa:sa;							\
-    ub = negB?-sb:sb;							\
-    (negA && !negB) || (!negA && negB);})
+#define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
+  ({ bool negA, negB;                                                    \
+     negA = sa < 0;                                                      \
+     negB = sb < 0;                                                      \
+     ua = negA ? -sa : sa;                                                   \
+     ub = negB ? -sb : sb;                                                   \
+     (negA && !negB) || (!negA && negB);})
 
 
 #define MASK_LO ((((int128_t)1)<<64)-1)
@@ -54,7 +54,7 @@ int64x64_t::Umul (uint128_t a, uint128_t b)
   result |= ((hiPart & MASK_LO) << 64) + (midPart & MASK_HI);
   // if the high part is not zero, put a warning
   NS_ABORT_MSG_IF ((hiPart & MASK_HI) != 0,
-		   "High precision 128 bits multiplication error: multiplication overflow.");
+                   "High precision 128 bits multiplication error: multiplication overflow.");
   return result;
 }
 void
@@ -62,9 +62,9 @@ int64x64_t::Div (int64x64_t const &o)
 {
   bool negResult;
   uint128_t a, b;
-  negResult = OUTPUT_SIGN (_v, o._v, a, b);  
+  negResult = OUTPUT_SIGN (_v, o._v, a, b);
   int128_t result = Divu (a, b);
-  result = negResult ? -result:result;
+  result = negResult ? -result : result;
   _v = result;
 }
 
@@ -96,10 +96,10 @@ void
 int64x64_t::MulByInvert (const int64x64_t &o)
 {
   bool negResult = _v < 0;
-  uint128_t a = negResult?-_v:_v;
+  uint128_t a = negResult ? -_v : _v;
   uint128_t result = UmulByInvert (a, o._v);
 
-  _v = negResult?-result:result;
+  _v = negResult ? -result : result;
 }
 uint128_t
 int64x64_t::UmulByInvert (uint128_t a, uint128_t b)

@@ -40,12 +40,12 @@ Ipv4NixVectorRouting::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4NixVectorRouting")
     .SetParent<Ipv4RoutingProtocol> ()
     .AddConstructor<Ipv4NixVectorRouting> ()
-    ;
+  ;
   return tid;
 }
 
 Ipv4NixVectorRouting::Ipv4NixVectorRouting ()
-:m_totalNeighbors (0)
+  : m_totalNeighbors (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -88,20 +88,20 @@ Ipv4NixVectorRouting::SetNode (Ptr<Node> node)
 void
 Ipv4NixVectorRouting::FlushGlobalNixRoutingCache ()
 {
-    NS_LOG_FUNCTION_NOARGS ();
-    NodeList::Iterator listEnd = NodeList::End ();
-    for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
-      {
-        Ptr<Node> node = *i;
-        Ptr<Ipv4NixVectorRouting> rp = node->GetObject<Ipv4NixVectorRouting> ();
-        if (!rp)
-          {
-            continue;
-          }
-        NS_LOG_LOGIC ("Flushing Nix caches.");
-        rp->FlushNixCache ();
-        rp->FlushIpv4RouteCache ();
-      }
+  NS_LOG_FUNCTION_NOARGS ();
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      Ptr<Ipv4NixVectorRouting> rp = node->GetObject<Ipv4NixVectorRouting> ();
+      if (!rp)
+        {
+          continue;
+        }
+      NS_LOG_LOGIC ("Flushing Nix caches.");
+      rp->FlushNixCache ();
+      rp->FlushIpv4RouteCache ();
+    }
 }
 
 void
@@ -214,7 +214,7 @@ Ipv4NixVectorRouting::BuildNixVectorLocal (Ptr<NixVector> nixVector)
         {
           NS_LOG_LOGIC ("Adding loopback to nix.");
           NS_LOG_LOGIC ("Adding Nix: " << i << " with " << nixVector->BitCount (numberOfDevices) 
-                        << " bits, for node " << m_node->GetId());
+                                       << " bits, for node " << m_node->GetId());
           nixVector->AddNeighborIndex (i, nixVector->BitCount (numberOfDevices));
           return true;
         }
@@ -286,7 +286,7 @@ Ipv4NixVectorRouting::BuildNixVector (const std::vector< Ptr<Node> > & parentVec
       totalNeighbors += netDeviceContainer.GetN ();
     }
   NS_LOG_LOGIC ("Adding Nix: " << destId << " with " 
-                << nixVector->BitCount (totalNeighbors) << " bits, for node " << parentNode->GetId());
+                               << nixVector->BitCount (totalNeighbors) << " bits, for node " << parentNode->GetId());
   nixVector->AddNeighborIndex (destId, nixVector->BitCount (totalNeighbors));
 
   // recurse through parent vector, grabbing the path 
@@ -520,7 +520,7 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
         {
           m_totalNeighbors = FindTotalNeighbors ();
         }
-  
+
       // Get the interface number that we go out of, by extracting
       // from the nix-vector
       uint32_t numberOfBits = nixVectorForPacket->BitCount (m_totalNeighbors);
@@ -603,8 +603,8 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
 
 bool 
 Ipv4NixVectorRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                             LocalDeliverCallback lcb, ErrorCallback ecb)
+                                  UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                                  LocalDeliverCallback lcb, ErrorCallback ecb)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -648,7 +648,7 @@ Ipv4NixVectorRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
     }
 
   NS_LOG_LOGIC ("At Node " << m_node->GetId() << ", Extracting " << numberOfBits << 
-                       " bits from Nix-vector: " << nixVector << " : " << *nixVector);
+                " bits from Nix-vector: " << nixVector << " : " << *nixVector);
 
   // call the unicast callback
   // local deliver is handled by Ipv4StaticRoutingImpl
@@ -827,11 +827,11 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                       continue;
                     }
                 }
-                if (!(localNetDevice->IsLinkUp ()))
-                  {
-                    NS_LOG_LOGIC ("Link is down.");
-                    continue;
-                  }
+              if (!(localNetDevice->IsLinkUp ()))
+                {
+                  NS_LOG_LOGIC ("Link is down.");
+                  continue;
+                }
               Ptr<Channel> channel = localNetDevice->GetChannel ();
               if (channel == 0)
                 { 
@@ -868,7 +868,7 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
       // It is now black.
       greyNodeList.pop ();
     }
-  
+
   // Didn't find the dest...
   return false;
 }

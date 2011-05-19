@@ -20,11 +20,12 @@
 #define IPV4_ROUTE_H
 
 #include <list>
-#include <vector>
+#include <map>
 #include <ostream>
 
 #include "ns3/simple-ref-count.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -126,7 +127,7 @@ public:
    * \return Ipv4Address of the origin address
    */
   Ipv4Address GetOrigin (void) const; 
-  
+
   /**
    * \param iif Parent (input interface) for this route
    */
@@ -145,8 +146,13 @@ public:
    * \param oif outgoing interface
    * \return TTL for this route
    */
-  uint32_t GetOutputTtl (uint32_t oif) const;
-  
+  uint32_t GetOutputTtl (uint32_t oif) NS_DEPRECATED;
+
+  /**
+   * \return map of output interface Ids and TTLs for this route
+   */
+  std::map<uint32_t, uint32_t> GetOutputTtlMap() const;
+
   static const uint32_t MAX_INTERFACES = 16;  // Maximum number of multicast interfaces on a router
   static const uint32_t MAX_TTL = 255;  // Maximum time-to-live (TTL)
 
@@ -154,9 +160,9 @@ private:
   Ipv4Address m_group;      // Group 
   Ipv4Address m_origin;     // Source of packet
   uint32_t m_parent;        // Source interface
-  std::vector<uint32_t> m_ttls;
+  std::map<uint32_t, uint32_t> m_ttls;
 };
 
-}//namespace ns3
+} //namespace ns3
 
 #endif /* IPV4_ROUTE_H */

@@ -58,7 +58,7 @@ TypeId Ipv6Extension::GetTypeId ()
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("Drop", "Drop ipv6 packet",
                      MakeTraceSourceAccessor (&Ipv6Extension::m_dropTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -177,7 +177,7 @@ TypeId Ipv6ExtensionHopByHop::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionHopByHop")
     .SetParent<Ipv6Extension> ()
     .AddConstructor<Ipv6ExtensionHopByHop> ()
-    ;
+  ;
   return tid;
 }
 
@@ -229,7 +229,7 @@ TypeId Ipv6ExtensionDestination::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionDestination")
     .SetParent<Ipv6Extension> ()
     .AddConstructor<Ipv6ExtensionDestination> ()
-    ;
+  ;
   return tid;
 }
 
@@ -281,7 +281,7 @@ TypeId Ipv6ExtensionFragment::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionFragment")
     .SetParent<Ipv6Extension> ()
     .AddConstructor<Ipv6ExtensionFragment> ()
-    ;
+  ;
   return tid;
 }
 
@@ -616,7 +616,7 @@ TypeId Ipv6ExtensionRouting::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionRouting")
     .SetParent<Ipv6Extension> ()
     .AddConstructor<Ipv6ExtensionRouting> ()
-    ;
+  ;
   return tid;
 }
 
@@ -704,7 +704,7 @@ TypeId Ipv6ExtensionRoutingDemux::GetTypeId ()
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6ExtensionRoutingDemux::m_extensionsRouting),
                    MakeObjectVectorChecker<Ipv6ExtensionRouting> ())
-    ;
+  ;
   return tid;
 }
 
@@ -763,7 +763,7 @@ TypeId Ipv6ExtensionLooseRouting::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionLooseRouting")
     .SetParent<Ipv6ExtensionRouting> ()
     .AddConstructor<Ipv6ExtensionLooseRouting> ()
-    ;
+  ;
   return tid;
 }
 
@@ -916,7 +916,7 @@ TypeId Ipv6ExtensionESP::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionESP")
     .SetParent<Ipv6Extension> ()
     .AddConstructor<Ipv6ExtensionESP> ()
-    ;
+  ;
   return tid;
 }
 
@@ -954,7 +954,7 @@ TypeId Ipv6ExtensionAH::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionAH")
     .SetParent<Ipv6Extension> ()
     .AddConstructor<Ipv6ExtensionAH> ()
-    ;
+  ;
   return tid;
 }
 

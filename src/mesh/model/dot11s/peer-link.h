@@ -81,7 +81,7 @@ public:
   uint16_t GetLocalAid () const;
   Time GetLastBeacon () const;
   Time GetBeaconInterval () const;
-  IeBeaconTiming GetBeaconTimingElement ()const;
+  IeBeaconTiming GetBeaconTimingElement () const;
   //IePeerManagement GetPeerLinkDescriptorElement ()const;
   //\}
 
@@ -145,7 +145,7 @@ private:
     uint16_t peerAid,
     IeConfiguration conf,
     Mac48Address peerMp
-  );
+    );
   /// Confirm reject
   void  ConfirmReject (
     uint16_t localLinkId,
@@ -153,7 +153,7 @@ private:
     IeConfiguration  conf,
     Mac48Address peerMp,
     PmpReasonCode reason
-  );
+    );
   //\}
   /// True if link is established
   bool  LinkIsEstab () const;

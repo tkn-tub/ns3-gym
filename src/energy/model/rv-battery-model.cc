@@ -329,7 +329,7 @@ RvBatteryModel::Discharge (double load, Time t)
     {
       // constant load
       calculatedAlpha = m_load[0] * RvModelAFunction (t, t, Seconds(0.0),
-                                                          m_beta);
+                                                      m_beta);
     }
   else
     {
@@ -359,7 +359,7 @@ RvBatteryModel::RvModelAFunction (Time t, Time sk, Time sk_1, double beta)
   for (int m = 1; m <= m_numOfTerms; m++)
     {
       double square = beta * beta * m * m;
-      sum += (exp (- square * (firstDelta)) - exp (- square * (secondDelta))) / square;
+      sum += (exp (-square * (firstDelta)) - exp (-square * (secondDelta))) / square;
     }
   return delta + 2 * sum;
 }

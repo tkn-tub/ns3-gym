@@ -3,7 +3,7 @@
  * Copyright (c) 2004,2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,8 +24,8 @@
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 
-#define Min(a,b) ((a<b)?a:b)
-#define Max(a,b) ((a>b)?a:b)
+#define Min(a,b) ((a < b) ? a : b)
+#define Max(a,b) ((a > b) ? a : b)
 
 NS_LOG_COMPONENT_DEFINE ("AarfWifiManager");
 
@@ -38,7 +38,7 @@ struct AarfWifiRemoteStation : public WifiRemoteStation
   uint32_t m_failed;
   bool m_recovery;
   uint32_t m_retry;
-  
+
   uint32_t m_timerTimeout;
   uint32_t m_successThreshold;
 
@@ -48,7 +48,7 @@ struct AarfWifiRemoteStation : public WifiRemoteStation
 
 NS_OBJECT_ENSURE_REGISTERED (AarfWifiManager);
 
-TypeId 
+TypeId
 AarfWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AarfWifiManager")
@@ -78,14 +78,16 @@ AarfWifiManager::GetTypeId (void)
                    UintegerValue (10),
                    MakeUintegerAccessor (&AarfWifiManager::m_minSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
 AarfWifiManager::AarfWifiManager ()
-{}
+{
+}
 AarfWifiManager::~AarfWifiManager ()
-{}
+{
+}
 
 WifiRemoteStation *
 AarfWifiManager::DoCreateStation (void) const
@@ -104,9 +106,10 @@ AarfWifiManager::DoCreateStation (void) const
   return station;
 }
 
-void 
+void
 AarfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
-{}
+{
+}
 /**
  * It is important to realize that "recovery" mode starts after failure of
  * the first transmission after a rate increase and ends at the first successful
@@ -116,7 +119,7 @@ AarfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
  * The fundamental reason for this is that there is a backoff between each data
  * transmission, be it an initial transmission or a retransmission.
  */
-void 
+void
 AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *)st;
@@ -125,7 +128,7 @@ AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   station->m_retry++;
   station->m_success = 0;
 
-  if (station->m_recovery) 
+  if (station->m_recovery)
     {
       NS_ASSERT (station->m_retry >= 1);
       if (station->m_retry == 1)
@@ -141,8 +144,8 @@ AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
             }
         }
       station->m_timer = 0;
-    } 
-  else 
+    }
+  else
     {
       NS_ASSERT (station->m_retry >= 1);
       if (((station->m_retry - 1) % 2) == 1)
@@ -155,23 +158,24 @@ AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
               station->m_rate--;
             }
         }
-      if (station->m_retry >= 2) 
+      if (station->m_retry >= 2)
         {
           station->m_timer = 0;
         }
     }
 }
-void 
+void
 AarfWifiManager::DoReportRxOk (WifiRemoteStation *station,
-                              double rxSnr, WifiMode txMode)
-{}
-void 
+                               double rxSnr, WifiMode txMode)
+{
+}
+void
 AarfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_DEBUG ("station=" << station << " rts ok");
 }
-void 
+void
 AarfWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
@@ -182,23 +186,25 @@ AarfWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_recovery = false;
   station->m_retry = 0;
   NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
-  if ((station->m_success == station->m_successThreshold ||
-       station->m_timer == station->m_timerTimeout) &&
-      (station->m_rate < (GetNSupported (station) - 1))) 
+  if ((station->m_success == station->m_successThreshold
+       || station->m_timer == station->m_timerTimeout)
+      && (station->m_rate < (GetNSupported (station) - 1)))
     {
-      NS_LOG_DEBUG ("station="<<station<<" inc rate");
+      NS_LOG_DEBUG ("station=" << station << " inc rate");
       station->m_rate++;
       station->m_timer = 0;
       station->m_success = 0;
       station->m_recovery = true;
     }
 }
-void 
+void
 AarfWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
-{}
-void 
+{
+}
+void
 AarfWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
-{}
+{
+}
 
 WifiMode
 AarfWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
@@ -215,7 +221,7 @@ AarfWifiManager::DoGetRtsMode (WifiRemoteStation *st)
   return GetSupported (station, 0);
 }
 
-bool 
+bool
 AarfWifiManager::IsLowLatency (void) const
 {
   return true;

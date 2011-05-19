@@ -27,7 +27,7 @@
 NS_LOG_COMPONENT_DEFINE("CsmaStarHelper");
 
 namespace ns3 {
-  
+
 CsmaStarHelper::CsmaStarHelper (uint32_t numSpokes,
                                 CsmaHelper csmaHelper)
 {
@@ -44,15 +44,16 @@ CsmaStarHelper::CsmaStarHelper (uint32_t numSpokes,
 }
 
 CsmaStarHelper::~CsmaStarHelper ()
-{}
+{
+}
 
-Ptr<Node> 
+Ptr<Node>
 CsmaStarHelper::GetHub () const
 {
   return m_hub.Get (0);
 }
 
-Ptr<Node> 
+Ptr<Node>
 CsmaStarHelper::GetSpokeNode (uint32_t i) const
 {
   return m_spokes.Get (i);
@@ -61,7 +62,7 @@ CsmaStarHelper::GetSpokeNode (uint32_t i) const
 NetDeviceContainer
 CsmaStarHelper::GetHubDevices () const
 {
-  return m_spokeDevices;
+  return m_hubDevices;
 }
 
 NetDeviceContainer
@@ -82,7 +83,7 @@ CsmaStarHelper::GetSpokeIpv4Address (uint32_t i) const
   return m_spokeInterfaces.GetAddress (i);
 }
 
-uint32_t  
+uint32_t
 CsmaStarHelper::SpokeCount () const
 {
   return m_spokes.GetN ();

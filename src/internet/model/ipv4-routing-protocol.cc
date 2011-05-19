@@ -28,8 +28,8 @@ TypeId Ipv4RoutingProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ipv4RoutingProtocol")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
-}//namespace ns3
+} //namespace ns3

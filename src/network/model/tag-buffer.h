@@ -139,7 +139,7 @@ public:
    */
   void Read (uint8_t *buffer, uint32_t size);
 private:
-  
+
   uint8_t *m_current;
   uint8_t *m_end;
 };
@@ -175,7 +175,7 @@ TagBuffer::WriteU32 (uint32_t data)
   WriteU8 ((data >> 24) & 0xff);
 }
 
-uint8_t  
+uint8_t
 TagBuffer::ReadU8 (void)
 {
   NS_ASSERT (m_current + 1 <= m_end);

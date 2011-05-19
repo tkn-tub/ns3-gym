@@ -81,7 +81,7 @@ public:
    * @brief Create and initialize a pcap file.
    */
   Ptr<PcapFileWrapper> CreateFile (std::string filename, std::ios::openmode filemode,
-                                  uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
+                                   uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
    */

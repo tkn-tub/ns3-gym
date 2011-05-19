@@ -49,8 +49,8 @@ GlobalValueTestCase::DoRun (void)
   // keep it hidden from the documentation.
   //
   GlobalValue uint = GlobalValue ("TestUint", "help text",
-				  UintegerValue (10),
-				  MakeUintegerChecker<uint32_t> ());
+                                  UintegerValue (10),
+                                  MakeUintegerChecker<uint32_t> ());
 
   //
   // Make sure we can get at the value and that it was initialized correctly.
@@ -66,8 +66,8 @@ GlobalValueTestCase::DoRun (void)
   for (GlobalValue::Vector::iterator i = vector->begin (); i != vector->end (); ++i)
     {
       if ((*i) == &uint)
-	{
-	  vector->erase (i);
+        {
+          vector->erase (i);
           break;
         }
     }

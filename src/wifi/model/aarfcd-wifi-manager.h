@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,13 +28,14 @@ struct AarfcdWifiRemoteStation;
 
 /**
  * \brief an implementation of the AARF-CD algorithm
+ * \ingroup wifi
  *
  * This algorithm was first described in "Efficient Collision Detection for Auto Rate Fallback Algorithm".
  * The implementation available here was done by Federico Maguolo for a very early development
  * version of ns-3. Federico died before merging this work in ns-3 itself so his code was ported
  * to ns-3 later without his supervision.
  */
-class AarfcdWifiManager : public WifiRemoteStationManager 
+class AarfcdWifiManager : public WifiRemoteStationManager
 {
 public:
   static TypeId GetTypeId (void);
@@ -43,8 +44,8 @@ public:
 
 private:
   // overriden from base class
-  virtual WifiRemoteStation *DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station, 
+  virtual WifiRemoteStation * DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
   virtual void DoReportDataFailed (WifiRemoteStation *station);
@@ -56,7 +57,7 @@ private:
   virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
   virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
   virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
-  virtual bool DoNeedRts (WifiRemoteStation *station, 
+  virtual bool DoNeedRts (WifiRemoteStation *station,
                           Ptr<const Packet> packet, bool normally);
   virtual bool IsLowLatency (void) const;
 

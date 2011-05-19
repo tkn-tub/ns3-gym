@@ -36,7 +36,7 @@ LoopbackNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LoopbackNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<LoopbackNetDevice> ()
-    ;
+  ;
   return tid;
 }
 
@@ -160,7 +160,7 @@ LoopbackNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 
 Address LoopbackNetDevice::GetMulticast (Ipv6Address addr) const
 {
-	return Mac48Address::GetMulticast (addr);
+  return Mac48Address::GetMulticast (addr);
 }
 
 bool 

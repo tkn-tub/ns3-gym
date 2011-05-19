@@ -23,8 +23,8 @@
 
 namespace ns3 {
 
-  std::string EmuBufferToString (uint8_t *buffer, uint32_t len);
-  bool EmuStringToBuffer (std::string s, uint8_t *buffer, uint32_t *len);
+std::string EmuBufferToString (uint8_t *buffer, uint32_t len);
+bool EmuStringToBuffer (std::string s, uint8_t *buffer, uint32_t *len);
 
 
 } // namespace ns3

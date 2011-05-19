@@ -30,6 +30,13 @@
 namespace ns3 {
 
 /**
+ * \defgroup energy Energy Models
+ *
+ */
+
+/**
+ * \ingroup energy
+ *
  * \brief Energy source base class.
  *
  * This is the base class for energy sources. Energy sources keep track of

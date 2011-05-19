@@ -3,7 +3,7 @@
  * Copyright (c) 2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,7 +22,13 @@
 
 namespace ns3 {
 
-enum WifiPhyStandard {
+
+/**
+ * \ingroup wifi
+ * Identifies the PHY specification that a Wifi device is configured to use.
+ */
+enum WifiPhyStandard
+{
   /** OFDM PHY for the 5 GHz band (Clause 17) */
   WIFI_PHY_STANDARD_80211a,
   /** DSSS PHY (Clause 15) and HR/DSSS PHY (Clause 18) */

@@ -29,6 +29,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * \brief Rakhmatov Vrudhula non-linear battery model.
  *
  * This (energy source) model implements an analytical non-linear battery model.
@@ -44,6 +45,7 @@ namespace ns3 {
  * "Simulation of Mobile Wireless Networks with Accurate Modeling of non-linear
  * battery effects". The real-time algorithm is modified by the authors of this
  * code for improved accuracy and reduced computation (sampling) overhead.
+ *
  */
 class RvBatteryModel : public EnergySource
 {

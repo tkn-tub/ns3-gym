@@ -39,10 +39,12 @@ TcpHeader::TcpHeader ()
     m_urgentPointer (0),
     m_calcChecksum(false),
     m_goodChecksum(true)
-{}
+{
+}
 
 TcpHeader::~TcpHeader ()
-{}
+{
+}
 
 void
 TcpHeader::EnableChecksums (void)
@@ -157,7 +159,7 @@ TcpHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::TcpHeader")
     .SetParent<Header> ()
     .AddConstructor<TcpHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -169,34 +171,34 @@ void TcpHeader::Print (std::ostream &os)  const
 {
   os << m_sourcePort << " > " << m_destinationPort;
   if(m_flags!=0)
-  {
-    os<<" [";
-    if((m_flags & FIN) != 0)
     {
-      os<<" FIN ";
+      os<<" [";
+      if((m_flags & FIN) != 0)
+        {
+          os<<" FIN ";
+        }
+      if((m_flags & SYN) != 0)
+        {
+          os<<" SYN ";
+        }
+      if((m_flags & RST) != 0)
+        {
+          os<<" RST ";
+        }
+      if((m_flags & PSH) != 0)
+        {
+          os<<" PSH ";
+        }
+      if((m_flags & ACK) != 0)
+        {
+          os<<" ACK ";
+        }
+      if((m_flags & URG) != 0)
+        {
+          os<<" URG ";
+        }
+      os<<"]";
     }
-    if((m_flags & SYN) != 0)
-    {
-      os<<" SYN ";
-    }
-    if((m_flags & RST) != 0)
-    {
-      os<<" RST ";
-    }
-    if((m_flags & PSH) != 0)
-    {
-      os<<" PSH ";
-    }
-    if((m_flags & ACK) != 0)
-    {
-      os<<" ACK ";
-    }
-    if((m_flags & URG) != 0)
-    {
-      os<<" URG ";
-    }
-    os<<"]";
-  }
   os<<" Seq="<<m_sequenceNumber<<" Ack="<<m_ackNumber<<" Win="<<m_windowSize;
 }
 uint32_t TcpHeader::GetSerializedSize (void)  const
@@ -216,15 +218,15 @@ void TcpHeader::Serialize (Buffer::Iterator start)  const
   i.WriteHtonU16 (m_urgentPointer);
 
   if(m_calcChecksum)
-  {
-    uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
-    i = start;
-    uint16_t checksum = i.CalculateIpChecksum(start.GetSize (), headerChecksum);
-    
-    i = start;
-    i.Next(16);
-    i.WriteU16(checksum);
-  }
+    {
+      uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
+      i = start;
+      uint16_t checksum = i.CalculateIpChecksum(start.GetSize (), headerChecksum);
+
+      i = start;
+      i.Next(16);
+      i.WriteU16(checksum);
+    }
 }
 uint32_t TcpHeader::Deserialize (Buffer::Iterator start)
 {

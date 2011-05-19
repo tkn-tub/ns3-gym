@@ -35,7 +35,7 @@ public:
    * \internal
    */
   static TypeId GetTypeId ();
-  
+
   /**
    * Create a Dot11sStack() installer helper.
    */

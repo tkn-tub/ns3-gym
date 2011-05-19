@@ -289,7 +289,7 @@ private:
    *               either the Ethernet header in the case of type interpretation
    *               (DIX framing) or from the 802.2 LLC header in the case of 
    *               length interpretation (802.3 framing).
-   */   
+   */
   Ptr<Packet> Filter (Ptr<Packet> packet, Address *src, Address *dst, uint16_t *type);
 
   /**
@@ -370,7 +370,7 @@ private:
 
   /**
    * \internal
-   *     
+   *
    * The operating mode of the bridge.  Tells basically who creates and
    * configures the underlying network tap.
    */
@@ -425,7 +425,7 @@ private:
    * \internal
    *
    * The MAC address to use as the hardware address on the host; only used
-   * in UseLocal mode.  This value comes from the MAC  
+   * in UseLocal mode.  This value comes from the MAC
    * address assigned to the bridged ns-3 net device and matches the MAC 
    * address of the underlying network TAP which we configured to have the 
    * same value.

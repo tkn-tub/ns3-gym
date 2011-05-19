@@ -287,7 +287,7 @@ public:
    */
   static NodeContainer GetGlobal (void);
 
- private:
+private:
   std::vector<Ptr<Node> > m_nodes;
 };
 

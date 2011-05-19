@@ -575,7 +575,7 @@ From the perspective of the user who writes a new class in the system and wants
 to hook it in to the attribute system, there is mainly the matter of writing the
 conversions to/from strings and attribute values.  Most of this can be
 copy/pasted with macro-ized code.  For instance, consider class declaration for
-Rectangle in the ``src/mobility/`` directory:
+Rectangle in the ``src/mobility/model`` directory:
 
 Header file
 +++++++++++
@@ -641,14 +641,14 @@ ConfigStore
 ***********
 
 **Feedback requested:**  This is an experimental feature of |ns3|.  It is found
-in ``src/contrib`` and not in the main tree.  If you like this feature and
+in ``src/config-store``.  If you like this feature and
 would like to provide feedback on it, please email us.
 
-Values for |ns3| attributes can be stored in an ASCII or XML text file and
-loaded into a future simulation.  This feature is known as the |ns3|
-ConfigStore.  The ConfigStore code is in ``src/contrib/``.  It is not yet
-main-tree code, because we are seeking some user feedback and experience with
-this. 
+Values for |ns3| attributes can be stored in an ASCII or XML text file
+and loaded into a future simulation.  This feature is known as the
+|ns3| ConfigStore.  The ConfigStore code is in ``src/config-store/model``.  
+It is still considered as unstable code, because we are seeking some
+user feedback and experience with this.
 
 We can explore this system by using an example. Copy the ``csma-bridge.cc``
 file to the scratch directory:::

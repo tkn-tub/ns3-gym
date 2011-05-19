@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#if defined(HAVE___UINT128_T) and !defined(HAVE_UINT128_T)
+#if defined(HAVE___UINT128_T)and !defined(HAVE_UINT128_T)
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 #endif
@@ -25,13 +25,13 @@ public:
   inline int64x64_t (double value)
   {
     bool is_negative = value < 0;
-    value = is_negative?-value:value;
+    value = is_negative ? -value : value;
     double hi = floor (value);
     double lo = (value - hi) * HP128_MAX_64;
     _v = (int128_t)hi;
     _v <<= 64;
     _v += (int128_t)lo;
-    _v = is_negative?-_v:_v;
+    _v = is_negative ? -_v : _v;
   }
   inline int64x64_t (int v)
     : _v (v)
@@ -66,24 +66,24 @@ public:
   explicit inline int64x64_t (int64_t hi, uint64_t lo)
   {
     bool is_negative = hi<0;
-    _v = is_negative?-hi:hi;
+    _v = is_negative ? -hi : hi;
     _v <<= 64;
     _v += lo;
-    _v = is_negative?-_v:_v;
+    _v = is_negative ? -_v : _v;
   }
 
   inline int64x64_t (const int64x64_t &o)
     : _v (o._v) {}
   inline int64x64_t &operator = (const int64x64_t &o)
-    {
-      _v = o._v;
-      return *this;
-    }
+  {
+    _v = o._v;
+    return *this;
+  }
 
   inline double GetDouble (void) const
   {
     bool is_negative = _v < 0;
-    uint128_t value = is_negative ? -_v:_v;
+    uint128_t value = is_negative ? -_v : _v;
     uint64_t hi = value >> 64;
     uint64_t lo = value;
     double flo = lo;
@@ -96,15 +96,15 @@ public:
   inline int64_t GetHigh (void) const
   {
     bool negative = _v < 0;
-    int128_t v = negative?-_v:_v;
+    int128_t v = negative ? -_v : _v;
     v >>= 64;
     int64_t retval = v;
-    return negative?-retval:retval;
+    return negative ? -retval : retval;
   }
   inline uint64_t GetLow (void) const
   {
     bool negative = _v < 0;
-    int128_t v = negative?-_v:_v;
+    int128_t v = negative ? -_v : _v;
     int128_t low = v & HP128_MASK_LO;
     uint64_t retval = low;
     return retval;

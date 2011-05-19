@@ -16,7 +16,7 @@
  *
  */
 /**
- * This is the test code for ipv4-l3-protocol.cc  
+ * This is the test code for ipv4-l3-protocol.cc
  */
 
 #include "ns3/simulator.h"
@@ -75,16 +75,16 @@ Ipv4L3ProtocolTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (index, 0, "No interface should be found??");
   interface->SetUp ();
   Ipv4InterfaceAddress ifaceAddr1 = Ipv4InterfaceAddress ("192.168.0.1",
-      "255.255.255.0");
+                                                          "255.255.255.0");
   interface->AddAddress (ifaceAddr1);
   Ipv4InterfaceAddress ifaceAddr2 = Ipv4InterfaceAddress ("192.168.0.2",
-      "255.255.255.0");
+                                                          "255.255.255.0");
   interface->AddAddress (ifaceAddr2);
   Ipv4InterfaceAddress ifaceAddr3 = Ipv4InterfaceAddress ("10.30.0.1",
-      "255.255.255.0");
+                                                          "255.255.255.0");
   interface->AddAddress (ifaceAddr3);
   Ipv4InterfaceAddress ifaceAddr4 = Ipv4InterfaceAddress ("250.0.0.1",
-      "255.255.255.0");
+                                                          "255.255.255.0");
   interface->AddAddress (ifaceAddr4);
   uint32_t num = interface->GetNAddresses ();
   NS_TEST_ASSERT_MSG_EQ (num, 4, "Should find 4 interfaces??");
@@ -93,7 +93,7 @@ Ipv4L3ProtocolTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (num, 3, "Should find 3 interfaces??");
   Ipv4InterfaceAddress output = interface->GetAddress (2);
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr4, output,
-      "The addresses should be identical");
+                         "The addresses should be identical");
   Simulator::Destroy ();
 }
 

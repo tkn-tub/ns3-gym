@@ -43,7 +43,7 @@ class Packet;
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
  */
-  class EmuHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
+class EmuHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /*
@@ -67,10 +67,10 @@ public:
    * EmuNetDevice created through EmuHelper::Install.
    */
   void SetQueue (std::string type,
-    std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-    std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-    std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-    std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
+                 std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                 std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                 std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                 std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
 
   /**
    * \param n1 the name of the attribute to set

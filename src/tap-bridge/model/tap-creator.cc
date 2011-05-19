@@ -77,12 +77,12 @@ static char
 AsciiToLowCase (char c)
 {
   if (c >= ASCII_a && c <= ASCII_z) {
-    return c;
-  } else if (c >= ASCII_A && c <= ASCII_Z) {
-    return c + (ASCII_a - ASCII_A);
-  } else {
-    return c;
-  }
+      return c;
+    } else if (c >= ASCII_A && c <= ASCII_Z) {
+      return c + (ASCII_a - ASCII_A);
+    } else {
+      return c;
+    }
 }
 
 static uint32_t 
@@ -90,20 +90,20 @@ AsciiToIpv4 (const char *address)
 {
   uint32_t host = 0;
   while (true) {
-    uint8_t byte = 0;
-    while (*address != ASCII_DOT &&
-           *address != 0) {
-      byte *= 10;
-      byte += *address - ASCII_ZERO;
+      uint8_t byte = 0;
+      while (*address != ASCII_DOT &&
+             *address != 0) {
+          byte *= 10;
+          byte += *address - ASCII_ZERO;
+          address++;
+        }
+      host <<= 8;
+      host |= byte;
+      if (*address == 0) {
+          break;
+        }
       address++;
     }
-    host <<= 8;
-    host |= byte;
-    if (*address == 0) {
-      break;
-    }
-    address++;
-  }
   return host;
 }
 
@@ -115,25 +115,25 @@ AsciiToMac48 (const char *str, uint8_t addr[6])
     {
       uint8_t byte = 0;
       while (*str != ASCII_COLON && *str != 0) 
-	{
-	  byte <<= 4;
-	  char low = AsciiToLowCase (*str);
-	  if (low >= ASCII_a) 
-	    {
-	      byte |= low - ASCII_a + 10;
-	    } 
-	  else 
-	    {
-	      byte |= low - ASCII_ZERO;
-	    }
-	  str++;
-	}
+        {
+          byte <<= 4;
+          char low = AsciiToLowCase (*str);
+          if (low >= ASCII_a)
+            {
+              byte |= low - ASCII_a + 10;
+            }
+          else
+            {
+              byte |= low - ASCII_ZERO;
+            }
+          str++;
+        }
       addr[i] = byte;
       i++;
       if (*str == 0) 
-	{
-	  break;
-	}
+        {
+          break;
+        }
       str++;
     }
 }
@@ -151,7 +151,7 @@ CreateInetAddress (uint32_t networkOrder)
   return s.any_socket;
 }
 
-  static void
+static void
 SendSocket (const char *path, int fd)
 {
   //
@@ -160,7 +160,7 @@ SendSocket (const char *path, int fd)
   LOG ("Create Unix socket");
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
   ABORT_IF (sock == -1, "Unable to open socket", 1);
-  
+
   //
   // We have this string called path, which is really a hex representation
   // of the endpoint that the tap bridge created.  It used a forward encoding
@@ -261,7 +261,7 @@ SendSocket (const char *path, int fd)
   // Finally, we get a pointer to the start of the ancillary data array and
   // put our file descriptor in.
   //
-  int *fdptr = (int*) (CMSG_DATA(cmsg));
+  int *fdptr = (int*)(CMSG_DATA(cmsg));
   *fdptr = fd; // 
 
   //
@@ -273,7 +273,7 @@ SendSocket (const char *path, int fd)
   LOG ("sendmsg complete");
 }
 
-  static int
+static int
 CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, const char *mode, const char *netmask)
 {
   //
@@ -299,7 +299,7 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
   LOG ("Allocated TAP device " << tapDeviceName);
 
   //
-  // Operating mode "2" corresponds to USE_LOCAL and "3" to USE_BRIDGE mode.  
+  // Operating mode "2" corresponds to USE_LOCAL and "3" to USE_BRIDGE mode.
   // This means that we expect that the user will have named, created and 
   // configured a network tap that we are just going to use.  So don't mess 
   // up his hard work by changing anything, just return the tap fd.
@@ -350,7 +350,7 @@ CreateTap (const char *dev, const char *gw, const char *ip, const char *mac, con
   return tap;
 }
 
-  int 
+int
 main (int argc, char *argv[])
 {
   int c;
@@ -431,7 +431,7 @@ main (int argc, char *argv[])
   //
   // We have got to be able to assign a net mask to the tap device we are
   // allocating.  This mask is allocated in the simulation and given to
-  // the bridged device.  
+  // the bridged device.
   //
   ABORT_IF (netmask == NULL, "Net Mask is a required argument", 0);
   LOG ("Provided Net Mask is \"" << netmask << "\"");

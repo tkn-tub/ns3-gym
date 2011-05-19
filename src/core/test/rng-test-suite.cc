@@ -31,7 +31,7 @@ FillHistoRangeUniformly (double *array, uint32_t n, double start, double end)
 {
   double increment = (end - start) / (n - 1.);
   double d = start;
-  
+
   for (uint32_t i = 0; i < n; ++i)
     {
       array[i] = d;
@@ -98,7 +98,7 @@ RngUniformTestCase::ChiSquaredTest (UniformVariable &u)
     {
       chiSquared += tmp[i];
     }
-  
+
   return chiSquared;
 }
 
@@ -195,7 +195,7 @@ RngNormalTestCase::ChiSquaredTest (NormalVariable &n)
     {
       chiSquared += tmp[i];
     }
-  
+
   return chiSquared;
 }
 
@@ -291,7 +291,7 @@ RngExponentialTestCase::ChiSquaredTest (ExponentialVariable &e)
     {
       chiSquared += tmp[i];
     }
-  
+
   return chiSquared;
 }
 
@@ -388,7 +388,7 @@ RngParetoTestCase::ChiSquaredTest (ParetoVariable &p)
     {
       chiSquared += tmp[i];
     }
-  
+
   return chiSquared;
 }
 

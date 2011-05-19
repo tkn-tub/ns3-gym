@@ -60,7 +60,7 @@ public:
   enum EncapsulationMode {
     ILLEGAL,     /**< Encapsulation mode not set */
     DIX,         /**< DIX II / Ethernet II packet */
-    LLC,         /**< 802.2 LLC/SNAP Packet*/  
+    LLC,         /**< 802.2 LLC/SNAP Packet*/
   };
 
   /**
@@ -98,7 +98,7 @@ public:
    * \param ceiling Cap on the exponential function when calculating max slots
    */
   void SetBackoffParams (Time slotTime, uint32_t minSlots, uint32_t maxSlots, 
-    uint32_t maxRetries, uint32_t ceiling);
+                         uint32_t maxRetries, uint32_t ceiling);
 
   /**
    * Attach the device to a channel.
@@ -116,7 +116,7 @@ public:
    *
    * The CsmaNetDevice "owns" a queue.  This queue may be set by higher
    * level topology objects to implement a particular queueing method such as
-   * DropTail or RED.  
+   * DropTail or RED.
    *
    * \see Queue
    * \see DropTailQueue
@@ -259,7 +259,7 @@ public:
    * \return true if successfull, false otherwise (drop, ...)
    */
   virtual bool Send (Ptr<Packet> packet, const Address& dest, 
-    uint16_t protocolNumber);
+                     uint16_t protocolNumber);
 
   /**
    * Start sending a packet down the channel, with MAC spoofing
@@ -445,19 +445,19 @@ private:
    * Enumeration of the states of the transmit machine of the net device.
    */
   enum TxMachineState
-    {
-      READY, /**< The transmitter is ready to begin transmission of a packet */
-      BUSY,  /**< The transmitter is busy transmitting a packet */
-      GAP,    /**< The transmitter is in the interframe gap time */
-      BACKOFF    /**< The transmitter is waiting for the channel to be free */
-    };
+  {
+    READY,   /**< The transmitter is ready to begin transmission of a packet */
+    BUSY,    /**< The transmitter is busy transmitting a packet */
+    GAP,      /**< The transmitter is in the interframe gap time */
+    BACKOFF      /**< The transmitter is waiting for the channel to be free */
+  };
 
   /**
    * The state of the Net Device transmit state machine.
    * \see TxMachineState
    */
   TxMachineState m_txMachineState;
-  
+
   /**
    * The type of packet that should be created by the AddHeader
    * function and that should be processed by the ProcessHeader

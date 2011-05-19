@@ -26,8 +26,8 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiInformationElementVector);
 
-WifiInformationElementVector::WifiInformationElementVector () :
-  m_maxSize (1500)
+WifiInformationElementVector::WifiInformationElementVector ()
+  : m_maxSize (1500)
 {
 }
 WifiInformationElementVector::~WifiInformationElementVector ()
@@ -42,8 +42,8 @@ TypeId
 WifiInformationElementVector::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiInformationElementVector")
-                      .SetParent<Header> ()
-                      .AddConstructor<WifiInformationElementVector> ();
+    .SetParent<Header> ()
+    .AddConstructor<WifiInformationElementVector> ();
   return tid;
 }
 TypeId
@@ -59,7 +59,7 @@ WifiInformationElementVector::GetSerializedSize () const
 void
 WifiInformationElementVector::Serialize (Buffer::Iterator start) const
 {
-  for(IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i ++)
+  for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
     {
       start = (*i)->Serialize (start);
     }
@@ -68,17 +68,17 @@ uint32_t
 WifiInformationElementVector::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  uint32_t size = start.GetSize();
+  uint32_t size = start.GetSize ();
   while (size > 0)
     {
-      uint32_t deserialized = DeserializeSingleIe(i);
+      uint32_t deserialized = DeserializeSingleIe (i);
       i.Next (deserialized);
       size -= deserialized;
     }
-  return i.GetDistanceFrom(start);
+  return i.GetDistanceFrom (start);
 }
 uint32_t
-WifiInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
+WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t id = i.ReadU8 ();
@@ -97,10 +97,10 @@ WifiInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
   newElement->DeserializeInformationField (i, length);
   i.Next (length);
   m_elements.push_back (newElement);
-  return i.GetDistanceFrom(start);
+  return i.GetDistanceFrom (start);
 }
 void
-WifiInformationElementVector::Print(std::ostream & os) const
+WifiInformationElementVector::Print (std::ostream & os) const
 {
   //TODO
 }
@@ -167,7 +167,7 @@ WifiInformationElementVector::operator== (const WifiInformationElementVector & a
 {
   if (m_elements.size () != a.m_elements.size ())
     {
-      NS_ASSERT(false);
+      NS_ASSERT (false);
       return false;
     }
   // In principle we could bypass some of the faffing about (and speed
@@ -179,10 +179,12 @@ WifiInformationElementVector::operator== (const WifiInformationElementVector & a
   // flexible equality operators.
   WifiInformationElementVector::IE_VECTOR::const_iterator j = a.m_elements.begin ();
   for (WifiInformationElementVector::IE_VECTOR::const_iterator i = m_elements.begin (); i
-      != m_elements.end (); i++, j++)
+       != m_elements.end (); i++, j++)
     {
       if (!(*(*i) == *(*j)))
-        return false;
+        {
+          return false;
+        }
     }
 
   return true;

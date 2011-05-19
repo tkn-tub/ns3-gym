@@ -32,7 +32,7 @@
 // We don't assume any special configuration and all of the ns-3 emulated net
 // devices will actually talk to the same underlying OS device.  We rely on 
 // the fact that the OS will deliver copies of our packets to the other ns-3
-// net devices since we operate in promiscuous mode.  
+// net devices since we operate in promiscuous mode.
 //
 // Packets will be sent out over the device, but we use MAC spoofing.  The
 // MAC addresses will be generated using the Organizationally Unique Identifier
@@ -90,7 +90,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("SimulatorImplementationType", 
-    StringValue ("ns3::RealtimeSimulatorImpl"));
+                     StringValue ("ns3::RealtimeSimulatorImpl"));
 
   //
   // need at least two nodes
@@ -113,7 +113,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create channels.");
   EmuHelper emu;
   emu.SetAttribute ("DeviceName", StringValue (deviceName));
-  emu.SetAttribute ("EncapsulationMode", StringValue (encapMode));  
+  emu.SetAttribute ("EncapsulationMode", StringValue (encapMode));
 
   NetDeviceContainer d = emu.Install (n);
 

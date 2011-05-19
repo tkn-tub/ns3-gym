@@ -284,4 +284,26 @@ MpiInterface::TestSendComplete ()
 #endif
 }
 
+void 
+MpiInterface::Disable ()
+{
+#ifdef NS3_MPI
+  int flag = 0 ;
+  MPI_Initialized (&flag);
+  if (flag)
+    {
+      MPI_Finalize ();
+      m_enabled = false;
+      m_initialized = false;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Cannot disable MPI environment without Initializing it first");
+    }
+#else
+  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
+#endif
+}
+
+
 } // namespace ns3

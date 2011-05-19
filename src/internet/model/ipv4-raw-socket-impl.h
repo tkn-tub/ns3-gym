@@ -36,11 +36,11 @@ public:
   virtual uint32_t GetTxAvailable (void) const;
   virtual int Send (Ptr<Packet> p, uint32_t flags);
   virtual int SendTo (Ptr<Packet> p, uint32_t flags, 
-		      const Address &toAddress);
+                      const Address &toAddress);
   virtual uint32_t GetRxAvailable (void) const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
-  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,  
-				Address &fromAddress);
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
+                                Address &fromAddress);
 
   void SetProtocol (uint16_t protocol);
   bool ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4Interface> incomingInterface);

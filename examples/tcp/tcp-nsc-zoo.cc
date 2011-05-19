@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
 
   if (MaxNodes < 2)
     {
-       std::cerr << "--nodes: must be >= 2" << std::endl;
-       return 1;
+      std::cerr << "--nodes: must be >= 2" << std::endl;
+      return 1;
     }
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(100 * 1000 * 1000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MicroSeconds (200)));
@@ -86,13 +86,13 @@ int main(int argc, char *argv[])
     {
       // the next statement doesn't change anything for the nodes 0, 1, and 2; since they
       // already have a stack assigned.
-      internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.18.so"));
-      // this switches node 3 to NSCs Linux 2.6.18 stack.
+      internetStack.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue("liblinux2.6.26.so"));
+      // this switches node 3 to NSCs Linux 2.6.26 stack.
       internetStack.Install (n.Get(3));
       // and then agains disables sack/timestamps/wscale on node 3.
-      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_sack", StringValue ("0"));
-      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_timestamps", StringValue ("0"));
-      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.18>/net.ipv4.tcp_window_scaling", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_sack", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", StringValue ("0"));
+      Config::Set ("/NodeList/3/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", StringValue ("0"));
     }
   // the freebsd stack is not yet built by default, so its commented out for now.
   // internetStack.SetNscStack ("libfreebsd5.so");
@@ -115,24 +115,24 @@ int main(int argc, char *argv[])
   sinkApp.Stop (Seconds (30.0));
 
   // This tells every node on the network to start a flow to all other nodes on the network ...
-  for (unsigned int i = 0 ; i < MaxNodes;i++)
+  for (unsigned int i = 0 ; i < MaxNodes; i++)
     {
-      for (unsigned int j = 0 ; j < MaxNodes;j++)
+      for (unsigned int j = 0 ; j < MaxNodes; j++)
         {
           if (i == j)
             {  // ...but we don't want a node to talk to itself.
-               continue;
+              continue;
             }
           Address remoteAddress(InetSocketAddress(ipv4Interfaces.GetAddress (j), servPort));
           OnOffHelper clientHelper ("ns3::TcpSocketFactory", remoteAddress);
           clientHelper.SetAttribute 
-            ("OnTime", RandomVariableValue (ConstantVariable (1)));
+                  ("OnTime", RandomVariableValue (ConstantVariable (1)));
           clientHelper.SetAttribute 
-            ("OffTime", RandomVariableValue (ConstantVariable (0)));
+                  ("OffTime", RandomVariableValue (ConstantVariable (0)));
           ApplicationContainer clientApp = clientHelper.Install(n.Get(i));
           clientApp.Start (Seconds (j)); /* delay startup depending on node number */
           clientApp.Stop (Seconds (j + runtime));
-	}
+        }
     }
 
   csma.EnablePcapAll ("tcp-nsc-zoo", false);

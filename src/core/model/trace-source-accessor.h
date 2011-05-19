@@ -92,38 +92,38 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
     virtual bool ConnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       (p->*m_source).ConnectWithoutContext (cb);
       return true;
     }
     virtual bool Connect (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       (p->*m_source).Connect (cb, context);
       return true;
     }
     virtual bool DisconnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       (p->*m_source).DisconnectWithoutContext (cb);
-      return true;      
+      return true;
     }
     virtual bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       (p->*m_source).Disconnect (cb, context);
-      return true;      
+      return true;
     }
     SOURCE T::*m_source;
   } *accessor = new Accessor ();

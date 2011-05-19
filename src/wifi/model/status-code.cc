@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,35 +25,36 @@
 namespace ns3 {
 
 StatusCode::StatusCode ()
-{}
-void 
+{
+}
+void
 StatusCode::SetSuccess (void)
 {
   m_code = 0;
 }
-void 
+void
 StatusCode::SetFailure (void)
 {
   m_code = 1;
 }
 
-bool 
+bool
 StatusCode::IsSuccess (void) const
 {
   return (m_code == 0);
 }
-uint32_t 
+uint32_t
 StatusCode::GetSerializedSize (void) const
 {
   return 2;
 }
-Buffer::Iterator 
+Buffer::Iterator
 StatusCode::Serialize (Buffer::Iterator start) const
 {
   start.WriteHtolsbU16 (m_code);
   return start;
 }
-Buffer::Iterator 
+Buffer::Iterator
 StatusCode::Deserialize (Buffer::Iterator start)
 {
   m_code = start.ReadLsbtohU16 ();

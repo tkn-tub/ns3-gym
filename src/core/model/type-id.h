@@ -365,7 +365,7 @@ private:
 
   explicit TypeId (uint16_t tid);
   void DoAddConstructor (Callback<ObjectBase *> callback);
-  
+
   uint16_t m_tid;
 };
 
@@ -388,16 +388,19 @@ ATTRIBUTE_HELPER_HEADER (TypeId);
 namespace ns3 {
 
 TypeId::TypeId ()
-  : m_tid (0) {}
+  : m_tid (0) {
+}
 TypeId::TypeId (const TypeId &o)
-  : m_tid (o.m_tid) {}
+  : m_tid (o.m_tid) {
+}
 TypeId &TypeId::operator = (const TypeId &o)
 {
   m_tid = o.m_tid;
   return *this;
 }
 TypeId::~TypeId ()
-{}
+{
+}
 inline bool operator == (TypeId a, TypeId b)
 {
   return a.m_tid == b.m_tid;

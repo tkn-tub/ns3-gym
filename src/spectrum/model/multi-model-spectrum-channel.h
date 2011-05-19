@@ -36,11 +36,15 @@ namespace ns3 {
 typedef std::map<SpectrumModelUid_t, SpectrumConverter> SpectrumConverterMap_t;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class TxSpectrumModelInfo
 {
 public:
   TxSpectrumModelInfo (Ptr<const SpectrumModel> txSpectrumModel);
-  
+
   Ptr<const SpectrumModel> m_txSpectrumModel;
   SpectrumConverterMap_t m_spectrumConverterMap;
 };
@@ -48,13 +52,17 @@ public:
 typedef std::map<SpectrumModelUid_t, TxSpectrumModelInfo> TxSpectrumModelInfoMap_t;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class RxSpectrumModelInfo
 {
 public:
   RxSpectrumModelInfo (Ptr<const SpectrumModel> rxSpectrumModel);
-  
+
   Ptr<const SpectrumModel> m_rxSpectrumModel;
-  std::list<Ptr<SpectrumPhy> > m_rxPhyList;  
+  std::list<Ptr<SpectrumPhy> > m_rxPhyList;
 };
 
 typedef std::map<SpectrumModelUid_t, RxSpectrumModelInfo> RxSpectrumModelInfoMap_t;
@@ -63,6 +71,8 @@ typedef std::map<SpectrumModelUid_t, RxSpectrumModelInfo> RxSpectrumModelInfoMap
 
 
 /**
+ * \ingroup spectrum
+ *
  * This SpectrumChannel implementation can handle the presence of
  * SpectrumPhy instances which can use
  * different spectrum models, i.e.,  different SpectrumModel. The only
@@ -97,25 +107,23 @@ protected:
 
 
 private:
- 
-
-  /** 
+  /**
    * this method checks if m_rxSpectrumModelInfoMap contains an entry
    * for the given TX SpectrumModel. If such entry exists, it returns
    * an interator pointing to it. If not, it creates a new entry in
    * m_txSpectrumMpodelInfoMap, and returns an iterator to it.
-   * 
+   *
    * @param txSpectrumModel the TX SpectrumModel  being considered
-   * 
+   *
    * @return an iterator pointing to the corresponding entry in m_txSpectrumModelInfoMap
    */
   TxSpectrumModelInfoMap_t::const_iterator FindAndEventuallyAddTxSpectrumModel (Ptr<const SpectrumModel> txSpectrumModel);
 
 
-  /** 
+  /**
    * make sure that there are SpectrumConverters from any
    * SpectrumPhy being used for TX to the given SpectrumModel being used for RX
-   * 
+   *
    * @param rxPhy the RXing SpectrumPhy
    * @param rxSpectrumModel the SpectrumModel used for RX by rxPhy
    */
@@ -153,8 +161,8 @@ private:
   /**
    * data structure holding, for each TX SpectrumModel,  all the
    * converters to any RX SpectrumModel, and all the corresponding
-   * SpectrumPhy instances. 
-   * 
+   * SpectrumPhy instances.
+   *
    */
   TxSpectrumModelInfoMap_t m_txSpectrumModelInfoMap;
 
@@ -162,10 +170,10 @@ private:
   /**
    * data structure holding, for each RX spectrum model, all the
    * corresponding SpectrumPhy instances.
-   * 
+   *
    */
   RxSpectrumModelInfoMap_t m_rxSpectrumModelInfoMap;
-  
+
   /**
    * this is only used to provide a straighforward implementation of
    * GetNDevices() and GetDevice()

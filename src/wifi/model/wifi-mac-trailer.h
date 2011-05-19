@@ -25,12 +25,19 @@
 
 namespace ns3 {
 
-/** 
+
+
+/**
  * The length in octects of the IEEE 802.11 MAC FCS field
  */
 static const uint16_t WIFI_MAC_FCS_LENGTH = 4;
 
-class WifiMacTrailer : public Trailer 
+/**
+ * \ingroup wifi
+ *
+ * Implements the IEEE 802.11 MAC trailer
+ */
+class WifiMacTrailer : public Trailer
 {
 public:
   WifiMacTrailer ();

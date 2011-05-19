@@ -33,45 +33,46 @@ NS_OBJECT_ENSURE_REGISTERED (SeqTsHeader);
 SeqTsHeader::SeqTsHeader ()
   : m_seq (0),
     m_ts (Simulator::Now ().GetTimeStep ())
-{}
+{
+}
 
-void 
+void
 SeqTsHeader::SetSeq (uint32_t seq)
 {
   m_seq = seq;
 }
-uint32_t 
+uint32_t
 SeqTsHeader::GetSeq (void) const
 {
   return m_seq;
 }
 
-Time 
+Time
 SeqTsHeader::GetTs (void) const
 {
   return TimeStep (m_ts);
 }
 
-TypeId 
+TypeId
 SeqTsHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SeqTsHeader")
     .SetParent<Header> ()
     .AddConstructor<SeqTsHeader> ()
-    ;
+  ;
   return tid;
 }
-TypeId 
+TypeId
 SeqTsHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-void 
+void
 SeqTsHeader::Print (std::ostream &os) const
 {
   os << "(seq=" << m_seq << " time=" << TimeStep (m_ts).GetSeconds () << ")";
 }
-uint32_t 
+uint32_t
 SeqTsHeader::GetSerializedSize (void) const
 {
   return 4+8;

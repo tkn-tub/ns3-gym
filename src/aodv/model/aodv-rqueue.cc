@@ -50,7 +50,7 @@ RequestQueue::Enqueue (QueueEntry & entry)
 {
   Purge ();
   for (std::vector<QueueEntry>::const_iterator i = m_queue.begin (); i
-      != m_queue.end (); ++i)
+       != m_queue.end (); ++i)
     {
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
           && (i->GetIpv4Header ().GetDestination ()
@@ -73,7 +73,7 @@ RequestQueue::DropPacketWithDst (Ipv4Address dst)
   NS_LOG_FUNCTION (this << dst);
   Purge ();
   for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i
-      != m_queue.end (); ++i)
+       != m_queue.end (); ++i)
     {
       if (IsEqual (*i, dst))
         {
@@ -81,7 +81,7 @@ RequestQueue::DropPacketWithDst (Ipv4Address dst)
         }
     }
   m_queue.erase (std::remove_if (m_queue.begin (), m_queue.end (),
-      std::bind2nd (std::ptr_fun (RequestQueue::IsEqual), dst)), m_queue.end ());
+                                 std::bind2nd (std::ptr_fun (RequestQueue::IsEqual), dst)), m_queue.end ());
 }
 
 bool
@@ -104,7 +104,7 @@ bool
 RequestQueue::Find (Ipv4Address dst)
 {
   for (std::vector<QueueEntry>::const_iterator i = m_queue.begin (); i
-      != m_queue.end (); ++i)
+       != m_queue.end (); ++i)
     {
       if (i->GetIpv4Header ().GetDestination () == dst)
         return true;
@@ -126,7 +126,7 @@ RequestQueue::Purge ()
 {
   IsExpired pred;
   for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i
-      != m_queue.end (); ++i)
+       != m_queue.end (); ++i)
     {
       if (pred (*i))
         {
@@ -134,7 +134,7 @@ RequestQueue::Purge ()
         }
     }
   m_queue.erase (std::remove_if (m_queue.begin (), m_queue.end (), pred),
-      m_queue.end ());
+                 m_queue.end ());
 }
 
 void
@@ -142,7 +142,7 @@ RequestQueue::Drop (QueueEntry en, std::string reason)
 {
   NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetIpv4Header ().GetDestination ());
   en.GetErrorCallback () (en.GetPacket (), en.GetIpv4Header (),
-      Socket::ERROR_NOROUTETOHOST);
+                          Socket::ERROR_NOROUTETOHOST);
   return;
 }
 

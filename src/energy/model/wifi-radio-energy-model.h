@@ -30,8 +30,10 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * A WifiPhy listener class for notifying the WifiRadioEnergyModel of Wifi radio
  * state change.
+ *
  */
 class WifiRadioEnergyModelPhyListener : public WifiPhyListener
 {
@@ -118,6 +120,7 @@ private:
 // -------------------------------------------------------------------------- //
 
 /**
+ * \ingroup energy
  * \brief A WiFi radio energy model.
  * 
  * 4 states are defined for the radio: TX, RX, IDLE, SLEEP. Default state is
@@ -138,6 +141,7 @@ private:
  * Default values for power consumption are based on CC2420 radio chip, with
  * supply voltage as 2.5V and currents as 17.4 mA (TX), 18.8 mA (RX), 20 uA
  * (sleep) and 426 uA (idle).
+ *
  */
 class WifiRadioEnergyModel : public DeviceEnergyModel
 {

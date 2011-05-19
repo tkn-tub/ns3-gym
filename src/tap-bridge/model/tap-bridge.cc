@@ -100,7 +100,7 @@ TapBridge::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&TapBridge::SetMtu,
                                          &TapBridge::GetMtu),
-                   MakeUintegerChecker<uint16_t> ())                   
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("DeviceName", 
                    "The name of the tap device to create.",
                    StringValue (""),
@@ -146,18 +146,18 @@ TapBridge::GetTypeId (void)
                    MakeEnumChecker (CONFIGURE_LOCAL, "ConfigureLocal",
                                     USE_LOCAL, "UseLocal",
                                     USE_BRIDGE, "UseBridge"))
-    ;
+  ;
   return tid;
 }
 
 TapBridge::TapBridge ()
-: m_node (0),
-  m_ifIndex (0),
-  m_sock (-1),
-  m_startEvent (),
-  m_stopEvent (),
-  m_fdReader (0),
-  m_ns3AddressRewritten (false)
+  : m_node (0),
+    m_ifIndex (0),
+    m_sock (-1),
+    m_startEvent (),
+    m_stopEvent (),
+    m_fdReader (0),
+    m_ns3AddressRewritten (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_packetBuffer = new uint8_t[65536];
@@ -176,7 +176,7 @@ TapBridge::~TapBridge()
   m_bridgedDevice = 0;
 }
 
-  void 
+void
 TapBridge::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -195,7 +195,7 @@ TapBridge::Start (Time tStart)
   m_startEvent = Simulator::Schedule (tStart, &TapBridge::StartTapDevice, this);
 }
 
-  void
+void
 TapBridge::Stop (Time tStop)
 {
   NS_LOG_FUNCTION (tStop);
@@ -206,7 +206,7 @@ TapBridge::Stop (Time tStop)
   m_startEvent = Simulator::Schedule (tStop, &TapBridge::StopTapDevice, this);
 }
 
-  void
+void
 TapBridge::StartTapDevice (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -304,7 +304,7 @@ TapBridge::CreateTap (void)
   //   sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
   //
   // The user will then set the "Mode" Attribute of the TapBridge to "UseLocal"
-  // and the "DeviceName" Attribute to "tap0" in this case.  
+  // and the "DeviceName" Attribute to "tap0" in this case.
   //
   // In ConfigureLocal mode, the user is asking the TapBridge to do the 
   // configuration and create a TAP with the provided "DeviceName" with which 
@@ -420,9 +420,9 @@ TapBridge::CreateTap (void)
       bool wantIp = (m_mode == CONFIGURE_LOCAL);
 
       if (wantIp
-            && (ipv4 == 0)
-            && m_tapIp.IsBroadcast ()
-            && m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
+          && (ipv4 == 0)
+          && m_tapIp.IsBroadcast ()
+          && m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
         {
           NS_FATAL_ERROR ("TapBridge::CreateTap(): Tap device IP configuration requested but neither IP address nor IP netmask is provided");
         }
@@ -525,15 +525,15 @@ TapBridge::CreateTap (void)
       // Execute the socket creation process image.
       //
       status = ::execlp ("tap-creator", 
-                        "tap-creator",                        // argv[0] (filename)
-                        ossDeviceName.str ().c_str (),        // argv[1] (-d<device name>)
-                        ossGateway.str ().c_str (),           // argv[2] (-g<gateway>)
-                        ossIp.str ().c_str (),                // argv[3] (-i<IP address>)
-                        ossMac.str ().c_str (),               // argv[4] (-m<MAC address>)
-                        ossNetmask.str ().c_str (),           // argv[5] (-n<net mask>)
-                        ossMode.str ().c_str (),              // argv[6] (-o<operating mode>)
-                        ossPath.str ().c_str (),              // argv[7] (-p<path>)
-                        (char *)NULL);
+                         "tap-creator",                       // argv[0] (filename)
+                         ossDeviceName.str ().c_str (),       // argv[1] (-d<device name>)
+                         ossGateway.str ().c_str (),          // argv[2] (-g<gateway>)
+                         ossIp.str ().c_str (),               // argv[3] (-i<IP address>)
+                         ossMac.str ().c_str (),              // argv[4] (-m<MAC address>)
+                         ossNetmask.str ().c_str (),          // argv[5] (-n<net mask>)
+                         ossMode.str ().c_str (),             // argv[6] (-o<operating mode>)
+                         ossPath.str ().c_str (),             // argv[7] (-p<path>)
+                         (char *)NULL);
 
       //
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
@@ -559,15 +559,15 @@ TapBridge::CreateTap (void)
       // even exit normally, we bail too.
       //
       if (WIFEXITED (st))
-	{
+        {
           int exitStatus = WEXITSTATUS (st);
           NS_ABORT_MSG_IF (exitStatus != 0, 
                            "TapBridge::CreateTap(): socket creator exited normally with status " << exitStatus);
-	}
+        }
       else 
-	{
+        {
           NS_FATAL_ERROR ("TapBridge::CreateTap(): socket creator exited abnormally");
-	}
+        }
 
       //
       // At this point, the socket creator has run successfully and should 
@@ -603,7 +603,7 @@ TapBridge::CreateTap (void)
 
       //
       // There is a msghdr that is used to minimize the number of parameters
-      // passed to recvmsg (which we will use to receive our ancillary data).  
+      // passed to recvmsg (which we will use to receive our ancillary data).
       // This structure uses terminology corresponding to control messages, so
       // you'll see msg_control, which is the pointer to the ancillary data and 
       // controllen which is the size of the ancillary data array.
@@ -634,10 +634,10 @@ TapBridge::CreateTap (void)
       //
       struct cmsghdr *cmsg;
       for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg, cmsg)) 
-	{
-	  if (cmsg->cmsg_level == SOL_SOCKET &&
-	      cmsg->cmsg_type == SCM_RIGHTS)
-	    {
+        {
+          if (cmsg->cmsg_level == SOL_SOCKET &&
+              cmsg->cmsg_type == SCM_RIGHTS)
+            {
               //
               // This is the type of message we want.  Check to see if the magic 
               // number is correct and then pull out the socket we care about if
@@ -653,10 +653,10 @@ TapBridge::CreateTap (void)
                 }
               else
                 {
-                  NS_LOG_INFO ("Got SCM_RIGHTS, but with bad magic " << magic);                  
+                  NS_LOG_INFO ("Got SCM_RIGHTS, but with bad magic " << magic);
                 }
-	    }
-	}
+            }
+        }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
 }
@@ -857,8 +857,8 @@ TapBridge::Filter (Ptr<Packet> p, Address *src, Address *dst, uint16_t *type)
           return 0;
         }
 
-        p->RemoveHeader (llc);
-        *type = llc.GetType ();
+      p->RemoveHeader (llc);
+      *type = llc.GetType ();
     }
   else
     {
@@ -890,12 +890,12 @@ TapBridge::SetBridgedNetDevice (Ptr<NetDevice> bridgedDevice)
   NS_ASSERT_MSG (m_node != 0, "TapBridge::SetBridgedDevice:  Bridge not installed in a node");
   NS_ASSERT_MSG (bridgedDevice != this, "TapBridge::SetBridgedDevice:  Cannot bridge to self");
   NS_ASSERT_MSG (m_bridgedDevice == 0, "TapBridge::SetBridgedDevice:  Already bridged");
-  
+
   if (!Mac48Address::IsMatchingType (bridgedDevice->GetAddress ()))
     {
       NS_FATAL_ERROR ("TapBridge::SetBridgedDevice: Device does not support eui 48 addresses: cannot be added to bridge.");
     }
-  
+
   if (m_mode == USE_BRIDGE && !bridgedDevice->SupportsSendFrom ())
     {
       NS_FATAL_ERROR ("TapBridge::SetBridgedDevice: Device does not support SendFrom: cannot be added to bridge.");
@@ -1030,20 +1030,20 @@ TapBridge::GetAddress (void) const
   return m_address;
 }
 
-  void 
+void
 TapBridge::SetMode (enum Mode mode)
 {
   NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
-  TapBridge::Mode
+TapBridge::Mode
 TapBridge::GetMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_mode;
 }
-  
+
 bool 
 TapBridge::SetMtu (const uint16_t mtu)
 {
@@ -1097,9 +1097,9 @@ TapBridge::IsMulticast (void) const
 Address
 TapBridge::GetMulticast (Ipv4Address multicastGroup) const
 {
- NS_LOG_FUNCTION (this << multicastGroup);
- Mac48Address multicast = Mac48Address::GetMulticast (multicastGroup);
- return multicast;
+  NS_LOG_FUNCTION (this << multicastGroup);
+  Mac48Address multicast = Mac48Address::GetMulticast (multicastGroup);
+  return multicast;
 }
 
 bool 

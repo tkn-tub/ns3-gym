@@ -28,7 +28,7 @@ TypeId UdpSocketFactory::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpSocketFactory")
     .SetParent<SocketFactory> ()
-    ;
+  ;
   return tid;
 }
 

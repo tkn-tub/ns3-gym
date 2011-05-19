@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
     {
       NS_FATAL_ERROR ("Need more nodes for grid.");
     }
-  
+
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
@@ -68,9 +68,9 @@ int main (int argc, char *argv[])
 
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
   clientHelper.SetAttribute 
-    ("OnTime", RandomVariableValue (ConstantVariable (1)));
+          ("OnTime", RandomVariableValue (ConstantVariable (1)));
   clientHelper.SetAttribute 
-    ("OffTime", RandomVariableValue (ConstantVariable (0)));
+          ("OffTime", RandomVariableValue (ConstantVariable (0)));
   ApplicationContainer clientApps;
 
   // Create an on/off app sending packets
@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
       anim.SetOutputFile (animFile);
     }
   anim.StartAnimation ();
-  
+
   // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

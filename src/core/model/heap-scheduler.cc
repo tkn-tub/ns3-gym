@@ -46,7 +46,7 @@ HeapScheduler::HeapScheduler ()
   // we purposedly waste an item at the start of
   // the array to make sure the indexes in the
   // array start at one.
-  Scheduler::Event empty = {0,{0,0}};
+  Scheduler::Event empty = { 0,{ 0,0}};
   m_heap.push_back (empty);
 }
 

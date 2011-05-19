@@ -42,52 +42,52 @@ const double fact =       5.9604644775390625e-8;     /* 1 / 2^24  */
 // (in matrix form), raised to the powers -1, 1, 2^76, and 2^127, resp.
 
 const double InvA1[3][3] = {          // Inverse of A1p0
-       { 184888585.0,   0.0,  1945170933.0 },
-       {         1.0,   0.0,           0.0 },
-       {         0.0,   1.0,           0.0 }
-       };
+  { 184888585.0,   0.0,  1945170933.0 },
+  {         1.0,   0.0,           0.0 },
+  {         0.0,   1.0,           0.0 }
+};
 
 const double InvA2[3][3] = {          // Inverse of A2p0
-       {      0.0,  360363334.0,  4225571728.0 },
-       {      1.0,          0.0,           0.0 },
-       {      0.0,          1.0,           0.0 }
-       };
+  {      0.0,  360363334.0,  4225571728.0 },
+  {      1.0,          0.0,           0.0 },
+  {      0.0,          1.0,           0.0 }
+};
 
 const double A1p0[3][3] = {
-       {       0.0,        1.0,       0.0 },
-       {       0.0,        0.0,       1.0 },
-       { -810728.0,  1403580.0,       0.0 }
-       };
+  {       0.0,        1.0,       0.0 },
+  {       0.0,        0.0,       1.0 },
+  { -810728.0,  1403580.0,       0.0 }
+};
 
 const double A2p0[3][3] = {
-       {        0.0,        1.0,       0.0 },
-       {        0.0,        0.0,       1.0 },
-       { -1370589.0,        0.0,  527612.0 }
-       };
+  {        0.0,        1.0,       0.0 },
+  {        0.0,        0.0,       1.0 },
+  { -1370589.0,        0.0,  527612.0 }
+};
 
 const double A1p76[3][3] = {
-       {      82758667.0, 1871391091.0, 4127413238.0 },
-       {    3672831523.0,   69195019.0, 1871391091.0 },
-       {    3672091415.0, 3528743235.0,   69195019.0 }
-       };
+  {      82758667.0, 1871391091.0, 4127413238.0 },
+  {    3672831523.0,   69195019.0, 1871391091.0 },
+  {    3672091415.0, 3528743235.0,   69195019.0 }
+};
 
 const double A2p76[3][3] = {
-       {    1511326704.0, 3759209742.0, 1610795712.0 },
-       {    4292754251.0, 1511326704.0, 3889917532.0 },
-       {    3859662829.0, 4292754251.0, 3708466080.0 }
-       };
+  {    1511326704.0, 3759209742.0, 1610795712.0 },
+  {    4292754251.0, 1511326704.0, 3889917532.0 },
+  {    3859662829.0, 4292754251.0, 3708466080.0 }
+};
 
 const double A1p127[3][3] = {
-       {    2427906178.0, 3580155704.0,  949770784.0 },
-       {     226153695.0, 1230515664.0, 3580155704.0 },
-       {    1988835001.0,  986791581.0, 1230515664.0 }
-       };
+  {    2427906178.0, 3580155704.0,  949770784.0 },
+  {     226153695.0, 1230515664.0, 3580155704.0 },
+  {    1988835001.0,  986791581.0, 1230515664.0 }
+};
 
 const double A2p127[3][3] = {
-       {    1464411153.0,  277697599.0, 1610723613.0 },
-       {      32183930.0, 1464411153.0, 1022607788.0 },
-       {    2824425944.0,   32183930.0, 2093834863.0 }
-       };
+  {    1464411153.0,  277697599.0, 1610723613.0 },
+  {      32183930.0, 1464411153.0, 1022607788.0 },
+  {    2824425944.0,   32183930.0, 2093834863.0 }
+};
 
 
 
@@ -96,21 +96,21 @@ const double A2p127[3][3] = {
 //
 double MultModM (double a, double s, double c, double m)
 {
-    double v;
-    int32_t a1;
+  double v;
+  int32_t a1;
 
-    v = a * s + c;
+  v = a * s + c;
 
-    if (v >= two53 || v <= -two53) {
-        a1 = static_cast<int32_t> (a / two17);    a -= a1 * two17;
-        v  = a1 * s;
-        a1 = static_cast<int32_t> (v / m);     v -= a1 * m;
-        v = v * two17 + a * s + c;
+  if (v >= two53 || v <= -two53) {
+      a1 = static_cast<int32_t> (a / two17);    a -= a1 * two17;
+      v  = a1 * s;
+      a1 = static_cast<int32_t> (v / m);     v -= a1 * m;
+      v = v * two17 + a * s + c;
     }
 
-    a1 = static_cast<int32_t> (v / m);
-    /* in case v < 0)*/
-    if ((v -= a1 * m) < 0.0) return v += m;   else return v;
+  a1 = static_cast<int32_t> (v / m);
+  /* in case v < 0)*/
+  if ((v -= a1 * m) < 0.0) return v += m;else return v;
 }
 
 
@@ -121,16 +121,16 @@ double MultModM (double a, double s, double c, double m)
 void MatVecModM (const double A[3][3], const double s[3], double v[3],
                  double m)
 {
-    int i;
-    double x[3];               // Necessary if v = s
+  int i;
+  double x[3];                 // Necessary if v = s
 
-    for (i = 0; i < 3; ++i) {
-        x[i] = MultModM (A[i][0], s[0], 0.0, m);
-        x[i] = MultModM (A[i][1], s[1], x[i], m);
-        x[i] = MultModM (A[i][2], s[2], x[i], m);
+  for (i = 0; i < 3; ++i) {
+      x[i] = MultModM (A[i][0], s[0], 0.0, m);
+      x[i] = MultModM (A[i][1], s[1], x[i], m);
+      x[i] = MultModM (A[i][2], s[2], x[i], m);
     }
-    for (i = 0; i < 3; ++i)
-        v[i] = x[i];
+  for (i = 0; i < 3; ++i)
+    v[i] = x[i];
 }
 
 
@@ -141,19 +141,19 @@ void MatVecModM (const double A[3][3], const double s[3], double v[3],
 void MatMatModM (const double A[3][3], const double B[3][3],
                  double C[3][3], double m)
 {
-    int i, j;
-    double V[3], W[3][3];
+  int i, j;
+  double V[3], W[3][3];
 
-    for (i = 0; i < 3; ++i) {
-        for (j = 0; j < 3; ++j)
-            V[j] = B[j][i];
-        MatVecModM (A, V, V, m);
-        for (j = 0; j < 3; ++j)
-            W[j][i] = V[j];
+  for (i = 0; i < 3; ++i) {
+      for (j = 0; j < 3; ++j)
+        V[j] = B[j][i];
+      MatVecModM (A, V, V, m);
+      for (j = 0; j < 3; ++j)
+        W[j][i] = V[j];
     }
-    for (i = 0; i < 3; ++i)
-        for (j = 0; j < 3; ++j)
-            C[i][j] = W[i][j];
+  for (i = 0; i < 3; ++i)
+    for (j = 0; j < 3; ++j)
+      C[i][j] = W[i][j];
 }
 
 
@@ -162,17 +162,17 @@ void MatMatModM (const double A[3][3], const double B[3][3],
 //
 void MatTwoPowModM (const double A[3][3], double B[3][3], double m, int32_t e)
 {
-   int i, j;
+  int i, j;
 
-   /* initialize: B = A */
-   if (A != B) {
+  /* initialize: B = A */
+  if (A != B) {
       for (i = 0; i < 3; ++i)
-         for (j = 0; j < 3; ++j)
-            B[i][j] = A[i][j];
-   }
-   /* Compute B = A^(2^e) mod m */
-   for (i = 0; i < e; i++)
-      MatMatModM (B, B, B, m);
+        for (j = 0; j < 3; ++j)
+          B[i][j] = A[i][j];
+    }
+  /* Compute B = A^(2^e) mod m */
+  for (i = 0; i < e; i++)
+    MatMatModM (B, B, B, m);
 }
 
 
@@ -181,23 +181,23 @@ void MatTwoPowModM (const double A[3][3], double B[3][3], double m, int32_t e)
 //
 void MatPowModM (const double A[3][3], double B[3][3], double m, int32_t n)
 {
-    int i, j;
-    double W[3][3];
+  int i, j;
+  double W[3][3];
 
-    /* initialize: W = A; B = I */
-    for (i = 0; i < 3; ++i)
-        for (j = 0; j < 3; ++j) {
-            W[i][j] = A[i][j];
-            B[i][j] = 0.0;
-        }
-    for (j = 0; j < 3; ++j)
-        B[j][j] = 1.0;
+  /* initialize: W = A; B = I */
+  for (i = 0; i < 3; ++i)
+    for (j = 0; j < 3; ++j) {
+        W[i][j] = A[i][j];
+        B[i][j] = 0.0;
+      }
+  for (j = 0; j < 3; ++j)
+    B[j][j] = 1.0;
 
-    /* Compute B = A^n mod m using the binary decomposition of n */
-    while (n > 0) {
-        if (n % 2) MatMatModM (W, B, B, m);
-        MatMatModM (W, W, W, m);
-        n /= 2;
+  /* Compute B = A^n mod m using the binary decomposition of n */
+  while (n > 0) {
+      if (n % 2) MatMatModM (W, B, B, m);
+      MatMatModM (W, W, W, m);
+      n /= 2;
     }
 }
 
@@ -214,33 +214,33 @@ static ns3::GlobalValue g_rngRun ("RngRun",
 } // end of anonymous namespace
 
 
-namespace ns3{
+namespace ns3 {
 //-------------------------------------------------------------------------
 // Generate the next random number.
 //
 double RngStream::U01 ()
 {
-    int32_t k;
-    double p1, p2, u;
+  int32_t k;
+  double p1, p2, u;
 
-    /* Component 1 */
-    p1 = a12 * Cg[1] - a13n * Cg[0];
-    k = static_cast<int32_t> (p1 / m1);
-    p1 -= k * m1;
-    if (p1 < 0.0) p1 += m1;
-    Cg[0] = Cg[1]; Cg[1] = Cg[2]; Cg[2] = p1;
+  /* Component 1 */
+  p1 = a12 * Cg[1] - a13n * Cg[0];
+  k = static_cast<int32_t> (p1 / m1);
+  p1 -= k * m1;
+  if (p1 < 0.0) p1 += m1;
+  Cg[0] = Cg[1]; Cg[1] = Cg[2]; Cg[2] = p1;
 
-    /* Component 2 */
-    p2 = a21 * Cg[5] - a23n * Cg[3];
-    k = static_cast<int32_t> (p2 / m2);
-    p2 -= k * m2;
-    if (p2 < 0.0) p2 += m2;
-    Cg[3] = Cg[4]; Cg[4] = Cg[5]; Cg[5] = p2;
+  /* Component 2 */
+  p2 = a21 * Cg[5] - a23n * Cg[3];
+  k = static_cast<int32_t> (p2 / m2);
+  p2 -= k * m2;
+  if (p2 < 0.0) p2 += m2;
+  Cg[3] = Cg[4]; Cg[4] = Cg[5]; Cg[5] = p2;
 
-    /* Combination */
-    u = ((p1 > p2) ? (p1 - p2) * norm : (p1 - p2 + m1) * norm);
+  /* Combination */
+  u = ((p1 > p2) ? (p1 - p2) * norm : (p1 - p2 + m1) * norm);
 
-    return (anti == false) ? u : (1 - u);
+  return (anti == false) ? u : (1 - u);
 }
 
 
@@ -249,15 +249,15 @@ double RngStream::U01 ()
 //
 double RngStream::U01d ()
 {
-    double u;
-    u = U01();
-    if (anti) {
-        // Don't forget that U01() returns 1 - u in the antithetic case
-        u += (U01() - 1.0) * fact;
-        return (u < 0.0) ? u + 1.0 : u;
+  double u;
+  u = U01();
+  if (anti) {
+      // Don't forget that U01() returns 1 - u in the antithetic case
+      u += (U01() - 1.0) * fact;
+      return (u < 0.0) ? u + 1.0 : u;
     } else {
-        u += U01() * fact;
-        return (u < 1.0) ? u : (u - 1.0);
+      u += U01() * fact;
+      return (u < 1.0) ? u : (u - 1.0);
     }
 }
 
@@ -267,38 +267,38 @@ double RngStream::U01d ()
 //
 bool RngStream::CheckSeed (const uint32_t seed[6])
 {
-    int i;
+  int i;
 
-    for (i = 0; i < 3; ++i) {
-        if (seed[i] >= m1) {
-            cerr << "****************************************\n\n"
-                 << "ERROR: Seed[" << i << "] >= 4294967087, Seed is not set."
-                 << "\n\n****************************************\n\n";
-            return (false);
+  for (i = 0; i < 3; ++i) {
+      if (seed[i] >= m1) {
+          cerr << "****************************************\n\n"
+               << "ERROR: Seed[" << i << "] >= 4294967087, Seed is not set."
+               << "\n\n****************************************\n\n";
+          return (false);
         }
     }
-    for (i = 3; i < 6; ++i) {
-        if (seed[i] >= m2) {
-	  cerr << "Seed[" << i << "] = " << seed[i] << endl; 
+  for (i = 3; i < 6; ++i) {
+      if (seed[i] >= m2) {
+          cerr << "Seed[" << i << "] = " << seed[i] << endl;
           cerr << "*****************************************\n\n"
                << "ERROR: Seed[" << i << "] >= 4294944443, Seed is not set."
                << "\n\n*****************************************\n\n";
           return (false);
         }
     }
-    if (seed[0] == 0 && seed[1] == 0 && seed[2] == 0) {
-         cerr << "****************************\n\n"
-              << "ERROR: First 3 seeds = 0.\n\n"
-              << "****************************\n\n";
-         return (false);
+  if (seed[0] == 0 && seed[1] == 0 && seed[2] == 0) {
+      cerr << "****************************\n\n"
+           << "ERROR: First 3 seeds = 0.\n\n"
+           << "****************************\n\n";
+      return (false);
     }
-    if (seed[3] == 0 && seed[4] == 0 && seed[5] == 0) {
-         cerr << "****************************\n\n"
-              << "ERROR: Last 3 seeds = 0.\n\n"
-              << "****************************\n\n";
-         return (false);
+  if (seed[3] == 0 && seed[4] == 0 && seed[5] == 0) {
+      cerr << "****************************\n\n"
+           << "ERROR: Last 3 seeds = 0.\n\n"
+           << "****************************\n\n";
+      return (false);
     }
-    return true;
+  return true;
 }
 
 uint32_t
@@ -340,7 +340,7 @@ double RngStream::nextSeed[6] =
 RngStream::RngStream ()
 {
   uint32_t run = EnsureGlobalInitialized ();
-  
+
   anti = false;
   incPrec = false;
   // Stream initialization moved to separate method.
@@ -354,12 +354,12 @@ RngStream::RngStream(const RngStream& r)
   anti = r.anti;
   incPrec = r.incPrec;
   for (int i = 0; i < 6; ++i) {
-    Cg[i] = r.Cg[i];
-    Bg[i] = r.Bg[i];
-    Ig[i] = r.Ig[i];
-  }
+      Cg[i] = r.Cg[i];
+      Bg[i] = r.Bg[i];
+      Ig[i] = r.Ig[i];
+    }
 }
-      
+
 
 void RngStream::InitializeStream()
 { // Moved from the RngStream constructor above to allow seeding
@@ -373,8 +373,8 @@ void RngStream::InitializeStream()
      will be the seed of the next declared RngStream. */
 
   for (int i = 0; i < 6; ++i) {
-    Bg[i] = Cg[i] = Ig[i] = nextSeed[i];
-  }
+      Bg[i] = Cg[i] = Ig[i] = nextSeed[i];
+    }
 
   MatVecModM (A1p127, nextSeed, nextSeed, m1);
   MatVecModM (A2p127, &nextSeed[3], &nextSeed[3], m2);
@@ -417,10 +417,10 @@ void RngStream::ResetNextSubstream ()
 void RngStream::ResetNthSubstream (uint32_t N)
 {
   if(N==0) return;
-  for(uint32_t i=0;i<N;++i) {
-    MatVecModM(A1p76, Bg, Bg, m1);
-    MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
-  }
+  for(uint32_t i=0; i<N; ++i) {
+      MatVecModM(A1p76, Bg, Bg, m1);
+      MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
+    }
   for (int i = 0; i < 6; ++i)
     Cg[i] = Bg[i];
 }
@@ -439,7 +439,7 @@ bool RngStream::SetPackageSeed (const uint32_t seed[6])
 bool 
 RngStream::SetPackageSeed (uint32_t seed)
 {
-  uint32_t seeds[6] = {seed, seed, seed, seed, seed, seed};
+  uint32_t seeds[6] = { seed, seed, seed, seed, seed, seed};
   return SetPackageSeed (seeds);
 }
 void 
@@ -468,7 +468,7 @@ RngStream::GetPackageRun (void)
 bool 
 RngStream::CheckSeed(uint32_t seed)
 {
-  uint32_t seeds[6] = {seed, seed, seed, seed, seed, seed};
+  uint32_t seeds[6] = { seed, seed, seed, seed, seed, seed};
   return CheckSeed (seeds);
 }
 
@@ -492,53 +492,53 @@ bool RngStream::SetSeeds (const uint32_t seed[6])
 //
 void RngStream::AdvanceState (int32_t e, int32_t c)
 {
-    double B1[3][3], C1[3][3], B2[3][3], C2[3][3];
+  double B1[3][3], C1[3][3], B2[3][3], C2[3][3];
 
-    if (e > 0) {
-        MatTwoPowModM (A1p0, B1, m1, e);
-        MatTwoPowModM (A2p0, B2, m2, e);
+  if (e > 0) {
+      MatTwoPowModM (A1p0, B1, m1, e);
+      MatTwoPowModM (A2p0, B2, m2, e);
     } else if (e < 0) {
-        MatTwoPowModM (InvA1, B1, m1, -e);
-        MatTwoPowModM (InvA2, B2, m2, -e);
+      MatTwoPowModM (InvA1, B1, m1, -e);
+      MatTwoPowModM (InvA2, B2, m2, -e);
     }
 
-    if (c >= 0) {
-        MatPowModM (A1p0, C1, m1, c);
-        MatPowModM (A2p0, C2, m2, c);
+  if (c >= 0) {
+      MatPowModM (A1p0, C1, m1, c);
+      MatPowModM (A2p0, C2, m2, c);
     } else {
-        MatPowModM (InvA1, C1, m1, -c);
-        MatPowModM (InvA2, C2, m2, -c);
+      MatPowModM (InvA1, C1, m1, -c);
+      MatPowModM (InvA2, C2, m2, -c);
     }
 
-    if (e) {
-        MatMatModM (B1, C1, C1, m1);
-        MatMatModM (B2, C2, C2, m2);
+  if (e) {
+      MatMatModM (B1, C1, C1, m1);
+      MatMatModM (B2, C2, C2, m2);
     }
 
-    MatVecModM (C1, Cg, Cg, m1);
-    MatVecModM (C2, &Cg[3], &Cg[3], m2);
+  MatVecModM (C1, Cg, Cg, m1);
+  MatVecModM (C2, &Cg[3], &Cg[3], m2);
 }
 
 
 //-------------------------------------------------------------------------
 void RngStream::GetState (uint32_t seed[6]) const
 {
-   for (int i = 0; i < 6; ++i)
-      seed[i] = static_cast<uint32_t> (Cg[i]);
+  for (int i = 0; i < 6; ++i)
+    seed[i] = static_cast<uint32_t> (Cg[i]);
 }
 
 
 //-------------------------------------------------------------------------
 void RngStream::IncreasedPrecis (bool incp)
 {
-   incPrec = incp;
+  incPrec = incp;
 }
 
 
 //-------------------------------------------------------------------------
 void RngStream::SetAntithetic (bool a)
 {
-   anti = a;
+  anti = a;
 }
 
 
@@ -547,10 +547,10 @@ void RngStream::SetAntithetic (bool a)
 //
 double RngStream::RandU01 ()
 {
-   if (incPrec)
-      return U01d();
-   else
-      return U01();
+  if (incPrec)
+    return U01d();
+  else
+    return U01();
 }
 
 
@@ -559,7 +559,7 @@ double RngStream::RandU01 ()
 //
 int32_t RngStream::RandInt (int32_t low, int32_t high)
 {
-    return low + static_cast<int32_t> ((high - low + 1) * RandU01 ());
+  return low + static_cast<int32_t> ((high - low + 1) * RandU01 ());
 };
 
 } //namespace ns3

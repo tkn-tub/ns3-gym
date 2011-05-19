@@ -39,7 +39,7 @@ PcapFileWrapper::GetTypeId (void)
                    UintegerValue (PcapFile::SNAPLEN_DEFAULT),
                    MakeUintegerAccessor (&PcapFileWrapper::m_snapLen),
                    MakeUintegerChecker<uint32_t> (0, PcapFile::SNAPLEN_DEFAULT))
-    ;
+  ;
   return tid;
 }
 

@@ -32,7 +32,7 @@ TypeId Ipv6RoutingProtocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6RoutingProtocol")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 

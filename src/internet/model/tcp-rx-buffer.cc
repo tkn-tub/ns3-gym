@@ -142,7 +142,7 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
   SequenceNumber32 headSeq = tcph.GetSequenceNumber ();
   SequenceNumber32 tailSeq = headSeq + SequenceNumber32 (pktSize);
   NS_LOG_LOGIC ("Add pkt " << p << " len=" << pktSize << " seq=" << headSeq
-                << ", when NextRxSeq=" << m_nextRxSeq << ", buffsize=" << m_size);
+                           << ", when NextRxSeq=" << m_nextRxSeq << ", buffsize=" << m_size);
 
   // Trim packet to fit Rx window specification
   if (headSeq < m_nextRxSeq) headSeq = m_nextRxSeq;
@@ -257,7 +257,7 @@ TcpRxBuffer::Extract (uint32_t maxSize)
       return 0;
     }
   NS_LOG_LOGIC ("Extracted " << outPkt->GetSize( ) << " bytes, bufsize=" << m_size
-                << ", num pkts in buffer=" << m_data.size ());
+                             << ", num pkts in buffer=" << m_data.size ());
   return outPkt;
 }
 

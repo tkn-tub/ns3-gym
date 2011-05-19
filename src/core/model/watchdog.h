@@ -28,7 +28,7 @@ namespace ns3 {
 class TimerImpl;
 
 /**
- * \ingroup simulator
+ * \ingroup core
  * \brief a very simple watchdog
  *
  * If you don't ping the watchdog sufficiently often, it triggers its

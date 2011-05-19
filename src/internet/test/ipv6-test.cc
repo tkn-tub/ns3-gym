@@ -93,11 +93,11 @@ Ipv6L3ProtocolTestCase::DoRun ()
 
   Ipv6InterfaceAddress ifaceAddr = interface->GetLinkLocalAddress ();
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr.GetAddress ().IsLinkLocal (), true,
-      "Should be link local??");
+                         "Should be link local??");
 
   interface->SetUp ();
   NS_TEST_ASSERT_MSG_EQ (interface->GetNAddresses (), 1,
-      "interface has always a link-local address"); /* interface has always a link-local address */
+                         "interface has always a link-local address"); /* interface has always a link-local address */
 
   interface2->SetUp ();
 
@@ -124,10 +124,10 @@ Ipv6L3ProtocolTestCase::DoRun ()
 
   Ipv6InterfaceAddress output = interface->GetAddress (1);
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr1, output,
-      "Should be the interface address 1?");
+                         "Should be the interface address 1?");
 
   index = ipv6->GetInterfaceForPrefix ("2001:1234:5678:9000::0",
-      Ipv6Prefix (64));
+                                       Ipv6Prefix (64));
   NS_TEST_ASSERT_MSG_EQ (index, 1, "We should get one address??"); /* link-local address is always index 0 */
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9001::2");
@@ -136,7 +136,7 @@ Ipv6L3ProtocolTestCase::DoRun ()
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9000::1"); /* address we just remove */
   NS_TEST_ASSERT_MSG_EQ (index, (uint32_t) -1, "Address should not be found??");
   Simulator::Destroy ();
-}//end DoRun
+} //end DoRun
 static class IPv6L3ProtocolTestSuite : public TestSuite
 {
 public:

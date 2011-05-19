@@ -31,7 +31,7 @@ class CallbackBase;
 
 
 /**
- * \ingroup node
+ * \ingroup network
  *
  * \brief the list of simulation nodes.
  *
@@ -71,7 +71,7 @@ public:
   static uint32_t GetNNodes (void);
 };
 
-}//namespace ns3
+} //namespace ns3
 
 
 #endif /* NODE_LIST_H */

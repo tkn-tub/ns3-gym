@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,22 +29,23 @@ namespace ns3 {
 
 MacTxMiddle::MacTxMiddle ()
   : m_sequence (0)
-{}
+{
+}
 
 MacTxMiddle::~MacTxMiddle ()
 {
-  for (std::map<Mac48Address,uint16_t*>::iterator i = m_qosSequences.begin(); i != m_qosSequences.end (); i++)
+  for (std::map<Mac48Address,uint16_t*>::iterator i = m_qosSequences.begin (); i != m_qosSequences.end (); i++)
     {
       delete [] i->second;
     }
 }
 
-uint16_t 
+uint16_t
 MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
 {
   uint16_t retval;
-  if (hdr->IsQosData () &&
-      !hdr->GetAddr1 ().IsGroup ()) 
+  if (hdr->IsQosData ()
+      && !hdr->GetAddr1 ().IsGroup ())
     {
       uint8_t tid = hdr->GetQosTid ();
       NS_ASSERT (tid < 16);
@@ -60,15 +61,15 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
           retval = 0;
           std::pair <Mac48Address,uint16_t*> newSeq (hdr->GetAddr1 (), new uint16_t[16]);
           std::pair <std::map<Mac48Address,uint16_t*>::iterator,bool> newIns = m_qosSequences.insert (newSeq);
-          NS_ASSERT(newIns.second == true);
+          NS_ASSERT (newIns.second == true);
           for (uint8_t i = 0; i < 16; i++)
             {
               newIns.first->second[i] = 0;
             }
           newIns.first->second[tid]++;
         }
-    } 
-  else 
+    }
+  else
     {
       retval = m_sequence;
       m_sequence++;

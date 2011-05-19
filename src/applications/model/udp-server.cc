@@ -56,12 +56,12 @@ UdpServer::GetTypeId (void)
                    MakeUintegerAccessor (&UdpServer::GetPacketWindowSize,
                                          &UdpServer::SetPacketWindowSize),
                    MakeUintegerChecker<uint16_t> (8,256))
-    ;
+  ;
   return tid;
 }
 
 UdpServer::UdpServer ()
- : m_lossCounter (0)
+  : m_lossCounter (0)
 {
   NS_LOG_FUNCTION (this);
   m_received=0;
@@ -146,7 +146,6 @@ UdpServer::HandleRead (Ptr<Socket> socket)
         {
           SeqTsHeader seqTs;
           packet->RemoveHeader (seqTs);
-          Time delay = Simulator::Now () - seqTs.GetTs ();
           uint32_t currentSequenceNumber = seqTs.GetSeq ();
           NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
                        " bytes from "<< InetSocketAddress::ConvertFrom(from).GetIpv4 () <<
@@ -154,7 +153,7 @@ UdpServer::HandleRead (Ptr<Socket> socket)
                        " Uid: " << packet->GetUid () <<
                        " TXtime: " << seqTs.GetTs () <<
                        " RXtime: " << Simulator::Now () <<
-                       " Delay: " << delay) ;
+                       " Delay: " << Simulator::Now () - seqTs.GetTs ()) ;
 
           m_lossCounter.NotifyReceived (currentSequenceNumber);
           m_received++;

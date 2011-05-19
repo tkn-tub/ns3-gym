@@ -24,35 +24,6 @@
 #include "ns3/header.h"
 #include "ns3/simple-ref-count.h"
 
-/**
- * \ingroup wifi
- *
- * \subsection wifi_ie Information Elements
- *
- * The IEEE 802.11 standard includes the notion of Information
- * Elements, which are encodings of management information to be
- * communicated between STAs in the payload of various frames of type
- * Management. Information Elements (IEs) have a common format, each
- * starting with a single octet - the Element ID, which indicates the
- * specific type of IE (a type to represent the options here is
- * defined as WifiInformationElementId). The next octet is a length field and
- * encodes the number of octets in the third and final field, which is
- * the IE Information field.
- *
- * The class ns3::WifiInformationElement provides a base for classes
- * which represent specific Information Elements. This class defines
- * pure virtual methods for serialisation
- * (ns3::WifiInformationElement::SerializeInformationField) and
- * deserialisation
- * (ns3::WifiInformationElement::DeserializeInformationField) of IEs, from
- * or to data members or other objects that simulation objects use to
- * maintain the relevant state.
- *
- * This class also provides an implementation of the equality
- * operator, which operates by comparing the serialised versions of
- * the two WifiInformationElement objects concerned.
- */
-
 namespace ns3 {
 
 /**
@@ -121,6 +92,30 @@ typedef uint8_t WifiInformationElementId;
 
 /**
  * \brief Information element, as defined in 802.11-2007 standard
+ * \ingroup wifi
+ *
+ * The IEEE 802.11 standard includes the notion of Information
+ * Elements, which are encodings of management information to be
+ * communicated between STAs in the payload of various frames of type
+ * Management. Information Elements (IEs) have a common format, each
+ * starting with a single octet - the Element ID, which indicates the
+ * specific type of IE (a type to represent the options here is
+ * defined as WifiInformationElementId). The next octet is a length field and
+ * encodes the number of octets in the third and final field, which is
+ * the IE Information field.
+ *
+ * The class ns3::WifiInformationElement provides a base for classes
+ * which represent specific Information Elements. This class defines
+ * pure virtual methods for serialisation
+ * (ns3::WifiInformationElement::SerializeInformationField) and
+ * deserialisation
+ * (ns3::WifiInformationElement::DeserializeInformationField) of IEs, from
+ * or to data members or other objects that simulation objects use to
+ * maintain the relevant state.
+ *
+ * This class also provides an implementation of the equality
+ * operator, which operates by comparing the serialised versions of
+ * the two WifiInformationElement objects concerned.
  *
  * Elements are defined to have a common general format consisting of
  * a 1 octet Element ID field, a 1 octet length field, and a

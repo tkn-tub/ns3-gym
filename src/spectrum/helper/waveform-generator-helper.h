@@ -37,6 +37,10 @@ class SpectrumValue;
 class SpectrumChannel;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class WaveformGeneratorHelper
 {
 public:

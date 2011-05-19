@@ -110,30 +110,30 @@ Ns3TcpStateTestCase::Ns3TcpStateTestCase (uint32_t testCase)
 void
 Ns3TcpStateTestCase::DoSetup (void)
 {
-    //
-    // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
-    // response-vectors/ of this directory
-    //
-    std::ostringstream oss;
-    oss << "/response-vectors/ns3tcp-state" << m_testCase << "-response-vectors.pcap";
-    m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
+  //
+  // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
+  // response-vectors/ of this directory
+  //
+  std::ostringstream oss;
+  oss << "/response-vectors/ns3tcp-state" << m_testCase << "-response-vectors.pcap";
+  m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
 
-    if (m_writeVectors)
-      {
-        m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
-        m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
-      }
-    else
-      {
-        m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
-        NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
-      }
+  if (m_writeVectors)
+    {
+      m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
+      m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+    }
+  else
+    {
+      m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
+      NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
+    }
 }
 
 void
 Ns3TcpStateTestCase::DoTeardown (void)
 {
-    m_pcapFile.Close ();
+  m_pcapFile.Close ();
 }
 
 void
@@ -159,7 +159,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
       //
       Time tNow = Simulator::Now ();
       int64_t tMicroSeconds = tNow.GetMicroSeconds ();
-      
+
       uint32_t size = p->GetSize ();
       uint8_t *buf = new uint8_t[size];
       p->CopyData (buf, size);
@@ -217,7 +217,7 @@ Ns3TcpStateTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txS
       if (m_writeLogging)
         {
           std::clog << "Submitting " 
-            << toWrite << " bytes to TCP socket" << std::endl;
+                    << toWrite << " bytes to TCP socket" << std::endl;
         }
       int amountSent = localSocket->Send (0, toWrite, 0);
       NS_ASSERT (amountSent > 0);  // Given GetTxAvailable() non-zero, amountSent should not be zero
@@ -228,8 +228,8 @@ Ns3TcpStateTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txS
       if (m_writeLogging)
         {
           std::clog << "Close socket at " 
-            <<  Simulator::Now ().GetSeconds () 
-            << std::endl;
+                    <<  Simulator::Now ().GetSeconds ()
+                    << std::endl;
         }
       localSocket->Close ();
       m_needToClose = false;
@@ -244,8 +244,8 @@ Ns3TcpStateTestCase::StartFlow (Ptr<Socket> localSocket,
   if (m_writeLogging)
     {
       std::clog << "Starting flow at time " 
-        <<  Simulator::Now ().GetSeconds () 
-        << std::endl;
+                <<  Simulator::Now ().GetSeconds ()
+                << std::endl;
     }
 
   localSocket->Connect (InetSocketAddress (servAddress, servPort)); // connect
@@ -253,8 +253,8 @@ Ns3TcpStateTestCase::StartFlow (Ptr<Socket> localSocket,
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
   localSocket->SetSendCallback (MakeCallback
-                               (&Ns3TcpStateTestCase::WriteUntilBufferFull,
-                                this));
+                                     (&Ns3TcpStateTestCase::WriteUntilBufferFull,
+                                     this));
   WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
 }
 
@@ -288,7 +288,7 @@ Ns3TcpStateTestCase::DoRun (void)
   ////////////////////////////////////////////////////////
   // Topology construction
   //
-  
+
   // Create three nodes
   NodeContainer n0n1;
   n0n1.Create (2);
@@ -328,7 +328,7 @@ Ns3TcpStateTestCase::DoRun (void)
   ApplicationContainer sinkApps = sink.Install (n1n2.Get (1));
   sinkApps.Start (Seconds (0.0));
   sinkApps.Stop (Seconds (100.0));
-  
+
   // Create a data source to send packets on node n0
   // Instead of full application, here use the socket directly by
   // registering callbacks in function StarFlow().
@@ -426,7 +426,7 @@ Ns3TcpStateTestCase::DoRun (void)
       p2p.EnableAsciiAll (osw);
 
       std::clog << std::endl << "Running TCP test-case " << m_testCase << ": "
-        << caseDescription << std::endl;
+                << caseDescription << std::endl;
     }
 
   // Finally, set up the simulator to run.  The 1000 second hard limit is a

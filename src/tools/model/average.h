@@ -28,7 +28,18 @@
 
 namespace ns3 {
 
-/// Simple average, min, max and std. deviation calculator
+/**
+ * \defgroup tools Tools
+ *
+ */
+
+/**
+ * \ingroup tools
+ *
+ * Simple average, min, max and std. deviation calculator
+ *
+ */
+
 template <typename T = double>
 class Average
 {
@@ -75,10 +86,10 @@ public:
   /// Standard deviation
   double   Stddev  () const { return sqrt (Var ());}
   //\}
-  
+
   /** 
    * \name Error of the mean estimates
-   *  
+   *
    * Note that estimates are valid for 
    *   - uncorrelated measurements, 
    *   - normal distribution and

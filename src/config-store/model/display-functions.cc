@@ -590,5 +590,5 @@ clean_model_callback_config_default (GtkTreeModel *model, GtkTreePath *path,
 }
 
 
-}//end ns3 namespace
+} //end ns3 namespace
 

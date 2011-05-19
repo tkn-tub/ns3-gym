@@ -23,14 +23,14 @@ Ipv4RawSocketImpl::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4RawSocketImpl")
     .SetParent<Socket> ()
     .AddAttribute ("Protocol", "Protocol number to match.",
-		   UintegerValue (0),
-		   MakeUintegerAccessor (&Ipv4RawSocketImpl::m_protocol),
-		   MakeUintegerChecker<uint16_t> ())
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv4RawSocketImpl::m_protocol),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("IcmpFilter", 
-		   "Any icmp header whose type field matches a bit in this filter is dropped.",
-		   UintegerValue (0),
-		   MakeUintegerAccessor (&Ipv4RawSocketImpl::m_icmpFilter),
-		   MakeUintegerChecker<uint32_t> ())
+                   "Any icmp header whose type field matches a bit in this filter is dropped.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv4RawSocketImpl::m_icmpFilter),
+                   MakeUintegerChecker<uint32_t> ())
     // 
     //  from raw (7), linux, returned length of Send/Recv should be
     // 
@@ -40,11 +40,11 @@ Ipv4RawSocketImpl::GetTypeId (void)
     //  Recv(Ipv4)| hdr + payload | hdr+payload |
     //  ----------+---------------+-------------+-
     .AddAttribute ("IpHeaderInclude", 
-		   "Include IP Header information (a.k.a setsockopt (IP_HDRINCL)).",
-		   BooleanValue (false),
-		   MakeBooleanAccessor (&Ipv4RawSocketImpl::m_iphdrincl),
-		   MakeBooleanChecker ())
-    ;
+                   "Include IP Header information (a.k.a setsockopt (IP_HDRINCL)).",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&Ipv4RawSocketImpl::m_iphdrincl),
+                   MakeBooleanChecker ())
+  ;
   return tid;
 }
 
@@ -179,7 +179,7 @@ Ipv4RawSocketImpl::Send (Ptr<Packet> p, uint32_t flags)
 }
 int 
 Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, 
-			   const Address &toAddress)
+                           const Address &toAddress)
 {
   NS_LOG_FUNCTION (this << p << flags << toAddress);
   if (!InetSocketAddress::IsMatchingType (toAddress))
@@ -209,7 +209,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
           dst = header.GetDestination ();
           src = header.GetSource ();
         }
-      SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 
+      SocketErrno errno_ = ERROR_NOTERROR; //do not use errno as it is the standard C last error number
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
       if (!oif && src != Ipv4Address::GetAny ())
@@ -264,8 +264,8 @@ Ipv4RawSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
   return RecvFrom (maxSize, flags, tmp);
 }
 Ptr<Packet> 
-Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,  
-			     Address &fromAddress)
+Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
+                             Address &fromAddress)
 {
   NS_LOG_FUNCTION (this << maxSize << flags << fromAddress);
   if (m_recv.empty ())
@@ -319,17 +319,17 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
           copy->AddPacketTag (tag);
         }
       if (m_protocol == 1)
-	{
-	  Icmpv4Header icmpHeader;
-	  copy->PeekHeader (icmpHeader);
-	  uint8_t type = icmpHeader.GetType ();
-	  if (type < 32 && 
-	      ((1 << type) & m_icmpFilter))
-	    {
-	      // filter out icmp packet.
-	      return false;
-	    }
-	}
+        {
+          Icmpv4Header icmpHeader;
+          copy->PeekHeader (icmpHeader);
+          uint8_t type = icmpHeader.GetType ();
+          if (type < 32 &&
+              ((1 << type) & m_icmpFilter))
+            {
+              // filter out icmp packet.
+              return false;
+            }
+        }
       copy->AddHeader (ipHeader);
       struct Data data;
       data.packet = copy;

@@ -24,16 +24,18 @@ namespace ns3 {
 
 BooleanValue::BooleanValue ()
   : m_value (false)
-{}
+{
+}
 BooleanValue::BooleanValue (bool value)
   : m_value (value)
-{}
-void 
+{
+}
+void
 BooleanValue::Set (bool value)
 {
   m_value = value;
 }
-bool 
+bool
 BooleanValue::Get (void) const
 {
   return m_value;
@@ -93,7 +95,7 @@ BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeCheck
   else
     {
       return false;
-    }  
+    }
 }
 
 

@@ -34,7 +34,7 @@ public:
   virtual ~Ipv4AddressGeneratorImpl ();
 
   void Init (const Ipv4Address net, const Ipv4Mask mask, 
-    const Ipv4Address addr);
+             const Ipv4Address addr);
 
   Ipv4Address GetNetwork (const Ipv4Mask mask) const;
   Ipv4Address NextNetwork (const Ipv4Mask mask);
@@ -55,7 +55,7 @@ private:
 
   class NetworkState
   {
-  public:
+public:
     uint32_t mask;
     uint32_t shift;
     uint32_t network;
@@ -67,7 +67,7 @@ private:
 
   class Entry
   {
-  public:
+public:
     uint32_t addrLow;
     uint32_t addrHigh;
   };
@@ -83,7 +83,7 @@ Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl ()
   Reset ();
 }
 
-  void
+void
 Ipv4AddressGeneratorImpl::Reset (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -127,7 +127,7 @@ Ipv4AddressGeneratorImpl::~Ipv4AddressGeneratorImpl ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-  void
+void
 Ipv4AddressGeneratorImpl::Init (
   const Ipv4Address net,
   const Ipv4Mask mask,
@@ -161,7 +161,7 @@ Ipv4AddressGeneratorImpl::Init (
   return;
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGeneratorImpl::GetNetwork (
   const Ipv4Mask mask) const
 {
@@ -171,7 +171,7 @@ Ipv4AddressGeneratorImpl::GetNetwork (
   return Ipv4Address (m_netTable[index].network << m_netTable[index].shift);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGeneratorImpl::NextNetwork (
   const Ipv4Mask mask)
 {
@@ -190,7 +190,7 @@ Ipv4AddressGeneratorImpl::NextNetwork (
   return Ipv4Address (m_netTable[index].network << m_netTable[index].shift);
 }
 
-  void
+void
 Ipv4AddressGeneratorImpl::InitAddress (
   const Ipv4Address addr,
   const Ipv4Mask mask)
@@ -204,7 +204,7 @@ Ipv4AddressGeneratorImpl::InitAddress (
   m_netTable[index].addr = addrBits;
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGeneratorImpl::GetAddress (
   const Ipv4Mask mask) const
 {
@@ -213,11 +213,11 @@ Ipv4AddressGeneratorImpl::GetAddress (
   uint32_t index = MaskToIndex (mask);
 
   return Ipv4Address (
-    (m_netTable[index].network << m_netTable[index].shift) |
-    m_netTable[index].addr);
+           (m_netTable[index].network << m_netTable[index].shift) |
+           m_netTable[index].addr);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -234,8 +234,8 @@ Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
                        "Ipv4AddressGeneratorImpl::NextAddress(): Address overflow");
 
   Ipv4Address addr = Ipv4Address (
-    (m_netTable[index].network << m_netTable[index].shift) |
-    m_netTable[index].addr);
+      (m_netTable[index].network << m_netTable[index].shift) |
+      m_netTable[index].addr);
 
   ++m_netTable[index].addr;
 //
@@ -246,7 +246,7 @@ Ipv4AddressGeneratorImpl::NextAddress (const Ipv4Mask mask)
   return addr;
 }
 
-  bool
+bool
 Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -260,7 +260,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
   for (i = m_entries.begin (); i != m_entries.end (); ++i)
     {
       NS_LOG_LOGIC ("examine entry: " << Ipv4Address ((*i).addrLow) << 
-        " to " << Ipv4Address ((*i).addrHigh));
+                    " to " << Ipv4Address ((*i).addrHigh));
 //
 // First things first.  Is there an address collision -- that is, does the
 // new address fall in a previously allocated block of addresses.
@@ -273,7 +273,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
               NS_FATAL_ERROR ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr));
             }
           return false;
-       }
+        }
 //
 // If the new address is less than the lowest address in the current block,
 // and can't be merged into to the current block, then insert it as a new
@@ -300,7 +300,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
               if (addr == (*j).addrLow)
                 {
                   NS_LOG_LOGIC ("Ipv4AddressGeneratorImpl::Add(): "
-                    "Address Collision: " << Ipv4Address (addr)); 
+                                "Address Collision: " << Ipv4Address (addr));
                   if (!m_test)
                     {
                       NS_FATAL_ERROR ("Ipv4AddressGeneratorImpl::Add(): Address Collision: " << Ipv4Address (addr));
@@ -308,7 +308,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
                   return false;
                 }
             }
-          
+
           NS_LOG_LOGIC ("New addrHigh = " << Ipv4Address (addr));
           (*i).addrHigh = addr;
           return true;
@@ -334,14 +334,14 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
   return true;
 }
 
-  void
+void
 Ipv4AddressGeneratorImpl::TestMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_test = true;
 }
 
-  uint32_t
+uint32_t
 Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
 {
 //
@@ -371,7 +371,7 @@ Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
   return 0;
 }
 
-  void
+void
 Ipv4AddressGenerator::Init (
   const Ipv4Address net,
   const Ipv4Mask mask,
@@ -380,28 +380,28 @@ Ipv4AddressGenerator::Init (
   NS_LOG_FUNCTION_NOARGS ();
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->Init (net, mask, addr);
+  ->Init (net, mask, addr);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGenerator::NextNetwork (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->NextNetwork (mask);
+         ->NextNetwork (mask);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGenerator::GetNetwork (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->GetNetwork (mask);
+         ->GetNetwork (mask);
 }
 
-  void
+void
 Ipv4AddressGenerator::InitAddress (
   const Ipv4Address addr,
   const Ipv4Mask mask)
@@ -409,52 +409,52 @@ Ipv4AddressGenerator::InitAddress (
   NS_LOG_FUNCTION_NOARGS ();
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->InitAddress (addr, mask);
+  ->InitAddress (addr, mask);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGenerator::GetAddress (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->GetAddress (mask);
+         ->GetAddress (mask);
 }
 
-  Ipv4Address
+Ipv4Address
 Ipv4AddressGenerator::NextAddress (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->NextAddress (mask);
+         ->NextAddress (mask);
 }
 
-  void
+void
 Ipv4AddressGenerator::Reset (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->Reset ();
+         ->Reset ();
 }
 
-  bool
+bool
 Ipv4AddressGenerator::AddAllocated (const Ipv4Address addr)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->AddAllocated (addr);
+         ->AddAllocated (addr);
 }
 
-  void
-  Ipv4AddressGenerator::TestMode (void)
+void
+Ipv4AddressGenerator::TestMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
-    ->TestMode ();
+  ->TestMode ();
 }
 
 } // namespace ns3

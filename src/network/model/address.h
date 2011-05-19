@@ -30,7 +30,7 @@
 namespace ns3 {
 
 /**
- * \ingroup node
+ * \ingroup network
  * \defgroup address Address
  */
 /**
@@ -159,7 +159,7 @@ public:
    * \param len the length of the buffer
    * \returns the number of bytes copied.
    *
-   * The inverse of CopyAllTo().  
+   * The inverse of CopyAllTo().
    *
    * \see CopyAllTo
    */

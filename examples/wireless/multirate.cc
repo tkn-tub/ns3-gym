@@ -334,6 +334,11 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
                                        << " position (" << clientPos.x << "," << clientPos.y << "," << clientPos.z << ")"
                                        << "\n");
 
+  //cast serverPos,clientPos,iaddrClient to void, to suppress variable set but not
+  //used compiler warning in optimized builds
+  (void) serverPos;
+  (void) clientPos;
+  (void) ipv4AddrClient;
 
   // Equipping the source  node with OnOff Application used for sending 
   OnOffHelper onoff ("ns3::UdpSocketFactory", Address(InetSocketAddress(Ipv4Address("10.0.0.1"), port)));
@@ -383,7 +388,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableRouting)
     {
-      internet.SetRoutingHelper(list);
+      internet.SetRoutingHelper(list);  // has effect on the next Install ()
     }
   internet.Install (c);
 

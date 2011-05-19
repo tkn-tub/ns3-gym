@@ -26,65 +26,70 @@
 
 namespace ns3 {
 
-  //------------------------------------------------------------
-  //--------------------------------------------
-  template <typename T  = uint32_t>
-  class MinMaxAvgTotalCalculator : public DataCalculator,
-                                   public StatisticalSummary {
-  public:
-    MinMaxAvgTotalCalculator();
-    virtual ~MinMaxAvgTotalCalculator();
+/**
+ * \defgroup stats Statistics
+ *
+ */
 
-    void Update(const T i);
+//------------------------------------------------------------
+//--------------------------------------------
+template <typename T  = uint32_t>
+class MinMaxAvgTotalCalculator : public DataCalculator,
+                                 public StatisticalSummary {
+public:
+  MinMaxAvgTotalCalculator();
+  virtual ~MinMaxAvgTotalCalculator();
 
-    virtual void Output(DataOutputCallback &callback) const;
+  void Update(const T i);
 
-    long getCount() const { return m_count; }
-    double getSum() const { return m_total; }
-    double getMin() const { return m_min; }
-    double getMax() const { return m_max; }
-    double getMean() const { return m_total / (double)m_count; }
+  virtual void Output(DataOutputCallback &callback) const;
+
+  long getCount() const { return m_count; }
+  double getSum() const { return m_total; }
+  double getMin() const { return m_min; }
+  double getMax() const { return m_max; }
+  double getMean() const { return m_total / (double)m_count; }
     double getStddev() const { return sqrt (getVariance ()); }
     double getVariance() const { return  ( m_count * m_totalSquare - m_total * m_total ) / (double) (m_count * (m_count - 1) ); }
     double getSqrSum() const { return m_totalSquare; }
 
-  protected:
-    virtual void DoDispose(void);
+protected:
+  virtual void DoDispose(void);
 
-    uint32_t m_count;
+  uint32_t m_count;
     T m_total, m_min, m_max, m_totalSquare;
 
-    // end MinMaxAvgTotalCalculator
-  };
+  // end MinMaxAvgTotalCalculator
+};
 
-  //----------------------------------------------
-  template <typename T>
-  MinMaxAvgTotalCalculator<T>::MinMaxAvgTotalCalculator()
-  {
-    m_count = 0;
-    m_total = 0;
+//----------------------------------------------
+template <typename T>
+MinMaxAvgTotalCalculator<T>::MinMaxAvgTotalCalculator()
+{
+  m_count = 0;
+  m_total = 0;
     m_totalSquare = 0;
-    m_min = ~0;
-    m_max = 0;
-  }
+  m_min = ~0;
+  m_max = 0;
+}
 
-  template <typename T>
-  MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
-  {
-  }
-  template <typename T>
-  void
-  MinMaxAvgTotalCalculator<T>::DoDispose(void)
-  {
-    DataCalculator::DoDispose();
-    // MinMaxAvgTotalCalculator::DoDispose
-  }
+template <typename T>
+MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
+{
+}
+template <typename T>
+void
+MinMaxAvgTotalCalculator<T>::DoDispose(void)
+{
+  DataCalculator::DoDispose();
+  // MinMaxAvgTotalCalculator::DoDispose
+}
 
-  template <typename T>
-  void
-  MinMaxAvgTotalCalculator<T>::Update(const T i)
-  {
-    if (m_enabled) {
+template <typename T>
+void
+MinMaxAvgTotalCalculator<T>::Update(const T i)
+{
+  if (m_enabled) {
       m_total += i;
       m_totalSquare += i*i;
 
@@ -96,97 +101,101 @@ namespace ns3 {
 
       m_count++;
     }
-    // end MinMaxAvgTotalCalculator::Update
-  }
+  // end MinMaxAvgTotalCalculator::Update
+}
 
-  template <typename T>
-  void
-  MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback &callback) const
-  {
-      callback.OutputStatistic(m_context, m_key, this);
-  }
-
-
-  //------------------------------------------------------------
-  //--------------------------------------------
-  template <typename T  = uint32_t>
-  class CounterCalculator : public DataCalculator {
-  public:
-    CounterCalculator();
-    virtual ~CounterCalculator();
-
-    void Update();
-    void Update(const T i);
-
-    T GetCount() const;
-
-    virtual void Output(DataOutputCallback &callback) const;
-
-  protected:
-    virtual void DoDispose(void);
-
-    T m_count;
-
-    // end CounterCalculator
-  };
+template <typename T>
+void
+MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback &callback) const
+{
+  callback.OutputStatistic(m_context, m_key, this);
+}
 
 
-  //--------------------------------------------
-  template <typename T>
-  CounterCalculator<T>::CounterCalculator() :
-    m_count(0)
-  {
-  }
+/**
+ * \ingroup stats
+ *
+ */
+//------------------------------------------------------------
+//--------------------------------------------
+template <typename T  = uint32_t>
+class CounterCalculator : public DataCalculator {
+public:
+  CounterCalculator();
+  virtual ~CounterCalculator();
 
-  template <typename T>
-  CounterCalculator<T>::~CounterCalculator()
-  {
-  }
-  template <typename T>
-  void
-  CounterCalculator<T>::DoDispose(void)
-  {
-    DataCalculator::DoDispose();
-    // CounterCalculator::DoDispose
-  }
+  void Update();
+  void Update(const T i);
 
-  template <typename T>
-  void
-  CounterCalculator<T>::Update()
-  {
-    if (m_enabled) {
+  T GetCount() const;
+
+  virtual void Output(DataOutputCallback &callback) const;
+
+protected:
+  virtual void DoDispose(void);
+
+  T m_count;
+
+  // end CounterCalculator
+};
+
+
+//--------------------------------------------
+template <typename T>
+CounterCalculator<T>::CounterCalculator() :
+  m_count(0)
+{
+}
+
+template <typename T>
+CounterCalculator<T>::~CounterCalculator()
+{
+}
+template <typename T>
+void
+CounterCalculator<T>::DoDispose(void)
+{
+  DataCalculator::DoDispose();
+  // CounterCalculator::DoDispose
+}
+
+template <typename T>
+void
+CounterCalculator<T>::Update()
+{
+  if (m_enabled) {
       m_count++;
     }
-    // end CounterCalculator::Update
-  }
+  // end CounterCalculator::Update
+}
 
-  template <typename T>
-  void
-  CounterCalculator<T>::Update(const T i)
-  {
-    if (m_enabled) {
+template <typename T>
+void
+CounterCalculator<T>::Update(const T i)
+{
+  if (m_enabled) {
       m_count += i;
     }
-    // end CounterCalculator::Update
-  }
+  // end CounterCalculator::Update
+}
 
-  template <typename T>
-  T
-  CounterCalculator<T>::GetCount() const
-  {
-    return m_count;
-    // end CounterCalculator::GetCount
-  }
+template <typename T>
+T
+CounterCalculator<T>::GetCount() const
+{
+  return m_count;
+  // end CounterCalculator::GetCount
+}
 
-  template <typename T>
-  void
-  CounterCalculator<T>::Output(DataOutputCallback &callback) const
-  {
-    callback.OutputSingleton(m_context, m_key, m_count);
-    // end CounterCalculator::Output
-  }
+template <typename T>
+void
+CounterCalculator<T>::Output(DataOutputCallback &callback) const
+{
+  callback.OutputSingleton(m_context, m_key, m_count);
+  // end CounterCalculator::Output
+}
 
-  // end namespace ns3
+// end namespace ns3
 };
 
 

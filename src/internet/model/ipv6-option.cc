@@ -39,7 +39,7 @@ TypeId Ipv6Option::GetTypeId ()
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6Option::GetOptionNumber),
                    MakeUintegerChecker<uint8_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -62,7 +62,7 @@ TypeId Ipv6OptionPad1::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionPad1")
     .SetParent<Ipv6Option> ()
     .AddConstructor<Ipv6OptionPad1> ()
-    ;
+  ;
   return tid;
 }
 
@@ -106,7 +106,7 @@ TypeId Ipv6OptionPadn::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionPadn")
     .SetParent<Ipv6Option> ()
     .AddConstructor<Ipv6OptionPadn> ()
-    ;
+  ;
   return tid;
 }
 
@@ -150,7 +150,7 @@ TypeId Ipv6OptionJumbogram::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionJumbogram")
     .SetParent<Ipv6Option> ()
     .AddConstructor<Ipv6OptionJumbogram> ()
-    ;
+  ;
   return tid;
 }
 
@@ -194,7 +194,7 @@ TypeId Ipv6OptionRouterAlert::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionRouterAlert")
     .SetParent<Ipv6Option> ()
     .AddConstructor<Ipv6OptionRouterAlert> ()
-    ;
+  ;
   return tid;
 }
 

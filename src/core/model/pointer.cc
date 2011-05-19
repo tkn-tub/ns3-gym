@@ -23,30 +23,32 @@ namespace ns3 {
 
 PointerValue::PointerValue ()
   : m_value ()
-{}
+{
+}
 
 PointerValue::PointerValue (Ptr<Object> object)
   : m_value (object)
-{}
+{
+}
 
-void 
+void
 PointerValue::SetObject (Ptr<Object> object)
 {
   m_value = object;
 }
 
-Ptr<Object> 
+Ptr<Object>
 PointerValue::GetObject (void) const
 {
   return m_value;
 }
 
-Ptr<AttributeValue> 
+Ptr<AttributeValue>
 PointerValue::Copy (void) const
 {
   return Create<PointerValue> (*this);
 }
-std::string 
+std::string
 PointerValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::ostringstream oss;

@@ -92,7 +92,7 @@ public:
    * \param model new mobility model parent
    */
   void SetParent (Ptr<MobilityModel> model);
-  
+
 private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);

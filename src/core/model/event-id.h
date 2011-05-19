@@ -29,7 +29,7 @@ namespace ns3 {
 class EventImpl;
 
 /**
- * \ingroup simulator
+ * \ingroup core
  * \brief an identifier for simulation events.
  *
  * Each EventId identifies a unique event scheduled with one

@@ -35,36 +35,38 @@ NS_OBJECT_ENSURE_REGISTERED (EthernetHeader);
 EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),
     m_lengthType (0)
-{}
+{
+}
 
 EthernetHeader::EthernetHeader ()
   : m_enPreambleSfd (false),
     m_lengthType (0)
-{}
+{
+}
 
-void 
+void
 EthernetHeader::SetLengthType (uint16_t lengthType)
 {
   m_lengthType = lengthType;
 }
-uint16_t 
+uint16_t
 EthernetHeader::GetLengthType (void) const
 {
   return m_lengthType;
 }
 
-void 
+void
 EthernetHeader::SetPreambleSfd (uint64_t preambleSfd)
 {
   m_preambleSfd = preambleSfd;
 }
-uint64_t 
+uint64_t
 EthernetHeader::GetPreambleSfd (void) const
 {
   return m_preambleSfd;
 }
 
-void 
+void
 EthernetHeader::SetSource (Mac48Address source)
 {
   m_source = source;
@@ -105,7 +107,7 @@ EthernetHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::EthernetHeader")
     .SetParent<Header> ()
     .AddConstructor<EthernetHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -143,7 +145,7 @@ void
 EthernetHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  
+
   if (m_enPreambleSfd)
     {
       i.WriteU64(m_preambleSfd);

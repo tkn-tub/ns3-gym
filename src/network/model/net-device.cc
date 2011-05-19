@@ -33,7 +33,7 @@ TypeId NetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NetDevice")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 

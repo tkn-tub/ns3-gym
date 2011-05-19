@@ -1126,6 +1126,8 @@ class Visualizer(gobject.GObject):
         __IPYTHON__.runcode = types.MethodType(runcode, __IPYTHON__)                
 
     def autoscale_view(self):
+        if not self.nodes:
+            return
         self._update_node_positions()
         positions = [node.get_position() for node in self.nodes.itervalues()]
         min_x, min_y = min(x for (x,y) in positions), min(y for (x,y) in positions)

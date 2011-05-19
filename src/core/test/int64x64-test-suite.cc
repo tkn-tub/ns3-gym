@@ -17,9 +17,9 @@ Int64x64FracTestCase::CheckFrac (int64_t hi, uint64_t lo)
 {
   int64x64_t tmp = int64x64_t (hi,lo);
   NS_TEST_EXPECT_MSG_EQ (tmp.GetHigh (), hi,
-			 "High part does not match");
+                         "High part does not match");
   NS_TEST_EXPECT_MSG_EQ (tmp.GetLow (), lo,
-			 "Low part does not match");
+                         "Low part does not match");
 }
 
 Int64x64FracTestCase::Int64x64FracTestCase ()
@@ -273,25 +273,26 @@ Int64x64InvertTestCase::DoRun (void)
 {
 #define TEST(factor)                                                    \
   do {                                                                  \
-    int64x64_t a;							\
-    a = int64x64_t::Invert (factor);					\
-    int64x64_t b = V (factor);						\
-    b.MulByInvert (a);                                                  \
-    NS_TEST_ASSERT_MSG_EQ (b.GetHigh (), 1,				\
-			   "x * 1/x should be 1 for x=" << factor);     \
-    int64x64_t c = V (1);						\
-    c.MulByInvert (a);                                                  \
-    NS_TEST_ASSERT_MSG_EQ (c.GetHigh (), 0,				\
-			   "1 * 1/x should be 0 for x=" << factor);     \
-    int64x64_t d = V (1);						\
-    d /= (V(factor));                                                  \
-    NS_TEST_ASSERT_MSG_EQ (d.GetDouble (), c.GetDouble (),              \
-			   "1 * 1/x should be equal to 1/x for x=" << factor); \
-    int64x64_t e = V (-factor);					\
-    e.MulByInvert (a);                                                  \
-    NS_TEST_ASSERT_MSG_EQ (e.GetHigh (), -1,				\
-			   "-x * 1/x should be -1 for x=" << factor);   \
-  } while(false)
+      int64x64_t a;                                                       \
+      a = int64x64_t::Invert (factor);                                    \
+      int64x64_t b = V (factor);                                          \
+      b.MulByInvert (a);                                                  \
+      NS_TEST_ASSERT_MSG_EQ (b.GetHigh (), 1,                             \
+                             "x * 1/x should be 1 for x=" << factor);     \
+      int64x64_t c = V (1);                                               \
+      c.MulByInvert (a);                                                  \
+      NS_TEST_ASSERT_MSG_EQ (c.GetHigh (), 0,                             \
+                             "1 * 1/x should be 0 for x=" << factor);     \
+      int64x64_t d = V (1);                                               \
+      d /= (V(factor));                                                  \
+      NS_TEST_ASSERT_MSG_EQ (d.GetDouble (), c.GetDouble (),              \
+                             "1 * 1/x should be equal to 1/x for x=" << factor); \
+      int64x64_t e = V (-factor);                                 \
+      e.MulByInvert (a);                                                  \
+      NS_TEST_ASSERT_MSG_EQ (e.GetHigh (), -1,                            \
+                             "-x * 1/x should be -1 for x=" << factor);   \
+    } \
+  while(false)
   TEST(2);
   TEST(3);
   TEST(4);

@@ -115,30 +115,30 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase)
 void
 Ns3TcpLossTestCase::DoSetup (void)
 {
-    //
-    // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
-    // response-vectors/ of this directory
-    //
-    std::ostringstream oss;
-    oss << "/response-vectors/ns3tcp-loss-" << m_tcpModel << m_testCase << "-response-vectors.pcap";
-    m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
+  //
+  // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
+  // response-vectors/ of this directory
+  //
+  std::ostringstream oss;
+  oss << "/response-vectors/ns3tcp-loss-" << m_tcpModel << m_testCase << "-response-vectors.pcap";
+  m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
 
-    if (m_writeVectors)
-      {
-        m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
-        m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
-      }
-    else
-      {
-        m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
-        NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
-      }
+  if (m_writeVectors)
+    {
+      m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
+      m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+    }
+  else
+    {
+      m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
+      NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
+    }
 }
 
 void
 Ns3TcpLossTestCase::DoTeardown (void)
 {
-    m_pcapFile.Close ();
+  m_pcapFile.Close ();
 }
 
 void
@@ -164,7 +164,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       //
       Time tNow = Simulator::Now ();
       int64_t tMicroSeconds = tNow.GetMicroSeconds ();
-      
+
       uint32_t size = p->GetSize ();
       uint8_t *buf = new uint8_t[size];
       p->CopyData (buf, size);
@@ -208,8 +208,8 @@ Ns3TcpLossTestCase::CwndTracer (uint32_t oldval, uint32_t newval)
   if (m_writeLogging)
     {
       *(m_osw->GetStream ()) << "Moving cwnd from " << oldval << " to " << newval 
-        << " at time " << Simulator::Now ().GetSeconds () 
-        << " seconds" << std::endl;
+                             << " at time " << Simulator::Now ().GetSeconds ()
+                             << " seconds" << std::endl;
     }
 }
 
@@ -233,7 +233,7 @@ Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSp
       if (m_writeLogging)
         {
           std::clog << "Submitting " << toWrite 
-            << " bytes to TCP socket" << std::endl;
+                    << " bytes to TCP socket" << std::endl;
         }
       int amountSent = localSocket->Send (0, toWrite, 0);
       NS_ASSERT (amountSent > 0);  // Given GetTxAvailable() non-zero, amountSent should not be zero
@@ -244,7 +244,7 @@ Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSp
       if (m_writeLogging)
         {
           std::clog << "Close socket at " 
-            <<  Simulator::Now ().GetSeconds () << std::endl;
+                    <<  Simulator::Now ().GetSeconds () << std::endl;
         }
       localSocket->Close ();
       m_needToClose = false;
@@ -253,21 +253,21 @@ Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSp
 
 void 
 Ns3TcpLossTestCase::StartFlow (Ptr<Socket> localSocket,
-                                Ipv4Address servAddress,
-                                uint16_t servPort)
+                               Ipv4Address servAddress,
+                               uint16_t servPort)
 {
   if (m_writeLogging)
     {
       std::clog << "Starting flow at time " 
-        <<  Simulator::Now ().GetSeconds () << std::endl;
+                <<  Simulator::Now ().GetSeconds () << std::endl;
     }
   localSocket->Connect (InetSocketAddress (servAddress, servPort)); // connect
 
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
   localSocket->SetSendCallback (MakeCallback
-                               (&Ns3TcpLossTestCase::WriteUntilBufferFull,
-                                this));
+                                     (&Ns3TcpLossTestCase::WriteUntilBufferFull,
+                                     this));
   WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
 }
 
@@ -304,7 +304,7 @@ Ns3TcpLossTestCase::DoRun (void)
   ////////////////////////////////////////////////////////
   // Topology construction
   //
-  
+
   // Create three nodes: s1, r1, and k1
   NodeContainer s1r1;
   s1r1.Create (2);
@@ -363,8 +363,8 @@ Ns3TcpLossTestCase::DoRun (void)
                    MakeCallback (&Ns3TcpLossTestCase::Ipv4L3Tx, this));
 
   Config::ConnectWithoutContext
-    ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
-     MakeCallback (&Ns3TcpLossTestCase::CwndTracer, this));
+          ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+          MakeCallback (&Ns3TcpLossTestCase::CwndTracer, this));
 
   ////////////////////////////////////////////////////////
   // Set up loss model at node k1
@@ -425,7 +425,7 @@ Ns3TcpLossTestCase::DoRun (void)
       *(m_osw->GetStream ()) << std::setprecision (9) << std::fixed;
       p2p.EnableAsciiAll (m_osw);
     }
-  
+
   // Finally, set up the simulator to run.  The 1000 second hard limit is a
   // failsafe in case some change above causes the simulation to never end
   Simulator::Stop (Seconds (1000));

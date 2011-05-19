@@ -61,7 +61,7 @@ bool operator < (const Ipv4FlowClassifier::FiveTuple &t1,
     {
       return false;
     }
-  
+
   if (t1.sourcePort < t2.sourcePort)
     {
       return true;
@@ -137,11 +137,11 @@ Ipv4FlowClassifier::Classify (const Ipv4Header &ipHeader, Ptr<const Packet> ipPa
     default:
       return false;
     }
-  
+
   // try to insert the tuple, but check if it already exists
   std::pair<std::map<FiveTuple, FlowId>::iterator, bool> insert
     = m_flowMap.insert (std::pair<FiveTuple, FlowId> (tuple, 0));
-  
+
   // if the insertion succeeded, we need to assign this tuple a new flow identifier
   if (insert.second)
     {
@@ -159,7 +159,7 @@ Ipv4FlowClassifier::FiveTuple
 Ipv4FlowClassifier::FindFlow (FlowId flowId) const
 {
   for (std::map<FiveTuple, FlowId>::const_iterator
-         iter = m_flowMap.begin (); iter != m_flowMap.end (); iter++)
+       iter = m_flowMap.begin (); iter != m_flowMap.end (); iter++)
     {
       if (iter->second == flowId)
         {
@@ -168,7 +168,7 @@ Ipv4FlowClassifier::FindFlow (FlowId flowId) const
     }
   NS_FATAL_ERROR ("Could not find the flow with ID " << flowId);
   FiveTuple retval = { Ipv4Address::GetZero (), Ipv4Address::GetZero (), 0, 0, 0 };
-  return retval;    
+  return retval;
 }
 
 void
@@ -180,7 +180,7 @@ Ipv4FlowClassifier::SerializeToXmlStream (std::ostream &os, int indent) const
 
   indent += 2;
   for (std::map<FiveTuple, FlowId>::const_iterator
-         iter = m_flowMap.begin (); iter != m_flowMap.end (); iter++)
+       iter = m_flowMap.begin (); iter != m_flowMap.end (); iter++)
     {
       INDENT(indent);
       os << "<Flow flowId=\"" << iter->second << "\""
@@ -194,7 +194,7 @@ Ipv4FlowClassifier::SerializeToXmlStream (std::ostream &os, int indent) const
 
   indent -= 2;
   INDENT(indent); os << "</Ipv4FlowClassifier>\n";
-  
+
 #undef INDENT
 }
 

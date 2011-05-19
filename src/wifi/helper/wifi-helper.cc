@@ -59,7 +59,7 @@ WifiHelper::Default (void)
   return helper;
 }
 
-void 
+void
 WifiHelper::SetRemoteStationManager (std::string type,
                                      std::string n0, const AttributeValue &v0,
                                      std::string n1, const AttributeValue &v1,
@@ -82,13 +82,13 @@ WifiHelper::SetRemoteStationManager (std::string type,
   m_stationManager.Set (n7, v7);
 }
 
-void 
+void
 WifiHelper::SetStandard (enum WifiPhyStandard standard)
 {
   m_standard = standard;
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 WifiHelper::Install (const WifiPhyHelper &phyHelper,
                      const WifiMacHelper &macHelper, NodeContainer c) const
 {
@@ -108,19 +108,19 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
       devices.Add (device);
-      NS_LOG_DEBUG ("node="<<node<<", mob="<<node->GetObject<MobilityModel> ());
+      NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
     }
   return devices;
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 WifiHelper::Install (const WifiPhyHelper &phy,
                      const WifiMacHelper &mac, Ptr<Node> node) const
 {
   return Install (phy, mac, NodeContainer (node));
 }
 
-NetDeviceContainer 
+NetDeviceContainer
 WifiHelper::Install (const WifiPhyHelper &phy,
                      const WifiMacHelper &mac, std::string nodeName) const
 {

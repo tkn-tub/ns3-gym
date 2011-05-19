@@ -41,7 +41,7 @@ Backoff::Backoff(Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t c
   m_ceiling = ceiling;
   m_maxRetries = maxRetries;
   m_rng = UniformVariable ();
-}  
+}
 
 Time
 Backoff::GetBackoffTime (void)

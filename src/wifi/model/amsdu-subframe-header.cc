@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,11 +30,11 @@ AmsduSubframeHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::AmsduSubframeHeader")
     .SetParent<Header> ()
     .AddConstructor<AmsduSubframeHeader> ()
-    ;
-  return tid; 
+  ;
+  return tid;
 }
 
-TypeId 
+TypeId
 AmsduSubframeHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
@@ -42,10 +42,12 @@ AmsduSubframeHeader::GetInstanceTypeId (void) const
 
 AmsduSubframeHeader::AmsduSubframeHeader ()
   : m_length (0)
-{}
+{
+}
 
 AmsduSubframeHeader::~AmsduSubframeHeader ()
-{}
+{
+}
 
 uint32_t
 AmsduSubframeHeader::GetSerializedSize () const
@@ -106,7 +108,7 @@ AmsduSubframeHeader::GetSourceAddr (void) const
 {
   return m_sa;
 }
-  
+
 uint16_t
 AmsduSubframeHeader::GetLength (void) const
 {

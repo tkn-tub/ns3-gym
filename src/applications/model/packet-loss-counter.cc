@@ -103,7 +103,7 @@ PacketLossCounter::SetBit(uint32_t seqNum, bool val)
 void
 PacketLossCounter::NotifyReceived (uint32_t seqNum)
 {
-  for (uint32_t i=m_lastMaxSeqNum+1; i<=seqNum;i++)
+  for (uint32_t i=m_lastMaxSeqNum+1; i<=seqNum; i++)
     {
       if (GetBit(i)!=1)
         {

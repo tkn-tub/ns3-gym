@@ -172,10 +172,10 @@ private:
    * \param nd Net device for which you want to enable tracing.
    */
   virtual void EnableAsciiInternal (
-                                    Ptr<OutputStreamWrapper> stream, 
-                                    std::string prefix, 
-                                    Ptr<NetDevice> nd,
-                                    bool explicitFilename);
+    Ptr<OutputStreamWrapper> stream,
+    std::string prefix,
+    Ptr<NetDevice> nd,
+    bool explicitFilename);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;

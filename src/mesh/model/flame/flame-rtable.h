@@ -49,9 +49,9 @@ public:
     uint8_t  cost;
     uint16_t seqnum;
     LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
-                 uint32_t i = INTERFACE_ANY,
-                 uint8_t  c = MAX_COST,
-                 uint16_t s = 0)
+                  uint32_t i = INTERFACE_ANY,
+                  uint8_t  c = MAX_COST,
+                  uint16_t s = 0)
       : retransmitter (r),
         ifIndex (i),
         cost (c),
@@ -76,7 +76,7 @@ public:
     const uint32_t interface,
     const uint8_t cost,
     const uint16_t seqnum
-  );
+    );
   /**
    * \brief Lookup path to destination
    * \return Broadcast if not found

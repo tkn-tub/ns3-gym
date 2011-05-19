@@ -3,7 +3,7 @@
  * Copyright (c) 2004,2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -44,9 +44,9 @@ struct RraaWifiRemoteStation : public WifiRemoteStation
   uint32_t m_rate;
 };
 
-NS_OBJECT_ENSURE_REGISTERED(RraaWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (RraaWifiManager);
 
-TypeId 
+TypeId
 RraaWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RraaWifiManager")
@@ -172,15 +172,17 @@ RraaWifiManager::GetTypeId (void)
                    DoubleValue (0.3932),
                    MakeDoubleAccessor (&RraaWifiManager::m_pmtlfor9),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 
 
 RraaWifiManager::RraaWifiManager ()
-{}
+{
+}
 RraaWifiManager::~RraaWifiManager ()
-{}
+{
+}
 
 
 WifiRemoteStation *
@@ -220,11 +222,12 @@ RraaWifiManager::GetMinRate (RraaWifiRemoteStation *station)
 }
 
 
-void 
+void
 RraaWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
-{}
+{
+}
 
-void 
+void
 RraaWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
@@ -234,17 +237,18 @@ RraaWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   station->m_failed++;
   RunBasicAlgorithm (station);
 }
-void 
+void
 RraaWifiManager::DoReportRxOk (WifiRemoteStation *st,
                                double rxSnr, WifiMode txMode)
-{}
-void 
+{
+}
+void
 RraaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  NS_LOG_DEBUG ("self="<<st<<" rts ok");
+  NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
-void 
+void
 RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
@@ -254,12 +258,14 @@ RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_counter--;
   RunBasicAlgorithm (station);
 }
-void 
+void
 RraaWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
-{}
-void 
+{
+}
+void
 RraaWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
-{}
+{
+}
 
 WifiMode
 RraaWifiManager::DoGetDataMode (WifiRemoteStation *st,
@@ -295,7 +301,7 @@ void
 RraaWifiManager::CheckTimeout (RraaWifiRemoteStation *station)
 {
   Time d = Simulator::Now () - station->m_lastReset;
-  if (station->m_counter == 0 || d > m_timeout) 
+  if (station->m_counter == 0 || d > m_timeout)
     {
       ResetCountersBasic (station);
     }
@@ -306,16 +312,16 @@ RraaWifiManager::RunBasicAlgorithm (RraaWifiRemoteStation *station)
 {
   ThresholdsItem thresholds = GetThresholds (station, station->m_rate);
   double ploss = (double) station->m_failed / (double) thresholds.ewnd;
-  if (station->m_counter == 0 || 
-      ploss > thresholds.pmtl) 
+  if (station->m_counter == 0
+      || ploss > thresholds.pmtl)
     {
-      if (station->m_rate > GetMinRate (station) && 
-          ploss > thresholds.pmtl) 
+      if (station->m_rate > GetMinRate (station)
+          && ploss > thresholds.pmtl)
         {
           station->m_rate--;
         }
-      else if (station->m_rate < GetMaxRate (station) && 
-               ploss < thresholds.pori) 
+      else if (station->m_rate < GetMaxRate (station)
+               && ploss < thresholds.pori)
         {
           station->m_rate++;
         }
@@ -326,31 +332,31 @@ RraaWifiManager::RunBasicAlgorithm (RraaWifiRemoteStation *station)
 void
 RraaWifiManager::ARts (RraaWifiRemoteStation *station)
 {
-  if (!station->m_rtsOn && 
-      station->m_lastFrameFail) 
+  if (!station->m_rtsOn
+      && station->m_lastFrameFail)
     {
       station->m_rtsWnd++;
       station->m_rtsCounter = station->m_rtsWnd;
     }
-  else if ((station->m_rtsOn && station->m_lastFrameFail) || 
-           (!station->m_rtsOn && !station->m_lastFrameFail)) 
+  else if ((station->m_rtsOn && station->m_lastFrameFail)
+           || (!station->m_rtsOn && !station->m_lastFrameFail))
     {
       station->m_rtsWnd = station->m_rtsWnd / 2;
       station->m_rtsCounter = station->m_rtsWnd;
     }
-  if (station->m_rtsCounter > 0) 
+  if (station->m_rtsCounter > 0)
     {
       station->m_rtsOn = true;
       station->m_rtsCounter--;
     }
-  else 
+  else
     {
       station->m_rtsOn = false;
     }
 }
 
 struct RraaWifiManager::ThresholdsItem
-RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, 
+RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station,
                                 uint32_t rate) const
 {
   WifiMode mode = GetSupported (station, rate);
@@ -360,66 +366,90 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station,
 struct RraaWifiManager::ThresholdsItem
 RraaWifiManager::GetThresholds (WifiMode mode) const
 {
-  switch (mode.GetDataRate () / 1000000) 
+  switch (mode.GetDataRate () / 1000000)
     {
-    case 54: {
-      ThresholdsItem mode54 = {54000000, 
-                               0.0, 
-                               m_pmtlfor54, 
-                               m_ewndfor54};
-      return mode54;
-    } break;
-    case 48: {
-      ThresholdsItem mode48 = {48000000, 
-                               m_porifor48, 
-                               m_pmtlfor48, 
-                               m_ewndfor48};
-      return mode48;
-    } break;
-    case 36: {
-      ThresholdsItem mode36 = {36000000, 
-                               m_porifor36, 
-                               m_pmtlfor36, 
-                               m_ewndfor36};
-      return mode36;
-    } break;
-    case 24: {
-      ThresholdsItem mode24 = {24000000, 
-                               m_porifor24, 
-                               m_pmtlfor24, 
-                               m_ewndfor24};
-      return mode24;
-    } break;
-    case 18: {
-      ThresholdsItem mode18 = {18000000, 
-                               m_porifor18, 
-                               m_pmtlfor18, 
-                               m_ewndfor18};
-      return mode18;
-    } break;
-    case 12: {
-      ThresholdsItem mode12 = {12000000, 
-                               m_porifor12, 
-                               m_pmtlfor12, 
-                               m_ewndfor12};
-      return mode12;
-    } break;
-    case 9: {
-      ThresholdsItem mode9 =  {9000000, 
-                               m_porifor9, 
-                               m_pmtlfor9, 
-                               m_ewndfor9};
-      return mode9;
-    } break;
-    case 6: {
-      ThresholdsItem mode6 =  {6000000, 
-                               m_porifor6, 
-                               1.0, 
-                               m_ewndfor6};
-      return mode6;
-    } break;
+    case 54:
+      {
+        ThresholdsItem mode54 = {
+          54000000,
+          0.0,
+          m_pmtlfor54,
+          m_ewndfor54
+        };
+        return mode54;
+      } break;
+    case 48:
+      {
+        ThresholdsItem mode48 = {
+          48000000,
+          m_porifor48,
+          m_pmtlfor48,
+          m_ewndfor48
+        };
+        return mode48;
+      } break;
+    case 36:
+      {
+        ThresholdsItem mode36 = {
+          36000000,
+          m_porifor36,
+          m_pmtlfor36,
+          m_ewndfor36
+        };
+        return mode36;
+      } break;
+    case 24:
+      {
+        ThresholdsItem mode24 = {
+          24000000,
+          m_porifor24,
+          m_pmtlfor24,
+          m_ewndfor24
+        };
+        return mode24;
+      } break;
+    case 18:
+      {
+        ThresholdsItem mode18 = {
+          18000000,
+          m_porifor18,
+          m_pmtlfor18,
+          m_ewndfor18
+        };
+        return mode18;
+      } break;
+    case 12:
+      {
+        ThresholdsItem mode12 = {
+          12000000,
+          m_porifor12,
+          m_pmtlfor12,
+          m_ewndfor12
+        };
+        return mode12;
+      } break;
+    case 9:
+      {
+        ThresholdsItem mode9 =  {
+          9000000,
+          m_porifor9,
+          m_pmtlfor9,
+          m_ewndfor9
+        };
+        return mode9;
+      } break;
+    case 6:
+      {
+        ThresholdsItem mode6 =  {
+          6000000,
+          m_porifor6,
+          1.0,
+          m_ewndfor6
+        };
+        return mode6;
+      } break;
     }
-  NS_ASSERT_MSG(false, "Thresholds for an unknown mode are asked (" << mode << ")");
+  NS_ASSERT_MSG (false, "Thresholds for an unknown mode are asked (" << mode << ")");
   return ThresholdsItem ();
 }
 
