@@ -52,6 +52,6 @@
  *    - a UDP and a TCP implementation
  *    
  * @defgroup applications Applications
- *
- * @defgroup mobility Mobility
+ *    
+ * @defgroup netanim Animation
  */

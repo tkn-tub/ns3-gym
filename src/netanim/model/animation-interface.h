@@ -32,11 +32,6 @@
 
 namespace ns3 {
 
-/**
- * \defgroup netanim Animation
- *
- */
-
 class NetModel;
 
 /**
