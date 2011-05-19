@@ -37,7 +37,7 @@ class Ipv6Route;
 class NetDevice;
 
 /**
- * \ingroup node 
+ * \ingroup internet 
  * \defgroup ipv6Routing Ipv6RoutingProtocol
  */
 

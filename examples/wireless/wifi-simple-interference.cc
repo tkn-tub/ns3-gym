@@ -102,6 +102,9 @@ void ReceivePacket (Ptr<Socket> socket)
   socket->GetSockName (addr);
   InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
   NS_LOG_UNCOND ("Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ());
+  //cast iaddr to void, to suppress iaddr set but not used compiler warning
+  //in optimized builds
+  (void) iaddr;
 }
 
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, 
@@ -149,7 +152,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("PpacketSize", "size of application packet sent", PpacketSize);
   cmd.AddValue ("IpacketSize", "size of interfering packet sent", IpacketSize);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
-  
+
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);
@@ -190,7 +193,7 @@ int main (int argc, char *argv[])
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue(phyMode),
-                                   "ControlMode",StringValue(phyMode));
+                                "ControlMode",StringValue(phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c.Get (0));
@@ -241,7 +244,7 @@ int main (int argc, char *argv[])
 
   // Tracing
   wifiPhy.EnablePcap ("wifi-simple-interference", devices.Get (0));
-  
+
   // Output what we are doing
   NS_LOG_UNCOND ("Primary packet RSS=" << Prss << " dBm and interferer RSS=" << Irss << " dBm at time offset=" << delta << " ms");
 

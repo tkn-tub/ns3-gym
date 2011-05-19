@@ -39,6 +39,8 @@ class LteNetDevice;
 class LteEnbPhy;
 
 /**
+ * \ingroup lte
+ *
  * The LteSpectrumPhy models the physical layer of LTE
  */
 class LteUePhy : public LtePhy

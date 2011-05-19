@@ -38,9 +38,9 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
     virtual bool Check (const AttributeValue &value) const {
       const DoubleValue *v = dynamic_cast<const DoubleValue *> (&value);
       if (v == 0)
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
     virtual std::string GetValueTypeName (void) const {

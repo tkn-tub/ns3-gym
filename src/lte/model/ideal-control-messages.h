@@ -32,6 +32,8 @@ class LteNetDevice;
 
 
 /**
+ * \ingroup lte
+ *
  * The IdealControlMessage provides a basic implementations for
  * control messages (such as PDCCH allocation map, CQI feedbacks)
  * that are exchanged among eNodeB and UEs.
@@ -39,6 +41,7 @@ class LteNetDevice;
 class IdealControlMessage : public SimpleRefCount<IdealControlMessage>
 {
 public:
+
   /**
    * The type of the message
    */
@@ -112,6 +115,8 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * \brief The PdcchMapIdealControlMessage defines an ideal allocation map
  * for both UL and DL sends by the eNodeB to all UE,
  * using an ideal PDCCH control channel.
@@ -127,11 +132,12 @@ class LteNetDevice;
 class PdcchMapIdealControlMessage : public IdealControlMessage
 {
 public:
+
   PdcchMapIdealControlMessage (void);
   virtual ~PdcchMapIdealControlMessage (void);
 
   /**
-   * Direction for which the message is created
+   * Direction for which the message is created 
    */
   enum Direction
   {
@@ -145,7 +151,7 @@ public:
   {
     /** the direction */
     Direction m_direction;
-    /** the sub channel */
+    /** the sub channel */ 
     int m_idSubChannel;
     /** the ue that receive the mapping */
     Ptr<LteNetDevice> m_ue;
@@ -199,12 +205,15 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
+ * \ingroup lte
+ *
  * The CqiIdealControlMessage defines an ideal list of feedback about
  * the channel quality sent by the UE to the eNodeB.
  */
 class CqiIdealControlMessage : public IdealControlMessage
 {
 public:
+
   CqiIdealControlMessage (void);
   virtual ~CqiIdealControlMessage (void);
 
@@ -214,7 +223,7 @@ public:
   struct CqiFeedback
   {
     /** the sub channel */
-    int m_idSubChannel;
+    int m_idSubChannel; 
     /** the cqi feedback */
     double m_cqi;
   };

@@ -34,7 +34,7 @@ public:
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual void Print (std::ostream &os) const;
-  
+
   // these are our accessors to our tag structure
   void SetSimpleValue (uint8_t value);
   uint8_t GetSimpleValue (void) const;
@@ -53,7 +53,7 @@ MyTag::GetTypeId (void)
                    EmptyAttributeValue (),
                    MakeUintegerAccessor (&MyTag::GetSimpleValue),
                    MakeUintegerChecker<uint8_t> ())
-    ;
+  ;
   return tid;
 }
 TypeId 

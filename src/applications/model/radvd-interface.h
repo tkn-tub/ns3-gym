@@ -62,7 +62,7 @@ public:
   uint32_t GetInterface () const;
 
   /**
-   * \brief Get list of prefixes advertised for this interface.     
+   * \brief Get list of prefixes advertised for this interface.
    * \return list of IPv6 prefixes
    */
   std::list <Ptr<RadvdPrefix> > GetPrefixes () const;

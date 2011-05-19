@@ -23,7 +23,7 @@
 //     |      |      |     The bridge node talks over three CSMA channels
 //     |      |      |
 //   CSMA   CSMA   CSMA    to three other CSMA net devices
-//   ----   ----   ----    
+//   ----   ----   ----
 //    n0     n1     n2     Node two acts as a router and talks to another
 //                 ----        bridge that connects the remaining nodes.
 //                 CSMA
@@ -44,9 +44,9 @@
 //        n0     n1                (n0 = 10.1.1.2)
 //        |      |                 (n1 = 10.1.1.3)  Note odd addressing
 //       -----------               (n2 = 10.1.1.1)
-//       | bridge1 | <- n5  
+//       | bridge1 | <- n5
 //       -----------
-//           |    
+//           |
 //         router    <- n2
 //           |
 //       -----------

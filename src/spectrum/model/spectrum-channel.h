@@ -37,13 +37,14 @@ class SpectrumPropagationLossModel;
 class PropagationDelayModel;
 
 /**
+ * \ingroup spectrum
+ *
  * Defines the interface for spectrum-aware channel implementations
  *
  */
 class SpectrumChannel : public Channel
 {
 public:
-  
   virtual ~SpectrumChannel ();
   static TypeId GetTypeId (void);
 
@@ -85,13 +86,13 @@ public:
    * SpectrumChannel instance, so that the SpectrumPhy can receive
    * packets sent on that channel. Note that a SpectrumPhy that only
    * transmits (without receiveing ever) does not need to be added to
-   * the channel. 
+   * the channel.
    *
    * This method is to be implemented by all classes inheriting from
-   * SpectrumChannel. 
+   * SpectrumChannel.
    *
    * @param phy the SpectrumPhy instance to be added to the channel as
-   * a receiver. 
+   * a receiver.
    */
   virtual void AddRx (Ptr<SpectrumPhy> phy) = 0;
 

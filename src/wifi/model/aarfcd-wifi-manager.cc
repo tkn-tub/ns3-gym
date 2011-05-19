@@ -3,7 +3,7 @@
  * Copyright (c) 2004,2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,8 +27,8 @@
 #include "ns3/uinteger.h"
 #include <algorithm>
 
-#define Min(a,b) ((a<b)?a:b)
-#define Max(a,b) ((a>b)?a:b)
+#define Min(a,b) ((a < b) ? a : b)
+#define Max(a,b) ((a > b) ? a : b)
 
 NS_LOG_COMPONENT_DEFINE ("Aarfcd");
 
@@ -42,7 +42,7 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
   bool m_recovery;
   bool m_justModifyRate;
   uint32_t m_retry;
-  
+
   uint32_t m_successThreshold;
   uint32_t m_timerTimeout;
 
@@ -53,9 +53,9 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
   bool m_haveASuccess;
 };
 
-NS_OBJECT_ENSURE_REGISTERED(AarfcdWifiManager);
+NS_OBJECT_ENSURE_REGISTERED (AarfcdWifiManager);
 
-TypeId 
+TypeId
 AarfcdWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AarfcdWifiManager")
@@ -85,12 +85,12 @@ AarfcdWifiManager::GetTypeId (void)
                    UintegerValue (10),
                    MakeUintegerAccessor (&AarfcdWifiManager::m_minSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MinRtsWnd", 
+    .AddAttribute ("MinRtsWnd",
                    "Minimum value for Rts window of Aarf-CD",
                    UintegerValue (1),
                    MakeUintegerAccessor (&AarfcdWifiManager::m_minRtsWnd),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxRtsWnd", 
+    .AddAttribute ("MaxRtsWnd",
                    "Maximum value for Rts window of Aarf-CD",
                    UintegerValue (40),
                    MakeUintegerAccessor (&AarfcdWifiManager::m_maxRtsWnd),
@@ -105,14 +105,16 @@ AarfcdWifiManager::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&AarfcdWifiManager::m_turnOnRtsAfterRateIncrease),
                    MakeBooleanChecker ())
-    ;
+  ;
   return tid;
 }
 AarfcdWifiManager::AarfcdWifiManager ()
   : WifiRemoteStationManager ()
-{}
+{
+}
 AarfcdWifiManager::~AarfcdWifiManager ()
-{}
+{
+}
 WifiRemoteStation *
 AarfcdWifiManager::DoCreateStation (void) const
 {
@@ -138,9 +140,10 @@ AarfcdWifiManager::DoCreateStation (void) const
   return station;
 }
 
-void 
+void
 AarfcdWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
-{}
+{
+}
 /**
  * It is important to realize that "recovery" mode starts after failure of
  * the first transmission after a rate increase and ends at the first successful
@@ -150,7 +153,7 @@ AarfcdWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
  * The fundamental reason for this is that there is a backoff between each data
  * transmission, be it an initial transmission or a retransmission.
  */
-void 
+void
 AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
 
@@ -160,24 +163,24 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   station->m_retry++;
   station->m_success = 0;
 
-  if (!station->m_rtsOn) 
+  if (!station->m_rtsOn)
     {
       TurnOnRts (station);
-      if (!station->m_justModifyRate && !station->m_haveASuccess) 
+      if (!station->m_justModifyRate && !station->m_haveASuccess)
         {
           IncreaseRtsWnd (station);
         }
-      else 
+      else
         {
           ResetRtsWnd (station);
         }
       station->m_rtsCounter = station->m_rtsWnd;
-      if (station->m_retry >= 2) 
+      if (station->m_retry >= 2)
         {
           station->m_timer = 0;
         }
     }
-  else if (station->m_recovery) 
+  else if (station->m_recovery)
     {
       NS_ASSERT (station->m_retry >= 1);
       station->m_justModifyRate = false;
@@ -185,7 +188,7 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       if (station->m_retry == 1)
         {
           // need recovery fallback
-          if (m_turnOffRtsAfterRateDecrease) 
+          if (m_turnOffRtsAfterRateDecrease)
             {
               TurnOffRts (station);
             }
@@ -200,8 +203,8 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
             }
         }
       station->m_timer = 0;
-    } 
-  else 
+    }
+  else
     {
       NS_ASSERT (station->m_retry >= 1);
       station->m_justModifyRate = false;
@@ -209,7 +212,7 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       if (((station->m_retry - 1) % 2) == 1)
         {
           // need normal fallback
-          if (m_turnOffRtsAfterRateDecrease) 
+          if (m_turnOffRtsAfterRateDecrease)
             {
               TurnOffRts (station);
             }
@@ -221,28 +224,29 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
               station->m_rate--;
             }
         }
-      if (station->m_retry >= 2) 
+      if (station->m_retry >= 2)
         {
           station->m_timer = 0;
         }
     }
   CheckRts (station);
 }
-void 
+void
 AarfcdWifiManager::DoReportRxOk (WifiRemoteStation *station,
-                              double rxSnr, WifiMode txMode)
-{}
-void 
+                                 double rxSnr, WifiMode txMode)
+{
+}
+void
 AarfcdWifiManager::DoReportRtsOk (WifiRemoteStation *st,
-                                double ctsSnr, WifiMode ctsMode, double rtsSnr)
+                                  double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   NS_LOG_DEBUG ("station=" << station << " rts ok");
   station->m_rtsCounter--;
 }
-void 
+void
 AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+                                   double ackSnr, WifiMode ackMode, double dataSnr)
 {
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
   station->m_timer++;
@@ -253,17 +257,17 @@ AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_justModifyRate = false;
   station->m_haveASuccess = true;
   NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
-  if ((station->m_success == station->m_successThreshold ||
-       station->m_timer == station->m_timerTimeout) &&
-      (station->m_rate < (GetNSupported (station) - 1))) 
+  if ((station->m_success == station->m_successThreshold
+       || station->m_timer == station->m_timerTimeout)
+      && (station->m_rate < (GetNSupported (station) - 1)))
     {
-      NS_LOG_DEBUG ("station="<<station<<" inc rate");
+      NS_LOG_DEBUG ("station=" << station << " inc rate");
       station->m_rate++;
       station->m_timer = 0;
       station->m_success = 0;
       station->m_recovery = true;
       station->m_justModifyRate = true;
-      if (m_turnOnRtsAfterRateIncrease) 
+      if (m_turnOnRtsAfterRateIncrease)
         {
           TurnOnRts (station);
           ResetRtsWnd (station);
@@ -272,12 +276,14 @@ AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
     }
   CheckRts (station);
 }
-void 
+void
 AarfcdWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
-{}
-void 
+{
+}
+void
 AarfcdWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
-{}
+{
+}
 
 WifiMode
 AarfcdWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
@@ -299,12 +305,12 @@ AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
                               Ptr<const Packet> packet, bool normally)
 {
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
-  NS_LOG_INFO ("" << station << " rate=" << station->m_rate << " rts=" << (station->m_rtsOn?"RTS":"BASIC") << 
+  NS_LOG_INFO ("" << station << " rate=" << station->m_rate << " rts=" << (station->m_rtsOn ? "RTS" : "BASIC") <<
                " rtsCounter=" << station->m_rtsCounter);
   return station->m_rtsOn;
 }
 
-bool 
+bool
 AarfcdWifiManager::IsLowLatency (void) const
 {
   return true;
@@ -313,7 +319,7 @@ AarfcdWifiManager::IsLowLatency (void) const
 void
 AarfcdWifiManager::CheckRts (AarfcdWifiRemoteStation *station)
 {
-  if (station->m_rtsCounter == 0 && station->m_rtsOn) 
+  if (station->m_rtsCounter == 0 && station->m_rtsOn)
     {
       TurnOffRts (station);
     }

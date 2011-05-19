@@ -153,7 +153,7 @@ RegularWifiMac::SetupEdcaQueue (enum AcIndex ac)
   edca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
   edca->SetAccessCategory (ac);
   edca->CompleteConfig ();
-  m_edca.insert (std::make_pair(ac, edca));
+  m_edca.insert (std::make_pair (ac, edca));
 }
 
 void
@@ -447,7 +447,7 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
         case WifiActionHeader::BLOCK_ACK:
 
-          switch (actionHdr.GetAction().blockAck)
+          switch (actionHdr.GetAction ().blockAck)
             {
             case WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST:
               {
@@ -607,22 +607,22 @@ RegularWifiMac::GetTypeId (void)
     .AddAttribute ("VO_EdcaTxopN",
                    "Queue that manages packets belonging to AC_VO access class",
                    PointerValue (),
-                   MakePointerAccessor(&RegularWifiMac::GetVOQueue),
+                   MakePointerAccessor (&RegularWifiMac::GetVOQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("VI_EdcaTxopN",
                    "Queue that manages packets belonging to AC_VI access class",
                    PointerValue (),
-                   MakePointerAccessor(&RegularWifiMac::GetVIQueue),
+                   MakePointerAccessor (&RegularWifiMac::GetVIQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BE_EdcaTxopN",
                    "Queue that manages packets belonging to AC_BE access class",
                    PointerValue (),
-                   MakePointerAccessor(&RegularWifiMac::GetBEQueue),
+                   MakePointerAccessor (&RegularWifiMac::GetBEQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BK_EdcaTxopN",
                    "Queue that manages packets belonging to AC_BK access class",
                    PointerValue (),
-                   MakePointerAccessor(&RegularWifiMac::GetBKQueue),
+                   MakePointerAccessor (&RegularWifiMac::GetBKQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddTraceSource ( "TxOkHeader",
                       "The header of successfully transmitted packet",

@@ -6,45 +6,10 @@ FIGURES = figures
 VPATH = $(FIGURES)
 
 IMAGES_EPS = \
-	$(FIGURES)/internet-node-send.eps \
-	$(FIGURES)/internet-node-recv.eps \
-	$(FIGURES)/packet.eps \
-	$(FIGURES)/node.eps \
-	$(FIGURES)/buffer.eps \
-	$(FIGURES)/sockets-overview.eps \
 	$(FIGURES)/software-organization.eps \
-	$(FIGURES)/routing.eps \
-	$(FIGURES)/routing-specialization.eps \
-	$(FIGURES)/testbed.eps \
-	$(FIGURES)/emulated-channel.eps \
-	$(FIGURES)/snir.eps \
-	$(FIGURES)/WifiArchitecture.eps \
-	$(FIGURES)/WimaxArchitecture.eps \
-        $(FIGURES)/auvmobility-classes.eps \
-        $(FIGURES)/ff-mac-saps.eps \
-        $(FIGURES)/ff-example.eps \
-        $(FIGURES)/lte-enb-architecture.eps \
-        $(FIGURES)/lte-ue-architecture.eps \
 
-# missing figure 
-#        $(FIGURES)/lte-transmission.eps
 
-$(FIGURES)/node.pdf_width = 5in
-$(FIGURES)/testbed.pdf_width = 5in
-$(FIGURES)/emulated-channel.pdf_width = 6in
-$(FIGURES)/internet-node-send.pdf_width = 5in
-$(FIGURES)/internet-node-recv.pdf_width = 5in
 $(FIGURES)/software-organization.pdf_width = 5in
-$(FIGURES)/packet.pdf_width = 4in
-$(FIGURES)/buffer.pdf_width = 15cm
-$(FIGURES)/routing.pdf_width = 6in
-$(FIGURES)/routing-specialization.pdf_width = 5in
-$(FIGURES)/sockets-overview.pdf_width = 10cm
-$(FIGURES)/snir.pdf_width = 3in
-$(FIGURES)/lte-transmission.pdf_width = 3in
-$(FIGURES)/auvmobility-classes.pdf_width = 10cm
-$(FIGURES)/lte-enb-architecture.pdf_width = 10cm
-
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
@@ -88,7 +53,7 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 clean:
-	-rm -rf $(BUILDDIR)/*
+	-rm -rf $(BUILDDIR)
 	-rm -rf $(IMAGES)
 
 frag: pickle

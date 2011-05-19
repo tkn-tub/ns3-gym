@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -47,10 +47,11 @@ class WifiPhyStateHelper;
 
 /**
  * \brief 802.11 PHY layer model
+ * \ingroup wifi
  *
  * This PHY implements a model of 802.11a. The model
  * implemented here is based on the model described
- * in "Yet Another Network Simulator", 
+ * in "Yet Another Network Simulator",
  * (http://cutebugs.net/files/wns2-yans.pdf).
  *
  *
@@ -62,35 +63,34 @@ class WifiPhyStateHelper;
 class YansWifiPhy : public WifiPhy
 {
 public:
-
   static TypeId GetTypeId (void);
 
   YansWifiPhy ();
   virtual ~YansWifiPhy ();
 
   void SetChannel (Ptr<YansWifiChannel> channel);
-  
-  /** 
-   * \brief Set channel number. 
-   * 
+
+  /**
+   * \brief Set channel number.
+   *
    * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
    *
-   * YansWifiPhy can switch among different channels. Basically, YansWifiPhy 
-   * has a private attribute m_channelNumber that identifies the channel the 
+   * YansWifiPhy can switch among different channels. Basically, YansWifiPhy
+   * has a private attribute m_channelNumber that identifies the channel the
    * PHY operates on. Channel switching cannot interrupt an ongoing transmission.
    * When PHY is in TX state, the channel switching is postponed until the end
-   * of the current transmission. When the PHY is in RX state, the channel 
-   * switching causes the drop of the synchronized packet. 
-   */ 
+   * of the current transmission. When the PHY is in RX state, the channel
+   * switching causes the drop of the synchronized packet.
+   */
   void SetChannelNumber (uint16_t id);
   /// Return current channel number, see SetChannelNumber()
   uint16_t GetChannelNumber () const;
   /// Return current center channel frequency in MHz, see SetChannelNumber()
-  double GetChannelFrequencyMhz() const;
-  
+  double GetChannelFrequencyMhz () const;
+
   void StartReceivePacket (Ptr<Packet> packet,
                            double rxPowerDbm,
                            WifiMode mode,
@@ -115,8 +115,8 @@ public:
   Ptr<ErrorRateModel> GetErrorRateModel (void) const;
   Ptr<Object> GetDevice (void) const;
   Ptr<Object> GetMobility (void);
-  
-  
+
+
 
 
   virtual double GetTxPowerStart (void) const;
@@ -131,11 +131,10 @@ public:
   virtual bool IsStateBusy (void);
   virtual bool IsStateRx (void);
   virtual bool IsStateTx (void);
-  virtual bool IsStateSwitching (void); 
+  virtual bool IsStateSwitching (void);
   virtual Time GetStateDuration (void);
   virtual Time GetDelayUntilIdle (void);
   virtual Time GetLastRxStartTime (void) const;
-  virtual Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const;
   virtual uint32_t GetNModes (void) const;
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual double CalculateSnr (WifiMode txMode, double ber) const;
@@ -215,7 +214,7 @@ private:
 
   EventId m_endRxEvent;
   UniformVariable m_random;
-  /// Standard-dependent center frequency of 0-th channel, MHz 
+  /// Standard-dependent center frequency of 0-th channel, MHz
   double m_channelStartingFrequency;
   Ptr<WifiPhyStateHelper> m_state;
   InterferenceHelper m_interference;

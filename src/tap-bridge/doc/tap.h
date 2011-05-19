@@ -1,6 +1,5 @@
 /**
- * \ingroup devices
- * \defgroup TapBridgeModel Tap Bridge Model
+ * \defgroup TapBridgeModel Tap Bridge Device
  *
  * \section TapBridgeModelOverview TapBridge Model Overview
  *

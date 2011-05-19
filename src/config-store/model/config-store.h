@@ -7,6 +7,8 @@
 namespace ns3 {
 
 /**
+ * \defgroup configstore Config-Store
+ *
  * \brief Store and load simulation attribute configuration
  *
  * While it is possible to generate a sample config file and lightly
@@ -23,6 +25,11 @@ namespace ns3 {
  * which will allow you to edit the parameters and will generate 
  * configuration files where all the instances of the same parameter
  * are changed.
+ */
+
+/**
+ * \ingroup configstore
+ *
  */
 class ConfigStore : public ObjectBase
 {

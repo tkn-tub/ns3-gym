@@ -24,7 +24,7 @@ namespace ns3 {
 class NscTcpL4Protocol;
 
 /**
- * \ingroup internetStack
+ * \ingroup internet
  * \defgroup nsctcp NscTcp
  *
  * An alternate implementation of TCP for ns-3 is provided by the

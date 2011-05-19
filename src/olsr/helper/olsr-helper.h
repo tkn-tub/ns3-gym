@@ -59,12 +59,12 @@ public:
    */
   OlsrHelper* Copy (void) const;
 
- /**
-   * \param node the node for which an exception is to be defined
-   * \param interface an interface of node on which OLSR is not to be installed
-   *
-   * This method allows the user to specify an interface on which OLSR is not to be installed on
-   */
+  /**
+    * \param node the node for which an exception is to be defined
+    * \param interface an interface of node on which OLSR is not to be installed
+    *
+    * This method allows the user to specify an interface on which OLSR is not to be installed on
+    */
   void ExcludeInterface (Ptr<Node> node, uint32_t interface);
 
   /**

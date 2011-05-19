@@ -74,15 +74,15 @@ OpenFlowSwitchNetDevice::GetTypeId (void)
                    MakeTimeAccessor (&OpenFlowSwitchNetDevice::m_lookupDelay),
                    MakeTimeChecker ())
     .AddAttribute ("Flags", // Note: The Controller can configure this value, overriding the user's setting.
-		   "Flags to turn different functionality on/off, such as whether to inform the controller when a flow expires, or how to handle fragments.",
-		   UintegerValue (0), // Look at the ofp_config_flags enum in openflow/include/openflow.h for options.
-		   MakeUintegerAccessor (&OpenFlowSwitchNetDevice::m_flags),
-		   MakeUintegerChecker<uint16_t> ())
+                   "Flags to turn different functionality on/off, such as whether to inform the controller when a flow expires, or how to handle fragments.",
+                   UintegerValue (0), // Look at the ofp_config_flags enum in openflow/include/openflow.h for options.
+                   MakeUintegerAccessor (&OpenFlowSwitchNetDevice::m_flags),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("FlowTableMissSendLength", // Note: The Controller can configure this value, overriding the user's setting.
-		   "When forwarding a packet the switch didn't match up to the controller, it can be more efficient to forward only the first x bytes.",
-		   UintegerValue (OFP_DEFAULT_MISS_SEND_LEN), // 128 bytes
-		   MakeUintegerAccessor (&OpenFlowSwitchNetDevice::m_missSendLen),
-		   MakeUintegerChecker<uint16_t> ())
+                   "When forwarding a packet the switch didn't match up to the controller, it can be more efficient to forward only the first x bytes.",
+                   UintegerValue (OFP_DEFAULT_MISS_SEND_LEN), // 128 bytes
+                   MakeUintegerAccessor (&OpenFlowSwitchNetDevice::m_missSendLen),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -589,7 +589,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket (Ptr<Packet> packet, Address src, Addr
 
 void
 OpenFlowSwitchNetDevice::ReceiveFromDevice (Ptr<NetDevice> netdev, Ptr<const Packet> packet, uint16_t protocol,
-                                    const Address& src, const Address& dst, PacketType packetType)
+                                            const Address& src, const Address& dst, PacketType packetType)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_INFO ("--------------------------------------------");
@@ -645,7 +645,7 @@ OpenFlowSwitchNetDevice::ReceiveFromDevice (Ptr<NetDevice> netdev, Ptr<const Pac
           break;
         }
     }
-  
+
   // Run periodic execution.
   Time now = Simulator::Now();
   if (now >= Seconds (m_lastExecute.GetSeconds () + 1)) // If a second or more has passed from the simulation time, execute.
@@ -665,21 +665,21 @@ OpenFlowSwitchNetDevice::ReceiveFromDevice (Ptr<NetDevice> netdev, Ptr<const Pac
       chain_timeout (m_chain, &deleted);
       LIST_FOR_EACH_SAFE (f, n, sw_flow, node, &deleted)
       {
-	std::ostringstream str;
-	str << "Flow [";
-	for (int i = 0; i < 6; i++)
-	  str << (i!=0?":":"") << std::hex << f->key.flow.dl_src[i]/16 << f->key.flow.dl_src[i]%16;
-	str << " -> ";
-	for (int i = 0; i < 6; i++)
-	  str << (i!=0?":":"") << std::hex << f->key.flow.dl_dst[i]/16 << f->key.flow.dl_dst[i]%16;
-	str <<  "] expired.";
+        std::ostringstream str;
+        str << "Flow [";
+        for (int i = 0; i < 6; i++)
+          str << (i!=0 ? ":" : "") << std::hex << f->key.flow.dl_src[i]/16 << f->key.flow.dl_src[i]%16;
+        str << " -> ";
+        for (int i = 0; i < 6; i++)
+          str << (i!=0 ? ":" : "") << std::hex << f->key.flow.dl_dst[i]/16 << f->key.flow.dl_dst[i]%16;
+        str <<  "] expired.";
 	
-	NS_LOG_INFO (str.str ());
+        NS_LOG_INFO (str.str ());
         SendFlowExpired (f, (ofp_flow_expired_reason)f->reason);
         list_remove (&f->node);
         flow_free (f);
       }
-      
+
       m_lastExecute = now;
     }
 }
@@ -845,7 +845,7 @@ OpenFlowSwitchNetDevice::FillPortDesc (ofi::Port p, ofp_phy_port *desc)
   p.netdev->GetAddress ().CopyTo (desc->hw_addr);
   desc->config = htonl (p.config);
   desc->state = htonl (p.state);
-  
+
   // TODO: This should probably be fixed eventually to specify different available features.
   desc->curr = 0; // htonl(netdev_get_features(p->netdev, NETDEV_FEAT_CURRENT));
   desc->supported = 0; // htonl(netdev_get_features(p->netdev, NETDEV_FEAT_SUPPORTED));
@@ -1099,7 +1099,7 @@ int
 OpenFlowSwitchNetDevice::ReceiveSetConfig (const void *msg)
 {
   const ofp_switch_config *osc = (ofp_switch_config*)msg;
-  
+
   int n_flags = ntohs (osc->flags) & (OFPC_SEND_FLOW_EXP | OFPC_FRAG_MASK);
   if ((n_flags & OFPC_FRAG_MASK) != OFPC_FRAG_NORMAL && (n_flags & OFPC_FRAG_MASK) != OFPC_FRAG_DROP)
     {
@@ -1159,7 +1159,7 @@ int
 OpenFlowSwitchNetDevice::ReceivePortMod (const void *msg)
 {
   ofp_port_mod* opm = (ofp_port_mod*)msg;
-  
+
   int port = opm->port_no; // ntohs(opm->port_no);
   if (port < DP_MAX_PORTS)
     {
@@ -1185,16 +1185,16 @@ OpenFlowSwitchNetDevice::ReceivePortMod (const void *msg)
           if ((opm->config & htonl (OFPPC_PORT_DOWN)) && (p.config & OFPPC_PORT_DOWN) == 0)
             {
               p.config |= OFPPC_PORT_DOWN;
-	      // TODO: Possibly disable the Port's Net Device via the appropriate interface.
+              // TODO: Possibly disable the Port's Net Device via the appropriate interface.
             }
           else if ((opm->config & htonl (OFPPC_PORT_DOWN)) == 0 && (p.config & OFPPC_PORT_DOWN))
             {
               p.config &= ~OFPPC_PORT_DOWN;
-	      // TODO: Possibly enable the Port's Net Device via the appropriate interface.
+              // TODO: Possibly enable the Port's Net Device via the appropriate interface.
             }
         }
     }
-  
+
   return 0;
 }
 
@@ -1431,7 +1431,7 @@ OpenFlowSwitchNetDevice::ReceiveStatsRequest (const void *oh)
   int type = ntohs (rq->type);
   int body_len = rq_len - offsetof (ofp_stats_request, body);
   ofi::Stats* st = new ofi::Stats ((ofp_stats_types)type, (unsigned)body_len);
-  
+
   if (st == 0)
     {
       return -EINVAL;
@@ -1463,7 +1463,7 @@ OpenFlowSwitchNetDevice::ReceiveStatsRequest (const void *oh)
     {
       NS_LOG_ERROR ("Switch needs to be registered to a controller in order to start the stats reply.");
     }
-  
+
   return 0;
 }
 

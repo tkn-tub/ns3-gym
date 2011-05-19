@@ -23,8 +23,7 @@
  */
 
 /**
- * \ingroup devices
- * \defgroup mesh Mesh
+ * \defgroup mesh Mesh Device
  *
  * \brief MAC-layer mobile mesh networking.
  * \section MeshOverview Overview of Layer-2 Mesh networking protocols

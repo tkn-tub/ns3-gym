@@ -27,7 +27,8 @@
 namespace ns3 {
 
 UdpServerHelper::UdpServerHelper ()
-{}
+{
+}
 
 UdpServerHelper::UdpServerHelper (uint16_t port)
 {
@@ -64,7 +65,8 @@ UdpServerHelper::GetServer (void)
 }
 
 UdpClientHelper::UdpClientHelper ()
-{}
+{
+}
 
 UdpClientHelper::UdpClientHelper (Ipv4Address address, uint16_t port)
 {
@@ -94,7 +96,8 @@ UdpClientHelper::Install (NodeContainer c)
 }
 
 UdpTraceClientHelper::UdpTraceClientHelper ()
-{}
+{
+}
 
 UdpTraceClientHelper::UdpTraceClientHelper (Ipv4Address address, uint16_t port, std::string filename)
 {

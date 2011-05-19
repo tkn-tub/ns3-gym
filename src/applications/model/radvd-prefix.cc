@@ -25,12 +25,12 @@ namespace ns3
 
 RadvdPrefix::RadvdPrefix (Ipv6Address network, uint8_t prefixLength, uint32_t preferredLifeTime, uint32_t validLifeTime, bool onLinkFlag, bool autonomousFlag, bool routerAddrFlag)
   : m_network (network),
-  m_prefixLength (prefixLength),
-  m_preferredLifeTime (preferredLifeTime),
-  m_validLifeTime (validLifeTime),
-  m_onLinkFlag (onLinkFlag),
-  m_autonomousFlag (autonomousFlag),
-  m_routerAddrFlag (routerAddrFlag)
+    m_prefixLength (prefixLength),
+    m_preferredLifeTime (preferredLifeTime),
+    m_validLifeTime (validLifeTime),
+    m_onLinkFlag (onLinkFlag),
+    m_autonomousFlag (autonomousFlag),
+    m_routerAddrFlag (routerAddrFlag)
 {
 }
 

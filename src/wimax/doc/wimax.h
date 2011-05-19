@@ -1,5 +1,4 @@
 /**
- * \ingroup devices
  * \defgroup WiMAX WiMAX Models
  *
  * \section WiMAXModelOverview WiMAX Model Overview
@@ -291,7 +290,5 @@
  *  SNR_value2   BER  Blc_ER  STANDARD_DEVIATION  CONFIDENCE_INTERVAL1  CONFIDENCE_INTERVAL2
  *  ...          ...  ...     ...                 ...                   ...
  *  ...          ...  ...     ...                 ...                   ...
- * \subsection wimaxl2stack Module Overview
- * \image html WimaxArchitecture.png "Overview of the WiMAX module"
  */
 

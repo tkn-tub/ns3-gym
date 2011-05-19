@@ -36,7 +36,7 @@ Ipv6ListRouting::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv6ListRouting")
     .SetParent<Ipv6RoutingProtocol> ()
     .AddConstructor<Ipv6ListRouting> ()
-    ;
+  ;
   return tid;
 }
 
@@ -116,16 +116,16 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
 #ifdef NOTYET
       if (m_ipv6->MulticastCheckGroup (iif, dst))
 #endif
-        if (true)
-          {
-            NS_LOG_LOGIC ("Multicast packet for me-- local deliver");
-            Ptr<Packet> packetCopy = p->Copy ();
-            // Here may want to disable lcb callback in recursive RouteInput
-            // call below
-            lcb (packetCopy, header, iif);
-            // Fall through-- we may also need to forward this
-            retVal = true;
-          }
+      if (true)
+        {
+          NS_LOG_LOGIC ("Multicast packet for me-- local deliver");
+          Ptr<Packet> packetCopy = p->Copy ();
+          // Here may want to disable lcb callback in recursive RouteInput
+          // call below
+          lcb (packetCopy, header, iif);
+          // Fall through-- we may also need to forward this
+          retVal = true;
+        }
 
       /* do not forward link-local multicast address */
       if (dst == Ipv6Address::GetAllNodesMulticast () || dst == Ipv6Address::GetAllRoutersMulticast () || dst == Ipv6Address::GetAllHostsMulticast ())
@@ -134,7 +134,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
         }
 
       for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-           m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end ();
+             m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end ();
            rprotoIter++)
         {
           NS_LOG_LOGIC ("Multicast packet for me-- trying to forward");
@@ -183,7 +183,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
     }
   // Next, try to find a route
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
@@ -192,7 +192,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
           return true;
         }
     }
-  // No routing protocol has found a route.  
+  // No routing protocol has found a route.
   return retVal;
 }
 
@@ -201,55 +201,55 @@ Ipv6ListRouting::NotifyInterfaceUp (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyInterfaceUp (interface);
-    }  
+    }
 }
 void 
 Ipv6ListRouting::NotifyInterfaceDown (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyInterfaceDown (interface);
-    }  
+    }
 }
 void 
 Ipv6ListRouting::NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyAddAddress (interface, address);
-    }  
+    }
 }
 void 
 Ipv6ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
       (*rprotoIter).second->NotifyRemoveAddress (interface, address);
-    }  
+    }
 }
 
 void Ipv6ListRouting::NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse)
 {
   NS_LOG_FUNCTION (this << dst << mask << nextHop << interface);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
@@ -261,7 +261,7 @@ void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6A
 {
   NS_LOG_FUNCTION (this << dst << mask << nextHop << interface);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
@@ -275,12 +275,12 @@ Ipv6ListRouting::SetIpv6 (Ptr<Ipv6> ipv6)
   NS_LOG_FUNCTION (this << ipv6);
   NS_ASSERT (m_ipv6 == 0);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
-       m_routingProtocols.begin ();
+         m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
       (*rprotoIter).second->SetIpv6 (ipv6);
-    }  
+    }
   m_ipv6 = ipv6;
 }
 

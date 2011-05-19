@@ -34,7 +34,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("Node");
 
-namespace ns3{
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
 
@@ -62,7 +62,7 @@ Node::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&Node::m_id),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -85,23 +85,24 @@ Node::Construct (void)
 {
   m_id = NodeList::Add (this);
 }
-  
-Node::~Node ()
-{}
 
-uint32_t 
+Node::~Node ()
+{
+}
+
+uint32_t
 Node::GetId (void) const
 {
   return m_id;
 }
 
-uint32_t 
+uint32_t
 Node::GetSystemId (void) const
 {
   return m_sid;
 }
 
-uint32_t 
+uint32_t
 Node::AddDevice (Ptr<NetDevice> device)
 {
   uint32_t index = m_devices.size ();
@@ -187,7 +188,7 @@ Node::DoStart (void)
       Ptr<Application> application = *i;
       application->Start ();
     }
-  
+
   Object::DoStart ();
 }
 
@@ -274,8 +275,8 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
                  "make sure the channels in use are correctly updating events context " <<
                  "when transfering events from one node to another.");
   NS_LOG_DEBUG("Node " << GetId () << " ReceiveFromDevice:  dev "
-               << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
-               << ") Packet UID " << packet->GetUid ());
+                       << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
+                       << ") Packet UID " << packet->GetUid ());
   bool found = false;
 
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
@@ -298,4 +299,4 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
   return found;
 }
 
-}//namespace ns3
+} //namespace ns3

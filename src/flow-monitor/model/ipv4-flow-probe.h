@@ -38,34 +38,34 @@ class Node;
 /// Ipv4L3Protocol interface of the node.
 class Ipv4FlowProbe : public FlowProbe
 {
-  
+
 public:
   Ipv4FlowProbe (Ptr<FlowMonitor> monitor, Ptr<Ipv4FlowClassifier> classifier, Ptr<Node> node);
   virtual ~Ipv4FlowProbe ();
 
   /// \brief enumeration of possible reasons why a packet may be dropped
   enum DropReason 
-    {
-      /// Packet dropped due to missing route to the destination
-      DROP_NO_ROUTE = 0,
+  {
+    /// Packet dropped due to missing route to the destination
+    DROP_NO_ROUTE = 0,
 
-      /// Packet dropped due to TTL decremented to zero during IPv4 forwarding
-      DROP_TTL_EXPIRE,      
+    /// Packet dropped due to TTL decremented to zero during IPv4 forwarding
+    DROP_TTL_EXPIRE,
 
-      /// Packet dropped due to invalid checksum in the IPv4 header
-      DROP_BAD_CHECKSUM,
+    /// Packet dropped due to invalid checksum in the IPv4 header
+    DROP_BAD_CHECKSUM,
 
-      /// Packet dropped due to queue overflow.  Note: only works for
-      /// NetDevices that provide a TxQueue attribute of type Queue
-      /// with a Drop trace source.  It currently works with Csma and
-      /// PointToPoint devices, but not with WiFi or WiMax.
-      DROP_QUEUE,
+    /// Packet dropped due to queue overflow.  Note: only works for
+    /// NetDevices that provide a TxQueue attribute of type Queue
+    /// with a Drop trace source.  It currently works with Csma and
+    /// PointToPoint devices, but not with WiFi or WiMax.
+    DROP_QUEUE,
 
-      DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
-      DROP_ROUTE_ERROR, /**< Route error */
-      
-      DROP_INVALID_REASON,
-    };
+    DROP_INTERFACE_DOWN,   /**< Interface is down so can not send packet */
+    DROP_ROUTE_ERROR,   /**< Route error */
+
+    DROP_INVALID_REASON,
+  };
 
 private:
 

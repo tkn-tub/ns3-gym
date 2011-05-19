@@ -25,14 +25,14 @@ namespace ns3 {
 
 class NscStackStringAccessor : public AttributeAccessor
 {
-  public:
+public:
   NscStackStringAccessor (std::string name) : m_name (name) {}
 
   virtual bool Set (ObjectBase * object, const AttributeValue &val) const;
   virtual bool Get (const ObjectBase * object, AttributeValue &val) const;
   virtual bool HasGetter (void) const;
   virtual bool HasSetter (void) const;
-  private:
+private:
   std::string m_name;
 };
 
@@ -106,7 +106,7 @@ Ns3NscStack::GetInstanceTypeId (void) const
       tid = TypeId (name.c_str ());
       tid.SetParent<Ns3NscStack> ();
       char buf[256];
-      for (int i=0; m_stack->sysctl_getnum(i, buf, sizeof(buf)) > 0 ;i++)
+      for (int i=0; m_stack->sysctl_getnum(i, buf, sizeof(buf)) > 0 ; i++)
         {
           char value[256];
           if (m_stack->sysctl_get (buf, value, sizeof(value)) > 0)
@@ -148,7 +148,7 @@ TypeId
 Ns3NscStack::Ns3NscStack::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Ns3NscStack")
-  .SetParent<Object> ()
+    .SetParent<Object> ()
   ;
   return tid;
 }

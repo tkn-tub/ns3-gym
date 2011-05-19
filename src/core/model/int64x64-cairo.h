@@ -26,7 +26,7 @@ public:
 #define HPCAIRO_MAX_64 18446744073709551615.0
     double fhi = floor (value);
     int64_t hi = lround(fhi);
-    uint64_t lo = (uint64_t) ((value - fhi) * HPCAIRO_MAX_64);
+    uint64_t lo = (uint64_t)((value - fhi) * HPCAIRO_MAX_64);
     _v.hi = hi;
     _v.lo = lo;
 #undef HPCAIRO_MAX_64
@@ -70,10 +70,10 @@ public:
   inline int64x64_t (const int64x64_t &o)
     : _v (o._v) {}
   inline int64x64_t &operator = (const int64x64_t &o)
-    {
-      _v = o._v;
-      return *this;
-    }
+  {
+    _v = o._v;
+    return *this;
+  }
 
   inline double GetDouble (void) const
   {
@@ -84,7 +84,7 @@ public:
     flo /= HPCAIRO_MAX_64;
     double retval = value.hi;
     retval += flo;
-    retval = is_negative ? -retval: retval;
+    retval = is_negative ? -retval : retval;
     return retval;
 #undef HPCAIRO_MAX_64
   }
@@ -131,7 +131,7 @@ private:
     _v.hi = ~_v.hi;
     if (++_v.lo == 0)
       {
-	++_v.hi;
+        ++_v.hi;
       }
   }
   inline int Compare (const int64x64_t &o) const
@@ -139,8 +139,8 @@ private:
     int status;
     int64x64_t tmp = *this;
     tmp -= o;
-    status = (((int64_t)(tmp)._v.hi) < 0)?-1:
-      (((tmp)._v.hi == 0 && (tmp)._v.lo == 0))?0:1;
+    status = (((int64_t)(tmp)._v.hi) < 0) ? -1 :
+      (((tmp)._v.hi == 0 && (tmp)._v.lo == 0)) ? 0 : 1;
     return status;
   }
   cairo_int128_t _v;
@@ -153,7 +153,7 @@ inline bool operator == (const int64x64_t &lhs, const int64x64_t &rhs)
 
 inline bool operator != (const int64x64_t &lhs, const int64x64_t &rhs)
 {
-  return ! (lhs == rhs);
+  return !(lhs == rhs);
 }
 
 inline bool operator < (const int64x64_t &lhs, const int64x64_t &rhs)
@@ -246,7 +246,7 @@ inline int64x64_t operator - (const int64x64_t &lhs)
 
 inline int64x64_t operator ! (const int64x64_t &lhs)
 {
-  return (lhs._v.hi == 0 && lhs._v.lo == 0)?int64x64_t (1, 0):int64x64_t ();
+  return (lhs._v.hi == 0 && lhs._v.lo == 0) ? int64x64_t (1, 0) : int64x64_t ();
 }
 
 } // namespace ns3

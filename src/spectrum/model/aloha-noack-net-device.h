@@ -44,6 +44,8 @@ class Queue;
 
 
 /**
+ * \ingroup spectrum
+ *
  * This devices implements the following features:
  *  - layer 3 protocol multiplexing
  *  - MAC addressing
@@ -57,7 +59,8 @@ class Queue;
 class AlohaNoackNetDevice : public NetDevice
 {
 public:
-  enum State {
+  enum State
+  {
     IDLE, TX, RX
   };
 

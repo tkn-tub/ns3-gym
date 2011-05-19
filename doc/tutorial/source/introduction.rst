@@ -96,7 +96,6 @@ contribute to |ns3| like they have for ns-2:
   <http://www.nsnam.org/wiki/index.php/Contributed_Code>`_ page, similar to ns-2's popular Contributed Code
   `page
   <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_; 
-* ``src/contrib`` directory (we will host your contributed code);
 * Open `bug tracker
   <http://www.nsnam.org/bugzilla>`_;
 * |ns3| developers will gladly help potential contributors to get

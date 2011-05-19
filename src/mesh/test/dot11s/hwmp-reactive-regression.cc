@@ -41,8 +41,8 @@ const bool WRITE_VECTORS = false;
 const char * const PREFIX = "hwmp-reactive-regression-test";
 
 HwmpReactiveRegressionTest::HwmpReactiveRegressionTest () : TestCase ("HWMP on-demand regression test"),
-  m_nodes (0),
-  m_time (Seconds (10))
+                                                            m_nodes (0),
+                                                            m_time (Seconds (10))
 {
 }
 HwmpReactiveRegressionTest::~HwmpReactiveRegressionTest ()
@@ -60,7 +60,7 @@ HwmpReactiveRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS) CheckResults ();
   delete m_nodes, m_nodes = 0;
 }
@@ -102,8 +102,8 @@ HwmpReactiveRegressionTest::CreateDevices ()
 {
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-  // This test suite output was originally based on YansErrorRateModel     
-  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");   
+  // This test suite output was originally based on YansErrorRateModel
+  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   // 2. setup mesh
@@ -111,7 +111,7 @@ HwmpReactiveRegressionTest::CreateDevices ()
   mesh.SetStackInstaller ("ns3::Dot11sStack");
   mesh.SetMacType ("RandomStart", TimeValue (Seconds(0.1)));
   mesh.SetNumberOfInterfaces (1);
-  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);  
+  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);
@@ -123,7 +123,7 @@ HwmpReactiveRegressionTest::CreateDevices ()
   wifiPhy.EnablePcapAll (prefix);
 
 }
-  
+
 void
 HwmpReactiveRegressionTest::CheckResults ()
 {
@@ -133,11 +133,11 @@ HwmpReactiveRegressionTest::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec); // TODO support default PcapWriter snap length here
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

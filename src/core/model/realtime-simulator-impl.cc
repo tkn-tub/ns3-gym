@@ -58,7 +58,7 @@ RealtimeSimulatorImpl::GetTypeId (void)
                    TimeValue (Seconds (0.1)),
                    MakeTimeAccessor (&RealtimeSimulatorImpl::m_hardLimit),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -86,7 +86,8 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
 }
 
 RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
-{}
+{
+}
 
 void
 RealtimeSimulatorImpl::DoDispose (void)
@@ -155,7 +156,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
   NS_LOG_FUNCTION_NOARGS ();
   //
   // The idea here is to wait until the next event comes due.  In the case of
-  // a realtime simulation, we want real time to be consumed between events.  
+  // a realtime simulation, we want real time to be consumed between events.
   // It is the realtime synchronizer that causes real time to be consumed by
   // doing some kind of a wait.
   //
@@ -205,7 +206,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
         // time so we need to be careful about that and not delay in that case.
         //
         NS_ASSERT_MSG (m_synchronizer->Realtime (), 
-          "RealtimeSimulatorImpl::ProcessOneEvent (): Synchronizer reports not Realtime ()");
+                       "RealtimeSimulatorImpl::ProcessOneEvent (): Synchronizer reports not Realtime ()");
 
         //
         // tsNow is set to the normalized current real time.  When the simulation was
@@ -234,7 +235,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
           {
             tsDelay = tsNext - tsNow;
           }
-      
+
         //
         // We've figured out how long we need to delay in order to pace the 
         // simulation time with the real time.  We're going to sleep, but need
@@ -274,7 +275,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
       // attempting to sleep until its due.  If we've slept until the timestamp is due, 
       // Synchronize returns true and we break out of the sync loop.  If an external
       // event happens that requires a re-schedule, Synchronize returns false and
-      // we re-evaluate our timing by continuing in the loop.  
+      // we re-evaluate our timing by continuing in the loop.
       //
       // It is expected that tsDelay become shorter as external events interrupt our
       // waits.
@@ -313,7 +314,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
     // mess with us.
     //
     NS_ASSERT_MSG (m_events->IsEmpty () == false, 
-      "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
+                   "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
     next = m_events->RemoveNext ();
     m_unscheduledEvents--;
 
@@ -400,7 +401,7 @@ RealtimeSimulatorImpl::NextTs (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT_MSG (m_events->IsEmpty () == false, 
-    "RealtimeSimulatorImpl::NextTs(): event queue is empty");
+                 "RealtimeSimulatorImpl::NextTs(): event queue is empty");
   Scheduler::Event ev = m_events->PeekNext ();
   return ev.key.m_ts;
 }
@@ -461,7 +462,7 @@ RealtimeSimulatorImpl::Run (void)
     CriticalSection cs (m_mutex);
 
     NS_ASSERT_MSG (m_events->IsEmpty () == false || m_unscheduledEvents == 0,
-      "RealtimeSimulatorImpl::Run(): Empty queue and unprocessed events");
+                   "RealtimeSimulatorImpl::Run(): Empty queue and unprocessed events");
   }
 
   m_running = false;
@@ -628,7 +629,7 @@ void
 RealtimeSimulatorImpl::ScheduleRealtimeWithContext (uint32_t context, Time const &time, EventImpl *impl)
 {
   NS_LOG_FUNCTION (context << time << impl);
-  
+
   {
     CriticalSection cs (m_mutex);
 
@@ -743,7 +744,7 @@ RealtimeSimulatorImpl::Remove (const EventId &id)
               m_destroyEvents.erase (i);
               break;
             }
-         }
+        }
       return;
     }
   if (IsExpired (id))
@@ -759,7 +760,7 @@ RealtimeSimulatorImpl::Remove (const EventId &id)
     event.key.m_ts = id.GetTs ();
     event.key.m_context = id.GetContext ();
     event.key.m_uid = id.GetUid ();
-    
+
     m_events->Remove (event);
     m_unscheduledEvents--;
     event.impl->Cancel ();
@@ -794,7 +795,7 @@ RealtimeSimulatorImpl::IsExpired (const EventId &ev) const
             {
               return false;
             }
-         }
+        }
       return true;
     }
 
@@ -853,7 +854,7 @@ RealtimeSimulatorImpl::GetSynchronizationMode (void) const
   NS_LOG_FUNCTION_NOARGS ();
   return m_synchronizationMode;
 }
-  
+
 void 
 RealtimeSimulatorImpl::SetHardLimit (Time limit)
 {
@@ -867,5 +868,5 @@ RealtimeSimulatorImpl::GetHardLimit (void) const
   NS_LOG_FUNCTION_NOARGS ();
   return m_hardLimit;
 }
-  
+
 }; // namespace ns3

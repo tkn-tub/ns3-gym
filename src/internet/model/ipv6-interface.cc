@@ -38,20 +38,20 @@ TypeId Ipv6Interface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6Interface")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
 Ipv6Interface::Ipv6Interface ()
   : m_ifup (false),
-  m_forwarding (true),
-  m_metric (1),
-  m_node (0),
-  m_device (0),
-  m_curHopLimit (0),
-  m_baseReachableTime (0),
-  m_reachableTime (0),
-  m_retransTimer (0)
+    m_forwarding (true),
+    m_metric (1),
+    m_node (0),
+    m_device (0),
+    m_curHopLimit (0),
+    m_baseReachableTime (0),
+    m_reachableTime (0),
+    m_retransTimer (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -330,7 +330,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
                          m_device->GetBroadcast (),
                          m_device->GetBroadcast (),
                          NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
-          );
+                         );
           return;
         }
     }
@@ -362,7 +362,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
       if (found)
         {
           NS_LOG_LOGIC ("Address Resolved.  Send.");
-          m_device ->Send (p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
+          m_device->Send (p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
         }
     }
   else

@@ -49,7 +49,7 @@ TagBuffer::WriteU32 (uint32_t data)
 }
 
 
-uint8_t  
+uint8_t
 TagBuffer::ReadU8 (void)
 {
   NS_ASSERT (m_current + 1 <= m_end);
@@ -169,16 +169,17 @@ TagBuffer::Read (uint8_t *buffer, uint32_t size)
 TagBuffer::TagBuffer (uint8_t *start, uint8_t *end)
   : m_current (start),
     m_end (end)
-{}
+{
+}
 
-void 
+void
 TagBuffer::TrimAtEnd (uint32_t trim)
 {
   NS_ASSERT (m_current <= (m_end - trim));
   m_end -= trim;
 }
 
-void 
+void
 TagBuffer::CopyFrom (TagBuffer o)
 {
   NS_ASSERT (o.m_end >= o.m_current);

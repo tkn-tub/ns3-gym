@@ -101,7 +101,7 @@ private:
   Ipv6Address m_remoteIp;
 
   /**
-   * \brief Out interface index.                       
+   * \brief Out interface index.
    */
   uint32_t m_ifIndex;
 

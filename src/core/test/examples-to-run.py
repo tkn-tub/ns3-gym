@@ -12,7 +12,7 @@ cpp_examples = [
     ("main-callback", "True", "True"),
     ("sample-simulator", "True", "True"),
     ("main-ptr", "True", "True"),
-    ("main-random-variable", "True", "True"),
+    ("main-random-variable", "True", "False"),
     ("sample-random-variable", "True", "True"),
 ]
 

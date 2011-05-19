@@ -29,7 +29,7 @@ NS_LOG_COMPONENT_DEFINE ("SystemMutex");
 
 namespace ns3 {
 
-class SystemMutexPrivate {    
+class SystemMutexPrivate {
 public: 
   SystemMutexPrivate ();
   ~SystemMutexPrivate ();
@@ -62,14 +62,14 @@ SystemMutexPrivate::SystemMutexPrivate ()
 #endif
   pthread_mutex_init (&m_mutex, &attr);
 }
-    
+
 SystemMutexPrivate::~SystemMutexPrivate() 
 {
   NS_LOG_FUNCTION_NOARGS ();
   pthread_mutex_destroy (&m_mutex);
 }
 	
-  void 
+void
 SystemMutexPrivate::Lock (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -78,12 +78,12 @@ SystemMutexPrivate::Lock (void)
   if (rc != 0) 
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Lock()"
-        "pthread_mutex_lock failed: " << rc << " = \"" << 
-        strerror(rc) << "\"");
+                      "pthread_mutex_lock failed: " << rc << " = \"" <<
+                      strerror(rc) << "\"");
     }
 }
 	
-  void
+void
 SystemMutexPrivate::Unlock (void) 
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -92,8 +92,8 @@ SystemMutexPrivate::Unlock (void)
   if (rc != 0)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Unlock()"
-        "pthread_mutex_unlock failed: " << rc << " = \"" << 
-        strerror(rc) << "\"");
+                      "pthread_mutex_unlock failed: " << rc << " = \"" <<
+                      strerror(rc) << "\"");
     }
 }
 
@@ -109,19 +109,19 @@ SystemMutex::~SystemMutex()
   delete m_priv;
 }
 
-  void 
+void
 SystemMutex::Lock() 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Lock ();
 }
 
-  void 
+void
 SystemMutex::Unlock() 
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Unlock ();
-}  
+}
 
 CriticalSection::CriticalSection (SystemMutex &mutex)
   : m_mutex(mutex)

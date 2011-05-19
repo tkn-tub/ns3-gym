@@ -46,7 +46,7 @@ VirtualNetDevice::GetTypeId (void)
                    UintegerValue (1500),
                    MakeUintegerAccessor (&VirtualNetDevice::SetMtu,
                                          &VirtualNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> ())                   
+                   MakeUintegerChecker<uint16_t> ())
     .AddTraceSource ("MacTx", 
                      "Trace source indicating a packet has arrived for transmission by this device",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_macTxTrace))
@@ -67,7 +67,7 @@ VirtualNetDevice::GetTypeId (void)
     .AddTraceSource ("PromiscSniffer", 
                      "Trace source simulating a promiscuous packet sniffer attached to the device",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_promiscSnifferTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -228,7 +228,7 @@ Address VirtualNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 
 Address VirtualNetDevice::GetMulticast (Ipv6Address addr) const
 {
-  return Mac48Address ("ff:ff:ff:ff:ff:ff");  
+  return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
 

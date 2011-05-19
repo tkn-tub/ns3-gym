@@ -107,7 +107,7 @@ public:
   bool IsLastFragment (void) const;
   /**
    * \returns true if this is this packet can be fragmented.
-   */  
+   */
   bool IsDontFragment (void) const;
   /**
    * \returns the offset of this fragment.
@@ -129,7 +129,7 @@ public:
    * \returns the destination address of this packet
    */
   Ipv4Address GetDestination (void) const;
-  
+
   /**
    * \returns true if the ipv4 checksum is correct, false otherwise.
    *

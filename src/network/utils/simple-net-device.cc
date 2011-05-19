@@ -46,7 +46,7 @@ SimpleNetDevice::GetTypeId (void)
     .AddTraceSource ("PhyRxDrop",
                      "Trace source indicating a packet has been dropped by the device during reception",
                      MakeTraceSourceAccessor (&SimpleNetDevice::m_phyRxDropTrace))
-    ;
+  ;
   return tid;
 }
 
@@ -55,11 +55,12 @@ SimpleNetDevice::SimpleNetDevice ()
     m_node (0),
     m_mtu (0xffff),
     m_ifIndex (0)
-{}
+{
+}
 
-void 
-SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, 
-			  Mac48Address to, Mac48Address from)
+void
+SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
+                          Mac48Address to, Mac48Address from)
 {
   NS_LOG_FUNCTION (packet << protocol << to << from);
   NetDevice::PacketType packetType;

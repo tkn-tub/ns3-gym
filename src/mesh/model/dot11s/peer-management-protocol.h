@@ -101,13 +101,13 @@ public:
    * management frame
    */
   void ReceivePeerLinkFrame (
-      uint32_t interface,
-      Mac48Address peerAddress,
-      Mac48Address peerMeshPointAddress,
-      uint16_t aid,
-      IePeerManagement peerManagementElement,
-      IeConfiguration meshConfig
-      );
+    uint32_t interface,
+    Mac48Address peerAddress,
+    Mac48Address peerMeshPointAddress,
+    uint16_t aid,
+    IePeerManagement peerManagementElement,
+    IeConfiguration meshConfig
+    );
   /**
    * \brief Cancels peer link due to broken configuration (Mesh ID or Supported
    * rates)
@@ -177,10 +177,10 @@ private:
   PeerManagementProtocol (const PeerManagementProtocol &);
 
   Ptr<PeerLink> InitiateLink (
-      uint32_t interface,
-      Mac48Address peerAddress,
-      Mac48Address peerMeshPointAddress
-      );
+    uint32_t interface,
+    Mac48Address peerAddress,
+    Mac48Address peerMeshPointAddress
+    );
   /**
    * \name External peer-chooser
    * \{
@@ -201,7 +201,7 @@ private:
   Time TuToTime (uint32_t x);
   uint32_t TimeToTu (Time x);
   ///\}
-  
+
   /// Aux. method to register open links
   void NotifyLinkOpen (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
   /// Aux. method to register closed links
@@ -210,7 +210,7 @@ private:
   PeerManagementProtocolMacMap m_plugins;
   Mac48Address m_address;
   Ptr<IeMeshId> m_meshId;
-  
+
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;
   uint8_t m_maxNumberOfPeerLinks;
@@ -239,14 +239,14 @@ private:
    * bool is status - true when new link has appeared, false - when link was closed,
    */
   Callback <void, Mac48Address, Mac48Address, uint32_t, bool> m_peerStatusCallback;
-  
+
   /// Simple link open/close trace source type. Addresses are: src interface, dst interface
   typedef TracedCallback <Mac48Address, Mac48Address> LinkEventCallback;
   /// LinkOpen trace source
   LinkEventCallback m_linkOpenTraceSrc;
   /// LinkClose trace source
   LinkEventCallback m_linkCloseTraceSrc;
-  
+
   ///\name Statistics:
   ///\{
   struct Statistics {

@@ -44,7 +44,7 @@ class ErrorModel;
  * This PointToPointNetDevice class specializes the NetDevice abstract
  * base class.  Together with a PointToPointChannel (and a peer 
  * PointToPointNetDevice), the class models, with some level of 
- * abstraction, a generic point-to-point or serial link.  
+ * abstraction, a generic point-to-point or serial link.
  * Key parameters or objects that can be specified for this device 
  * include a queue, data rate, and interframe transmission gap (the 
  * propagation delay is set in the PointToPointChannel).
@@ -99,7 +99,7 @@ public:
    * Attach a queue to the PointToPointNetDevice.
    *
    * The PointToPointNetDevice "owns" a queue that implements a queueing 
-   * method such as DropTail or RED.  
+   * method such as DropTail or RED.
    *
    * @see Queue
    * @see DropTailQueue
@@ -139,7 +139,7 @@ public:
   void Receive (Ptr<Packet> p);
 
   // The remaining methods are documented in ns3::NetDevice*
-  
+
   virtual void SetIfIndex(const uint32_t index);
   virtual uint32_t GetIfIndex(void) const;
 
@@ -246,10 +246,10 @@ private:
    * Enumeration of the states of the transmit machine of the net device.
    */
   enum TxMachineState
-    {
-      READY, /**< The transmitter is ready to begin transmission of a packet */
-      BUSY   /**< The transmitter is busy transmitting a packet */
-    };
+  {
+    READY,   /**< The transmitter is ready to begin transmission of a packet */
+    BUSY     /**< The transmitter is busy transmitting a packet */
+  };
   /**
    * The state of the Net Device transmit state machine.
    * @see TxMachineState
@@ -346,7 +346,7 @@ private:
 
   /**
    * The trace source fired when a packet ends the transmission process on
-   * the medium.  
+   * the medium.
    *
    * \see class CallBackTraceSource
    */

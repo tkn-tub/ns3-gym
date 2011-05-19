@@ -20,7 +20,7 @@
 #include "ns3/trace-source-accessor.h"
 
 #include <iostream>
-  
+
 using namespace ns3;
 
 class MyObject : public Object
@@ -34,10 +34,10 @@ public:
       .AddTraceSource ("MyInteger",
                        "An integer value to trace.",
                        MakeTraceSourceAccessor (&MyObject::m_myInt))
-      ;
+    ;
     return tid;
   }
-  
+
   MyObject () {}
   TracedValue<int32_t> m_myInt;
 };

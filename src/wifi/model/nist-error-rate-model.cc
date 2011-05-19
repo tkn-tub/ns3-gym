@@ -3,7 +3,7 @@
  * Copyright (c) 2010 The Boeing Company
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,7 +27,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (NistErrorRateModel);
 
-TypeId 
+TypeId
 NistErrorRateModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NistErrorRateModel")
@@ -44,41 +44,41 @@ NistErrorRateModel::NistErrorRateModel ()
 double
 NistErrorRateModel::GetBpskBer (double snr) const
 {
-  double z = sqrt(snr);
-  double ber = 0.5 * erfc(z);
-  NS_LOG_INFO ("bpsk snr="<<snr<<" ber="<<ber);
+  double z = sqrt (snr);
+  double ber = 0.5 * erfc (z);
+  NS_LOG_INFO ("bpsk snr=" << snr << " ber=" << ber);
   return ber;
 }
 double
 NistErrorRateModel::GetQpskBer (double snr) const
 {
-  double z = sqrt(snr/2.0);
-  double ber = 0.5 * erfc(z);
-  NS_LOG_INFO ("qpsk snr="<<snr<<" ber="<<ber);
-  return ber;
-}
-double 
-NistErrorRateModel::Get16QamBer (double snr) const
-{
-  double z = sqrt(snr/(5.0 * 2.0));
-  double ber = 0.75 * 0.5 * erfc(z);
-  NS_LOG_INFO ("16-Qam" << " snr="<<snr<<" ber="<<ber);
-  return ber;
-}
-double 
-NistErrorRateModel::Get64QamBer (double snr) const
-{
-  double z = sqrt(snr/(21.0 * 2.0));
-  double ber = 7.0 / 12.0 * 0.5 * erfc(z);
-  NS_LOG_INFO ("64-Qam" << " snr="<<snr<<" ber="<<ber);
+  double z = sqrt (snr / 2.0);
+  double ber = 0.5 * erfc (z);
+  NS_LOG_INFO ("qpsk snr=" << snr << " ber=" << ber);
   return ber;
 }
 double
-NistErrorRateModel::GetFecBpskBer (double snr, double nbits, 
+NistErrorRateModel::Get16QamBer (double snr) const
+{
+  double z = sqrt (snr / (5.0 * 2.0));
+  double ber = 0.75 * 0.5 * erfc (z);
+  NS_LOG_INFO ("16-Qam" << " snr=" << snr << " ber=" << ber);
+  return ber;
+}
+double
+NistErrorRateModel::Get64QamBer (double snr) const
+{
+  double z = sqrt (snr / (21.0 * 2.0));
+  double ber = 7.0 / 12.0 * 0.5 * erfc (z);
+  NS_LOG_INFO ("64-Qam" << " snr=" << snr << " ber=" << ber);
+  return ber;
+}
+double
+NistErrorRateModel::GetFecBpskBer (double snr, double nbits,
                                    uint32_t bValue) const
 {
   double ber = GetBpskBer (snr);
-  if (ber == 0.0) 
+  if (ber == 0.0)
     {
       return 1.0;
     }
@@ -88,11 +88,11 @@ NistErrorRateModel::GetFecBpskBer (double snr, double nbits,
   return pms;
 }
 double
-NistErrorRateModel::GetFecQpskBer (double snr, double nbits, 
+NistErrorRateModel::GetFecQpskBer (double snr, double nbits,
                                    uint32_t bValue) const
 {
   double ber = GetQpskBer (snr);
-  if (ber == 0.0) 
+  if (ber == 0.0)
     {
       return 1.0;
     }
@@ -104,7 +104,7 @@ NistErrorRateModel::GetFecQpskBer (double snr, double nbits,
 double
 NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
 {
-  double D = sqrt (4.0 * p * (1.0 -p));
+  double D = sqrt (4.0 * p * (1.0 - p));
   double pe = 1.0;
   if (bValue == 1)
     {
@@ -123,7 +123,7 @@ NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
   else if (bValue == 2)
     {
       // code rate 2/3, use table 3.1.2
-      pe = 1.0 / (2.0 * bValue) * 
+      pe = 1.0 / (2.0 * bValue) *
         ( 3.0 * pow (D, 6.0)
           + 70.0 * pow (D, 7.0)
           + 285.0 * pow (D, 8.0)
@@ -139,7 +139,7 @@ NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
   else if (bValue == 3)
     {
       // code rate 3/4, use table 3.1.2
-      pe = 1.0 / (2.0 * bValue) * 
+      pe = 1.0 / (2.0 * bValue) *
         ( 42.0 * pow (D, 5.0)
           + 201.0 * pow (D, 6.0)
           + 1492.0 * pow (D, 7.0)
@@ -160,11 +160,11 @@ NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
 }
 
 double
-NistErrorRateModel::GetFec16QamBer (double snr, uint32_t nbits, 
+NistErrorRateModel::GetFec16QamBer (double snr, uint32_t nbits,
                                     uint32_t bValue) const
 {
   double ber = Get16QamBer (snr);
-  if (ber == 0.0) 
+  if (ber == 0.0)
     {
       return 1.0;
     }
@@ -174,11 +174,11 @@ NistErrorRateModel::GetFec16QamBer (double snr, uint32_t nbits,
   return pms;
 }
 double
-NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits, 
+NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits,
                                     uint32_t bValue) const
 {
   double ber = Get64QamBer (snr);
-  if (ber == 0.0) 
+  if (ber == 0.0)
     {
       return 1.0;
     }
@@ -187,11 +187,11 @@ NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits,
   double pms = pow (1 - pe, nbits);
   return pms;
 }
-double 
+double
 NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
-  if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM ||
-      mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
+      || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
     {
       if (mode.GetConstellationSize () == 2)
         {

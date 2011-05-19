@@ -152,7 +152,7 @@ int main (int argc, char *argv[])
 
   // Create and bind the socket...
   Ptr<Socket> localSocket =
-      Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
+    Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
   localSocket->Bind ();
 
   // Trace changes to the congestion window
@@ -191,7 +191,7 @@ void StartFlow(Ptr<Socket> localSocket,
                uint16_t servPort)
 {
   NS_LOG_LOGIC("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
-  localSocket->Connect (InetSocketAddress (servAddress, servPort));//connect
+  localSocket->Connect (InetSocketAddress (servAddress, servPort)); //connect
 
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available

@@ -43,10 +43,10 @@ namespace ns3 {
  */
 class RandomDirection2dMobilityModel : public MobilityModel
 {
- public:
+public:
   static TypeId GetTypeId (void);
 
- private:
+private:
   void ResetDirectionAndSpeed (void);
   void BeginPause (void);
   void SetDirectionAndSpeed (double direction);

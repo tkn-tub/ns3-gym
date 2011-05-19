@@ -33,7 +33,7 @@
 
 namespace ns3 {
 
-class RocketfuelTopologyReaderTest: public TestCase 
+class RocketfuelTopologyReaderTest : public TestCase
 {
 public:
   RocketfuelTopologyReaderTest ();
@@ -42,8 +42,9 @@ private:
 };
 
 RocketfuelTopologyReaderTest::RocketfuelTopologyReaderTest ()
-  : TestCase ("RocketfuelTopologyReaderTest") 
-{}
+  : TestCase ("RocketfuelTopologyReaderTest")
+{
+}
 
 
 void
@@ -51,11 +52,11 @@ RocketfuelTopologyReaderTest::DoRun (void)
 {
   Ptr<RocketfuelTopologyReader> inFile;
   NodeContainer nodes;
-  
+
   std::string input ("./src/topology-read/examples/RocketFuel_toposample_1239_weights.txt");
 
   inFile = CreateObject<RocketfuelTopologyReader> ();
-  inFile->SetFileName(input);
+  inFile->SetFileName (input);
 
   if (inFile != 0)
     {
@@ -76,7 +77,7 @@ class RocketfuelTopologyReaderTestSuite : public TestSuite
 public:
   RocketfuelTopologyReaderTestSuite ();
 private:
-}; 
+};
 
 RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
   : TestSuite ("rocketfuel-topology-reader", UNIT)

@@ -47,11 +47,11 @@ public:
   void SetTypeId (TypeId tid);
   /**
    * \param tid the TypeId of the object to instantiate.
-   */  
+   */
   void SetTypeId (const char *tid);
   /**
    * \param tid the TypeId of the object to instantiate.
-   */  
+   */
   void SetTypeId (std::string tid);
   /**
    * \param name the name of the attribute to set during object construction

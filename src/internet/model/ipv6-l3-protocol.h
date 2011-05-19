@@ -368,17 +368,17 @@ private:
   /**
    * \brief Callback to trace TX (transmission) packets.
    */ 
-  TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
+  TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_txTrace;
 
   /**
    * \brief Callback to trace RX (reception) packets.
    */ 
-  TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
+  TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_rxTrace;
 
   /**
    * \brief Callback to trace drop packets.
    */ 
-  TracedCallback<const Ipv6Header &, Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
+  TracedCallback<const Ipv6Header &, Ptr<const Packet>, DropReason, Ptr<Ipv6>, uint32_t> m_dropTrace;
 
   /**
    * \brief Copy constructor.

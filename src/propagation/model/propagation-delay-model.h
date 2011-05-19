@@ -30,6 +30,8 @@ namespace ns3 {
 class MobilityModel;
 
 /**
+ * \ingroup propagation
+ *
  * \brief calculate a propagation delay.
  */
 class PropagationDelayModel : public Object
@@ -49,6 +51,8 @@ public:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief the propagation delay is random
  */
 class RandomPropagationDelayModel : public PropagationDelayModel
@@ -67,6 +71,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief the propagation speed is constant
  */
 class ConstantSpeedPropagationDelayModel : public PropagationDelayModel

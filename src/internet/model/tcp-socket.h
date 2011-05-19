@@ -48,7 +48,8 @@ typedef enum {
   FIN_WAIT_2,   // 8
   CLOSING,      // 9
   TIME_WAIT,   // 10
-  LAST_STATE } TcpStates_t;
+  LAST_STATE
+} TcpStates_t;
 
 /**
  * \ingroup socket
@@ -61,7 +62,7 @@ typedef enum {
 class TcpSocket : public Socket
 {
 public:
- static TypeId GetTypeId (void);
+  static TypeId GetTypeId (void);
  
   TcpSocket (void);
   virtual ~TcpSocket (void);
@@ -91,7 +92,7 @@ private:
   virtual uint32_t GetDelAckMaxCount (void) const = 0;
   virtual void SetPersistTimeout (Time timeout) = 0;
   virtual Time GetPersistTimeout (void) const = 0;
-  
+
 };
 
 } //namespace ns3

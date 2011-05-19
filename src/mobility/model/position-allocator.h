@@ -148,7 +148,7 @@ public:
    * \return the currently-selected layout type.
    */
   enum LayoutType GetLayoutType (void) const;
-  
+
 
   virtual Vector GetNext (void) const;
 private:

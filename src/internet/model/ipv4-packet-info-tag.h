@@ -60,7 +60,7 @@ public:
   // Implemented, but not used in the stack yet
   uint8_t GetTtl (void) const;
 
-  static TypeId GetTypeId (void);  
+  static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;

@@ -25,7 +25,7 @@ NS_LOG_COMPONENT_DEFINE ("MicrowaveOvenSpectrumValue");
 
 namespace ns3 {
 
-  
+
 Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel5Mhz;
 Ptr<SpectrumModel> g_MicrowaveOvenSpectrumModel6Mhz;
 
@@ -35,9 +35,9 @@ class MicrowaveOvenSpectrumModel5MhzInitializer
 public:
   MicrowaveOvenSpectrumModel5MhzInitializer ()
   {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION (this);
     Bands bands;
-   for (double fl = 2400e6; fl < 2499e6; fl += 5e6)
+    for (double fl = 2400e6; fl < 2499e6; fl += 5e6)
       {
         BandInfo bi;
         bi.fl = fl;
@@ -45,8 +45,8 @@ public:
         bi.fh = fl + 10e6;
         bands.push_back (bi);
       }
-   NS_LOG_LOGIC("bands.size () :" << bands.size ());
-   g_MicrowaveOvenSpectrumModel5Mhz = Create<SpectrumModel> (bands);
+    NS_LOG_LOGIC ("bands.size () :" << bands.size ());
+    g_MicrowaveOvenSpectrumModel5Mhz = Create<SpectrumModel> (bands);
   }
 } g_MicrowaveOvenSpectrumModel5MhzInitializerInstance;
 
@@ -57,7 +57,7 @@ class MicrowaveOvenSpectrumModel6MhzInitializer
 public:
   MicrowaveOvenSpectrumModel6MhzInitializer ()
   {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION (this);
     Bands bands;
     for (double fl = 2360e6; fl < 2479e6; fl += 6e6)
       {
@@ -67,7 +67,7 @@ public:
         bi.fh = fl + 12e6;
         bands.push_back (bi);
       }
-    NS_LOG_LOGIC("bands.size () :" << bands.size ());
+    NS_LOG_LOGIC ("bands.size () :" << bands.size ());
     g_MicrowaveOvenSpectrumModel6Mhz = Create<SpectrumModel> (bands);
   }
 } g_MicrowaveOvenSpectrumModel6MhzInitializerInstance;
@@ -76,13 +76,13 @@ public:
 
 
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo1 ()
-{  
+{
   Ptr<SpectrumValue> psd = Create <SpectrumValue> (g_MicrowaveOvenSpectrumModel6Mhz);
 
   // values from this paper:
-  // Tanim M. Taher, Matthew J. Misurac, Joseph L. LoCicero, and Donald R. Ucci, 
+  // Tanim M. Taher, Matthew J. Misurac, Joseph L. LoCicero, and Donald R. Ucci,
   // "MICROWAVE OVEN SIGNAL MODELING", in Proc. of IEEE WCNC, 2008,
   // see Figure 3, "Experimental PSD of MWO #1"
   // the figure has a resolution of 12 MHz per division; we use a
@@ -112,18 +112,18 @@ MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo1 ()
   (*psd)[19] = -67.5;
 
   // convert to W/Hz
-  (*psd) = Pow(10.0, ((*psd) - 30)/10.0);
+  (*psd) = Pow (10.0, ((*psd) - 30) / 10.0);
 
   return psd;
 }
 
 
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo2 ()
-{  
+{
   // values from this paper:
-  // Tanim M. Taher, Matthew J. Misurac, Joseph L. LoCicero, and Donald R. Ucci, 
+  // Tanim M. Taher, Matthew J. Misurac, Joseph L. LoCicero, and Donald R. Ucci,
   // "MICROWAVE OVEN SIGNAL MODELING", in Proc. of IEEE WCNC, 2008,
   // see Figure 9, "Experimental PSD of actual MWO #2"
   // the figure has a resolution of 10 MHz per division; we use a
@@ -133,14 +133,14 @@ MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo2 ()
 
   Ptr<SpectrumValue> psd = Create <SpectrumValue> (g_MicrowaveOvenSpectrumModel5Mhz);
 
-  (*psd)[0] = -68; 
-  (*psd)[1] = -68; 
+  (*psd)[0] = -68;
+  (*psd)[1] = -68;
   (*psd)[2] = -68;
   (*psd)[3] = -68;
-  (*psd)[4] = -65; 
+  (*psd)[4] = -65;
   (*psd)[5] = -62;
-  (*psd)[6] = -56; 
-  (*psd)[7] = -55; 
+  (*psd)[6] = -56;
+  (*psd)[7] = -55;
   (*psd)[8] = -47;
   (*psd)[9] = -40;
   (*psd)[10] = -37;
@@ -155,7 +155,7 @@ MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo2 ()
   (*psd)[19] = -68;
 
   // convert to W/Hz
-  (*psd) = Pow(10.0, ((*psd) - 30)/10.0);
+  (*psd) = Pow (10.0, ((*psd) - 30) / 10.0);
 
   return psd;
 }

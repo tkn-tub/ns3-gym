@@ -26,29 +26,34 @@ namespace ns3 {
 InetSocketAddress::InetSocketAddress (Ipv4Address ipv4, uint16_t port)
   : m_ipv4 (ipv4),
     m_port (port)
-{}
+{
+}
 InetSocketAddress::InetSocketAddress (Ipv4Address ipv4)
   : m_ipv4 (ipv4),
     m_port (0)
-{}
+{
+}
 InetSocketAddress::InetSocketAddress (const char *ipv4, uint16_t port)
   : m_ipv4 (Ipv4Address (ipv4)),
     m_port (port)
-{}
+{
+}
 InetSocketAddress::InetSocketAddress (const char * ipv4)
   : m_ipv4 (Ipv4Address (ipv4)),
     m_port (0)
-{}
+{
+}
 InetSocketAddress::InetSocketAddress (uint16_t port)
   : m_ipv4 (Ipv4Address::GetAny ()),
     m_port (port)
-{}
-uint16_t 
+{
+}
+uint16_t
 InetSocketAddress::GetPort (void) const
 {
   return m_port;
 }
-Ipv4Address 
+Ipv4Address
 InetSocketAddress::GetIpv4 (void) const
 {
   return m_ipv4;
@@ -59,13 +64,13 @@ InetSocketAddress::SetPort (uint16_t port)
 {
   m_port = port;
 }
-void 
+void
 InetSocketAddress::SetIpv4 (Ipv4Address address)
 {
   m_ipv4 = address;
 }
 
-bool 
+bool
 InetSocketAddress::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 6);

@@ -82,7 +82,7 @@ public:
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
-  virtual void StartApplication (void);  
+  virtual void StartApplication (void);
   virtual void StopApplication (void);
 
   void ScheduleTx (void);
@@ -183,8 +183,8 @@ private:
   virtual void DoRun (void);
   bool m_writeResults;
 
-  class  CwndEvent {
-  public:
+  class CwndEvent {
+public:
     uint32_t m_oldCwnd;
     uint32_t m_newCwnd;
   };
@@ -284,7 +284,7 @@ Ns3TcpCwndTestCase1::DoRun (void)
   // CongestionWindow attribute on the socket.  Normally one would use an on-off
   // application to generate a flow, but this has a couple of problems.  First,
   // the socket of the on-off application is not created until Application Start
-  // time, so we wouldn't be able to hook the socket now at configuration time.  
+  // time, so we wouldn't be able to hook the socket now at configuration time.
   // Second, even if we could arrange a call after start time, the socket is not 
   // public.
   //
@@ -386,8 +386,8 @@ private:
   virtual void DoRun (void);
   bool m_writeResults;
 
-  class  CwndEvent {
-  public:
+  class CwndEvent {
+public:
     uint32_t m_oldCwnd;
     uint32_t m_newCwnd;
   };

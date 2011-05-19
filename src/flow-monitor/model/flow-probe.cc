@@ -28,7 +28,7 @@ FlowProbe::~FlowProbe ()
 {
 }
 
-  
+
 FlowProbe::FlowProbe (Ptr<FlowMonitor> flowMonitor)
   : m_flowMonitor (flowMonitor)
 {
@@ -72,7 +72,7 @@ FlowProbe::SerializeToXmlStream (std::ostream &os, int indent, uint32_t index) c
   INDENT(indent); os << "<FlowProbe index=\"" << index << "\">\n";
 
   indent += 2;
-  
+
   for (Stats::const_iterator iter = m_stats.begin (); iter != m_stats.end (); iter++)
     {
       INDENT(indent);

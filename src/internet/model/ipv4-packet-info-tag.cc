@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-Ipv4PacketInfoTag::Ipv4PacketInfoTag ()  
+Ipv4PacketInfoTag::Ipv4PacketInfoTag ()
   : m_addr (Ipv4Address ()),
     m_spec_dst (Ipv4Address ()),
     m_ifindex (0),
@@ -89,7 +89,7 @@ Ipv4PacketInfoTag::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4PacketInfoTag")
     .SetParent<Tag> ()
     .AddConstructor<Ipv4PacketInfoTag> ()
-    ;
+  ;
   return tid;
 }
 TypeId
@@ -102,8 +102,8 @@ uint32_t
 Ipv4PacketInfoTag::GetSerializedSize (void) const
 { 
   return 4 + 4 
-    + sizeof (uint32_t)
-    + sizeof (uint8_t);
+         + sizeof (uint32_t)
+         + sizeof (uint8_t);
 }
 void 
 Ipv4PacketInfoTag::Serialize (TagBuffer i) const
@@ -136,5 +136,5 @@ Ipv4PacketInfoTag::Print (std::ostream &os) const
   os << ", TTL:" << (uint32_t) m_ttl;
   os << "] ";
 }
-}//namespace ns3
+} //namespace ns3
 

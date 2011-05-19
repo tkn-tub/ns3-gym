@@ -37,7 +37,7 @@ namespace olsr
  * 
  * Expected trace (5 seconds):
    \verbatim
-    1       2      
+    1       2
     |------>|   HELLO (empty) src = 10.1.1.1
     |<------|   HELLO (empty) src = 10.1.1.2
     |------>|   HELLO (Link type: Asymmetric link, Neighbor address: 10.1.1.2) src = 10.1.1.1

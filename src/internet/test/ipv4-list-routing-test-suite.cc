@@ -27,8 +27,8 @@ class Ipv4ARouting : public Ipv4RoutingProtocol {
 public:
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0;}
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                             LocalDeliverCallback lcb, ErrorCallback ecb) {return false;}
+                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false;}
   void NotifyInterfaceUp (uint32_t interface) {}
   void NotifyInterfaceDown (uint32_t interface) {}
   void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
@@ -41,8 +41,8 @@ class Ipv4BRouting : public Ipv4RoutingProtocol {
 public:
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0;}
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                             LocalDeliverCallback lcb, ErrorCallback ecb) {return false;}
+                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false;}
   void NotifyInterfaceUp (uint32_t interface) {}
   void NotifyInterfaceDown (uint32_t interface) {}
   void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
@@ -60,7 +60,8 @@ public:
 
 Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
   : TestCase("Check negative priorities")
-{}
+{
+}
 void
 Ipv4ListRoutingNegativeTestCase::DoRun (void)
 {
@@ -87,14 +88,15 @@ public:
 
 Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
   : TestCase("Check positive priorities")
-{}
+{
+}
 void
 Ipv4ListRoutingPositiveTestCase::DoRun (void)
 {
   Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
   Ptr<Ipv4RoutingProtocol> aRouting = CreateObject<Ipv4ARouting> ();
   Ptr<Ipv4RoutingProtocol> bRouting = CreateObject<Ipv4BRouting> ();
-  // The Ipv4ARouting should be added with higher priority (larger integer 
+  // The Ipv4ARouting should be added with higher priority (larger integer
   // value) and will be fetched first below
   lr->AddRoutingProtocol (aRouting, 10);
   lr->AddRoutingProtocol (bRouting, 5);

@@ -7,6 +7,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tools
+ *
  * \brief quick and dirty delay and jitter estimation
  *
  */

@@ -56,7 +56,7 @@ public:
   uint16_t GetPeerPort (void);
 
   void SetPeer (Ipv4Address address, uint16_t port);
-  
+
   void BindToNetDevice (Ptr<NetDevice> netdevice);
   Ptr<NetDevice> GetBoundNetDevice (void);
 

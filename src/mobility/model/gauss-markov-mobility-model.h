@@ -54,7 +54,7 @@ namespace ns3 {
  * Here is an example of how to implement the model and set the initial node positions:
  * \code
     MobilityHelper mobility;
-  
+
     mobility.SetMobilityModel ("ns3::GaussMarkovMobilityModel",
       "Bounds", BoxValue (Box (0, 150000, 0, 150000, 0, 10000)),
       "TimeStep", TimeValue (Seconds (0.5)),
@@ -65,7 +65,7 @@ namespace ns3 {
       "NormalVelocity", RandomVariableValue (NormalVariable (0.0, 0.0, 0.0)),
       "NormalDirection", RandomVariableValue (NormalVariable (0.0, 0.2, 0.4)),
       "NormalPitch", RandomVariableValue (NormalVariable (0.0, 0.02, 0.04)));
-  
+
     mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator",
       "X", RandomVariableValue (UniformVariable (0, 150000)),
       "Y", RandomVariableValue (UniformVariable (0, 150000)),

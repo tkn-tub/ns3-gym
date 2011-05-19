@@ -33,11 +33,6 @@
 namespace ns3 {
 
 /**
- * \defgroup topology Topology Input Readers
- */
-
-/**
- * \ingroup topology
  * \brief Interface for input file readers management.
  *
  * This interface perform the shared tasks among all possible input file readers.
@@ -48,7 +43,6 @@ class TopologyReader : public Object
 
 public:
   /**
-   * \ingroup topology
    * \brief Inner class holding the details about a link between two nodes.
    *
    * The link is not described in terms of technology. Rather it is only stating
@@ -190,7 +184,6 @@ private:
   void AddLink (Link link);
 
 private:
-
   TopologyReader (const TopologyReader&);
   TopologyReader& operator= (const TopologyReader&);
 

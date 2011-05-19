@@ -53,11 +53,11 @@ UdpClient::GetTypeId (void)
                    MakeTimeAccessor (&UdpClient::m_interval),
                    MakeTimeChecker ())
     .AddAttribute (
-                   "RemoteAddress",
-                   "The destination Ipv4Address of the outbound packets",
-                   Ipv4AddressValue (),
-                   MakeIpv4AddressAccessor (&UdpClient::m_peerAddress),
-                   MakeIpv4AddressChecker ())
+      "RemoteAddress",
+      "The destination Ipv4Address of the outbound packets",
+      Ipv4AddressValue (),
+      MakeIpv4AddressAccessor (&UdpClient::m_peerAddress),
+      MakeIpv4AddressChecker ())
     .AddAttribute ("RemotePort", "The destination port of the outbound packets",
                    UintegerValue (100),
                    MakeUintegerAccessor (&UdpClient::m_peerPort),
@@ -67,7 +67,7 @@ UdpClient::GetTypeId (void)
                    UintegerValue (1024),
                    MakeUintegerAccessor (&UdpClient::m_size),
                    MakeUintegerChecker<uint32_t> (12,1500))
-    ;
+  ;
   return tid;
 }
 
@@ -135,15 +135,15 @@ UdpClient::Send (void)
   if ((m_socket->Send (p)) >= 0)
     {
       ++m_sent;
-     NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
-                  << m_peerAddress << " Uid: " << p->GetUid ()
-                  << " Time: " << (Simulator::Now ()).GetSeconds ());
+      NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
+                                    << m_peerAddress << " Uid: " << p->GetUid ()
+                                    << " Time: " << (Simulator::Now ()).GetSeconds ());
 
     }
   else
     {
       NS_LOG_INFO ("Error while sending " << m_size << " bytes to "
-                   << m_peerAddress);
+                                          << m_peerAddress);
     }
 
   if (m_sent < m_count)

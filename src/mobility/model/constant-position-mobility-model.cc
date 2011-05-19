@@ -29,21 +29,23 @@ ConstantPositionMobilityModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ConstantPositionMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<ConstantPositionMobilityModel> ()
-    ;
+  ;
   return tid;
 }
-  
+
 ConstantPositionMobilityModel::ConstantPositionMobilityModel ()
-{}
+{
+}
 ConstantPositionMobilityModel::~ConstantPositionMobilityModel ()
-{}
+{
+}
 
 Vector
 ConstantPositionMobilityModel::DoGetPosition (void) const
 {
   return m_position;
 }
-void 
+void
 ConstantPositionMobilityModel::DoSetPosition (const Vector &position)
 {
   m_position = position;

@@ -32,10 +32,10 @@ TypeId Ipv6L4Protocol::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6L4Protocol")
     .SetParent<Object> ()
     .AddAttribute ("ProtocolNumber", "The IPv6 protocol number.",
-        UintegerValue (0),
-        MakeUintegerAccessor (&Ipv6L4Protocol::GetProtocolNumber),
-        MakeUintegerChecker<int> ())
-    ;
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv6L4Protocol::GetProtocolNumber),
+                   MakeUintegerChecker<int> ())
+  ;
   return tid;
 }
 

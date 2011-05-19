@@ -196,7 +196,6 @@ main (int argc, char *argv[])
 
   bool haveBasedir = false;
   bool haveTempdir = false;
-  bool haveOutfile = false;
   bool haveType = false;
 
   std::string suiteName;
@@ -250,7 +249,6 @@ main (int argc, char *argv[])
       if (arg.find ("--out=") != std::string::npos)
         {
           outfileName = arg.substr (arg.find_first_of ("=") + 1, 9999);
-          haveOutfile = true;
         }
 
       if (arg.find ("--suite=") != std::string::npos)

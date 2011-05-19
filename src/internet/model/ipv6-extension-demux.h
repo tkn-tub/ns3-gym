@@ -79,7 +79,7 @@ public:
    */
   void Remove (Ptr<Ipv6Extension> extension);
 
-protected:   
+protected:
   /**
    * \brief Dispose object.
    */

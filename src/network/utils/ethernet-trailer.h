@@ -29,7 +29,7 @@ namespace ns3 {
 
 
 /**
- * \ingroup node
+ * \ingroup network
  *
  * \brief Packet trailer for Ethernet
  *

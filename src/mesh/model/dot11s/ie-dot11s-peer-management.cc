@@ -163,7 +163,7 @@ bool
 operator== (const IePeerManagement & a, const IePeerManagement & b)
 {
   return ((a.m_length == b.m_length) && (a.m_subtype == b.m_subtype) && (a.m_localLinkId == b.m_localLinkId)
-      && (a.m_peerLinkId == b.m_peerLinkId) && (a.m_reasonCode == b.m_reasonCode));
+          && (a.m_peerLinkId == b.m_peerLinkId) && (a.m_reasonCode == b.m_reasonCode));
 }
 std::ostream &
 operator << (std::ostream &os, const IePeerManagement &a)

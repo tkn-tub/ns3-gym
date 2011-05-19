@@ -27,6 +27,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup propagation
+ *
  * \brief a Jakes propagation loss model
  *
  * The Jakes propagation loss model implemented here is 
@@ -120,11 +122,11 @@ private:
   };
   typedef std::vector<PathsSet *> PathsList;
 
-  
+
   static const double PI;
   ComplexNumber* m_amp;
   RandomVariable m_variable;
-  double m_fd;  
+  double m_fd;
   mutable PathsList m_paths;
   uint8_t m_nRays;
   uint8_t m_nOscillators;

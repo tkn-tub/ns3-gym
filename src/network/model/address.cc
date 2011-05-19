@@ -30,7 +30,7 @@ Address::Address ()
   : m_type (0),
     m_len (0)
 {
-  // Buffer left uninitialized    
+  // Buffer left uninitialized
 }
 
 Address::Address (uint8_t type, const uint8_t *buffer, uint8_t len)
@@ -95,7 +95,7 @@ Address::CopyFrom (const uint8_t *buffer, uint8_t len)
   m_len = len;
   return m_len;
 }
-    uint32_t
+uint32_t
 Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
 {
   NS_ASSERT (len >= 2);
@@ -201,13 +201,13 @@ bool operator < (const Address &a, const Address &b)
   for (uint8_t i = 0; i < a.GetLength(); i++) 
     {
       if (a.m_data[i] < b.m_data[i]) 
-	{
-	  return true;
-	} 
+        {
+          return true;
+        }
       else if (a.m_data[i] > b.m_data[i]) 
-	{
-	  return false;
-	}
+        {
+          return false;
+        }
     }
   return false;
 }
@@ -259,17 +259,17 @@ std::istream& operator>> (std::istream& is, Address & address)
       std::string::size_type next;
       next = v.find (":", col);
       if (next == std::string::npos)
-	{
-	  tmp = v.substr (col, v.size ()-col);
-	  address.m_data[i] = AsInt (tmp);
-	  break;
-	}
+        {
+          tmp = v.substr (col, v.size ()-col);
+          address.m_data[i] = AsInt (tmp);
+          break;
+        }
       else
-	{
-	  tmp = v.substr (col, next-col);
-	  address.m_data[i] = AsInt (tmp);
-	  col = next + 1;
-	}
+        {
+          tmp = v.substr (col, next-col);
+          address.m_data[i] = AsInt (tmp);
+          col = next + 1;
+        }
     }
   return is;
 }

@@ -574,7 +574,7 @@ private:
   static struct Buffer::Data *Create (uint32_t size);
   static struct Buffer::Data *Allocate (uint32_t reqSize);
   static void Deallocate (struct Buffer::Data *data);
-  
+
   struct Data *m_data;
 
   /* keep track of the maximum value of m_zeroAreaStart across

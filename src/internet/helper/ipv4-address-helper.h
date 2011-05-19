@@ -57,7 +57,7 @@ public:
  * in the constructor
  */
   Ipv4AddressHelper (Ipv4Address network, Ipv4Mask mask, 
-    Ipv4Address base = "0.0.0.1");
+                     Ipv4Address base = "0.0.0.1");
 
 /**
  * @brief Set the base network number, network mask and base address.
@@ -89,7 +89,7 @@ public:
  * @returns Nothing.
  */
   void SetBase (Ipv4Address network, Ipv4Mask mask, 
-    Ipv4Address base = "0.0.0.1");
+                Ipv4Address base = "0.0.0.1");
 
 /**
  * @brief Increment the network number and reset the IP address counter to 

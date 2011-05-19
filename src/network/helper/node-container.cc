@@ -24,7 +24,8 @@
 namespace ns3 {
 
 NodeContainer::NodeContainer ()
-{}
+{
+}
 
 NodeContainer::NodeContainer (Ptr<Node> node)
 {

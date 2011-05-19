@@ -34,7 +34,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
 
 NS_OBJECT_ENSURE_REGISTERED (FlowMonitor);
-  
+
 
 TypeId 
 FlowMonitor::GetTypeId (void)
@@ -58,7 +58,7 @@ FlowMonitor::GetTypeId (void)
     .AddAttribute ("JitterBinWidth", ("The width used in the jitter histogram."),
                    DoubleValue (0.001),
                    MakeDoubleAccessor (&FlowMonitor::m_jitterBinWidth),
-		   MakeDoubleChecker <double> ())
+                   MakeDoubleChecker <double> ())
     .AddAttribute ("PacketSizeBinWidth", ("The width used in the packetSize histogram."),
                    DoubleValue (20),
                    MakeDoubleAccessor (&FlowMonitor::m_packetSizeBinWidth),
@@ -71,7 +71,7 @@ FlowMonitor::GetTypeId (void)
                    TimeValue (Seconds (0.5)),
                    MakeTimeAccessor (&FlowMonitor::m_flowInterruptionsMinTime),
                    MakeTimeChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -82,9 +82,9 @@ FlowMonitor::GetInstanceTypeId (void) const
 }
 
 FlowMonitor::FlowMonitor ()
- : m_enabled (false)
+  : m_enabled (false)
 {
- // m_histogramBinWidth=DEFAULT_BIN_WIDTH;
+  // m_histogramBinWidth=DEFAULT_BIN_WIDTH;
 }
 
 
@@ -131,7 +131,7 @@ FlowMonitor::ReportFirstTx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t pack
   tracked.lastSeenTime = tracked.firstSeenTime;
   tracked.timesForwarded = 0;
   NS_LOG_DEBUG ("ReportFirstTx: adding tracked packet (flowId=" << flowId << ", packetId=" << packetId
-                << ").");
+                                                                << ").");
 
   probe->AddPacketStats (flowId, packetSize, Seconds (0));
 
@@ -158,7 +158,7 @@ FlowMonitor::ReportForwarding (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t p
   if (tracked == m_trackedPackets.end ())
     {
       NS_LOG_WARN ("Received packet forward report (flowId=" << flowId << ", packetId=" << packetId
-                   << ") but not known to be transmitted.");
+                                                             << ") but not known to be transmitted.");
       return;
     }
 
@@ -181,7 +181,7 @@ FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packe
   if (tracked == m_trackedPackets.end ())
     {
       NS_LOG_WARN ("Received packet last-tx report (flowId=" << flowId << ", packetId=" << packetId
-                   << ") but not known to be transmitted.");
+                                                             << ") but not known to be transmitted.");
       return;
     }
 
@@ -196,18 +196,18 @@ FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packe
     {
       Time jitter = stats.lastDelay - delay;
       if (jitter > Seconds (0))
-	{
-      	  stats.jitterSum += jitter;
-	  stats.jitterHistogram.AddValue (jitter.GetSeconds ());
-	}
+        {
+          stats.jitterSum += jitter;
+          stats.jitterHistogram.AddValue (jitter.GetSeconds ());
+        }
       else 
-	{
-	  stats.jitterSum -= jitter;
-	  stats.jitterHistogram.AddValue (-jitter.GetSeconds());
-	}
+        {
+          stats.jitterSum -= jitter;
+          stats.jitterHistogram.AddValue (-jitter.GetSeconds());
+        }
     }
   stats.lastDelay = delay;
-  
+
   stats.rxBytes += packetSize;
   stats.packetSizeHistogram.AddValue ((double) packetSize);
   stats.rxPackets++;
@@ -277,7 +277,7 @@ void
 FlowMonitor::CheckForLostPackets (Time maxDelay)
 {
   Time now = Simulator::Now ();
-  
+
   for (TrackedPacketMap::iterator iter = m_trackedPackets.begin ();
        iter != m_trackedPackets.end (); )
     {
@@ -285,7 +285,7 @@ FlowMonitor::CheckForLostPackets (Time maxDelay)
         {
           // packet is considered lost, add it to the loss statistics
           std::map<FlowId, FlowStats>::iterator
-            flow = m_flowStats.find (iter->first.first);
+          flow = m_flowStats.find (iter->first.first);
           NS_ASSERT (flow != m_flowStats.end ());
           flow->second.lostPackets++;
 
@@ -387,7 +387,7 @@ void
 FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHistograms, bool enableProbes)
 {
   CheckForLostPackets ();
-  
+
   INDENT(indent); os << "<FlowMonitor>\n";
   indent += 2;
   INDENT(indent); os << "<FlowStats>\n";
@@ -395,24 +395,24 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
   for (std::map<FlowId, FlowStats>::const_iterator flowI = m_flowStats.begin ();
        flowI != m_flowStats.end (); flowI++)
     {
-      
+
       INDENT(indent);
-#define ATTRIB(name) << " "#name"=\"" << flowI->second.name << "\""
+#define ATTRIB(name) << " " # name "=\"" << flowI->second.name << "\""
       os << "<Flow flowId=\"" << flowI->first << "\""
-        ATTRIB(timeFirstTxPacket)
-        ATTRIB(timeFirstRxPacket)
-        ATTRIB(timeLastTxPacket)
-        ATTRIB(timeLastRxPacket)
-        ATTRIB(delaySum)
-        ATTRIB(jitterSum)
-        ATTRIB(lastDelay)
-        ATTRIB(txBytes)
-        ATTRIB(rxBytes)
-        ATTRIB(txPackets)
-        ATTRIB(rxPackets)
-        ATTRIB(lostPackets)
-        ATTRIB(timesForwarded)
-         << ">\n";
+      ATTRIB(timeFirstTxPacket)
+      ATTRIB(timeFirstRxPacket)
+      ATTRIB(timeLastTxPacket)
+      ATTRIB(timeLastRxPacket)
+      ATTRIB(delaySum)
+      ATTRIB(jitterSum)
+      ATTRIB(lastDelay)
+      ATTRIB(txBytes)
+      ATTRIB(rxBytes)
+      ATTRIB(txPackets)
+      ATTRIB(rxPackets)
+      ATTRIB(lostPackets)
+      ATTRIB(timesForwarded)
+                     << ">\n";
 #undef ATTRIB
 
 
@@ -462,7 +462,7 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
   indent -= 2;
   INDENT(indent); os << "</FlowMonitor>\n";
 }
-  
+
 
 std::string
 FlowMonitor::SerializeToXmlString (int indent, bool enableHistograms, bool enableProbes)

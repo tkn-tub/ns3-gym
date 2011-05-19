@@ -144,22 +144,22 @@ private:
                  > m_txrxPointToPoint;
 
   enum WireState
-    {
-      INITIALIZING,
-      IDLE,
-      TRANSMITTING,
-      PROPAGATING
-    };
+  {
+    INITIALIZING,
+    IDLE,
+    TRANSMITTING,
+    PROPAGATING
+  };
 
   class Link
   {
-  public:
+public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
     WireState                  m_state;
     Ptr<PointToPointNetDevice> m_src;
     Ptr<PointToPointNetDevice> m_dst;
   };
-    
+
   Link    m_link[N_DEVICES];
 };
 

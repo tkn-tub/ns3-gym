@@ -54,7 +54,7 @@ public:
   enum EncapsulationMode {
     ILLEGAL,     /**< Encapsulation mode not set */
     DIX,         /**< DIX II / Ethernet II packet */
-    LLC,         /**< 802.2 LLC/SNAP Packet*/  
+    LLC,         /**< 802.2 LLC/SNAP Packet*/
   };
 
   /**
@@ -72,7 +72,7 @@ public:
   virtual ~EmuNetDevice ();
 
   /**
-   * Set the Data Rate used for transmission of packets.  
+   * Set the Data Rate used for transmission of packets.
    *
    * @see Attach ()
    * @param bps the data rate at which this object operates
@@ -97,7 +97,7 @@ public:
    * Attach a queue to the EmuNetDevice.
    *
    * The EmuNetDevice "owns" a queue that implements a queueing 
-   * method such as DropTail or RED.  
+   * method such as DropTail or RED.
    *
    * @see Queue
    * @see DropTailQueue

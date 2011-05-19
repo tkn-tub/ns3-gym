@@ -33,7 +33,7 @@
 namespace ns3 {
 
 /**
- * \ingroup node
+ * \ingroup network
  * \defgroup queue Queue
  */
 /**
@@ -49,7 +49,7 @@ public:
 
   Queue ();
   virtual ~Queue ();
-  
+
   /**
    * \return true if the queue is empty; false otherwise
    */

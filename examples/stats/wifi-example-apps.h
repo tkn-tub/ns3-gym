@@ -37,7 +37,7 @@ using namespace ns3;
 
 //----------------------------------------------------------------------
 //------------------------------------------------------
-class Sender: public Application {
+class Sender : public Application {
 public:
   static TypeId GetTypeId(void);
   Sender();
@@ -72,7 +72,7 @@ private:
 
 
 //------------------------------------------------------
-class Receiver: public Application {
+class Receiver : public Application {
 public:
   static TypeId GetTypeId(void);
   Receiver();
@@ -112,7 +112,7 @@ public:
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
-  
+
   // these are our accessors to our tag structure
   void SetTimestamp(Time time);
   Time GetTimestamp(void) const;

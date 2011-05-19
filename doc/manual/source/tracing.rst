@@ -365,7 +365,7 @@ Pcap Tracing Device Helpers
 The goal of these helpers is to make it easy to add a consistent pcap trace
 facility to an |ns3| device. We want all of the various flavors of pcap tracing
 to work the same across all devices, so the methods of these helpers are
-inherited by device helpers. Take a look at ``src/helper/trace-helper.h`` if you
+inherited by device helpers. Take a look at ``src/network/helper/trace-helper.h`` if you
 want to follow the discussion while looking at real code.
 
 The class ``PcapHelperForDevice`` is a ``mixin`` provides the high level
@@ -515,7 +515,7 @@ Ascii Tracing Device Helpers
 ++++++++++++++++++++++++++++
 
 The behavior of the ascii trace helper ``mixin`` is substantially similar to 
-the pcap version. Take a look at ``src/helper/trace-helper.h`` if you want to 
+the pcap version. Take a look at ``src/network/helper/trace-helper.h`` if you want to 
 follow the discussion while looking at real code.
 
 The class ``AsciiTraceHelperForDevice`` adds the high level functionality for
@@ -721,7 +721,7 @@ Pcap Tracing Protocol Helpers
 The goal of these ``mixins`` is to make it easy to add a consistent pcap trace
 facility to protocols. We want all of the various flavors of pcap tracing to
 work the same across all protocols, so the methods of these helpers are
-inherited by stack helpers. Take a look at ``src/helper/trace-helper.h`` if you
+inherited by stack helpers. Take a look at ``src/network/helper/trace-helper.h`` if you
 want to follow the discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the protocol
@@ -858,7 +858,7 @@ Ascii Tracing Protocol Helpers
 ++++++++++++++++++++++++++++++
 
 The behavior of the ascii trace helpers is substantially similar to the pcap
-case.  Take a look at ``src/helper/trace-helper.h`` if you want to follow the
+case.  Take a look at ``src/network/helper/trace-helper.h`` if you want to follow the
 discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the protocol

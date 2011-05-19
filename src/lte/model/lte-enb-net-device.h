@@ -44,6 +44,8 @@ class FfMacScheduler;
 
 
 /**
+ * \ingroup lte
+ *
  * The eNodeB device implementation
  */
 class LteEnbNetDevice : public LteNetDevice

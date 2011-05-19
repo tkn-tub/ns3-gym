@@ -88,8 +88,8 @@ IePreq::~IePreq ()
 }
 IePreq::IePreq () :
   m_maxSize (32), m_flags (0), m_hopCount (0), m_ttl (0), m_preqId (0), m_originatorAddress (
-      Mac48Address::GetBroadcast ()), m_originatorSeqNumber (0), m_lifetime (0), m_metric (0),
-      m_destCount (0)
+    Mac48Address::GetBroadcast ()), m_originatorSeqNumber (0), m_lifetime (0), m_metric (0),
+  m_destCount (0)
 {
 }
 WifiInformationElementId
@@ -224,7 +224,7 @@ IePreq::SerializeInformationField (Buffer::Iterator i) const
   i.WriteU8 (m_destCount);
   int written = 0;
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator j = m_destinations.begin (); j
-      != m_destinations.end (); j++)
+       != m_destinations.end (); j++)
     {
       uint8_t flags = 0;
       if ((*j)->IsDo ())
@@ -295,14 +295,14 @@ uint8_t
 IePreq::GetInformationFieldSize () const
 {
   uint8_t retval = 1 //Flags
-      + 1 //Hopcount
-      + 1 //TTL
-      + 4 //PREQ ID
-      + 6 //Source address (originator)
-      + 4 //Originator seqno
-      + 4 //Lifetime
-      + 4 //metric
-      + 1; //destination count
+    + 1   //Hopcount
+    + 1   //TTL
+    + 4   //PREQ ID
+    + 6   //Source address (originator)
+    + 4   //Originator seqno
+    + 4   //Lifetime
+    + 4   //metric
+    + 1;   //destination count
   if (m_destCount > m_maxSize)
     {
       retval += (m_maxSize * 11);
@@ -338,10 +338,10 @@ IePreq::GetDestinationList ()
 }
 void
 IePreq::AddDestinationAddressElement (bool doFlag, bool rfFlag, Mac48Address dest_address,
-    uint32_t dest_seq_number)
+                                      uint32_t dest_seq_number)
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i
-      != m_destinations.end (); i++)
+       != m_destinations.end (); i++)
     {
       if ((*i)->GetDestinationAddress () == dest_address)
         {
@@ -360,7 +360,7 @@ void
 IePreq::DelDestinationAddressElement (Mac48Address dest_address)
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin (); i
-      != m_destinations.end (); i++)
+       != m_destinations.end (); i++)
     {
       if ((*i)->GetDestinationAddress () == dest_address)
         {
@@ -374,7 +374,7 @@ void
 IePreq::ClearDestinationAddressElements ()
 {
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j
-      != m_destinations.end (); j++)
+       != m_destinations.end (); j++)
     {
       (*j) = 0;
     }
@@ -385,15 +385,15 @@ bool
 operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
 {
   return (a.m_do == b.m_do && a.m_rf == b.m_rf && a.m_usn == b.m_usn && a.m_destinationAddress
-      == b.m_destinationAddress && a.m_destSeqNumber == b.m_destSeqNumber);
+          == b.m_destinationAddress && a.m_destSeqNumber == b.m_destSeqNumber);
 }
 bool
 operator== (const IePreq & a, const IePreq & b)
 {
   bool ok = (a.m_flags == b.m_flags && a.m_hopCount == b.m_hopCount && a.m_ttl == b.m_ttl && a.m_preqId
-      == b.m_preqId && a.m_originatorAddress == b.m_originatorAddress && a.m_originatorSeqNumber
-      == b.m_originatorSeqNumber && a.m_lifetime == b.m_lifetime && a.m_metric == b.m_metric && a.m_destCount
-      == b.m_destCount);
+             == b.m_preqId && a.m_originatorAddress == b.m_originatorAddress && a.m_originatorSeqNumber
+             == b.m_originatorSeqNumber && a.m_lifetime == b.m_lifetime && a.m_metric == b.m_metric && a.m_destCount
+             == b.m_destCount);
 
   if (!ok)
     {

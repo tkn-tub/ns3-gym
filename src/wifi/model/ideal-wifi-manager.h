@@ -3,7 +3,7 @@
  * Copyright (c) 2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,19 +29,20 @@ namespace ns3 {
 
 /**
  * \brief Ideal rate control algorithm
+ * \ingroup wifi
  *
  * This class implements an 'ideal' rate control algorithm
  * similar to RBAR in spirit (see <i>A rate-adaptive MAC
  * protocol for multihop wireless networks</i> by G. Holland,
  * N. Vaidya, and P. Bahl.): every station keeps track of the
  * snr of every packet received and sends back this snr to the
- * original transmitter by an out-of-band mechanism. Each 
+ * original transmitter by an out-of-band mechanism. Each
  * transmitter keeps track of the last snr sent back by a receiver
  * and uses it to pick a transmission mode based on a set
- * of snr thresholds built from a target ber and transmission 
+ * of snr thresholds built from a target ber and transmission
  * mode-specific snr/ber curves.
  */
-class IdealWifiManager : public WifiRemoteStationManager 
+class IdealWifiManager : public WifiRemoteStationManager
 {
 public:
   static TypeId GetTypeId (void);
@@ -52,8 +53,8 @@ public:
 
 private:
   // overriden from base class
-  virtual WifiRemoteStation *DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station, 
+  virtual WifiRemoteStation* DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
   virtual void DoReportDataFailed (WifiRemoteStation *station);

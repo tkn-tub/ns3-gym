@@ -51,7 +51,7 @@ class ArpCache : public Object
 private:
   ArpCache (ArpCache const &);
   ArpCache& operator= (ArpCache const &);
-  
+
 public:
   static TypeId GetTypeId (void);
   class Entry;
@@ -71,7 +71,7 @@ public:
    * \return the Ipv4Interface that this ARP cache is associated with
    */
   Ptr<Ipv4Interface> GetInterface (void) const;
-  
+
   void SetAliveTimeout (Time aliveTimeout);
   void SetDeadTimeout (Time deadTimeout);
   void SetWaitReplyTimeout (Time waitReplyTimeout);
@@ -87,7 +87,7 @@ public:
    * \param arpRequestCallback Callback for transmitting an Arp request.
    */
   void SetArpRequestCallback (Callback<void, Ptr<const ArpCache>, 
-                             Ipv4Address> arpRequestCallback);
+                                       Ipv4Address> arpRequestCallback);
   /**
    * This method will schedule a timeout at WaitReplyTimeout interval
    * in the future, unless a timer is already running for the cache,
@@ -114,13 +114,13 @@ public:
    * \brief A record that that holds information about an ArpCache entry
    */
   class Entry {
-  public:
+public:
     /**
      * \brief Constructor
      * \param arp The ArpCache this entry belongs to
      */
     Entry (ArpCache *arp);
-    
+
     /**
      * \brief Changes the state of this entry to dead
      */
@@ -150,7 +150,7 @@ public:
      * \return True if the state of this entry is wait_reply; false otherwise.
      */
     bool IsWaitReply (void);
-    
+
     /**
      * \return The MacAddress of this entry
      */
@@ -189,7 +189,7 @@ public:
      */
     void ClearRetries (void);
 
-  private:
+private:
     enum ArpCacheEntryState_e {
       ALIVE,
       WAIT_REPLY,

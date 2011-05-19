@@ -25,8 +25,15 @@
 
 namespace ns3 {
 
-  
+
 /**
+ * \defgroup  visualizer Visualizer
+ *
+ */
+
+/**
+ * \ingroup visualizer
+ *
  * \brief A replacement simulator that starts the visualizer
  * \internal
  *
@@ -69,7 +76,7 @@ public:
 protected:
   void DoDispose ();
   void NotifyConstructionCompleted (void);
-  
+
 private:
   Ptr<SimulatorImpl> GetSim ();
   Ptr<SimulatorImpl> m_simulator;

@@ -53,12 +53,12 @@ ArpHeader::SetReply (Address sourceHardwareAddress,
 bool 
 ArpHeader::IsRequest (void) const
 {
-  return (m_type == ARP_TYPE_REQUEST)?true:false;
+  return (m_type == ARP_TYPE_REQUEST) ? true : false;
 }
 bool 
 ArpHeader::IsReply (void) const
 {
-  return (m_type == ARP_TYPE_REPLY)?true:false;
+  return (m_type == ARP_TYPE_REPLY) ? true : false;
 }
 Address 
 ArpHeader::GetSourceHardwareAddress (void)
@@ -88,7 +88,7 @@ ArpHeader::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ArpHeader")
     .SetParent<Header> ()
     .AddConstructor<ArpHeader> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -105,7 +105,7 @@ ArpHeader::Print (std::ostream &os) const
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest ipv4: " << m_ipv4Dest
-        ;
+      ;
     } 
   else 
     {
@@ -115,7 +115,7 @@ ArpHeader::Print (std::ostream &os) const
          << "source ipv4: " << m_ipv4Source << " "
          << "dest mac: " << m_macDest << " "
          << "dest ipv4: " <<m_ipv4Dest
-        ;
+      ;
     }
 }
 uint32_t 

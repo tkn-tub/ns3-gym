@@ -40,31 +40,32 @@ Ipv4Header::Ipv4Header ()
     m_fragmentOffset (0),
     m_checksum(0),
     m_goodChecksum (true)
-{}
+{
+}
 
-void 
+void
 Ipv4Header::EnableChecksum (void)
 {
   m_calcChecksum = true;
 }
 
-void 
+void
 Ipv4Header::SetPayloadSize (uint16_t size)
 {
   m_payloadSize = size;
 }
-uint16_t 
+uint16_t
 Ipv4Header::GetPayloadSize (void) const
 {
   return m_payloadSize;
 }
 
-uint16_t 
+uint16_t
 Ipv4Header::GetIdentification (void) const
 {
   return m_identification;
 }
-void 
+void
 Ipv4Header::SetIdentification (uint16_t identification)
 {
   m_identification = identification;
@@ -137,7 +138,7 @@ Ipv4Header::GetTtl (void) const
 {
   return m_ttl;
 }
-  
+
 uint8_t 
 Ipv4Header::GetProtocol (void) const
 {
@@ -184,7 +185,7 @@ Ipv4Header::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Ipv4Header")
     .SetParent<Header> ()
     .AddConstructor<Ipv4Header> ()
-    ;
+  ;
   return tid;
 }
 TypeId 
@@ -227,7 +228,7 @@ Ipv4Header::Print (std::ostream &os) const
      << "length: " << (m_payloadSize + 5 * 4)
      << " " 
      << m_source << " > " << m_destination
-    ;
+  ;
 }
 uint32_t 
 Ipv4Header::GetSerializedSize (void) const
@@ -239,7 +240,7 @@ void
 Ipv4Header::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  
+
   uint8_t verIhl = (4 << 4) | (5);
   i.WriteU8 (verIhl);
   i.WriteU8 (m_tos);

@@ -285,7 +285,7 @@ DsdvManetExample::InstallInternetStack (std::string tr_name)
   dsdv.Set ("PeriodicUpdateInterval", TimeValue (Seconds (m_periodicUpdateInterval)));
   dsdv.Set ("SettlingTime", TimeValue (Seconds (m_settlingTime)));
   InternetStackHelper stack;
-  stack.SetRoutingHelper (dsdv);
+  stack.SetRoutingHelper (dsdv); // has effect on the next Install ()
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");

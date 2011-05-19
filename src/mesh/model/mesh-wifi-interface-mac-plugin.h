@@ -30,7 +30,7 @@
 namespace ns3 {
 
 class MeshWifiInterfaceMac;
-  
+
 /**
  * \ingroup mesh
  * 
@@ -61,7 +61,7 @@ public:
   virtual bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to) = 0;
   /**
    * \brief Update beacon before it will be formed and sent
-   *  
+   *
    * TODO define when MAC call this
    */
   virtual void UpdateBeacon (MeshWifiBeacon & beacon) const = 0;

@@ -28,7 +28,7 @@ namespace ns3 {
 class UdpL4Protocol;
 
 /**
- * \ingroup internetStack
+ * \ingroup internet
  * \defgroup udp Udp
  *
  * This  is  an  implementation of the User Datagram Protocol described in

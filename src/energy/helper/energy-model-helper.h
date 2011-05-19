@@ -35,10 +35,12 @@
 namespace ns3 {
 
 /**
+ * \ingroup energy
  * \brief Creates EnergySource objects.
  *
  * This class creates and installs an energy source onto network nodes. Only a
  * single source can exist on a network node.
+ *
  */
 class EnergySourceHelper
 {
@@ -101,6 +103,7 @@ private:
 
 
 /**
+ * \ingroup energy
  * \brief Creates DeviceEnergyModel objects.
  *
  * This class helps to create and install DeviceEnergyModel onto NetDevice. A
@@ -108,6 +111,7 @@ private:
  * Note that DeviceEnergyModel objects are *not* aggregated onto the node. They
  * can be accessed through the EnergySource object, which *is* aggregated onto
  * the node.
+ *
  */
 class DeviceEnergyModelHelper
 {

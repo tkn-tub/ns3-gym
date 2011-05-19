@@ -3,7 +3,7 @@
  * Copyright (c) 2010 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ static bool g_verbose = false;
 
 void
 PhyTxStartTrace (std::string context, Ptr<const Packet> p)
-{  
+{
   if (g_verbose)
     {
       std::cout << context << " PHY TX START p: " << p << std::endl;
@@ -57,7 +57,7 @@ PhyTxStartTrace (std::string context, Ptr<const Packet> p)
 
 void
 PhyTxEndTrace (std::string context, Ptr<const Packet> p)
-{  
+{
   if (g_verbose)
     {
       std::cout << context << " PHY TX END p: " << p << std::endl;
@@ -69,7 +69,7 @@ PhyRxStartTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX START p:" << p << std::endl; 
+      std::cout << context << " PHY RX START p:" << p << std::endl;
     }
 }
 
@@ -78,7 +78,7 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END OK p:" << p << std::endl; 
+      std::cout << context << " PHY RX END OK p:" << p << std::endl;
     }
 }
 
@@ -87,7 +87,7 @@ PhyRxEndErrorTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END ERROR p:" << p << std::endl; 
+      std::cout << context << " PHY RX END ERROR p:" << p << std::endl;
     }
 }
 
@@ -103,7 +103,7 @@ ReceivePacket (Ptr<Socket> socket)
     }
   if (g_verbose)
     {
-      std::cout << "SOCKET received " << bytes << " bytes" <<std::endl; 
+      std::cout << "SOCKET received " << bytes << " bytes" << std::endl;
     }
 }
 
@@ -122,7 +122,7 @@ int main (int argc, char** argv)
   CommandLine cmd;
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
   cmd.Parse (argc, argv);
-  
+
   NodeContainer c;
   c.Create (2);
 
@@ -134,8 +134,8 @@ int main (int argc, char** argv)
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   mobility.Install (c);
-  
-   
+
+
   SpectrumChannelHelper channelHelper = SpectrumChannelHelper::Default ();
   Ptr<SpectrumChannel> channel = channelHelper.Create ();
 
@@ -143,17 +143,17 @@ int main (int argc, char** argv)
 
   double txPower = 0.1; // Watts
   uint32_t channelNumber = 1;
-  Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);  
-  
+  Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);
+
   // for the noise, we use the Power Spectral Density of thermal noise
-  // at room temperature. The value of the PSD will be constant over the band of interest.  
+  // at room temperature. The value of the PSD will be constant over the band of interest.
   const double k = 1.381e-23; //Boltzmann's constant
   const double T = 290; // temperature in Kelvin
-  double noisePsdValue = k*T; // watts per hertz
-  Ptr<SpectrumValue> noisePsd = sf.CreateConstant (noisePsdValue);   
+  double noisePsdValue = k * T; // watts per hertz
+  Ptr<SpectrumValue> noisePsd = sf.CreateConstant (noisePsdValue);
 
   AdhocAlohaNoackIdealPhyHelper deviceHelper;
-  deviceHelper.SetChannel(channel);
+  deviceHelper.SetChannel (channel);
   deviceHelper.SetTxPowerSpectralDensity (txPsd);
   deviceHelper.SetNoisePowerSpectralDensity (noisePsd);
   deviceHelper.SetPhyAttribute ("Rate", DataRateValue (DataRate ("1Mbps")));
@@ -163,7 +163,7 @@ int main (int argc, char** argv)
   packetSocket.Install (c);
 
   PacketSocketAddress socket;
-  socket.SetSingleDevice(devices.Get (0)->GetIfIndex ());
+  socket.SetSingleDevice (devices.Get (0)->GetIfIndex ());
   socket.SetPhysicalAddress (devices.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 
@@ -176,7 +176,7 @@ int main (int argc, char** argv)
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (0.1));
   apps.Stop (Seconds (0.104));
-  
+
   Ptr<Socket> recvSink = SetupPacketReceive (c.Get (1));
 
   Simulator::Stop (Seconds (10.0));

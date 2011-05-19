@@ -35,6 +35,10 @@ class Node;
 class NetDevice;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class SpectrumChannelHelper
 {
 public:
@@ -146,6 +150,8 @@ private:
 
 
 /**
+ * \ingroup spectrum
+ *
  * create and configure several SpectrumPhy instances and connect them to a channel.
  */
 class SpectrumPhyHelper

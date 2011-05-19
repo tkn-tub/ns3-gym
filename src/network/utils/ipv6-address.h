@@ -42,7 +42,7 @@ class Mac48Address;
  */
 class Ipv6Address
 {
-public :
+public:
   /**
    * \brief Default constructor.
    */

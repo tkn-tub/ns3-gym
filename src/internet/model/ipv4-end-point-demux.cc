@@ -22,7 +22,7 @@
 #include "ipv4-end-point.h"
 #include "ns3/log.h"
 
-namespace ns3{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4EndPointDemux");
 
@@ -129,7 +129,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
 
 Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
-			     Ipv4Address peerAddress, uint16_t peerPort)
+                             Ipv4Address peerAddress, uint16_t peerPort)
 {
   NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
@@ -178,7 +178,7 @@ Ipv4EndPointDemux::GetAllEndPoints (void)
   EndPoints ret;
 
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
-   {
+    {
       Ipv4EndPoint* endP = *i;
       ret.push_back(endP);
     }
@@ -201,22 +201,22 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   EndPoints retval2; // Matches exact on local port/adder, wildcards on others
   EndPoints retval3; // Matches all but local address
   EndPoints retval4; // Exact match on all 4
-  
+
   NS_LOG_FUNCTION (this << daddr << dport << saddr << sport << incomingInterface);
   NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       Ipv4EndPoint* endP = *i;
       NS_LOG_DEBUG ("Looking at endpoint dport=" << endP->GetLocalPort ()
-                    << " daddr=" << endP->GetLocalAddress ()
-                    << " sport=" << endP->GetPeerPort ()
-                    << " saddr=" << endP->GetPeerAddress ());
+                                                 << " daddr=" << endP->GetLocalAddress ()
+                                                 << " sport=" << endP->GetPeerPort ()
+                                                 << " saddr=" << endP->GetPeerAddress ());
       if (endP->GetLocalPort () != dport) 
         {
           NS_LOG_LOGIC ("Skipping endpoint " << &endP
-                        << " because endpoint dport "
-                        << endP->GetLocalPort ()
-                        << " does not match packet dport " << dport);
+                                             << " because endpoint dport "
+                                             << endP->GetLocalPort ()
+                                             << " does not match packet dport " << dport);
           continue;
         }
       if (endP->GetBoundNetDevice ())
@@ -224,9 +224,9 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
           if (endP->GetBoundNetDevice () != incomingInterface->GetDevice ())
             {
               NS_LOG_LOGIC ("Skipping endpoint " << &endP
-                            << " because endpoint is bound to specific device and"
-                            << endP->GetBoundNetDevice ()
-                            << " does not match packet device " << incomingInterface->GetDevice ());
+                                                 << " because endpoint is bound to specific device and"
+                                                 << endP->GetBoundNetDevice ()
+                                                 << " does not match packet device " << incomingInterface->GetDevice ());
               continue;
             }
         }
@@ -236,7 +236,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
         {
           Ipv4InterfaceAddress addr = incomingInterface->GetAddress (i);
           if (addr.GetLocal ().CombineMask (addr.GetMask ()) == daddr.CombineMask (addr.GetMask ()) &&
-            daddr.IsSubnetDirectedBroadcast (addr.GetMask ()))
+              daddr.IsSubnetDirectedBroadcast (addr.GetMask ()))
             {
               subnetDirected = true;
               incomingInterfaceAddr = addr.GetLocal ();
@@ -272,7 +272,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
         continue;
       if (!(remoteAddressMatchesExact || remoteAddressMatchesWildCard))
         continue;
-      
+
       // Now figure out which return list to add this one to
       if (localAddressMatchesWildCard &&
           remotePeerMatchesWildCard &&
@@ -282,7 +282,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
         }
       if ((localAddressMatchesExact || (isBroadcast && localAddressMatchesWildCard))&&
           remotePeerMatchesWildCard &&
-           remoteAddressMatchesWildCard)
+          remoteAddressMatchesWildCard)
         { // Only local port and local address matches exactly
           retval2.push_back(endP);
         }
@@ -333,11 +333,11 @@ Ipv4EndPointDemux::SimpleLookup (Ipv4Address daddr,
       uint32_t tmp = 0;
       if ((*i)->GetLocalAddress () == Ipv4Address::GetAny ()) 
         {
-          tmp ++;
+          tmp++;
         }
       if ((*i)->GetPeerAddress () == Ipv4Address::GetAny ()) 
         {
-          tmp ++;
+          tmp++;
         }
       if (tmp < genericity) 
         {
@@ -364,7 +364,7 @@ Ipv4EndPointDemux::AllocateEphemeralPort (void)
         {
           return port;
         }
-  } while (port != m_ephemeral);
+    } while (port != m_ephemeral);
   return 0;
 }
 

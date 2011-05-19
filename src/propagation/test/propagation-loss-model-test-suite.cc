@@ -136,10 +136,10 @@ class TwoRayGroundPropagationLossModelTestCase : public TestCase
 public:
   TwoRayGroundPropagationLossModelTestCase ();
   virtual ~TwoRayGroundPropagationLossModelTestCase ();
-  
+
 private:
   virtual void DoRun (void);
-  
+
   typedef struct
   {
     Vector m_position;
@@ -147,13 +147,13 @@ private:
     double m_pr;  // W
     double m_tolerance;
   } TestVector;
-  
+
   TestVectors<TestVector> m_testVectors;
 };
 
 TwoRayGroundPropagationLossModelTestCase::TwoRayGroundPropagationLossModelTestCase ()
-: TestCase ("Check to see that the ns-3 TwoRayGround propagation loss model provides correct received power"),
-m_testVectors ()
+  : TestCase ("Check to see that the ns-3 TwoRayGround propagation loss model provides correct received power"),
+    m_testVectors ()
 {
 }
 
@@ -167,15 +167,15 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   // wavelength at 2.4 GHz is 0.125m
   Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::Lambda", DoubleValue (0.125));
   Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::SystemLoss", DoubleValue (1.0));
-  
+
   // set antenna height to 1.5m above z coordinate
   Config::SetDefault ("ns3::TwoRayGroundPropagationLossModel::HeightAboveZ", DoubleValue (1.5));
-  
+
   // Select a reference transmit power of 17.0206 dBm
   // Pt = 10^(17.0206/10)/10^3 = .05035702 W
   double txPowerW = 0.05035702;
   double txPowerdBm = 10 * log10 (txPowerW) + 30;
-  
+
   //
   // As with the Friis tests above, we want to test the propagation loss 
   // model calculations at a few chosen distances and compare the results 
@@ -183,39 +183,39 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   // value for agreement to be within 5e-16, as above.
   //
   TestVector testVector;
-  
+
   // Below the Crossover distance use Friis so this test should be the same as that above
   // Crossover = (4 * PI * TxAntennaHeight * RxAntennaHeight) / Lamdba
   // Crossover = (4 * PI * 1.5 * 1.5) / 0.125 = 226.1946m
-  
+
   testVector.m_position = Vector (100, 0, 0);
   testVector.m_pt = txPowerdBm;
   testVector.m_pr = 4.98265e-10;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
+
   // These values are above the crossover distance and therefore use the Two Ray calculation
-  
+
   testVector.m_position = Vector (500, 0, 0);
   testVector.m_pt = txPowerdBm;
   testVector.m_pr = 4.07891862e-12;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
+
   testVector.m_position = Vector (1000, 0, 0);
   testVector.m_pt = txPowerdBm;
   testVector.m_pr = 2.5493241375e-13;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
+
   testVector.m_position = Vector (2000, 0, 0);
   testVector.m_pt = txPowerdBm;
   testVector.m_pr = 1.593327585938e-14;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
+
   // Repeat the tests for non-zero z coordinates
-  
+
   // Pr = (0.05035702 * (1.5*1.5) * (2.5*2.5)) / (500*500*500*500) = 1.13303295e-11
   // dCross = (4 * pi * 1.5 * 2.5) / 0.125 = 376.99m
   testVector.m_position = Vector (500, 0, 1);
@@ -223,7 +223,7 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   testVector.m_pr = 1.13303295e-11;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
+
   // Pr = (0.05035702 * (1.5*1.5) * (5.5*5.5)) / (1000*1000*1000*1000) = 3.42742467375e-12
   // dCross = (4 * pi * 1.5 * 5.5) / 0.125 = 829.38m
   testVector.m_position = Vector (1000, 0, 4);
@@ -231,7 +231,7 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   testVector.m_pr = 3.42742467375e-12;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
+
   // Pr = (0.05035702 * (1.5*1.5) * (11.5*11.5)) / (2000*2000*2000*2000) = 9.36522547734e-13
   // dCross = (4 * pi * 1.5 * 11.5) / 0.125 = 1734.15m
   testVector.m_position = Vector (2000, 0, 10);
@@ -239,23 +239,23 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
   testVector.m_pr = 9.36522547734e-13;
   testVector.m_tolerance = 5e-16;
   m_testVectors.Add (testVector);
-  
-  
+
+
   // Now, check that the received power values are expected
-  
+
   Ptr<MobilityModel> a = CreateObject<ConstantPositionMobilityModel> (); 
   a->SetPosition (Vector (0,0,0));
   Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> (); 
-  
+
   Ptr<TwoRayGroundPropagationLossModel> lossModel = CreateObject<TwoRayGroundPropagationLossModel> (); 
   for (uint32_t i = 0; i < m_testVectors.GetN (); ++i)
-  {
-    testVector = m_testVectors.Get (i);
-    b->SetPosition (testVector.m_position);
-    double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
-    double resultW =   pow (10.0, resultdBm / 10.0) / 1000;
-    NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
-  }
+    {
+      testVector = m_testVectors.Get (i);
+      b->SetPosition (testVector.m_position);
+      double resultdBm = lossModel->CalcRxPower (testVector.m_pt, a, b);
+      double resultW =   pow (10.0, resultdBm / 10.0) / 1000;
+      NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
+    }
 }
 
 
@@ -373,17 +373,17 @@ MatrixPropagationLossModelTestCase::DoRun (void)
     {
       m[i] = CreateObject<ConstantPositionMobilityModel> ();
     }
-  
+
   MatrixPropagationLossModel loss;
   // no loss by default
-  loss.SetDefaultLoss (0);       
+  loss.SetDefaultLoss (0);
   // -10 dB for 0 -> 1 and 1 -> 0
   loss.SetLoss (m[0], m[1], 10);
   // -30 dB from 0 to 2 and -100 dB from 2 to 0
-  loss.SetLoss (m[0], m[2], 30, /*symmetric = */false);
-  loss.SetLoss (m[2], m[0], 100, /*symmetric = */false);
+  loss.SetLoss (m[0], m[2], 30, /*symmetric = */ false);
+  loss.SetLoss (m[2], m[0], 100, /*symmetric = */ false);
   // default from 1 to 2
-  
+
   NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[0], m[1]), -10, "Loss 0 -> 1 incorrect");
   NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[1], m[0]), -10, "Loss 1 -> 0 incorrect");
   NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[0], m[2]), -30, "Loss 0 -> 2 incorrect");

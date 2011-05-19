@@ -27,8 +27,15 @@
 #include "ipv4-interface-container.h"
 
 namespace ns3 {
-  
+
 /**
+ * \defgroup csmalayout CSMA Layout Helpers
+ *
+ */
+
+/**
+ * \ingroup csmalayout
+ *
  * \brief A helper to make it easier to create a star topology
  * with Csma links
  */

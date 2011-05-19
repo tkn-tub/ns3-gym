@@ -40,6 +40,7 @@ class DcfManager;
 
 /**
  * \brief base class for all MAC-level wifi objects.
+ * \ingroup wifi
  *
  * This class encapsulates all the low-level MAC functionality
  * DCA, EDCA, etc) and all the high-level MAC functionality

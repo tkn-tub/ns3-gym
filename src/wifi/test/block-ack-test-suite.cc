@@ -3,7 +3,7 @@
  * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,12 +39,12 @@ NS_LOG_COMPONENT_DEFINE ("BlockAckTest");
 
 /* ----- = old packets
  * +++++ = new packets
- *  
- *  CASE A: startSeq < endSeq  
+ *
+ *  CASE A: startSeq < endSeq
  *                        -  -   +
  *  initial buffer state: 0 16 56000
  *
- * 
+ *
  *    0                            4095
  *    |------|++++++++++++++++|-----|
  *           ^                ^
@@ -54,7 +54,7 @@ NS_LOG_COMPONENT_DEFINE ("BlockAckTest");
  *  second received packet's sequence control = 63984 (seqNum = 3999, fragNum = 0) +
  *  4001 is older seq number so this packet should be inserted at the buffer's begin.
  *  3999 is previous element of older of new packets: it should be inserted at the end of buffer.
- *  
+ *
  *  expected buffer state: 64016 0 16 56000 63984
  *
  */
@@ -79,7 +79,8 @@ PacketBufferingCaseA::PacketBufferingCaseA ()
 }
 
 PacketBufferingCaseA::~PacketBufferingCaseA ()
-{}
+{
+}
 
 void
 PacketBufferingCaseA::DoRun (void)
@@ -91,20 +92,26 @@ PacketBufferingCaseA::DoRun (void)
   m_buffer.push_back (56000);
 
   uint16_t endSeq = 4000;
-  
+
   uint16_t receivedSeq = 4001 * 16;
   uint32_t mappedSeq = QosUtilsMapSeqControlToUniqueInteger (receivedSeq, endSeq);
-  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++);
+  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++)
     {
-      m_buffer.insert (i, receivedSeq);
+      ;
     }
-  
+  {
+    m_buffer.insert (i, receivedSeq);
+  }
+
   receivedSeq = 3999 * 16;
   mappedSeq = QosUtilsMapSeqControlToUniqueInteger (receivedSeq, endSeq);
-  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++);
+  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++)
     {
-      m_buffer.insert (i, receivedSeq);
+      ;
     }
+  {
+    m_buffer.insert (i, receivedSeq);
+  }
 
   for (i = m_buffer.begin (), j = m_expectedBuffer.begin (); i != m_buffer.end (); i++, j++)
     {
@@ -114,7 +121,7 @@ PacketBufferingCaseA::DoRun (void)
 
 /* ----- = old packets
  * +++++ = new packets
- *  
+ *
  *  CASE B: startSeq > endSeq
  *                         -    +    +
  *  initial buffer state: 256 64000 16
@@ -131,7 +138,7 @@ PacketBufferingCaseA::DoRun (void)
  *  240 is an old packet should be inserted at the buffer's begin.
  *  241 is an old packet: second segment of the above packet.
  *  4050 is a new packet: it should be inserted between 64000 and 16.
- *  
+ *
  *  expected buffer state: 240 241 256 64000 64800 16
  *
  */
@@ -157,7 +164,8 @@ PacketBufferingCaseB::PacketBufferingCaseB ()
 }
 
 PacketBufferingCaseB::~PacketBufferingCaseB ()
-{}
+{
+}
 
 void
 PacketBufferingCaseB::DoRun (void)
@@ -172,24 +180,33 @@ PacketBufferingCaseB::DoRun (void)
 
   uint16_t receivedSeq = 15 * 16;
   uint32_t mappedSeq = QosUtilsMapSeqControlToUniqueInteger (receivedSeq, endSeq);
-  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++);
+  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++)
     {
-      m_buffer.insert (i, receivedSeq);
+      ;
     }
+  {
+    m_buffer.insert (i, receivedSeq);
+  }
 
   receivedSeq = 15 * 16 + 1;
   mappedSeq = QosUtilsMapSeqControlToUniqueInteger (receivedSeq, endSeq);
-  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++);
+  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++)
     {
-      m_buffer.insert (i, receivedSeq);
+      ;
     }
+  {
+    m_buffer.insert (i, receivedSeq);
+  }
 
   receivedSeq = 4050 * 16;
   mappedSeq = QosUtilsMapSeqControlToUniqueInteger (receivedSeq, endSeq);
-  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++);
+  for (i = m_buffer.begin (); i != m_buffer.end () && QosUtilsMapSeqControlToUniqueInteger ((*i), endSeq) < mappedSeq; i++)
     {
-      m_buffer.insert (i, receivedSeq);
+      ;
     }
+  {
+    m_buffer.insert (i, receivedSeq);
+  }
 
   for (i = m_buffer.begin (), j = m_expectedBuffer.begin (); i != m_buffer.end (); i++, j++)
     {
@@ -209,13 +226,14 @@ private:
 
 CtrlBAckResponseHeaderTest::CtrlBAckResponseHeaderTest ()
   : TestCase ("Check the correctness of block ack compressed bitmap")
-{}
+{
+}
 
 void
 CtrlBAckResponseHeaderTest::DoRun (void)
 {
   m_blockAckHdr.SetType (COMPRESSED_BLOCK_ACK);
-  
+
   //Case 1: startSeq < endSeq
   //          179        242
   m_blockAckHdr.SetStartingSequence (179);
@@ -235,7 +253,7 @@ CtrlBAckResponseHeaderTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (1500), false, "error in compressed bitmap");
 
   m_blockAckHdr.ResetBitmap ();
-  
+
   //Case 2: startSeq > endSeq
   //          4090       58
   m_blockAckHdr.SetStartingSequence (4090);

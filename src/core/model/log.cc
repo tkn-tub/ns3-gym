@@ -76,7 +76,7 @@ PrintList::PrintList ()
         }
       cur = next + 1;
     }
-#endif  
+#endif
 }
 
 
@@ -261,11 +261,11 @@ LogComponentEnable (char const *name, enum LogLevel level)
        i++)
     {
       if (i->first.compare (name) == 0) 
-	{
-	  i->second->Enable (level);
-	  break;
-	}
-    }  
+        {
+          i->second->Enable (level);
+          break;
+        }
+    }
 }
 
 void 
@@ -277,7 +277,7 @@ LogComponentEnableAll (enum LogLevel level)
        i++)
     {
       i->second->Enable (level);
-    }  
+    }
 }
 
 void 
@@ -289,11 +289,11 @@ LogComponentDisable (char const *name, enum LogLevel level)
        i++)
     {
       if (i->first.compare (name) == 0) 
-	{
-	  i->second->Disable (level);
-	  break;
-	}
-    }  
+        {
+          i->second->Disable (level);
+          break;
+        }
+    }
 }
 
 void 
@@ -305,7 +305,7 @@ LogComponentDisableAll (enum LogLevel level)
        i++)
     {
       i->second->Disable (level);
-    }  
+    }
 }
 
 void 
@@ -376,6 +376,7 @@ LogNodePrinter LogGetNodePrinter(void)
 ParameterLogger::ParameterLogger (std::ostream &os)
   : m_itemNumber (0),
     m_os (os)
-{}
+{
+}
 
 } // namespace ns3

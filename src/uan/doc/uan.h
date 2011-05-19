@@ -19,7 +19,6 @@
  */
 
 /**
- * \ingroup devices
  * \defgroup UAN UAN Models
  *
  * \section UanOverview UAN Framework Overview

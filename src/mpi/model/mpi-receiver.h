@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup mpi
+ *
  * Class to aggregate to a NetDevice if it supports MPI capability
  * 
  * MpiInterface::ReceiveMessages () needs to send packets to a NetDevice

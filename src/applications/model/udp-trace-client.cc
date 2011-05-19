@@ -40,16 +40,16 @@ NS_LOG_COMPONENT_DEFINE ("UdpTraceClient");
 NS_OBJECT_ENSURE_REGISTERED (UdpTraceClient);
 
 struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
-  {0, 534, 'I'},
-  {40, 1542, 'P'},
-  {120, 134, 'B'},
-  {80, 390, 'B'},
-  {240, 765, 'P'},
-  {160, 407, 'B'},
-  {200, 504, 'B'},
-  {360, 903, 'P'},
-  {280, 421, 'B'},
-  {320, 587, 'B'}
+  { 0, 534, 'I'},
+  { 40, 1542, 'P'},
+  { 120, 134, 'B'},
+  { 80, 390, 'B'},
+  { 240, 765, 'P'},
+  { 160, 407, 'B'},
+  { 200, 504, 'B'},
+  { 360, 903, 'P'},
+  { 280, 421, 'B'},
+  { 320, 587, 'B'}
 };
 
 TypeId
@@ -79,7 +79,7 @@ UdpTraceClient::GetTypeId (void)
                    MakeStringAccessor (&UdpTraceClient::SetTraceFile),
                    MakeStringChecker ())
 
-    ;
+  ;
   return tid;
 }
 
@@ -93,7 +93,7 @@ UdpTraceClient::UdpTraceClient ()
 }
 
 UdpTraceClient::UdpTraceClient (Ipv4Address ip, uint16_t port,
-                                        char *traceFile)
+                                char *traceFile)
 {
   NS_LOG_FUNCTION (this);
   m_sent = 0;
@@ -259,12 +259,12 @@ UdpTraceClient::SendPacket (uint32_t size)
     {
       ++m_sent;
       NS_LOG_INFO ("Sent " << size << " bytes to "
-                   << m_peerAddress);
+                           << m_peerAddress);
     }
   else
     {
       NS_LOG_INFO ("Error while sending " << size << " bytes to "
-                   << m_peerAddress);
+                                          << m_peerAddress);
     }
 }
 

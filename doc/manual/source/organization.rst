@@ -27,10 +27,9 @@ on modules beneath them in the figure.
 
 We first describe the core of the simulator; those components that are 
 common across all protocol, hardware, and environmental models. 
-The simulation core is implemented
-in ``src/core``, and the core is used to build the simulation engine
-``src/simulator``. Packets are fundamental objects in a network simulator
-and are implemented in ``src/common``. These three simulation modules by
+The simulation core is implemented in ``src/core``. Packets are 
+fundamental objects in a network simulator
+and are implemented in ``src/network``. These two simulation modules by
 themselves are intended to comprise a generic simulation core that can be
 used by different kinds of networks, not just Internet-based networks.  The
 above modules of |ns3| are independent of specific network and device

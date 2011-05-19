@@ -28,7 +28,6 @@
 namespace ns3 {
 
 /**
- * \ingroup topology
  * \brief Helper class which makes it easier to configure and use a generic TopologyReader.
  */
 class TopologyReaderHelper

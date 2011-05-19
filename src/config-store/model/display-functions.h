@@ -145,6 +145,6 @@ create_view_config_default (GtkTreeStore *model);
 gboolean
 clean_model_callback_config_default (GtkTreeModel *model, GtkTreePath *path,
                                      GtkTreeIter *iter, gpointer data);
-}//end namespace ns3
+} //end namespace ns3
 
 #endif

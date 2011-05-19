@@ -55,7 +55,7 @@ HwmpRtable::DoDispose ()
 }
 void
 HwmpRtable::AddReactivePath (Mac48Address destination, Mac48Address retransmitter, uint32_t interface,
-    uint32_t metric, Time lifetime, uint32_t seqnum)
+                             uint32_t metric, Time lifetime, uint32_t seqnum)
 {
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i == m_routes.end ())
@@ -73,7 +73,7 @@ HwmpRtable::AddReactivePath (Mac48Address destination, Mac48Address retransmitte
 }
 void
 HwmpRtable::AddProactivePath (uint32_t metric, Mac48Address root, Mac48Address retransmitter,
-    uint32_t interface, Time lifetime, uint32_t seqnum)
+                              uint32_t interface, Time lifetime, uint32_t seqnum)
 {
   m_root.root = root;
   m_root.retransmitter = retransmitter;
@@ -84,7 +84,7 @@ HwmpRtable::AddProactivePath (uint32_t metric, Mac48Address root, Mac48Address r
 }
 void
 HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
-    Mac48Address precursorAddress, Time lifetime)
+                          Mac48Address precursorAddress, Time lifetime)
 {
   Precursor precursor;
   precursor.interface = precursorInterface;
@@ -162,7 +162,7 @@ HwmpRtable::LookupReactiveExpired (Mac48Address destination)
       return LookupResult ();
     }
   return LookupResult (i->second.retransmitter, i->second.interface, i->second.metric, i->second.seqnum,
-      i->second.whenExpire - Simulator::Now ());
+                       i->second.whenExpire - Simulator::Now ());
 }
 HwmpRtable::LookupResult
 HwmpRtable::LookupProactive ()
@@ -178,7 +178,7 @@ HwmpRtable::LookupResult
 HwmpRtable::LookupProactiveExpired ()
 {
   return LookupResult (m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum,
-      m_root.whenExpire - Simulator::Now ());
+                       m_root.whenExpire - Simulator::Now ());
 }
 std::vector<HwmpProtocol::FailedDestination>
 HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
@@ -186,7 +186,7 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
   HwmpProtocol::FailedDestination dst;
   std::vector<HwmpProtocol::FailedDestination> retval;
   for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin (); i != m_routes.end (); i++)
-  {
+    {
       if (i->second.retransmitter == peerAddress)
         {
           dst.destination = i->first;
@@ -194,7 +194,7 @@ HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
           dst.seqnum = i->second.seqnum;
           retval.push_back (dst);
         }
-  }
+    }
   //Lookup a path to root
   if (m_root.retransmitter == peerAddress)
     {
@@ -213,7 +213,7 @@ HwmpRtable::GetPrecursors (Mac48Address destination)
   if (route != m_routes.end ())
     {
       for (std::vector<Precursor>::const_iterator i = route->second.precursors.begin ();
-          i != route->second.precursors.end (); i++)
+           i != route->second.precursors.end (); i++)
         {
           if (i->whenExpire > Simulator::Now ())
             {
@@ -227,7 +227,7 @@ bool
 HwmpRtable::LookupResult::operator== (const HwmpRtable::LookupResult & o) const
 {
   return (retransmitter == o.retransmitter && ifIndex == o.ifIndex && metric == o.metric && seqnum
-      == o.seqnum);
+          == o.seqnum);
 }
 HwmpRtable::LookupResult::LookupResult (Mac48Address r, uint32_t i, uint32_t m, uint32_t s, Time l) :
   retransmitter (r), ifIndex (i), metric (m), seqnum (s), lifetime (l)
@@ -237,7 +237,7 @@ bool
 HwmpRtable::LookupResult::IsValid () const
 {
   return !(retransmitter == Mac48Address::GetBroadcast () && ifIndex == INTERFACE_ANY && metric == MAX_METRIC
-      && seqnum == 0);
+           && seqnum == 0);
 }
 } //namespace dot11s
 } //namespace ns3

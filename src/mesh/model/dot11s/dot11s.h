@@ -51,7 +51,7 @@
  *      and peek all needed information from management frames and information elements from beacons.
  *      - Peer link ns3::dot11s::PeerLink which keeps finite state machine of each peer link, keeps
  *      beacon loss counter and counter of successive transmission failures.
- *      
+ *
  * Procedure of closing peer link is not described detailed in 802.11s draft standard, so in our model
  * the link may be closed by:
  *      - beacon loss (see an appropriate attribute of ns3::dot11s::PeerLink class)

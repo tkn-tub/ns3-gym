@@ -30,6 +30,7 @@ namespace ns3 {
 class SpectrumValue;
 
 /**
+ * \ingroup lte
  * \brief The LteAmc class implements the Adaptive Modulation And Coding Scheme
  * as proposed in 3GPP TSG-RAN WG1 - R1-081483
  * http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip

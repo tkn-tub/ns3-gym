@@ -31,6 +31,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * This class represent a type of signal that can be transmitted by
  * SpectrumPhy instances over a SpectrumChannel. By means of this
  * class a SpectrumPhy is able to recognize which type of signals it
@@ -62,6 +64,10 @@ std::ostream& operator<< (std::ostream& os, const SpectrumType& rhs);
 
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class SpectrumTypeFactory
 {
 

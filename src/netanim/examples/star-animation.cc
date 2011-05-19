@@ -80,7 +80,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Create applications.");
   //
-  // Create a packet sink on the star "hub" to receive packets.  
+  // Create a packet sink on the star "hub" to receive packets.
   // 
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
@@ -103,7 +103,7 @@ main (int argc, char *argv[])
       AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
       onOffHelper.SetAttribute ("Remote", remoteAddress);
       spokeApps.Add (onOffHelper.Install (star.GetSpokeNode (i)));
-  }
+    }
   spokeApps.Start (Seconds (1.0));
   spokeApps.Stop (Seconds (10.0));
 
@@ -115,7 +115,7 @@ main (int argc, char *argv[])
 
   // Set the bounding box for animation
   star.BoundingBox (1, 1, 100, 100);
-  
+
   // Create the animation object and configure for specified output
   AnimationInterface anim;
   if (animPort > 0)

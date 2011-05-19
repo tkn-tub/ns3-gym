@@ -169,8 +169,8 @@ public:
    */
   std::pair<Ptr<Ipv4>, uint32_t> Get (uint32_t i) const;
 
- private:
-  
+private:
+
   typedef std::vector<std::pair<Ptr<Ipv4>,uint32_t> > InterfaceVector;
   InterfaceVector m_interfaces;
 };

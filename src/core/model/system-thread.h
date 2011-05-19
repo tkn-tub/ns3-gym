@@ -154,7 +154,7 @@ public:
    *
    * It is often the case that we want a thread to be off doing work until such
    * time as its job is done.  We then want the thread to exit itself.  This
-   * method allows a thread to query whether or not it should be running.  
+   * method allows a thread to query whether or not it should be running.
    * Typically, the worker thread is running in a forever-loop, and will need to
    * "break" out of that loop to exit -- thus the name.
    *

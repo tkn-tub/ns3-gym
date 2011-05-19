@@ -30,6 +30,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup lte
+ *
  * \brief The DiscreteTimeLossModel class offers a basic implementation
  * for all propagation loss models used for LTE networks
  */

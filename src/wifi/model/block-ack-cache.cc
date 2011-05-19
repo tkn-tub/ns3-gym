@@ -3,7 +3,7 @@
  * Copyright (c) 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -53,7 +53,7 @@ BlockAckCache::UpdateWithMpdu (const WifiMacHeader *hdr)
 
           WINSIZE_ASSERT;
         }
-      m_bitmap[seqNumber] |= (0x0001<<hdr->GetFragmentNumber ());
+      m_bitmap[seqNumber] |= (0x0001 << hdr->GetFragmentNumber ());
     }
 }
 
@@ -91,7 +91,7 @@ BlockAckCache::ResetPortionOfBitmap (uint16_t start, uint16_t end)
   uint32_t i = start;
   for (; i != end; i = (i + 1) % 4096)
     {
-      m_bitmap[i] = 0; 
+      m_bitmap[i] = 0;
     }
   m_bitmap[i] = 0;
 }
@@ -112,7 +112,7 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
   else if (blockAckHeader->IsCompressed ())
     {
       uint32_t i = blockAckHeader->GetStartingSequence ();
-      uint32_t end = ((i + m_winSize) % 4096) - 1; 
+      uint32_t end = ((i + m_winSize) % 4096) - 1;
       for (; i != end; i = (i + 1) % 4096)
         {
           if (m_bitmap[i] == 1)

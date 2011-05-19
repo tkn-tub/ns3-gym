@@ -76,7 +76,7 @@ with --enable-gcov)
 === Extending ns-3 ===
 
 To add new modules:
-  1. Create the module directory under src (or src/devices, or whatever);
+  1. Create the module directory under src;
   2. Add the source files to it;
   3. Add a 'wscript' describing it;
   4. Add the module subdirectory name to the all_modules list in src/wscript.

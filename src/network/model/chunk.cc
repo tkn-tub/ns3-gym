@@ -9,7 +9,7 @@ Chunk::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Chunk")
     .SetParent<ObjectBase> ()
-    ;
+  ;
   return tid;
 }
 

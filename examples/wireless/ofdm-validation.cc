@@ -84,7 +84,7 @@ set style line 5 linewidth 5\n\
 set style line 6 linewidth 5\n\
 set style line 7 linewidth 5\n\
 set style line 8 linewidth 5\n\
-set style increment user");
+set style increment user"                                                                                                                                                                                                                                                                                                                                   );
   yansplot.GenerateOutput (yansfile);
   yansfile.close ();
 
@@ -100,7 +100,7 @@ set style line 5 linewidth 5\n\
 set style line 6 linewidth 5\n\
 set style line 7 linewidth 5\n\
 set style line 8 linewidth 5\n\
-set style increment user");
+set style increment user"                                                                                                                                                                                                                                                                                                                                   );
 
   nistplot.GenerateOutput (nistfile);
   nistfile.close ();

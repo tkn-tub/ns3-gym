@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -64,7 +64,7 @@ private:
   struct Output m_output;
 };
 
-void 
+void
 PsrExperiment::Send (void)
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSize);
@@ -72,21 +72,23 @@ PsrExperiment::Send (void)
   m_tx->SendPacket (p, mode, WIFI_PREAMBLE_SHORT, m_input.txPowerLevel);
 }
 
-void 
+void
 PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
   m_output.received++;
 }
 
 PsrExperiment::PsrExperiment ()
-{}
+{
+}
 PsrExperiment::Input::Input ()
   : distance (5.0),
     txMode ("OfdmRate6Mbps"),
     txPowerLevel (0),
     packetSize (2304),
     nPackets (400)
-{}
+{
+}
 
 struct PsrExperiment::Output
 PsrExperiment::Run (struct PsrExperiment::Input input)
@@ -163,25 +165,25 @@ private:
   struct Output m_output;
 };
 
-void 
+void
 CollisionExperiment::SendA (void) const
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSizeA);
   p->AddByteTag (FlowIdTag (m_flowIdA));
-  m_txA->SendPacket (p, WifiMode (m_input.txModeA), 
-		     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelA);
+  m_txA->SendPacket (p, WifiMode (m_input.txModeA),
+                     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelA);
 }
 
-void 
+void
 CollisionExperiment::SendB (void) const
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSizeB);
   p->AddByteTag (FlowIdTag (m_flowIdB));
-  m_txB->SendPacket (p, WifiMode (m_input.txModeB), 
-		     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelB);
+  m_txB->SendPacket (p, WifiMode (m_input.txModeB),
+                     WIFI_PREAMBLE_SHORT, m_input.txPowerLevelB);
 }
 
-void 
+void
 CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
   FlowIdTag tag;
@@ -197,7 +199,8 @@ CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiMode mode, enum Wif
 }
 
 CollisionExperiment::CollisionExperiment ()
-{}
+{
+}
 CollisionExperiment::Input::Input ()
   : interval (MicroSeconds (0)),
     xA (-5),
@@ -209,7 +212,8 @@ CollisionExperiment::Input::Input ()
     packetSizeA (2304),
     packetSizeB (2304),
     nPackets (400)
-{}
+{
+}
 
 struct CollisionExperiment::Output
 CollisionExperiment::Run (struct CollisionExperiment::Input input)
@@ -284,7 +288,7 @@ static void PrintPsr (int argc, char *argv[])
 
   double psr = output.received;
   psr /= input.nPackets ;
-  
+
   std::cout << psr << std::endl;
 }
 
@@ -299,7 +303,7 @@ static void PrintPsrVsDistance (int argc, char *argv[])
 {
   struct PsrExperiment::Input input;
   CommandLine cmd;
-  cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);  
+  cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
   cmd.AddValue ("PacketSize", "The size of each packet sent", input.packetSize);
@@ -313,7 +317,7 @@ static void PrintPsrVsDistance (int argc, char *argv[])
       input.txMode = "OfdmRate6Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
-    
+
       input.txMode = "OfdmRate9Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
@@ -351,7 +355,7 @@ static void PrintSizeVsRange (int argc, char *argv[])
   double targetPsr = 0.05;
   struct PsrExperiment::Input input;
   CommandLine cmd;
-  cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);  
+  cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
   cmd.AddValue ("TargetPsr", "The psr needed to assume that we are within range", targetPsr);
@@ -362,22 +366,22 @@ static void PrintSizeVsRange (int argc, char *argv[])
       double low = 1.0;
       double high = 200.0;
       while (high - low > precision)
-	{
-	  double middle = low + (high - low) / 2;
-	  struct PsrExperiment::Output output;
-	  PsrExperiment experiment;
-	  input.distance = middle;
-	  output = experiment.Run (input);
-	  double psr = CalcPsr (output, input);
-	  if (psr >= targetPsr)
-	    {
-	      low = middle;
-	    }
-	  else
-	    {
-	      high = middle;
-	    }
-	}
+        {
+          double middle = low + (high - low) / 2;
+          struct PsrExperiment::Output output;
+          PsrExperiment experiment;
+          input.distance = middle;
+          output = experiment.Run (input);
+          double psr = CalcPsr (output, input);
+          if (psr >= targetPsr)
+            {
+              low = middle;
+            }
+          else
+            {
+              high = middle;
+            }
+        }
       std::cout << input.packetSize << " " << input.distance << std::endl;
     }
 }
@@ -396,8 +400,8 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
       CollisionExperiment::Output output;
       input.interval = MicroSeconds (i);
       output = experiment.Run (input);
-      double perA = (output.receivedA+0.0) / (input.nPackets+0.0);
-      double perB = (output.receivedB+0.0) / (input.nPackets+0.0);
+      double perA = (output.receivedA + 0.0) / (input.nPackets + 0.0);
+      double perB = (output.receivedB + 0.0) / (input.nPackets + 0.0);
       std::cout << i << " " << perA << " " << perB << std::endl;
     }
   for (uint32_t i = 100; i < 4000; i += 50)
@@ -406,8 +410,8 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
       CollisionExperiment::Output output;
       input.interval = MicroSeconds (i);
       output = experiment.Run (input);
-      double perA = (output.receivedA+0.0) / (input.nPackets+0.0);
-      double perB = (output.receivedB+0.0) / (input.nPackets+0.0);
+      double perA = (output.receivedA + 0.0) / (input.nPackets + 0.0);
+      double perB = (output.receivedB + 0.0) / (input.nPackets + 0.0);
       std::cout << i << " " << perA << " " << perB << std::endl;
     }
 }
@@ -419,11 +423,11 @@ int main (int argc, char *argv[])
   if (argc <= 1)
     {
       std::cout << "Available experiments: "
-		<< "Psr "
-		<< "SizeVsRange "
-		<< "PsrVsDistance "
-		<< "PsrVsCollisionInterval "
-		<< std::endl;
+                << "Psr "
+                << "SizeVsRange "
+                << "PsrVsDistance "
+                << "PsrVsCollisionInterval "
+                << std::endl;
       return -1;
     }
   std::string type = argv[1];

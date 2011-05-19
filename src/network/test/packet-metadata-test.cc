@@ -47,20 +47,21 @@ HistoryHeaderBase::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HistoryHeaderBase")
     .SetParent<Header> ()
-    ;
+  ;
   return tid;
 }
 
 HistoryHeaderBase::HistoryHeaderBase ()
   : m_ok (true)
-{}
+{
+}
 
-bool 
+bool
 HistoryHeaderBase::IsOk (void) const
 {
   return m_ok;
 }
-void 
+void
 HistoryHeaderBase::ReportError (void)
 {
   m_ok = false;
@@ -83,7 +84,8 @@ public:
 template <int N>
 HistoryHeader<N>::HistoryHeader ()
   : HistoryHeaderBase ()
-{}
+{
+}
 
 template <int N>
 TypeId
@@ -94,7 +96,7 @@ HistoryHeader<N>::GetTypeId (void)
   static TypeId tid = TypeId (oss.str ().c_str ())
     .SetParent<HistoryHeaderBase> ()
     .AddConstructor<HistoryHeader<N> > ()
-    ;
+  ;
   return tid;
 }
 
@@ -153,18 +155,19 @@ HistoryTrailerBase::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HistoryTrailerBase")
     .SetParent<Trailer> ()
-    ;
+  ;
   return tid;
 }
 HistoryTrailerBase::HistoryTrailerBase ()
   : m_ok (true)
-{}
-bool 
+{
+}
+bool
 HistoryTrailerBase::IsOk (void) const
 {
   return m_ok;
 }
-void 
+void
 HistoryTrailerBase::ReportError (void)
 {
   m_ok = false;
@@ -189,7 +192,8 @@ private:
 
 template <int N>
 HistoryTrailer<N>::HistoryTrailer ()
-{}
+{
+}
 
 template <int N>
 TypeId
@@ -200,7 +204,7 @@ HistoryTrailer<N>::GetTypeId (void)
   static TypeId tid = TypeId (oss.str ().c_str ())
     .SetParent<HistoryTrailerBase> ()
     .AddConstructor<HistoryTrailer<N> > ()
-    ;
+  ;
   return tid;
 }
 
@@ -260,10 +264,12 @@ private:
 
 PacketMetadataTest::PacketMetadataTest ()
   : TestCase ("Packet metadata")
-{}
+{
+}
 
 PacketMetadataTest::~PacketMetadataTest ()
-{}
+{
+}
 
 void
 PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...)
@@ -324,7 +330,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     }
 
   for (std::list<int>::iterator i = got.begin (),
-         j = expected.begin (); 
+                                j = expected.begin ();
        i != got.end (); i++, j++)
     {
       NS_ASSERT (j != expected.end ());
@@ -334,7 +340,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
         }
     }
   return;
- error:
+error:
   std::ostringstream failure;
   failure << "PacketMetadata error. Got:\"";
   for (std::list<int>::iterator i = got.begin (); 
@@ -403,7 +409,7 @@ PacketMetadataTest::DoRun (void)
   ADD_TRAILER (p, 100);
   CHECK_HISTORY (p, 2, 10, 100);
 
-  
+
   p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
@@ -598,7 +604,7 @@ PacketMetadataTest::DoRun (void)
 
   p = Create<Packet> (2000);
   CHECK_HISTORY (p, 1, 2000);
-  
+
   p = Create<Packet> ();
   ADD_TRAILER (p, 10);
   ADD_HEADER (p, 5);
@@ -712,7 +718,7 @@ PacketMetadataTest::DoRun (void)
   REM_TRAILER (p1, 5);
   NS_TEST_EXPECT_MSG_EQ (p->GetSize (), 1015, "Correct size");
 
-  
+
   p = Create<Packet> (1510);
   ADD_HEADER (p, 8);
   ADD_HEADER (p, 25);
@@ -829,4 +835,4 @@ PacketMetadataTestSuite::PacketMetadataTestSuite ()
 }
 
 PacketMetadataTestSuite g_packetMetadataTest;
-}//namespace ns3
+} //namespace ns3

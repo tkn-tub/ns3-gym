@@ -32,6 +32,10 @@ namespace ns3 {
 
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class SpectrumErrorModel :  public Object
 {
 public:
@@ -43,6 +47,8 @@ public:
 
 
 /**
+ * \ingroup spectrum
+ *
  * This class implements the error model described in this paper:
  * N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling
  * for ns3", in Proceedings of International Workshop on Network

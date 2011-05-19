@@ -48,8 +48,8 @@ TypeId DropTailQueue::GetTypeId (void)
                    UintegerValue (100 * 65535),
                    MakeUintegerAccessor (&DropTailQueue::m_maxBytes),
                    MakeUintegerChecker<uint32_t> ())
-    ;
-  
+  ;
+
   return tid;
 }
 
@@ -66,20 +66,20 @@ DropTailQueue::~DropTailQueue ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-  void 
+void
 DropTailQueue::SetMode (enum Mode mode)
 {
   NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
-  DropTailQueue::Mode
+DropTailQueue::Mode
 DropTailQueue::GetMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_mode;
 }
-  
+
 bool 
 DropTailQueue::DoEnqueue (Ptr<Packet> p)
 {

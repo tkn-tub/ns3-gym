@@ -28,25 +28,27 @@ EventId::EventId ()
     m_ts (0),
     m_context (0),
     m_uid (0)
-{}
-  
+{
+}
+
 EventId::EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t context, uint32_t uid)
   : m_eventImpl (impl),
     m_ts (ts),
     m_context (context),
     m_uid (uid)
-{}
-void 
+{
+}
+void
 EventId::Cancel (void)
 {
   Simulator::Cancel (*this);
 }
-bool 
+bool
 EventId::IsExpired (void) const
 {
   return Simulator::IsExpired (*this);
 }
-bool 
+bool
 EventId::IsRunning (void) const
 {
   return !IsExpired ();

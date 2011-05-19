@@ -38,9 +38,12 @@ The actual code begins by loading module include files just as was done in the
 ::
 
   #include "ns3/core-module.h"
-  #include "ns3/simulator-module.h"
-  #include "ns3/node-module.h"
-  #include "ns3/helper-module.h"
+  #include "ns3/network-module.h"
+  #include "ns3/csma-module.h"
+  #include "ns3/internet-module.h"
+  #include "ns3/point-to-point-module.h"
+  #include "ns3/applications-module.h"
+  #include "ns3/ipv4-global-routing-helper.h"
 
 One thing that can be surprisingly useful is a small bit of ASCII art that
 shows a cartoon of the network topology constructed in the example.  You will
@@ -805,11 +808,12 @@ to the Wifi module and the mobility module which we will discuss below.
 ::
 
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
+#include "ns3/csma-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 The network topology illustration follows:
 

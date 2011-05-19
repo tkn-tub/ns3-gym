@@ -26,7 +26,7 @@
 namespace ns3 {
 
 /**
- * \ingroup simulator
+ * \ingroup core
  * \brief a simulation event
  *
  * Each subclass of this base class represents a simulation event. The

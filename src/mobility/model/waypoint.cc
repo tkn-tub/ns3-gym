@@ -25,12 +25,14 @@ ATTRIBUTE_HELPER_CPP (Waypoint);
 
 Waypoint::Waypoint (const Time &waypointTime, const Vector &waypointPosition)
   : time (waypointTime),
-  position (waypointPosition)
-{}
+    position (waypointPosition)
+{
+}
 Waypoint::Waypoint ()
   : time (Seconds (0.0)),
     position (0,0,0)
-{}
+{
+}
 
 std::ostream &operator << (std::ostream &os, const Waypoint &waypoint)
 {

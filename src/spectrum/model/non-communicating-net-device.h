@@ -41,6 +41,8 @@ class Queue;
 
 
 /**
+ * \ingroup spectrum
+ *
  * This class implements a device which does not communicate, in the
  * sense that it does not interact with the above protocol stack. The
  * purpose of this NetDevice is to be used for devices such as
@@ -52,7 +54,6 @@ class Queue;
 class NonCommunicatingNetDevice : public NetDevice
 {
 public:
-
   static TypeId GetTypeId (void);
 
   NonCommunicatingNetDevice ();
@@ -120,7 +121,6 @@ public:
 
 
 private:
-
   virtual void DoDispose (void);
 
   Ptr<Node>    m_node;

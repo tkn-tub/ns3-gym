@@ -30,6 +30,8 @@ namespace ns3 {
 class MobilityModel;
 
 /**
+ * \ingroup lte
+ *
  * \brief This class models the propagation loss model due to the path loss
  */
 class PathLossModel : public DiscreteTimeLossModel

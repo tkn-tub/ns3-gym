@@ -110,7 +110,7 @@ void update_checksums (ofpbuf *buffer, const sw_flow_key *key, uint32_t old_word
 namespace ns3 {
 
 class OpenFlowSwitchNetDevice;
-  
+
 namespace ofi {
 
 /**
@@ -146,9 +146,9 @@ struct Port
 
 class Stats
 {
-  public:
+public:
   Stats (ofp_stats_types _type, size_t body_len);
-  
+
   /**
    * \brief Prepares to dump some kind of statistics on the connected OpenFlowSwitchNetDevice.
    *
@@ -158,7 +158,7 @@ class Stats
    * \return 0 if successful, otherwise a negative error code.
    */
   int DoInit (const void *body, int body_len, void **state);
-  
+
   /**
    * \brief Appends statistics for OpenFlowSwitchNetDevice to 'buffer'.
    *
@@ -168,7 +168,7 @@ class Stats
    * \return 1 if it should be called again later with another buffer, 0 if it is done, or a negative errno value on failure.
    */
   int DoDump (Ptr<OpenFlowSwitchNetDevice> swtch, void *state, ofpbuf *buffer);
-  
+
   /**
    * \brief Cleans any state created by the init or dump functions.
    *
@@ -177,7 +177,7 @@ class Stats
    * \param state State information to clear.
    */
   void DoCleanup (void *state);
-  
+
   /**
    * \brief State of the FlowStats request/reply.
    */
@@ -190,7 +190,7 @@ class Stats
 
     ofpbuf *buffer;
   };
-  
+
   /**
    * \brief State of the PortStats request/reply.
    */
@@ -199,9 +199,9 @@ class Stats
     uint32_t num_ports; ///< Number of ports in host byte order
     uint32_t *ports;    ///< Array of ports in network byte order
   };
-  
+
   ofp_stats_types type;
-  private:  
+private:
   int DescStatsDump (void *state, ofpbuf *buffer);
 
   int FlowStatsInit (const void *body, int body_len, void **state);
@@ -322,10 +322,10 @@ struct EricssonAction
 struct StatsDumpCallback
 {
   bool done;                            ///< Whether we are done requesting stats.
-  ofp_stats_request *rq; 	        ///< Current stats request.
-  Stats *s;                	        ///< Handler of the stats request.
+  ofp_stats_request *rq;                ///< Current stats request.
+  Stats *s;                             ///< Handler of the stats request.
   void *state;                          ///< Stats request state data.
-  Ptr<OpenFlowSwitchNetDevice> swtch;	///< The switch that we're requesting data from.
+  Ptr<OpenFlowSwitchNetDevice> swtch;   ///< The switch that we're requesting data from.
 };
 
 /**
@@ -335,7 +335,7 @@ struct SwitchPacketMetadata
 {
   Ptr<Packet> packet; ///< The Packet itself.
   ofpbuf* buffer;               ///< The OpenFlow buffer as created from the Packet, with its data and headers.
-  uint16_t protocolNumber;     	///< Protocol type of the Packet when the Packet is received
+  uint16_t protocolNumber;      ///< Protocol type of the Packet when the Packet is received
   Address src;             ///< Source Address of the Packet when the Packet is received
   Address dst;             ///< Destination Address of the Packet when the Packet is received.
 };
@@ -351,17 +351,17 @@ public:
   static TypeId GetTypeId (void)
   {
     static TypeId tid = TypeId ("ns3::ofi::Controller")
-    .SetParent<Object> ()
-    .AddConstructor<Controller> ()
+      .SetParent<Object> ()
+      .AddConstructor<Controller> ()
     ;
     return tid;
   }
-  
+
   virtual ~Controller ()
   {
     m_switches.clear ();
   }
-  
+
   /**
    * Adds a switch to the controller.
    *
@@ -378,7 +378,7 @@ public:
   virtual void ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer)
   {
   }
-  
+
   /**
    * \brief Starts a callback-based, reliable, possibly multi-message reply to a request made by the controller.
    *
@@ -438,7 +438,7 @@ protected:
    * \return The packet type, as defined in the ofp_type struct.
    */
   uint8_t GetPacketType (ofpbuf* buffer);
-  
+
   typedef std::set<Ptr<OpenFlowSwitchNetDevice> > Switches_t;
   Switches_t m_switches;  ///< The collection of switches registered to this controller.
 };
@@ -465,12 +465,12 @@ class LearningController : public Controller
 {
 public:
   static TypeId GetTypeId (void);
-  
+
   virtual ~LearningController ()
   {
     m_learnState.clear ();
   }
-  
+
   void ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* buffer);
 
 protected:
@@ -478,7 +478,7 @@ protected:
   {
     uint32_t port;                      ///< Learned port.
   };
-  Time m_expirationTime;		///< Time it takes for learned MAC state entry/created flow to expire.
+  Time m_expirationTime;                ///< Time it takes for learned MAC state entry/created flow to expire.
   typedef std::map<Mac48Address, LearnedState> LearnState_t;
   LearnState_t m_learnState;            ///< Learned state data.
 };

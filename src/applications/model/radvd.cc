@@ -48,7 +48,7 @@ TypeId Radvd::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Radvd")
     .SetParent<Application> ()
     .AddConstructor<Radvd> ()
-    ;
+  ;
   return tid;
 }
 

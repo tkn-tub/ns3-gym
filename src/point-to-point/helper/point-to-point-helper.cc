@@ -265,7 +265,7 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
       devA->AggregateObject (mpiRecA);
       devB->AggregateObject (mpiRecB);
     }
-    
+
   devA->Attach (channel);
   devB->Attach (channel);
   container.Add (devA);

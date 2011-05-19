@@ -28,6 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lte
+ *
  * \brief This class models the propagation loss model due to the penetration loss
  */
 class PenetrationLossModel : public DiscreteTimeLossModel

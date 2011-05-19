@@ -67,7 +67,7 @@ static int gVerbose = 0;
  * to send the created socket back to.
  * \param fd The socket we're going to send. 
  */
-  static void
+static void
 SendSocket (const char *path, int fd)
 {
   //
@@ -77,7 +77,7 @@ SendSocket (const char *path, int fd)
   LOG ("Create Unix socket");
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
   ABORT_IF (sock == -1, "Unable to open socket", 1);
-  
+
   //
   // We have this string called path, which is really a hex representation
   // of the endpoint that the net device created.  It used a forward encoding
@@ -179,7 +179,7 @@ SendSocket (const char *path, int fd)
   // Finally, we get a pointer to the start of the ancillary data array and
   // put our file descriptor in.
   //
-  int *fdptr = (int*) (CMSG_DATA(cmsg));
+  int *fdptr = (int*)(CMSG_DATA(cmsg));
   *fdptr = fd; // 
 
   //
@@ -191,7 +191,7 @@ SendSocket (const char *path, int fd)
   LOG ("sendmsg complete");
 }
 
-  int 
+int
 main (int argc, char *argv[])
 {
   int c;

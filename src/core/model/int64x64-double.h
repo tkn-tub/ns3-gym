@@ -27,15 +27,15 @@ public:
   inline int64x64_t (unsigned long long int v)
     : _v (v) {}
   inline int64x64_t (int64_t hi, uint64_t lo)
-    : _v (hi) {/* XXX */}
+    : _v (hi) { /* XXX */}
 
   inline int64x64_t (const int64x64_t &o)
     : _v (o._v) {}
   inline int64x64_t &operator = (const int64x64_t &o)
-    {
-      _v = o._v;
-      return *this;
-    }
+  {
+    _v = o._v;
+    return *this;
+  }
 
   inline double GetDouble (void) const
   {

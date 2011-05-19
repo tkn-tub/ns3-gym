@@ -43,8 +43,8 @@ const char * const PREFIX = "hwmp-simplest-regression-test";
 
 
 HwmpSimplestRegressionTest::HwmpSimplestRegressionTest () : TestCase ("Simplest HWMP regression test"),
-  m_nodes (0),
-  m_time (Seconds (15))
+                                                            m_nodes (0),
+                                                            m_time (Seconds (15))
 {
 }
 
@@ -63,7 +63,7 @@ HwmpSimplestRegressionTest::DoRun ()
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS) CheckResults ();
 
   delete m_nodes, m_nodes = 0;
@@ -75,12 +75,12 @@ HwmpSimplestRegressionTest::CreateNodes ()
   m_nodes->Create (2);
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                "MinX", DoubleValue (0.0),
-                                "MinY", DoubleValue (0.0),
-                                "DeltaX", DoubleValue (1 /*meter*/),
-                                "DeltaY", DoubleValue (0),
-                                "GridWidth", UintegerValue (2),
-                                "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (1 /*meter*/),
+                                 "DeltaY", DoubleValue (0),
+                                 "GridWidth", UintegerValue (2),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (*m_nodes);
   Simulator::Schedule (Seconds(10.0), &HwmpSimplestRegressionTest::ResetPosition, this);
@@ -123,7 +123,7 @@ HwmpSimplestRegressionTest::CreateDevices ()
   mesh.SetStackInstaller ("ns3::Dot11sStack");
   mesh.SetMacType ("RandomStart", TimeValue (Seconds(0.1)));
   mesh.SetNumberOfInterfaces (1);
-  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);  
+  NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);
@@ -134,7 +134,7 @@ HwmpSimplestRegressionTest::CreateDevices ()
   std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string(GetTempDir ())) + PREFIX;
   wifiPhy.EnablePcapAll (prefix);
 }
-  
+
 void
 HwmpSimplestRegressionTest::CheckResults ()
 {
@@ -144,11 +144,11 @@ HwmpSimplestRegressionTest::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec); // TODO support default PcapWriter snap length here
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

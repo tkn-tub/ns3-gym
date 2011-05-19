@@ -114,7 +114,7 @@ public:
   /**
    * \brief Test if the prefix is valid.
    * \return true if prefix is in valid state, false otherwise
-   */  
+   */
   bool IsValid () const;
 
   /**

@@ -35,7 +35,7 @@ TypeId Ipv6OptionHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionHeader")
     .AddConstructor<Ipv6OptionHeader> ()
     .SetParent<Header> ()
-    ;
+  ;
   return tid;
 }
 
@@ -46,7 +46,7 @@ TypeId Ipv6OptionHeader::GetInstanceTypeId () const
 
 Ipv6OptionHeader::Ipv6OptionHeader ()
   : m_type (0),
-  m_length (0)
+    m_length (0)
 {
 }
 
@@ -113,7 +113,7 @@ uint32_t Ipv6OptionHeader::Deserialize (Buffer::Iterator start)
 
 Ipv6OptionHeader::Alignment Ipv6OptionHeader::GetAlignment () const
 {
-  return (Alignment){1,0};
+  return (Alignment){ 1,0};
 }
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1Header);
@@ -123,7 +123,7 @@ TypeId Ipv6OptionPad1Header::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionPad1Header")
     .AddConstructor<Ipv6OptionPad1Header> ()
     .SetParent<Ipv6OptionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -174,7 +174,7 @@ TypeId Ipv6OptionPadnHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionPadnHeader")
     .AddConstructor<Ipv6OptionPadnHeader> ()
     .SetParent<Ipv6OptionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -234,7 +234,7 @@ TypeId Ipv6OptionJumbogramHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionJumbogramHeader")
     .AddConstructor<Ipv6OptionJumbogramHeader> ()
     .SetParent<Ipv6OptionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -295,7 +295,7 @@ uint32_t Ipv6OptionJumbogramHeader::Deserialize (Buffer::Iterator start)
 
 Ipv6OptionHeader::Alignment Ipv6OptionJumbogramHeader::GetAlignment () const
 {
-  return (Alignment){4,2}; //4n+2
+  return (Alignment){ 4,2}; //4n+2
 }
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlertHeader);
@@ -305,7 +305,7 @@ TypeId Ipv6OptionRouterAlertHeader::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionRouterAlertHeader")
     .AddConstructor<Ipv6OptionRouterAlertHeader> ()
     .SetParent<Ipv6OptionHeader> ()
-    ;
+  ;
   return tid;
 }
 
@@ -336,7 +336,7 @@ uint16_t Ipv6OptionRouterAlertHeader::GetValue () const
 
 void Ipv6OptionRouterAlertHeader::Print (std::ostream &os) const
 {
-  os << "( type = " << (uint32_t)GetType () << " length = " << (uint32_t)GetLength ()	<< " value = " << (uint32_t)m_value << " )";
+  os << "( type = " << (uint32_t)GetType () << " length = " << (uint32_t)GetLength ()   << " value = " << (uint32_t)m_value << " )";
 }
 
 uint32_t Ipv6OptionRouterAlertHeader::GetSerializedSize () const
@@ -366,7 +366,7 @@ uint32_t Ipv6OptionRouterAlertHeader::Deserialize (Buffer::Iterator start)
 
 Ipv6OptionHeader::Alignment Ipv6OptionRouterAlertHeader::GetAlignment () const
 {
-  return (Alignment){2,0}; //2n+0
+  return (Alignment){ 2,0}; //2n+0
 }
 
 } /* namespace ns3 */

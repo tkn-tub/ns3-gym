@@ -90,8 +90,8 @@ public:
   void Set (const T &v) {
     if (m_v != v)
       {
-	m_cb (m_v, v);
-	m_v = v;
+        m_cb (m_v, v);
+        m_v = v;
       }
   }
   T Get (void) const {

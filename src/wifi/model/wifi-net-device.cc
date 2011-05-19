@@ -3,7 +3,7 @@
  * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -36,7 +36,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiNetDevice);
 
-TypeId 
+TypeId
 WifiNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
@@ -66,7 +66,7 @@ WifiNetDevice::GetTypeId (void)
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
-    ;
+  ;
   return tid;
 }
 
@@ -107,11 +107,11 @@ WifiNetDevice::DoStart (void)
 void
 WifiNetDevice::CompleteConfig (void)
 {
-  if (m_mac == 0 || 
-      m_phy == 0 || 
-      m_stationManager == 0 ||
-      m_node == 0 ||
-      m_configComplete)
+  if (m_mac == 0
+      || m_phy == 0
+      || m_stationManager == 0
+      || m_node == 0
+      || m_configComplete)
     {
       return;
     }
@@ -123,72 +123,72 @@ WifiNetDevice::CompleteConfig (void)
   m_stationManager->SetupPhy (m_phy);
   m_configComplete = true;
 }
-  
-void 
+
+void
 WifiNetDevice::SetMac (Ptr<WifiMac> mac)
 {
   m_mac = mac;
   CompleteConfig ();
 }
-void 
+void
 WifiNetDevice::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
   CompleteConfig ();
 }
-void 
+void
 WifiNetDevice::SetRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
 {
   m_stationManager = manager;
   CompleteConfig ();
 }
-Ptr<WifiMac> 
+Ptr<WifiMac>
 WifiNetDevice::GetMac (void) const
 {
   return m_mac;
 }
-Ptr<WifiPhy> 
+Ptr<WifiPhy>
 WifiNetDevice::GetPhy (void) const
 {
   return m_phy;
 }
-Ptr<WifiRemoteStationManager> 
+Ptr<WifiRemoteStationManager>
 WifiNetDevice::GetRemoteStationManager (void) const
 {
   return m_stationManager;
 }
 
-void 
-WifiNetDevice::SetIfIndex(const uint32_t index)
+void
+WifiNetDevice::SetIfIndex (const uint32_t index)
 {
   m_ifIndex = index;
 }
-uint32_t 
-WifiNetDevice::GetIfIndex(void) const
+uint32_t
+WifiNetDevice::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
-Ptr<Channel> 
+Ptr<Channel>
 WifiNetDevice::GetChannel (void) const
 {
   return m_phy->GetChannel ();
 }
-Ptr<WifiChannel> 
+Ptr<WifiChannel>
 WifiNetDevice::DoGetChannel (void) const
 {
   return m_phy->GetChannel ();
 }
-void 
+void
 WifiNetDevice::SetAddress (Address address)
 {
   m_mac->SetAddress (Mac48Address::ConvertFrom (address));
 }
-Address 
+Address
 WifiNetDevice::GetAddress (void) const
 {
   return m_mac->GetAddress ();
 }
-bool 
+bool
 WifiNetDevice::SetMtu (const uint16_t mtu)
 {
   if (mtu > MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH)
@@ -198,37 +198,37 @@ WifiNetDevice::SetMtu (const uint16_t mtu)
   m_mtu = mtu;
   return true;
 }
-uint16_t 
+uint16_t
 WifiNetDevice::GetMtu (void) const
 {
   return m_mtu;
 }
-bool 
+bool
 WifiNetDevice::IsLinkUp (void) const
 {
   return m_phy != 0 && m_linkUp;
 }
-void 
+void
 WifiNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
   m_linkChanges.ConnectWithoutContext (callback);
 }
-bool 
+bool
 WifiNetDevice::IsBroadcast (void) const
 {
   return true;
 }
-Address 
+Address
 WifiNetDevice::GetBroadcast (void) const
 {
   return Mac48Address::GetBroadcast ();
 }
-bool 
+bool
 WifiNetDevice::IsMulticast (void) const
 {
   return true;
 }
-Address 
+Address
 WifiNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
   return Mac48Address::GetMulticast (multicastGroup);
@@ -237,17 +237,17 @@ Address WifiNetDevice::GetMulticast (Ipv6Address addr) const
 {
   return Mac48Address::GetMulticast (addr);
 }
-bool 
+bool
 WifiNetDevice::IsPointToPoint (void) const
 {
   return false;
 }
-bool 
+bool
 WifiNetDevice::IsBridge (void) const
 {
   return false;
 }
-bool 
+bool
 WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_ASSERT (Mac48Address::IsMatchingType (dest));
@@ -262,23 +262,23 @@ WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolN
   m_mac->Enqueue (packet, realTo);
   return true;
 }
-Ptr<Node> 
+Ptr<Node>
 WifiNetDevice::GetNode (void) const
 {
   return m_node;
 }
-void 
+void
 WifiNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
   CompleteConfig ();
 }
-bool 
+bool
 WifiNetDevice::NeedsArp (void) const
 {
   return true;
 }
-void 
+void
 WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 {
   m_forwardUp = cb;

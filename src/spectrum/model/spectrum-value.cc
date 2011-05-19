@@ -33,7 +33,7 @@ namespace ns3 {
 
 SpectrumValue::SpectrumValue ()
   : m_values (0)
-{ 
+{
 }
 
 SpectrumValue::SpectrumValue (Ptr<const SpectrumModel> sof)

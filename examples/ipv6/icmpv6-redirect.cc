@@ -82,10 +82,10 @@ public:
       {
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"
-          << route.GetGateway () << "\t"
-          << route.GetInterface () << "\t" 
-          << route.GetPrefixToUse () << "\t"
-          << std::endl;
+                  << route.GetGateway () << "\t"
+                  << route.GetInterface () << "\t"
+                  << route.GetPrefixToUse () << "\t"
+                  << std::endl;
       }
   }
 

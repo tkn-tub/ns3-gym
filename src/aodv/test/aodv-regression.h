@@ -163,12 +163,12 @@ public:
    * \param arpAliveTimeout     ARP alive timeout, this is used to check that ARP and routing do not interfere
    */
   ChainRegressionTest (const char * const prefix, Time time = Seconds (10), uint32_t size = 5, Time arpAliveTimeout = Seconds (120));
-  ~ChainRegressionTest ();  
-  
+  ~ChainRegressionTest ();
+
 private:
   /// XXX It is important to have pointers here
   NodeContainer * m_nodes;
-  
+
   /// PCAP file names prefix
   const std::string m_prefix;
   /// Total simulation time
@@ -179,7 +179,7 @@ private:
   const double m_step;
   /// ARP alive timeout
   const Time m_arpAliveTimeout;
-  
+
   /// Create test topology
   void CreateNodes ();
   /// Create devices, install TCP/IP stack and applications

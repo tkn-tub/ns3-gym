@@ -94,7 +94,7 @@ private:
   uint16_t m_packetLength;
   uint16_t m_packetSequenceNumber;
 
-public:  
+public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -189,7 +189,7 @@ public:
 //   {
 //     return m_messageSize;
 //   }
-  
+
 private:
   MessageType m_messageType;
   uint8_t m_vTime;
@@ -199,7 +199,7 @@ private:
   uint16_t m_messageSequenceNumber;
   uint16_t m_messageSize;
 
-public:  
+public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -431,7 +431,7 @@ public:
     return m_message.hna;
   }
 
-  
+
 };
 
 
@@ -464,7 +464,8 @@ static inline std::ostream& operator<< (std::ostream& os, const MessageList & me
 }
 
 
-}} // namespace olsr, ns3
+}
+}  // namespace olsr, ns3
 
 #endif /* OLSR_HEADER_H */
 

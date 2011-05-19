@@ -70,7 +70,7 @@ CandidateQueue::~CandidateQueue()
   Clear ();
 }
 
-  void
+void
 CandidateQueue::Clear (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -82,19 +82,19 @@ CandidateQueue::Clear (void)
     }
 }
 
-  void
+void
 CandidateQueue::Push (SPFVertex *vNew)
 {
   NS_LOG_FUNCTION (this << vNew);
 
   CandidateList_t::iterator i = std::upper_bound (
-    m_candidates.begin (), m_candidates.end (), vNew,
-    &CandidateQueue::CompareSPFVertex
-    );
+      m_candidates.begin (), m_candidates.end (), vNew,
+      &CandidateQueue::CompareSPFVertex
+      );
   m_candidates.insert (i, vNew);
 }
 
-  SPFVertex *
+SPFVertex *
 CandidateQueue::Pop (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -108,7 +108,7 @@ CandidateQueue::Pop (void)
   return v;
 }
 
-  SPFVertex *
+SPFVertex *
 CandidateQueue::Top (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -120,21 +120,21 @@ CandidateQueue::Top (void) const
   return m_candidates.front ();
 }
 
-  bool
+bool
 CandidateQueue::Empty (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_candidates.empty ();
 }
 
-  uint32_t
+uint32_t
 CandidateQueue::Size (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_candidates.size ();
 }
 
-  SPFVertex *
+SPFVertex *
 CandidateQueue::Find (const Ipv4Address addr) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -152,7 +152,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
   return 0;
 }
 
-  void
+void
 CandidateQueue::Reorder (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -176,7 +176,7 @@ CandidateQueue::CompareSPFVertex (const SPFVertex* v1, const SPFVertex* v2)
 
   bool result = false;
   if (v1->GetDistanceFromRoot () < v2->GetDistanceFromRoot ())
-    {  
+    {
       result = true;
     }
   else if (v1->GetDistanceFromRoot () == v2->GetDistanceFromRoot ())

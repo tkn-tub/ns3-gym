@@ -43,7 +43,7 @@ public:
    * Construct a OpenFlowSwitchHelper
    */
   OpenFlowSwitchHelper ();
-  
+
   /**
    * Set an attribute on each ns3::OpenFlowSwitchNetDevice created by
    * OpenFlowSwitchHelper::Install
@@ -81,7 +81,7 @@ public:
    */
   NetDeviceContainer
   Install (Ptr<Node> node, NetDeviceContainer c);
-  
+
   /**
    * This method creates an ns3::OpenFlowSwitchNetDevice with the attributes
    * configured by OpenFlowSwitchHelper::SetDeviceAttribute, adds the device
@@ -94,7 +94,7 @@ public:
    */
   NetDeviceContainer
   Install (std::string nodeName, NetDeviceContainer c);
-  
+
 private:
   ObjectFactory m_deviceFactory;
 };

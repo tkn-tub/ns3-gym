@@ -4,7 +4,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,7 +32,11 @@
 
 namespace ns3 {
 
-class MgtAssocRequestHeader : public Header 
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type association request.
+ */
+class MgtAssocRequestHeader : public Header
 {
 public:
   MgtAssocRequestHeader ();
@@ -60,7 +64,13 @@ private:
   uint16_t m_listenInterval;
 };
 
-class MgtAssocResponseHeader : public Header {
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type association response.
+ */
+class MgtAssocResponseHeader : public Header
+{
 public:
   MgtAssocResponseHeader ();
   ~MgtAssocResponseHeader ();
@@ -85,7 +95,13 @@ private:
   uint16_t m_aid;
 };
 
-class MgtProbeRequestHeader : public Header {
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type probe request.
+ */
+class MgtProbeRequestHeader : public Header
+{
 public:
   ~MgtProbeRequestHeader ();
 
@@ -101,12 +117,17 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
-
   Ssid m_ssid;
   SupportedRates m_rates;
 };
 
-class MgtProbeResponseHeader : public Header {
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type probe response.
+ */
+class MgtProbeResponseHeader : public Header
+{
 public:
   MgtProbeResponseHeader ();
   ~MgtProbeResponseHeader ();
@@ -118,7 +139,7 @@ public:
   void SetSsid (Ssid ssid);
   void SetBeaconIntervalUs (uint64_t us);
   void SetSupportedRates (SupportedRates rates);
-  uint64_t GetTimestamp();
+  uint64_t GetTimestamp ();
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -134,16 +155,25 @@ private:
   CapabilityInformation m_capability;
 };
 
-class MgtBeaconHeader : public MgtProbeResponseHeader {};
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type beacon.
+ */
+class MgtBeaconHeader : public MgtProbeResponseHeader
+{
+};
 
 /****************************
 *     Action frames
 *****************************/
 
 /**
- * \brief See IEEE 802.11 chapter 7.3.1.11
+ * \ingroup wifi
  *
+ * See IEEE 802.11 chapter 7.3.1.11
  * Header format: | category: 1 | action value: 1 |
+ *
  */
 class WifiActionHeader : public Header
 {
@@ -226,9 +256,13 @@ private:
   uint8_t m_actionValue;
 };
 
-class MgtAddBaRequestHeader : public Header {
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type add block ack request.
+ */
+class MgtAddBaRequestHeader : public Header
+{
 public:
-  
   MgtAddBaRequestHeader ();
 
   static TypeId GetTypeId (void);
@@ -245,20 +279,20 @@ public:
   void SetBufferSize (uint16_t size);
   void SetStartingSequence (uint16_t seq);
   void SetAmsduSupport (bool supported);
-  
+
   uint16_t GetStartingSequence (void) const;
   uint8_t GetTid (void) const;
   bool IsImmediateBlockAck (void) const;
   uint16_t GetTimeout (void) const;
   uint16_t GetBufferSize (void) const;
   bool IsAmsduSupported (void) const;
-  
+
 private:
   uint16_t GetParameterSet (void) const;
   void SetParameterSet (uint16_t params);
   uint16_t GetStartingSequenceControl (void) const;
   void SetStartingSequenceControl (uint16_t seqControl);
-  
+
   uint8_t m_dialogToken; /* Not used for now */
   uint8_t m_amsduSupport;
   uint8_t m_policy;
@@ -267,10 +301,15 @@ private:
   uint16_t m_timeoutValue;
   uint16_t m_startingSeq;
 };
- 
-class MgtAddBaResponseHeader : public Header {
-public:
 
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type add block ack response.
+ */
+class MgtAddBaResponseHeader : public Header
+{
+public:
   MgtAddBaResponseHeader ();
 
   static TypeId GetTypeId (void);
@@ -298,7 +337,7 @@ public:
 private:
   uint16_t GetParameterSet (void) const;
   void SetParameterSet (uint16_t params);
-  
+
   uint8_t m_dialogToken; /* Not used for now */
   StatusCode m_code;
   uint8_t m_amsduSupport;
@@ -308,7 +347,13 @@ private:
   uint16_t m_timeoutValue;
 };
 
-class MgtDelBaHeader : public Header {
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type del block ack.
+ */
+class MgtDelBaHeader : public Header
+{
 public:
   MgtDelBaHeader ();
 

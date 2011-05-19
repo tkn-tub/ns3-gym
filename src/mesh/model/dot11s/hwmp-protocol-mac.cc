@@ -70,12 +70,12 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   Mac48Address source;
   switch (meshHdr.GetAddressExt ())
     {
-  case 0:
-    source = header.GetAddr4 ();
-    destination = header.GetAddr3 ();
-    break;
-  default:
-    NS_FATAL_ERROR (
+    case 0:
+      source = header.GetAddr4 ();
+      destination = header.GetAddr3 ();
+      break;
+    default:
+      NS_FATAL_ERROR (
         "6-address scheme is not yet supported and 4-address extension is not supposed to be used for data frames.");
     }
   tag.SetSeqno (meshHdr.GetMeshSeqno ());
@@ -83,7 +83,7 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   packet->AddPacketTag (tag);
 
   if ((destination == Mac48Address::GetBroadcast ()) && (m_protocol->DropDataFrame (meshHdr.GetMeshSeqno (),
-      source)))
+                                                                                    source)))
     {
       return false;
     }
@@ -104,7 +104,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
   MeshInformationElementVector elements;
   packet->RemoveHeader (elements);
   std::vector<HwmpProtocol::FailedDestination> failedDestinations;
-  for (MeshInformationElementVector::Iterator i = elements.Begin(); i != elements.End(); i ++)
+  for (MeshInformationElementVector::Iterator i = elements.Begin(); i != elements.End(); i++)
     {
       if ((*i)->ElementId () == IE11S_RANN)
         {
@@ -125,7 +125,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
             }
           preq->DecrementTtl ();
           m_protocol->ReceivePreq (*preq, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (),
-              m_parent->GetLinkMetric (header.GetAddr2 ()));
+                                   m_parent->GetLinkMetric (header.GetAddr2 ()));
         }
       if ((*i)->ElementId () == IE11S_PREP)
         {
@@ -138,7 +138,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
             }
           prep->DecrementTtl ();
           m_protocol->ReceivePrep (*prep, header.GetAddr2 (), m_ifIndex, header.GetAddr3 (),
-              m_parent->GetLinkMetric (header.GetAddr2 ()));
+                                   m_parent->GetLinkMetric (header.GetAddr2 ()));
         }
       if ((*i)->ElementId () == IE11S_PERR)
         {
@@ -147,7 +147,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
           m_stats.rxPerr++;
           std::vector<HwmpProtocol::FailedDestination> destinations = perr->GetAddressUnitVector ();
           for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = destinations.begin (); i
-              != destinations.end (); i++)
+               != destinations.end (); i++)
             {
               failedDestinations.push_back (*i);
             }
@@ -182,7 +182,7 @@ HwmpProtocolMac::Receive (Ptr<Packet> packet, const WifiMacHeader & header)
 }
 bool
 HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from,
-    Mac48Address to)
+                                       Mac48Address to)
 {
   if (!header.IsData ())
     {
@@ -317,14 +317,14 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
 }
 void
 HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> failedDestinations, std::vector<
-    Mac48Address> receivers)
+                                Mac48Address> receivers)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet = Create<Packet> ();
   Ptr<IePerr> perr = Create <IePerr> ();
   MeshInformationElementVector elements;
   for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = failedDestinations.begin (); i
-      != failedDestinations.end (); i++)
+       != failedDestinations.end (); i++)
     {
       if (!perr->IsFull ())
         {
@@ -371,48 +371,48 @@ HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> faile
 }
 void
 HwmpProtocolMac::InitiatePerr (std::vector<HwmpProtocol::FailedDestination> failedDestinations, std::vector<
-    Mac48Address> receivers)
+                                 Mac48Address> receivers)
 {
   //All duplicates in PERR are checked here, and there is no reason to
   //check it at any athoer place
-    {
-      std::vector<Mac48Address>::const_iterator end = receivers.end ();
-      for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != end; i++)
-        {
-          bool should_add = true;
-          for (std::vector<Mac48Address>::const_iterator j = m_myPerr.receivers.begin (); j
-              != m_myPerr.receivers.end (); j++)
-            {
-              if ((*i) == (*j))
-                {
-                  should_add = false;
-                }
-            }
-          if (should_add)
-            {
-              m_myPerr.receivers.push_back (*i);
-            }
-        }
-    }
-    {
-      std::vector<HwmpProtocol::FailedDestination>::const_iterator end = failedDestinations.end ();
-      for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i++)
-        {
-          bool should_add = true;
-          for (std::vector<HwmpProtocol::FailedDestination>::const_iterator j = m_myPerr.destinations.begin (); j
-              != m_myPerr.destinations.end (); j++)
-            {
-              if (((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum))
-                {
-                  should_add = false;
-                }
-            }
-          if (should_add)
-            {
-              m_myPerr.destinations.push_back (*i);
-            }
-        }
-    }
+  {
+    std::vector<Mac48Address>::const_iterator end = receivers.end ();
+    for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != end; i++)
+      {
+        bool should_add = true;
+        for (std::vector<Mac48Address>::const_iterator j = m_myPerr.receivers.begin (); j
+             != m_myPerr.receivers.end (); j++)
+          {
+            if ((*i) == (*j))
+              {
+                should_add = false;
+              }
+          }
+        if (should_add)
+          {
+            m_myPerr.receivers.push_back (*i);
+          }
+      }
+  }
+  {
+    std::vector<HwmpProtocol::FailedDestination>::const_iterator end = failedDestinations.end ();
+    for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i++)
+      {
+        bool should_add = true;
+        for (std::vector<HwmpProtocol::FailedDestination>::const_iterator j = m_myPerr.destinations.begin (); j
+             != m_myPerr.destinations.end (); j++)
+          {
+            if (((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum))
+              {
+                should_add = false;
+              }
+          }
+        if (should_add)
+          {
+            m_myPerr.destinations.push_back (*i);
+          }
+      }
+  }
   SendMyPerr ();
 }
 void
@@ -440,33 +440,33 @@ HwmpProtocolMac::GetChannelId () const
 }
 HwmpProtocolMac::Statistics::Statistics () :
   txPreq (0), rxPreq (0), txPrep (0), rxPrep (0), txPerr (0), rxPerr (0), txMgt (0), txMgtBytes (0),
-      rxMgt (0), rxMgtBytes (0), txData (0), txDataBytes (0), rxData (0), rxDataBytes (0)
+  rxMgt (0), rxMgtBytes (0), txData (0), txDataBytes (0), rxData (0), rxDataBytes (0)
 {
 }
 void
 HwmpProtocolMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "txPreq= \"" << txPreq << "\"" << std::endl <<
-    "txPrep=\"" << txPrep << "\"" << std::endl <<
-    "txPerr=\"" << txPerr << "\"" << std::endl <<
-    "rxPreq=\"" << rxPreq << "\"" << std::endl <<
-    "rxPrep=\"" << rxPrep << "\"" << std::endl <<
-    "rxPerr=\"" << rxPerr << "\"" << std::endl <<
-    "txMgt=\"" << txMgt << "\"" << std::endl <<
-    "txMgtBytes=\"" << txMgtBytes << "\"" << std::endl <<
-    "rxMgt=\"" << rxMgt << "\"" << std::endl <<
-    "rxMgtBytes=\"" << rxMgtBytes << "\"" << std::endl <<
-    "txData=\"" << txData << "\"" << std::endl <<
-    "txDataBytes=\"" << txDataBytes << "\"" << std::endl <<
-    "rxData=\"" << rxData << "\"" << std::endl <<
-    "rxDataBytes=\"" << rxDataBytes << "\"/>" << std::endl;
+  "txPreq= \"" << txPreq << "\"" << std::endl <<
+  "txPrep=\"" << txPrep << "\"" << std::endl <<
+  "txPerr=\"" << txPerr << "\"" << std::endl <<
+  "rxPreq=\"" << rxPreq << "\"" << std::endl <<
+  "rxPrep=\"" << rxPrep << "\"" << std::endl <<
+  "rxPerr=\"" << rxPerr << "\"" << std::endl <<
+  "txMgt=\"" << txMgt << "\"" << std::endl <<
+  "txMgtBytes=\"" << txMgtBytes << "\"" << std::endl <<
+  "rxMgt=\"" << rxMgt << "\"" << std::endl <<
+  "rxMgtBytes=\"" << rxMgtBytes << "\"" << std::endl <<
+  "txData=\"" << txData << "\"" << std::endl <<
+  "txDataBytes=\"" << txDataBytes << "\"" << std::endl <<
+  "rxData=\"" << rxData << "\"" << std::endl <<
+  "rxDataBytes=\"" << rxDataBytes << "\"/>" << std::endl;
 }
 void
 HwmpProtocolMac::Report (std::ostream & os) const
 {
   os << "<HwmpProtocolMac" << std::endl <<
-    "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
+  "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
   os << "</HwmpProtocolMac>" << std::endl;
 }
@@ -477,4 +477,4 @@ HwmpProtocolMac::ResetStats ()
 }
 
 } //namespace dot11s
-}//namespace ns3
+} //namespace ns3

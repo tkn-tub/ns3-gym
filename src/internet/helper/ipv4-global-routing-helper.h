@@ -73,7 +73,7 @@ public:
   /**
    * \brief Remove all routes that were previously installed in a prior call
    * to either PopulateRoutingTables() or RecomputeRoutingTables(), and 
-   * add a new set of routes.  
+   * add a new set of routes.
    * 
    * This method does not change the set of nodes
    * over which GlobalRouting is being used, but it will dynamically update

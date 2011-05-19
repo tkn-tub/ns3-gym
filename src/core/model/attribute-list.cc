@@ -28,7 +28,8 @@ namespace ns3 {
  *********************************************************************/
 
 AttributeList::AttributeList ()
-{}
+{
+}
 
 AttributeList::AttributeList (const AttributeList &o)
 {
@@ -198,7 +199,7 @@ AttributeList::SerializeToString (void) const
         {
           oss << "|";
         }
-    }  
+    }
   return oss.str ();
 }
 bool 
@@ -258,7 +259,8 @@ AttributeList::DeserializeFromString (std::string str)
 }
 
 UnsafeAttributeList::UnsafeAttributeList ()
-{}
+{
+}
 UnsafeAttributeList::UnsafeAttributeList (const UnsafeAttributeList &o)
 {
   for (uint32_t i = 0; i < o.m_attributes.size (); ++i)

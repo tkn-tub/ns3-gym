@@ -3,7 +3,7 @@
  * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,10 +33,12 @@ CtrlBAckRequestHeader::CtrlBAckRequestHeader ()
   : m_barAckPolicy (false),
     m_multiTid (false),
     m_compressed (false)
-{}
+{
+}
 
 CtrlBAckRequestHeader::~CtrlBAckRequestHeader ()
-{}
+{
+}
 
 TypeId
 CtrlBAckRequestHeader::GetTypeId (void)
@@ -126,7 +128,7 @@ CtrlBAckRequestHeader::Deserialize (Buffer::Iterator start)
         }
     }
   return i.GetDistanceFrom (start);
-} 
+}
 
 uint16_t
 CtrlBAckRequestHeader::GetBarControl (void) const
@@ -138,22 +140,22 @@ CtrlBAckRequestHeader::GetBarControl (void) const
     }
   if (m_multiTid)
     {
-      res |= (0x1<<1);
+      res |= (0x1 << 1);
     }
   if (m_compressed)
     {
-      res |= (0x1<<2);
+      res |= (0x1 << 2);
     }
-  res |= (m_tidInfo << 12) & (0xf<<12);
+  res |= (m_tidInfo << 12) & (0xf << 12);
   return res;
 }
 
 void
 CtrlBAckRequestHeader::SetBarControl (uint16_t bar)
 {
-  m_barAckPolicy = ((bar & 0x01) == 1)?true:false;
-  m_multiTid = (((bar >> 1) & 0x01) == 1)?true:false;
-  m_compressed = (((bar >> 2) & 0x01) == 1)?true:false;
+  m_barAckPolicy = ((bar & 0x01) == 1) ? true : false;
+  m_multiTid = (((bar >> 1) & 0x01) == 1) ? true : false;
+  m_compressed = (((bar >> 2) & 0x01) == 1) ? true : false;
   m_tidInfo = (bar >> 12) & 0x0f;
 }
 
@@ -178,7 +180,8 @@ CtrlBAckRequestHeader::SetHtImmediateAck (bool immediateAck)
 void
 CtrlBAckRequestHeader::SetType (enum BlockAckType type)
 {
-  switch (type) {
+  switch (type)
+    {
     case BASIC_BLOCK_ACK:
       m_multiTid = false;
       m_compressed = false;
@@ -194,7 +197,7 @@ CtrlBAckRequestHeader::SetType (enum BlockAckType type)
     default:
       NS_FATAL_ERROR ("Invalid variant type");
       break;
-  }
+    }
 }
 
 void
@@ -231,19 +234,19 @@ CtrlBAckRequestHeader::GetStartingSequence (void) const
 bool
 CtrlBAckRequestHeader::IsBasic (void) const
 {
-  return (!m_multiTid && !m_compressed)?true:false;
+  return (!m_multiTid && !m_compressed) ? true : false;
 }
 
 bool
 CtrlBAckRequestHeader::IsCompressed (void) const
 {
-  return (!m_multiTid && m_compressed)?true:false;
+  return (!m_multiTid && m_compressed) ? true : false;
 }
 
 bool
 CtrlBAckRequestHeader::IsMultiTid (void) const
 {
-  return (m_multiTid && m_compressed)?true:false;
+  return (m_multiTid && m_compressed) ? true : false;
 }
 
 /***********************************
@@ -261,7 +264,8 @@ CtrlBAckResponseHeader::CtrlBAckResponseHeader ()
 }
 
 CtrlBAckResponseHeader::~CtrlBAckResponseHeader ()
-{}
+{
+}
 
 TypeId
 CtrlBAckResponseHeader::GetTypeId (void)
@@ -270,7 +274,7 @@ CtrlBAckResponseHeader::GetTypeId (void)
     .SetParent<Header> ()
     .AddConstructor<CtrlBAckResponseHeader> ()
   ;
-  return tid; 
+  return tid;
 }
 
 TypeId
@@ -371,7 +375,8 @@ CtrlBAckResponseHeader::SetHtImmediateAck (bool immediateAck)
 void
 CtrlBAckResponseHeader::SetType (enum BlockAckType type)
 {
-  switch (type) {
+  switch (type)
+    {
     case BASIC_BLOCK_ACK:
       m_multiTid = false;
       m_compressed = false;
@@ -387,7 +392,7 @@ CtrlBAckResponseHeader::SetType (enum BlockAckType type)
     default:
       NS_FATAL_ERROR ("Invalid variant type");
       break;
-  }
+    }
 }
 
 void
@@ -405,7 +410,7 @@ CtrlBAckResponseHeader::SetStartingSequence (uint16_t seq)
 bool
 CtrlBAckResponseHeader::MustSendHtImmediateAck (void) const
 {
-  return (m_baAckPolicy)?true:false;
+  return (m_baAckPolicy) ? true : false;
 }
 
 uint8_t
@@ -424,47 +429,47 @@ CtrlBAckResponseHeader::GetStartingSequence (void) const
 bool
 CtrlBAckResponseHeader::IsBasic (void) const
 {
-  return (!m_multiTid && !m_compressed)?true:false;
+  return (!m_multiTid && !m_compressed) ? true : false;
 }
 
 bool
 CtrlBAckResponseHeader::IsCompressed (void) const
 {
-  return (!m_multiTid && m_compressed)?true:false;
+  return (!m_multiTid && m_compressed) ? true : false;
 }
 
 bool
 CtrlBAckResponseHeader::IsMultiTid (void) const
 {
-  return (m_multiTid && m_compressed)?true:false;
+  return (m_multiTid && m_compressed) ? true : false;
 }
 
 uint16_t
 CtrlBAckResponseHeader::GetBaControl (void) const
 {
   uint16_t res = 0;
-  if (m_baAckPolicy) 
+  if (m_baAckPolicy)
     {
       res |= 0x1;
     }
   if (m_multiTid)
     {
-      res |= (0x1<<1);
+      res |= (0x1 << 1);
     }
   if (m_compressed)
     {
-      res |= (0x1<<2);
+      res |= (0x1 << 2);
     }
-  res |= (m_tidInfo << 12) & (0xf<<12);
+  res |= (m_tidInfo << 12) & (0xf << 12);
   return res;
 }
 
 void
 CtrlBAckResponseHeader::SetBaControl (uint16_t ba)
 {
-  m_baAckPolicy = ((ba & 0x01) == 1)?true:false;
-  m_multiTid = (((ba >> 1) & 0x01) == 1)?true:false;
-  m_compressed = (((ba >> 2) & 0x01) == 1)?true:false;
+  m_baAckPolicy = ((ba & 0x01) == 1) ? true : false;
+  m_multiTid = (((ba >> 1) & 0x01) == 1) ? true : false;
+  m_compressed = (((ba >> 2) & 0x01) == 1) ? true : false;
   m_tidInfo = (ba >> 12) & 0x0f;
 }
 
@@ -548,7 +553,9 @@ void
 CtrlBAckResponseHeader::SetReceivedPacket (uint16_t seq)
 {
   if (!IsInBitmap (seq))
-    return;
+    {
+      return;
+    }
   if (!m_multiTid)
     {
       if (!m_compressed)
@@ -559,7 +566,7 @@ CtrlBAckResponseHeader::SetReceivedPacket (uint16_t seq)
         }
       else
         {
-          bitmap.m_compressedBitmap |= (uint64_t(0x0000000000000001) << IndexInBitmap (seq));
+          bitmap.m_compressedBitmap |= (uint64_t (0x0000000000000001) << IndexInBitmap (seq));
         }
     }
   else
@@ -580,12 +587,14 @@ CtrlBAckResponseHeader::SetReceivedFragment (uint16_t seq, uint8_t frag)
 {
   NS_ASSERT (frag < 16);
   if (!IsInBitmap (seq))
-    return;
+    {
+      return;
+    }
   if (!m_multiTid)
     {
       if (!m_compressed)
         {
-          bitmap.m_bitmap[IndexInBitmap (seq)] |= (0x0001<<frag);
+          bitmap.m_bitmap[IndexInBitmap (seq)] |= (0x0001 << frag);
         }
       else
         {
@@ -610,18 +619,20 @@ bool
 CtrlBAckResponseHeader::IsPacketReceived (uint16_t seq) const
 {
   if (!IsInBitmap (seq))
-    return false;
+    {
+      return false;
+    }
   if (!m_multiTid)
     {
       if (!m_compressed)
         {
           /*It's impossible to say if an entire packet was correctly received. */
-          return false; 
+          return false;
         }
       else
         {
-          uint64_t mask = uint64_t(0x0000000000000001);
-          return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1)?true:false;
+          uint64_t mask = uint64_t (0x0000000000000001);
+          return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1) ? true : false;
         }
     }
   else
@@ -643,20 +654,22 @@ CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
 {
   NS_ASSERT (frag < 16);
   if (!IsInBitmap (seq))
-    return false;
+    {
+      return false;
+    }
   if (!m_multiTid)
     {
       if (!m_compressed)
         {
-          return ((bitmap.m_bitmap[IndexInBitmap (seq)] & (0x0001<<frag)) != 0x0000)?true:false;
+          return ((bitmap.m_bitmap[IndexInBitmap (seq)] & (0x0001 << frag)) != 0x0000) ? true : false;
         }
       else
         {
           /* Although this could make no sense, if packet with sequence number
-             equal to <i>seq</i> was correctly received, also all of its fragments 
+             equal to <i>seq</i> was correctly received, also all of its fragments
              were correctly received. */
-          uint64_t mask = uint64_t(0x0000000000000001);
-          return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1)?true:false;
+          uint64_t mask = uint64_t (0x0000000000000001);
+          return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1) ? true : false;
         }
     }
   else
