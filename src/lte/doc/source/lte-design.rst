@@ -82,7 +82,7 @@ The MAC Scheduler interface is **specified** or defined as **abstract classes**.
 
 There are 3 blocks involved in the MAC Scheduler interface: Control block, Subframe block and Scheduler block. Each of these blocks provide one part of the MAC Scheduler interface. The following figure shows the relationship between the blocks and the Service Access Points they provide.
 
-.. figure:: figures/ff-mac-saps.png
+.. figure:: figures/ff-mac-saps.*
 
 Implementation details
 ++++++++++++++++++++++
@@ -102,73 +102,49 @@ This subsection details the criteria adopted during the development of the FF MA
 Usage in the ns-3 LTE module
 ++++++++++++++++++++++++++++
 
-The files ``rr-ff-mac-scheduler.{cc,h}`` implement a Round Robin MAC scheduler. To interact with the MAC of the eNB, the Round Robin scheduler implements the Provider side of the SCHED SAP and CSCHED SAP interface. If you plan to develop your own scheduler, we advise to create your own class taking inspiration from the Round Robin scheduler. 
+To clarify how the MAC Scheduler Interface is used within the eNB, we consider the example of the Round Robin Scheduler which is depicted in the figure below. To interact with the MAC of the eNB, the Round Robin scheduler implements the Provider side of the SCHED SAP and CSCHED SAP interfaces. The MAC of the eNB implements the provider side of the SCHED SAP and CSCHED SAP interfaces. A similar approach is   If you plan to develop your own scheduler, we advise to create your own class taking inspiration from the Round Robin scheduler. 
 
 
 The User side of both the CSCHED SAP and the SCHED SAP are implemented in the file ``lte-enb-mac.cc``. You are normally not expected to modify these files in order to implement your own scheduler. 
 
 
-.. figure:: figures/ff-example.png
+.. figure:: figures/ff-example.*
 
 
+MAC Scheduler Implementations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this section we describe the features of the MAC Scheduler Implementations that are included with the simulator. Both these models are well-known from the literature. The reason for their inclusion is twofold: first, they can be used as starting code base for the development of more advanced schedulers; second, they can be used as reference algorithm when doing performance evaluation. With this latter respect, we stress that the use of a publicly available scheduler implementation as the reference for a performance evaluation study is beneficial to the authoritativeness of the study itself.
+
+
+Round Robin (RR) Scheduler
+++++++++++++++++++++++++++
+
+Here we describe the RR scheduler that we implement, providing references from the literature.
+
+
+Proportional Fair (PF) Scheduler
+++++++++++++++++++++++++++++++++
+
+Here we describe the PF scheduler that we implement, providing references from the literature.
 
 
 LTE Spectrum Model
 ~~~~~~~~~~~~~~~~~~
 
-Based on the Spectrum
+Here we describe how the LTE spectrum model works and what it allows to do.
 
-
-
-
-Radio Resource Management and Packet Scheduling
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-For how the ns-3 LTE module handles Radio Resource Management and Packet Scheduling at the eNB, please see the :ref:`ff-mac-sched-api`.
 
 
 Physical layer
 ~~~~~~~~~~~~~~
-
-The `ns3::LtePhy` class models the LTE PHY layer. 
-
-Basic functionalities of the PHY layer are: (i) transmit packets coming from the device to the channel; (ii) receive packets from the channel; (ii) evaluate the quality of the channel from the Signal To Noise ratio of the received signal; and (iii) forward received packets to the device.
-
-Both the PHY and channel have been developed extending `ns3::SpectrumPhy` and 
-`ns3::SpectrumChannel` classes, respectively, which are provided by the Spectrum Framework [1]_.
- 
-The module implements an FDD channel access. In FDD channel access, downlink and uplink 
-transmissions work together in the time but using a different set of frequencies.  
-Since DL and UL are indipendent between them, the PHY is composed by couple of 
-`ns3::LteSpectrumPhy` object, one for the downlink and one for the uplink.
-The `ns3::LtePhy` stores and manages both downlink and uplink 
-`ns3::LteSpectrumPhy` elements. 
-
-In order to customize all physical functionalities for both UE and eNB devices, dedicated 
-classes have been inherited from ones described before. In particular, 
-`ns3::LteUePhy` and `ns3::LteEnbPhy` classes, inherited from 
-the `ns3::LtePhy` class, implement the PHY layer for the UE and the 
-eNB, respectively. 
-
-The figure below shows how UE and eNB can exchange packets through the considered PHY layer.
+The physical layer model provided in this LTE simulator model supports Frequency Division Duplex (FDD) only.
 
 
-For the downlink, when the eNB whants to send packets, it calls the ``StartTx`` function to 
-send them into the downlink channel. Then, the downlink channel delivers the burst 
-of packets to all the `ns3::UeLteSpectrumPhy` attached to it, handling the 
-``StartRx`` function. 
-When the UE receives packets, it executes the following tasks:
-
-* compute the SINR for all the sub channel used in the downlink
-
-* create and send CQI feedbacks
-
-* forward all the received packets to the MAC layer through the PHY SAP.
-
-The uplink works similary.
 
 Propagation Loss Models
 ~~~~~~~~~~~~~~~~~~~~~~~
+NOTE: this information refers to the GSoC model, which as of this writing is not working anymore. 
 
 A proper propagation loss model has been developed for the LTE E-UTRAN interface (see [2]_ and [3]_).
 It is used by the PHY layer to compute the loss due to the propagation. 
