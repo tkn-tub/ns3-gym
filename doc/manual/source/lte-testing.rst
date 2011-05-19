@@ -44,39 +44,25 @@ The test suite ``lte-downlink-sinr`` checks that the SINR calculation in downlin
 
 .. math::
 
-  \mathrm{SINR} = \frac{ P_\mathrm{signal} }{ P_\mathrm{noise} + \sum P_\mathrm{interference} }
+  \gamma = \frac{ P_\mathrm{signal} }{ P_\mathrm{noise} + \sum P_\mathrm{interference} }
 
-The unit test program includes two test cases with random transmited signals and random interference signals. The signals are active during different periods of time. A chunk of time is a period of time during which :math:`n` signals are active (:math:`T_i`). A different SINR is calculated (:math:`\mathrm{SINR_i}`) for each chunk. The expected :math:`\mathrm{SINR}` is
+In general, different signals can be active during different periods of time. We define a *chunk* as the time interval between any two events of type either start or end of a waveform. In other words, a chunk identifies a time interval during which the set of active waveforms does not change. Let :math:`i` be the generic chunk, :math:`T_i` its duration and :math:`\mathrm{SINR_i}` its SINR, calculated with the above equation. The calculation of the average SINR :math:`\overline{\gamma}` to be used for CQI feedback reporting uses the following formula:
 
 .. math::
 
-  {\mathrm{SINR}}_{total} = \frac{ \displaystyle\sum_{\forall\mathrm{chunks}} {\mathrm{SINR}}_i * T_i }{ T_{total} }
+  \overline{\gamma} = \frac{ \sum_i {\gamma}_i  T_i }{ \sum_i T_{i} }
 
-The test vectors are obtained by an Octave script that applies the described algorithm. The unit test program checks that the SINR calculation in downlink is performed correctly in the :cpp:class:`ns3::LtePhy` interface. It implements this interface in the :cpp:class:`ns3::LteTestUePhy` test class.
-
-The test passes if the calculated values are equal to the test vector within a tolerance of :math:`10^{-7}`. The tolerance is meant to account for the approximation errors typical of floating point arithmetic.
-
+The test suite checks that the above calculation is performed correctly in the simulator. The test vectors are obtained offline by an Octave script that implements the above equation, and that recreates a number of random transmitted signals and interference signals that mimic a scenario where an UE is trying to decode a signal from an eNB while facing interference from other eNBs. The test passes if the calculated values are equal to the test vector within a tolerance of :math:`10^{-7}`. The tolerance is meant to account for the approximation errors typical of floating point arithmetic.
 
 
 
 SINR calculation in the Uplink
 ------------------------------
 
-The test suite ``lte-uplink-sinr`` checks that the SINR calculation in uplink is performed correctly. The SINR in the uplink is calculated for each Resource Block assigned to data transmissions by dividing the power of the intended signal from the considered UE by the sum of the noise power plus all the transmissions on the same RB coming from other UEs belonging to different cells (the interference signals).
+The test suite ``lte-uplink-sinr`` checks that the SINR calculation in uplink is performed correctly. This test suite is identical to ``lte-downlink-sinr`` described in the previous section, with the difference than both the signal and the interference now refer to transmissions by the UEs, and reception is performed by the eNB.
+This test suite recreates a number of random transmitted signals and interference signals to mimic a scenario where an eNB is trying to decode the signal from several UEs simultaneously (the ones in the cell of the eNB) while facing interference from other UEs (the ones belonging to other cells). 
 
-.. math::
-
-  \mathrm{SINR} = \frac{ P_\mathrm{signal} }{ P_\mathrm{noise} + \sum P_\mathrm{interference} }
-
-The unit test program includes two test cases with random transmited signals and random interference signals. The signals are active during different periods of time. A chunk of time is a period of time during which :math:`n` signals are active (:math:`T_i`). A different SINR is calculated (:math:`\mathrm{SINR_i}`) for each chunk. The expected :math:`\mathrm{SINR}` is
-
-.. math::
-
-  {\mathrm{SINR}}_{total} = \frac{ \displaystyle\sum_{\forall\mathrm{chunks}} {\mathrm{SINR}}_i * T_i }{ T_{total} }
-
-The test vectors are obtained by an Octave script that applies the described algorithm. The unit test program checks that the SINR calculation in uplink is performed correctly in the :cpp:class:`ns3::LtePhy` interface. It implements this interface in the :cpp:class:`ns3::LteTestUePhy` test class.
-
-The test passes if the calculated values are equal to the test vector within a tolerance of :math:`10^{-7}`. The tolerance is meant to account for the approximation errors typical of floating point arithmetic.
+The test vectors are obtained by a dedicated Octave script. The test passes if the calculated values are equal to the test vector within a tolerance of :math:`10^{-7}` which, as for the downlink SINR test, deals with floating point arithmetic approximation issues.
 
 
 System Tests
@@ -87,7 +73,7 @@ Adaptive Modulation and Coding
 
 The test suite ``lte-link-adaptation`` provides system tests recreating a scenario with a single eNB and a single UE. Different test cases are created corresponding to different SINR values perceived by the UE. The aim of the test is to check that in each test case the chosen MCS corresponds to the values in a known test vector.
 
-The test vector is obtained with the model described in [Piro2011]_ which cites [Seo2004]_. Here we described how this model works. We get the spectral efficiency :math:`\eta_i` for each value of the SINR in dB using Shannon's theorem:
+The test vector is obtained with the model described in [Piro2011]_ which cites [Seo2004]_. Here we described how this model works. Let :math:`i` denote the generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficiency :math:`\eta_i` of user :math:`i` using the following equations:
 
 .. math::
 
@@ -99,7 +85,7 @@ The test vector is obtained with the model described in [Piro2011]_ which cites 
 
 .. math::
 
-  \eta_i = \log_2 { \left( 1 + \frac{ {\mathrm{SINR}}_i }{ \Gamma } \right) }
+  \eta_i = \log_2 { \left( 1 + \frac{ {\gamma}_i }{ \Gamma } \right) }
 
 Then, 3GPP [R1-081483]_ document (its XLS sheet annexed file) is used to get the corresponding MCS scheme. The spectral efficiency is quantized based on the CQI (rounding to the lowest value) and is mapped to the corresponding MCS scheme (i.e. the MCS index that appears on the same line looking at the MCS table on the right). Note that the quantization of the CQI is coarser than the spectral efficiency reported in the CQI table.
 
@@ -115,7 +101,7 @@ The test passes if both the following conditions are verified:
 Round Robin scheduler performance
 ---------------------------------
 
-This system test program creates different test cases with a single eNB and several UEs, all having the same Radio Bearer specification. In each test case, the UEs see the same SINR from the eNB; different test cases are implemented by using different distance among UEs and the eNB (i.e., therefore having different SINR values) and different numbers of UEs. The test consists on checking that the obtained throughput performance is equal among users and matches a reference throughput value obtained according to the SINR perceived within a given tolerance.
+The test suite ``lte-rr-ff-mac-scheduler`` creates different test cases with a single eNB and several UEs, all having the same Radio Bearer specification. In each test case, the UEs see the same SINR from the eNB; different test cases are implemented by using different distance among UEs and the eNB (i.e., therefore having different SINR values) and different numbers of UEs. The test consists on checking that the obtained throughput performance is equal among users and matches a reference throughput value obtained according to the SINR perceived within a given tolerance.
 The test vector is obtained according to the values of transport block size reported in table 7.1.7.2.1-1 of [TS36.213]_, considering an equal distribution of the physical resource block among the users using Resource Allocation Type 0 as defined in Section 7.1.6.1 of [TS36.213]_.  Let :math:`\tau` be the TTI duration, :math:`N` be the number of UEs, :math:`B` the transmission bandwidth configuration in number of RBs, :math:`G` the RBG size, :math:`M` the modulation and coding scheme in use at the given SINR and :math:`S(M, B)` be the transport block size in bits as defined by 3GPP TS 36.213. We first calculate the number :math:`L` of RBGs allocated to each user as
 
 .. math::
@@ -128,13 +114,14 @@ The reference throughput (in bytes per second) :math:`T` in bps achieved by each
 
    T =  \frac{S(M, L G)}{8 \; \tau}
 
+The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. This tolerance is needed to account for the transient behavior at the beginning of the simulation (e.g., CQI feedback is only available after a few subframes) as well as for the accuracy of the estimator of the average throughput performance over the chosen simulation time (0.04s). We note that a lower value of the tolerance can be achieved by making each test case running longer simulations; we chose not to do this in order to keep the total execution time of this test suite as low as possible in spite of the high number of test cases. 
 
 
 
 Proportional Fair scheduler performance
 ---------------------------------------
 
-This system test program creates different test cases with a single eNB, using the Proportional Fair (PF) scheduler, and several UEs, all having the same Radio Bearer specification. The test cases are grouped in two categories in order to evaluate both the performance in terms of adaptation to channel condition and from fairness perspective.
+The test suite ``lte-pf-ff-mac-scheduler`` creates different test cases with a single eNB, using the Proportional Fair (PF) scheduler, and several UEs, all having the same Radio Bearer specification. The test cases are grouped in two categories in order to evaluate both the performance in terms of adaptation to channel condition and from fairness perspective.
 
 In the first category of test cases, the UEs are all placed at the same distance from the eNB, and hence all placed in order to have the same SINR. Different test cases are implemented by using a different SINR value and a different number of UEs. The test consists on checking that the obtained throughput performance matches with the known reference throughput up to a given tolerance. The expected behavior of the PF scheduler when all UEs have the same SNR is that each UE should get an equal fraction of the throughput obtainable by a single UE when using all the resources. We calculate the reference throughput value by dividing the throughput achievable by a single UE at the given SNR by the total number of UEs. Let :math:`\tau` be the TTI duration, :math:`B` the transmission bandwidth configuration in number of RBs, :math:`M` the modulation and coding scheme in use at the given SINR and :math:`S(M, B)` be the transport block size as defined in [TS36.213]_. The reference throughput :math:`T` achieved by each UE is calculated as
 
@@ -149,7 +136,7 @@ Let :math:`Ri` the estimation done by PFS of the throughput of the :math:`i` UE 
 
    K = \frac{Ri}{\sum_{k=1}^N Ri} = \frac{Ti}{\sum_{k=1}^N Ti}
 
-
+The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. The choice of this tolerance has the same motivations already discussed for the Round Robin scheduler test suite.
 
 References
 **********
