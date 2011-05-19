@@ -37,6 +37,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * Simple SpectrumPhy implementation that sends customizable waveform.
  * The generated waveforms have a given Spectrum Power Density and
  * duration (set with the SetResolution()) . The generator activates

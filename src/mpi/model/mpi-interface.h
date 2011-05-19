@@ -34,12 +34,19 @@ typedef struct ompi_request_t* MPI_Request;
 namespace ns3 {
 
 /**
+ * \defgroup mpi MPI Distributed Simulation
+ *
+ */
+
+/**
  * maximum MPI message size for easy
  * buffer creation
  */
 const uint32_t MAX_MPI_MSG_SIZE = 2000;
 
 /**
+ * \ingroup mpi
+ *
  * Define a class for tracking the non-block sends
  */
 class SentBuffer
@@ -69,6 +76,8 @@ private:
 class Packet;
 
 /**
+ * \ingroup mpi
+ *
  * Interface between ns-3 and MPI
  */
 class MpiInterface

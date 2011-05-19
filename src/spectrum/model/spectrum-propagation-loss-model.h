@@ -32,6 +32,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * \brief spectrum-aware propagation loss model
  *
  * Interface for propagation loss models to be adopted when

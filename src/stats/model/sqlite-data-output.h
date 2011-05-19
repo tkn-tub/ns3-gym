@@ -33,6 +33,10 @@ namespace ns3 {
 
 //------------------------------------------------------------
 //--------------------------------------------
+/**
+ * \ingroup stats
+ *
+ */
 class SqliteDataOutput : public DataOutputInterface {
 public:
   SqliteDataOutput();

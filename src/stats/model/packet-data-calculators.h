@@ -28,6 +28,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup stats
+ *
+ */
 class PacketCounterCalculator : public CounterCalculator<uint32_t> {
 public:
   PacketCounterCalculator();
@@ -44,6 +48,10 @@ protected:
 };
 
 
+/**
+ * \ingroup stats
+ *
+ */
 class PacketSizeMinMaxAvgTotalCalculator :
   public MinMaxAvgTotalCalculator<uint32_t> {
 public:

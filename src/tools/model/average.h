@@ -28,7 +28,18 @@
 
 namespace ns3 {
 
-/// Simple average, min, max and std. deviation calculator
+/**
+ * \defgroup tools Tools
+ *
+ */
+
+/**
+ * \ingroup tools
+ *
+ * Simple average, min, max and std. deviation calculator
+ *
+ */
+
 template <typename T = double>
 class Average
 {

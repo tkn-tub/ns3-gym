@@ -30,6 +30,10 @@ namespace ns3 {
 
 //------------------------------------------------------------
 //--------------------------------------------
+/**
+ * \ingroup stats
+ *
+ */
 class OmnetDataOutput : public DataOutputInterface {
 public:
   OmnetDataOutput();

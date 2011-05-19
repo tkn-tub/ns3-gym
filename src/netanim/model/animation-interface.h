@@ -31,9 +31,17 @@
 
 
 namespace ns3 {
+
+/**
+ * \defgroup netanim Animation
+ *
+ */
+
 class NetModel;
 
 /**
+ * \ingroup netanim
+ *
  * \brief Interface to network animator
  *
  * Provides functions that facilitate communications with an

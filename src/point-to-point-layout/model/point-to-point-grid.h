@@ -30,6 +30,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup pointtopointlayout
+ *
  * \brief A helper to make it easier to create a grid topology
  * with p2p links
  */

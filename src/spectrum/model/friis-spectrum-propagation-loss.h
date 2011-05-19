@@ -30,6 +30,10 @@ namespace ns3 {
 class MobilityModel;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class FriisSpectrumPropagationLossModel : public SpectrumPropagationLossModel
 {
 

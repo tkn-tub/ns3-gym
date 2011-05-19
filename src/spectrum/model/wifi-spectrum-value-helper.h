@@ -29,6 +29,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * this abstract class defines the interface for interacting with all WifiSpectrumValue implementations.
  *
  */
@@ -71,6 +73,8 @@ public:
 
 
 /**
+ * \ingroup spectrum
+ *
  * Implements WifiSpectrumValue for the 2.4 GHz ISM band only, with a
  * 5 MHz spectrum resolution.
  *

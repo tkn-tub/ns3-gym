@@ -37,6 +37,8 @@ class SpectrumPropagationLossModel;
 class PropagationDelayModel;
 
 /**
+ * \ingroup spectrum
+ *
  * Defines the interface for spectrum-aware channel implementations
  *
  */

@@ -44,6 +44,8 @@ class Queue;
 
 
 /**
+ * \ingroup spectrum
+ *
  * This devices implements the following features:
  *  - layer 3 protocol multiplexing
  *  - MAC addressing

@@ -36,6 +36,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * Simple SpectrumPhy implemetation that averages the spectrum power
  * density of incoming transmissions to produce a spectrogram.
  *

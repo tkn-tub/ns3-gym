@@ -27,6 +27,13 @@ namespace ns3 {
 
 
 /**
+ * \defgroup  visualizer Visualizer
+ *
+ */
+
+/**
+ * \ingroup visualizer
+ *
  * \brief A replacement simulator that starts the visualizer
  * \internal
  *

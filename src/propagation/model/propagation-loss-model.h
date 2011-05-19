@@ -31,9 +31,16 @@
 
 namespace ns3 {
 
+/**
+ * \defgroup propagation Propagation Models
+ *
+ */
+
 class MobilityModel;
 
 /**
+ * \ingroup propagation
+ *
  * \brief Modelize the propagation loss through a transmission medium
  *
  * Calculate the receive power (dbm) from a transmit power (dbm)
@@ -77,6 +84,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief The propagation loss follows a random distribution.
  */ 
 class RandomPropagationLossModel : public PropagationLossModel
@@ -97,6 +106,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief a Friis propagation loss model
  *
  * The Friis propagation loss model was first described in
@@ -193,7 +204,8 @@ private:
   double m_minDistance;
 };
 
-/*
+/**
+ * \ingroup propagation
  *
  * \brief a Two-Ray Ground propagation loss model ported from NS2
  *
@@ -215,7 +227,6 @@ private:
  *
  * \f$ dCross = \frac{(4 * pi * Ht * Hr)}{lambda} \f$
  */
-
 class TwoRayGroundPropagationLossModel : public PropagationLossModel
 {
 public:
@@ -285,6 +296,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief a log distance propagation model.
  *
  * This model calculates the reception power with a so-called
@@ -334,6 +347,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief A log distance path loss propagation model with three distance
  * fields. This model is the same as ns3::LogDistancePropagationLossModel
  * except that it has three distance fields: near, middle and far with
@@ -371,7 +386,6 @@ L_0 + 10 \cdot n_0 \log_{10}(\frac{d_1}{d_0}) + 10 \cdot n_1 \log_{10}(\frac{d_2
  * reference distance defaults to 1m and reference loss defaults to
  * ns3::FriisPropagationLossModel with 5.15 GHz and is thus \f$ L_0 \f$ = 46.67 dB.
  */
-
 class ThreeLogDistancePropagationLossModel : public PropagationLossModel
 {
 public:
@@ -400,6 +414,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief Nakagami-m fast fading propagation loss model.
  *
  * The Nakagami-m distribution is applied to the power level. The probability
@@ -417,7 +433,6 @@ private:
  * For m = 1 the Nakagami-m distribution equals the Rayleigh distribution. Thus
  * this model also implements Rayleigh distribution based fast fading.
  */
-
 class NakagamiPropagationLossModel : public PropagationLossModel
 {
 public:
@@ -447,6 +462,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief Return a constant received power level independent of the transmit 
  *  power
  *
@@ -481,6 +498,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief The propagation loss is fixed for each pair of nodes and doesn't depend on their actual positions.
  * 
  * This is supposed to be used by synthetic tests. Note that by default propagation loss is assumed to be symmetric.
@@ -520,6 +539,8 @@ private:
 };
 
 /**
+ * \ingroup propagation
+ *
  * \brief The propagation loss depends only on the distance (range) between transmitter and receiver.
  *
  * The single MaxRange attribute (units of meters) determines path loss.

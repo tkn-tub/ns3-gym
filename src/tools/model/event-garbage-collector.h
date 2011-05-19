@@ -27,6 +27,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup tools
+ *
  * \brief An object that tracks scheduled events and automatically
  * cancels them when it is destroyed.  It is useful in situations
  * where multiple instances of the same type of event can

@@ -27,6 +27,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup propagation
+ *
  * \brief a Jakes propagation loss model
  *
  * The Jakes propagation loss model implemented here is 

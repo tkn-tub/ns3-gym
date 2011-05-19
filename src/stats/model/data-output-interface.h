@@ -31,6 +31,10 @@ class DataCollector;
 
 //------------------------------------------------------------
 //--------------------------------------------
+/**
+ * \ingroup stats
+ *
+ */
 class DataOutputInterface : public Object {
 public:
   DataOutputInterface();
@@ -49,6 +53,10 @@ protected:
   // end class DataOutputInterface
 };
 
+/**
+ * \ingroup stats
+ *
+ */
 class DataOutputCallback {
 public:
   virtual ~DataOutputCallback() {}

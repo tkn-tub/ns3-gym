@@ -31,6 +31,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * @brief SpectrumChannel implementation which handles a single spectrum model
  *
  * All SpectrumPhy layers attached to this SpectrumChannel

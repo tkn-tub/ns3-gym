@@ -36,6 +36,10 @@ namespace ns3 {
 typedef std::map<SpectrumModelUid_t, SpectrumConverter> SpectrumConverterMap_t;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class TxSpectrumModelInfo
 {
 public:
@@ -48,6 +52,10 @@ public:
 typedef std::map<SpectrumModelUid_t, TxSpectrumModelInfo> TxSpectrumModelInfoMap_t;
 
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class RxSpectrumModelInfo
 {
 public:
@@ -63,6 +71,8 @@ typedef std::map<SpectrumModelUid_t, RxSpectrumModelInfo> RxSpectrumModelInfoMap
 
 
 /**
+ * \ingroup spectrum
+ *
  * This SpectrumChannel implementation can handle the presence of
  * SpectrumPhy instances which can use
  * different spectrum models, i.e.,  different SpectrumModel. The only

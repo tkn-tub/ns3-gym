@@ -37,6 +37,10 @@ class SpectrumValue;
 class SpectrumChannel;
 class SpectrumModel;
 
+/**
+ * \ingroup spectrum
+ *
+ */
 class SpectrumAnalyzerHelper
 {
 public:

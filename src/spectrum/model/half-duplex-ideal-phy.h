@@ -40,6 +40,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * This PHY layer implementation realizes an ideal OFDM PHY which
  * transmits half-duplex (i.e., it can either receive or transmit at a
  * given time). The device is ideal in the sense that:

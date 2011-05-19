@@ -26,6 +26,11 @@
 
 namespace ns3 {
 
+/**
+ * \defgroup stats Statistics
+ *
+ */
+
 //------------------------------------------------------------
 //--------------------------------------------
 template <typename T  = uint32_t>
@@ -105,6 +110,10 @@ MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback &callback) const
 }
 
 
+/**
+ * \ingroup stats
+ *
+ */
 //------------------------------------------------------------
 //--------------------------------------------
 template <typename T  = uint32_t>

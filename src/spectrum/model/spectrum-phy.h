@@ -36,6 +36,8 @@ class SpectrumModel;
 class NetDevice;
 
 /**
+ * \ingroup spectrum
+ *
  * Abstract base class for Spectrum-aware PHY layers
  *
  */

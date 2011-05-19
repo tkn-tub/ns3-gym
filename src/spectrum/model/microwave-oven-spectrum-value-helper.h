@@ -29,6 +29,8 @@ namespace ns3 {
 
 
 /**
+ * \ingroup spectrum
+ *
  * This class provides methods for the creation of SpectrumValue
  * instances that mimic the Power Spectral Density of commercial
  * microwave ovens based on the measurements reported in the following paper:

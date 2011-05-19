@@ -28,6 +28,10 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup stats
+ *
+ */
 class DataCalculator;
 
 //------------------------------------------------------------
@@ -35,6 +39,10 @@ class DataCalculator;
 typedef std::list<Ptr<DataCalculator> > DataCalculatorList;
 typedef std::list<std::pair<std::string, std::string> > MetadataList;
 
+/**
+ * \ingroup stats
+ *
+ */
 class DataCollector : public Object {
 public:
   DataCollector();

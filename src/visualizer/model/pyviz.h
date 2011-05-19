@@ -38,6 +38,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup visualizer
+ *
  * \brief helper class to be used by the visualizer
  * \internal
  *
