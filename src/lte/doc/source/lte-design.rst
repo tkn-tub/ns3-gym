@@ -116,17 +116,29 @@ MAC Scheduler Implementations
 
 In this section we describe the features of the MAC Scheduler Implementations that are included with the simulator. Both these models are well-known from the literature. The reason for their inclusion is twofold: first, they can be used as starting code base for the development of more advanced schedulers; second, they can be used as reference algorithm when doing performance evaluation. With this latter respect, we stress that the use of a publicly available scheduler implementation as the reference for a performance evaluation study is beneficial to the authoritativeness of the study itself.
 
+Before describing the schedulers, we would like introduce a bit the problem of resource allocation in LTE. The scheduler is in charge of generating specific structures calles Data Control Indication (DCI) by which communicates to the users connected the resource allocation per subframe basis. In doing this in the downlink direction, the scheduler has to fill some specific fields of the DCI structure with all the information, such as: MCS, TB size and the allocation bitmap. The latter bitmap can be coded in different manner, in this implementation we considered the "allocation Type 0" [36.213], which implies the aggregation of the RB in group of different size as function of the bandwidth in use. This implies that for certain bandwidth values not all the RBs are usable, since the group size is not a common divisor of the group. This is for instance the case when system bandwith is equal to 25 RBs, which results in a RBG size of 2 RBs and therefore 1 RB will result not addressable. 
+In uplink the structure of the DCIs changes and since it uses only adjacent RBs allows the use of all RBs in all the configurations.
+
+On this matter, another constaint of LTE is represented by the assumption that the scheduler can allocate only one transport channel to a user. This implies that the control of the scheduler is only per users basis and the different LCs have to be multiplxed in the same transport block.
+
 
 Round Robin (RR) Scheduler
 ++++++++++++++++++++++++++
 
-Here we describe the RR scheduler that we implement, providing references from the literature.
+The RR scheduler is one of the simpliest solution in literature. It divides the available resources among the active flows, which means all the logical channels that has something in the queues. In case the number of active flows is greater then the number of RBGs available, the RR scheduler allocates the users in a round robin fashion within multiples subframes (i.e., users that cannot be allocated in a subframe will be allocated in the subsequents ones). The evaluation of the MCS to be adopted for each user is done according to the received wideband CQIs.
 
 
 Proportional Fair (PF) Scheduler
 ++++++++++++++++++++++++++++++++
 
-Here we describe the PF scheduler that we implement, providing references from the literature.
+The PF scheduler[5]_ philosophy is to schedule a user when its instantaneous channel quality is high relative to its own average channel condition over time. In formula this implies that a user :math:`k` is allocated to a rb :math:`m` in a subframe :math:`f` when it is the one that maximizes the formula
+:math:`\hat{k_{m}} = \underset{k`=1,...,k}{\operatorname{argmax}}\frac{ R_\mathrm{k`}(m,f) }{ T_\mathrm{k`}(f) }\end{split}\notag`
+where :math:`T_{k}(f)` is the long-term average througput perceived by the user :math:`k` during the subframe :math:`f` and :math:`R_{k}(m,f)` is the achievable rate evaluated by the PFS during the subframe :math:`f`. The latter is evaluated by estimating the MCS to be used according to the the inband CQIs of the user :math:`k` in RB :math:`m` and therefore computing the TB size as function of the MCS considering the transmission of a single RB. The long-term average user throughputs are computed each subframe by
+
+:math:`T_\mathrm{k}(f) = (1-\frac{1}{t_\mathrm{c}})T_{k}(f-1)+\frac{1}{t_\mathrm{c}}\sum{i}^{M}_{m = 1}R_\mathrm{k}(m,f)\Phi(\hat{k_{m}}=k\end{split})\notag
+%\begin{split}T_\mathrm{k}(f) = (1-\frac{1}{t_\mathrm{c}})T_{k}(f-1)+\frac{1}{t_\mathrm{c}\sum{i}^{M}_{m = 1}R_\mathrm{k}(m,f)\I\{\hat{k_\matrm{m}}=k\}`
+
+where :math:`t_c` is the time window over which the fairness is imposed and :math:`\Phi(\cdot)` is the indicator function equal to one if :math:`\hat{k_m}=k` and zero otherwise. According to this allocation scheme a user can be allocated to different RBGs either undjacents as function of the actual condition of the channel and its past history in terms of throughput.
 
 
 LTE Spectrum Model
@@ -184,3 +196,5 @@ References
 
 .. [4] 3GPP R1-081483 (available on 
        http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip )
+
+.. [5] S. Sesia, I. Toufik and M. Baker, “LTE – The UMTS Long Term Evolution”, Ed Wiley, 2009.
