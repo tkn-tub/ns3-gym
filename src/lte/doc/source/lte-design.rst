@@ -128,16 +128,16 @@ Proportional Fair (PF) Scheduler
 
 Here we describe the PF scheduler that we implement, providing references from the literature.
 
-
-LTE Spectrum Model
-~~~~~~~~~~~~~~~~~~
-
-Here we describe how the LTE spectrum model works and what it allows to do.
-
+Spectrum Model
 
 
 Physical layer
 ~~~~~~~~~~~~~~
+The usage of the radio spectrum by eNBs and UEs in LTE is described in [TS36.101]_. 
+
+In the simulator, we model it as follow. for communications is modeled as follows. 
+Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be the Transmission Bandwidth Configuration in number of Resource Blocks. For every pair :math:`(f_c,B)` used in the simulation we create a corresponding spectrum model using the `ns3::Spectrum`` framework of [Baldo2009]_. All these LTE-specific spectrum models are used to simulate different spectrum usage policies in the same simulation, for example allowing the simulation of cognitive radio / dynamic spectrum access strategies for LTE. 
+
 The physical layer model provided in this LTE simulator model supports Frequency Division Duplex (FDD) only.
 
 
@@ -146,11 +146,11 @@ Propagation Loss Models
 ~~~~~~~~~~~~~~~~~~~~~~~
 NOTE: this information refers to the GSoC model, which as of this writing is not working anymore. 
 
-A proper propagation loss model has been developed for the LTE E-UTRAN interface (see [2]_ and [3]_).
+A proper propagation loss model has been developed for the LTE E-UTRAN interface (see [TS25.814]_ and [Piro2010]_).
 It is used by the PHY layer to compute the loss due to the propagation. 
 
 The LTE propagation loss model is composed by 4 different models (shadowing, multipath, 
-penetration loss and path loss) [2]_:
+penetration loss and path loss) [TS25.814]_:
 
 * Pathloss: :math:`PL = 128.1 + (37.6 * log10 (R))`, where R is the distance between the 
   UE and the eNB in Km.
@@ -162,25 +162,7 @@ penetration loss and path loss) [2]_:
 * Shadowing: log-normal distribution (mean=0dB, standard deviation=8dB)
 
 Every time that the ``LteSpectrumPHY::StartRx ()`` function is called, the 
-``SpectrumInterferenceModel`` is used to computed the SINR, as proposed in [3]_. Then, 
+``SpectrumInterferenceModel`` is used to computed the SINR, as proposed in [Piro2010]_. Then, 
 the network device uses the AMC module to map the SINR to a proper CQI and to send it 
 to the eNB using the ideal control channel.
 
-
-References
-**********
-
-.. [1] N. Baldo and M. Miozzo, Spectrum-aware Channel and PHY layer modeling for ns3, Proceedings 
-       of ICST NSTools 2009, Pisa, Italy. The framework is designed to simulate only data 
-       transmissions. For the transmission of control messages (such as CQI feedback, PDCCH, 
-       etc..) will be used an ideal control channel). 
-
-.. [2] 3GPP TS 25.814 ( http://www.3gpp.org/ftp/specs/html-INFO/25814.htm ) 
-
-.. [3] Giuseppe Piro, Luigi Alfredo Grieco, Gennaro Boggia, and Pietro Camarda", A Two-level 
-       Scheduling Algorithm for QoS Support in the Downlink of LTE Cellular Networks", Proc. of 
-       European Wireless, EW2010, Lucca, Italy, Apr., 2010 ( draft version is available on 
-       http://telematics.poliba.it/index.php?option=com_jombib&task=showbib&id=330 )
-
-.. [4] 3GPP R1-081483 (available on 
-       http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip )

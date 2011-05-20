@@ -145,17 +145,4 @@ Let :math:`Ri` the estimation done by PFS of the throughput of the :math:`i` UE 
 
 The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. The choice of this tolerance has the same motivations already discussed for the Round Robin scheduler test suite.
 
-References
-**********
 
-.. [TS36.213] 3GPP TS 36.213 "LTE Physical layer procedures"
-
-.. [Kushner2004] H.J. Kushner and P.A. Whiting, "Convergence of proportional-fair sharing algorithms under general conditions", IEEE Trans. on Wireless Communications, July 2004
-
-.. [Piro2011] G. Piro, N. Baldo. M. Miozzo, "An LTE module for the ns-3 network simulator", Wns3 2011
-              (in conjunction with SimuTOOLS 2011), March 2011, Barcelona (Spain)
-
-.. [Seo2004] H. Seo, B. G. Lee. "A proportional-fair power allocation scheme for fair and efficient multiuser
-             OFDM systems", In Proc. of IEEE GLOBECOM, December 2004. Dallas (USA)
-
-.. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
