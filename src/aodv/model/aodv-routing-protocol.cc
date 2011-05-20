@@ -819,7 +819,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       else
         rreqHeader.SetUnknownSeqno (true);
       rt.SetFlag (IN_SEARCH);
-      m_routingTable.AddRoute (rt);
+      m_routingTable.Update (rt);
     }
   else
     {
