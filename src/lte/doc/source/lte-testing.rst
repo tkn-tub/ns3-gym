@@ -96,6 +96,13 @@ The test passes if both the following conditions are verified:
  #. the SINR calculated by the UE corresponds to the value intended for the given test case within a tolerance of :math:`10^{-7}`.  The tolerance is meant to account for the approximation errors typical of floating point arithmetic. This test condition acts as a system test of the SINR calculation. This is needed because the other test suites that deal with the SINR calculation are unit tests, and hence might not be able to detect system-level bugs in the SINR calculation.
  #. the MCS index chosen by the scheduler matches exactly with the MCS index in the test vector, determined using the above described procedure.
 
+In the following figure, we see the modulation to be used depending on the MCS index. This mapping is defined in [R1-081483]_.
+
+.. figure:: figures/lte-mcs-index.*
+   :align: center
+
+   Modulation depending on the SINR and MCS index
+
 
 
 Round Robin scheduler performance
