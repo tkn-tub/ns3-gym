@@ -356,7 +356,7 @@ RoutingProtocol::DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & he
       bool result = m_routingTable.LookupRoute(header.GetDestination (), rt);
       if(!result || ((rt.GetFlag() != IN_SEARCH) && result))
         {
-          NS_LOG_LOGIC ("Send RREQ to" <<header.GetDestination ());
+          NS_LOG_LOGIC ("Send new RREQ for outbound packet to " <<header.GetDestination ());
           SendRequest (header.GetDestination ());
         }
     }
@@ -867,6 +867,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
         { 
           destination = iface.GetBroadcast ();
         }
+      NS_LOG_DEBUG ("Send RREQ with id " << rreqHeader.GetId () << " to socket");
       socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
     }
   ScheduleRreqRetry (dst);
@@ -894,6 +895,7 @@ RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
   rt.IncrementRreqCnt ();
   m_routingTable.Update (rt);
   m_addressReqTimer[dst].Schedule (Time (rt.GetRreqCnt () * NetTraversalTime));
+  NS_LOG_LOGIC ("Scheduled RREQ retry in " << Time (rt.GetRreqCnt () * NetTraversalTime).GetSeconds () << " seconds");
 }
 
 void
@@ -1002,7 +1004,10 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   if (m_routingTable.LookupRoute (src, toPrev))
     {
       if (toPrev.IsUnidirectional ())
-        return;
+        {
+          NS_LOG_DEBUG ("Ignoring RREQ from node in blacklist");
+          return;
+	}
     }
 
   uint32_t id = rreqHeader.GetId ();
@@ -1014,6 +1019,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
    */
   if (m_rreqIdCache.IsDuplicate (origin, id))
     {
+      NS_LOG_DEBUG ("Ignoring RREQ due to duplicate");
       return;
     }
 
@@ -1058,13 +1064,16 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
                                       toOrigin.GetLifeTime ()));
       m_routingTable.Update (toOrigin);
     }
-  NS_LOG_LOGIC (receiver << " receive RREQ to destination " << rreqHeader.GetDst ());
+  NS_LOG_LOGIC (receiver << " receive RREQ with hop count " << static_cast<uint32_t>(rreqHeader.GetHopCount ()) 
+		         << " ID " << rreqHeader.GetId ()
+		         << " to destination " << rreqHeader.GetDst ());
 
   //  A node generates a RREP if either:
   //  (i)  it is itself the destination,
   if (IsMyOwnAddress (rreqHeader.GetDst ()))
     {
       m_routingTable.LookupRoute (origin, toOrigin);
+      NS_LOG_DEBUG ("Send reply since I am the destination");
       SendReply (rreqHeader, toOrigin);
       return;
     }
@@ -1468,17 +1477,17 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst)
    */
   if (toDst.GetRreqCnt () == RreqRetries)
     {
-      NS_LOG_LOGIC("route discovery to " << dst << " has been attempted RreqRetries times");
+      NS_LOG_LOGIC("route discovery to " << dst << " has been attempted RreqRetries (" << RreqRetries << ") times");
       m_addressReqTimer.erase (dst);
       m_routingTable.DeleteRoute (dst);
-      NS_LOG_DEBUG ("Route not found. Drop packet with dst " << dst);
+      NS_LOG_DEBUG ("Route not found. Drop all packets with dst " << dst);
       m_queue.DropPacketWithDst (dst);
       return;
     }
 
   if (toDst.GetFlag () == IN_SEARCH)
     {
-      NS_LOG_LOGIC ("Send new RREQ to " << dst << " ttl " << NetDiameter);
+      NS_LOG_LOGIC ("Resend RREQ to " << dst << " ttl " << NetDiameter);
       SendRequest (dst);
     }
   else
