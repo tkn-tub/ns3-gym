@@ -72,7 +72,8 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/*
-	-rm -rf $(SOURCE)
+	-rm -f $(IMAGES_PNG)
+	-rm -f $(IMAGES_PDF)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
