@@ -68,3 +68,13 @@ Example simulation program
     lena.ActivateEpsBearer (ueDevs, bearer);
 
 
+Performance evaluation
+**********************
+
+Execution time and memory consumption
+-------------------------------------
+
+In order to provide an running time and memory consumption estimation a reference simulation script has been developed, ``src/lte/examples/profiling-reference``. The scenario is composed by a set of eNodeBs, each one of them with a constant number of UEs attached. All eNodeBs have the same number of attached UEs. The UEs are all in the same position than its eNodeB and the eNodeBs are distributed in a line, each one 140m away from the previous one. Simulated time is set to 60s.
+
+With this considerations, the execution time and the memory consumtpion has been obtained for a certain number of UEs attached to each eNodeB and number of eNodeBs. The reference hardware platform is a Intel Core2 Duo E8400 3.00GHz with 512 MB of RAM memory running a Fedora Core 10 with kernel 2.6.27.5. It scenarios considered range the number of eNodeBs between 1 and 15 and the UEs per eNodeB in 1, 5 and 10. The performance figures obtained show follows.
+

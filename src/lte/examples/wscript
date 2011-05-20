@@ -10,6 +10,6 @@ def build(bld):
     obj = bld.create_ns3_program('lena-rlc-calculator',
                                  ['lte'])
     obj.source = 'lena-rlc-calculator.cc'    
-    obj = bld.create_ns3_program('execution-time-reference',
+    obj = bld.create_ns3_program('profiling-reference',
                                  ['lte'])
-    obj.source = 'execution-time-reference.cc'
+    obj.source = 'profiling-reference.cc'
