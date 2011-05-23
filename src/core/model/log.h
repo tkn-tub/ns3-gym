@@ -294,7 +294,7 @@ void LogComponentDisableAll (enum LogLevel level);
           NS_LOG_APPEND_CONTEXT;                                \
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "(";                     \
-          ns3::ParameterLogger (std::clog)  << parameters;      \
+          ns3::ParameterLogger (std::clog) << parameters;      \
           std::clog << ")" << std::endl;                        \
         }                                                       \
     }                                                           \

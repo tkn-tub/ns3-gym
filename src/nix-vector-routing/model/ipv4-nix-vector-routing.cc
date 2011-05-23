@@ -679,7 +679,7 @@ Ipv4NixVectorRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
   *os << "Ipv4RouteCache:" << std::endl;
   if (m_ipv4RouteCache.size () > 0)
     {
-      *os  << "Destination     Gateway         Source            OutputDevice" << std::endl;
+      *os << "Destination     Gateway         Source            OutputDevice" << std::endl;
       for (Ipv4RouteMap_t::const_iterator it = m_ipv4RouteCache.begin (); it != m_ipv4RouteCache.end (); it++)
         {
           std::ostringstream dest, gw, src;

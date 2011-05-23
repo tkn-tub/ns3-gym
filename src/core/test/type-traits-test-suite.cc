@@ -39,12 +39,12 @@ TypeTraitsTestCase::TypeTraitsTestCase (void)
 void
 TypeTraitsTestCase::DoRun (void)
 {
-  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*)(void)>::IsPointerToMember, 1, "Check");
-  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*)(void) const>::IsPointerToMember, 1, "Check");
-  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*)(int)>::IsPointerToMember, 1, "Check");
-  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*)(int) const>::IsPointerToMember, 1, "Check");
-  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*)(void) const>::PointerToMemberTraits::nArgs, 0, "Check");
-  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*)(int) const>::PointerToMemberTraits::nArgs, 1, "Check");
+  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (void)>::IsPointerToMember, 1, "Check");
+  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (void) const>::IsPointerToMember, 1, "Check");
+  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (int)>::IsPointerToMember, 1, "Check");
+  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (int) const>::IsPointerToMember, 1, "Check");
+  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (void) const>::PointerToMemberTraits::nArgs, 0, "Check");
+  NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (int) const>::PointerToMemberTraits::nArgs, 1, "Check");
 }
 
 class TypeTraitsTestSuite : public TestSuite

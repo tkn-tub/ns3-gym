@@ -110,7 +110,7 @@ public:
   Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
   void SetOutputDevice (Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice(dev); }
   Ptr<NetDevice> GetOutputDevice () const { return m_ipv4Route->GetOutputDevice(); }
-  Ipv4InterfaceAddress GetInterface () const { return m_iface;}
+  Ipv4InterfaceAddress GetInterface () const { return m_iface; }
   void SetInterface (Ipv4InterfaceAddress iface) { m_iface = iface; }
   void SetValidSeqNo (bool s) { m_validSeqNo = s; }
   bool GetValidSeqNo () const { return m_validSeqNo; }

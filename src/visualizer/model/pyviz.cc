@@ -714,7 +714,7 @@ PyViz::TraceNetDevRxCommon (std::string const &context, Ptr<const Packet> packet
 #endif
 
   std::map<TransmissionSampleKey,TransmissionSampleValue>::iterator
-  iter = m_transmissionSamples.find (key);
+    iter = m_transmissionSamples.find (key);
 
   if (iter == m_transmissionSamples.end ())
     {
@@ -893,7 +893,7 @@ PyViz::GetLastPackets (uint32_t nodeId) const
   NS_LOG_DEBUG ("GetLastPackets: " << nodeId);
 
   std::map<uint32_t, LastPacketsSample>::const_iterator
-  iter = m_lastPackets.find(nodeId);
+    iter = m_lastPackets.find(nodeId);
   if (iter != m_lastPackets.end ())
     {
       return iter->second;

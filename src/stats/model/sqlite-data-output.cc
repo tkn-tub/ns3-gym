@@ -145,7 +145,7 @@ SqliteDataOutput::Output(DataCollector &dc)
 }
 
 SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
-        (Ptr<SqliteDataOutput> owner, std::string run) :
+  (Ptr<SqliteDataOutput> owner, std::string run) :
   m_owner(owner),
   m_runLabel(run)
 {

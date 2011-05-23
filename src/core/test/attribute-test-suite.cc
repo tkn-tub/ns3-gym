@@ -175,9 +175,9 @@ public:
     return tid;
   }
 
-  void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ());}
-  void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ());}
-  void InvokeCb (double a, int b, float c) { m_cb (a,b,c);}
+  void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ()); }
+  void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ()); }
+  void InvokeCb (double a, int b, float c) { m_cb (a,b,c); }
 
   void InvokeCbValue (int8_t a)
   {
@@ -187,14 +187,14 @@ public:
   }
 
 private:
-  void DoSetTestB (bool v) { m_boolTestA = v;}
-  bool DoGetTestB (void) const { return m_boolTestA;}
-  int16_t DoGetInt16 (void) const { return m_int16SetGet;}
-  void DoSetInt16 (int16_t v) { m_int16SetGet = v;}
-  uint32_t DoGetVectorN (void) const { return m_vector2.size ();}
-  Ptr<Derived> DoGetVector (uint32_t i) const { return m_vector2[i];}
-  bool DoSetIntSrc (int8_t v) { m_intSrc2 = v; return true;}
-  int8_t DoGetIntSrc (void) const { return m_intSrc2;}
+  void DoSetTestB (bool v) { m_boolTestA = v; }
+  bool DoGetTestB (void) const { return m_boolTestA; }
+  int16_t DoGetInt16 (void) const { return m_int16SetGet; }
+  void DoSetInt16 (int16_t v) { m_int16SetGet = v; }
+  uint32_t DoGetVectorN (void) const { return m_vector2.size (); }
+  Ptr<Derived> DoGetVector (uint32_t i) const { return m_vector2[i]; }
+  bool DoSetIntSrc (int8_t v) { m_intSrc2 = v; return true; }
+  int8_t DoGetIntSrc (void) const { return m_intSrc2; }
 
   bool m_boolTestA;
   bool m_boolTest;
@@ -836,7 +836,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource1 (int8_t old, int8_t n) { m_got1 = n;}
+  void NotifySource1 (int8_t old, int8_t n) { m_got1 = n; }
   int64_t m_got1;
 };
 
@@ -908,7 +908,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource2 (double a, int b, float c) { m_got2 = a;}
+  void NotifySource2 (double a, int b, float c) { m_got2 = a; }
 
   double m_got2;
 };
@@ -982,7 +982,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource2 (double a, int b, float c) { m_got2 = a;}
+  void NotifySource2 (double a, int b, float c) { m_got2 = a; }
 
   double m_got2;
 };
@@ -1078,7 +1078,7 @@ private:
 
   Callback<void,int8_t> m_cbValue;
 
-  void NotifyCallbackValue (int8_t a) { m_gotCbValue = a;}
+  void NotifyCallbackValue (int8_t a) { m_gotCbValue = a; }
 
   int16_t m_gotCbValue;
 };

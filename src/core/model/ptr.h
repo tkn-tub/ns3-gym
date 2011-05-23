@@ -100,7 +100,7 @@ public:
   // allow conversions from T to T const.
   template <typename U>
   Ptr (Ptr<U> const &o);
-  ~Ptr () ;
+  ~Ptr ();
   Ptr<T> &operator = (Ptr const& o);
 
   T *operator -> () const;

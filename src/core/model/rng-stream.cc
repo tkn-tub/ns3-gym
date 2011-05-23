@@ -110,7 +110,7 @@ double MultModM (double a, double s, double c, double m)
 
   a1 = static_cast<int32_t> (v / m);
   /* in case v < 0)*/
-  if ((v -= a1 * m) < 0.0) return v += m;else return v;
+  if ((v -= a1 * m) < 0.0) return v += m; else return v;
 }
 
 

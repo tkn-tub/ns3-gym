@@ -33,7 +33,7 @@ class Ns3NscStack : public Object
 public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-  void SetStack (INetStack *stack) { m_stack = stack;}
+  void SetStack (INetStack *stack) { m_stack = stack; }
 
 private:
   friend class NscStackStringAccessor;

@@ -266,8 +266,8 @@ Ns3TcpLossTestCase::StartFlow (Ptr<Socket> localSocket,
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
   localSocket->SetSendCallback (MakeCallback
-                                     (&Ns3TcpLossTestCase::WriteUntilBufferFull,
-                                     this));
+                                  (&Ns3TcpLossTestCase::WriteUntilBufferFull,
+                                  this));
   WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
 }
 
@@ -363,8 +363,8 @@ Ns3TcpLossTestCase::DoRun (void)
                    MakeCallback (&Ns3TcpLossTestCase::Ipv4L3Tx, this));
 
   Config::ConnectWithoutContext
-          ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
-          MakeCallback (&Ns3TcpLossTestCase::CwndTracer, this));
+    ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+    MakeCallback (&Ns3TcpLossTestCase::CwndTracer, this));
 
   ////////////////////////////////////////////////////////
   // Set up loss model at node k1

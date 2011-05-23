@@ -307,7 +307,7 @@ UplinkSchedulerMBQoS::Schedule (void)
                       // Recover period interval information for UGS flow
                       Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
                       Time
-                      timestamp =
+                        timestamp =
                         (*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetRecord ()->GetLastGrantTime ()
                         + MilliSeconds ((*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetUnsolicitedGrantInterval ());
 

@@ -51,7 +51,7 @@ NS_OBJECT_ENSURE_REGISTERED ( EnbNetDevice);
 TypeId EnbNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::EnbNetDevice")
     .SetParent<LteNetDevice> ();
   return tid;

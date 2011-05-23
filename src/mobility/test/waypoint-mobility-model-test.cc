@@ -31,7 +31,7 @@ class WaypointMobilityModelNotifyTest : public TestCase
 public:
   WaypointMobilityModelNotifyTest (bool lazy)
     : TestCase (lazy ? "Check Waypoint Mobility Model LAZY notification accuracy"
-                  : "Check Waypoint Mobility Model NON-LAZY notification accuracy"),
+                : "Check Waypoint Mobility Model NON-LAZY notification accuracy"),
       lazyNotify (lazy)
   {
   }

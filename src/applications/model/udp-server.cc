@@ -153,7 +153,7 @@ UdpServer::HandleRead (Ptr<Socket> socket)
                        " Uid: " << packet->GetUid () <<
                        " TXtime: " << seqTs.GetTs () <<
                        " RXtime: " << Simulator::Now () <<
-                       " Delay: " << Simulator::Now () - seqTs.GetTs ()) ;
+                       " Delay: " << Simulator::Now () - seqTs.GetTs ());
 
           m_lossCounter.NotifyReceived (currentSequenceNumber);
           m_received++;

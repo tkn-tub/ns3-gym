@@ -108,7 +108,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRun (void)
 {
 
   double
-  frameDuratioTab[7] = { 0.0025, 0.004, 0.005, 0.008, 0.01, 0.0125, 0.02 };
+    frameDuratioTab[7] = { 0.0025, 0.004, 0.005, 0.008, 0.01, 0.0125, 0.02 };
   for (int i = 0; i < 7; i++)
     {
       NS_LOG_DEBUG ("Frame Duration = " << frameDuratioTab[i]);

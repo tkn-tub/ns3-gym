@@ -171,7 +171,7 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
   if (numberOfBits > totalRemainingBits)
     {
       NS_FATAL_ERROR ("You've tried to extract too many bits of the Nix-vector, " << this << ". NumberBits: " 
-                                                                                  << numberOfBits << " Remaining: " << totalRemainingBits);
+                      << numberOfBits << " Remaining: " << totalRemainingBits);
     }
 
   if (numberOfBits <= 0)

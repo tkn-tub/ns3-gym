@@ -106,7 +106,7 @@ Ns3NscStack::GetInstanceTypeId (void) const
       tid = TypeId (name.c_str ());
       tid.SetParent<Ns3NscStack> ();
       char buf[256];
-      for (int i=0; m_stack->sysctl_getnum(i, buf, sizeof(buf)) > 0 ; i++)
+      for (int i=0; m_stack->sysctl_getnum(i, buf, sizeof(buf)) > 0; i++)
         {
           char value[256];
           if (m_stack->sysctl_get (buf, value, sizeof(value)) > 0)

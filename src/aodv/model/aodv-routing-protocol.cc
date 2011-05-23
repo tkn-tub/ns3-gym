@@ -1007,7 +1007,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
         {
           NS_LOG_DEBUG ("Ignoring RREQ from node in blacklist");
           return;
-	}
+        }
     }
 
   uint32_t id = rreqHeader.GetId ();
@@ -1065,8 +1065,8 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       m_routingTable.Update (toOrigin);
     }
   NS_LOG_LOGIC (receiver << " receive RREQ with hop count " << static_cast<uint32_t>(rreqHeader.GetHopCount ()) 
-		         << " ID " << rreqHeader.GetId ()
-		         << " to destination " << rreqHeader.GetDst ());
+                         << " ID " << rreqHeader.GetId ()
+                         << " to destination " << rreqHeader.GetDst ());
 
   //  A node generates a RREP if either:
   //  (i)  it is itself the destination,

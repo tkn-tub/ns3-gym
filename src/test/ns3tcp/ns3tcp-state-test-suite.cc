@@ -253,8 +253,8 @@ Ns3TcpStateTestCase::StartFlow (Ptr<Socket> localSocket,
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
   localSocket->SetSendCallback (MakeCallback
-                                     (&Ns3TcpStateTestCase::WriteUntilBufferFull,
-                                     this));
+                                  (&Ns3TcpStateTestCase::WriteUntilBufferFull,
+                                  this));
   WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
 }
 

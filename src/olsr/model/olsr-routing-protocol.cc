@@ -393,9 +393,9 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
       sizeLeft -= messageHeader.GetSerializedSize ();
 
       NS_LOG_DEBUG ("Olsr Msg received with type "
-                << std::dec << int (messageHeader.GetMessageType ())
-                << " TTL=" << int (messageHeader.GetTimeToLive ())
-                << " origAddr=" << messageHeader.GetOriginatorAddress ());
+                    << std::dec << int (messageHeader.GetMessageType ())
+                    << " TTL=" << int (messageHeader.GetTimeToLive ())
+                    << " origAddr=" << messageHeader.GetOriginatorAddress ());
       messages.push_back (messageHeader);
     }
 
@@ -419,8 +419,8 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
       // If the message has been processed it must not be processed again
       bool do_forwarding = true;
       DuplicateTuple *duplicated = m_state.FindDuplicateTuple
-              (messageHeader.GetOriginatorAddress (),
-              messageHeader.GetMessageSequenceNumber ());
+          (messageHeader.GetOriginatorAddress (),
+          messageHeader.GetMessageSequenceNumber ());
 
       // Get main address of the peer, which may be different from the packet source address
 //       const IfaceAssocTuple *ifaceAssoc = m_state.FindIfaceAssocTuple (inetSourceAddr.GetIpv4 ());
@@ -1025,7 +1025,7 @@ RoutingProtocol::RoutingTableComputation ()
         }
     }
 
-  for (uint32_t h = 2; ; h++)
+  for (uint32_t h = 2;; h++)
     {
       bool added = false;
 
@@ -1130,7 +1130,7 @@ RoutingProtocol::RoutingTableComputation ()
           if (localHnaAssoc.networkAddr == tuple.networkAddr && localHnaAssoc.netmask == tuple.netmask)
             {
               NS_LOG_DEBUG ("HNA association received from another GW is part of local HNA associations: no route added for network "
-                                  << tuple.networkAddr << "/" << tuple.netmask);
+                            << tuple.networkAddr << "/" << tuple.netmask);
               goToNextAssociationTuple = true;
             }
         }
@@ -1447,7 +1447,7 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
   // message:
 
   for (std::vector<olsr::MessageHeader::Hna::Association>::const_iterator it = hna.associations.begin();
-       it != hna.associations.end() ; it++)
+       it != hna.associations.end(); it++)
     {
       AssociationTuple *tuple = m_state.FindAssociationTuple(msg.GetOriginatorAddress(),it->address,it->mask);
 
@@ -1745,14 +1745,14 @@ RoutingProtocol::SendHello ()
       olsr::MessageHeader::Hello::LinkMessage linkMessage;
       linkMessage.linkCode = (link_type & 0x03) | ((nb_type << 2) & 0x0f);
       linkMessage.neighborInterfaceAddresses.push_back
-              (link_tuple->neighborIfaceAddr);
+        (link_tuple->neighborIfaceAddr);
 
       std::vector<Ipv4Address> interfaces =
         m_state.FindNeighborInterfaces (link_tuple->neighborIfaceAddr);
 
       linkMessage.neighborInterfaceAddresses.insert
-              (linkMessage.neighborInterfaceAddresses.end (),
-              interfaces.begin (), interfaces.end ());
+        (linkMessage.neighborInterfaceAddresses.end (),
+        interfaces.begin (), interfaces.end ());
 
       linkMessages.push_back (linkMessage);
     }
@@ -2280,9 +2280,9 @@ RoutingProtocol::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
 
                       // Schedules mpr selector tuple deletion
                       m_events.Track (Simulator::Schedule
-                                            (DELAY (mprsel_tuple.expirationTime),
-                                            &RoutingProtocol::MprSelTupleTimerExpire, this,
-                                            mprsel_tuple.mainAddr));
+                                        (DELAY (mprsel_tuple.expirationTime),
+                                        &RoutingProtocol::MprSelTupleTimerExpire, this,
+                                        mprsel_tuple.mainAddr));
                     }
                   else
                     {

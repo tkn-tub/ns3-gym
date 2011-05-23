@@ -639,7 +639,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
           m_minstrelTable[i].adjustedRetryCount = m_minstrelTable[i].retryCount >> 1;
           if (m_minstrelTable[i].adjustedRetryCount > 2)
             {
-              m_minstrelTable[i].adjustedRetryCount = 2 ;
+              m_minstrelTable[i].adjustedRetryCount = 2;
             }
         }
       else

@@ -136,7 +136,7 @@ OmnetDataOutput::Output(DataCollector &dc)
 
 
 OmnetDataOutput::OmnetOutputCallback::OmnetOutputCallback
-        (std::ostream *scalar) :
+  (std::ostream *scalar) :
   m_scalar(scalar)
 {
 }

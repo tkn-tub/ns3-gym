@@ -330,7 +330,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     }
 
   for (std::list<int>::iterator i = got.begin (),
-                                j = expected.begin ();
+       j = expected.begin ();
        i != got.end (); i++, j++)
     {
       NS_ASSERT (j != expected.end ());

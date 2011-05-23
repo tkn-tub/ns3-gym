@@ -63,7 +63,7 @@ public:
   virtual void ClearSent();
   virtual void   Measurement(Time t) = 0;
   virtual Time RetransmitTimeout() = 0;
-  void Init(SequenceNumber32 s) { next = s;}
+  void Init(SequenceNumber32 s) { next = s; }
   virtual Ptr<RttEstimator> Copy() const = 0;
   virtual void IncreaseMultiplier();
   virtual void ResetMultiplier();
@@ -107,7 +107,7 @@ public:
   Time RetransmitTimeout ();
   Ptr<RttEstimator> Copy () const;
   void Reset ();
-  void Gain (double g) { gain = g;}
+  void Gain (double g) { gain = g; }
 
 public:
   double       gain;       // Filter gain

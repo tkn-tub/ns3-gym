@@ -1270,7 +1270,7 @@ bool
 TcpSocketBase::SendPendingData (bool withAck)
 {
   NS_LOG_FUNCTION (this << withAck);
-  if (m_txBuffer.Size () == 0) return false; // Nothing to send
+  if (m_txBuffer.Size () == 0) return false;  // Nothing to send
   if (m_endPoint == 0)
     {
       NS_LOG_INFO ("TcpSocketBase::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);

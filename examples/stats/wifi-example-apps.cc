@@ -99,7 +99,7 @@ void Sender::StartApplication()
 
   if (m_socket == 0) {
       Ptr<SocketFactory> socketFactory = GetNode()->GetObject<SocketFactory>
-              (UdpSocketFactory::GetTypeId());
+          (UdpSocketFactory::GetTypeId());
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
     }
@@ -196,7 +196,7 @@ Receiver::StartApplication()
 
   if (m_socket == 0) {
       Ptr<SocketFactory> socketFactory = GetNode()->GetObject<SocketFactory>
-              (UdpSocketFactory::GetTypeId());
+          (UdpSocketFactory::GetTypeId());
       m_socket = socketFactory->CreateSocket();
       InetSocketAddress local = 
         InetSocketAddress(Ipv4Address::GetAny(), m_port);

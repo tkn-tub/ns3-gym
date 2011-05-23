@@ -55,7 +55,7 @@ void
 DiscreteTimeLossModel::SetLastUpdate (void)
 {
   NS_LOG_FUNCTION (this);
-  m_lastUpdate = Simulator::Now () ;
+  m_lastUpdate = Simulator::Now ();
 }
 
 

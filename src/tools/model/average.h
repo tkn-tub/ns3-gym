@@ -84,7 +84,7 @@ public:
   /// Unbiased estimate of variance
   double   Var     () const { return Count() / (double)(Count() - 1) * (m_avg2 - m_avg*m_avg); }
   /// Standard deviation
-  double   Stddev  () const { return sqrt (Var ());}
+  double   Stddev  () const { return sqrt (Var ()); }
   //\}
 
   /** 
@@ -117,7 +117,7 @@ std::ostream & operator<< (std::ostream & os, Average<T> const & x)
   if (x.Count () != 0)
     os << x.Avg () << " (" << x.Stddev () << ") [" << x.Min () << ", " << x.Max () << "]";
   else
-    os << "NA"; // not available
+    os << "NA";  // not available
   return os;
 }
 }

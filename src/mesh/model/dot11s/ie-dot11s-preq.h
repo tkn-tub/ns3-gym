@@ -101,7 +101,7 @@ public:
   bool  IsUnicastPreq () const;
   bool  IsNeedNotPrep () const;
   uint8_t  GetHopCount () const;
-  uint8_t  GetTtl () const ;
+  uint8_t  GetTtl () const;
   uint32_t GetPreqID () const;
   Mac48Address GetOriginatorAddress () const;
   uint32_t GetOriginatorSeqNumber () const;

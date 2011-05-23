@@ -50,9 +50,9 @@ operator<< (std::ostream& os, const CandidateQueue& q)
   for (CIter_t iter = list.begin (); iter != list.end (); iter++)
     {
       os << "<" 
-         << (*iter)->GetVertexId () << ", " 
-         << (*iter)->GetDistanceFromRoot () << ", " 
-         << (*iter)->GetVertexType () << ">" << std::endl;
+      << (*iter)->GetVertexId () << ", "
+      << (*iter)->GetDistanceFromRoot () << ", "
+      << (*iter)->GetVertexType () << ">" << std::endl;
     }
   os << "*** CandidateQueue End ***";
   return os;

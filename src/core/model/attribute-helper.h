@@ -180,13 +180,13 @@ private:                                                              \
     return ns3::Create<name ## Value> (*this);                            \
   }                                                                     \
   std::string                                                           \
-  name ## Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
+    name ## Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
     std::ostringstream oss;                                             \
     oss << m_value;                                                     \
     return oss.str ();                                                  \
   }                                                                     \
   bool                                                                  \
-  name ## Value::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) { \
+    name ## Value::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) { \
     std::istringstream iss;                                             \
     iss.str (value);                                                    \
     iss >> m_value;                                                     \

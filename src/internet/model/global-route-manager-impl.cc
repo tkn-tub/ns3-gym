@@ -296,7 +296,7 @@ SPFVertex::GetRootExitDirection (uint32_t i) const
 
   NS_ASSERT_MSG (i < m_ecmpRootExits.size (), "Index out-of-range when accessing SPFVertex::m_ecmpRootExits!");
   CIter_t iter = m_ecmpRootExits.begin ();
-  while (i-- > 0) { iter++;}
+  while (i-- > 0) { iter++; }
 
   return *iter;
 }
@@ -805,7 +805,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
       if (v->GetVertexType () == SPFVertex::VertexNetwork) 
         {
           w_lsa = m_lsdb->GetLSAByLinkData 
-                  (v->GetLSA ()->GetAttachedRouter (i));
+              (v->GetLSA ()->GetAttachedRouter (i));
           if (!w_lsa)
             {
               continue;
@@ -871,7 +871,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
             }
           else
             NS_ASSERT_MSG (0, "SPFNexthopCalculation never " 
-              << "return false, but it does now!");
+                           << "return false, but it does now!");
         }
       else if (w_lsa->GetStatus () == GlobalRoutingLSA::LSA_SPF_CANDIDATE)
         {
@@ -1535,11 +1535,11 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
   if (v->GetVertexId () == m_spfroot->GetVertexId ())
     {
       NS_LOG_LOGIC ("External is on local host: " 
-        << v->GetVertexId () << "; returning");
+                    << v->GetVertexId () << "; returning");
       return;
     }
   NS_LOG_LOGIC ("External is on remote host: " 
-    << extlsa->GetAdvertisingRouter () << "; installing");
+                << extlsa->GetAdvertisingRouter () << "; installing");
 
   Ipv4Address routerId = m_spfroot->GetVertexId ();
 

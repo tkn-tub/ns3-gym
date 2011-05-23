@@ -137,16 +137,16 @@ main (int argc, char *argv[])
   // Create the OnOff applications to send TCP to the server
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
   clientHelper.SetAttribute 
-            ("OnTime", RandomVariableValue (ConstantVariable (1)));
+    ("OnTime", RandomVariableValue (ConstantVariable (1)));
   clientHelper.SetAttribute 
-            ("OffTime", RandomVariableValue (ConstantVariable (0)));
+    ("OffTime", RandomVariableValue (ConstantVariable (0)));
   //normally wouldn't need a loop here but the server IP address is different
   //on each p2p subnet
   ApplicationContainer clientApps;
   for(uint32_t i=0; i<clientNodes.GetN(); ++i)
     {
       AddressValue remoteAddress
-              (InetSocketAddress (interfaceAdjacencyList[i].GetAddress (0), port));
+        (InetSocketAddress (interfaceAdjacencyList[i].GetAddress (0), port));
       clientHelper.SetAttribute ("Remote", remoteAddress);
       clientApps.Add(clientHelper.Install (clientNodes.Get(i)));
     }

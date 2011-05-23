@@ -140,7 +140,7 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
       m_errno = ERROR_BADF;
       return -1;
     }
-  Ptr<NetDevice> dev ;
+  Ptr<NetDevice> dev;
   if (address.IsSingleDevice ())
     {
       dev = m_node->GetDevice (address.GetSingleDevice ());

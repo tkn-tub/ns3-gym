@@ -113,7 +113,7 @@ void NdiscCache::Remove (NdiscCache::Entry* entry)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  for (CacheI i = m_ndCache.begin () ; i != m_ndCache.end () ; i++)
+  for (CacheI i = m_ndCache.begin (); i != m_ndCache.end (); i++)
     {
       if ((*i).second == entry)
         {
@@ -129,7 +129,7 @@ void NdiscCache::Flush ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  for (CacheI i = m_ndCache.begin () ; i != m_ndCache.end () ; i++)
+  for (CacheI i = m_ndCache.begin (); i != m_ndCache.end (); i++)
     {
       delete (*i).second; /* delete the pointer NdiscCache::Entry */
     }

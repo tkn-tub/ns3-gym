@@ -285,7 +285,7 @@ FlowMonitor::CheckForLostPackets (Time maxDelay)
         {
           // packet is considered lost, add it to the loss statistics
           std::map<FlowId, FlowStats>::iterator
-          flow = m_flowStats.find (iter->first.first);
+            flow = m_flowStats.find (iter->first.first);
           NS_ASSERT (flow != m_flowStats.end ());
           flow->second.lostPackets++;
 
@@ -412,7 +412,7 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
       ATTRIB(rxPackets)
       ATTRIB(lostPackets)
       ATTRIB(timesForwarded)
-                     << ">\n";
+      << ">\n";
 #undef ATTRIB
 
 
@@ -421,15 +421,15 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
         {
           INDENT(indent);
           os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
-             << " number=\"" << flowI->second.packetsDropped[reasonCode]
-             << "\" />\n";
+          << " number=\"" << flowI->second.packetsDropped[reasonCode]
+          << "\" />\n";
         }
       for (uint32_t reasonCode = 0; reasonCode < flowI->second.bytesDropped.size (); reasonCode++)
         {
           INDENT(indent);
           os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
-             << " bytes=\"" << flowI->second.bytesDropped[reasonCode]
-             << "\" />\n";
+          << " bytes=\"" << flowI->second.bytesDropped[reasonCode]
+          << "\" />\n";
         }
       if (enableHistograms)
         {

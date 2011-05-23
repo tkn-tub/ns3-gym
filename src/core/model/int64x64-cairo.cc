@@ -34,7 +34,7 @@ namespace ns3 {
      ub = _cairo_int128_to_uint128 (sb);                                   \
      ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
      ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
-     (negA && !negB) || (!negA && negB);})
+     (negA && !negB) || (!negA && negB); })
 
 void
 int64x64_t::Mul (int64x64_t const &o)

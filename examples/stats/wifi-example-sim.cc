@@ -271,8 +271,8 @@ int main(int argc, char *argv[]) {
   appTxPkts->SetContext("node[0]");
   Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
                   MakeCallback
-                          (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
-                          appTxPkts));
+                    (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
+                    appTxPkts));
   data.AddDataCalculator(appTxPkts);
 
 

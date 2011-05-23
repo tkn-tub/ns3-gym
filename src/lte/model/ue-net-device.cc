@@ -53,7 +53,7 @@ NS_OBJECT_ENSURE_REGISTERED ( UeNetDevice);
 TypeId UeNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::UeNetDevice")
     .SetParent<LteNetDevice> ();
   return tid;

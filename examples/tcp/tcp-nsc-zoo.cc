@@ -115,9 +115,9 @@ int main(int argc, char *argv[])
   sinkApp.Stop (Seconds (30.0));
 
   // This tells every node on the network to start a flow to all other nodes on the network ...
-  for (unsigned int i = 0 ; i < MaxNodes; i++)
+  for (unsigned int i = 0; i < MaxNodes; i++)
     {
-      for (unsigned int j = 0 ; j < MaxNodes; j++)
+      for (unsigned int j = 0; j < MaxNodes; j++)
         {
           if (i == j)
             {  // ...but we don't want a node to talk to itself.
@@ -126,9 +126,9 @@ int main(int argc, char *argv[])
           Address remoteAddress(InetSocketAddress(ipv4Interfaces.GetAddress (j), servPort));
           OnOffHelper clientHelper ("ns3::TcpSocketFactory", remoteAddress);
           clientHelper.SetAttribute 
-                  ("OnTime", RandomVariableValue (ConstantVariable (1)));
+            ("OnTime", RandomVariableValue (ConstantVariable (1)));
           clientHelper.SetAttribute 
-                  ("OffTime", RandomVariableValue (ConstantVariable (0)));
+            ("OffTime", RandomVariableValue (ConstantVariable (0)));
           ApplicationContainer clientApp = clientHelper.Install(n.Get(i));
           clientApp.Start (Seconds (j)); /* delay startup depending on node number */
           clientApp.Stop (Seconds (j + runtime));
