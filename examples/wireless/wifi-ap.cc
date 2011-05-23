@@ -165,7 +165,7 @@ int main (int argc, char *argv[])
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, ap.Get (0));
 
   PacketSocketAddress socket;
-  socket.SetSingleDevice(staDevs.Get (0)->GetIfIndex ());
+  socket.SetSingleDevice (staDevs.Get (0)->GetIfIndex ());
   socket.SetPhysicalAddress (staDevs.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 
@@ -187,8 +187,8 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace));
 
   AthstatsHelper athstats;
-  athstats.EnableAthstats("athstats-sta", stas);
-  athstats.EnableAthstats("athstats-ap", ap);
+  athstats.EnableAthstats ("athstats-sta", stas);
+  athstats.EnableAthstats ("athstats-ap", ap);
 
   Simulator::Run ();
 

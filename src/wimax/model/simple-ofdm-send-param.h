@@ -103,7 +103,7 @@ public:
   /**
    * \return the received burst
    */
-  Ptr<PacketBurst> GetBurst(void);
+  Ptr<PacketBurst> GetBurst (void);
 
 private:
   bvec m_fecBlock;

@@ -45,7 +45,7 @@ private:
 void
 SteadyStateRandomWaypointTest::DoRun (void)
 {
-  SeedManager::SetSeed(123);
+  SeedManager::SetSeed (123);
 
   // Total simulation time, seconds
   double totalTime = 1000;
@@ -92,9 +92,9 @@ SteadyStateRandomWaypointTest::DistribCompare ()
   for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       model = (*i);
-      velocity = sqrt (pow (model->GetVelocity().x, 2) + pow (model->GetVelocity().y, 2));
-      sum_x += model->GetPosition().x;
-      sum_y += model->GetPosition().y;
+      velocity = sqrt (pow (model->GetVelocity ().x, 2) + pow (model->GetVelocity ().y, 2));
+      sum_x += model->GetPosition ().x;
+      sum_y += model->GetPosition ().y;
       sum_v += velocity;
     }
   double mean_x = sum_x / count;
@@ -112,10 +112,10 @@ SteadyStateRandomWaypointTest::DistribCompare ()
   for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       model = (*i);
-      velocity = sqrt (pow (model->GetVelocity().x, 2) + pow (model->GetVelocity().y, 2));
-      tmp = model->GetPosition().x - mean_x;
+      velocity = sqrt (pow (model->GetVelocity ().x, 2) + pow (model->GetVelocity ().y, 2));
+      tmp = model->GetPosition ().x - mean_x;
       sum_x += tmp * tmp;
-      tmp = model->GetPosition().y - mean_y;
+      tmp = model->GetPosition ().y - mean_y;
       sum_y += tmp * tmp;
       tmp = velocity - mean_v;
       sum_v += tmp * tmp;

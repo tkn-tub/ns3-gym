@@ -54,7 +54,7 @@ HelloRegressionTest::~HelloRegressionTest()
 void
 HelloRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed(12345);
+  SeedManager::SetSeed (12345);
   CreateNodes ();
 
   Simulator::Stop (m_time);
@@ -99,9 +99,9 @@ HelloRegressionTest::CheckResults ()
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
 
-      uint32_t sec(0), usec(0);
-      bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
+      uint32_t sec (0), usec (0);
+      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec);
+      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
                                                          << " differ starting from " << sec << " s " << usec << " us");
     }
 }

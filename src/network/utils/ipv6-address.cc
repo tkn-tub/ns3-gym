@@ -195,7 +195,7 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
       /* TODO Handle IPv4 mapped address (2001::192.168.0.1) */
 #if 0
       if (ch == '.' && ((tp + 4 /*NS_INADDRSZ*/) <= endp) &&
-          inet_pton4(curtok, tp) > 0)
+          inet_pton4 (curtok, tp) > 0)
         {
           tp += 4 /*NS_INADDRSZ*/;
           seen_xdigits = 0;
@@ -296,7 +296,7 @@ void Ipv6Address::Serialize (uint8_t buf[16]) const
 
 Ipv6Address Ipv6Address::Deserialize (const uint8_t buf[16])
 {
-  Ipv6Address ipv6((uint8_t*)buf);
+  Ipv6Address ipv6 ((uint8_t*)buf);
   return ipv6;
 }
 

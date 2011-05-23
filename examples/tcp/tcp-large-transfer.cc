@@ -61,7 +61,7 @@ uint8_t data[writeSize];
 // implement a sending "Application", although not a proper ns3::Application
 // subclass.
 
-void StartFlow(Ptr<Socket>, Ipv4Address, uint16_t);
+void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
 void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
 
 static void 
@@ -104,8 +104,8 @@ int main (int argc, char *argv[])
   // First make and configure the helper, so that it will put the appropriate
   // attributes on the network interfaces and channels we are about to install.
   PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(10000000)));
-  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(10)));
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (10000000)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
 
   // And then install devices and channels connecting our topology.
   NetDeviceContainer dev0 = p2p.Install (n0n1);
@@ -176,7 +176,7 @@ int main (int argc, char *argv[])
 
   // Finally, set up the simulator to run.  The 1000 second hard limit is a
   // failsafe in case some change above causes the simulation to never end
-  Simulator::Stop (Seconds(1000));
+  Simulator::Stop (Seconds (1000));
   Simulator::Run ();
   Simulator::Destroy ();
 }
@@ -186,11 +186,11 @@ int main (int argc, char *argv[])
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 //begin implementation of sending "Application"
-void StartFlow(Ptr<Socket> localSocket,
-               Ipv4Address servAddress,
-               uint16_t servPort)
+void StartFlow (Ptr<Socket> localSocket,
+                Ipv4Address servAddress,
+                uint16_t servPort)
 {
-  NS_LOG_LOGIC("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
+  NS_LOG_LOGIC ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
   localSocket->Connect (InetSocketAddress (servAddress, servPort)); //connect
 
   // tell the tcp implementation to call WriteUntilBufferFull again

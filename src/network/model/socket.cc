@@ -150,7 +150,7 @@ Ptr<Packet>
 Socket::Recv (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return Recv (std::numeric_limits<uint32_t>::max(), 0);
+  return Recv (std::numeric_limits<uint32_t>::max (), 0);
 }
 
 int 
@@ -170,7 +170,7 @@ Ptr<Packet>
 Socket::RecvFrom (Address &fromAddress)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return RecvFrom (std::numeric_limits<uint32_t>::max(), 0, fromAddress);
+  return RecvFrom (std::numeric_limits<uint32_t>::max (), 0, fromAddress);
 }
 
 int 
@@ -305,9 +305,9 @@ Socket::BindToNetDevice (Ptr<NetDevice> netdevice)
   if (netdevice != 0)
     {
       bool found = false;
-      for (uint32_t i = 0; i < GetNode()->GetNDevices (); i++)
+      for (uint32_t i = 0; i < GetNode ()->GetNDevices (); i++)
         {
-          if (GetNode()->GetDevice (i) == netdevice)
+          if (GetNode ()->GetDevice (i) == netdevice)
             {
               found = true;
               break;

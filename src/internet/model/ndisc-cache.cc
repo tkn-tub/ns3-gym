@@ -154,10 +154,10 @@ NdiscCache::Entry::Entry (NdiscCache* nd)
     m_waiting (),
     m_router (false),
     m_reachableTimer (Timer::CANCEL_ON_DESTROY),
-    m_retransTimer(Timer::CANCEL_ON_DESTROY),
-    m_probeTimer(Timer::CANCEL_ON_DESTROY),
-    m_delayTimer(Timer::CANCEL_ON_DESTROY),
-    m_lastReachabilityConfirmation(Seconds (0.0)),
+    m_retransTimer (Timer::CANCEL_ON_DESTROY),
+    m_probeTimer (Timer::CANCEL_ON_DESTROY),
+    m_delayTimer (Timer::CANCEL_ON_DESTROY),
+    m_lastReachabilityConfirmation (Seconds (0.0)),
     m_nsRetransmit (0)
 {
   NS_LOG_FUNCTION_NOARGS ();

@@ -49,36 +49,36 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 namespace ns3 {
 
 std::string
-CallbackBase::Demangle(const std::string& mangled)
+CallbackBase::Demangle (const std::string& mangled)
 {
   int status;
-  char* demangled = abi::__cxa_demangle(mangled.c_str(),
-                                        NULL, NULL, &status);
+  char* demangled = abi::__cxa_demangle (mangled.c_str (),
+                                         NULL, NULL, &status);
 
   std::string ret;
   if (status == 0) {
-      NS_ASSERT(demangled);
+      NS_ASSERT (demangled);
       ret = demangled;
     }
   else if (status == -1) {
-      NS_LOG_UNCOND("Callback demangling failed: Memory allocation failure occured.");
+      NS_LOG_UNCOND ("Callback demangling failed: Memory allocation failure occured.");
       ret = mangled;
     }
   else if (status == -2) {
-      NS_LOG_UNCOND("Callback demangling failed: Mangled name is not a valid under the C++ ABI mangling rules.");
+      NS_LOG_UNCOND ("Callback demangling failed: Mangled name is not a valid under the C++ ABI mangling rules.");
       ret = mangled;
     }
   else if (status == -3) {
-      NS_LOG_UNCOND("Callback demangling failed: One of the arguments is invalid.");
+      NS_LOG_UNCOND ("Callback demangling failed: One of the arguments is invalid.");
       ret = mangled;
     }
   else {
-      NS_LOG_UNCOND("Callback demangling failed: status " << status);
+      NS_LOG_UNCOND ("Callback demangling failed: status " << status);
       ret = mangled;
     }
 
   if (demangled) {
-      free(demangled);
+      free (demangled);
     }
   return ret;
 }
@@ -88,7 +88,7 @@ CallbackBase::Demangle(const std::string& mangled)
 #else
 
 std::string
-ns3::CallbackBase::Demangle(const std::string& mangled)
+ns3::CallbackBase::Demangle (const std::string& mangled)
 {
   return mangled;
 }

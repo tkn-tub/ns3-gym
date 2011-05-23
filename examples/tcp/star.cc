@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   uint32_t nSpokes = 8;
 
   CommandLine cmd;
-  cmd.AddValue("nSpokes", "Number of nodes to place in the star", nSpokes);
+  cmd.AddValue ("nSpokes", "Number of nodes to place in the star", nSpokes);
   cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Build star topology.");

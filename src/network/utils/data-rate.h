@@ -97,17 +97,17 @@ public:
    * \param bytes The number of bytes (not bits) for which to calculate
    * \return The transmission time in seconds for the number of bytes specified
    */
-  double CalculateTxTime(uint32_t bytes) const;
+  double CalculateTxTime (uint32_t bytes) const;
 
   /**
    * Get the underlying bitrate
    * \return The underlying bitrate in bits per second
    */
-  uint64_t GetBitRate() const;
+  uint64_t GetBitRate () const;
 
 private:
   uint64_t m_bps;
-  static uint64_t Parse(const std::string);
+  static uint64_t Parse (const std::string);
 };
 
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
@@ -125,8 +125,8 @@ ATTRIBUTE_HELPER_HEADER (DataRate);
  * \param rhs
  * \return Bits transmitted in rhs seconds at lhs b/s
  */
-double operator*(const DataRate& lhs, const Time& rhs);
-double operator*(const Time& lhs, const DataRate& rhs);
+double operator* (const DataRate& lhs, const Time& rhs);
+double operator* (const Time& lhs, const DataRate& rhs);
 
 } //namespace ns3
 

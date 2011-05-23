@@ -106,7 +106,7 @@ public:
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  void Insert(Ptr<Ipv4L4Protocol> protocol);
+  void Insert (Ptr<Ipv4L4Protocol> protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
@@ -116,7 +116,7 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from NodeImpl::GetUdp for example.
    */
-  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber) const;
+  Ptr<Ipv4L4Protocol> GetProtocol (int protocolNumber) const;
   /**
    * \param protocol protocol to remove from this demux.
    *
@@ -146,8 +146,8 @@ public:
    * \param to address of the destination
    * \param packetType type of the packet
    */
-  void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                const Address &to, NetDevice::PacketType packetType);
+  void Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                 const Address &to, NetDevice::PacketType packetType);
 
   /**
    * \param packet packet to send

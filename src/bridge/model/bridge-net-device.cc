@@ -263,14 +263,14 @@ BridgeNetDevice::AddBridgePort (Ptr<NetDevice> bridgePort)
 }
 
 void 
-BridgeNetDevice::SetIfIndex(const uint32_t index)
+BridgeNetDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ifIndex = index;
 }
 
 uint32_t 
-BridgeNetDevice::GetIfIndex(void) const
+BridgeNetDevice::GetIfIndex (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;

@@ -40,21 +40,21 @@ public:
   MinMaxAvgTotalCalculator();
   virtual ~MinMaxAvgTotalCalculator();
 
-  void Update(const T i);
+  void Update (const T i);
 
-  virtual void Output(DataOutputCallback &callback) const;
+  virtual void Output (DataOutputCallback &callback) const;
 
-  long getCount() const { return m_count; }
-  double getSum() const { return m_total; }
-  double getMin() const { return m_min; }
-  double getMax() const { return m_max; }
-  double getMean() const { return m_total / (double)m_count; }
-  double getStddev() const { return NaN; }   // unsupported
-  double getVariance() const { return NaN; }   // unsupported
-  double getSqrSum() const { return NaN; }   // unsupported
+  long getCount () const { return m_count; }
+  double getSum () const { return m_total; }
+  double getMin () const { return m_min; }
+  double getMax () const { return m_max; }
+  double getMean () const { return m_total / (double)m_count; }
+  double getStddev () const { return NaN; }   // unsupported
+  double getVariance () const { return NaN; }   // unsupported
+  double getSqrSum () const { return NaN; }   // unsupported
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   uint32_t m_count;
   T m_total, m_min, m_max;
@@ -78,15 +78,15 @@ MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
 }
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::DoDispose(void)
+MinMaxAvgTotalCalculator<T>::DoDispose (void)
 {
-  DataCalculator::DoDispose();
+  DataCalculator::DoDispose ();
   // MinMaxAvgTotalCalculator::DoDispose
 }
 
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::Update(const T i)
+MinMaxAvgTotalCalculator<T>::Update (const T i)
 {
   if (m_enabled) {
       m_total += i;
@@ -104,9 +104,9 @@ MinMaxAvgTotalCalculator<T>::Update(const T i)
 
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback &callback) const
+MinMaxAvgTotalCalculator<T>::Output (DataOutputCallback &callback) const
 {
-  callback.OutputStatistic(m_context, m_key, this);
+  callback.OutputStatistic (m_context, m_key, this);
 }
 
 
@@ -122,15 +122,15 @@ public:
   CounterCalculator();
   virtual ~CounterCalculator();
 
-  void Update();
-  void Update(const T i);
+  void Update ();
+  void Update (const T i);
 
-  T GetCount() const;
+  T GetCount () const;
 
-  virtual void Output(DataOutputCallback &callback) const;
+  virtual void Output (DataOutputCallback &callback) const;
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   T m_count;
 
@@ -141,7 +141,7 @@ protected:
 //--------------------------------------------
 template <typename T>
 CounterCalculator<T>::CounterCalculator() :
-  m_count(0)
+  m_count (0)
 {
 }
 
@@ -151,15 +151,15 @@ CounterCalculator<T>::~CounterCalculator()
 }
 template <typename T>
 void
-CounterCalculator<T>::DoDispose(void)
+CounterCalculator<T>::DoDispose (void)
 {
-  DataCalculator::DoDispose();
+  DataCalculator::DoDispose ();
   // CounterCalculator::DoDispose
 }
 
 template <typename T>
 void
-CounterCalculator<T>::Update()
+CounterCalculator<T>::Update ()
 {
   if (m_enabled) {
       m_count++;
@@ -169,7 +169,7 @@ CounterCalculator<T>::Update()
 
 template <typename T>
 void
-CounterCalculator<T>::Update(const T i)
+CounterCalculator<T>::Update (const T i)
 {
   if (m_enabled) {
       m_count += i;
@@ -179,7 +179,7 @@ CounterCalculator<T>::Update(const T i)
 
 template <typename T>
 T
-CounterCalculator<T>::GetCount() const
+CounterCalculator<T>::GetCount () const
 {
   return m_count;
   // end CounterCalculator::GetCount
@@ -187,9 +187,9 @@ CounterCalculator<T>::GetCount() const
 
 template <typename T>
 void
-CounterCalculator<T>::Output(DataOutputCallback &callback) const
+CounterCalculator<T>::Output (DataOutputCallback &callback) const
 {
-  callback.OutputSingleton(m_context, m_key, m_count);
+  callback.OutputSingleton (m_context, m_key, m_count);
   // end CounterCalculator::Output
 }
 

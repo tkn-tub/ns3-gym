@@ -226,7 +226,7 @@ private:
   /// Initiate RERR
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);
   /// Forward RERR
-  void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
+  void SendRerrMessage (Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
   /**
    * Send RERR message when no route to forward input packet. Unicast if there is reverse route to originating node, broadcast otherwise.
    * \param dst - destination node IP address

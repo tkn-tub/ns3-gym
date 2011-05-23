@@ -148,7 +148,7 @@ UdpServer::HandleRead (Ptr<Socket> socket)
           packet->RemoveHeader (seqTs);
           uint32_t currentSequenceNumber = seqTs.GetSeq ();
           NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
-                       " bytes from "<< InetSocketAddress::ConvertFrom(from).GetIpv4 () <<
+                       " bytes from "<< InetSocketAddress::ConvertFrom (from).GetIpv4 () <<
                        " Sequence Number: " << currentSequenceNumber <<
                        " Uid: " << packet->GetUid () <<
                        " TXtime: " << seqTs.GetTs () <<

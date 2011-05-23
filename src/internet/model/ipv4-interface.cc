@@ -194,7 +194,7 @@ void
 Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
 {
   NS_LOG_FUNCTION (dest << *p);
-  if (!IsUp()) 
+  if (!IsUp ())
     {
       return;
     }
@@ -237,11 +237,11 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
       else if (dest.IsMulticast ())
         {
           NS_LOG_LOGIC ("IsMulticast");
-          NS_ASSERT_MSG(m_device->IsMulticast (),
-                        "ArpIpv4Interface::SendTo (): Sending multicast packet over "
-                        "non-multicast device");
+          NS_ASSERT_MSG (m_device->IsMulticast (),
+                         "ArpIpv4Interface::SendTo (): Sending multicast packet over "
+                         "non-multicast device");
 
-          hardwareDestination = m_device->GetMulticast(dest);
+          hardwareDestination = m_device->GetMulticast (dest);
           found = true;
         }
       else
@@ -282,7 +282,7 @@ uint32_t
 Ipv4Interface::GetNAddresses (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return m_ifaddrs.size();
+  return m_ifaddrs.size ();
 }
 
 bool

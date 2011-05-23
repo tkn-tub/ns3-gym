@@ -200,9 +200,9 @@ Mac48Address::GetMulticast (Ipv4Address multicastGroup)
   result.CopyFrom (etherBuffer);
   return result;
 }
-Mac48Address Mac48Address::GetMulticast(Ipv6Address addr)
+Mac48Address Mac48Address::GetMulticast (Ipv6Address addr)
 {
-  Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix();
+  Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix ();
   uint8_t etherBuffer[6];
   uint8_t ipBuffer[16];
 
@@ -227,15 +227,15 @@ std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
   address.CopyTo (ad);
 
   os.setf (std::ios::hex, std::ios::basefield);
-  os.fill('0');
+  os.fill ('0');
   for (uint8_t i=0; i < 5; i++) 
     {
-      os << std::setw(2) << (uint32_t)ad[i] << ":";
+      os << std::setw (2) << (uint32_t)ad[i] << ":";
     }
   // Final byte not suffixed by ":"
-  os << std::setw(2) << (uint32_t)ad[5];
+  os << std::setw (2) << (uint32_t)ad[5];
   os.setf (std::ios::dec, std::ios::basefield);
-  os.fill(' ');
+  os.fill (' ');
   return os;
 }
 

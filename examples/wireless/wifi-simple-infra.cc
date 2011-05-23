@@ -141,14 +141,14 @@ int main (int argc, char *argv[])
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   // The below FixedRssLossModel will cause the rss to be fixed regardless
   // of the distance between the two stations, and the transmit power
-  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(rss));
+  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (rss));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue(phyMode),
-                                "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue (phyMode),
+                                "ControlMode",StringValue (phyMode));
 
   // Setup the rest of the upper mac
   Ssid ssid = Ssid ("wifi-default");
@@ -156,12 +156,12 @@ int main (int argc, char *argv[])
   wifiMac.SetType ("ns3::StaWifiMac",
                    "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
-  NetDeviceContainer staDevice = wifi.Install (wifiPhy, wifiMac, c.Get(0));
+  NetDeviceContainer staDevice = wifi.Install (wifiPhy, wifiMac, c.Get (0));
   NetDeviceContainer devices = staDevice;
   // setup ap.
   wifiMac.SetType ("ns3::ApWifiMac",
                    "Ssid", SsidValue (ssid));
-  NetDeviceContainer apDevice = wifi.Install (wifiPhy, wifiMac, c.Get(1));
+  NetDeviceContainer apDevice = wifi.Install (wifiPhy, wifiMac, c.Get (1));
   devices.Add (apDevice);
 
   // Note that with FixedRssLossModel, the positions below are not 

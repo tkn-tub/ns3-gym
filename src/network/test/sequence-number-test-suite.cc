@@ -40,7 +40,7 @@ public:
 
   static TypeId GetTypeId (void)
   {
-    static TypeId tid = TypeId("ns3::SequenceNumberTestObj")
+    static TypeId tid = TypeId ("ns3::SequenceNumberTestObj")
       .SetParent<Object> ()
       .AddTraceSource ("TestTracedSequenceNumber",
                        "A traceable sequence number",
@@ -97,8 +97,8 @@ SequenceNumberTestCase::SequenceNumberTracer (SequenceNumber32 oldval, SequenceN
 
 void SequenceNumberTestCase::DoRun (void)
 {
-#define NS_TEST_ASSERT_EQUAL(a,b) NS_TEST_ASSERT_MSG_EQ(a,b, "foo")
-#define NS_TEST_ASSERT(a) NS_TEST_ASSERT_MSG_EQ(bool(a), true, "foo")
+#define NS_TEST_ASSERT_EQUAL(a,b) NS_TEST_ASSERT_MSG_EQ (a,b, "foo")
+#define NS_TEST_ASSERT(a) NS_TEST_ASSERT_MSG_EQ (bool(a), true, "foo")
 
   {
     SequenceNumber32 num1 (3), num2 (5);

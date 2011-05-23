@@ -440,7 +440,7 @@ template <typename T>
 Ptr<T> CompleteConstruct (T *p)
 {
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (AttributeList());
+  p->Object::Construct (AttributeList ());
   return Ptr<T> (p, false);
 }
 template <typename T>

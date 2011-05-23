@@ -23,7 +23,7 @@
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE("GlobalRoutingHelper");
+NS_LOG_COMPONENT_DEFINE ("GlobalRoutingHelper");
 
 namespace ns3 {
 

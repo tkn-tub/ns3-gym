@@ -201,8 +201,8 @@ LteHelper::CreateEnbPhy (void)
 void 
 LteHelper::AddMobility (Ptr<LtePhy> phy, Ptr<MobilityModel> m)
 {
-  phy->GetDownlinkSpectrumPhy ()->SetMobility(m);
-  phy->GetUplinkSpectrumPhy ()->SetMobility(m);
+  phy->GetDownlinkSpectrumPhy ()->SetMobility (m);
+  phy->GetUplinkSpectrumPhy ()->SetMobility (m);
 }
 
 

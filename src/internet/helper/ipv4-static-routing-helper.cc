@@ -29,7 +29,7 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ipv4-static-routing-helper.h"
 
-NS_LOG_COMPONENT_DEFINE("Ipv4StaticRoutingHelper");
+NS_LOG_COMPONENT_DEFINE ("Ipv4StaticRoutingHelper");
 
 namespace ns3 {
 
@@ -101,16 +101,16 @@ Ipv4StaticRoutingHelper::AddMulticastRoute (
     {
       Ptr<NetDevice> nd = *i;
       int32_t interface = ipv4->GetInterfaceForDevice (nd);
-      NS_ASSERT_MSG(interface >= 0, 
-                    "Ipv4StaticRoutingHelper::AddMulticastRoute(): "
-                    "Expected an interface associated with the device nd");
-      outputInterfaces.push_back(interface);
+      NS_ASSERT_MSG (interface >= 0,
+                     "Ipv4StaticRoutingHelper::AddMulticastRoute(): "
+                     "Expected an interface associated with the device nd");
+      outputInterfaces.push_back (interface);
     }
 
   int32_t inputInterface = ipv4->GetInterfaceForDevice (input);
-  NS_ASSERT_MSG(inputInterface >= 0, 
-                "Ipv4StaticRoutingHelper::AddMulticastRoute(): "
-                "Expected an interface associated with the device input");
+  NS_ASSERT_MSG (inputInterface >= 0,
+                 "Ipv4StaticRoutingHelper::AddMulticastRoute(): "
+                 "Expected an interface associated with the device input");
   Ipv4StaticRoutingHelper helper;
   Ptr<Ipv4StaticRouting> ipv4StaticRouting = helper.GetStaticRouting (ipv4);
   if (!ipv4StaticRouting)
@@ -166,9 +166,9 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
 {
   Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
   int32_t interfaceSrc = ipv4->GetInterfaceForDevice (nd);
-  NS_ASSERT_MSG(interfaceSrc >= 0, 
-                "Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(): "
-                "Expected an interface associated with the device");
+  NS_ASSERT_MSG (interfaceSrc >= 0,
+                 "Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(): "
+                 "Expected an interface associated with the device");
   Ipv4StaticRoutingHelper helper;
   Ptr<Ipv4StaticRouting> ipv4StaticRouting = helper.GetStaticRouting (ipv4);
   if (!ipv4StaticRouting)

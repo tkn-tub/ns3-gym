@@ -688,7 +688,7 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
                           continue;
                         }
 
-                      uint32_t symbolsToAllocate = GetBs ()->GetPhy ()->GetNrSymbols(allocationSize, job->GetSsRecord ()->GetModulationType ());
+                      uint32_t symbolsToAllocate = GetBs ()->GetPhy ()->GetNrSymbols (allocationSize, job->GetSsRecord ()->GetModulationType ());
                       if (symbolsToAllocate > availableSymbols)
                         {
                           symbolsToAllocate = availableSymbols;

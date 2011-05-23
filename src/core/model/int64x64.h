@@ -36,17 +36,17 @@ namespace ns3 {
     tmp op ## = rhs;                                                      \
     return tmp;                                                         \
   }                                                                     \
-  INT64X64_OP_ARITH_TYPE(op,double)                                     \
-  INT64X64_OP_ARITH_TYPE(op,signed char)                              \
-  INT64X64_OP_ARITH_TYPE(op,signed short)                             \
-  INT64X64_OP_ARITH_TYPE(op,signed int)                               \
-  INT64X64_OP_ARITH_TYPE(op,signed long int)                          \
-  INT64X64_OP_ARITH_TYPE(op,signed long long int)                     \
-  INT64X64_OP_ARITH_TYPE(op,unsigned char)                            \
-  INT64X64_OP_ARITH_TYPE(op,unsigned short)                           \
-  INT64X64_OP_ARITH_TYPE(op,unsigned int)                             \
-  INT64X64_OP_ARITH_TYPE(op,unsigned long int)                        \
-  INT64X64_OP_ARITH_TYPE(op,unsigned long long int)
+  INT64X64_OP_ARITH_TYPE (op,double)                                     \
+  INT64X64_OP_ARITH_TYPE (op,signed char)                              \
+  INT64X64_OP_ARITH_TYPE (op,signed short)                             \
+  INT64X64_OP_ARITH_TYPE (op,signed int)                               \
+  INT64X64_OP_ARITH_TYPE (op,signed long int)                          \
+  INT64X64_OP_ARITH_TYPE (op,signed long long int)                     \
+  INT64X64_OP_ARITH_TYPE (op,unsigned char)                            \
+  INT64X64_OP_ARITH_TYPE (op,unsigned short)                           \
+  INT64X64_OP_ARITH_TYPE (op,unsigned int)                             \
+  INT64X64_OP_ARITH_TYPE (op,unsigned long int)                        \
+  INT64X64_OP_ARITH_TYPE (op,unsigned long long int)
 
 #define INT64X64_OP_CMP_TYPE(op,type)                                   \
   inline bool operator op (const int64x64_t &lhs, const type &rhs)      \
@@ -59,25 +59,25 @@ namespace ns3 {
   }
 
 #define INT64X64_OP_CMP(op)                                             \
-  INT64X64_OP_CMP_TYPE(op,double)                                       \
-  INT64X64_OP_CMP_TYPE(op,signed int)                                 \
-  INT64X64_OP_CMP_TYPE(op,signed long int)                            \
-  INT64X64_OP_CMP_TYPE(op,signed long long int)                       \
-  INT64X64_OP_CMP_TYPE(op,unsigned int)                               \
-  INT64X64_OP_CMP_TYPE(op,unsigned long int)                          \
-  INT64X64_OP_CMP_TYPE(op,unsigned long long int)
+  INT64X64_OP_CMP_TYPE (op,double)                                       \
+  INT64X64_OP_CMP_TYPE (op,signed int)                                 \
+  INT64X64_OP_CMP_TYPE (op,signed long int)                            \
+  INT64X64_OP_CMP_TYPE (op,signed long long int)                       \
+  INT64X64_OP_CMP_TYPE (op,unsigned int)                               \
+  INT64X64_OP_CMP_TYPE (op,unsigned long int)                          \
+  INT64X64_OP_CMP_TYPE (op,unsigned long long int)
 
 
-INT64X64_OP_ARITH(+)
-INT64X64_OP_ARITH(-)
-INT64X64_OP_ARITH(*)
-INT64X64_OP_ARITH(/)
-INT64X64_OP_CMP(==)
-INT64X64_OP_CMP(!=)
-INT64X64_OP_CMP(<)
-INT64X64_OP_CMP(<=)
-INT64X64_OP_CMP(>)
-INT64X64_OP_CMP(>=)
+INT64X64_OP_ARITH (+)
+INT64X64_OP_ARITH (-)
+INT64X64_OP_ARITH (*)
+INT64X64_OP_ARITH (/)
+INT64X64_OP_CMP (==)
+INT64X64_OP_CMP (!=)
+INT64X64_OP_CMP (<)
+INT64X64_OP_CMP (<=)
+INT64X64_OP_CMP (>)
+INT64X64_OP_CMP (>=)
 
 std::ostream &operator << (std::ostream &os, const int64x64_t &val);
 std::istream &operator >> (std::istream &is, int64x64_t &val);

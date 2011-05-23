@@ -55,7 +55,7 @@ CsmaChannel::CsmaChannel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_state = IDLE;
-  m_deviceList.clear();
+  m_deviceList.clear ();
 }
 
 int32_t
@@ -77,7 +77,7 @@ CsmaChannel::Reattach (Ptr<CsmaNetDevice> device)
   NS_ASSERT (device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
-  for (it = m_deviceList.begin (); it < m_deviceList.end( ); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end ( ); it++)
     {
       if (it->devicePtr == device) 
         {
@@ -174,7 +174,7 @@ CsmaChannel::TransmitStart (Ptr<Packet> p, uint32_t srcId)
       return false;
     }
 
-  if (!IsActive(srcId))
+  if (!IsActive (srcId))
     {
       NS_LOG_ERROR ("CsmaChannel::TransmitStart(): Seclected source is not currently attached to network");
       return false;
@@ -188,13 +188,13 @@ CsmaChannel::TransmitStart (Ptr<Packet> p, uint32_t srcId)
 }
 
 bool
-CsmaChannel::IsActive(uint32_t deviceId) 
+CsmaChannel::IsActive (uint32_t deviceId)
 {
   return (m_deviceList[deviceId].active);
 }
 
 bool
-CsmaChannel::TransmitEnd()
+CsmaChannel::TransmitEnd ()
 {
   NS_LOG_FUNCTION (this << m_currentPkt << m_currentSrc);
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");
@@ -217,7 +217,7 @@ CsmaChannel::TransmitEnd()
 
   std::vector<CsmaDeviceRec>::iterator it;
   uint32_t devId = 0;
-  for (it = m_deviceList.begin (); it < m_deviceList.end(); it++) 
+  for (it = m_deviceList.begin (); it < m_deviceList.end (); it++)
     {
       if (it->IsActive ())
         {
@@ -237,7 +237,7 @@ CsmaChannel::TransmitEnd()
 }
 
 void
-CsmaChannel::PropagationCompleteEvent()
+CsmaChannel::PropagationCompleteEvent ()
 {
   NS_LOG_FUNCTION (this << m_currentPkt);
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");

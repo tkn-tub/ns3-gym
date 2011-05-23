@@ -47,7 +47,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("UanCwExample");
+NS_LOG_COMPONENT_DEFINE ("UanCwExample");
 
 Experiment::Experiment () 
   : m_numNodes (15),
@@ -115,7 +115,7 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
 
-  while (packet = socket->Recv())
+  while (packet = socket->Recv ())
     {
       m_bytesTotal += packet->GetSize ();
     }
@@ -178,8 +178,8 @@ Experiment::Run (UanHelper &uan)
     mobility.Install (nc);
 
     PacketSocketAddress socket;
-    socket.SetSingleDevice (sinkdev.Get(0)->GetIfIndex ());
-    socket.SetPhysicalAddress (sinkdev.Get(0)->GetAddress ());
+    socket.SetSingleDevice (sinkdev.Get (0)->GetIfIndex ());
+    socket.SetPhysicalAddress (sinkdev.Get (0)->GetAddress ());
     socket.SetProtocol (0);
 
     OnOffHelper app ("ns3::PacketSocketFactory", Address (socket));

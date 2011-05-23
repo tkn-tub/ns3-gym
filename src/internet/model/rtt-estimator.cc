@@ -104,10 +104,10 @@ RttEstimator::RttEstimator () : next (1), history (),
 }
 
 RttEstimator::RttEstimator(const RttEstimator& c)
-  : Object (c), next(c.next), history(c.history), 
-    m_maxMultiplier (c.m_maxMultiplier), est(c.est),
-    minrto(c.minrto), nSamples(c.nSamples),
-    multiplier(c.multiplier)
+  : Object (c), next (c.next), history (c.history),
+    m_maxMultiplier (c.m_maxMultiplier), est (c.est),
+    minrto (c.minrto), nSamples (c.nSamples),
+    multiplier (c.multiplier)
 {
 }
 
@@ -151,14 +151,14 @@ Time RttEstimator::AckSeq (SequenceNumber32 a)
   if (!h.retx && a >= (h.seq + SequenceNumber32 (h.count)))
     { // Ok to use this sample
       m = Simulator::Now () - h.time; // Elapsed time
-      Measurement(m);                // Log the measurement
-      ResetMultiplier();             // Reset multiplier on valid measurement
+      Measurement (m);                // Log the measurement
+      ResetMultiplier ();             // Reset multiplier on valid measurement
     }
   // Now delete all ack history with seq <= ack
-  while(history.size() > 0)
+  while(history.size () > 0)
     {
       RttHistory& h = history.front ();
-      if ((h.seq + SequenceNumber32(h.count)) > a) break;                // Done removing
+      if ((h.seq + SequenceNumber32 (h.count)) > a) break;               // Done removing
       history.pop_front (); // Remove
     }
   return m;

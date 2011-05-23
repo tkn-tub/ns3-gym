@@ -102,7 +102,7 @@ NixVector::AddNeighborIndex (uint32_t newBits, uint32_t numberOfBits)
         {
           // can't add any more to this vector, so 
           // start a new one
-          m_nixVector.push_back(newBits);
+          m_nixVector.push_back (newBits);
 
           // also reset number of bits in
           // m_currentVectorBitSize
@@ -263,7 +263,7 @@ NixVector::Serialize (uint32_t* buffer, uint32_t maxSize) const
       if (size + 4 <= maxSize)
         {
           size += 4;
-          *p++ = m_nixVector.at(j);
+          *p++ = m_nixVector.at (j);
         }
       else
         {

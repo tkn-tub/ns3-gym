@@ -64,7 +64,7 @@ public:
 };
 
 Ipv6ListRoutingNegativeTestCase::Ipv6ListRoutingNegativeTestCase()
-  : TestCase("Check negative priorities")
+  : TestCase ("Check negative priorities")
 {
 }
 void
@@ -92,7 +92,7 @@ public:
 };
 
 Ipv6ListRoutingPositiveTestCase::Ipv6ListRoutingPositiveTestCase()
-  : TestCase("Check positive priorities")
+  : TestCase ("Check positive priorities")
 {
 }
 void
@@ -121,10 +121,10 @@ static class Ipv6ListRoutingTestSuite : public TestSuite
 {
 public:
   Ipv6ListRoutingTestSuite()
-    : TestSuite("ipv6-list-routing", UNIT)
+    : TestSuite ("ipv6-list-routing", UNIT)
   {
-    AddTestCase(new Ipv6ListRoutingPositiveTestCase());
-    AddTestCase(new Ipv6ListRoutingNegativeTestCase());
+    AddTestCase (new Ipv6ListRoutingPositiveTestCase ());
+    AddTestCase (new Ipv6ListRoutingNegativeTestCase ());
   }
 
 } g_ipv6ListRoutingTestSuite;

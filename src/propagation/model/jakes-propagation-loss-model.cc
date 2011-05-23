@@ -114,7 +114,7 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (Ptr<const JakesPropagation
             floor (m_phases[i][j] / 2.0 / JakesPropagationLossModel::PI);
           fading.real += jakes->m_amp[j].real * cos (m_phases[i][j]);
           fading.imag += jakes->m_amp[j].imag * cos (m_phases[i][j]);
-          norm += sqrt(pow (jakes->m_amp[j].real, 2) + pow(jakes->m_amp[j].imag, 2));
+          norm += sqrt (pow (jakes->m_amp[j].real, 2) + pow (jakes->m_amp[j].imag, 2));
         }
       coef.real += fading.real;
       coef.imag += fading.imag;
@@ -198,13 +198,13 @@ JakesPropagationLossModel::SetNOscillators (uint8_t nOscillators)
   delete [] m_amp;
   uint16_t N = 4 * m_nOscillators + 2;
   m_amp = new ComplexNumber[m_nOscillators + 1];
-  m_amp[0].real = 2.0 * sqrt(2.0 / N) * cos (PI / 4.0);
-  m_amp[0].imag = 2.0 * sqrt(2.0 / N) * sin (PI / 4.0);
+  m_amp[0].real = 2.0 * sqrt (2.0 / N) * cos (PI / 4.0);
+  m_amp[0].imag = 2.0 * sqrt (2.0 / N) * sin (PI / 4.0);
   for (uint8_t i = 1; i <= m_nOscillators; i++) 
     {
       double beta = PI * (double)i / m_nOscillators;
-      m_amp[i].real = 4.0 * cos (beta) / sqrt(N);
-      m_amp[i].imag = 4.0 * sin (beta) / sqrt(N);
+      m_amp[i].real = 4.0 * cos (beta) / sqrt (N);
+      m_amp[i].imag = 4.0 * sin (beta) / sqrt (N);
     }
 }
 

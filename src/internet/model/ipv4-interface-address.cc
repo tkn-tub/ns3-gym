@@ -22,7 +22,7 @@
 #include "ns3/assert.h"
 #include "ipv4-interface-address.h"
 
-NS_LOG_COMPONENT_DEFINE("Ipv4InterfaceAddress");
+NS_LOG_COMPONENT_DEFINE ("Ipv4InterfaceAddress");
 
 namespace ns3 {
 
@@ -133,7 +133,7 @@ Ipv4InterfaceAddress::SetPrimary (void)
 std::ostream& operator<< (std::ostream& os, const Ipv4InterfaceAddress &addr)
 { 
   os << "m_local=" << addr.GetLocal () << "; m_mask=" <<
-  addr.GetMask () << "; m_broadcast=" << addr.GetBroadcast () << "; m_scope=" << addr.GetScope() <<
+  addr.GetMask () << "; m_broadcast=" << addr.GetBroadcast () << "; m_scope=" << addr.GetScope () <<
   "; m_secondary=" << addr.IsSecondary ();
   return os;
 } 

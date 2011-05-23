@@ -382,7 +382,7 @@ Packet::CopyData (uint8_t *buffer, uint32_t size) const
 }
 
 void
-Packet::CopyData(std::ostream *os, uint32_t size) const
+Packet::CopyData (std::ostream *os, uint32_t size) const
 {
   return m_buffer.CopyData (os, size);
 }

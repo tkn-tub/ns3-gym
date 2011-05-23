@@ -59,7 +59,7 @@ public:
 };
 
 Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
-  : TestCase("Check negative priorities")
+  : TestCase ("Check negative priorities")
 {
 }
 void
@@ -87,7 +87,7 @@ public:
 };
 
 Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
-  : TestCase("Check positive priorities")
+  : TestCase ("Check positive priorities")
 {
 }
 void
@@ -116,10 +116,10 @@ static class Ipv4ListRoutingTestSuite : public TestSuite
 {
 public:
   Ipv4ListRoutingTestSuite()
-    : TestSuite("ipv4-list-routing", UNIT)
+    : TestSuite ("ipv4-list-routing", UNIT)
   {
-    AddTestCase(new Ipv4ListRoutingPositiveTestCase());
-    AddTestCase(new Ipv4ListRoutingNegativeTestCase());
+    AddTestCase (new Ipv4ListRoutingPositiveTestCase ());
+    AddTestCase (new Ipv4ListRoutingNegativeTestCase ());
   }
 
 } g_ipv4ListRoutingTestSuite;

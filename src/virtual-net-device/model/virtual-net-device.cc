@@ -117,7 +117,7 @@ VirtualNetDevice::~VirtualNetDevice()
 }
 
 
-void VirtualNetDevice::DoDispose()
+void VirtualNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;

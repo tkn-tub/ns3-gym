@@ -194,7 +194,7 @@ public:
   }
   virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
     FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6,T7,T8,T9> const *otherDerived = 
-      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6,T7,T8,T9> const *> (PeekPointer(other));
+      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6,T7,T8,T9> const *> (PeekPointer (other));
     if (otherDerived == 0)
       {
         return false;
@@ -328,7 +328,7 @@ protected:
   CallbackBase (Ptr<CallbackImplBase> impl) : m_impl (impl) {}
   Ptr<CallbackImplBase> m_impl;
 
-  static std::string Demangle(const std::string& mangled);
+  static std::string Demangle (const std::string& mangled);
 };
 
 /**
@@ -974,7 +974,7 @@ private:
   CallbackBase m_value;
 };
 
-ATTRIBUTE_ACCESSOR_DEFINE(Callback);
+ATTRIBUTE_ACCESSOR_DEFINE (Callback);
 ATTRIBUTE_CHECKER_DEFINE (Callback);
 
 } // namespace ns3

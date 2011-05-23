@@ -636,16 +636,16 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
 
   //for link-local traffic, we need to determine the interface
-  if (source.IsLinkLocal() ||
-      destination.IsLinkLocal() ||
-      destination.IsAllNodesMulticast() ||
-      destination.IsAllRoutersMulticast() ||
-      destination.IsAllHostsMulticast() ||
-      destination.IsSolicitedMulticast())
+  if (source.IsLinkLocal () ||
+      destination.IsLinkLocal () ||
+      destination.IsAllNodesMulticast () ||
+      destination.IsAllRoutersMulticast () ||
+      destination.IsAllHostsMulticast () ||
+      destination.IsSolicitedMulticast ())
     {
       int32_t index = GetInterfaceForAddress (source);
       NS_ASSERT (index >= 0);
-      oif = GetNetDevice(index);
+      oif = GetNetDevice (index);
     }
 
   newRoute = m_routingProtocol->RouteOutput (packet, hdr, oif, err);
@@ -657,7 +657,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   else
     {
       NS_LOG_WARN ("No route to host, drop!");
-      m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), GetInterfaceForDevice(oif));
+      m_dropTrace (hdr, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv6> (), GetInterfaceForDevice (oif));
     }
 }
 
@@ -910,10 +910,10 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<c
   NS_LOG_FUNCTION (this << mrtentry << p << header);
   NS_LOG_LOGIC ("Multicast forwarding logic for node: " << m_node->GetId ());
 
-  std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap();
+  std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap ();
   std::map<uint32_t, uint32_t>::iterator mapIter;
 
-  for (mapIter = ttlMap.begin(); mapIter != ttlMap.end(); mapIter++)
+  for (mapIter = ttlMap.begin (); mapIter != ttlMap.end (); mapIter++)
     {
       uint32_t interfaceId = mapIter->first;
       //uint32_t outputTtl = mapIter->second;  // Unused for now
@@ -954,7 +954,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
     {
       uint8_t buf[2];
-      p->CopyData(buf, sizeof(buf));
+      p->CopyData (buf, sizeof(buf));
       nextHeader = buf[0];
       nextHeaderPosition = buf[1];
     }

@@ -42,12 +42,12 @@ Queue::GetTypeId (void)
 }
 
 Queue::Queue() : 
-  m_nBytes(0), 
-  m_nTotalReceivedBytes(0),
-  m_nPackets(0), 
-  m_nTotalReceivedPackets(0),
-  m_nTotalDroppedBytes(0),
-  m_nTotalDroppedPackets(0)
+  m_nBytes (0),
+  m_nTotalReceivedBytes (0),
+  m_nPackets (0),
+  m_nTotalReceivedPackets (0),
+  m_nTotalDroppedBytes (0),
+  m_nTotalDroppedPackets (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -97,7 +97,7 @@ Queue::Dequeue (void)
       m_nBytes -= packet->GetSize ();
       m_nPackets--;
 
-      NS_LOG_LOGIC("m_traceDequeue (packet)");
+      NS_LOG_LOGIC ("m_traceDequeue (packet)");
       m_traceDequeue (packet);
     }
   return packet;
@@ -149,7 +149,7 @@ uint32_t
 Queue::GetTotalReceivedBytes (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC("returns " << m_nTotalReceivedBytes);
+  NS_LOG_LOGIC ("returns " << m_nTotalReceivedBytes);
   return m_nTotalReceivedBytes;
 }
 
@@ -173,7 +173,7 @@ uint32_t
 Queue::GetTotalDroppedPackets (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC("returns " << m_nTotalDroppedPackets);
+  NS_LOG_LOGIC ("returns " << m_nTotalDroppedPackets);
   return m_nTotalDroppedPackets;
 }
 

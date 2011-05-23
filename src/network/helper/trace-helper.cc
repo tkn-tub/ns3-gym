@@ -31,7 +31,7 @@
 
 #include "trace-helper.h"
 
-NS_LOG_COMPONENT_DEFINE("TraceHelper");
+NS_LOG_COMPONENT_DEFINE ("TraceHelper");
 
 namespace ns3 {
 
@@ -167,7 +167,7 @@ void
 PcapHelper::DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (file << p);
-  file->Write(Simulator::Now(), p);
+  file->Write (Simulator::Now (), p);
 }
 
 AsciiTraceHelper::AsciiTraceHelper ()

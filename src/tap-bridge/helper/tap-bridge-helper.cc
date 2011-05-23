@@ -38,7 +38,7 @@ TapBridgeHelper::TapBridgeHelper (Ipv4Address gateway)
   NS_LOG_FUNCTION_NOARGS ();
   m_deviceFactory.SetTypeId ("ns3::TapBridge");
   SetAttribute ("Gateway", Ipv4AddressValue (gateway));
-  SetAttribute ("Mode", EnumValue(TapBridge::CONFIGURE_LOCAL));
+  SetAttribute ("Mode", EnumValue (TapBridge::CONFIGURE_LOCAL));
 }
 
 void 

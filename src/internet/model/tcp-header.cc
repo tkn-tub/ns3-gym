@@ -37,8 +37,8 @@ TcpHeader::TcpHeader ()
     m_flags (0),
     m_windowSize (0xffff),
     m_urgentPointer (0),
-    m_calcChecksum(false),
-    m_goodChecksum(true)
+    m_calcChecksum (false),
+    m_goodChecksum (true)
 {
 }
 
@@ -221,11 +221,11 @@ void TcpHeader::Serialize (Buffer::Iterator start)  const
     {
       uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(start.GetSize (), headerChecksum);
+      uint16_t checksum = i.CalculateIpChecksum (start.GetSize (), headerChecksum);
 
       i = start;
-      i.Next(16);
-      i.WriteU16(checksum);
+      i.Next (16);
+      i.WriteU16 (checksum);
     }
 }
 uint32_t TcpHeader::Deserialize (Buffer::Iterator start)
@@ -246,7 +246,7 @@ uint32_t TcpHeader::Deserialize (Buffer::Iterator start)
     {
       uint16_t headerChecksum = CalculateHeaderChecksum (start.GetSize ());
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(start.GetSize (), headerChecksum);
+      uint16_t checksum = i.CalculateIpChecksum (start.GetSize (), headerChecksum);
       m_goodChecksum = (checksum == 0);
     }
 

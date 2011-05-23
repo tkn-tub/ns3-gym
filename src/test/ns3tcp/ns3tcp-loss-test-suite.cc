@@ -126,7 +126,7 @@ Ns3TcpLossTestCase::DoSetup (void)
   if (m_writeVectors)
     {
       m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
-      m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+      m_pcapFile.Init (PCAP_LINK_TYPE, PCAP_SNAPLEN);
     }
   else
     {
@@ -188,7 +188,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       uint8_t *actual = new uint8_t[readLen];
       p->CopyData (actual, readLen);
 
-      uint32_t result = memcmp(actual, expected, readLen);
+      uint32_t result = memcmp (actual, expected, readLen);
 
       delete [] actual;
 

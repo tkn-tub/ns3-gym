@@ -45,8 +45,8 @@ NS_LOG_COMPONENT_DEFINE ("NixSimpleExample");
 int
 main (int argc, char *argv[])
 {
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
   NodeContainer nodes12;
   nodes12.Create (2);
@@ -56,7 +56,7 @@ main (int argc, char *argv[])
   nodes23.Create (1);
 
   NodeContainer nodes34;
-  nodes34.Add(nodes23.Get (1));
+  nodes34.Add (nodes23.Get (1));
   nodes34.Create (1);
 
   PointToPointHelper pointToPoint;

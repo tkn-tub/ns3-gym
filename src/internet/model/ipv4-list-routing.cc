@@ -72,7 +72,7 @@ void
 Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () 
-                        << " Time: " << Simulator::Now().GetSeconds () << "s "
+                        << " Time: " << Simulator::Now ().GetSeconds () << "s "
                         << "Ipv4ListRouting table" << std::endl;
   for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)
@@ -142,7 +142,7 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
       NS_LOG_LOGIC ("Address "<< header.GetDestination () << " is a match for local delivery");
       if (header.GetDestination ().IsMulticast ())
         {
-          Ptr<Packet> packetCopy = p->Copy();
+          Ptr<Packet> packetCopy = p->Copy ();
           lcb (packetCopy, header, iif);
           retVal = true;
           // Fall through
@@ -210,7 +210,7 @@ Ipv4ListRouting::NotifyInterfaceDown (uint32_t interface)
 void 
 Ipv4ListRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  NS_LOG_FUNCTION(this << interface << address);
+  NS_LOG_FUNCTION (this << interface << address);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
          m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
@@ -222,7 +222,7 @@ Ipv4ListRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress addr
 void 
 Ipv4ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  NS_LOG_FUNCTION(this << interface << address);
+  NS_LOG_FUNCTION (this << interface << address);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
          m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
@@ -234,7 +234,7 @@ Ipv4ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress a
 void 
 Ipv4ListRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_LOG_FUNCTION(this << ipv4);
+  NS_LOG_FUNCTION (this << ipv4);
   NS_ASSERT (m_ipv4 == 0);
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
          m_routingProtocols.begin ();

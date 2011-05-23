@@ -172,8 +172,8 @@ int main (int argc, char *argv[])
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue(phyMode),
-                                "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue (phyMode),
+                                "ControlMode",StringValue (phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);

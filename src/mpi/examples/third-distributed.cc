@@ -94,8 +94,8 @@ main (int argc, char *argv[])
 
   if (verbose)
     {
-      LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-      LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+      LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+      LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
     }
 
   NodeContainer p2pNodes;

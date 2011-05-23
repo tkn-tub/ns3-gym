@@ -135,7 +135,7 @@ int main (int argc, char** argv)
   Ipv6InterfaceContainer i2 = ipv6.Assign (d2);
   i2.SetRouter (0, true);
 
-  stackHelper.PrintRoutingTable(n0);
+  stackHelper.PrintRoutingTable (n0);
 
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r */
   uint32_t packetSize = 1024;

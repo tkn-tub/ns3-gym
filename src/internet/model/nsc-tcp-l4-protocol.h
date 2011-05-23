@@ -102,15 +102,15 @@ private:
   // send_callback is invoked by NSCs 'ethernet driver' to re-inject
   // a packet (i.e. an octet soup consisting of an IP Header, TCP Header
   // and user payload, if any), into ns-3.
-  void send_callback(const void *data, int datalen);
+  void send_callback (const void *data, int datalen);
   // This is called by the NSC stack whenever something of interest
   // has happened, e.g. when data arrives on a socket, a listen socket
   // has a new connection pending, etc.
-  void wakeup();
+  void wakeup ();
   // This is called by the Linux stack RNG initialization.
   // Its also used by the cradle code to add a timestamp to
   // printk/printf/debug output.
-  void gettime(unsigned int *sec, unsigned int *usec);
+  void gettime (unsigned int *sec, unsigned int *usec);
   void AddInterface (void);
   void SoftInterrupt (void);
   friend class NscInterfaceImpl;

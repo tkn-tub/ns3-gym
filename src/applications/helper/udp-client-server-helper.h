@@ -69,7 +69,7 @@ public:
    *          NodeContainer.
    */
   ApplicationContainer Install (NodeContainer c);
-  Ptr<UdpServer> GetServer(void);
+  Ptr<UdpServer> GetServer (void);
 private:
   ObjectFactory m_factory;
   Ptr<UdpServer> m_server;

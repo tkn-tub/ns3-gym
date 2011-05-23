@@ -203,7 +203,7 @@ private:                                                              \
  * Typically invoked from xxx.cc.
  */
 #define ATTRIBUTE_VALUE_IMPLEMENT(type)                                 \
-  ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(type,type)
+  ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (type,type)
 
 
 /**

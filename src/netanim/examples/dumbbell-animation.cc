@@ -61,9 +61,9 @@ int main (int argc, char *argv[])
   pointToPointLeaf.SetDeviceAttribute    ("DataRate", StringValue ("10Mbps"));
   pointToPointLeaf.SetChannelAttribute   ("Delay", StringValue ("1ms"));
 
-  PointToPointDumbbellHelper d(nLeftLeaf, pointToPointLeaf,
-                               nRightLeaf, pointToPointLeaf,
-                               pointToPointRouter);
+  PointToPointDumbbellHelper d (nLeftLeaf, pointToPointLeaf,
+                                nRightLeaf, pointToPointLeaf,
+                                pointToPointRouter);
 
   // Install Stack
   InternetStackHelper stack;
@@ -87,7 +87,7 @@ int main (int argc, char *argv[])
       // Create an on/off app sending packets to the same leaf right side
       AddressValue remoteAddress (InetSocketAddress (d.GetLeftIpv4Address (i), 1000));
       clientHelper.SetAttribute ("Remote", remoteAddress);
-      clientApps.Add(clientHelper.Install (d.GetRight (i)));
+      clientApps.Add (clientHelper.Install (d.GetRight (i)));
     }
 
   clientApps.Start (Seconds (0.0));
@@ -116,6 +116,6 @@ int main (int argc, char *argv[])
   std::cout << "Destroying the simulation" << std::endl;
   Simulator::Destroy ();
   std::cout << "Stopping the animation" << std::endl;
-  anim.StopAnimation();
+  anim.StopAnimation ();
   return 0;
 }

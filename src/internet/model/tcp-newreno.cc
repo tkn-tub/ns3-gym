@@ -113,7 +113,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
     { // Partial ACK, partial window deflation (RFC2582 sec.3 bullet #5 paragraph 3)
       m_cWnd += m_segmentSize;  // increase cwnd
       NS_LOG_INFO ("Partial ACK in fast recovery: cwnd set to " << m_cWnd);
-      TcpSocketBase::NewAck(seq); // update m_nextTxSequence and send new data if allowed by window
+      TcpSocketBase::NewAck (seq); // update m_nextTxSequence and send new data if allowed by window
       DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
       return;
     }

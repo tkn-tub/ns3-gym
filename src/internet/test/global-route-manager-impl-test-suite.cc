@@ -34,15 +34,15 @@ class GlobalRouteManagerImplTestCase : public TestCase
 {
 public:
   GlobalRouteManagerImplTestCase();
-  virtual void DoRun(void);
+  virtual void DoRun (void);
 };
 
 GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()
-  : TestCase("GlobalRouteManagerImplTestCase")
+  : TestCase ("GlobalRouteManagerImplTestCase")
 {
 }
 void
-GlobalRouteManagerImplTestCase::DoRun(void)
+GlobalRouteManagerImplTestCase::DoRun (void)
 {
   CandidateQueue candidate;
 
@@ -218,9 +218,9 @@ static class GlobalRouteManagerImplTestSuite : public TestSuite
 {
 public:
   GlobalRouteManagerImplTestSuite()
-    : TestSuite("global-route-manager-impl", UNIT)
+    : TestSuite ("global-route-manager-impl", UNIT)
   {
-    AddTestCase(new GlobalRouteManagerImplTestCase());
+    AddTestCase (new GlobalRouteManagerImplTestCase ());
   }
 } g_globalRoutingManagerImplTestSuite;
 

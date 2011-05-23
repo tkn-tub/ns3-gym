@@ -938,7 +938,7 @@ CsmaNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& 
   // Place the packet to be sent on the send queue.  Note that the 
   // queue may fire a drop trace, but we will too.
   //
-  if (m_queue->Enqueue(packet) == false)
+  if (m_queue->Enqueue (packet) == false)
     {
       m_macTxDropTrace (packet);
       return false;
@@ -996,7 +996,7 @@ Address CsmaNetDevice::GetMulticast (Ipv6Address addr) const
 {
   Mac48Address ad = Mac48Address::GetMulticast (addr);
 
-  NS_LOG_LOGIC("MAC IPv6 multicast address is " << ad);
+  NS_LOG_LOGIC ("MAC IPv6 multicast address is " << ad);
   return ad;
 }
 

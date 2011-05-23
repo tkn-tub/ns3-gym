@@ -40,11 +40,11 @@ class RngStream {
 public:  //public api
   RngStream ();
   RngStream (const RngStream&);
-  void InitializeStream(); // Separate initialization
+  void InitializeStream (); // Separate initialization
   void ResetStartStream ();
   void ResetStartSubstream ();
   void ResetNextSubstream ();
-  void ResetNthSubstream(uint32_t N);
+  void ResetNthSubstream (uint32_t N);
   void SetAntithetic (bool a);
   void IncreasedPrecis (bool incp);
   bool SetSeeds (const uint32_t seed[6]);
@@ -58,8 +58,8 @@ public: //public static api
   static void GetPackageSeed (uint32_t seed[6]);
   static void SetPackageRun (uint32_t run);
   static uint32_t GetPackageRun (void);
-  static bool CheckSeed(const uint32_t seed[6]);
-  static bool CheckSeed(uint32_t seed);
+  static bool CheckSeed (const uint32_t seed[6]);
+  static bool CheckSeed (uint32_t seed);
 private: //members
   double Cg[6], Bg[6], Ig[6];
   bool anti, incPrec;

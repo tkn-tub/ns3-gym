@@ -328,7 +328,7 @@ RvBatteryModel::Discharge (double load, Time t)
   if (m_timeStamps.size () == 1)
     {
       // constant load
-      calculatedAlpha = m_load[0] * RvModelAFunction (t, t, Seconds(0.0),
+      calculatedAlpha = m_load[0] * RvModelAFunction (t, t, Seconds (0.0),
                                                       m_beta);
     }
   else

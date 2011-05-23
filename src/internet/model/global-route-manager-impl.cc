@@ -320,7 +320,7 @@ SPFVertex::MergeRootExitDirections (const SPFVertex* vertex)
   // Append the external list into 'this' and remove duplication afterward
   const ListOfNodeExit_t& extList = vertex->m_ecmpRootExits;
   m_ecmpRootExits.insert (m_ecmpRootExits.end (), 
-                          extList.begin(), extList.end ());
+                          extList.begin (), extList.end ());
   m_ecmpRootExits.sort ();
   m_ecmpRootExits.unique ();
 }
@@ -1313,7 +1313,7 @@ GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
                                          FindOutgoingInterfaceId (transitLink->GetLinkData ()));
                   NS_LOG_LOGIC ("Inserting default route for node " << myRouterId << " to next hop " << 
                                 lr->GetLinkData () << " via interface " << 
-                                FindOutgoingInterfaceId(transitLink->GetLinkData()));
+                                FindOutgoingInterfaceId (transitLink->GetLinkData ()));
                   return true;
                 }
             }
@@ -1504,7 +1504,7 @@ GlobalRouteManagerImpl::ProcessASExternals (SPFVertex* v, GlobalRoutingLSA* extl
       if ((rlsa->GetLinkStateId ()) == (extlsa->GetAdvertisingRouter ()))
         {
           NS_LOG_LOGIC ("Found advertising router to destination");
-          SPFAddASExternal(extlsa,v);
+          SPFAddASExternal (extlsa,v);
         }
     }
   for (uint32_t i = 0; i < v->GetNChildren (); i++)

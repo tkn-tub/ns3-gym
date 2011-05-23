@@ -39,7 +39,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("WimaxPhyTest");
+NS_LOG_COMPONENT_DEFINE ("WimaxPhyTest");
 
 /*
  * Configure a network with 3 SS and 1 BS

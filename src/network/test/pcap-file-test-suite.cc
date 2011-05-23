@@ -180,7 +180,7 @@ WriteModeCreateTestCase::DoRun (void)
   // data.
   //
   uint8_t buffer[128];
-  memset(buffer, 0, sizeof(buffer));
+  memset (buffer, 0, sizeof(buffer));
   f.Write (0, 0, buffer, 128);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Write (write-only-file " << m_testFilename << 
                          ") returns error");
@@ -390,7 +390,7 @@ AppendModeCreateTestCase::DoRun (void)
   // We should be able to write to it since it was opened in "std::ios::app" mode.
   //
   uint8_t buffer[128];
-  memset(buffer, 0, sizeof(buffer));
+  memset (buffer, 0, sizeof(buffer));
   f.Write (0, 0, buffer, 128);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Write (append-mode-file " << m_testFilename << ") returns error");
 
@@ -582,19 +582,19 @@ FileHeaderTestCase::DoRun (void)
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() magic number");
-  NS_TEST_ASSERT_MSG_EQ (val32, Swap(uint32_t (0xa1b2c3d4)), "Magic number written incorrectly");
+  NS_TEST_ASSERT_MSG_EQ (val32, Swap (uint32_t (0xa1b2c3d4)), "Magic number written incorrectly");
 
   result = fread (&val16, sizeof(val16), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() version major");
-  NS_TEST_ASSERT_MSG_EQ (val16, Swap(uint16_t (2)), "Version major written incorrectly");
+  NS_TEST_ASSERT_MSG_EQ (val16, Swap (uint16_t (2)), "Version major written incorrectly");
 
   result = fread (&val16, sizeof(val16), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() version minor");
-  NS_TEST_ASSERT_MSG_EQ (val16, Swap(uint16_t (4)), "Version minor written incorrectly");
+  NS_TEST_ASSERT_MSG_EQ (val16, Swap (uint16_t (4)), "Version minor written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() time zone correction");
-  NS_TEST_ASSERT_MSG_EQ (val32, Swap(uint32_t (7)), "Version minor written incorrectly");
+  NS_TEST_ASSERT_MSG_EQ (val32, Swap (uint32_t (7)), "Version minor written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() sig figs");
@@ -602,11 +602,11 @@ FileHeaderTestCase::DoRun (void)
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() snap length");
-  NS_TEST_ASSERT_MSG_EQ (val32, Swap(uint32_t (5678)), "Snap length written incorrectly");
+  NS_TEST_ASSERT_MSG_EQ (val32, Swap (uint32_t (5678)), "Snap length written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() data link type");
-  NS_TEST_ASSERT_MSG_EQ (val32, Swap(uint32_t (1234)), "Data length type written incorrectly");
+  NS_TEST_ASSERT_MSG_EQ (val32, Swap (uint32_t (1234)), "Data length type written incorrectly");
 
   fclose (p);
   p = 0;
@@ -1071,7 +1071,7 @@ DiffTestCase::DoRun (void)
   // Check that PcapDiff(file, file) is false
   //
   std::string filename = NS_TEST_SOURCEDIR + "known.pcap";
-  uint32_t sec(0), usec(0);
+  uint32_t sec (0), usec (0);
   bool diff = PcapFile::Diff (filename, filename, sec, usec);
   NS_TEST_EXPECT_MSG_EQ (diff, false, "PcapDiff(file, file) must always be false");
 

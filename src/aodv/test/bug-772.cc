@@ -73,7 +73,7 @@ Bug772ChainTest::~Bug772ChainTest ()
 void
 Bug772ChainTest::DoRun ()
 {
-  SeedManager::SetSeed(12345);
+  SeedManager::SetSeed (12345);
 
   CreateNodes ();
   CreateDevices ();
@@ -158,9 +158,9 @@ Bug772ChainTest::CheckResults ()
       os1 << NS_TEST_SOURCEDIR << m_prefix << "-" << i << "-0.pcap";
       os2 << GetTempDir () << m_prefix << "-" << i << "-0.pcap";
 
-      uint32_t sec(0), usec(0);
-      bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
+      uint32_t sec (0), usec (0);
+      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec);
+      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
                                                          << " differ starting from " << sec << " s " << usec << " us");
     }
 }

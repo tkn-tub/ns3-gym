@@ -212,8 +212,8 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
    * The ttl value should be set as a socket option, but this is not yet implemented
    */
   SocketIpTtlTag ttl;
-  ttl.SetTtl(255);
-  p->AddPacketTag(ttl);
+  ttl.SetTtl (255);
+  p->AddPacketTag (ttl);
 
   /* send RA */
   NS_LOG_LOGIC ("Send RA");

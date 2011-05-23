@@ -72,7 +72,7 @@ public:
    *
    * \param protocol the protocol type being carried
    */
-  void SetProtocol(uint16_t protocol);
+  void SetProtocol (uint16_t protocol);
 
   /**
    * \brief Get the protocol type carried by this PPP packet
@@ -81,7 +81,7 @@ public:
    *
    * \return the protocol type being carried
    */
-  uint16_t GetProtocol(void);
+  uint16_t GetProtocol (void);
 
 private:
 

@@ -81,7 +81,7 @@ main (int argc, char *argv[])
   internet.Install (n);
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
   NetDeviceContainer d = csma.Install (n);

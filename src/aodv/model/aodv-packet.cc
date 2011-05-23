@@ -141,8 +141,8 @@ operator<< (std::ostream & os, TypeHeader const & h)
 //-----------------------------------------------------------------------------
 RreqHeader::RreqHeader (uint8_t flags, uint8_t reserved, uint8_t hopCount, uint32_t requestID, Ipv4Address dst,
                         uint32_t dstSeqNo, Ipv4Address origin, uint32_t originSeqNo) :
-  m_flags (flags), m_reserved (reserved), m_hopCount (hopCount), m_requestID (requestID), m_dst(dst),
-  m_dstSeqNo (dstSeqNo), m_origin(origin),  m_originSeqNo (originSeqNo)
+  m_flags (flags), m_reserved (reserved), m_hopCount (hopCount), m_requestID (requestID), m_dst (dst),
+  m_dstSeqNo (dstSeqNo), m_origin (origin),  m_originSeqNo (originSeqNo)
 {
 }
 
@@ -585,7 +585,7 @@ RerrHeader::AddUnDestination (Ipv4Address dst, uint32_t seqNo )
   if (m_unreachableDstSeqNo.find (dst) != m_unreachableDstSeqNo.end ())
     return true;
 
-  NS_ASSERT (GetDestCount() < 255); // can't support more than 255 destinations in single RERR
+  NS_ASSERT (GetDestCount () < 255); // can't support more than 255 destinations in single RERR
   m_unreachableDstSeqNo.insert (std::make_pair (dst, seqNo));
   return true;
 }

@@ -155,7 +155,7 @@ private:
   /* for printing of nix-vector */
   void DumpNixVector (std::ostream &os) const;
   /* for printing of nix-vector */
-  friend std::ostream & operator <<( std::ostream &outs, const NixVector &nix);
+  friend std::ostream & operator << ( std::ostream &outs, const NixVector &nix);
 
   /* the actual nix-vector */
   NixBits_t m_nixVector;

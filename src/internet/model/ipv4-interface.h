@@ -127,7 +127,7 @@ public:
    * This method will eventually call the private
    * SendTo method which must be implemented by subclasses.
    */ 
-  void Send(Ptr<Packet> p, Ipv4Address dest);
+  void Send (Ptr<Packet> p, Ipv4Address dest);
 
   /**
    * \param address The Ipv4InterfaceAddress to add to the interface

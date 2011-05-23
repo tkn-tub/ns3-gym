@@ -44,7 +44,7 @@
 
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE("TcpTestSuite");
+NS_LOG_COMPONENT_DEFINE ("TcpTestSuite");
 
 namespace ns3 {
 
@@ -255,7 +255,7 @@ TcpTestCase::CreateInternetNode ()
   Ptr<Node> node = CreateObject<Node> ();
   //ARP
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject(arp);
+  node->AggregateObject (arp);
   //IPV4
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   //Routing for Ipv4
@@ -263,16 +263,16 @@ TcpTestCase::CreateInternetNode ()
   ipv4->SetRoutingProtocol (ipv4Routing);
   Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
   ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
-  node->AggregateObject(ipv4);
+  node->AggregateObject (ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
-  node->AggregateObject(icmp);
+  node->AggregateObject (icmp);
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject(udp); 
+  node->AggregateObject (udp);
   //TCP
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
-  node->AggregateObject(tcp);
+  node->AggregateObject (tcp);
   return node;
 }
 
@@ -308,22 +308,22 @@ TcpTestCase::SetupDefaultSim (void)
   Ptr<SocketFactory> sockFactory0 = node0->GetObject<TcpSocketFactory> ();
   Ptr<SocketFactory> sockFactory1 = node1->GetObject<TcpSocketFactory> ();
 
-  Ptr<Socket> server = sockFactory0->CreateSocket();
-  Ptr<Socket> source = sockFactory1->CreateSocket();
+  Ptr<Socket> server = sockFactory0->CreateSocket ();
+  Ptr<Socket> source = sockFactory1->CreateSocket ();
 
   uint16_t port = 50000;
-  InetSocketAddress serverlocaladdr (Ipv4Address::GetAny(), port);
-  InetSocketAddress serverremoteaddr (Ipv4Address(ipaddr0), port);
+  InetSocketAddress serverlocaladdr (Ipv4Address::GetAny (), port);
+  InetSocketAddress serverremoteaddr (Ipv4Address (ipaddr0), port);
 
-  server->Bind(serverlocaladdr);
+  server->Bind (serverlocaladdr);
   server->Listen ();
   server->SetAcceptCallback (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-                             MakeCallback(&TcpTestCase::ServerHandleConnectionCreated,this));
+                             MakeCallback (&TcpTestCase::ServerHandleConnectionCreated,this));
 
-  source->SetRecvCallback (MakeCallback(&TcpTestCase::SourceHandleRecv, this));
+  source->SetRecvCallback (MakeCallback (&TcpTestCase::SourceHandleRecv, this));
   source->SetSendCallback (MakeCallback (&TcpTestCase::SourceHandleSend, this));
 
-  source->Connect(serverremoteaddr);
+  source->Connect (serverremoteaddr);
 }
 
 static class TcpTestSuite : public TestSuite

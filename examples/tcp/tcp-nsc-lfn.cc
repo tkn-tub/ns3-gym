@@ -62,10 +62,10 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   // Here, we define additional command line options.
   // This allows a user to override the defaults set above from the command line.
-  cmd.AddValue("TCP_CONGESTION", "Linux 2.6.26 Tcp Congestion control algorithm to use", tcpCong);
-  cmd.AddValue("error-rate", "Error rate to apply to link", errRate);
-  cmd.AddValue("runtime", "How long the applications should send data (default 120 seconds)", runtime);
-  cmd.AddValue("nscstack", "Set name of NSC stack (shared library) to use (default liblinux2.6.26.so)", nscStack);
+  cmd.AddValue ("TCP_CONGESTION", "Linux 2.6.26 Tcp Congestion control algorithm to use", tcpCong);
+  cmd.AddValue ("error-rate", "Error rate to apply to link", errRate);
+  cmd.AddValue ("runtime", "How long the applications should send data (default 120 seconds)", runtime);
+  cmd.AddValue ("nscstack", "Set name of NSC stack (shared library) to use (default liblinux2.6.26.so)", nscStack);
   cmd.Parse (argc, argv);
 
   NodeContainer n;
@@ -73,19 +73,19 @@ int main (int argc, char *argv[])
 
   PointToPointHelper p2p;
   // create point-to-point link with a bandwidth of 6MBit/s and a large delay (0.5 seconds)
-  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(6 * 1000 * 1000)));
-  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(500)));
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (6 * 1000 * 1000)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (500)));
 
   NetDeviceContainer p2pInterfaces = p2p.Install (n);
   // The default MTU of the p2p link would be 65535, which doesn't work
   // well with our default errRate (most packets would arrive corrupted).
-  p2pInterfaces.Get(0)->SetMtu(1500);
-  p2pInterfaces.Get(1)->SetMtu(1500);
+  p2pInterfaces.Get (0)->SetMtu (1500);
+  p2pInterfaces.Get (1)->SetMtu (1500);
 
   InternetStackHelper internet;
   // The next statement switches the nodes to 'NSC'-Mode.
   // It disables the native ns-3 TCP model and loads the NSC library.
-  internet.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue(nscStack));
+  internet.SetTcp ("ns3::NscTcpL4Protocol","Library",StringValue (nscStack));
   internet.Install (n);
 
   if (tcpCong != "cubic") // make sure we only fail if both --nscstack and --TCP_CONGESTION are used
@@ -100,16 +100,16 @@ int main (int argc, char *argv[])
   ipv4.SetBase ("10.0.0.0", "255.255.255.0");
   Ipv4InterfaceContainer ipv4Interfaces = ipv4.Assign (p2pInterfaces);
 
-  DoubleValue rate(errRate);
-  RandomVariableValue u01(UniformVariable (0.0, 1.0));
+  DoubleValue rate (errRate);
+  RandomVariableValue u01 (UniformVariable (0.0, 1.0));
   Ptr<RateErrorModel> em1 = 
     CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
   Ptr<RateErrorModel> em2 = 
     CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
 
   // This enables the specified errRate on both link endpoints.
-  p2pInterfaces.Get(0)->SetAttribute("ReceiveErrorModel", PointerValue (em1));
-  p2pInterfaces.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue (em2));
+  p2pInterfaces.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em1));
+  p2pInterfaces.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -123,11 +123,11 @@ int main (int argc, char *argv[])
   // This sets up two TCP flows, one from A -> B, one from B -> A.
   for (int i = 0, j = 1; i < 2; j--, i++)
     {
-      Address remoteAddress(InetSocketAddress(ipv4Interfaces.GetAddress (i), servPort));
+      Address remoteAddress (InetSocketAddress (ipv4Interfaces.GetAddress (i), servPort));
       OnOffHelper clientHelper ("ns3::TcpSocketFactory", remoteAddress);
       clientHelper.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
       clientHelper.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-      ApplicationContainer clientApp = clientHelper.Install(n.Get(j));
+      ApplicationContainer clientApp = clientHelper.Install (n.Get (j));
       clientApp.Start (Seconds (1.0 + i));
       clientApp.Stop (Seconds (runtime + 1.0 + i));
     }
@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
   // This tells ns-3 to generate pcap traces.
   p2p.EnablePcapAll ("tcp-nsc-lfn");
 
-  Simulator::Stop (Seconds(900));
+  Simulator::Stop (Seconds (900));
   Simulator::Run ();
   Simulator::Destroy ();
 

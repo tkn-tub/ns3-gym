@@ -56,7 +56,7 @@ HwmpProactiveRegressionTest::~HwmpProactiveRegressionTest ()
 void
 HwmpProactiveRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed(12345);
+  SeedManager::SetSeed (12345);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -94,7 +94,7 @@ HwmpProactiveRegressionTest::InstallApplications ()
   serverApps.Stop (m_time);
   UdpEchoClientHelper echoClient (m_interfaces.GetAddress (0), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue (300));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds(0.5)));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (100));
   ApplicationContainer clientApps = echoClient.Install (m_nodes->Get (4));
   clientApps.Start (Seconds (2.5));
@@ -112,7 +112,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::Dot11sStack", "Root", Mac48AddressValue (Mac48Address ("00:00:00:00:00:0d")));
-  mesh.SetMacType ("RandomStart", TimeValue (Seconds(0.1)));
+  mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
   // 3. setup TCP/IP
@@ -122,7 +122,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   address.SetBase ("10.1.1.0", "255.255.255.0");
   m_interfaces = address.Assign (meshDevices);
   // 4. write PCAP if needed
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string(GetTempDir ())) + PREFIX;
+  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string (GetTempDir ())) + PREFIX;
   wifiPhy.EnablePcapAll (prefix);
 }
 
@@ -136,9 +136,9 @@ HwmpProactiveRegressionTest::CheckResults ()
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
 
-      uint32_t sec(0), usec(0);
-      bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec); // TODO support default PcapWriter snap length here
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
+      uint32_t sec (0), usec (0);
+      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec); // TODO support default PcapWriter snap length here
+      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
                                                          << " differ starting from " << sec << " s " << usec << " us");
     }
 }

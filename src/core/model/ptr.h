@@ -453,7 +453,7 @@ Ptr<T>::~Ptr ()
 {
   if (m_ptr != 0) 
     {
-      m_ptr->Unref();
+      m_ptr->Unref ();
     }
 }
 
@@ -467,7 +467,7 @@ Ptr<T>::operator = (Ptr const& o)
     }
   if (m_ptr != 0) 
     {
-      m_ptr->Unref();
+      m_ptr->Unref ();
     }
   m_ptr = o.m_ptr;
   Acquire ();

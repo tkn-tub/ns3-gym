@@ -68,9 +68,9 @@ public:
    * Called from lower-level layers to send the packet up
    * in the stack. 
    */
-  virtual enum RxStatus Receive(Ptr<Packet> p, 
-                                Ipv4Header const &header,
-                                Ptr<Ipv4Interface> incomingInterface) = 0;
+  virtual enum RxStatus Receive (Ptr<Packet> p,
+                                 Ipv4Header const &header,
+                                 Ptr<Ipv4Interface> incomingInterface) = 0;
 
   /**
    * \param icmpSource the source address of the icmp message

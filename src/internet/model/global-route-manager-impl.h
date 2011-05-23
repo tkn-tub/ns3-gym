@@ -617,7 +617,7 @@ public:
  * ID.
  * @param lsa A pointer to the Link State Advertisement for the router.
  */
-  void Insert(Ipv4Address addr, GlobalRoutingLSA* lsa);
+  void Insert (Ipv4Address addr, GlobalRoutingLSA* lsa);
 
 /**
  * @brief Look up the Link State Advertisement associated with the given
@@ -773,7 +773,7 @@ private:
   void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
   void SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v);
   int32_t FindOutgoingInterfaceId (Ipv4Address a, 
-                                   Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+                                   Ipv4Mask amask = Ipv4Mask ("255.255.255.255"));
 };
 
 } // namespace ns3

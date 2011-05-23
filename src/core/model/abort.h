@@ -115,7 +115,7 @@
  * \see NS_ABORT_IF
  */
 #define NS_ABORT_UNLESS(cond)                                                       \
-  NS_ABORT_IF(!(cond))
+  NS_ABORT_IF (!(cond))
 
 /**
  * \ingroup debugging
@@ -129,6 +129,6 @@
  * \see NS_ABORT_MSG_IF
  */
 #define NS_ABORT_MSG_UNLESS(cond, msg)                                      \
-  NS_ABORT_MSG_IF(!(cond),msg)
+  NS_ABORT_MSG_IF (!(cond),msg)
 
 #endif /* NS3_ABORT_H */

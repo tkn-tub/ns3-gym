@@ -68,7 +68,7 @@ main (int argc, char *argv[])
   n0->AddDevice (net0);
 
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
-  net0->SetQueue(q);
+  net0->SetQueue (q);
 
   // At this point, we have created a single node (Node 0) and a 
   // single PointToPointNetDevice (NetDevice 0) and added a 
@@ -114,7 +114,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("2.  txQueue limit: " << limit.Get () << " packets");
 
   // Now, let's set it to another value (60 packets)
-  txQueue->SetAttribute("MaxPackets", UintegerValue (60));
+  txQueue->SetAttribute ("MaxPackets", UintegerValue (60));
   txQueue->GetAttribute ("MaxPackets", limit);
   NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get () << " packets");
 

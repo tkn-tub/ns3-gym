@@ -100,7 +100,7 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
       if ((*it)->GetQueue ()->IsEmpty ())
         {
           // Get the first packet form the queue.
-          Ptr<Packet> p = enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->at(0)->GetRlcEntity ()->Dequeue ();
+          Ptr<Packet> p = enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->at (0)->GetRlcEntity ()->Dequeue ();
           pb->AddPacket (p);
         }
     }
@@ -112,7 +112,7 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
       if ((*it)->GetQueue ()->IsEmpty ())
         {
           // Get the first packet form the queue.
-          Ptr<Packet> p = enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->at(0)->GetRlcEntity ()->Dequeue ();
+          Ptr<Packet> p = enb->GetRrcEntity ()->GetDownlinkNgbrBearers ()->at (0)->GetRlcEntity ()->Dequeue ();
           pb->AddPacket (p);
         }
     }

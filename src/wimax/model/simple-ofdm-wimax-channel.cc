@@ -150,7 +150,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
   simpleOfdmSendParam * param;
   for (std::list<Ptr<SimpleOfdmWimaxPhy> >::iterator iter = m_phyList.begin (); iter != m_phyList.end (); ++iter)
     {
-      Time delay = Seconds(0);
+      Time delay = Seconds (0);
       if (phy != *iter)
         {
           double distance = 0;
@@ -158,7 +158,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
           if (receiverMobility != 0 && senderMobility != 0 && m_loss != 0)
             {
               distance = senderMobility->GetDistanceFrom (receiverMobility);
-              delay =  Seconds(distance/300000000.0);
+              delay =  Seconds (distance/300000000.0);
               rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
             }
 
@@ -199,7 +199,7 @@ SimpleOfdmWimaxChannel::EndSendDummyBlock (Ptr<SimpleOfdmWimaxPhy> rxphy, simple
                        param->GetModulationType (),
                        param->GetDirection (),
                        param->GetRxPowerDbm (),
-                       param->GetBurst());
+                       param->GetBurst ());
   delete param;
 }
 }

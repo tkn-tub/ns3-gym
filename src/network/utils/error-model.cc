@@ -214,7 +214,7 @@ RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 }
 
 bool
-RateErrorModel::DoCorruptBit(Ptr<Packet> p)
+RateErrorModel::DoCorruptBit (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed bit error
@@ -295,7 +295,7 @@ void
 ListErrorModel::DoReset (void) 
 { 
   NS_LOG_FUNCTION_NOARGS ();
-  m_packetList.clear();
+  m_packetList.clear ();
 }
 
 //
@@ -363,7 +363,7 @@ void
 ReceiveListErrorModel::DoReset (void) 
 { 
   NS_LOG_FUNCTION_NOARGS ();
-  m_packetList.clear();
+  m_packetList.clear ();
 }
 
 

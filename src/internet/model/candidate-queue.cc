@@ -143,7 +143,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
   for (; i != m_candidates.end (); i++)
     {
       SPFVertex *v = *i;
-      if (v->GetVertexId() == addr)
+      if (v->GetVertexId () == addr)
         {
           return v;
         }

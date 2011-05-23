@@ -1138,8 +1138,8 @@ RoutingProtocol::GetSettlingTime (Ipv4Address address)
         {
           NS_LOG_DEBUG ("Route SettlingTime: " << mainrt.GetSettlingTime ().GetSeconds ()
                                                << " and LifeTime:" << mainrt.GetLifeTime ().GetSeconds ());
-          weightedTime = Time (m_weightedFactor * mainrt.GetSettlingTime ().GetSeconds() + (1.0 - m_weightedFactor)
-                               * mainrt.GetLifeTime ().GetSeconds());
+          weightedTime = Time (m_weightedFactor * mainrt.GetSettlingTime ().GetSeconds () + (1.0 - m_weightedFactor)
+                               * mainrt.GetLifeTime ().GetSeconds ());
           NS_LOG_DEBUG ("Calculated weightedTime:" << weightedTime.GetSeconds ());
           return weightedTime;
         }
