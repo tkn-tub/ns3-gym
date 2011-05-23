@@ -18,6 +18,19 @@ This release is not yet available.
 
 Supported platforms
 -------------------
+ns-3.11 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
+
+- Linux x86_64 Ubuntu 11.04
+  - g++-4.5.2
+- Linux i686 Ubuntu 11.04
+  - g++-4.5.2, g++-4.4.5
+- Linux x86_64 Fedora Core 15
+  - g++-4.6.0
+- Linux x86_64 Fedora Core 14
+  - g++-4.5.3, g++-4.4.6, g++-4.3.4
+- Linux x86_64 Fedora Core 10
+  - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.2, 4.4.0
 
 New user-visible features
 -------------------------
@@ -71,6 +84,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - ./waf --apiscan: fix bug in detection of whether the per-module
    - Remove the 'Modules to build' debug print 
    - CsmaNetDevice ReceiveErrorModel was not dropping the packet
+   - Several "set but not used" bugs for newer compilers quick-fixed
 
    - bug 445 - Is the class name Scalar in nstime.h appropriate?
    - bug 699 - TestCase::DoRun probably should not return a bool
@@ -113,6 +127,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1094 - Object::GetObject upon dlopen 
    - bug 1097 - AODV routing entry set to be VALID mistakenly.
    - bug 1098 - when to show users which modules are enabled?
+   - bug 1101 - Sqlite stats disappeared from configuration file src/wscript
    - bug 1103 - Useless assignment in omnet-data-output.cc
    - bug 1105 - Move topology helpers into separate per-device modules
    - bug 1106 - Remove "CanvasLocation" dependencies in p2p helpers
@@ -124,6 +139,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1131 - Bug in Ipv4L3Protocol::RemoveAddress()
    - bug 1133 - DSDV: Possible bug in settling time calc
    - bug 1142 - Wrong 802.11p Slot time
+   - bug 1146 - help string for test.py with disabled tests
 
 Known issues
 ------------
