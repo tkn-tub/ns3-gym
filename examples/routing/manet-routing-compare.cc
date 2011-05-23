@@ -129,6 +129,9 @@ RoutingExperiment::ReceivePacket (Ptr<Socket> socket)
           InetSocketAddress addr = InetSocketAddress::ConvertFrom (tag.GetAddress ());
           NS_LOG_UNCOND (Simulator::Now ().GetSeconds () <<  " " << socket->GetNode ()->GetId ()
                                                          << " received one packet from " << addr.GetIpv4 ());
+          //cast addr to void, to suppress 'addr' set but not used
+          //compiler warning in optimized builds
+          (void) addr;
         }
       else
         {
