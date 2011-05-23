@@ -22,14 +22,40 @@ Supported platforms
 New user-visible features
 -------------------------
 
+  - The build system has been modularized, and the source code reorganized,
+    to allow for modular libraries instead of a single monolithic ns-3
+    library.   User programs now link a number of smaller, per-module
+    libraries depending on the dependencies expressed to the build system.  
+    Source code is now being maintained in individual modules with
+    consistent directory structures.
+
+  - Python bindings have also been modularized, and the bindings are now
+    generated into a 'ns' namespace instead of 'ns3' for the old
+    (monolithic) bindings.  By default the bindings are now modular, with
+    a backward compatibility layer for older programs.  
+
+  - By default, example and test programs are disabled from the build.
+    Users can enable them via the use of a waf command at configure time,
+    or automatically through the use of a new .ns3rc file.
+
   - int64x64_t is a new type which allows portable and easy to write arithmetic
     calculations that require a high degree of fractional precision.
 
-  - interface to the Click Modular Router and an Ipv4ClickRouting
-    class to allow a node to use Click for external routing
+  - An interface to the Click Modular Router and an Ipv4ClickRouting
+    class has been added, to allow a node to use Click for external routing.
 
-  - interface to an OpenFlow software implementation distribution to allow the 
-    simulation of OpenFlow switches in ns-3
+  - An interface to an OpenFlow software implementation distribution has
+    been added to allow the simulation of OpenFlow switches in ns-3.
+
+  - ns-3 coding style requirements have been applied to the entire coding
+    base, resulting in a large number of whitespace changes.  The coding 
+    style has been automatically enforced by running a style checking 
+    program (utils/check-style.py) that uses the uncrustify (v. 0.58)
+    program to apply changes. 
+
+  - Some documentation reorganization to split documentation between
+    the ns-3 manual (primarily focusing on the ns-3 core) and a new 
+    "model library" document has been started.
 
 Bugs fixed
 ----------
