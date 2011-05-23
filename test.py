@@ -79,6 +79,7 @@ core_valgrind_skip_tests = [
     "ns3-tcp-cwnd",
     "nsc-tcp-loss",
     "ns3-tcp-interoperability",
+    "routing-click",
 ]
 
 # 
