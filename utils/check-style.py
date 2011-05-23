@@ -77,9 +77,6 @@ mod_remove_extra_semicolon=True
 """
     level1 = """
 # extra spaces here and there
-sp_func_proto_paren=Add
-sp_func_def_paren=Add
-sp_func_call_paren=Add
 sp_brace_typedef=Add
 sp_enum_assign=Add
 sp_before_sparen=Add
@@ -93,6 +90,9 @@ sp_type_func=Add
 sp_angle_paren=Add
 """
     level0 = """
+sp_func_proto_paren=Add
+sp_func_def_paren=Add
+sp_func_call_paren=Add
 sp_after_semi_for=Ignore
 sp_before_sparen=Ignore
 sp_type_func=Ignore
