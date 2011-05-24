@@ -11,7 +11,11 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-mac-saps.eps \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
-	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/lte-ue-architecture.eps
+
+# specify figures for build process (all eps figures)
+GRAPHS_EPS = \
+	$(FIGURES)/lte-mcs-index.eps
 
 
 # rescale figures as necessary
@@ -36,6 +40,14 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+
+GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
+GRAPHS_PDF = ${GRAPHS_EPS:.eps=.pdf}
+
+GRAPHS = $(GRAPHS_EPS) $(GRAPHS_PNG) $(GRAPHS_PDF)
+
+%.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 # You can set these variables from the command line.
@@ -74,13 +86,15 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 	-rm -f $(IMAGES_PNG)
 	-rm -f $(IMAGES_PDF)
+	-rm -f $(GRAPHS_PNG)
+	-rm -f $(GRAPHS_PDF)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
 	pushd $(BUILDDIR)/frag && ../../pickle-to-xml.py ../pickle/index.fpickle  > navigation.xml && popd
 	cp -r $(BUILDDIR)/pickle/_images $(BUILDDIR)/frag
 
-html:  $(IMAGES) 
+html:  $(IMAGES) ${GRAPHS}
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
@@ -134,14 +148,14 @@ epub:  $(IMAGES)
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-latex:  $(IMAGES)
+latex:  $(IMAGES) ${GRAPHS}
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf:  $(IMAGES)
+latexpdf:  $(IMAGES) ${GRAPHS}
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(BUILDDIR)/latex all-pdf
