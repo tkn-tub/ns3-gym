@@ -152,11 +152,11 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // Test Case 2: fairness check
   
   std::vector<uint16_t> dist;
-  dist.push_back (0);    // User 0 distance
-  dist.push_back (3000);    // User 1 distance
-  dist.push_back (6000);    // User 2 distance
-  dist.push_back (9000);    // User 3 distance
-  dist.push_back (15000);    // User 4 distance
+  dist.push_back (0);    // User 0 distance --> MCS 28
+  dist.push_back (3000);    // User 1 distance --> MCS 24
+  dist.push_back (6000);    // User 2 distance --> MCS 16
+  dist.push_back (9000);    // User 3 distance --> MCS 12
+  dist.push_back (15000);    // User 4 distance --> MCS 6
   std::vector<uint32_t> estThrPfDl;
   estThrPfDl.push_back (89000); // User 0 estimated TTI throughput from PF
   estThrPfDl.push_back (55000); // User 1 estimated TTI throughput from PF
