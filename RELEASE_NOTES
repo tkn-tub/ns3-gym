@@ -31,6 +31,8 @@ available on all platforms; check the Installation page on the project wiki.
   - g++-4.5.3, g++-4.4.6, g++-4.3.4
 - Linux x86_64 Fedora Core 10
   - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.2, 4.4.0
+- OS X Snow Leopard
+  - g++-4.2.1 
 
 New user-visible features
 -------------------------
