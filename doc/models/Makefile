@@ -16,10 +16,7 @@ SOURCES = \
 	source/organization.rst \
 	source/internet-models.rst \
 	source/network.rst \
-	source/devices.rst \
-	source/routing.rst \
 	source/emulation-overview.rst \
-	source/support.rst \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
