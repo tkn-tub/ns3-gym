@@ -98,9 +98,6 @@ contribute to |ns3| like they have for ns-2:
   <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_; 
 * Open `bug tracker
   <http://www.nsnam.org/bugzilla>`_;
-* |ns3| developers will gladly help potential contributors to get
-  started with the simulator (please contact `one of us
-  <http://www.nsnam.org/people.html>`_).
 
 We realize that if you are reading this document, contributing back to 
 the project is probably not your foremost concern at this point, but
