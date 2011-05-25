@@ -24,6 +24,7 @@ SOURCES = \
 	$(SRC)/bridge/doc/bridge.rst \
 	$(SRC)/click/doc/click.rst \
 	$(SRC)/csma/doc/csma.rst \
+	$(SRC)/dsdv/doc/dsdv.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/emu/doc/emu.rst \

@@ -24,6 +24,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    bridge
    click
    csma
+   dsdv
    emulation-overview
    energy
    flow-monitor
