@@ -50,28 +50,25 @@ Some elements of protocol operation aren't described in the RFC. These
 elements generally concern cooperation of different OSI model layers.
 The model uses the following heuristics:
 
-#. This AODV implementation can detect the presence of unidirectional 
-links and avoid them if necessary.  If the node the model receives an
-RREQ for is a neighbor, the cause may be a unidirectional link.
-This heuristic is taken from AODV-UU implementation and can be disabled.
-
-#. Protocol operation strongly depends on broken link detection mechanism. 
-The model implements two such heuristics.  First, this implementation 
-support HELLO messages. However HELLO messages are not a good way to 
-perform neighbor sensing in a wireless environment (at least not over 
-802.11). Therefore, one may experience bad performance when running over 
-wireless.  There are several reasons for this:
-##. HELLO messages are broadcasted. In 802.11, broadcasting is often done at a 
-lower bit rate than unicasting, thus HELLO messages can travel further 
-than unicast data.
-##. HELLO messages are small, thus less prone to bit errors than 
-data transmissions.
-##. Broadcast transmissions are not guaranteed to be bidirectional, 
-unlike unicast transmissions.  
-Second, we use layer 2 feedback when possible. Link are considered to be 
-broken if frame transmission results in a transmission failure for all 
-retries. This mechanism is meant for active links and works faster than
-the first method.
+* This AODV implementation can detect the presence of unidirectional 
+  links and avoid them if necessary.  If the node the model receives an
+  RREQ for is a neighbor, the cause may be a unidirectional link.
+  This heuristic is taken from AODV-UU implementation and can be disabled.
+* Protocol operation strongly depends on broken link detection mechanism. 
+  The model implements two such heuristics.  First, this implementation 
+  support HELLO messages. However HELLO messages are not a good way to 
+  perform neighbor sensing in a wireless environment (at least not over 
+  802.11). Therefore, one may experience bad performance when running over 
+  wireless.  There are several reasons for this: 1) HELLO messages are 
+  broadcasted. In 802.11, broadcasting is often done at a 
+  lower bit rate than unicasting, thus HELLO messages can travel further 
+  than unicast data. 2) HELLO messages are small, thus less prone to 
+  bit errors than data transmissions, and 3) Broadcast transmissions are 
+  not guaranteed to be bidirectional, unlike unicast transmissions.  
+  Second, we use layer 2 feedback when possible. Link are considered to be 
+  broken if frame transmission results in a transmission failure for all 
+  retries. This mechanism is meant for active links and works faster than
+  the first method.
 
 The layer 2 feedback implementation relies on the ``TxErrHeader`` trace source, 
 currently supported in AdhocWifiMac only.
@@ -81,6 +78,7 @@ Scope and Limitations
 
 The model is for IPv4 only.  The following optional protocol optimizations 
 are not implemented:
+
 #. Expanding ring search.
 #. Local link repair.
 #. RREP, RREQ and HELLO message extensions.
@@ -98,7 +96,6 @@ No announced plans.
 
 References
 ++++++++++
-
 
 .. [rfc3561] RFC 3561 *Ad hoc On-Demand Distance Vector (AODV) Routing*
 
