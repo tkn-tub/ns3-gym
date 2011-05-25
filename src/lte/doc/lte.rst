@@ -145,8 +145,8 @@ based on the information provided by the class :cpp:class:`ns3::IpcsClassifierRe
 The MAC Entity
 ##############
 
-Class :cpp:class:`ns3::MacEntity` provides a basic implementation of the MAC entity for 
-the LTE device. Moreover, :cpp:class:`ns3::EnbMacEntity` and :cpp:class:`ns3::UeMacEntity classes, 
+Class ``ns3::MacEntity`` provides a basic implementation of the MAC entity for 
+the LTE device. Moreover, ``ns3::EnbMacEntity`` and ``ns3::UeMacEntity`` classes, 
 inherited from the previous one, provides an implementation for the eNB and the UE MAC entity, 
 respectively. 
 In all MAC entities is defined the AMC module [4]_. Furthermore, into the 

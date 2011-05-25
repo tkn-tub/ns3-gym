@@ -125,27 +125,26 @@ and PER models for calculation of SINR and probability of error.
 
 Several simple example PER and SINR models have been created.
 a) The PER models
-   - Default (simple) PER model (``ns3::UanPhyPerGenDefault``):  The Default PER model tests the packet against a threshold and
-     assumes error (with prob. 1) if the SINR is below the threshold or success if the SINR is above
-     the threshold
-   - Micromodem FH-FSK PER (``ns3::UanPhyPerUmodem``).  The FH-FSK PER model calculates probability of error assuming a
-     rate 1/2 convolutional code with constraint length 9 and a CRC check capable of correcting
-     up to 1 bit error.  This is similar to what is used in the receiver of the WHOI Micromodem.
+- Default (simple) PER model (``ns3::UanPhyPerGenDefault``):  The Default PER model tests the packet against a threshold and
+assumes error (with prob. 1) if the SINR is below the threshold or success if the SINR is above
+the threshold
+- Micromodem FH-FSK PER (``ns3::UanPhyPerUmodem``).  The FH-FSK PER model calculates probability of error assuming a
+rate 1/2 convolutional code with constraint length 9 and a CRC check capable of correcting
+up to 1 bit error.  This is similar to what is used in the receiver of the WHOI Micromodem.
 
 b) SINR models
 - Default Model (``ns3::UanPhyCalcSinrDefault``), The default SINR model assumes that all transmitted energy is captured at the receiver
-  and that there is no ISI.  Any received signal power from interferes acts as additional
-  ambient noise.
+and that there is no ISI.  Any received signal power from interferes acts as additional ambient noise.
 - FH-FSK SINR Model (``ns3::UanPhyCalcSinrFhFsk``), The WHOI Micromodem operating in FH-FSK mode uses a predetermined hopping
-  pattern that is shared by all nodes in the network.  We model this by only including signal
-  energy receiving within one symbol time (as given by ``ns3::UanTxMode``) in calculating the
-  received signal power.  A channel clearing time is given to the FH-FSK SINR model via attribute.
-  Any signal energy arriving in adjacent signals (after a symbol time and the clearing time) is
-  considered ISI and is treated as additional ambient noise.   Interfering signal arrivals inside
-  a symbol time (any symbol time) is also counted as additional ambient noise
+pattern that is shared by all nodes in the network.  We model this by only including signal
+energy receiving within one symbol time (as given by ``ns3::UanTxMode``) in calculating the
+received signal power.  A channel clearing time is given to the FH-FSK SINR model via attribute.
+Any signal energy arriving in adjacent signals (after a symbol time and the clearing time) is
+considered ISI and is treated as additional ambient noise.   Interfering signal arrivals inside
+a symbol time (any symbol time) is also counted as additional ambient noise
 - Frequency filtered SINR (``ns3::UanPhyCalcSinrDual``).  This SINR model calculates SINR in the same manner
-  as the default model.  This model however only considers interference if there is an overlap in frequency
-  of the arriving packets as determined by UanTxMode.
+as the default model.  This model however only considers interference if there is an overlap in frequency
+of the arriving packets as determined by UanTxMode.
 
 In addition to the generic PHY a dual phy layer is also included (``ns3::UanPhyDual``).  This wraps two
 generic phy layers together to model a net device which includes two receivers.  This was primarily

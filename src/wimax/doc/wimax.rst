@@ -156,7 +156,7 @@ The WimaxNetDevice makes heavy use of the |ns3| :ref:`Attributes` subsystem for
 configuration and default value management.  Presently, approximately 60 values
 are stored in this system.
 
-For instance, class :cpp:class:`ns-3::SimpleOfdmWimaxPhy` exports these
+For instance, class ``ns-3::SimpleOfdmWimaxPhy`` exports these
 attributes:
 
 * NoiseFigure:  Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
@@ -207,15 +207,13 @@ three layers:
 * Physical (PHY) layer
 
 
-The following figure :ref:`WimaxArchitecture` shows the relationships of these
+The following figure :ref:`wimax-architecture` shows the relationships of these
 models.
 
 .. _wimax-architecture:
 
 .. figure:: figures/WimaxArchitecture.*
    
-   WiMAX architecture.
-
 Convergence Sublayer 
 ++++++++++++++++++++
  

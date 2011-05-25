@@ -14,6 +14,8 @@ Interface (MPI) is used, along with a new distributed simulator class.
 Currently, dividing a simulation for distributed purposes in |ns3| can only occur
 across point-to-point links.
 
+.. _current-implementation-details:
+
 Current Implementation Details
 ******************************
 
@@ -179,7 +181,7 @@ system ids:::
 Next, where the simulation is divided is determined by the placement of 
 point-to-point links. If a point-to-point link is created between two 
 nodes with different system ids, a remote point-to-point link is created, 
-as described in :ref:`Current Implementation Details`.
+as described in :ref:`current-implementation-details`.
 
 Finally, installing applications only on the LP associated with the target node
 is very important. For example, if a traffic generator is to be placed on node
