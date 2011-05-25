@@ -89,15 +89,15 @@ community to develop new models, debug or maintain existing ones, and share
 results.  There are a few policies that we hope will encourage people to 
 contribute to |ns3| like they have for ns-2:
 
-* Open source licensing based on GNU GPLv2 compatibility;
+* Open source licensing based on GNU GPLv2 compatibility
 * `wiki
-  <http://www.nsnam.org/wiki/index.php>`_;
+  <http://www.nsnam.org/wiki/index.php>`_
 * `Contributed Code
   <http://www.nsnam.org/wiki/index.php/Contributed_Code>`_ page, similar to ns-2's popular Contributed Code
   `page
-  <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_; 
+  <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_ 
 * Open `bug tracker
-  <http://www.nsnam.org/bugzilla>`_;
+  <http://www.nsnam.org/bugzilla>`_
 
 We realize that if you are reading this document, contributing back to 
 the project is probably not your foremost concern at this point, but
