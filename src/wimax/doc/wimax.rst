@@ -216,7 +216,8 @@ models.
    
    WiMAX architecture.
 
-the Convergence Sublayer ++++++++++++++++++++++++
+Convergence Sublayer 
+++++++++++++++++++++
  
 The Convergence sublayer (CS) provided with this module implements the Packet
 CS, designed to work with the packet-based protocols at higher layers. The CS is
@@ -227,7 +228,8 @@ enables the MAC CPS identifying the Quality of Service (QoS) parameters
 associated to a transport connection and ensuring the QoS requirements. The CS
 currently employs an IP classifier.
  
-IP Packet Classifier ++++++++++++++++++++
+IP Packet Classifier 
+++++++++++++++++++++
  
 An IP packet classifier is used to map incoming packets to appropriate
 connections based on a set of criteria. The classifier maintains a list of
