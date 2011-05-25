@@ -26,7 +26,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'emu'
     headers.source = [
-        'doc/emu.h',
         ]
 
     if not bld.env['ENABLE_EMU']:
