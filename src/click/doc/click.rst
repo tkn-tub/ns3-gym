@@ -5,8 +5,7 @@ Click is a software architecture for building configurable routers.
 By using different combinations of packet processing units called elements,
 a Click router can be made to perform a specific kind of functionality.
 This flexibility provides a good platform for testing and experimenting with
-different protocols. This project aims to integrate ns-3 with the Click
-Modular Router so as to enable rapid protocol development.
+different protocols. 
 
 Model Description
 *****************
@@ -22,10 +21,24 @@ ns-3's design is well suited for an integration with Click due to the following 
 * This also means that any kind of ns-3 traffic generator and transport should work easily on top of Click.
 * By striving to implement click as an Ipv4RoutingProtocol instance, we can avoid significant changes to the LL and MAC layer of the ns-3 code. 
 
-The design goal would be to make the ns-3-click public API simple enough such that the user needs to merely add an Ipv4ClickRouting instance to the node, and inform each Click node of the Click configuration file (.click file) that it is to use. 
+The design goal was to make the ns-3-click public API simple enough such that the user needs to merely add an Ipv4ClickRouting instance to the node, and inform each Click node of the Click configuration file (.click file) that it is to use. 
 
-Developing a Simulator API which will allow ns-3 to talk with Click and vice versa 
-##################################################################################
+This model implements the interface to the Click Modular Router and
+provides the Ipv4ClickRouting class to allow a node to use Click
+for external routing. Unlike normal Ipv4RoutingProtocol sub types,
+Ipv4ClickRouting doesn't use a RouteInput() method, but instead,
+receives a packet on the appropriate interface and processes it
+accordingly. Note that you need to have a routing table type element
+in your Click graph to use Click for external routing. This is needed
+by the RouteOutput() function inherited from Ipv4RoutingProtocol.
+Furthermore, a Click based node uses a different kind of L3 in the
+form of Ipv4L3ClickProtocol, which is a trimmed down version of
+Ipv4L3Protocol. Ipv4L3ClickProtocol passes on packets passing through
+the stack to Ipv4ClickRouting for processing.
+
+
+Developing a Simulator API to allow ns-3 to interact with Click
+###############################################################
 
 Much of the API is already well defined, which allows Click to probe for information from the simulator (like a Node's ID, an Interface ID and so forth). By retaining most of the methods, it should be possible to write new implementations specific to ns-3 for the same functionality.
 
