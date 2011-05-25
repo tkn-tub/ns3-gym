@@ -20,6 +20,7 @@ SOURCES = \
 	source/routing.rst \
 	source/emulation-overview.rst \
 	source/support.rst \
+	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
 	$(SRC)/click/doc/click.rst \
