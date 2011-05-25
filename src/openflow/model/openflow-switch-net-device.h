@@ -15,6 +15,12 @@
  *
  * Author: Blake Hurd  <naimorai@gmail.com>
  */
+
+/**
+ * \defgroup openflow OpenFlow Switch Device
+ * This section documents the API of the ns-3 OpenFlow module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
 #ifdef NS3_OPENFLOW
 
 #ifndef OPENFLOW_SWITCH_NET_DEVICE_H
@@ -47,8 +53,7 @@
 namespace ns3 {
 
 /**
- * \defgroup openflow OpenFlow
- *
+ * \ingroup openflow
  * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
  *
  * The OpenFlowSwitchNetDevice object aggregates multiple netdevices as ports
@@ -77,7 +82,7 @@ namespace ns3 {
  */
 
 /**
- * \ingroup switch
+ * \ingroup openflow 
  * \brief A net device that switches multiple LAN segments via an OpenFlow-compatible flow table
  */
 class OpenFlowSwitchNetDevice : public NetDevice
