@@ -29,6 +29,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup point-to-point
+ */
 class PointToPointRemoteChannel : public PointToPointChannel
 {
 public:

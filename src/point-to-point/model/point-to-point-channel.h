@@ -32,6 +32,7 @@ class PointToPointNetDevice;
 class Packet;
 
 /**
+ * \ingroup point-to-point
  * \brief Simple Point To Point Channel.
  *
  * This class represents a very simple point to point channel.  Think full
