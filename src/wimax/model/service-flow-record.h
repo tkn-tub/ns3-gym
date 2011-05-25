@@ -28,11 +28,13 @@
 #include "ns3/ptr.h"
 
 namespace ns3 {
+
+/**
+ * \ingroup wimax
+ * \brief this class implements a structure to manage some parameters and statistics related to a service flow
+ */
 class ServiceFlowRecord
 {
-  /**
-   * \brief this class implements a structure to manage some parameters and statistics related to a service flow
-   */
 public:
   ServiceFlowRecord (void);
   ~ServiceFlowRecord (void);

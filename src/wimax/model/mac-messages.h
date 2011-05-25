@@ -35,6 +35,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ */
 class ManagementMessageType : public Header
 {
 public:

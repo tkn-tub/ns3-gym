@@ -27,8 +27,10 @@
 
 namespace ns3 {
 
-/*Represents the HT (Header Type) field of generic MAC and bandwidth request headers*/
-
+/**
+ * \ingroup wimax
+ * \brief Represents the HT (Header Type) field of generic MAC and bandwidth request headers
+*/
 class MacHeaderType : public Header
 {
   /**

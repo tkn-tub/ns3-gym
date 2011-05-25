@@ -39,6 +39,7 @@ class WimaxConnection;
 class Cid;
 
 /**
+ * \ingroup wimax
  * \brief This class implements a simple downlink scheduler for rtPS flows.
  *
  * The DL-rtPS-Scheduler assigns the available bandwidth the service flows

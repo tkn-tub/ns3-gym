@@ -29,6 +29,10 @@
 #define SIMPLEOFDMSENDPARAM_H_
 
 namespace ns3 {
+
+/**
+ * \ingroup wimax
+ */
 class simpleOfdmSendParam
 {
 public:

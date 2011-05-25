@@ -37,6 +37,9 @@ class SSRecord;
 class WimaxConnection;
 class BaseStationNetDevice;
 
+/**
+ * \ingroup wimax
+ */
 class BsServiceFlowManager : public ServiceFlowManager
 {
 public:

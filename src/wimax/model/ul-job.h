@@ -38,11 +38,12 @@ enum ReqType
   DATA, UNICAST_POLLING
 };
 
+/**
+ * \ingroup wimax
+ * \brief this class implements a structure to compute the priority of service flows
+ */
 class UlJob : public Object
 {
-  /**
-   * \brief this class implements a structure to compute the priority of service flows
-   */
 public:
   enum JobPriority
   {

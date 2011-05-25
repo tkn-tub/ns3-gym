@@ -31,6 +31,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ */
 class WimaxMacQueue : public Object
 {
 public:

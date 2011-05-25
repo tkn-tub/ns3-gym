@@ -20,7 +20,17 @@
  */
 
 
+#ifndef SNRTOBLOCKERRORRATEMANAGER_H_
+#define SNRTOBLOCKERRORRATEMANAGER_H_
+
+#include "ns3/snr-to-block-error-rate-record.h"
+#include <vector>
+#include "ns3/ptr.h"
+
+namespace ns3 {
+
 /**
+ * \ingroup wimax
  * \brief This class handles the  SNR to BlcER traces.  A path to a repository containing trace files should be provided.
  * If no repository is provided the traces form default-traces.h will be loaded.
  * A valid repository should contain 7 files, one for each modulation and coding scheme.
@@ -33,15 +43,6 @@
  *  ...           ...       ...          ...                      ...                        ...
  * SNR_value(n)   BER(n)    Blc_ER(n)    STANDARD_DEVIATION(n)    CONFIDENCE_INTERVAL1(n)    CONFIDENCE_INTERVAL2(n)
  */
-#ifndef SNRTOBLOCKERRORRATEMANAGER_H_
-#define SNRTOBLOCKERRORRATEMANAGER_H_
-
-#include "ns3/snr-to-block-error-rate-record.h"
-#include <vector>
-#include "ns3/ptr.h"
-
-namespace ns3 {
-
 class SNRToBlockErrorRateManager
 {
 public:

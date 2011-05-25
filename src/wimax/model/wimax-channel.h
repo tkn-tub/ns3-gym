@@ -33,6 +33,9 @@ class Packet;
 class Position;
 class PacketBurst;
 
+/**
+ * \ingroup wimax
+ */
 class WimaxChannel : public Channel
 {
 public:
