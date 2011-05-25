@@ -40,6 +40,12 @@ namespace ns3 {
 class Queue;
 
 /**
+ * \defgroup emu EmuNetDevice
+ * This section documents the API of the ns-3 emu module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
+/**
+ * \ingroup emu
  * \class EmuNetDevice
  * \brief A Device for an Emu Network Link.
  */
