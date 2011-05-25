@@ -34,6 +34,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    mesh
    distributed
    network
+   olsr
    openflow-switch
    point-to-point
    propagation

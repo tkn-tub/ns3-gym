@@ -47,6 +47,10 @@
 namespace ns3 {
 namespace olsr {
 
+///
+/// \defgroup olsr OLSR Routing
+/// This section documents the API of the ns-3 OLSR module. For a generic 
+/// functional description, please refer to the ns-3 manual.
 
 /// An %OLSR's routing table entry.
 struct RoutingTableEntry
