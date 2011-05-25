@@ -42,7 +42,7 @@ Developing a Simulator API to allow ns-3 to interact with Click
 
 Much of the API is already well defined, which allows Click to probe for information from the simulator (like a Node's ID, an Interface ID and so forth). By retaining most of the methods, it should be possible to write new implementations specific to ns-3 for the same functionality.
 
-Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will handle the interaction with Click. The code for the same can be found in ``src/click/model/ipv4-click-routing.[cc,h]``.
+Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will handle the interaction with Click. The code for the same can be found in ``src/click/model/ipv4-click-routing.{cc,h}``.
 
 Packet hand off between ns-3 and Click
 ######################################
@@ -132,7 +132,7 @@ class in your simulation script. For instance::
   click.Install (myNodeContainer);
 
 The example scripts inside ``src/click/examples/`` demonstrate the use of Click based nodes
-in different scenarios. The helper source can be found inside ``src/click/helper/click-internet-stack-helper.[h,cc]``
+in different scenarios. The helper source can be found inside ``src/click/helper/click-internet-stack-helper.{h,cc}``
 
 Examples
 ========
