@@ -14,7 +14,8 @@ Release 3.11
 
 Availability
 ------------
-This release is not yet available.
+This release is available from: 
+http://www.nsnam.org/releases/ns-allinone-3.11.tar.bz2
 
 Supported platforms
 -------------------
@@ -90,6 +91,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
 
    - bug 445 - Is the class name Scalar in nstime.h appropriate?
    - bug 699 - TestCase::DoRun probably should not return a bool
+   - bug 823 - Need finer-grained control over what goes into libns3
    - bug 957 - Issue with test.py
    - bug 1017 - node --> internet-stack --> node
    - bug 1018 - mobility --> helper --> mobility circular dependency
