@@ -15,7 +15,9 @@ IMAGES_EPS = \
 
 # specify figures for build process (all eps figures)
 GRAPHS_EPS = \
-	$(FIGURES)/lte-mcs-index.eps
+	$(FIGURES)/lte-mcs-index.eps \
+	$(FIGURES)/lenaThrTestCase1.eps \
+	$(FIGURES)/lenaThrTestCase2.eps 
 
 
 # rescale figures as necessary
