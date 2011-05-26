@@ -51,18 +51,11 @@ public:
    */
   static int GetMcsFromCqi (int cqi);
 
-  // /**
-  //  * \brief Get the Transport Block Size for a selected MCS
-  //  * \param mcs the mcs index
-  //  * \return the TBs value
-  //  */
-  // static int GetTbSizeFromMcs (int mcs);
-
   /**
   * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 7.1.7.2.1-1 of 36.213)
   * \param mcs the mcs index
   * \param nprb the no. of PRB
-  * \return the TBs value
+  * \return the Transport Block Size in bits
   */
   static int GetTbSizeFromMcs (int mcs, int nprb);
 
@@ -70,7 +63,7 @@ public:
    * \brief Get the spectral efficiency value associated
    * to the received CQI
    * \param cqi the cqi value
-   * \return the spectral efficiency value
+   * \return the spectral efficiency in (bit/s)/Hz
    */
   static double GetSpectralEfficiencyFromCqi (int cqi);
 
