@@ -64,8 +64,8 @@ have been considered:
     the API defined in [FFAPI]_. Neither
     binary nor data structure compatibility with vendor-specific implementations
     of the same interface are expected; hence, a compatibility layer should be
-    interposed whenever a vendor-specific MAC scheduler is to be used with the
-    simulator. This requirement is necessary to allow the
+    interposed whenever a vendor-specific MAC scheduler is to be used
+    with the simulator. This requirement is necessary to allow the
     simulator to be independent from vendor-specific implementations of this
     interface specification. We note that [FFAPI]_ is a logical
     specification only, and its implementation (e.g., translation to some specific
@@ -192,7 +192,9 @@ in the downlink direction, the scheduler has to fill some specific fields of the
 DCI structure with all the information, such as: the Modulation and Coding
 Scheme (MCS) to be used, the MAC Transport Block (TB) size, and the allocation
 bitmap which identifies which RBs will contain the data
-tranmitted by the eNB to each user. For the mapping of resources to
+tranmitted by the eNB to each user. 
+
+For the mapping of resources to
 physical RBs, we adopt a *localized mapping* approach
 (see [Sesia2009]_, Section 9.2.2.1);
 hence in a given subframe each RB is always allocated to the same user in both
@@ -201,7 +203,9 @@ The allocation bitmap can be coded in
 different formats; in this implementation, we considered the *Allocation
 Type 0* defined in [TS36.213]_, according to which the RBs are grouped in
 Resource Block Groups (RBG) of different size determined as a function of the
-Transmission Bandwidth Configuration in use. For certain bandwidth
+Transmission Bandwidth Configuration in use.
+
+For certain bandwidth
 values not all the RBs are usable, since the 
 group size is not a common divisor of the group. This is for instance the case
 when the bandwith is equal to 25 RBs, which results in a RBG size of 2 RBs, and
@@ -211,60 +215,151 @@ can be used because of the SC-FDMA modulation. As a consequence, all
 RBs can be allocated by the eNB regardless of the bandwidth
 configuration. 
 
+Adaptive Modulation and Coding
+++++++++++++++++++++++++++++++
 
+The Adaptive Modulation and Coding (AMC) model that we provide in the
+simulator is a modified version of the model described in [Piro2011]_,
+which in turn is inspired from [Seo2004]_. Our version is described in the
+following. Let :math:`i` denote the
+generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficiency
+:math:`\eta_i` of user :math:`i` using the following equations:
 
-MAC Scheduler Implementations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. math::
 
-In this section we describe the features of the MAC Scheduler Implementations that are included with the simulator. Both these models are well-known from the literature. The reason for their inclusion is twofold: first, they can be used as starting code base for the development of more advanced schedulers; second, they can be used as reference algorithm when doing performance evaluation. With this latter respect, we stress that the use of a publicly available scheduler implementation as the reference for a performance evaluation study is beneficial to the authoritativeness of the study itself.
+   \mathrm{BER} = 0.00005
+
+   \Gamma = \frac{ -\ln{ (5 * \mathrm{BER}) } }{ 1.5}
+
+   \eta_i = \log_2 { \left( 1 + \frac{ {\gamma}_i }{ \Gamma } \right)}
+
+The procedure described in [R1-081483]_ is used to get
+the corresponding MCS scheme. The spectral efficiency is quantized based on the
+CQI (rounding to the lowest value) and is mapped to the corresponding MCS
+scheme. 
+
+Finally, wenote that there are some discrepancies between the MCS index
+in [R1-081483]_
+and that indicated by the standard:  [TS36.213]_ Table
+7.1.7.1-1 says that the MCS index goes from 0 to 31, and 0 appears to be a valid
+MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
+index
+is 1. Hence to get the value as intended by the standard we need to subtract 1
+from the index reported in [R1-081483]_. 
 
 
 Round Robin (RR) Scheduler
 ++++++++++++++++++++++++++
 
-Here we describe the RR scheduler that we implement, providing references from the literature.
+The Round Robin (RR) scheduler is probably the simplest scheduler found in the literature. It works by dividing the
+available resources among the active flows, i.e., those logical channels which have a non-empty RLC queue. If the number of RBGs is greater than the number of active flows, all the flows can be allocated in the same subframe. Otherwise, if the number of active flows is greater than the number of RBGs, not all the flows can be scheduled in a given subframe; then, in the next subframe the allocation will start from the last flow that was not allocated.  The MCS to be adopted for each user is done according to the received wideband CQIs. 
 
 
 Proportional Fair (PF) Scheduler
 ++++++++++++++++++++++++++++++++
 
-Here we describe the PF scheduler that we implement, providing references from the literature.
+The Proportional Fair (PF) scheduler [Sesia2009]_ works by scheduling a user
+when its
+instantaneous channel quality is high relative to its own average channel
+condition over time. Let :math:`i,j` denote generic users; let :math:`t` be the
+subframe index, and :math:`k` be the resource block index; let :math:`M_{i,k}(t)` be MCS
+usable by user :math:`i` on resource block :math:`k` according to what reported by the AMC
+model (see `Adaptive Modulation and Coding`_); finally, let :math:`S(M, B)` be the TB
+size in bits as defined in [TS36.213]_ for the case where a number :math:`B` of
+resource blocks is used. The achievable rate :math:`R_{i}(k,t)` in bit/s for user :math:`i`
+on resource block :math:`k` at subframe :math:`t` is defined as 
 
-Spectrum Model
+.. math::
+
+   R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
+
+where :math:`\tau` is the TTI duration.
+At the start of each subframe :math:`t`, all the RBs are assigned to a certain user.
+In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
+:math:`t` is determined as
+
+.. math::
+
+   \widehat{i}_{k}(t) = \underset{j=1,...,N}{\operatorname{argmax}}
+    \left( \frac{ R_{j}(k,t) }{ T_\mathrm{j}(t) } \right) 
+
+where :math:`T_{j}(t)` is the past througput performance perceived by the
+user :math:`j`.
+According to the above scheduling algorithm, a user can be allocated to
+different RBGs, which can be either adjacent or not, depending on the current
+condition of the channel and the past throughput performance :math:`T_{j}(t)`. The
+latter is determined at the end of the subframe :math:`t` using the following
+exponential moving average approach:
+
+.. math::
+
+   T_{j}(t) = 
+   (1-\frac{1}{\alpha})T_{j}(t-1)
+   +\frac{1}{\alpha} \widehat{T}_{j}(t)
+
+where :math:`\alpha` is the time constant (in number of subframes) of
+the exponential moving average, and :math:`\widehat{T}_{j}(t)` is the actual
+throughput achieved by the user :math:`i` in the subframe :math:`t`. :math:`\widehat{T}_{j}(t)`
+is measured according to the following procedure. First we
+determine the MCS :math:`\widehat{M}_j(t)` actually used by user
+:math:`j`:
+
+.. math::
+
+   \widehat{M}_j(t) = \min_{k: \widehat{i}_{k}(t) = j}{M_{j,k}(t)}
+
+then we determine the total number :math:`\widehat{B}_j(t)` of RBs allocated to user
+:math:`j`:
+
+.. math::
+
+   \widehat{B}_j(t) = \left| \{ k :  \widehat{i}_{k}(t) = j \} \right|
+
+where :math:`|\cdot|` indicates the cardinality of the set; finally, 
+
+.. math::
+
+   \widehat{T}_{j}(t) = \frac{S\left( \widehat{M}_j(t), \widehat{B}_j(t)
+   \right)}{\tau}
+   
+
+
+
+RRC and RLC Models
+++++++++++++++++++++++++++++++
+
+At the time of this writing, the RRC and the RLC models implemented in the simulator are not comprehensive of all the funcionalities defined
+by the 3GPP standard. The RRC mainly includes the procedures for managing the connection of the UEs to the eNBs, and to setup and release the Radio Bearers. The RLC model takes care of the generation of RLC PDUs in response to the notification of transmission opportunities, which are notified by the scheduler using the primitives specified in~\cite{ffapi}. The current RLC implementation simulates saturation conditions, i.e., it assumes that the RLC buffer is always full and can generate a new PDU whenever notified by the scheduler. We note that, although this is an unrealistic traffic model, it still allows for the correct simulation of scenarios with flow belonging to different QoS classes in order to test the QoS performance obtained by different schedulers. This can be done since it is the task of the Scheduler to assign transmission resources based on the characteristics of each Radio Bearer which are specified upon the creation of each Bearer at the start of the simulation.
+
+LTE Spectrum Model
+++++++++++++++++++
+
+The usage of the radio spectrum by eNBs and UEs in LTE is described in
+[TS36.101]_. In the simulator, radio spectrum usage is modeled as follows. 
+Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
+identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
+the Transmission Bandwidth Configuration in number of Resource Blocks. For every
+pair :math:`(f_c,B)` used in the simulation we define a corresponding spectrum
+model using the Spectrum framework framework described
+in [Baldo2009]_.  :math:`f_c` and :math:`B` can be configured for every eNB instantiated
+in the simulation; hence, each eNB can use a different spectrum model. Every UE
+will automatically use the spectrum model of the eNB it is attached to. Using
+the MultiModelSpectrumChannel described in [Baldo2009]_, the interference
+among eNBs that use different spectrum models is properly accounted for. 
+This allows to simulate different spectrum usage policies in the same
+simulation, such as for example the spectrum licensing policies that are
+discussed in [Ofcom2.6GHz]_.
+
+
 
 
 Physical layer
-~~~~~~~~~~~~~~
-The usage of the radio spectrum by eNBs and UEs in LTE is described in [TS36.101]_. 
+++++++++++++++
 
-In the simulator, we model it as follow. for communications is modeled as follows. 
-Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be the Transmission Bandwidth Configuration in number of Resource Blocks. For every pair :math:`(f_c,B)` used in the simulation we create a corresponding spectrum model using the `ns3::Spectrum`` framework of [Baldo2009]_. All these LTE-specific spectrum models are used to simulate different spectrum usage policies in the same simulation, for example allowing the simulation of cognitive radio / dynamic spectrum access strategies for LTE. 
-
-The physical layer model provided in this LTE simulator model supports Frequency Division Duplex (FDD) only.
-
-
-
-Propagation Loss Models
-~~~~~~~~~~~~~~~~~~~~~~~
-NOTE: this information refers to the GSoC model, which as of this writing is not working anymore. 
-
-A proper propagation loss model has been developed for the LTE E-UTRAN interface (see [TS25.814]_ and [Piro2010]_).
-It is used by the PHY layer to compute the loss due to the propagation. 
-
-The LTE propagation loss model is composed by 4 different models (shadowing, multipath, 
-penetration loss and path loss) [TS25.814]_:
-
-* Pathloss: :math:`PL = 128.1 + (37.6 * log10 (R))`, where R is the distance between the 
-  UE and the eNB in Km.
-
-* Multipath: Jakes model
-
-* PenetrationLoss: 10 dB
-
-* Shadowing: log-normal distribution (mean=0dB, standard deviation=8dB)
-
-Every time that the ``LteSpectrumPHY::StartRx ()`` function is called, the 
-``SpectrumInterferenceModel`` is used to computed the SINR, as proposed in [Piro2010]_. Then, 
-the network device uses the AMC module to map the SINR to a proper CQI and to send it 
-to the eNB using the ideal control channel.
+The physical layer model provided in this LTE simulator is based on
+the one described in [Piro2011]_, with the following modifications.  The model now includes the 
+inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. Regarding CQIs in particular, their evaluation
+has been refined to comply with the scheduler interface specification [FFAPI]_. In detail, we considered the generation 
+of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
+in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
 

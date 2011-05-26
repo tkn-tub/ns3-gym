@@ -2,16 +2,13 @@
 
 
 .. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", Wiley, 2009
-}
 
 .. [Baldo2009] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3", 
    Proceedings of ICST NSTools 2009, Pisa, Italy. 
 
-
 .. [Piro2010] Giuseppe Piro, Luigi Alfredo Grieco, Gennaro Boggia, and Pietro Camarda, A Two-level 
    Scheduling Algorithm for QoS Support in the Downlink of LTE Cellular Networks", Proc. of 
    European Wireless, EW2010, Lucca, Italy, Apr., 2010 
-
 
 .. [Kushner2004] H.J. Kushner and P.A. Whiting, "Convergence of proportional-fair sharing algorithms under general conditions", IEEE Trans. on Wireless Communications, July 2004
 
@@ -30,11 +27,9 @@
 
 .. [TS36.213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"
 
-.. [TS25.814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio
-Access"
+.. [TS25.814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access"
 
 
-.. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH" 
-       http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip 
+.. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH" http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip 
 
 .. [FFAPI] FemtoForum LTE MAC Scheduler Interface Specification v1.11 http://www.femtoforum.org/femto/technical.php
