@@ -13,102 +13,204 @@ An overview of the LTE module
 Design Criteria
 ~~~~~~~~~~~~~~~
 
-The LTE module has the long term objective of supporting the evaluation of the following aspects of LTE systems:
 
-* LTE Radio Resource Management
-* QoS-aware Packet Scheduling
-* Call Admission Control
-* Inter-cell Interference Coordination
-* Load Balancing 
-* Mobility 
+The LTE module has been designed to support the evaluation of the following aspects of LTE systems:  
 
+ * Radio Resource Management
+ * QoS-aware Packet Scheduling
+ * Inter-cell Interference Coordination
+ * Dynamic Spectrum Access
 
-In order to model LTE systems to a level of detail that is sufficient to allow a correct evaluation of the above mentioned aspects, the following assumptions have been made:
+In order to model LTE systems to a level of detail that is sufficient to allow a
+correct evaluation of the above mentioned aspects, the following requirements
+have been considered:
 
-#. At the radio level, the granularity of the model should be at least that of the Resource Block. In fact, this is the fundamental unit being used for resource allocation. Without this minimum level of granularity, it is not possible to model accurately, for example, packet scheduling and inter-cell-interference solutions. Note that this design choice rules out system level simulator, which work at the granularity of call / bearer establishment.
-#. The simulator should scale up to tens of eNBs and hundreds of UEs. This rules out the use of a link level simulator, i.e., a simulator whose radio interface is modeled with a granularity up to the symbol level. This is becaise a symbol layer model needs to implement all the PHY layer signal processing, whose huge complexity severely limits scalability in terms of number of eNBs and UEs. In fact, link-level simulators are normally limited to a single eNB and one or a few UEs.
-#. MAC-level KPIs (e.g., per-UE and per-bearer throughput, delay and loss rate measured at the RLC PDU level) are probably the most straightforward KPIs that can be extracted by the simulator. Still, these KPIs cannot be mapped directly to the Quality of Experience (QoE) perceived by the end user, at least without some gross approximation. Hence, to allow a proper evaluation of the QoE, the LTE user plane protocol stack should be modeled accurately. In particular, the RLC protocol should be modeled: in fact, since the RLC takes care of fragmentation, concatenation & fragment retransmission of user-plane IP packets, it  
-#. While it is acceptable to idealize some aspects of the control plane for ease of simulations, there are some other aspects that need to be modeled in order to obtain accurate simulation results. For example, control signaling consumes radio resources and can be the cause of a limitation in the user-perceived performance; furthermore, the correct or erroneous reception of the control signalling affects important aspects of LTE such as cell selection by the UEs and the neighbor relation function of the eNBs.
+ #. At the radio level, the granularity of the model should be at least that
+    of the Resource Block (RB). In fact, this is the fundamental unit being used for
+    resource allocation. Without this minimum level of granularity, it is not
+    possible to model accurately packet scheduling and
+    inter-cell-interference.
+    The reason is that, since packet scheduling is done on
+    a per-RB basis, an eNB might transmit on a subset only of all the available
+    RBs, hence interfering with other eNBs only on those RBs where it is
+    trasmitting.
+    Note that this requirement rules out the adoption of a system lever simulation
+    approach, which evaluates resource allocation only at the granularity of
+    call/bearer establishment.
+ #. The simulator should scale up to tens of eNBs and hundreds of User
+    Equipments (UEs). This
+    rules out the use of a link level simulator, i.e., a simulator whose radio
+    interface is modeled with a granularity up to the symbol level. This is because
+    to have a symbol level model it is necessary to implement all the PHY
+    layer signal processing, whose huge computational complexity severely limits
+    simulation. In fact, link-level simulators are normally limited to a single eNB
+    and one or a few UEs.
+ #. It should be possible within the simulation to configure different cells
+    so that they use different carrier frequencies and system bandwidths. The
+    bandwidth used by different cells should be allowed to overlap, in order to
+    support dynamic spectrum licensing solutions such as those described in
+    in~\cite{ofcom2.6GHz, RealWireless}. The calculation of interference should
+    handle appropriately this case.
+ #. To be more representative of the LTE standard, as well as to be as
+    close as possible to real-world implementations, the simulator
+    should support the MAC Scheduler API published by the FemtoForum
+    [FFAPI]_. This interface is expected to be used by femtocell manufacturers
+    for the implementation of scheduling and Radio Resource Management
+    (RRM) algorithms. By introducing support for this interface in the
+    simulator, we make it possible for LTE equipment vendors and
+    operators to test in a simulative environment exactly the same
+    algorithms that would be deployed in a real system.  
+#.  The LTE simulation module should contain its own implementation of
+    the API defined in [FFAPI]_. Neither
+    binary nor data structure compatibility with vendor-specific implementations
+    of the same interface are expected; hence, a compatibility layer should be
+    interposed whenever a vendor-specific MAC scheduler is to be used with the
+    simulator. This requirement is necessary to allow the
+    simulator to be independent from vendor-specific implementations of this
+    interface specification. We note that [FFAPI]_ is a logical
+    specification only, and its implementation (e.g., translation to some specific
+    programming language) is left to the vendors. 
+
 
 
 Module Architecture
 ~~~~~~~~~~~~~~~~~~~
 
+The overall architecture of the LTE module is represented in the
+figures :ref:`fig-lte-enb-architecture` and :ref:`fig-lte-ue-architecture`, which
+deal respectively with the eNB and the UE. A detailed description of the most
+important components are provided in the following sections.
 
-The overall architecture of the LTE module is represented in the following figures.
 
+
+.. _fig-lte-enb-architecture:
+   
 .. figure:: figures/lte-enb-architecture.*
-   :align: right
 
-   The architecture of the LTE eNB
+   Architecture of the LTE eNB
+
+
+
+.. _fig-lte-ue-architecture:
 
 .. figure:: figures/lte-ue-architecture.*
-   :align: right
 
-   The architecture of the LTE UE
-
+   Architecture of the LTE UE
 
 
-Detailed description of the components
-**************************************
+
 
 .. _ff-mac-sched-api:
 
 The FemtoForum MAC Scheduler Interface
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+++++++++++++++++++++++++++++++++++++++
 
-This section describes the ns-3 specific version of the `FemtoForum LTE MAC Scheduler Interface Specification v1.11 <http://www.femtoforum.org/femto/technical.php>`_
+This section describes the ns-3 specific version of the LTE MAC
+Scheduler Interface Specification published by the FemtoForum [FFAPI]_.
 
-The goals of the definition of this MAC scheduler API in the |ns3| network simulator are:
+We implemented the ns-3 specific version of the FemtoForum MAC Scheduler
+Interface [FFAPI]_ as a set of C++ abstract
+classes; in particular, each primitive is translated to a C++ method of a
+given class. The term *implemented* here is used with the same
+meaning adopted in [FFAPI]_, and hence refers to the process of translating
+the logical interface specification to a particular programming language.
+The primitives in [FFAPI]_ are grouped in two groups: the CSCHED
+primitives, which deal with scheduler configuration, and the SCHED primitives,
+which deal with the execution of the scheduler. Furthermore, [FFAPI]_
+defines primitives of two different kinds: those of type REQ go from the MAC to
+the Scheduler, and those of type IND/CNF go from the scheduler to the MAC. To
+translate these characteristics into C++, we define the following abstract
+classes that implement Service Access Points (SAPs) to be used to issue the
+primitives:
 
-* to let MAC's developers to implement its own MAC schedulers allowing these developers to provide the standard MAC scheduler API.
-* to let MAC's users to use different MAC schedulers using always the same standard MAC scheduler API.
-
-Design
-++++++
-
-The MAC Scheduler interface is **specified** or defined as **abstract classes**. The MAC Scheduler interface is **implemented** as **derived classes** from the abstract classes. We have splitted the MAC Scheduler interface into 4 abstract classes:
-
-* SCHED SAP API
-
-  * Provider Side is specified in the ``FfMacSchedSapProvider`` class
-  * User Side is specified in the ``FfMacSchedSapUser`` class
-  
-* CSCHED SAP API
-
-  * Provider Side is specified in the ``FfMacCschedSapProvider`` class
-  * User Side is specified in the ``FfMacCschedSapUser`` class
+ *  the ``FfMacSchedSapProvider`` class defines all the C++ methods that
+    correspond to SCHED primitives of type REQ;
+ *  the ``FfMacSchedSapUser`` class defines all the C++ methods that
+    correspond to SCHED primitives of type CNF/IND;
+ *  the ``FfMacCschedSapProvider`` class defines all the C++ methods that
+    correspond to CSCHED primitives of type REQ;
+ *  the ``FfMacCschedSapUser`` class defines all the C++ methods that
+    correspond to CSCHED primitives of type CNF/IND;
 
 
-There are 3 blocks involved in the MAC Scheduler interface: Control block, Subframe block and Scheduler block. Each of these blocks provide one part of the MAC Scheduler interface. The following figure shows the relationship between the blocks and the Service Access Points they provide.
+There are 3 blocks involved in the MAC Scheduler interface: Control block,
+Subframe block and Scheduler block. Each of these blocks provide one part of the
+MAC Scheduler interface. The figure below shows the relationship
+between the blocks and the SAPs defined in our implementation of the MAC
+Scheduler Interface. 
 
 .. figure:: figures/ff-mac-saps.*
 
-Implementation details
-++++++++++++++++++++++
+In addition to the above principles, the following design choices have been
+taken:
 
-This subsection details the criteria adopted during the development of the FF MAC API:
+ *  The definition of the MAC Scheduler interface classes follows the naming
+    conventions of the |ns3| Coding Style. In particular, we follow the
+    CamelCase convention for the primitive names. For example, the primitive
+    ``CSCHED_CELL_CONFIG_REG`` is translated to ``CschedCellConfigReg``
+    in the |ns3| code.
+ *  The same naming conventions are followed for the primitive parameters. As
+    the primitive parameters are member variables of classes, they are also prefixed
+    with a ``m_``.
+ *  regarding the use of vectors and lists in data structures, we note
+    that [FFAPI]_ is a pretty much C-oriented API. However, considered that
+    C++ is used in ns-3, and that the use of C arrays is discouraged, we used STL
+    vectors (``std::vector``) for the implementation of the MAC Scheduler
+    Interface, instead of using C arrays as implicitly suggested by the
+    way [FFAPI]_ is written.
+ *  In C++, members with constructors and destructors are not allow in
+    ``unions``. Hence all those data structures that are said to be
+    ``unions`` in [FFAPI]_ have been defined as ``structs`` in our code.
 
-* The definition of the MAC Scheduler interface follows the naming conventions of the |ns3| Coding Style. In particular, we follow the CamelCase convention for the primitive names. For example, the primitive **CSCHED_CELL_CONFIG_REG** is translated to ``CschedCellConfigReg`` in the |ns3| code.
-
-* The same naming conventions are followed for the primitive parameters. As the primitive parameters are member variables of classes, they are also prefixed with a ``m_``.
-
-* FF MAC API is a C-based oriented API but |ns3| network simulator is written in C++. So, STL vectors (``std::vector``) are used, instead of using C arrays as the FF MAC API document suggests.
-
-* In C++, members with constructors and destructors are not allow in ``unions``. These ``unions`` have been converted to ``structs``.
-
-
-
-Usage in the ns-3 LTE module
-++++++++++++++++++++++++++++
-
-To clarify how the MAC Scheduler Interface is used within the eNB, we consider the example of the Round Robin Scheduler which is depicted in the figure below. To interact with the MAC of the eNB, the Round Robin scheduler implements the Provider side of the SCHED SAP and CSCHED SAP interfaces. The MAC of the eNB implements the provider side of the SCHED SAP and CSCHED SAP interfaces. A similar approach is   If you plan to develop your own scheduler, we advise to create your own class taking inspiration from the Round Robin scheduler. 
-
-
-The User side of both the CSCHED SAP and the SCHED SAP are implemented in the file ``lte-enb-mac.cc``. You are normally not expected to modify these files in order to implement your own scheduler. 
-
+The figure below shows how the MAC Scheduler Interface is
+used within the eNB. 
 
 .. figure:: figures/ff-example.*
+
+The User side of both the CSCHED SAP and the SCHED SAP are
+implemented within the eNB MAC, i.e., in the file ``lte-enb-mac.cc``.
+The eNB MAC can be used with different scheduler implementations without
+modifications. The same figure also shows, as an example, how the Round Robin
+Scheduler is implemented: to interact with the MAC of the eNB, the Round Robin
+scheduler implements the Provider side of the SCHED SAP and CSCHED
+SAP interfaces. A similar approach can be used to implement other schedulers as
+well. A description of all the scheduler implementations that we provide as
+part of our LTE simulation module will be given in
+the following.
+
+
+Resource Allocation Model
++++++++++++++++++++++++++
+
+
+We now briefly describe how resource allocation is handled in LTE,
+clarifying how it is implemented in the simulator. The scheduler is in
+charge of generating specific structures calles Data Control Indication (DCI)
+which are then transmitted by the PHY of the eNB to the connected UEs, in order
+to inform them of the resource allocation on a per subframe basis. In doing this
+in the downlink direction, the scheduler has to fill some specific fields of the
+DCI structure with all the information, such as: the Modulation and Coding
+Scheme (MCS) to be used, the MAC Transport Block (TB) size, and the allocation
+bitmap which identifies which RBs will contain the data
+tranmitted by the eNB to each user. For the mapping of resources to
+physical RBs, we adopt a *localized mapping* approach
+(see [Sesia2009]_, Section 9.2.2.1);
+hence in a given subframe each RB is always allocated to the same user in both
+slots.
+The allocation bitmap can be coded in
+different formats; in this implementation, we considered the *Allocation
+Type 0* defined in [TS36.213]_, according to which the RBs are grouped in
+Resource Block Groups (RBG) of different size determined as a function of the
+Transmission Bandwidth Configuration in use. For certain bandwidth
+values not all the RBs are usable, since the 
+group size is not a common divisor of the group. This is for instance the case
+when the bandwith is equal to 25 RBs, which results in a RBG size of 2 RBs, and
+therefore 1 RB will result not addressable. 
+In uplink the format of the DCIs is different, since only adjacent RBs
+can be used because of the SC-FDMA modulation. As a consequence, all
+RBs can be allocated by the eNB regardless of the bandwidth
+configuration. 
+
 
 
 MAC Scheduler Implementations
