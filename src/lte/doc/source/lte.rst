@@ -1,10 +1,8 @@
 
-########################
-LTE Module
-########################
+####################################
+LTE Simulator Documentation
+####################################
 
-
-This chapter describes the ns-3 LTE module located in ``src/lte``.
 
 
 
@@ -13,6 +11,7 @@ This chapter describes the ns-3 LTE module located in ``src/lte``.
     lte-design
     lte-user
     lte-testing
+    lte-references
 
 
 

@@ -1,7 +1,8 @@
 
 
 
-.. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", Wiley, 2009
+.. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", 
+   Wiley, 2009
 
 .. [Baldo2009] N. Baldo and M. Miozzo, "Spectrum-aware Channel and PHY layer modeling for ns3", 
    Proceedings of ICST NSTools 2009, Pisa, Italy. 
@@ -10,7 +11,8 @@
    Scheduling Algorithm for QoS Support in the Downlink of LTE Cellular Networks", Proc. of 
    European Wireless, EW2010, Lucca, Italy, Apr., 2010 
 
-.. [Kushner2004] H.J. Kushner and P.A. Whiting, "Convergence of proportional-fair sharing algorithms under general conditions", IEEE Trans. on Wireless Communications, July 2004
+.. [Kushner2004] H.J. Kushner and P.A. Whiting, "Convergence of proportional-fair sharing algorithms under general conditions", 
+   IEEE Trans. on Wireless Communications, July 2004
 
 .. [Piro2011] G. Piro, N. Baldo. M. Miozzo, "An LTE module for the ns-3 network simulator", 
     in Proc. of Wns3 2011 (in conjunction with SimuTOOLS 2011), March 2011, Barcelona (Spain)

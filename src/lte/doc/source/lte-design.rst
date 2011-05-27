@@ -6,9 +6,6 @@
 ++++++++++++++++++++++++++
 
 
-An overview of the LTE module
-*****************************
-
 
 Design Criteria
 ~~~~~~~~~~~~~~~
@@ -346,8 +343,8 @@ in the simulation; hence, each eNB can use a different spectrum model. Every UE
 will automatically use the spectrum model of the eNB it is attached to. Using
 the MultiModelSpectrumChannel described in [Baldo2009]_, the interference
 among eNBs that use different spectrum models is properly accounted for. 
-This allows to simulate different spectrum usage policies in the same
-simulation, such as for example the spectrum licensing policies that are
+This allows to simulate dynamic spectrum access policies, such as for
+example the spectrum licensing policies that are 
 discussed in [Ofcom2.6GHz]_.
 
 
