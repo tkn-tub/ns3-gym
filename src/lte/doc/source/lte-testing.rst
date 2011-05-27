@@ -171,7 +171,7 @@ the MCS index being used in each test case.
 
 .. _fig-lenaThrTestCase1:
 
-.. figure:: figures/lenaThrTestCase1.*
+.. figure:: figures/lenaThrTestCase1.*                 
    :align: center
 
    Test vectors for the RR and PF Scheduler in the downlink in a
