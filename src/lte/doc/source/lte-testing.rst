@@ -2,7 +2,7 @@
 
 
 +++++++++++++++++++++++++++
- LTE Testing Documentation
+ Testing Documentation
 +++++++++++++++++++++++++++
 
 

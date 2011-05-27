@@ -2,7 +2,7 @@
 
 
 ++++++++++++++++++++++++++
- LTE Design Documentation
+ Design Documentation
 ++++++++++++++++++++++++++
 
 

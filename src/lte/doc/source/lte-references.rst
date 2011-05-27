@@ -35,3 +35,7 @@
 .. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH" http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip 
 
 .. [FFAPI] FemtoForum LTE MAC Scheduler Interface Specification v1.11 http://www.femtoforum.org/femto/technical.php
+
+.. [ns3tutorial] The ns-3 Tutorial http://www.nsnam.org/docs/tutorial/html/
+
+.. [ns3manual] The ns-3 Tutorial http://www.nsnam.org/docs/manual/html/
