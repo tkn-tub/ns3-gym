@@ -108,7 +108,8 @@ public:
    *
    * \brief Sets an interface to run on promiscuous mode.
    */
-  void SetPromiscuous (std::string ifName);
+  void SetPromisc (int ifid);
+
 
 private:
   simclick_node_t *m_simNode;
