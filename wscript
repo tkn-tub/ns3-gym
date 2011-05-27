@@ -102,6 +102,24 @@ def dist_hook():
     shutil.rmtree("doc/latex", True)
     shutil.rmtree("nsc", True)
 
+# Print the module names without prefixes, sorted, and in columns.
+def print_module_names(names):
+    # Get the sorted list of module names without the "ns3-" prefix.
+    names_without_prefix =[name[len('ns3-'):] for name in names]
+    names_without_prefix.sort()
+
+    # Print the list of module names in 3 columns.
+    i = 1
+    for name in names_without_prefix:
+        print name.ljust(25),
+        if i == 3:
+                print
+                i = 0
+        i = i+1
+
+    if i != 1:
+        print
+
 def set_options(opt):
     # options provided by the modules
     opt.tool_options('compiler_cc')
@@ -293,6 +311,36 @@ def configure(conf):
             if conf.check_compilation_flag('-Wl,--soname=foo'):
                 env['WL_SONAME_SUPPORTED'] = True
 
+    env['ENABLE_STATIC_NS3'] = False
+    if Options.options.enable_static:
+        if env['PLATFORM'].startswith('linux') and \
+                env['CXX_NAME'] in ['gcc', 'icc']:
+            if re.match('i[3-6]86', os.uname()[4]):
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
+            elif os.uname()[4] == 'x86_64':
+                if env['ENABLE_PYTHON_BINDINGS'] and \
+                        not conf.check_compilation_flag('-mcmodel=large'):
+                    conf.report_optional_feature("static", "Static build", False,
+                                                 "Can't enable static builds because " + \
+                                                     "no -mcmodel=large compiler " \
+                                                     "option. Try --disable-python or upgrade your " \
+                                                     "compiler to at least gcc 4.3.x.")
+                else:
+                    conf.report_optional_feature("static", "Static build", True, '')
+                    env['ENABLE_STATIC_NS3'] = True                    
+        elif env['CXX_NAME'] == 'gcc' and \
+                (env['PLATFORM'].startswith('darwin') or \
+                     env['PLATFORM'].startswith('cygwin')):
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
+        else:
+            conf.report_optional_feature("static", "Static build", False,
+                                         "Unsupported platform")
+    else:
+        conf.report_optional_feature("static", "Static build", False,
+                                     "option --enable-static not selected")
+
     conf.sub_config('src')
 
     # Set the list of enabled modules.
@@ -309,6 +357,29 @@ def configure(conf):
             # Enable the modules from the list.
             conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                                modules_enabled]
+
+    # Remove the emu module from the list of enabled modules if it
+    # is there and emu is not enabled.
+    conf.env['NS3_ENABLED_MODULES_NOT_BUILT'] = []
+    emu_module_name = 'ns3-emu'
+    if emu_module_name in conf.env['NS3_ENABLED_MODULES']:
+        if not conf.env['ENABLE_EMU']:
+            conf.env['NS3_ENABLED_MODULES'].remove(emu_module_name)
+            conf.env['NS3_ENABLED_MODULES_NOT_BUILT'].append(emu_module_name)
+            if not conf.env['NS3_ENABLED_MODULES']:
+                raise Utils.WafError("Exiting because the emu module can not be built and it was the only one enabled.")
+
+    # Remove the template module from the list of enabled modules if
+    # this is a static build on Darwin because they don't work there
+    # for the template module.  This is probably because it is empty.
+    template_module_name = 'ns3-template'
+    if template_module_name in conf.env['NS3_ENABLED_MODULES']:
+        if conf.env['ENABLE_STATIC_NS3'] and sys.platform == 'darwin':
+            conf.env['NS3_ENABLED_MODULES'].remove(template_module_name)
+            conf.env['NS3_ENABLED_MODULES_NOT_BUILT'].append(template_module_name)
+            if not conf.env['NS3_ENABLED_MODULES']:
+                raise Utils.WafError("Exiting because the template module can not be built and it was the only one enabled.")
+
     conf.sub_config('bindings/python')
 
     conf.sub_config('src/mpi')
@@ -379,36 +450,6 @@ def configure(conf):
                                  why_not_examples)
 
     conf.find_program('valgrind', var='VALGRIND')
-
-    env['ENABLE_STATIC_NS3'] = False
-    if Options.options.enable_static:
-        if env['PLATFORM'].startswith('linux') and \
-                env['CXX_NAME'] in ['gcc', 'icc']:
-            if re.match('i[3-6]86', os.uname()[4]):
-                conf.report_optional_feature("static", "Static build", True, '')
-                env['ENABLE_STATIC_NS3'] = True
-            elif os.uname()[4] == 'x86_64':
-                if env['ENABLE_PYTHON_BINDINGS'] and \
-                        not conf.check_compilation_flag('-mcmodel=large'):
-                    conf.report_optional_feature("static", "Static build", False,
-                                                 "Can't enable static builds because " + \
-                                                     "no -mcmodel=large compiler " \
-                                                     "option. Try --disable-python or upgrade your " \
-                                                     "compiler to at least gcc 4.3.x.")
-                else:
-                    conf.report_optional_feature("static", "Static build", True, '')
-                    env['ENABLE_STATIC_NS3'] = True                    
-        elif env['CXX_NAME'] == 'gcc' and \
-                (env['PLATFORM'].startswith('darwin') or \
-                     env['PLATFORM'].startswith('cygwin')):
-                conf.report_optional_feature("static", "Static build", True, '')
-                env['ENABLE_STATIC_NS3'] = True
-        else:
-            conf.report_optional_feature("static", "Static build", False,
-                                         "Unsupported platform")
-    else:
-        conf.report_optional_feature("static", "Static build", False,
-                                     "option --enable-static not selected")
 
     # These flags are used for the implicitly dependent modules.
     if env['ENABLE_STATIC_NS3']:
@@ -733,25 +774,20 @@ def shutdown(ctx):
         return
     env = bld.env
 
-    # Don't print the list if this a clean or distribution clean.
+    # Don't print the lists if this a clean or distribution clean.
     if ('clean' not in Options.arg_line) and ('distclean' not in Options.arg_line):
 
-        # Get the sorted list of built modules without the "ns3-" in their name.
-        modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
-        modules_without_prefix.sort()
-
-        # Print the list of built modules in 3 columns.
+        # Print the list of built modules.
         print
         print 'Modules built:'
-        i = 1
-        for mod in modules_without_prefix:
-            print mod.ljust(25),
-            if i == 3:
-                    print
-                    i = 0
-            i = i+1
+        print_module_names(env['NS3_ENABLED_MODULES'])
         print
-        print
+
+        # Print the list of enabled modules that were not built.
+        if env['NS3_ENABLED_MODULES_NOT_BUILT']:
+            print 'Modules not built:'
+            print_module_names(env['NS3_ENABLED_MODULES_NOT_BUILT'])
+            print
 
     # Write the build status file.
     build_status_file = os.path.join (env['NS3_BUILDDIR'], env['NS3_ACTIVE_VARIANT'], 'build-status.py')

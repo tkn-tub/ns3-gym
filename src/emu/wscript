@@ -20,26 +20,23 @@ def configure(conf):
         conf.env.append_value('NS3_EXECUTABLE_PATH', emucreatordir)
 
 def build(bld):
-    module = bld.create_ns3_module('emu', ['network'])
-    module.source = [
-        ]
-    headers = bld.new_task_gen('ns3header')
-    headers.module = 'emu'
-    headers.source = [
-        ]
-
+    # Don't do anything for this module if emu's not enabled.
     if not bld.env['ENABLE_EMU']:
         return
 
-    module.source.extend([
+    module = bld.create_ns3_module('emu', ['network'])
+    module.source = [
             'model/emu-net-device.cc',
             'model/emu-encode-decode.cc',
             'helper/emu-helper.cc',
-            ])
-    headers.source.extend([
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'emu'
+    headers.source = [
             'model/emu-net-device.h',
             'helper/emu-helper.h',
-            ])
+        ]
 
     obj = bld.create_suid_program('emu-sock-creator')
     obj.source = [
