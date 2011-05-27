@@ -46,16 +46,16 @@ Here is the minimal simulation program that is needed to do an LTE simulation.
 .. highlight:: none
 
 #. Initial boilerplate::
-      
-   #include "ns3/core-module.h"
-   #include "ns3/network-module.h"
-   #include "ns3/mobility-module.h"
-   #include "ns3/lte-module.h"
-   
-   using namespace ns3;
-    
-   int main (int argc, char *argv[])
-   {
+       
+    #include "ns3/core-module.h"
+    #include "ns3/network-module.h"
+    #include "ns3/mobility-module.h"
+    #include "ns3/lte-module.h"   
+
+    using namespace ns3;    
+
+    int main (int argc, char *argv[])
+    {
 
 
 #. Create a LenaHelper object::
