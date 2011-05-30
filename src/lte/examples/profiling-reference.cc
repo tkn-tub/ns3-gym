@@ -38,6 +38,7 @@ int main (int argc, char *argv[])
   double radius = 0.0;
   uint32_t nEnb = 1;
   uint32_t nUe  = 1;
+  double enbDist = 100;
   CommandLine cmd;
 
   cmd.AddValue ("nEnb", "Number of eNodeBs", nEnb);
@@ -64,6 +65,7 @@ int main (int argc, char *argv[])
        << "_rngRun"  << std::setw(3) << std::setfill('0')  << runValue.Get () ;
 */
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  lena->EnableLogComponents ();
   
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -79,24 +81,29 @@ int main (int argc, char *argv[])
 
   // Position of eNBs  
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  for (uint32_t i = 0; i < nEnb; i++)
+      {
+         positionAlloc->Add (Vector (enbDist*i, enbDist*i, 0.0));
+      }
+
   MobilityHelper enbMobility;
   enbMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   enbMobility.SetPositionAllocator (positionAlloc);
   enbMobility.Install (enbNodes);
 
-  // Position of UEs attached to eN
-  MobilityHelper ueMobility;
-  ueMobility.SetPositionAllocator ("ns3::UniformDiscPositionAllocator",
-                                    "X", DoubleValue (0.0),
-                                    "Y", DoubleValue (0.0),
-                                    "rho", DoubleValue (radius));
-  ueMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  // Position of UEs attached to eNB
+  vector<MobilityHelper> ueMobility;
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      ueMobility.Install (ueNodes[i]);
+      MobilityHelper ueMob;
+      ueMob.SetPositionAllocator ("ns3::UniformDiscPositionAllocator",
+                                    "X", DoubleValue (enbDist*i),
+                                    "Y", DoubleValue (enbDist*i),
+                                    "rho", DoubleValue (radius));
+      ueMob.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+      ueMobility.push_back (ueMob);
+      ueMobility[i].Install (ueNodes[i]);
     }
-
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;

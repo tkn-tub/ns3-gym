@@ -228,15 +228,6 @@ LteAmc::GetMcsFromCqi (int cqi)
   return mcs;
 }
 
-
-// int
-// LteAmc::GetTbSizeFromMcs (int mcs)
-// {
-//   NS_LOG_FUNCTION (mcs);
-//   NS_LOG_FUNCTION (mcs << TransportBlockSize[mcs]);
-//   return TransportBlockSize[mcs];
-// }
-
 int
 LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 {
