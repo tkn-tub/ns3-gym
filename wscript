@@ -102,15 +102,14 @@ def dist_hook():
     shutil.rmtree("doc/latex", True)
     shutil.rmtree("nsc", True)
 
-# Print the module names without prefixes, sorted, and in columns.
+# Print the sorted list of module names in columns.
 def print_module_names(names):
-    # Get the sorted list of module names without the "ns3-" prefix.
-    names_without_prefix =[name[len('ns3-'):] for name in names]
-    names_without_prefix.sort()
+    # Sort the list of module names.
+    names.sort()
 
     # Print the list of module names in 3 columns.
     i = 1
-    for name in names_without_prefix:
+    for name in names:
         print name.ljust(25),
         if i == 3:
                 print
@@ -341,6 +340,8 @@ def configure(conf):
         conf.report_optional_feature("static", "Static build", False,
                                      "option --enable-static not selected")
 
+    conf.env['MODULES_NOT_BUILT'] = []
+
     conf.sub_config('src')
 
     # Set the list of enabled modules.
@@ -358,27 +359,20 @@ def configure(conf):
             conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                                modules_enabled]
 
-    # Remove the emu module from the list of enabled modules if it
-    # is there and emu is not enabled.
-    conf.env['NS3_ENABLED_MODULES_NOT_BUILT'] = []
-    emu_module_name = 'ns3-emu'
-    if emu_module_name in conf.env['NS3_ENABLED_MODULES']:
-        if not conf.env['ENABLE_EMU']:
-            conf.env['NS3_ENABLED_MODULES'].remove(emu_module_name)
-            conf.env['NS3_ENABLED_MODULES_NOT_BUILT'].append(emu_module_name)
-            if not conf.env['NS3_ENABLED_MODULES']:
-                raise Utils.WafError("Exiting because the emu module can not be built and it was the only one enabled.")
+    # Add the template module to the list of enabled modules that
+    # should not be built if this is a static build on Darwin.  They
+    # don't work there for the template module, and this is probably
+    # because the template module has no source files.
+    if conf.env['ENABLE_STATIC_NS3'] and sys.platform == 'darwin':
+        conf.env['MODULES_NOT_BUILT'].append('template')
 
-    # Remove the template module from the list of enabled modules if
-    # this is a static build on Darwin because they don't work there
-    # for the template module.  This is probably because it is empty.
-    template_module_name = 'ns3-template'
-    if template_module_name in conf.env['NS3_ENABLED_MODULES']:
-        if conf.env['ENABLE_STATIC_NS3'] and sys.platform == 'darwin':
-            conf.env['NS3_ENABLED_MODULES'].remove(template_module_name)
-            conf.env['NS3_ENABLED_MODULES_NOT_BUILT'].append(template_module_name)
+    # Remove these modules from the list of enabled modules.
+    for not_built in conf.env['MODULES_NOT_BUILT']:
+        not_built_name = 'ns3-' + not_built
+        if not_built_name in conf.env['NS3_ENABLED_MODULES']:
+            conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
-                raise Utils.WafError("Exiting because the template module can not be built and it was the only one enabled.")
+                raise Utils.WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
 
     conf.sub_config('bindings/python')
 
@@ -780,13 +774,14 @@ def shutdown(ctx):
         # Print the list of built modules.
         print
         print 'Modules built:'
-        print_module_names(env['NS3_ENABLED_MODULES'])
+        names_without_prefix =[name[len('ns3-'):] for name in env['NS3_ENABLED_MODULES']]
+        print_module_names(names_without_prefix)
         print
 
         # Print the list of enabled modules that were not built.
-        if env['NS3_ENABLED_MODULES_NOT_BUILT']:
+        if env['MODULES_NOT_BUILT']:
             print 'Modules not built:'
-            print_module_names(env['NS3_ENABLED_MODULES_NOT_BUILT'])
+            print_module_names(env['MODULES_NOT_BUILT'])
             print
 
     # Write the build status file.

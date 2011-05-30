@@ -283,20 +283,10 @@ def build(bld):
     bld.create_obj = types.MethodType(create_obj, bld)
     bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
     
-    # Remove the emu module from the list of all modules if it
-    # is there and emu is not enabled.
-    emu_module_name = 'emu'
-    if emu_module_name in all_modules:
-        if not bld.env['ENABLE_EMU']:
-            all_modules.remove(emu_module_name)
-
-    # Remove the template module from the list of all modules if this
-    # is a static build on Darwin because they don't work there for
-    # the template module.  This is probably because it is empty.
-    template_module_name = 'template'
-    if template_module_name in all_modules:
-        if bld.env['ENABLE_STATIC_NS3'] and sys.platform == 'darwin':
-            all_modules.remove(template_module_name)
+    # Remove these modules from the list of all modules.
+    for not_built in bld.env['MODULES_NOT_BUILT']:
+        if not_built in all_modules:
+            all_modules.remove(not_built)
 
     bld.add_subdirs(list(all_modules))
 
