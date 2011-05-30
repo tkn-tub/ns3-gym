@@ -137,9 +137,14 @@ private:
   
   
   /*
+  * Map of UE statistics (per RNTI basis) in downlink 
+  */
+  std::map <uint16_t, pfsFlowPerf_t> m_flowStatsDl;
+  
+  /*
   * Map of UE statistics (per RNTI basis)
   */
-  std::map <uint16_t, pfsFlowPerf_t> m_flowStats;
+  std::map <uint16_t, pfsFlowPerf_t> m_flowStatsUl;
   
 
   /*

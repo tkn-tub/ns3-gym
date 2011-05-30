@@ -294,16 +294,22 @@ PfFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csch
   std::map <uint16_t, pfsFlowPerf_t>::iterator it;
   for (uint16_t i = 0; i < params.m_logicalChannelConfigList.size (); i++)
     {      
-      it = m_flowStats.find (params.m_rnti);
+      it = m_flowStatsDl.find (params.m_rnti);
       
-      if (it == m_flowStats.end ())
+      if (it == m_flowStatsDl.end ())
         {
-          pfsFlowPerf_t flowStats;
-          flowStats.flowStart = Simulator::Now ();
-          flowStats.totalBytesTransmitted = 0;
-          flowStats.lastTtiBytesTrasmitted = 0;
-          flowStats.lastAveragedThroughput = 1;
-          m_flowStats.insert (std::pair<uint16_t, pfsFlowPerf_t> (params.m_rnti, flowStats));
+          pfsFlowPerf_t flowStatsDl;
+          flowStatsDl.flowStart = Simulator::Now ();
+          flowStatsDl.totalBytesTransmitted = 0;
+          flowStatsDl.lastTtiBytesTrasmitted = 0;
+          flowStatsDl.lastAveragedThroughput = 1;
+          m_flowStatsDl.insert (std::pair<uint16_t, pfsFlowPerf_t> (params.m_rnti, flowStatsDl));
+          pfsFlowPerf_t flowStatsUl;
+          flowStatsUl.flowStart = Simulator::Now ();
+          flowStatsUl.totalBytesTransmitted = 0;
+          flowStatsUl.lastTtiBytesTrasmitted = 0;
+          flowStatsUl.lastAveragedThroughput = 1;
+          m_flowStatsUl.insert (std::pair<uint16_t, pfsFlowPerf_t> (params.m_rnti, flowStatsUl));
         }
       else
         {
@@ -427,9 +433,9 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
     {
 //       NS_LOG_DEBUG (this << " ALLOCATION for RBG " << i << " of " << rbgNum);
       std::map <uint16_t, pfsFlowPerf_t>::iterator it;
-      std::map <uint16_t, pfsFlowPerf_t>::iterator itMax = m_flowStats.end ();
+      std::map <uint16_t, pfsFlowPerf_t>::iterator itMax = m_flowStatsDl.end ();
       double rcqiMax = 0.0;
-      for (it = m_flowStats.begin (); it != m_flowStats.end (); it++)
+      for (it = m_flowStatsDl.begin (); it != m_flowStatsDl.end (); it++)
         {
           std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
           itCqi = m_a30CqiRxed.find ((*it).first);
@@ -463,7 +469,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               } // end if cqi
         } // end for m_rlcBufferReq
       
-      if (itMax == m_flowStats.end ())
+      if (itMax == m_flowStatsDl.end ())
         {
           // no UE available for this RB
           NS_LOG_DEBUG (this << " no UE found");
@@ -489,7 +495,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   
   // reset TTI stats of users
   std::map <uint16_t, pfsFlowPerf_t>::iterator itStats;
-  for (itStats = m_flowStats.begin (); itStats != m_flowStats.end (); itStats++)
+  for (itStats = m_flowStatsDl.begin (); itStats != m_flowStatsDl.end (); itStats++)
     {
       (*itStats).second.lastTtiBytesTrasmitted = 0;
     }
@@ -575,8 +581,8 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       
       // update UE stats
       std::map <uint16_t, pfsFlowPerf_t>::iterator it;
-      it = m_flowStats.find ((*itMap).first);
-      if (it != m_flowStats.end())
+      it = m_flowStatsDl.find ((*itMap).first);
+      if (it != m_flowStatsDl.end())
         {
           (*it).second.lastTtiBytesTrasmitted = tbSize;
 //           NS_LOG_DEBUG (this << " UE bytes txed " << (*it).second.lastTtiBytesTrasmitted);
@@ -594,7 +600,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   
   
   // update UEs stats
-  for (itStats = m_flowStats.begin (); itStats != m_flowStats.end (); itStats++)
+  for (itStats = m_flowStatsDl.begin (); itStats != m_flowStatsDl.end (); itStats++)
     {
       (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTrasmitted;
       // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term Evolution, Ed Wiley)
@@ -702,6 +708,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
   
   FfMacSchedSapUser::SchedUlConfigIndParameters ret;
   std::vector <uint16_t> rbgAllocationMap;
+  std::map <uint16_t, pfsFlowPerf_t>::iterator itStats;
   if (m_nextRntiUl!=0)
     {
       for (it = m_ceBsrRxed.begin (); it != m_ceBsrRxed.end (); it++)
@@ -793,6 +800,22 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_freqHopping = 0;
       uldci.m_pdcchPowerOffset = 0; // not used
       ret.m_dciList.push_back (uldci);
+      
+      // update TTI  UE stats
+      itStats = m_flowStatsUl.find ((*it).first);
+      if (itStats != m_flowStatsUl.end())
+        {
+          (*itStats).second.lastTtiBytesTrasmitted =  uldci.m_tbSize;
+          //           NS_LOG_DEBUG (this << " UE bytes txed " << (*it).second.lastTtiBytesTrasmitted);
+          
+          
+        }
+      else
+        {
+          NS_LOG_DEBUG (this << " No Stats for this allocated UE");
+        }
+      
+      
       it++;
       if (it==m_ceBsrRxed.end ())
         {
@@ -806,6 +829,19 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           break;
         }
     } while ((*it).first != m_nextRntiUl);
+    
+    
+  // Update global UE stats
+  // update UEs stats
+  for (itStats = m_flowStatsDl.begin (); itStats != m_flowStatsDl.end (); itStats++)
+    {
+      (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTrasmitted;
+      // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term Evolution, Ed Wiley)
+      (*itStats).second.lastAveragedThroughput = ((1.0 - (1.0 / m_timeWindow)) * (*itStats).second.lastAveragedThroughput) + ((1.0 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTrasmitted / 0.001));
+      //       NS_LOG_DEBUG (this << " UE tot bytes " << (*itStats).second.totalBytesTransmitted);
+      //       NS_LOG_DEBUG (this << " UE avg thr " << (*itStats).second.lastAveragedThroughput);
+      (*itStats).second.lastTtiBytesTrasmitted = 0;
+    }
   m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
   m_schedSapUser->SchedUlConfigInd (ret);
   return;
