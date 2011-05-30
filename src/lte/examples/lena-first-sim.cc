@@ -47,6 +47,11 @@ int main (int argc, char *argv[])
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
   //lena->EnableLogComponents ();
+  
+  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
+    LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+      LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -78,7 +83,7 @@ int main (int argc, char *argv[])
   lena->ActivateEpsBearer (ueDevs, bearer);
 
 
-  Simulator::Stop (Seconds (0.005));
+  Simulator::Stop (Seconds (0.010));
 
   Simulator::Run ();
 
