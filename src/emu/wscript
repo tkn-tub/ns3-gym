@@ -19,6 +19,8 @@ def configure(conf):
         emucreatordir = os.path.abspath(os.path.join(blddir, "src/emu"))
         conf.env.append_value('NS3_EXECUTABLE_PATH', emucreatordir)
     else:
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('emu')
 
 def build(bld):
