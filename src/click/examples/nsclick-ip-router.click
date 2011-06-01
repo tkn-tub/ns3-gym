@@ -39,7 +39,7 @@ c0[3] -> Discard;
 c1 :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800, -);
 FromSimDevice(eth1, 4096) -> c1;
 out1 :: Queue(200) -> todevice1 :: ToSimDevice(eth1);
-c1[0] -> ar1 :: ARPResponder(eth0) -> out1;
+c1[0] -> ar1 :: ARPResponder(eth1) -> out1;
 arpq1 :: ARPQuerier(eth1) -> out1;
 c1[1] -> arpt;
 arpt[1] -> [1]arpq1;
