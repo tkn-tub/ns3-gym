@@ -209,15 +209,15 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
   NS_ASSERT (hdr.GetAddr1 () != Mac48Address ());
   // Queue frame
-  if (m_stationManager->IsBrandNew (to))
+  if (m_stationManager->IsBrandNew (hdr.GetAddr1 ()))
     {
       // in adhoc mode, we assume that every destination
       // supports all the rates we support.
       for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
         {
-          m_stationManager->AddSupportedMode (to, m_phy->GetMode (i));
+          m_stationManager->AddSupportedMode (hdr.GetAddr1 (), m_phy->GetMode (i));
         }
-      m_stationManager->RecordDisassociated (to);
+      m_stationManager->RecordDisassociated (hdr.GetAddr1 ());
     }
   //Classify: application sets a tag, which is removed here
   // Get Qos tag:
