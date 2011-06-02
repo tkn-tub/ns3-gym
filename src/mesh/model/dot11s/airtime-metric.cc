@@ -89,6 +89,11 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
   WifiMode mode = mac->GetWifiRemoteStationManager ()->GetDataMode (peerAddress, &m_testHeader, m_testFrame, m_testFrame->GetSize ());
   //obtain frame error rate:
   double failAvg = mac->GetWifiRemoteStationManager ()->GetInfo (peerAddress).GetFrameErrorRate ();
+  if (failAvg == 1)
+    {
+      // Retrun max metric value when frame error rate equals to 1
+      return (uint32_t)0xffffffff;
+    }
   NS_ASSERT (failAvg < 1.0);
   //calculate metric
   uint32_t metric = (uint32_t)((double)( /*Overhead + payload*/
