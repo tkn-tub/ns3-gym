@@ -144,7 +144,7 @@ LteLinkAdaptationTestCase::LteLinkAdaptationTestCase (std::string name, double s
   sstream1 << " snr=" << snrDb 
            << " mcs=" << mcsIndex;
 
-  NS_LOG_UNCOND ("Creating LteLinkAdaptationTestCase: " + sstream1.str ());
+  NS_LOG_INFO ("Creating LteLinkAdaptationTestCase: " + sstream1.str ());
 }
 
 LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
@@ -213,14 +213,14 @@ LteLinkAdaptationTestCase::DoRun (void)
 
 void
 LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                         uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+                                         uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2) 
 {
   static bool firstTime = true;
 
   if ( firstTime )
     {
       firstTime = false;
-      NS_LOG_UNCOND ("SNR\tRef_MCS\tCalc_MCS");
+      NS_LOG_INFO ("SNR\tRef_MCS\tCalc_MCS");
     }
 
   /**
@@ -230,7 +230,7 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
    */
   if ( (frameNo > 1) || (subframeNo > 4) )
     {
-      NS_LOG_UNCOND (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
+      NS_LOG_INFO (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
 
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
     }

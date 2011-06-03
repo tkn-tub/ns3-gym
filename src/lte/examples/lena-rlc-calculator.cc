@@ -73,10 +73,20 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (35));
+  Simulator::Stop (Seconds (2));
 
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
+
+
+  double distance_temp [] = {10000,10000,10000}; //{10000, 10000, 10000};
+  std::vector<double> userDistance;
+  userDistance.assign(distance_temp, distance_temp+3);
+  for (int i = 0; i < 3; i++)
+    {
+      Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
+      mm->SetPosition (Vector (userDistance[i], 0.0, 0.0));
+    } // rkwan 
 
   Simulator::Run ();
 

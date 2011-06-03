@@ -9,7 +9,6 @@ This is the stand-alone version of the ns-3 LTE module documentation.
    :maxdepth: 2
 
    lte-design
-   ff-api
    lte-user
    lte-testing
    

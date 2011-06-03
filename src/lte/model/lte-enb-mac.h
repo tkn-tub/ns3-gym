@@ -216,13 +216,13 @@ private:
   uint32_t m_subframeNo;
   /**
    * Trace information regarding DL scheduling
-   * Simulation time, Frame number, Subframe number, RNTI, MCS of TB1, size of TB1,
+   * Frame number, Subframe number, RNTI, MCS of TB1, size of TB1,
    * MCS of TB2 (0 if not present), size of TB2 (0 if not present)
    */
   TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t, uint8_t, uint16_t> m_dlScheduling;
   /**
    * Trace information regarding UL scheduling
-   * Simulation time, Frame number, Subframe number, RNTI, MCS of TB, size of TB
+   * Frame number, Subframe number, RNTI, MCS of TB, size of TB
    */
   TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t> m_ulScheduling;
 
