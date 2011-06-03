@@ -7,11 +7,8 @@ def configure(conf):
     # should not be built if this is a static build on Darwin.  They
     # don't work there for the ns3wifi module, and this is probably
     # because the ns3wifi module has no source files.
-    #
-    # Note that because this module is in a subdirectory of test, its
-    # name in the modules list is "test/ns3wifi".
     if conf.env['ENABLE_STATIC_NS3'] and sys.platform == 'darwin':
-        conf.env['MODULES_NOT_BUILT'].append('test/ns3wifi')
+        conf.env['MODULES_NOT_BUILT'].append('ns3wifi')
 
 def build(bld):
     # Don't do anything for this module if it should not be built.
