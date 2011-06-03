@@ -19,8 +19,8 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef LTE_TEST_LINK_ADAPTATION_WITH_INTERFERENCE_H
-#define LTE_TEST_LINK_ADAPTATION_WITH_INTERFERENCE_H
+#ifndef LTE_TEST_INTERFERENCE_H
+#define LTE_TEST_INTERFERENCE_H
 
 #include "ns3/test.h"
 
@@ -31,18 +31,18 @@ using namespace ns3;
 /**
  * Test that SINR calculation and MCS selection works fine in a multi-cell interference scenario.
  */
-class LteLinkAdaptationWithInterferenceTestSuite : public TestSuite
+class LteInterferenceTestSuite : public TestSuite
 {
 public:
-  LteLinkAdaptationWithInterferenceTestSuite ();
+  LteInterferenceTestSuite ();
 };
 
 
-class LteLinkAdaptationWithInterferenceTestCase : public TestCase
+class LteInterferenceTestCase : public TestCase
 {
 public:
-  LteLinkAdaptationWithInterferenceTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr, double dlSe, double ulSe, uint16_t dlMcs, uint16_t ulMcs);
-  virtual ~LteLinkAdaptationWithInterferenceTestCase ();
+  LteInterferenceTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr, double dlSe, double ulSe, uint16_t dlMcs, uint16_t ulMcs);
+  virtual ~LteInterferenceTestCase ();
   
   void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                        uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
@@ -65,4 +65,4 @@ private:
 };
 
 
-#endif /* LTE_TEST_LINK_ADAPTATION_H */
+#endif /* LTE_TEST_INTERFERENCE_H */

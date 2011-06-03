@@ -33,17 +33,17 @@
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-ue-net-device.h"
 
-#include "ns3/lte-test-link-adaptation-with-interference.h"
+#include "ns3/lte-test-interference.h"
 
 #include "lte-test-sinr-chunk-processor.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationWithInterferenceTest");
+NS_LOG_COMPONENT_DEFINE ("LteInterferenceTest");
 
 using namespace ns3;
 
 
 void
-LteTestDlSchedulingCallback (LteLinkAdaptationWithInterferenceTestCase *testcase, std::string path,
+LteTestDlSchedulingCallback (LteInterferenceTestCase *testcase, std::string path,
                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                              uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
@@ -51,7 +51,7 @@ LteTestDlSchedulingCallback (LteLinkAdaptationWithInterferenceTestCase *testcase
 }
 
 void
-LteTestUlSchedulingCallback (LteLinkAdaptationWithInterferenceTestCase *testcase, std::string path,
+LteTestUlSchedulingCallback (LteInterferenceTestCase *testcase, std::string path,
                             uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                             uint8_t mcs, uint16_t sizeTb)
 {
@@ -63,22 +63,22 @@ LteTestUlSchedulingCallback (LteLinkAdaptationWithInterferenceTestCase *testcase
  * TestSuite
  */
 
-LteLinkAdaptationWithInterferenceTestSuite::LteLinkAdaptationWithInterferenceTestSuite ()
+LteInterferenceTestSuite::LteInterferenceTestSuite ()
   : TestSuite ("lte-interference", SYSTEM)
 {
-  NS_LOG_INFO ("Creating LteLinkAdaptionWithInterferenceTestSuite");
+  NS_LOG_INFO ("Creating LteInterferenceTestSuite");
 
-  AddTestCase (new LteLinkAdaptationWithInterferenceTestCase ("d1=3000, d2=6000",  3000.000000, 6000.000000,  3.844681, 1.714583,  0.761558, 0.389662, 4, 2));    
+  AddTestCase (new LteInterferenceTestCase ("d1=3000, d2=6000",  3000.000000, 6000.000000,  3.844681, 1.714583,  0.761558, 0.389662, 4, 2));    
 }
 
-static LteLinkAdaptationWithInterferenceTestSuite lteLinkAdaptationWithInterferenceTestSuite;
+static LteInterferenceTestSuite lteLinkAdaptationWithInterferenceTestSuite;
 
 
 /**
  * TestCase
  */
 
-LteLinkAdaptationWithInterferenceTestCase::LteLinkAdaptationWithInterferenceTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr, double dlSe, double ulSe, uint16_t dlMcs, uint16_t ulMcs)
+LteInterferenceTestCase::LteInterferenceTestCase (std::string name, double d1, double d2, double dlSinr, double ulSinr, double dlSe, double ulSe, uint16_t dlMcs, uint16_t ulMcs)
   : TestCase (name),
     m_d1 (d1),
     m_d2 (d2),
@@ -91,12 +91,12 @@ LteLinkAdaptationWithInterferenceTestCase::LteLinkAdaptationWithInterferenceTest
 {
 }
 
-LteLinkAdaptationWithInterferenceTestCase::~LteLinkAdaptationWithInterferenceTestCase ()
+LteInterferenceTestCase::~LteInterferenceTestCase ()
 {
 }
 
 void
-LteLinkAdaptationWithInterferenceTestCase::DoRun (void)
+LteInterferenceTestCase::DoRun (void)
 {
   /**
     * Simulation Topology
@@ -180,7 +180,7 @@ LteLinkAdaptationWithInterferenceTestCase::DoRun (void)
 
 
 void
-LteLinkAdaptationWithInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                                          uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
   /**
@@ -195,7 +195,7 @@ LteLinkAdaptationWithInterferenceTestCase::DlScheduling (uint32_t frameNo, uint3
 }
 
 void
-LteLinkAdaptationWithInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                                          uint8_t mcs, uint16_t sizeTb)
 {
   /**
