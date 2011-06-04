@@ -833,7 +833,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
     
   // Update global UE stats
   // update UEs stats
-  for (itStats = m_flowStatsDl.begin (); itStats != m_flowStatsDl.end (); itStats++)
+  for (itStats = m_flowStatsUl.begin (); itStats != m_flowStatsUl.end (); itStats++)
     {
       (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTrasmitted;
       // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term Evolution, Ed Wiley)
