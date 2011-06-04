@@ -68,7 +68,18 @@ LteInterferenceTestSuite::LteInterferenceTestSuite ()
 {
   NS_LOG_INFO ("Creating LteInterferenceTestSuite");
 
-  AddTestCase (new LteInterferenceTestCase ("d1=3000, d2=6000",  3000.000000, 6000.000000,  3.844681, 1.714583,  0.761558, 0.389662, 4, 2));    
+  AddTestCase (new LteInterferenceTestCase ("d1=3000, d2=6000",  3000.000000, 6000.000000,  3.844681, 1.714583,  0.761558, 0.389662, 6, 4));  
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=10",  50.000000, 10.000000,  0.040000, 0.040000,  0.010399, 0.010399, 0, 0));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=20",  50.000000, 20.000000,  0.160000, 0.159998,  0.041154, 0.041153, 0, 0));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=50",  50.000000, 50.000000,  0.999997, 0.999907,  0.239828, 0.239808, 2, 2));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=100",  50.000000, 100.000000,  3.999955, 3.998520,  0.785259, 0.785042, 6, 6));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=200",  50.000000, 200.000000,  15.999282, 15.976339,  1.961072, 1.959533, 14, 14));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=500",  50.000000, 500.000000,  99.971953, 99.082845,  4.254003, 4.241793, 22, 22));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=1000",  50.000000, 1000.000000,  399.551632, 385.718468,  6.194952, 6.144825, 28, 28));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=10000",  50.000000, 10000.000000,  35964.181431, 8505.970614,  12.667381, 10.588084, 28, 28));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=100000",  50.000000, 100000.000000,  327284.773828, 10774.181090,  15.853097, 10.928917, 28, 28));
+  AddTestCase (new LteInterferenceTestCase ("d1=50, d2=1000000",  50.000000, 1000000.000000,  356132.574152, 10802.988445,  15.974963, 10.932767, 28, 28));
+  
 }
 
 static LteInterferenceTestSuite lteLinkAdaptationWithInterferenceTestSuite;
@@ -117,12 +128,19 @@ LteInterferenceTestCase::DoRun (void)
   ueNodes2.Create (1);
   NodeContainer allNodes = NodeContainer ( enbNodes, ueNodes1, ueNodes2);
 
-  // positions
+  // the topology is the following:
+  //         d2  
+  //  UE1-----------eNB2
+  //   |             |
+  // d1|             |d1
+  //   |     d2      |
+  //  eNB1----------UE2
+  //
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0)); // eNB 1
-  positionAlloc->Add (Vector (m_d2, m_d1, 0.0)); // eNB 2
-  positionAlloc->Add (Vector (0.0, m_d1, 0.0)); // UE 1
-  positionAlloc->Add (Vector (m_d2, 0.0, 0.0)); // UE 2
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));   // eNB1
+  positionAlloc->Add (Vector (m_d2, m_d1, 0.0)); // eNB2
+  positionAlloc->Add (Vector (0.0, m_d1, 0.0));  // UE1
+  positionAlloc->Add (Vector (m_d2, 0.0, 0.0));  // UE2
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.SetPositionAllocator (positionAlloc);
@@ -170,10 +188,10 @@ LteInterferenceTestCase::DoRun (void)
   Simulator::Run ();
 
   double dlSinrDb = 10.0 * log10 (testDlSinr->GetSinr ()[0]);
-  NS_TEST_ASSERT_MSG_EQ_TOL (dlSinrDb, m_dlSinrDb, 0.0000001, "Wrong SINR in DL!");
+  NS_TEST_ASSERT_MSG_EQ_TOL (dlSinrDb, m_dlSinrDb, 0.01, "Wrong SINR in DL!");
 
   double ulSinrDb = 10.0 * log10 (testUlSinr->GetSinr ()[0]);
-  NS_TEST_ASSERT_MSG_EQ_TOL (ulSinrDb, m_ulSinrDb, 0.0000001, "Wrong SINR in UL!");
+  NS_TEST_ASSERT_MSG_EQ_TOL (ulSinrDb, m_ulSinrDb, 0.01, "Wrong SINR in UL!");
 
   Simulator::Destroy ();
 }

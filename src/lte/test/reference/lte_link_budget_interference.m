@@ -35,52 +35,45 @@ gamma = -log (5*ber)./1.5;
 %%   |     d2      |
 %%  eNB1----------UE2
 %%
-d1 = 3000;
-d2 = 6000;
 
-%% propagation gains (linear)
-%%             g21dl  
-%%      UE1<----------eNB2
-%%      ^ |              
-%%g11dl1| |g11ul          
-%%      | v            
-%%      eNB1<---------UE2
-%%             g21ul
+d1 = 50;
+%% for d2 = [10 100 1000 10000 100000 1000000]
+for d2 = [20 50 200 500]
 
-g11dl = gain_freespace (d1, fdl);
-g11ul = gain_freespace (d1, ful);
-g21dl = gain_freespace (d2, fdl);
-g21ul = gain_freespace (d2, ful);
+  %% propagation gains (linear)
+  %%             g21dl  
+  %%      UE1<----------eNB2
+  %%      ^ |              
+  %%g11dl1| |g11ul          
+  %%      | v            
+  %%      eNB1<---------UE2
+  %%             g21ul
 
-%% SINR (linear)
-dlsinr = dlp*g11dl / (dlp*g21dl + dln);
-ulsinr = ulp*g11ul / (ulp*g21ul + uln);
+  g11dl = gain_freespace (d1, fdl);
+  g11ul = gain_freespace (d1, ful);
+  g21dl = gain_freespace (d2, fdl);
+  g21ul = gain_freespace (d2, ful);
 
-%% SINR (dB)
-dlsinrdB = 10.*log10(dlsinr)
-ulsinrdB = 10.*log10(ulsinr)
+  %% SINR (linear)
+  dlsinr = dlp*g11dl / (dlp*g21dl + dln);
+  ulsinr = ulp*g11ul / (ulp*g21ul + uln);
 
-%% Spectal Efficiency
-dlse = log2(1 + dlsinr./gamma);
-ulse = log2(1 + ulsinr./gamma);
+  %% SINR (dB)
+  dlsinrdB = 10.*log10(dlsinr);
+  ulsinrdB = 10.*log10(ulsinr);
 
-%% to get the MCS, you need to do a manual lookup into 3GPP R1-081483
-%% starting from the spectral efficiency value.
-%% See the Testing section in the LTE module documentation for more info
-%% on how this is done. You might as well look into lte_amc.m
+  %% Spectal Efficiency
+  dlse = log2(1 + dlsinr./gamma);
+  ulse = log2(1 + ulsinr./gamma);
 
-
-
-printf("AddTestCase (new LteLinkAdaptationWithInterferenceTestCase (\"d1=%d, d2=%d\", % f, %f, % f, %f, % f, %f, , ));\n", \
-       d1, d2, d1, d2, dlsinr, ulsinr, dlse, ulse)
-
-# semilogx (d, snr, ";friis;");
-# xlabel ("distance (m)");
-# ylabel ("SNR (dB)");
-# title ("LTE link budget");
-
-# grid on;
-# print ("lte_link_budget.png", "-dpng");
-      
+  %% to get the MCS, you need to do a manual lookup into 3GPP R1-081483
+  %% starting from the spectral efficiency value.
+  %% See the Testing section in the LTE module documentation for more info
+  %% on how this is done. You might as well look into lte_amc.m
 
 
+  printf("AddTestCase (new LteInterferenceTestCase (\"d1=%d, d2=%d\", % f, %f, % f, %f, % f, %f, , ));\n", \
+	 d1, d2, d1, d2, dlsinr, ulsinr, dlse, ulse)
+  
+
+endfor
