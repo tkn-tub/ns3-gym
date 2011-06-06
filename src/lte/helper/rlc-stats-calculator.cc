@@ -291,7 +291,7 @@ RlcStatsCalculator::WriteDlResults (std::ofstream& outFile)
 {
   // Get the unique IMSI list
   std::vector<ImsiLcidPair > pairVector;
-  for (Uint32Map::iterator it = m_ulTxPackets.begin(); it != m_ulTxPackets.end(); ++it)
+  for (Uint32Map::iterator it = m_dlTxPackets.begin(); it != m_dlTxPackets.end(); ++it)
     {
       if (find (pairVector.begin (), pairVector.end (),  (*it).first ) == pairVector.end () )
         {
@@ -351,6 +351,7 @@ RlcStatsCalculator::CheckEpoch (void)
 {
   if ( Simulator::Now () > m_startTime + m_epochDuration )
     {
+      std::cout << "JNNNNNNNNNG New epoch! startTime " << m_startTime << " epoch duration " << m_epochDuration << std::endl;
       ShowResults();
       ResetResults();
       StartEpoch();

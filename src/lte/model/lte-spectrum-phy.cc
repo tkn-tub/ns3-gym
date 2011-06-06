@@ -327,7 +327,7 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
       switch (m_state)
         {
         case TX:
-          NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
+          NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel access, the physical layer for transmission cannot be used for reception");
           break;
 
         case IDLE:
@@ -366,7 +366,7 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                                && (m_firstRxDuration == duration));
                   }
                 
-                ChangeState (RX);                                
+                ChangeState (RX);
                 m_interference->StartRx (rxPsd);
 
                 m_phyRxStartTrace (pb);  
