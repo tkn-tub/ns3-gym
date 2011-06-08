@@ -48,16 +48,27 @@ public:
   double getSum () const { return m_total; }
   double getMin () const { return m_min; }
   double getMax () const { return m_max; }
-  double getMean () const { return m_total / (double)m_count; }
-  double getStddev () const { return NaN; }   // unsupported
-  double getVariance () const { return NaN; }   // unsupported
-  double getSqrSum () const { return NaN; }   // unsupported
+  double getMean () const { return m_meanCurr; }
+  double getStddev () const { return sqrt (m_varianceCurr); }
+  double getVariance () const { return m_varianceCurr; }
+  double getSqrSum () const { return m_squareTotal; }
 
 protected:
   virtual void DoDispose (void);
 
   uint32_t m_count;
-  T m_total, m_min, m_max;
+
+  T m_total;
+  T m_squareTotal;
+  T m_min;
+  T m_max;
+
+  double m_meanCurr;
+  double m_sCurr;
+  double m_varianceCurr;
+
+  double m_meanPrev;
+  double m_sPrev;
 
   // end MinMaxAvgTotalCalculator
 };
@@ -67,9 +78,16 @@ template <typename T>
 MinMaxAvgTotalCalculator<T>::MinMaxAvgTotalCalculator()
 {
   m_count = 0;
-  m_total = 0;
-  m_min = ~0;
-  m_max = 0;
+
+  m_total       = 0;
+  m_squareTotal = 0;
+
+  m_meanCurr     = NaN;
+  m_sCurr        = NaN;
+  m_varianceCurr = NaN;
+
+  m_meanPrev     = NaN;
+  m_sPrev        = NaN;
 }
 
 template <typename T>
@@ -89,15 +107,63 @@ void
 MinMaxAvgTotalCalculator<T>::Update (const T i)
 {
   if (m_enabled) {
-      m_total += i;
-
-      if (i < m_min)
-        m_min = i;
-
-      if (i > m_max)
-        m_max = i;
-
       m_count++;
+
+      m_total       += i;
+      m_squareTotal += i*i;
+
+      if (m_count == 1)
+        {
+          m_min = i;
+          m_max = i;
+        }
+      else
+        {
+          if (i < m_min)
+            {
+              m_min = i;
+            }
+          if (i > m_max)
+            {
+              m_max = i;
+            }
+        }
+
+      // Calculate the variance based on equations (15) and (16) on
+      // page 216 of "The Art of Computer Programming, Volume 2",
+      // Second Edition. Donald E. Knuth.  Addison-Wesley
+      // Publishing Company, 1973.
+      //
+      // The relationships between the variance, standard deviation,
+      // and s are as follows
+      //
+      //                      s
+      //     variance  =  -----------
+      //                   count - 1
+      //
+      //                                -------------
+      //                               /
+      //     standard_deviation  =    /  variance
+      //                            \/
+      //
+      if (m_count == 1)
+        {
+          // Set the very first values.
+          m_meanCurr     = i;
+          m_sCurr        = 0;
+          m_varianceCurr = m_sCurr;
+        }
+      else
+        {
+          // Save the previous values.
+          m_meanPrev     = m_meanCurr;
+          m_sPrev        = m_sCurr;
+
+          // Update the current values.
+          m_meanCurr     = m_meanPrev + (i - m_meanPrev) / m_count;
+          m_sCurr        = m_sPrev    + (i - m_meanPrev) * (i - m_meanCurr);
+          m_varianceCurr = m_sCurr / (m_count - 1);
+        }
     }
   // end MinMaxAvgTotalCalculator::Update
 }

@@ -295,7 +295,6 @@ int main (int argc, char *argv[]) {
   //--------------------------------------------
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
-  Simulator::Destroy ();
 
 
 
@@ -322,6 +321,9 @@ int main (int argc, char *argv[]) {
   // the results.
   if (output != 0)
     output->Output (data);
+
+  // Free any memory here at the end of this example.
+  Simulator::Destroy ();
 
   // end main
 }
