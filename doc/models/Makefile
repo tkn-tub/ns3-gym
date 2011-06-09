@@ -67,7 +67,9 @@ SOURCEFIGS = \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/lte-transmission.png \
 	$(SRC)/lte/doc/lte-transmission.pdf \
-        $(SRC)/uan/doc/auvmobility-classes.dia \
+	$(SRC)/uan/doc/auvmobility-classes.dia \
+	$(SRC)/stats/doc/Stat-framework-arch.png \
+	$(SRC)/stats/doc/Wifi-default.png \
 	$(SRC)/netanim/doc/animation-dumbbell.png \
 	$(SRC)/netanim/doc/animation-dumbbell.pdf \
 
