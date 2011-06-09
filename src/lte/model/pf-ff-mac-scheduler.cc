@@ -674,6 +674,38 @@ PfFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   return;
 }
 
+
+double
+PfFfMacScheduler::EstimateUlSinr(uint16_t rnti, uint16_t rb)
+{
+  std::map <uint16_t, std::vector <double> >::iterator itCqi = m_ueCqi.find (rnti);
+  if (itCqi == m_ueCqi.end ())
+  {
+    // no cqi info about this UE
+    return (NO_SINR);
+    
+  }
+  else
+  {
+    // take the average SINR value among the available 
+    double sinrSum = 0;
+    int sinrNum = 0;
+    for (uint32_t i = 0; i < m_cschedCellConfig.m_ulBandwidth; i++)
+      {
+        double sinr = (*itCqi).second.at(i);
+        if (sinr != NO_SINR)
+          {
+            sinrSum += sinr;
+            sinrNum++;
+          }
+      }
+    double estimatedSinr = sinrSum / (double)sinrNum;
+    // store the value
+    (*itCqi).second.at(rb) = estimatedSinr;
+    return (estimatedSinr);
+  }
+}
+
 void
 PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params)
 {
@@ -757,9 +789,18 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           // take the lowest CQI value (worst RB)
           double minSinr = (*itCqi).second.at(uldci.m_rbStart);
+          if (minSinr == NO_SINR)
+            {
+              minSinr = EstimateUlSinr ((*it).first, uldci.m_rbStart);
+            }
           for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
             {
               //NS_LOG_DEBUG (this << " UE " << (*it).first << " has CQI " << (*itCqi).second.at(i));
+              double sinr = (*itCqi).second.at(i);
+              if (sinr == NO_SINR)
+                {
+                  sinr = EstimateUlSinr ((*it).first, i);
+                }
               if ((*itCqi).second.at(i) < minSinr)
                 {
                   minSinr = (*itCqi).second.at(i);
@@ -937,8 +978,8 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
 		 	    	  	}
   	    	  	else
   	    	  	  {
-  	    	  	  	// initialize with minumum values according to the fixed point notation
-  	    	  	  	newCqi.push_back (LteFfConverter::getMinFpS11dot3Value ());
+                  // initialize with NO_SINR value.
+  	    	  	  	newCqi.push_back (NO_SINR);
   	    	  	  }
   	    	  	
   	    	  }

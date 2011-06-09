@@ -30,6 +30,10 @@
 #include <ns3/nstime.h>
 
 
+// value for SINR outside the range defined by FF-API, used to indicate that there
+// is no CQI for this element
+#define NO_SINR -5000
+
 namespace ns3 {
 
 
@@ -129,6 +133,8 @@ private:
   int GetRbgSize (int dlbandwidth);
   
   int LcActivePerFlow(uint16_t rnti);
+  
+  double EstimateUlSinr(uint16_t rnti, uint16_t rb);
 
   /*
    * Vectors of UE's LC info
