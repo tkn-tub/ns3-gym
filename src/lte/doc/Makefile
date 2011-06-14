@@ -11,7 +11,8 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-mac-saps.eps \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
-	$(FIGURES)/lte-ue-architecture.eps
+	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/lte-interference-test-scenario.eps
 
 # specify figures for build process (all eps figures)
 GRAPHS_EPS = \
@@ -35,6 +36,7 @@ $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-transmission.pdf_width = 3in
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/lte-interference-test-scenario.pdf_width = 4in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
