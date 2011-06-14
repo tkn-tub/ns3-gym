@@ -11,8 +11,8 @@
    Scheduling Algorithm for QoS Support in the Downlink of LTE Cellular Networks", Proc. of 
    European Wireless, EW2010, Lucca, Italy, Apr., 2010 
 
-.. [Kushner2004] H.J. Kushner and P.A. Whiting, "Convergence of proportional-fair sharing algorithms under general conditions", 
-   IEEE Trans. on Wireless Communications, July 2004
+.. [Holtzman2000] J.M. Holtzman, "CDMA forward link waterfilling power control", 
+   in Proc. of IEEE VTC Spring, 2000.
 
 .. [Piro2011] G. Piro, N. Baldo. M. Miozzo, "An LTE module for the ns-3 network simulator", 
     in Proc. of Wns3 2011 (in conjunction with SimuTOOLS 2011), March 2011, Barcelona (Spain)

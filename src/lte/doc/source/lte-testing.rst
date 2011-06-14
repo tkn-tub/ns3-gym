@@ -276,7 +276,7 @@ achievable rate ratio :math:`\rho_{R,i}` of each user :math:`i` as
 
 Let now :math:`T_i` be the throughput actually achieved by the UE :math:`i` , which
 is obtained as part of the simulation output. We define the obtained throughput
-ratio :math:`\rho_{R,i}` of UE :math:`i` as
+ratio :math:`\rho_{T,i}` of UE :math:`i` as
 
 .. math::
    \rho_{T,i} = \frac{T_i}{\sum_{j=1}^N T_j}
@@ -288,7 +288,22 @@ The test consists of checking that the following condition is verified:
 
 if so, it means that the throughput obtained by each UE over the whole
 simulation matches with the steady-state throughput expected by the PF scheduler
-according to the theory (see for instance [Kushner2004]_).
+according to the theory. This test can be derived from [Holtzman2000]_
+as follows. From Section 3 of [Holtzman2000]_, we know that 
+
+.. math::
+   \frac{T_i}{R_i} = c, \, \forall i
+
+where :math:`c` is a constant. By substituting the above into the
+definition of :math:`\rho_{T,i}` given previously, we get
+
+.. math::
+    \frac{T_i}{\sum_{j=1}^N T_j} &=  \frac{c R_i}{\sum_{j=1}^N c R_j} \\
+                                 &=  \frac{c R_i}{c \sum_{j=1}^N  R_j} \\
+                                 &=  \frac{R_i}{\sum_{j=1}^N  R_j}
+
+which is exactly the expression being used in the test.
+              
 
 
 Figure :ref:`fig-lenaThrTestCase2` presents the results obtained in a test case with
