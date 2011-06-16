@@ -219,6 +219,8 @@ can be used because of the SC-FDMA modulation. As a consequence, all
 RBs can be allocated by the eNB regardless of the bandwidth
 configuration. 
 
+.. _sec-lte-amc:
+
 Adaptive Modulation and Coding
 ++++++++++++++++++++++++++++++
 
