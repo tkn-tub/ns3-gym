@@ -76,7 +76,7 @@ Usage
 Building Click
 ==============
 
-The first step is to build Click. At the top of your Click source directory::
+The first step is to fetch (http://read.cs.ucla.edu/click/download) and build Click. At the top of your Click source directory::
 
   $: ./configure --enable-userlevel --disable-linuxmodule --enable-nsclick --enable-wifi
   $: make
