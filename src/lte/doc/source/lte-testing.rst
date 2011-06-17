@@ -101,6 +101,8 @@ deals with floating point arithmetic approximation issues.
 System Tests
 ~~~~~~~~~~~~
 
+.. _sec-lte-amc-tests:
+
 Adaptive Modulation and Coding Tests
 ------------------------------------
 
@@ -110,7 +112,7 @@ corresponding to different SNR values perceived by the UE. The aim of the test
 is to check that in each test case the chosen MCS corresponds to some known
 reference values. These reference values are obtained by
 re-implementing in Octave (see `src/lte/test/reference/lte_amc.m`) the
-model described in Section :ref:`Adaptive Modulation and Coding` for the calculation of the
+model described in Section :ref:`sec-lte-amc` for the calculation of the
 spectral efficiency, and determining the corresponding MCS index
 by manually looking up the tables in [R1-081483]_. The resulting test vector is
 represented in Figure :ref:`fig-lte-mcs-index`.
@@ -119,7 +121,7 @@ The MCS which is used by the simulator is measured by
 obtaining the tracing output produced by the scheduler after 4ms (this
 is needed to account for the initial delay in CQI reporting). The SINR
 which is calcualted by the simulator is also obtained using the
-`LteSinrChunkProcessor``interface. The test
+``LteSinrChunkProcessor`` interface. The test
 passes if both the following conditions are satisfied:
  
  #. the SINR calculated by the simulator correspond to the SNR
@@ -133,6 +135,8 @@ passes if both the following conditions are satisfied:
    :align: center
 
    Test vector for Adaptive Modulation and Coding
+
+
 
 Inter-cell Interference Tests
 -----------------------------
@@ -165,7 +169,7 @@ The test vectors are obtained by use of a dedicated octave script
 the link budget calculations (including interference) corresponding to the topology of each
 test case, and outputs the resulting SINR and spectral efficiency. The
 latter is then used to determine (using the same procedure adopted for 
-:ref:`Inter-cell Interference Tests`. We note that the test vector
+:ref:`sec-lte-amc-tests`. We note that the test vector
 contains separate values for uplink and downlink. 
 
 
