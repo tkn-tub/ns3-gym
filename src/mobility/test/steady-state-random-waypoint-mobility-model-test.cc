@@ -39,8 +39,15 @@ private:
   double count;
 private:
   virtual void DoRun (void);
+  virtual void DoTeardown (void);
   void DistribCompare ();
 };
+
+void
+SteadyStateRandomWaypointTest::DoTeardown (void)
+{
+  mobilityStack.clear();
+}
 
 void
 SteadyStateRandomWaypointTest::DoRun (void)

@@ -201,6 +201,19 @@ private:
     NS_TEST_EXPECT_MSG_EQ (pos, ref.pos, "Position mismatch at time " << time.GetSeconds () << " s for node " << id);
     NS_TEST_EXPECT_MSG_EQ (vel, ref.vel, "Velocity mismatch at time " << time.GetSeconds () << " s for node " << id);
   }
+  
+  void DoSetup ()
+  {
+    CreateNodes ();
+  }
+  
+  void DoTeardown ()
+  {
+    Names::Clear ();
+    std::remove (m_traceFile.c_str ());
+    Simulator::Destroy ();
+  }
+  
   /// Go
   void DoRun ()
   {
@@ -211,7 +224,6 @@ private:
       {
         return;
       }
-    CreateNodes ();
     Ns2MobilityHelper mobility (m_traceFile);
     mobility.Install ();
     if (CheckInitialPositions ())
@@ -222,9 +234,6 @@ private:
                      MakeCallback (&Ns2MobilityHelperTest::CourseChange, this));
     Simulator::Stop (m_timeLimit);
     Simulator::Run ();
-    Names::Clear ();
-    std::remove (m_traceFile.c_str ());
-    Simulator::Destroy ();
   }
 };
 
