@@ -91,16 +91,16 @@ TypeId LenaHelper::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<LenaHelper> ()
     .AddAttribute ("Scheduler",
-                   "The type of scheduler to be used for eNBs",               
+                   "The type of scheduler to be used for eNBs",
                    StringValue ("ns3::PfFfMacScheduler"),
-                   MakeStringAccessor (&LenaHelper::SetSchedulerType),                   
+                   MakeStringAccessor (&LenaHelper::SetSchedulerType),
                    MakeStringChecker ())
     .AddAttribute ("PropagationModel",
-                   "The type of propagation model to be used",               
+                   "The type of propagation model to be used",
                    StringValue ("ns3::FriisSpectrumPropagationLossModel"),
-                   MakeStringAccessor (&LenaHelper::SetPropagationModelType),                   
+                   MakeStringAccessor (&LenaHelper::SetPropagationModelType),
                    MakeStringChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -186,7 +186,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
-  
+
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
@@ -203,7 +203,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
-  Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();  
+  Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
 
@@ -253,7 +253,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetMobility (mm);
 
   m_downlinkChannel->AddRx (dlPhy);
-  
+
   Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
 
@@ -381,14 +381,14 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
                       uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                       uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  mac->DlScheduling(frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+  mac->DlScheduling (frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
 }
 
 void
 LenaHelper::EnableDlMacTraces (void)
 {
-  Config::Connect("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
-                  MakeBoundCallback(&DlSchedulingCallback, macStats));
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+                   MakeBoundCallback (&DlSchedulingCallback, macStats));
 }
 
 void
@@ -396,14 +396,14 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
                       uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                       uint8_t mcs, uint16_t size)
 {
-  mac->UlScheduling(frameNo, subframeNo, rnti, mcs, size);
+  mac->UlScheduling (frameNo, subframeNo, rnti, mcs, size);
 }
 
 void
 LenaHelper::EnableUlMacTraces (void)
 {
-  Config::Connect("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
-                  MakeBoundCallback(&UlSchedulingCallback, macStats));
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
+                   MakeBoundCallback (&UlSchedulingCallback, macStats));
 }
 
 void
@@ -421,13 +421,13 @@ FindImsiFromEnbRlcPath (std::string path)
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
 
   // We retrieve the UeInfo accociated to the C-RNTI and perform the IMSI lookup
-  std::string ueMapPath = path.substr (0, path.find("/RadioBearerMap"));
+  std::string ueMapPath = path.substr (0, path.find ("/RadioBearerMap"));
   Config::MatchContainer match = Config::LookupMatches (ueMapPath);
 
   if (match.GetN () != 0)
     {
-       Ptr<Object> ueInfo = match.Get(0);
-       return ueInfo->GetObject<UeInfo> ()->GetImsi ();
+      Ptr<Object> ueInfo = match.Get (0);
+      return ueInfo->GetObject<UeInfo> ()->GetImsi ();
     }
   else
     {
@@ -443,13 +443,13 @@ FindImsiFromUeRlc (std::string path)
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RlcMap/#LCID/RxPDU
 
   // We retrieve the LteUeNetDevice path
-  std::string lteUeNetDevicePath = path.substr (0, path.find("/LteUeRrc"));
+  std::string lteUeNetDevicePath = path.substr (0, path.find ("/LteUeRrc"));
   Config::MatchContainer match = Config::LookupMatches (lteUeNetDevicePath);
 
   if (match.GetN () != 0)
     {
-       Ptr<Object> ueNetDevice = match.Get(0);
-       return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+      Ptr<Object> ueNetDevice = match.Get (0);
+      return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
     }
   else
     {
@@ -461,7 +461,7 @@ FindImsiFromUeRlc (std::string path)
 
 void
 DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+                 uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
   rlcStats->DlTxPdu (imsi, rnti, lcid, packetSize);
@@ -469,7 +469,7 @@ DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
 
 void
 DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+                 uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   uint64_t imsi = FindImsiFromUeRlc (path);
   rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
@@ -479,22 +479,22 @@ void
 LenaHelper::EnableDlRlcTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
-                   MakeBoundCallback(&DlTxPduCallback, rlcStats));
+                   MakeBoundCallback (&DlTxPduCallback, rlcStats));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
-                   MakeBoundCallback(&DlRxPduCallback, rlcStats));
+                   MakeBoundCallback (&DlRxPduCallback, rlcStats));
 }
 
 void
-UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                 uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   uint64_t imsi = FindImsiFromUeRlc (path);
   rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
-UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                 uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
   rlcStats->UlRxPdu (imsi, rnti, lcid, packetSize, delay);
@@ -505,10 +505,10 @@ UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
 void
 LenaHelper::EnableUlRlcTraces (void)
 {
-  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
-                   MakeBoundCallback(&UlTxPduCallback, rlcStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
+                   MakeBoundCallback (&UlTxPduCallback, rlcStats));
   Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
-                   MakeBoundCallback(&UlRxPduCallback, rlcStats));
+                   MakeBoundCallback (&UlRxPduCallback, rlcStats));
 }
 
 Ptr<RlcStatsCalculator>

@@ -201,7 +201,7 @@ LteDownlinkSinrTestCase::DoRun (void)
             {
               // Create phy tag (different for each packet burst)
               // and add to the first packet
-              pktTag[pb] = LtePhyTag (100 * (pb+1));
+              pktTag[pb] = LtePhyTag (100 * (pb + 1));
               pkt[pb][i]->AddPacketTag ( pktTag[pb] );
             }
 
@@ -246,12 +246,12 @@ LteDownlinkSinrTestCase::DoRun (void)
    */
 
   // eNB sends data to 2 UEs through 2 subcarriers
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[0], m_sv, dlPhy->GetSpectrumType(), ds);
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[0], m_sv, dlPhy->GetSpectrumType (), ds);
 
-  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[1], i1, dlPhy->GetSpectrumType(), di1);
-  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[2], i2, dlPhy->GetSpectrumType(), di2);
-  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[3], i3, dlPhy->GetSpectrumType(), di3);
-  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[4], i4, dlPhy->GetSpectrumType(), di4);
+  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[1], i1, dlPhy->GetSpectrumType (), di1);
+  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[2], i2, dlPhy->GetSpectrumType (), di2);
+  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[3], i3, dlPhy->GetSpectrumType (), di3);
+  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[4], i4, dlPhy->GetSpectrumType (), di4);
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();

@@ -47,15 +47,15 @@ LteTestDlSchedulingCallback (LteInterferenceTestCase *testcase, std::string path
                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                              uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  testcase->DlScheduling(frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+  testcase->DlScheduling (frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
 }
 
 void
 LteTestUlSchedulingCallback (LteInterferenceTestCase *testcase, std::string path,
-                            uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                            uint8_t mcs, uint16_t sizeTb)
+                             uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                             uint8_t mcs, uint16_t sizeTb)
 {
-    testcase->UlScheduling(frameNo, subframeNo, rnti, mcs, sizeTb);
+  testcase->UlScheduling (frameNo, subframeNo, rnti, mcs, sizeTb);
 }
 
 
@@ -68,7 +68,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite ()
 {
   NS_LOG_INFO ("Creating LteInterferenceTestSuite");
 
-  AddTestCase (new LteInterferenceTestCase ("d1=3000, d2=6000",  3000.000000, 6000.000000,  3.844681, 1.714583,  0.761558, 0.389662, 6, 4));  
+  AddTestCase (new LteInterferenceTestCase ("d1=3000, d2=6000",  3000.000000, 6000.000000,  3.844681, 1.714583,  0.761558, 0.389662, 6, 4));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=10",  50.000000, 10.000000,  0.040000, 0.040000,  0.010399, 0.010399, 0, 0));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=20",  50.000000, 20.000000,  0.160000, 0.159998,  0.041154, 0.041153, 0, 0));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=50",  50.000000, 50.000000,  0.999997, 0.999907,  0.239828, 0.239808, 2, 2));
@@ -79,7 +79,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite ()
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=10000",  50.000000, 10000.000000,  35964.181431, 8505.970614,  12.667381, 10.588084, 28, 28));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=100000",  50.000000, 100000.000000,  327284.773828, 10774.181090,  15.853097, 10.928917, 28, 28));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=1000000",  50.000000, 1000000.000000,  356132.574152, 10802.988445,  15.974963, 10.932767, 28, 28));
-  
+
 }
 
 static LteInterferenceTestSuite lteLinkAdaptationWithInterferenceTestSuite;
@@ -93,8 +93,8 @@ LteInterferenceTestCase::LteInterferenceTestCase (std::string name, double d1, d
   : TestCase (name),
     m_d1 (d1),
     m_d2 (d2),
-    m_dlSinrDb (10*log10(dlSinr)),
-    m_ulSinrDb (10*log10(ulSinr)),
+    m_dlSinrDb (10 * log10 (dlSinr)),
+    m_ulSinrDb (10 * log10 (ulSinr)),
     m_dlSe (dlSe),
     m_ulSe (ulSe),
     m_dlMcs (dlMcs),
@@ -129,7 +129,7 @@ LteInterferenceTestCase::DoRun (void)
   NodeContainer allNodes = NodeContainer ( enbNodes, ueNodes1, ueNodes2);
 
   // the topology is the following:
-  //         d2  
+  //         d2
   //  UE1-----------eNB2
   //   |             |
   // d1|             |d1
@@ -178,10 +178,10 @@ LteInterferenceTestCase::DoRun (void)
   enbPhy->GetUplinkSpectrumPhy ()->AddSinrChunkProcessor (testUlSinr);
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
-                    MakeBoundCallback(&LteTestDlSchedulingCallback, this));
+                   MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
-                    MakeBoundCallback(&LteTestUlSchedulingCallback, this));
+                   MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 
   Simulator::Stop (Seconds (0.005));
@@ -199,7 +199,7 @@ LteInterferenceTestCase::DoRun (void)
 
 void
 LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                         uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+                                       uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
   /**
    * Note:
@@ -214,7 +214,7 @@ LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
 
 void
 LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                         uint8_t mcs, uint16_t sizeTb)
+                                       uint8_t mcs, uint16_t sizeTb)
 {
   /**
    * Note:

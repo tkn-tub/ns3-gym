@@ -39,14 +39,14 @@ protected:
   uint16_t m_earfcn;
   double m_f;
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 };
 
 LteEarfcnTestCase::LteEarfcnTestCase (const char* str, uint16_t earfcn, double f)
   :   TestCase (str),
-      m_earfcn (earfcn),
-      m_f (f)
+    m_earfcn (earfcn),
+    m_f (f)
 {
   NS_LOG_FUNCTION (this << str << earfcn << f);
 }
@@ -67,8 +67,8 @@ class LteEarfcnDlTestCase : public LteEarfcnTestCase
 public:
   LteEarfcnDlTestCase (const char* str, uint16_t earfcn, double f);
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 };
 
 LteEarfcnDlTestCase::LteEarfcnDlTestCase (const char* str, uint16_t earfcn, double f)
@@ -79,7 +79,7 @@ LteEarfcnDlTestCase::LteEarfcnDlTestCase (const char* str, uint16_t earfcn, doub
 void 
 LteEarfcnDlTestCase::DoRun (void)
 {
-//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);  
+//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
 //   LogComponentEnable ("LteTestEarfcn", logLevel);
 
@@ -93,8 +93,8 @@ class LteEarfcnUlTestCase : public LteEarfcnTestCase
 public:
   LteEarfcnUlTestCase (const char* str, uint16_t earfcn, double f);
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 };
 
 LteEarfcnUlTestCase::LteEarfcnUlTestCase (const char* str, uint16_t earfcn, double f)

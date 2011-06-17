@@ -30,7 +30,7 @@
 #include <fstream>
 
 namespace ns3 {
-  
+
 
 struct ImsiLcidPair
 {
@@ -66,7 +66,6 @@ typedef std::map<ImsiLcidPair, LteFlowId_t> FlowIdMap;
 class RlcStatsCalculator : public Object
 {
 public:
-
   /**
    * Class constructor
    */
@@ -77,9 +76,9 @@ public:
    */
   virtual  ~RlcStatsCalculator ();
 
-   /**
-    * Inherited from ns3::Object
-    */
+  /**
+   * Inherited from ns3::Object
+   */
   static TypeId GetTypeId (void);
 
   /**
