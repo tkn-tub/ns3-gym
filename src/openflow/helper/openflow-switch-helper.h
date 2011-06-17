@@ -17,8 +17,6 @@
  *
  * Author: Blake Hurd  <naimorai@gmail.com>
  */
-#ifdef NS3_OPENFLOW
-
 #ifndef OPENFLOW_SWITCH_HELPER_H
 #define OPENFLOW_SWITCH_HELPER_H
 
@@ -101,5 +99,4 @@ private:
 
 } // namespace ns3
 
-#endif // NS3_OPENFLOW
 #endif /* OPENFLOW_SWITCH_HELPER_H */
