@@ -55,7 +55,7 @@ OneIntegerTestCase::DoRun (void)
 {
   MinMaxAvgTotalCalculator<int> calculator;
 
-  uint32_t count = 1;
+  long count = 1;
 
   double sum = 0;
   double sqrSum = 0;
@@ -68,7 +68,7 @@ OneIntegerTestCase::DoRun (void)
   // Put all of the values into the calculator.
   int multiple = 5;
   int value;
-  for (uint32_t i = 0; i < count; i++)
+  for (long i = 0; i < count; i++)
     {
       value = multiple * (i + 1);
 
@@ -133,7 +133,7 @@ FiveIntegersTestCase::DoRun (void)
 {
   MinMaxAvgTotalCalculator<int> calculator;
 
-  uint32_t count = 5;
+  long count = 5;
 
   double sum = 0;
   double sqrSum = 0;
@@ -146,7 +146,7 @@ FiveIntegersTestCase::DoRun (void)
   // Put all of the values into the calculator.
   int multiple = 5;
   int value;
-  for (uint32_t i = 0; i < count; i++)
+  for (long i = 0; i < count; i++)
     {
       value = multiple * (i + 1);
 
@@ -211,7 +211,7 @@ FiveDoublesTestCase::DoRun (void)
 {
   MinMaxAvgTotalCalculator<double> calculator;
 
-  uint32_t count = 5;
+  long count = 5;
 
   double sum = 0;
   double sqrSum = 0;
@@ -224,7 +224,7 @@ FiveDoublesTestCase::DoRun (void)
   // Put all of the values into the calculator.
   double multiple = 3.14;
   double value;
-  for (uint32_t i = 0; i < count; i++)
+  for (long i = 0; i < count; i++)
     {
       value = multiple * (i + 1);
 
