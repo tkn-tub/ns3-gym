@@ -47,7 +47,7 @@ public:
   static uint16_t double2fpS11dot3 (double val);
   static double fpS11dot3toDouble (uint16_t val);
   static double getMinFpS11dot3Value ();
-  
+
   //static const double MIN_FP_S11DOT3_VALUE = -4096;
 
 

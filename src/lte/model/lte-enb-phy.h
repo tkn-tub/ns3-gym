@@ -43,19 +43,18 @@ class LteEnbPhy : public LtePhy
   friend class EnbMemberLteEnbPhySapProvider;
 
 public:
-
-  /** 
+  /**
    * @warning the default constructor should not be used
    */
   LteEnbPhy ();
-  
-  /** 
-   * 
+
+  /**
+   *
    * \param dlPhy the downlink LteSpectrumPhy instance
    * \param ulPhy the uplink LteSpectrumPhy instance
    */
   LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
-  
+
   virtual ~LteEnbPhy ();
 
   // inherited from Object
@@ -76,25 +75,25 @@ public:
   */
   void SetLteEnbPhySapUser (LteEnbPhySapUser* s);
 
-  /**     
+  /**
    * \param pw the transmission power in dBm
    */
-   void SetTxPower (double pow);
+  void SetTxPower (double pow);
 
   /**
    * \return the transmission power in dBm
    */
-   double GetTxPower () const;
+  double GetTxPower () const;
 
-  /**     
+  /**
    * \param pw the noise figure in dB
    */
-   void SetNoiseFigure (double pow);
+  void SetNoiseFigure (double pow);
 
   /**
    * \return the noise figure in dB
    */
-   double GetNoiseFigure () const;
+  double GetNoiseFigure () const;
 
   /**
   * \brief Queue the MAC PDU to be sent
@@ -127,7 +126,7 @@ public:
    * \param msg the received message
    */
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
-  
+
   /**
   * \brief Create the UL CQI feedback from SINR values perceived at
   * the physical layer with the signal received from eNB
@@ -164,10 +163,10 @@ public:
    * \brief PhySpectrum received a new PHY-PDU
    */
   void PhyPduReceived (Ptr<Packet> p);
-  
+
   // inherited from LtePhy
   virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
-  
+
 
 private:
   std::map <uint8_t, Ptr<LteUePhy> > m_ueAttached;

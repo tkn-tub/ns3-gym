@@ -72,20 +72,18 @@ class EnbRadioBearerInfo : public Object
 {
 
 public:
-
-  EnbRadioBearerInfo(void);
+  EnbRadioBearerInfo (void);
   virtual ~EnbRadioBearerInfo (void);
   static TypeId GetTypeId (void);
 
-  void SetRlc(Ptr<LteRlc> rlc);
+  void SetRlc (Ptr<LteRlc> rlc);
 
 private:
-
   Ptr<LteRlc> m_rlc;
 
 };
 
-NS_OBJECT_ENSURE_REGISTERED(EnbRadioBearerInfo);
+NS_OBJECT_ENSURE_REGISTERED (EnbRadioBearerInfo);
 
 EnbRadioBearerInfo::EnbRadioBearerInfo (void)
 {
@@ -108,26 +106,26 @@ TypeId EnbRadioBearerInfo::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&EnbRadioBearerInfo::m_rlc),
                    MakePointerChecker<LteRlc> ())
-    ;
+  ;
   return tid;
 }
 
-void EnbRadioBearerInfo::SetRlc(Ptr<LteRlc> rlc)
+void EnbRadioBearerInfo::SetRlc (Ptr<LteRlc> rlc)
 {
   m_rlc = rlc;
 }
 
 
-NS_OBJECT_ENSURE_REGISTERED(UeInfo);
+NS_OBJECT_ENSURE_REGISTERED (UeInfo);
 
-UeInfo::UeInfo (void) :
-    m_lastAllocatedId (0)
+UeInfo::UeInfo (void)
+  : m_lastAllocatedId (0)
 {
   m_imsi = 0;
 }
 
-UeInfo::UeInfo (uint64_t imsi) :
-    m_lastAllocatedId (0)
+UeInfo::UeInfo (uint64_t imsi)
+  : m_lastAllocatedId (0)
 {
   m_imsi = imsi;
 }
@@ -153,7 +151,7 @@ TypeId UeInfo::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&UeInfo::m_imsi),
                    MakeUintegerChecker<uint64_t> ())*/
-    ;
+  ;
   return tid;
 }
 
@@ -173,7 +171,7 @@ UeInfo::AddRadioBearer (Ptr<EnbRadioBearerInfo> rbi)
         {
           if (m_rbMap.find (lcid) == m_rbMap.end ())
             {
-              m_rbMap.insert (std::pair<uint8_t, Ptr<EnbRadioBearerInfo> >(lcid, rbi));
+              m_rbMap.insert (std::pair<uint8_t, Ptr<EnbRadioBearerInfo> > (lcid, rbi));
               m_lastAllocatedId = lcid;
               return lcid;
             }
@@ -247,32 +245,32 @@ LteEnbRrc::GetTypeId (void)
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&LteEnbRrc::m_ueMap),
                    MakeObjectMapChecker<UeInfo> ())
-     ;
+  ;
   return tid;
 }
 
 uint16_t
-LteEnbRrc::GetLastAllocatedRnti() const
+LteEnbRrc::GetLastAllocatedRnti () const
 {
-    NS_LOG_FUNCTION (this);
-    return m_lastAllocatedRnti;
+  NS_LOG_FUNCTION (this);
+  return m_lastAllocatedRnti;
 }
-std::map<uint16_t,Ptr<UeInfo> > LteEnbRrc::GetUeMap(void) const
+std::map<uint16_t,Ptr<UeInfo> > LteEnbRrc::GetUeMap (void) const
 {
-    return m_ueMap;
+  return m_ueMap;
 }
 
-void LteEnbRrc::SetUeMap(std::map<uint16_t,Ptr<UeInfo> > ueMap)
+void LteEnbRrc::SetUeMap (std::map<uint16_t,Ptr<UeInfo> > ueMap)
 {
   this->m_ueMap = ueMap;
 }
 
 
 void
-LteEnbRrc::SetLastAllocatedRnti(uint16_t lastAllocatedRnti)
+LteEnbRrc::SetLastAllocatedRnti (uint16_t lastAllocatedRnti)
 {
-    NS_LOG_FUNCTION (this << lastAllocatedRnti);
-    m_lastAllocatedRnti = lastAllocatedRnti;
+  NS_LOG_FUNCTION (this << lastAllocatedRnti);
+  m_lastAllocatedRnti = lastAllocatedRnti;
 }
 
 

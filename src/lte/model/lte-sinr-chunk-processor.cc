@@ -35,7 +35,7 @@ LteSinrChunkProcessor::~LteSinrChunkProcessor ()
 
 LteCqiSinrChunkProcessor::LteCqiSinrChunkProcessor (Ptr<LtePhy> p)
   : m_phy (p)
-{  
+{
   NS_LOG_FUNCTION (this << p);
   NS_ASSERT (m_phy);
 }
@@ -49,7 +49,7 @@ LteCqiSinrChunkProcessor::~LteCqiSinrChunkProcessor ()
 
 void 
 LteCqiSinrChunkProcessor::Start ()
-{  
+{
   NS_LOG_FUNCTION (this);
   m_sumSinr = 0;
   m_totDuration = MicroSeconds (0);
@@ -63,14 +63,14 @@ LteCqiSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time dur
   if (m_sumSinr == 0)
     {
       m_sumSinr = Create<SpectrumValue> (sinr.GetSpectrumModel ());
-    }  
+    }
   (*m_sumSinr) += sinr * duration.GetSeconds ();
   m_totDuration += duration;
 }
  
 void 
 LteCqiSinrChunkProcessor::End ()
-{    
+{
   NS_LOG_FUNCTION (this);
   if (m_totDuration.GetSeconds () > 0)
     {

@@ -193,14 +193,14 @@ UlDciIdealControlMessage::UlDciIdealControlMessage (void)
 
 UlDciIdealControlMessage::~UlDciIdealControlMessage (void)
 {
-  
+
 }
 
 void
 UlDciIdealControlMessage::SetDci (UlDciListElement_s dci)
 {
   m_dci = dci;
-  
+
 }
 
 

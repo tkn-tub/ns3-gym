@@ -305,7 +305,7 @@ LteEnbMac::GetTypeId (void)
     .AddTraceSource ("UlScheduling",
                      "Information regarding UL scheduling.",
                      MakeTraceSourceAccessor (&LteEnbMac::m_ulScheduling))
-    ;
+  ;
 
   return tid;
 }
@@ -442,14 +442,14 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   cqiNum = m_ulCqiReceived.size ();
   if (cqiNum >= 1)
     {
-      ulcqiInfoReq.m_ulCqi = m_ulCqiReceived.at (cqiNum -1);
+      ulcqiInfoReq.m_ulCqi = m_ulCqiReceived.at (cqiNum - 1);
       if (cqiNum > 1)
         {
-        	// empty old ul cqi
-        	while (m_ulCqiReceived.size () > 0)
-        	  {
-        	  	m_ulCqiReceived.pop_back ();
-        	  }
+          // empty old ul cqi
+          while (m_ulCqiReceived.size () > 0)
+            {
+              m_ulCqiReceived.pop_back ();
+            }
         }
       m_schedSapProvider->SchedUlCqiInfoReq (ulcqiInfoReq);
     }
@@ -465,15 +465,15 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   // Get uplink transmission opportunities
   FfMacSchedSapProvider::SchedUlTriggerReqParameters ulparams;
   ulparams.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
-  
+
   std::map <uint16_t,UlInfoListElement_s>::iterator it;
   for (it = m_ulInfoListElements.begin (); it != m_ulInfoListElements.end (); it++)
     {
       ulparams.m_ulInfoList.push_back ((*it).second);
     }
   m_schedSapProvider->SchedUlTriggerReq (ulparams);
-  
-  
+
+
 
 
   // reset UL info
@@ -514,9 +514,9 @@ void
 LteEnbMac::DoUlCqiReport (UlCqi_s ulcqi)
 { 
   if (ulcqi.m_type == UlCqi_s::PUSCH)
-  {
-    NS_LOG_DEBUG(this << " eNB rxed an PUSCH UL-CQI");	
-  }
+    {
+      NS_LOG_DEBUG (this << " eNB rxed an PUSCH UL-CQI");
+    }
   // TODO store UL-CQI to send them to scheduler
   m_ulCqiReceived.push_back (ulcqi);
 }
@@ -529,7 +529,7 @@ LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
   // NS_LOG_FUNCTION (this << msg->GetSourceDevice () << msg->GetDestinationDevice ());
 
   CqiListElement_s dlcqi = msg->GetDlCqi ();
-  NS_LOG_FUNCTION(this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
+  NS_LOG_FUNCTION (this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
   m_dlCqiReceived.push_back (dlcqi);
 
 }
@@ -551,9 +551,9 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
   NS_LOG_FUNCTION (this);
   LteMacTag tag;
   p->RemovePacketTag (tag);
-  
+
   // store info of the packet received
-  
+
   std::map <uint16_t,UlInfoListElement_s>::iterator it;
 //   u_int rnti = tag.GetRnti ();
 //  u_int lcid = tag.GetLcid ();
@@ -568,15 +568,15 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
       ulinfonew.m_receptionStatus = UlInfoListElement_s::Ok;
       ulinfonew.m_tpc = 0; // Tx power control not implemented at this stage
       m_ulInfoListElements.insert (std::pair<uint16_t, UlInfoListElement_s > (tag.GetRnti (), ulinfonew));
-      
+
     }
   else
     {
       (*it).second.m_ulReception.at (tag.GetLcid () - 1) += p->GetSize ();
       (*it).second.m_receptionStatus = UlInfoListElement_s::Ok;
     }
-      
-  
+
+
 
   // forward the packet to the correspondent RLC
   LteFlowId_t flow ( tag.GetRnti (), tag.GetLcid () );
@@ -721,7 +721,7 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
     {
       for (unsigned int j = 0; j < ind.m_buildDataList.at (i).m_rlcPduList.size (); j++)
         {
-          for (uint16_t k = 0; k < ind.m_buildDataList.at (i).m_rlcPduList.at(j).size (); k++)
+          for (uint16_t k = 0; k < ind.m_buildDataList.at (i).m_rlcPduList.at (j).size (); k++)
             {
               LteFlowId_t flow (ind.m_buildDataList.at (i).m_rnti,
                                 ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_logicalChannelIdentity);
@@ -746,7 +746,7 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                           ind.m_buildDataList.at (i).m_dci.m_mcs.at (0),
                           ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0),
                           0, 0
-                         );
+                          );
 
         }
       // Two TBs used
@@ -757,7 +757,7 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                           ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0),
                           ind.m_buildDataList.at (i).m_dci.m_mcs.at (1),
                           ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (1)
-                         );
+                          );
         }
       else
         {
@@ -772,7 +772,7 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
 {
 
   NS_LOG_FUNCTION (this);
-  
+
   for (unsigned int i = 0; i < ind.m_dciList.size (); i++)
     {
       // send the correspondent ul dci
@@ -780,12 +780,12 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
       msg->SetDci (ind.m_dciList.at (i));
       m_enbPhySapProvider->SendIdealControlMessage (msg);
     }
-  
+
   // Fire the trace with the UL information
   for (  uint32_t i  = 0; i < ind.m_dciList.size (); i++ )
     {
-        m_ulScheduling (m_frameNo, m_subframeNo, ind.m_dciList.at (i).m_rnti,
-                        ind.m_dciList.at (i).m_mcs, ind.m_dciList.at (i).m_tbSize);
+      m_ulScheduling (m_frameNo, m_subframeNo, ind.m_dciList.at (i).m_rnti,
+                      ind.m_dciList.at (i).m_mcs, ind.m_dciList.at (i).m_tbSize);
     }
 
 

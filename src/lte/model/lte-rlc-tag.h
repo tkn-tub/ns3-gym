@@ -25,8 +25,7 @@
 #include "ns3/nstime.h"
 
 
-namespace ns3
-{
+namespace ns3 {
 
 class Tag;
 
@@ -37,8 +36,8 @@ class Tag;
 class RlcTag : public Tag
 {
 public:
-  static TypeId  GetTypeId(void);
-  virtual TypeId  GetInstanceTypeId(void) const;
+  static TypeId  GetTypeId (void);
+  virtual TypeId  GetInstanceTypeId (void) const;
 
   /**
    * Create an empty RLC tag
@@ -49,15 +48,15 @@ public:
    */
   RlcTag (Time senderTimestamp);
 
-  virtual void  Serialize(TagBuffer i) const;
-  virtual void  Deserialize(TagBuffer i);
-  virtual uint32_t  GetSerializedSize() const;
+  virtual void  Serialize (TagBuffer i) const;
+  virtual void  Deserialize (TagBuffer i);
+  virtual uint32_t  GetSerializedSize () const;
   virtual void Print (std::ostream &os) const;
 
   /**
    * Get the instant when the RLC delivers the PDU to the MAC SAP provider
    */
-  Time  getSenderTimestamp(void) const
+  Time  getSenderTimestamp (void) const
   {
     return m_senderTimestamp;
   }
@@ -66,13 +65,12 @@ public:
    * Set the sender timestamp
    * @param senderTimestamp time stamp of the instant when the RLC delivers the PDU to the MAC SAP provider
    */
-  void  setSenderTimestamp(Time senderTimestamp)
+  void  setSenderTimestamp (Time senderTimestamp)
   {
     this->m_senderTimestamp = senderTimestamp;
   }
 
 private:
-
   Time m_senderTimestamp;
 
 };
