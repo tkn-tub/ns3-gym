@@ -25,7 +25,6 @@
 #include "lte-enb-rrc.h"
 #include "lte-rlc.h"
 #include "ns3/object-map.h"
-#include "ns3/object-vector.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
