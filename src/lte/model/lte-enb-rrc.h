@@ -59,7 +59,7 @@ public:
    *
    * \return the EnbRadioBearerInfo of the selected radio bearer
    */
-  Ptr<EnbRadioBearerInfo> GetRadioBerer (uint8_t lcid);
+  Ptr<EnbRadioBearerInfo> GetRadioBearer (uint8_t lcid);
 
 
   /**

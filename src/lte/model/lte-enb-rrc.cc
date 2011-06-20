@@ -182,7 +182,7 @@ UeInfo::AddRadioBearer (Ptr<EnbRadioBearerInfo> rbi)
 }
 
 Ptr<EnbRadioBearerInfo>
-UeInfo::GetRadioBerer (uint8_t lcid)
+UeInfo::GetRadioBearer (uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcid);
   NS_ASSERT (0 != lcid);
