@@ -200,8 +200,8 @@ private:
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
 
-  Ptr<MacStatsCalculator> macStats;
-  Ptr<RlcStatsCalculator> rlcStats;
+  Ptr<MacStatsCalculator> m_macStats;
+  Ptr<RlcStatsCalculator> m_rlcStats;
 
 };
 

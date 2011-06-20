@@ -63,8 +63,8 @@ LenaHelper::DoStart (void)
   Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
   m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
-  macStats = CreateObject<MacStatsCalculator> ();
-  rlcStats = CreateObject<RlcStatsCalculator> ();
+  m_macStats = CreateObject<MacStatsCalculator> ();
+  m_rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
 }
 
@@ -388,7 +388,7 @@ void
 LenaHelper::EnableDlMacTraces (void)
 {
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
-                   MakeBoundCallback (&DlSchedulingCallback, macStats));
+                   MakeBoundCallback (&DlSchedulingCallback, m_macStats));
 }
 
 void
@@ -403,7 +403,7 @@ void
 LenaHelper::EnableUlMacTraces (void)
 {
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
-                   MakeBoundCallback (&UlSchedulingCallback, macStats));
+                   MakeBoundCallback (&UlSchedulingCallback, m_macStats));
 }
 
 void
@@ -460,44 +460,44 @@ FindImsiFromUeRlc (std::string path)
 
 
 void
-DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+DlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  rlcStats->DlTxPdu (imsi, rnti, lcid, packetSize);
+  m_rlcStats->DlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
-DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+DlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   uint64_t imsi = FindImsiFromUeRlc (path);
-  rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
+  m_rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
 void
 LenaHelper::EnableDlRlcTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
-                   MakeBoundCallback (&DlTxPduCallback, rlcStats));
+                   MakeBoundCallback (&DlTxPduCallback, m_rlcStats));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
-                   MakeBoundCallback (&DlRxPduCallback, rlcStats));
+                   MakeBoundCallback (&DlRxPduCallback, m_rlcStats));
 }
 
 void
-UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+UlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   uint64_t imsi = FindImsiFromUeRlc (path);
-  rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
+  m_rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
-UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+UlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  rlcStats->UlRxPdu (imsi, rnti, lcid, packetSize, delay);
+  m_rlcStats->UlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
 
@@ -506,15 +506,15 @@ void
 LenaHelper::EnableUlRlcTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
-                   MakeBoundCallback (&UlTxPduCallback, rlcStats));
+                   MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
   Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
-                   MakeBoundCallback (&UlRxPduCallback, rlcStats));
+                   MakeBoundCallback (&UlRxPduCallback, m_rlcStats));
 }
 
 Ptr<RlcStatsCalculator>
 LenaHelper::GetRlcStats (void)
 {
-  return rlcStats;
+  return m_rlcStats;
 }
 
 } // namespace ns3
