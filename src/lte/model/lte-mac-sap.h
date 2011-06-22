@@ -46,7 +46,7 @@ public:
   {
     Ptr<Packet> pdu;  /**< the RLC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
-    uint8_t     lcid; /**< the logical channel id corresponding to the sendingx RLC instance */
+    uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
   };
 
   /**
@@ -118,6 +118,42 @@ public:
   virtual void ReceivePdu (Ptr<Packet> p) = 0;
 
 };
+
+///////////////////////////////////////
+
+template <class C>
+class EnbMacMemberLteMacSapProvider : public LteMacSapProvider
+{
+public:
+  EnbMacMemberLteMacSapProvider (C* mac);
+
+  // inherited from LteMacSapProvider
+  virtual void TransmitPdu (TransmitPduParameters params);
+  virtual void ReportBufferStatus (ReportBufferStatusParameters params);
+
+private:
+  C* m_mac;
+};
+
+
+template <class C>
+EnbMacMemberLteMacSapProvider<C>::EnbMacMemberLteMacSapProvider (C* mac)
+  : m_mac (mac)
+{
+}
+
+template <class C>
+void EnbMacMemberLteMacSapProvider<C>::TransmitPdu (TransmitPduParameters params)
+{
+  m_mac->DoTransmitPdu (params);
+}
+
+template <class C>
+void EnbMacMemberLteMacSapProvider<C>::ReportBufferStatus (ReportBufferStatusParameters params)
+{
+  m_mac->DoReportBufferStatus (params);
+}
+
 
 } // namespace ns3
 
