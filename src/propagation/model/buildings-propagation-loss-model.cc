@@ -113,7 +113,7 @@ BuildingsPropagationLossModel::GetEnvironment (void) const
 
 
 double
-BuildingsPropagationLossModel::OkumuraHata (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
   // Hp: a is the rooftop antenna (from GetLoss logic)
   double loss = 0.0;
@@ -182,26 +182,80 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<MobilityModel> a, Ptr<MobilityMo
 
 
 double
-BuildingsPropagationLossModel::ItuR1411 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
+  double dist = a->GetDistanceFrom (b);
+  double lossLow = 0.0;
+  double lossUp = 0.0;
+  double pi = 3.141592653589793;
+  double Lbp = 20*log10(m_lambda*m_lambda/(8*pi*a->GetPosition ().z*b->GetPosition ().z));
+  double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
   
-  return (0.0);
+  if (dist <= Rbp)
+    {
+      lossLow = Lbp + 20*log10(dist/Rbp);
+      lossUp = Lbp + 20 + 25*log10(dist/Rbp);
+    }
+  else
+    {
+      lossLow = Lbp + 40*log10(dist/Rbp);
+      lossUp = Lbp + 20 + 40*log10(dist/Rbp);
+    }
+  
+  double loss = (lossUp + lossLow) / 2; // CHECK!!!
+  
+  return (loss);
 }
 
 
 double
-BuildingsPropagationLossModel::ItuR1238 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
-
-  return (0.0);
+  double N = 0.0;
+  Ptr<Building> aBuilding = a->GetBuilding ();
+  if (aBuilding->GetBuildingType () == Building::Residential)
+    {
+      N = 28;
+    }
+  else if (aBuilding->GetBuildingType () == Building::Office)
+    {
+      N = 30;
+    }
+  else if (aBuilding->GetBuildingType () == Building::Commercial)
+    {
+      N = 22;
+    
+    }
+  else
+    {
+      NS_LOG_ERROR (this << " Unkwnon Wall Type");
+    }
+    
+  double loss = 20*log10(m_frequency) + N*log10(a->GetDistanceFrom (b)) - 28.0;
+  
+  return (loss);
 }
 
 
 double
-BuildingsPropagationLossModel::BEWPL (Ptr<MobilityModel> a) const
+BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
 {
-
-  return (0.0);
+  double loss = 0.0;
+  Ptr<Building> aBuilding = a->GetBuilding ();
+  if (aBuilding->GetExtWallsType () == Building::Wood)
+  {
+    loss = 4;
+  }
+  else if (aBuilding->GetExtWallsType () == Building::ConcreteWithWindows)
+  {
+    loss = 7;
+  }
+  else if (aBuilding->GetExtWallsType () == Building::ConcreteWithoutWindows)
+  {
+    loss = 10; // 10 ~ 20 dB
+  }
+    
+  return (loss);
 }
 
 

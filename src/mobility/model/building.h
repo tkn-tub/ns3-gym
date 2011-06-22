@@ -40,6 +40,10 @@ public:
     {
       Residential, Office, Commercial
     };
+  enum ExtWallsType_t
+    {
+      Wood, ConcreteWithWindows, ConcreteWithoutWindows
+    };
   /**
   * \param _xMin x coordinates of left boundary.
   * \param _xMax x coordinates of right boundary.
@@ -64,6 +68,16 @@ public:
   */
   Building ();
   
+  /**
+  * Return the type of building (i.e., Residential, Office, Commercial)
+  */
+  BuildingType_t GetBuildingType ();
+  
+  /**
+  * Return the type of external walls (i.e., Wood, ConcreteWithWindows, ConcreteWithoutWindows)
+  */
+  ExtWallsType_t GetExtWallsType ();
+  
 private:
   Box m_buldingBounds;
   
@@ -72,6 +86,8 @@ private:
   uint8_t m_roomY;
   
   uint8_t m_buildingId;
+  BuildingType_t m_buildingType;
+  ExtWallsType_t m_externalWalls;
   
 };
 

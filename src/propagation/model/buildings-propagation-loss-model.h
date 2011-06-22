@@ -24,6 +24,8 @@
 
 #include "ns3/nstime.h"
 #include "ns3/propagation-loss-model.h"
+#include <ns3/building.h>
+#include <ns3/buildings-mobility-model.h>
 
 namespace ns3 {
 
@@ -82,10 +84,10 @@ public:
   
 private:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  double OkumuraHata (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  double ItuR1411 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  double ItuR1238 (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  double BEWPL (Ptr<MobilityModel> a) const;
+  double OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  double ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  double ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  double BEWPL (Ptr<BuildingsMobilityModel> a) const;
   
   double C;  // OH loss coefficient for the environment
   double N;  // ITU-R P.1238: power loss coefficient

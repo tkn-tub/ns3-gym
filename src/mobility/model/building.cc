@@ -33,7 +33,9 @@ Building::Building (double _xMin, double _xMax,
           uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY) :
      m_floor (_nFloors),
      m_roomX (_nRoomX),
-     m_roomY (_nRoomY)
+     m_roomY (_nRoomY),
+     m_buildingType (Residential),
+     m_externalWalls (ConcreteWithWindows)
      
 {
   m_buldingBounds = Box (_xMin, _xMax, _yMin, _yMax, _zMin, _zMax);
@@ -43,9 +45,23 @@ Building::Building (double _xMin, double _xMax,
 Building::Building () 
   : m_floor (0), 
     m_roomX (0), 
-    m_roomY (0)
+    m_roomY (0),
+    m_buildingType (Residential),
+    m_externalWalls (ConcreteWithWindows)
 {
   m_buldingBounds = Box ();
+}
+
+Building::BuildingType_t 
+Building::GetBuildingType ()
+{
+  return (m_buildingType);
+}
+
+Building::ExtWallsType_t
+Building::GetExtWallsType ()
+{
+  return (m_externalWalls);
 }
 
 } // namespace ns3
