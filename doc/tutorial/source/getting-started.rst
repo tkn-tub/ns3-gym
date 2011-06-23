@@ -29,9 +29,7 @@ From this point forward, we are going to assume that the reader is working in
 Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
 toolchain installed and verified along with the prerequisites mentioned 
 above.  We are also going to assume that you have Mercurial and Waf installed
-and running on the target system as described in the "Getting Started" section 
-of the  |ns3| web site: 
-http://www.nsnam.org/getting_started.html.
+and running on the target system.
 
 The |ns3| code is available in Mercurial repositories on the server
 http://code.nsnam.org.  You can also download a tarball release at
@@ -106,9 +104,9 @@ the more constant ns-3-dev here in the tutorial, but you can replace the
 string "ns-3-dev" with your choice of release (e.g., ns-3.10) in the 
 text below.  You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
-`"Getting Started"
-<http://www.nsnam.org/getting_started.html>`_
-web page and looking for the latest release identifier.
+`"ns-3 Releases"
+<http://www.nsnam.org/releases>`_
+web page and clicking on the latest release link.
 
 Go ahead and change into the ``ns-3-allinone`` directory you created when
 you cloned that repository.  We are now going to use the ``download.py`` 
