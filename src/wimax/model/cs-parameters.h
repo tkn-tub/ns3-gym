@@ -26,6 +26,9 @@
 #define CSPARAMETERS_H_
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ */
 class CsParameters
 {
 public:

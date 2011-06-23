@@ -296,7 +296,7 @@ SPFVertex::GetRootExitDirection (uint32_t i) const
 
   NS_ASSERT_MSG (i < m_ecmpRootExits.size (), "Index out-of-range when accessing SPFVertex::m_ecmpRootExits!");
   CIter_t iter = m_ecmpRootExits.begin ();
-  while (i-- > 0) { iter++;}
+  while (i-- > 0) { iter++; }
 
   return *iter;
 }
@@ -320,7 +320,7 @@ SPFVertex::MergeRootExitDirections (const SPFVertex* vertex)
   // Append the external list into 'this' and remove duplication afterward
   const ListOfNodeExit_t& extList = vertex->m_ecmpRootExits;
   m_ecmpRootExits.insert (m_ecmpRootExits.end (), 
-                          extList.begin(), extList.end ());
+                          extList.begin (), extList.end ());
   m_ecmpRootExits.sort ();
   m_ecmpRootExits.unique ();
 }
@@ -805,7 +805,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
       if (v->GetVertexType () == SPFVertex::VertexNetwork) 
         {
           w_lsa = m_lsdb->GetLSAByLinkData 
-                  (v->GetLSA ()->GetAttachedRouter (i));
+              (v->GetLSA ()->GetAttachedRouter (i));
           if (!w_lsa)
             {
               continue;
@@ -871,7 +871,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
             }
           else
             NS_ASSERT_MSG (0, "SPFNexthopCalculation never " 
-              << "return false, but it does now!");
+                           << "return false, but it does now!");
         }
       else if (w_lsa->GetStatus () == GlobalRoutingLSA::LSA_SPF_CANDIDATE)
         {
@@ -1313,7 +1313,7 @@ GlobalRouteManagerImpl::CheckForStubNode (Ipv4Address root)
                                          FindOutgoingInterfaceId (transitLink->GetLinkData ()));
                   NS_LOG_LOGIC ("Inserting default route for node " << myRouterId << " to next hop " << 
                                 lr->GetLinkData () << " via interface " << 
-                                FindOutgoingInterfaceId(transitLink->GetLinkData()));
+                                FindOutgoingInterfaceId (transitLink->GetLinkData ()));
                   return true;
                 }
             }
@@ -1504,7 +1504,7 @@ GlobalRouteManagerImpl::ProcessASExternals (SPFVertex* v, GlobalRoutingLSA* extl
       if ((rlsa->GetLinkStateId ()) == (extlsa->GetAdvertisingRouter ()))
         {
           NS_LOG_LOGIC ("Found advertising router to destination");
-          SPFAddASExternal(extlsa,v);
+          SPFAddASExternal (extlsa,v);
         }
     }
   for (uint32_t i = 0; i < v->GetNChildren (); i++)
@@ -1535,11 +1535,11 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
   if (v->GetVertexId () == m_spfroot->GetVertexId ())
     {
       NS_LOG_LOGIC ("External is on local host: " 
-        << v->GetVertexId () << "; returning");
+                    << v->GetVertexId () << "; returning");
       return;
     }
   NS_LOG_LOGIC ("External is on remote host: " 
-    << extlsa->GetAdvertisingRouter () << "; installing");
+                << extlsa->GetAdvertisingRouter () << "; installing");
 
   Ipv4Address routerId = m_spfroot->GetVertexId ();
 

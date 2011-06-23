@@ -457,8 +457,8 @@ public:
   ObjectVectorTraceConfigTestCase ();
   virtual ~ObjectVectorTraceConfigTestCase () {}
 
-  void Trace (int16_t oldValue, int16_t newValue) { m_newValue = newValue;}
-  void TraceWithPath (std::string path, int16_t old, int16_t newValue) { m_newValue = newValue; m_path = path;}
+  void Trace (int16_t oldValue, int16_t newValue) { m_newValue = newValue; }
+  void TraceWithPath (std::string path, int16_t old, int16_t newValue) { m_newValue = newValue; m_path = path; }
 
 private:
   virtual void DoRun (void);

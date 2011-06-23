@@ -29,12 +29,13 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ * \brief this class manages a list of SSrecord
+ * \see SSrecord
+ */
 class SSManager : public Object
 {
-  /**
-   * \brief this class manages a list of SSrecord
-   * \see SSrecord
-   */
 public:
   SSManager (void);
   ~SSManager (void);

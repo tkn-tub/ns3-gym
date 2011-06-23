@@ -403,7 +403,7 @@ operator << (std::ostream& os, const SpectrumValue& pvf)
   Values::const_iterator it1 = pvf.ConstValuesBegin ();
   while (it1 != pvf.ConstValuesEnd ())
     {
-      os << *it1 << " " ;
+      os << *it1 << " ";
       ++it1;
     }
   return os;

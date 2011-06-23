@@ -136,13 +136,13 @@ GlobalRoutingLinkRecord::SetMetric (uint16_t metric)
 GlobalRoutingLSA::GlobalRoutingLSA()
   : 
     m_lsType (GlobalRoutingLSA::Unknown),
-    m_linkStateId("0.0.0.0"),
-    m_advertisingRtr("0.0.0.0"),
-    m_linkRecords(),
-    m_networkLSANetworkMask("0.0.0.0"),
-    m_attachedRouters(),
-    m_status(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED),
-    m_node_id(0)
+    m_linkStateId ("0.0.0.0"),
+    m_advertisingRtr ("0.0.0.0"),
+    m_linkRecords (),
+    m_networkLSANetworkMask ("0.0.0.0"),
+    m_attachedRouters (),
+    m_status (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED),
+    m_node_id (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -153,27 +153,27 @@ GlobalRoutingLSA::GlobalRoutingLSA (
   Ipv4Address advertisingRtr)
   :
     m_lsType (GlobalRoutingLSA::Unknown),
-    m_linkStateId(linkStateId),
-    m_advertisingRtr(advertisingRtr),
-    m_linkRecords(),
-    m_networkLSANetworkMask("0.0.0.0"),
-    m_attachedRouters(),
-    m_status(status),
-    m_node_id(0)
+    m_linkStateId (linkStateId),
+    m_advertisingRtr (advertisingRtr),
+    m_linkRecords (),
+    m_networkLSANetworkMask ("0.0.0.0"),
+    m_attachedRouters (),
+    m_status (status),
+    m_node_id (0)
 {
   NS_LOG_FUNCTION (this << status << linkStateId << advertisingRtr);
 }
 
 GlobalRoutingLSA::GlobalRoutingLSA (GlobalRoutingLSA& lsa)
-  : m_lsType(lsa.m_lsType), m_linkStateId(lsa.m_linkStateId), 
-    m_advertisingRtr(lsa.m_advertisingRtr), 
-    m_networkLSANetworkMask(lsa.m_networkLSANetworkMask), 
-    m_status(lsa.m_status),
-    m_node_id(lsa.m_node_id)
+  : m_lsType (lsa.m_lsType), m_linkStateId (lsa.m_linkStateId),
+    m_advertisingRtr (lsa.m_advertisingRtr),
+    m_networkLSANetworkMask (lsa.m_networkLSANetworkMask),
+    m_status (lsa.m_status),
+    m_node_id (lsa.m_node_id)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT_MSG(IsEmpty(), 
-                "GlobalRoutingLSA::GlobalRoutingLSA (): Non-empty LSA in constructor");
+  NS_ASSERT_MSG (IsEmpty (),
+                 "GlobalRoutingLSA::GlobalRoutingLSA (): Non-empty LSA in constructor");
   CopyLinkRecords (lsa);
 }
 
@@ -209,7 +209,7 @@ GlobalRoutingLSA::CopyLinkRecords (const GlobalRoutingLSA& lsa)
       pDst->SetLinkData (pSrc->GetLinkData ());
       pDst->SetMetric (pSrc->GetMetric ());
 
-      m_linkRecords.push_back(pDst);
+      m_linkRecords.push_back (pDst);
       pDst = 0;
     }
 
@@ -223,7 +223,7 @@ GlobalRoutingLSA::~GlobalRoutingLSA()
 }
 
 void
-GlobalRoutingLSA::ClearLinkRecords(void)
+GlobalRoutingLSA::ClearLinkRecords (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
@@ -239,7 +239,7 @@ GlobalRoutingLSA::ClearLinkRecords(void)
       *i = 0;
     }
   NS_LOG_LOGIC ("Clear list");
-  m_linkRecords.clear();
+  m_linkRecords.clear ();
 }
 
 uint32_t
@@ -271,7 +271,7 @@ GlobalRoutingLSA::GetLinkRecord (uint32_t n) const
           return *i;
         }
     }
-  NS_ASSERT_MSG(false, "GlobalRoutingLSA::GetLinkRecord (): invalid index");
+  NS_ASSERT_MSG (false, "GlobalRoutingLSA::GetLinkRecord (): invalid index");
   return 0;
 }
 
@@ -374,8 +374,8 @@ GlobalRoutingLSA::GetAttachedRouter (uint32_t n) const
           return *i;
         }
     }
-  NS_ASSERT_MSG(false, "GlobalRoutingLSA::GetAttachedRouter (): invalid index");
-  return Ipv4Address("0.0.0.0");
+  NS_ASSERT_MSG (false, "GlobalRoutingLSA::GetAttachedRouter (): invalid index");
+  return Ipv4Address ("0.0.0.0");
 }
 
 void
@@ -486,7 +486,7 @@ GlobalRoutingLSA::Print (std::ostream &os) const
     }
   else 
     {
-      NS_ASSERT_MSG(0, "Illegal LSA LSType: " << m_lsType);
+      NS_ASSERT_MSG (0, "Illegal LSA LSType: " << m_lsType);
     }
   os << "========== End Global Routing LSA ==========" << std::endl;
 }
@@ -514,16 +514,16 @@ GlobalRouter::GetTypeId (void)
 }
 
 GlobalRouter::GlobalRouter ()
-  : m_LSAs()
+  : m_LSAs ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_routerId.Set(GlobalRouteManager::AllocateRouterId ());
+  m_routerId.Set (GlobalRouteManager::AllocateRouterId ());
 }
 
 GlobalRouter::~GlobalRouter ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  ClearLSAs();
+  ClearLSAs ();
 }
 
 void 
@@ -568,7 +568,7 @@ GlobalRouter::ClearLSAs ()
       *i = 0;
     }
   NS_LOG_LOGIC ("Clear list of LSAs");
-  m_LSAs.clear();
+  m_LSAs.clear ();
 }
 
 Ipv4Address
@@ -625,7 +625,7 @@ GlobalRouter::DiscoverLSAs ()
   // of devices may include those for stub networks (e.g., ethernets, etc.) and 
   // bridge devices also take up an "extra" net device.
   //
-  uint32_t numDevices = node->GetNDevices();
+  uint32_t numDevices = node->GetNDevices ();
 
   //
   // Iterate through the devices on the node and walk the channel to see what's
@@ -633,7 +633,7 @@ GlobalRouter::DiscoverLSAs ()
   //
   for (uint32_t i = 0; i < numDevices; ++i)
     {
-      Ptr<NetDevice> ndLocal = node->GetDevice(i);
+      Ptr<NetDevice> ndLocal = node->GetDevice (i);
 
       //
       // There is an assumption that bridge ports must never have an IP address 
@@ -644,7 +644,7 @@ GlobalRouter::DiscoverLSAs ()
         {
           // Initialize to value out of bounds to silence compiler
           uint32_t interfaceBridge = ipv4Local->GetNInterfaces () + 1;
-          bool rc = FindInterfaceForDevice(node, ndLocal, interfaceBridge);
+          bool rc = FindInterfaceForDevice (node, ndLocal, interfaceBridge);
           NS_ABORT_MSG_IF (rc, "GlobalRouter::DiscoverLSAs(): Bridge ports must not have an IPv4 interface index");
         }
 
@@ -693,7 +693,7 @@ GlobalRouter::DiscoverLSAs ()
         }
       else
         {
-          NS_ASSERT_MSG(0, "GlobalRouter::DiscoverLSAs (): unknown link type");
+          NS_ASSERT_MSG (0, "GlobalRouter::DiscoverLSAs (): unknown link type");
         }
     }
 
@@ -717,8 +717,8 @@ GlobalRouter::DiscoverLSAs ()
   // Build injected route LSAs as external routes
   // RFC 2328, section 12.4.4
   //
-  for (InjectedRoutesCI i = m_injectedRoutes.begin();
-       i != m_injectedRoutes.end();
+  for (InjectedRoutesCI i = m_injectedRoutes.begin ();
+       i != m_injectedRoutes.end ();
        i++)
     {
       GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
@@ -769,7 +769,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
 
   // Initialize to value out of bounds to silence compiler
   uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
-  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
+  bool rc = FindInterfaceForDevice (node, nd, interfaceLocal);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessSingleBroadcastLink(): No interface index associated with device");
 
   if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
@@ -792,23 +792,23 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       //
       // This is a net device connected to a stub network
       //
-      NS_LOG_LOGIC("Router-LSA Stub Network");
+      NS_LOG_LOGIC ("Router-LSA Stub Network");
       plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
 
       // 
       // According to OSPF, the Link ID is the IP network number of 
       // the attached network.
       //
-      plr->SetLinkId (addrLocal.CombineMask(maskLocal));
+      plr->SetLinkId (addrLocal.CombineMask (maskLocal));
 
       //
       // and the Link Data is the network mask; converted to Ipv4Address
       //
       Ipv4Address maskLocalAddr;
-      maskLocalAddr.Set(maskLocal.Get ());
+      maskLocalAddr.Set (maskLocal.Get ());
       plr->SetLinkData (maskLocalAddr);
       plr->SetMetric (metricLocal);
-      pLSA->AddLinkRecord(plr);
+      pLSA->AddLinkRecord (plr);
       plr = 0;
     }
   else
@@ -889,7 +889,7 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
 
   // Initialize to value out of bounds to silence compiler
   uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
-  bool rc = FindInterfaceForDevice(node, nd, interfaceLocal);
+  bool rc = FindInterfaceForDevice (node, nd, interfaceLocal);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessBridgedBroadcastLink(): No interface index associated with device");
 
   if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
@@ -965,23 +965,23 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
       //
       // This is a net device connected to a bridge of stub networks
       //
-      NS_LOG_LOGIC("Router-LSA Stub Network");
+      NS_LOG_LOGIC ("Router-LSA Stub Network");
       plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
 
       // 
       // According to OSPF, the Link ID is the IP network number of 
       // the attached network.
       //
-      plr->SetLinkId (addrLocal.CombineMask(maskLocal));
+      plr->SetLinkId (addrLocal.CombineMask (maskLocal));
 
       //
       // and the Link Data is the network mask; converted to Ipv4Address
       //
       Ipv4Address maskLocalAddr;
-      maskLocalAddr.Set(maskLocal.Get ());
+      maskLocalAddr.Set (maskLocal.Get ());
       plr->SetLinkData (maskLocalAddr);
       plr->SetMetric (metricLocal);
-      pLSA->AddLinkRecord(plr);
+      pLSA->AddLinkRecord (plr);
       plr = 0;
     }
   else
@@ -1035,7 +1035,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
 
   uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
-  bool rc = FindInterfaceForDevice(nodeLocal, ndLocal, interfaceLocal);
+  bool rc = FindInterfaceForDevice (nodeLocal, ndLocal, interfaceLocal);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLink (): No interface index associated with device");
 
   if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
@@ -1051,12 +1051,12 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // the point-to-point channel we know we have.  This is where our adjacent 
   // router (to use OSPF lingo) is running.
   //
-  Ptr<Channel> ch = ndLocal->GetChannel();
+  Ptr<Channel> ch = ndLocal->GetChannel ();
 
   //
   // Get the net device on the other side of the point-to-point channel.
   //
-  Ptr<NetDevice> ndRemote = GetAdjacent(ndLocal, ch);
+  Ptr<NetDevice> ndRemote = GetAdjacent (ndLocal, ch);
 
   //
   // The adjacent net device is aggregated to a node.  We need to ask that net 
@@ -1065,7 +1065,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // internet stacks; and an assumption that point-to-point links are incompatible 
   // with bridging.
   //
-  Ptr<Node> nodeRemote = ndRemote->GetNode();
+  Ptr<Node> nodeRemote = ndRemote->GetNode ();
   Ptr<Ipv4> ipv4Remote = nodeRemote->GetObject<Ipv4> ();
   NS_ABORT_MSG_UNLESS (ipv4Remote, 
                        "GlobalRouter::ProcessPointToPointLink(): GetObject for remote <Ipv4> failed");
@@ -1084,7 +1084,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   //
   // We're going to need the remote router ID, so we might as well get it now.
   //
-  Ipv4Address rtrIdRemote = rtrRemote->GetRouterId();
+  Ipv4Address rtrIdRemote = rtrRemote->GetRouterId ();
   NS_LOG_LOGIC ("Working with remote router " << rtrIdRemote);
 
   //
@@ -1092,7 +1092,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   // net device on the other end of the point-to-point channel.
   //
   uint32_t interfaceRemote = ipv4Remote->GetNInterfaces () + 1;
-  rc = FindInterfaceForDevice(nodeRemote, ndRemote, interfaceRemote);
+  rc = FindInterfaceForDevice (nodeRemote, ndRemote, interfaceRemote);
   NS_ABORT_MSG_IF (rc == false, "GlobalRouter::ProcessPointToPointLinks(): No interface index associated with remote device");
 
   //
@@ -1132,7 +1132,7 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   NS_ABORT_MSG_IF (plr == 0, "GlobalRouter::ProcessPointToPointLink(): Can't alloc link record");
   plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
   plr->SetLinkId (addrRemote);
-  plr->SetLinkData (Ipv4Address(maskRemote.Get()));  // Frown
+  plr->SetLinkData (Ipv4Address (maskRemote.Get ()));  // Frown
   plr->SetMetric (metricLocal);
   pLSA->AddLinkRecord (plr);
   plr = 0;
@@ -1158,7 +1158,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       NS_ABORT_MSG_UNLESS (ipv4Local, "GlobalRouter::ProcessPointToPointLink (): GetObject for <Ipv4> interface failed");
 
       uint32_t interfaceLocal = ipv4Local->GetNInterfaces () + 1;
-      bool rc = FindInterfaceForDevice(node, ndLocal, interfaceLocal);
+      bool rc = FindInterfaceForDevice (node, ndLocal, interfaceLocal);
       NS_ABORT_MSG_IF (rc == false, "GlobalRouter::BuildNetworkLSAs (): No interface index associated with device");
 
       if (ipv4Local->GetNAddresses (interfaceLocal) > 1)
@@ -1183,8 +1183,8 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       // and, if we find a node with a GlobalRouter interface and an IPv4 
       // interface associated with that device, we call it an attached router.
       //
-      Ptr<Channel> ch = ndLocal->GetChannel();
-      uint32_t nDevices = ch->GetNDevices();
+      Ptr<Channel> ch = ndLocal->GetChannel ();
+      uint32_t nDevices = ch->GetNDevices ();
       NS_ASSERT (nDevices);
 
       for (uint32_t i = 0; i < nDevices; i++)
@@ -1222,7 +1222,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
                     {
                       NS_LOG_WARN ("Warning, interface has multiple IP addresses; using only the primary one");
                     }
-                  Ipv4Address tempAddr = tempIpv4->GetAddress(tempInterface, 0).GetLocal ();
+                  Ipv4Address tempAddr = tempIpv4->GetAddress (tempInterface, 0).GetLocal ();
                   pLSA->AddAttachedRouter (tempAddr);
                 }
             }
@@ -1243,8 +1243,8 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
 {
   NS_LOG_FUNCTION (ndLocal << allowRecursion);
 
-  Ptr<Channel> ch = ndLocal->GetChannel();
-  uint32_t nDevices = ch->GetNDevices();
+  Ptr<Channel> ch = ndLocal->GetChannel ();
+  uint32_t nDevices = ch->GetNDevices ();
   NS_ASSERT (nDevices);
 
   NS_LOG_LOGIC ("Looking for designated router off of net device " << ndLocal << " on node " << 
@@ -1293,7 +1293,7 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
             {
               // Initialize to value out of bounds to silence compiler
               uint32_t interfaceOther = ipv4->GetNInterfaces () + 1;
-              if (FindInterfaceForDevice(nodeOther, bnd, interfaceOther))
+              if (FindInterfaceForDevice (nodeOther, bnd, interfaceOther))
                 {
                   NS_LOG_LOGIC ("Found router on bridge net device " << bnd);
                   if (!ipv4->IsUp (interfaceOther))
@@ -1347,7 +1347,7 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRec
             {
               // Initialize to value out of bounds to silence compiler
               uint32_t interfaceOther = ipv4->GetNInterfaces () + 1;
-              if (FindInterfaceForDevice(nodeOther, ndOther, interfaceOther))
+              if (FindInterfaceForDevice (nodeOther, ndOther, interfaceOther))
                 {
                   if (!ipv4->IsUp (interfaceOther))
                     {
@@ -1380,13 +1380,13 @@ GlobalRouter::AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const
 {
   NS_LOG_FUNCTION (nd << allowRecursion);
 
-  Ptr<Channel> ch = nd->GetChannel();
+  Ptr<Channel> ch = nd->GetChannel ();
   if (!ch)
     {
       // It may be that this net device is a stub device, without a channel
       return false;
     }
-  uint32_t nDevices = ch->GetNDevices();
+  uint32_t nDevices = ch->GetNDevices ();
   NS_ASSERT (nDevices);
 
   NS_LOG_LOGIC ("Looking for routers off of net device " << nd << " on node " << nd->GetNode ()->GetId ());
@@ -1480,7 +1480,7 @@ bool
 GlobalRouter::GetLSA (uint32_t n, GlobalRoutingLSA &lsa) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT_MSG(lsa.IsEmpty(), "GlobalRouter::GetLSA (): Must pass empty LSA");
+  NS_ASSERT_MSG (lsa.IsEmpty (), "GlobalRouter::GetLSA (): Must pass empty LSA");
 //
 // All of the work was done in GetNumLSAs.  All we have to do here is to
 // walk the list of link state advertisements created there and return the 
@@ -1555,7 +1555,7 @@ GlobalRouter::RemoveInjectedRoute (uint32_t index)
     {
       if (tmp  == index)
         {
-          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_injectedRoutes.size());
+          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_injectedRoutes.size ());
           delete *i;
           m_injectedRoutes.erase (i);
           return;
@@ -1590,12 +1590,12 @@ Ptr<NetDevice>
 GlobalRouter::GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT_MSG(ch->GetNDevices() == 2, "GlobalRouter::GetAdjacent (): Channel with other than two devices");
+  NS_ASSERT_MSG (ch->GetNDevices () == 2, "GlobalRouter::GetAdjacent (): Channel with other than two devices");
 //
 // This is a point to point channel with two endpoints.  Get both of them.
 //
-  Ptr<NetDevice> nd1 = ch->GetDevice(0);
-  Ptr<NetDevice> nd2 = ch->GetDevice(1);
+  Ptr<NetDevice> nd1 = ch->GetDevice (0);
+  Ptr<NetDevice> nd2 = ch->GetDevice (1);
 //
 // One of the endpoints is going to be "us" -- that is the net device attached
 // to the node on which we're running -- i.e., "nd".  The other endpoint (the
@@ -1611,8 +1611,8 @@ GlobalRouter::GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const
     }
   else
     {
-      NS_ASSERT_MSG(false,
-                    "GlobalRouter::GetAdjacent (): Wrong or confused channel?");
+      NS_ASSERT_MSG (false,
+                     "GlobalRouter::GetAdjacent (): Wrong or confused channel?");
       return 0;
     }
 }
@@ -1628,7 +1628,7 @@ bool
 GlobalRouter::FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC("For node " << node->GetId () << " for net device " << nd );
+  NS_LOG_LOGIC ("For node " << node->GetId () << " for net device " << nd );
 
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   if (ipv4 == 0)
@@ -1637,9 +1637,9 @@ GlobalRouter::FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_
       return false;
     }
 
-  for (uint32_t i = 0; i < ipv4->GetNInterfaces(); ++i )
+  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); ++i )
     {
-      if (ipv4->GetNetDevice(i) == nd) 
+      if (ipv4->GetNetDevice (i) == nd)
         {
           NS_LOG_LOGIC ("Device " << nd << " has associated ipv4 index " << i);
           index = i;
@@ -1660,7 +1660,7 @@ GlobalRouter::NetDeviceIsBridged (Ptr<NetDevice> nd) const
   NS_LOG_FUNCTION (nd);
 
   Ptr<Node> node = nd->GetNode ();
-  uint32_t nDevices = node->GetNDevices();
+  uint32_t nDevices = node->GetNDevices ();
 
   //
   // There is no bit on a net device that says it is being bridged, so we have
@@ -1670,7 +1670,7 @@ GlobalRouter::NetDeviceIsBridged (Ptr<NetDevice> nd) const
   //
   for (uint32_t i = 0; i < nDevices; ++i)
     {
-      Ptr<NetDevice> ndTest = node->GetDevice(i);
+      Ptr<NetDevice> ndTest = node->GetDevice (i);
       NS_LOG_LOGIC ("Examine device " << i << " " << ndTest);
 
       if (ndTest->IsBridge ())

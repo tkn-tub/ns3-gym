@@ -83,7 +83,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  virtual void DoDispose();
+  virtual void DoDispose ();
 
 private:
   typedef std::list<Ptr<Ipv6Option> > Ipv6OptionList_t;

@@ -218,9 +218,9 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
   c.Create (4);
-  NodeContainer n0n2 = NodeContainer (c.Get(0), c.Get (2));
-  NodeContainer n1n2 = NodeContainer (c.Get(1), c.Get (2));
-  NodeContainer n3n2 = NodeContainer (c.Get(3), c.Get (2));
+  NodeContainer n0n2 = NodeContainer (c.Get (0), c.Get (2));
+  NodeContainer n1n2 = NodeContainer (c.Get (1), c.Get (2));
+  NodeContainer n3n2 = NodeContainer (c.Get (3), c.Get (2));
 
   InternetStackHelper internet;
   internet.Install (c);

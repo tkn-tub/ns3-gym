@@ -86,7 +86,7 @@ MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 void
 MobilityModel::NotifyCourseChange (void) const
 {
-  m_courseChangeTrace(this);
+  m_courseChangeTrace (this);
 }
 
 } // namespace ns3

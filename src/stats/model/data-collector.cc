@@ -26,36 +26,36 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("DataCollector");
+NS_LOG_COMPONENT_DEFINE ("DataCollector");
 
 //--------------------------------------------------------------
 //----------------------------------------------
 DataCollector::DataCollector() {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
   // end DataCollector::DataCollector
 }
 
 DataCollector::~DataCollector() {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
   // end DataCollector::~DataCollector
 }
 
-void DataCollector::DoDispose() {
-  NS_LOG_FUNCTION_NOARGS();
+void DataCollector::DoDispose () {
+  NS_LOG_FUNCTION_NOARGS ();
 
-  m_calcList.clear();
-  m_metadata.clear();
+  m_calcList.clear ();
+  m_metadata.clear ();
 
-  Object::DoDispose();
+  Object::DoDispose ();
   // end DataCollector::DoDispose
 }
 
 void
-DataCollector::DescribeRun(std::string experiment,
-                           std::string strategy,
-                           std::string input,
-                           std::string runID,
-                           std::string description)
+DataCollector::DescribeRun (std::string experiment,
+                            std::string strategy,
+                            std::string input,
+                            std::string runID,
+                            std::string description)
 {
 
   m_experimentLabel = experiment;
@@ -68,64 +68,64 @@ DataCollector::DescribeRun(std::string experiment,
 }
 
 void
-DataCollector::AddDataCalculator(Ptr<DataCalculator> datac)
+DataCollector::AddDataCalculator (Ptr<DataCalculator> datac)
 {
 
-  m_calcList.push_back(datac);
+  m_calcList.push_back (datac);
 
   // end DataCollector::AddDataCalculator
 }
 
 DataCalculatorList::iterator
-DataCollector::DataCalculatorBegin()
+DataCollector::DataCalculatorBegin ()
 {
-  return m_calcList.begin();
+  return m_calcList.begin ();
   // end DataCollector::DataCalculatorBegin
 }
 DataCalculatorList::iterator
-DataCollector::DataCalculatorEnd()
+DataCollector::DataCalculatorEnd ()
 {
-  return m_calcList.end();
+  return m_calcList.end ();
   // end DataCollector::DataCalculatorEnd
 }
 
 void
-DataCollector::AddMetadata(std::string key, std::string value)
+DataCollector::AddMetadata (std::string key, std::string value)
 {
-  std::pair<std::string, std::string> blob(key, value);
-  m_metadata.push_back(blob);
+  std::pair<std::string, std::string> blob (key, value);
+  m_metadata.push_back (blob);
   // end DataCollector::AddMetadata
 }
 void
-DataCollector::AddMetadata(std::string key, uint32_t value)
+DataCollector::AddMetadata (std::string key, uint32_t value)
 {
   std::stringstream st;
   st << value;
 
-  std::pair<std::string, std::string> blob(key, st.str());
-  m_metadata.push_back(blob);
+  std::pair<std::string, std::string> blob (key, st.str ());
+  m_metadata.push_back (blob);
   // end DataCollector::AddMetadata
 }
 void
-DataCollector::AddMetadata(std::string key, double value)
+DataCollector::AddMetadata (std::string key, double value)
 {
   std::stringstream st;
   st << value;
 
-  std::pair<std::string, std::string> blob(key, st.str());
-  m_metadata.push_back(blob);
+  std::pair<std::string, std::string> blob (key, st.str ());
+  m_metadata.push_back (blob);
   // end DataCollector::AddMetadata
 }
 
 MetadataList::iterator
-DataCollector::MetadataBegin()
+DataCollector::MetadataBegin ()
 {
-  return m_metadata.begin();
+  return m_metadata.begin ();
   // end DataCollector::MetadataBegin
 }
 MetadataList::iterator
-DataCollector::MetadataEnd()
+DataCollector::MetadataEnd ()
 {
-  return m_metadata.end();
+  return m_metadata.end ();
   // end DataCollector::MetadataEnd
 }

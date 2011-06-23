@@ -138,6 +138,8 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (20.0));
   Simulator::Run ();
+
+  Simulator::Destroy ();
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use ns-3-click without NSCLICK compiled in");

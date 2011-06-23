@@ -140,7 +140,7 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
       m_errno = ERROR_BADF;
       return -1;
     }
-  Ptr<NetDevice> dev ;
+  Ptr<NetDevice> dev;
   if (address.IsSingleDevice ())
     {
       dev = m_node->GetDevice (address.GetSingleDevice ());
@@ -185,7 +185,7 @@ PacketSocket::ShutdownRecv (void)
 }
 
 int
-PacketSocket::Close(void)
+PacketSocket::Close (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_state == STATE_CLOSED)
@@ -204,7 +204,7 @@ PacketSocket::Close(void)
 }
 
 int
-PacketSocket::Connect(const Address &ad)
+PacketSocket::Connect (const Address &ad)
 {
   NS_LOG_FUNCTION (this << ad);
   PacketSocketAddress address;
@@ -238,7 +238,7 @@ error:
   return -1;
 }
 int 
-PacketSocket::Listen(void)
+PacketSocket::Listen (void)
 {
   m_errno = Socket::ERROR_OPNOTSUPP;
   return -1;
@@ -385,7 +385,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<const Packet> packet,
       copy->AddPacketTag (tag);
       m_deliveryQueue.push (copy);
       m_rxAvailable += packet->GetSize ();
-      NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
+      NS_LOG_LOGIC ("UID is " << packet->GetUid () << " PacketSocket " << this);
       NotifyDataRecv ();
     }
   else
@@ -413,7 +413,7 @@ Ptr<Packet>
 PacketSocket::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
-  if (m_deliveryQueue.empty() )
+  if (m_deliveryQueue.empty () )
     {
       return 0;
     }
@@ -453,18 +453,18 @@ int
 PacketSocket::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION (this << address);
-  PacketSocketAddress ad = PacketSocketAddress::ConvertFrom(address);
+  PacketSocketAddress ad = PacketSocketAddress::ConvertFrom (address);
 
   ad.SetProtocol (m_protocol);
   if (m_isSingleDevice)
     {
       Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
-      ad.SetPhysicalAddress(device->GetAddress());
+      ad.SetPhysicalAddress (device->GetAddress ());
       ad.SetSingleDevice (m_device);
     }
   else
     {
-      ad.SetPhysicalAddress(Address());
+      ad.SetPhysicalAddress (Address ());
       ad.SetAllDevices ();
     }
   address = ad;

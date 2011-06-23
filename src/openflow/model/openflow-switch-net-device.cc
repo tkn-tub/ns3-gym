@@ -647,7 +647,7 @@ OpenFlowSwitchNetDevice::ReceiveFromDevice (Ptr<NetDevice> netdev, Ptr<const Pac
     }
 
   // Run periodic execution.
-  Time now = Simulator::Now();
+  Time now = Simulator::Now ();
   if (now >= Seconds (m_lastExecute.GetSeconds () + 1)) // If a second or more has passed from the simulation time, execute.
     {
       // If port status is modified in any way, notify the controller.

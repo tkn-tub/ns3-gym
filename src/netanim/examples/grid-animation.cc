@@ -68,9 +68,9 @@ int main (int argc, char *argv[])
 
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
   clientHelper.SetAttribute 
-          ("OnTime", RandomVariableValue (ConstantVariable (1)));
+    ("OnTime", RandomVariableValue (ConstantVariable (1)));
   clientHelper.SetAttribute 
-          ("OffTime", RandomVariableValue (ConstantVariable (0)));
+    ("OffTime", RandomVariableValue (ConstantVariable (0)));
   ApplicationContainer clientApps;
 
   // Create an on/off app sending packets
@@ -104,6 +104,6 @@ int main (int argc, char *argv[])
   std::cout << "Destroying the simulation" << std::endl;
   Simulator::Destroy ();
   std::cout << "Stopping the animation" << std::endl;
-  anim.StopAnimation();
+  anim.StopAnimation ();
   return 0;
 }

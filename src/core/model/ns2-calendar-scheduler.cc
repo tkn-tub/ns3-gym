@@ -318,19 +318,19 @@ Ns2CalendarScheduler::head (void)
   do {                                                    \
       head_search_++;                                         \
       if ((e = buckets_[i].list_) != NULL) {                  \
-             diff = e->event.key.m_ts - cal_clock_.m_ts;     \
-             if (diff < diff ## x ## _)  {                       \
-               l = i;                                  \
-               goto found_l;                           \
-             }                                               \
-             if (min_e == NULL || min_e->event.key > e->event.key) { \
-               min_e = e;                                      \
-               l = i;                                          \
-             }                                                       \
-           }                                                               \
-           if (++i == nbuckets_) { i = 0; }                                                                         \
-           } \
-           while (0)
+          diff = e->event.key.m_ts - cal_clock_.m_ts;     \
+          if (diff < diff ## x ## _)  {                       \
+              l = i;                                  \
+              goto found_l;                           \
+            }                                               \
+          if (min_e == NULL || min_e->event.key > e->event.key) { \
+              min_e = e;                                      \
+              l = i;                                          \
+            }                                                       \
+        }                                                               \
+      if (++i == nbuckets_) { i = 0; }                                                                         \
+    } \
+  while (0)
 
   // CAL_DEQUEUE applied successively will find the event to
   // dequeue (within one year) and keep track of the
@@ -341,22 +341,22 @@ Ns2CalendarScheduler::head (void)
   CAL_DEQUEUE (0);
   CAL_DEQUEUE (1);
   for (; i != lastbucket_dec; )
-  {
-    CAL_DEQUEUE (2);
-  }
+    {
+      CAL_DEQUEUE (2);
+    }
   // one last bucket is left unchecked - take the minimum
   // [could have done CAL_DEQUEUE(3) with diff3_ = bwidth*(nbuck*3/2-1)]
   e = buckets_[i].list_;
   if (min_e != NULL
       && (e == NULL || min_e->event.key < e->event.key))
-  {
-    e = min_e;
-  }
+    {
+      e = min_e;
+    }
   else
-  {
-    // assert(e);
-    l = i;
-  }
+    {
+      // assert(e);
+      l = i;
+    }
 found_l:
   // assert(buckets_[l].count_ >= 0);
   // assert(buckets_[l].list_ == e);
@@ -401,49 +401,49 @@ Ns2CalendarScheduler::resize (int newsize, Scheduler::EventKey start)
 {
   uint64_t bwidth;
   if (newsize == nbuckets_)
-  {
-    /* we resize for bwidth*/
-    if (head_search_)
     {
-      bwidth = head_search_;
-    }
-    else
-    {
-      bwidth = 1;
-    }
-    if (insert_search_)
-    {
-      bwidth = bwidth / insert_search_;
-    }
-    bwidth = static_cast<uint64_t> (sqrt (bwidth) * width_);
-    if (bwidth < min_bin_width_)
-    {
-      if (time_to_newwidth_ > 0)
-      {
-        time_to_newwidth_--;
-        head_search_ = 0;
-        insert_search_ = 0;
-        round_num_ = 0;
-        return;                         // failed to adjust bwidth
-      }
+      /* we resize for bwidth*/
+      if (head_search_)
+        {
+          bwidth = head_search_;
+        }
       else
-      {
-        // We have many (adjust_new_width_interval_) times failure in adjusting bwidth.
-        // should do a reshuffle with newwidth
-        bwidth = newwidth (newsize);
-      }
+        {
+          bwidth = 1;
+        }
+      if (insert_search_)
+        {
+          bwidth = bwidth / insert_search_;
+        }
+      bwidth = static_cast<uint64_t> (sqrt (bwidth) * width_);
+      if (bwidth < min_bin_width_)
+        {
+          if (time_to_newwidth_ > 0)
+            {
+              time_to_newwidth_--;
+              head_search_ = 0;
+              insert_search_ = 0;
+              round_num_ = 0;
+              return;                   // failed to adjust bwidth
+            }
+          else
+            {
+              // We have many (adjust_new_width_interval_) times failure in adjusting bwidth.
+              // should do a reshuffle with newwidth
+              bwidth = newwidth (newsize);
+            }
+        }
+      // snoopy queue calculation
     }
-    // snoopy queue calculation
-  }
   else
-  {
-    /* we resize for size */
-    bwidth = newwidth (newsize);
-    if (newsize < 4)
     {
-      newsize = 4;
+      /* we resize for size */
+      bwidth = newwidth (newsize);
+      if (newsize < 4)
+        {
+          newsize = 4;
+        }
     }
-  }
 
   Bucket *oldb = buckets_;
   int oldn = nbuckets_;
@@ -454,24 +454,24 @@ Ns2CalendarScheduler::resize (int newsize, Scheduler::EventKey start)
   int i;
 
   for (i = 0; i < oldn; ++i)
-  {
-    // we can do inserts faster, if we use insert2, but to
-    // preserve FIFO, we have to start from the end of
-    // each bucket and use insert2
-    if  (oldb[i].list_)
     {
-      BucketItem *tail = oldb[i].list_->prev_;
-      BucketItem *e = tail;
-      do
-      {
-        BucketItem* ep = e->prev_;
-        e->next_ = e->prev_ = 0;
-        insert2 (e);
-        e = ep;
-      }
-      while (e != tail);
+      // we can do inserts faster, if we use insert2, but to
+      // preserve FIFO, we have to start from the end of
+      // each bucket and use insert2
+      if  (oldb[i].list_)
+        {
+          BucketItem *tail = oldb[i].list_->prev_;
+          BucketItem *e = tail;
+          do
+            {
+              BucketItem* ep = e->prev_;
+              e->next_ = e->prev_ = 0;
+              insert2 (e);
+              e = ep;
+            }
+          while (e != tail);
+        }
     }
-  }
   head_search_ = 0;
   insert_search_ = 0;
   round_num_ = 0;
@@ -489,46 +489,46 @@ Ns2CalendarScheduler::insert2 (Ns2CalendarScheduler::BucketItem* e)
   BucketItem *head = buckets_[i].list_;
   BucketItem *before = 0;
   if (!head)
-  {
-    buckets_[i].list_ = e;
-    e->next_ = e->prev_ = e;
-    ++stat_qsize_;
-    ++buckets_[i].count_;
-  }
-  else
-  {
-    bool newhead;
-    if (e->event.key > head->prev_->event.key)               // strict LIFO, so > and not >=
-    {                   // insert at the tail
-      before = head;
-      newhead = false;
-    }
-    else
-    {
-      // insert event in time sorted order, LIFO for sim-time events
-      for (before = head; e->event.key > before->event.key; before = before->next_)
-      {
-      }
-      newhead = (before == head);
-    }
-
-    e->next_ = before;
-    e->prev_ = before->prev_;
-    before->prev_ = e;
-    e->prev_->next_ = e;
-    if (newhead)
     {
       buckets_[i].list_ = e;
-      // assert(e->time_ <= e->next_->time_);
-    }
-
-    if (e != e->next_ && e->next_->event.key != e->event.key)
-    {
-      // unique timing
+      e->next_ = e->prev_ = e;
       ++stat_qsize_;
       ++buckets_[i].count_;
     }
-  }
+  else
+    {
+      bool newhead;
+      if (e->event.key > head->prev_->event.key)             // strict LIFO, so > and not >=
+        {               // insert at the tail
+          before = head;
+          newhead = false;
+        }
+      else
+        {
+          // insert event in time sorted order, LIFO for sim-time events
+          for (before = head; e->event.key > before->event.key; before = before->next_)
+            {
+            }
+          newhead = (before == head);
+        }
+
+      e->next_ = before;
+      e->prev_ = before->prev_;
+      before->prev_ = e;
+      e->prev_->next_ = e;
+      if (newhead)
+        {
+          buckets_[i].list_ = e;
+          // assert(e->time_ <= e->next_->time_);
+        }
+
+      if (e != e->next_ && e->next_->event.key != e->event.key)
+        {
+          // unique timing
+          ++stat_qsize_;
+          ++buckets_[i].count_;
+        }
+    }
   // assert(e == buckets_[i].list_ ||  e->prev_->time_ <= e->time_);
   // assert(e == buckets_[i].list_->prev_ || e->next_->time_ >= e->time_);
 
@@ -540,28 +540,28 @@ uint64_t
 Ns2CalendarScheduler::newwidth (int newsize)
 {
   if (adjust_new_width_interval_)
-  {
-    time_to_newwidth_ = adjust_new_width_interval_;
-    if (avg_gap_ > 0)
     {
-      return avg_gap_ * 4;
+      time_to_newwidth_ = adjust_new_width_interval_;
+      if (avg_gap_ > 0)
+        {
+          return avg_gap_ * 4;
+        }
     }
-  }
   int i;
   int max_bucket = 0;       // index of the fullest bucket
   for (i = 1; i < nbuckets_; ++i)
-  {
-    if (buckets_[i].count_ > buckets_[max_bucket].count_)
     {
-      max_bucket = i;
+      if (buckets_[i].count_ > buckets_[max_bucket].count_)
+        {
+          max_bucket = i;
+        }
     }
-  }
   int nsamples = buckets_[max_bucket].count_;
 
   if (nsamples <= 4)
-  {
-    return width_;
-  }
+    {
+      return width_;
+    }
 
   uint64_t nw = (buckets_[max_bucket].list_->prev_->event.key.m_ts
                  - buckets_[max_bucket].list_->event.key.m_ts) * 4;

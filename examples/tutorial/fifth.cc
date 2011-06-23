@@ -198,7 +198,7 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress(interfaces.GetAddress (1), sinkPort));
+  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   sinkApps.Start (Seconds (0.));
@@ -213,9 +213,9 @@ main (int argc, char *argv[])
   app->SetStartTime (Seconds (1.));
   app->SetStopTime (Seconds (20.));
 
-  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback (&RxDrop));
+  devices.Get (1)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&RxDrop));
 
-  Simulator::Stop (Seconds(20));
+  Simulator::Stop (Seconds (20));
   Simulator::Run ();
   Simulator::Destroy ();
 

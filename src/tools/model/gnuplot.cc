@@ -47,26 +47,26 @@ struct GnuplotDataset::Data
   /**
    * Returns "plot" or "splot".
    */
-  virtual std::string GetCommand() const = 0;
+  virtual std::string GetCommand () const = 0;
 
   /**
    * Prints the plot description used as argument to (s)plot. Either the
    * function expression or a datafile description. Should include m_title and
    * m_extra in the output.
    */
-  virtual void PrintExpression(std::ostream &os) const = 0;
+  virtual void PrintExpression (std::ostream &os) const = 0;
 
   /**
    * Print the inline data file contents trailing the plot command. Empty for
    * functions.
    */
-  virtual void PrintDatafile(std::ostream &os) const = 0;
+  virtual void PrintDatafile (std::ostream &os) const = 0;
 };
 
 GnuplotDataset::Data::Data(const std::string& title)
-  : m_references(1),
-    m_title(title),
-    m_extra(m_defaultExtra)
+  : m_references (1),
+    m_title (title),
+    m_extra (m_defaultExtra)
 {
 }
 
@@ -79,12 +79,12 @@ GnuplotDataset::Data::~Data()
 std::string GnuplotDataset::m_defaultExtra = "";
 
 GnuplotDataset::GnuplotDataset (struct Data* data)
-  : m_data(data)
+  : m_data (data)
 {
 }
 
 GnuplotDataset::GnuplotDataset (const GnuplotDataset& original)
-  : m_data(original.m_data)
+  : m_data (original.m_data)
 {
   ++m_data->m_references;
 }
@@ -141,30 +141,30 @@ struct Gnuplot2dDataset::Data2d : public GnuplotDataset::Data
    */
   Data2d(const std::string& title);
 
-  virtual std::string GetCommand() const;
-  virtual void PrintExpression(std::ostream &os) const;
-  virtual void PrintDatafile(std::ostream &os) const;
+  virtual std::string GetCommand () const;
+  virtual void PrintExpression (std::ostream &os) const;
+  virtual void PrintDatafile (std::ostream &os) const;
 };
 
 Gnuplot2dDataset::Data2d::Data2d(const std::string& title)
-  : Data(title),
-    m_style(m_defaultStyle),
-    m_errorBars(m_defaultErrorBars)
+  : Data (title),
+    m_style (m_defaultStyle),
+    m_errorBars (m_defaultErrorBars)
 {
 }
 
 std::string
-Gnuplot2dDataset::Data2d::GetCommand() const
+Gnuplot2dDataset::Data2d::GetCommand () const
 {
   return "plot";
 }
 
 void
-Gnuplot2dDataset::Data2d::PrintExpression(std::ostream &os) const
+Gnuplot2dDataset::Data2d::PrintExpression (std::ostream &os) const
 {
   os << "'-' ";
 
-  if (m_title.size())
+  if (m_title.size ())
     os << " title '" << m_title << "'";
 
   switch (m_style) {
@@ -222,12 +222,12 @@ Gnuplot2dDataset::Data2d::PrintExpression(std::ostream &os) const
       break;
     }
 
-  if (m_extra.size())
+  if (m_extra.size ())
     os << " " << m_extra;
 }
 
 void
-Gnuplot2dDataset::Data2d::PrintDatafile(std::ostream &os) const
+Gnuplot2dDataset::Data2d::PrintDatafile (std::ostream &os) const
 {
   for (PointSet::const_iterator i = m_pointset.begin ();
        i != m_pointset.end (); ++i)
@@ -261,7 +261,7 @@ enum Gnuplot2dDataset::Style Gnuplot2dDataset::m_defaultStyle = LINES;
 enum Gnuplot2dDataset::ErrorBars Gnuplot2dDataset::m_defaultErrorBars = NONE;
 
 Gnuplot2dDataset::Gnuplot2dDataset (const std::string& title)
-  : GnuplotDataset( new Data2d(title) )
+  : GnuplotDataset ( new Data2d (title) )
 {
 }
 
@@ -332,7 +332,7 @@ Gnuplot2dDataset::Add (double x, double y, double minY, double maxY)
 }
 
 void
-Gnuplot2dDataset::AddEmptyLine()
+Gnuplot2dDataset::AddEmptyLine ()
 {
   struct Point data;
   data.empty = true;
@@ -352,44 +352,44 @@ struct Gnuplot2dFunction::Function2d : public GnuplotDataset::Data
    */
   Function2d(const std::string& title, const std::string& function);
 
-  virtual std::string GetCommand() const;
-  virtual void PrintExpression(std::ostream &os) const;
-  virtual void PrintDatafile(std::ostream &os) const;
+  virtual std::string GetCommand () const;
+  virtual void PrintExpression (std::ostream &os) const;
+  virtual void PrintDatafile (std::ostream &os) const;
 };
 
 Gnuplot2dFunction::Function2d::Function2d(const std::string& title, const std::string& function)
-  : Data(title),
-    m_function(function)
+  : Data (title),
+    m_function (function)
 {
 }
 
 std::string
-Gnuplot2dFunction::Function2d::GetCommand() const
+Gnuplot2dFunction::Function2d::GetCommand () const
 {
   return "plot";
 }
 
 void
-Gnuplot2dFunction::Function2d::PrintExpression(std::ostream &os) const
+Gnuplot2dFunction::Function2d::PrintExpression (std::ostream &os) const
 {
   os << m_function;
 
-  if (m_title.size())
+  if (m_title.size ())
     os << " title '" << m_title << "'";
 
-  if (m_extra.size())
+  if (m_extra.size ())
     os << " " << m_extra;
 }
 
 void
-Gnuplot2dFunction::Function2d::PrintDatafile(std::ostream &os) const
+Gnuplot2dFunction::Function2d::PrintDatafile (std::ostream &os) const
 {
 }
 
 // --- Gnuplot2dFunction --------------------------------------------------- //
 
 Gnuplot2dFunction::Gnuplot2dFunction (const std::string& title, const std::string& function)
-  : GnuplotDataset( new Function2d(title, function) )
+  : GnuplotDataset ( new Function2d (title, function) )
 {
 }
 
@@ -414,40 +414,40 @@ struct Gnuplot3dDataset::Data3d : public GnuplotDataset::Data
    */
   Data3d(const std::string& title);
 
-  virtual std::string GetCommand() const;
-  virtual void PrintExpression(std::ostream &os) const;
-  virtual void PrintDatafile(std::ostream &os) const;
+  virtual std::string GetCommand () const;
+  virtual void PrintExpression (std::ostream &os) const;
+  virtual void PrintDatafile (std::ostream &os) const;
 };
 
 Gnuplot3dDataset::Data3d::Data3d(const std::string& title)
-  : Data(title),
-    m_style(m_defaultStyle)
+  : Data (title),
+    m_style (m_defaultStyle)
 {
 }
 
 std::string
-Gnuplot3dDataset::Data3d::GetCommand() const
+Gnuplot3dDataset::Data3d::GetCommand () const
 {
   return "splot";
 }
 
 void
-Gnuplot3dDataset::Data3d::PrintExpression(std::ostream &os) const
+Gnuplot3dDataset::Data3d::PrintExpression (std::ostream &os) const
 {
   os << "'-' ";
 
-  if (m_style.size())
+  if (m_style.size ())
     os << " " << m_style;
 
-  if (m_title.size())
+  if (m_title.size ())
     os << " title '" << m_title << "'";
 
-  if (m_extra.size())
+  if (m_extra.size ())
     os << " " << m_extra;
 }
 
 void
-Gnuplot3dDataset::Data3d::PrintDatafile(std::ostream &os) const
+Gnuplot3dDataset::Data3d::PrintDatafile (std::ostream &os) const
 {
   for (PointSet::const_iterator i = m_pointset.begin ();
        i != m_pointset.end (); ++i)
@@ -467,7 +467,7 @@ Gnuplot3dDataset::Data3d::PrintDatafile(std::ostream &os) const
 std::string Gnuplot3dDataset::m_defaultStyle = "";
 
 Gnuplot3dDataset::Gnuplot3dDataset (const std::string& title)
-  : GnuplotDataset( new Data3d(title) )
+  : GnuplotDataset ( new Data3d (title) )
 {
 }
 
@@ -494,7 +494,7 @@ Gnuplot3dDataset::Add (double x, double y, double z)
 }
 
 void
-Gnuplot3dDataset::AddEmptyLine()
+Gnuplot3dDataset::AddEmptyLine ()
 {
   struct Point data;
   data.empty = true;
@@ -514,44 +514,44 @@ struct Gnuplot3dFunction::Function3d : public GnuplotDataset::Data
    */
   Function3d(const std::string& title, const std::string& function);
 
-  virtual std::string GetCommand() const;
-  virtual void PrintExpression(std::ostream &os) const;
-  virtual void PrintDatafile(std::ostream &os) const;
+  virtual std::string GetCommand () const;
+  virtual void PrintExpression (std::ostream &os) const;
+  virtual void PrintDatafile (std::ostream &os) const;
 };
 
 Gnuplot3dFunction::Function3d::Function3d(const std::string& title, const std::string& function)
-  : Data(title),
-    m_function(function)
+  : Data (title),
+    m_function (function)
 {
 }
 
 std::string
-Gnuplot3dFunction::Function3d::GetCommand() const
+Gnuplot3dFunction::Function3d::GetCommand () const
 {
   return "splot";
 }
 
 void
-Gnuplot3dFunction::Function3d::PrintExpression(std::ostream &os) const
+Gnuplot3dFunction::Function3d::PrintExpression (std::ostream &os) const
 {
   os << m_function;
 
-  if (m_title.size())
+  if (m_title.size ())
     os << " title '" << m_title << "'";
 
-  if (m_extra.size())
+  if (m_extra.size ())
     os << " " << m_extra;
 }
 
 void
-Gnuplot3dFunction::Function3d::PrintDatafile(std::ostream &os) const
+Gnuplot3dFunction::Function3d::PrintDatafile (std::ostream &os) const
 {
 }
 
 // --- Gnuplot3dFunction --------------------------------------------------- //
 
 Gnuplot3dFunction::Gnuplot3dFunction (const std::string& title, const std::string& function)
-  : GnuplotDataset( new Function3d(title, function) )
+  : GnuplotDataset ( new Function3d (title, function) )
 {
 }
 
@@ -564,21 +564,21 @@ Gnuplot3dFunction::SetFunction (const std::string& function)
 // ------------------------------------------------------------------------- //
 
 Gnuplot::Gnuplot (const std::string& outputFilename, const std::string& title)
-  : m_outputFilename(outputFilename),
-    m_terminal( DetectTerminal(outputFilename) ),
-    m_title(title)
+  : m_outputFilename (outputFilename),
+    m_terminal ( DetectTerminal (outputFilename) ),
+    m_title (title)
 {
 }
 
 std::string Gnuplot::DetectTerminal (const std::string& filename)
 {
-  std::string::size_type dotpos = filename.rfind('.');
+  std::string::size_type dotpos = filename.rfind ('.');
   if (dotpos == std::string::npos) return "";
 
-  if (filename.substr(dotpos) == ".png") {
+  if (filename.substr (dotpos) == ".png") {
       return "png";
     }
-  else if (filename.substr(dotpos) == ".pdf") {
+  else if (filename.substr (dotpos) == ".pdf") {
       return "pdf";
     }
 
@@ -626,37 +626,37 @@ Gnuplot::AddDataset (const GnuplotDataset& dataset)
 void
 Gnuplot::GenerateOutput (std::ostream &os) const
 {
-  if (m_terminal.size())
+  if (m_terminal.size ())
     os << "set terminal " << m_terminal << std::endl;
 
-  if (m_outputFilename.size())
+  if (m_outputFilename.size ())
     os << "set output '" << m_outputFilename << "'" << std::endl;
 
-  if (m_title.size())
+  if (m_title.size ())
     os << "set title '" << m_title << "'" << std::endl;
 
-  if (m_xLegend.size())
+  if (m_xLegend.size ())
     os << "set xlabel '" << m_xLegend << "'" << std::endl;
 
-  if (m_yLegend.size())
+  if (m_yLegend.size ())
     os << "set ylabel '" << m_yLegend << "'" << std::endl;
 
-  if (m_extra.size())
+  if (m_extra.size ())
     os << m_extra << std::endl;
 
-  if (m_datasets.empty())
+  if (m_datasets.empty ())
     return;
 
   // Determine the GetCommand() values of all datasets included. Check that all
   // are equal and print the command.
 
-  std::string command = m_datasets.begin()->m_data->GetCommand();
+  std::string command = m_datasets.begin ()->m_data->GetCommand ();
 
   for (Datasets::const_iterator i = m_datasets.begin () + 1;
        i != m_datasets.end (); ++i)
     {
-      NS_ASSERT_MSG(command == i->m_data->GetCommand(),
-                    "Cannot mix 'plot' and 'splot' GnuplotDatasets.");
+      NS_ASSERT_MSG (command == i->m_data->GetCommand (),
+                     "Cannot mix 'plot' and 'splot' GnuplotDatasets.");
     }
 
   os << command << " ";
@@ -665,7 +665,7 @@ Gnuplot::GenerateOutput (std::ostream &os) const
 
   for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end ();)
     {
-      i->m_data->PrintExpression(os);
+      i->m_data->PrintExpression (os);
 
       i++;
 
@@ -680,15 +680,15 @@ Gnuplot::GenerateOutput (std::ostream &os) const
 
   for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end (); i++)
     {
-      i->m_data->PrintDatafile(os);
+      i->m_data->PrintDatafile (os);
     }
 }
 
 // ------------------------------------------------------------------------- //
 
 GnuplotCollection::GnuplotCollection (const std::string& outputFilename)
-  : m_outputFilename(outputFilename),
-    m_terminal( Gnuplot::DetectTerminal(outputFilename) )
+  : m_outputFilename (outputFilename),
+    m_terminal ( Gnuplot::DetectTerminal (outputFilename) )
 {
 }
 
@@ -705,10 +705,10 @@ GnuplotCollection::AddPlot (const Gnuplot& plot)
 }
 
 Gnuplot&
-GnuplotCollection::GetPlot(unsigned int id)
+GnuplotCollection::GetPlot (unsigned int id)
 {
-  if (id >= m_plots.size())
-    throw(std::range_error("Gnuplot id is out of range"));
+  if (id >= m_plots.size ())
+    throw(std::range_error ("Gnuplot id is out of range"));
   else
     return m_plots[id];
 }
@@ -716,10 +716,10 @@ GnuplotCollection::GetPlot(unsigned int id)
 void
 GnuplotCollection::GenerateOutput (std::ostream &os) const
 {
-  if (m_terminal.size())
+  if (m_terminal.size ())
     os << "set terminal " << m_terminal << std::endl;
 
-  if (m_outputFilename.size())
+  if (m_outputFilename.size ())
     os << "set output '" << m_outputFilename << "'" << std::endl;
 
   for (Plots::const_iterator i = m_plots.begin (); i != m_plots.end (); ++i)

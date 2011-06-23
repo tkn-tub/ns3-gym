@@ -219,7 +219,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * Use \ref NS_LOG to output a message of level LOG_ERROR.
  */
 #define NS_LOG_ERROR(msg) \
-  NS_LOG(ns3::LOG_ERROR, msg)
+  NS_LOG (ns3::LOG_ERROR, msg)
 
 /**
  * \ingroup logging
@@ -228,7 +228,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * Use \ref NS_LOG to output a message of level LOG_WARN.
  */
 #define NS_LOG_WARN(msg) \
-  NS_LOG(ns3::LOG_WARN, msg)
+  NS_LOG (ns3::LOG_WARN, msg)
 
 /**
  * \ingroup logging
@@ -237,7 +237,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * Use \ref NS_LOG to output a message of level LOG_DEBUG.
  */
 #define NS_LOG_DEBUG(msg) \
-  NS_LOG(ns3::LOG_DEBUG, msg)
+  NS_LOG (ns3::LOG_DEBUG, msg)
 
 /**
  * \ingroup logging
@@ -246,7 +246,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * Use \ref NS_LOG to output a message of level LOG_INFO.
  */
 #define NS_LOG_INFO(msg) \
-  NS_LOG(ns3::LOG_INFO, msg)
+  NS_LOG (ns3::LOG_INFO, msg)
 
 /**
  * \ingroup logging
@@ -294,7 +294,7 @@ void LogComponentDisableAll (enum LogLevel level);
           NS_LOG_APPEND_CONTEXT;                                \
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "(";                     \
-          ns3::ParameterLogger (std::clog)  << parameters;      \
+          ns3::ParameterLogger (std::clog) << parameters;      \
           std::clog << ")" << std::endl;                        \
         }                                                       \
     }                                                           \
@@ -308,7 +308,7 @@ void LogComponentDisableAll (enum LogLevel level);
  * Use \ref NS_LOG to output a message of level LOG_LOGIC
  */
 #define NS_LOG_LOGIC(msg) \
-  NS_LOG(ns3::LOG_LOGIC, msg)
+  NS_LOG (ns3::LOG_LOGIC, msg)
 
 /**
  * \ingroup logging
@@ -353,10 +353,10 @@ typedef void (*LogTimePrinter)(std::ostream &os);
 typedef void (*LogNodePrinter)(std::ostream &os);
 
 void LogSetTimePrinter (LogTimePrinter);
-LogTimePrinter LogGetTimePrinter(void);
+LogTimePrinter LogGetTimePrinter (void);
 
 void LogSetNodePrinter (LogNodePrinter);
-LogNodePrinter LogGetNodePrinter(void);
+LogNodePrinter LogGetNodePrinter (void);
 
 
 class LogComponent {

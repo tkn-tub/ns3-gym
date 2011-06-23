@@ -208,7 +208,7 @@ EmuNetDevice::~EmuNetDevice ()
 }
 
 void 
-EmuNetDevice::DoDispose()
+EmuNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (m_readThread != 0)
@@ -334,7 +334,7 @@ EmuNetDevice::StartDevice (void)
 
   ll.sll_family = AF_PACKET;
   ll.sll_ifindex = m_sll_ifindex;
-  ll.sll_protocol = htons(ETH_P_ALL); 
+  ll.sll_protocol = htons (ETH_P_ALL);
 
   NS_LOG_LOGIC ("Binding socket to interface");
 
@@ -344,7 +344,7 @@ EmuNetDevice::StartDevice (void)
       NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Can't bind to specified interface");
     }
 
-  rc = ioctl(m_sock, SIOCGIFFLAGS, &ifr);
+  rc = ioctl (m_sock, SIOCGIFFLAGS, &ifr);
   if (rc == -1)
     {
       NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Can't get interface flags");
@@ -446,7 +446,7 @@ EmuNetDevice::CreateSocket (void)
   //
   // Now encode that socket name (family and path) as a string of hex digits
   //
-  std::string path = EmuBufferToString((uint8_t *)&un, len);
+  std::string path = EmuBufferToString ((uint8_t *)&un, len);
   NS_LOG_INFO ("Encoded Unix socket as \"" << path << "\"");
   //
   // Fork and exec the process to create our socket.  If we're us (the parent)
@@ -548,7 +548,7 @@ EmuNetDevice::CreateSocket (void)
       // so we call it "control."
       //
       size_t msg_size = sizeof(int);
-      char control[CMSG_SPACE(msg_size)];
+      char control[CMSG_SPACE (msg_size)];
 
       //
       // There is a msghdr that is used to minimize the number of parameters
@@ -585,7 +585,7 @@ EmuNetDevice::CreateSocket (void)
       // one we're interested in.
       //
       struct cmsghdr *cmsg;
-      for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg, cmsg)) 
+      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != NULL; cmsg = CMSG_NXTHDR (&msg, cmsg))
         {
           if (cmsg->cmsg_level == SOL_SOCKET &&
               cmsg->cmsg_type == SCM_RIGHTS)
@@ -660,7 +660,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   // filter out packets we think are completely bogus, so we always check to see
   // that the packet is long enough to contain the header we want to remove.
   //
-  if (packet->GetSize() < header.GetSerializedSize())
+  if (packet->GetSize () < header.GetSerializedSize ())
     {
       m_phyRxDropTrace (originalPacket);
       return;
@@ -689,7 +689,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
           // Check to see that the packet is long enough to possibly contain the
           // header we want to remove before just naively calling.
           //
-          if (packet->GetSize() < llc.GetSerializedSize())
+          if (packet->GetSize () < llc.GetSerializedSize ())
             {
               m_phyRxDropTrace (originalPacket);
               return;
@@ -922,7 +922,7 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
 
   ll.sll_family = AF_PACKET;
   ll.sll_ifindex = m_sll_ifindex;
-  ll.sll_protocol = htons(ETH_P_ALL); 
+  ll.sll_protocol = htons (ETH_P_ALL);
 
   NS_LOG_LOGIC ("calling sendto");
 
@@ -936,7 +936,7 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
 }
 
 void 
-EmuNetDevice::SetDataRate(DataRate bps)
+EmuNetDevice::SetDataRate (DataRate bps)
 {
   NS_LOG_FUNCTION (this << bps);
   NS_FATAL_ERROR ("EmuNetDevice::SetDataRate():  Unable."); 
@@ -950,7 +950,7 @@ EmuNetDevice::SetQueue (Ptr<Queue> q)
 }
 
 Ptr<Queue> 
-EmuNetDevice::GetQueue(void) const 
+EmuNetDevice::GetQueue (void) const
 { 
   NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
@@ -964,13 +964,13 @@ EmuNetDevice::NotifyLinkUp (void)
 }
 
 void 
-EmuNetDevice::SetIfIndex(const uint32_t index)
+EmuNetDevice::SetIfIndex (const uint32_t index)
 {
   m_ifIndex = index;
 }
 
 uint32_t 
-EmuNetDevice::GetIfIndex(void) const
+EmuNetDevice::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
@@ -1008,12 +1008,12 @@ EmuNetDevice::GetMtu (void) const
 {
   struct ifreq ifr;
   bzero (&ifr, sizeof (ifr));
-  strcpy(ifr.ifr_name, m_deviceName.c_str ());
+  strcpy (ifr.ifr_name, m_deviceName.c_str ());
 
-  int32_t fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
+  int32_t fd = socket (PF_INET, SOCK_DGRAM, IPPROTO_IP);
 
 
-  int32_t rc = ioctl(fd, SIOCGIFMTU, &ifr);
+  int32_t rc = ioctl (fd, SIOCGIFMTU, &ifr);
   if (rc == -1)
     {
       NS_FATAL_ERROR ("EmuNetDevice::GetMtu(): Can't ioctl SIOCGIFMTU");
@@ -1074,10 +1074,10 @@ EmuNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 Address
 EmuNetDevice::GetMulticast (Ipv6Address addr) const
 {
-  NS_LOG_FUNCTION(this << addr);
+  NS_LOG_FUNCTION (this << addr);
 
   Mac48Address ad = Mac48Address::GetMulticast (addr);
-  NS_LOG_LOGIC("MAC IPv6 multicast address is " << ad);
+  NS_LOG_LOGIC ("MAC IPv6 multicast address is " << ad);
 
   return ad;
 }

@@ -138,7 +138,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   mobility.Install (c);
 
   PacketSocketAddress socket;
-  socket.SetSingleDevice(devices.Get (0)->GetIfIndex ());
+  socket.SetSingleDevice (devices.Get (0)->GetIfIndex ());
   socket.SetPhysicalAddress (devices.Get (1)->GetAddress ());
   socket.SetProtocol (1);
 

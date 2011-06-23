@@ -65,12 +65,12 @@ TcpL4Protocol::GetTypeId (void)
     .AddConstructor<TcpL4Protocol> ()
     .AddAttribute ("RttEstimatorType",
                    "Type of RttEstimator objects.",
-                   TypeIdValue (RttMeanDeviation::GetTypeId()),
+                   TypeIdValue (RttMeanDeviation::GetTypeId ()),
                    MakeTypeIdAccessor (&TcpL4Protocol::m_rttTypeId),
                    MakeTypeIdChecker ())
     .AddAttribute ("SocketType",
                    "Socket type of TCP objects.",
-                   TypeIdValue (TcpNewReno::GetTypeId()),
+                   TypeIdValue (TcpNewReno::GetTypeId ()),
                    MakeTypeIdAccessor (&TcpL4Protocol::m_socketTypeId),
                    MakeTypeIdChecker ())
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
@@ -85,7 +85,7 @@ TcpL4Protocol::TcpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ())
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC("Made a TcpL4Protocol "<<this);
+  NS_LOG_LOGIC ("Made a TcpL4Protocol "<<this);
 }
 
 TcpL4Protocol::~TcpL4Protocol ()
@@ -120,7 +120,7 @@ TcpL4Protocol::NotifyNewAggregate ()
               Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
               tcpFactory->SetTcp (this);
               node->AggregateObject (tcpFactory);
-              this->SetDownTarget (MakeCallback(&Ipv4::Send, ipv4));
+              this->SetDownTarget (MakeCallback (&Ipv4::Send, ipv4));
             }
         }
     }
@@ -160,8 +160,8 @@ TcpL4Protocol::CreateSocket (TypeId socketTypeId)
   NS_LOG_FUNCTION_NOARGS ();
   ObjectFactory rttFactory;
   ObjectFactory socketFactory;
-  rttFactory.SetTypeId(m_rttTypeId);
-  socketFactory.SetTypeId(socketTypeId);
+  rttFactory.SetTypeId (m_rttTypeId);
+  socketFactory.SetTypeId (socketTypeId);
   Ptr<RttEstimator> rtt = rttFactory.Create<RttEstimator> ();
   Ptr<TcpSocketBase> socket = socketFactory.Create<TcpSocketBase> ();
   socket->SetNode (m_node);
@@ -231,21 +231,21 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   TcpHeader tcpHeader;
   if(Node::ChecksumEnabled ())
     {
-      tcpHeader.EnableChecksums();
+      tcpHeader.EnableChecksums ();
       tcpHeader.InitializeChecksum (ipHeader.GetSource (), ipHeader.GetDestination (), PROT_NUMBER);
     }
 
   packet->PeekHeader (tcpHeader);
 
-  NS_LOG_LOGIC("TcpL4Protocol " << this
-                                << " receiving seq " << tcpHeader.GetSequenceNumber()
-                                << " ack " << tcpHeader.GetAckNumber()
-                                << " flags "<< std::hex << (int)tcpHeader.GetFlags() << std::dec
-                                << " data size " << packet->GetSize());
+  NS_LOG_LOGIC ("TcpL4Protocol " << this
+                                 << " receiving seq " << tcpHeader.GetSequenceNumber ()
+                                 << " ack " << tcpHeader.GetAckNumber ()
+                                 << " flags "<< std::hex << (int)tcpHeader.GetFlags () << std::dec
+                                 << " data size " << packet->GetSize ());
 
   if(!tcpHeader.IsChecksumOk ())
     {
-      NS_LOG_INFO("Bad checksum, dropping packet!");
+      NS_LOG_INFO ("Bad checksum, dropping packet!");
       return Ipv4L4Protocol::RX_CSUM_FAILED;
     }
 
@@ -291,7 +291,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
           return Ipv4L4Protocol::RX_ENDPOINT_CLOSED;
         }
     }
-  NS_ASSERT_MSG (endPoints.size() == 1, "Demux returned more than one endpoint");
+  NS_ASSERT_MSG (endPoints.size () == 1, "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
   (*endPoints.begin ())->ForwardUp (packet, ipHeader, tcpHeader.GetSourcePort (), 
                                     incomingInterface);
@@ -310,7 +310,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   tcpHeader.SetSourcePort (sport);
   if(Node::ChecksumEnabled ())
     {
-      tcpHeader.EnableChecksums();
+      tcpHeader.EnableChecksums ();
     }
   tcpHeader.InitializeChecksum (saddr,
                                 daddr,
@@ -346,11 +346,11 @@ void
 TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
                            Ipv4Address saddr, Ipv4Address daddr, Ptr<NetDevice> oif)
 {
-  NS_LOG_LOGIC("TcpL4Protocol " << this
-                                << " sending seq " << outgoing.GetSequenceNumber()
-                                << " ack " << outgoing.GetAckNumber()
-                                << " flags " << std::hex << (int)outgoing.GetFlags() << std::dec
-                                << " data size " << packet->GetSize());
+  NS_LOG_LOGIC ("TcpL4Protocol " << this
+                                 << " sending seq " << outgoing.GetSequenceNumber ()
+                                 << " ack " << outgoing.GetAckNumber ()
+                                 << " flags " << std::hex << (int)outgoing.GetFlags () << std::dec
+                                 << " data size " << packet->GetSize ());
   NS_LOG_FUNCTION (this << packet << saddr << daddr << oif);
   // XXX outgoingHeader cannot be logged
 
@@ -359,9 +359,9 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
   /* outgoingHeader.SetUrgentPointer (0); //XXX */
   if(Node::ChecksumEnabled ())
     {
-      outgoingHeader.EnableChecksums();
+      outgoingHeader.EnableChecksums ();
     }
-  outgoingHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+  outgoingHeader.InitializeChecksum (saddr, daddr, PROT_NUMBER);
 
   packet->AddHeader (outgoingHeader);
 
@@ -386,7 +386,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
       m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
     }
   else
-    NS_FATAL_ERROR("Trying to use Tcp on a node without an Ipv4 interface");
+    NS_FATAL_ERROR ("Trying to use Tcp on a node without an Ipv4 interface");
 }
 
 void

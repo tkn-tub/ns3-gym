@@ -25,10 +25,10 @@ namespace ns3 {
 
 class Ipv4ARouting : public Ipv4RoutingProtocol {
 public:
-  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0;}
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0; }
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                     UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false;}
+                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false; }
   void NotifyInterfaceUp (uint32_t interface) {}
   void NotifyInterfaceDown (uint32_t interface) {}
   void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
@@ -39,10 +39,10 @@ public:
 
 class Ipv4BRouting : public Ipv4RoutingProtocol {
 public:
-  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0;}
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0; }
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                     UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false;}
+                    LocalDeliverCallback lcb, ErrorCallback ecb) { return false; }
   void NotifyInterfaceUp (uint32_t interface) {}
   void NotifyInterfaceDown (uint32_t interface) {}
   void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
@@ -59,7 +59,7 @@ public:
 };
 
 Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
-  : TestCase("Check negative priorities")
+  : TestCase ("Check negative priorities")
 {
 }
 void
@@ -87,7 +87,7 @@ public:
 };
 
 Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
-  : TestCase("Check positive priorities")
+  : TestCase ("Check positive priorities")
 {
 }
 void
@@ -116,10 +116,10 @@ static class Ipv4ListRoutingTestSuite : public TestSuite
 {
 public:
   Ipv4ListRoutingTestSuite()
-    : TestSuite("ipv4-list-routing", UNIT)
+    : TestSuite ("ipv4-list-routing", UNIT)
   {
-    AddTestCase(new Ipv4ListRoutingPositiveTestCase());
-    AddTestCase(new Ipv4ListRoutingNegativeTestCase());
+    AddTestCase (new Ipv4ListRoutingPositiveTestCase ());
+    AddTestCase (new Ipv4ListRoutingNegativeTestCase ());
   }
 
 } g_ipv4ListRoutingTestSuite;

@@ -82,7 +82,7 @@ elementclass TapSimHost {
   $dev |
 
   // It is mandatory to use an IPRouteTable element with ns-3-click
-  rt :: LinearIPLookup (172.16.2.0/24 0.0.0.0 1,172.16.1.0/24 172.16.1.2 1);
+  rt :: LinearIPLookup (172.16.2.0/24 0.0.0.0 1,172.16.1.0/24 172.16.2.1 1);
 
   // Packets go to "tap0" which sends them to the kernel
   input[0]

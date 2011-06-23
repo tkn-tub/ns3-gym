@@ -10,7 +10,7 @@ namespace ns3 {
      negB = sb < 0;                                                      \
      ua = negA ? -sa : sa;                                                   \
      ub = negB ? -sb : sb;                                                   \
-     (negA && !negB) || (!negA && negB);})
+     (negA && !negB) || (!negA && negB); })
 
 
 #define MASK_LO ((((int128_t)1)<<64)-1)

@@ -34,7 +34,7 @@ namespace ns3 {
      ub = _cairo_int128_to_uint128 (sb);                                   \
      ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
      ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
-     (negA && !negB) || (!negA && negB);})
+     (negA && !negB) || (!negA && negB); })
 
 void
 int64x64_t::Mul (int64x64_t const &o)
@@ -114,10 +114,10 @@ void
 int64x64_t::MulByInvert (const int64x64_t &o)
 {
   bool negResult = _cairo_int128_negative (_v);
-  cairo_uint128_t a = negResult ? _cairo_int128_negate(_v) : _v;
+  cairo_uint128_t a = negResult ? _cairo_int128_negate (_v) : _v;
   cairo_uint128_t result = UmulByInvert (a, o._v);
 
-  _v = negResult ? _cairo_int128_negate(result) : result;
+  _v = negResult ? _cairo_int128_negate (result) : result;
 }
 cairo_uint128_t
 int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)

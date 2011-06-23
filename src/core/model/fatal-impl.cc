@@ -96,7 +96,7 @@ UnregisterStream (std::ostream* stream)
 namespace {
 /* Overrides normal SIGSEGV handler once the
  * HandleTerminate function is run. */
-void sigHandler(int sig)
+void sigHandler (int sig)
 {
   FlushStreams ();
   std::abort ();

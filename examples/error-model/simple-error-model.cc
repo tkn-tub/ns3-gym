@@ -116,12 +116,12 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (i3i2.GetAddress (1), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
-  apps.Start(Seconds(1.0));
-  apps.Stop (Seconds(10.0));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
@@ -134,8 +134,8 @@ main (int argc, char *argv[])
   onoff.SetAttribute ("Remote", 
                       AddressValue (InetSocketAddress (i1i2.GetAddress (0), port)));
   apps = onoff.Install (c.Get (3));
-  apps.Start(Seconds(1.1));
-  apps.Stop (Seconds(10.0));
+  apps.Start (Seconds (1.1));
+  apps.Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
   sink.SetAttribute ("Local", 

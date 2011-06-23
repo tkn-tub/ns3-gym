@@ -182,7 +182,7 @@ FriisPropagationLossModel::GetLambda (void) const
 double
 FriisPropagationLossModel::DbmToW (double dbm) const
 {
-  double mw = pow(10.0,dbm/10.0);
+  double mw = pow (10.0,dbm/10.0);
   return mw / 1000.0;
 }
 
@@ -551,7 +551,7 @@ ThreeLogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                                      Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
-  NS_ASSERT(distance >= 0);
+  NS_ASSERT (distance >= 0);
 
   // See doxygen comments for the formula and explanation
 
@@ -564,20 +564,20 @@ ThreeLogDistancePropagationLossModel::DoCalcRxPower (double txPowerDbm,
   else if (distance < m_distance1)
     {
       pathLossDb = m_referenceLoss
-        + 10 * m_exponent0 * log10(distance / m_distance0);
+        + 10 * m_exponent0 * log10 (distance / m_distance0);
     }
   else if (distance < m_distance2)
     {
       pathLossDb = m_referenceLoss
-        + 10 * m_exponent0 * log10(m_distance1 / m_distance0)
-        + 10 * m_exponent1 * log10(distance / m_distance1);
+        + 10 * m_exponent0 * log10 (m_distance1 / m_distance0)
+        + 10 * m_exponent1 * log10 (distance / m_distance1);
     }
   else
     {
       pathLossDb = m_referenceLoss
-        + 10 * m_exponent0 * log10(m_distance1 / m_distance0)
-        + 10 * m_exponent1 * log10(m_distance2 / m_distance1)
-        + 10 * m_exponent2 * log10(distance / m_distance2);
+        + 10 * m_exponent0 * log10 (m_distance1 / m_distance0)
+        + 10 * m_exponent1 * log10 (m_distance2 / m_distance1)
+        + 10 * m_exponent2 * log10 (distance / m_distance2);
     }
 
   NS_LOG_DEBUG ("ThreeLogDistance distance=" << distance << "m, " <<
@@ -638,7 +638,7 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   // select m parameter
 
   double distance = a->GetDistanceFrom (b);
-  NS_ASSERT(distance >= 0);
+  NS_ASSERT (distance >= 0);
 
   double m;
   if (distance < m_distance1)
@@ -656,24 +656,24 @@ NakagamiPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 
   // the current power unit is dBm, but Watt is put into the Nakagami /
   // Rayleigh distribution.
-  double powerW = pow(10, (txPowerDbm - 30) / 10);
+  double powerW = pow (10, (txPowerDbm - 30) / 10);
 
   double resultPowerW;
 
   // switch between Erlang- and Gamma distributions: this is only for
   // speed. (Gamma is equal to Erlang for any positive integer m.)
-  unsigned int int_m = static_cast<unsigned int>(floor(m));
+  unsigned int int_m = static_cast<unsigned int>(floor (m));
 
   if (int_m == m)
     {
-      resultPowerW = m_erlangRandomVariable.GetValue(int_m, powerW / m);
+      resultPowerW = m_erlangRandomVariable.GetValue (int_m, powerW / m);
     }
   else
     {
-      resultPowerW = m_gammaRandomVariable.GetValue(m, powerW / m);
+      resultPowerW = m_gammaRandomVariable.GetValue (m, powerW / m);
     }
 
-  double resultPowerDbm = 10 * log10(resultPowerW) + 30;
+  double resultPowerDbm = 10 * log10 (resultPowerW) + 30;
 
   NS_LOG_DEBUG ("Nakagami distance=" << distance << "m, " <<
                 "power=" << powerW <<"W, " <<
@@ -760,7 +760,7 @@ MatrixPropagationLossModel::SetLoss (Ptr<MobilityModel> ma, Ptr<MobilityModel> m
 {
   NS_ASSERT (ma != 0 && mb != 0);
 
-  MobilityPair p = std::make_pair(ma, mb);
+  MobilityPair p = std::make_pair (ma, mb);
   std::map<MobilityPair, double>::iterator i = m_loss.find (p);
 
   if (i == m_loss.end ())

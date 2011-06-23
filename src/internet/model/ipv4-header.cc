@@ -38,7 +38,7 @@ Ipv4Header::Ipv4Header ()
     m_protocol (0),
     m_flags (0),
     m_fragmentOffset (0),
-    m_checksum(0),
+    m_checksum (0),
     m_goodChecksum (true)
 {
 }
@@ -268,7 +268,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   if (m_calcChecksum) 
     {
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(20);
+      uint16_t checksum = i.CalculateIpChecksum (20);
       NS_LOG_LOGIC ("checksum=" <<checksum);
       i = start;
       i.Next (10);
@@ -304,7 +304,7 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   m_fragmentOffset <<= 3;
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
-  m_checksum = i.ReadU16();
+  m_checksum = i.ReadU16 ();
   /* i.Next (2); // checksum */
   m_source.Set (i.ReadNtohU32 ());
   m_destination.Set (i.ReadNtohU32 ());
@@ -312,7 +312,7 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   if (m_calcChecksum) 
     {
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(headerSize);
+      uint16_t checksum = i.CalculateIpChecksum (headerSize);
       NS_LOG_LOGIC ("checksum=" <<checksum);
 
       m_goodChecksum = (checksum == 0);

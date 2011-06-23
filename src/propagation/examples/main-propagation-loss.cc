@@ -35,16 +35,16 @@ using namespace ns3;
 
 /// Round a double number to the given precision. e.g. dround(0.234, 0.1) = 0.2
 /// and dround(0.257, 0.1) = 0.3
-static double dround(double number, double precision)
+static double dround (double number, double precision)
 {
   number /= precision;
   if (number >= 0)
     {
-      number = floor(number + 0.5);
+      number = floor (number + 0.5);
     }
   else
     {
-      number = ceil(number - 0.5);
+      number = ceil (number - 0.5);
     }
   number *= precision;
   return number;
@@ -58,15 +58,15 @@ TestDeterministic (Ptr<PropagationLossModel> model)
 
   Gnuplot plot;
 
-  plot.AppendExtra("set xlabel 'Distance'");
-  plot.AppendExtra("set ylabel 'rxPower (dBm)'");
-  plot.AppendExtra("set key top right");
+  plot.AppendExtra ("set xlabel 'Distance'");
+  plot.AppendExtra ("set ylabel 'rxPower (dBm)'");
+  plot.AppendExtra ("set key top right");
 
   double txPowerDbm = +20; // dBm
 
   Gnuplot2dDataset dataset;
 
-  dataset.SetStyle(Gnuplot2dDataset::LINES);
+  dataset.SetStyle (Gnuplot2dDataset::LINES);
 
   {
     a->SetPosition (Vector (0.0, 0.0, 0.0));
@@ -78,7 +78,7 @@ TestDeterministic (Ptr<PropagationLossModel> model)
         // CalcRxPower() returns dBm.
         double rxPowerDbm = model->CalcRxPower (txPowerDbm, a, b);
 
-        dataset.Add(distance, rxPowerDbm);
+        dataset.Add (distance, rxPowerDbm);
 
         Simulator::Stop (Seconds (1.0));
         Simulator::Run ();
@@ -87,11 +87,11 @@ TestDeterministic (Ptr<PropagationLossModel> model)
 
   std::ostringstream os;
   os << "txPower " << txPowerDbm << "dBm";
-  dataset.SetTitle(os.str());
+  dataset.SetTitle (os.str ());
 
-  plot.AddDataset(dataset);
+  plot.AddDataset (dataset);
 
-  plot.AddDataset( Gnuplot2dFunction("-94 dBm CSThreshold", "-94.0") );
+  plot.AddDataset ( Gnuplot2dFunction ("-94 dBm CSThreshold", "-94.0") );
 
   return plot;
 }
@@ -104,23 +104,23 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
 
   Gnuplot plot;
 
-  plot.AppendExtra("set xlabel 'Distance'");
-  plot.AppendExtra("set ylabel 'rxPower (dBm)'");
-  plot.AppendExtra("set zlabel 'Probability' offset 0,+10");
-  plot.AppendExtra("set view 50, 120, 1.0, 1.0");
-  plot.AppendExtra("set key top right");
+  plot.AppendExtra ("set xlabel 'Distance'");
+  plot.AppendExtra ("set ylabel 'rxPower (dBm)'");
+  plot.AppendExtra ("set zlabel 'Probability' offset 0,+10");
+  plot.AppendExtra ("set view 50, 120, 1.0, 1.0");
+  plot.AppendExtra ("set key top right");
 
-  plot.AppendExtra("set ticslevel 0");
-  plot.AppendExtra("set xtics offset -0.5,0");
-  plot.AppendExtra("set ytics offset 0,-0.5");
-  plot.AppendExtra("set xrange [100:]");
+  plot.AppendExtra ("set ticslevel 0");
+  plot.AppendExtra ("set xtics offset -0.5,0");
+  plot.AppendExtra ("set ytics offset 0,-0.5");
+  plot.AppendExtra ("set xrange [100:]");
 
   double txPowerDbm = +20; // dBm
 
   Gnuplot3dDataset dataset;
 
-  dataset.SetStyle("with linespoints");
-  dataset.SetExtra("pointtype 3 pointsize 0.5");
+  dataset.SetStyle ("with linespoints");
+  dataset.SetExtra ("pointtype 3 pointsize 0.5");
 
   typedef std::map<double, unsigned int> rxPowerMapType;
 
@@ -139,7 +139,7 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
           {
             // CalcRxPower() returns dBm.
             double rxPowerDbm = model->CalcRxPower (txPowerDbm, a, b);
-            rxPowerDbm = dround(rxPowerDbm, 1.0);
+            rxPowerDbm = dround (rxPowerDbm, 1.0);
 
             rxPowerMap[ rxPowerDbm ]++;
 
@@ -147,28 +147,28 @@ TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 10000
             Simulator::Run ();
           }
 
-        for (rxPowerMapType::const_iterator i = rxPowerMap.begin();
-             i != rxPowerMap.end(); ++i)
+        for (rxPowerMapType::const_iterator i = rxPowerMap.begin ();
+             i != rxPowerMap.end (); ++i)
           {
-            dataset.Add(distance, i->first, (double)i->second / (double)samples);
+            dataset.Add (distance, i->first, (double)i->second / (double)samples);
           }
-        dataset.AddEmptyLine();
+        dataset.AddEmptyLine ();
       }
   }
 
   std::ostringstream os;
   os << "txPower " << txPowerDbm << "dBm";
-  dataset.SetTitle(os.str());
+  dataset.SetTitle (os.str ());
 
-  plot.AddDataset(dataset);
+  plot.AddDataset (dataset);
 
   return plot;
 }
 
 static Gnuplot
 TestDeterministicByTime (Ptr<PropagationLossModel> model,
-                         Time timeStep = Seconds(0.001),
-                         Time timeTotal = Seconds(1.0),
+                         Time timeStep = Seconds (0.001),
+                         Time timeTotal = Seconds (1.0),
                          double distance = 100.0)
 {
   Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
@@ -176,28 +176,28 @@ TestDeterministicByTime (Ptr<PropagationLossModel> model,
 
   Gnuplot plot;
 
-  plot.AppendExtra("set xlabel 'Time (s)'");
-  plot.AppendExtra("set ylabel 'rxPower (dBm)'");
-  plot.AppendExtra("set key center right");
+  plot.AppendExtra ("set xlabel 'Time (s)'");
+  plot.AppendExtra ("set ylabel 'rxPower (dBm)'");
+  plot.AppendExtra ("set key center right");
 
   double txPowerDbm = +20; // dBm
 
   Gnuplot2dDataset dataset;
 
-  dataset.SetStyle(Gnuplot2dDataset::LINES);
+  dataset.SetStyle (Gnuplot2dDataset::LINES);
 
   {
     a->SetPosition (Vector (0.0, 0.0, 0.0));
     b->SetPosition (Vector (distance, 0.0, 0.0));
 
-    Time start = Simulator::Now();
-    while( Simulator::Now() < start + timeTotal )
+    Time start = Simulator::Now ();
+    while( Simulator::Now () < start + timeTotal )
       {
         // CalcRxPower() returns dBm.
         double rxPowerDbm = model->CalcRxPower (txPowerDbm, a, b);
 
-        Time elapsed = Simulator::Now() - start;
-        dataset.Add(elapsed.GetSeconds(), rxPowerDbm);
+        Time elapsed = Simulator::Now () - start;
+        dataset.Add (elapsed.GetSeconds (), rxPowerDbm);
 
         Simulator::Stop (timeStep);
         Simulator::Run ();
@@ -206,107 +206,107 @@ TestDeterministicByTime (Ptr<PropagationLossModel> model,
 
   std::ostringstream os;
   os << "txPower " << txPowerDbm << "dBm";
-  dataset.SetTitle(os.str());
+  dataset.SetTitle (os.str ());
 
-  plot.AddDataset(dataset);
+  plot.AddDataset (dataset);
 
-  plot.AddDataset( Gnuplot2dFunction("-94 dBm CSThreshold", "-94.0") );
+  plot.AddDataset ( Gnuplot2dFunction ("-94 dBm CSThreshold", "-94.0") );
 
   return plot;
 }
 
 int main (int argc, char *argv[])
 {
-  GnuplotCollection gnuplots("main-propagation-loss.pdf");
+  GnuplotCollection gnuplots ("main-propagation-loss.pdf");
 
   {
     Ptr<FriisPropagationLossModel> friis = CreateObject<FriisPropagationLossModel> ();
 
-    Gnuplot plot = TestDeterministic(friis);
-    plot.SetTitle("ns3::FriisPropagationLossModel (Default Parameters)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministic (friis);
+    plot.SetTitle ("ns3::FriisPropagationLossModel (Default Parameters)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
-    log->SetAttribute("Exponent", DoubleValue (2.5));
+    log->SetAttribute ("Exponent", DoubleValue (2.5));
 
-    Gnuplot plot = TestDeterministic(log);
-    plot.SetTitle("ns3::LogDistancePropagationLossModel (Exponent = 2.5)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministic (log);
+    plot.SetTitle ("ns3::LogDistancePropagationLossModel (Exponent = 2.5)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<RandomPropagationLossModel> random = CreateObject<RandomPropagationLossModel> ();
-    random->SetAttribute("Variable", RandomVariableValue(ExponentialVariable(50.0)));
+    random->SetAttribute ("Variable", RandomVariableValue (ExponentialVariable (50.0)));
 
-    Gnuplot plot = TestDeterministic(random);
-    plot.SetTitle("ns3::RandomPropagationLossModel with Exponential Distribution");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministic (random);
+    plot.SetTitle ("ns3::RandomPropagationLossModel with Exponential Distribution");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<JakesPropagationLossModel> jakes = CreateObject<JakesPropagationLossModel> ();
 
     // doppler frequency shift for 5.15 GHz at 100 km/h
-    jakes->SetAttribute("DopplerFreq", DoubleValue(477.9));
+    jakes->SetAttribute ("DopplerFreq", DoubleValue (477.9));
 
-    Gnuplot plot = TestDeterministicByTime (jakes, Seconds(0.001), Seconds(1.0));
-    plot.SetTitle("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 1 millisec resolution)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.001), Seconds (1.0));
+    plot.SetTitle ("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 1 millisec resolution)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<JakesPropagationLossModel> jakes = CreateObject<JakesPropagationLossModel> ();
 
     // doppler frequency shift for 5.15 GHz at 100 km/h
-    jakes->SetAttribute("DopplerFreq", DoubleValue(477.9));
+    jakes->SetAttribute ("DopplerFreq", DoubleValue (477.9));
 
-    Gnuplot plot = TestDeterministicByTime (jakes, Seconds(0.0001), Seconds(0.1));
-    plot.SetTitle("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 0.1 millisec resolution)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.0001), Seconds (0.1));
+    plot.SetTitle ("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 0.1 millisec resolution)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<ThreeLogDistancePropagationLossModel> log3 = CreateObject<ThreeLogDistancePropagationLossModel> ();
 
-    Gnuplot plot = TestDeterministic(log3);
-    plot.SetTitle("ns3::ThreeLogDistancePropagationLossModel (Defaults)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministic (log3);
+    plot.SetTitle ("ns3::ThreeLogDistancePropagationLossModel (Defaults)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<ThreeLogDistancePropagationLossModel> log3 = CreateObject<ThreeLogDistancePropagationLossModel> ();
     // more prominent example values:
-    log3->SetAttribute("Exponent0", DoubleValue(1.0));
-    log3->SetAttribute("Exponent1", DoubleValue(3.0));
-    log3->SetAttribute("Exponent2", DoubleValue(10.0));
+    log3->SetAttribute ("Exponent0", DoubleValue (1.0));
+    log3->SetAttribute ("Exponent1", DoubleValue (3.0));
+    log3->SetAttribute ("Exponent2", DoubleValue (10.0));
 
-    Gnuplot plot = TestDeterministic(log3);
-    plot.SetTitle("ns3::ThreeLogDistancePropagationLossModel (Exponents 1.0, 3.0 and 10.0)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestDeterministic (log3);
+    plot.SetTitle ("ns3::ThreeLogDistancePropagationLossModel (Exponents 1.0, 3.0 and 10.0)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<NakagamiPropagationLossModel> nak = CreateObject<NakagamiPropagationLossModel> ();
 
-    Gnuplot plot = TestProbabilistic(nak);
-    plot.SetTitle("ns3::NakagamiPropagationLossModel (Default Parameters)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestProbabilistic (nak);
+    plot.SetTitle ("ns3::NakagamiPropagationLossModel (Default Parameters)");
+    gnuplots.AddPlot (plot);
   }
 
   {
     Ptr<ThreeLogDistancePropagationLossModel> log3 = CreateObject<ThreeLogDistancePropagationLossModel> ();
 
     Ptr<NakagamiPropagationLossModel> nak = CreateObject<NakagamiPropagationLossModel> ();
-    log3->SetNext(nak);
+    log3->SetNext (nak);
 
-    Gnuplot plot = TestProbabilistic(log3);
-    plot.SetTitle("ns3::ThreeLogDistancePropagationLossModel and ns3::NakagamiPropagationLossModel (Default Parameters)");
-    gnuplots.AddPlot(plot);
+    Gnuplot plot = TestProbabilistic (log3);
+    plot.SetTitle ("ns3::ThreeLogDistancePropagationLossModel and ns3::NakagamiPropagationLossModel (Default Parameters)");
+    gnuplots.AddPlot (plot);
   }
 
-  gnuplots.GenerateOutput(std::cout);
+  gnuplots.GenerateOutput (std::cout);
 
   // produce clean valgrind
   Simulator::Destroy ();

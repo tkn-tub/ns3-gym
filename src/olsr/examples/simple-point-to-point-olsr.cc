@@ -79,9 +79,9 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
   c.Create (5);
-  NodeContainer n02 = NodeContainer (c.Get(0), c.Get (2));
-  NodeContainer n12 = NodeContainer (c.Get(1), c.Get (2));
-  NodeContainer n32 = NodeContainer (c.Get(3), c.Get (2));
+  NodeContainer n02 = NodeContainer (c.Get (0), c.Get (2));
+  NodeContainer n12 = NodeContainer (c.Get (1), c.Get (2));
+  NodeContainer n32 = NodeContainer (c.Get (3), c.Get (2));
   NodeContainer n34 = NodeContainer (c.Get (3), c.Get (4));
 
   // Enable OLSR

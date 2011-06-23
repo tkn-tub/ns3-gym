@@ -69,10 +69,10 @@ public:
   void SetErrorCallback (ErrorCallback ecb) { m_ecb = ecb; }
   Ptr<const Packet> GetPacket () const { return m_packet; }
   void SetPacket (Ptr<const Packet> p) { m_packet = p; }
-  Ipv4Header GetIpv4Header() const { return m_header; }
+  Ipv4Header GetIpv4Header () const { return m_header; }
   void SetIpv4Header (Ipv4Header h) { m_header = h; }
-  void SetExpireTime (Time exp) { m_expire = exp + Simulator::Now(); }
-  Time GetExpireTime () const { return m_expire - Simulator::Now(); }
+  void SetExpireTime (Time exp) { m_expire = exp + Simulator::Now (); }
+  Time GetExpireTime () const { return m_expire - Simulator::Now (); }
   //\}
 private:
   /// Data packet

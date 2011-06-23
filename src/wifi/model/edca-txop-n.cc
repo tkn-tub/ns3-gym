@@ -38,7 +38,7 @@
 NS_LOG_COMPONENT_DEFINE ("EdcaTxopN");
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] ";}
+#define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
 
 namespace ns3 {
 
@@ -143,7 +143,7 @@ EdcaTxopN::GetTypeId (void)
     .SetParent (ns3::Dcf::GetTypeId ())
     .AddConstructor<EdcaTxopN> ()
     .AddAttribute ("BlockAckThreshold", "If number of packets in this queue reaches this value,\
-                                         block ack mechanism is used. If this value is 0, block ack is never used."                                                                                                 ,
+                                         block ack mechanism is used. If this value is 0, block ack is never used.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&EdcaTxopN::SetBlockAckThreshold,
                                          &EdcaTxopN::GetBlockAckThreshold),
@@ -151,7 +151,7 @@ EdcaTxopN::GetTypeId (void)
     .AddAttribute ("BlockAckInactivityTimeout", "Represents max time (blocks of 1024 micro seconds) allowed for block ack\
                                                  inactivity. If this value isn't equal to 0 a timer start after that a\
                                                  block ack setup is completed and will be reset every time that a block\
-                                                 ack frame is received. If this value is 0, block ack inactivity timeout won't be used."                                                                                                                                                                                                                                                                                                                                                                            ,
+                                                 ack frame is received. If this value is 0, block ack inactivity timeout won't be used.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&EdcaTxopN::SetBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())

@@ -298,8 +298,8 @@ Ipv4MulticastRoutingTableEntry::GetNOutputInterfaces (void) const
 uint32_t
 Ipv4MulticastRoutingTableEntry::GetOutputInterface (uint32_t n) const
 {
-  NS_ASSERT_MSG(n < m_outputInterfaces.size (), 
-                "Ipv4MulticastRoutingTableEntry::GetOutputInterface (): index out of bounds");
+  NS_ASSERT_MSG (n < m_outputInterfaces.size (),
+                 "Ipv4MulticastRoutingTableEntry::GetOutputInterface (): index out of bounds");
 
   return m_outputInterfaces[n];
 }

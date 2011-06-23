@@ -42,8 +42,8 @@ namespace ns3 {
  * int, etc.
  */
 
-ATTRIBUTE_VALUE_DEFINE_WITH_NAME(int64_t, Integer);
-ATTRIBUTE_ACCESSOR_DEFINE(Integer);
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME (int64_t, Integer);
+ATTRIBUTE_ACCESSOR_DEFINE (Integer);
 
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker (void);

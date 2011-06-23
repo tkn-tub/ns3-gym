@@ -156,15 +156,15 @@ std::ostream& operator<< (std::ostream& os, const Mac64Address & address)
   address.CopyTo (ad);
 
   os.setf (std::ios::hex, std::ios::basefield);
-  os.fill('0');
+  os.fill ('0');
   for (uint8_t i=0; i < 7; i++) 
     {
-      os << std::setw(2) << (uint32_t)ad[i] << ":";
+      os << std::setw (2) << (uint32_t)ad[i] << ":";
     }
   // Final byte not suffixed by ":"
-  os << std::setw(2) << (uint32_t)ad[7];
+  os << std::setw (2) << (uint32_t)ad[7];
   os.setf (std::ios::dec, std::ios::basefield);
-  os.fill(' ');
+  os.fill (' ');
   return os;
 }
 

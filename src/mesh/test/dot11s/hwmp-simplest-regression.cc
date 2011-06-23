@@ -55,7 +55,7 @@ HwmpSimplestRegressionTest::~HwmpSimplestRegressionTest ()
 void
 HwmpSimplestRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed(12345);
+  SeedManager::SetSeed (12345);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -83,18 +83,18 @@ HwmpSimplestRegressionTest::CreateNodes ()
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (*m_nodes);
-  Simulator::Schedule (Seconds(10.0), &HwmpSimplestRegressionTest::ResetPosition, this);
+  Simulator::Schedule (Seconds (10.0), &HwmpSimplestRegressionTest::ResetPosition, this);
 }
 void
 HwmpSimplestRegressionTest::ResetPosition ()
 {
-  Ptr<Object> object = m_nodes->Get(1);
+  Ptr<Object> object = m_nodes->Get (1);
   Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
   if (model == 0)
     {
       return;
     }
-  model->SetPosition (Vector(9000, 0, 0));
+  model->SetPosition (Vector (9000, 0, 0));
 }
 void
 HwmpSimplestRegressionTest::InstallApplications ()
@@ -105,7 +105,7 @@ HwmpSimplestRegressionTest::InstallApplications ()
   serverApps.Stop (m_time);
   UdpEchoClientHelper echoClient (m_interfaces.GetAddress (0), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue (300));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds(0.05)));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.05)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (100));
   ApplicationContainer clientApps = echoClient.Install (m_nodes->Get (1));
   clientApps.Start (Seconds (2.0));
@@ -121,7 +121,7 @@ HwmpSimplestRegressionTest::CreateDevices ()
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::Dot11sStack");
-  mesh.SetMacType ("RandomStart", TimeValue (Seconds(0.1)));
+  mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
   // 3. setup TCP/IP
@@ -131,7 +131,7 @@ HwmpSimplestRegressionTest::CreateDevices ()
   address.SetBase ("10.1.1.0", "255.255.255.0");
   m_interfaces = address.Assign (meshDevices);
   // 4. write PCAP if needed
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string(GetTempDir ())) + PREFIX;
+  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string (GetTempDir ())) + PREFIX;
   wifiPhy.EnablePcapAll (prefix);
 }
 
@@ -145,9 +145,9 @@ HwmpSimplestRegressionTest::CheckResults ()
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
 
-      uint32_t sec(0), usec(0);
-      bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec); // TODO support default PcapWriter snap length here
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
+      uint32_t sec (0), usec (0);
+      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec); // TODO support default PcapWriter snap length here
+      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
                                                          << " differ starting from " << sec << " s " << usec << " us");
     }
 }

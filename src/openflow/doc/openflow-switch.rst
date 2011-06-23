@@ -134,7 +134,12 @@ To do this:
 
 #1 Obtain the OFSID code. An ns-3 specific OFSID branch is provided to ensure
 operation with ns-3. Use mercurial to download this branch and waf to build 
-the library. From the "openflow" directory, run:::
+the library::: 
+
+  $ hg clone http://code.nsnam.org/jpelkey3/openflow
+  $ cd openflow
+
+From the "openflow" directory, run:::
      
   $ ./waf configure
   $ ./waf build

@@ -203,11 +203,11 @@ ArpCache::HandleWaitReplyTimeout (void)
                             entry->GetRetries ());
               entry->MarkDead ();
               entry->ClearRetries ();
-              Ptr<Packet> pending = entry->DequeuePending();
+              Ptr<Packet> pending = entry->DequeuePending ();
               while (pending != 0)
                 {
                   m_dropTrace (pending);
-                  pending = entry->DequeuePending();
+                  pending = entry->DequeuePending ();
                 }
             }
         }

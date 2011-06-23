@@ -44,7 +44,7 @@ class DuplicatePacketDetection
 {
 public:
   /// C-tor
-  DuplicatePacketDetection (Time lifetime) : m_idCache(lifetime) {}
+  DuplicatePacketDetection (Time lifetime) : m_idCache (lifetime) {}
   /// Check that the packet is duplicated. If not, save information about this packet.
   bool IsDuplicate (Ptr<const Packet> p, const Ipv4Header & header);
   /// Set duplicate records lifetimes

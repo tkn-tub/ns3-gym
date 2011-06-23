@@ -34,6 +34,7 @@ class SSRecord;
 class ServiceFlow;
 
 /**
+ * \ingroup wimax
  * \brief This class implements a simple uplink scheduler for rtPS flows.
  *
  * The UL-rtPS-Scheduler work in this way:

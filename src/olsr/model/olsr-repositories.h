@@ -60,8 +60,8 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const IfaceAssocTuple &tuple)
                 {
                   os << "IfaceAssocTuple(ifaceAddr=" << tuple.ifaceAddr
-                         << ", mainAddr=" << tuple.mainAddr
-                         << ", time=" << tuple.time << ")";
+                  << ", mainAddr=" << tuple.mainAddr
+                  << ", time=" << tuple.time << ")";
                   return os;
                 }
 
@@ -91,11 +91,11 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const LinkTuple &tuple)
                 {
                   os << "LinkTuple(localIfaceAddr=" << tuple.localIfaceAddr
-                         << ", neighborIfaceAddr=" << tuple.neighborIfaceAddr
-                         << ", symTime=" << tuple.symTime
-                         << ", asymTime=" << tuple.asymTime
-                         << ", expTime=" << tuple.time
-                         << ")";
+                  << ", neighborIfaceAddr=" << tuple.neighborIfaceAddr
+                  << ", symTime=" << tuple.symTime
+                  << ", asymTime=" << tuple.asymTime
+                  << ", expTime=" << tuple.time
+                  << ")";
                   return os;
                 }
 
@@ -125,8 +125,8 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const NeighborTuple &tuple)
                 {
                   os << "NeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
-                         << ", status=" << (tuple.status == NeighborTuple::STATUS_SYM ? "SYM" : "NOT_SYM")
-                         << ", willingness=" << (int) tuple.willingness << ")";
+                  << ", status=" << (tuple.status == NeighborTuple::STATUS_SYM ? "SYM" : "NOT_SYM")
+                  << ", willingness=" << (int) tuple.willingness << ")";
                   return os;
                 }
 
@@ -145,9 +145,9 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const TwoHopNeighborTuple &tuple)
                 {
                   os << "TwoHopNeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
-                         << ", twoHopNeighborAddr=" << tuple.twoHopNeighborAddr
-                         << ", expirationTime=" << tuple.expirationTime
-                         << ")";
+                  << ", twoHopNeighborAddr=" << tuple.twoHopNeighborAddr
+                  << ", expirationTime=" << tuple.expirationTime
+                  << ")";
                   return os;
                 }
 
@@ -224,10 +224,10 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const TopologyTuple &tuple)
                 {
                   os << "TopologyTuple(destAddr=" << tuple.destAddr
-                         << ", lastAddr=" << tuple.lastAddr
-                         << ", sequenceNumber=" << (int) tuple.sequenceNumber
-                         << ", expirationTime=" << tuple.expirationTime
-                         << ")";
+                  << ", lastAddr=" << tuple.lastAddr
+                  << ", sequenceNumber=" << (int) tuple.sequenceNumber
+                  << ", expirationTime=" << tuple.expirationTime
+                  << ")";
                   return os;
                 }
 
@@ -249,8 +249,8 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const Association &tuple)
                 {
                   os << "Association(networkAddr=" << tuple.networkAddr
-                         << ", netmask=" << tuple.netmask
-                         << ")";
+                  << ", netmask=" << tuple.netmask
+                  << ")";
                   return os;
                 }
 
@@ -279,10 +279,10 @@ namespace ns3 { namespace olsr {
                 operator << (std::ostream &os, const AssociationTuple &tuple)
                 {
                   os << "AssociationTuple(gatewayAddr=" << tuple.gatewayAddr
-                         << ", networkAddr=" << tuple.networkAddr
-                         << ", netmask=" << tuple.netmask
-                         << ", expirationTime=" << tuple.expirationTime
-                         << ")";
+                  << ", networkAddr=" << tuple.networkAddr
+                  << ", netmask=" << tuple.netmask
+                  << ", expirationTime=" << tuple.expirationTime
+                  << ")";
                   return os;
                 }
 

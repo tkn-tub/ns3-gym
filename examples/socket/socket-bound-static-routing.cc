@@ -156,7 +156,7 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (0.1),&SendStuff, srcSocket, dstaddr, dstport);
   // Second via Rtr1 explicitly
   Simulator::Schedule (Seconds (1.0),&BindSock, srcSocket, SrcToRtr1);
-  Simulator::Schedule (Seconds( 1.1),&SendStuff, srcSocket, dstaddr, dstport);
+  Simulator::Schedule (Seconds ( 1.1),&SendStuff, srcSocket, dstaddr, dstport);
   // Third via Rtr2 explicitly
   Simulator::Schedule (Seconds (2.0),&BindSock, srcSocket, SrcToRtr2);
   Simulator::Schedule (Seconds (2.1),&SendStuff, srcSocket, dstaddr, dstport);
@@ -172,7 +172,7 @@ main (int argc, char *argv[])
   return 0;
 }
 
-void SendStuff(Ptr<Socket> sock, Ipv4Address dstaddr, uint16_t port)
+void SendStuff (Ptr<Socket> sock, Ipv4Address dstaddr, uint16_t port)
 {
   Ptr<Packet> p = Create<Packet> ();
   p->AddPaddingAtEnd (100);
@@ -180,7 +180,7 @@ void SendStuff(Ptr<Socket> sock, Ipv4Address dstaddr, uint16_t port)
   return;
 }
 
-void BindSock(Ptr<Socket> sock, Ptr<NetDevice> netdev)
+void BindSock (Ptr<Socket> sock, Ptr<NetDevice> netdev)
 {
   sock->BindToNetDevice (netdev);
   return;
@@ -193,7 +193,7 @@ srcSocketRecv (Ptr<Socket> socket)
   Ptr<Packet> packet = socket->RecvFrom (from);
   packet->RemoveAllPacketTags ();
   packet->RemoveAllByteTags ();
-  NS_LOG_INFO ("Source Received " << packet->GetSize () << " bytes from " << InetSocketAddress::ConvertFrom (from).GetIpv4());
+  NS_LOG_INFO ("Source Received " << packet->GetSize () << " bytes from " << InetSocketAddress::ConvertFrom (from).GetIpv4 ());
   if (socket->GetBoundNetDevice ())
     {
       NS_LOG_INFO ("Socket was bound");
@@ -214,5 +214,5 @@ dstSocketRecv (Ptr<Socket> socket)
   InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
   NS_LOG_INFO ("Destination Received " << packet->GetSize () << " bytes from " << address.GetIpv4 ());
   NS_LOG_INFO ("Triggering packet back to source node's interface 1");
-  SendStuff(socket, Ipv4Address ("10.1.1.1"), address.GetPort ());
+  SendStuff (socket, Ipv4Address ("10.1.1.1"), address.GetPort ());
 }

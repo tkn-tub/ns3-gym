@@ -23,46 +23,46 @@ public:
   PythonEventImpl (PyObject *callback, PyObject *args)
   {
     m_callback = callback;
-    Py_INCREF(m_callback);
+    Py_INCREF (m_callback);
     m_args = args;
-    Py_INCREF(m_args);
+    Py_INCREF (m_args);
   }
   virtual ~PythonEventImpl ()
   {
     PyGILState_STATE __py_gil_state;
-    __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+    __py_gil_state = (PyEval_ThreadsInitialized () ? PyGILState_Ensure () : (PyGILState_STATE) 0);
 
-    Py_DECREF(m_callback);
-    Py_DECREF(m_args);
+    Py_DECREF (m_callback);
+    Py_DECREF (m_args);
 
-    if (PyEval_ThreadsInitialized())
-      PyGILState_Release(__py_gil_state);
+    if (PyEval_ThreadsInitialized ())
+      PyGILState_Release (__py_gil_state);
   }
   virtual void Notify ()
   {
     PyGILState_STATE __py_gil_state;
-    __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+    __py_gil_state = (PyEval_ThreadsInitialized () ? PyGILState_Ensure () : (PyGILState_STATE) 0);
 
-    PyObject *retval = PyObject_CallObject(m_callback, m_args);
+    PyObject *retval = PyObject_CallObject (m_callback, m_args);
     if (retval) {
         if (retval != Py_None) {
-            PyErr_SetString(PyExc_TypeError, "event callback should return None");
-            PyErr_Print();
+            PyErr_SetString (PyExc_TypeError, "event callback should return None");
+            PyErr_Print ();
           }
-        Py_DECREF(retval);
+        Py_DECREF (retval);
       } else {
-        PyErr_Print();
+        PyErr_Print ();
       }
 
-    if (PyEval_ThreadsInitialized())
-      PyGILState_Release(__py_gil_state);
+    if (PyEval_ThreadsInitialized ())
+      PyGILState_Release (__py_gil_state);
   }
 };
 
 
 PyObject *
-_wrap_Simulator_Schedule(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
-                         PyObject **return_exception)
+_wrap_Simulator_Schedule (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
+                          PyObject **return_exception)
 {
   PyObject *exc_type, *traceback;
   PyObject *py_time;
@@ -71,47 +71,47 @@ _wrap_Simulator_Schedule(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args
   ns3::Ptr<PythonEventImpl> py_event_impl;
   PyNs3EventId *py_EventId;
 
-  if (kwargs && PyObject_Length(kwargs) > 0) {
-      PyErr_SetString(PyExc_TypeError, "keyword arguments not supported");
+  if (kwargs && PyObject_Length (kwargs) > 0) {
+      PyErr_SetString (PyExc_TypeError, "keyword arguments not supported");
       goto error;
     }
 
-  if (PyTuple_GET_SIZE(args) < 2) {
-      PyErr_SetString(PyExc_TypeError, "ns3.Simulator.Schedule needs at least 2 arguments");
+  if (PyTuple_GET_SIZE (args) < 2) {
+      PyErr_SetString (PyExc_TypeError, "ns3.Simulator.Schedule needs at least 2 arguments");
       goto error;
     }
-  py_time = PyTuple_GET_ITEM(args, 0);
-  py_callback = PyTuple_GET_ITEM(args, 1);
+  py_time = PyTuple_GET_ITEM (args, 0);
+  py_callback = PyTuple_GET_ITEM (args, 1);
 
-  if (!PyObject_IsInstance(py_time, (PyObject*) &PyNs3Time_Type)) {
-      PyErr_SetString(PyExc_TypeError, "Parameter 1 should be a ns3.Time instance");
+  if (!PyObject_IsInstance (py_time, (PyObject*) &PyNs3Time_Type)) {
+      PyErr_SetString (PyExc_TypeError, "Parameter 1 should be a ns3.Time instance");
       goto error;
     }
-  if (!PyCallable_Check(py_callback)) {
-      PyErr_SetString(PyExc_TypeError, "Parameter 2 should be callable");
+  if (!PyCallable_Check (py_callback)) {
+      PyErr_SetString (PyExc_TypeError, "Parameter 2 should be callable");
       goto error;
     }
-  user_args = PyTuple_GetSlice(args, 2, PyTuple_GET_SIZE(args));
+  user_args = PyTuple_GetSlice (args, 2, PyTuple_GET_SIZE (args));
   py_event_impl = ns3::Create<PythonEventImpl>(py_callback, user_args);
-  Py_DECREF(user_args);
+  Py_DECREF (user_args);
 
-  py_EventId = PyObject_New(PyNs3EventId, &PyNs3EventId_Type);
-  py_EventId->obj = new ns3::EventId(
-      ns3::Simulator::Schedule(*((PyNs3Time *) py_time)->obj, py_event_impl));
+  py_EventId = PyObject_New (PyNs3EventId, &PyNs3EventId_Type);
+  py_EventId->obj = new ns3::EventId (
+      ns3::Simulator::Schedule (*((PyNs3Time *) py_time)->obj, py_event_impl));
   py_EventId->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
   return (PyObject *) py_EventId;
 
 error:
-  PyErr_Fetch(&exc_type, return_exception, &traceback);
-  Py_XDECREF(exc_type);
-  Py_XDECREF(traceback);
+  PyErr_Fetch (&exc_type, return_exception, &traceback);
+  Py_XDECREF (exc_type);
+  Py_XDECREF (traceback);
   return NULL;
 }
 
 
 PyObject *
-_wrap_Simulator_ScheduleNow(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
-                            PyObject **return_exception)
+_wrap_Simulator_ScheduleNow (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
+                             PyObject **return_exception)
 {
   PyObject *exc_type, *traceback;
   PyObject *py_callback;
@@ -119,41 +119,41 @@ _wrap_Simulator_ScheduleNow(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *a
   ns3::Ptr<PythonEventImpl> py_event_impl;
   PyNs3EventId *py_EventId;
 
-  if (kwargs && PyObject_Length(kwargs) > 0) {
-      PyErr_SetString(PyExc_TypeError, "keyword arguments not supported");
+  if (kwargs && PyObject_Length (kwargs) > 0) {
+      PyErr_SetString (PyExc_TypeError, "keyword arguments not supported");
       goto error;
     }
 
-  if (PyTuple_GET_SIZE(args) < 1) {
-      PyErr_SetString(PyExc_TypeError, "ns3.Simulator.Schedule needs at least 1 argument");
+  if (PyTuple_GET_SIZE (args) < 1) {
+      PyErr_SetString (PyExc_TypeError, "ns3.Simulator.Schedule needs at least 1 argument");
       goto error;
     }
-  py_callback = PyTuple_GET_ITEM(args, 0);
+  py_callback = PyTuple_GET_ITEM (args, 0);
 
-  if (!PyCallable_Check(py_callback)) {
-      PyErr_SetString(PyExc_TypeError, "Parameter 2 should be callable");
+  if (!PyCallable_Check (py_callback)) {
+      PyErr_SetString (PyExc_TypeError, "Parameter 2 should be callable");
       goto error;
     }
-  user_args = PyTuple_GetSlice(args, 1, PyTuple_GET_SIZE(args));
+  user_args = PyTuple_GetSlice (args, 1, PyTuple_GET_SIZE (args));
   py_event_impl = ns3::Create<PythonEventImpl>(py_callback, user_args);
-  Py_DECREF(user_args);
+  Py_DECREF (user_args);
 
-  py_EventId = PyObject_New(PyNs3EventId, &PyNs3EventId_Type);
-  py_EventId->obj = new ns3::EventId(ns3::Simulator::ScheduleNow(py_event_impl));
+  py_EventId = PyObject_New (PyNs3EventId, &PyNs3EventId_Type);
+  py_EventId->obj = new ns3::EventId (ns3::Simulator::ScheduleNow (py_event_impl));
   py_EventId->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
   return (PyObject *) py_EventId;
 
 error:
-  PyErr_Fetch(&exc_type, return_exception, &traceback);
-  Py_XDECREF(exc_type);
-  Py_XDECREF(traceback);
+  PyErr_Fetch (&exc_type, return_exception, &traceback);
+  Py_XDECREF (exc_type);
+  Py_XDECREF (traceback);
   return NULL;
 }
 
 
 PyObject *
-_wrap_Simulator_ScheduleDestroy(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
-                                PyObject **return_exception)
+_wrap_Simulator_ScheduleDestroy (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
+                                 PyObject **return_exception)
 {
   PyObject *exc_type, *traceback;
   PyObject *py_callback;
@@ -161,41 +161,41 @@ _wrap_Simulator_ScheduleDestroy(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObjec
   ns3::Ptr<PythonEventImpl> py_event_impl;
   PyNs3EventId *py_EventId;
 
-  if (kwargs && PyObject_Length(kwargs) > 0) {
-      PyErr_SetString(PyExc_TypeError, "keyword arguments not supported");
+  if (kwargs && PyObject_Length (kwargs) > 0) {
+      PyErr_SetString (PyExc_TypeError, "keyword arguments not supported");
       goto error;
     }
 
-  if (PyTuple_GET_SIZE(args) < 1) {
-      PyErr_SetString(PyExc_TypeError, "ns3.Simulator.Schedule needs at least 1 argument");
+  if (PyTuple_GET_SIZE (args) < 1) {
+      PyErr_SetString (PyExc_TypeError, "ns3.Simulator.Schedule needs at least 1 argument");
       goto error;
     }
-  py_callback = PyTuple_GET_ITEM(args, 0);
+  py_callback = PyTuple_GET_ITEM (args, 0);
 
-  if (!PyCallable_Check(py_callback)) {
-      PyErr_SetString(PyExc_TypeError, "Parameter 2 should be callable");
+  if (!PyCallable_Check (py_callback)) {
+      PyErr_SetString (PyExc_TypeError, "Parameter 2 should be callable");
       goto error;
     }
-  user_args = PyTuple_GetSlice(args, 1, PyTuple_GET_SIZE(args));
+  user_args = PyTuple_GetSlice (args, 1, PyTuple_GET_SIZE (args));
   py_event_impl = ns3::Create<PythonEventImpl>(py_callback, user_args);
-  Py_DECREF(user_args);
+  Py_DECREF (user_args);
 
-  py_EventId = PyObject_New(PyNs3EventId, &PyNs3EventId_Type);
-  py_EventId->obj = new ns3::EventId(ns3::Simulator::ScheduleDestroy(py_event_impl));
+  py_EventId = PyObject_New (PyNs3EventId, &PyNs3EventId_Type);
+  py_EventId->obj = new ns3::EventId (ns3::Simulator::ScheduleDestroy (py_event_impl));
   py_EventId->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
   return (PyObject *) py_EventId;
 
 error:
-  PyErr_Fetch(&exc_type, return_exception, &traceback);
-  Py_XDECREF(exc_type);
-  Py_XDECREF(traceback);
+  PyErr_Fetch (&exc_type, return_exception, &traceback);
+  Py_XDECREF (exc_type);
+  Py_XDECREF (traceback);
   return NULL;
 }
 
 
 PyObject *
-_wrap_TypeId_LookupByNameFailSafe(PyNs3TypeId *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
-                                  PyObject **return_exception)
+_wrap_TypeId_LookupByNameFailSafe (PyNs3TypeId *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
+                                   PyObject **return_exception)
 {
   bool ok;
   const char *name;
@@ -204,21 +204,21 @@ _wrap_TypeId_LookupByNameFailSafe(PyNs3TypeId *PYBINDGEN_UNUSED(dummy), PyObject
   PyNs3TypeId *py_tid;
   const char *keywords[] = { "name", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "s#", (char **) keywords, &name, &name_len)) {
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs, (char *) "s#", (char **) keywords, &name, &name_len)) {
       PyObject *exc_type, *traceback;
-      PyErr_Fetch(&exc_type, return_exception, &traceback);
-      Py_XDECREF(exc_type);
-      Py_XDECREF(traceback);
+      PyErr_Fetch (&exc_type, return_exception, &traceback);
+      Py_XDECREF (exc_type);
+      Py_XDECREF (traceback);
       return NULL;
     }
-  ok = ns3::TypeId::LookupByNameFailSafe(std::string(name, name_len), &tid);
+  ok = ns3::TypeId::LookupByNameFailSafe (std::string (name, name_len), &tid);
   if (!ok)
     {
-      PyErr_Format(PyExc_KeyError, "The ns3 type with name `%s' is not registered", name);
+      PyErr_Format (PyExc_KeyError, "The ns3 type with name `%s' is not registered", name);
       return NULL;
     }
 
-  py_tid = PyObject_New(PyNs3TypeId, &PyNs3TypeId_Type);
+  py_tid = PyObject_New (PyNs3TypeId, &PyNs3TypeId_Type);
   py_tid->obj = new ns3::TypeId (tid);
   PyNs3TypeId_wrapper_registry[(void *) py_tid->obj] = (PyObject *) py_tid;
 
@@ -232,15 +232,15 @@ class CommandLinePythonValueSetter : public ns3::RefCountBase
   std::string m_variable;
 public:
   CommandLinePythonValueSetter (PyObject *ns, std::string const &variable) {
-    Py_INCREF(ns);
+    Py_INCREF (ns);
     m_namespace = ns;
     m_variable = variable;
   }
   bool Parse (std::string value) {
-    PyObject *pyvalue = PyString_FromStringAndSize (value.data(), value.size());
-    PyObject_SetAttrString (m_namespace, (char *) m_variable.c_str(), pyvalue);
-    if (PyErr_Occurred()) {
-        PyErr_Print();
+    PyObject *pyvalue = PyString_FromStringAndSize (value.data (), value.size ());
+    PyObject_SetAttrString (m_namespace, (char *) m_variable.c_str (), pyvalue);
+    if (PyErr_Occurred ()) {
+        PyErr_Print ();
         return false;
       }
     return true;
@@ -253,18 +253,18 @@ public:
 };
 
 PyObject *
-_wrap_CommandLine_AddValue(PyNs3CommandLine *self, PyObject *args, PyObject *kwargs,
-                           PyObject **return_exception)
+_wrap_CommandLine_AddValue (PyNs3CommandLine *self, PyObject *args, PyObject *kwargs,
+                            PyObject **return_exception)
 {
   const char *name, *help, *variable = NULL;
   PyObject *py_namespace = NULL;
   const char *keywords[] = { "name", "help", "variable", "namespace", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "ss|sO", (char **) keywords, &name, &help, &variable, &py_namespace)) {
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs, (char *) "ss|sO", (char **) keywords, &name, &help, &variable, &py_namespace)) {
       PyObject *exc_type, *traceback;
-      PyErr_Fetch(&exc_type, return_exception, &traceback);
-      Py_XDECREF(exc_type);
-      Py_XDECREF(traceback);
+      PyErr_Fetch (&exc_type, return_exception, &traceback);
+      Py_XDECREF (exc_type);
+      Py_XDECREF (traceback);
       return NULL;
     }
 
@@ -278,14 +278,14 @@ _wrap_CommandLine_AddValue(PyNs3CommandLine *self, PyObject *args, PyObject *kwa
   ns3::Ptr<CommandLinePythonValueSetter> setter = ns3::Create<CommandLinePythonValueSetter> (py_namespace, variable);
   self->obj->AddValue (name, help, ns3::MakeCallback (&CommandLinePythonValueSetter::Parse, setter));
 
-  Py_INCREF(Py_None);
+  Py_INCREF (Py_None);
   return Py_None;
 }
 
 
 PyObject *
-_wrap_Simulator_Run(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
-                    PyObject **return_exception)
+_wrap_Simulator_Run (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
+                     PyObject **return_exception)
 {
   const char *keywords[] = { "signal_check_frequency", NULL};
   int signal_check_frequency;
@@ -298,11 +298,11 @@ _wrap_Simulator_Run(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyO
       signal_check_frequency = -1;
     }
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "|i", (char **) keywords, &signal_check_frequency)) {
+  if (!PyArg_ParseTupleAndKeywords (args, kwargs, (char *) "|i", (char **) keywords, &signal_check_frequency)) {
       PyObject *exc_type, *traceback;
-      PyErr_Fetch(&exc_type, return_exception, &traceback);
-      Py_XDECREF(exc_type);
-      Py_XDECREF(traceback);
+      PyErr_Fetch (&exc_type, return_exception, &traceback);
+      Py_XDECREF (exc_type);
+      Py_XDECREF (traceback);
       return NULL;
     }
 
@@ -311,29 +311,29 @@ _wrap_Simulator_Run(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyO
   if (signal_check_frequency == -1)
     {
       if (PyEval_ThreadsInitialized ())
-        py_thread_state = PyEval_SaveThread();
-      ns3::Simulator::Run();
+        py_thread_state = PyEval_SaveThread ();
+      ns3::Simulator::Run ();
       if (py_thread_state)
-        PyEval_RestoreThread(py_thread_state);
+        PyEval_RestoreThread (py_thread_state);
     } else {
-      while (!ns3::Simulator::IsFinished())
+      while (!ns3::Simulator::IsFinished ())
         {
-          if (PyEval_ThreadsInitialized())
-            py_thread_state = PyEval_SaveThread();
+          if (PyEval_ThreadsInitialized ())
+            py_thread_state = PyEval_SaveThread ();
 
-          for (int n = signal_check_frequency; n > 0 && !ns3::Simulator::IsFinished(); --n)
+          for (int n = signal_check_frequency; n > 0 && !ns3::Simulator::IsFinished (); --n)
             {
-              ns3::Simulator::RunOneEvent();
+              ns3::Simulator::RunOneEvent ();
             }
 
           if (py_thread_state)
-            PyEval_RestoreThread(py_thread_state);
-          PyErr_CheckSignals();
-          if (PyErr_Occurred())
+            PyEval_RestoreThread (py_thread_state);
+          PyErr_CheckSignals ();
+          if (PyErr_Occurred ())
             return NULL;
         }
     }
-  Py_INCREF(Py_None);
+  Py_INCREF (Py_None);
   return Py_None;
 }
 

@@ -28,6 +28,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ */
 class IpcsClassifierRecord
 {
 public:

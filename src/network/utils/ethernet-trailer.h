@@ -88,7 +88,7 @@ public:
   /**
    *\return Returns the size of the trailer
    */ 
-  uint32_t GetTrailerSize() const;
+  uint32_t GetTrailerSize () const;
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;

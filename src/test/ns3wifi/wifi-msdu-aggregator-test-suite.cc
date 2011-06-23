@@ -134,8 +134,8 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // and then off at 9 seconds, so we turn the sink off at 9 seconds
   // too in order to measure throughput in a fixed window.
   PacketSinkHelper packetSink ("ns3::UdpSocketFactory",
-                               InetSocketAddress(Ipv4Address::GetAny(),
-                                                 udpPort));
+                               InetSocketAddress (Ipv4Address::GetAny (),
+                                                  udpPort));
   ApplicationContainer sinkApp = packetSink.Install (sta.Get (0));
   sinkApp.Start (Seconds (0));
   sinkApp.Stop (Seconds (9.0));
@@ -149,8 +149,8 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      InetSocketAddress (staNodeInterface.GetAddress (0),
                                         udpPort));
-  onoff.SetAttribute ("DataRate", DataRateValue(DataRate("1Mbps")));
-  onoff.SetAttribute ("PacketSize", UintegerValue(100));
+  onoff.SetAttribute ("DataRate", DataRateValue (DataRate ("1Mbps")));
+  onoff.SetAttribute ("PacketSize", UintegerValue (100));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   ApplicationContainer sourceApp = onoff.Install (ap.Get (0));
@@ -185,9 +185,9 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   //
   // If aggregation is turned off, then we get about 350 kilobytes in
   // the same test, so we'll definitely catch the major failures.
-  NS_TEST_ASSERT_MSG_GT(totalOctetsThrough, 600000,
-                        "A-MSDU test fails for low throughput of "
-                        << totalOctetsThrough << " octets");
+  NS_TEST_ASSERT_MSG_GT (totalOctetsThrough, 600000,
+                         "A-MSDU test fails for low throughput of "
+                         << totalOctetsThrough << " octets");
 }
 
 

@@ -1,12 +1,37 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import Options
+
+def configure(conf):
+    # If Python was explicitly disabled, then add this module to the
+    # list of modules that won't be built if they are enabled.
+    if Options.options.python_disable:
+        conf.env['MODULES_NOT_BUILT'].append('visualizer')
 
 def build(bld):
+    # Don't do anything for this module if Python was explicitly
+    # disabled.
+    if 'visualizer' in bld.env['MODULES_NOT_BUILT']:
+        return
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'visualizer'
     headers.source = [
         ]
 
-    module = bld.create_ns3_module('visualizer', ['network', 'wifi'])
+    module = bld.create_ns3_module('visualizer', ['internet', 'wifi', 'point-to-point'])
+
+    # XXX This file was added so that static builds would work on
+    # Darwin, which doesn't like modules with no source files.  It
+    # would have been better to add this module to the list
+    # conf.env['MODULES_NOT_BUILT'] if Python bindings were not
+    # enabled, but it's not possible for this module to determine in
+    # its configure() function if Python bindings will be enabled
+    # because that is done by the wscript file in bindings/python that
+    # is parsed after this module's wscript file is parsed.
+    module.source = [
+        'model/dummy-file-for-static-builds.cc',
+        ]
+
     if not bld.env['ENABLE_PYTHON_BINDINGS']:
         return
 
@@ -14,14 +39,10 @@ def build(bld):
     module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
     module.includes = '.'
 
-    if bld.env['ENABLE_PYTHON_BINDINGS']:
-        module.source = [
-            'model/pyviz.cc',
-            'model/visual-simulator-impl.cc',
-            ]
-        headers.source.append('model/pyviz.h')
-    else:
-        module.source = [
-            ]
+    module.source.extend([
+        'model/pyviz.cc',
+        'model/visual-simulator-impl.cc',
+        ])
+    headers.source.append('model/pyviz.h')
 
     bld.ns3_python_bindings()

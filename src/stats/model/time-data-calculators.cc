@@ -25,7 +25,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("TimeDataCalculators");
+NS_LOG_COMPONENT_DEFINE ("TimeDataCalculators");
 
 
 //--------------------------------------------------------------
@@ -38,14 +38,14 @@ TimeMinMaxAvgTotalCalculator::~TimeMinMaxAvgTotalCalculator()
 {
 }
 void
-TimeMinMaxAvgTotalCalculator::DoDispose(void)
+TimeMinMaxAvgTotalCalculator::DoDispose (void)
 {
-  DataCalculator::DoDispose();
+  DataCalculator::DoDispose ();
   // TimeMinMaxAvgTotalCalculator::DoDispose
 }
 
 void
-TimeMinMaxAvgTotalCalculator::Update(const Time i)
+TimeMinMaxAvgTotalCalculator::Update (const Time i)
 {
   if (m_enabled) {
       if (m_count) {
@@ -68,14 +68,14 @@ TimeMinMaxAvgTotalCalculator::Update(const Time i)
   // end TimeMinMaxAvgTotalCalculator::Update
 }
 void
-TimeMinMaxAvgTotalCalculator::Output(DataOutputCallback &callback) const
+TimeMinMaxAvgTotalCalculator::Output (DataOutputCallback &callback) const
 {
-  callback.OutputSingleton(m_context, m_key + "-count", m_count);
+  callback.OutputSingleton (m_context, m_key + "-count", m_count);
   if (m_count > 0) {
-      callback.OutputSingleton(m_context, m_key + "-total", m_total);
-      callback.OutputSingleton(m_context, m_key + "-average", Time (m_total / m_count));
-      callback.OutputSingleton(m_context, m_key + "-max", m_max);
-      callback.OutputSingleton(m_context, m_key + "-min", m_min);
+      callback.OutputSingleton (m_context, m_key + "-total", m_total);
+      callback.OutputSingleton (m_context, m_key + "-average", Time (m_total / m_count));
+      callback.OutputSingleton (m_context, m_key + "-max", m_max);
+      callback.OutputSingleton (m_context, m_key + "-min", m_min);
     }
   // end TimeMinMaxAvgTotalCalculator::Output
 }

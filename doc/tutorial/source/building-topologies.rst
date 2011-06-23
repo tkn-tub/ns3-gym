@@ -100,7 +100,7 @@ entirely comfortable with the following code at this point in the tutorial.
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
 
-  cmd.Parse (argc,argv);
+  cmd.Parse (argc, argv);
 
   if (verbose)
     {

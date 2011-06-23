@@ -97,7 +97,7 @@ NscTcpLossTestCase1::DoRun (void)
   devices = pointToPoint.Install (n0, n1);
 
   InternetStackHelper internet;
-  internet.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue("liblinux2.6.26.so"));
+  internet.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue ("liblinux2.6.26.so"));
   internet.InstallAll ();
 
   Ipv4AddressHelper address;
@@ -121,10 +121,10 @@ NscTcpLossTestCase1::DoRun (void)
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
                    MakeCallback (&NscTcpLossTestCase1::SinkRx, this));
 
-  Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
-  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 500);
+  Simulator::Schedule (Seconds (2), &SocketWriter::Connect, socketWriter);
+  Simulator::Schedule (Seconds (10), &SocketWriter::Write, socketWriter, 500);
   m_inputs.Add (500);
-  Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
+  Simulator::Schedule (writerStopTimeObj, &SocketWriter::Close, socketWriter);
 
   std::list<uint32_t> sampleList;
   // Lose first two SYNs
@@ -205,7 +205,7 @@ NscTcpLossTestCase2::DoRun (void)
   devices = pointToPoint.Install (n0, n1);
 
   InternetStackHelper internet;
-  internet.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue("liblinux2.6.26.so"));
+  internet.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue ("liblinux2.6.26.so"));
   internet.InstallAll ();
 
   Ipv4AddressHelper address;
@@ -229,10 +229,10 @@ NscTcpLossTestCase2::DoRun (void)
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
                    MakeCallback (&NscTcpLossTestCase2::SinkRx, this));
 
-  Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
-  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 500);
+  Simulator::Schedule (Seconds (2), &SocketWriter::Connect, socketWriter);
+  Simulator::Schedule (Seconds (10), &SocketWriter::Write, socketWriter, 500);
   m_inputs.Add (500);
-  Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
+  Simulator::Schedule (writerStopTimeObj, &SocketWriter::Close, socketWriter);
 
   std::list<uint32_t> sampleList;
   // Lose first data segment

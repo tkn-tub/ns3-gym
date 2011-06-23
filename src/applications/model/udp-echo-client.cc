@@ -111,14 +111,14 @@ UdpEchoClient::StartApplication (void)
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-      m_socket = Socket::CreateSocket (GetNode(), tid);
+      m_socket = Socket::CreateSocket (GetNode (), tid);
       m_socket->Bind ();
       m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
     }
 
-  m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
+  m_socket->SetRecvCallback (MakeCallback (&UdpEchoClient::HandleRead, this));
 
-  ScheduleTransmit (Seconds(0.));
+  ScheduleTransmit (Seconds (0.));
 }
 
 void 
@@ -129,11 +129,11 @@ UdpEchoClient::StopApplication ()
   if (m_socket != 0) 
     {
       m_socket->Close ();
-      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
+      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
       m_socket = 0;
     }
 
-  Simulator::Cancel(m_sendEvent);
+  Simulator::Cancel (m_sendEvent);
 }
 
 void 
@@ -228,7 +228,7 @@ UdpEchoClient::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
   //
   // Last fill may be partial
   //
-  memcpy(&m_data[filled], fill, dataSize - filled);
+  memcpy (&m_data[filled], fill, dataSize - filled);
 
   //
   // Overwrite packet size attribute.
@@ -240,7 +240,7 @@ void
 UdpEchoClient::ScheduleTransmit (Time dt)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_sendEvent = Simulator::Schedule(dt, &UdpEchoClient::Send, this);
+  m_sendEvent = Simulator::Schedule (dt, &UdpEchoClient::Send, this);
 }
 
 void 
@@ -299,8 +299,8 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " <<
-                       InetSocketAddress::ConvertFrom (from).GetIpv4());
+          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
+                       InetSocketAddress::ConvertFrom (from).GetIpv4 ());
         }
     }
 }

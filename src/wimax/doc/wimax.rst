@@ -156,7 +156,7 @@ The WimaxNetDevice makes heavy use of the |ns3| :ref:`Attributes` subsystem for
 configuration and default value management.  Presently, approximately 60 values
 are stored in this system.
 
-For instance, class :cpp:class:`ns-3::SimpleOfdmWimaxPhy` exports these
+For instance, class ``ns-3::SimpleOfdmWimaxPhy`` exports these
 attributes:
 
 * NoiseFigure:  Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
@@ -207,16 +207,15 @@ three layers:
 * Physical (PHY) layer
 
 
-The following figure :ref:`WimaxArchitecture` shows the relationships of these
+The following figure :ref:`wimax-architecture` shows the relationships of these
 models.
 
 .. _wimax-architecture:
 
 .. figure:: figures/WimaxArchitecture.*
    
-   WiMAX architecture.
-
-the Convergence Sublayer ++++++++++++++++++++++++
+Convergence Sublayer 
+++++++++++++++++++++
  
 The Convergence sublayer (CS) provided with this module implements the Packet
 CS, designed to work with the packet-based protocols at higher layers. The CS is
@@ -227,7 +226,8 @@ enables the MAC CPS identifying the Quality of Service (QoS) parameters
 associated to a transport connection and ensuring the QoS requirements. The CS
 currently employs an IP classifier.
  
-IP Packet Classifier ++++++++++++++++++++
+IP Packet Classifier 
+++++++++++++++++++++
  
 An IP packet classifier is used to map incoming packets to appropriate
 connections based on a set of criteria. The classifier maintains a list of

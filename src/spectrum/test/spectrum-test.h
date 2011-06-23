@@ -56,7 +56,7 @@
               || (i->fc > j->fc + (tol)) || (i->fc < j->fc - (tol))        \
               || (i->fh > j->fh + (tol)) || (i->fh < j->fh - (tol)))       \
             {                                           \
-              if (gBreakOnFailure) { *(int *)0 = 0;}     \
+              if (gBreakOnFailure) { *(int *)0 = 0; }     \
               std::ostringstream indexStream;           \
               indexStream << "[" << k << "]";           \
               std::ostringstream msgStream;     \
@@ -117,7 +117,7 @@
         {                                                                      \
           if ((*i) > (*j) + (tol) || (*i) < (*j) - (tol))                      \
             {                                           \
-              if (gBreakOnFailure) { *(int *)0 = 0;}     \
+              if (gBreakOnFailure) { *(int *)0 = 0; }     \
               std::ostringstream indexStream;           \
               indexStream << "[" << k << "]";           \
               std::ostringstream msgStream;     \

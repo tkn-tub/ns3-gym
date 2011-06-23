@@ -16,14 +16,13 @@ SOURCES = \
 	source/organization.rst \
 	source/internet-models.rst \
 	source/network.rst \
-	source/devices.rst \
-	source/routing.rst \
 	source/emulation-overview.rst \
-	source/support.rst \
+	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
 	$(SRC)/click/doc/click.rst \
 	$(SRC)/csma/doc/csma.rst \
+	$(SRC)/dsdv/doc/dsdv.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/emu/doc/emu.rst \
@@ -44,6 +43,7 @@ SOURCES = \
 	$(SRC)/internet/doc/ipv6.rst \
 	$(SRC)/internet/doc/routing-overview.rst \
 	$(SRC)/internet/doc/tcp.rst \
+	$(SRC)/olsr/doc/olsr.rst \
 	$(SRC)/openflow/doc/openflow-switch.rst \
 	$(SRC)/point-to-point/doc/point-to-point.rst \
 	$(SRC)/wifi/doc/wifi.rst \
@@ -83,7 +83,9 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase2.eps \
 	$(SRC)/lte/doc/source/figures/simulationTime.eps \
 	$(SRC)/lte/doc/source/figures/memoryUsage.eps \
-        $(SRC)/uan/doc/auvmobility-classes.dia \
+	$(SRC)/uan/doc/auvmobility-classes.dia \
+	$(SRC)/stats/doc/Stat-framework-arch.png \
+	$(SRC)/stats/doc/Wifi-default.png \
 	$(SRC)/netanim/doc/animation-dumbbell.png \
 	$(SRC)/netanim/doc/animation-dumbbell.pdf \
 

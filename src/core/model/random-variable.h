@@ -603,10 +603,10 @@ public:
  * where \f$ mean = e^{\mu+\frac{\sigma^2}{2}} \f$ and
  * \f$ variance = (e^{\sigma^2}-1)e^{2\mu+\sigma^2}\f$
  *
- * The \f$ \mu \f$ and \f$ \sigma \f$ parameters can be calculated from the mean
- * and standard deviation with the following equations:
- * \f$ \mu = ln(mean) - \frac{1}{2}ln\left(1+\frac{stddev}{mean^2}\right)\f$, and,
- * \f$ \sigma = \sqrt{ln\left(1+\frac{stddev}{mean^2}\right)}\f$
+ * The \f$ \mu \f$ and \f$ \sigma \f$ parameters can be calculated if instead
+ * the mean and variance are known with the following equations:
+ * \f$ \mu = ln(mean) - \frac{1}{2}ln\left(1+\frac{variance}{mean^2}\right)\f$, and,
+ * \f$ \sigma = \sqrt{ln\left(1+\frac{variance}{mean^2}\right)}\f$
  */
 class LogNormalVariable : public RandomVariable
 {

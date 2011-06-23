@@ -52,7 +52,7 @@ int
 main (int argc, char *argv[])
 {
   Ptr<MyObject> myObject = CreateObject<MyObject> ();
-  myObject->TraceConnectWithoutContext ("MyInteger", MakeCallback(&IntTrace));
+  myObject->TraceConnectWithoutContext ("MyInteger", MakeCallback (&IntTrace));
 
   myObject->m_myInt = 1234;
 }

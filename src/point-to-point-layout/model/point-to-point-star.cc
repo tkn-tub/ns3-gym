@@ -26,7 +26,7 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
 
-NS_LOG_COMPONENT_DEFINE("PointToPointStarHelper");
+NS_LOG_COMPONENT_DEFINE ("PointToPointStarHelper");
 
 namespace ns3 {
 

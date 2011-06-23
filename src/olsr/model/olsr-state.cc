@@ -210,7 +210,7 @@ OlsrState::EraseTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
     {
       if (*it == tuple)
         {
-          m_twoHopNeighborSet.erase(it);
+          m_twoHopNeighborSet.erase (it);
           break;
         }
     }
@@ -284,7 +284,7 @@ DuplicateTuple*
 OlsrState::FindDuplicateTuple (Ipv4Address const &addr, uint16_t sequenceNumber)
 {
   for (DuplicateSet::iterator it = m_duplicateSet.begin ();
-       it != m_duplicateSet.end(); it++)
+       it != m_duplicateSet.end (); it++)
     {
       if (it->address == addr && it->sequenceNumber == sequenceNumber)
         return &(*it);
@@ -392,7 +392,7 @@ OlsrState::FindNewerTopologyTuple (Ipv4Address const & lastAddr, uint16_t ansn)
 }
 
 void
-OlsrState::EraseTopologyTuple(const TopologyTuple &tuple)
+OlsrState::EraseTopologyTuple (const TopologyTuple &tuple)
 {
   for (TopologySet::iterator it = m_topologySet.begin ();
        it != m_topologySet.end (); it++)
@@ -408,8 +408,8 @@ OlsrState::EraseTopologyTuple(const TopologyTuple &tuple)
 void
 OlsrState::EraseOlderTopologyTuples (const Ipv4Address &lastAddr, uint16_t ansn)
 {
-  for (TopologySet::iterator it = m_topologySet.begin();
-       it != m_topologySet.end();)
+  for (TopologySet::iterator it = m_topologySet.begin ();
+       it != m_topologySet.end ();)
     {
       if (it->lastAddr == lastAddr && it->sequenceNumber < ansn)
         {
@@ -540,7 +540,7 @@ OlsrState::EraseAssociation (const Association &tuple)
 void
 OlsrState::InsertAssociation (const Association &tuple)
 {
-  m_associations.push_back(tuple);
+  m_associations.push_back (tuple);
 }
 
 } // namespace ns3

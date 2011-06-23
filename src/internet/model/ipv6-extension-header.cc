@@ -558,7 +558,7 @@ void Ipv6ExtensionLooseRoutingHeader::Serialize (Buffer::Iterator start) const
   i.WriteU8 (GetSegmentsLeft ());
   i.WriteU32 (0);
 
-  for (VectorIpv6Address_t::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end () ; it++)
+  for (VectorIpv6Address_t::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
     {
       it->Serialize (buff);
       i.Write (buff, 16);

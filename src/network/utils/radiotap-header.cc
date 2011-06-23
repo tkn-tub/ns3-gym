@@ -30,15 +30,15 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (RadiotapHeader);
  
 RadiotapHeader::RadiotapHeader()
-  : m_length(8),
-    m_present(0),
-    m_tsft(0),
-    m_flags(FRAME_FLAG_NONE),
-    m_rate(0),
-    m_channelFreq(0),
-    m_channelFlags(CHANNEL_FLAG_NONE),
-    m_antennaSignal(0),
-    m_antennaNoise(0)
+  : m_length (8),
+    m_present (0),
+    m_tsft (0),
+    m_flags (FRAME_FLAG_NONE),
+    m_rate (0),
+    m_channelFreq (0),
+    m_channelFlags (CHANNEL_FLAG_NONE),
+    m_antennaSignal (0),
+    m_antennaNoise (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -148,7 +148,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_TSFT) // bit 0
     {
-      m_tsft = start.ReadU64();
+      m_tsft = start.ReadU64 ();
       bytesRead += 8;
     }
 
@@ -157,7 +157,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_FLAGS) // bit 1
     {
-      m_flags = start.ReadU8();
+      m_flags = start.ReadU8 ();
       ++bytesRead;
     }
 
@@ -166,7 +166,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_RATE) // bit 2
     {
-      m_rate = start.ReadU8();
+      m_rate = start.ReadU8 ();
       ++bytesRead;
     }
 
@@ -175,8 +175,8 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_CHANNEL) // bit 3
     {
-      m_channelFreq = start.ReadU16();
-      m_channelFlags = start.ReadU16();
+      m_channelFreq = start.ReadU16 ();
+      m_channelFlags = start.ReadU16 ();
       bytesRead += 4;
     }
 
@@ -186,7 +186,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_FHSS) // bit 4
     {
-      start.ReadU8(); 
+      start.ReadU8 ();
       ++bytesRead;
     }
 
@@ -196,7 +196,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_DBM_ANTSIGNAL) // bit 5
     {
-      m_antennaSignal = start.ReadU8();
+      m_antennaSignal = start.ReadU8 ();
       ++bytesRead;
     }
 
@@ -206,11 +206,11 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   if (m_present & RADIOTAP_DBM_ANTNOISE) // bit 6
     {
-      m_antennaNoise = start.ReadU8();
+      m_antennaNoise = start.ReadU8 ();
       ++bytesRead;
     }
 
-  NS_ASSERT_MSG(m_length == bytesRead, "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
+  NS_ASSERT_MSG (m_length == bytesRead, "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
   return bytesRead;
 }
 
@@ -343,7 +343,7 @@ RadiotapHeader::SetAntennaSignalPower (double signal)
     }
   else
     {
-      m_antennaSignal = static_cast<int8_t> (floor(signal + 0.5));
+      m_antennaSignal = static_cast<int8_t> (floor (signal + 0.5));
     }
 
   NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);

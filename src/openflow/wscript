@@ -25,6 +25,11 @@ def configure(conf):
     if not conf.env['BOOST']:
 	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "Required boost libraries not found")
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('openflow')
+
 	return 
 
     if Options.options.with_openflow:
@@ -41,6 +46,10 @@ def configure(conf):
 	conf.check_message("OpenFlow location", '', False)
 	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
 				     "OpenFlow not enabled (see option --with-openflow)")
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('openflow')
+
 	return 
 
     test_code = '''
@@ -112,10 +121,18 @@ int main()
         conf.env.append_value('CXXDEFINES', 'NS3_OPENFLOW')
         conf.env.append_value('CPPPATH', conf.env['CPPPATH_OPENFLOW']) 
         conf.env.append_value('LIBPATH', conf.env['LIBPATH_OPENFLOW']) 
+    else:
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('openflow')
 
 
 
 def build(bld):
+    # Don't do anything for this module if openflow's not enabled.
+    if 'openflow' in bld.env['MODULES_NOT_BUILT']:
+        return
+
     # Build the Switch module
     obj = bld.create_ns3_module('openflow', ['internet'])
     obj.source = [

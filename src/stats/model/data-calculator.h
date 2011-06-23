@@ -27,7 +27,7 @@
 
 namespace ns3 {
 extern const double NaN;
-inline bool isNaN(double x) { return x != x; }
+inline bool isNaN (double x) { return x != x; }
 
 class DataOutputCallback;
 
@@ -42,44 +42,44 @@ public:
   /**
    * Returns the number of the observations.
    */
-  virtual long getCount() const = 0;
+  virtual long getCount () const = 0;
 
   /**
    * Returns the sum of the values.
    * @see getWeightedSum()
    */
-  virtual double getSum() const = 0;
+  virtual double getSum () const = 0;
 
   /**
    * Returns the sum of the squared values.
    * @see getWeightedSqrSum()
    */
-  virtual double getSqrSum() const = 0;
+  virtual double getSqrSum () const = 0;
 
   /**
    * Returns the minimum of the values.
    */
-  virtual double getMin() const = 0;
+  virtual double getMin () const = 0;
 
   /**
    * Returns the maximum of the values.
    */
-  virtual double getMax() const = 0;
+  virtual double getMax () const = 0;
 
   /**
    * Returns the mean of the (weighted) observations.
    */
-  virtual double getMean() const = 0;
+  virtual double getMean () const = 0;
 
   /**
    * Returns the standard deviation of the (weighted) observations.
    */
-  virtual double getStddev() const = 0;
+  virtual double getStddev () const = 0;
 
   /**
    * Returns the variance of the (weighted) observations.
    */
-  virtual double getVariance() const = 0;
+  virtual double getVariance () const = 0;
 };
 
 //------------------------------------------------------------
@@ -89,20 +89,20 @@ public:
   DataCalculator();
   virtual ~DataCalculator();
 
-  bool GetEnabled() const;
-  void Enable();
-  void Disable();
+  bool GetEnabled () const;
+  void Enable ();
+  void Disable ();
 
-  void SetKey(const std::string key);
-  std::string GetKey() const;
+  void SetKey (const std::string key);
+  std::string GetKey () const;
 
-  void SetContext(const std::string context);
-  std::string GetContext() const;
+  void SetContext (const std::string context);
+  std::string GetContext () const;
 
-  virtual void Start(const Time& startTime);
-  virtual void Stop(const Time& stopTime);
+  virtual void Start (const Time& startTime);
+  virtual void Stop (const Time& stopTime);
 
-  virtual void Output(DataOutputCallback &callback) const = 0;
+  virtual void Output (DataOutputCallback &callback) const = 0;
 
 protected:
   bool m_enabled;    // Descendant classes *must* check & respect m_enabled!
@@ -110,7 +110,7 @@ protected:
   std::string m_key;
   std::string m_context;
 
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
 private:
   EventId m_startEvent;

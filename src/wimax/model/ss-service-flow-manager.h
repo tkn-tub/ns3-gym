@@ -36,6 +36,9 @@ class WimaxNetDevice;
 class WimaxConnection;
 class SubscriberStationNetDevice;
 
+/**
+ * \ingroup wimax
+ */
 class SsServiceFlowManager : public ServiceFlowManager
 {
 public:

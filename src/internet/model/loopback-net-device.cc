@@ -79,13 +79,13 @@ LoopbackNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
 }
 
 void 
-LoopbackNetDevice::SetIfIndex(const uint32_t index)
+LoopbackNetDevice::SetIfIndex (const uint32_t index)
 {
   m_ifIndex = index;
 }
 
 uint32_t 
-LoopbackNetDevice::GetIfIndex(void) const
+LoopbackNetDevice::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
@@ -186,7 +186,7 @@ LoopbackNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t proto
 }
 
 bool 
-LoopbackNetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+LoopbackNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << " " << source << " " << dest << " " << protocolNumber);
   Mac48Address to = Mac48Address::ConvertFrom (dest);

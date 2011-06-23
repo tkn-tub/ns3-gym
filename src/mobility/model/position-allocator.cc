@@ -72,7 +72,7 @@ ListPositionAllocator::GetNext (void) const
 {
   Vector v = *m_current;
   m_current++;
-  if (m_current == m_positions.end())
+  if (m_current == m_positions.end ())
     {
       m_current = m_positions.begin ();
     }
@@ -445,7 +445,7 @@ UniformDiscPositionAllocator::GetNext (void) const
       x = r.GetValue ();
       y = r.GetValue ();
     }
-  while (sqrt(x*x + y*y) > m_rho);
+  while (sqrt (x*x + y*y) > m_rho);
 
   x += m_x;
   y += m_y;

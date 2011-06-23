@@ -44,6 +44,9 @@ class BSLinkManager;
 class UplinkScheduler;
 class BsServiceFlowManager;
 
+/**
+ * \ingroup wimax
+ */
 class BaseStationNetDevice : public WimaxNetDevice
 {
 public:

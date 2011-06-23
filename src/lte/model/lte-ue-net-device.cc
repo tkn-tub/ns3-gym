@@ -53,7 +53,7 @@ uint64_t LteUeNetDevice::m_imsiCounter = 0;
 TypeId LteUeNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::LteUeNetDevice")
     .SetParent<LteNetDevice> ()
     .AddAttribute ("LteUeRrc",

@@ -54,8 +54,8 @@ main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  LogComponentEnable("GlobalRoutingHelper", LOG_LOGIC);
-  LogComponentEnable("GlobalRouter", LOG_LOGIC);
+  LogComponentEnable ("GlobalRoutingHelper", LOG_LOGIC);
+  LogComponentEnable ("GlobalRouter", LOG_LOGIC);
 #endif
 
 

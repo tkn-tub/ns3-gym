@@ -81,11 +81,11 @@ public:
   /**
    * \param index ifIndex of the device 
    */
-  virtual void SetIfIndex(const uint32_t index) = 0;
+  virtual void SetIfIndex (const uint32_t index) = 0;
   /**
    * \return index ifIndex of the device 
    */
-  virtual uint32_t GetIfIndex(void) const = 0;
+  virtual uint32_t GetIfIndex (void) const = 0;
 
 
   /**
@@ -219,7 +219,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) = 0;
+  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) = 0;
   /**
    * \param packet packet sent from above down to Network Device
    * \param source source mac address (so called "MAC spoofing")
@@ -233,7 +233,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) = 0;
   /**
    * \returns the node base class which contains this network
    *          interface.

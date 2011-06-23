@@ -317,9 +317,9 @@ public:
    */
   bool RemoveUnDestination (std::pair<Ipv4Address, uint32_t> & un);
   /// Clear header
-  void Clear();
+  void Clear ();
   /// Return number of unreachable destinations in RERR message
-  uint8_t GetDestCount () const { return (uint8_t)m_unreachableDstSeqNo.size(); }
+  uint8_t GetDestCount () const { return (uint8_t)m_unreachableDstSeqNo.size (); }
   bool operator== (RerrHeader const & o) const;
 private:
   uint8_t m_flag;            ///< No delete flag

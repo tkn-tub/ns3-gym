@@ -67,15 +67,15 @@ Node::GetTypeId (void)
 }
 
 Node::Node()
-  : m_id(0), 
-    m_sid(0)
+  : m_id (0),
+    m_sid (0)
 {
   Construct ();
 }
 
 Node::Node(uint32_t sid)
-  : m_id(0), 
-    m_sid(sid)
+  : m_id (0),
+    m_sid (sid)
 { 
   Construct ();
 }
@@ -108,7 +108,7 @@ Node::AddDevice (Ptr<NetDevice> device)
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
   device->SetNode (this);
-  device->SetIfIndex(index);
+  device->SetIfIndex (index);
   device->SetReceiveCallback (MakeCallback (&Node::NonPromiscReceiveFromDevice, this));
   Simulator::ScheduleWithContext (GetId (), Seconds (0.0), 
                                   &NetDevice::Start, device);
@@ -152,7 +152,7 @@ Node::GetNApplications (void) const
 }
 
 void 
-Node::DoDispose()
+Node::DoDispose ()
 {
   m_handlers.clear ();
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
@@ -255,7 +255,7 @@ bool
 Node::PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                 const Address &from, const Address &to, NetDevice::PacketType packetType)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   return ReceiveFromDevice (device, packet, protocol, from, to, packetType, true);
 }
 
@@ -263,8 +263,8 @@ bool
 Node::NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                    const Address &from)
 {
-  NS_LOG_FUNCTION(this);
-  return ReceiveFromDevice (device, packet, protocol, from, device->GetAddress(), NetDevice::PacketType (0), false);
+  NS_LOG_FUNCTION (this);
+  return ReceiveFromDevice (device, packet, protocol, from, device->GetAddress (), NetDevice::PacketType (0), false);
 }
 
 bool
@@ -274,9 +274,9 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16
   NS_ASSERT_MSG (Simulator::GetContext () == GetId (), "Received packet with erroneous context ; " <<
                  "make sure the channels in use are correctly updating events context " <<
                  "when transfering events from one node to another.");
-  NS_LOG_DEBUG("Node " << GetId () << " ReceiveFromDevice:  dev "
-                       << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
-                       << ") Packet UID " << packet->GetUid ());
+  NS_LOG_DEBUG ("Node " << GetId () << " ReceiveFromDevice:  dev "
+                        << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
+                        << ") Packet UID " << packet->GetUid ());
   bool found = false;
 
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();

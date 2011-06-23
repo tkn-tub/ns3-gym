@@ -118,18 +118,18 @@ Ns3TcpSocketTestCase1::DoRun (void)
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
                    MakeCallback (&Ns3TcpSocketTestCase1::SinkRx, this));
 
-  Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
+  Simulator::Schedule (Seconds (2), &SocketWriter::Connect, socketWriter);
   // Send 1, 10, 100, 1000 bytes
-  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 1);
+  Simulator::Schedule (Seconds (10), &SocketWriter::Write, socketWriter, 1);
   m_inputs.Add (1);
-  Simulator::Schedule(Seconds (12), &SocketWriter::Write, socketWriter, 10);
+  Simulator::Schedule (Seconds (12), &SocketWriter::Write, socketWriter, 10);
   m_inputs.Add (10);
-  Simulator::Schedule(Seconds (14), &SocketWriter::Write, socketWriter, 100);
+  Simulator::Schedule (Seconds (14), &SocketWriter::Write, socketWriter, 100);
   m_inputs.Add (100);
-  Simulator::Schedule(Seconds (16), &SocketWriter::Write, socketWriter, 1000);
+  Simulator::Schedule (Seconds (16), &SocketWriter::Write, socketWriter, 1000);
   m_inputs.Add (536);
   m_inputs.Add (464);  // ns-3 TCP default segment size of 536
-  Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
+  Simulator::Schedule (writerStopTimeObj, &SocketWriter::Close, socketWriter);
 
   if (m_writeResults)
     {
@@ -227,22 +227,22 @@ Ns3TcpSocketTestCase2::DoRun (void)
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
                    MakeCallback (&Ns3TcpSocketTestCase2::SinkRx, this));
 
-  Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
+  Simulator::Schedule (Seconds (2), &SocketWriter::Connect, socketWriter);
   // Send 1, 10, 100, 1000 bytes
   // PointToPoint default MTU is 576 bytes, which leaves 536 bytes for TCP
-  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 1);
+  Simulator::Schedule (Seconds (10), &SocketWriter::Write, socketWriter, 1);
   m_inputs.Add (1);
-  Simulator::Schedule(Seconds (12), &SocketWriter::Write, socketWriter, 10);
+  Simulator::Schedule (Seconds (12), &SocketWriter::Write, socketWriter, 10);
   m_inputs.Add (10);
-  Simulator::Schedule(Seconds (14), &SocketWriter::Write, socketWriter, 100);
+  Simulator::Schedule (Seconds (14), &SocketWriter::Write, socketWriter, 100);
   m_inputs.Add (100);
-  Simulator::Schedule(Seconds (16), &SocketWriter::Write, socketWriter, 1000);
+  Simulator::Schedule (Seconds (16), &SocketWriter::Write, socketWriter, 1000);
   m_inputs.Add (1000);
   // Next packet will fragment
-  Simulator::Schedule(Seconds (16), &SocketWriter::Write, socketWriter, 1001);
+  Simulator::Schedule (Seconds (16), &SocketWriter::Write, socketWriter, 1001);
   m_inputs.Add (1000);
   m_inputs.Add (1);
-  Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
+  Simulator::Schedule (writerStopTimeObj, &SocketWriter::Close, socketWriter);
 
   if (m_writeResults)
     {

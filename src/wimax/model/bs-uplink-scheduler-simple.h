@@ -34,6 +34,9 @@ class BaseStationNetDevice;
 class SSRecord;
 class ServiceFlow;
 
+/**
+ * \ingroup wimax
+ */
 class UplinkSchedulerSimple : public UplinkScheduler
 {
 public:

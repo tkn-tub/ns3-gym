@@ -255,7 +255,7 @@ Ipv6EndPoint* Ipv6EndPointDemux::SimpleLookup (Ipv6Address dst, uint16_t dport, 
   uint32_t genericity = 3;
   Ipv6EndPoint *generic = 0;
 
-  for (EndPointsI i = m_endPoints.begin () ; i != m_endPoints.end () ; i++)
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       uint32_t tmp = 0;
 

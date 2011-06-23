@@ -54,11 +54,11 @@ NS_LOG_COMPONENT_DEFINE ("WiFiDistanceExperiment");
 
 
 
-void TxCallback(Ptr<CounterCalculator<uint32_t> > datac,
-                std::string path, Ptr<const Packet> packet) {
-  NS_LOG_INFO("Sent frame counted in " <<
-              datac->GetKey());
-  datac->Update();
+void TxCallback (Ptr<CounterCalculator<uint32_t> > datac,
+                 std::string path, Ptr<const Packet> packet) {
+  NS_LOG_INFO ("Sent frame counted in " <<
+               datac->GetKey ());
+  datac->Update ();
   // end TxCallback
 }
 
@@ -68,52 +68,52 @@ void TxCallback(Ptr<CounterCalculator<uint32_t> > datac,
 //----------------------------------------------------------------------
 //-- main
 //----------------------------------------------
-int main(int argc, char *argv[]) {
+int main (int argc, char *argv[]) {
 
   double distance = 50.0;
-  string format("omnet");
+  string format ("omnet");
 
-  string experiment("wifi-distance-test");
-  string strategy("wifi-default");
+  string experiment ("wifi-distance-test");
+  string strategy ("wifi-default");
   string input;
   string runID;
 
   {
     stringstream sstr;
-    sstr << "run-" << time(NULL);
-    runID = sstr.str();
+    sstr << "run-" << time (NULL);
+    runID = sstr.str ();
   }
 
   // Set up command line parameters used to control the experiment.
   CommandLine cmd;
-  cmd.AddValue("distance", "Distance apart to place nodes (in meters).",
-               distance);
-  cmd.AddValue("format", "Format to use for data output.",
-               format);
-  cmd.AddValue("experiment", "Identifier for experiment.",
-               experiment);
-  cmd.AddValue("strategy", "Identifier for strategy.",
-               strategy);
-  cmd.AddValue("run", "Identifier for run.",
-               runID);
+  cmd.AddValue ("distance", "Distance apart to place nodes (in meters).",
+                distance);
+  cmd.AddValue ("format", "Format to use for data output.",
+                format);
+  cmd.AddValue ("experiment", "Identifier for experiment.",
+                experiment);
+  cmd.AddValue ("strategy", "Identifier for strategy.",
+                strategy);
+  cmd.AddValue ("run", "Identifier for run.",
+                runID);
   cmd.Parse (argc, argv);
 
   if (format != "omnet" && format != "db") {
-      NS_LOG_ERROR("Unknown output format '" << format << "'");
+      NS_LOG_ERROR ("Unknown output format '" << format << "'");
       return -1;
     }
 
   #ifndef STATS_HAS_SQLITE3
   if (format == "db") {
-      NS_LOG_ERROR("sqlite support not compiled in.");
+      NS_LOG_ERROR ("sqlite support not compiled in.");
       return -1;
     }
   #endif
 
   {
-    stringstream sstr("");
+    stringstream sstr ("");
     sstr << distance;
-    input = sstr.str();
+    input = sstr.str ();
   }
 
 
@@ -122,24 +122,24 @@ int main(int argc, char *argv[]) {
   //------------------------------------------------------------
   //-- Create nodes and network stacks
   //--------------------------------------------
-  NS_LOG_INFO("Creating nodes.");
+  NS_LOG_INFO ("Creating nodes.");
   NodeContainer nodes;
-  nodes.Create(2);
+  nodes.Create (2);
 
-  NS_LOG_INFO("Installing WiFi and Internet stack.");
+  NS_LOG_INFO ("Installing WiFi and Internet stack.");
   WifiHelper wifi = WifiHelper::Default ();
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
-  NetDeviceContainer nodeDevices = wifi.Install(wifiPhy, wifiMac, nodes);
+  NetDeviceContainer nodeDevices = wifi.Install (wifiPhy, wifiMac, nodes);
 
   InternetStackHelper internet;
-  internet.Install(nodes);
+  internet.Install (nodes);
   Ipv4AddressHelper ipAddrs;
-  ipAddrs.SetBase("192.168.0.0", "255.255.255.0");
-  ipAddrs.Assign(nodeDevices);
+  ipAddrs.SetBase ("192.168.0.0", "255.255.255.0");
+  ipAddrs.Assign (nodeDevices);
 
 
 
@@ -147,14 +147,14 @@ int main(int argc, char *argv[]) {
   //------------------------------------------------------------
   //-- Setup physical layout
   //--------------------------------------------
-  NS_LOG_INFO("Installing static mobility; distance " << distance << " .");
+  NS_LOG_INFO ("Installing static mobility; distance " << distance << " .");
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc =
     CreateObject<ListPositionAllocator>();
-  positionAlloc->Add(Vector(0.0, 0.0, 0.0));
-  positionAlloc->Add(Vector(0.0, distance, 0.0));
-  mobility.SetPositionAllocator(positionAlloc);
-  mobility.Install(nodes);
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (0.0, distance, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (nodes);
 
 
 
@@ -163,15 +163,15 @@ int main(int argc, char *argv[]) {
   //-- Create a custom traffic source and sink
   //--------------------------------------------
   NS_LOG_INFO ("Create traffic source & sink.");
-  Ptr<Node> appSource = NodeList::GetNode(0);
+  Ptr<Node> appSource = NodeList::GetNode (0);
   Ptr<Sender> sender = CreateObject<Sender>();
-  appSource->AddApplication(sender);
-  sender->SetStartTime(Seconds(1));
+  appSource->AddApplication (sender);
+  sender->SetStartTime (Seconds (1));
 
-  Ptr<Node> appSink = NodeList::GetNode(1);
+  Ptr<Node> appSink = NodeList::GetNode (1);
   Ptr<Receiver> receiver = CreateObject<Receiver>();
-  appSink->AddApplication(receiver);
-  receiver->SetStartTime(Seconds(0));
+  appSink->AddApplication (receiver);
+  receiver->SetStartTime (Seconds (0));
 
   //  Config::Set("/NodeList/*/ApplicationList/*/$Sender/Destination",
   //              Ipv4AddressValue("192.168.0.2"));
@@ -185,13 +185,13 @@ int main(int argc, char *argv[]) {
 
   // Create a DataCollector object to hold information about this run.
   DataCollector data;
-  data.DescribeRun(experiment,
-                   strategy,
-                   input,
-                   runID);
+  data.DescribeRun (experiment,
+                    strategy,
+                    input,
+                    runID);
 
   // Add any information we wish to record about this run.
-  data.AddMetadata("author", "tjkopena");
+  data.AddMetadata ("author", "tjkopena");
 
 
   // Create a counter to track how many frames are generated.  Updates
@@ -200,11 +200,11 @@ int main(int argc, char *argv[]) {
   // TxCallback() glue function defined above.
   Ptr<CounterCalculator<uint32_t> > totalTx =
     CreateObject<CounterCalculator<uint32_t> >();
-  totalTx->SetKey("wifi-tx-frames");
-  totalTx->SetContext("node[0]");
-  Config::Connect("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
-                  MakeBoundCallback(&TxCallback, totalTx));
-  data.AddDataCalculator(totalTx);
+  totalTx->SetKey ("wifi-tx-frames");
+  totalTx->SetContext ("node[0]");
+  Config::Connect ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
+                   MakeBoundCallback (&TxCallback, totalTx));
+  data.AddDataCalculator (totalTx);
 
   // This is similar, but creates a counter to track how many frames
   // are received.  Instead of our own glue function, this uses a
@@ -212,12 +212,12 @@ int main(int argc, char *argv[]) {
   // trace signal generated by the WiFi MAC.
   Ptr<PacketCounterCalculator> totalRx =
     CreateObject<PacketCounterCalculator>();
-  totalRx->SetKey("wifi-rx-frames");
-  totalRx->SetContext("node[1]");
-  Config::Connect("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
-                  MakeCallback(&PacketCounterCalculator::PacketUpdate,
-                               totalRx));
-  data.AddDataCalculator(totalRx);
+  totalRx->SetKey ("wifi-rx-frames");
+  totalRx->SetContext ("node[1]");
+  Config::Connect ("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
+                   MakeCallback (&PacketCounterCalculator::PacketUpdate,
+                                 totalRx));
+  data.AddDataCalculator (totalRx);
 
 
 
@@ -227,12 +227,12 @@ int main(int argc, char *argv[]) {
   // by our Sender class.
   Ptr<PacketCounterCalculator> appTx =
     CreateObject<PacketCounterCalculator>();
-  appTx->SetKey("sender-tx-packets");
-  appTx->SetContext("node[0]");
-  Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
-                  MakeCallback(&PacketCounterCalculator::PacketUpdate,
-                               appTx));
-  data.AddDataCalculator(appTx);
+  appTx->SetKey ("sender-tx-packets");
+  appTx->SetContext ("node[0]");
+  Config::Connect ("/NodeList/0/ApplicationList/*/$Sender/Tx",
+                   MakeCallback (&PacketCounterCalculator::PacketUpdate,
+                                 appTx));
+  data.AddDataCalculator (appTx);
 
   // Here a counter for received packets is directly manipulated by
   // one of the custom objects in our simulation, the Receiver
@@ -240,10 +240,10 @@ int main(int argc, char *argv[]) {
   // counter and calls its Update() method whenever a packet arrives.
   Ptr<CounterCalculator<> > appRx =
     CreateObject<CounterCalculator<> >();
-  appRx->SetKey("receiver-rx-packets");
-  appRx->SetContext("node[1]");
-  receiver->SetCounter(appRx);
-  data.AddDataCalculator(appRx);
+  appRx->SetKey ("receiver-rx-packets");
+  appRx->SetContext ("node[1]");
+  receiver->SetCounter (appRx);
+  data.AddDataCalculator (appRx);
 
 
 
@@ -267,13 +267,13 @@ int main(int argc, char *argv[]) {
   // avg, total # bytes), although in this scenaro they're fixed.
   Ptr<PacketSizeMinMaxAvgTotalCalculator> appTxPkts =
     CreateObject<PacketSizeMinMaxAvgTotalCalculator>();
-  appTxPkts->SetKey("tx-pkt-size");
-  appTxPkts->SetContext("node[0]");
-  Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
-                  MakeCallback
-                          (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
-                          appTxPkts));
-  data.AddDataCalculator(appTxPkts);
+  appTxPkts->SetKey ("tx-pkt-size");
+  appTxPkts->SetContext ("node[0]");
+  Config::Connect ("/NodeList/0/ApplicationList/*/$Sender/Tx",
+                   MakeCallback
+                     (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
+                     appTxPkts));
+  data.AddDataCalculator (appTxPkts);
 
 
   // Here we directly manipulate another DataCollector tracking min,
@@ -282,10 +282,10 @@ int main(int argc, char *argv[]) {
   // timestamps to do this.
   Ptr<TimeMinMaxAvgTotalCalculator> delayStat =
     CreateObject<TimeMinMaxAvgTotalCalculator>();
-  delayStat->SetKey("delay");
-  delayStat->SetContext(".");
-  receiver->SetDelayTracker(delayStat);
-  data.AddDataCalculator(delayStat);
+  delayStat->SetKey ("delay");
+  delayStat->SetContext (".");
+  receiver->SetDelayTracker (delayStat);
+  data.AddDataCalculator (delayStat);
 
 
 
@@ -293,9 +293,8 @@ int main(int argc, char *argv[]) {
   //------------------------------------------------------------
   //-- Run the simulation
   //--------------------------------------------
-  NS_LOG_INFO("Run Simulation.");
-  Simulator::Run();
-  Simulator::Destroy();
+  NS_LOG_INFO ("Run Simulation.");
+  Simulator::Run ();
 
 
 
@@ -307,21 +306,24 @@ int main(int argc, char *argv[]) {
   // Pick an output writer based in the requested format.
   Ptr<DataOutputInterface> output = 0;
   if (format == "omnet") {
-      NS_LOG_INFO("Creating omnet formatted data output.");
+      NS_LOG_INFO ("Creating omnet formatted data output.");
       output = CreateObject<OmnetDataOutput>();
     } else if (format == "db") {
     #ifdef STATS_HAS_SQLITE3
-      NS_LOG_INFO("Creating sqlite formatted data output.");
+      NS_LOG_INFO ("Creating sqlite formatted data output.");
       output = CreateObject<SqliteDataOutput>();
     #endif
     } else {
-      NS_LOG_ERROR("Unknown output format " << format);
+      NS_LOG_ERROR ("Unknown output format " << format);
     }
 
   // Finally, have that writer interrogate the DataCollector and save
   // the results.
   if (output != 0)
-    output->Output(data);
+    output->Output (data);
+
+  // Free any memory here at the end of this example.
+  Simulator::Destroy ();
 
   // end main
 }

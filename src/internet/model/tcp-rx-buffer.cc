@@ -48,7 +48,7 @@ TcpRxBuffer::GetTypeId (void)
  * initialized below is insignificant.
  */
 TcpRxBuffer::TcpRxBuffer (uint32_t n)
-  : m_nextRxSeq(n), m_gotFin(false), m_size(0), m_maxBuffer(32768), m_availBytes(0)
+  : m_nextRxSeq (n), m_gotFin (false), m_size (0), m_maxBuffer (32768), m_availBytes (0)
 {
 }
 
@@ -112,7 +112,7 @@ TcpRxBuffer::MaxRxSequence (void) const
     }
   else if (m_data.size ())
     { // No data allowed beyond Rx window allowed
-      return m_data.begin()->first + SequenceNumber32 (m_maxBuffer);
+      return m_data.begin ()->first + SequenceNumber32 (m_maxBuffer);
     }
   return m_nextRxSeq + SequenceNumber32 (m_maxBuffer);
 }
@@ -161,7 +161,7 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
         {
           if (i->first > headSeq && lastByteSeq < tailSeq)
             { // Rare case: Existing packet is embedded fully in the new packet
-              m_size -= i->second->GetSize();
+              m_size -= i->second->GetSize ();
               m_data.erase (i++);
               continue;
             }
@@ -256,7 +256,7 @@ TcpRxBuffer::Extract (uint32_t maxSize)
       NS_LOG_LOGIC ("Nothing extracted.");
       return 0;
     }
-  NS_LOG_LOGIC ("Extracted " << outPkt->GetSize( ) << " bytes, bufsize=" << m_size
+  NS_LOG_LOGIC ("Extracted " << outPkt->GetSize ( ) << " bytes, bufsize=" << m_size
                              << ", num pkts in buffer=" << m_data.size ());
   return outPkt;
 }

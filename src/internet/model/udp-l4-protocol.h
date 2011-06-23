@@ -89,9 +89,9 @@ public:
    * \param interface the interface from which the packet is coming.
    */
   // inherited from Ipv4L4Protocol
-  virtual enum Ipv4L4Protocol::RxStatus Receive(Ptr<Packet> p, 
-                                                Ipv4Header const &header,
-                                                Ptr<Ipv4Interface> interface);
+  virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                                 Ipv4Header const &header,
+                                                 Ptr<Ipv4Interface> interface);
 
   /**
    * \brief Receive an ICMP packet
