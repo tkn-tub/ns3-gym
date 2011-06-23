@@ -99,7 +99,6 @@ public:
 
 
 private:
-
   std::string m_dlOutputFilename;
   bool m_dlFirstWrite;
 

@@ -41,15 +41,14 @@ class LteNetDevice;
 class IdealControlMessage : public SimpleRefCount<IdealControlMessage>
 {
 public:
-
   /**
    * The type of the message
    */
   enum MessageType
   {
     CQI_FEEDBACKS, ALLOCATION_MAP,
-    DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator 
-    DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator 
+    DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator
+    DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator
     BSR // Buffer Status Report
   };
 
@@ -132,12 +131,11 @@ class LteNetDevice;
 class PdcchMapIdealControlMessage : public IdealControlMessage
 {
 public:
-
   PdcchMapIdealControlMessage (void);
   virtual ~PdcchMapIdealControlMessage (void);
 
   /**
-   * Direction for which the message is created 
+   * Direction for which the message is created
    */
   enum Direction
   {
@@ -151,7 +149,7 @@ public:
   {
     /** the direction */
     Direction m_direction;
-    /** the sub channel */ 
+    /** the sub channel */
     int m_idSubChannel;
     /** the ue that receive the mapping */
     Ptr<LteNetDevice> m_ue;
@@ -213,7 +211,6 @@ class LteNetDevice;
 class CqiIdealControlMessage : public IdealControlMessage
 {
 public:
-
   CqiIdealControlMessage (void);
   virtual ~CqiIdealControlMessage (void);
 
@@ -223,7 +220,7 @@ public:
   struct CqiFeedback
   {
     /** the sub channel */
-    int m_idSubChannel; 
+    int m_idSubChannel;
     /** the cqi feedback */
     double m_cqi;
   };
@@ -307,33 +304,33 @@ private:
 #include <ns3/ff-mac-common.h>
 
 namespace ns3 {
-  
+
+/**
+* The Uplink Data Control Indicator messages defines the RB allocation for the
+* users
+*/
+class UlDciIdealControlMessage : public IdealControlMessage
+{
+public:
+  UlDciIdealControlMessage (void);
+  virtual ~UlDciIdealControlMessage (void);
+
   /**
-  * The Uplink Data Control Indicator messages defines the RB allocation for the
-  * users
+  * \brief add a DCI into the message
+  * \param dci the dci
   */
-  class UlDciIdealControlMessage : public IdealControlMessage
-  {
-    public:
-      UlDciIdealControlMessage (void);
-      virtual ~UlDciIdealControlMessage (void);
-      
-      /**
-      * \brief add a DCI into the message
-      * \param dci the dci
-      */
-      void SetDci (UlDciListElement_s dci);
-      
-      /**
-      * \brief Get dic informations
-      * \return dci messages
-      */
-      UlDciListElement_s GetDci (void);
-      
-      
-    private:
-      UlDciListElement_s m_dci;
-  };
+  void SetDci (UlDciListElement_s dci);
+
+  /**
+  * \brief Get dic informations
+  * \return dci messages
+  */
+  UlDciListElement_s GetDci (void);
+
+
+private:
+  UlDciListElement_s m_dci;
+};
 } // namespace ns3
 
 #endif /* UL_DCI_IDEAL_CONTROL_MESSAGES_H */

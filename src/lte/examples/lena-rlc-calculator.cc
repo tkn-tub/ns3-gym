@@ -37,7 +37,7 @@ int main (int argc, char *argv[])
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
-  
+
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
@@ -79,9 +79,9 @@ int main (int argc, char *argv[])
   lena->EnableRlcTraces ();
 
 
-  double distance_temp [] = {10000,10000,10000}; //{10000, 10000, 10000};
+  double distance_temp [] = { 10000,10000,10000}; //{10000, 10000, 10000};
   std::vector<double> userDistance;
-  userDistance.assign(distance_temp, distance_temp+3);
+  userDistance.assign (distance_temp, distance_temp + 3);
   for (int i = 0; i < 3; i++)
     {
       Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();

@@ -41,16 +41,16 @@ public:
 
 class LteDownlinkSinrTestCase : public TestCase
 {
-  public:
-    LteDownlinkSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-    virtual ~LteDownlinkSinrTestCase ();
+public:
+  LteDownlinkSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
+  virtual ~LteDownlinkSinrTestCase ();
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 
-    Ptr<SpectrumValue> m_sv;
-    Ptr<const SpectrumModel> m_sm;
-    Ptr<SpectrumValue> m_sinr;
+  Ptr<SpectrumValue> m_sv;
+  Ptr<const SpectrumModel> m_sm;
+  Ptr<SpectrumValue> m_sinr;
 };
 
 

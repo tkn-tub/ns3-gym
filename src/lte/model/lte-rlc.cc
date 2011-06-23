@@ -99,7 +99,7 @@ TypeId LteRlc::GetTypeId (void)
     .AddTraceSource ("RxPDU",
                      "PDU received.",
                      MakeTraceSourceAccessor (&LteRlc::m_rxPdu))
-    ;
+  ;
   return tid;
 }
 
@@ -163,7 +163,7 @@ LteRlcSm::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()
     .AddConstructor<LteRlcSm> ()
-    ;
+  ;
   return tid;
 }
 
@@ -173,12 +173,12 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
   // RLC Performance evaluation
   RlcTag rlcTag;
   Time delay;
-  if (p->FindFirstMatchingByteTag(rlcTag))
+  if (p->FindFirstMatchingByteTag (rlcTag))
     {
-      delay = Simulator::Now() - rlcTag.getSenderTimestamp ();
+      delay = Simulator::Now () - rlcTag.getSenderTimestamp ();
     }
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << delay.GetNanoSeconds ());
-  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
+  m_rxPdu (m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
 }
 
 void
@@ -190,10 +190,10 @@ LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
   params.lcid = m_lcid;
 
   // RLC Performance evaluation
-  RlcTag tag (Simulator::Now());
+  RlcTag tag (Simulator::Now ());
   params.pdu->AddByteTag (tag);
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
-  m_txPdu(m_rnti, m_lcid, bytes);
+  m_txPdu (m_rnti, m_lcid, bytes);
 
   m_macSapProvider->TransmitPdu (params);
 }

@@ -29,17 +29,17 @@ NS_LOG_COMPONENT_DEFINE ("MacStatsCalculator");
 
 NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator);
 
-MacStatsCalculator::MacStatsCalculator() :
-    m_dlOutputFilename (""),
-    m_dlFirstWrite(true),
+MacStatsCalculator::MacStatsCalculator ()
+  : m_dlOutputFilename (""),
+    m_dlFirstWrite (true),
     m_ulOutputFilename (""),
-    m_ulFirstWrite(true)
+    m_ulFirstWrite (true)
 {
   NS_LOG_FUNCTION (this);
 
 }
 
-MacStatsCalculator::~MacStatsCalculator()
+MacStatsCalculator::~MacStatsCalculator ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -60,7 +60,7 @@ MacStatsCalculator::GetTypeId (void)
                    StringValue ("UlMacStats.csv"),
                    MakeStringAccessor (&MacStatsCalculator::SetUlOutputFilename),
                    MakeStringChecker ())
-    ;
+  ;
   return tid;
 }
 
@@ -87,11 +87,11 @@ MacStatsCalculator::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
   if ( m_dlFirstWrite == true )
     {
       outFile.open (m_dlOutputFilename.c_str ());
-      if (! outFile.is_open ())
-      {
-        NS_LOG_ERROR ("Can't open file " << m_dlOutputFilename.c_str ());
-        return;
-      }
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << m_dlOutputFilename.c_str ());
+          return;
+        }
       m_dlFirstWrite = false;
       outFile << "# time\tframe\tsframe\tRNTI\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2";
       outFile << std::endl;
@@ -99,22 +99,22 @@ MacStatsCalculator::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
   else
     {
       outFile.open (m_dlOutputFilename.c_str (),  std::ios_base::app);
-      if (! outFile.is_open ())
-      {
-        NS_LOG_ERROR ("Can't open file " << m_dlOutputFilename.c_str ());
-        return;
-      }
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << m_dlOutputFilename.c_str ());
+          return;
+        }
     }
 
-    outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
-    outFile << frameNo << "\t";
-    outFile << subframeNo << "\t";
-    outFile << rnti<< "\t";
-    outFile << (uint32_t) mcsTb1 << "\t";
-    outFile << sizeTb1 << "\t";
-    outFile << (uint32_t) mcsTb2 << "\t";
-    outFile << sizeTb2 << std::endl;
-    outFile.close ();
+  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << frameNo << "\t";
+  outFile << subframeNo << "\t";
+  outFile << rnti << "\t";
+  outFile << (uint32_t) mcsTb1 << "\t";
+  outFile << sizeTb1 << "\t";
+  outFile << (uint32_t) mcsTb2 << "\t";
+  outFile << sizeTb2 << std::endl;
+  outFile.close ();
 }
 
 void
@@ -128,11 +128,11 @@ MacStatsCalculator::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
   if ( m_ulFirstWrite == true )
     {
       outFile.open (m_ulOutputFilename.c_str ());
-      if (! outFile.is_open ())
-      {
-        NS_LOG_ERROR ("Can't open file " << m_ulOutputFilename.c_str ());
-        return;
-      }
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << m_ulOutputFilename.c_str ());
+          return;
+        }
       m_ulFirstWrite = false;
       outFile << "# time\tframe\tsframe\tRNTI\tmcs\tsize";
       outFile << std::endl;
@@ -140,20 +140,20 @@ MacStatsCalculator::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
   else
     {
       outFile.open (m_ulOutputFilename.c_str (),  std::ios_base::app);
-      if (! outFile.is_open ())
-      {
-        NS_LOG_ERROR ("Can't open file " << m_ulOutputFilename.c_str ());
-        return;
-      }
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << m_ulOutputFilename.c_str ());
+          return;
+        }
     }
 
-    outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
-    outFile << frameNo << "\t";
-    outFile << subframeNo << "\t";
-    outFile << rnti<< "\t";
-    outFile << (uint32_t) mcs << "\t";
-    outFile << size << std::endl;
-    outFile.close ();
+  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << frameNo << "\t";
+  outFile << subframeNo << "\t";
+  outFile << rnti << "\t";
+  outFile << (uint32_t) mcs << "\t";
+  outFile << size << std::endl;
+  outFile.close ();
 }
 
 

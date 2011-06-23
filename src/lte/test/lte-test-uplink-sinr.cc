@@ -194,7 +194,7 @@ LteUplinkSinrTestCase::DoRun (void)
   // Phy tags
   LtePhyTag pktTag[numOfPbs];
 
-  
+
   /**
    * Build packet burst (Data and interference)
    */
@@ -234,7 +234,7 @@ LteUplinkSinrTestCase::DoRun (void)
             {
               // Create phy tag (different for each packet burst)
               // and add to the first packet
-              pktTag[pb] = LtePhyTag (100 * (pb+1));
+              pktTag[pb] = LtePhyTag (100 * (pb + 1));
               pkt[pb][i]->AddPacketTag ( pktTag[pb] );
             }
 
@@ -279,13 +279,13 @@ LteUplinkSinrTestCase::DoRun (void)
    */
 
   // 2 UEs send data to the eNB through 2 subcarriers
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[0], m_sv1, ulPhy->GetSpectrumType(), ds);
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[1], m_sv2, ulPhy->GetSpectrumType(), ds);
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[0], m_sv1, ulPhy->GetSpectrumType (), ds);
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[1], m_sv2, ulPhy->GetSpectrumType (), ds);
 
-  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[2], i1, ulPhy->GetSpectrumType(), di1);
-  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[3], i2, ulPhy->GetSpectrumType(), di2);
-  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[4], i3, ulPhy->GetSpectrumType(), di3);
-  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[5], i4, ulPhy->GetSpectrumType(), di4);
+  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[2], i1, ulPhy->GetSpectrumType (), di1);
+  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[3], i2, ulPhy->GetSpectrumType (), di2);
+  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[4], i3, ulPhy->GetSpectrumType (), di3);
+  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[5], i4, ulPhy->GetSpectrumType (), di4);
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();

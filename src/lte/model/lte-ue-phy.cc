@@ -102,9 +102,11 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_p10CqiPeriocity (MilliSeconds (1)),  // ideal behavior 
+    m_p10CqiPeriocity (MilliSeconds (1)),
+    // ideal behavior
     m_p10CqiLast (MilliSeconds (0)),
-    m_a30CqiPeriocity (MilliSeconds (1)), // ideal behavior 
+    m_a30CqiPeriocity (MilliSeconds (1)),
+    // ideal behavior
     m_a30CqiLast (MilliSeconds (0))
 {
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
@@ -122,7 +124,7 @@ LteUePhy::DoDispose ()
   delete m_uePhySapProvider;
   LtePhy::DoDispose ();
 }
-  
+
 
 
 TypeId
@@ -312,7 +314,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   // CREATE CqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
   CqiListElement_s dlcqi;
-  
+
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
 
@@ -322,7 +324,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       // average the CQIs of the different RBs
       for (int i = 0; i < nbSubChannels; i++)
         {
-          if (cqi.at (i)!=-1)
+          if (cqi.at (i) != -1)
             {
               cqiSum += cqi.at (i);
               activeSubChannels++;
@@ -332,7 +334,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       dlcqi.m_rnti = m_rnti;
       dlcqi.m_ri = 1; // not yet used
       dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
-      if (activeSubChannels>0)
+      if (activeSubChannels > 0)
         {
           dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / activeSubChannels);
         }
@@ -345,7 +347,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       dlcqi.m_wbPmi = 0; // not yet used
       // dl.cqi.m_sbMeasResult others CQI report modes: not yet implemented
     }
-  else if(Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
+  else if (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
     {
       int nbSubChannels = cqi.size ();
       int rbgSize = GetRbgSize ();
@@ -354,25 +356,25 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       SbMeasResult_s rbgMeas;
       //NS_LOG_DEBUG (this << " Create A30 CQI feedback, RBG " << rbgSize << " cqiNum " << nbSubChannels << " band "  << (uint16_t)m_dlBandwidth);
       for (int i = 0; i < nbSubChannels; i++)
-      {
-        if (cqi.at (i)!=-1)
-          {
-            cqiSum += cqi.at (i);
-          }
-        // else "nothing" no CQI is treated as CQI = 0 (worst case scenario)
-        cqiNum++;
-        if (cqiNum == rbgSize)
-          {
-            // average the CQIs of the different RBGs
-            //NS_LOG_DEBUG (this << " RBG CQI "  << (uint16_t) cqiSum / rbgSize);
-            HigherLayerSelected_s hlCqi;
-            hlCqi.m_sbPmi = 0; // not yet used
-            hlCqi.m_sbCqi.push_back ((uint16_t) cqiSum / rbgSize);  // only CW0 (SISO mode)
-            rbgMeas.m_higherLayerSelected.push_back (hlCqi);
-            cqiSum = 0.0;
-            cqiNum = 0;
-          }
-      }
+        {
+          if (cqi.at (i) != -1)
+            {
+              cqiSum += cqi.at (i);
+            }
+          // else "nothing" no CQI is treated as CQI = 0 (worst case scenario)
+          cqiNum++;
+          if (cqiNum == rbgSize)
+            {
+              // average the CQIs of the different RBGs
+              //NS_LOG_DEBUG (this << " RBG CQI "  << (uint16_t) cqiSum / rbgSize);
+              HigherLayerSelected_s hlCqi;
+              hlCqi.m_sbPmi = 0; // not yet used
+              hlCqi.m_sbCqi.push_back ((uint16_t) cqiSum / rbgSize); // only CW0 (SISO mode)
+              rbgMeas.m_higherLayerSelected.push_back (hlCqi);
+              cqiSum = 0.0;
+              cqiNum = 0;
+            }
+        }
       dlcqi.m_rnti = m_rnti;
       dlcqi.m_ri = 1; // not yet used
       dlcqi.m_cqiType = CqiListElement_s::A30; // Aperidic CQI using PUSCH
@@ -380,7 +382,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
       dlcqi.m_wbPmi = 0; // not yet used
       dlcqi.m_sbMeasResult = rbgMeas;
     }
-    
+
   msg->SetDlCqi (dlcqi);
   return msg;
 }
@@ -465,7 +467,7 @@ void
 LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   // trigger from eNB
-  
+
   // send control messages
   std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
   if (ctrlMsg.size () > 0)
@@ -481,7 +483,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           it = ctrlMsg.begin ();
         }
     }
-  
+
   // send packets in queue
   // send the current burts of packets
   Ptr<PacketBurst> pb = GetPacketBurst ();
@@ -489,7 +491,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       m_uplinkSpectrumPhy->StartTx (pb);
     }
-  
+
 }
 
 

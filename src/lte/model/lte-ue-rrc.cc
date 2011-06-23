@@ -112,7 +112,7 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteUeRrc::m_rnti),
                    MakeUintegerChecker<uint16_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -195,9 +195,9 @@ std::vector<uint8_t>
 LteUeRrc::GetLcIdVector ()
 {
   std::vector<uint8_t> v;
-  for (std::map<uint8_t, Ptr<LteRlc> >::iterator it = m_rlcMap.begin(); it != m_rlcMap.end(); ++it)
+  for (std::map<uint8_t, Ptr<LteRlc> >::iterator it = m_rlcMap.begin (); it != m_rlcMap.end (); ++it)
     {
-      v.push_back(it->first);
+      v.push_back (it->first);
     }
   return v;
 }

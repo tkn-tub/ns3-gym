@@ -32,8 +32,8 @@ LteFlowId_t::LteFlowId_t ()
 }
 
 LteFlowId_t::LteFlowId_t (const uint16_t a, const uint8_t b)
-  : m_rnti(a),
-    m_lcId(b)
+  : m_rnti (a),
+    m_lcId (b)
 {
 }
 
@@ -51,17 +51,17 @@ operator < (const LteFlowId_t& a, const LteFlowId_t& b)
 
 
 uint16_t
-LteFfConverter::double2fpS11dot3(double val)
+LteFfConverter::double2fpS11dot3 (double val)
 {
   // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
- 	int16_t valFp = (int16_t)(val * pow (2, 3));
- 	return (valFp);	
+  int16_t valFp = (int16_t)(val * pow (2, 3));
+  return (valFp);
 }
 
 double
-LteFfConverter::fpS11dot3toDouble(uint16_t val)
+LteFfConverter::fpS11dot3toDouble (uint16_t val)
 {
-	// convert from fixed point notation Sxxxxxxxxxxx.xxx to double
+  // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
   double valD = ((int16_t)val) / pow (2, 3);
   return (valD);
 }
@@ -69,7 +69,7 @@ LteFfConverter::fpS11dot3toDouble(uint16_t val)
 double 
 LteFfConverter::getMinFpS11dot3Value ()
 {
-	return (-4096);  // -4096 = 0x8000 = 1000 0000 0000 0000 b
+  return (-4096);        // -4096 = 0x8000 = 1000 0000 0000 0000 b
 }
 
 //static double g_lowestFpS11dot3Value = -4096; // 0x8001 (1000 0000 0000 0000)

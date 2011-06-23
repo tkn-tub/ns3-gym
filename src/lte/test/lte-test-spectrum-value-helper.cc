@@ -38,10 +38,10 @@ public:
 
 protected:
   Ptr<SpectrumModel> m_actual;
-  Ptr<SpectrumModel> m_expected;  
+  Ptr<SpectrumModel> m_expected;
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 };
 
 LteSpectrumModelTestCase::LteSpectrumModelTestCase (const char* str, uint16_t earfcn, uint8_t bw, std::vector<double> fcs)
@@ -49,7 +49,7 @@ LteSpectrumModelTestCase::LteSpectrumModelTestCase (const char* str, uint16_t ea
 {
   NS_LOG_FUNCTION (this << str << earfcn << bw);
   m_actual = LteSpectrumValueHelper::GetSpectrumModel (earfcn, bw);
-  m_expected = Create<SpectrumModel> (fcs);                   
+  m_expected = Create<SpectrumModel> (fcs);
 }
 
 LteSpectrumModelTestCase::~LteSpectrumModelTestCase ()
@@ -74,18 +74,18 @@ public:
 
 protected:
   Ptr<SpectrumValue> m_actual;
-  Ptr<SpectrumValue> m_expected;  
+  Ptr<SpectrumValue> m_expected;
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 };
 
 LteNoisePsdTestCase::LteNoisePsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double noiseFigureDb, SpectrumValue& expected)
   :   TestCase (str),
-      m_actual (LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (earfcn, bw, noiseFigureDb)),
-      m_expected (Create<SpectrumValue> (expected))
+    m_actual (LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (earfcn, bw, noiseFigureDb)),
+    m_expected (Create<SpectrumValue> (expected))
 {
-  NS_LOG_FUNCTION (this << str << earfcn << bw << noiseFigureDb);  
+  NS_LOG_FUNCTION (this << str << earfcn << bw << noiseFigureDb);
 }
 
 LteNoisePsdTestCase::~LteNoisePsdTestCase ()
@@ -111,18 +111,18 @@ public:
 
 protected:
   Ptr<SpectrumValue> m_actual;
-  Ptr<SpectrumValue> m_expected;  
+  Ptr<SpectrumValue> m_expected;
 
-  private:
-    virtual void DoRun (void);
+private:
+  virtual void DoRun (void);
 };
 
 LteTxPsdTestCase::LteTxPsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double txPowerDbm, std::vector<int> activeRbs, SpectrumValue& expected)
   :   TestCase (str),
-      m_actual (LteSpectrumValueHelper::CreateTxPowerSpectralDensity (earfcn, bw, txPowerDbm, activeRbs)),
-      m_expected (Create<SpectrumValue> (expected))
+    m_actual (LteSpectrumValueHelper::CreateTxPowerSpectralDensity (earfcn, bw, txPowerDbm, activeRbs)),
+    m_expected (Create<SpectrumValue> (expected))
 {
-  NS_LOG_FUNCTION (this << str << earfcn << bw << txPowerDbm);  
+  NS_LOG_FUNCTION (this << str << earfcn << bw << txPowerDbm);
 }
 
 LteTxPsdTestCase::~LteTxPsdTestCase ()

@@ -40,18 +40,18 @@ int main (int argc, char *argv[])
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
-  
+
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
-  
+
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
   //lena->EnableLogComponents ();
-  
+
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-    LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-      LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

@@ -42,7 +42,6 @@ class LteAmc
 {
 
 public:
-
   /**
    * \brief Get the Modulation anc Coding Scheme for
    * a CQI value
