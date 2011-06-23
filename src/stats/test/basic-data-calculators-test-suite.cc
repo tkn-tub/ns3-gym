@@ -25,6 +25,7 @@
 
 using namespace ns3;
 
+const double TOLERANCE = 1e-14;
 
 // ===========================================================================
 // Test case for a single integer.
@@ -93,14 +94,14 @@ OneIntegerTestCase::DoRun (void)
   stddev = sqrt (variance);
 
   // Test the calculator.
-  NS_TEST_ASSERT_MSG_EQ (calculator.getCount(),    count,    "Count value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getSum(),      sum,      "Sum value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMin(),      min,      "Min value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMax(),      max,      "Max value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMean(),     mean,     "Mean value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getStddev(),   stddev,   "Stddev value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getVariance(), variance, "Variance value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getSqrSum(),   sqrSum,   "SqrSum value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getCount(),    count,    TOLERANCE, "Count value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getSum(),      sum,      TOLERANCE, "Sum value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMin(),      min,      TOLERANCE, "Min value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMax(),      max,      TOLERANCE, "Max value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMean(),     mean,     TOLERANCE, "Mean value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getStddev(),   stddev,   TOLERANCE, "Stddev value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getVariance(), variance, TOLERANCE, "Variance value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getSqrSum(),   sqrSum,   TOLERANCE, "SqrSum value wrong");
 }
 
 
@@ -171,14 +172,14 @@ FiveIntegersTestCase::DoRun (void)
   stddev = sqrt (variance);
 
   // Test the calculator.
-  NS_TEST_ASSERT_MSG_EQ (calculator.getCount(),    count,    "Count value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getSum(),      sum,      "Sum value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMin(),      min,      "Min value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMax(),      max,      "Max value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMean(),     mean,     "Mean value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getStddev(),   stddev,   "Stddev value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getVariance(), variance, "Variance value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getSqrSum(),   sqrSum,   "SqrSum value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getCount(),    count,    TOLERANCE, "Count value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getSum(),      sum,      TOLERANCE, "Sum value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMin(),      min,      TOLERANCE, "Min value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMax(),      max,      TOLERANCE, "Max value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMean(),     mean,     TOLERANCE, "Mean value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getStddev(),   stddev,   TOLERANCE, "Stddev value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getVariance(), variance, TOLERANCE, "Variance value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getSqrSum(),   sqrSum,   TOLERANCE, "SqrSum value wrong");
 }
 
 
@@ -249,14 +250,14 @@ FiveDoublesTestCase::DoRun (void)
   stddev = sqrt (variance);
 
   // Test the calculator.
-  NS_TEST_ASSERT_MSG_EQ (calculator.getCount(),    count,    "Count value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getSum(),      sum,      "Sum value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMin(),      min,      "Min value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMax(),      max,      "Max value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getMean(),     mean,     "Mean value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getStddev(),   stddev,   "Stddev value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getVariance(), variance, "Variance value wrong");
-  NS_TEST_ASSERT_MSG_EQ (calculator.getSqrSum(),   sqrSum,   "SqrSum value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getCount(),    count,    TOLERANCE, "Count value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getSum(),      sum,      TOLERANCE, "Sum value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMin(),      min,      TOLERANCE, "Min value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMax(),      max,      TOLERANCE, "Max value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getMean(),     mean,     TOLERANCE, "Mean value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getStddev(),   stddev,   TOLERANCE, "Stddev value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getVariance(), variance, TOLERANCE, "Variance value wrong");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculator.getSqrSum(),   sqrSum,   TOLERANCE, "SqrSum value wrong");
 }
 
 
