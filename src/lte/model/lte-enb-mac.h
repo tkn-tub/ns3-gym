@@ -132,7 +132,7 @@ public:
   * \param msg the BSR message
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
-  
+
   void DoUlCqiReport (UlCqi_s ulcqi);
 
 
@@ -188,13 +188,13 @@ private:
   std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
   std::vector <UlCqi_s> m_ulCqiReceived; // UL-CQI received
   std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
-  
-  
+
+
   /*
   * Map of UE's info element (see 4.3.12 of FF MAC Scheduler API)
   */
   std::map <uint16_t,UlInfoListElement_s> m_ulInfoListElements; 
-  
+
 
 
   LteMacSapProvider* m_macSapProvider;

@@ -15,11 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Author: Jaume Nin <jaume.nin@cttc.cat>
  */
 
-#ifndef LTE_TEST_LINK_ADAPTATION_H
-#define LTE_TEST_LINK_ADAPTATION_H
+#ifndef EPC_TEST_GTPU_V1_H
+#define EPC_TEST_GTPU_V1_H
+
+#include "ns3/epc-gtpu-v1.h"
 
 #include "ns3/test.h"
 
@@ -27,33 +29,25 @@
 using namespace ns3;
 
 
-/**
- * Test 1.3 Link adaptation
- */
-class LteLinkAdaptationTestSuite : public TestSuite
+
+class EpsGtpuTestSuite : public TestSuite
 {
 public:
-  LteLinkAdaptationTestSuite ();
+  EpsGtpuTestSuite ();
 };
 
-
-class LteLinkAdaptationTestCase : public TestCase
+/**
+ * Test 1.Check header coding and decoding
+ */
+class EpsGtpuHeaderTestCase : public TestCase
 {
 public:
-  LteLinkAdaptationTestCase (std::string name, double snrDb, double loss, uint16_t mcsIndex);
-  LteLinkAdaptationTestCase ();
-  virtual ~LteLinkAdaptationTestCase ();
-
-  void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                     uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
+  EpsGtpuHeaderTestCase ();
+  virtual ~EpsGtpuHeaderTestCase ();
 
 private:
   virtual void DoRun (void);
-
-  double m_snrDb;
-  double m_loss;
-  uint16_t m_mcsIndex;
 };
 
 
-#endif /* LTE_TEST_LINK_ADAPTATION_H */
+#endif /* EPC_TEST_GTPU_V1_H */

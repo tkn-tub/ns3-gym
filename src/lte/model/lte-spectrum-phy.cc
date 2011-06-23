@@ -249,7 +249,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
     case TX:
       NS_FATAL_ERROR ("cannot TX while already TX: the MAC should avoid this");
       break;
-      
+
     case IDLE:
       {
         /*
@@ -259,7 +259,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
         */
         NS_ASSERT (m_txPsd);
         m_txPacketBurst = pb;
-        
+
         // we need to convey some PHY meta information to the receiver
         // to be used for simulation purposes (e.g., the CellId). This
         // is done by adding an LtePhyTag to the first packet in the
@@ -268,7 +268,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
         LtePhyTag tag (m_cellId);
         Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
         firstPacketInBurst->AddPacketTag (tag);
-        
+
         ChangeState (TX);
         NS_ASSERT (m_channel);
         double tti = 0.001;
@@ -278,7 +278,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
       }
       return true;
       break;
-      
+
     default:
       NS_FATAL_ERROR ("uknown state");
       return true;
@@ -331,20 +331,20 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
           break;
 
         case IDLE:
-        case RX:          
+        case RX:
           // the behavior is similar when
           // we're IDLE or RX because we can receive more signals
-          // simultaneously (e.g., at the eNB).         
+          // simultaneously (e.g., at the eNB).
           {
             // To check if we're synchronized to this signal, we check
             // for the CellId which is reported in the LtePhyTag
-            NS_ASSERT (pb->Begin () != pb->End ());          
+            NS_ASSERT (pb->Begin () != pb->End ());
             LtePhyTag tag;
             Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
             firstPacketInBurst->RemovePacketTag (tag);
             if (tag.GetCellId () == m_cellId)
-              {            
-                NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << tag.GetCellId () << ")");   
+              {
+                NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << tag.GetCellId () << ")");
                 if (m_rxPacketBurstList.empty ())
                   {
                     NS_ASSERT (m_state == IDLE);
@@ -353,7 +353,7 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                     m_firstRxStart = Simulator::Now ();
                     m_firstRxDuration = duration;
                     NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
-                    Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);          
+                    Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);
                   }
                 else
                   {
@@ -365,24 +365,24 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                     NS_ASSERT ((m_firstRxStart == Simulator::Now ()) 
                                && (m_firstRxDuration == duration));
                   }
-                
+
                 ChangeState (RX);
                 m_interference->StartRx (rxPsd);
 
-                m_phyRxStartTrace (pb);  
-                
+                m_phyRxStartTrace (pb);
+
                 m_rxPacketBurstList.push_back (pb);
  
-                NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());  
-              }      
+                NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());
+              }
             else
               {
                 NS_LOG_LOGIC (this << " not in sync with this signal (cellId=" 
-                              << tag.GetCellId () << ", m_cellId=" << m_cellId << ")");
+                                   << tag.GetCellId () << ", m_cellId=" << m_cellId << ")");
               }
           }
           break;
-          
+
         default:
           NS_FATAL_ERROR ("unknown state");
           break;
@@ -412,8 +412,8 @@ LteSpectrumPhy::EndRx ()
       bool tbRxOk = true;
 
       if (tbRxOk)
-        {       
-          m_phyRxEndOkTrace (*i);    
+        {
+          m_phyRxEndOkTrace (*i);
 
           // forward each PDU in the PacketBurst separately to the MAC 
           // WILD HACK: we currently don't model properly the aggregation
@@ -421,15 +421,16 @@ LteSpectrumPhy::EndRx ()
           // TBs, and it should be left to the MAC to decompose the TB into PDUs
           for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); 
                j != (*i)->End (); ++j)
-            {                              
+            {
               if (!m_genericPhyRxEndOkCallback.IsNull ())
                 {
-                  m_genericPhyRxEndOkCallback (*j);            
+                  m_genericPhyRxEndOkCallback (*j);
                 }
             }
         }
       else
-        { // TB received with errors
+        {
+          // TB received with errors
           m_phyRxEndErrorTrace (*i);
         }
     }

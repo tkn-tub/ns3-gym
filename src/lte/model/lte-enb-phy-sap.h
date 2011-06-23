@@ -102,7 +102,7 @@ public:
    * \param msg the Ideal Control Message to receive
    */
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
-  
+
   /**
    * \brief Returns to MAC level the UL-CQI evaluated
    * \param ulcqi the UL-CQI (see FF MAC API 4.3.29)

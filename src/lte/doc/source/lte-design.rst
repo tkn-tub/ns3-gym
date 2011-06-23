@@ -219,6 +219,8 @@ can be used because of the SC-FDMA modulation. As a consequence, all
 RBs can be allocated by the eNB regardless of the bandwidth
 configuration. 
 
+.. _sec-lte-amc:
+
 Adaptive Modulation and Coding
 ++++++++++++++++++++++++++++++
 
@@ -327,10 +329,6 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
    \right)}{\tau}
    
 
-Every time that the ``LteSpectrumPHY::StartRx ()`` function is called, the 
-``SpectrumInterferenceModel`` is used to computed the SINR, as proposed in [3]_. Then, 
-the network device uses the AMC module to map the SINR to a proper CQI and to send it 
-to the eNB using the ideal control channel.
 
 
 RRC and RLC Models

@@ -339,7 +339,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
       std::map <uint8_t, LteMacSapUser*>::iterator it; 
       it = m_macSapUserMap.begin ();  // use only the first LC --> UE-SCHEDULER??
       (*it).second->NotifyTxOpportunity (dci.m_tbSize);
-      
+
     }
   else
     {

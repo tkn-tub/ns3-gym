@@ -120,14 +120,14 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    */
   void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer);
-  
+
   /** 
    * 
    * 
    * \param type the type of scheduler to be used for the eNBs
    */
   void SetSchedulerType (std::string type);
-  
+
   /**
    * set an attribute for the scheduler to be created
    */
@@ -139,7 +139,7 @@ public:
    * \param type the type of propagation model to be used for the eNBs
    */
   void SetPropagationModelType (std::string type);
-  
+
   /**
    * set an attribute for the propagation model to be created
    */
@@ -185,12 +185,10 @@ public:
   Ptr<RlcStatsCalculator> GetRlcStats (void);
 
 protected:
-
   // inherited from Object
   virtual void DoStart (void);
 
 private:
-
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
@@ -198,12 +196,12 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
-  
+
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
 
-  Ptr<MacStatsCalculator> macStats;
-  Ptr<RlcStatsCalculator> rlcStats;
+  Ptr<MacStatsCalculator> m_macStats;
+  Ptr<RlcStatsCalculator> m_rlcStats;
 
 };
 

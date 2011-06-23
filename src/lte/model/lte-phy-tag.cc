@@ -33,7 +33,7 @@ LtePhyTag::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePhyTag")
     .SetParent<Tag> ()
-    .AddConstructor<LtePhyTag> ()    
+    .AddConstructor<LtePhyTag> ()
   ;
   return tid;
 }

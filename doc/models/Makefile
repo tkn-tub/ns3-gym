@@ -33,6 +33,7 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-user.rst \
 	$(SRC)/lte/doc/source/lte-design.rst \
 	$(SRC)/lte/doc/source/lte-testing.rst \
+	$(SRC)/lte/doc/source/lte-references.rst \
 	$(SRC)/propagation/doc/propagation.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
@@ -53,7 +54,11 @@ SOURCES = \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
 
 # list all model library figure files that need to be copied to 
-# $SOURCETEMP/figures.  Either a .dia or both a .pdf and .png
+# $SOURCETEMP/figures.  For each figure to be included in all
+# documentation formats (html, latex...) the following formats are supported: 
+#  1) a single .dia file (preferred option, because it can be edited)
+#  2) a single .eps file
+#  3) both a .pdf and .png file
 SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
@@ -72,11 +77,18 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/ff-example.dia \
 	$(SRC)/lte/doc/source/figures/lte-enb-architecture.dia \
 	$(SRC)/lte/doc/source/figures/lte-ue-architecture.dia \
+	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
+	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
+	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
+	$(SRC)/lte/doc/source/figures/lenaThrTestCase2.eps \
+	$(SRC)/lte/doc/source/figures/simulationTime.eps \
+	$(SRC)/lte/doc/source/figures/memoryUsage.eps \
         $(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/netanim/doc/animation-dumbbell.png \
 	$(SRC)/netanim/doc/animation-dumbbell.pdf \
 
-# specify figures for build process (all dia figures)
+# specify figures from which .png and .pdf figures need to be
+# generated (all dia and eps figures)
 IMAGES_EPS = \
 	$(FIGURES)/testbed.eps \
 	$(FIGURES)/emulated-channel.eps \
@@ -95,9 +107,15 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
 	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/lte-interference-test-scenario.eps \
+	$(FIGURES)/lte-mcs-index.eps \
+	$(FIGURES)/lenaThrTestCase1.eps \
+	$(FIGURES)/lenaThrTestCase2.eps \
+	$(FIGURES)/simulationTime.eps \
+	$(FIGURES)/memoryUsage.eps \
         $(FIGURES)/auvmobility-classes.eps \
 
-# rescale figures as necessary
+# rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
 $(FIGURES)/node.pdf_width = 5in
@@ -119,6 +137,7 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 # You can set these variables from the command line.

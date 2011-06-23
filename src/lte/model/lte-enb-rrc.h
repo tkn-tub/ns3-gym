@@ -59,7 +59,7 @@ public:
    *
    * \return the EnbRadioBearerInfo of the selected radio bearer
    */
-  Ptr<EnbRadioBearerInfo> GetRadioBerer (uint8_t lcid);
+  Ptr<EnbRadioBearerInfo> GetRadioBearer (uint8_t lcid);
 
 
   /**
@@ -169,10 +169,10 @@ public:
    */
   void RemoveUe (uint16_t rnti);
 
-  uint16_t GetLastAllocatedRnti() const;
-  void SetLastAllocatedRnti(uint16_t lastAllocatedRnti);
-  void SetUeMap(std::map<uint16_t,Ptr<UeInfo> > ueMap);
-  std::map<uint16_t,Ptr<UeInfo> > GetUeMap(void) const;
+  uint16_t GetLastAllocatedRnti () const;
+  void SetLastAllocatedRnti (uint16_t lastAllocatedRnti);
+  void SetUeMap (std::map<uint16_t,Ptr<UeInfo> > ueMap);
+  std::map<uint16_t,Ptr<UeInfo> > GetUeMap (void) const;
 
   /**
    * Setup a new radio bearer for the given user

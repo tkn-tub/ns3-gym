@@ -76,7 +76,7 @@ public:
    * \return a pointer to the physical layer.
    */
   Ptr<LteEnbPhy> GetPhy (void) const;
-  
+
   /** 
    * \return a pointer to the Radio Resource Control instance of the eNB
    */
@@ -129,7 +129,6 @@ public:
 
 
 protected:
-
   // inherited from Object
   virtual void DoStart (void);
 
@@ -142,7 +141,7 @@ private:
 
   void DoReceive (Ptr<Packet> p);
 
-  /** 
+  /**
    * Several attributes (e.g., the bandwidth) are exported as
    * attributes of the LteEnbNetDevice from a user perspective,  but
    * are actually used also in other modules as well (the RRC, the
@@ -150,7 +149,7 @@ private:
    * configuration of all modules so that their copy of the attribute
    * values is in sync with the one in the LteEnbNetDevice.
    */
-  void UpdateConfig (void);  
+  void UpdateConfig (void);
 
   Ptr<LteEnbMac> m_mac;
 
@@ -160,16 +159,16 @@ private:
 
   Ptr<FfMacScheduler> m_scheduler;
 
-  uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */ 
+  uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */
 
-  static uint16_t m_cellIdCounter; 
+  static uint16_t m_cellIdCounter;
 
   uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
   uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
 
-  uint16_t m_dlEarfcn;  /**< downlink carrier frequency */ 
-  uint16_t m_ulEarfcn;  /**< uplink carrier frequency */ 
-  
+  uint16_t m_dlEarfcn;  /**< downlink carrier frequency */
+  uint16_t m_ulEarfcn;  /**< uplink carrier frequency */
+
 };
 
 } // namespace ns3

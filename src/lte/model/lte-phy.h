@@ -89,7 +89,7 @@ public:
    * \return a pointer to the LteSpectrumPhy instance that manages the uplink
    */
   Ptr<LteSpectrumPhy> GetUplinkSpectrumPhy ();
-  
+
   /**
   * \brief Queue the MAC PDU to be sent (according to m_macChTtiDelay)
   * \param p the MAC PDU to sent
@@ -174,7 +174,7 @@ public:
   */
   void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
 
-  /**  
+  /**
    *
    * \param dlEarfcn the carrier frequency (EARFCN) in downlink
    * \param ulEarfcn the carrier frequency (EARFCN) in downlink
@@ -186,7 +186,7 @@ public:
    * \param cellId the Cell Identifier
    */
   void DoSetCellId (uint16_t cellId);
-  
+
 
   /**
   * \returns the RB gruop size according to the bandwidth
@@ -216,7 +216,7 @@ public:
   * \param p queue control message to be sent
   */
   void SetControlMessages (Ptr<IdealControlMessage> m);
-  
+
   /**
   * \returns the list of control messages to be sent
   */
@@ -231,9 +231,8 @@ public:
   virtual void  GenerateCqiFeedback (const SpectrumValue& sinr) = 0;
 
 
-  
-protected:
 
+protected:
   Ptr<LteNetDevice> m_netDevice;
 
   Ptr<LteSpectrumPhy> m_downlinkSpectrumPhy;
@@ -249,7 +248,7 @@ protected:
   uint8_t m_ulBandwidth;
   uint8_t m_dlBandwidth;
   uint8_t m_rbgSize;
-  
+
   uint16_t m_dlEarfcn;
   uint16_t m_ulEarfcn;
 

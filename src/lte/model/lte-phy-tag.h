@@ -55,7 +55,6 @@ public:
   uint16_t GetCellId () const;
 
 private:
-  
   uint16_t m_cellId;
 
 };

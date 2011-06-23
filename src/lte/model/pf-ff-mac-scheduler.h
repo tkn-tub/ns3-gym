@@ -30,6 +30,10 @@
 #include <ns3/nstime.h>
 
 
+// value for SINR outside the range defined by FF-API, used to indicate that there
+// is no CQI for this element
+#define NO_SINR -5000
+
 namespace ns3 {
 
 
@@ -82,7 +86,6 @@ public:
   friend class PfSchedulerMemberSchedSapProvider;
 
 private:
-
   //
   // Implementation of the CSCHED API primitives
   // (See 4.1 for description of the primitives)
@@ -127,52 +130,54 @@ private:
 
 
   int GetRbgSize (int dlbandwidth);
-  
-  int LcActivePerFlow(uint16_t rnti);
+
+  int LcActivePerFlow (uint16_t rnti);
+
+  double EstimateUlSinr (uint16_t rnti, uint16_t rb);
 
   /*
    * Vectors of UE's LC info
   */
   std::map <LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
-  
-  
+
+
   /*
-  * Map of UE statistics (per RNTI basis) in downlink 
+  * Map of UE statistics (per RNTI basis) in downlink
   */
   std::map <uint16_t, pfsFlowPerf_t> m_flowStatsDl;
-  
+
   /*
   * Map of UE statistics (per RNTI basis)
   */
   std::map <uint16_t, pfsFlowPerf_t> m_flowStatsUl;
-  
+
 
   /*
   * Map of UE's DL CQI P01 received
   */
-  std::map <uint16_t,uint8_t> m_p10CqiRxed; 
-  
+  std::map <uint16_t,uint8_t> m_p10CqiRxed;
+
   /*
   * Map of UE's DL CQI A30 received
   */
   std::map <uint16_t,SbMeasResult_s> m_a30CqiRxed;
-  
+
   /*
   * Map of previous allocated UE per RBG
   * (used to retrieve info from UL-CQI)
   */
   std::map <uint16_t, std::vector <uint16_t> > m_allocationMaps;
-  
+
   /*
   * Map of UEs' UL-CQI per RBG
   */
   std::map <uint16_t, std::vector <double> > m_ueCqi;
-  
+
   /*
   * Map of UE's buffer status reports received
   */
-  std::map <uint16_t,uint8_t> m_ceBsrRxed; 
-  
+  std::map <uint16_t,uint8_t> m_ceBsrRxed;
+
   // MAC SAPs
   FfMacCschedSapUser* m_cschedSapUser;
   FfMacSchedSapUser* m_schedSapUser;
@@ -182,11 +187,11 @@ private:
 
   // Internal parameters
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig;
-  
-  
+
+
   double m_timeWindow;
   uint8_t m_schedTtiDelay; // delay between scheduling and reception (based on m_macChTtiDelay)
-  
+
   uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
 
 };

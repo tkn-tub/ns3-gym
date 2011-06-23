@@ -101,16 +101,33 @@ deals with floating point arithmetic approximation issues.
 System Tests
 ~~~~~~~~~~~~
 
-Adaptive Modulation and Coding
-------------------------------
+.. _sec-lte-amc-tests:
+
+Adaptive Modulation and Coding Tests
+------------------------------------
 
 The test suite ``lte-link-adaptation`` provides system tests recreating a
 scenario with a single eNB and a single UE. Different test cases are created
-corresponding to different SINR values perceived by the UE. The aim of the test
+corresponding to different SNR values perceived by the UE. The aim of the test
 is to check that in each test case the chosen MCS corresponds to some known
-reference values. These reference values are obtained by re-implementing the
-model described in Section~\ref{sec:amc} in Octave. The resulting test vector is
+reference values. These reference values are obtained by
+re-implementing in Octave (see `src/lte/test/reference/lte_amc.m`) the
+model described in Section :ref:`sec-lte-amc` for the calculation of the
+spectral efficiency, and determining the corresponding MCS index
+by manually looking up the tables in [R1-081483]_. The resulting test vector is
 represented in Figure :ref:`fig-lte-mcs-index`.
+
+The MCS which is used by the simulator is measured by
+obtaining the tracing output produced by the scheduler after 4ms (this
+is needed to account for the initial delay in CQI reporting). The SINR
+which is calcualted by the simulator is also obtained using the
+``LteSinrChunkProcessor`` interface. The test
+passes if both the following conditions are satisfied:
+ 
+ #. the SINR calculated by the simulator correspond to the SNR
+    of the test vector within an absolute tolerance of :math:`10^{-7}`;
+ #. the MCS index used by the simulator exactly corresponds to
+    the one in the test vector.
 
 .. _fig-lte-mcs-index:
 
@@ -118,6 +135,42 @@ represented in Figure :ref:`fig-lte-mcs-index`.
    :align: center
 
    Test vector for Adaptive Modulation and Coding
+
+
+
+Inter-cell Interference Tests
+-----------------------------
+
+The test suite `lte-interference`` provides system tests recreating an
+inter-cell interference scenario with two eNBs, each having a single
+UE attached to it and employing Adaptive Modulation and Coding both in
+the downlink and in the uplink. The topology of the scenario
+is depicted in Figure :ref:`fig-lte-interference-test-scenario`. The
+:math:`d_1` parameter represents the distance of each UE to the eNB it
+is attached to, whereas the :math:`d_2` parameter represent the
+interferer distance. We note that the scenario topology is such that
+the interferer distance is the same for uplink and downlink; still,
+the actual interference power perceived will be different, because of
+the different propagation loss in the uplink and downlink
+bands. Different test cases are obtained by varying the :math:`d_1`
+and :math:`d_2` parameters.
+
+
+.. _fig-lte-interference-test-scenario:
+
+.. figure:: figures/lte-interference-test-scenario.*
+   :align: center
+
+   Topology for the inter-cell interference test
+
+The test vectors are obtained by use of a dedicated octave script
+(available in
+`src/lte/test/reference/lte_link_budget_interference.m`), which does
+the link budget calculations (including interference) corresponding to the topology of each
+test case, and outputs the resulting SINR and spectral efficiency. The
+latter is then used to determine (using the same procedure adopted for 
+:ref:`sec-lte-amc-tests`. We note that the test vector
+contains separate values for uplink and downlink. 
 
 
 
@@ -227,7 +280,7 @@ achievable rate ratio :math:`\rho_{R,i}` of each user :math:`i` as
 
 Let now :math:`T_i` be the throughput actually achieved by the UE :math:`i` , which
 is obtained as part of the simulation output. We define the obtained throughput
-ratio :math:`\rho_{R,i}` of UE :math:`i` as
+ratio :math:`\rho_{T,i}` of UE :math:`i` as
 
 .. math::
    \rho_{T,i} = \frac{T_i}{\sum_{j=1}^N T_j}
@@ -239,7 +292,22 @@ The test consists of checking that the following condition is verified:
 
 if so, it means that the throughput obtained by each UE over the whole
 simulation matches with the steady-state throughput expected by the PF scheduler
-according to the theory (see for instance [Kushner2004]_).
+according to the theory. This test can be derived from [Holtzman2000]_
+as follows. From Section 3 of [Holtzman2000]_, we know that 
+
+.. math::
+   \frac{T_i}{R_i} = c, \, \forall i
+
+where :math:`c` is a constant. By substituting the above into the
+definition of :math:`\rho_{T,i}` given previously, we get
+
+.. math::
+    \frac{T_i}{\sum_{j=1}^N T_j} &=  \frac{c R_i}{\sum_{j=1}^N c R_j} \\
+                                 &=  \frac{c R_i}{c \sum_{j=1}^N  R_j} \\
+                                 &=  \frac{R_i}{\sum_{j=1}^N  R_j}
+
+which is exactly the expression being used in the test.
+              
 
 
 Figure :ref:`fig-lenaThrTestCase2` presents the results obtained in a test case with
