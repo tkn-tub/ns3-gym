@@ -75,6 +75,8 @@ public:
 
   /**
    * Notifies the stats calculator that an downlink scheduling has occurred.
+   * @param cellId Cell ID of the attached Enb
+   * @param imsi IMSI of the scheduled UE
    * @param frameNo Frame number
    * @param subframeNo Subframe number
    * @param rnti C-RNTI scheduled
@@ -83,19 +85,21 @@ public:
    * @param mcsTb2 MCS for transport block 2 (0 if not used)
    * @param sizeTb2 Size of transport block 2 (0 if not used)
    */
-  void DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                     uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
+  void DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo,
+                     uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2);
 
   /**
    * Notifies the stats calculator that an uplink scheduling has occurred.
+   * @param cellId Cell ID of the attached Enb
+   * @param imsi IMSI of the scheduled UE
    * @param frameNo Frame number
    * @param subframeNo Subframe number
    * @param rnti C-RNTI scheduled
    * @param mcsTb MCS for transport block
    * @param sizeTb Size of transport block
    */
-  void UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                     uint8_t mcs, uint16_t sizeTb);
+  void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
+                     uint16_t rnti, uint8_t mcs, uint16_t sizeTb);
 
 
 private:

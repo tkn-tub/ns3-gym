@@ -43,6 +43,9 @@
 
 #include <ns3/ff-mac-scheduler.h>
 
+#include <iostream>
+
+
 NS_LOG_COMPONENT_DEFINE ("LenaHelper");
 
 namespace ns3 {
@@ -370,42 +373,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 }
 
-void
-LenaHelper::EnableMacTraces (void)
-{
-  EnableDlMacTraces ();
-  EnableUlMacTraces ();
-}
 
-void
-DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
-                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
-{
-  mac->DlScheduling (frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
-}
-
-void
-LenaHelper::EnableDlMacTraces (void)
-{
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
-                   MakeBoundCallback (&DlSchedulingCallback, m_macStats));
-}
-
-void
-UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
-                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                      uint8_t mcs, uint16_t size)
-{
-  mac->UlScheduling (frameNo, subframeNo, rnti, mcs, size);
-}
-
-void
-LenaHelper::EnableUlMacTraces (void)
-{
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
-                   MakeBoundCallback (&UlSchedulingCallback, m_macStats));
-}
 
 void
 LenaHelper::EnableRlcTraces (void)
@@ -414,6 +382,9 @@ LenaHelper::EnableRlcTraces (void)
   EnableUlRlcTraces ();
 
 }
+
+
+
 
 uint64_t
 FindImsiFromEnbRlcPath (std::string path)
@@ -479,6 +450,29 @@ FindImsiFromUeRlcPath (std::string path)
 
 }
 
+uint64_t
+FindImsiFromEnbMac (std::string path, uint16_t rnti)
+{
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
+  std::ostringstream oss;
+  std::string p = path.substr (0, path.find ("/LteEnbMac"));
+  oss << rnti;
+  p += "\\/LteEnbRrc/UeMap/" + oss.str ();
+  return FindImsiFromEnbRlcPath (p);
+}
+
+uint16_t
+FindCellIdFromEnbMac (std::string path, uint16_t rnti)
+{
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
+  std::ostringstream oss;
+  std::string p = path.substr (0, path.find ("/LteEnbMac"));
+  oss << rnti;
+  p += "\\/LteEnbRrc/UeMap/" + oss.str ();
+  return FindCellIdFromEnbRlcPath (p);
+}
+
+
 void
 DlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
@@ -522,7 +516,15 @@ UlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
   m_rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
-
+void
+DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
+                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+{
+  uint64_t imsi = FindImsiFromEnbMac (path, rnti);
+  uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
+  mac->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+}
 
 void
 LenaHelper::EnableUlRlcTraces (void)
@@ -531,6 +533,38 @@ LenaHelper::EnableUlRlcTraces (void)
                    MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
   Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback (&UlRxPduCallback, m_rlcStats));
+}
+
+void
+LenaHelper::EnableMacTraces (void)
+{
+  EnableDlMacTraces ();
+  EnableUlMacTraces ();
+}
+
+
+void
+LenaHelper::EnableDlMacTraces (void)
+{
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+                   MakeBoundCallback (&DlSchedulingCallback, m_macStats));
+}
+
+void
+UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
+                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                      uint8_t mcs, uint16_t size)
+{
+  uint64_t imsi = FindImsiFromEnbMac (path, rnti);
+  uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
+  mac->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);
+}
+
+void
+LenaHelper::EnableUlMacTraces (void)
+{
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
+                   MakeBoundCallback (&UlSchedulingCallback, m_macStats));
 }
 
 Ptr<RlcStatsCalculator>
