@@ -79,6 +79,9 @@ LteInterferenceTestSuite::LteInterferenceTestSuite ()
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=10000",  50.000000, 10000.000000,  35964.181431, 8505.970614,  12.667381, 10.588084, 28, 28));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=100000",  50.000000, 100000.000000,  327284.773828, 10774.181090,  15.853097, 10.928917, 28, 28));
   AddTestCase (new LteInterferenceTestCase ("d1=50, d2=1000000",  50.000000, 1000000.000000,  356132.574152, 10802.988445,  15.974963, 10.932767, 28, 28));
+  AddTestCase (new LteInterferenceTestCase ("d1=4500, d2=12600",  4500.000000, 12600.000000,  6.654462, 1.139831,  1.139781, 0.270399, 8, 2));
+  AddTestCase (new LteInterferenceTestCase ("d1=5400, d2=12600",  5400.000000, 12600.000000,  4.621154, 0.791549,  0.876368, 0.193019, 6, 0));
+
 
 }
 
@@ -109,12 +112,8 @@ LteInterferenceTestCase::~LteInterferenceTestCase ()
 void
 LteInterferenceTestCase::DoRun (void)
 {
-  /**
-    * Simulation Topology
-    */
-
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-//   lena->EnableLogComponents ();
+  //   lena->EnableLogComponents ();
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
@@ -169,13 +168,13 @@ LteInterferenceTestCase::DoRun (void)
   // It will be used to test that the SNR is as intended
   // we plug in two instances, one for DL and one for UL
 
-  Ptr<LtePhy> uePhy = ueDevs1.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testDlSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testDlSinr);
+  Ptr<LtePhy> ue1Phy = ueDevs1.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
+  Ptr<LteTestSinrChunkProcessor> testDlSinr1 = Create<LteTestSinrChunkProcessor> (ue1Phy);
+  ue1Phy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testDlSinr1);
 
-  Ptr<LtePhy> enbPhy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
-  Ptr<LteTestSinrChunkProcessor> testUlSinr = Create<LteTestSinrChunkProcessor> (enbPhy);
-  enbPhy->GetUplinkSpectrumPhy ()->AddSinrChunkProcessor (testUlSinr);
+  Ptr<LtePhy> enb1phy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
+  Ptr<LteTestSinrChunkProcessor> testUlSinr1 = Create<LteTestSinrChunkProcessor> (enb1phy);
+  enb1phy->GetUplinkSpectrumPhy ()->AddSinrChunkProcessor (testUlSinr1);
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
@@ -184,16 +183,40 @@ LteInterferenceTestCase::DoRun (void)
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 
+  // same as above for eNB2 and UE2
+  
+  Ptr<LtePhy> ue2Phy = ueDevs2.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
+  Ptr<LteTestSinrChunkProcessor> testDlSinr2 = Create<LteTestSinrChunkProcessor> (ue2Phy);
+  ue2Phy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testDlSinr2);
+
+  Ptr<LtePhy> enb2phy = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
+  Ptr<LteTestSinrChunkProcessor> testUlSinr2 = Create<LteTestSinrChunkProcessor> (enb2phy);
+  enb1phy->GetUplinkSpectrumPhy ()->AddSinrChunkProcessor (testUlSinr2);
+
+  Config::Connect ("/NodeList/1/DeviceList/0/LteEnbMac/DlScheduling",
+                   MakeBoundCallback (&LteTestDlSchedulingCallback, this));
+
+  Config::Connect ("/NodeList/1/DeviceList/0/LteEnbMac/UlScheduling",
+                   MakeBoundCallback (&LteTestUlSchedulingCallback, this));
+
+
   Simulator::Stop (Seconds (0.005));
   Simulator::Run ();
 
-  double dlSinrDb = 10.0 * log10 (testDlSinr->GetSinr ()[0]);
-  NS_TEST_ASSERT_MSG_EQ_TOL (dlSinrDb, m_dlSinrDb, 0.01, "Wrong SINR in DL!");
+  double dlSinr1Db = 10.0 * log10 (testDlSinr1->GetSinr ()[0]);
+  NS_TEST_ASSERT_MSG_EQ_TOL (dlSinr1Db, m_dlSinrDb, 0.01, "Wrong SINR in DL! (eNB1 --> UE1)");
 
-  double ulSinrDb = 10.0 * log10 (testUlSinr->GetSinr ()[0]);
-  NS_TEST_ASSERT_MSG_EQ_TOL (ulSinrDb, m_ulSinrDb, 0.01, "Wrong SINR in UL!");
+  double ulSinr1Db = 10.0 * log10 (testUlSinr1->GetSinr ()[0]);
+  NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr1Db, m_ulSinrDb, 0.01, "Wrong SINR in UL!  (UE1 --> eNB1)");
+
+  double dlSinr2Db = 10.0 * log10 (testDlSinr2->GetSinr ()[0]);
+  NS_TEST_ASSERT_MSG_EQ_TOL (dlSinr2Db, m_dlSinrDb, 0.01, "Wrong SINR in DL! (eNB2 --> UE2)");
+
+  double ulSinr2Db = 10.0 * log10 (testUlSinr2->GetSinr ()[0]);
+  NS_TEST_ASSERT_MSG_EQ_TOL (ulSinr2Db, m_ulSinrDb, 0.01, "Wrong SINR in UL!  (UE2 --> eNB2)");
 
   Simulator::Destroy ();
+ 
 }
 
 
