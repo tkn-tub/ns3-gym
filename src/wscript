@@ -119,7 +119,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
 
     module.is_ns3_module = True
     module.name = 'ns3-' + name
-    module.vnum = wutils.VERSION
+    module.vnum = wutils.VNUM
     # Add the proper path to the module's name.
     module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(bld.path), name)
     # Set the libraries this module depends on.  

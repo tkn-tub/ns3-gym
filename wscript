@@ -67,6 +67,11 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
+if re.match(r"\d+\.\d+(\.\d+)?", VERSION) is not None:
+    wutils.VNUM = VERSION
+else:
+    wutils.VNUM = None
+
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
 blddir = 'build'
