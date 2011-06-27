@@ -24,7 +24,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-//#include "ns3/gtk-config-store.h"
+#include "ns3/gtk-config-store.h"
 
 
 using namespace ns3;
@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (2));
+  Simulator::Stop (Seconds (5));
 
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
@@ -86,13 +86,13 @@ int main (int argc, char *argv[])
     {
       Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
       mm->SetPosition (Vector (userDistance[i], 0.0, 0.0));
-    } // rkwan 
+    } // rkwan
 
   Simulator::Run ();
 
   // Uncomment to show available paths
-  /*GtkConfigStore config;
-  config.ConfigureAttributes ();*/
+  GtkConfigStore config;
+  config.ConfigureAttributes ();
 
   Simulator::Destroy ();
 

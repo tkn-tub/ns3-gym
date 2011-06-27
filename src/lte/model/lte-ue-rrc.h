@@ -122,6 +122,13 @@ public:
    */
   uint16_t GetRnti ();
 
+
+  /**
+   *
+   * \return the CellId of the attached Enb
+   */
+  uint16_t GetCellId ();
+
   /**
    *
    * @return a vector with the allocated LCID

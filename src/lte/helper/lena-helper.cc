@@ -29,6 +29,7 @@
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-mac.h>
 #include <ns3/lte-enb-mac.h>
+#include <ns3/lte-enb-net-device.h>
 
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
@@ -420,7 +421,7 @@ FindImsiFromEnbRlcPath (std::string path)
   // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
 
-  // We retrieve the UeInfo accociated to the C-RNTI and perform the IMSI lookup
+  // We retrieve the UeInfo associated to the C-RNTI and perform the IMSI lookup
   std::string ueMapPath = path.substr (0, path.find ("/RadioBearerMap"));
   Config::MatchContainer match = Config::LookupMatches (ueMapPath);
 
@@ -435,11 +436,31 @@ FindImsiFromEnbRlcPath (std::string path)
     }
 }
 
-uint64_t
-FindImsiFromUeRlc (std::string path)
+uint16_t
+FindCellIdFromEnbRlcPath (std::string path)
 {
   // Sample path input:
-  // /NodeList/1/DeviceList/0/LteUeRrc/RlcMap/1/RxPDU
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
+
+  // We retrieve the CellId associated to the Enb
+  std::string enbNetDevicePath = path.substr (0, path.find ("/LteEnbRrc"));
+  Config::MatchContainer match = Config::LookupMatches (enbNetDevicePath);
+
+  if (match.GetN () != 0)
+    {
+      Ptr<Object> enbNetDevice = match.Get (0);
+      return enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ();
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Lookup " << enbNetDevicePath << " got no matches");
+    }
+}
+
+uint64_t
+FindImsiFromUeRlcPath (std::string path)
+{
+  // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RlcMap/#LCID/RxPDU
 
   // We retrieve the LteUeNetDevice path
@@ -458,20 +479,20 @@ FindImsiFromUeRlc (std::string path)
 
 }
 
-
 void
 DlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  m_rlcStats->DlTxPdu (imsi, rnti, lcid, packetSize);
+  uint16_t cellId = FindCellIdFromEnbRlcPath (path);
+  m_rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
 void
 DlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  uint64_t imsi = FindImsiFromUeRlc (path);
+  uint64_t imsi = FindImsiFromUeRlcPath (path);
   m_rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
@@ -488,7 +509,7 @@ void
 UlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  uint64_t imsi = FindImsiFromUeRlc (path);
+  uint64_t imsi = FindImsiFromUeRlcPath (path);
   m_rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
@@ -497,7 +518,8 @@ UlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  m_rlcStats->UlRxPdu (imsi, rnti, lcid, packetSize, delay);
+  uint16_t cellId = FindCellIdFromEnbRlcPath (path);
+  m_rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
 

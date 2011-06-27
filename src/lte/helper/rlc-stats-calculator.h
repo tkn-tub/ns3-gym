@@ -106,22 +106,24 @@ public:
 
   /**
    * Notifies the stats calculator that an uplink reception has occurred.
+   * @param cellId CellId of the attached Enb
    * @param imsi IMSI of the UE who received the PDU
    * @param rnti C-RNTI of the UE who received the PDU
    * @param lcid LCID through which the PDU has been received
    * @param packetSize size of the PDU in bytes
    * @param delay RLC to RLC delay in nanoseconds
    */
-  void UlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
+  void UlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
   /**
    * Notifies the stats calculator that an downlink transmission has occurred.
+   * @param cellId CellId of the attached Enb
    * @param imsi IMSI of the UE who is receiving the PDU
    * @param rnti C-RNTI of the UE who is receiving the PDU
    * @param lcid LCID through which the PDU has been transmitted
    * @param packetSize size of the PDU in bytes
    */
-  void DlTxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize);
+  void DlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize);
 
   /**
    * Notifies the stats calculator that an downlink reception has occurred.
@@ -164,6 +166,14 @@ public:
    * @return number of received data bytes
    */
   uint64_t GetUlRxData (uint64_t imsi, uint8_t lcid);
+
+  /**
+   * Gets the attached Enb cellId.
+   * @param imsi IMSI of the UE
+   * @param lcid LCID
+   * @return Enb cellId
+   */
+  uint32_t GetUlCellId (uint64_t imsi, uint8_t lcid);
 
   /**
    * Gets the uplink RLC to RLC delay
@@ -222,6 +232,14 @@ public:
   uint64_t GetDlRxData (uint64_t imsi, uint8_t lcid);
 
   /**
+   * Gets the attached Enb cellId.
+   * @param imsi IMSI of the UE
+   * @param lcid LCID
+   * @return Enb cellId
+   */
+  uint32_t GetDlCellId (uint64_t imsi, uint8_t lcid);
+
+  /**
    * Gets the downlink RLC to RLC delay
    * @param imsi IMSI of the UE
    * @param lcid LCID
@@ -252,11 +270,12 @@ private:
   void ResetResults (void);
 
   void StartEpoch (void);
-  void CheckEpoch (void);
+  void CheckEpoch (bool forceEpoch = false);
 
   FlowIdMap m_flowId;
 
   std::string m_dlOutputFilename;
+  Uint32Map m_dlCellId;
   Uint32Map m_dlTxPackets;
   Uint32Map m_dlRxPackets;
   Uint64Map m_dlTxData;
@@ -265,6 +284,7 @@ private:
   Uint32StatsMap m_dlPduSize;
 
   std::string m_ulOutputFilename;
+  Uint32Map m_ulCellId;
   Uint32Map m_ulTxPackets;
   Uint32Map m_ulRxPackets;
   Uint64Map m_ulTxData;
