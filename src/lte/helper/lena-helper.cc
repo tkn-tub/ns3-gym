@@ -546,7 +546,7 @@ LenaHelper::EnableMacTraces (void)
 void
 LenaHelper::EnableDlMacTraces (void)
 {
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&DlSchedulingCallback, m_macStats));
 }
 
@@ -563,7 +563,7 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
 void
 LenaHelper::EnableUlMacTraces (void)
 {
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
 }
 
