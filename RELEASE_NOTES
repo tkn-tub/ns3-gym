@@ -9,6 +9,28 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3.12
+===========
+
+Availability
+------------
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+ - bug 1033 - Mesh airtime-metric fixed
+ - bug 1102 - IPv4 header fragment offset field not set correctly
+ - bug 1123 - class MinMaxAvgTotalCalculator does not implement all methods
+ - bug 1141 - MeshWifiInterfaceMac adds supported modes to wrong remote station
+ - bug 1175 - shared libraries are not versioned
+ - bug 1192 - some test cases fail to clean up properly
+ - bug 1201 - UDP sockets need to set connected state before notifying the ConnectionSucceeded callback
+
 Release 3.11
 ===========
 
