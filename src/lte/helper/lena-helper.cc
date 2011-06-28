@@ -531,7 +531,7 @@ LenaHelper::EnableUlRlcTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
                    MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
-  Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback (&UlRxPduCallback, m_rlcStats));
 }
 
