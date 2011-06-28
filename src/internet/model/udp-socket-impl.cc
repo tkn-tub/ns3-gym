@@ -231,8 +231,8 @@ UdpSocketImpl::Connect (const Address & address)
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
-  NotifyConnectionSucceeded ();
   m_connected = true;
+  NotifyConnectionSucceeded ();
 
   return 0;
 }
