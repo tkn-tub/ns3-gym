@@ -35,6 +35,9 @@ namespace ns3 {
 class ServiceFlow;
 class Cid;
 
+/**
+ * \ingroup wimax
+ */
 class WimaxConnection : public Object
 {
 public:

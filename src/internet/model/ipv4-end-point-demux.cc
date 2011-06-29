@@ -180,7 +180,7 @@ Ipv4EndPointDemux::GetAllEndPoints (void)
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       Ipv4EndPoint* endP = *i;
-      ret.push_back(endP);
+      ret.push_back (endP);
     }
   return ret;
 }
@@ -245,15 +245,15 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
       bool isBroadcast = (daddr.IsBroadcast () || subnetDirected == true);
       NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast);
       bool localAddressMatchesWildCard = 
-        endP->GetLocalAddress() == Ipv4Address::GetAny();
+        endP->GetLocalAddress () == Ipv4Address::GetAny ();
       bool localAddressMatchesExact = endP->GetLocalAddress () == daddr;
 
       if (isBroadcast)
         {
-          NS_LOG_DEBUG("Found bcast, localaddr " << endP->GetLocalAddress());
+          NS_LOG_DEBUG ("Found bcast, localaddr " << endP->GetLocalAddress ());
         }
 
-      if (isBroadcast && (endP->GetLocalAddress() != Ipv4Address::GetAny()))
+      if (isBroadcast && (endP->GetLocalAddress () != Ipv4Address::GetAny ()))
         {
           localAddressMatchesExact = (endP->GetLocalAddress () ==
                                       incomingInterfaceAddr);
@@ -262,10 +262,10 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
       if (!(localAddressMatchesExact || localAddressMatchesWildCard))
         continue; 
       bool remotePeerMatchesExact = endP->GetPeerPort () == sport;
-      bool remotePeerMatchesWildCard = endP->GetPeerPort() == 0;
+      bool remotePeerMatchesWildCard = endP->GetPeerPort () == 0;
       bool remoteAddressMatchesExact = endP->GetPeerAddress () == saddr;
       bool remoteAddressMatchesWildCard = endP->GetPeerAddress () ==
-        Ipv4Address::GetAny();
+        Ipv4Address::GetAny ();
       // If remote does not match either with exact or wildcard,
       // skip this one
       if (!(remotePeerMatchesExact || remotePeerMatchesWildCard))
@@ -278,32 +278,32 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
           remotePeerMatchesWildCard &&
           remoteAddressMatchesWildCard)
         { // Only local port matches exactly
-          retval1.push_back(endP);
+          retval1.push_back (endP);
         }
       if ((localAddressMatchesExact || (isBroadcast && localAddressMatchesWildCard))&&
           remotePeerMatchesWildCard &&
           remoteAddressMatchesWildCard)
         { // Only local port and local address matches exactly
-          retval2.push_back(endP);
+          retval2.push_back (endP);
         }
       if (localAddressMatchesWildCard &&
           remotePeerMatchesExact &&
           remoteAddressMatchesExact)
         { // All but local address
-          retval3.push_back(endP);
+          retval3.push_back (endP);
         }
       if (localAddressMatchesExact &&
           remotePeerMatchesExact &&
           remoteAddressMatchesExact)
         { // All 4 match
-          retval4.push_back(endP);
+          retval4.push_back (endP);
         }
     }
 
   // Here we find the most exact match
-  if (!retval4.empty()) return retval4;
-  if (!retval3.empty()) return retval3;
-  if (!retval2.empty()) return retval2;
+  if (!retval4.empty ()) return retval4;
+  if (!retval3.empty ()) return retval3;
+  if (!retval2.empty ()) return retval2;
   return retval1;  // might be empty if no matches
 }
 

@@ -137,7 +137,7 @@ SystemConditionPrivate::TimedWait (uint64_t ns)
   ts.tv_nsec = ns % NS_PER_SEC;
 
   struct timeval tv;
-  gettimeofday(&tv, NULL);
+  gettimeofday (&tv, NULL);
 
   ts.tv_sec += tv.tv_sec;
   ts.tv_nsec += tv.tv_usec * 1000;

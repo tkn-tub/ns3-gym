@@ -39,6 +39,9 @@ class WimaxNetDevice;
 class NetDevice;
 class Packet;
 
+/**
+ * \ingroup wimax
+ */
 class WimaxPhy : public Object
 {
 public:

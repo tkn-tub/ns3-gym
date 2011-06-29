@@ -267,7 +267,7 @@ bool BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
           serviceFlowRecord = (*iter2)->GetRecord ();
           NS_LOG_INFO ("processing UGS: HAS PACKET=" << (*iter2)->HasPackets () << "max Latency = "
                                                      << MilliSeconds ((*iter2)->GetMaximumLatency ()) << "Delay = " << ((currentTime
-                                                                                                                         - serviceFlowRecord->GetDlTimeStamp ()) + GetBs ()->GetPhy ()->GetFrameDuration ()));
+                                                                                           - serviceFlowRecord->GetDlTimeStamp ()) + GetBs ()->GetPhy ()->GetFrameDuration ()));
           // if latency would exceed in case grant is allocated in next frame then allocate in current frame
           if ((*iter2)->HasPackets () && ((currentTime - serviceFlowRecord->GetDlTimeStamp ())
                                           + GetBs ()->GetPhy ()->GetFrameDuration ()) > MilliSeconds ((*iter2)->GetMaximumLatency ()))

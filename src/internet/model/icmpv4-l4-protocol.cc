@@ -63,7 +63,7 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
               ipv4->Insert (this);
               Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
               ipv4->AggregateObject (rawFactory);
-              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
+              this->SetDownTarget (MakeCallback (&Ipv4L3Protocol::Send, ipv4));
             }
         }
     }
@@ -220,9 +220,9 @@ Icmpv4L4Protocol::HandleTimeExceeded (Ptr<Packet> p,
 }
 
 enum Ipv4L4Protocol::RxStatus
-Icmpv4L4Protocol::Receive(Ptr<Packet> p, 
-                          Ipv4Header const &header,
-                          Ptr<Ipv4Interface> incomingInterface)
+Icmpv4L4Protocol::Receive (Ptr<Packet> p,
+                           Ipv4Header const &header,
+                           Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION (this << p << header << incomingInterface);
 

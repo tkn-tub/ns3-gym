@@ -37,6 +37,9 @@ class GenericMacHeader;
 class WimaxConnection;
 class Cid;
 
+/**
+ * \ingroup wimax
+ */
 class BSScheduler : public Object
 {
 public:

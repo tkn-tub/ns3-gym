@@ -61,7 +61,7 @@ LoopbackTestCase::DoRun ()
   nodes.Create (1);
   Ptr<MobilityModel> m = CreateObject<ConstantPositionMobilityModel> ();
   m->SetPosition (Vector (0, 0, 0));
-  nodes.Get(0)->AggregateObject (m);
+  nodes.Get (0)->AggregateObject (m);
   // Setup WiFi
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
@@ -84,7 +84,7 @@ LoopbackTestCase::DoRun ()
   // Setup ping
   Ptr<V4Ping> ping = CreateObject<V4Ping> ();
   ping->SetAttribute ("Remote", Ipv4AddressValue (Ipv4Address::GetLoopback ()));
-  nodes.Get(0)->AddApplication (ping);
+  nodes.Get (0)->AddApplication (ping);
   ping->SetStartTime (Seconds (0));
   ping->SetStopTime (Seconds (4));
   Names::Add ("ping", ping);

@@ -39,9 +39,9 @@ namespace aodv
 /// Unit test for id cache
 struct IdCacheTest : public TestCase
 {
-  IdCacheTest () : TestCase ("Id Cache"), cache (Seconds(10))
+  IdCacheTest () : TestCase ("Id Cache"), cache (Seconds (10))
   {}
-  virtual void DoRun();
+  virtual void DoRun ();
   void CheckTimeout1 ();
   void CheckTimeout2 ();
   void CheckTimeout3 ();
@@ -52,22 +52,22 @@ struct IdCacheTest : public TestCase
 void
 IdCacheTest::DoRun ()
 {
-  NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime(), Seconds(10), "Lifetime");
+  NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime (), Seconds (10), "Lifetime");
   NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("1.2.3.4"), 3), false, "Unknown ID & address");
   NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("1.2.3.4"), 4), false, "Unknown ID");
   NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("4.3.2.1"), 3), false, "Unknown address");
   NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("1.2.3.4"), 3), true, "Known address & ID");
-  cache.SetLifetime(Seconds(15));
-  NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime(), Seconds(15), "New lifetime");
+  cache.SetLifetime (Seconds (15));
+  NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime (), Seconds (15), "New lifetime");
   cache.IsDuplicate (Ipv4Address ("1.1.1.1"), 4);
   cache.IsDuplicate (Ipv4Address ("1.1.1.1"), 4);
   cache.IsDuplicate (Ipv4Address ("2.2.2.2"), 5);
   cache.IsDuplicate (Ipv4Address ("3.3.3.3"), 6);
   NS_TEST_EXPECT_MSG_EQ (cache.GetSize (), 6, "trivial");
 
-  Simulator::Schedule (Seconds(5), &IdCacheTest::CheckTimeout1, this);
-  Simulator::Schedule (Seconds(11), &IdCacheTest::CheckTimeout2, this);
-  Simulator::Schedule (Seconds(30), &IdCacheTest::CheckTimeout3, this);
+  Simulator::Schedule (Seconds (5), &IdCacheTest::CheckTimeout1, this);
+  Simulator::Schedule (Seconds (11), &IdCacheTest::CheckTimeout2, this);
+  Simulator::Schedule (Seconds (30), &IdCacheTest::CheckTimeout3, this);
   Simulator::Run ();
   Simulator::Destroy ();
 }

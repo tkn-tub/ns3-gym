@@ -1,6 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os, os.path
+import sys
 import shutil
 import types
 import warnings
@@ -20,7 +21,7 @@ try:
 except NameError:
     from sets import Set as set # Python 2.3 fallback
 
-all_modules = (
+all_modules = [
     'core',
     'network',
     'config-store',
@@ -60,7 +61,7 @@ all_modules = (
     'point-to-point-layout',
     'csma-layout',
     'template',
-    )
+    ]
 
 def set_options(opt):
     opt.sub_options('core')
@@ -89,6 +90,7 @@ def configure(conf):
     conf.sub_config('click')
     conf.sub_config('openflow')
     conf.sub_config('stats')
+    conf.sub_config('visualizer')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
@@ -282,6 +284,19 @@ def build(bld):
     bld.create_obj = types.MethodType(create_obj, bld)
     bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
     
+    # Remove these modules from the list of all modules.
+    for not_built in bld.env['MODULES_NOT_BUILT']:
+
+        # XXX Becaue these modules are located in subdirectories of
+        # test, their names in the all_modules list include the extra
+        # relative path "test/".  If these modules are moved into the
+        # src directory, then this if block should be removed.
+        if not_built == 'ns3tcp' or not_built == 'ns3wifi':
+            not_built = 'test/' + not_built
+
+        if not_built in all_modules:
+            all_modules.remove(not_built)
+
     bld.add_subdirs(list(all_modules))
 
     for module in all_modules:

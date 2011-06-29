@@ -68,9 +68,9 @@ main (int argc, char *argv[])
   internet.Install (nAnB);
   Ipv4ListRoutingHelper staticonly;
   Ipv4ListRoutingHelper staticRouting;
-  staticonly.Add(staticRouting, 0);
-  internet.SetRoutingHelper(staticonly);  // has effect on the next Install ()
-  internet.Install(NodeContainer(nC));
+  staticonly.Add (staticRouting, 0);
+  internet.SetRoutingHelper (staticonly);  // has effect on the next Install ()
+  internet.Install (NodeContainer (nC));
 
   // We create the channels first without any IP addressing information
   PointToPointHelper p2p;
@@ -124,18 +124,18 @@ main (int argc, char *argv[])
   // ...and the host in network "C"
   globalRouterB->InjectRoute ("192.168.1.1", "255.255.255.255");
 
-  Ipv4GlobalRoutingHelper::RecomputeRoutingTables();
+  Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
   // In addition, nB needs a static route to nC so it knows what to do with stuff
   // going to 192.168.1.1
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
-  Ptr<Ipv4StaticRouting> staticRoutingB = ipv4RoutingHelper.GetStaticRouting(ipv4B);
+  Ptr<Ipv4StaticRouting> staticRoutingB = ipv4RoutingHelper.GetStaticRouting (ipv4B);
   staticRoutingB->AddHostRouteTo (Ipv4Address ("192.168.1.1"), Ipv4Address ("10.1.1.6"),2);
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-                     Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
+                     Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));

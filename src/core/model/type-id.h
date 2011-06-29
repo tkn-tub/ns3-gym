@@ -51,7 +51,7 @@ public:
     ATTR_GET = 1<<0, /**< The attribute can be read */
     ATTR_SET = 1<<1, /**< The attribute can be written */
     ATTR_CONSTRUCT = 1<<2, /**< The attribute can be written at construction-time */
-    ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /** The attribute can be read, and written at any time */
+    ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /**< The attribute can be read, and written at any time */
   };
 
   /**

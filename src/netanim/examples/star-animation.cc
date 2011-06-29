@@ -59,7 +59,7 @@ main (int argc, char *argv[])
   std::string animFile;
 
   CommandLine cmd;
-  cmd.AddValue("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
+  cmd.AddValue ("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
   cmd.AddValue ("animPort",      "Port Number for Remote Animation", animPort);
   cmd.AddValue ("animFile",  "File Name for Animation Output", animFile);
 

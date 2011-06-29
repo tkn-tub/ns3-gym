@@ -119,7 +119,7 @@ main (int argc, char *argv[])
 
   // 2) Set up a default multicast route on the sender n0 
   Ptr<Node> sender = c.Get (0);
-  Ptr<NetDevice> senderIf = nd0.Get(0);
+  Ptr<NetDevice> senderIf = nd0.Get (0);
   multicast.SetDefaultMulticastRoute (sender, senderIf);
 
   //
@@ -144,12 +144,12 @@ main (int argc, char *argv[])
   //
   // Tell the application when to start and stop.
   //
-  srcC.Start(Seconds(1.));
-  srcC.Stop (Seconds(10.));
+  srcC.Start (Seconds (1.));
+  srcC.Stop (Seconds (10.));
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-                         InetSocketAddress (Ipv4Address::GetAny(), multicastPort));
+                         InetSocketAddress (Ipv4Address::GetAny (), multicastPort));
 
   ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
   // Start the sink

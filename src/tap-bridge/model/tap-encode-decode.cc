@@ -41,7 +41,7 @@ TapBufferToString (uint8_t *buffer, uint32_t len)
   // Tell the stream to make hex characters, zero-filled
   //
   oss.setf (std::ios::hex, std::ios::basefield);
-  oss.fill('0');
+  oss.fill ('0');
 
   //
   // Loop through the buffer, separating the two-digit-wide hex bytes

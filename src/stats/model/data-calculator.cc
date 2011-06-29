@@ -25,7 +25,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("DataCalculator");
+NS_LOG_COMPONENT_DEFINE ("DataCalculator");
 
 static double zero = 0;
 const double ns3::NaN = zero / zero;
@@ -33,38 +33,38 @@ const double ns3::NaN = zero / zero;
 //--------------------------------------------------------------
 //----------------------------------------------
 DataCalculator::DataCalculator() :
-  m_enabled(true)
+  m_enabled (true)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 DataCalculator::~DataCalculator()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
-DataCalculator::DoDispose(void)
+DataCalculator::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  Simulator::Cancel(m_startEvent);
-  Simulator::Cancel(m_stopEvent);
+  Simulator::Cancel (m_startEvent);
+  Simulator::Cancel (m_stopEvent);
 
-  Object::DoDispose();
+  Object::DoDispose ();
   // DataCalculator::DoDispose
 }
 
 //----------------------------------------------
 void
-DataCalculator::SetKey(const std::string key)
+DataCalculator::SetKey (const std::string key)
 {
   m_key = key;
   // end DataCalculator::SetKey
 }
 
 std::string
-DataCalculator::GetKey() const
+DataCalculator::GetKey () const
 {
   return m_key;
   // end DataCalculator::GetKey
@@ -72,35 +72,35 @@ DataCalculator::GetKey() const
 
 //----------------------------------------------
 void
-DataCalculator::SetContext(const std::string context)
+DataCalculator::SetContext (const std::string context)
 {
   m_context = context;
   // end DataCalculator::SetContext
 }
 
 std::string
-DataCalculator::GetContext() const
+DataCalculator::GetContext () const
 {
   return m_context;
   // end DataCalculator::GetContext
 }
 //----------------------------------------------
 void
-DataCalculator::Enable()
+DataCalculator::Enable ()
 {
   m_enabled = true;
   // end DataCalculator::Enable
 }
 
 void
-DataCalculator::Disable()
+DataCalculator::Disable ()
 {
   m_enabled = false;
   // end DataCalculator::Disable
 }
 
 bool
-DataCalculator::GetEnabled() const
+DataCalculator::GetEnabled () const
 {
   return m_enabled;
   // end DataCalculator::GetEnabled
@@ -108,19 +108,19 @@ DataCalculator::GetEnabled() const
 
 //----------------------------------------------
 void
-DataCalculator::Start(const Time& startTime)
+DataCalculator::Start (const Time& startTime)
 {
 
-  m_startEvent = Simulator::Schedule(startTime,
-                                     &DataCalculator::Enable, this);
+  m_startEvent = Simulator::Schedule (startTime,
+                                      &DataCalculator::Enable, this);
 
   // end DataCalculator::Start
 }
 
 void
-DataCalculator::Stop(const Time& stopTime)
+DataCalculator::Stop (const Time& stopTime)
 {
-  m_stopEvent = Simulator::Schedule(stopTime,
-                                    &DataCalculator::Disable, this);
+  m_stopEvent = Simulator::Schedule (stopTime,
+                                     &DataCalculator::Disable, this);
   // end DataCalculator::Stop
 }

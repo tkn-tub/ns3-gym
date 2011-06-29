@@ -197,8 +197,8 @@ bool operator < (const Address &a, const Address &b)
     {
       return false;
     }
-  NS_ASSERT (a.GetLength() == b.GetLength());
-  for (uint8_t i = 0; i < a.GetLength(); i++) 
+  NS_ASSERT (a.GetLength () == b.GetLength ());
+  for (uint8_t i = 0; i < a.GetLength (); i++)
     {
       if (a.m_data[i] < b.m_data[i]) 
         {
@@ -215,16 +215,16 @@ bool operator < (const Address &a, const Address &b)
 std::ostream& operator<< (std::ostream& os, const Address & address)
 {
   os.setf (std::ios::hex, std::ios::basefield);
-  os.fill('0');
-  os << std::setw(2) << (uint32_t) address.m_type << "-" << std::setw(2) << (uint32_t) address.m_len << "-";
+  os.fill ('0');
+  os << std::setw (2) << (uint32_t) address.m_type << "-" << std::setw (2) << (uint32_t) address.m_len << "-";
   for (uint8_t i = 0; i < (address.m_len-1); ++i)
     {
-      os << std::setw(2) << (uint32_t)address.m_data[i] << ":";
+      os << std::setw (2) << (uint32_t)address.m_data[i] << ":";
     }
   // Final byte not suffixed by ":"
-  os << std::setw(2) << (uint32_t) address.m_data[address.m_len-1];
+  os << std::setw (2) << (uint32_t) address.m_data[address.m_len-1];
   os.setf (std::ios::dec, std::ios::basefield);
-  os.fill(' ');
+  os.fill (' ');
   return os;
 }
 

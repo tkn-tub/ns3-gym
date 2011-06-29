@@ -43,17 +43,17 @@ PathSplit (std::string str)
 {
   std::vector<std::string> results;
   size_t cutAt;
-  while ((cutAt = str.find_first_of('/')) != str.npos)
+  while ((cutAt = str.find_first_of ('/')) != str.npos)
     {
       if(cutAt > 0)
         {
-          results.push_back(str.substr(0,cutAt));
+          results.push_back (str.substr (0,cutAt));
         }
-      str = str.substr(cutAt+1);
+      str = str.substr (cutAt+1);
     }
-  if (str.length() > 0)
+  if (str.length () > 0)
     {
-      results.push_back(str);
+      results.push_back (str);
     }
   return results;
 }
@@ -699,28 +699,28 @@ PyViz::TraceNetDevRxCommon (std::string const &context, Ptr<const Packet> packet
   TransmissionSampleKey key = { record.srcNode, node, channel };
 
 #ifdef  NS3_LOG_ENABLE
-  NS_LOG_DEBUG("m_transmissionSamples begin:");
+  NS_LOG_DEBUG ("m_transmissionSamples begin:");
   if (g_log.IsEnabled (ns3::LOG_DEBUG))
     {
       for (std::map<TransmissionSampleKey,TransmissionSampleValue>::const_iterator iter
              = m_transmissionSamples.begin (); iter != m_transmissionSamples.end (); iter++)
         {
-          NS_LOG_DEBUG(iter->first.transmitter<<"/"<<iter->first.transmitter->GetId () << ", "
-                                              << iter->first.receiver<<"/"<<iter->first.receiver->GetId ()
-                                              << ", " << iter->first.channel << " => " << iter->second.bytes << " (@ " << &iter->second << ")");
+          NS_LOG_DEBUG (iter->first.transmitter<<"/"<<iter->first.transmitter->GetId () << ", "
+                                               << iter->first.receiver<<"/"<<iter->first.receiver->GetId ()
+                                               << ", " << iter->first.channel << " => " << iter->second.bytes << " (@ " << &iter->second << ")");
         }
     }
-  NS_LOG_DEBUG("m_transmissionSamples end.");
+  NS_LOG_DEBUG ("m_transmissionSamples end.");
 #endif
 
   std::map<TransmissionSampleKey,TransmissionSampleValue>::iterator
-  iter = m_transmissionSamples.find (key);
+    iter = m_transmissionSamples.find (key);
 
   if (iter == m_transmissionSamples.end ())
     {
       TransmissionSampleValue sample = { packet->GetSize () };
-      NS_LOG_DEBUG ("RX: from " << key.transmitter<<"/"<<key.transmitter->GetId() << " to "
-                                << key.receiver<<"/"<<key.receiver->GetId()
+      NS_LOG_DEBUG ("RX: from " << key.transmitter<<"/"<<key.transmitter->GetId () << " to "
+                                << key.receiver<<"/"<<key.receiver->GetId ()
                                 << " channel " << channel << ": " << packet->GetSize ()
                                 << " bytes more. => new sample with " << packet->GetSize () << " bytes.");
       m_transmissionSamples[key] = sample;
@@ -728,8 +728,8 @@ PyViz::TraceNetDevRxCommon (std::string const &context, Ptr<const Packet> packet
   else
     {
       TransmissionSampleValue &sample = iter->second;
-      NS_LOG_DEBUG ("RX: from " << key.transmitter<<"/"<<key.transmitter->GetId() << " to "
-                                << key.receiver<<"/"<<key.receiver->GetId()
+      NS_LOG_DEBUG ("RX: from " << key.transmitter<<"/"<<key.transmitter->GetId () << " to "
+                                << key.receiver<<"/"<<key.receiver->GetId ()
                                 << " channel " << channel << ": " << packet->GetSize ()
                                 << " bytes more. => sample " << &sample << " with bytes " << sample.bytes);
 
@@ -838,7 +838,7 @@ PyViz::GetTransmissionSamples () const
       sample.receiver = iter->first.receiver;
       sample.channel = iter->first.channel;
       sample.bytes = iter->second.bytes;
-      NS_LOG_DEBUG ("from " << sample.transmitter->GetId() << " to " << sample.receiver->GetId()
+      NS_LOG_DEBUG ("from " << sample.transmitter->GetId () << " to " << sample.receiver->GetId ()
                             << ": " << sample.bytes << " bytes.");
       list.push_back (sample);
     }
@@ -859,7 +859,7 @@ PyViz::GetPacketDropSamples () const
       PacketDropSample sample;
       sample.transmitter = iter->first;
       sample.bytes = iter->second;
-      NS_LOG_DEBUG ("in " << sample.transmitter->GetId() 
+      NS_LOG_DEBUG ("in " << sample.transmitter->GetId ()
                           << ": " << sample.bytes << " bytes dropped.");
       list.push_back (sample);
     }
@@ -893,7 +893,7 @@ PyViz::GetLastPackets (uint32_t nodeId) const
   NS_LOG_DEBUG ("GetLastPackets: " << nodeId);
 
   std::map<uint32_t, LastPacketsSample>::const_iterator
-  iter = m_lastPackets.find(nodeId);
+    iter = m_lastPackets.find (nodeId);
   if (iter != m_lastPackets.end ())
     {
       return iter->second;

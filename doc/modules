@@ -30,28 +30,4 @@
  *    - a configuration class used to set and control all attributes and trace sources
  *      in a simulation: ns3::Config.
  *
- * @defgroup network Network
- * The "network" module contains: 
- *    - a packet class to create and manipulate simulation packets: 
- *      ns3::Packet, ns3::Header,  and ns3::Trailer. This packet class 
- *      also supports per-packet ns3::Tag which are  globs of data 
- *      which can be attached to any packet.
- *    - a ns3::Node base class which should be subclassed by any new type of
- *      network Node.
- *    - models which abstract the MAC-layer from the IP layer protocols:
- *      ns3::NetDevice and ns3::Channel. 
- *    - models which abstract the application-layer API: ns3::Application,
- *      ns3::Socket, ns3::SocketFactory, and, ns3::Udp
- * 
- * @defgroup internet Internet
- * 
- * The "internet" module contains:
- *    - an Ipv4 stack
- *    - an Ipv6 stack
- *    - an ARP module
- *    - a UDP and a TCP implementation
- *    
- * @defgroup applications Applications
- *
- * @defgroup mobility Mobility
  */

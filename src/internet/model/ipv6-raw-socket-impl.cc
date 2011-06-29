@@ -296,7 +296,7 @@ uint32_t Ipv6RawSocketImpl::GetRxAvailable () const
   NS_LOG_FUNCTION_NOARGS ();
   uint32_t rx = 0;
 
-  for (std::list<Data>::const_iterator it = m_data.begin () ; it != m_data.end () ; ++it)
+  for (std::list<Data>::const_iterator it = m_data.begin (); it != m_data.end (); ++it)
     {
       rx+= (it->packet)->GetSize ();
     }

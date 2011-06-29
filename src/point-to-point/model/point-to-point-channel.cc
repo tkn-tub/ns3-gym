@@ -59,11 +59,11 @@ PointToPointChannel::PointToPointChannel()
 }
 
 void
-PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
+PointToPointChannel::Attach (Ptr<PointToPointNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
-  NS_ASSERT_MSG(m_nDevices < N_DEVICES, "Only two devices permitted");
-  NS_ASSERT(device != 0);
+  NS_ASSERT_MSG (m_nDevices < N_DEVICES, "Only two devices permitted");
+  NS_ASSERT (device != 0);
 
   m_link[m_nDevices++].m_src = device;
 //
@@ -80,7 +80,7 @@ PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
 }
 
 bool
-PointToPointChannel::TransmitStart(
+PointToPointChannel::TransmitStart (
   Ptr<Packet> p,
   Ptr<PointToPointNetDevice> src,
   Time txTime)
@@ -88,8 +88,8 @@ PointToPointChannel::TransmitStart(
   NS_LOG_FUNCTION (this << p << src);
   NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
 
-  NS_ASSERT(m_link[0].m_state != INITIALIZING);
-  NS_ASSERT(m_link[1].m_state != INITIALIZING);
+  NS_ASSERT (m_link[0].m_state != INITIALIZING);
+  NS_ASSERT (m_link[1].m_state != INITIALIZING);
 
   uint32_t wire = src == m_link[0].m_src ? 0 : 1;
 
@@ -113,7 +113,7 @@ Ptr<PointToPointNetDevice>
 PointToPointChannel::GetPointToPointDevice (uint32_t i) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT(i < 2);
+  NS_ASSERT (i < 2);
   return m_link[i].m_src;
 }
 

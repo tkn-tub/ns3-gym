@@ -277,10 +277,10 @@ MacLowTransmissionParameters::GetNextPacketSize (void) const
 std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params)
 {
   os << "["
-                       << "send rts=" << params.m_sendRts << ", "
-                       << "next size=" << params.m_nextSize << ", "
-                       << "dur=" << params.m_overrideDurationId << ", "
-                       << "ack=";
+  << "send rts=" << params.m_sendRts << ", "
+  << "next size=" << params.m_nextSize << ", "
+  << "dur=" << params.m_overrideDurationId << ", "
+  << "ack=";
   switch (params.m_waitAck)
     {
     case MacLowTransmissionParameters::ACK_NONE:

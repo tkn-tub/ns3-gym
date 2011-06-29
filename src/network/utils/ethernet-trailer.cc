@@ -92,7 +92,7 @@ EthernetTrailer::GetFcs (void)
 uint32_t
 EthernetTrailer::GetTrailerSize (void) const
 {
-  return GetSerializedSize();
+  return GetSerializedSize ();
 }
 
 TypeId 
@@ -124,7 +124,7 @@ void
 EthernetTrailer::Serialize (Buffer::Iterator end) const
 {
   Buffer::Iterator i = end;
-  i.Prev(GetSerializedSize());
+  i.Prev (GetSerializedSize ());
 
   i.WriteU32 (m_fcs);
 }
@@ -132,8 +132,8 @@ uint32_t
 EthernetTrailer::Deserialize (Buffer::Iterator end)
 {
   Buffer::Iterator i = end;
-  uint32_t size = GetSerializedSize();
-  i.Prev(size);
+  uint32_t size = GetSerializedSize ();
+  i.Prev (size);
 
   m_fcs = i.ReadU32 ();
 

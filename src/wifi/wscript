@@ -112,6 +112,7 @@ def build(bld):
         'model/yans-error-rate-model.h',
         'model/nist-error-rate-model.h',
         'model/dsss-error-rate-model.h',
+        'model/wifi-mac-queue.h',
         'model/dca-txop.h',
         'model/wifi-mac-header.h',
         'model/qos-utils.h',

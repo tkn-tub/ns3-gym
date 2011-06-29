@@ -67,7 +67,7 @@ PppHeader::Print (std::ostream &os) const
       proto = "IPv6 (0x0057)";
       break;
     default:
-      NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+      NS_ASSERT_MSG (false, "PPP Protocol number not defined!");
     }
   os << "Point-to-Point Protocol: " << proto; 
 }
@@ -88,7 +88,7 @@ uint32_t
 PppHeader::Deserialize (Buffer::Iterator start)
 {
   m_protocol = start.ReadNtohU16 ();
-  return GetSerializedSize();
+  return GetSerializedSize ();
 }
 
 void

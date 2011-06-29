@@ -5,8 +5,7 @@ Click is a software architecture for building configurable routers.
 By using different combinations of packet processing units called elements,
 a Click router can be made to perform a specific kind of functionality.
 This flexibility provides a good platform for testing and experimenting with
-different protocols. This project aims to integrate ns-3 with the Click
-Modular Router so as to enable rapid protocol development.
+different protocols. 
 
 Model Description
 *****************
@@ -22,14 +21,28 @@ ns-3's design is well suited for an integration with Click due to the following 
 * This also means that any kind of ns-3 traffic generator and transport should work easily on top of Click.
 * By striving to implement click as an Ipv4RoutingProtocol instance, we can avoid significant changes to the LL and MAC layer of the ns-3 code. 
 
-The design goal would be to make the ns-3-click public API simple enough such that the user needs to merely add an Ipv4ClickRouting instance to the node, and inform each Click node of the Click configuration file (.click file) that it is to use. 
+The design goal was to make the ns-3-click public API simple enough such that the user needs to merely add an Ipv4ClickRouting instance to the node, and inform each Click node of the Click configuration file (.click file) that it is to use. 
 
-Developing a Simulator API which will allow ns-3 to talk with Click and vice versa 
-##################################################################################
+This model implements the interface to the Click Modular Router and
+provides the Ipv4ClickRouting class to allow a node to use Click
+for external routing. Unlike normal Ipv4RoutingProtocol sub types,
+Ipv4ClickRouting doesn't use a RouteInput() method, but instead,
+receives a packet on the appropriate interface and processes it
+accordingly. Note that you need to have a routing table type element
+in your Click graph to use Click for external routing. This is needed
+by the RouteOutput() function inherited from Ipv4RoutingProtocol.
+Furthermore, a Click based node uses a different kind of L3 in the
+form of Ipv4L3ClickProtocol, which is a trimmed down version of
+Ipv4L3Protocol. Ipv4L3ClickProtocol passes on packets passing through
+the stack to Ipv4ClickRouting for processing.
+
+
+Developing a Simulator API to allow ns-3 to interact with Click
+###############################################################
 
 Much of the API is already well defined, which allows Click to probe for information from the simulator (like a Node's ID, an Interface ID and so forth). By retaining most of the methods, it should be possible to write new implementations specific to ns-3 for the same functionality.
 
-Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will handle the interaction with Click. The code for the same can be found in ``src/click/model/ipv4-click-routing.[cc,h]``.
+Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will handle the interaction with Click. The code for the same can be found in ``src/click/model/ipv4-click-routing.{cc,h}``.
 
 Packet hand off between ns-3 and Click
 ######################################
@@ -54,7 +67,8 @@ References
 ==========
 
 * Eddie Kohler, Robert Morris, Benjie Chen, John Jannotti, and M. Frans Kaashoek. The click modular router. ACM Transactions on Computer Systems 18(3), August 2000, pages 263-297.
-* Neufeld, Michael and Jain, Ashish and Grunwald, Dirk. Nsclick: bridging network simulation and deployment. MSWiM '02: Proceedings of the 5th ACM international workshop on Modeling analysis and simulation of wireless and mobile systems, 2002, Atlanta, Georgia, USA. http://doi.acm.org/10.1145/570758.570772
+* Lalith Suresh P., and Ruben Merz. Ns-3-click: click modular router integration for ns-3. In Proc. of 3rd International ICST Workshop on NS-3 (WNS3), Barcelona, Spain. March, 2011.
+* Michael Neufeld, Ashish Jain, and Dirk Grunwald. Nsclick: bridging network simulation and deployment. MSWiM '02: Proceedings of the 5th ACM international workshop on Modeling analysis and simulation of wireless and mobile systems, 2002, Atlanta, Georgia, USA. http://doi.acm.org/10.1145/570758.570772
 
 Usage
 *****
@@ -62,7 +76,7 @@ Usage
 Building Click
 ==============
 
-The first step is to build Click. At the top of your Click source directory::
+The first step is to fetch (http://read.cs.ucla.edu/click/download) and build Click. At the top of your Click source directory::
 
   $: ./configure --enable-userlevel --disable-linuxmodule --enable-nsclick --enable-wifi
   $: make
@@ -119,7 +133,7 @@ class in your simulation script. For instance::
   click.Install (myNodeContainer);
 
 The example scripts inside ``src/click/examples/`` demonstrate the use of Click based nodes
-in different scenarios. The helper source can be found inside ``src/click/helper/click-internet-stack-helper.[h,cc]``
+in different scenarios. The helper source can be found inside ``src/click/helper/click-internet-stack-helper.{h,cc}``
 
 Examples
 ========

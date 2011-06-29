@@ -83,9 +83,9 @@ main (int argc, char *argv[])
   // arguments
   //
   CommandLine cmd;
-  cmd.AddValue("deviceName", "device name", deviceName);
-  cmd.AddValue("encapsulationMode", "encapsulation mode of emu device (\"Dix\" [default] or \"Llc\")", encapMode);
-  cmd.AddValue("nNodes", "number of nodes to create (>= 2)", nNodes);
+  cmd.AddValue ("deviceName", "device name", deviceName);
+  cmd.AddValue ("encapsulationMode", "encapsulation mode of emu device (\"Dix\" [default] or \"Llc\")", encapMode);
+  cmd.AddValue ("nNodes", "number of nodes to create (>= 2)", nNodes);
 
   cmd.Parse (argc, argv);
 
@@ -130,7 +130,7 @@ main (int argc, char *argv[])
   //
   NS_LOG_INFO ("Create Applications.");
   UdpEchoServerHelper server (9);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

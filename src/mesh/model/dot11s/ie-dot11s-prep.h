@@ -53,7 +53,7 @@ public:
   uint32_t GetLifetime () const;
   uint32_t GetMetric () const;
   Mac48Address GetOriginatorAddress () const;
-  uint32_t GetOriginatorSeqNumber () const ;
+  uint32_t GetOriginatorSeqNumber () const;
 
   void  DecrementTtl ();
   void  IncrementMetric (uint32_t metric);

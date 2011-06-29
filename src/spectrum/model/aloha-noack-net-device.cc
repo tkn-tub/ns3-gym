@@ -42,13 +42,13 @@ std::ostream& operator<< (std::ostream& os, AlohaNoackNetDevice::State state)
   switch (state)
     {
     case AlohaNoackNetDevice::IDLE:
-      os << "IDLE" ;
+      os << "IDLE";
       break;
     case AlohaNoackNetDevice::TX:
-      os << "TX" ;
+      os << "TX";
       break;
     case AlohaNoackNetDevice::RX:
-      os << "RX" ;
+      os << "RX";
       break;
     }
   return os;

@@ -23,7 +23,7 @@
 #include "ns3/simulation-singleton.h"
 #include "ipv4-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE("Ipv4AddressGenerator");
+NS_LOG_COMPONENT_DEFINE ("Ipv4AddressGenerator");
 
 namespace ns3 {
 
@@ -330,7 +330,7 @@ Ipv4AddressGeneratorImpl::AddAllocated (const Ipv4Address address)
 
   Entry entry;
   entry.addrLow = entry.addrHigh = addr;
-  m_entries.insert(i, entry);
+  m_entries.insert (i, entry);
   return true;
 }
 
@@ -367,7 +367,7 @@ Ipv4AddressGeneratorImpl::MaskToIndex (Ipv4Mask mask) const
         }
       maskBits >>= 1;
     }
-  NS_ASSERT_MSG(false, "Ipv4AddressGenerator::MaskToIndex(): Impossible");
+  NS_ASSERT_MSG (false, "Ipv4AddressGenerator::MaskToIndex(): Impossible");
   return 0;
 }
 

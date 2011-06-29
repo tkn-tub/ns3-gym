@@ -49,6 +49,7 @@ interesting_config_items = [
     "ENABLE_REAL_TIME",
     "ENABLE_THREADING",
     "ENABLE_EXAMPLES",
+    "ENABLE_TESTS",
     "EXAMPLE_DIRECTORIES",
     "ENABLE_PYTHON_BINDINGS",
     "ENABLE_CLICK",
@@ -59,6 +60,7 @@ NSC_ENABLED = False
 ENABLE_REAL_TIME = False
 ENABLE_THREADING = False
 ENABLE_EXAMPLES = True
+ENABLE_TESTS = True
 ENABLE_CLICK = False
 ENABLE_OPENFLOW = False
 EXAMPLE_DIRECTORIES = []
@@ -77,6 +79,7 @@ core_valgrind_skip_tests = [
     "ns3-tcp-cwnd",
     "nsc-tcp-loss",
     "ns3-tcp-interoperability",
+    "routing-click",
 ]
 
 # 
@@ -1625,6 +1628,19 @@ def run_tests():
     if len(options.xml):
         shutil.copyfile(xml_results_file, options.xml)
 
+    #
+    # Let the user know if they need to turn on tests or examples.
+    #
+    if not ENABLE_TESTS or not ENABLE_EXAMPLES:
+        print
+        if not ENABLE_TESTS:
+            print '***  Note: ns-3 tests are currently disabled. Enable them by adding'
+            print '***  "--enable-tests" to ./waf configure or modifying your .ns3rc file.'
+            print
+        if not ENABLE_EXAMPLES:
+            print '***  Note: ns-3 examples are currently disabled. Enable them by adding'
+            print '***  "--enable-examples" to ./waf configure or modifying your .ns3rc file.'
+            print
     #
     # If we have been asked to retain all of the little temporary files, we
     # don't delete tm.  If we do delete the temporary files, delete only the

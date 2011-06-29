@@ -53,7 +53,7 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[], const cha
           failure << (uint16_t)got[j] << " ";
         }
       failure << std::endl;
-      NS_TEST_ASSERT_MSG_EQ_INTERNAL(true, false, failure.str(), file, line);
+      NS_TEST_ASSERT_MSG_EQ_INTERNAL (true, false, failure.str (), file, line);
     }
 }
 
@@ -133,22 +133,22 @@ BufferTest::DoRun (void)
 
   // test 64-bit read/write
   Buffer buff64;
-  buff64.AddAtStart(8);
-  i = buff64.Begin();
+  buff64.AddAtStart (8);
+  i = buff64.Begin ();
   i.WriteU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
-  i = buff64.Begin();
-  NS_TEST_ASSERT_MSG_EQ(i.ReadLsbtohU64(), 0x0123456789abcdefllu, "Could not read expected value");
-  i = buff64.Begin();
+  i = buff64.Begin ();
+  NS_TEST_ASSERT_MSG_EQ (i.ReadLsbtohU64 (), 0x0123456789abcdefllu, "Could not read expected value");
+  i = buff64.Begin ();
   i.WriteHtolsbU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
-  i = buff64.Begin();
-  NS_TEST_ASSERT_MSG_EQ (i.ReadLsbtohU64(), 0x0123456789abcdefllu, "Could not read expected value");
-  i = buff64.Begin();
+  i = buff64.Begin ();
+  NS_TEST_ASSERT_MSG_EQ (i.ReadLsbtohU64 (), 0x0123456789abcdefllu, "Could not read expected value");
+  i = buff64.Begin ();
   i.WriteHtonU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
-  i = buff64.Begin();
-  NS_TEST_ASSERT_MSG_EQ (i.ReadNtohU64(), 0x0123456789abcdefllu, "could not read expected value");
+  i = buff64.Begin ();
+  NS_TEST_ASSERT_MSG_EQ (i.ReadNtohU64 (), 0x0123456789abcdefllu, "could not read expected value");
 
   // test self-assignment
   {
@@ -164,7 +164,7 @@ BufferTest::DoRun (void)
   buffer.AddAtStart (1);
   buffer.Begin ().WriteU8 (0xff);
   ENSURE_WRITTEN_BYTES (buffer, 5, 0xff, 0, 0, 0, 0);
-  buffer.RemoveAtStart(3);
+  buffer.RemoveAtStart (3);
   ENSURE_WRITTEN_BYTES (buffer, 2, 0, 0);
   buffer.AddAtStart (4);
   buffer.Begin ().WriteHtonU32 (0xdeadbeaf);

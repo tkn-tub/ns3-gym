@@ -29,6 +29,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ */
 class Cid
 {
 public:

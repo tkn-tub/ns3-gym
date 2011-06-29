@@ -403,36 +403,6 @@ public:
 
 
   /**
-   * Compare each component, one by one
-   *
-   * @param rhs Right Hand Side of the operator
-   *
-   * @return True if this == rhs
-   *         False if this != rhs
-   */
-  bool operator== (const SpectrumValue& rhs) const;
-
-  /**
-   * Compare each component, one by one
-   *
-   * @param rhs Right Hand Side of the operator
-   *
-   * @return True if this < rhs
-   *         False if this >= rhs
-   */
-  bool operator< (const SpectrumValue &rhs) const;
-
-  /**
-   * Compare each component, one by one
-   *
-   * @param rhs Right Hand Side of the operator
-   *
-   * @return True if this > rhs
-   *         False if this <= rhs
-   */
-  bool operator> (const SpectrumValue &rhs) const;
-
-  /**
    *
    * @param x the operand
    *

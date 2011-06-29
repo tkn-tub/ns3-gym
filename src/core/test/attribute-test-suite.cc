@@ -175,9 +175,9 @@ public:
     return tid;
   }
 
-  void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ());}
-  void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ());}
-  void InvokeCb (double a, int b, float c) { m_cb (a,b,c);}
+  void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ()); }
+  void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ()); }
+  void InvokeCb (double a, int b, float c) { m_cb (a,b,c); }
 
   void InvokeCbValue (int8_t a)
   {
@@ -187,14 +187,14 @@ public:
   }
 
 private:
-  void DoSetTestB (bool v) { m_boolTestA = v;}
-  bool DoGetTestB (void) const { return m_boolTestA;}
-  int16_t DoGetInt16 (void) const { return m_int16SetGet;}
-  void DoSetInt16 (int16_t v) { m_int16SetGet = v;}
-  uint32_t DoGetVectorN (void) const { return m_vector2.size ();}
-  Ptr<Derived> DoGetVector (uint32_t i) const { return m_vector2[i];}
-  bool DoSetIntSrc (int8_t v) { m_intSrc2 = v; return true;}
-  int8_t DoGetIntSrc (void) const { return m_intSrc2;}
+  void DoSetTestB (bool v) { m_boolTestA = v; }
+  bool DoGetTestB (void) const { return m_boolTestA; }
+  int16_t DoGetInt16 (void) const { return m_int16SetGet; }
+  void DoSetInt16 (int16_t v) { m_int16SetGet = v; }
+  uint32_t DoGetVectorN (void) const { return m_vector2.size (); }
+  Ptr<Derived> DoGetVector (uint32_t i) const { return m_vector2[i]; }
+  bool DoSetIntSrc (int8_t v) { m_intSrc2 = v; return true; }
+  int8_t DoGetIntSrc (void) const { return m_intSrc2; }
 
   bool m_boolTestA;
   bool m_boolTest;
@@ -326,7 +326,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   //
   // Set the BooleanValue Attribute to true via SetAttributeFailSafe path.
   //
-  ok = p->SetAttributeFailSafe("TestBoolName", StringValue ("true"));
+  ok = p->SetAttributeFailSafe ("TestBoolName", StringValue ("true"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() \"TestBoolName\" to true");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
@@ -335,7 +335,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   //
   // Set the BooleanValue to false via SetAttributeFailSafe path.
   //
-  ok = p->SetAttributeFailSafe("TestBoolName", StringValue ("false"));
+  ok = p->SetAttributeFailSafe ("TestBoolName", StringValue ("false"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() \"TestBoolName\" to false");
 
   ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
@@ -365,7 +365,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   // attribute is declared differently in the object.  First make sure we can set
   // to true.
   //
-  ok = p->SetAttributeFailSafe("TestBoolA", StringValue ("true"));
+  ok = p->SetAttributeFailSafe ("TestBoolA", StringValue ("true"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a boolean value to true");
 
   ok = CheckGetCodePaths (p, "TestBoolA", "true", BooleanValue (true));
@@ -374,7 +374,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   //
   // Now Set the BooleanValue to false via the setter.
   //
-  ok = p->SetAttributeFailSafe("TestBoolA", StringValue ("false"));
+  ok = p->SetAttributeFailSafe ("TestBoolA", StringValue ("false"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a boolean value to false");
 
   ok = CheckGetCodePaths (p, "TestBoolA", "false", BooleanValue (false));
@@ -400,7 +400,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute to a negative value through a StringValue.
   //
-  ok = p->SetAttributeFailSafe("TestInt16", StringValue ("-5"));
+  ok = p->SetAttributeFailSafe ("TestInt16", StringValue ("-5"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to -5");
 
   ok = CheckGetCodePaths (p, "TestInt16", "-5", IntegerValue (-5));
@@ -409,7 +409,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute to a positive value through a StringValue.
   //
-  ok = p->SetAttributeFailSafe("TestInt16", StringValue ("+2"));
+  ok = p->SetAttributeFailSafe ("TestInt16", StringValue ("+2"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to +2");
 
   ok = CheckGetCodePaths (p, "TestInt16", "2", IntegerValue (2));
@@ -418,7 +418,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute to the most negative value of the signed 16-bit range.
   //
-  ok = p->SetAttributeFailSafe("TestInt16", StringValue ("-32768"));
+  ok = p->SetAttributeFailSafe ("TestInt16", StringValue ("-32768"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to -32768");
 
   ok = CheckGetCodePaths (p, "TestInt16", "-32768", IntegerValue (-32768));
@@ -428,7 +428,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   // Try to set the Attribute past the most negative value of the signed 16-bit
   // range and make sure the underlying attribute is unchanged.
   //
-  ok = p->SetAttributeFailSafe("TestInt16", StringValue ("-32769"));
+  ok = p->SetAttributeFailSafe ("TestInt16", StringValue ("-32769"));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to -32769");
 
   ok = CheckGetCodePaths (p, "TestInt16", "-32768", IntegerValue (-32768));
@@ -437,7 +437,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute to the most positive value of the signed 16-bit range.
   //
-  ok = p->SetAttributeFailSafe("TestInt16", StringValue ("32767"));
+  ok = p->SetAttributeFailSafe ("TestInt16", StringValue ("32767"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to 32767");
 
   ok = CheckGetCodePaths (p, "TestInt16", "32767", IntegerValue (32767));
@@ -447,7 +447,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   // Try to set the Attribute past the most positive value of the signed 16-bit
   // range and make sure the underlying attribute is unchanged.
   //
-  ok = p->SetAttributeFailSafe("TestInt16", StringValue ("32768"));
+  ok = p->SetAttributeFailSafe ("TestInt16", StringValue ("32768"));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to 32768");
 
   ok = CheckGetCodePaths (p, "TestInt16", "32767", IntegerValue (32767));
@@ -457,7 +457,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   // Attributes can have limits other than the intrinsic limits of the
   // underlying data types.  These limits are specified in the Object.
   //
-  ok = p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (10));
+  ok = p->SetAttributeFailSafe ("TestInt16WithBounds", IntegerValue (10));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 10");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "10", IntegerValue (10));
@@ -466,7 +466,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute past the positive limit.
   //
-  ok = p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (11));
+  ok = p->SetAttributeFailSafe ("TestInt16WithBounds", IntegerValue (11));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to 11");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "10", IntegerValue (10));
@@ -475,7 +475,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute at the negative limit.
   //
-  ok = p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (-5));
+  ok = p->SetAttributeFailSafe ("TestInt16WithBounds", IntegerValue (-5));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to -5");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "-5", IntegerValue (-5));
@@ -484,7 +484,7 @@ AttributeTestCase<IntegerValue>::DoRun (void)
   //
   // Set the Attribute past the negative limit.
   //
-  ok = p->SetAttributeFailSafe("TestInt16WithBounds", IntegerValue (-6));
+  ok = p->SetAttributeFailSafe ("TestInt16WithBounds", IntegerValue (-6));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to -6");
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "-5", IntegerValue (-5));
@@ -510,7 +510,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   //
   // Set the Attribute to zero.
   //
-  ok = p->SetAttributeFailSafe("TestUint8", UintegerValue (0));
+  ok = p->SetAttributeFailSafe ("TestUint8", UintegerValue (0));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to 0");
 
   ok = CheckGetCodePaths (p, "TestUint8", "0", UintegerValue (0));
@@ -519,7 +519,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   //
   // Set the Attribute to the most positive value of the unsigned 8-bit range.
   //
-  ok = p->SetAttributeFailSafe("TestUint8", UintegerValue (255));
+  ok = p->SetAttributeFailSafe ("TestUint8", UintegerValue (255));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to 255");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
@@ -529,7 +529,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   // Try and set the Attribute past the most positive value of the unsigned 
   // 8-bit range.
   //
-  ok = p->SetAttributeFailSafe("TestUint8", UintegerValue (256));
+  ok = p->SetAttributeFailSafe ("TestUint8", UintegerValue (256));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to 256");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
@@ -539,7 +539,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   // Set the Attribute to the most positive value of the unsigned 8-bit range
   // through a StringValue.
   //
-  ok = p->SetAttributeFailSafe("TestUint8", StringValue ("255"));
+  ok = p->SetAttributeFailSafe ("TestUint8", StringValue ("255"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via StringValue to 255");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
@@ -549,7 +549,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   // Try and set the Attribute past the most positive value of the unsigned
   // 8-bit range through a StringValue.
   //
-  ok = p->SetAttributeFailSafe("TestUint8", StringValue ("256"));
+  ok = p->SetAttributeFailSafe ("TestUint8", StringValue ("256"));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to 256");
 
   ok = CheckGetCodePaths (p, "TestUint8", "255", UintegerValue (255));
@@ -558,7 +558,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   //
   // Try to set the Attribute to a negative StringValue.
   //
-  ok = p->SetAttributeFailSafe("TestUint8", StringValue ("-1"));
+  ok = p->SetAttributeFailSafe ("TestUint8", StringValue ("-1"));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to -1");
 }
 
@@ -581,7 +581,7 @@ AttributeTestCase<DoubleValue>::DoRun (void)
   //
   // Set the Attribute.
   //
-  ok = p->SetAttributeFailSafe("TestFloat", DoubleValue ((float)2.3));
+  ok = p->SetAttributeFailSafe ("TestFloat", DoubleValue ((float)2.3));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to 2.3");
 
   ok = CheckGetCodePaths (p, "TestFloat", "2.3", DoubleValue ((float)2.3));
@@ -607,7 +607,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   //
   // Set the Attribute using the EnumValue type.
   //
-  ok = p->SetAttributeFailSafe("TestEnum", EnumValue (AttributeObjectTest::TEST_C));
+  ok = p->SetAttributeFailSafe ("TestEnum", EnumValue (AttributeObjectTest::TEST_C));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to TEST_C");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestC", EnumValue (AttributeObjectTest::TEST_C));
@@ -616,7 +616,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   //
   // Set the Attribute using the StringValue type.
   //
-  ok = p->SetAttributeFailSafe("TestEnum", StringValue ("TestB"));
+  ok = p->SetAttributeFailSafe ("TestEnum", StringValue ("TestB"));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() to TEST_B");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
@@ -626,7 +626,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   // Try to set the Attribute to a bogus enum using the StringValue type and 
   // make sure the underlying value doesn't change.
   //
-  ok = p->SetAttributeFailSafe("TestEnum", StringValue ("TestD"));
+  ok = p->SetAttributeFailSafe ("TestEnum", StringValue ("TestD"));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to TEST_D"); // 
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
@@ -636,7 +636,7 @@ AttributeTestCase<EnumValue>::DoRun (void)
   // Try to set the Attribute to a bogus enum using an integer implicit conversion
   // and make sure the underlying value doesn't change.
   //
-  ok = p->SetAttributeFailSafe("TestEnum", EnumValue (5));
+  ok = p->SetAttributeFailSafe ("TestEnum", EnumValue (5));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to 5");
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
@@ -655,13 +655,13 @@ AttributeTestCase<RandomVariableValue>::DoRun (void)
   //
   // Try to set a UniformVariable
   //
-  ok = p->SetAttributeFailSafe("TestRandom", RandomVariableValue (UniformVariable (0., 1.)));
+  ok = p->SetAttributeFailSafe ("TestRandom", RandomVariableValue (UniformVariable (0., 1.)));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformVariable");
 
   //
   // Try to set a <snicker> ConstantVariable
   //
-  ok = p->SetAttributeFailSafe("TestRandom", RandomVariableValue (ConstantVariable (10.)));
+  ok = p->SetAttributeFailSafe ("TestRandom", RandomVariableValue (ConstantVariable (10.)));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformVariable");
 }
 
@@ -770,7 +770,7 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
   //
   // Set the Attribute to a positive value through an IntegerValue.
   //
-  ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue (5));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (5));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 5");
 
   p->GetAttribute ("IntegerTraceSource1", iv);
@@ -779,16 +779,16 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
   //
   // Limits should work.
   //
-  ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue (127));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (127));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 127");
 
-  ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue (128));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (128));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to 128");
 
-  ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue (-128));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (-128));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to -128");
 
-  ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue (-129));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource1", IntegerValue (-129));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to -129");
 
   //
@@ -801,7 +801,7 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
   //
   // Set the Attribute to a positive value through an IntegerValue.
   //
-  ok = p->SetAttributeFailSafe("IntegerTraceSource2", IntegerValue (5));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (5));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 5");
 
   p->GetAttribute ("IntegerTraceSource2", iv);
@@ -810,16 +810,16 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
   //
   // Limits should work.
   //
-  ok = p->SetAttributeFailSafe("IntegerTraceSource2", IntegerValue (127));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (127));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 127");
 
-  ok = p->SetAttributeFailSafe("IntegerTraceSource2", IntegerValue (128));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (128));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to 128");
 
-  ok = p->SetAttributeFailSafe("IntegerTraceSource2", IntegerValue (-128));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (-128));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to -128");
 
-  ok = p->SetAttributeFailSafe("IntegerTraceSource2", IntegerValue (-129));
+  ok = p->SetAttributeFailSafe ("IntegerTraceSource2", IntegerValue (-129));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to -129");
 }
 
@@ -836,7 +836,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource1 (int8_t old, int8_t n) { m_got1 = n;}
+  void NotifySource1 (int8_t old, int8_t n) { m_got1 = n; }
   int64_t m_got1;
 };
 
@@ -908,7 +908,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource2 (double a, int b, float c) { m_got2 = a;}
+  void NotifySource2 (double a, int b, float c) { m_got2 = a; }
 
   double m_got2;
 };
@@ -982,7 +982,7 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource2 (double a, int b, float c) { m_got2 = a;}
+  void NotifySource2 (double a, int b, float c) { m_got2 = a; }
 
   double m_got2;
 };
@@ -1016,7 +1016,7 @@ PointerAttributeTestCase::DoRun (void)
   // to that object.  We can then set the PointerValue Attribute to that Ptr.
   //
   derived = Create<Derived> ();
-  ok = p->SetAttributeFailSafe("Pointer", PointerValue (derived));
+  ok = p->SetAttributeFailSafe ("Pointer", PointerValue (derived));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a PointerValue of the correct type");
 
   //
@@ -1078,7 +1078,7 @@ private:
 
   Callback<void,int8_t> m_cbValue;
 
-  void NotifyCallbackValue (int8_t a) { m_gotCbValue = a;}
+  void NotifyCallbackValue (int8_t a) { m_gotCbValue = a; }
 
   int16_t m_gotCbValue;
 };

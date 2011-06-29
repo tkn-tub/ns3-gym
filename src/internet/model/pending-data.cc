@@ -57,8 +57,8 @@ PendingData::PendingData(const std::string& s)
   : size (s.length () + 1), data (0),
     msgSize (0), responseSize (0)
 {
-  NS_LOG_FUNCTION (this << s.length() + 1);
-  data.push_back (Create<Packet> ((uint8_t*)s.c_str(), size));
+  NS_LOG_FUNCTION (this << s.length () + 1);
+  data.push_back (Create<Packet> ((uint8_t*)s.c_str (), size));
 }
 
 PendingData::PendingData(const PendingData& c)
@@ -94,7 +94,7 @@ PendingData* PendingData::CopySD (uint32_t s, uint8_t* d)
 void PendingData::Clear ()
 { // Remove all pending data
   NS_LOG_FUNCTION (this);
-  data.clear();
+  data.clear ();
   size = 0;
 }
 
@@ -103,11 +103,11 @@ void PendingData::Add (uint32_t s, const uint8_t* d)
   NS_LOG_FUNCTION (this << s);
   if (d == 0)
     {
-      data.push_back(Create<Packet> (d,s));
+      data.push_back (Create<Packet> (d,s));
     }
   else
     {
-      data.push_back(Create<Packet> (s));
+      data.push_back (Create<Packet> (s));
     }
   size += s;
 }
@@ -115,8 +115,8 @@ void PendingData::Add (uint32_t s, const uint8_t* d)
 void PendingData::Add (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
-  data.push_back(p);
-  size += p->GetSize();
+  data.push_back (p);
+  size += p->GetSize ();
 }
 
 uint32_t PendingData::SizeFromSeq (const SequenceNumber32& seqFront, const SequenceNumber32& seqOffset)
@@ -153,7 +153,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
     {
       return Create<Packet> ();   // No data requested
     }
-  if (data.size() != 0)
+  if (data.size () != 0)
     { // Actual data exists, make copy and return it
       uint32_t count = 0;
       std::vector<Ptr<Packet> >::size_type begin = 0;
@@ -161,9 +161,9 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
       std::vector<Ptr<Packet> >::size_type end = 0;
       Ptr<Packet> outPacket;
       Ptr<Packet> endFragment;
-      for (std::vector<Ptr<Packet> >::size_type i=0; i<data.size(); ++i)
+      for (std::vector<Ptr<Packet> >::size_type i=0; i<data.size (); ++i)
         {
-          count+=data[i]->GetSize();
+          count+=data[i]->GetSize ();
           if (!beginFound)
             {
               if (count > o)
@@ -171,7 +171,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
                   if (count >= o + s1) //then just copy within this packet
                     {
                       Ptr<Packet> toFragment = data[i];
-                      uint32_t packetStart = count - toFragment->GetSize();
+                      uint32_t packetStart = count - toFragment->GetSize ();
                       uint32_t packetOffset = o - packetStart;
                       outPacket = toFragment->CreateFragment (packetOffset, s1);
                       return outPacket;
@@ -179,7 +179,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
                   begin = i;
                   beginFound = true;
                   Ptr<Packet> toFragment = data[begin];
-                  uint32_t packetStart = count - toFragment->GetSize();
+                  uint32_t packetStart = count - toFragment->GetSize ();
                   uint32_t packetOffset = o - packetStart;
                   uint32_t fragmentLength = count - o;
                   outPacket = toFragment->CreateFragment (packetOffset, fragmentLength);
@@ -191,9 +191,9 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
                 {
                   end = i;
                   Ptr<Packet> toFragment = data[end];
-                  uint32_t packetStart = count - toFragment->GetSize();
+                  uint32_t packetStart = count - toFragment->GetSize ();
                   uint32_t fragmentLength = o + s1 - packetStart;
-                  endFragment = toFragment->CreateFragment(0, fragmentLength);
+                  endFragment = toFragment->CreateFragment (0, fragmentLength);
                   break;
                 }
             }
@@ -204,9 +204,9 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
         }
       if (endFragment)
         {
-          outPacket->AddAtEnd(endFragment);
+          outPacket->AddAtEnd (endFragment);
         }
-      NS_ASSERT(outPacket->GetSize() == s1);
+      NS_ASSERT (outPacket->GetSize () == s1);
       return outPacket;
     }
   else
@@ -218,7 +218,7 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
 Ptr<Packet> PendingData::CopyFromSeq (uint32_t s, const SequenceNumber32& f, const SequenceNumber32& o)
 {
   NS_LOG_FUNCTION (this << s << f << o);
-  return CopyFromOffset (s, OffsetFromSeq(f,o));
+  return CopyFromOffset (s, OffsetFromSeq (f,o));
 }
 
 uint32_t

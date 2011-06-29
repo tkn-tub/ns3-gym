@@ -424,7 +424,7 @@ Ipv4L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
     }
 
   Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv4[pair];
-  file->Write(Simulator::Now(), p);
+  file->Write (Simulator::Now (), p);
 }
 
 bool
@@ -519,7 +519,7 @@ Ipv6L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
     }
 
   Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv6[pair];
-  file->Write(Simulator::Now(), p);
+  file->Write (Simulator::Now (), p);
 }
 
 bool

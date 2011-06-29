@@ -58,16 +58,16 @@ public:
   RttEstimator(const RttEstimator&); // Copy constructor
   virtual ~RttEstimator();
 
-  virtual void SentSeq(SequenceNumber32, uint32_t);
-  virtual Time AckSeq(SequenceNumber32);
-  virtual void ClearSent();
-  virtual void   Measurement(Time t) = 0;
-  virtual Time RetransmitTimeout() = 0;
-  void Init(SequenceNumber32 s) { next = s;}
-  virtual Ptr<RttEstimator> Copy() const = 0;
-  virtual void IncreaseMultiplier();
-  virtual void ResetMultiplier();
-  virtual void Reset();
+  virtual void SentSeq (SequenceNumber32, uint32_t);
+  virtual Time AckSeq (SequenceNumber32);
+  virtual void ClearSent ();
+  virtual void   Measurement (Time t) = 0;
+  virtual Time RetransmitTimeout () = 0;
+  void Init (SequenceNumber32 s) { next = s; }
+  virtual Ptr<RttEstimator> Copy () const = 0;
+  virtual void IncreaseMultiplier ();
+  virtual void ResetMultiplier ();
+  virtual void Reset ();
 
   void SetMinRto (Time minRto);
   Time GetMinRto (void) const;
@@ -107,7 +107,7 @@ public:
   Time RetransmitTimeout ();
   Ptr<RttEstimator> Copy () const;
   void Reset ();
-  void Gain (double g) { gain = g;}
+  void Gain (double g) { gain = g; }
 
 public:
   double       gain;       // Filter gain

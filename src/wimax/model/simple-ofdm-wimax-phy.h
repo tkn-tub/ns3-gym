@@ -39,6 +39,9 @@ class NetDevice;
 class Packet;
 class SimpleOfdmWimaxChannel;
 
+/**
+ * \ingroup wimax
+ */
 class SimpleOfdmWimaxPhy : public WimaxPhy
 {
 public:

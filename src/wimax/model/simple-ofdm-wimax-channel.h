@@ -35,6 +35,9 @@ class Packet;
 class PacketBurst;
 class SimpleOfdmWimaxPhy;
 
+/**
+ * \ingroup wimax
+ */
 class SimpleOfdmWimaxChannel : public WimaxChannel
 {
 public:

@@ -38,7 +38,7 @@ public:
   void D (int d);
   void foo0 (void);
   uint64_t NowUs (void);
-  void destroy(void);
+  void destroy (void);
   bool m_b;
   bool m_a;
   bool m_c;
@@ -103,7 +103,7 @@ SimulatorEventsTestCase::D (int d)
 }
 
 void
-SimulatorEventsTestCase::foo0(void)
+SimulatorEventsTestCase::foo0 (void)
 {}
 
 void

@@ -43,12 +43,12 @@ Ipv4GlobalRouting::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("RandomEcmpRouting",
                    "Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently",
-                   BooleanValue(false),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&Ipv4GlobalRouting::m_randomEcmpRouting),
                    MakeBooleanChecker ())
     .AddAttribute ("RespondToInterfaceEvents",
                    "Set to true if you want to dynamically recompute the global routes upon Interface notification events (up/down, or add/remove address)",
-                   BooleanValue(false),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&Ipv4GlobalRouting::m_respondToInterfaceEvents),
                    MakeBooleanChecker ())
   ;
@@ -152,7 +152,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
         {
           if (oif != 0)
             {
-              if (oif != m_ipv4->GetNetDevice((*i)->GetInterface ()))
+              if (oif != m_ipv4->GetNetDevice ((*i)->GetInterface ()))
                 {
                   NS_LOG_LOGIC ("Not on requested interface, skipping");
                   continue;
@@ -175,7 +175,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
             {
               if (oif != 0)
                 {
-                  if (oif != m_ipv4->GetNetDevice((*j)->GetInterface ()))
+                  if (oif != m_ipv4->GetNetDevice ((*j)->GetInterface ()))
                     {
                       NS_LOG_LOGIC ("Not on requested interface, skipping");
                       continue;
@@ -199,7 +199,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
               NS_LOG_LOGIC ("Found external route" << *k);
               if (oif != 0)
                 {
-                  if (oif != m_ipv4->GetNetDevice((*k)->GetInterface ()))
+                  if (oif != m_ipv4->GetNetDevice ((*k)->GetInterface ()))
                     {
                       NS_LOG_LOGIC ("Not on requested interface, skipping");
                       continue;
@@ -229,7 +229,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
       // XXX handle multi-address case
-      rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface(), 0).GetLocal ());
+      rtentry->SetSource (m_ipv4->GetAddress (route->GetInterface (), 0).GetLocal ());
       rtentry->SetGateway (route->GetGateway ());
       uint32_t interfaceIdx = route->GetInterface ();
       rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
@@ -272,7 +272,7 @@ Ipv4GlobalRouting::GetRoute (uint32_t index) const
     }
   index -= m_hostRoutes.size ();
   uint32_t tmp = 0;
-  if (index < m_networkRoutes.size())
+  if (index < m_networkRoutes.size ())
     {
       for (NetworkRoutesCI j = m_networkRoutes.begin (); 
            j != m_networkRoutes.end ();
@@ -285,7 +285,7 @@ Ipv4GlobalRouting::GetRoute (uint32_t index) const
           tmp++;
         }
     }
-  index -= m_networkRoutes.size();
+  index -= m_networkRoutes.size ();
   tmp = 0;
   for (ASExternalRoutesCI k = m_ASexternalRoutes.begin (); 
        k != m_ASexternalRoutes.end (); 
@@ -314,10 +314,10 @@ Ipv4GlobalRouting::RemoveRoute (uint32_t index)
         {
           if (tmp  == index)
             {
-              NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_hostRoutes.size());
+              NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_hostRoutes.size ());
               delete *i;
               m_hostRoutes.erase (i);
-              NS_LOG_LOGIC ("Done removing host route " << index << "; host route remaining size = " << m_hostRoutes.size());
+              NS_LOG_LOGIC ("Done removing host route " << index << "; host route remaining size = " << m_hostRoutes.size ());
               return;
             }
           tmp++;
@@ -331,10 +331,10 @@ Ipv4GlobalRouting::RemoveRoute (uint32_t index)
     {
       if (tmp == index)
         {
-          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_networkRoutes.size());
+          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_networkRoutes.size ());
           delete *j;
           m_networkRoutes.erase (j);
-          NS_LOG_LOGIC ("Done removing network route " << index << "; network route remaining size = " << m_networkRoutes.size());
+          NS_LOG_LOGIC ("Done removing network route " << index << "; network route remaining size = " << m_networkRoutes.size ());
           return;
         }
       tmp++;
@@ -347,10 +347,10 @@ Ipv4GlobalRouting::RemoveRoute (uint32_t index)
     {
       if (tmp == index)
         {
-          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_ASexternalRoutes.size());
+          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_ASexternalRoutes.size ());
           delete *k;
           m_ASexternalRoutes.erase (k);
-          NS_LOG_LOGIC ("Done removing network route " << index << "; network route remaining size = " << m_networkRoutes.size());
+          NS_LOG_LOGIC ("Done removing network route " << index << "; network route remaining size = " << m_networkRoutes.size ());
           return;
         }
       tmp++;
@@ -386,9 +386,9 @@ Ipv4GlobalRouting::DoDispose (void)
 
 // Formatted like output of "route -n" command
 void
-Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
+Ipv4GlobalRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
-  std::ostream* os = stream->GetStream();
+  std::ostream* os = stream->GetStream ();
   if (GetNRoutes () > 0)
     {
       *os << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface" << std::endl;
@@ -397,11 +397,11 @@ Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
           std::ostringstream dest, gw, mask, flags;
           Ipv4RoutingTableEntry route = GetRoute (j);
           dest << route.GetDest ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str ();
           gw << route.GetGateway ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str ();
           mask << route.GetDestNetworkMask ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << mask.str();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << mask.str ();
           flags << "U";
           if (route.IsHost ())
             {
@@ -411,7 +411,7 @@ Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
             {
               flags << "G";
             }
-          *os << std::setiosflags (std::ios::left) << std::setw (6) << flags.str();
+          *os << std::setiosflags (std::ios::left) << std::setw (6) << flags.str ();
           // Metric not implemented
           *os << "-" << "      ";
           // Ref ct not implemented
@@ -424,7 +424,7 @@ Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
             }
           else
             {
-              *os << route.GetInterface();
+              *os << route.GetInterface ();
             }
           *os << std::endl;
         }
@@ -439,7 +439,7 @@ Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<Net
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
 //
-  if (header.GetDestination().IsMulticast ())
+  if (header.GetDestination ().IsMulticast ())
     {
       NS_LOG_LOGIC ("Multicast destination-- returning false");
       return 0; // Let other routing protocols try to handle this
@@ -591,7 +591,7 @@ Ipv4GlobalRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress
 void 
 Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_LOG_FUNCTION(this << ipv4);
+  NS_LOG_FUNCTION (this << ipv4);
   NS_ASSERT (m_ipv4 == 0 && ipv4 != 0);
   m_ipv4 = ipv4;
 }

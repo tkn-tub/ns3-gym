@@ -35,12 +35,13 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ * \brief The value field of a tlv can take different values (uint8_t, uint16, vector...). This class is a virtual interface
+ * that all the types of tlv values should derive
+ */
 class TlvValue
 {
-  /**
-   * \brief The value field of a tlv can take different values (uint8_t, uint16, vector...). This class is a virtual interface
-   * that all the types of tlv values should derive
-   */
 public:
   virtual ~TlvValue ()
   {
@@ -54,15 +55,16 @@ private:
 
 
 // =============================================================================
+/**
+ * \ingroup wimax
+ * \brief This class implements the Type-Len-Value structure channel encodings as described by "IEEE Standard for
+ * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access Systems"
+ * 11. TLV encodings, page 645
+ *
+ */
 class Tlv : public Header
 {
 public:
-  /**
-   * \brief This class implements the Type-Len-Value structure channel encodings as described by "IEEE Standard for
-   * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access Systems"
-   * 11. TLV encodings, page 645
-   *
-   */
   enum CommonTypes
   {
     HMAC_TUPLE = 149,
@@ -97,6 +99,9 @@ private:
 };
 
 // ==============================================================================
+/**
+ * \ingroup wimax
+ */
 class U8TlvValue : public TlvValue
 {
 public:
@@ -114,6 +119,9 @@ private:
 };
 
 // ==============================================================================
+/**
+ * \ingroup wimax
+ */
 class U16TlvValue : public TlvValue
 {
 public:
@@ -131,6 +139,9 @@ private:
 };
 
 // ==============================================================================
+/**
+ * \ingroup wimax
+ */
 class U32TlvValue : public TlvValue
 {
 public:
@@ -150,11 +161,12 @@ private:
 
 // ==============================================================================
 
+/**
+ * \ingroup wimax
+ * \brief this class is used to implement a vector of values in one tlv value field
+ */
 class VectorTlvValue : public TlvValue
 {
-  /**
-   * \brief this class is used to implement a vector of values in one tlv value field
-   */
 public:
   typedef std::vector<Tlv*>::const_iterator Iterator;
   VectorTlvValue (void);
@@ -171,7 +183,9 @@ private:
 };
 
 // ==============================================================================
-
+/**
+ * \ingroup wimax
+ */
 class SfVectorTlvValue : public VectorTlvValue
 {
 
@@ -215,11 +229,12 @@ public:
 };
 // ==============================================================================
 
+/**
+ * \ingroup wimax
+ * \brief this class implements the convergence sub-layer descriptor as a tlv vector
+ */
 class CsParamVectorTlvValue : public VectorTlvValue
 {
-  /*
-   * \brief this class implements the convergence sub-layer descriptor as a tlv vector
-   */
 public:
   enum Type
   {
@@ -234,11 +249,12 @@ private:
 
 // ==============================================================================
 
+/**
+ * \ingroup wimax
+ * \brief this class implements the classifier descriptor as a tlv vector
+ */
 class ClassificationRuleVectorTlvValue : public VectorTlvValue
 {
-  /*
-   * \brief this class implements the classifier descriptor as a tlv vector
-   */
 public:
   enum ClassificationRuleTlvType
   {
@@ -258,6 +274,9 @@ private:
 };
 
 // ==============================================================================
+/**
+ * \ingroup wimax
+ */
 class TosTlvValue : public TlvValue
 {
 public:
@@ -278,6 +297,9 @@ private:
 };
 
 // ==============================================================================
+/**
+ * \ingroup wimax
+ */
 class PortRangeTlvValue : public TlvValue
 {
 public:
@@ -301,6 +323,9 @@ private:
 };
 
 // ==============================================================================
+/**
+ * \ingroup wimax
+ */
 class ProtocolTlvValue : public TlvValue
 {
 public:
@@ -320,6 +345,9 @@ private:
 
 // ==============================================================================
 
+/**
+ * \ingroup wimax
+ */
 class Ipv4AddressTlvValue : public TlvValue
 {
 public:

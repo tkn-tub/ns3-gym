@@ -342,7 +342,7 @@ public:
      * \param size size of the buffer.
      * \return checksum
      */
-    uint16_t CalculateIpChecksum(uint16_t size);
+    uint16_t CalculateIpChecksum (uint16_t size);
 
     /**
      * \brief Calculate the checksum.
@@ -350,7 +350,7 @@ public:
      * \param initialChecksum initial value
      * \return checksum
      */
-    uint16_t CalculateIpChecksum(uint16_t size, uint32_t initialChecksum);
+    uint16_t CalculateIpChecksum (uint16_t size, uint32_t initialChecksum);
 
     /**
      * \returns the size of the underlying buffer we are iterating

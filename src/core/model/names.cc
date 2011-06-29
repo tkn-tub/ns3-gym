@@ -254,7 +254,7 @@ NamesPriv::Add (Ptr<Object> context, std::string name, Ptr<Object> object)
       return false;
     }
 
-  NameNode *newNode = new NameNode(node, name, object);
+  NameNode *newNode = new NameNode (node, name, object);
   node->m_nameMap[name] = newNode;
   m_objectMap[object] = newNode;
 
@@ -498,7 +498,7 @@ NamesPriv::Find (std::string path)
           // specified name.  We need to "recurse" when we find this segment.
           //
           offset = remaining.find ("/");
-          std::string segment = remaining.substr(0, offset);
+          std::string segment = remaining.substr (0, offset);
 
           std::map<std::string, NameNode *>::iterator i = node->m_nameMap.find (segment);
           if (i == node->m_nameMap.end ())

@@ -68,7 +68,7 @@ Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
     {
       return false;
     }
-  if (mp->GetAddress() == m_root)
+  if (mp->GetAddress () == m_root)
     {
       hwmp->SetRoot ();
     }

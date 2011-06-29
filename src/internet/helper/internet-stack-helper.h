@@ -141,7 +141,7 @@ public:
    *
    * \param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
    */
-  void SetTcp(std::string tid);
+  void SetTcp (std::string tid);
 
   /**
    * \brief This function is used to setup the Network Simulation Cradle stack with library value.

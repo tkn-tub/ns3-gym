@@ -68,7 +68,7 @@
         {                                                       \
           std::cerr << "assert failed. cond=\"" <<              \
           # condition << "\", ";                               \
-          NS_FATAL_ERROR_NO_MSG();                              \
+          NS_FATAL_ERROR_NO_MSG ();                              \
         }                                                       \
     }                                                           \
   while (false)

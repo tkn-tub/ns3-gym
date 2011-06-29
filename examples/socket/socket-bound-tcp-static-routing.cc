@@ -157,7 +157,7 @@ main (int argc, char *argv[])
   uint16_t dstport = 12345;
   Ipv4Address dstaddr ("10.20.1.2");
 
-  PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny(), dstport));
+  PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dstport));
   ApplicationContainer apps = sink.Install (nDst);
   apps.Start (Seconds (0.0));
   apps.Stop (Seconds (10.0));
@@ -189,15 +189,15 @@ main (int argc, char *argv[])
   return 0;
 }
 
-void BindSock(Ptr<Socket> sock, Ptr<NetDevice> netdev)
+void BindSock (Ptr<Socket> sock, Ptr<NetDevice> netdev)
 {
-  sock->BindToNetDevice(netdev);
+  sock->BindToNetDevice (netdev);
   return;
 }
 
-void StartFlow(Ptr<Socket> localSocket,
-               Ipv4Address servAddress,
-               uint16_t servPort)
+void StartFlow (Ptr<Socket> localSocket,
+                Ipv4Address servAddress,
+                uint16_t servPort)
 {
   NS_LOG_INFO ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
   currentTxBytes = 0;

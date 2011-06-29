@@ -52,6 +52,20 @@ class ServiceFlowManager;
 class BandwidthManager;
 class UplinkScheduler;
 
+/**
+ * \defgroup wimax WiMAX Models
+ *
+ * This section documents the API of the ns-3 wimax module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
+/**
+ * \brief Hold together all Wimax-related objects in a NetDevice.
+ * \ingroup wimax
+ *
+ * This class holds together ns3::WimaxPhy, ns3::WimaxConnection,
+ * ns3::ConectionManager, ns3::BurstProfileManager, and 
+ * ns3::BandwidthManager.
+ */
 class WimaxNetDevice : public NetDevice
 {
 public:

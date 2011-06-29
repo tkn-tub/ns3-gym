@@ -108,12 +108,12 @@ SimpleNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 }
 
 void 
-SimpleNetDevice::SetIfIndex(const uint32_t index)
+SimpleNetDevice::SetIfIndex (const uint32_t index)
 {
   m_ifIndex = index;
 }
 uint32_t 
-SimpleNetDevice::GetIfIndex(void) const
+SimpleNetDevice::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
@@ -125,7 +125,7 @@ SimpleNetDevice::GetChannel (void) const
 void
 SimpleNetDevice::SetAddress (Address address)
 {
-  m_address = Mac48Address::ConvertFrom(address);
+  m_address = Mac48Address::ConvertFrom (address);
 }
 Address 
 SimpleNetDevice::GetAddress (void) const
@@ -193,7 +193,7 @@ SimpleNetDevice::IsBridge (void) const
 }
 
 bool 
-SimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+SimpleNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (packet << dest << protocolNumber);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
@@ -201,7 +201,7 @@ SimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocol
   return true;
 }
 bool 
-SimpleNetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+SimpleNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   Mac48Address from = Mac48Address::ConvertFrom (source);

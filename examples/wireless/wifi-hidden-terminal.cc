@@ -54,7 +54,7 @@ void experiment (bool enableCtsRts)
   // 2. Place nodes somehow, this is required by every wireless simulation
   for (size_t i = 0; i < 3; ++i)
     {
-      nodes.Get(i)->AggregateObject (CreateObject<ConstantPositionMobilityModel> ());
+      nodes.Get (i)->AggregateObject (CreateObject<ConstantPositionMobilityModel> ());
     }
 
   // 3. Create propagation loss matrix
@@ -140,7 +140,7 @@ void experiment (bool enableCtsRts)
 
   // 8. Install FlowMonitor on all nodes
   FlowMonitorHelper flowmon;
-  Ptr<FlowMonitor> monitor = flowmon.InstallAll();
+  Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
 
   // 9. Run simulation for 10 seconds
   Simulator::Stop (Seconds (10));

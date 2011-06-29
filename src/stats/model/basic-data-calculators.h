@@ -40,24 +40,35 @@ public:
   MinMaxAvgTotalCalculator();
   virtual ~MinMaxAvgTotalCalculator();
 
-  void Update(const T i);
+  void Update (const T i);
 
-  virtual void Output(DataOutputCallback &callback) const;
+  virtual void Output (DataOutputCallback &callback) const;
 
-  long getCount() const { return m_count; }
-  double getSum() const { return m_total; }
-  double getMin() const { return m_min; }
-  double getMax() const { return m_max; }
-  double getMean() const { return m_total / (double)m_count; }
-    double getStddev() const { return sqrt (getVariance ()); }
-    double getVariance() const { return  ( m_count * m_totalSquare - m_total * m_total ) / (double) (m_count * (m_count - 1) ); }
-    double getSqrSum() const { return m_totalSquare; }
+  long getCount () const { return m_count; }
+  double getSum () const { return m_total; }
+  double getMin () const { return m_min; }
+  double getMax () const { return m_max; }
+  double getMean () const { return m_meanCurr; }
+  double getStddev () const { return sqrt (m_varianceCurr); }
+  double getVariance () const { return m_varianceCurr; }
+  double getSqrSum () const { return m_squareTotal; }
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   uint32_t m_count;
-    T m_total, m_min, m_max, m_totalSquare;
+
+  T m_total;
+  T m_squareTotal;
+  T m_min;
+  T m_max;
+
+  double m_meanCurr;
+  double m_sCurr;
+  double m_varianceCurr;
+
+  double m_meanPrev;
+  double m_sPrev;
 
   // end MinMaxAvgTotalCalculator
 };
@@ -67,10 +78,16 @@ template <typename T>
 MinMaxAvgTotalCalculator<T>::MinMaxAvgTotalCalculator()
 {
   m_count = 0;
-  m_total = 0;
-    m_totalSquare = 0;
-  m_min = ~0;
-  m_max = 0;
+
+  m_total       = 0;
+  m_squareTotal = 0;
+
+  m_meanCurr     = NaN;
+  m_sCurr        = NaN;
+  m_varianceCurr = NaN;
+
+  m_meanPrev     = NaN;
+  m_sPrev        = NaN;
 }
 
 template <typename T>
@@ -79,36 +96,83 @@ MinMaxAvgTotalCalculator<T>::~MinMaxAvgTotalCalculator()
 }
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::DoDispose(void)
+MinMaxAvgTotalCalculator<T>::DoDispose (void)
 {
-  DataCalculator::DoDispose();
+  DataCalculator::DoDispose ();
   // MinMaxAvgTotalCalculator::DoDispose
 }
 
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::Update(const T i)
+MinMaxAvgTotalCalculator<T>::Update (const T i)
 {
   if (m_enabled) {
-      m_total += i;
-      m_totalSquare += i*i;
-
-      if (i < m_min)
-        m_min = i;
-
-      if (i > m_max)
-        m_max = i;
-
       m_count++;
+
+      m_total       += i;
+      m_squareTotal += i*i;
+
+      if (m_count == 1)
+        {
+          m_min = i;
+          m_max = i;
+        }
+      else
+        {
+          if (i < m_min)
+            {
+              m_min = i;
+            }
+          if (i > m_max)
+            {
+              m_max = i;
+            }
+        }
+
+      // Calculate the variance based on equations (15) and (16) on
+      // page 216 of "The Art of Computer Programming, Volume 2",
+      // Second Edition. Donald E. Knuth.  Addison-Wesley
+      // Publishing Company, 1973.
+      //
+      // The relationships between the variance, standard deviation,
+      // and s are as follows
+      //
+      //                      s
+      //     variance  =  -----------
+      //                   count - 1
+      //
+      //                                -------------
+      //                               /
+      //     standard_deviation  =    /  variance
+      //                            \/
+      //
+      if (m_count == 1)
+        {
+          // Set the very first values.
+          m_meanCurr     = i;
+          m_sCurr        = 0;
+          m_varianceCurr = m_sCurr;
+        }
+      else
+        {
+          // Save the previous values.
+          m_meanPrev     = m_meanCurr;
+          m_sPrev        = m_sCurr;
+
+          // Update the current values.
+          m_meanCurr     = m_meanPrev + (i - m_meanPrev) / m_count;
+          m_sCurr        = m_sPrev    + (i - m_meanPrev) * (i - m_meanCurr);
+          m_varianceCurr = m_sCurr / (m_count - 1);
+        }
     }
   // end MinMaxAvgTotalCalculator::Update
 }
 
 template <typename T>
 void
-MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback &callback) const
+MinMaxAvgTotalCalculator<T>::Output (DataOutputCallback &callback) const
 {
-  callback.OutputStatistic(m_context, m_key, this);
+  callback.OutputStatistic (m_context, m_key, this);
 }
 
 
@@ -124,15 +188,15 @@ public:
   CounterCalculator();
   virtual ~CounterCalculator();
 
-  void Update();
-  void Update(const T i);
+  void Update ();
+  void Update (const T i);
 
-  T GetCount() const;
+  T GetCount () const;
 
-  virtual void Output(DataOutputCallback &callback) const;
+  virtual void Output (DataOutputCallback &callback) const;
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   T m_count;
 
@@ -143,7 +207,7 @@ protected:
 //--------------------------------------------
 template <typename T>
 CounterCalculator<T>::CounterCalculator() :
-  m_count(0)
+  m_count (0)
 {
 }
 
@@ -153,15 +217,15 @@ CounterCalculator<T>::~CounterCalculator()
 }
 template <typename T>
 void
-CounterCalculator<T>::DoDispose(void)
+CounterCalculator<T>::DoDispose (void)
 {
-  DataCalculator::DoDispose();
+  DataCalculator::DoDispose ();
   // CounterCalculator::DoDispose
 }
 
 template <typename T>
 void
-CounterCalculator<T>::Update()
+CounterCalculator<T>::Update ()
 {
   if (m_enabled) {
       m_count++;
@@ -171,7 +235,7 @@ CounterCalculator<T>::Update()
 
 template <typename T>
 void
-CounterCalculator<T>::Update(const T i)
+CounterCalculator<T>::Update (const T i)
 {
   if (m_enabled) {
       m_count += i;
@@ -181,7 +245,7 @@ CounterCalculator<T>::Update(const T i)
 
 template <typename T>
 T
-CounterCalculator<T>::GetCount() const
+CounterCalculator<T>::GetCount () const
 {
   return m_count;
   // end CounterCalculator::GetCount
@@ -189,9 +253,9 @@ CounterCalculator<T>::GetCount() const
 
 template <typename T>
 void
-CounterCalculator<T>::Output(DataOutputCallback &callback) const
+CounterCalculator<T>::Output (DataOutputCallback &callback) const
 {
-  callback.OutputSingleton(m_context, m_key, m_count);
+  callback.OutputSingleton (m_context, m_key, m_count);
   // end CounterCalculator::Output
 }
 

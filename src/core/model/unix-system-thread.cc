@@ -85,7 +85,7 @@ SystemThreadImpl::Start (void)
   if (rc) 
     {
       NS_FATAL_ERROR ("pthread_create failed: " << rc << "=\"" << 
-                      strerror(rc) << "\".");
+                      strerror (rc) << "\".");
     }
 }
 
@@ -99,7 +99,7 @@ SystemThreadImpl::Join (void)
   if (rc) 
     {
       NS_FATAL_ERROR ("pthread_join failed: " << rc << "=\"" << 
-                      strerror(rc) << "\".");
+                      strerror (rc) << "\".");
     }
 }
 

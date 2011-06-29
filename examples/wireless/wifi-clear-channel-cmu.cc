@@ -181,7 +181,7 @@ int main (int argc, char *argv[])
 
   Gnuplot gnuplot = Gnuplot ("clear-channel.eps");
 
-  for (uint32_t i = 0; i < modes.size(); i++)
+  for (uint32_t i = 0; i < modes.size (); i++)
     {
       std::cout << modes[i] << std::endl;
       Gnuplot2dDataset dataset (modes[i]);
@@ -197,14 +197,14 @@ int main (int argc, char *argv[])
           Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
                               StringValue (modes[i]));
           wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                        "DataMode",StringValue(modes[i]),
-                                        "ControlMode",StringValue(modes[i]));
+                                        "DataMode",StringValue (modes[i]),
+                                        "ControlMode",StringValue (modes[i]));
           wifiMac.SetType ("ns3::AdhocWifiMac");
  
           YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-          YansWifiChannelHelper wifiChannel ;
+          YansWifiChannelHelper wifiChannel;
           wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-          wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(rss));
+          wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (rss));
  
  
           NS_LOG_DEBUG (modes[i]);

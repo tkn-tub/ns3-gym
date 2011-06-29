@@ -61,7 +61,7 @@ public:
     /// True for valid route
     bool IsValid () const;
     /// Compare route lookup results, used by tests
-    bool operator==(const LookupResult & o) const;
+    bool operator== (const LookupResult & o) const;
   };
 public:
   static TypeId GetTypeId ();

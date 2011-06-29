@@ -105,7 +105,7 @@ OnOffApplication::~OnOffApplication()
 }
 
 void 
-OnOffApplication::SetMaxBytes(uint32_t maxBytes)
+OnOffApplication::SetMaxBytes (uint32_t maxBytes)
 {
   NS_LOG_FUNCTION (this << maxBytes);
   m_maxBytes = maxBytes;
@@ -129,14 +129,14 @@ OnOffApplication::DoDispose (void)
 }
 
 // Application Methods
-void OnOffApplication::StartApplication() // Called at time specified by Start
+void OnOffApplication::StartApplication () // Called at time specified by Start
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   // Create the socket if not already
   if (!m_socket)
     {
-      m_socket = Socket::CreateSocket (GetNode(), m_tid);
+      m_socket = Socket::CreateSocket (GetNode (), m_tid);
       m_socket->Bind ();
       m_socket->Connect (m_peer);
       m_socket->SetAllowBroadcast (true);
@@ -147,10 +147,10 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
   // If we are not yet connected, there is nothing to do here
   // The ConnectionComplete upcall will start timers at that time
   //if (!m_connected) return;
-  ScheduleStartEvent();
+  ScheduleStartEvent ();
 }
 
-void OnOffApplication::StopApplication() // Called at time specified by Stop
+void OnOffApplication::StopApplication () // Called at time specified by Stop
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -161,7 +161,7 @@ void OnOffApplication::StopApplication() // Called at time specified by Stop
     }
   else
     {
-      NS_LOG_WARN("OnOffApplication found null socket to close in StopApplication");
+      NS_LOG_WARN ("OnOffApplication found null socket to close in StopApplication");
     }
 }
 
@@ -172,33 +172,33 @@ void OnOffApplication::CancelEvents ()
   if (m_sendEvent.IsRunning ())
     { // Cancel the pending send packet event
       // Calculate residual bits since last packet sent
-      Time delta(Simulator::Now() - m_lastStartTime);
-      int64x64_t bits = delta.To(Time::S) * m_cbrRate.GetBitRate ();
+      Time delta (Simulator::Now () - m_lastStartTime);
+      int64x64_t bits = delta.To (Time::S) * m_cbrRate.GetBitRate ();
       m_residualBits += bits.GetHigh ();
     }
-  Simulator::Cancel(m_sendEvent);
-  Simulator::Cancel(m_startStopEvent);
+  Simulator::Cancel (m_sendEvent);
+  Simulator::Cancel (m_startStopEvent);
 }
 
 // Event handlers
-void OnOffApplication::StartSending()
+void OnOffApplication::StartSending ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_lastStartTime = Simulator::Now();
-  ScheduleNextTx();  // Schedule the send packet event
-  ScheduleStopEvent();
+  m_lastStartTime = Simulator::Now ();
+  ScheduleNextTx ();  // Schedule the send packet event
+  ScheduleStopEvent ();
 }
 
-void OnOffApplication::StopSending()
+void OnOffApplication::StopSending ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  CancelEvents();
+  CancelEvents ();
 
-  ScheduleStartEvent();
+  ScheduleStartEvent ();
 }
 
 // Private helpers
-void OnOffApplication::ScheduleNextTx()
+void OnOffApplication::ScheduleNextTx ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -206,60 +206,60 @@ void OnOffApplication::ScheduleNextTx()
     {
       uint32_t bits = m_pktSize * 8 - m_residualBits;
       NS_LOG_LOGIC ("bits = " << bits);
-      Time nextTime(Seconds (bits / 
-                             static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
+      Time nextTime (Seconds (bits /
+                              static_cast<double>(m_cbrRate.GetBitRate ()))); // Time till next packet
       NS_LOG_LOGIC ("nextTime = " << nextTime);
-      m_sendEvent = Simulator::Schedule(nextTime, 
-                                        &OnOffApplication::SendPacket, this);
+      m_sendEvent = Simulator::Schedule (nextTime,
+                                         &OnOffApplication::SendPacket, this);
     }
   else
     { // All done, cancel any pending events
-      StopApplication();
+      StopApplication ();
     }
 }
 
-void OnOffApplication::ScheduleStartEvent()
+void OnOffApplication::ScheduleStartEvent ()
 {  // Schedules the event to start sending data (switch to the "On" state)
   NS_LOG_FUNCTION_NOARGS ();
 
-  Time offInterval = Seconds(m_offTime.GetValue());
+  Time offInterval = Seconds (m_offTime.GetValue ());
   NS_LOG_LOGIC ("start at " << offInterval);
-  m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
+  m_startStopEvent = Simulator::Schedule (offInterval, &OnOffApplication::StartSending, this);
 }
 
-void OnOffApplication::ScheduleStopEvent()
+void OnOffApplication::ScheduleStopEvent ()
 {  // Schedules the event to stop sending data (switch to "Off" state)
   NS_LOG_FUNCTION_NOARGS ();
 
-  Time onInterval = Seconds(m_onTime.GetValue());
+  Time onInterval = Seconds (m_onTime.GetValue ());
   NS_LOG_LOGIC ("stop at " << onInterval);
-  m_startStopEvent = Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
+  m_startStopEvent = Simulator::Schedule (onInterval, &OnOffApplication::StopSending, this);
 }
 
 
-void OnOffApplication::SendPacket()
+void OnOffApplication::SendPacket ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC ("sending packet at " << Simulator::Now());
+  NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> packet = Create<Packet> (m_pktSize);
   m_txTrace (packet);
   m_socket->Send (packet);
   m_totBytes += m_pktSize;
-  m_lastStartTime = Simulator::Now();
+  m_lastStartTime = Simulator::Now ();
   m_residualBits = 0;
-  ScheduleNextTx();
+  ScheduleNextTx ();
 }
 
-void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
+void OnOffApplication::ConnectionSucceeded (Ptr<Socket>)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   m_connected = true;
-  ScheduleStartEvent();
+  ScheduleStartEvent ();
 }
 
-void OnOffApplication::ConnectionFailed(Ptr<Socket>)
+void OnOffApplication::ConnectionFailed (Ptr<Socket>)
 {
   NS_LOG_FUNCTION_NOARGS ();
   cout << "OnOffApplication, Connection Failed" << endl;

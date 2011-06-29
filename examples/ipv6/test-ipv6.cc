@@ -50,7 +50,7 @@ main (int argc, char *argv[])
 
   Ipv6Address prefix1 ("2001:1::");
   NS_LOG_INFO ("prefix = " << prefix1);
-  for (uint32_t i = 0; i < 10 ; ++i)
+  for (uint32_t i = 0; i < 10; ++i)
     {
       NS_LOG_INFO ("address = " << m_addresses[i]);
       Ipv6Address ipv6address = Ipv6Address::MakeAutoconfiguredAddress (m_addresses[i], prefix1);
@@ -60,7 +60,7 @@ main (int argc, char *argv[])
   Ipv6Address prefix2 ("2002:1:1::");
 
   NS_LOG_INFO ("prefix = " << prefix2);
-  for (uint32_t i = 0; i < 10 ; ++i)
+  for (uint32_t i = 0; i < 10; ++i)
     {
       Ipv6Address ipv6address = Ipv6Address::MakeAutoconfiguredAddress (m_addresses[i], prefix2);
       NS_LOG_INFO ("address = " << ipv6address);

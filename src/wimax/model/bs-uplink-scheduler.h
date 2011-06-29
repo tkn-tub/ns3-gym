@@ -36,6 +36,7 @@ class ServiceFlow;
 class ServiceFlowRecord;
 
 /**
+ * \ingroup wimax
  * \brief Virtual class for uplink scheduler.
  */
 class UplinkScheduler : public Object

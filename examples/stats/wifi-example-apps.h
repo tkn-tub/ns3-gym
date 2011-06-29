@@ -39,18 +39,18 @@ using namespace ns3;
 //------------------------------------------------------
 class Sender : public Application {
 public:
-  static TypeId GetTypeId(void);
+  static TypeId GetTypeId (void);
   Sender();
   virtual ~Sender();
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
 private:
-  virtual void StartApplication(void);
-  virtual void StopApplication(void);
+  virtual void StartApplication (void);
+  virtual void StopApplication (void);
 
-  void SendPacket();
+  void SendPacket ();
 
   uint32_t        m_pktSize;
   Ipv4Address     m_destAddr;
@@ -74,21 +74,21 @@ private:
 //------------------------------------------------------
 class Receiver : public Application {
 public:
-  static TypeId GetTypeId(void);
+  static TypeId GetTypeId (void);
   Receiver();
   virtual ~Receiver();
 
-  void SetCounter(Ptr<CounterCalculator<> > calc);
-  void SetDelayTracker(Ptr<TimeMinMaxAvgTotalCalculator> delay);
+  void SetCounter (Ptr<CounterCalculator<> > calc);
+  void SetDelayTracker (Ptr<TimeMinMaxAvgTotalCalculator> delay);
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
 private:
-  virtual void StartApplication(void);
-  virtual void StopApplication(void);
+  virtual void StartApplication (void);
+  virtual void StopApplication (void);
 
-  void Receive(Ptr<Socket> socket);
+  void Receive (Ptr<Socket> socket);
 
   Ptr<Socket>     m_socket;
 
@@ -114,10 +114,10 @@ public:
   virtual void Deserialize (TagBuffer i);
 
   // these are our accessors to our tag structure
-  void SetTimestamp(Time time);
-  Time GetTimestamp(void) const;
+  void SetTimestamp (Time time);
+  Time GetTimestamp (void) const;
 
-  void Print(std::ostream &os) const;
+  void Print (std::ostream &os) const;
 
 private:
   Time m_timestamp;

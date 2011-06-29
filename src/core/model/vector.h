@@ -118,7 +118,7 @@ std::istream &operator >> (std::istream &is, Vector2D &vector);
 typedef Vector3D Vector;
 typedef Vector3DValue VectorValue;
 typedef Vector3DChecker VectorChecker;
-ATTRIBUTE_ACCESSOR_DEFINE(Vector);
+ATTRIBUTE_ACCESSOR_DEFINE (Vector);
 Ptr<const AttributeChecker> MakeVectorChecker (void);
 
 } // namespace ns3

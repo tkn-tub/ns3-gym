@@ -37,7 +37,7 @@
 namespace ns3 {
 
 uint32_t
-MeshInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
+MeshInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t id = i.ReadU8 ();
@@ -88,7 +88,7 @@ MeshInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
   newElement->DeserializeInformationField (i, length);
   i.Next (length);
   m_elements.push_back (newElement);
-  return i.GetDistanceFrom(start);
+  return i.GetDistanceFrom (start);
 }
 
 

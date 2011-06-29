@@ -33,12 +33,13 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ * \brief this class implements the link manager of subscriber station net device. An ss link manager is
+ * responsible for link scanning and ranging
+ */
 class SSLinkManager : public Object
 {
-  /**
-   * \brief this class implements the link manager of subscriber station net device. An ss link manager is
-   * responsible for link scanning and ranging
-   */
 public:
   SSLinkManager (Ptr<SubscriberStationNetDevice> ss);
   ~SSLinkManager (void);

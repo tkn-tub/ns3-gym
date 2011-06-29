@@ -32,6 +32,9 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup wimax
+ */
 class BSLinkManager : public Object
 {
 public:

@@ -206,7 +206,7 @@ public:
   /**
    * \return map of output interface Ids and TTLs for this route
    */
-  std::map<uint32_t, uint32_t> GetOutputTtlMap() const;
+  std::map<uint32_t, uint32_t> GetOutputTtlMap () const;
 
 private:
   /**

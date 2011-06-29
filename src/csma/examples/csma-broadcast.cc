@@ -65,8 +65,8 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Build Topology.");
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(2)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
 
   NetDeviceContainer n0 = csma.Install (c0);
   NetDeviceContainer n1 = csma.Install (c1);

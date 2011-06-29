@@ -108,6 +108,7 @@ def main(argv):
     flowmon_helper = ns.flow_monitor.FlowMonitorHelper()
     #flowmon_helper.SetMonitorAttribute("StartTime", ns.core.TimeValue(ns.core.Seconds(31)))
     monitor = flowmon_helper.InstallAll()
+    monitor = flowmon_helper.GetMonitor()
     monitor.SetAttribute("DelayBinWidth", ns.core.DoubleValue(0.001))
     monitor.SetAttribute("JitterBinWidth", ns.core.DoubleValue(0.001))
     monitor.SetAttribute("PacketSizeBinWidth", ns.core.DoubleValue(20))

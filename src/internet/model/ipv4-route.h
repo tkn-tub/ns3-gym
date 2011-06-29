@@ -151,7 +151,7 @@ public:
   /**
    * \return map of output interface Ids and TTLs for this route
    */
-  std::map<uint32_t, uint32_t> GetOutputTtlMap() const;
+  std::map<uint32_t, uint32_t> GetOutputTtlMap () const;
 
   static const uint32_t MAX_INTERFACES = 16;  // Maximum number of multicast interfaces on a router
   static const uint32_t MAX_TTL = 255;  // Maximum time-to-live (TTL)

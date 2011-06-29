@@ -35,10 +35,10 @@ class WimaxNetDevice;
 class SSRecord;
 class WimaxConnection;
 
-/*
- The same service flow manager class serves both for BS and SS though some functions are exclusive to only one of them.
+/**
+ * \ingroup wimax
+ * The same service flow manager class serves both for BS and SS though some functions are exclusive to only one of them.
  */
-
 class ServiceFlowManager : public Object
 {
 public:

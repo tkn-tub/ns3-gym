@@ -188,11 +188,11 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
 {
   Time now = Simulator::Now ();
   ostringstream oss;
-  oss << now.GetSeconds() << " P "
+  oss << now.GetSeconds () << " P "
       << tx->GetNode ()->GetId () << " "
       << rx->GetNode ()->GetId () << " "
       << (now + txTime).GetSeconds () << " " // last bit tx time
-      << (now + rxTime - txTime).GetSeconds() << " "  // first bit rx time
+      << (now + rxTime - txTime).GetSeconds () << " " // first bit rx time
       << (now + rxTime).GetSeconds () << endl;         // last bit rx time
   WriteN (m_fHandle, oss.str ().c_str (), oss.str ().length ());
 }

@@ -94,7 +94,7 @@ Application::DoStart (void)
   Object::DoStart ();
 }
 
-Ptr<Node> Application::GetNode() const
+Ptr<Node> Application::GetNode () const
 {
   return m_node;
 }
@@ -107,11 +107,11 @@ Application::SetNode (Ptr<Node> node)
 
 // Protected methods
 // StartApp and StopApp will likely be overridden by application subclasses
-void Application::StartApplication()
+void Application::StartApplication ()
 { // Provide null functionality in case subclass is not interested
 }
 
-void Application::StopApplication()
+void Application::StopApplication ()
 { // Provide null functionality in case subclass is not interested
 }
 

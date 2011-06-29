@@ -68,7 +68,7 @@ public:
    * \return The amount of time that the net device should wait before
    * trying to retransmit the packet
    */
-  Time GetBackoffTime();
+  Time GetBackoffTime ();
 
   /**
    * Indicates to the backoff object that the last packet was

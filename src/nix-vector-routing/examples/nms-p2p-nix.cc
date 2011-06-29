@@ -52,9 +52,9 @@ using namespace std;
 using namespace ns3;
 
 typedef struct timeval TIMER_TYPE;
-#define TIMER_NOW(_t) gettimeofday(&_t,NULL);
+#define TIMER_NOW(_t) gettimeofday (&_t,NULL);
 #define TIMER_SECONDS(_t) ((double)(_t).tv_sec + (_t).tv_usec*1e-6)
-#define TIMER_DIFF(_t1, _t2) (TIMER_SECONDS(_t1)-TIMER_SECONDS(_t2))
+#define TIMER_DIFF(_t1, _t2) (TIMER_SECONDS (_t1)-TIMER_SECONDS (_t2))
 
 NS_LOG_COMPONENT_DEFINE ("CampusNetworkModel");
 
@@ -67,7 +67,7 @@ int
 main (int argc, char *argv[])
 {
   TIMER_TYPE t0, t1, t2;
-  TIMER_NOW(t0);
+  TIMER_NOW (t0);
   cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << endl;
   LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
 
@@ -165,7 +165,7 @@ main (int argc, char *argv[])
       net0_1.Add (nodes_net1[z][0].Get (0));
       NetDeviceContainer ndc0_1;
       ndc0_1 = p2p_1gb5ms.Install (net0_1);
-      oss.str("");
+      oss.str ("");
       oss << 10 + z << ".1.252.0";
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc0_1);
@@ -215,7 +215,7 @@ main (int argc, char *argv[])
       for (int i = 0; i < 9; ++i) 
         {
           nodes_net3[z][i].Create (1);
-          stack.Install(nodes_net3[z][i]);
+          stack.Install (nodes_net3[z][i]);
         }
       nodes_net3[z][0].Add (nodes_net3[z][1].Get (0));
       nodes_net3[z][1].Add (nodes_net3[z][2].Get (0));
@@ -394,8 +394,8 @@ main (int argc, char *argv[])
               r1 = 2 + (int)(4 * urng.GetValue ());
               r2 = 10 * urng.GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
-              AddressValue remoteAddress(InetSocketAddress (
-                                           ifs2LAN[z][i][j].GetAddress (0), 9999));
+              AddressValue remoteAddress (InetSocketAddress (
+                                            ifs2LAN[z][i][j].GetAddress (0), 9999));
               client.SetAttribute ("Remote", remoteAddress);
               ApplicationContainer clientApp;
               clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));

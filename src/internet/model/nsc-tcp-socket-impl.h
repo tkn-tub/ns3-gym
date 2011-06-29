@@ -72,11 +72,11 @@ public:
   virtual int Close (void);
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
-  virtual int Connect(const Address &address);
-  virtual int Listen(void);
+  virtual int Connect (const Address &address);
+  virtual int Listen (void);
   virtual uint32_t GetTxAvailable (void) const;
   virtual int Send (Ptr<Packet> p, uint32_t flags);
-  virtual int SendTo(Ptr<Packet> p, uint32_t flags, const Address &toAddress);
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
   virtual uint32_t GetRxAvailable (void) const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
@@ -86,7 +86,7 @@ public:
   virtual bool GetAllowBroadcast () const;
 
 private:
-  void NSCWakeup(void);
+  void NSCWakeup (void);
   friend class Tcp;
   // invoked by Tcp class
   int FinishBind (void);
@@ -94,11 +94,11 @@ private:
                   Ptr<Ipv4Interface> incomingInterface);
   void Destroy (void);
   //methods for state
-  bool SendPendingData(void);
-  bool ReadPendingData(void);
-  bool Accept(void);
-  void CompleteFork(void);
-  void ConnectionSucceeded();
+  bool SendPendingData (void);
+  bool ReadPendingData (void);
+  bool Accept (void);
+  void CompleteFork (void);
+  void ConnectionSucceeded ();
 
   // Manage data tx/rx
   // XXX This should be virtual and overridden
@@ -128,7 +128,7 @@ private:
   virtual void SetPersistTimeout (Time timeout);
   virtual Time GetPersistTimeout (void) const;
 
-  enum Socket::SocketErrno GetNativeNs3Errno(int err) const;
+  enum Socket::SocketErrno GetNativeNs3Errno (int err) const;
   uint32_t m_delAckMaxCount;
   Time m_delAckTimeout;
 

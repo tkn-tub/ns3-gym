@@ -44,7 +44,7 @@ NS_OBJECT_ENSURE_REGISTERED ( LteNetDevice);
 TypeId LteNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::LteNetDevice")
 
     .SetParent<NetDevice> ()

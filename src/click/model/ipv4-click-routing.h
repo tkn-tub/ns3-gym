@@ -40,6 +40,11 @@
 namespace ns3 {
 
 /**
+* \defgroup click Click Routing
+* This section documents the API of the ns-3 click module. For a generic functional description, please refer to the ns-3 manual.
+*/
+
+/**
 * \ingroup click
 * \brief Class to allow a node to use Click for external routing
 */

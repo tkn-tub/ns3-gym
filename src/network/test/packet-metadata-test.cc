@@ -330,7 +330,7 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     }
 
   for (std::list<int>::iterator i = got.begin (),
-                                j = expected.begin ();
+       j = expected.begin ();
        i != got.end (); i++, j++)
     {
       NS_ASSERT (j != expected.end ());
@@ -355,7 +355,7 @@ error:
       failure << *j << ", ";
     }
   failure << "\"";
-  NS_TEST_ASSERT_MSG_EQ_INTERNAL (false, true, failure.str(), file, line);
+  NS_TEST_ASSERT_MSG_EQ_INTERNAL (false, true, failure.str (), file, line);
 }
 
 #define ADD_HEADER(p, n)                                           \
@@ -741,8 +741,8 @@ PacketMetadataTest::DoRun (void)
 
   p = Create<Packet> (200);
   ADD_HEADER (p, 24);
-  p1 = p->CreateFragment(0, 100);
-  p2 = p->CreateFragment(100, 100);	
+  p1 = p->CreateFragment (0, 100);
+  p2 = p->CreateFragment (100, 100);
   p1->AddAtEnd (p2);
 
   p = Create<Packet> ();
@@ -778,48 +778,48 @@ PacketMetadataTest::DoRun (void)
   CHECK_HISTORY (p, 4, 5, 20, 10, 500);
   p1 = p->CreateFragment (0,6);
   p2 = p->CreateFragment (6,535-6);
-  p1->AddAtEnd(p2);
+  p1->AddAtEnd (p2);
 
   // bug 1072#2
   p = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello world"), 11);
   ADD_HEADER (p, 2);
-  CHECK_HISTORY(p, 2, 2, 11);
+  CHECK_HISTORY (p, 2, 2, 11);
   p1 = p->CreateFragment (0, 5);
-  CHECK_HISTORY(p1, 2, 2, 3);
+  CHECK_HISTORY (p1, 2, 2, 3);
   p2 = p->CreateFragment (5, 8);
-  CHECK_HISTORY(p2, 1, 8);
+  CHECK_HISTORY (p2, 1, 8);
 
   ADD_HEADER (p1, 8+2+2*6);
   ADD_TRAILER (p1, 4);
-  CHECK_HISTORY(p1, 4, 22, 2, 3, 4);
+  CHECK_HISTORY (p1, 4, 22, 2, 3, 4);
   ADD_HEADER (p2, 8+2+2*6);
   ADD_TRAILER (p2, 4);
-  CHECK_HISTORY(p2, 3, 22, 8, 4);
+  CHECK_HISTORY (p2, 3, 22, 8, 4);
 
   REM_TRAILER (p1, 4);
   REM_HEADER (p1, 8+2+2*6);
-  CHECK_HISTORY(p1, 2, 2, 3);
+  CHECK_HISTORY (p1, 2, 2, 3);
   REM_TRAILER (p2, 4);
   REM_HEADER (p2, 8+2+2*6);
-  CHECK_HISTORY(p2, 1, 8);
+  CHECK_HISTORY (p2, 1, 8);
 
-  p3 = p1->Copy();
-  CHECK_HISTORY(p3, 2, 2, 3);
-  p3->AddAtEnd(p2);
-  CHECK_HISTORY(p3, 2, 2, 11);
+  p3 = p1->Copy ();
+  CHECK_HISTORY (p3, 2, 2, 3);
+  p3->AddAtEnd (p2);
+  CHECK_HISTORY (p3, 2, 2, 11);
 
-  CHECK_HISTORY(p, 2, 2, 11);
+  CHECK_HISTORY (p, 2, 2, 11);
   REM_HEADER (p, 2);
-  CHECK_HISTORY(p, 1, 11);
+  CHECK_HISTORY (p, 1, 11);
   REM_HEADER (p3, 2);
-  CHECK_HISTORY(p3, 1, 11);
+  CHECK_HISTORY (p3, 1, 11);
 
   uint8_t *buf = new uint8_t[p3->GetSize ()];
   p3->CopyData (buf, p3->GetSize ());
   std::string msg = std::string (reinterpret_cast<const char *>(buf),
                                  p3->GetSize ());
   delete [] buf;
-  NS_TEST_EXPECT_MSG_EQ(msg, std::string("hello world"), "Could not find original data in received packet");
+  NS_TEST_EXPECT_MSG_EQ (msg, std::string ("hello world"), "Could not find original data in received packet");
 }
 //-----------------------------------------------------------------------------
 class PacketMetadataTestSuite : public TestSuite

@@ -100,7 +100,7 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
     }
 
   m_bytesInQueue += p->GetSize ();
-  m_packets.push(p);
+  m_packets.push (p);
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
@@ -113,7 +113,7 @@ DropTailQueue::DoDequeue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_packets.empty()) 
+  if (m_packets.empty ())
     {
       NS_LOG_LOGIC ("Queue empty");
       return 0;
@@ -136,7 +136,7 @@ DropTailQueue::DoPeek (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_packets.empty()) 
+  if (m_packets.empty ())
     {
       NS_LOG_LOGIC ("Queue empty");
       return 0;
