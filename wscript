@@ -773,8 +773,13 @@ def shutdown(ctx):
         return
     env = bld.env
 
-    # Don't print the lists if this a clean or distribution clean.
-    if ('clean' not in Options.arg_line) and ('distclean' not in Options.arg_line):
+    # Don't print the lists if a program is being run, a Python
+    # program is being run, this a clean, or this is a distribution
+    # clean.
+    if ((not Options.options.run)
+        and (not Options.options.pyrun) 
+        and ('clean' not in Options.arg_line)
+        and ('distclean' not in Options.arg_line)):
 
         # Print the list of built modules.
         print
