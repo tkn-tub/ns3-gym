@@ -72,23 +72,30 @@ RlcStatsCalculator::~RlcStatsCalculator ()
 TypeId
 RlcStatsCalculator::GetTypeId (void)
 {
-  static TypeId
-    tid =
-    TypeId ("ns3::RlcStatsCalculator").SetParent<Object> ().AddConstructor<
-      RlcStatsCalculator> ().AddAttribute ("DlOutputFilename",
-                                           "Name of the file where the downlink results will be saved.",
-                                           StringValue ("DlRlcStats.csv"), MakeStringAccessor (
-                                             &RlcStatsCalculator::SetDlOutputFilename),
-                                           MakeStringChecker ()).AddAttribute ("UlOutputFilename",
-                                                                               "Name of the file where the uplink results will be saved.",
-                                                                               StringValue ("UlRlcStats.csv"), MakeStringAccessor (
-                                                                                 &RlcStatsCalculator::SetUlOutputFilename),
-                                                                               MakeStringChecker ()).AddAttribute ("StartTime",
-                                                                                                                   "Start time of the on going epoch.", TimeValue (Seconds (0.)),
-                                                                                                                   MakeTimeAccessor (&RlcStatsCalculator::m_startTime),
-                                                                                                                   MakeTimeChecker ()).AddAttribute ("EpochDuration",
-                                                                                                                                                     "Epoch duration.", TimeValue (Seconds (0.25)), MakeTimeAccessor (
-                                                                                                                                                       &RlcStatsCalculator::m_epochDuration), MakeTimeChecker ());
+  static TypeId tid =
+    TypeId ("ns3::RlcStatsCalculator")
+    .SetParent<Object> ()
+    .AddConstructor<RlcStatsCalculator> ()
+    .AddAttribute ("DlOutputFilename",
+                   "Name of the file where the downlink results will be saved.",
+                   StringValue ("DlRlcStats.csv"), 
+                   MakeStringAccessor (&RlcStatsCalculator::SetDlOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("UlOutputFilename",
+                   "Name of the file where the uplink results will be saved.",
+                   StringValue ("UlRlcStats.csv"), 
+                   MakeStringAccessor (&RlcStatsCalculator::SetUlOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("StartTime",
+                   "Start time of the on going epoch.", 
+                   TimeValue (Seconds (0.)),
+                   MakeTimeAccessor (&RlcStatsCalculator::m_startTime),
+                   MakeTimeChecker ())
+    .AddAttribute ("EpochDuration",
+                   "Epoch duration.", 
+                   TimeValue (Seconds (0.25)), 
+                   MakeTimeAccessor (&RlcStatsCalculator::m_epochDuration), 
+                   MakeTimeChecker ());
   return tid;
 }
 
