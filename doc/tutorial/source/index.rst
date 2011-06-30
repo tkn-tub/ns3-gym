@@ -4,7 +4,7 @@ ns-3 Tutorial
 ===========================
 
 This is the *ns-3 Tutorial*. Primary documentation for the ns-3 project is
-available in four forms:
+available in five forms:
 
 * `ns-3 Doxygen <http://www.nsnam.org/doxygen/index.html>`_: Documentation of the public APIs of the simulator
 * `Tutorial <http://www.nsnam.org/tutorials.html>`_: *(this document)*

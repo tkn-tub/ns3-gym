@@ -6,7 +6,8 @@ CONVERT = convert
 SOURCE = source
 FIGURES = $(SOURCE)/figures
 
-# specify figures for build process (all dia figures)
+# specify figures from which .png and .pdf figures need to be
+# generated (all dia and eps figures)
 IMAGES_EPS = \
 	$(FIGURES)/ff-mac-saps.eps \
 	$(FIGURES)/ff-example.eps \
@@ -22,7 +23,7 @@ GRAPHS_EPS = \
 	$(FIGURES)/simulationTime.eps \
 	$(FIGURES)/memoryUsage.eps 
 
-# rescale figures as necessary
+# rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
 $(FIGURES)/node.pdf_width = 5in
@@ -45,6 +46,7 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}

@@ -19,6 +19,7 @@
  */
 
 #include "ns3/assert.h"
+#include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/header.h"
 #include "ipv4-header.h"
@@ -71,8 +72,6 @@ Ipv4Header::SetIdentification (uint16_t identification)
   m_identification = identification;
 }
 
-
-
 void 
 Ipv4Header::SetTos (uint8_t tos)
 {
@@ -116,15 +115,20 @@ Ipv4Header::IsDontFragment (void) const
 }
 
 void 
-Ipv4Header::SetFragmentOffset (uint16_t offset)
+Ipv4Header::SetFragmentOffset (uint16_t offsetBytes)
 {
-  NS_ASSERT (!(offset & (~0x3fff)));
-  m_fragmentOffset = offset;
+  // check if the user is trying to set an invalid offset
+  NS_ABORT_MSG_IF ((offsetBytes & 0x7), "offsetBytes must be multiple of 8 bytes");
+  m_fragmentOffset = offsetBytes;
 }
 uint16_t 
 Ipv4Header::GetFragmentOffset (void) const
 {
-  NS_ASSERT (!(m_fragmentOffset & (~0x3fff)));
+  if ((m_fragmentOffset+m_payloadSize+5*4) > 65535)
+    {
+      NS_LOG_WARN("Fragment will exceed the maximum packet size once reassembled");
+    }
+
   return m_fragmentOffset;
 }
 
@@ -223,7 +227,7 @@ Ipv4Header::Print (std::ostream &os) const
      << "ttl " << m_ttl << " "
      << "id " << m_identification << " "
      << "protocol " << m_protocol << " "
-     << "offset " << m_fragmentOffset << " "
+     << "offset (bytes) " << m_fragmentOffset << " "
      << "flags [" << flags << "] "
      << "length: " << (m_payloadSize + 5 * 4)
      << " " 

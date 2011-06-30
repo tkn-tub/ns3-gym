@@ -9,18 +9,6 @@ primarily for research and educational use.  The
 <http://www.nsnam.org>`_, 
 started in 2006, is an open-source project developing |ns3|.
 
-Primary documentation for the |ns3| project is available in four
-forms:
-
-* `ns-3 Doxygen/Manual
-  <http://www.nsnam.org/doxygen/index.html>`_:  
-  Documentation of the public APIs of the simulator
-* Tutorial (this document)
-* `Reference Manual
-  <http://www.nsnam.org/docs/manual.html>`_:  Reference Manual
-* `ns-3 wiki
-  <http://www.nsnam.org/wiki/index.php>`_
-
 The purpose of this tutorial is to introduce new |ns3| users to the 
 system in a structured way.  It is sometimes difficult for new users to
 glean essential information from detailed manuals and to convert this
