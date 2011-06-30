@@ -1418,19 +1418,14 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
   std::pair<Ipv4Address, uint32_t> un;
   while (rerrHeader.RemoveUnDestination (un))
     {
-      if (m_nb.IsNeighbor (un.first))
-        SendRerrWhenBreaksLinkToNextHop (un.first);
-      else
-        {
-          for (std::map<Ipv4Address, uint32_t>::const_iterator i =
-                 dstWithNextHopSrc.begin (); i != dstWithNextHopSrc.end (); ++i)
-            {
-              if (i->first == un.first)
-                {
-                  unreachable.insert (un);
-                }
-            }
-        }
+      for (std::map<Ipv4Address, uint32_t>::const_iterator i =
+           dstWithNextHopSrc.begin (); i != dstWithNextHopSrc.end (); ++i)
+      {
+        if (i->first == un.first)
+          {
+            unreachable.insert (un);
+          }
+      }
     }
 
   std::vector<Ipv4Address> precursors;
