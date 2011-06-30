@@ -117,42 +117,6 @@ PdcchMapIdealControlMessage::GetMessage (void)
 }
 
 
-
-// ----------------------------------------------------------------------------------------------------------
-
-
-CqiIdealControlMessage::CqiIdealControlMessage (void)
-{
-  m_cqiFeedbacks = new CqiFeedbacks ();
-  SetMessageType (IdealControlMessage::CQI_FEEDBACKS);
-}
-
-
-CqiIdealControlMessage::~CqiIdealControlMessage (void)
-{
-  delete m_cqiFeedbacks;
-}
-
-void
-CqiIdealControlMessage::AddNewRecord (int subChannel, double cqi)
-{
-  CqiFeedback c;
-  c.m_idSubChannel = subChannel;
-  c.m_cqi = cqi;
-
-  m_cqiFeedbacks->push_back (c);
-
-}
-
-
-CqiIdealControlMessage::CqiFeedbacks*
-CqiIdealControlMessage::GetMessage (void)
-{
-  return m_cqiFeedbacks;
-}
-
-
-
 // ----------------------------------------------------------------------------------------------------------
 
 
@@ -237,36 +201,6 @@ CqiListElement_s
 DlCqiIdealControlMessage::GetDlCqi (void)
 {
   return m_dlCqi;
-}
-
-
-
-// ----------------------------------------------------------------------------------------------------------
-
-
-UlCqiIdealControlMessage::UlCqiIdealControlMessage (void)
-{
-  SetMessageType (IdealControlMessage::UL_CQI);
-}
-
-
-UlCqiIdealControlMessage::~UlCqiIdealControlMessage (void)
-{
-
-}
-
-void
-UlCqiIdealControlMessage::SetUlCqi (UlCqi_s ulCqi)
-{
-  m_ulCqi = ulCqi;
-
-}
-
-
-UlCqi_s
-UlCqiIdealControlMessage::GetUlCqi (void)
-{
-  return m_ulCqi;
 }
 
 

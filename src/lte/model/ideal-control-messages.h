@@ -188,69 +188,6 @@ private:
 
 
 
-// ----------------------------------------------------------------------------------------------------------
-
-
-
-#ifndef CQI_IDEAL_CONTROL_MESSAGES_H
-#define CQI_IDEAL_CONTROL_MESSAGES_H
-
-#include "ns3/object.h"
-#include <list>
-
-namespace ns3 {
-
-class LteNetDevice;
-
-/**
- * \ingroup lte
- *
- * The CqiIdealControlMessage defines an ideal list of feedback about
- * the channel quality sent by the UE to the eNodeB.
- */
-class CqiIdealControlMessage : public IdealControlMessage
-{
-public:
-  CqiIdealControlMessage (void);
-  virtual ~CqiIdealControlMessage (void);
-
-  /**
-   * The CQI feedback ideal record
-   */
-  struct CqiFeedback
-  {
-    /** the sub channel */
-    int m_idSubChannel;
-    /** the cqi feedback */
-    double m_cqi;
-  };
-
-  /**
-   * The ideal CQI feedback message
-   */
-  typedef std::list<struct CqiFeedback>  CqiFeedbacks;
-
-  /**
-   * \brief add a CQI feedback record into the message.
-   * \param subChannel the scheduled sub channel
-   * \param cqi the cqi feedback
-   */
-  void AddNewRecord (int subChannel, double cqi);
-
-  /**
-   * \brief Get cqi informations
-   * \return cqi messages
-   */
-  CqiFeedbacks* GetMessage (void);
-
-
-private:
-  CqiFeedbacks *m_cqiFeedbacks;
-};
-} // namespace ns3
-
-#endif /* CQI_IDEAL_CONTROL_MESSAGES_H */
-
 
 // ----------------------------------------------------------------------------------------------------------
 
@@ -380,52 +317,6 @@ private:
 } // namespace ns3
 
 #endif /* DLCQI_IDEAL_CONTROL_MESSAGES_H */
-
-// ----------------------------------------------------------------------------------------------------------
-
-#ifndef ULCQI_IDEAL_CONTROL_MESSAGES_H
-#define ULCQI_IDEAL_CONTROL_MESSAGES_H
-
-#include <ns3/object.h>
-#include <ns3/ff-mac-common.h>
-
-namespace ns3 {
-
-class LteNetDevice;
-
-/**
-* The Fempto forum uplink CqiIdealControlMessage defines an ideal list of
-* feedback about the channel quality sent by the UE to the eNodeB.
-*/
-class UlCqiIdealControlMessage : public IdealControlMessage
-{
-public:
-  UlCqiIdealControlMessage (void);
-  virtual ~UlCqiIdealControlMessage (void);
-
-  /**
-  * \brief add a UL-CQI feedback record into the message.
-  * \param dlcqi the UL cqi feedback
-  */
-  void SetUlCqi (UlCqi_s ulcqi);
-
-  /**
-  * \brief Get UL cqi informations
-  * \return dlcqi messages
-  */
-  UlCqi_s GetUlCqi (void);
-
-
-private:
-  UlCqi_s m_ulCqi;
-
-  // RNTI too?
-
-
-};
-} // namespace ns3
-
-#endif /* ULCQI_IDEAL_CONTROL_MESSAGES_H */
 
 
 // ----------------------------------------------------------------------------------------------------------
