@@ -207,6 +207,10 @@ def set_options(opt):
                    help=('Compile NS-3 statically: works only on linux, without python'),
                    dest='enable_static', action='store_true',
                    default=False)
+    opt.add_option('--enable-shared-and-static',
+                   help=('Compile NS-3 both shared and static libraries at the same time: static works only on linux'),
+                   dest='enable_shared_and_static', action='store_true',
+                   default=False)
     opt.add_option('--enable-mpi',
                    help=('Compile NS-3 with MPI and distributed simulation support'),
                    dest='enable_mpi', action='store_true',
@@ -316,12 +320,15 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     env['ENABLE_STATIC_NS3'] = False
-    if Options.options.enable_static:
+    if Options.options.enable_static or Options.options.enable_shared_and_static:
         if env['PLATFORM'].startswith('linux') and \
                 env['CXX_NAME'] in ['gcc', 'icc']:
             if re.match('i[3-6]86', os.uname()[4]):
                 conf.report_optional_feature("static", "Static build", True, '')
-                env['ENABLE_STATIC_NS3'] = True
+                if Options.options.enable_static:
+                    env['ENABLE_STATIC_NS3'] = True
+                if Options.options.enable_shared_and_static:
+                    env['ENABLE_SHARED_AND_STATIC_NS3'] = True
             elif os.uname()[4] == 'x86_64':
                 if env['ENABLE_PYTHON_BINDINGS'] and \
                         not conf.check_compilation_flag('-mcmodel=large'):
@@ -332,12 +339,18 @@ def configure(conf):
                                                      "compiler to at least gcc 4.3.x.")
                 else:
                     conf.report_optional_feature("static", "Static build", True, '')
-                    env['ENABLE_STATIC_NS3'] = True                    
+                    if Options.options.enable_static:
+                        env['ENABLE_STATIC_NS3'] = True
+                    if Options.options.enable_shared_and_static:
+                        env['ENABLE_SHARED_AND_STATIC_NS3'] = True
         elif env['CXX_NAME'] == 'gcc' and \
                 (env['PLATFORM'].startswith('darwin') or \
                      env['PLATFORM'].startswith('cygwin')):
                 conf.report_optional_feature("static", "Static build", True, '')
-                env['ENABLE_STATIC_NS3'] = True
+                if Options.options.enable_static:
+                    env['ENABLE_STATIC_NS3'] = True
+                if Options.options.enable_shared_and_static:
+                    env['ENABLE_SHARED_AND_STATIC_NS3'] = True
         else:
             conf.report_optional_feature("static", "Static build", False,
                                          "Unsupported platform")
@@ -558,18 +571,7 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     program.name = name
     program.target = program.name
     # Each of the modules this program depends on has its own library.
-    program.uselib_local = ['ns3-' + dep for dep in dependencies]
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
-    if program.env['ENABLE_STATIC_NS3']:
-        if sys.platform == 'darwin':
-            program.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            for dep in dependencies:
-                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
-        else:
-            program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            for dep in dependencies:
-                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
-            program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
 def register_ns3_script(bld, name, dependencies=('core',)):
@@ -604,6 +606,22 @@ def add_scratch_programs(bld):
             obj.source = filename
             obj.target = name
             obj.name = obj.target
+
+
+def _add_ns3_program_missing_deps(bld, program):
+    deps_found = program.ns3_module_dependencies
+    program.uselib_local = [dep + "--lib" for dep in deps_found]
+    if program.env['ENABLE_STATIC_NS3'] and not program.env['ENABLE_SHARED_AND_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            program.env.append_value('LINKFLAGS', '-Wl,-all_load')
+            for dep in deps_found:
+                program.env.append_value('LINKFLAGS', '-l' + dep)
+        else:
+            program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
+            for dep in deps_found:
+                program.env.append_value('LINKFLAGS', '-l' + dep)
+            program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
+
 
 
 def build(bld):
@@ -750,6 +768,32 @@ def build(bld):
             bld.env.append_value('NS3_RUNNABLE_SCRIPTS', script)
 
     bld.add_subdirs('bindings/python')
+
+    ## do a topological sort on the modules graph
+    dep_graph = []
+    for gen in bld.all_task_gen:
+        if type(gen).__name__ in ['ns3module_taskgen']:
+            for dep in gen.dependencies:
+                dep_graph.append(("ns3-"+dep, gen.name))
+    dep_graph.sort()
+    sys.path.insert(0, "bindings/python")
+    from topsort import topsort
+    sorted_ns3_modules = topsort(dep_graph)
+    #print sorted_ns3_modules
+
+    # we need to post() the ns3 modules, so they create libraries underneath, and programs can list them in uselib_local
+    for module in sorted_ns3_modules:
+        gen = bld.name_to_obj(module, bld.env)
+        if type(gen).__name__ in ['ns3module_taskgen']:
+            gen.post()
+            for lib in gen.libs:
+                lib.post()
+
+    for gen in bld.all_task_gen:
+        if not getattr(gen, "is_ns3_program", False) or not hasattr(gen, "ns3_module_dependencies"):
+            continue
+        _add_ns3_program_missing_deps(bld, gen)
+
 
     if Options.options.run:
         # Check that the requested program name is valid
