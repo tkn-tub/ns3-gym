@@ -23,6 +23,7 @@
 
 
 #include <ns3/spectrum-channel.h>
+#include <ns3/spectrum-model.h>
 
 namespace ns3 {
 
