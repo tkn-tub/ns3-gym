@@ -39,3 +39,6 @@
 .. [ns3tutorial] The ns-3 Tutorial http://www.nsnam.org/docs/tutorial/html/
 
 .. [ns3manual] The ns-3 Tutorial http://www.nsnam.org/docs/manual/html/
+
+.. [pl26ghz] Sun Kun; Wang Ping; Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
+   in Proc. of ISAPE 2008,  Kunming,  China, Nov 2008.

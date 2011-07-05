@@ -32,7 +32,7 @@ The model will not include the following pathloss link computations:
   * UE <-> UE
   * BS <-> BS
   * BS <-> SC
-
+  * SC <-> SC
 
 In the following we present the link pathloss models included.
 
@@ -47,13 +47,13 @@ The pathloss expression of the COST231 OH is:
 
 .. math::
 
-  L = 46.3 + 33.9\log{f} - 13.83 \log{h_\mathrm{b}} + (44.9 - 6.55\log{h_\mathrm{b}})\log{d} - F(h_\mathrm{M}) + C
+  L = 46.3 + 33.9\log{f} - 13.82 \log{h_\mathrm{b}} + (44.9 - 6.55\log{h_\mathrm{b}})\log{d} - F(h_\mathrm{M}) + C
 
 where
 
 .. math::
 
-  F(h_\mathrm{M}) = \left\{\begin{array}{ll} (1.1\log(f))-0.7 \times h_\mathrm{M} - (1.56\times \log(f)-0.8) & \mbox{for medium and small size cities} \\ 3.2\times (\log{11.75\times h_\mathrm{M}})^2 & \mbox{for large cities}\end{array} \right.
+  F(h_\mathrm{M}) = \left\{\begin{array}{ll} (1.1\log(f))-0.7 \times h_\mathrm{M} - (1.56\times \log(f)-0.8) & \mbox{for medium and small size cities} \\ 3.2\times (\log{(11.75\times h_\mathrm{M}}))^2 & \mbox{for large cities}\end{array} \right.
 
 
 .. math::
@@ -79,13 +79,24 @@ The pathloss expression of the standard OH in urban area is:
 
 .. math::
 
-  L = 69.55 + 26.16\log{f} - 13.83 \log{h_\mathrm{b}} + (44.9 - 6.55\log{h_\mathrm{b}})\log{d} - F(h_\mathrm{M}) + C
+  L = 69.55 + 26.16\log{f} - 13.82 \log{h_\mathrm{b}} + (44.9 - 6.55\log{h_\mathrm{b}})\log{d} - C_\mathrm{H}
+
+where for small or medium sized city
+
+.. math::
+
+  C_\mathrm{H} = 0.8 + (1.1\log{f} - 0.7)h_\mathrm[M] -1.56\log{f}
+
+and for large cities
+
+.. math::
+  C = \left\{\begin{array}{ll} 8.29 (\log{(1.54h_\mathrm[M])})^2 -1.1 & \mbox{if } 150\leq f\leq 200 \\ 3.2(\log{(11.75h_\mathrm[M])})^2 -4.97 & \mbox{if } 200<f\leq 1500\end{array} \right.
 
 There extension for the standard OH in suburban is
 
 .. math::
 
-  L_\mathrm{SU} = L_\mathrm{U} - 2 (\log{\frac{f}{28}})^2 - 5.4
+  L_\mathrm{SU} = L_\mathrm{U} - 2 \left(\log{\frac{f}{28}}\right)^2 - 5.4
 
 where
 
@@ -101,7 +112,7 @@ The extension for the standard OH in open area is
 I did not find info on how to extend the COST231 to open area (for suburban it seems that we can just impose C = 0).
 
 
-While for 2600 MHz we have COST231 model can be used since we assume that the loss due to the higher frequency is compensated by the increase in the antenna gain, or there is the formula (from empirical studies):
+While for 2600 MHz in literature we found that the COST231 model can be used with the assumption that the loss due to the higher frequency is compensated by the increase in the antenna gain. However, there is a formula coming from an empirical evaluation for urban area [pl26ghz]_:
 
 .. math::
 
@@ -176,7 +187,7 @@ Hybrid Model Indoor<->Outdoor
 The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to their distance, the external wall penetration loss due to the building.
 
 
-Patloss Logic Model
+Pathloss Logic Model
 -------------------
 
 
@@ -223,4 +234,5 @@ In the following the pseudo-code of the model is presented::
 
 where `txNode` and `rxNode` can be one of the elements eNB, SC and UE.
 We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the tranmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level.
+
 
