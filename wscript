@@ -610,7 +610,7 @@ def add_scratch_programs(bld):
 
 def _add_ns3_program_missing_deps(bld, program):
     deps_found = program.ns3_module_dependencies
-    program.uselib_local = [dep + "--lib" for dep in deps_found]
+    program.uselib_local = getattr(program, "uselib_local", []) + [dep + "--lib" for dep in deps_found]
     if program.env['ENABLE_STATIC_NS3'] and not program.env['ENABLE_SHARED_AND_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.append_value('LINKFLAGS', '-Wl,-all_load')
@@ -689,10 +689,6 @@ def build(bld):
             for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
                 if mod in bld.env['NS3_ENABLED_MODULES']:
                     bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
-
-    # Process this subfolder here after the lists of enabled modules
-    # and module test libraries have been set.
-    bld.add_subdirs('utils')
 
     add_examples_programs(bld)
     add_scratch_programs(bld)
@@ -789,11 +785,14 @@ def build(bld):
             for lib in gen.libs:
                 lib.post()
 
+    # Process this subfolder here after the lists of enabled modules
+    # and module test libraries have been set.
+    bld.add_subdirs('utils')
+
     for gen in bld.all_task_gen:
         if not getattr(gen, "is_ns3_program", False) or not hasattr(gen, "ns3_module_dependencies"):
             continue
         _add_ns3_program_missing_deps(bld, gen)
-
 
     if Options.options.run:
         # Check that the requested program name is valid
