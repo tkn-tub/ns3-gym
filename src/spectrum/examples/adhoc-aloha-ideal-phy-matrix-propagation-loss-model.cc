@@ -1,0 +1,151 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010 CTTC
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Nicola Baldo <nbaldo@cttc.es>
+ */
+
+
+
+#include <iostream>
+
+#include <ns3/core-module.h>
+#include <ns3/network-module.h>
+#include <ns3/spectrum-model-ism2400MHz-res1MHz.h>
+#include <ns3/spectrum-model-300kHz-300GHz-log.h>
+#include <ns3/wifi-spectrum-value-helper.h>
+#include <ns3/single-model-spectrum-channel.h>
+#include <ns3/waveform-generator.h>
+#include <ns3/spectrum-analyzer.h>
+#include <ns3/log.h>
+#include <string>
+#include <iomanip>
+#include <ns3/friis-spectrum-propagation-loss.h>
+#include <ns3/propagation-delay-model.h>
+#include <ns3/mobility-module.h>
+#include <ns3/spectrum-helper.h>
+#include <ns3/applications-module.h>
+#include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
+
+NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
+
+using namespace ns3;
+
+static bool g_verbose = false;
+static uint64_t g_rxBytes;
+
+void
+PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
+{
+  if (g_verbose)
+    {
+      std::cout << context << " PHY RX END OK p:" << p << std::endl;
+    }
+  g_rxBytes += p->GetSize ();
+}
+
+
+int main (int argc, char** argv)
+{
+  CommandLine cmd;
+  double lossDb;
+  double txPowerW = 0.1; 
+  uint64_t phyRate = 500000;
+  uint32_t pktSize = 1000;
+  cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
+  cmd.AddValue ("lossDb", "link loss in dB", lossDb);
+  cmd.AddValue ("txPowerW", "txPower in Watts", txPowerW);
+  cmd.AddValue ("phyRate", "PHY rate in bps", phyRate);
+  cmd.AddValue ("pktSize", "packet size in bytes", pktSize);
+  cmd.Parse (argc, argv);
+
+  NodeContainer c;
+  c.Create (2);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (5.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+
+
+  mobility.Install (c);
+
+
+  SpectrumChannelHelper channelHelper;
+  channelHelper.SetChannel ("ns3::MultiModelSpectrumChannel");
+  channelHelper.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
+  Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();
+  propLoss->SetLoss (c.Get (0)->GetObject<MobilityModel> (), c.Get (1)->GetObject<MobilityModel> (), lossDb, true);
+  channelHelper.AddPropagationLoss (propLoss);
+  Ptr<SpectrumChannel> channel = channelHelper.Create ();
+
+
+  WifiSpectrumValue5MhzFactory sf;
+
+  uint32_t channelNumber = 1;
+  Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPowerW, channelNumber);
+
+  // for the noise, we use the Power Spectral Density of thermal noise
+  // at room temperature. The value of the PSD will be constant over the band of interest.
+  const double k = 1.381e-23; //Boltzmann's constant
+  const double T = 290; // temperature in Kelvin
+  double noisePsdValue = k * T; // watts per hertz
+  Ptr<SpectrumValue> noisePsd = sf.CreateConstant (noisePsdValue);
+
+  AdhocAlohaNoackIdealPhyHelper deviceHelper;
+  deviceHelper.SetChannel (channel);
+  deviceHelper.SetTxPowerSpectralDensity (txPsd);
+  deviceHelper.SetNoisePowerSpectralDensity (noisePsd);
+  deviceHelper.SetPhyAttribute ("Rate", DataRateValue (DataRate (phyRate)));
+  NetDeviceContainer devices = deviceHelper.Install (c);
+
+  PacketSocketHelper packetSocket;
+  packetSocket.Install (c);
+
+  PacketSocketAddress socket;
+  socket.SetSingleDevice (devices.Get (0)->GetIfIndex ());
+  socket.SetPhysicalAddress (devices.Get (1)->GetAddress ());
+  socket.SetProtocol (1);
+
+  OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
+  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (250)));
+  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (2*phyRate)));
+  onoff.SetAttribute ("PacketSize", UintegerValue (pktSize));
+
+  ApplicationContainer apps = onoff.Install (c.Get (0));
+  apps.Start (Seconds (0.0));
+  apps.Stop (Seconds (10.0));
+
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxEndOk", MakeCallback (&PhyRxEndOkTrace));
+
+  g_rxBytes = 0;
+  Simulator::Stop (Seconds (10.0001));
+  Simulator::Run ();
+  double throughputBps = (g_rxBytes * 8.0) / 10.0;
+
+  std::cerr << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
+  std::cerr << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
+  double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
+  double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
+  std::cerr << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+
+
+  Simulator::Destroy ();
+  return 0;
+}

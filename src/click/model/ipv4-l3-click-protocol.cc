@@ -574,35 +574,22 @@ Ipv4L3ClickProtocol::SetForwarding (uint32_t i, bool val)
 void
 Ipv4L3ClickProtocol::SetPromisc (uint32_t i)
 {
-  NS_ASSERT (i <= m_node->GetNDevices ());
-  if (i > m_promiscDeviceList.size ())
-    {
-      m_promiscDeviceList.resize (i);
-    }
-  std::vector<bool>::iterator it = m_promiscDeviceList.begin ();
-  std::advance (it, i);
-  m_promiscDeviceList.insert (it, true);
+  NS_ASSERT(i <= m_node->GetNDevices ());
+  Ptr<NetDevice> netdev = GetNetDevice (i);
+  NS_ASSERT (netdev);
+  Ptr<Node> node = GetObject<Node> ();
+  NS_ASSERT (node);
+  node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
+                                 0, netdev,true);
 }
 
 uint32_t
 Ipv4L3ClickProtocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << &device);
-
   Ptr<Node> node = GetObject<Node> ();
-  NS_LOG_DEBUG ("Size:" << m_promiscDeviceList.size () << " Interface index" << device->GetIfIndex ());
-  if (m_promiscDeviceList.size () > 0
-      && (m_promiscDeviceList.size () >= device->GetIfIndex ())
-      && (m_promiscDeviceList[device->GetIfIndex ()]))
-    {
-      node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
-                                     0, device,true);
-    }
-  else
-    {
-      node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
-                                     Ipv4L3ClickProtocol::PROT_NUMBER, device);
-    }
+  node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
+                                 Ipv4L3ClickProtocol::PROT_NUMBER, device);
   node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
                                  ArpL3Protocol::PROT_NUMBER, device);
 

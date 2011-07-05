@@ -17,17 +17,23 @@
 // Adaptation of examples/udp/udp-client-server.cc for
 // Click based nodes running wifi.
 //
-// Network topology
+// Network topology:
+//
+//               (1.4)
+//             (( n4 ))
 //
 //          172.16.1.0/24
+//
 //   (1.1)      (1.2)       (1.3)
 //     n0 ))   (( n1 ))   (( n2
 //               WLAN
 //
-// - UDP flows from n0 to n1
+// - UDP flows from n0 to n1 and n2 to n1.
 // - All nodes are Click based.
 // - The single ethernet interface that each node
 //   uses is named 'eth0' in the Click file.
+// - Node 4 is running in promiscuous mode and can listen in on
+//   the packets being exchanged between n0-n1 and n2-n1.
 //
 
 #include <fstream>
@@ -58,16 +64,6 @@ WriteArp (Ptr<Ipv4ClickRouting> clickRouter)
 {
   // Access the handler
   NS_LOG_INFO (clickRouter->WriteHandler ("wifi/arpquerier", "insert", "172.16.1.2 00:00:00:00:00:02"));
-}
-
-void SetPromisc (Ptr<Ipv4ClickRouting> clickRouter)
-{
-  // 4th node can listen to traffic in promisc mode
-  // Note: Promiscuous mode support for Click has
-  // been added ahead of the official Wifi support
-  // for promiscuous mode. Thus, the below line will
-  // not work until then.
-  clickRouter->SetPromiscuous ("eth0");
 }
 #endif
 
@@ -142,7 +138,14 @@ main (int argc, char *argv[])
   // Install Click on the nodes
   //
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (n, "src/click/examples/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (n.Get (0), "src/click/examples/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (n.Get (1), "src/click/examples/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (n.Get (2), "src/click/examples/nsclick-wifi-single-interface.click");
+
+  // Node 4 is to run in promiscuous mode. This can be verified
+  // from the pcap trace Node4_in_eth0.pcap generated after running
+  // this script.
+  clickinternet.SetClickFile (n.Get (3), "src/click/examples/nsclick-wifi-single-interface-promisc.click");
   clickinternet.SetRoutingTableElement (n, "rt");
   clickinternet.Install (n);
   Ipv4AddressHelper ipv4;
@@ -179,9 +182,6 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   wifiPhy.EnablePcap ("nsclick-udp-client-server-wifi", d);
-
-  // Call SetPromiscuous mode on Click Router for node 4
-  Simulator::Schedule (Seconds (0.1), &SetPromisc, n.Get (3)->GetObject<Ipv4ClickRouting> ());
 
   // Force the MAC address of the second node: The current ARP
   // implementation of Click sends only one ARP request per incoming

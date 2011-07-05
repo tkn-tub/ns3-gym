@@ -873,8 +873,11 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   ScheduleRreqRetry (dst);
   if (EnableHello)
     {
-      m_htimer.Cancel ();
-      m_htimer.Schedule (HelloInterval - Time (0.01 * MilliSeconds (UniformVariable ().GetInteger (0, 10))));
+      if (!m_htimer.IsRunning ())
+        {
+          m_htimer.Cancel ();
+          m_htimer.Schedule (HelloInterval - Time (0.01 * MilliSeconds (UniformVariable ().GetInteger (0, 10))));
+        }
     }
 }
 
@@ -1137,8 +1140,11 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
 
   if (EnableHello)
     {
-      m_htimer.Cancel ();
-      m_htimer.Schedule (HelloInterval - Time (0.1 * MilliSeconds (UniformVariable ().GetInteger (0, 10))));
+      if (!m_htimer.IsRunning ())
+        {
+          m_htimer.Cancel ();
+          m_htimer.Schedule (HelloInterval - Time (0.1 * MilliSeconds (UniformVariable ().GetInteger (0, 10))));
+	}
     }
 }
 
@@ -1412,19 +1418,14 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
   std::pair<Ipv4Address, uint32_t> un;
   while (rerrHeader.RemoveUnDestination (un))
     {
-      if (m_nb.IsNeighbor (un.first))
-        SendRerrWhenBreaksLinkToNextHop (un.first);
-      else
-        {
-          for (std::map<Ipv4Address, uint32_t>::const_iterator i =
-                 dstWithNextHopSrc.begin (); i != dstWithNextHopSrc.end (); ++i)
-            {
-              if (i->first == un.first)
-                {
-                  unreachable.insert (un);
-                }
-            }
-        }
+      for (std::map<Ipv4Address, uint32_t>::const_iterator i =
+           dstWithNextHopSrc.begin (); i != dstWithNextHopSrc.end (); ++i)
+      {
+        if (i->first == un.first)
+          {
+            unreachable.insert (un);
+          }
+      }
     }
 
   std::vector<Ipv4Address> precursors;
