@@ -18,6 +18,7 @@ def build(bld):
     obj = bld.create_ns3_program('bench-packets', ['network'])
     obj.source = 'bench-packets.cc'
 
-    obj = bld.create_ns3_program('print-introspected-doxygen', ['core', 'network', 'internet', 'olsr', 'mobility'])
+    obj = bld.create_ns3_program('print-introspected-doxygen')
     obj.source = 'print-introspected-doxygen.cc'
+    obj.uselib_local = [mod+"--lib" for mod in env['NS3_ENABLED_MODULES']]
 
