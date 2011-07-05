@@ -415,7 +415,7 @@ public:
 
   /**
    *
-   * Public method used to fire a PromiscSniffer trace for a wifi packet being received.  Implemented for encapsulation
+   * Public method used to fire a MonitorSniffer trace for a wifi packet being received.  Implemented for encapsulation
    * purposes.
    *
    * @param packet the packet being received
@@ -433,12 +433,12 @@ public:
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
-  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble,
+  void NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble,
                              double signalDbm, double noiseDbm);
 
   /**
    *
-   * Public method used to fire a PromiscSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation
+   * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation
    * purposes.
    *
    * @param packet the packet being transmitted
@@ -449,7 +449,7 @@ public:
    * units used both for the radiotap and for the prism header)
    * @param isShortPreamble true if short preamble is used, false otherwise
    */
-  void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble);
+  void NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble);
 
 
 private:
@@ -510,7 +510,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, double, double> m_phyPromiscSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, double, double> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -522,7 +522,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool> m_phyPromiscSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool> m_phyMonitorSniffTxTrace;
 
 };
 

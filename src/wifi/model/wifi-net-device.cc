@@ -356,6 +356,7 @@ void
 WifiNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
   m_promiscRx = cb;
+  m_mac->SetPromisc();
 }
 
 bool

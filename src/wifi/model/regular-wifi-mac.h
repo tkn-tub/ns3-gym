@@ -130,6 +130,14 @@ public:
    * \returns the bssid of the network this device belongs to.
    */
   virtual Mac48Address GetBssid (void) const;
+  /**
+   * \brief Sets the interface in promiscuous mode.
+   *
+   * Enables promiscuous mode on the interface. Note that any further
+   * filtering on the incoming frame path may affect the overall
+   * behavior.
+   */
+  virtual void SetPromisc (void);
 
   /**
    * \param packet the packet to send.
