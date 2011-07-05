@@ -177,7 +177,7 @@ SpectrumIdealPhyTestCase::DoRun (void)
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (250)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (1.2*phyRate)));
+  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (static_cast<uint64_t> (1.2*phyRate))));
   onoff.SetAttribute ("PacketSize", UintegerValue (pktSize));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
@@ -221,22 +221,22 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite ()
   for (double snr = 0.01; snr <= 10 ; snr *= 2)
     {          
       double achievableRate = g_bandwidth*log2(1+snr);      
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*0.1,  true,  "ns3::SingleModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*0.5,  true,  "ns3::SingleModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*0.95, true,  "ns3::SingleModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*1.05, false,  "ns3::SingleModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*2,    false,  "ns3::SingleModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*4,    false,  "ns3::SingleModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.1),  true,  "ns3::SingleModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.5),  true,  "ns3::SingleModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.95), true,  "ns3::SingleModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*1.05), false,  "ns3::SingleModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*2),    false,  "ns3::SingleModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*4),    false,  "ns3::SingleModelSpectrumChannel"));
     }
   for (double snr = 0.01; snr <= 10 ; snr *= 10)
     {          
       double achievableRate = g_bandwidth*log2(1+snr);      
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*0.1,  true,  "ns3::MultiModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*0.5,  true,  "ns3::MultiModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*0.95, true,  "ns3::MultiModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*1.05, false,  "ns3::MultiModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*2,    false,  "ns3::MultiModelSpectrumChannel"));
-      AddTestCase (new SpectrumIdealPhyTestCase (snr, achievableRate*4,    false,  "ns3::MultiModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.1),  true,  "ns3::MultiModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.5),  true,  "ns3::MultiModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*0.95), true,  "ns3::MultiModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*1.05), false,  "ns3::MultiModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*2),    false,  "ns3::MultiModelSpectrumChannel"));
+      AddTestCase (new SpectrumIdealPhyTestCase (snr, static_cast<uint64_t> (achievableRate*4),    false,  "ns3::MultiModelSpectrumChannel"));
     }
 }
 
