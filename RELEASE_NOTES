@@ -21,6 +21,14 @@ Supported platforms
 New user-visible features
 -------------------------
 
+- SpectrumChannel models now support the usage of single-frequency
+  propagation loss models based on the PropagationLossModel
+  class. These model can be used in conjunction with
+  the frequency-dependent propagation loss model based on the
+  SpectrumPropagationLossModel class already supported by
+  SpectrumChannel. 
+
+
 Bugs fixed
 ----------
  - bug 1033 - Mesh airtime-metric fixed
