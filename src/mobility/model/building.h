@@ -42,7 +42,7 @@ public:
     };
   enum ExtWallsType_t
     {
-      Wood, ConcreteWithWindows, ConcreteWithoutWindows
+      Wood, ConcreteWithWindows, ConcreteWithoutWindows, StoneBlocks
     };
   /**
   * \param _xMin x coordinates of left boundary.

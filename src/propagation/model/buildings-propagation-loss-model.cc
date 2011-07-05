@@ -28,9 +28,11 @@
 #include "buildings-propagation-loss-model.h"
 #include "ns3/buildings-mobility-model.h"
 
+NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
+
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
+
 NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
 
 TypeId
@@ -66,7 +68,7 @@ BuildingsPropagationLossModel::BuildingsPropagationLossModel () :
   m_environment (Urban),
   m_citySize (Large)
 {
-
+  NS_LOG_INFO (this << " BuildingsPropagationLossModel");
 }
 
 void
@@ -243,17 +245,22 @@ BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
   double loss = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
   if (aBuilding->GetExtWallsType () == Building::Wood)
-  {
-    loss = 4;
-  }
+    {
+      loss = 4;
+    }
   else if (aBuilding->GetExtWallsType () == Building::ConcreteWithWindows)
-  {
-    loss = 7;
-  }
+    {
+      loss = 7;
+    }
   else if (aBuilding->GetExtWallsType () == Building::ConcreteWithoutWindows)
-  {
-    loss = 10; // 10 ~ 20 dB
-  }
+    {
+      loss = 10; // 10 ~ 20 dB
+    }
+  else if (aBuilding->GetExtWallsType () == Building::StoneBlocks)
+    {
+      loss = 12;
+    }
+  
     
   return (loss);
 }
@@ -263,7 +270,8 @@ BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
 double
 BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-
+  NS_LOG_INFO (this << " RX POWER");
+  
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_minDistance)
     {
@@ -357,6 +365,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
 double
 BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
+  NS_LOG_INFO (this << " RX POWER");
   return txPowerDbm + GetLoss (a, b);
 }
 
