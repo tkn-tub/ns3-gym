@@ -18,6 +18,8 @@ def configure(conf):
 
 
 def build(bld):
+    bld.install_files('${PREFIX}/include/ns3', '../../ns3/config-store-config.h')
+
     module = bld.create_ns3_module('config-store', ['core', 'network'])
     module.source = [
         'model/attribute-iterator.cc',

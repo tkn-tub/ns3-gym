@@ -129,6 +129,7 @@ def set_options(opt):
     opt.tool_options('compiler_cc')
     opt.tool_options('compiler_cxx')
     opt.tool_options('cflags')
+    opt.tool_options('gnu_dirs')
 
     opt.add_option('--cwd',
                    help=('Set the working directory for a program.'),
@@ -270,6 +271,10 @@ def configure(conf):
     except Configure.ConfigurationError:
         pass
     conf.check_tool('command', ['waf-tools'])
+    conf.check_tool('gnu_dirs')
+
+    #if os.path.exists('/usr/lib64'):
+    #    conf.env.LIBDIR = os.path.join(conf.env.PREFIX, "lib64")
 
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()

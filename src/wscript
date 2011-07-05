@@ -432,10 +432,11 @@ class ns3pcfile_task(Task.Task):
         includes = self.env['CPPPATH_%s' % dep]
         return [self.env['CPPPATH_ST'] % include for include in includes]
 
-    def _generate_pcfile(self, name, use, uselib_local, prefix, outfilename):
+    def _generate_pcfile(self, name, use, uselib_local, env, outfilename):
         outfile = open(outfilename, 'w')
-        includedir = os.path.join(prefix, 'include')
-        libdir = os.path.join(prefix, 'lib')
+        prefix = env.PREFIX
+        includedir = os.path.join(env.INCLUDEDIR, "ns3")
+        libdir = env.LIBDIR
         libs = self._self_libs(self.env, name, '${libdir}')
         for dep in use:
             libs = libs + self._lib(self.env, dep)
@@ -463,7 +464,7 @@ Cflags: %s
         output_filename = self.outputs[0].bldpath(self.env)
         self._generate_pcfile(self.module.name, self.module.uselib, 
                               self.module.uselib_local,
-                              self.env['PREFIX'], output_filename)
+                              self.env, output_filename)
 
 class ns3pcfile_taskgen(TaskGen.task_gen):
     def __init__(self, *args, **kwargs):
@@ -473,8 +474,7 @@ class ns3pcfile_taskgen(TaskGen.task_gen):
         output_node = self.path.find_or_declare(output_filename)
         assert output_node is not None, str(self)
         task = self.create_task('ns3pcfile', env=self.env)
-        self.bld.install_files(os.path.join('${PREFIX}', 'lib', 'pkgconfig'),
-                               output_node)
+        self.bld.install_files('${LIBDIR}/pkgconfig', output_node)
         task.set_outputs([output_node])
         task.module = self.module
 
