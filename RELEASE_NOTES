@@ -9,12 +9,11 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3.11
+Release 3.12
 ===========
 
 Availability
 ------------
-This release is not yet available.
 
 Supported platforms
 -------------------
@@ -22,14 +21,87 @@ Supported platforms
 New user-visible features
 -------------------------
 
+- SpectrumChannel models now support the usage of single-frequency
+  propagation loss models based on the PropagationLossModel
+  class. These model can be used in conjunction with
+  the frequency-dependent propagation loss model based on the
+  SpectrumPropagationLossModel class already supported by
+  SpectrumChannel. 
+
+
+Bugs fixed
+----------
+ - bug 1033 - Mesh airtime-metric fixed
+ - bug 1102 - IPv4 header fragment offset field not set correctly
+ - bug 1123 - class MinMaxAvgTotalCalculator does not implement all methods
+ - bug 1141 - MeshWifiInterfaceMac adds supported modes to wrong remote station
+ - bug 1175 - shared libraries are not versioned
+ - bug 1192 - some test cases fail to clean up properly
+ - bug 1201 - UDP sockets need to set connected state before notifying the ConnectionSucceeded callback
+
+Release 3.11
+===========
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/releases/ns-allinone-3.11.tar.bz2
+
+Supported platforms
+-------------------
+ns-3.11 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
+
+- Linux x86_64 Ubuntu 11.04
+  - g++-4.5.2
+- Linux i686 Ubuntu 11.04
+  - g++-4.5.2, g++-4.4.5
+- Linux x86_64 Fedora Core 15
+  - g++-4.6.0
+- Linux x86_64 Fedora Core 14
+  - g++-4.5.3, g++-4.4.6, g++-4.3.4
+- Linux x86_64 Fedora Core 10
+  - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.2, 4.4.0
+- OS X Snow Leopard
+  - g++-4.2.1 
+
+New user-visible features
+-------------------------
+
+  - The build system has been modularized, and the source code reorganized,
+    to allow for modular libraries instead of a single monolithic ns-3
+    library.   User programs now link a number of smaller, per-module
+    libraries depending on the dependencies expressed to the build system.  
+    Source code is now being maintained in individual modules with
+    consistent directory structures.
+
+  - Python bindings have also been modularized, and the bindings are now
+    generated into a 'ns' namespace instead of 'ns3' for the old
+    (monolithic) bindings.  By default the bindings are now modular, with
+    a backward compatibility layer for older programs.  
+
+  - By default, example and test programs are disabled from the build.
+    Users can enable them via the use of a waf command at configure time,
+    or automatically through the use of a new .ns3rc file.
+
   - int64x64_t is a new type which allows portable and easy to write arithmetic
     calculations that require a high degree of fractional precision.
 
-  - interface to the Click Modular Router and an Ipv4ClickRouting
-    class to allow a node to use Click for external routing
+  - An interface to the Click Modular Router and an Ipv4ClickRouting
+    class has been added, to allow a node to use Click for external routing.
 
-  - interface to an OpenFlow software implementation distribution to allow the 
-    simulation of OpenFlow switches in ns-3
+  - An interface to an OpenFlow software implementation distribution has
+    been added to allow the simulation of OpenFlow switches in ns-3.
+
+  - ns-3 coding style requirements have been applied to the entire coding
+    base, resulting in a large number of whitespace changes.  The coding 
+    style has been automatically enforced by running a style checking 
+    program (utils/check-style.py) that uses the uncrustify (v. 0.58)
+    program to apply changes. 
+
+  - Some documentation reorganization to split documentation between
+    the ns-3 manual (primarily focusing on the ns-3 core) and a new 
+    "model library" document has been started.
 
 Bugs fixed
 ----------
@@ -45,9 +117,11 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - ./waf --apiscan: fix bug in detection of whether the per-module
    - Remove the 'Modules to build' debug print 
    - CsmaNetDevice ReceiveErrorModel was not dropping the packet
+   - Several "set but not used" bugs for newer compilers quick-fixed
 
    - bug 445 - Is the class name Scalar in nstime.h appropriate?
    - bug 699 - TestCase::DoRun probably should not return a bool
+   - bug 823 - Need finer-grained control over what goes into libns3
    - bug 957 - Issue with test.py
    - bug 1017 - node --> internet-stack --> node
    - bug 1018 - mobility --> helper --> mobility circular dependency
@@ -87,6 +161,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1094 - Object::GetObject upon dlopen 
    - bug 1097 - AODV routing entry set to be VALID mistakenly.
    - bug 1098 - when to show users which modules are enabled?
+   - bug 1101 - Sqlite stats disappeared from configuration file src/wscript
    - bug 1103 - Useless assignment in omnet-data-output.cc
    - bug 1105 - Move topology helpers into separate per-device modules
    - bug 1106 - Remove "CanvasLocation" dependencies in p2p helpers
@@ -98,6 +173,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1131 - Bug in Ipv4L3Protocol::RemoveAddress()
    - bug 1133 - DSDV: Possible bug in settling time calc
    - bug 1142 - Wrong 802.11p Slot time
+   - bug 1146 - help string for test.py with disabled tests
 
 Known issues
 ------------

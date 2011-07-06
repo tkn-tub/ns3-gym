@@ -138,8 +138,8 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                       const Address &to, NetDevice::PacketType packetType)
+ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                        const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << device << p->GetSize () << protocol << from << to << packetType);
 
@@ -205,21 +205,21 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
                                        << " for waiting entry -- flush");
                   Address from_mac = arp.GetSourceHardwareAddress ();
                   entry->MarkAlive (from_mac);
-                  Ptr<Packet> pending = entry->DequeuePending();
+                  Ptr<Packet> pending = entry->DequeuePending ();
                   while (pending != 0)
                     {
                       cache->GetInterface ()->Send (pending,
                                                     arp.GetSourceIpv4Address ());
-                      pending = entry->DequeuePending();
+                      pending = entry->DequeuePending ();
                     }
                 } 
               else 
                 {
                   // ignore this reply which might well be an attempt 
                   // at poisening my arp cache.
-                  NS_LOG_LOGIC("node="<<m_node->GetId ()<<", got reply from " << 
-                               arp.GetSourceIpv4Address () <<
-                               " for non-waiting entry -- drop");
+                  NS_LOG_LOGIC ("node="<<m_node->GetId ()<<", got reply from " <<
+                                arp.GetSourceIpv4Address () <<
+                                " for non-waiting entry -- drop");
                   m_dropTrace (packet);
                 }
             } 

@@ -24,36 +24,36 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("DataOutputInterface");
+NS_LOG_COMPONENT_DEFINE ("DataOutputInterface");
 
 
 //--------------------------------------------------------------
 //----------------------------------------------
 DataOutputInterface::DataOutputInterface()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 DataOutputInterface::~DataOutputInterface()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 void
-DataOutputInterface::DoDispose()
+DataOutputInterface::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  Object::DoDispose();
+  Object::DoDispose ();
   // end DataOutputInterface::DoDispose
 }
 
 void
-DataOutputInterface::SetFilePrefix(const std::string prefix)
+DataOutputInterface::SetFilePrefix (const std::string prefix)
 {
   m_filePrefix = prefix;
 }
 
 std::string
-DataOutputInterface::GetFilePrefix() const
+DataOutputInterface::GetFilePrefix () const
 {
   return m_filePrefix;
 }

@@ -203,7 +203,7 @@ FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packe
       else 
         {
           stats.jitterSum -= jitter;
-          stats.jitterHistogram.AddValue (-jitter.GetSeconds());
+          stats.jitterHistogram.AddValue (-jitter.GetSeconds ());
         }
     }
   stats.lastDelay = delay;
@@ -285,7 +285,7 @@ FlowMonitor::CheckForLostPackets (Time maxDelay)
         {
           // packet is considered lost, add it to the loss statistics
           std::map<FlowId, FlowStats>::iterator
-          flow = m_flowStats.find (iter->first.first);
+            flow = m_flowStats.find (iter->first.first);
           NS_ASSERT (flow != m_flowStats.end ());
           flow->second.lostPackets++;
 
@@ -388,48 +388,48 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
 {
   CheckForLostPackets ();
 
-  INDENT(indent); os << "<FlowMonitor>\n";
+  INDENT (indent); os << "<FlowMonitor>\n";
   indent += 2;
-  INDENT(indent); os << "<FlowStats>\n";
+  INDENT (indent); os << "<FlowStats>\n";
   indent += 2;
   for (std::map<FlowId, FlowStats>::const_iterator flowI = m_flowStats.begin ();
        flowI != m_flowStats.end (); flowI++)
     {
 
-      INDENT(indent);
+      INDENT (indent);
 #define ATTRIB(name) << " " # name "=\"" << flowI->second.name << "\""
       os << "<Flow flowId=\"" << flowI->first << "\""
-      ATTRIB(timeFirstTxPacket)
-      ATTRIB(timeFirstRxPacket)
-      ATTRIB(timeLastTxPacket)
-      ATTRIB(timeLastRxPacket)
-      ATTRIB(delaySum)
-      ATTRIB(jitterSum)
-      ATTRIB(lastDelay)
-      ATTRIB(txBytes)
-      ATTRIB(rxBytes)
-      ATTRIB(txPackets)
-      ATTRIB(rxPackets)
-      ATTRIB(lostPackets)
-      ATTRIB(timesForwarded)
-                     << ">\n";
+      ATTRIB (timeFirstTxPacket)
+      ATTRIB (timeFirstRxPacket)
+      ATTRIB (timeLastTxPacket)
+      ATTRIB (timeLastRxPacket)
+      ATTRIB (delaySum)
+      ATTRIB (jitterSum)
+      ATTRIB (lastDelay)
+      ATTRIB (txBytes)
+      ATTRIB (rxBytes)
+      ATTRIB (txPackets)
+      ATTRIB (rxPackets)
+      ATTRIB (lostPackets)
+      ATTRIB (timesForwarded)
+      << ">\n";
 #undef ATTRIB
 
 
       indent += 2;
       for (uint32_t reasonCode = 0; reasonCode < flowI->second.packetsDropped.size (); reasonCode++)
         {
-          INDENT(indent);
+          INDENT (indent);
           os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
-             << " number=\"" << flowI->second.packetsDropped[reasonCode]
-             << "\" />\n";
+          << " number=\"" << flowI->second.packetsDropped[reasonCode]
+          << "\" />\n";
         }
       for (uint32_t reasonCode = 0; reasonCode < flowI->second.bytesDropped.size (); reasonCode++)
         {
-          INDENT(indent);
+          INDENT (indent);
           os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
-             << " bytes=\"" << flowI->second.bytesDropped[reasonCode]
-             << "\" />\n";
+          << " bytes=\"" << flowI->second.bytesDropped[reasonCode]
+          << "\" />\n";
         }
       if (enableHistograms)
         {
@@ -440,27 +440,27 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
         }
       indent -= 2;
 
-      INDENT(indent); os << "</Flow>\n";
+      INDENT (indent); os << "</Flow>\n";
     }
   indent -= 2;
-  INDENT(indent); os << "</FlowStats>\n";
+  INDENT (indent); os << "</FlowStats>\n";
 
   m_classifier->SerializeToXmlStream (os, indent);
 
   if (enableProbes)
     {
-      INDENT(indent); os << "<FlowProbes>\n";
+      INDENT (indent); os << "<FlowProbes>\n";
       indent += 2;
       for (uint32_t i = 0; i < m_flowProbes.size (); i++)
         {
           m_flowProbes[i]->SerializeToXmlStream (os, indent, i);
         }
       indent -= 2;
-      INDENT(indent); os << "</FlowProbes>\n";
+      INDENT (indent); os << "</FlowProbes>\n";
     }
 
   indent -= 2;
-  INDENT(indent); os << "</FlowMonitor>\n";
+  INDENT (indent); os << "</FlowMonitor>\n";
 }
 
 

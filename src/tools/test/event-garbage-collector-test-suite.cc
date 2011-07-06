@@ -65,9 +65,9 @@ void EventGarbageCollectorTestCase::DoRun (void)
   for (int n = 0; n < 100; n++)
     {
       m_events->Track (Simulator::Schedule
-                             (Simulator::Now (),
-                             &EventGarbageCollectorTestCase::EventGarbageCollectorCallback,
-                             this));
+                         (Simulator::Now (),
+                         &EventGarbageCollectorTestCase::EventGarbageCollectorCallback,
+                         this));
     }
   Simulator::Run ();
   NS_TEST_EXPECT_MSG_EQ (m_events, 0, "");

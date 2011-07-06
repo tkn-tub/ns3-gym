@@ -121,7 +121,7 @@ Ns3TcpStateTestCase::DoSetup (void)
   if (m_writeVectors)
     {
       m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
-      m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+      m_pcapFile.Init (PCAP_LINK_TYPE, PCAP_SNAPLEN);
     }
   else
     {
@@ -183,7 +183,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
       uint8_t *actual = new uint8_t[readLen];
       p->CopyData (actual, readLen);
 
-      uint32_t result = memcmp(actual, expected, readLen);
+      uint32_t result = memcmp (actual, expected, readLen);
 
       delete [] actual;
 
@@ -253,8 +253,8 @@ Ns3TcpStateTestCase::StartFlow (Ptr<Socket> localSocket,
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
   localSocket->SetSendCallback (MakeCallback
-                                     (&Ns3TcpStateTestCase::WriteUntilBufferFull,
-                                     this));
+                                  (&Ns3TcpStateTestCase::WriteUntilBufferFull,
+                                  this));
   WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
 }
 
@@ -378,7 +378,7 @@ Ns3TcpStateTestCase::DoRun (void)
       caseDescription = "Immediate FIN upon SYN_RCVD";
       m_needToClose = false;
       dropListN0.push_back (1); // Hide the ACK in 3WHS
-      Simulator::Schedule (Seconds(0.002), &Socket::Close, localSocket);
+      Simulator::Schedule (Seconds (0.002), &Socket::Close, localSocket);
       break;
     case 6:
       m_totalTxBytes = 5000;
@@ -390,7 +390,7 @@ Ns3TcpStateTestCase::DoRun (void)
       caseDescription = "FIN check 1: Loss of initiator's FIN. Wait until app close";
       m_needToClose = false;
       dropListN0.push_back (7); // Hide the FIN from n0
-      Simulator::Schedule (Seconds(0.04), &Socket::Close, localSocket);
+      Simulator::Schedule (Seconds (0.04), &Socket::Close, localSocket);
       break;
     case 8:
       m_totalTxBytes = 5000;

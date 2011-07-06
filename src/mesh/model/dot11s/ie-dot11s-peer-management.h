@@ -68,7 +68,7 @@ public:
   uint16_t  GetPeerLinkId () const;
   bool   SubtypeIsOpen () const;
   bool   SubtypeIsClose () const;
-  bool   SubtypeIsConfirm () const ;
+  bool   SubtypeIsConfirm () const;
   uint8_t GetSubtype () const;
   /**
    * \name Inherited from WifiInformationElement

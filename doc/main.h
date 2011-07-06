@@ -7,19 +7,9 @@
  * Doxygen is typically used for 
  * API documentation, and organizes such documentation across different
  * modules.   This project uses Doxygen for building the definitive
- * maintained API documentation,  Separate GNU texinfo documents are used for 
- * a tutorial, reference manual, and testing and validation manual.
- *
- * The ns-3 project documentation is organized as follows:
- *     - <b><a href="modules.html">modules</a></b>:  The "Modules" tab (above) 
- *       organizes  all of the public API and supporting manual text 
- *       along the  source code directory structure.   
- *     - <a href="http://www.nsnam.org/tutorials.html">tutorial</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
- *     - <a href="http://www.nsnam.org/tutorials.html">Reference manual</a>:  The ns-3 reference manual is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
- *     - <a href="http://www.nsnam.org/tutorials.html">Testing and validation manual</a>:  The ns-3 testing and validation manual is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
- *     - The <b><a href="http://www.nsnam.org/wiki/index.php/Main_Page">ns-3 wiki</a></b> 
- *       contains additional user-contributed material.  Some wiki-contributed
- *       material may migrate to and overlap with the Doxygen and manual information.
+ * maintained API documentation.  Additional ns-3 project documentation 
+ * can be found at the
+ * <a href="http://www.nsnam.org/documentation/latest">project web site</a>.
  *
  * \section install-sec Building the Documentation
  * 
@@ -34,7 +24,8 @@
  * 
  * \section module-sec Module overview
  *
- * The ns-3 library is split across many modules:
+ * The ns-3 library is split across many modules organized under the 
+ * <b><a href="modules.html">Modules</a></b> tab.
  *     - aodv
  *     - applications
  *     - bridge
@@ -75,8 +66,6 @@
  *     - wifi
  *     - wimax
  *
- * More detail can be found in the <b><a href="modules.html">Modules</a></b>
- * tab.
  *
  */
 /**

@@ -118,7 +118,7 @@ RawTextConfigLoad::Default (void)
   m_is->seekg (0);
   std::string type, name, value;
   *m_is >> type >> name >> value;
-  while (m_is->good())
+  while (m_is->good ())
     {
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
@@ -135,7 +135,7 @@ RawTextConfigLoad::Global (void)
   m_is->seekg (0);
   std::string type, name, value;
   *m_is >> type >> name >> value;
-  while (m_is->good())
+  while (m_is->good ())
     {
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
@@ -152,7 +152,7 @@ RawTextConfigLoad::Attributes (void)
   m_is->seekg (0);
   std::string type, path, value;
   *m_is >> type >> path >> value;
-  while (m_is->good())
+  while (m_is->good ())
     {
       NS_LOG_DEBUG ("type=" << type << ", path=" << path << ", value=" << value);
       value = Strip (value);

@@ -76,7 +76,7 @@ RadvdInterface::RadvdInterface (uint32_t interface, uint32_t maxRtrAdvInterval, 
 RadvdInterface::~RadvdInterface ()
 {
   /* clear prefixes */
-  for (RadvdPrefixListI it = m_prefixes.begin () ; it != m_prefixes.end () ; ++it)
+  for (RadvdPrefixListI it = m_prefixes.begin (); it != m_prefixes.end (); ++it)
     {
       (*it) = 0;
     }

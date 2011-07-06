@@ -24,13 +24,13 @@ namespace ns3 {
 
 Backoff::Backoff () 
 {
-  m_slotTime = MicroSeconds(1);
+  m_slotTime = MicroSeconds (1);
   m_minSlots = 1;
   m_maxSlots = 1000;
   m_ceiling = 10;
   m_maxRetries = 1000;
 
-  ResetBackoffTime();
+  ResetBackoffTime ();
 }
 
 Backoff::Backoff(Time slotTime, uint32_t minSlots, uint32_t maxSlots, uint32_t ceiling, uint32_t maxRetries)
@@ -64,7 +64,7 @@ Backoff::GetBackoffTime (void)
       maxSlot = m_maxSlots;
     }
 
-  uint32_t backoffSlots = (uint32_t)m_rng.GetValue(minSlot, maxSlot);
+  uint32_t backoffSlots = (uint32_t)m_rng.GetValue (minSlot, maxSlot);
 
   Time backoff = Time (backoffSlots * m_slotTime);
   return backoff;

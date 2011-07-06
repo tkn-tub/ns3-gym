@@ -34,6 +34,7 @@ class PacketBurst;
 class SpectrumValue;
 class SpectrumPhy;
 class SpectrumPropagationLossModel;
+class PropagationLossModel;
 class PropagationDelayModel;
 
 /**
@@ -50,8 +51,16 @@ public:
 
 
   /**
-   * set the propagation loss model to be used
-   * \param loss Ptr to the propagation loss model to be used.
+   * set the single-frequency propagation loss model to be used
+   * \warning only models that do not depend on the TX power should be used.
+   * 
+   * \param loss a pointer to the propagation loss model to be used.
+   */
+  virtual void AddPropagationLossModel (Ptr<PropagationLossModel> loss) = 0;
+
+  /**
+   * set the frequency-dependent propagation loss model to be used
+   * \param loss a pointer to the propagation loss model to be used.
    */
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss) = 0;
 

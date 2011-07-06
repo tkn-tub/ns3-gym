@@ -109,7 +109,7 @@ main (int argc, char *argv[])
   onoff.SetAttribute ("Remote", 
                       AddressValue (InetSocketAddress (interfaces.GetAddress (0), port)));
   app = onoff.Install (nodes.Get (3));
-  app.Start(Seconds (1.1));
+  app.Start (Seconds (1.1));
   app.Stop (Seconds (10.0));
 
   app = sink.Install (nodes.Get (0));

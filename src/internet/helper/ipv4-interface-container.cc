@@ -67,7 +67,7 @@ Ipv4InterfaceContainer::Add (std::string ipv4Name, uint32_t interface)
 }
 
 std::pair<Ptr<Ipv4>, uint32_t>
-Ipv4InterfaceContainer::Get(uint32_t i) const
+Ipv4InterfaceContainer::Get (uint32_t i) const
 {
   return m_interfaces[i];
 }

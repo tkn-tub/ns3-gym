@@ -16,32 +16,31 @@ def configure(conf):
 
     if conf.env['ENABLE_TAP']:
         blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
-        tapcreatordir = os.path.abspath(os.path.join(blddir, "src/devices/tap-bridge"))
+        tapcreatordir = os.path.abspath(os.path.join(blddir, "src/tap-bridge"))
         conf.env.append_value('NS3_EXECUTABLE_PATH', tapcreatordir)
+    else:
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append('tap-bridge')
 
 def build(bld):
+    # Don't do anything for this module if tap-bridge's not enabled.
+    if not bld.env['ENABLE_TAP']:
+        return
+
     module = bld.create_ns3_module('tap-bridge', ['network', 'internet'])
     module.source = [
+        'model/tap-bridge.cc',
+        'model/tap-encode-decode.cc',
+        'helper/tap-bridge-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'tap-bridge'
     headers.source = [
+        'model/tap-bridge.h',
+        'helper/tap-bridge-helper.h',
         'doc/tap.h',
         ]
-
-    if not bld.env['ENABLE_TAP']:
-        return
-
-    module.source.extend([
-            'model/tap-bridge.cc',
-            'model/tap-encode-decode.cc',
-            'helper/tap-bridge-helper.cc',
-            ])
-    headers.source.extend([
-            'model/tap-bridge.h',
-            'helper/tap-bridge-helper.h',
-            ])
-
 
     if not bld.env['PLATFORM'].startswith('freebsd'):
         obj = bld.create_suid_program('tap-creator')

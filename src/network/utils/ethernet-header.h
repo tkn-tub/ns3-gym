@@ -101,7 +101,7 @@ public:
   /**
    * \return The size of the header
    */
-  uint32_t GetHeaderSize() const;
+  uint32_t GetHeaderSize () const;
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;

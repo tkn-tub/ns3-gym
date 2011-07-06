@@ -18,8 +18,6 @@
 #ifndef OPENFLOW_INTERFACE_H
 #define OPENFLOW_INTERFACE_H
 
-#ifdef NS3_OPENFLOW
-
 #include <assert.h>
 #include <errno.h>
 
@@ -563,5 +561,4 @@ uint16_t ValidateVendor (const sw_flow_key *key, const ofp_action_header *ah, ui
 
 }
 
-#endif // NS3_OPENFLOW
 #endif /* OPENFLOW_INTERFACE_H */

@@ -35,7 +35,7 @@ elementclass LanSimHost {
 
   // All packets received on eth0 are silently
   // dropped if they are destined for another location
-  FromSimDevice(eth0,4096)
+  FromSimDevice(eth0,SNAPLEN 4096)
     -> ToDump(in_eth0.pcap,PER_NODE 1,ENCAP ETHER)
     -> cl;
 
@@ -90,7 +90,7 @@ elementclass TapSimHost {
     -> ToSimDevice($dev,IP);
 
   // Packets sent out by the "kernel" get pushed outside
-  FromSimDevice($dev,4096)
+  FromSimDevice($dev,SNAPLEN 4096)
     -> CheckIPHeader2
     -> ToDump(fromkernel.pcap,2000,IP,PER_NODE 1)
     -> GetIPAddress(16)

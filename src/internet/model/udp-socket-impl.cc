@@ -225,14 +225,14 @@ UdpSocketImpl::Close (void)
 }
 
 int
-UdpSocketImpl::Connect(const Address & address)
+UdpSocketImpl::Connect (const Address & address)
 {
   NS_LOG_FUNCTION (this << address);
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
-  NotifyConnectionSucceeded ();
   m_connected = true;
+  NotifyConnectionSucceeded ();
 
   return 0;
 }
@@ -306,7 +306,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   NS_LOG_FUNCTION (this << p << dest << port);
   if (m_boundnetdevice)
     {
-      NS_LOG_LOGIC("Bound interface number " << m_boundnetdevice->GetIfIndex());
+      NS_LOG_LOGIC ("Bound interface number " << m_boundnetdevice->GetIfIndex ());
     }
   if (m_endPoint == 0)
     {
@@ -394,7 +394,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           // Check if interface-bound socket
           if (m_boundnetdevice) 
             {
-              if (ipv4->GetNetDevice(i) != m_boundnetdevice)
+              if (ipv4->GetNetDevice (i) != m_boundnetdevice)
                 continue;
             }
           Ipv4Mask maski = iaddr.GetMask ();
@@ -421,15 +421,15 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
             }
         }
       NS_LOG_LOGIC ("Limited broadcast end.");
-      return p->GetSize();
+      return p->GetSize ();
     }
-  else if (m_endPoint->GetLocalAddress() != Ipv4Address::GetAny())
+  else if (m_endPoint->GetLocalAddress () != Ipv4Address::GetAny ())
     {
-      m_udp->Send(p->Copy (), m_endPoint->GetLocalAddress(), dest,
-                  m_endPoint->GetLocalPort(), port, 0);
+      m_udp->Send (p->Copy (), m_endPoint->GetLocalAddress (), dest,
+                   m_endPoint->GetLocalPort (), port, 0);
       NotifyDataSent (p->GetSize ());
       NotifySend (GetTxAvailable ());
-      return p->GetSize();
+      return p->GetSize ();
     }
   else if (ipv4->GetRoutingProtocol () != 0)
     {
@@ -463,7 +463,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           m_udp->Send (p->Copy (), header.GetSource (), header.GetDestination (),
                        m_endPoint->GetLocalPort (), port, route);
           NotifyDataSent (p->GetSize ());
-          return p->GetSize();
+          return p->GetSize ();
         }
       else 
         {
@@ -517,7 +517,7 @@ Ptr<Packet>
 UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
-  if (m_deliveryQueue.empty() )
+  if (m_deliveryQueue.empty () )
     {
       m_errno = ERROR_AGAIN;
       return 0;
@@ -561,13 +561,13 @@ UdpSocketImpl::GetSockName (Address &address) const
   NS_LOG_FUNCTION_NOARGS ();
   if (m_endPoint != 0)
     {
-      address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort());
+      address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort ());
     }
   else
     {
       // It is possible to call this method on a socket without a name
       // in which case, behavior is unspecified
-      address = InetSocketAddress(Ipv4Address::GetZero(), 0);
+      address = InetSocketAddress (Ipv4Address::GetZero (), 0);
     }
   return 0;
 }

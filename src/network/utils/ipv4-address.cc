@@ -23,7 +23,7 @@
 #include "ipv4-address.h"
 #include "ns3/assert.h"
 
-NS_LOG_COMPONENT_DEFINE("Ipv4Address");
+NS_LOG_COMPONENT_DEFINE ("Ipv4Address");
 
 namespace ns3 {
 
@@ -341,7 +341,7 @@ Ipv4Address::GetLoopback (void)
   return loopback;
 }
 
-size_t Ipv4AddressHash::operator()(Ipv4Address const &x) const 
+size_t Ipv4AddressHash::operator() (Ipv4Address const &x) const
 { 
   return x.Get ();
 }

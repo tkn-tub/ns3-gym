@@ -56,7 +56,7 @@ ComponentList *GetComponentList (void)
 PrintList::PrintList ()
 {
 #ifdef HAVE_GETENV
-  char *envVar = getenv("NS_LOG");
+  char *envVar = getenv ("NS_LOG");
   if (envVar == 0)
     {
       return;
@@ -102,7 +102,7 @@ void
 LogComponent::EnvVarCheck (char const * name)
 {
 #ifdef HAVE_GETENV
-  char *envVar = getenv("NS_LOG");
+  char *envVar = getenv ("NS_LOG");
   if (envVar == 0)
     {
       return;
@@ -358,7 +358,7 @@ void LogSetTimePrinter (LogTimePrinter printer)
 {
   g_logTimePrinter = printer;
 }
-LogTimePrinter LogGetTimePrinter(void)
+LogTimePrinter LogGetTimePrinter (void)
 {
   return g_logTimePrinter;
 }
@@ -367,7 +367,7 @@ void LogSetNodePrinter (LogNodePrinter printer)
 {
   g_logNodePrinter = printer;
 }
-LogNodePrinter LogGetNodePrinter(void)
+LogNodePrinter LogGetNodePrinter (void)
 {
   return g_logNodePrinter;
 }

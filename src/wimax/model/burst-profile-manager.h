@@ -31,6 +31,9 @@ namespace ns3 {
 class SSRecord;
 class RngReq;
 
+/**
+ * \ingroup wimax
+ */
 class BurstProfileManager : public Object
 {
 public:

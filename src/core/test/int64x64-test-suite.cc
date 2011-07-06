@@ -132,43 +132,43 @@ Int64x64ArithmeticTestCase::DoRun (void)
 {
   int64x64_t a, b;
 
-  CHECK_EXPECTED (V(1) - V(1), 0);
-  CHECK_EXPECTED (V(1) - V(2), -1);
-  CHECK_EXPECTED (V(1) - V(3), -2);
-  CHECK_EXPECTED (V(1) - V(-1), 2);
-  CHECK_EXPECTED (V(1) - V(-2), 3);
-  CHECK_EXPECTED (V(-3) - V(-4), 1);
-  CHECK_EXPECTED (V(-2) - V(3), -5);
-  CHECK_EXPECTED (V(1) + V(2), 3);
-  CHECK_EXPECTED (V(1) + V(-3), -2);
-  CHECK_EXPECTED (V(0) + V(0), 0);
-  CHECK_EXPECTED (V(0) * V(0), 0);
-  CHECK_EXPECTED (V(0) * V(1), 0);
-  CHECK_EXPECTED (V(0) * V(-1), 0);
-  CHECK_EXPECTED (V(1) * V(0), 0);
-  CHECK_EXPECTED (V(1) * V(1), 1);
-  CHECK_EXPECTED (V(1) * V(-1), -1);
-  CHECK_EXPECTED (V(-1) * V(-1), 1);
-  CHECK_EXPECTED (V(0) * V(1), 0);
-  CHECK_EXPECTED (V(0) * V(-1), 0);
-  CHECK_EXPECTED (V(-1) * V(1), -1);
+  CHECK_EXPECTED (V (1) - V (1), 0);
+  CHECK_EXPECTED (V (1) - V (2), -1);
+  CHECK_EXPECTED (V (1) - V (3), -2);
+  CHECK_EXPECTED (V (1) - V (-1), 2);
+  CHECK_EXPECTED (V (1) - V (-2), 3);
+  CHECK_EXPECTED (V (-3) - V (-4), 1);
+  CHECK_EXPECTED (V (-2) - V (3), -5);
+  CHECK_EXPECTED (V (1) + V (2), 3);
+  CHECK_EXPECTED (V (1) + V (-3), -2);
+  CHECK_EXPECTED (V (0) + V (0), 0);
+  CHECK_EXPECTED (V (0) * V (0), 0);
+  CHECK_EXPECTED (V (0) * V (1), 0);
+  CHECK_EXPECTED (V (0) * V (-1), 0);
+  CHECK_EXPECTED (V (1) * V (0), 0);
+  CHECK_EXPECTED (V (1) * V (1), 1);
+  CHECK_EXPECTED (V (1) * V (-1), -1);
+  CHECK_EXPECTED (V (-1) * V (-1), 1);
+  CHECK_EXPECTED (V (0) * V (1), 0);
+  CHECK_EXPECTED (V (0) * V (-1), 0);
+  CHECK_EXPECTED (V (-1) * V (1), -1);
 
 
-  CHECK_EXPECTED (V (2) * V(3) / V(3), 2);
+  CHECK_EXPECTED (V (2) * V (3) / V (3), 2);
 
   // Below, the division loses precision because 2/3 is not
   // representable exactly in 64.64 integers. So, we got
   // something super close but the final rounding kills us.
-  a = V(2);
-  b = V(3);
+  a = V (2);
+  b = V (3);
   a /= b;
   a *= b;
-  CHECK_EXPECTED (V(2) / V(3) * V(3), 1);
+  CHECK_EXPECTED (V (2) / V (3) * V (3), 1);
 
   // The example below shows that we really do not lose
   // much precision internally: it is almost always the
   // final conversion which loses precision.
-  CHECK_EXPECTED (V (2000000000) / V(3) * V(3), 1999999999);
+  CHECK_EXPECTED (V (2000000000) / V (3) * V (3), 1999999999);
 }
 
 class Int64x64Bug455TestCase : public TestCase
@@ -248,12 +248,12 @@ void
 Int64x64CompareTestCase::DoRun (void)
 {
 
-  NS_TEST_ASSERT_MSG_EQ ((V(-1) < V(1)), true, "a is smaller than b");
-  NS_TEST_ASSERT_MSG_EQ ((V(-1) > V(-2)), true, "a is bigger than b");
-  NS_TEST_ASSERT_MSG_EQ ((V(-1) == V(-1)), true, "a is equal to b");
+  NS_TEST_ASSERT_MSG_EQ ((V (-1) < V (1)), true, "a is smaller than b");
+  NS_TEST_ASSERT_MSG_EQ ((V (-1) > V (-2)), true, "a is bigger than b");
+  NS_TEST_ASSERT_MSG_EQ ((V (-1) == V (-1)), true, "a is equal to b");
 
-  NS_TEST_ASSERT_MSG_EQ ((V(1) > V(-1)), true, "a is bigger than b");
-  NS_TEST_ASSERT_MSG_EQ ((V(1) < V(2)), true, "a is smaller than b");
+  NS_TEST_ASSERT_MSG_EQ ((V (1) > V (-1)), true, "a is bigger than b");
+  NS_TEST_ASSERT_MSG_EQ ((V (1) < V (2)), true, "a is smaller than b");
 }
 
 class Int64x64InvertTestCase : public TestCase
@@ -284,7 +284,7 @@ Int64x64InvertTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (c.GetHigh (), 0,                             \
                              "1 * 1/x should be 0 for x=" << factor);     \
       int64x64_t d = V (1);                                               \
-      d /= (V(factor));                                                  \
+      d /= (V (factor));                                                  \
       NS_TEST_ASSERT_MSG_EQ (d.GetDouble (), c.GetDouble (),              \
                              "1 * 1/x should be equal to 1/x for x=" << factor); \
       int64x64_t e = V (-factor);                                 \
@@ -293,28 +293,28 @@ Int64x64InvertTestCase::DoRun (void)
                              "-x * 1/x should be -1 for x=" << factor);   \
     } \
   while(false)
-  TEST(2);
-  TEST(3);
-  TEST(4);
-  TEST(5);
-  TEST(6);
-  TEST(10);
-  TEST(99);
-  TEST(100);
-  TEST(1000);
-  TEST(10000);
-  TEST(100000);
-  TEST(100000);
-  TEST(1000000);
-  TEST(10000000);
-  TEST(100000000);
-  TEST(1000000000);
-  TEST(10000000000LL);
-  TEST(100000000000LL);
-  TEST(1000000000000LL);
-  TEST(10000000000000LL);
-  TEST(100000000000000LL);
-  TEST(1000000000000000LL);
+  TEST (2);
+  TEST (3);
+  TEST (4);
+  TEST (5);
+  TEST (6);
+  TEST (10);
+  TEST (99);
+  TEST (100);
+  TEST (1000);
+  TEST (10000);
+  TEST (100000);
+  TEST (100000);
+  TEST (1000000);
+  TEST (10000000);
+  TEST (100000000);
+  TEST (1000000000);
+  TEST (10000000000LL);
+  TEST (100000000000LL);
+  TEST (1000000000000LL);
+  TEST (10000000000000LL);
+  TEST (100000000000000LL);
+  TEST (1000000000000000LL);
 #undef TEST
 }
 

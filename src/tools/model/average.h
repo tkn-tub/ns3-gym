@@ -82,9 +82,9 @@ public:
   /// Estimate of mean, alias to Avg
   double   Mean    () const { return Avg (); }
   /// Unbiased estimate of variance
-  double   Var     () const { return Count() / (double)(Count() - 1) * (m_avg2 - m_avg*m_avg); }
+  double   Var     () const { return Count () / (double)(Count () - 1) * (m_avg2 - m_avg*m_avg); }
   /// Standard deviation
-  double   Stddev  () const { return sqrt (Var ());}
+  double   Stddev  () const { return sqrt (Var ()); }
   //\}
 
   /** 
@@ -97,11 +97,11 @@ public:
    */
   //\{
   /// Margin of error of the mean for 90% confidence level 
-  double   Error90() const { return 1.645 * sqrt (Var () / Count ()); }
+  double   Error90 () const { return 1.645 * sqrt (Var () / Count ()); }
   /// Margin of error of the mean for 95% confidence level 
-  double   Error95() const { return 1.960 * sqrt (Var () / Count ()); }
+  double   Error95 () const { return 1.960 * sqrt (Var () / Count ()); }
   /// Margin of error of the mean for 99% confidence level 
-  double   Error99() const { return 2.576 * sqrt (Var () / Count ()); }
+  double   Error99 () const { return 2.576 * sqrt (Var () / Count ()); }
   //\}
 
 private:
@@ -117,7 +117,7 @@ std::ostream & operator<< (std::ostream & os, Average<T> const & x)
   if (x.Count () != 0)
     os << x.Avg () << " (" << x.Stddev () << ") [" << x.Min () << ", " << x.Max () << "]";
   else
-    os << "NA"; // not available
+    os << "NA";  // not available
   return os;
 }
 }

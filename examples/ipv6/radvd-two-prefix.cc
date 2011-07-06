@@ -85,7 +85,7 @@ public:
     std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
 
     nbRoutes = routing->GetNRoutes ();
-    for (uint32_t i = 0 ; i < nbRoutes ; i++)
+    for (uint32_t i = 0; i < nbRoutes; i++)
       {
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"

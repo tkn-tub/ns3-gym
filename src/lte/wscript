@@ -46,6 +46,7 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
+        'model/epc-gtpu-v1.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -60,6 +61,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
+        'test/epc-test-gtpu-v1.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -108,6 +110,7 @@ def build(bld):
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
+        'model/epc-gtpu-v1.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-link-adaptation.h',
@@ -116,6 +119,8 @@ def build(bld):
         'test/lte-test-ue-phy.h',
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
+        'test/lte-test-pf-ff-mac-scheduler.h',
+        'test/epc-test-gtpu-v1.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

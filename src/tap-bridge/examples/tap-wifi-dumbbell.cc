@@ -121,8 +121,8 @@ main (int argc, char *argv[])
   std::string tapName = "thetap";
 
   CommandLine cmd;
-  cmd.AddValue("mode", "Mode setting of TapBridge", mode);
-  cmd.AddValue("tapName", "Name of the OS tap device", tapName);
+  cmd.AddValue ("mode", "Mode setting of TapBridge", mode);
+  cmd.AddValue ("tapName", "Name of the OS tap device", tapName);
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
@@ -195,7 +195,7 @@ main (int argc, char *argv[])
   p2p.SetDeviceAttribute ("DataRate", StringValue ("512kbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("10ms"));
 
-  NodeContainer nodes = NodeContainer (nodesLeft.Get(3), nodesRight.Get (0));
+  NodeContainer nodes = NodeContainer (nodesLeft.Get (3), nodesRight.Get (0));
   NetDeviceContainer devices = p2p.Install (nodes);
 
   Ipv4AddressHelper ipv4;

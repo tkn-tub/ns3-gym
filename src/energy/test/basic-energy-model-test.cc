@@ -312,15 +312,15 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
   wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
-  YansWifiChannelHelper wifiChannel ;
+  YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper MAC, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue(phyMode),
-                                "ControlMode", StringValue(phyMode));
+                                "DataMode", StringValue (phyMode),
+                                "ControlMode", StringValue (phyMode));
   // Set it to ad-hoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);

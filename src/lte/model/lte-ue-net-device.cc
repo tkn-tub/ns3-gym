@@ -53,7 +53,7 @@ uint64_t LteUeNetDevice::m_imsiCounter = 0;
 TypeId LteUeNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::LteUeNetDevice")
     .SetParent<LteNetDevice> ()
     .AddAttribute ("LteUeRrc",
@@ -61,13 +61,13 @@ TypeId LteUeNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteUeNetDevice::m_rrc),
                    MakePointerChecker <LteUeRrc> ())
-    .AddAttribute("Imsi",
-                  "International Mobile Subscriber Identity assigned to this UE",
-                  TypeId::ATTR_GET, 
-                  UintegerValue (0), // not used because the attribute is read-only
-                  MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
-                  MakeUintegerChecker<uint64_t> ())
-    ;
+    .AddAttribute ("Imsi",
+                   "International Mobile Subscriber Identity assigned to this UE",
+                   TypeId::ATTR_GET,
+                   UintegerValue (0), // not used because the attribute is read-only
+                   MakeUintegerAccessor (&LteUeNetDevice::m_imsi),
+                   MakeUintegerChecker<uint64_t> ())
+  ;
 
   return tid;
 }
@@ -179,7 +179,7 @@ LteUeNetDevice::DoStart (void)
 
 bool
 LteUeNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
-                     const Mac48Address& dest, uint16_t protocolNumber)
+                        const Mac48Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this);
 

@@ -1,4 +1,8 @@
 /**
+ * @defgroup mobility Mobility
+ */
+
+/**
  * \addtogroup mobility Mobility
  *
  * The mobility support includes:

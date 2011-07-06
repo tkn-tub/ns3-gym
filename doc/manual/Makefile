@@ -8,8 +8,9 @@ VPATH = $(FIGURES)
 IMAGES_EPS = \
 	$(FIGURES)/software-organization.eps \
 
-
+# rescale pdf figures as necessary
 $(FIGURES)/software-organization.pdf_width = 5in
+
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
@@ -17,6 +18,7 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 

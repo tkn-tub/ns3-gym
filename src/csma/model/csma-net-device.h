@@ -41,7 +41,14 @@ class Queue;
 class CsmaChannel;
 class ErrorModel;
 
+/** 
+ * \defgroup csma CsmaNetDevice
+ *
+ * This section documents the API of the ns-3 csma module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
 /**
+ * \ingroup csma
  * \class CsmaNetDevice
  * \brief A Device for a Csma Network Link.
  *

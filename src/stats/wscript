@@ -17,6 +17,12 @@ def build(bld):
         'model/omnet-data-output.cc',
         'model/data-collector.cc',
         ]
+
+    module_test = bld.create_ns3_module_test_library('stats')
+    module_test.source = [
+        'test/basic-data-calculators-test-suite.cc',
+        ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'stats'
     headers.source = [

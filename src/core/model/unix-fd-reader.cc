@@ -63,12 +63,12 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
     }
 
   // make the read end non-blocking
-  tmp = fcntl(m_evpipe[0], F_GETFL);
+  tmp = fcntl (m_evpipe[0], F_GETFL);
   if (tmp == -1)
     {
       NS_FATAL_ERROR ("fcntl() failed: " << strerror (errno));
     }
-  if (fcntl(m_evpipe[0], F_SETFL, tmp | O_NONBLOCK) == -1)
+  if (fcntl (m_evpipe[0], F_SETFL, tmp | O_NONBLOCK) == -1)
     {
       NS_FATAL_ERROR ("fcntl() failed: " << strerror (errno));
     }

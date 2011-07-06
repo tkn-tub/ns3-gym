@@ -1,6 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import os, os.path
+import sys
 import shutil
 import types
 import warnings
@@ -15,12 +16,14 @@ import Constants
 import ccroot
 ccroot.USE_TOP_LEVEL = True
 
+import wutils
+
 try:
     set
 except NameError:
     from sets import Set as set # Python 2.3 fallback
 
-all_modules = (
+all_modules = [
     'core',
     'network',
     'config-store',
@@ -60,7 +63,7 @@ all_modules = (
     'point-to-point-layout',
     'csma-layout',
     'template',
-    )
+    ]
 
 def set_options(opt):
     opt.sub_options('core')
@@ -89,6 +92,7 @@ def configure(conf):
     conf.sub_config('click')
     conf.sub_config('openflow')
     conf.sub_config('stats')
+    conf.sub_config('visualizer')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
@@ -99,50 +103,125 @@ def configure(conf):
     conf.env['NS3_MODULES'] = ['ns3-' + module.split('/')[-1] for module in all_modules]
 
 
-def create_ns3_module(bld, name, dependencies=(), test=False):
-    # Create a separate library for this module.
-    if bld.env['ENABLE_STATIC_NS3']:
-        module = bld.new_task_gen('cxx', 'cstaticlib')
-    else:
-        module = bld.new_task_gen('cxx', 'cshlib')
-    if not test:
-        pcfile = bld.new_task_gen('ns3pcfile')
-        pcfile.module = module
+class ns3module_taskgen(TaskGen.task_gen):
+    def __init__(self, *args, **kwargs):
+        super(ns3module_taskgen, self).__init__(*args, **kwargs)
+        self.libs = []
 
+    def apply(self):
+        static_enabled = False
+        shared_enabled = True
+        bld = self.bld
+        if bld.env['ENABLE_STATIC_NS3']:
+            static_enabled = True
+            shared_enabled = False
+        if bld.env['ENABLE_SHARED_AND_STATIC_NS3']:
+            static_enabled = True
+            shared_enabled = True
+
+        assert self.name.startswith("ns3-")
+        name = self.name.split("ns3-")[1]
+
+        if static_enabled:
+            static = self._create_ns3_module(self.bld, name, self.dependencies, True)
+            self.libs.append(static)
+        else:
+            static = None
+
+        if shared_enabled:
+            shared = self._create_ns3_module(self.bld, name, self.dependencies, False)
+            self.libs.append(shared)
+        else:
+            shared = None
+
+        if static is not None and shared is None:
+            static.name = self.name + "--lib"
+            static.uselib_local = ['ns3-%s--lib' % (dep,) for dep in self.dependencies]
+
+        elif shared is not None and static is None:
+            shared.name = self.name + "--lib"
+            shared.uselib_local = ['ns3-%s--lib' % (dep,) for dep in self.dependencies]
+        else:
+            shared.name = self.name + "--lib"
+            shared.uselib_local = ['ns3-%s--lib' % (dep,) for dep in self.dependencies]
+            static.name = self.name + "--static"
+            static.uselib_local = ['ns3-%s--static' % (dep,) for dep in self.dependencies]
+
+        if not self.test:
+            pcfile = bld.new_task_gen('ns3pcfile')
+            pcfile.module = self
+
+
+    def _create_ns3_module(self, bld, name, dependencies, static):
+
+        # FIXME: env modifications are overwritten by parent caller
+
+        # Create a separate library for this module.
+        if static:
+            module = bld.new_task_gen('cxx', 'cstaticlib')
+        else:
+            module = bld.new_task_gen('cxx', 'cshlib')
+
+        module.source = self.source
+        module.env = self.env.copy()
+        features = list(self.features)
+        features.remove("ns3module")
+        module.features.extend(features)
+        module.path = self.path
+        module.uselib = self.uselib
+        if hasattr(self, 'includes'):
+            module.includes = self.includes
+        if hasattr(self, "is_ns3_module"):
+            module.is_ns3_module = self.is_ns3_module
+
+        module.is_static = static
+        module.vnum = wutils.VNUM
+        # Add the proper path to the module's name.
+        module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(self.path), name)
+        # Set the libraries this module depends on.  
+        module.module_deps = list(dependencies)
+        if not static:
+            module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+            module.env.append_value('CCFLAGS', module.env['shlib_CXXFLAGS'])
+            # Turn on the link flags for shared libraries if we have the
+            # proper compiler and platform.
+            if module.env['CXX_NAME'] in ['gcc', 'icc'] and module.env['WL_SONAME_SUPPORTED']:
+                # Get the module library name without any relative paths
+                # at its beginning because all of the libraries will end
+                # up in the same directory.
+                module_library_name = os.path.basename(ccroot.get_target_name(module))
+                module.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % module_library_name)
+        elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
+                os.uname()[4] == 'x86_64' and \
+                module.env['ENABLE_PYTHON_BINDINGS']:
+            # enable that flag for static builds only on x86-64 platforms
+            # when gcc is present and only when we want python bindings
+            # (it's more efficient to not use this option if we can avoid it)
+            module.env.append_value('CXXFLAGS', '-mcmodel=large')
+            module.env.append_value('CCFLAGS', '-mcmodel=large')
+        module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
+        module.env.append_value('CCDEFINES', "NS3_MODULE_COMPILATION")
+
+        module.install_path = "${LIBDIR}"
+
+        return module
+
+
+def create_ns3_module(bld, name, dependencies=(), test=False):
+    module = bld.new_task_gen('ns3module')
+    module.bld = bld
+    module.name = "ns3-" + name
+    module.dependencies = dependencies
     # Initially create an empty value for this because the pcfile
     # writing task assumes every module has a uselib attribute.
     module.uselib = ''
-
-    module.is_ns3_module = True
-    module.name = 'ns3-' + name
-    # Add the proper path to the module's name.
-    module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(bld.path), name)
-    # Set the libraries this module depends on.  
     module.uselib_local = ['ns3-' + dep for dep in dependencies]
     module.module_deps = list(dependencies)
-    if not module.env['ENABLE_STATIC_NS3']:
-        module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
-        module.env.append_value('CCFLAGS', module.env['shlib_CXXFLAGS'])
-        # Turn on the link flags for shared libraries if we have the
-        # proper compiler and platform.
-        if module.env['CXX_NAME'] in ['gcc', 'icc'] and module.env['WL_SONAME_SUPPORTED']:
-            # Get the module library name without any relative paths
-            # at its beginning because all of the libraries will end
-            # up in the same directory.
-            module_library_name = os.path.basename(ccroot.get_target_name(module))
-            module.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % module_library_name)
-    elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
-            os.uname()[4] == 'x86_64' and \
-            module.env['ENABLE_PYTHON_BINDINGS']:
-        # enable that flag for static builds only on x86-64 platforms
-        # when gcc is present and only when we want python bindings
-        # (it's more efficient to not use this option if we can avoid it)
-        module.env.append_value('CXXFLAGS', '-mcmodel=large')
-        module.env.append_value('CCFLAGS', '-mcmodel=large')
-        
-    module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
-    module.env.append_value('CCDEFINES', "NS3_MODULE_COMPILATION")
+    module.test = test
+    module.is_ns3_module = True
+
     return module
+
 
 def create_ns3_module_test_library(bld, name):
     # Create an ns3 module for the test library that depends only on
@@ -253,15 +332,17 @@ def ns3_python_bindings(bld):
     pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (module_target_dir, extension_name)
     pymod.name = 'ns3module_%s' % module
-    pymod.uselib_local = pymod.env['NS3_ENABLED_MODULES'] #  Should be '"ns3-"+module', but see bug 1117
+    pymod.uselib_local = ["%s--lib" % mod for mod in pymod.env['NS3_ENABLED_MODULES']] #  Should be '"ns3-"+module', but see bug 1117
     if pymod.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
             for mod in pymod.uselib_local:
+                mod = mod.split("--lib")[0]
                 pymod.env.append_value('LINKFLAGS', '-l' + mod)
         else:
             pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
             for mod in pymod.uselib_local:
+                mod = mod.split("--lib")[0]
                 pymod.env.append_value('LINKFLAGS', '-l' + mod)
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['CXXDEFINES'])
@@ -282,6 +363,19 @@ def build(bld):
     bld.create_obj = types.MethodType(create_obj, bld)
     bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
     
+    # Remove these modules from the list of all modules.
+    for not_built in bld.env['MODULES_NOT_BUILT']:
+
+        # XXX Becaue these modules are located in subdirectories of
+        # test, their names in the all_modules list include the extra
+        # relative path "test/".  If these modules are moved into the
+        # src directory, then this if block should be removed.
+        if not_built == 'ns3tcp' or not_built == 'ns3wifi':
+            not_built = 'test/' + not_built
+
+        if not_built in all_modules:
+            all_modules.remove(not_built)
+
     bld.add_subdirs(list(all_modules))
 
     for module in all_modules:
@@ -398,7 +492,6 @@ class ns3header_taskgen(TaskGen.task_gen):
     def apply(self):
         for filename in set(self.to_list(self.source)):
             src_node = self.path.find_resource(filename)
-            self.bld.install_files('${PREFIX}/include/ns3', [src_node])
         if self.module is None:
             raise Utils.WafError("'module' missing on ns3headers object %s" % self)
         ns3_dir_node = self.bld.path.find_dir("ns3")
@@ -413,6 +506,7 @@ class ns3header_taskgen(TaskGen.task_gen):
             task = self.create_task('ns3header', env=self.env)
             task.mode = self.mode
             if self.mode == 'install':
+                self.bld.install_files('${PREFIX}/include/ns3', [src_node])
                 task.set_inputs([src_node])
                 task.set_outputs([dst_node])
             else:
@@ -580,13 +674,13 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
             raise Utils.WscriptError("error finding headers for module %s" % self.module)
         if not all_headers_inputs:
             return
-        self.bld.install_files('${PREFIX}/include/ns3', 
-                               ns3_dir_node.find_or_declare("%s-module.h" % self.module))
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]
         task = self.create_task('gen_ns3_module_header', env=self.env)
         task.module = self.module
         task.mode = self.mode
         if self.mode == 'install':
+            self.bld.install_files('${PREFIX}/include/ns3', 
+                                   ns3_dir_node.find_or_declare("%s-module.h" % self.module))
             task.set_inputs(all_headers_inputs)
             task.set_outputs(all_headers_outputs)
             module_obj = self.bld.name_to_obj("ns3-" + self.module, self.env)

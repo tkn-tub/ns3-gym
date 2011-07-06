@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleOfdmWimaxPhy);
 TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::SimpleOfdmWimaxPhy").SetParent<WimaxPhy> ()
 
     .AddAttribute ("NoiseFigure",
@@ -263,7 +263,7 @@ SimpleOfdmWimaxPhy::Send (Ptr<PacketBurst> burst,
       m_nrFecBlocksSent = 0;
       m_currentBurst = burst;
       SetBlockParameters (burst->GetSize (), modulationType);
-      NotifyTxBegin(m_currentBurst);
+      NotifyTxBegin (m_currentBurst);
       StartSendDummyFecBlock (true, modulationType, direction);
       m_traceTx (burst);
     }
@@ -318,11 +318,11 @@ SimpleOfdmWimaxPhy::EndSendFecBlock (WimaxPhy::ModulationType modulationType,
     {
       // this is the last FEC block of the burst
       NS_ASSERT_MSG (m_nrRemainingBlocksToSend == 0, "Error while sending a burst");
-      NotifyTxEnd(m_currentBurst);
+      NotifyTxEnd (m_currentBurst);
     }
   else
     {
-      StartSendDummyFecBlock(false,modulationType,direction);
+      StartSendDummyFecBlock (false,modulationType,direction);
     }
 }
 
@@ -393,7 +393,7 @@ SimpleOfdmWimaxPhy::StartReceive (uint32_t burstSize,
         {
           if (isFirstBlock)
             {
-              NotifyRxBegin(burst);
+              NotifyRxBegin (burst);
               m_receivedFecBlocks->clear ();
               m_nrRecivedFecBlocks=0;
               SetBlockParameters (burstSize, modulationType);

@@ -95,7 +95,7 @@ private:
 };
 
 Ns3TcpInteroperabilityTestCase::Ns3TcpInteroperabilityTestCase ()
-  : TestCase ("Check to see that the ns-3 TCP can work with liblinux2.6.26.so"), m_writeVectors(WRITE_VECTORS)
+  : TestCase ("Check to see that the ns-3 TCP can work with liblinux2.6.26.so"), m_writeVectors (WRITE_VECTORS)
 {
 }
 
@@ -115,7 +115,7 @@ Ns3TcpInteroperabilityTestCase::DoSetup (void)
   if (m_writeVectors)
     {
       m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
-      m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+      m_pcapFile.Init (PCAP_LINK_TYPE, PCAP_SNAPLEN);
     }
   else
     {
@@ -177,7 +177,7 @@ Ns3TcpInteroperabilityTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet>
       uint8_t *actual = new uint8_t[readLen];
       p->CopyData (actual, readLen);
 
-      uint32_t result = memcmp(actual, expected, readLen);
+      uint32_t result = memcmp (actual, expected, readLen);
 
       delete [] actual;
 
@@ -230,7 +230,7 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
   // implementation that we consider a known good TCP.
   //
   std::string nscStack = "liblinux2.6.26.so";
-  stack.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue("liblinux2.6.26.so"));
+  stack.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue ("liblinux2.6.26.so"));
   stack.Install (nodes.Get (1));
 
   //
@@ -246,7 +246,7 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
   // test, so just create a sink on node zero.
   //
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress(interfaces.GetAddress (0), sinkPort));
+  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (0), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (0));
   sinkApps.Start (Seconds (0.));
@@ -259,7 +259,7 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
   //
   OnOffHelper onOffHelper ("ns3::TcpSocketFactory", sinkAddress);
   onOffHelper.SetAttribute ("MaxBytes", UintegerValue (100000));
-  ApplicationContainer sourceApps = onOffHelper.Install(nodes.Get(1));
+  ApplicationContainer sourceApps = onOffHelper.Install (nodes.Get (1));
   sourceApps.Start (Seconds (1.));
   sourceApps.Stop (Seconds (10.));
 
@@ -294,7 +294,7 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
       pointToPoint.EnablePcapAll ("tcp-interop");
     }
 
-  Simulator::Stop (Seconds(20));
+  Simulator::Stop (Seconds (20));
   Simulator::Run ();
   Simulator::Destroy ();
 }

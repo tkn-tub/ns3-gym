@@ -228,6 +228,47 @@ allow you to use them in the future. This all takes just one line of code.::
 
   NetDeviceContainer csmaDevices = csma.Install (csmaNodes);
 
+We recommend thinking carefully about changing these Attributes, since
+it can result in behavior that surprises users.  We allow this because
+we believe flexibility is important.  As an example of a possibly
+surprising effect of changing Attributes, consider the following:
+
+The Mtu Attribute indicates the Maximum Transmission Unit to the device.
+This is the size of the largest Protocol Data Unit (PDU) that the
+device can send.  This Attribute defaults to 1500 bytes and corresponds
+to a number found in RFC 894, "A Standard for the Transmission of IP
+Datagrams over Ethernet Networks."  The number is actually derived
+from the maximum packet size for 10Base5 (full-spec Ethernet) networks --
+1518 bytes.  If you subtract DIX encapsulation overhead for Ethernet
+packets (18 bytes) you will end up with a maximum possible data size (MTU)
+of 1500 bytes.  One can also find that the MTU for IEEE 802.3 networks
+is 1492 bytes.  This is because LLC/SNAP encapsulation adds an extra eight
+bytes of overhead to the packet.  In both cases, the underlying network
+hardware is limited to 1518 bytes, but the MTU is different because the
+encapsulation is different.
+
+If one leaves the Mtu Attribute at 1500 bytes and changes the encapsulation
+mode Attribute to Llc, the result will be a network that encapsulates 1500
+byte PDUs with LLC/SNAP framing resulting in packets of 1526 bytes.  This
+would be illegal in many networks, but we allow you do do this.  This
+results in a simulation that quite subtly does not reflect what you might
+be expecting since a real device would balk at sending a 1526 byte packet.
+
+There also exist jumbo frames (1500 < MTU <= 9000 bytes) and super-jumbo
+(MTU > 9000 bytes) frames that are not officially sanctioned by IEEE but
+are available in some high-speed (Gigabit) networks and NICs.  In the
+CSMA model, one could leave the encapsulation mode set to Dix, and set the
+Mtu to 64000 bytes -- even though an associated CsmaChannel DataRate was
+left at 10 megabits per second (certainly not Gigabit Ethernet).  This
+would essentially model an Ethernet switch made out of vampire-tapped
+1980s-style 10Base5 networks that support super-jumbo datagrams, which is
+certainly not something that was ever made, nor is likely to ever be made;
+however it is quite easy for you to configure.
+
+Be careful about assumptions regarding what CSMA is actually modelling and
+how configuration (Attributes) may allow you to swerve considerably away
+from reality.
+
 CSMA Tracing
 ************
 
@@ -303,3 +344,29 @@ The other low-level trace source fires on reception of an accepted packet (see
 CsmaNetDevice::m_rxTrace). A packet is accepted if it is destined for the
 broadcast address, a multicast address, or to the MAC address assigned to the
 net device.
+
+Summary
+*******
+
+The ns3 CSMA model is a simplistic model of an Ethernet-like network.  It
+supports a Carrier-Sense function and allows for Multiple Access to a
+shared medium.  It is not physical in the sense that the state of the
+medium is instantaneously shared among all devices.  This means that there
+is no collision detection required in this model and none is implemented.
+There will never be a "jam" of a packet already on the medium.  Access to
+the shared channel is on a first-come first-served basis as determined by
+the simulator scheduler.  If the channel is determined to be busy by looking
+at the global state, a random exponential backoff is performed and a retry
+is attempted.
+
+Ns-3 Attributes provide a mechanism for setting various parameters in the
+device and channel such as addresses, encapsulation modes and error model
+selection.  Trace hooks are provided in the usual manner with a set of
+upper level hooks corresponding to a transmit queue and used in ASCII
+tracing; and also a set of lower level hooks used in pcap tracing.
+
+Although the ns-3 CsmaChannel and CsmaNetDevice does not model any kind of
+network you could build or buy, it does provide us with some useful
+functionality.  You should, however, understand that it is explicitly not
+Ethernet or any flavor of IEEE 802.3 but an interesting subset.
+

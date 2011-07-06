@@ -47,7 +47,7 @@ namespace ns3 {
  * bits long and can store multiple neighbor-indexes.  A 
  * fair amount of bit manipulation is used to store these 
  * neighbor-indexes efficiently.  A vector is used so that 
- * the nix-vector can grow arbitraily if the topology and 
+ * the nix-vector can grow arbitrarily if the topology and 
  * route requires a large number of neighbor-indexes.
  *
  * As the nix-vector travels along the route, an internal 
@@ -155,7 +155,7 @@ private:
   /* for printing of nix-vector */
   void DumpNixVector (std::ostream &os) const;
   /* for printing of nix-vector */
-  friend std::ostream & operator <<( std::ostream &outs, const NixVector &nix);
+  friend std::ostream & operator << ( std::ostream &outs, const NixVector &nix);
 
   /* the actual nix-vector */
   NixBits_t m_nixVector;

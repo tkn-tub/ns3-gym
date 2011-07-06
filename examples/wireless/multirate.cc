@@ -91,7 +91,7 @@ private:
 
   Vector GetPosition (Ptr<Node> node);
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
-  NodeContainer GenerateNeighbors(NodeContainer c, uint32_t senderId);
+  NodeContainer GenerateNeighbors (NodeContainer c, uint32_t senderId);
 
   void ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, double stop);
   void AssignNeighbors (NodeContainer c);
@@ -130,7 +130,7 @@ Experiment::Experiment (std::string name) :
   m_output (name),
   totalTime (0.3),
   expMean (0.1), //flows being exponentially distributed
-  bytesTotal(0),
+  bytesTotal (0),
   packetSize (2000),
   gridSize (10), //10x10 grid  for a total of 100 nodes
   nodeDistance (30),
@@ -166,12 +166,12 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
   Ptr<Packet> packet;
   while (packet = socket->Recv ())
     {
-      bytesTotal += packet->GetSize();
+      bytesTotal += packet->GetSize ();
     }
 }
 
 void
-Experiment::CheckThroughput()
+Experiment::CheckThroughput ()
 {
   double mbs = ((bytesTotal * 8.0) /1000000);
   bytesTotal = 0;
@@ -205,13 +205,13 @@ Experiment::AssignNeighbors (NodeContainer c)
           //lower left quadrant
           if ( i < totalNodes/2 )
             {
-              containerA.Add(c.Get(i));
+              containerA.Add (c.Get (i));
             }
 
           //upper left quadrant
           if ( i >= (uint32_t)(4*totalNodes)/10 )
             {
-              containerC.Add(c.Get(i));
+              containerC.Add (c.Get (i));
             }
         }
       if ( (i % gridSize) >= (gridSize/2 - 1))
@@ -219,13 +219,13 @@ Experiment::AssignNeighbors (NodeContainer c)
           //lower right quadrant
           if ( i < totalNodes/2 )
             {
-              containerB.Add(c.Get(i));
+              containerB.Add (c.Get (i));
             }
 
           //upper right quadrant
           if ( i >= (uint32_t)(4*totalNodes)/10  )
             {
-              containerD.Add(c.Get(i));
+              containerD.Add (c.Get (i));
             }
         }
     }
@@ -243,11 +243,11 @@ Experiment::GenerateNeighbors (NodeContainer c, uint32_t senderId)
   for (uint32_t i= senderId - 2; i <= limit; i++)
     {
       //must ensure the boundaries for other topologies
-      nc.Add(c.Get(i));
-      nc.Add(c.Get(i + 10));
-      nc.Add(c.Get(i + 20));
-      nc.Add(c.Get(i - 10));
-      nc.Add(c.Get(i - 20));
+      nc.Add (c.Get (i));
+      nc.Add (c.Get (i + 10));
+      nc.Add (c.Get (i + 20));
+      nc.Add (c.Get (i - 10));
+      nc.Add (c.Get (i - 20));
     }
   return nc;
 }
@@ -260,13 +260,13 @@ Experiment::GenerateNeighbors (NodeContainer c, uint32_t senderId)
 void
 Experiment::SelectSrcDest (NodeContainer c)
 {
-  uint32_t totalNodes = c.GetN();
+  uint32_t totalNodes = c.GetN ();
   UniformVariable uvSrc (0, totalNodes/2 -1);
   UniformVariable uvDest (totalNodes/2, totalNodes);
 
   for (uint32_t i=0; i < totalNodes/3; i++)
     {
-      ApplicationSetup (c.Get(uvSrc.RandomVariable::GetInteger()), c.Get(uvDest.RandomVariable::GetInteger()),  0, totalTime);
+      ApplicationSetup (c.Get (uvSrc.RandomVariable::GetInteger ()), c.Get (uvDest.RandomVariable::GetInteger ()),  0, totalTime);
     }
 }
 
@@ -277,28 +277,28 @@ Experiment::SelectSrcDest (NodeContainer c)
  *
  */
 void
-Experiment::SendMultiDestinations(Ptr<Node> sender, NodeContainer c)
+Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
 {
 
   // UniformVariable params: (Xrange, Yrange)
-  UniformVariable uv(0, c.GetN ());
+  UniformVariable uv (0, c.GetN ());
 
   // ExponentialVariable params: (mean, upperbound)
-  ExponentialVariable ev(expMean, totalTime);
+  ExponentialVariable ev (expMean, totalTime);
 
   double start=0.0, stop=totalTime;
   uint32_t destIndex; 
 
   for (uint32_t i=0; i < c.GetN (); i++)
     {
-      stop = start + ev.GetValue();
-      NS_LOG_DEBUG("Start=" << start << " Stop=" << stop);
+      stop = start + ev.GetValue ();
+      NS_LOG_DEBUG ("Start=" << start << " Stop=" << stop);
 
       do {
-          destIndex = (uint32_t) uv.GetValue();
-        } while ( (c.Get(destIndex))->GetId () == sender->GetId ());
+          destIndex = (uint32_t) uv.GetValue ();
+        } while ( (c.Get (destIndex))->GetId () == sender->GetId ());
 
-      ApplicationSetup (sender, c.Get(destIndex),  start, stop);
+      ApplicationSetup (sender, c.Get (destIndex),  start, stop);
 
       start = stop;
 
@@ -319,20 +319,20 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
   Ptr<Ipv4> ipv4Server = server->GetObject<Ipv4>();
   Ptr<Ipv4> ipv4Client = client->GetObject<Ipv4>();
 
-  Ipv4InterfaceAddress iaddrServer = ipv4Server->GetAddress(1,0);
-  Ipv4InterfaceAddress iaddrClient = ipv4Client->GetAddress(1,0);
+  Ipv4InterfaceAddress iaddrServer = ipv4Server->GetAddress (1,0);
+  Ipv4InterfaceAddress iaddrClient = ipv4Client->GetAddress (1,0);
 
   Ipv4Address ipv4AddrServer = iaddrServer.GetLocal ();
   Ipv4Address ipv4AddrClient = iaddrClient.GetLocal ();
 
-  NS_LOG_DEBUG("Set up Server Device " <<  (server->GetDevice(0))->GetAddress () 
-                                       << " with ip " << ipv4AddrServer
-                                       << " position (" << serverPos.x << "," << serverPos.y << "," << serverPos.z << ")");
+  NS_LOG_DEBUG ("Set up Server Device " <<  (server->GetDevice (0))->GetAddress ()
+                                        << " with ip " << ipv4AddrServer
+                                        << " position (" << serverPos.x << "," << serverPos.y << "," << serverPos.z << ")");
 
-  NS_LOG_DEBUG("Set up Client Device " <<  (client->GetDevice(0))->GetAddress () 
-                                       << " with ip " << ipv4AddrClient
-                                       << " position (" << clientPos.x << "," << clientPos.y << "," << clientPos.z << ")"
-                                       << "\n");
+  NS_LOG_DEBUG ("Set up Client Device " <<  (client->GetDevice (0))->GetAddress ()
+                                        << " with ip " << ipv4AddrClient
+                                        << " position (" << clientPos.x << "," << clientPos.y << "," << clientPos.z << ")"
+                                        << "\n");
 
   //cast serverPos,clientPos,iaddrClient to void, to suppress variable set but not
   //used compiler warning in optimized builds
@@ -341,12 +341,12 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
   (void) ipv4AddrClient;
 
   // Equipping the source  node with OnOff Application used for sending 
-  OnOffHelper onoff ("ns3::UdpSocketFactory", Address(InetSocketAddress(Ipv4Address("10.0.0.1"), port)));
+  OnOffHelper onoff ("ns3::UdpSocketFactory", Address (InetSocketAddress (Ipv4Address ("10.0.0.1"), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (60000000)));
   onoff.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  onoff.SetAttribute ("Remote", AddressValue(InetSocketAddress (ipv4AddrServer, port)));
+  onoff.SetAttribute ("Remote", AddressValue (InetSocketAddress (ipv4AddrServer, port)));
 
   ApplicationContainer apps = onoff.Install (client);
   apps.Start (Seconds (start));
@@ -388,7 +388,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableRouting)
     {
-      internet.SetRoutingHelper(list);  // has effect on the next Install ()
+      internet.SetRoutingHelper (list);  // has effect on the next Install ()
     }
   internet.Install (c);
 
@@ -397,7 +397,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   address.SetBase ("10.0.0.0", "255.255.255.0");
 
   Ipv4InterfaceContainer ipInterfaces;
-  ipInterfaces = address.Assign(devices);
+  ipInterfaces = address.Assign (devices);
 
   MobilityHelper mobil= mobility;
   mobil.SetPositionAllocator ("ns3::GridPositionAllocator",
@@ -426,7 +426,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if ( scenario == 1 && enableRouting)
     {
-      SelectSrcDest(c);
+      SelectSrcDest (c);
     }
   else if ( scenario == 2)
     {
@@ -438,21 +438,21 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
     }
   else if ( scenario == 3)
     {
-      AssignNeighbors(c);
+      AssignNeighbors (c);
       //Note: these senders are hand-picked in order to ensure good coverage
       //for 10x10 grid, basically one sender for each quadrant
       //you might have to change these values for other grids 
-      NS_LOG_DEBUG(">>>>>>>>>region A<<<<<<<<<");
-      SendMultiDestinations(c.Get(22), containerA);
+      NS_LOG_DEBUG (">>>>>>>>>region A<<<<<<<<<");
+      SendMultiDestinations (c.Get (22), containerA);
 
-      NS_LOG_DEBUG(">>>>>>>>>region B<<<<<<<<<");
-      SendMultiDestinations(c.Get(26), containerB);
+      NS_LOG_DEBUG (">>>>>>>>>region B<<<<<<<<<");
+      SendMultiDestinations (c.Get (26), containerB);
 
-      NS_LOG_DEBUG(">>>>>>>>>region C<<<<<<<<<");
-      SendMultiDestinations(c.Get(72), containerC);
+      NS_LOG_DEBUG (">>>>>>>>>region C<<<<<<<<<");
+      SendMultiDestinations (c.Get (72), containerC);
 
-      NS_LOG_DEBUG(">>>>>>>>>region D<<<<<<<<<");
-      SendMultiDestinations(c.Get(76), containerD);
+      NS_LOG_DEBUG (">>>>>>>>>region D<<<<<<<<<");
+      SendMultiDestinations (c.Get (76), containerD);
     }
   else if ( scenario == 4)
     {
@@ -461,38 +461,38 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
       //you might have to change these values for other grids 
       NodeContainer c1, c2, c3, c4, c5, c6, c7, c8, c9;
 
-      c1 = GenerateNeighbors(c, 22);
-      c2 = GenerateNeighbors(c, 24);;
-      c3 = GenerateNeighbors(c, 26);;
-      c4 = GenerateNeighbors(c, 42);;
-      c5 = GenerateNeighbors(c, 44);;
-      c6 = GenerateNeighbors(c, 46);;
-      c7 = GenerateNeighbors(c, 62);;
-      c8 = GenerateNeighbors(c, 64);;
-      c9 = GenerateNeighbors(c, 66);;
+      c1 = GenerateNeighbors (c, 22);
+      c2 = GenerateNeighbors (c, 24);;
+      c3 = GenerateNeighbors (c, 26);;
+      c4 = GenerateNeighbors (c, 42);;
+      c5 = GenerateNeighbors (c, 44);;
+      c6 = GenerateNeighbors (c, 46);;
+      c7 = GenerateNeighbors (c, 62);;
+      c8 = GenerateNeighbors (c, 64);;
+      c9 = GenerateNeighbors (c, 66);;
 
-      SendMultiDestinations(c.Get(22), c1);
-      SendMultiDestinations(c.Get(24), c2);
-      SendMultiDestinations(c.Get(26), c3);
-      SendMultiDestinations(c.Get(42), c4);
-      SendMultiDestinations(c.Get(44), c5);
-      SendMultiDestinations(c.Get(46), c6);
-      SendMultiDestinations(c.Get(62), c7);
-      SendMultiDestinations(c.Get(64), c8);
-      SendMultiDestinations(c.Get(66), c9);
+      SendMultiDestinations (c.Get (22), c1);
+      SendMultiDestinations (c.Get (24), c2);
+      SendMultiDestinations (c.Get (26), c3);
+      SendMultiDestinations (c.Get (42), c4);
+      SendMultiDestinations (c.Get (44), c5);
+      SendMultiDestinations (c.Get (46), c6);
+      SendMultiDestinations (c.Get (62), c7);
+      SendMultiDestinations (c.Get (64), c8);
+      SendMultiDestinations (c.Get (66), c9);
     }
 
   CheckThroughput ();
 
   if (enablePcap)
     {
-      phy.EnablePcapAll(GetOutputFileName());
+      phy.EnablePcapAll (GetOutputFileName ());
     }
 
   if (enableTracing)
     {
       AsciiTraceHelper ascii;
-      phy.EnableAsciiAll (ascii.CreateFileStream (GetOutputFileName() + ".tr"));
+      phy.EnableAsciiAll (ascii.CreateFileStream (GetOutputFileName () + ".tr"));
     }
 
   Ptr<FlowMonitor> flowmon;
@@ -508,7 +508,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableFlowMon)
     {
-      flowmon->SerializeToXmlFile ((GetOutputFileName() + ".flomon"), false, false);
+      flowmon->SerializeToXmlFile ((GetOutputFileName () + ".flomon"), false, false);
     }
 
   Simulator::Destroy ();
@@ -541,13 +541,13 @@ int main (int argc, char *argv[])
   experiment = Experiment ("multirate");
 
   //for commandline input
-  experiment.CommandSetup(argc, argv);
+  experiment.CommandSetup (argc, argv);
 
   // set value to 0 for enabling fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue (experiment.GetRtsThreshold()));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue (experiment.GetRtsThreshold ()));
 
-  std::ofstream outfile ((experiment.GetOutputFileName()+ ".plt").c_str());
+  std::ofstream outfile ((experiment.GetOutputFileName ()+ ".plt").c_str ());
 
   MobilityHelper mobility;
   Gnuplot gnuplot;
@@ -560,16 +560,16 @@ int main (int argc, char *argv[])
   Ssid ssid = Ssid ("Testbed");
 
   wifiMac.SetType ("ns3::AdhocWifiMac",
-                   "Ssid", SsidValue(ssid));
+                   "Ssid", SsidValue (ssid));
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
-  wifi.SetRemoteStationManager (experiment.GetRateManager());
+  wifi.SetRemoteStationManager (experiment.GetRateManager ());
 
   NS_LOG_INFO ("Scenario: " << experiment.GetScenario ());
-  NS_LOG_INFO ("Rts Threshold: " << experiment.GetRtsThreshold());
-  NS_LOG_INFO ("Name:  " << experiment.GetOutputFileName());
-  NS_LOG_INFO ("Rate:  " << experiment.GetRateManager());
-  NS_LOG_INFO ("Routing: " << experiment.IsRouting());
-  NS_LOG_INFO ("Mobility: " << experiment.IsMobility());
+  NS_LOG_INFO ("Rts Threshold: " << experiment.GetRtsThreshold ());
+  NS_LOG_INFO ("Name:  " << experiment.GetOutputFileName ());
+  NS_LOG_INFO ("Rate:  " << experiment.GetRateManager ());
+  NS_LOG_INFO ("Routing: " << experiment.IsRouting ());
+  NS_LOG_INFO ("Mobility: " << experiment.IsMobility ());
 
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility);
 

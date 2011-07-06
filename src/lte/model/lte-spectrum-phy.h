@@ -73,7 +73,7 @@ public:
   Ptr<Object> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
   void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
-  
+
 
   /**
    * Get the SpectrumType used by this PHY
@@ -146,14 +146,14 @@ public:
    */
   void SetCellId (uint16_t cellId);
 
-  
+
   /** 
    * 
    * 
    * \param p the new LteSinrChunkProcessor to be added to the processing chain
    */
   void AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
-  
+
 private:
   void ChangeState (State newState);
   void EndTx ();

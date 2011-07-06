@@ -25,7 +25,7 @@ public:
   {
 #define HPCAIRO_MAX_64 18446744073709551615.0
     double fhi = floor (value);
-    int64_t hi = lround(fhi);
+    int64_t hi = lround (fhi);
     uint64_t lo = (uint64_t)((value - fhi) * HPCAIRO_MAX_64);
     _v.hi = hi;
     _v.lo = lo;

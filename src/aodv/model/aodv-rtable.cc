@@ -158,7 +158,7 @@ RoutingTableEntry::Invalidate (Time badLinkLifetime)
 void
 RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream) const
 {
-  std::ostream* os = stream->GetStream();
+  std::ostream* os = stream->GetStream ();
   *os << m_ipv4Route->GetDestination () << "\t" << m_ipv4Route->GetGateway ()
       << "\t" << m_iface.GetLocal () << "\t";
   switch (m_flag)

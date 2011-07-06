@@ -79,12 +79,13 @@ int McsToItbs[29] = {
 };
 
 
-  // 3GPP TS 36.213 v8.8.0 Table 7.1.7.2.1-1: Transport block size table (dimension 27×110)
-  // for NPRB = 1 and Itbs = 6 the stadard returns 328, but it not consisent with the 
-  // other values, therefore we used 88 obtained following the sequence of NPRB = 1 values
+// 3GPP TS 36.213 v8.8.0 Table 7.1.7.2.1-1: Transport block size table (dimension 27×110)
+// for NPRB = 1 and Itbs = 6 the stadard returns 328, but it not consisent with the
+// other values, therefore we used 88 obtained following the sequence of NPRB = 1 values
 int TransportBlockSizeTable [110][27] = {
 
-  /* NPRB 001*/ { 16, 24, 32, 40, 56, 72, 88, 104, 120, 136, 144, 176, 208, 224, 256, 280, 328, 336, 376, 408, 440, 488, 520, 552, 584, 616, 712},
+  /* NPRB 001*/
+  { 16, 24, 32, 40, 56, 72, 88, 104, 120, 136, 144, 176, 208, 224, 256, 280, 328, 336, 376, 408, 440, 488, 520, 552, 584, 616, 712},
   /* NPRB 002*/ { 32, 56, 72, 104, 120, 144, 176, 224, 256, 296, 328, 376, 440, 488, 552, 600, 632, 696, 776, 840, 904, 1000, 1064, 1128, 1192, 1256, 1480},
   /* NPRB 003*/ { 56, 88, 144, 176, 208, 224, 256, 328, 392, 456, 504, 584, 680, 744, 840, 904, 968, 1064, 1160, 1288, 1384, 1480, 1608, 1736, 1800, 1864, 2216},
   /* NPRB 004*/ { 88, 144, 176, 208, 256, 328, 392, 472, 536, 616, 680, 776, 904, 1000, 1128, 1224, 1288, 1416, 1544, 1736, 1864, 1992, 2152, 2280, 2408, 2536, 2984},
@@ -203,7 +204,7 @@ int
 LteAmc::GetCqiFromSpectralEfficiency (double s)
 {
   NS_LOG_FUNCTION (s);
-  NS_ASSERT_MSG (s >= 0.0, "negative spectral efficiency = "<< s);
+  NS_ASSERT_MSG (s >= 0.0, "negative spectral efficiency = " << s);
   int cqi = 0;
   while ((cqi < 15) && (SpectralEfficiencyForCqi[cqi + 1] < s))
     {
@@ -280,10 +281,10 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
           int cqi_ = GetCqiFromSpectralEfficiency (s);
 
           NS_LOG_LOGIC (" PRB =" << cqi.size ()
-                        << ", sinr = " << sinr_
-                        << " (=" << pow (10.0, sinr_/10.0) << " dB)"
-                        << ", spectral efficiency =" << s
-                        << ", CQI = " << cqi_ );
+                                 << ", sinr = " << sinr_
+                                 << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
+                                 << ", spectral efficiency =" << s
+                                 << ", CQI = " << cqi_ );
 
           cqi.push_back (cqi_);
         }

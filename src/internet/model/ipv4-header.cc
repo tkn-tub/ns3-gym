@@ -19,6 +19,7 @@
  */
 
 #include "ns3/assert.h"
+#include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/header.h"
 #include "ipv4-header.h"
@@ -38,7 +39,7 @@ Ipv4Header::Ipv4Header ()
     m_protocol (0),
     m_flags (0),
     m_fragmentOffset (0),
-    m_checksum(0),
+    m_checksum (0),
     m_goodChecksum (true)
 {
 }
@@ -70,8 +71,6 @@ Ipv4Header::SetIdentification (uint16_t identification)
 {
   m_identification = identification;
 }
-
-
 
 void 
 Ipv4Header::SetTos (uint8_t tos)
@@ -116,15 +115,20 @@ Ipv4Header::IsDontFragment (void) const
 }
 
 void 
-Ipv4Header::SetFragmentOffset (uint16_t offset)
+Ipv4Header::SetFragmentOffset (uint16_t offsetBytes)
 {
-  NS_ASSERT (!(offset & (~0x3fff)));
-  m_fragmentOffset = offset;
+  // check if the user is trying to set an invalid offset
+  NS_ABORT_MSG_IF ((offsetBytes & 0x7), "offsetBytes must be multiple of 8 bytes");
+  m_fragmentOffset = offsetBytes;
 }
 uint16_t 
 Ipv4Header::GetFragmentOffset (void) const
 {
-  NS_ASSERT (!(m_fragmentOffset & (~0x3fff)));
+  if ((m_fragmentOffset+m_payloadSize+5*4) > 65535)
+    {
+      NS_LOG_WARN("Fragment will exceed the maximum packet size once reassembled");
+    }
+
   return m_fragmentOffset;
 }
 
@@ -223,7 +227,7 @@ Ipv4Header::Print (std::ostream &os) const
      << "ttl " << m_ttl << " "
      << "id " << m_identification << " "
      << "protocol " << m_protocol << " "
-     << "offset " << m_fragmentOffset << " "
+     << "offset (bytes) " << m_fragmentOffset << " "
      << "flags [" << flags << "] "
      << "length: " << (m_payloadSize + 5 * 4)
      << " " 
@@ -268,7 +272,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
   if (m_calcChecksum) 
     {
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(20);
+      uint16_t checksum = i.CalculateIpChecksum (20);
       NS_LOG_LOGIC ("checksum=" <<checksum);
       i = start;
       i.Next (10);
@@ -304,7 +308,7 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   m_fragmentOffset <<= 3;
   m_ttl = i.ReadU8 ();
   m_protocol = i.ReadU8 ();
-  m_checksum = i.ReadU16();
+  m_checksum = i.ReadU16 ();
   /* i.Next (2); // checksum */
   m_source.Set (i.ReadNtohU32 ());
   m_destination.Set (i.ReadNtohU32 ());
@@ -312,7 +316,7 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   if (m_calcChecksum) 
     {
       i = start;
-      uint16_t checksum = i.CalculateIpChecksum(headerSize);
+      uint16_t checksum = i.CalculateIpChecksum (headerSize);
       NS_LOG_LOGIC ("checksum=" <<checksum);
 
       m_goodChecksum = (checksum == 0);

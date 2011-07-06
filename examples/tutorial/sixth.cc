@@ -171,7 +171,7 @@ static void
 RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
   NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
-  file->Write(Simulator::Now(), p);
+  file->Write (Simulator::Now (), p);
 }
 
 int 
@@ -200,7 +200,7 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress(interfaces.GetAddress (1), sinkPort));
+  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   sinkApps.Start (Seconds (0.));
@@ -220,9 +220,9 @@ main (int argc, char *argv[])
 
   PcapHelper pcapHelper;
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
-  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
+  devices.Get (1)->TraceConnectWithoutContext ("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 
-  Simulator::Stop (Seconds(20));
+  Simulator::Stop (Seconds (20));
   Simulator::Run ();
   Simulator::Destroy ();
 

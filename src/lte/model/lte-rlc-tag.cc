@@ -26,15 +26,15 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (RlcTag);
 
-RlcTag::RlcTag ():
-    m_senderTimestamp (Seconds (0))
+RlcTag::RlcTag ()
+  : m_senderTimestamp (Seconds (0))
 {
   // Nothing to do here
 }
 
 
-RlcTag::RlcTag(Time senderTimestamp):
-    m_senderTimestamp (senderTimestamp)
+RlcTag::RlcTag (Time senderTimestamp)
+  : m_senderTimestamp (senderTimestamp)
 
 {
   // Nothing to do here
@@ -64,7 +64,7 @@ RlcTag::GetSerializedSize (void) const
 void
 RlcTag::Serialize (TagBuffer i) const
 {
-  int64_t senderTimestamp = m_senderTimestamp.GetNanoSeconds();
+  int64_t senderTimestamp = m_senderTimestamp.GetNanoSeconds ();
   i.Write ((const uint8_t *)&senderTimestamp, sizeof(int64_t));
 }
 
@@ -72,7 +72,7 @@ void
 RlcTag::Deserialize (TagBuffer i)
 {
   int64_t senderTimestamp;
-  i.Read((uint8_t *)&senderTimestamp, 8);
+  i.Read ((uint8_t *)&senderTimestamp, 8);
   m_senderTimestamp   = NanoSeconds (senderTimestamp);
 
 }

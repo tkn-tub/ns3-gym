@@ -27,10 +27,10 @@
 namespace ns3 {
 
 /**
+ * \ingroup wimax
  *\brief This class implements  the DL Frame Prefix IE as described by IEEE-802.16 standard
  *\brief The DL Frame Prefix IE is contained in DLFP (Downlink Frame Prefix) in OFDM PHY
  */
-
 class DlFramePrefixIe
 {
 public:

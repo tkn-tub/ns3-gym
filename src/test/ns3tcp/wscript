@@ -1,9 +1,20 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
+import sys
+
 def configure(conf):
-    pass
+    # Add the ns3tcp module to the list of enabled modules that
+    # should not be built if this is a static build on Darwin.  They
+    # don't work there for the ns3tcp module, and this is probably
+    # because the ns3tcp module has no source files.
+    if conf.env['ENABLE_STATIC_NS3'] and sys.platform == 'darwin':
+        conf.env['MODULES_NOT_BUILT'].append('ns3tcp')
 
 def build(bld):
+    # Don't do anything for this module if it should not be built.
+    if 'ns3tcp' in bld.env['MODULES_NOT_BUILT']:
+        return
+
     ns3tcp = bld.create_ns3_module('ns3tcp', ['internet', 'point-to-point', 'csma', 'applications'])
     headers = bld.new_task_gen('ns3header')
     headers.module = 'ns3tcp'

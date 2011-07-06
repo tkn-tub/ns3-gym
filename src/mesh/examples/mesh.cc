@@ -175,7 +175,7 @@ MeshTest::CreateNodes ()
     {
       mesh.SetSpreadInterfaceChannels (MeshHelper::ZERO_CHANNEL);
     }
-  mesh.SetMacType ("RandomStart", TimeValue (Seconds(m_randomStart)));
+  mesh.SetMacType ("RandomStart", TimeValue (Seconds (m_randomStart)));
   // Set number of interfaces - default is single-interface mesh point
   mesh.SetNumberOfInterfaces (m_nIfaces);
   // Install protocols and return container if MeshPointDevices
@@ -224,7 +224,7 @@ MeshTest::Run ()
   CreateNodes ();
   InstallInternetStack ();
   InstallApplication ();
-  Simulator::Schedule (Seconds(m_totalTime), &MeshTest::Report, this);
+  Simulator::Schedule (Seconds (m_totalTime), &MeshTest::Report, this);
   Simulator::Stop (Seconds (m_totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
@@ -240,10 +240,10 @@ MeshTest::Report ()
       os << "mp-report-" << n << ".xml";
       std::cerr << "Printing mesh point device #" << n << " diagnostics to " << os.str () << "\n";
       std::ofstream of;
-      of.open (os.str().c_str());
+      of.open (os.str ().c_str ());
       if (!of.is_open ())
         {
-          std::cerr << "Error: Can't open file " << os.str() << "\n";
+          std::cerr << "Error: Can't open file " << os.str () << "\n";
           return;
         }
       mesh.Report (*i, of);
@@ -255,5 +255,5 @@ main (int argc, char *argv[])
 {
   MeshTest t; 
   t.Configure (argc, argv);
-  return t.Run();
+  return t.Run ();
 }

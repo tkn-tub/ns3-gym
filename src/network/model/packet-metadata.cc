@@ -1410,7 +1410,7 @@ PacketMetadata::ReadFromRawU8 (uint8_t& data,
     {
       return 0;
     }
-  memcpy(&data, current, sizeof (uint8_t));
+  memcpy (&data, current, sizeof (uint8_t));
   return const_cast<uint8_t *> (current) + sizeof (uint8_t);
 }
 
@@ -1425,7 +1425,7 @@ PacketMetadata::ReadFromRawU16 (uint16_t& data,
     {
       return 0;
     }
-  memcpy(&data, current, sizeof (uint16_t));
+  memcpy (&data, current, sizeof (uint16_t));
   return const_cast<uint8_t *> (current) + sizeof (uint16_t);
 }
 
@@ -1440,7 +1440,7 @@ PacketMetadata::ReadFromRawU32 (uint32_t& data,
     {
       return 0;
     }
-  memcpy(&data, current, sizeof (uint32_t));
+  memcpy (&data, current, sizeof (uint32_t));
   return const_cast<uint8_t *> (current) + sizeof (uint32_t);
 }
 
@@ -1455,7 +1455,7 @@ PacketMetadata::ReadFromRawU64 (uint64_t& data,
     {
       return 0;
     }
-  memcpy(&data, current, sizeof (uint64_t));
+  memcpy (&data, current, sizeof (uint64_t));
   return const_cast<uint8_t *> (current) + sizeof (uint64_t);
 }
 

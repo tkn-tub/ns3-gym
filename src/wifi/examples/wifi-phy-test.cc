@@ -287,7 +287,7 @@ static void PrintPsr (int argc, char *argv[])
   output = experiment.Run (input);
 
   double psr = output.received;
-  psr /= input.nPackets ;
+  psr /= input.nPackets;
 
   std::cout << psr << std::endl;
 }
@@ -295,7 +295,7 @@ static void PrintPsr (int argc, char *argv[])
 double CalcPsr (struct PsrExperiment::Output output, struct PsrExperiment::Input input)
 {
   double psr = output.received;
-  psr /= input.nPackets ;
+  psr /= input.nPackets;
   return psr;
 }
 

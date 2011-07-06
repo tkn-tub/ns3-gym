@@ -26,14 +26,14 @@
 static bool
 DoParse (const std::string s, uint64_t *v)
 {
-  std::string::size_type n = s.find_first_not_of("0123456789.");
+  std::string::size_type n = s.find_first_not_of ("0123456789.");
   if (n != std::string::npos)
     { // Found non-numeric
       std::istringstream iss;
-      iss.str (s.substr(0, n));
+      iss.str (s.substr (0, n));
       double r;
       iss >> r;
-      std::string trailer = s.substr(n, std::string::npos);
+      std::string trailer = s.substr (n, std::string::npos);
       if (trailer == "bps")
         {
           // bit/s
@@ -187,7 +187,7 @@ DataRate::DataRate ()
 }
 
 DataRate::DataRate(uint64_t bps)
-  : m_bps(bps)
+  : m_bps (bps)
 {
 }
 
@@ -221,12 +221,12 @@ bool DataRate::operator != (const DataRate& rhs) const
   return m_bps!=rhs.m_bps;
 }
 
-double DataRate::CalculateTxTime(uint32_t bytes) const
+double DataRate::CalculateTxTime (uint32_t bytes) const
 {
   return static_cast<double>(bytes)*8/m_bps;
 }
 
-uint64_t DataRate::GetBitRate() const
+uint64_t DataRate::GetBitRate () const
 {
   return m_bps;
 }
@@ -261,14 +261,14 @@ std::istream &operator >> (std::istream &is, DataRate &rate)
 
 
 
-double operator*(const DataRate& lhs, const Time& rhs)
+double operator* (const DataRate& lhs, const Time& rhs)
 {
-  return rhs.GetSeconds()*lhs.GetBitRate();
+  return rhs.GetSeconds ()*lhs.GetBitRate ();
 }
 
-double operator*(const Time& lhs, const DataRate& rhs)
+double operator* (const Time& lhs, const DataRate& rhs)
 {
-  return lhs.GetSeconds()*rhs.GetBitRate();
+  return lhs.GetSeconds ()*rhs.GetBitRate ();
 }
 
 } //namespace ns3

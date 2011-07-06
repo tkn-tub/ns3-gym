@@ -155,10 +155,12 @@ directory structure something like the following:
 
 ::
 
-  AUTHORS       doc/       README         utils/   wscript   
-  bindings/     examples/  RELEASE_NOTES  VERSION  wutils.py  
-  build/        LICENSE    scratch/       waf*     wutils.pyc 
-  CHANGES.html  ns3/       src            waf.bat*  
+  AUTHORS       examples       scratch        utils      waf.bat*
+  bindings      LICENSE        src            utils.py   waf-tools
+  build         ns3            test.py*       utils.pyc  wscript
+  CHANGES.html  README         testpy-output  VERSION    wutils.py
+  doc           RELEASE_NOTES  testpy.supp    waf*       wutils.pyc
+
 
 Change into the ``examples/tutorial`` directory.  You should see a file named 
 ``first.cc`` located there.  This is a script that will create a simple
@@ -735,7 +737,7 @@ the ``scratch`` directory after changing back into the top level directory.
 
 ::
 
-  cd ..
+  cd ../..
   cp examples/tutorial/first.cc scratch/myfirst.cc
 
 Now build your first example script using waf:
@@ -823,7 +825,7 @@ most of our *repositories* will look:
   -rw-r--r-- 2009-07-01 12:47 +0200 7673   wutils.py        file | revisions | annotate
   
 Our example scripts are in the ``examples`` directory.  If you click on ``examples``
-you will see a list of files.  One of the files in that directory is ``first.cc``.  If
+you will see a list of subdirectories.  One of the files in ``tutorial`` subdirectory is ``first.cc``.  If
 you click on ``first.cc`` you will find the code you just walked through.
 
 The source code is mainly in the ``src`` directory.  You can view source

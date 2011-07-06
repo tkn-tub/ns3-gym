@@ -72,7 +72,8 @@ NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 
 LteUeRrc::LteUeRrc ()
   : m_cmacSapProvider (0),
-    m_macSapProvider (0)
+    m_macSapProvider (0),
+    m_cellId (0)
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new UeMemberLteUeCmacSapUser (this);
@@ -112,10 +113,9 @@ LteUeRrc::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteUeRrc::m_rnti),
                    MakeUintegerChecker<uint16_t> ())
-    ;
+  ;
   return tid;
 }
-
 
 void
 LteUeRrc::SetLteUeCmacSapProvider (LteUeCmacSapProvider * s)
@@ -191,13 +191,20 @@ LteUeRrc::GetRnti ()
   return m_rnti;
 }
 
+uint16_t
+LteUeRrc::GetCellId ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_cellId;
+}
+
 std::vector<uint8_t>
 LteUeRrc::GetLcIdVector ()
 {
   std::vector<uint8_t> v;
-  for (std::map<uint8_t, Ptr<LteRlc> >::iterator it = m_rlcMap.begin(); it != m_rlcMap.end(); ++it)
+  for (std::map<uint8_t, Ptr<LteRlc> >::iterator it = m_rlcMap.begin (); it != m_rlcMap.end (); ++it)
     {
-      v.push_back(it->first);
+      v.push_back (it->first);
     }
   return v;
 }

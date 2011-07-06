@@ -51,27 +51,27 @@ uint16_t LteEnbNetDevice::m_cellIdCounter = 0;
 TypeId LteEnbNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::LteEnbNetDevice")
     .SetParent<LteNetDevice> ()
     .AddConstructor<LteEnbNetDevice> ()
     .AddAttribute ("LteEnbRrc",
-                   "The RRC associated to this EnbNetDevice",               
+                   "The RRC associated to this EnbNetDevice",
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_rrc),
                    MakePointerChecker <LteEnbRrc> ())
     .AddAttribute ("LteEnbMac",
-                   "The MAC associated to this EnbNetDevice",               
+                   "The MAC associated to this EnbNetDevice",
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_mac),
                    MakePointerChecker <LteEnbMac> ())
     .AddAttribute ("FfMacScheduler",
-                   "The scheduler associated to this EnbNetDevice",               
+                   "The scheduler associated to this EnbNetDevice",
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_scheduler),
                    MakePointerChecker <FfMacScheduler> ())
     .AddAttribute ("LteEnbPhy",
-                   "The PHY associated to this EnbNetDevice",               
+                   "The PHY associated to this EnbNetDevice",
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_phy),
                    MakePointerChecker <LteEnbPhy> ())
@@ -94,17 +94,17 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("DlEarfcn",
                    "Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
-                   "as per 3GPP 36.101 Section 5.7.3. ",  
+                   "as per 3GPP 36.101 Section 5.7.3. ",
                    UintegerValue (100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_dlEarfcn),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("UlEarfcn",
                    "Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
-                   "as per 3GPP 36.101 Section 5.7.3. ",  
+                   "as per 3GPP 36.101 Section 5.7.3. ",
                    UintegerValue (18100),
                    MakeUintegerAccessor (&LteEnbNetDevice::m_ulEarfcn),
                    MakeUintegerChecker<uint16_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -179,7 +179,7 @@ LteEnbNetDevice::GetCellId () const
 {
   return m_cellId;
 }
-  
+
 uint8_t 
 LteEnbNetDevice::GetUlBandwidth () const
 {
@@ -196,10 +196,10 @@ LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
     case 25:
     case 50:
     case 75:
-    case 100:     
+    case 100:
       m_ulBandwidth = bw;
       break;
-      
+
     default:
       NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
       break;
@@ -222,10 +222,10 @@ LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
     case 25:
     case 50:
     case 75:
-    case 100:     
+    case 100:
       m_dlBandwidth = bw;
       break;
-      
+
     default:
       NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
       break;
@@ -261,7 +261,7 @@ void
 LteEnbNetDevice::DoStart (void)
 {
   m_cellId = ++m_cellIdCounter;
-  UpdateConfig ();  
+  UpdateConfig ();
   m_phy->Start ();
   m_mac->Start ();
   m_rrc->Start ();
@@ -271,7 +271,7 @@ LteEnbNetDevice::DoStart (void)
 
 bool
 LteEnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
-                      const Mac48Address& dest, uint16_t protocolNumber)
+                         const Mac48Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << source << dest << protocolNumber);
 
@@ -315,11 +315,11 @@ LteEnbNetDevice::UpdateConfig (void)
   m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth);
 
   // Configuring directly for now, but ideally we should use the PHY
-  // SAP instead. Probably should handle this through the RRC.  
+  // SAP instead. Probably should handle this through the RRC.
   m_phy->DoSetBandwidth (m_ulBandwidth, m_dlBandwidth);
   m_phy->DoSetEarfcn (m_dlEarfcn, m_ulEarfcn);
   m_phy->DoSetCellId (m_cellId);
-  
+
 }
 
 

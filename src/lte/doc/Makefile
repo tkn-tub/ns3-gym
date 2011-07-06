@@ -6,12 +6,14 @@ CONVERT = convert
 SOURCE = source
 FIGURES = $(SOURCE)/figures
 
-# specify figures for build process (all dia figures)
+# specify figures from which .png and .pdf figures need to be
+# generated (all dia and eps figures)
 IMAGES_EPS = \
 	$(FIGURES)/ff-mac-saps.eps \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
-	$(FIGURES)/lte-ue-architecture.eps
+	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/lte-interference-test-scenario.eps
 
 # specify figures for build process (all eps figures)
 GRAPHS_EPS = \
@@ -21,7 +23,7 @@ GRAPHS_EPS = \
 	$(FIGURES)/simulationTime.eps \
 	$(FIGURES)/memoryUsage.eps 
 
-# rescale figures as necessary
+# rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
 $(FIGURES)/node.pdf_width = 5in
@@ -35,6 +37,7 @@ $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-transmission.pdf_width = 3in
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/lte-interference-test-scenario.pdf_width = 4in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
@@ -43,6 +46,7 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}

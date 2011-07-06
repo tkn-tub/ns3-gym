@@ -31,10 +31,10 @@ public:
   BasicCallbackTestCase ();
   virtual ~BasicCallbackTestCase () {}
 
-  void Target1 (void) { m_test1 = true;}
-  int Target2 (void) { m_test2 = true; return 2;}
-  void Target3 (double a) { m_test3 = true;}
-  int Target4 (double a, int b) { m_test4 = true; return 4;}
+  void Target1 (void) { m_test1 = true; }
+  int Target2 (void) { m_test2 = true; return 2; }
+  void Target3 (double a) { m_test3 = true; }
+  int Target4 (double a, int b) { m_test4 = true; return 4; }
 
 private:
   virtual void DoRun (void);
@@ -161,10 +161,10 @@ public:
   MakeCallbackTestCase ();
   virtual ~MakeCallbackTestCase () {}
 
-  void Target1 (void) { m_test1 = true;}
-  int Target2 (void) { m_test2 = true; return 2;}
-  void Target3 (double a) { m_test3 = true;}
-  int Target4 (double a, int b) { m_test4 = true; return 4;}
+  void Target1 (void) { m_test1 = true; }
+  int Target2 (void) { m_test2 = true; return 2; }
+  void Target3 (double a) { m_test3 = true; }
+  int Target4 (double a, int b) { m_test4 = true; return 4; }
 
 private:
   virtual void DoRun (void);
@@ -387,7 +387,7 @@ public:
   NullifyCallbackTestCase ();
   virtual ~NullifyCallbackTestCase () {}
 
-  void Target1 (void) { m_test1 = true;}
+  void Target1 (void) { m_test1 = true; }
 
 private:
   virtual void DoRun (void);
@@ -435,7 +435,7 @@ public:
   MakeCallbackTemplatesTestCase ();
   virtual ~MakeCallbackTemplatesTestCase () {}
 
-  void Target1 (void) { m_test1 = true;}
+  void Target1 (void) { m_test1 = true; }
 
 private:
   virtual void DoRun (void);

@@ -152,10 +152,10 @@ void Ipv6Header::Serialize (Buffer::Iterator start) const
 
   vTcFl= (6 << 28) | (m_trafficClass << 20) | (m_flowLabel);
 
-  i.WriteHtonU32(vTcFl);
-  i.WriteHtonU16(m_payloadLength);
-  i.WriteU8(m_nextHeader);
-  i.WriteU8(m_hopLimit);
+  i.WriteHtonU32 (vTcFl);
+  i.WriteHtonU16 (m_payloadLength);
+  i.WriteU8 (m_nextHeader);
+  i.WriteU8 (m_hopLimit);
 
   WriteTo (i, m_sourceAddress);
   WriteTo (i, m_destinationAddress);
@@ -166,16 +166,16 @@ uint32_t Ipv6Header::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   uint32_t vTcFl = 0;
 
-  vTcFl = i.ReadNtohU32();
+  vTcFl = i.ReadNtohU32 ();
   m_version = vTcFl >> 28;
 
   NS_ASSERT ((m_version) == 6);
 
   m_trafficClass = (uint8_t)((vTcFl >> 20) & 0x000000ff);
   m_flowLabel = vTcFl & 0xfff00000;
-  m_payloadLength = i.ReadNtohU16();
-  m_nextHeader = i.ReadU8();
-  m_hopLimit = i.ReadU8();
+  m_payloadLength = i.ReadNtohU16 ();
+  m_nextHeader = i.ReadU8 ();
+  m_hopLimit = i.ReadU8 ();
 
   ReadFrom (i, m_sourceAddress);
   ReadFrom (i, m_destinationAddress);

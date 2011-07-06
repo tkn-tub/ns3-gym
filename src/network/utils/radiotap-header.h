@@ -242,7 +242,7 @@ private:
     RADIOTAP_EXT               = 0x10000000
   };
  
-  void CheckAddChannelField();
+  void CheckAddChannelField ();
 
   uint16_t m_length;
   uint32_t m_present;

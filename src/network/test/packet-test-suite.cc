@@ -282,7 +282,7 @@ PacketTest::DoRun (void)
   CHECK (copy, 1, E (1, 0, 1000));
 
   p->AddByteTag (ATestTag<2> ());
-  CHECK (p, 2, E (1, 0, 1000), E(2, 0, 1000));
+  CHECK (p, 2, E (1, 0, 1000), E (2, 0, 1000));
   CHECK (copy, 1, E (1, 0, 1000));
 
   {
@@ -302,21 +302,21 @@ PacketTest::DoRun (void)
   Ptr<Packet> frag1 = p->CreateFragment (10, 90);
   Ptr<const Packet> frag2 = p->CreateFragment (100, 900);
   frag0->AddByteTag (ATestTag<3> ());
-  CHECK (frag0, 3, E (1, 0, 10), E(2, 0, 10), E (3, 0, 10));
+  CHECK (frag0, 3, E (1, 0, 10), E (2, 0, 10), E (3, 0, 10));
   frag1->AddByteTag (ATestTag<4> ());
-  CHECK (frag1, 3, E (1, 0, 90), E(2, 0, 90), E (4, 0, 90));
+  CHECK (frag1, 3, E (1, 0, 90), E (2, 0, 90), E (4, 0, 90));
   frag2->AddByteTag (ATestTag<5> ());
-  CHECK (frag2, 3, E (1, 0, 900), E(2, 0, 900), E (5, 0, 900));
+  CHECK (frag2, 3, E (1, 0, 900), E (2, 0, 900), E (5, 0, 900));
 
   frag1->AddAtEnd (frag2);
-  CHECK (frag1, 6, E (1, 0, 90), E(2, 0, 90), E (4, 0, 90), E (1, 90, 990), E(2, 90, 990), E (5, 90, 990));
+  CHECK (frag1, 6, E (1, 0, 90), E (2, 0, 90), E (4, 0, 90), E (1, 90, 990), E (2, 90, 990), E (5, 90, 990));
 
-  CHECK (frag0, 3, E (1, 0, 10), E(2, 0, 10), E (3, 0, 10));
+  CHECK (frag0, 3, E (1, 0, 10), E (2, 0, 10), E (3, 0, 10));
   frag0->AddAtEnd (frag1);
   CHECK (frag0, 9, 
-         E (1, 0, 10), E(2, 0, 10), E (3, 0, 10),
-         E (1, 10, 100), E(2, 10, 100), E (4, 10, 100), 
-         E (1, 100, 1000), E(2, 100, 1000), E (5, 100, 1000));
+         E (1, 0, 10), E (2, 0, 10), E (3, 0, 10),
+         E (1, 10, 100), E (2, 10, 100), E (4, 10, 100),
+         E (1, 100, 1000), E (2, 100, 1000), E (5, 100, 1000));
 
 
   // force caching a buffer of the right size.

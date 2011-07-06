@@ -198,7 +198,7 @@ void
 LteEnbPhy::SetNoiseFigure (double nf)
 {
   NS_LOG_FUNCTION (this << nf);
-  m_noiseFigure = nf;  
+  m_noiseFigure = nf;
 }
 
 double
@@ -327,7 +327,7 @@ LteEnbPhy::StartSubFrame (void)
 
   ++m_nrSubFrames;
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
-  
+
   // send the current burst of control messages
   std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
   std::vector <int> dlRb;
@@ -343,7 +343,7 @@ LteEnbPhy::StartSubFrame (void)
               std::map <uint8_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<DlDciIdealControlMessage> dci = DynamicCast<DlDciIdealControlMessage> (msg);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
-              
+
               if (it2 == m_ueAttached.end ())
                 {
                   NS_LOG_ERROR ("UE not attached");
@@ -373,15 +373,15 @@ LteEnbPhy::StartSubFrame (void)
               std::map <uint8_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<UlDciIdealControlMessage> dci = DynamicCast<UlDciIdealControlMessage> (msg);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
-             
+
               if (it2 == m_ueAttached.end ())
-              {
-                NS_LOG_ERROR ("UE not attached");
-              }
+                {
+                  NS_LOG_ERROR ("UE not attached");
+                }
               else
-              {
-                (*it2).second->ReceiveIdealControlMessage (msg);
-              }
+                {
+                  (*it2).second->ReceiveIdealControlMessage (msg);
+                }
             }
           ctrlMsg.pop_front ();
           it = ctrlMsg.begin ();
@@ -400,8 +400,8 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<LteEnbMac> macEntity = GetDevice ()->GetObject<LteEnbNetDevice> ()->GetMac ();
 
   m_enbPhySapUser->SubframeIndication (m_nrFrames, m_nrSubFrames);
-  
-  
+
+
   // trigger the UE(s)
   std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
   for (it = m_ueAttached.begin (); it != m_ueAttached.end (); it++)
@@ -443,30 +443,30 @@ void
 LteEnbPhy::GenerateCqiFeedback (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-    Ptr<LteEnbNetDevice> thisDevice = GetDevice ()->GetObject<LteEnbNetDevice> ();
-    
-    m_enbPhySapUser->UlCqiReport (CreateUlCqiReport (sinr));
-  
-  
+  Ptr<LteEnbNetDevice> thisDevice = GetDevice ()->GetObject<LteEnbNetDevice> ();
+
+  m_enbPhySapUser->UlCqiReport (CreateUlCqiReport (sinr));
+
+
 }
 
 
 UlCqi_s
 LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
 {
-	NS_LOG_FUNCTION (this << sinr);
+  NS_LOG_FUNCTION (this << sinr);
   Values::const_iterator it;
   UlCqi_s ulcqi;
   ulcqi.m_type = UlCqi_s::PUSCH;
   int i = 0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
-  {
-  	double sinrdb = 10*log10 ((*it));
- 	  // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
- 	  int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
-    ulcqi.m_sinr.push_back (sinrFp);
-    i++;
-  }
+    {
+      double sinrdb = 10 * log10 ((*it));
+      // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
+      int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
+      ulcqi.m_sinr.push_back (sinrFp);
+      i++;
+    }
   return (ulcqi);
 	
 }

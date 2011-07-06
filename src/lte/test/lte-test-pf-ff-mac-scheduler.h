@@ -39,32 +39,32 @@ using namespace ns3;
 */
 class LenaPfFfMacSchedulerTestCase1 : public TestCase
 {
-  public:
-    LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
-    virtual ~LenaPfFfMacSchedulerTestCase1 ();
+public:
+  LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
+  virtual ~LenaPfFfMacSchedulerTestCase1 ();
 
-  private:
-    virtual void DoRun (void);
-    uint16_t m_nUser;
-    uint16_t m_nLc;
-    uint16_t m_dist;
-    double m_thrRefDl;
-    double m_thrRefUl;
+private:
+  virtual void DoRun (void);
+  uint16_t m_nUser;
+  uint16_t m_nLc;
+  uint16_t m_dist;
+  double m_thrRefDl;
+  double m_thrRefUl;
 };
 
 
 class LenaPfFfMacSchedulerTestCase2 : public TestCase
 {
-  public:
-    LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl);
-    virtual ~LenaPfFfMacSchedulerTestCase2 ();
-    
-  private:
-    virtual void DoRun (void);
-    uint16_t m_nUser;
-    std::vector<uint16_t> m_dist;
-    std::vector<uint32_t> m_estThrPfDl;
-    std::vector<uint32_t> m_estThrPfUl;
+public:
+  LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl);
+  virtual ~LenaPfFfMacSchedulerTestCase2 ();
+
+private:
+  virtual void DoRun (void);
+  uint16_t m_nUser;
+  std::vector<uint16_t> m_dist;
+  std::vector<uint32_t> m_estThrPfDl;
+  std::vector<uint32_t> m_estThrPfUl;
 };
 
 
@@ -72,8 +72,8 @@ class LenaPfFfMacSchedulerTestCase2 : public TestCase
 
 class LenaTestPfFfMacSchedulerSuite : public TestSuite
 {
-  public:
-    LenaTestPfFfMacSchedulerSuite ();
+public:
+  LenaTestPfFfMacSchedulerSuite ();
 };
 
 

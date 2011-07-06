@@ -26,7 +26,7 @@
 #include "ns3/simulator.h"
 #include "ipv4-address-helper.h"
 
-NS_LOG_COMPONENT_DEFINE("Ipv4AddressHelper");
+NS_LOG_COMPONENT_DEFINE ("Ipv4AddressHelper");
 
 namespace ns3 {
 
@@ -71,8 +71,8 @@ Ipv4AddressHelper::SetBase (
 //
 // Some quick reasonableness testing.
 //
-  NS_ASSERT_MSG((m_network & ~m_mask) == 0,
-                "Ipv4AddressHelper::SetBase(): Inconsistent network and mask");
+  NS_ASSERT_MSG ((m_network & ~m_mask) == 0,
+                 "Ipv4AddressHelper::SetBase(): Inconsistent network and mask");
 
 //
 // Figure out how much to shift network numbers to get them aligned, and what
@@ -81,8 +81,8 @@ Ipv4AddressHelper::SetBase (
   m_shift = NumAddressBits (m_mask);
   m_max = (1 << m_shift) - 2;
 
-  NS_ASSERT_MSG(m_shift <= 32,
-                "Ipv4AddressHelper::SetBase(): Unreasonable address length");
+  NS_ASSERT_MSG (m_shift <= 32,
+                 "Ipv4AddressHelper::SetBase(): Unreasonable address length");
 
 //
 // Shift the network down into the normalized position.
@@ -177,7 +177,7 @@ Ipv4AddressHelper::NumAddressBits (uint32_t maskbits) const
       maskbits >>= 1;
     }
 
-  NS_ASSERT_MSG(false, "Ipv4AddressHelper::NumAddressBits(): Bad Mask");
+  NS_ASSERT_MSG (false, "Ipv4AddressHelper::NumAddressBits(): Bad Mask");
   return 0;
 }
 

@@ -22,6 +22,8 @@
 
 #include "ns3/log.h"
 
+#include "ns3/spectrum-test.h"
+
 #include "ns3/lte-phy-tag.h"
 #include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-sinr-chunk-processor.h"
@@ -194,7 +196,7 @@ LteUplinkSinrTestCase::DoRun (void)
   // Phy tags
   LtePhyTag pktTag[numOfPbs];
 
-  
+
   /**
    * Build packet burst (Data and interference)
    */
@@ -234,7 +236,7 @@ LteUplinkSinrTestCase::DoRun (void)
             {
               // Create phy tag (different for each packet burst)
               // and add to the first packet
-              pktTag[pb] = LtePhyTag (100 * (pb+1));
+              pktTag[pb] = LtePhyTag (100 * (pb + 1));
               pkt[pb][i]->AddPacketTag ( pktTag[pb] );
             }
 
@@ -279,13 +281,13 @@ LteUplinkSinrTestCase::DoRun (void)
    */
 
   // 2 UEs send data to the eNB through 2 subcarriers
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[0], m_sv1, ulPhy->GetSpectrumType(), ds);
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[1], m_sv2, ulPhy->GetSpectrumType(), ds);
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[0], m_sv1, ulPhy->GetSpectrumType (), ds);
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[1], m_sv2, ulPhy->GetSpectrumType (), ds);
 
-  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[2], i1, ulPhy->GetSpectrumType(), di1);
-  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[3], i2, ulPhy->GetSpectrumType(), di2);
-  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[4], i3, ulPhy->GetSpectrumType(), di3);
-  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[5], i4, ulPhy->GetSpectrumType(), di4);
+  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[2], i1, ulPhy->GetSpectrumType (), di1);
+  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[3], i2, ulPhy->GetSpectrumType (), di2);
+  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[4], i3, ulPhy->GetSpectrumType (), di3);
+  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, ulPhy, packetBursts[5], i4, ulPhy->GetSpectrumType (), di4);
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();
@@ -299,6 +301,6 @@ LteUplinkSinrTestCase::DoRun (void)
 
   NS_LOG_INFO ("Theoretical SINR: " << *m_sinr);
   NS_LOG_INFO ("Calculated SINR: " << calculatedSinr);
-
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, *m_sinr, 0.0000001, "Wrong SINR !");
+  
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (calculatedSinr, *m_sinr, 0.0000001, "Wrong SINR !");
 }

@@ -26,6 +26,8 @@
 #include <ns3/object-factory.h>
 #include <ns3/node-container.h>
 #include <ns3/net-device-container.h>
+#include <ns3/propagation-loss-model.h>
+#include <ns3/spectrum-propagation-loss-model.h>
 
 namespace ns3 {
 
@@ -72,6 +74,44 @@ public:
                    std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                    std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                    std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * \param name the name of the model to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
+   *
+   * Add a new single-frequency propagation loss model to this channel helper.
+   */
+  void AddPropagationLoss (std::string name,
+                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+
+
+  /** 
+   * Add a new single-frequency propagation loss model instance to this channel helper.
+   * 
+   * \param m a pointer to the instance of the propagation loss model
+   */
+  void AddPropagationLoss (Ptr<PropagationLossModel> m);
 
   /**
    * \param name the name of the model to set
@@ -92,7 +132,7 @@ public:
    * \param n7 the name of the attribute to set
    * \param v7 the value of the attribute to set
    *
-   * Add a new spectrum propagation loss to this channel helper.
+   * Add a new frequency-dependent propagation loss model to this channel helper.
    */
   void AddSpectrumPropagationLoss (std::string name,
                                    std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
@@ -103,6 +143,14 @@ public:
                                    std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                                    std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                                    std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+
+  /** 
+   * Add a new frequency-dependent propagation loss model instance to this channel helper.
+   * 
+   * \param m a pointer to the instance of the propagation loss model
+   */
+  void AddSpectrumPropagationLoss (Ptr<SpectrumPropagationLossModel> m);
+
   /**
    * \param name the name of the model to set
    * \param n0 the name of the attribute to set
@@ -142,7 +190,8 @@ public:
   Ptr<SpectrumChannel> Create (void) const;
 
 private:
-  std::vector<ObjectFactory> m_spectrumPropagationLoss;
+  Ptr<SpectrumPropagationLossModel> m_spectrumPropagationLossModel;
+  Ptr<PropagationLossModel> m_propagationLossModel;
   ObjectFactory m_propagationDelay;
   ObjectFactory m_channel;
 };

@@ -32,12 +32,13 @@
 
 namespace ns3 {
 
-/**
- * \defgroup netanim Animation
- *
- */
-
 class NetModel;
+
+/**
+ * \defgroup netanim Netanim
+ *
+ * This section documents the API of the ns-3 netanim module. For a generic functional description, please refer to the ns-3 manual.
+ */
 
 /**
  * \ingroup netanim

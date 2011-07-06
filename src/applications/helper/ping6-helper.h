@@ -82,7 +82,7 @@ public:
    * \brief Set routers addresses for routing type 0.
    * \param routers routers addresses
    */
-  void SetRoutersAddress(std::vector<Ipv6Address> routers);
+  void SetRoutersAddress (std::vector<Ipv6Address> routers);
 
 private:
   /**

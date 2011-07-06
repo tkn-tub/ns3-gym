@@ -93,14 +93,14 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 }
 
 void
-Ipv4L3Protocol::Insert(Ptr<Ipv4L4Protocol> protocol)
+Ipv4L3Protocol::Insert (Ptr<Ipv4L4Protocol> protocol)
 {
   m_protocols.push_back (protocol);
 }
 Ptr<Ipv4L4Protocol>
-Ipv4L3Protocol::GetProtocol(int protocolNumber) const
+Ipv4L3Protocol::GetProtocol (int protocolNumber) const
 {
-  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+  for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
       if ((*i)->GetProtocolNumber () == protocolNumber)
         {
@@ -185,7 +185,7 @@ void
 Ipv4L3Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+  for (L4List_t::iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
       *i = 0;
     }
@@ -410,8 +410,8 @@ Ipv4L3Protocol::IsDestinationAddress (Ipv4Address address, uint32_t iif) const
 }
 
 void 
-Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                         const Address &to, NetDevice::PacketType packetType)
+Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                          const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << &device << p << protocol <<  from);
 
@@ -523,7 +523,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
                       uint8_t protocol,
                       Ptr<Ipv4Route> route)
 {
-  NS_LOG_FUNCTION (this << packet << source << destination << uint32_t(protocol) << route);
+  NS_LOG_FUNCTION (this << packet << source << destination << uint32_t (protocol) << route);
 
   Ipv4Header ipHeader;
   bool mayFragment = true;
@@ -554,7 +554,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
           Ptr<Ipv4Interface> outInterface = *ifaceIter;
           Ptr<Packet> packetCopy = packet->Copy ();
 
-          NS_ASSERT (packetCopy->GetSize () <= outInterface->GetDevice()->GetMtu ());
+          NS_ASSERT (packetCopy->GetSize () <= outInterface->GetDevice ()->GetMtu ());
 
           m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
           packetCopy->AddHeader (ipHeader);
@@ -740,10 +740,10 @@ Ipv4L3Protocol::IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, Ptr<const 
   NS_LOG_FUNCTION (this << mrtentry << p << header);
   NS_LOG_LOGIC ("Multicast forwarding logic for node: " << m_node->GetId ());
 
-  std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap();
+  std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap ();
   std::map<uint32_t, uint32_t>::iterator mapIter;
 
-  for (mapIter = ttlMap.begin(); mapIter != ttlMap.end(); mapIter++)
+  for (mapIter = ttlMap.begin (); mapIter != ttlMap.end (); mapIter++)
     {
       uint32_t interfaceId = mapIter->first;
       //uint32_t outputTtl = mapIter->second;  // Unused for now
@@ -831,7 +831,7 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
           for (uint32_t i = 0; i < GetNAddresses (iif); i++)
             {
               Ipv4InterfaceAddress addr = GetAddress (iif, i);
-              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination().CombineMask (addr.GetMask ()) &&
+              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination ().CombineMask (addr.GetMask ()) &&
                   ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
                 {
                   subnetDirected = true;

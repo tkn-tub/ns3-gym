@@ -77,7 +77,7 @@ Bug780Test::~Bug780Test()
 void
 Bug780Test::DoRun ()
 {
-  SeedManager::SetSeed(123);
+  SeedManager::SetSeed (123);
   CreateNodes ();
 
   Simulator::Stop (m_time);
@@ -116,8 +116,8 @@ Bug780Test::CreateNodes (void)
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue(phyMode),
-                                "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue (phyMode),
+                                "ControlMode",StringValue (phyMode));
 
   //set the tx range to 300
   wifiPhy.Set ("TxPowerStart",DoubleValue (-0.1615));
@@ -143,24 +143,24 @@ Bug780Test::CreateNodes (void)
   Ptr<ListPositionAllocator> positionAlloc_Adhoc =
     CreateObject<ListPositionAllocator>();
   double distance = 0.0;
-  for (uint32_t i = 0; i <= adhocNodes.GetN(); i++)
+  for (uint32_t i = 0; i <= adhocNodes.GetN (); i++)
     {
-      positionAlloc_Adhoc->Add(Vector(distance,0.0,0.0));
+      positionAlloc_Adhoc->Add (Vector (distance,0.0,0.0));
       distance += 250.0;
     }
 
   mobilityAdhoc.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
-  mobilityAdhoc.SetPositionAllocator(positionAlloc_Adhoc);
+  mobilityAdhoc.SetPositionAllocator (positionAlloc_Adhoc);
   mobilityAdhoc.Install (adhocNodes);
 
   //At 50 sec node 3 moves towards node 2
-  Simulator::Schedule (Seconds (50.0), &SetVelocity, adhocNodes.Get(2),Vector(-5.0,0.0,0.0));
+  Simulator::Schedule (Seconds (50.0), &SetVelocity, adhocNodes.Get (2),Vector (-5.0,0.0,0.0));
   //AT 100 sec set node 3 with zero velocity
-  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get(2),Vector(0.0,0.0,0.0));
+  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get (2),Vector (0.0,0.0,0.0));
   //Move node2 away from node 3
-  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get(1),Vector(5.0,0.0,0.0));
+  Simulator::Schedule (Seconds (100.0), &SetVelocity, adhocNodes.Get (1),Vector (5.0,0.0,0.0));
   //AT 150 sec set node 2 with zero velocity
-  Simulator::Schedule (Seconds (150.0), &SetVelocity, adhocNodes.Get(1), Vector(0.0,0.0,0.0));
+  Simulator::Schedule (Seconds (150.0), &SetVelocity, adhocNodes.Get (1), Vector (0.0,0.0,0.0));
 
 
   // Ping 10.1.1.1 -> 10.1.1.2
@@ -169,7 +169,7 @@ Bug780Test::CreateNodes (void)
 
   ApplicationContainer p = ping.Install (adhocNodes.Get (0));
   p.Start (Seconds (50));
-  p.Stop (Seconds (SimTime) - Seconds(0.001));
+  p.Stop (Seconds (SimTime) - Seconds (0.001));
 
   // pcap
   std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + PREFIX;
@@ -186,9 +186,9 @@ Bug780Test::CheckResults ()
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-0.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-0.pcap";
 
-      uint32_t sec(0), usec(0);
-      bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
+      uint32_t sec (0), usec (0);
+      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec);
+      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
                                                          << " differ starting from " << sec << " s " << usec << " us");
     }
 }

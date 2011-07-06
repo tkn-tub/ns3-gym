@@ -24,7 +24,7 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
 
-NS_LOG_COMPONENT_DEFINE("CsmaStarHelper");
+NS_LOG_COMPONENT_DEFINE ("CsmaStarHelper");
 
 namespace ns3 {
 

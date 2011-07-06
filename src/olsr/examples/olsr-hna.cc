@@ -145,18 +145,18 @@ int main (int argc, char *argv[])
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
   wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
 
-  YansWifiChannelHelper wifiChannel ;
+  YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   // The below FixedRssLossModel will cause the rss to be fixed regardless
   // of the distance between the two stations, and the transmit power
-  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(rss));
+  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (rss));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue(phyMode),
-                                "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue (phyMode),
+                                "ControlMode",StringValue (phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, olsrNodes);
@@ -164,7 +164,7 @@ int main (int argc, char *argv[])
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-  NetDeviceContainer csmaDevices = csma.Install (NodeContainer (csmaNodes.Get(0), olsrNodes.Get(1)));
+  NetDeviceContainer csmaDevices = csma.Install (NodeContainer (csmaNodes.Get (0), olsrNodes.Get (1)));
 
   // Note that with FixedRssLossModel, the positions below are not 
   // used for received signal strength. 
@@ -203,7 +203,7 @@ int main (int argc, char *argv[])
   ipv4.Assign (csmaDevices);
 
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-  Ptr<Socket> recvSink = Socket::CreateSocket (csmaNodes.Get(0), tid);
+  Ptr<Socket> recvSink = Socket::CreateSocket (csmaNodes.Get (0), tid);
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
   recvSink->Bind (local);
   recvSink->SetRecvCallback (MakeCallback (&ReceivePacket));
@@ -239,7 +239,7 @@ int main (int argc, char *argv[])
       // Add the required routes into the Ipv4StaticRouting Protocol instance
       // and have the node generate HNA messages for all these routes
       // which are associated with non-OLSR interfaces specified above.
-      hnaEntries->AddNetworkRouteTo (Ipv4Address ("172.16.1.0"), Ipv4Mask ("255.255.255.0"), uint32_t(2), uint32_t(1));
+      hnaEntries->AddNetworkRouteTo (Ipv4Address ("172.16.1.0"), Ipv4Mask ("255.255.255.0"), uint32_t (2), uint32_t (1));
       olsrrp_Gw->SetRoutingTableAssociation (hnaEntries);
     }
  

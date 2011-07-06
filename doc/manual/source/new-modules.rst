@@ -216,14 +216,14 @@ Step 7 - Specify which of your module's examples should be run
 If your new module has examples, then you must specify which of them
 should be run in your ::
 
-  src/new-module/tests/examples-to-run.py
+  src/new-module/test/examples-to-run.py
 
 file by modifying it with your text editor.  These examples are run by
 test.py.
 
 As an example, the examples that are run by test.py for the core module are specified in  ::
 
-  src/core/tests/examples-to-run
+  src/core/test/examples-to-run.py
 
 using the following two lists of C++ and Python examples: ::
 

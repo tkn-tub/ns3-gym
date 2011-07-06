@@ -90,7 +90,7 @@ Ipv6PacketInfoTagTest::RxCb (Ptr<Socket> socket)
   Ptr<Packet> m_receivedPacket;
 
   availableData = socket->GetRxAvailable ();
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket->GetSize (), "Did not read expected data");
 
   Ipv6PacketInfoTag tag;
@@ -102,7 +102,7 @@ Ipv6PacketInfoTagTest::RxCb (Ptr<Socket> socket)
 void
 Ipv6PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
-  Address realTo = Inet6SocketAddress (Ipv6Address (to.c_str()), 200);
+  Address realTo = Inet6SocketAddress (Ipv6Address (to.c_str ()), 200);
   if (DynamicCast<UdpSocket> (socket) != 0)
     {
       NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
@@ -130,8 +130,8 @@ Ipv6PacketInfoTagTest::DoRun (void)
   Ptr<Ipv6> ipv6 = node0->GetObject<Ipv6> ();
 
   uint32_t index = ipv6->AddInterface (device);
-  Ipv6InterfaceAddress ifaceAddr1 = Ipv6InterfaceAddress (Ipv6Address("2000:1000:0:2000::1"), 
-                                                          Ipv6Prefix(64));
+  Ipv6InterfaceAddress ifaceAddr1 = Ipv6InterfaceAddress (Ipv6Address ("2000:1000:0:2000::1"),
+                                                          Ipv6Prefix (64));
   ipv6->AddAddress (index, ifaceAddr1);
   ipv6->SetMetric (index, 1);
   ipv6->SetUp (index);
@@ -142,8 +142,8 @@ Ipv6PacketInfoTagTest::DoRun (void)
   ipv6 = node1->GetObject<Ipv6> ();
 
   index = ipv6->AddInterface (device2);
-  Ipv6InterfaceAddress ifaceAddr2 = Ipv6InterfaceAddress (Ipv6Address("2000:1000:0:2000::2"), 
-                                                          Ipv6Prefix(64));
+  Ipv6InterfaceAddress ifaceAddr2 = Ipv6InterfaceAddress (Ipv6Address ("2000:1000:0:2000::2"),
+                                                          Ipv6Prefix (64));
   ipv6->AddAddress (index, ifaceAddr2);
   ipv6->SetMetric (index, 1);
   ipv6->SetUp (index);

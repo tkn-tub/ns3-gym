@@ -40,6 +40,10 @@ class SSScheduler;
 class SSLinkManager;
 class SsServiceFlowManager;
 class IpcsClassifier;
+
+/**
+ * \ingroup wimax
+ */
 class SubscriberStationNetDevice : public WimaxNetDevice
 {
 public:

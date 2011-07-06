@@ -31,44 +31,44 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("SqliteDataOutput");
+NS_LOG_COMPONENT_DEFINE ("SqliteDataOutput");
 
 //--------------------------------------------------------------
 //----------------------------------------------
 SqliteDataOutput::SqliteDataOutput()
 {
   m_filePrefix = "data";
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 SqliteDataOutput::~SqliteDataOutput()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 void
-SqliteDataOutput::DoDispose()
+SqliteDataOutput::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  DataOutputInterface::DoDispose();
+  DataOutputInterface::DoDispose ();
   // end SqliteDataOutput::DoDispose
 }
 
 int
-SqliteDataOutput::Exec(std::string exe) {
+SqliteDataOutput::Exec (std::string exe) {
   int res;
   char **result;
   int nrows, ncols;
   char *errMsg = 0;
 
-  NS_LOG_INFO("executing '" << exe << "'");
+  NS_LOG_INFO ("executing '" << exe << "'");
 
-  res = sqlite3_get_table(m_db,
-                          exe.c_str(),
-                          &result, &nrows, &ncols,
-                          &errMsg);
+  res = sqlite3_get_table (m_db,
+                           exe.c_str (),
+                           &result, &nrows, &ncols,
+                           &errMsg);
 
   if (res != SQLITE_OK) {
-      NS_LOG_ERROR("sqlite3 error: \"" << errMsg << "\"");
+      NS_LOG_ERROR ("sqlite3 error: \"" << errMsg << "\"");
       /*
       } else {
         // std::cout << "nrows " << nrows << " ncols " << ncols << std::endl;
@@ -90,7 +90,7 @@ SqliteDataOutput::Exec(std::string exe) {
       */
     }
 
-  sqlite3_free_table(result);
+  sqlite3_free_table (result);
   return res;
 
   // end SqliteDataOutput::Exec
@@ -98,86 +98,86 @@ SqliteDataOutput::Exec(std::string exe) {
 
 //----------------------------------------------
 void
-SqliteDataOutput::Output(DataCollector &dc)
+SqliteDataOutput::Output (DataCollector &dc)
 {
   std::string m_dbFile = m_filePrefix + ".db";
 
-  if (sqlite3_open(m_dbFile.c_str(), &m_db)) {
-      NS_LOG_ERROR("Could not open sqlite3 database \"" << m_dbFile << "\"");
-      NS_LOG_ERROR("sqlite3 error \"" << sqlite3_errmsg(m_db) << "\"");
-      sqlite3_close(m_db);
+  if (sqlite3_open (m_dbFile.c_str (), &m_db)) {
+      NS_LOG_ERROR ("Could not open sqlite3 database \"" << m_dbFile << "\"");
+      NS_LOG_ERROR ("sqlite3 error \"" << sqlite3_errmsg (m_db) << "\"");
+      sqlite3_close (m_db);
       // TODO: Better error reporting, management!
       return;
     }
 
-  std::string run = dc.GetRunLabel();
+  std::string run = dc.GetRunLabel ();
 
-  Exec("create table if not exists Experiments (run, experiment, strategy, input, description text)");
-  Exec("insert into Experiments (run,experiment,strategy,input,description) values ('" +
-       run + "', '" +
-       dc.GetExperimentLabel() + "', '" +
-       dc.GetStrategyLabel() + "', '" +
-       dc.GetInputLabel() + "', '" +
-       dc.GetDescription() + "')");
+  Exec ("create table if not exists Experiments (run, experiment, strategy, input, description text)");
+  Exec ("insert into Experiments (run,experiment,strategy,input,description) values ('" +
+        run + "', '" +
+        dc.GetExperimentLabel () + "', '" +
+        dc.GetStrategyLabel () + "', '" +
+        dc.GetInputLabel () + "', '" +
+        dc.GetDescription () + "')");
 
-  Exec("create table if not exists Metadata ( run text, key text, value)");
+  Exec ("create table if not exists Metadata ( run text, key text, value)");
 
-  for (MetadataList::iterator i = dc.MetadataBegin();
-       i != dc.MetadataEnd(); i++) {
+  for (MetadataList::iterator i = dc.MetadataBegin ();
+       i != dc.MetadataEnd (); i++) {
       std::pair<std::string, std::string> blob = (*i);
-      Exec("insert into Metadata (run,key,value) values ('" +
-           run + "', '" +
-           blob.first + "', '" +
-           blob.second + "')");
+      Exec ("insert into Metadata (run,key,value) values ('" +
+            run + "', '" +
+            blob.first + "', '" +
+            blob.second + "')");
     }
 
-  Exec("BEGIN");
-  SqliteOutputCallback callback(this, run);
-  for (DataCalculatorList::iterator i = dc.DataCalculatorBegin();
-       i != dc.DataCalculatorEnd(); i++) {
-      (*i)->Output(callback);
+  Exec ("BEGIN");
+  SqliteOutputCallback callback (this, run);
+  for (DataCalculatorList::iterator i = dc.DataCalculatorBegin ();
+       i != dc.DataCalculatorEnd (); i++) {
+      (*i)->Output (callback);
     }
-  Exec("COMMIT");
+  Exec ("COMMIT");
 
-  sqlite3_close(m_db);
+  sqlite3_close (m_db);
 
   // end SqliteDataOutput::Output
 }
 
 SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
-        (Ptr<SqliteDataOutput> owner, std::string run) :
-  m_owner(owner),
-  m_runLabel(run)
+  (Ptr<SqliteDataOutput> owner, std::string run) :
+  m_owner (owner),
+  m_runLabel (run)
 {
 
-  m_owner->Exec("create table if not exists Singletons ( run text, name text, variable text, value )");
+  m_owner->Exec ("create table if not exists Singletons ( run text, name text, variable text, value )");
 
   // end SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
 }
 
 void
-SqliteDataOutput::SqliteOutputCallback::OutputStatistic(std::string key,
-                                                        std::string variable,
-                                                        const StatisticalSummary *statSum)
+SqliteDataOutput::SqliteOutputCallback::OutputStatistic (std::string key,
+                                                         std::string variable,
+                                                         const StatisticalSummary *statSum)
 {
-  OutputSingleton(key,variable+"-count", (double)statSum->getCount());
-  if (!isNaN(statSum->getSum()))
-    OutputSingleton(key,variable+"-total", statSum->getSum());
-  if (!isNaN(statSum->getMax()))
-    OutputSingleton(key,variable+"-max", statSum->getMax());
-  if (!isNaN(statSum->getMin()))
-    OutputSingleton(key,variable+"-min", statSum->getMin());
-  if (!isNaN(statSum->getSqrSum()))
-    OutputSingleton(key,variable+"-sqrsum", statSum->getSqrSum());
-  if (!isNaN(statSum->getStddev()))
-    OutputSingleton(key,variable+"-stddev", statSum->getStddev());
+  OutputSingleton (key,variable+"-count", (double)statSum->getCount ());
+  if (!isNaN (statSum->getSum ()))
+    OutputSingleton (key,variable+"-total", statSum->getSum ());
+  if (!isNaN (statSum->getMax ()))
+    OutputSingleton (key,variable+"-max", statSum->getMax ());
+  if (!isNaN (statSum->getMin ()))
+    OutputSingleton (key,variable+"-min", statSum->getMin ());
+  if (!isNaN (statSum->getSqrSum ()))
+    OutputSingleton (key,variable+"-sqrsum", statSum->getSqrSum ());
+  if (!isNaN (statSum->getStddev ()))
+    OutputSingleton (key,variable+"-stddev", statSum->getStddev ());
 }
 
 
 void
-SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
-                                                        std::string variable,
-                                                        int val)
+SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
+                                                         std::string variable,
+                                                         int val)
 {
 
   std::stringstream sstr;
@@ -186,14 +186,14 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
   key << "', '" <<
   variable << "', " <<
   val << ")";
-  m_owner->Exec(sstr.str());
+  m_owner->Exec (sstr.str ());
 
   // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
 }
 void
-SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
-                                                        std::string variable,
-                                                        uint32_t val)
+SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
+                                                         std::string variable,
+                                                         uint32_t val)
 {
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
@@ -201,13 +201,13 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
   key << "', '" <<
   variable << "', " <<
   val << ")";
-  m_owner->Exec(sstr.str());
+  m_owner->Exec (sstr.str ());
   // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
 }
 void
-SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
-                                                        std::string variable,
-                                                        double val)
+SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
+                                                         std::string variable,
+                                                         double val)
 {
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
@@ -215,13 +215,13 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
   key << "', '" <<
   variable << "', " <<
   val << ")";
-  m_owner->Exec(sstr.str());
+  m_owner->Exec (sstr.str ());
   // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
 }
 void
-SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
-                                                        std::string variable,
-                                                        std::string val)
+SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
+                                                         std::string variable,
+                                                         std::string val)
 {
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
@@ -229,20 +229,20 @@ SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
   key << "', '" <<
   variable << "', '" <<
   val << "')";
-  m_owner->Exec(sstr.str());
+  m_owner->Exec (sstr.str ());
   // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
 }
 void
-SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
-                                                        std::string variable,
-                                                        Time val)
+SqliteDataOutput::SqliteOutputCallback::OutputSingleton (std::string key,
+                                                         std::string variable,
+                                                         Time val)
 {
   std::stringstream sstr;
   sstr << "insert into Singletons (run,name,variable,value) values ('" <<
   m_runLabel << "', '" <<
   key << "', '" <<
   variable << "', " <<
-  val.GetTimeStep() << ")";
-  m_owner->Exec(sstr.str());
+  val.GetTimeStep () << ")";
+  m_owner->Exec (sstr.str ());
   // end SqliteDataOutput::SqliteOutputCallback::OutputSingleton
 }

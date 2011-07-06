@@ -79,7 +79,7 @@ SystemMutexPrivate::Lock (void)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Lock()"
                       "pthread_mutex_lock failed: " << rc << " = \"" <<
-                      strerror(rc) << "\"");
+                      strerror (rc) << "\"");
     }
 }
 	
@@ -93,7 +93,7 @@ SystemMutexPrivate::Unlock (void)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Unlock()"
                       "pthread_mutex_unlock failed: " << rc << " = \"" <<
-                      strerror(rc) << "\"");
+                      strerror (rc) << "\"");
     }
 }
 
@@ -110,21 +110,21 @@ SystemMutex::~SystemMutex()
 }
 
 void
-SystemMutex::Lock() 
+SystemMutex::Lock ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Lock ();
 }
 
 void
-SystemMutex::Unlock() 
+SystemMutex::Unlock ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_priv->Unlock ();
 }
 
 CriticalSection::CriticalSection (SystemMutex &mutex)
-  : m_mutex(mutex)
+  : m_mutex (mutex)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_mutex.Lock ();

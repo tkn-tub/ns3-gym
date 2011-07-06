@@ -160,26 +160,26 @@ PointToPointNetDevice::~PointToPointNetDevice ()
 }
 
 void
-PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
+PointToPointNetDevice::AddHeader (Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
   PppHeader ppp;
-  ppp.SetProtocol(EtherToPpp(protocolNumber));
+  ppp.SetProtocol (EtherToPpp (protocolNumber));
   p->AddHeader (ppp);
 }
 
 bool
-PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
+PointToPointNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t& param)
 {
   NS_LOG_FUNCTION_NOARGS ();
   PppHeader ppp;
   p->RemoveHeader (ppp);
-  param = PppToEther(ppp.GetProtocol());
+  param = PppToEther (ppp.GetProtocol ());
   return true;
 }
 
 void
-PointToPointNetDevice::DoDispose()
+PointToPointNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
@@ -190,14 +190,14 @@ PointToPointNetDevice::DoDispose()
 }
 
 void
-PointToPointNetDevice::SetDataRate(DataRate bps)
+PointToPointNetDevice::SetDataRate (DataRate bps)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_bps = bps;
 }
 
 void
-PointToPointNetDevice::SetInterframeGap(Time t)
+PointToPointNetDevice::SetInterframeGap (Time t)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_tInterframeGap = t;
@@ -214,18 +214,18 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   // We need to tell the channel that we've started wiggling the wire and
   // schedule an event that will be executed when the transmission is complete.
   //
-  NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
+  NS_ASSERT_MSG (m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
   m_currentPkt = p;
   m_phyTxBeginTrace (m_currentPkt);
 
-  Time txTime = Seconds (m_bps.CalculateTxTime(p->GetSize()));
+  Time txTime = Seconds (m_bps.CalculateTxTime (p->GetSize ()));
   Time txCompleteTime = txTime + m_tInterframeGap;
 
   NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds () << "sec");
   Simulator::Schedule (txCompleteTime, &PointToPointNetDevice::TransmitComplete, this);
 
-  bool result = m_channel->TransmitStart(p, this, txTime); 
+  bool result = m_channel->TransmitStart (p, this, txTime);
   if (result == false)
     {
       m_phyTxDropTrace (p);
@@ -244,7 +244,7 @@ PointToPointNetDevice::TransmitComplete (void)
   // is empty, we are done, otherwise we need to start transmitting the
   // next packet.
   //
-  NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
+  NS_ASSERT_MSG (m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = READY;
 
   NS_ASSERT_MSG (m_currentPkt != 0, "PointToPointNetDevice::TransmitComplete(): m_currentPkt zero");
@@ -266,7 +266,7 @@ PointToPointNetDevice::TransmitComplete (void)
   //
   m_snifferTrace (p);
   m_promiscSnifferTrace (p);
-  TransmitStart(p);
+  TransmitStart (p);
 }
 
 bool
@@ -276,7 +276,7 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 
   m_channel = ch;
 
-  m_channel->Attach(this);
+  m_channel->Attach (this);
 
   //
   // This device is up whenever it is attached to a channel.  A better plan
@@ -332,7 +332,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
       // there is no difference in what the promisc callback sees and what the
       // normal receive callback sees.
       //
-      ProcessHeader(packet, protocol);
+      ProcessHeader (packet, protocol);
 
       if (!m_promiscCallback.IsNull ())
         {
@@ -346,7 +346,7 @@ PointToPointNetDevice::Receive (Ptr<Packet> packet)
 }
 
 Ptr<Queue>
-PointToPointNetDevice::GetQueue(void) const 
+PointToPointNetDevice::GetQueue (void) const
 { 
   NS_LOG_FUNCTION_NOARGS ();
   return m_queue;
@@ -360,13 +360,13 @@ PointToPointNetDevice::NotifyLinkUp (void)
 }
 
 void
-PointToPointNetDevice::SetIfIndex(const uint32_t index)
+PointToPointNetDevice::SetIfIndex (const uint32_t index)
 {
   m_ifIndex = index;
 }
 
 uint32_t
-PointToPointNetDevice::GetIfIndex(void) const
+PointToPointNetDevice::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
@@ -443,7 +443,7 @@ PointToPointNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 Address
 PointToPointNetDevice::GetMulticast (Ipv6Address addr) const
 {
-  NS_LOG_FUNCTION(this << addr);
+  NS_LOG_FUNCTION (this << addr);
   return Mac48Address ("33:33:00:00:00:00");
 }
 
@@ -460,7 +460,7 @@ PointToPointNetDevice::IsBridge (void) const
 }
 
 bool
-PointToPointNetDevice::Send(
+PointToPointNetDevice::Send (
   Ptr<Packet> packet, 
   const Address &dest, 
   uint16_t protocolNumber)
@@ -483,7 +483,7 @@ PointToPointNetDevice::Send(
   // Stick a point to point protocol header on the packet in preparation for
   // shoving it out the door.
   //
-  AddHeader(packet, protocolNumber);
+  AddHeader (packet, protocolNumber);
 
   m_macTxTrace (packet);
 
@@ -513,7 +513,7 @@ PointToPointNetDevice::Send(
     }
   else
     {
-      return m_queue->Enqueue(packet);
+      return m_queue->Enqueue (packet);
     }
 }
 
@@ -601,25 +601,25 @@ PointToPointNetDevice::GetMtu (void) const
 }
 
 uint16_t
-PointToPointNetDevice::PppToEther(uint16_t proto)
+PointToPointNetDevice::PppToEther (uint16_t proto)
 {
   switch(proto)
     {
     case 0x0021: return 0x0800;   //IPv4
     case 0x0057: return 0x86DD;   //IPv6
-    default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+    default: NS_ASSERT_MSG (false, "PPP Protocol number not defined!");
     }
   return 0;
 }
 
 uint16_t
-PointToPointNetDevice::EtherToPpp(uint16_t proto)
+PointToPointNetDevice::EtherToPpp (uint16_t proto)
 {
   switch(proto)
     {
     case 0x0800: return 0x0021;   //IPv4
     case 0x86DD: return 0x0057;   //IPv6
-    default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+    default: NS_ASSERT_MSG (false, "PPP Protocol number not defined!");
     }
   return 0;
 }

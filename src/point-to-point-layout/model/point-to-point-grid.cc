@@ -25,7 +25,7 @@
 #include "ns3/vector.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE("PointToPointGridHelper");
+NS_LOG_COMPONENT_DEFINE ("PointToPointGridHelper");
 
 namespace ns3 {
 
@@ -62,8 +62,8 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
           // install vertical p2p links
           if (y > 0)
             {
-              colDevices.Add(pointToPoint.
-                             Install ((m_nodes.at (y-1)).Get (x), rowNodes.Get (x)));
+              colDevices.Add (pointToPoint.
+                              Install ((m_nodes.at (y-1)).Get (x), rowNodes.Get (x)));
             }
         }
 

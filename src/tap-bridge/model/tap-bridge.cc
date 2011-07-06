@@ -366,7 +366,7 @@ TapBridge::CreateTap (void)
   //
   // Now encode that socket name (family and path) as a string of hex digits
   //
-  std::string path = TapBufferToString((uint8_t *)&un, len);
+  std::string path = TapBufferToString ((uint8_t *)&un, len);
   NS_LOG_INFO ("Encoded Unix socket as \"" << path << "\"");
 
   //
@@ -599,7 +599,7 @@ TapBridge::CreateTap (void)
       // so we call it "control."
       //
       size_t msg_size = sizeof(int);
-      char control[CMSG_SPACE(msg_size)];
+      char control[CMSG_SPACE (msg_size)];
 
       //
       // There is a msghdr that is used to minimize the number of parameters
@@ -633,7 +633,7 @@ TapBridge::CreateTap (void)
       // one we're interested in.
       //
       struct cmsghdr *cmsg;
-      for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg, cmsg)) 
+      for (cmsg = CMSG_FIRSTHDR (&msg); cmsg != NULL; cmsg = CMSG_NXTHDR (&msg, cmsg))
         {
           if (cmsg->cmsg_level == SOL_SOCKET &&
               cmsg->cmsg_type == SCM_RIGHTS)
@@ -996,14 +996,14 @@ TapBridge::ReceiveFromBridgedDevice (
 }
 
 void 
-TapBridge::SetIfIndex(const uint32_t index)
+TapBridge::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ifIndex = index;
 }
 
 uint32_t 
-TapBridge::GetIfIndex(void) const
+TapBridge::GetIfIndex (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ifIndex;

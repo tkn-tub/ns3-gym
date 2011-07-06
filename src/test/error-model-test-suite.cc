@@ -101,7 +101,7 @@ ErrorModelSimple::DoRun (void)
   output->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&ErrorModelSimple::DropEvent, this));
 
   // Send 10000 packets
-  Simulator::Schedule (Seconds (0), &SendPacket, 10000, input, output->GetAddress());
+  Simulator::Schedule (Seconds (0), &SendPacket, 10000, input, output->GetAddress ());
 
   Simulator::Run ();
   Simulator::Destroy ();

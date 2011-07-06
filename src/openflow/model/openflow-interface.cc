@@ -746,7 +746,7 @@ DropController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* b
     }
 
   // We have received any packet at this point, so we pull the header to figure out what type of packet we're handling.
-  uint8_t type = GetPacketType(buffer);
+  uint8_t type = GetPacketType (buffer);
 
   if (type == OFPT_PACKET_IN) // The switch didn't understand the packet it received, so it forwarded it to the controller.
     {
@@ -766,7 +766,7 @@ DropController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf* b
 TypeId LearningController::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ofi::LearningController")
-    .SetParent (Controller::GetTypeId())
+    .SetParent (Controller::GetTypeId ())
     .AddConstructor<LearningController> ()
     .AddAttribute ("ExpirationTime",
                    "Time it takes for learned MAC state entry/created flow to expire.",
@@ -787,7 +787,7 @@ LearningController::ReceiveFromSwitch (Ptr<OpenFlowSwitchNetDevice> swtch, ofpbu
     }
 
   // We have received any packet at this point, so we pull the header to figure out what type of packet we're handling.
-  uint8_t type = GetPacketType(buffer);
+  uint8_t type = GetPacketType (buffer);
 
   if (type == OFPT_PACKET_IN) // The switch didn't understand the packet it received, so it forwarded it to the controller.
     {

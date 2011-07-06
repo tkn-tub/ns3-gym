@@ -93,12 +93,12 @@ public:
   /**
    * \return the maximum packet size
    */
-  uint16_t GetMaxPacketSize(void);
+  uint16_t GetMaxPacketSize (void);
 
   /**
    * \param maxPacketSize The maximum packet size
    */
-  void SetMaxPacketSize(uint16_t maxPacketSize);
+  void SetMaxPacketSize (uint16_t maxPacketSize);
 
 protected:
   virtual void DoDispose (void);

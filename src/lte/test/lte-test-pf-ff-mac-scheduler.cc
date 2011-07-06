@@ -52,11 +52,11 @@ NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacCheduler");
 using namespace ns3;
 
 LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
-: TestSuite ("lte-pf-ff-mac-scheduler", SYSTEM)
+  : TestSuite ("lte-pf-ff-mac-scheduler", SYSTEM)
 {
   SetVerbose (true);
   NS_LOG_INFO ("creating LenaTestPfFfMacSchedulerSuite");
-  
+
   //Test Case 1: AMC works in PF
 
   // DOWNLINK - DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
@@ -106,7 +106,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // 3 users -> 8 PRB at Itbs 11 -> 201 -> 201000 bytes/sec
   // 6 users -> 4 PRB at Itbs 11 -> 97 -> 97000 bytes/sec
   // 12 users -> 2 PRB at Itbs 11 -> 47 -> 47000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 11 -> 22 -> 22000 bytes/sec  
+  // 15 users -> 1 PRB at Itbs 11 -> 22 -> 22000 bytes/sec
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,6000,903000,621000));
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,6000,301000,201000));
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,6000,150500,97000));
@@ -136,13 +136,13 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   // 3 users -> 309000 among 3 users -> 103000 bytes/sec
   // 6 users -> 309000 among 6 users -> 51500 bytes/sec
   // 12 users -> 309000 among 12 users -> 25750 bytes/sec
-  // 15 users -> 309000 among 15 users -> 20600 bytes/sec  
+  // 15 users -> 309000 among 15 users -> 20600 bytes/sec
   // UPLINK - DISTANCE 15000 -> MCS 6 -> Itbs 6 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 25 PRB at Itbs 6 -> 233 -> 233000 bytes/sec
   // 3 users -> 8 PRB at Itbs 6 -> 69 -> 69000 bytes/sec
   // 6 users -> 4 PRB at Itbs 6 -> 32 -> 32000 bytes/sec
   // 12 users -> 2 PRB at Itbs 6 -> 15 -> 15000 bytes/sec
-  // 15 users -> 1 PRB at Itbs 6 -> 7 -> 7000 bytes/sec  
+  // 15 users -> 1 PRB at Itbs 6 -> 7 -> 7000 bytes/sec
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (1,0,15000,309000,233000));
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (3,0,15000,103000,69000));
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,15000,51500,32000));
@@ -150,7 +150,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,15000,20600,7000));
 
   // Test Case 2: fairness check
-  
+
   std::vector<uint16_t> dist;
   dist.push_back (0);    // User 0 distance --> MCS 28
   dist.push_back (3000);    // User 1 distance --> MCS 24
@@ -204,11 +204,11 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
 //     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  
+//
+//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+
   //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
@@ -223,7 +223,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-  
+
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
@@ -232,7 +232,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
-  
+
   SetVerbose (true);
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
@@ -241,36 +241,36 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   NodeContainer ueNodes;
   enbNodes.Create (1);
   ueNodes.Create (m_nUser);
-  
+
   // Install Mobility Model
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
-  
+
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lena->SetSchedulerType ("ns3::PfFfMacScheduler");
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);
-  
+
   // Attach a UE to a eNB
   lena->Attach (ueDevs, enbDevs.Get (0));
-  
+
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
-  
+
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-  
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
   enbPhy->SetAttribute ("NoiseFigure", DoubleValue (5.0));
-  
+
   // Set UEs' position and power
   for (int i = 0; i < m_nUser; i++)
     {
@@ -281,29 +281,29 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
-    
-  lena->EnableRlcTraces();
-  
+
+  lena->EnableRlcTraces ();
+
   double simulationTime = 1.0;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
-  
+
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
-  rlcStats->SetAttribute("EpochDuration", TimeValue(Seconds(simulationTime)));
-  
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+
   Simulator::Run ();
 
   /**
    * Check that the downlink assignation is done in a "proportional fair" manner
    */
-  NS_LOG_INFO("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
+  NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
   for (int i = 0; i < m_nUser; i++)
     {
       // get the imsi
-      uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
+      uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at(0);
+      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
     }
@@ -315,20 +315,20 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   */
   for (int i = 0; i < m_nUser; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");      
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
     }
-  
+
   /**
   * Check that the uplink assignation is done in a "proportional fair" manner
   */
-  NS_LOG_INFO("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
+  NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> ulDataRxed;
   for (int i = 0; i < m_nUser; i++)
     {
       // get the imsi
-      uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
+      uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at(0);
+      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
     }
@@ -340,7 +340,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   */
   for (int i = 0; i < m_nUser; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");      
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
     }
   Simulator::Destroy ();
 
@@ -384,7 +384,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  
+
   //   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
@@ -399,54 +399,54 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   //   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-  
+
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
-  
+
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
   */
-  
+
   SetVerbose (true);
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
   ueNodes.Create (m_nUser);
-  
+
   // Install Mobility Model
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
-  
+
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lena->SetSchedulerType ("ns3::PfFfMacScheduler");
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);
-  
+
   // Attach a UE to a eNB
   lena->Attach (ueDevs, enbDevs.Get (0));
-  
+
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
-  
+
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-  
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
   enbPhy->SetAttribute ("NoiseFigure", DoubleValue (5.0));
-  
+
   // Set UEs' position and power
   for (int i = 0; i < m_nUser; i++)
     {
@@ -457,34 +457,34 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
-  
-  lena->EnableRlcTraces();
-  
+
+  lena->EnableRlcTraces ();
+
   double simulationTime = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
-  
+
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
-  rlcStats->SetAttribute("EpochDuration", TimeValue(Seconds(simulationTime)));
-  
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
+
   Simulator::Run ();
-  
-  NS_LOG_INFO("DL - Test with " << m_nUser << " user(s)");
+
+  NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s)");
   std::vector <uint64_t> dlDataRxed;
   double totalData = 0;
   double totalEstThrPf = 0;
   for (int i = 0; i < m_nUser; i++)
     {
       // get the imsi
-      uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
+      uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
-      uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at(0);
+      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       totalData += (double)dlDataRxed.at (i);
       NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_nUser);
       totalEstThrPf += m_estThrPfDl.at (i);
     }
-  
+
   /**
   * Check that the assignation is done in a "proportional fair" manner among users
   * with different SINRs: the bandwidht should be distributed according to the 
@@ -495,27 +495,27 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       double thrRatio = (double)dlDataRxed.at (i) / totalData;
       double estThrRatio = (double)m_estThrPfDl.at (i) / totalEstThrPf;
       NS_LOG_INFO ("\tUser " << i << " thrRatio " << thrRatio << " estThrRatio " << estThrRatio);
-      NS_TEST_ASSERT_MSG_EQ_TOL (estThrRatio, thrRatio, tolerance, " Unfair Throughput!");      
+      NS_TEST_ASSERT_MSG_EQ_TOL (estThrRatio, thrRatio, tolerance, " Unfair Throughput!");
     }
-   
-   /**
-   * Check that the assignation in uplink is done in a round robin manner.
-   */
-    
-    NS_LOG_INFO("UL - Test with " << m_nUser);
-    std::vector <uint64_t> ulDataRxed;
-    for (int i = 0; i < m_nUser; i++)
-      {
-        // get the imsi
-        uint64_t imsi = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetImsi ();
-        // get the lcId
-        uint8_t lcId = ueDevs.Get (i)-> GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector().at(0);
-        ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-        NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << (double)m_estThrPfUl.at (i));
-        NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, (double)m_estThrPfUl.at (i), (double)m_estThrPfUl.at (i) * tolerance, " Unfair Throughput!");      
-      }
+
+  /**
+  * Check that the assignation in uplink is done in a round robin manner.
+  */
+
+  NS_LOG_INFO ("UL - Test with " << m_nUser);
+  std::vector <uint64_t> ulDataRxed;
+  for (int i = 0; i < m_nUser; i++)
+    {
+      // get the imsi
+      uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
+      // get the lcId
+      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+      ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
+      NS_LOG_INFO ("\tUser " << i << " dist " << m_dist.at (i) << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << (double)m_estThrPfUl.at (i));
+      NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, (double)m_estThrPfUl.at (i), (double)m_estThrPfUl.at (i) * tolerance, " Unfair Throughput!");
+    }
   Simulator::Destroy ();
-  
+
 }
 
 

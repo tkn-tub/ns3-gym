@@ -39,14 +39,14 @@ private:
     enum { IsFunctionPointer = 0};
   };
   template <typename U> 
-  struct FunctionPtrTraits <U (*) (void)>
+  struct FunctionPtrTraits <U (*)(void)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 0};
     typedef U ReturnType;
   };
   template <typename U, typename V1> 
-  struct FunctionPtrTraits <U (*) (V1)>
+  struct FunctionPtrTraits <U (*)(V1)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 1};
@@ -54,7 +54,7 @@ private:
     typedef V1 Arg1Type;
   };
   template <typename U, typename V1, typename V2> 
-  struct FunctionPtrTraits <U (*) (V1,V2)>
+  struct FunctionPtrTraits <U (*)(V1,V2)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 2};
@@ -64,7 +64,7 @@ private:
   };
   template <typename U, typename V1, typename V2,
             typename V3> 
-  struct FunctionPtrTraits <U (*) (V1,V2,V3)>
+  struct FunctionPtrTraits <U (*)(V1,V2,V3)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 3};
@@ -75,7 +75,7 @@ private:
   };
   template <typename U, typename V1, typename V2,
             typename V3, typename V4> 
-  struct FunctionPtrTraits <U (*) (V1,V2,V3,V4)>
+  struct FunctionPtrTraits <U (*)(V1,V2,V3,V4)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 4};
@@ -88,7 +88,7 @@ private:
   template <typename U, typename V1, typename V2,
             typename V3, typename V4,
             typename V5> 
-  struct FunctionPtrTraits <U (*) (V1,V2,V3,V4,V5)>
+  struct FunctionPtrTraits <U (*)(V1,V2,V3,V4,V5)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 5};
@@ -102,7 +102,7 @@ private:
   template <typename U, typename V1, typename V2,
             typename V3, typename V4,
             typename V5, typename V6> 
-  struct FunctionPtrTraits <U (*) (V1,V2,V3,V4,V5,V6)>
+  struct FunctionPtrTraits <U (*)(V1,V2,V3,V4,V5,V6)>
   {
     enum { IsFunctionPointer = 1};
     enum { nArgs = 6};
@@ -119,21 +119,21 @@ private:
     enum { IsPointerToMember = 0};
   };
   template <typename U, typename V> 
-  struct PtrToMemberTraits <U (V::*)(void)>
+  struct PtrToMemberTraits <U (V::*) (void)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 0};
     typedef U ReturnType;
   };
   template <typename U, typename V> 
-  struct PtrToMemberTraits <U (V::*)(void) const>
+  struct PtrToMemberTraits <U (V::*) (void) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 0};
     typedef U ReturnType;
   };
   template <typename U, typename V,typename W1> 
-  struct PtrToMemberTraits <U (V::*)(W1)>
+  struct PtrToMemberTraits <U (V::*) (W1)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 1};
@@ -141,7 +141,7 @@ private:
     typedef W1 Arg1Type;
   };
   template <typename U, typename V,typename W1> 
-  struct PtrToMemberTraits <U (V::*)(W1) const>
+  struct PtrToMemberTraits <U (V::*) (W1) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 1};
@@ -149,7 +149,7 @@ private:
     typedef W1 Arg1Type;
   };
   template <typename U, typename V,typename W1, typename W2> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2)>
+  struct PtrToMemberTraits <U (V::*) (W1,W2)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 2};
@@ -158,7 +158,7 @@ private:
     typedef W2 Arg2Type;
   };
   template <typename U, typename V,typename W1, typename W2> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2) const>
+  struct PtrToMemberTraits <U (V::*) (W1,W2) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 2};
@@ -169,7 +169,7 @@ private:
   template <typename U, typename V,
             typename W1, typename W2,
             typename W3> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3)>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 3};
@@ -181,7 +181,7 @@ private:
   template <typename U, typename V,
             typename W1, typename W2,
             typename W3> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3) const>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 3};
@@ -193,7 +193,7 @@ private:
   template <typename U, typename V,
             typename W1, typename W2,
             typename W3, typename W4> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3,W4)>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 4};
@@ -206,7 +206,7 @@ private:
   template <typename U, typename V,
             typename W1, typename W2,
             typename W3, typename W4> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3,W4) const>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 4};
@@ -220,7 +220,7 @@ private:
             typename W1, typename W2,
             typename W3, typename W4,
             typename W5> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3,W4,W5)>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 5};
@@ -235,7 +235,7 @@ private:
             typename W1, typename W2,
             typename W3, typename W4,
             typename W5> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3,W4,W5) const>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 5};
@@ -250,7 +250,7 @@ private:
             typename W1, typename W2,
             typename W3, typename W4,
             typename W5, typename W6> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3,W4,W5,W6)>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5,W6)>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 6};
@@ -266,7 +266,7 @@ private:
             typename W1, typename W2,
             typename W3, typename W4,
             typename W5, typename W6> 
-  struct PtrToMemberTraits <U (V::*)(W1,W2,W3,W4,W5,W6) const>
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5,W6) const>
   {
     enum { IsPointerToMember = 1};
     enum { nArgs = 6};

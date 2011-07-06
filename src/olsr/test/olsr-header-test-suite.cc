@@ -41,8 +41,8 @@ OlsrEmfTestCase::DoRun (void)
     {
       uint8_t emf = olsr::SecondsToEmf (time);
       double seconds = olsr::EmfToSeconds (emf);
-      NS_TEST_ASSERT_MSG_EQ((seconds < 0 || fabs (seconds - time) > 0.1), false,
-                            "XXX");
+      NS_TEST_ASSERT_MSG_EQ ((seconds < 0 || fabs (seconds - time) > 0.1), false,
+                             "XXX");
     }
 }
 
@@ -128,7 +128,7 @@ OlsrMidTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (*mid1.interfaceAddresses.begin (), Ipv4Address ("1.2.3.4"), "XXX");
 
       sizeLeft -= msg1.GetSerializedSize ();
-      NS_TEST_ASSERT_MSG_EQ((sizeLeft > 0), true, "XXX");
+      NS_TEST_ASSERT_MSG_EQ ((sizeLeft > 0), true, "XXX");
     }
     {
       // now read the second message
@@ -303,13 +303,13 @@ public:
 } g_olsrTestSuite;
 
 OlsrTestSuite::OlsrTestSuite()
-  : TestSuite("routing-olsr-header", UNIT)
+  : TestSuite ("routing-olsr-header", UNIT)
 {
-  AddTestCase(new OlsrHnaTestCase());
-  AddTestCase(new OlsrTcTestCase());
-  AddTestCase(new OlsrHelloTestCase());
-  AddTestCase(new OlsrMidTestCase());
-  AddTestCase(new OlsrEmfTestCase());
+  AddTestCase (new OlsrHnaTestCase ());
+  AddTestCase (new OlsrTcTestCase ());
+  AddTestCase (new OlsrHelloTestCase ());
+  AddTestCase (new OlsrMidTestCase ());
+  AddTestCase (new OlsrEmfTestCase ());
 }
 
 } // namespace ns3

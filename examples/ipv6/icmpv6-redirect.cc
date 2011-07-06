@@ -78,7 +78,7 @@ public:
     std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
 
     nbRoutes = routing->GetNRoutes ();
-    for(uint32_t i = 0 ; i < nbRoutes ; i++)
+    for(uint32_t i = 0; i < nbRoutes; i++)
       {
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"
@@ -112,11 +112,11 @@ int main (int argc, char **argv)
 #if 0 
   LogComponentEnable ("Icmpv6RedirectExample", LOG_LEVEL_INFO);
   LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_INFO);
-  LogComponentEnable("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Icmpv6L4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("NdiscCache", LOG_LEVEL_ALL);
 #endif
 
   CommandLine cmd;
@@ -127,9 +127,9 @@ int main (int argc, char **argv)
   Ptr<Node> r1 = CreateObject<Node> ();
   Ptr<Node> r2 = CreateObject<Node> ();
   Ptr<Node> sta2 = CreateObject<Node> ();
-  NodeContainer net1(sta1, r1, r2);
-  NodeContainer net2(r2, sta2);
-  NodeContainer all(sta1, r1, r2, sta2);
+  NodeContainer net1 (sta1, r1, r2);
+  NodeContainer net2 (r2, sta2);
+  NodeContainer all (sta1, r1, r2, sta2);
 
   StackHelper stackHelper;
 
@@ -138,8 +138,8 @@ int main (int argc, char **argv)
 
   NS_LOG_INFO ("Create channels.");
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue(5000000));
-  csma.SetChannelAttribute ("Delay", TimeValue(MilliSeconds (2)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer ndc1 = csma.Install (net1); 
   NetDeviceContainer ndc2 = csma.Install (net2);
 
@@ -157,8 +157,8 @@ int main (int argc, char **argv)
 
   stackHelper.AddHostRouteTo (r1, iic2.GetAddress (1, 1), iic1.GetAddress (2, 1), iic1.GetInterfaceIndex (1));
 
-  Simulator::Schedule(Seconds(0.0), &StackHelper::PrintRoutingTable, &stackHelper, r1);
-  Simulator::Schedule(Seconds(3.0), &StackHelper::PrintRoutingTable, &stackHelper, sta1);
+  Simulator::Schedule (Seconds (0.0), &StackHelper::PrintRoutingTable, &stackHelper, r1);
+  Simulator::Schedule (Seconds (3.0), &StackHelper::PrintRoutingTable, &stackHelper, sta1);
 
   NS_LOG_INFO ("Create Applications.");
   uint32_t packetSize = 1024;
@@ -166,10 +166,10 @@ int main (int argc, char **argv)
   Time interPacketInterval = Seconds (1.);
   Ping6Helper ping6;
 
-  ping6.SetLocal (iic1.GetAddress(0, 1));
-  ping6.SetRemote (iic2.GetAddress(1, 1));
+  ping6.SetLocal (iic1.GetAddress (0, 1));
+  ping6.SetRemote (iic2.GetAddress (1, 1));
   ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  ping6.SetAttribute ("Interval", TimeValue(interPacketInterval));
+  ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));
   ping6.SetAttribute ("PacketSize", UintegerValue (packetSize));
   ApplicationContainer apps = ping6.Install (sta1);
   apps.Start (Seconds (2.0));

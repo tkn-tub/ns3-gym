@@ -223,8 +223,8 @@ CsmaBroadcastTestCase::DoRun (void)
   NodeContainer c1 = NodeContainer (c.Get (0), c.Get (2));
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(2)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
 
   NetDeviceContainer n0 = csma.Install (c0);
   NetDeviceContainer n1 = csma.Install (c1);
@@ -391,7 +391,7 @@ CsmaMulticastTestCase::DoRun (void)
 
   // 2) Set up a default multicast route on the sender n0 
   Ptr<Node> sender = c.Get (0);
-  Ptr<NetDevice> senderIf = nd0.Get(0);
+  Ptr<NetDevice> senderIf = nd0.Get (0);
   multicast.SetDefaultMulticastRoute (sender, senderIf);
 
   //
@@ -416,12 +416,12 @@ CsmaMulticastTestCase::DoRun (void)
   //
   // Tell the application when to start and stop.
   //
-  srcC.Start(Seconds(1.));
-  srcC.Stop (Seconds(10.));
+  srcC.Start (Seconds (1.));
+  srcC.Stop (Seconds (10.));
 
   // Create an optional packet sink to receive these packets
   PacketSinkHelper sink ("ns3::UdpSocketFactory",
-                         InetSocketAddress (Ipv4Address::GetAny(), multicastPort));
+                         InetSocketAddress (Ipv4Address::GetAny (), multicastPort));
 
   ApplicationContainer sinkC = sink.Install (c1.Get (2)); // Node n4 
   // Start the sink
@@ -550,7 +550,7 @@ CsmaOneSubnetTestCase::DoRun (void)
   onoff.SetAttribute ("Remote", 
                       AddressValue (InetSocketAddress (interfaces.GetAddress (0), port)));
   app = onoff.Install (nodes.Get (3));
-  app.Start(Seconds (1.1));
+  app.Start (Seconds (1.1));
   app.Stop (Seconds (10.0));
 
   app = sink.Install (nodes.Get (0));
@@ -630,8 +630,8 @@ CsmaPacketSocketTestCase::DoRun (void)
 
   // create the shared medium used by all csma devices.
   Ptr<CsmaChannel> channel = CreateObjectWithAttributes<CsmaChannel> (
-      "DataRate", DataRateValue (DataRate(5000000)),
-      "Delay", TimeValue (MilliSeconds(2)));
+      "DataRate", DataRateValue (DataRate (5000000)),
+      "Delay", TimeValue (MilliSeconds (2)));
 
   // use a helper function to connect our nodes to the shared channel.
   CsmaHelper csma;
@@ -643,7 +643,7 @@ CsmaPacketSocketTestCase::DoRun (void)
   // Make packets be sent about every DefaultPacketSize / DataRate = 
   // 4096 bits / (5000 bits/second) = 0.82 second.
   PacketSocketAddress socket;
-  socket.SetSingleDevice(devs.Get (0)->GetIfIndex ());
+  socket.SetSingleDevice (devs.Get (0)->GetIfIndex ());
   socket.SetPhysicalAddress (devs.Get (1)->GetAddress ());
   socket.SetProtocol (2);
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));

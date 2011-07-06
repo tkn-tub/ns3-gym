@@ -277,10 +277,10 @@ MacLowTransmissionParameters::GetNextPacketSize (void) const
 std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params)
 {
   os << "["
-                       << "send rts=" << params.m_sendRts << ", "
-                       << "next size=" << params.m_nextSize << ", "
-                       << "dur=" << params.m_overrideDurationId << ", "
-                       << "ack=";
+  << "send rts=" << params.m_sendRts << ", "
+  << "next size=" << params.m_nextSize << ", "
+  << "dur=" << params.m_overrideDurationId << ", "
+  << "ack=";
   switch (params.m_waitAck)
     {
     case MacLowTransmissionParameters::ACK_NONE:
@@ -366,6 +366,7 @@ MacLow::MacLow ()
   NS_LOG_FUNCTION (this);
   m_lastNavDuration = Seconds (0);
   m_lastNavStart = Seconds (0);
+  m_promisc = false;
 }
 
 MacLow::~MacLow ()
@@ -521,6 +522,11 @@ void
 MacLow::SetBssid (Mac48Address bssid)
 {
   m_bssid = bssid;
+}
+void
+MacLow::SetPromisc (void)
+{
+  m_promisc = true;
 }
 Mac48Address
 MacLow::GetAddress (void) const
@@ -891,6 +897,14 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       else
         {
           // DROP
+        }
+    }
+  else if (m_promisc)
+    {
+      NS_ASSERT (hdr.GetAddr1 () != m_self);
+      if (hdr.IsData ())
+        {
+          goto rxPacket;
         }
     }
   else

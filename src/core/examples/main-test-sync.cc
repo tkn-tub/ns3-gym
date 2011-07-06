@@ -97,7 +97,7 @@ test (void)
   // 
   // Make sure ScheduleNow works when the system isn't running
   //
-  DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow(MakeEvent (&first_function));
+  DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (MakeEvent (&first_function));
 
   // 
   // drive the progression of m_currentTs at a ten millisecond rate from the main thread

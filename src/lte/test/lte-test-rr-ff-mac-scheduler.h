@@ -39,26 +39,26 @@ using namespace ns3;
  */
 class LenaRrFfMacSchedulerTestCase : public TestCase
 {
-  public:
-    LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
-    virtual ~LenaRrFfMacSchedulerTestCase ();
+public:
+  LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl);
+  virtual ~LenaRrFfMacSchedulerTestCase ();
 
-  private:
-    virtual void DoRun (void);
-    uint16_t m_nUser;
-    uint16_t m_nLc;
-    uint16_t m_dist;
-    double m_thrRefDl;
-    double m_thrRefUl;
-    
+private:
+  virtual void DoRun (void);
+  uint16_t m_nUser;
+  uint16_t m_nLc;
+  uint16_t m_dist;
+  double m_thrRefDl;
+  double m_thrRefUl;
+
 };
 
 
 
 class LenaTestRrFfMacSchedulerSuite : public TestSuite
 {
-  public:
-    LenaTestRrFfMacSchedulerSuite ();
+public:
+  LenaTestRrFfMacSchedulerSuite ();
 };
 
 

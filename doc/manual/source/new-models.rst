@@ -189,7 +189,7 @@ Let's start with empty files error-model.h and error-model.cc, and add this to
 ``src/network/wscript``. It is really just a matter of adding the .cc file to the
 rest of the source files, and the .h file to the list of the header files. 
 
-Now, pop up to the top level directory and type "./waf --check".  You
+Now, pop up to the top level directory and type "./test.py".  You
 shouldn't have broken anything by this operation.
 
 include guards

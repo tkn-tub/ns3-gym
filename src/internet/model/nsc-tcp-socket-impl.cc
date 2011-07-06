@@ -53,7 +53,7 @@ NS_OBJECT_ENSURE_REGISTERED (NscTcpSocketImpl);
 TypeId
 NscTcpSocketImpl::GetTypeId ()
 {
-  static TypeId tid = TypeId("ns3::NscTcpSocketImpl")
+  static TypeId tid = TypeId ("ns3::NscTcpSocketImpl")
     .SetParent<TcpSocket> ()
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
@@ -76,13 +76,13 @@ NscTcpSocketImpl::NscTcpSocketImpl ()
     m_state (CLOSED),
     m_closeOnEmpty (false),
     m_txBufferSize (0),
-    m_lastMeasuredRtt (Seconds(0.0))
+    m_lastMeasuredRtt (Seconds (0.0))
 {
   NS_LOG_FUNCTION (this);
 }
 
 NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
-  : TcpSocket(sock), //copy the base class callbacks
+  : TcpSocket (sock), //copy the base class callbacks
     m_delAckMaxCount (sock.m_delAckMaxCount),
     m_delAckTimeout (sock.m_delAckTimeout),
     m_endPoint (0),
@@ -106,7 +106,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
-    m_lastMeasuredRtt (Seconds(0.0)),
+    m_lastMeasuredRtt (Seconds (0.0)),
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
     m_rxAvailable (0),
@@ -114,7 +114,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_sndBufSize (sock.m_sndBufSize)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC("Invoked the copy constructor");
+  NS_LOG_LOGIC ("Invoked the copy constructor");
   //copy the pending data if necessary
   if(!sock.m_txBuffer.empty () )
     {
@@ -126,7 +126,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
 
 NscTcpSocketImpl::~NscTcpSocketImpl ()
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   if (m_endPoint != 0)
     {
@@ -158,7 +158,7 @@ NscTcpSocketImpl::SetNode (Ptr<Node> node)
 void 
 NscTcpSocketImpl::SetTcp (Ptr<NscTcpL4Protocol> tcp)
 {
-  m_nscTcpSocket = tcp->m_nscStack->new_tcp_socket();
+  m_nscTcpSocket = tcp->m_nscStack->new_tcp_socket ();
   m_tcp = tcp;
 }
 
@@ -276,13 +276,13 @@ NscTcpSocketImpl::Close (void)
   if (!m_txBuffer.empty ())
     { // App close with pending data must wait until all data transmitted
       m_closeOnEmpty = true;
-      NS_LOG_LOGIC("Socket " << this << 
-                   " deferring close, state " << m_state);
+      NS_LOG_LOGIC ("Socket " << this <<
+                    " deferring close, state " << m_state);
       return 0;
     }
 
-  NS_LOG_LOGIC("NscTcp socket " << this << " calling disconnect(); moving to CLOSED");
-  m_nscTcpSocket->disconnect();
+  NS_LOG_LOGIC ("NscTcp socket " << this << " calling disconnect(); moving to CLOSED");
+  m_nscTcpSocket->disconnect ();
   m_state = CLOSED;
   ShutdownSend ();
   return 0;
@@ -306,10 +306,10 @@ NscTcpSocketImpl::Connect (const Address & address)
   m_remotePort = transport.GetPort ();
 
   std::ostringstream ss;
-  m_remoteAddress.Print(ss);
+  m_remoteAddress.Print (ss);
   std::string ipstring = ss.str ();
 
-  m_nscTcpSocket->connect(ipstring.c_str (), m_remotePort);
+  m_nscTcpSocket->connect (ipstring.c_str (), m_remotePort);
   m_state = SYN_SENT;
   return 0;
 }
@@ -331,13 +331,13 @@ NscTcpSocketImpl::Send (const Ptr<Packet> p, uint32_t flags)
       uint32_t sent = p->GetSize ();
       if (m_state == ESTABLISHED)
         {
-          m_txBuffer.push(p);
+          m_txBuffer.push (p);
           m_txBufferSize += sent;
-          SendPendingData();
+          SendPendingData ();
         }
       else
         { // SYN_SET -- Queue Data
-          m_txBuffer.push(p);
+          m_txBuffer.push (p);
           m_txBufferSize += sent;
         }
       return sent;
@@ -383,7 +383,7 @@ int
 NscTcpSocketImpl::Listen (void)
 {
   NS_LOG_FUNCTION (this);
-  m_nscTcpSocket->listen(m_localPort);
+  m_nscTcpSocket->listen (m_localPort);
   m_state = LISTEN;
   return 0;
 }
@@ -394,18 +394,18 @@ NscTcpSocketImpl::NSCWakeup ()
 {
   switch (m_state) {
     case SYN_SENT:
-      if (!m_nscTcpSocket->is_connected())
+      if (!m_nscTcpSocket->is_connected ())
         break;
       m_state = ESTABLISHED;
-      Simulator::ScheduleNow(&NscTcpSocketImpl::ConnectionSucceeded, this);
+      Simulator::ScheduleNow (&NscTcpSocketImpl::ConnectionSucceeded, this);
     // fall through to schedule read/write events
     case ESTABLISHED:
       if (!m_txBuffer.empty ())
-        Simulator::ScheduleNow(&NscTcpSocketImpl::SendPendingData, this);
-      Simulator::ScheduleNow(&NscTcpSocketImpl::ReadPendingData, this);
+        Simulator::ScheduleNow (&NscTcpSocketImpl::SendPendingData, this);
+      Simulator::ScheduleNow (&NscTcpSocketImpl::ReadPendingData, this);
       break;
     case LISTEN:
-      Simulator::ScheduleNow(&NscTcpSocketImpl::Accept, this);
+      Simulator::ScheduleNow (&NscTcpSocketImpl::Accept, this);
       break;
     case CLOSED: break;
     default:
@@ -417,7 +417,7 @@ Ptr<Packet>
 NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_deliveryQueue.empty() )
+  if (m_deliveryQueue.empty () )
     {
       m_errno = ERROR_AGAIN;
       return 0;
@@ -448,6 +448,9 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       bool found;
       found = packet->PeekPacketTag (tag);
       NS_ASSERT (found);
+      // cast found to void, to suppress 'found' set but not used
+      // compiler warning in optimized builds
+      (void) found;
       fromAddress = tag.GetAddress ();
     }
   return packet;
@@ -457,7 +460,7 @@ int
 NscTcpSocketImpl::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  address = InetSocketAddress(m_localAddress, m_localPort);
+  address = InetSocketAddress (m_localAddress, m_localPort);
   return 0;
 }
 
@@ -474,10 +477,10 @@ void
 NscTcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
                              Ptr<Ipv4Interface> incomingInterface)
 {
-  NSCWakeup();
+  NSCWakeup ();
 }
 
-void NscTcpSocketImpl::CompleteFork(void)
+void NscTcpSocketImpl::CompleteFork (void)
 {
   // The address pairs (m_localAddress, m_localPort, m_remoteAddress, m_remotePort)
   // are bogus, but this isn't important at the moment, because
@@ -487,22 +490,22 @@ void NscTcpSocketImpl::CompleteFork(void)
   struct sockaddr_in sin;
   size_t sin_len = sizeof(sin);
 
-  if (0 == m_nscTcpSocket->getpeername((struct sockaddr*) &sin, &sin_len)) {
-      m_remotePort = ntohs(sin.sin_port);
-      m_remoteAddress = m_remoteAddress.Deserialize((const uint8_t*) &sin.sin_addr);
-      m_peerAddress = InetSocketAddress(m_remoteAddress, m_remotePort);
+  if (0 == m_nscTcpSocket->getpeername ((struct sockaddr*) &sin, &sin_len)) {
+      m_remotePort = ntohs (sin.sin_port);
+      m_remoteAddress = m_remoteAddress.Deserialize ((const uint8_t*) &sin.sin_addr);
+      m_peerAddress = InetSocketAddress (m_remoteAddress, m_remotePort);
     }
 
   m_endPoint = m_tcp->Allocate ();
 
   //the cloned socket with be in listen state, so manually change state
-  NS_ASSERT(m_state == LISTEN);
+  NS_ASSERT (m_state == LISTEN);
   m_state = ESTABLISHED;
 
   sin_len = sizeof(sin);
 
-  if (0 == m_nscTcpSocket->getsockname((struct sockaddr *) &sin, &sin_len))
-    m_localAddress = m_localAddress.Deserialize((const uint8_t*) &sin.sin_addr);
+  if (0 == m_nscTcpSocket->getsockname ((struct sockaddr *) &sin, &sin_len))
+    m_localAddress = m_localAddress.Deserialize ((const uint8_t*) &sin.sin_addr);
 
   NS_LOG_LOGIC ("NscTcpSocketImpl " << this << " accepted connection from " 
                                     << m_remoteAddress << ":" << m_remotePort
@@ -514,21 +517,21 @@ void NscTcpSocketImpl::CompleteFork(void)
   NotifyNewConnectionCreated (this, m_peerAddress);
 }
 
-void NscTcpSocketImpl::ConnectionSucceeded()
+void NscTcpSocketImpl::ConnectionSucceeded ()
 { // We would preferred to have scheduled an event directly to
   // NotifyConnectionSucceeded, but (sigh) these are protected
   // and we can get the address of it :(
   struct sockaddr_in sin;
   size_t sin_len = sizeof(sin);
-  if (0 == m_nscTcpSocket->getsockname((struct sockaddr *) &sin, &sin_len)) {
-      m_localAddress = m_localAddress.Deserialize((const uint8_t*)&sin.sin_addr);
-      m_localPort = ntohs(sin.sin_port);
+  if (0 == m_nscTcpSocket->getsockname ((struct sockaddr *) &sin, &sin_len)) {
+      m_localAddress = m_localAddress.Deserialize ((const uint8_t*)&sin.sin_addr);
+      m_localPort = ntohs (sin.sin_port);
     }
 
   NS_LOG_LOGIC ("NscTcpSocketImpl " << this << " connected to "
                                     << m_remoteAddress << ":" << m_remotePort
                                     << " from " << m_localAddress << ":" << m_localPort);
-  NotifyConnectionSucceeded();
+  NotifyConnectionSucceeded ();
 }
 
 
@@ -540,12 +543,12 @@ bool NscTcpSocketImpl::Accept (void)
     }
   NS_ASSERT (m_state == LISTEN);
 
-  if (!m_nscTcpSocket->is_listening())
+  if (!m_nscTcpSocket->is_listening ())
     {
       return false;
     }
   INetStreamSocket *newsock;
-  int res = m_nscTcpSocket->accept(&newsock);
+  int res = m_nscTcpSocket->accept (&newsock);
   if (res != 0)
     {
       return false;
@@ -575,14 +578,14 @@ bool NscTcpSocketImpl::ReadPendingData (void)
   uint8_t buffer[8192];
   len = sizeof(buffer);
   m_errno = ERROR_NOTERROR;
-  err = m_nscTcpSocket->read_data(buffer, &len);
+  err = m_nscTcpSocket->read_data (buffer, &len);
   if (err == 0 && len == 0)
     {
       NS_LOG_LOGIC ("ReadPendingData got EOF from socket");
       m_state = CLOSE_WAIT;
       return false;
     }
-  m_errno = GetNativeNs3Errno(err);
+  m_errno = GetNativeNs3Errno (err);
   switch (m_errno)
     {
     case ERROR_NOTERROR: break;   // some data was sent
@@ -630,7 +633,7 @@ bool NscTcpSocketImpl::SendPendingData (void)
 
       uint8_t *buf = new uint8_t[size];
       p->CopyData (buf, size);
-      ret = m_nscTcpSocket->send_data((const char *)buf, size);
+      ret = m_nscTcpSocket->send_data ((const char *)buf, size);
       delete[] buf;
 
       if (ret <= 0)
@@ -644,7 +647,7 @@ bool NscTcpSocketImpl::SendPendingData (void)
 
       if ((size_t)ret < size)
         {
-          p->RemoveAtStart(ret);
+          p->RemoveAtStart (ret);
           break;
         }
 
@@ -654,7 +657,7 @@ bool NscTcpSocketImpl::SendPendingData (void)
         {
           if (m_closeOnEmpty)
             {
-              m_nscTcpSocket->disconnect();
+              m_nscTcpSocket->disconnect ();
               m_state = CLOSED;
             }
           break;
@@ -663,7 +666,7 @@ bool NscTcpSocketImpl::SendPendingData (void)
 
   if (written > 0)
     {
-      Simulator::ScheduleNow(&NscTcpSocketImpl::NotifyDataSent, this, ret);
+      Simulator::ScheduleNow (&NscTcpSocketImpl::NotifyDataSent, this, ret);
       return true;
     }
   return false;
@@ -807,7 +810,7 @@ NscTcpSocketImpl::GetPersistTimeout (void) const
 }
 
 enum Socket::SocketErrno
-NscTcpSocketImpl::GetNativeNs3Errno(int error) const
+NscTcpSocketImpl::GetNativeNs3Errno (int error) const
 {
   enum nsc_errno err;
 
@@ -837,7 +840,7 @@ NscTcpSocketImpl::GetNativeNs3Errno(int error) const
     // but is triggered by e.g. show_config().
     case NSC_EUNKNOWN: return ERROR_INVAL;   // Catches stacks that 'return -1' without real mapping
     }
-  NS_ASSERT_MSG(0, "Unknown NSC error");
+  NS_ASSERT_MSG (0, "Unknown NSC error");
   return ERROR_INVAL;
 }
 

@@ -46,7 +46,7 @@ public:
   PendingData (uint8_t*, uint32_t&, Packet*); // Construct from serialized buffer
   PendingData (const PendingData&);   // Copy constructor
   virtual ~PendingData ();     // Destructor
-  uint32_t Size () const { return size;}
+  uint32_t Size () const { return size; }
   // Serialization
   uint8_t*  Serialize (uint8_t*, uint32_t&); // Serialize to a buffer
   uint8_t*  Construct (uint8_t*, uint32_t&); // Construct from buffer

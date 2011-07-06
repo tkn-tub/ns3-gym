@@ -27,47 +27,47 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("PacketDataCalculators");
+NS_LOG_COMPONENT_DEFINE ("PacketDataCalculators");
 
 
 //--------------------------------------------------------------
 //----------------------------------------------
 PacketCounterCalculator::PacketCounterCalculator()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 PacketCounterCalculator::~PacketCounterCalculator()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 void
-PacketCounterCalculator::DoDispose(void)
+PacketCounterCalculator::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  CounterCalculator<uint32_t>::DoDispose();
+  CounterCalculator<uint32_t>::DoDispose ();
   // PacketCounterCalculator::DoDispose
 }
 
 void
-PacketCounterCalculator::PacketUpdate(std::string path,
-                                      Ptr<const Packet> packet)
+PacketCounterCalculator::PacketUpdate (std::string path,
+                                       Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  CounterCalculator<uint32_t>::Update();
+  CounterCalculator<uint32_t>::Update ();
 
   // PacketCounterCalculator::Update
 }
 void
-PacketCounterCalculator::FrameUpdate(std::string path,
-                                     Ptr<const Packet> packet,
-                                     Mac48Address realto)
+PacketCounterCalculator::FrameUpdate (std::string path,
+                                      Ptr<const Packet> packet,
+                                      Mac48Address realto)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  CounterCalculator<uint32_t>::Update();
+  CounterCalculator<uint32_t>::Update ();
 
   // PacketCounterCalculator::Update
 }
@@ -79,40 +79,40 @@ PacketCounterCalculator::FrameUpdate(std::string path,
 //----------------------------------------------
 PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 PacketSizeMinMaxAvgTotalCalculator::~PacketSizeMinMaxAvgTotalCalculator()
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 }
 void
-PacketSizeMinMaxAvgTotalCalculator::DoDispose(void)
+PacketSizeMinMaxAvgTotalCalculator::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  MinMaxAvgTotalCalculator<uint32_t>::DoDispose();
+  MinMaxAvgTotalCalculator<uint32_t>::DoDispose ();
   // end PacketSizeMinMaxAvgTotalCalculator::DoDispose
 }
 
 void
-PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path,
-                                                 Ptr<const Packet> packet)
+PacketSizeMinMaxAvgTotalCalculator::PacketUpdate (std::string path,
+                                                  Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  MinMaxAvgTotalCalculator<uint32_t>::Update(packet->GetSize());
+  MinMaxAvgTotalCalculator<uint32_t>::Update (packet->GetSize ());
 
   // end PacketSizeMinMaxAvgTotalCalculator::Update
 }
 void
-PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path,
-                                                Ptr<const Packet> packet,
-                                                Mac48Address realto)
+PacketSizeMinMaxAvgTotalCalculator::FrameUpdate (std::string path,
+                                                 Ptr<const Packet> packet,
+                                                 Mac48Address realto)
 {
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
-  MinMaxAvgTotalCalculator<uint32_t>::Update(packet->GetSize());
+  MinMaxAvgTotalCalculator<uint32_t>::Update (packet->GetSize ());
 
   // end PacketSizeMinMaxAvgTotalCalculator::Update
 }

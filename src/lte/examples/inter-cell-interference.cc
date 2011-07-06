@@ -38,19 +38,19 @@ int main (int argc, char *argv[])
   double radius = 50.0;
   uint32_t numUes = 1;
 
-  
+
   CommandLine cmd;
   cmd.AddValue ("enbDist", "distance between the two eNBs", enbDist);
   cmd.AddValue ("radius", "the radius of the disc where UEs are placed around an eNB", radius);
   cmd.AddValue ("numUes", "how many UEs are attached to each eNB", numUes);
   cmd.Parse (argc, argv);
-  
+
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
-  
+
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
-  
+
   // determine the string tag that identifies this simulation run
   // this tag is then appended to all filenames
 
@@ -58,13 +58,13 @@ int main (int argc, char *argv[])
   GlobalValue::GetValueByName ("RngRun", runValue);
 
   std::ostringstream tag;
-  tag  << "_enbDist" << std::setw(3) << std::setfill ('0') << std::fixed << std::setprecision (0) << enbDist
-       << "_radius"  << std::setw(3) << std::setfill ('0') << std::fixed << std::setprecision (0) << radius
-       << "_numUes"  << std::setw(3) << std::setfill('0')  << numUes
-       << "_rngRun"  << std::setw(3) << std::setfill('0')  << runValue.Get () ;
-  
+  tag  << "_enbDist" << std::setw (3) << std::setfill ('0') << std::fixed << std::setprecision (0) << enbDist
+       << "_radius"  << std::setw (3) << std::setfill ('0') << std::fixed << std::setprecision (0) << radius
+       << "_numUes"  << std::setw (3) << std::setfill ('0')  << numUes
+       << "_rngRun"  << std::setw (3) << std::setfill ('0')  << runValue.Get () ;
+
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes1, ueNodes2;
@@ -72,7 +72,7 @@ int main (int argc, char *argv[])
   ueNodes1.Create (numUes);
   ueNodes2.Create (numUes);
 
-  // Position of eNBs  
+  // Position of eNBs
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (enbDist, 0.0, 0.0));
@@ -98,8 +98,8 @@ int main (int argc, char *argv[])
                                     "rho", DoubleValue (radius));
   ue2mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   ue2mobility.Install (ueNodes2);
-  
-  
+
+
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10));
 
- // Insert RLC Performance Calculator
+  // Insert RLC Performance Calculator
   std::string dlOutFname = "DlRlcStats";
   dlOutFname.append (tag.str ());
   std::string ulOutFname = "UlRlcStats";

@@ -40,6 +40,12 @@ namespace ns3 {
 class Queue;
 
 /**
+ * \defgroup emu EmuNetDevice
+ * This section documents the API of the ns-3 emu module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
+/**
+ * \ingroup emu
  * \class EmuNetDevice
  * \brief A Device for an Emu Network Link.
  */
@@ -110,14 +116,14 @@ public:
    *
    * @returns Ptr to the queue.
    */
-  Ptr<Queue> GetQueue(void) const; 
+  Ptr<Queue> GetQueue (void) const;
 
 
 //
 // Pure virtual methods inherited from NetDevice we must implement.
 //
-  virtual void SetIfIndex(const uint32_t index);
-  virtual uint32_t GetIfIndex(void) const;
+  virtual void SetIfIndex (const uint32_t index);
+  virtual uint32_t GetIfIndex (void) const;
 
   virtual Ptr<Channel> GetChannel (void) const;
 
@@ -181,9 +187,9 @@ public:
    */
   virtual bool IsBridge (void) const;
 
-  virtual bool Send(Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
+  virtual bool Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
 
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
 
   virtual Ptr<Node> GetNode (void) const;
   virtual void SetNode (Ptr<Node> node);
@@ -265,7 +271,7 @@ private:
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
-  bool ProcessHeader(Ptr<Packet> p, uint16_t& param);
+  bool ProcessHeader (Ptr<Packet> p, uint16_t& param);
 
   /**
    * Start Sending a Packet Down the Wire.

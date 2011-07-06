@@ -197,7 +197,7 @@ public:
    * Add an empty line in the data output sequence. Empty lines in the plot
    * data break continuous lines and do other things in the output.
    */
-  void AddEmptyLine();
+  void AddEmptyLine ();
 
 private:
 
@@ -286,7 +286,7 @@ public:
    * Add an empty line in the data output sequence. Empty lines in the plot
    * data break continuous lines and do other things in the output.
    */
-  void AddEmptyLine();
+  void AddEmptyLine ();
 
 private:
 
@@ -356,7 +356,7 @@ public:
    * the filename's extension.
    * \param filename output file name
    */
-  static std::string DetectTerminal(const std::string& filename);
+  static std::string DetectTerminal (const std::string& filename);
 
   /**
    * \param terminal terminal setting string for output. The default terminal
@@ -440,7 +440,7 @@ public:
    * \param id  index of plot to return
    * \return    reference to plot, throws std::range_error if it does not exist.
    */
-  Gnuplot& GetPlot(unsigned int id);
+  Gnuplot& GetPlot (unsigned int id);
 
   /**
    * \param os the output stream on which the relevant gnuplot commands should

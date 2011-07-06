@@ -109,7 +109,7 @@ public:
  *
  * @returns The Ipv4Address corresponding to the Link ID field of the record.
  */
-  Ipv4Address GetLinkId(void) const;
+  Ipv4Address GetLinkId (void) const;
 
 /**
  * @brief Set the Link ID field of the Global Routing Link Record.
@@ -122,7 +122,7 @@ public:
  *
  * @param addr An Ipv4Address to store in the Link ID field of the record.
  */
-  void SetLinkId(Ipv4Address addr);
+  void SetLinkId (Ipv4Address addr);
 
 /**
  * @brief Get the Link Data field of the Global Routing Link Record.
@@ -135,7 +135,7 @@ public:
  *
  * @returns The Ipv4Address corresponding to the Link Data field of the record.
  */
-  Ipv4Address GetLinkData(void) const;
+  Ipv4Address GetLinkData (void) const;
 
 /**
  * @brief Set the Link Data field of the Global Routing Link Record.
@@ -148,7 +148,7 @@ public:
  *
  * @param addr An Ipv4Address to store in the Link Data field of the record.
  */
-  void SetLinkData(Ipv4Address addr);
+  void SetLinkData (Ipv4Address addr);
 
 /**
  * @brief Get the Link Type field of the Global Routing Link Record.
@@ -159,7 +159,7 @@ public:
  * @see LinkType
  * @returns The LinkType of the current Global Routing Link Record.
  */
-  LinkType GetLinkType(void) const;
+  LinkType GetLinkType (void) const;
 
 /**
  * @brief Set the Link Type field of the Global Routing Link Record.
@@ -170,7 +170,7 @@ public:
  * @see LinkType
  * @param linkType The new LinkType for the current Global Routing Link Record.
  */
-  void SetLinkType(LinkType linkType);
+  void SetLinkType (LinkType linkType);
 
 /**
  * @brief Get the Metric Data field of the Global Routing Link Record.
@@ -183,7 +183,7 @@ public:
  *
  * @returns The metric field of the Global Routing Link Record.
  */
-  uint16_t GetMetric(void) const;
+  uint16_t GetMetric (void) const;
 
 /**
  * @brief Set the Metric Data field of the Global Routing Link Record.
@@ -196,7 +196,7 @@ public:
  *
  * @param metric The new metric for the current Global Routing Link Record.
  */
-  void SetMetric(uint16_t metric);
+  void SetMetric (uint16_t metric);
 
 private:
 /**
@@ -363,7 +363,7 @@ public:
  * @brief Release all of the Global Routing Link Records present in the Global
  * Routing Link State Advertisement and make the list of link records empty.
  */
-  void ClearLinkRecords(void);
+  void ClearLinkRecords (void);
 
 /**
  * @brief Check to see if the list of Global Routing Link Records present in the
@@ -371,7 +371,7 @@ public:
  *
  * @returns True if the list is empty, false otherwise.
  */
-  bool IsEmpty(void) const;
+  bool IsEmpty (void) const;
 
 /**
  * @brief Print the contents of the Global Routing Link State Advertisement and
@@ -711,8 +711,8 @@ private:
   virtual ~GlobalRouter ();
   void ClearLSAs (void);
 
-  Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
-  bool FindInterfaceForDevice(Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
+  Ptr<NetDevice> GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const;
+  bool FindInterfaceForDevice (Ptr<Node> node, Ptr<NetDevice> nd, uint32_t &index) const;
   Ipv4Address FindDesignatedRouterForLink (Ptr<NetDevice> ndLocal, bool allowRecursion) const;
   bool AnotherRouterOnLink (Ptr<NetDevice> nd, bool allowRecursion) const;
   void ProcessBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *pLSA, NetDeviceContainer &c);

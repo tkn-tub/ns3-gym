@@ -68,7 +68,7 @@ uint32_t Buffer::g_recommendedStart = 0;
 #define MAGIC_DESTROYED (~(long) 0)
 #define IS_UNINITIALIZED(x) (x == (Buffer::FreeList*)0)
 #define IS_DESTROYED(x) (x == (Buffer::FreeList*)MAGIC_DESTROYED)
-#define IS_INITIALIZED(x) (!IS_UNINITIALIZED(x) && !IS_DESTROYED(x))
+#define IS_INITIALIZED(x) (!IS_UNINITIALIZED (x) && !IS_DESTROYED (x))
 #define DESTROYED ((Buffer::FreeList*)MAGIC_DESTROYED)
 #define UNINITIALIZED ((Buffer::FreeList*)0)
 uint32_t Buffer::g_maxSize = 0;
@@ -77,7 +77,7 @@ struct Buffer::LocalStaticDestructor Buffer::g_localStaticDestructor;
 
 Buffer::LocalStaticDestructor::~LocalStaticDestructor(void)
 {
-  if (IS_INITIALIZED(g_freeList))
+  if (IS_INITIALIZED (g_freeList))
     {
       for (Buffer::FreeList::iterator i = g_freeList->begin ();
            i != g_freeList->end (); i++)
@@ -93,18 +93,18 @@ void
 Buffer::Recycle (struct Buffer::Data *data)
 {
   NS_ASSERT (data->m_count == 0);
-  NS_ASSERT (!IS_UNINITIALIZED(g_freeList));
+  NS_ASSERT (!IS_UNINITIALIZED (g_freeList));
   g_maxSize = std::max (g_maxSize, data->m_size);
   /* feed into free list */
   if (data->m_size < g_maxSize ||
-      IS_DESTROYED(g_freeList) ||
+      IS_DESTROYED (g_freeList) ||
       g_freeList->size () > 1000)
     {
       Buffer::Deallocate (data);
     }
   else
     {
-      NS_ASSERT (IS_INITIALIZED(g_freeList));
+      NS_ASSERT (IS_INITIALIZED (g_freeList));
       g_freeList->push_back (data);
     }
 }
@@ -113,11 +113,11 @@ Buffer::Data *
 Buffer::Create (uint32_t dataSize)
 {
   /* try to find a buffer correctly sized. */
-  if (IS_UNINITIALIZED(g_freeList))
+  if (IS_UNINITIALIZED (g_freeList))
     {
       g_freeList = new Buffer::FreeList ();
     }
-  else if (IS_INITIALIZED(g_freeList))
+  else if (IS_INITIALIZED (g_freeList))
     {
       while (!g_freeList->empty ()) 
         {
@@ -611,7 +611,7 @@ Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
   if (size + ((dataStartLength + 3) & (~3))  <= maxSize)
     {
       size += (dataStartLength + 3) & (~3);
-      memcpy(p, m_data->m_data + m_start, dataStartLength);
+      memcpy (p, m_data->m_data + m_start, dataStartLength);
       p += (((dataStartLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
     }
   else
@@ -635,7 +635,7 @@ Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
   if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
     {
       size += (dataEndLength + 3) & (~3);
-      memcpy(p, m_data->m_data+m_zeroAreaStart,dataEndLength);
+      memcpy (p, m_data->m_data+m_zeroAreaStart,dataEndLength);
       p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
     }
   else
@@ -722,12 +722,12 @@ Buffer::PeekData (void) const
 }
 
 void
-Buffer::CopyData(std::ostream *os, uint32_t size) const
+Buffer::CopyData (std::ostream *os, uint32_t size) const
 {
   if (size > 0)
     {
       uint32_t tmpsize = std::min (m_zeroAreaStart-m_start, size);
-      os->write((const char*)(m_data->m_data + m_start), tmpsize);
+      os->write ((const char*)(m_data->m_data + m_start), tmpsize);
       if (size > tmpsize) 
         { 
           size -= m_zeroAreaStart-m_start;
@@ -1115,13 +1115,13 @@ Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
 }
 
 uint16_t
-Buffer::Iterator::CalculateIpChecksum(uint16_t size)
+Buffer::Iterator::CalculateIpChecksum (uint16_t size)
 {
-  return CalculateIpChecksum(size, 0);
+  return CalculateIpChecksum (size, 0);
 }
 
 uint16_t
-Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum)
+Buffer::Iterator::CalculateIpChecksum (uint16_t size, uint32_t initialChecksum)
 {
   /* see RFC 1071 to understand this code. */
   uint32_t sum = initialChecksum;

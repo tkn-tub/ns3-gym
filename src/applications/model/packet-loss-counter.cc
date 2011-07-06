@@ -53,7 +53,7 @@ void
 PacketLossCounter::SetBitMapSize (uint16_t winSize)
 {
 
-  NS_ASSERT_MSG(winSize%8==0,"The packet window size should be a multiple of 8");
+  NS_ASSERT_MSG (winSize%8==0,"The packet window size should be a multiple of 8");
   m_bitMapSize = winSize/8;
   if (m_receiveBitMap!=0)
     {
@@ -70,13 +70,13 @@ PacketLossCounter::GetLost () const
 }
 
 bool
-PacketLossCounter::GetBit(uint32_t seqNum)
+PacketLossCounter::GetBit (uint32_t seqNum)
 {
   return ((m_receiveBitMap[(seqNum%(m_bitMapSize*8))/8] >> (7-(seqNum%8)))&0x01);
 }
 
 void
-PacketLossCounter::SetBit(uint32_t seqNum, bool val)
+PacketLossCounter::SetBit (uint32_t seqNum, bool val)
 {
   if (val)
     {
@@ -105,14 +105,14 @@ PacketLossCounter::NotifyReceived (uint32_t seqNum)
 {
   for (uint32_t i=m_lastMaxSeqNum+1; i<=seqNum; i++)
     {
-      if (GetBit(i)!=1)
+      if (GetBit (i)!=1)
         {
           NS_LOG_INFO ("Packet lost: " << i-(m_bitMapSize*8));
           m_lost++;
         }
-      SetBit(i, 0);
+      SetBit (i, 0);
     }
-  SetBit(seqNum, 1);
+  SetBit (seqNum, 1);
   if (seqNum>m_lastMaxSeqNum)
     {
       m_lastMaxSeqNum = seqNum;

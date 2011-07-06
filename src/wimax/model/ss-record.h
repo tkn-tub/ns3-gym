@@ -36,11 +36,12 @@ namespace ns3 {
 
 class ServiceFlow;
 
+/**
+ * \ingroup wimax
+ * \brief This class is used by the base station to store some information related to subscriber station in the cell.
+ */
 class SSRecord
 {
-  /**
-   * \brief This class is used by the base station to store some information related to subscriber station in the cell.
-   */
 public:
   SSRecord (void);
   SSRecord (Mac48Address macAddress);

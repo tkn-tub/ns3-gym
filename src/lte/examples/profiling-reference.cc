@@ -45,13 +45,13 @@ int main (int argc, char *argv[])
   cmd.AddValue ("nUe", "Number of UEs", nUe);
   cmd.AddValue ("radius", "the radius of the disc where UEs are placed around an eNB", radius);
   cmd.Parse (argc, argv);
-  
+
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
 
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
-  
+
   // determine the string tag that identifies this simulation run
   // this tag is then appended to all filenames
 
@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
 */
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   lena->EnableLogComponents ();
-  
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   vector<NodeContainer> ueNodes;
@@ -76,15 +76,15 @@ int main (int argc, char *argv[])
     {
       NodeContainer ueNode;
       ueNode.Create (nUe);
-      ueNodes.push_back(ueNode);
+      ueNodes.push_back (ueNode);
     }
 
-  // Position of eNBs  
+  // Position of eNBs
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   for (uint32_t i = 0; i < nEnb; i++)
-      {
-         positionAlloc->Add (Vector (enbDist*i, enbDist*i, 0.0));
-      }
+    {
+      positionAlloc->Add (Vector (enbDist * i, enbDist * i, 0.0));
+    }
 
   MobilityHelper enbMobility;
   enbMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -97,9 +97,9 @@ int main (int argc, char *argv[])
     {
       MobilityHelper ueMob;
       ueMob.SetPositionAllocator ("ns3::UniformDiscPositionAllocator",
-                                    "X", DoubleValue (enbDist*i),
-                                    "Y", DoubleValue (enbDist*i),
-                                    "rho", DoubleValue (radius));
+                                  "X", DoubleValue (enbDist * i),
+                                  "Y", DoubleValue (enbDist * i),
+                                  "rho", DoubleValue (radius));
       ueMob.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       ueMobility.push_back (ueMob);
       ueMobility[i].Install (ueNodes[i]);

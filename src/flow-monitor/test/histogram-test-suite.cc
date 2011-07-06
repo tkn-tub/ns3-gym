@@ -41,7 +41,7 @@ HistogramTestCase::HistogramTestCase ()
 void
 HistogramTestCase::DoRun (void)
 {
-  Histogram h0(3.5);
+  Histogram h0 (3.5);
   // Testing floating-point bin widths
   {
     for (int i=1; i <= 10; i++)

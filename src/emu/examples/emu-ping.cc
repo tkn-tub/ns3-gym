@@ -83,8 +83,8 @@ main (int argc, char *argv[])
   // command-line arguments
   //
   CommandLine cmd;
-  cmd.AddValue("deviceName", "Device name", deviceName);
-  cmd.AddValue("remote", "Remote IP address (dotted decimal only please)", remote);
+  cmd.AddValue ("deviceName", "Device name", deviceName);
+  cmd.AddValue ("remote", "Remote IP address (dotted decimal only please)", remote);
   cmd.Parse (argc, argv);
 
   Ipv4Address remoteIp (remote.c_str ());

@@ -148,12 +148,12 @@ private:
   TracedCallback<Ptr<const Packet> > m_txTrace;
 
 private:
-  void ScheduleNextTx();
-  void ScheduleStartEvent();
-  void ScheduleStopEvent();
-  void ConnectionSucceeded(Ptr<Socket>);
-  void ConnectionFailed(Ptr<Socket>);
-  void Ignore(Ptr<Socket>);
+  void ScheduleNextTx ();
+  void ScheduleStartEvent ();
+  void ScheduleStopEvent ();
+  void ConnectionSucceeded (Ptr<Socket>);
+  void ConnectionFailed (Ptr<Socket>);
+  void Ignore (Ptr<Socket>);
 };
 
 } // namespace ns3

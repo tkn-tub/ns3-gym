@@ -107,7 +107,7 @@ LtePhy::GetDevice ()
   NS_LOG_FUNCTION (this);
   return m_netDevice;
 }
-  
+
 Ptr<LteSpectrumPhy> 
 LtePhy::GetDownlinkSpectrumPhy ()
 {
@@ -222,8 +222,8 @@ LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
 void 
 LtePhy::DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn)
 {
- m_dlEarfcn = dlEarfcn;
- m_ulEarfcn = ulEarfcn;
+  m_dlEarfcn = dlEarfcn;
+  m_ulEarfcn = ulEarfcn;
 }
 
 uint8_t
@@ -288,21 +288,21 @@ std::list<Ptr<IdealControlMessage> >
 LtePhy::GetControlMessages (void)
 {
   if (m_controlMessagesQueue.at (0).size () > 0)
-  {
-    std::list<Ptr<IdealControlMessage> > ret = m_controlMessagesQueue.at (0);
-    m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
-    std::list<Ptr<IdealControlMessage> > newlist;
-    m_controlMessagesQueue.push_back (newlist);
-    return (ret);
-  }
+    {
+      std::list<Ptr<IdealControlMessage> > ret = m_controlMessagesQueue.at (0);
+      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
+      std::list<Ptr<IdealControlMessage> > newlist;
+      m_controlMessagesQueue.push_back (newlist);
+      return (ret);
+    }
   else
-  {
-    m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
-    std::list<Ptr<IdealControlMessage> > newlist;
-    m_controlMessagesQueue.push_back (newlist);
-    std::list<Ptr<IdealControlMessage> > emptylist;
-    return (emptylist);
-  }
+    {
+      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
+      std::list<Ptr<IdealControlMessage> > newlist;
+      m_controlMessagesQueue.push_back (newlist);
+      std::list<Ptr<IdealControlMessage> > emptylist;
+      return (emptylist);
+    }
 }
 
 

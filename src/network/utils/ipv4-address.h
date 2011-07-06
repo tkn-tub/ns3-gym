@@ -310,7 +310,7 @@ inline bool operator < (const Ipv4Address &a, const Ipv4Address &b)
 
 class Ipv4AddressHash : public std::unary_function<Ipv4Address, size_t> {
 public:
-  size_t operator()(Ipv4Address const &x) const;
+  size_t operator() (Ipv4Address const &x) const;
 };
 
 bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);

@@ -31,7 +31,7 @@ class WaypointMobilityModelNotifyTest : public TestCase
 public:
   WaypointMobilityModelNotifyTest (bool lazy)
     : TestCase (lazy ? "Check Waypoint Mobility Model LAZY notification accuracy"
-                  : "Check Waypoint Mobility Model NON-LAZY notification accuracy"),
+                : "Check Waypoint Mobility Model NON-LAZY notification accuracy"),
       lazyNotify (lazy)
   {
   }
@@ -47,9 +47,18 @@ private:
   bool lazyNotify;
 private:
   virtual void DoRun (void);
+  virtual void DoTeardown (void);
   void ForceUpdates (void);
   void CourseChangeCallback (std::string path, Ptr<const MobilityModel> model);
 };
+
+void
+WaypointMobilityModelNotifyTest::DoTeardown (void)
+{
+  mobilityStack.clear();
+  waypoints.clear();
+}
+
 void
 WaypointMobilityModelNotifyTest::DoRun (void)
 {

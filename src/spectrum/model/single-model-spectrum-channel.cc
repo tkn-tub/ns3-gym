@@ -25,8 +25,14 @@
 #include <ns3/packet-burst.h>
 #include <ns3/net-device.h>
 #include <ns3/node.h>
+#include <ns3/double.h>
 #include <ns3/mobility-model.h>
 #include <ns3/spectrum-phy.h>
+#include <ns3/spectrum-propagation-loss-model.h>
+#include <ns3/propagation-loss-model.h>
+#include <ns3/propagation-delay-model.h>
+
+
 #include "single-model-spectrum-channel.h"
 
 
@@ -39,9 +45,6 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (SingleModelSpectrumChannel);
 
 SingleModelSpectrumChannel::SingleModelSpectrumChannel ()
-  : m_spectrumModel (0),
-    m_PropagationDelay (0),
-    m_PropagationLoss (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -52,8 +55,9 @@ SingleModelSpectrumChannel::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_phyList.clear ();
   m_spectrumModel = 0;
-  m_PropagationDelay = 0;
-  m_PropagationLoss = 0;
+  m_propagationDelay = 0;
+  m_propagationLoss = 0;
+  m_spectrumPropagationLoss = 0;
   SpectrumChannel::DoDispose ();
 }
 
@@ -64,6 +68,18 @@ SingleModelSpectrumChannel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SingleModelSpectrumChannel")
     .SetParent<SpectrumChannel> ()
     .AddConstructor<SingleModelSpectrumChannel> ()
+    .AddAttribute ("MaxLossDb", 
+                   "If a single-frequency PropagationLossModel is used, this value "
+                   "represents the maximum loss in dB for which transmissions will be "
+                   "passed to the receiving PHY. Signals for which the PropagationLossModel "
+                   "returns a loss bigger than this value will not be propagated to the receiver. "
+                   "This parameter is to be used to reduce "
+                   "the computational load by not propagating signals that are far beyond "
+                   "the interference range. Note that the default value corresponds to "
+                   "considering all signals for reception. Tune this value with care. ",
+                   DoubleValue (1.0e9),
+                   MakeDoubleAccessor (&SingleModelSpectrumChannel::m_maxLossDb),
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -98,46 +114,44 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
     }
 
 
-  PhyList::const_iterator rxPhyIterator = m_phyList.begin ();
+
 
   Ptr<MobilityModel> senderMobility = txPhy->GetMobility ()->GetObject<MobilityModel> ();
 
-  NS_ASSERT (rxPhyIterator != m_phyList.end ());
-
-  while (rxPhyIterator != m_phyList.end ())
+  for (PhyList::const_iterator rxPhyIterator = m_phyList.begin ();
+       rxPhyIterator != m_phyList.end ();
+       ++rxPhyIterator)
     {
       if ((*rxPhyIterator) != txPhy)
         {
-          Ptr <SpectrumValue> rxPsd;
-          Time delay;
+          Ptr <SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
+          Time delay  = MicroSeconds (0);
+
           Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ()->GetObject<MobilityModel> ();
 
           if (senderMobility && receiverMobility)
             {
+              if (m_propagationLoss)
+                {
+                  double gainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
+                  if ( (-gainDb) > m_maxLossDb)
+                    {
+                      // beyond range
+                      continue;
+                    }
+                  double gainLinear = pow (10.0, gainDb/10.0);
+                  *rxPsd = (*rxPsd) * gainLinear;
+                }
 
-
-              if (m_PropagationLoss)
+              if (m_spectrumPropagationLoss)
                 {
-                  rxPsd = m_PropagationLoss->CalcRxPowerSpectralDensity (txPsd, senderMobility, receiverMobility);
-                }
-              else
-                {
-                  rxPsd = txPsd;
+                  rxPsd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxPsd, senderMobility, receiverMobility);
                 }
 
-              if (m_PropagationDelay)
+              if (m_propagationDelay)
                 {
-                  delay = m_PropagationDelay->GetDelay (senderMobility, receiverMobility);
+                  delay = m_propagationDelay->GetDelay (senderMobility, receiverMobility);
                 }
-              else
-                {
-                  delay = MicroSeconds (0);
-                }
-            }
-          else
-            {
-              rxPsd = txPsd;
-              delay = MicroSeconds (0);
             }
 
           Ptr<PacketBurst> pktBurstCopy = p->Copy ();
@@ -156,7 +170,6 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
                                    pktBurstCopy, rxPsd, st, duration, *rxPhyIterator);
             }
         }
-      ++rxPhyIterator;
     }
 
 }
@@ -186,21 +199,29 @@ SingleModelSpectrumChannel::GetDevice (uint32_t i) const
 }
 
 
+void
+SingleModelSpectrumChannel::AddPropagationLossModel (Ptr<PropagationLossModel> loss)
+{
+  NS_LOG_FUNCTION (this << loss);
+  NS_ASSERT (m_propagationLoss == 0);
+  m_propagationLoss = loss;
+}
+
 
 void
 SingleModelSpectrumChannel::AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss)
 {
   NS_LOG_FUNCTION (this << loss);
-  NS_ASSERT (m_PropagationLoss == 0);
-  m_PropagationLoss = loss;
+  NS_ASSERT (m_propagationLoss == 0);
+  m_spectrumPropagationLoss = loss;
 }
 
 void
 SingleModelSpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 {
   NS_LOG_FUNCTION (this << delay);
-  NS_ASSERT (m_PropagationDelay == 0);
-  m_PropagationDelay = delay;
+  NS_ASSERT (m_propagationDelay == 0);
+  m_propagationDelay = delay;
 }
 
 
@@ -208,7 +229,7 @@ Ptr<SpectrumPropagationLossModel>
 SingleModelSpectrumChannel::GetSpectrumPropagationLossModel (void)
 {
   NS_LOG_FUNCTION (this);
-  return m_PropagationLoss;
+  return m_spectrumPropagationLoss;
 }
 
 

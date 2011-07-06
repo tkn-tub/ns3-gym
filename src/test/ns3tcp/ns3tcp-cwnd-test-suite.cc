@@ -254,7 +254,7 @@ Ns3TcpCwndTestCase1::DoRun (void)
   // implementation that we consider a known good TCP.
   //
   std::string nscStack = "liblinux2.6.26.so";
-  stack.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue("liblinux2.6.26.so"));
+  stack.SetTcp ("ns3::NscTcpL4Protocol", "Library", StringValue ("liblinux2.6.26.so"));
   stack.Install (nodes.Get (1));
 
   //
@@ -271,7 +271,7 @@ Ns3TcpCwndTestCase1::DoRun (void)
   // just create a sink.
   //
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress(interfaces.GetAddress (1), sinkPort));
+  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   sinkApps.Start (Seconds (0.));
@@ -326,7 +326,7 @@ Ns3TcpCwndTestCase1::DoRun (void)
       pointToPoint.EnablePcapAll ("tcp-cwnd");
     }
 
-  Simulator::Stop (Seconds(2));
+  Simulator::Stop (Seconds (2));
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -436,11 +436,11 @@ Ns3TcpCwndTestCase2::DoRun (void)
   n2n3.Create (1);
 
   PointToPointHelper p2p1;
-  p2p1.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(1000000)));
-  p2p1.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(10)));
+  p2p1.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (1000000)));
+  p2p1.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
   PointToPointHelper p2p2;
-  p2p2.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(100000)));
-  p2p2.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(10)));
+  p2p2.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (100000)));
+  p2p2.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
 
   // And then install devices and channels connecting our topology.
   NetDeviceContainer dev0 = p2p1.Install (n0n1);
@@ -475,7 +475,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
   apps.Stop (Seconds (5.4));
 
   // Create the socket for n0
-  Address sinkAddress (InetSocketAddress(ipInterfs.GetAddress (1), servPort));
+  Address sinkAddress (InetSocketAddress (ipInterfs.GetAddress (1), servPort));
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&Ns3TcpCwndTestCase2::CwndChange, this));
 
@@ -494,7 +494,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
     }
 
   // Finally, set up the simulator to run.
-  Simulator::Stop (Seconds(5.4));
+  Simulator::Stop (Seconds (5.4));
   Simulator::Run ();
   Simulator::Destroy ();
 

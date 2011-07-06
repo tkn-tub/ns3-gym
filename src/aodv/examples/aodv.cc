@@ -85,7 +85,7 @@ private:
 int main (int argc, char **argv)
 {
   AodvExample test;
-  if (!test.Configure(argc, argv))
+  if (!test.Configure (argc, argv))
     NS_FATAL_ERROR ("Configuration failed. Aborted.");
 
   test.Run ();
@@ -109,7 +109,7 @@ AodvExample::Configure (int argc, char **argv)
   // Enable AODV logs by default. Comment this if too noisy
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
 
-  SeedManager::SetSeed(12345);
+  SeedManager::SetSeed (12345);
   CommandLine cmd;
 
   cmd.AddValue ("pcap", "Write PCAP traces.", pcap);
@@ -213,7 +213,7 @@ AodvExample::InstallApplications ()
 
   ApplicationContainer p = ping.Install (nodes.Get (0));
   p.Start (Seconds (0));
-  p.Stop (Seconds (totalTime) - Seconds(0.001));
+  p.Stop (Seconds (totalTime) - Seconds (0.001));
 
   // move node away
   Ptr<Node> node = nodes.Get (size/2);

@@ -52,7 +52,7 @@ AddInternetStack (Ptr<Node> node)
 {
   //ARP
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject(arp);
+  node->AggregateObject (arp);
   //IPV4
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   //Routing for Ipv4
@@ -60,16 +60,16 @@ AddInternetStack (Ptr<Node> node)
   ipv4->SetRoutingProtocol (ipv4Routing);
   Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
   ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
-  node->AggregateObject(ipv4);
+  node->AggregateObject (ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
-  node->AggregateObject(icmp);
+  node->AggregateObject (icmp);
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject(udp); 
+  node->AggregateObject (udp);
   //TCP
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
-  node->AggregateObject(tcp);
+  node->AggregateObject (tcp);
 }
 
 
@@ -92,7 +92,7 @@ void UdpSocketLoopbackTest::ReceivePkt (Ptr<Socket> socket)
 {
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
@@ -107,7 +107,7 @@ UdpSocketLoopbackTest::DoRun ()
 
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  rxSocket->Bind (InetSocketAddress (Ipv4Address::GetAny(), 80));
+  rxSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 80));
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketLoopbackTest::ReceivePkt, this));
 
   Ptr<Socket> txSocket = rxSocketFactory->CreateSocket ();
@@ -153,7 +153,7 @@ void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
 {
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
@@ -164,7 +164,7 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 {
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
-  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
@@ -174,7 +174,7 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 void
 UdpSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
-  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 1234);
+  Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 1234);
   NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
                          123, "XXX");
 }

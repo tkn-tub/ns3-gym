@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
-                     Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
+                     Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));
