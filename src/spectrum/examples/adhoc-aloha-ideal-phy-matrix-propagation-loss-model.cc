@@ -61,7 +61,7 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 int main (int argc, char** argv)
 {
   CommandLine cmd;
-  double lossDb;
+  double lossDb = 150;
   double txPowerW = 0.1; 
   uint64_t phyRate = 500000;
   uint32_t pktSize = 1000;
