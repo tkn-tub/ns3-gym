@@ -173,6 +173,8 @@ class ns3module_taskgen(TaskGen.task_gen):
             module.includes = self.includes
         if hasattr(self, "is_ns3_module"):
             module.is_ns3_module = self.is_ns3_module
+        if hasattr(self, 'add_objects'):
+            module.add_objects = self.add_objects
 
         module.is_static = static
         module.vnum = wutils.VNUM
