@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef __LOG_H__
-#define __LOG_H__
+#ifndef LOG_H
+#define LOG_H
 
 #include <string>
 #include <iostream>
@@ -400,4 +400,4 @@ public:
 } // namespace ns3
 
 
-#endif // __LOG_H__
+#endif /* LOG_H */

@@ -19,8 +19,8 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-#ifndef MESH_PEER_MAN_ELEMENT
-#define MESH_PEER_MAN_ELEMENT
+#ifndef IE_DOT11S_PEER_MANAGEMENT_H
+#define IE_DOT11S_PEER_MANAGEMENT_H
 
 #include "ns3/mesh-information-element-vector.h"
 
@@ -98,4 +98,5 @@ bool operator== (const IePeerManagement & a, const IePeerManagement & b);
 std::ostream &operator << (std::ostream &os, const IePeerManagement &peerMan);
 } // namespace dot11s
 } //namespace ns3
-#endif
+
+#endif /* IE_DOT11S_PEER_MANAGEMENT_H */

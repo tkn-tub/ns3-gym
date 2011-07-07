@@ -20,8 +20,8 @@
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef __UDP_SOCKET_H__
-#define __UDP_SOCKET_H__
+#ifndef UDP_SOCKET_H
+#define UDP_SOCKET_H
 
 #include "ns3/socket.h"
 #include "ns3/traced-callback.h"

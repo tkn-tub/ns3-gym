@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANNOISEMODEL_H
-#define UANNOISEMODEL_H
+#ifndef UAN_NOISE_MODEL_H
+#define UAN_NOISE_MODEL_H
 
 #include "ns3/object.h"
 
@@ -44,4 +44,4 @@ public:
 
 } // namespace ns3
 
-#endif // UANNOISEMODEL_H
+#endif /* UAN_NOISE_MODEL_H */

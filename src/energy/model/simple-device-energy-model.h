@@ -4,8 +4,9 @@
  *  Created on: 09/ago/2010
  *      Author: socket
  */
-#ifndef SIMPLE_DEVICE_ENERGY_MODEL_H_
-#define SIMPLE_DEVICE_ENERGY_MODEL_H_
+
+#ifndef SIMPLE_DEVICE_ENERGY_MODEL_H
+#define SIMPLE_DEVICE_ENERGY_MODEL_H
 
 #include "ns3/device-energy-model.h"
 #include "ns3/nstime.h"
@@ -105,4 +106,4 @@ private:
 
 } // namespace ns3
 
-#endif /* SIMPLE_DEVICE_ENERGY_MODEL_H_ */
+#endif /* SIMPLE_DEVICE_ENERGY_MODEL_H */

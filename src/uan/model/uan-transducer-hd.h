@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANTRANSDUCERHD_H_
-#define UANTRANSDUCERHD_H_
+#ifndef UAN_TRANSDUCER_HD_H
+#define UAN_TRANSDUCER_HD_H
 
 #include "uan-transducer.h"
 #include "ns3/simulator.h"
@@ -69,4 +69,4 @@ protected:
 
 }
 
-#endif /*UANTRANSDUCERSIMPLE_H_*/
+#endif /* UAN_TRANSDUCER_HD_H */

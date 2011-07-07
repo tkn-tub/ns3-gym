@@ -26,8 +26,8 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef IDCACHE_H_
-#define IDCACHE_H_
+#ifndef AODV_ID_CACHE_H
+#define AODV_ID_CACHE_H
 
 #include "ns3/ipv4-address.h"
 #include "ns3/simulator.h"
@@ -83,4 +83,4 @@ private:
 
 }
 }
-#endif /* IDCACHE_H_ */
+#endif /* AODV_ID_CACHE_H */

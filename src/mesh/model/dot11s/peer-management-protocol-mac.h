@@ -18,8 +18,8 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-#ifndef PEER_MANAGER_MAC_PLUGIN_H_
-#define PEER_MANAGER_MAC_PLUGIN_H_
+#ifndef PEER_MANAGEMENT_PROTOCOL_MAC_H
+#define PEER_MANAGEMENT_PROTOCOL_MAC_H
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 
@@ -131,5 +131,6 @@ private:
 
 } // namespace dot11s
 } //namespace ns3
-#endif
+
+#endif /* PEER_MANAGEMENT_PROTOCOL_MAC_H */
 

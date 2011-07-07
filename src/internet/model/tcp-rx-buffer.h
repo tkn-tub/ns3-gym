@@ -18,8 +18,8 @@
  * Author: Adrian Sai-wah Tam <adrian.sw.tam@gmail.com>
  */
 
-#ifndef __TCP_RX_BUFFER_H__
-#define __TCP_RX_BUFFER_H__
+#ifndef TCP_RX_BUFFER_H
+#define TCP_RX_BUFFER_H
 
 #include <map>
 #include "ns3/traced-value.h"
@@ -86,4 +86,4 @@ public:
 
 } //namepsace ns3
 
-#endif /* __TCP_RX_BUFFER_H__ */
+#endif /* TCP_RX_BUFFER_H */

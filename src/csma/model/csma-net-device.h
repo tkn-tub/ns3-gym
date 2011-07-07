@@ -712,4 +712,4 @@ private:
 
 }; // namespace ns3
 
-#endif // CSMA_NET_DEVICE_H
+#endif /* CSMA_NET_DEVICE_H */

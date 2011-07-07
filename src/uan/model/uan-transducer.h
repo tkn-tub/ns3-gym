@@ -17,8 +17,9 @@
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
-#ifndef UANTRANSDUCER_H_
-#define UANTRANSDUCER_H_
+
+#ifndef UAN_TRANSDUCER_H
+#define UAN_TRANSDUCER_H
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
@@ -26,6 +27,7 @@
 #include "ns3/uan-prop-model.h"
 
 #include <list>
+
 namespace ns3 {
 
 class UanPhy;
@@ -195,4 +197,4 @@ public:
 
 } // namespace ns3
 
-#endif /*UANTRANSDUCER_H_*/
+#endif /* UAN_TRANSDUCER_H */

@@ -20,9 +20,8 @@
  *          Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
  */
 
-
-#ifndef __OLSR_AGENT_IMPL_H__
-#define __OLSR_AGENT_IMPL_H__
+#ifndef OLSR_AGENT_IMPL_H
+#define OLSR_AGENT_IMPL_H
 
 #include "olsr-header.h"
 #include "ns3/test.h"
@@ -306,4 +305,4 @@ private:
 }
 }  // namespace ns3
 
-#endif
+#endif /* OLSR_AGENT_IMPL_H */

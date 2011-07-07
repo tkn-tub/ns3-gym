@@ -18,8 +18,8 @@
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  */
 
-#ifndef BEARER_QOS_PARAMETERS_H_
-#define BEARER_QOS_PARAMETERS_H_
+#ifndef BEARER_QOS_PARAMETERS_H
+#define BEARER_QOS_PARAMETERS_H
 
 #include "ns3/object.h"
 
@@ -156,4 +156,4 @@ private:
 
 
 }
-#endif /* BEARER_QOS_PARAMETERS_H_ */
+#endif /* BEARER_QOS_PARAMETERS_H */

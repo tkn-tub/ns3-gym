@@ -25,8 +25,8 @@
 /// \brief	Here are defined all data structures needed by an OLSR node.
 ///
 
-#ifndef __OLSR_REPOSITORIES_H__
-#define __OLSR_REPOSITORIES_H__
+#ifndef OLSR_REPOSITORIES_H
+#define OLSR_REPOSITORIES_H
 
 #include <set>
 #include <vector>
@@ -301,4 +301,4 @@ namespace ns3 { namespace olsr {
 
                 }}; // namespace ns3, olsr
 
-#endif  /* __OLSR_REPOSITORIES_H__ */
+#endif /* OLSR_REPOSITORIES_H */

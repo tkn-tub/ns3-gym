@@ -20,8 +20,8 @@
  */
 
 
-#ifndef SNRTOBLOCKERRORRATEMANAGER_H_
-#define SNRTOBLOCKERRORRATEMANAGER_H_
+#ifndef SNR_TO_BLOCK_ERROR_RATE_MANAGER_H
+#define SNR_TO_BLOCK_ERROR_RATE_MANAGER_H
 
 #include "ns3/snr-to-block-error-rate-record.h"
 #include <vector>
@@ -101,4 +101,4 @@ private:
 };
 }
 
-#endif /* SNRTOBLOCKERRORRATEMANAGER_H_ */
+#endif /* SNR_TO_BLOCK_ERROR_RATE_MANAGER_H */

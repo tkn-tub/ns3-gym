@@ -22,8 +22,8 @@
 
 /// \brief	This header file declares and defines internal state of an OLSR node.
 
-#ifndef __OLSR_STATE_H__
-#define __OLSR_STATE_H__
+#ifndef OLSR_STATE_H
+#define OLSR_STATE_H
 
 #include "olsr-repositories.h"
 
@@ -177,4 +177,4 @@ public:
 
 } // namespace ns3
 
-#endif
+#endif /* OLSR_STATE_H */

@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANPROPMODEL_H_
-#define UANPROPMODEL_H_
+#ifndef UAN_PROP_MODEL_H
+#define UAN_PROP_MODEL_H
 
 #include "ns3/object.h"
 #include "ns3/mobility-model.h"
@@ -251,4 +251,4 @@ public:
 
 }
 
-#endif /*UANPROPMODEL_H_*/
+#endif /* UAN_PROP_MODEL_H */

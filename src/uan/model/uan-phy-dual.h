@@ -19,8 +19,8 @@
  *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#ifndef UANPHYDUAL_H
-#define UANPHYDUAL_H
+#ifndef UAN_PHY_DUAL_H
+#define UAN_PHY_DUAL_H
 
 #include "ns3/uan-phy.h"
 
@@ -279,4 +279,4 @@ protected:
 
 }
 
-#endif // UANPHYDUAL_H
+#endif /* UAN_PHY_DUAL_H */

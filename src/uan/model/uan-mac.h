@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANMAC_H
-#define UANMAC_H
+#ifndef UAN_MAC_H
+#define UAN_MAC_H
 
 #include "ns3/address.h"
 #include "ns3/object.h"
@@ -93,4 +93,4 @@ public:
 
 }
 
-#endif // UANMAC_H
+#endif /* UAN_MAC_H */

@@ -1,5 +1,4 @@
 /* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
-
 /*
  * Copyright (c) 2010 The Boeing Company
  *
@@ -110,4 +109,4 @@ private:
 
 } // namespace ns3
 
-#endif  // UNIX_FD_READER_H
+#endif /* UNIX_FD_READER_H */

@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANNETDEVICE_H
-#define UANNETDEVICE_H
+#ifndef UAN_NET_DEVICE_H
+#define UAN_NET_DEVICE_H
 
 #include "ns3/net-device.h"
 #include "ns3/pointer.h"
@@ -154,4 +154,4 @@ protected:
 
 } // namespace ns3
 
-#endif // UANNETDEVICE_H 
+#endif /* UAN_NET_DEVICE_H */

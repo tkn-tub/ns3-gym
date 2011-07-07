@@ -19,8 +19,8 @@
  *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#ifndef UANPHYGEN_H
-#define UANPHYGEN_H
+#ifndef UAN_PHY_GEN_H
+#define UAN_PHY_GEN_H
 
 
 #include "uan-phy.h"
@@ -261,4 +261,4 @@ protected:
 
 } // namespace ns3
 
-#endif // UANPHYGEN_H
+#endif /* UAN_PHY_GEN_H */

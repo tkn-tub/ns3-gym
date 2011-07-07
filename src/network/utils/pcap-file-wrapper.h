@@ -201,4 +201,4 @@ private:
 
 } //namespace ns3
 
-#endif // PCAP_FILE_WRAPPER_H
+#endif /* PCAP_FILE_WRAPPER_H */

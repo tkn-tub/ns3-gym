@@ -228,4 +228,4 @@ private:
 
 #endif /* CLICK_INTERNET_STACK_HELPER_H */
 
-#endif // NS3_CLICK
+#endif /* NS3_CLICK */

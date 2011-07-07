@@ -90,4 +90,4 @@ private:
 
 } //namespace ns3
 
-#endif // OUTPUT_STREAM_WRAPPER_H
+#endif /* OUTPUT_STREAM_WRAPPER_H */

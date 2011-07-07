@@ -20,8 +20,8 @@
  */
 
 
-#ifndef UANPHY_H
-#define UANPHY_H
+#ifndef UAN_PHY_H
+#define UAN_PHY_H
 
 #include "ns3/object.h"
 #include "ns3/uan-mac.h"
@@ -378,4 +378,4 @@ public:
 
 }
 
-#endif // UANPHY_H
+#endif /* UAN_PHY_H */

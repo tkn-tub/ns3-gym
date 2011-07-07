@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANMACRCGW_H
-#define UANMACRCGW_H
+#ifndef UAN_MAC_RC_GW_H
+#define UAN_MAC_RC_GW_H
 
 #include "uan-mac.h"
 #include "uan-address.h"
@@ -164,4 +164,4 @@ bool operator < (UanAddress &a, UanAddress &b);
 
 }
 
-#endif // UANMACRCGW_H
+#endif /* UAN_MAC_RC_GW_H */

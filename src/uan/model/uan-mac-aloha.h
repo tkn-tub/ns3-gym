@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANMACALOHA_H
-#define UANMACALOHA_H
+#ifndef UAN_MAC_ALOHA_H
+#define UAN_MAC_ALOHA_H
 
 #include "uan-mac.h"
 #include "uan-address.h"
@@ -82,4 +82,4 @@ protected:
 
 }
 
-#endif // UANMACALOHA_H
+#endif /* UAN_MAC_ALOHA_H */

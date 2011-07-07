@@ -18,8 +18,8 @@
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  */
 
-#ifndef UE_RECORD_H_
-#define UE_RECORD_H_
+#ifndef UE_RECORD_H
+#define UE_RECORD_H
 
 #include "ns3/net-device.h"
 #include "ns3/object.h"
@@ -118,4 +118,4 @@ private:
 }
 ; // namespace ns3
 
-#endif /* UE_RECORD_H_ */
+#endif /* UE_RECORD_H */

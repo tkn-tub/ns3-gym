@@ -28,8 +28,9 @@
  * NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI),
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
-#ifndef DSDVPACKET_H_
-#define DSDVPACKET_H_
+
+#ifndef DSDV_PACKET_H
+#define DSDV_PACKET_H
 
 #include <iostream>
 #include "ns3/header.h"
@@ -108,4 +109,5 @@ static inline std::ostream & operator<< (std::ostream& os, const DsdvHeader & pa
 }
 }
 }
-#endif /* DSDVPACKET_H_ */
+
+#endif /* DSDV_PACKET_H */

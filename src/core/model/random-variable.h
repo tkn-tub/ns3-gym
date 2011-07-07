@@ -19,8 +19,8 @@
 // Author: Hadi Arbabi<marbabi@cs.odu.edu>
 //
 
-#ifndef __random_variable_h
-#define __random_variable_h
+#ifndef NS3_RANDOM_VARIABLE_H
+#define NS3_RANDOM_VARIABLE_H
 
 #include <vector>
 #include <algorithm>
@@ -817,5 +817,4 @@ ATTRIBUTE_ACCESSOR_DEFINE (RandomVariable);
 
 } // namespace ns3
 
-
-#endif
+#endif /* NS3_RANDOM_VARIABLE_H */
