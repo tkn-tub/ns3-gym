@@ -61,6 +61,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
+        'test/lte-test-pathloss-model.cc',
         'test/epc-test-gtpu-v1.cc',
         ]
     
@@ -120,6 +121,7 @@ def build(bld):
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
+        'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu-v1.h',
         ]
 
