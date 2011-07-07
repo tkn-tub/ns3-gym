@@ -56,8 +56,6 @@ int main (int argc, char *argv[])
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
  
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::SingleModelSpectrumChannel"));
-
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;

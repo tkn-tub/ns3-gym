@@ -163,6 +163,19 @@ LtePathlossModelTestCase::DoRun (void)
 
   Ptr<LteCqiSinrChunkProcessor> chunkProcessor = Create<LteCqiSinrChunkProcessor> (uePhy->GetObject<LtePhy> ());
   dlPhy->AddSinrChunkProcessor (chunkProcessor);
+  
+//   Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
+//   Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
+//   Ptr<SpectrumPropagationLossModel> dlPropagationModel = Create<BuildingsSpectrumPropagationLossModel> ();
+//   Ptr<SpectrumPropagationLossModel> ulPropagationModel = Create<BuildingsSpectrumPropagationLossModel> ();
+//   m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
+//   m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+//   m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+//   m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+//   m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
+//   m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
+  
+  
 
   /**
    * Generate several calls to LteSpectrumPhy::StartRx corresponding to several signals.
