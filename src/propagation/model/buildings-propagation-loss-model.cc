@@ -270,7 +270,6 @@ BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
 double
 BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_INFO (this << " RX POWER");
   
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_minDistance)
@@ -365,7 +364,6 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
 double
 BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  NS_LOG_INFO (this << " RX POWER");
   return txPowerDbm + GetLoss (a, b);
 }
 

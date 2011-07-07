@@ -39,6 +39,7 @@ namespace ns3 {
 class LteUePhy;
 class LteEnbPhy;
 class SpectrumChannel;
+class PropagationLossModel;
 
 
 /**
@@ -196,6 +197,9 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
+  
+  Ptr<PropagationLossModel> m_downlinkPropagationLossModel;
+  Ptr<PropagationLossModel> m_uplinkPropagationLossModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;

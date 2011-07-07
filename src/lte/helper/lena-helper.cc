@@ -45,6 +45,8 @@
 
 #include <iostream>
 
+#include <ns3/buildings-propagation-loss-model.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("LenaHelper");
 
@@ -67,6 +69,10 @@ LenaHelper::DoStart (void)
   Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
   m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+  m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
+  m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
   m_macStats = CreateObject<MacStatsCalculator> ();
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
@@ -203,7 +209,6 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LenaHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
-
   m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
