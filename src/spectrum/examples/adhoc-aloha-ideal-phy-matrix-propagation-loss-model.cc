@@ -65,11 +65,13 @@ int main (int argc, char** argv)
   double txPowerW = 0.1; 
   uint64_t phyRate = 500000;
   uint32_t pktSize = 1000;
+  double simDuration = 0.5;
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
   cmd.AddValue ("lossDb", "link loss in dB", lossDb);
   cmd.AddValue ("txPowerW", "txPower in Watts", txPowerW);
   cmd.AddValue ("phyRate", "PHY rate in bps", phyRate);
   cmd.AddValue ("pktSize", "packet size in bytes", pktSize);
+  cmd.AddValue ("simDuration", "duration of the simulation in seconds", simDuration);
   cmd.Parse (argc, argv);
 
   NodeContainer c;
@@ -130,20 +132,26 @@ int main (int argc, char** argv)
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (0.0));
-  apps.Stop (Seconds (10.0));
+  apps.Stop (Seconds (simDuration));
 
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxEndOk", MakeCallback (&PhyRxEndOkTrace));
 
   g_rxBytes = 0;
-  Simulator::Stop (Seconds (10.0001));
+  Simulator::Stop (Seconds (simDuration + 0.000001));
   Simulator::Run ();
-  double throughputBps = (g_rxBytes * 8.0) / 10.0;
 
-  std::cerr << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
-  std::cerr << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
-  double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
-  double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
-  std::cerr << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+  if (g_verbose)
+    {
+      double throughputBps = (g_rxBytes * 8.0) / simDuration;
+      std::cout << "throughput:       " << throughputBps << std::endl;
+      std::cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
+      std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
+      double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
+      double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
+      std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+
+    }
+
 
 
   Simulator::Destroy ();
