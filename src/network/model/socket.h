@@ -94,12 +94,12 @@ public:
 
   /**
    * This method wraps the creation of sockets that is performed
-   * by a socket factory on a given node based on a TypeId.
+   * on a given node by a SocketFactory specified by TypeId.
    * 
    * \return A smart pointer to a newly created socket.
    * 
    * \param node The node on which to create the socket
-   * \param tid The TypeId of the socket to create
+   * \param tid The TypeId of a SocketFactory class to use
    */
   static Ptr<Socket> CreateSocket (Ptr<Node> node, TypeId tid);
   /**
