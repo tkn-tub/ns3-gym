@@ -36,7 +36,6 @@
 
 namespace ns3 {
 
-class NetModel;
 /**
  * \defgroup netanim Netanim
  *
@@ -57,27 +56,29 @@ public:
 
   /**
    * \brief Construct the animator interface. No arguments needed.
+   *
    */
   AnimationInterface ();
 
   /**
    * \brief Destructor for the animator interface.
+   *
    */
   ~AnimationInterface ();
 
   /**
    * \brief Constructor
-   * \param Filename for the trace file used by the Animator
-   * \param Set to true if XML output traces are required
+   * \param filename The Filename for the trace file used by the Animator
+   * \param usingXML Set to true if XML output traces are required
    *
    */
   AnimationInterface (const std::string filename, bool usingXML = true);
 
   /**
    * \brief Constructor
-   * \param Port on which ns-3 should listen to for connection from the
+   * \param port Port on which ns-3 should listen to for connection from the
    *        external netanim application
-   * \param Set to true if XML output traces are required
+   * \param usingXML Set to true if XML output traces are required
    *
    */
   AnimationInterface (uint16_t port, bool usingXML = true);
@@ -91,6 +92,7 @@ public:
    *
    * \param fn The name of the output file.
    * \returns true if successful open.
+   *
    */
   bool SetOutputFile (const std::string& fn);
 
@@ -99,6 +101,7 @@ public:
    * in XML format.
    *
    * \returns none
+   *
    */
   void SetXMLOutput ();
 
@@ -113,6 +116,7 @@ public:
    *
    * \param port Port number to bind to.
    * \returns true if connection created, false if bind failed.
+   *
    */
   bool SetServerPort (uint16_t port);
 
@@ -138,14 +142,14 @@ public:
    * \brief Set mobility poll interval:WARNING: setting a low interval can 
    * cause slowness
    *
-   * \param Time interval between fetching mobility/position information
+   * \param t Time interval between fetching mobility/position information
    * Default: 0.25s
    *
    */
   void SetMobilityPollInterval (Time t);
 
 private:
-
+  
   int       m_fHandle;  // File handle for output (-1 if none)
   bool      m_xml;      // True if xml format desired
   Time mobilitypollinterval;
@@ -172,7 +176,6 @@ private:
                           Ptr<const Packet> p);
   void WifiPhyRxDropTrace (std::string context,
                            Ptr<const Packet> p);
-
   void WimaxTxTrace (std::string context,
                      Ptr<const Packet> p,
 		     const Mac48Address &);
@@ -181,8 +184,6 @@ private:
                      const Mac48Address &);
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
-  typedef std::map <uint32_t,AnimRxInfo>::iterator RxInfoIterator;
-
   // Write specified amount of data to the specified handle
   int  WriteN (int, const char*, uint32_t);
 
@@ -190,13 +191,21 @@ private:
   int  WriteN (int, const std::string&);
 
   //Helpers to output xml wireless packet
-  void OutputWirelessPacket (uint32_t, AnimPacketInfo&);
+  void OutputWirelessPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void MobilityAutoCheck ();
-  std::map<uint64_t, AnimPacketInfo> pendingWifiPackets;
-  std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
-  bool WifiPacketIsPending (uint64_t Uid); 
-  bool WimaxPacketIsPending (uint64_t Uid); 
   
+  uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
+
+  std::map<uint64_t, AnimPacketInfo> pendingWifiPackets;
+  void AddPendingWifiPacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool WifiPacketIsPending (uint64_t AnimUid); 
+
+  std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
+  void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool WimaxPacketIsPending (uint64_t AnimUid); 
+
+  uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
+
   std::map<uint32_t, Vector> nodeLocation;
   Vector GetPosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n);
@@ -207,6 +216,7 @@ private:
 
   // Recalculate topology bounds
   void RecalcTopoBounds (Vector v);
+  std::vector < Ptr <Node> > RecalcTopoBounds ();
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);
@@ -230,6 +240,83 @@ private:
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
 
 };
+
+/**
+ * \ingroup netanim
+ *
+ * \brief Byte tag using by Anim to uniquely identify packets
+ *
+ * When Anim receives a Tx Notification we tag the packet with a unique global uint64_t identifier
+ * before recording Tx information
+ * When Anim receives Rx notifications the tag is used to retrieve Tx information recorded earlier 
+ * 
+ */
+
+class AnimByteTag : public Tag
+{
+public:
+
+  /**
+   * \brief Get Type Id
+   * \returns Type Id
+   *
+   */
+  static TypeId GetTypeId (void);
+  
+  /**
+   * \brief Get Instance Type Id
+   * \returns Type Id
+   *
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+
+  /**
+   * \brief Get Serialized Size
+   * \returns Serialized Size (i.e size of uint64_t)
+   *
+   */
+  virtual uint32_t GetSerializedSize (void) const;
+
+  /**
+   * \brief Serialize function
+   * \param i Tag Buffer
+   *
+   */
+  virtual void Serialize (TagBuffer i) const;
+
+  /**
+   * \brief Deserialize function
+   * \param i Tag Buffer
+   *
+   */
+  virtual void Deserialize (TagBuffer i);
+
+  /**
+   * \brief Print tag info
+   * \param os Reference of ostream object
+   *
+   */
+  virtual void Print (std::ostream &os) const;
+
+  /**
+   * \brief Set global Uid in tag
+   * \param AnimUid global Uid
+   *
+   */
+  void Set (uint64_t AnimUid);
+
+  /**
+   * \brief Get Uid in tag
+   * \returns Uid in tag
+   *
+   */
+  uint64_t Get (void) const;
+
+private:
+
+  uint64_t m_AnimUid;
+};
+
 }
 #endif
 

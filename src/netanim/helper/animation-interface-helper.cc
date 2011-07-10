@@ -27,62 +27,58 @@ NS_LOG_COMPONENT_DEFINE ("AnimationInterfaceHelper");
 
 namespace ns3 {
 AnimPacketInfo::AnimPacketInfo()
-  : m_txnd (0), m_nRx (0), m_nRxEnd (0), m_fbTx (0), m_lbTx (0), 
-    transmitter_loc (Vector (0,0,0))
+  : m_txnd (0), m_fbTx (0), m_lbTx (0), 
+    m_txLoc (Vector (0,0,0))
 {
 }
 
-AnimPacketInfo::AnimPacketInfo(Ptr<const NetDevice> nd, const Time& fbTx, 
+AnimPacketInfo::AnimPacketInfo(Ptr <const NetDevice> txnd, const Time& fbTx, 
   const Time& lbTx, Vector txLoc)
-  : m_txnd (nd), m_nRx (0), m_nRxEnd (0),
-    m_fbTx (fbTx.GetSeconds ()), m_lbTx (lbTx.GetSeconds ()), transmitter_loc (txLoc), 
-    reception_range (0) 
+  : m_txnd (txnd), m_fbTx (fbTx.GetSeconds ()), m_lbTx (lbTx.GetSeconds ()), 
+    m_txLoc (txLoc)
 {
 }
 
-void AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const Time& fbRx,
-                                 Vector rxLoc)
+void AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const Time& fbRx)
 {
-  m_rx[nd->GetNode ()->GetId ()] = AnimRxInfo (fbRx,nd);
-  m_nRx++;
-  reception_range = std::max (reception_range,CalculateDistance (transmitter_loc,rxLoc));
+  m_rx[nd->GetNode ()->GetId ()] = AnimRxInfo (fbRx, nd, 0);
 }
 
-bool AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const Time& lbRx)
-
+bool AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const Time& lbRx, Vector rxLoc)
 {
   uint32_t NodeId = nd->GetNode ()->GetId (); 
   // Find the RxInfo
-  if (m_rx.find(NodeId) != m_rx.end ())
-    { 
-      // Check if the NetDevice matches. A node may have several NetDevices
-      if (m_rx[NodeId].m_rxnd != nd) 
-        {
-          return false; 
-        }
-      m_rx[NodeId].m_lbRx = lbRx.GetSeconds ();
-      firstlastbitDelta = m_rx[NodeId].m_lbRx - m_rx[NodeId].m_fbRx;
-      m_nRxEnd++;
-      if (m_nRxEnd == m_nRx) 
-        {
-          return true;
-        }
-      return false; // Still more RxEnd notifications expected
+  if (m_rx.find (NodeId) == m_rx.end ())
+    {
+      return false;
+    } 
+  AnimRxInfo& rxInfo = m_rx[NodeId];
+  // Check if the NetDevice matches. A node may have several NetDevices
+  if (rxInfo.m_rxnd != nd) 
+    {
+      return false; 
     }
-   NS_ASSERT ("Received RxEnd notification but RxInfo never existed");
-  return false; // Still more rxEnd expected
+  rxInfo.rxRange = CalculateDistance (m_txLoc, rxLoc);
+  rxInfo.m_lbRx = lbRx.GetSeconds ();
+  firstlastbitDelta = rxInfo.m_lbRx - rxInfo.m_fbRx;
+  return true;
+}
+
+AnimRxInfo AnimPacketInfo::GetRxInfo (Ptr<const NetDevice> nd)
+{
+  uint32_t NodeId = nd->GetNode ()->GetId (); 
+  NS_ASSERT (m_rx.find (NodeId) != m_rx.end ()); 
+  return m_rx[NodeId];
+}
+
+void AnimPacketInfo::RemoveRxInfo (Ptr<const NetDevice> nd)
+{
+  uint32_t NodeId = nd->GetNode ()->GetId (); 
+  m_rx.erase (m_rx.find (NodeId));
 }
 
 void AnimPacketInfo::ProcessRxDrop (Ptr<const NetDevice> nd)
 {
-  if (m_rx.find (nd->GetNode ()->GetId ()) == m_rx.end()) 
-    {
-      NS_LOG_DEBUG ("Received RxDrop notification"); 
-      return;
-    }
-  // Remove any entry for which an RxBegin notification was received
-  m_rx.erase (m_rx.find (nd->GetNode ()->GetId ()));
-  m_nRx--;
 }
 
 

@@ -56,27 +56,43 @@ public:
 
   /**
    * \brief Constructor
-   * \param First-bit Receive time
-   * \param Ptr to NetDevice used for reception
+   * \param fbRx First-bit Receive time
+   * \param nd NetDevice where packet was received
+   * \param rxRange Reception range 
    *
    */
-  AnimRxInfo (const Time& fbRx, Ptr <const NetDevice> nd)
-    : m_fbRx (fbRx.GetSeconds ()), m_lbRx (0), m_rxnd (nd) {}
+  AnimRxInfo (const Time& fbRx, Ptr <const NetDevice> nd ,double rxRange)
+    : m_fbRx (fbRx.GetSeconds ()), m_lbRx (0), m_rxnd (nd), 
+      rxRange (rxRange) {}
 
-  /* 
-   * First bit receive time
+  /** 
+   * \brief First bit receive time
+   * \param m_fbRx First bit receive time
+   *
    */
   double m_fbRx;            
   
-  /* 
-   * Last bit receive time
+  /** 
+   * \brief Last bit receive time
+   * \param m_lbRx Last bit receive time
+   *
    */
   double m_lbRx;             
 
-  /*
-   * Ptr to receiving Net Device
+  /**
+   * \brief Ptr to receiving NetDevice
+   * \param m_rxnd Ptr to receiving NetDevice
+   *
    */
   Ptr <const NetDevice> m_rxnd;
+
+  /** 
+   * \brief Reception range
+   * \param rxRange Reception range
+   *
+   */
+  double rxRange;
+
 };
 
 /**
@@ -101,88 +117,99 @@ public:
 
   /**
    * \brief Default constructor
+   *
    */
   AnimPacketInfo ();
   
   /**
    * \brief Constructor
-   * \param Ptr to NetDevice transmitted on
-   * \param First bit transmit time
-   * \param Last bit transmit time
-   * \param Transmitter Location
+   * \param tx_nd Ptr to NetDevice that is transmitting
+   * \param fbTx First bit transmit time
+   * \param lbTx Last bit transmit time
+   * \param txLoc Transmitter Location
    *
    */
-  AnimPacketInfo(Ptr<const NetDevice> nd,
-                 const Time& fbTx, const Time& lbTx,Vector txLoc);
-
+  AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time& fbTx, const Time& lbTx,Vector txLoc);
+  
   /**
-   * Ptr to NetDevice used for transmission
-   */
-  Ptr<const NetDevice> m_txnd;
-
-  /**
-   * Number of receivers
-   */
-  uint32_t m_nRx;      
+   * \brief Ptr to NetDevice that is transmitting
+   * \param m_txnd NetDevice that is transmitting
+   *
+   */ 
+  Ptr <const NetDevice> m_txnd;
 
   /** 
-   * Number of RxEnd trace callbacks
-   */
-  uint32_t m_nRxEnd;   
-
-  /** 
-   * First bit transmission time
+   * \brief First bit transmission time
+   * \param m_fbTx First bit transmission time
+   *
    */
   double   m_fbTx;     
 
   /**
-   * Last bit transmission time
+   * \brief Last bit transmission time
+   * \param m_lbTx Last bit transmission time
+   *
    */
   double   m_lbTx;     
 
   /**
-   * Transmitter's location
+   * \brief Transmitter's location
+   * \param m_txLoc Transmitter's Location
+   *
    */
-  Vector   transmitter_loc;
+  Vector   m_txLoc;
 
-  /** 
-   * Receptiion range
-   */
-  double reception_range;
 
   /**
-   * Collection of receivers
+   * \brief Collection of receivers
+   * \param m_rx Collection of receivers
+   *
    */
   std::map<uint32_t,AnimRxInfo> m_rx;
 
   /**
    * \brief Process RxBegin notifications
-   * \param Ptr to NetDevice where packet was received
-   * \param First bit receive time
-   * \param Location of the transmitter
+   * \param nd Ptr to NetDevice where packet was received
+   * \param fbRx First bit receive time
    *
    */
-  void ProcessRxBegin (Ptr <const NetDevice> nd, const Time& fbRx,
-                   Vector rxLoc);
+  void ProcessRxBegin (Ptr <const NetDevice> nd, const Time& fbRx);
 
   /**
    * \brief Process RxEnd notifications
-   * \param Ptr to NetDevice where packet was received
-   * \param First bit receive time
+   * \param nd Ptr to NetDevice where packet was received
+   * \param fbRx First bit receive time
+   * \param rxLoc Location of receiver
+   * \returns true if RxEnd notification was expected and processed
    *
    */
-  bool ProcessRxEnd (Ptr <const NetDevice> nd, const Time& fbRx);
+  bool ProcessRxEnd (Ptr <const NetDevice> nd, const Time& fbRx, Vector rxLoc);
 
   /**
    * \brief Process RxDrop notifications
-   * \param Ptr to NetDevice where packet was dropped on reception
+   * \param nd Ptr to NetDevice where packet was dropped on reception
    *
    */
   void ProcessRxDrop (Ptr <const NetDevice> nd);
+  
+  /**
+   * \brief GetRxInfo
+   * \param nd Ptr to NetDevice where packet was received
+   * \returns AnimRxInfo object
+   *
+   */ 
+  AnimRxInfo GetRxInfo (Ptr <const NetDevice> nd);
+
+  /**
+   * \brief RemoveRxInfo
+   * \param nd Ptr to NetDevice where packet was received
+   *
+   */ 
+  void RemoveRxInfo (Ptr <const NetDevice> nd);
 
   /**
    * \brief Time delta between First bit Rx and Last bit Rx
-   *
+   * \param firstlastbitDelta Time delta between First bit Rx and Last bit Rx
    */
    double firstlastbitDelta;
 
