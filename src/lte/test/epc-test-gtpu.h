@@ -18,10 +18,10 @@
  * Author: Jaume Nin <jaume.nin@cttc.cat>
  */
 
-#ifndef EPC_TEST_GTPU_V1_H
-#define EPC_TEST_GTPU_V1_H
+#ifndef EPC_TEST_GTPU_H
+#define EPC_TEST_GTPU_H
 
-#include "ns3/epc-gtpu-v1.h"
+#include "ns3/epc-gtpu-header.h"
 
 #include "ns3/test.h"
 
@@ -50,4 +50,4 @@ private:
 };
 
 
-#endif /* EPC_TEST_GTPU_V1_H */
+#endif /* EPC_TEST_GTPU_H */

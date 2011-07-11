@@ -23,8 +23,8 @@
 #include "ns3/object.h"
 #include "ns3/packet.h"
 
-#include "ns3/epc-gtpu-v1.h"
-#include "ns3/epc-test-gtpu-v1.h"
+#include "ns3/epc-gtpu-header.h"
+#include "ns3/epc-test-gtpu.h"
 
 NS_LOG_COMPONENT_DEFINE ("EpcGtpuTest");
 
@@ -36,7 +36,7 @@ using namespace ns3;
  */
 
 EpsGtpuTestSuite::EpsGtpuTestSuite ()
-  : TestSuite ("epc-gtpu-v1", SYSTEM)
+  : TestSuite ("epc-gtpu", SYSTEM)
 {
   AddTestCase (new EpsGtpuHeaderTestCase ());
 }
@@ -64,23 +64,23 @@ EpsGtpuHeaderTestCase::DoRun (void)
   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
   LogComponentEnable ("EpcGtpuTest", logLevel);
-  GtpuHeader header1;
-  header1.SetExtensionHeaderFlag (true);
-  header1.SetLength (1234);
-  header1.SetMessageType (123);
-  header1.SetNPduNumber (123);
-  header1.SetNPduNumberFlag (true);
-  header1.SetNextExtensionType (123);
-  header1.SetProtocolType (true);
-  header1.SetSequenceNumber (1234);
-  header1.SetSequenceNumberFlag (true);
-  header1.SetTeid (1234567);
-  header1.SetVersion (123);
+  GtpuHeader h1;
+  h1.SetExtensionHeaderFlag (true);
+  h1.SetLength (1234);
+  h1.SetMessageType (123);
+  h1.SetNPduNumber (123);
+  h1.SetNPduNumberFlag (true);
+  h1.SetNextExtensionType (123);
+  h1.SetProtocolType (true);
+  h1.SetSequenceNumber (1234);
+  h1.SetSequenceNumberFlag (true);
+  h1.SetTeid (1234567);
+  h1.SetVersion (123);
 
   Packet p;
-  GtpuHeader header2;
-  p.AddHeader (header1);
-  p.RemoveHeader (header2);
+  GtpuHeader h2;
+  p.AddHeader (h1);
+  p.RemoveHeader (h2);
 
-  NS_TEST_ASSERT_MSG_EQ (header1, header2, "Wrong value!");
+  NS_TEST_ASSERT_MSG_EQ (h1, h2, "Wrong value!");
 }
