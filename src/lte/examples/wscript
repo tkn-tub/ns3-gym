@@ -13,6 +13,3 @@ def build(bld):
     obj = bld.create_ns3_program('profiling-reference',
                                  ['lte'])
     obj.source = 'profiling-reference.cc'
-    obj = bld.create_ns3_program('epc-gtpu-tunnel-example',
-                                 ['virtual-net-device', 'csma', 'internet', 'applications', 'lte'])
-    obj.source = 'epc-gtpu-tunnel-example.cc'

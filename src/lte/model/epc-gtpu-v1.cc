@@ -18,11 +18,8 @@
  * Author: Jaume Nin <jnin@cttc.cat>
  */
 
-#include "epc-gtpu-header.h"
-#include <ns3/log.h>
+#include "epc-gtpu-v1.h"
 #include "ns3/packet.h"
-
-NS_LOG_COMPONENT_DEFINE ("GtpuHeader");
 
 namespace ns3
 {
@@ -43,7 +40,7 @@ GtpuHeader::GetTypeId (void)
 }
 GtpuHeader::GtpuHeader () :
   m_version(1), m_protocolType(true), m_extensionHeaderFlag(false),
-      m_sequenceNumberFlag(true), m_nPduNumberFlag(true), m_messageType(255),
+      m_sequenceNumberFlag(false), m_nPduNumberFlag(false), m_messageType(0),
       m_length(0), m_teid(0), m_sequenceNumber(0), m_nPduNumber(0),
       m_nextExtensionType(0)
 {
@@ -83,25 +80,24 @@ GtpuHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 GtpuHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  uint8_t firstByte = i.ReadU8 ();
+  uint8_t firstByte = start.ReadU8 ();
   m_version = firstByte >> 5 & 0x7;
   m_protocolType = firstByte >> 4 & 0x1;
   m_extensionHeaderFlag = firstByte >> 2 & 0x1;
   m_sequenceNumberFlag  = firstByte >> 1 & 0x1;
   m_nPduNumberFlag = firstByte & 0x1;
-  m_messageType = i.ReadU8 ();
-  m_length = i.ReadNtohU16 ();
-  m_teid= i.ReadNtohU32 ();
-  m_sequenceNumber= i.ReadNtohU16 ();
-  m_nPduNumber= i.ReadU8 ();
-  m_nextExtensionType= i.ReadU8 ();
-  return GetSerializedSize ();
+  m_messageType = start.ReadU8 ();
+  m_length = start.ReadNtohU16 ();
+  m_teid= start.ReadNtohU32 ();
+  m_sequenceNumber= start.ReadNtohU16 ();
+  m_nPduNumber= start.ReadU8 ();
+  m_nextExtensionType= start.ReadU8 ();
+  return 4;
 }
 void
 GtpuHeader::Print (std::ostream &os) const
 {
-  os << " version=" << (uint32_t) m_version << " [";
+  os << "version=" << (uint32_t) m_version << " [";
   if (m_protocolType)
     {
      os << " PT ";
