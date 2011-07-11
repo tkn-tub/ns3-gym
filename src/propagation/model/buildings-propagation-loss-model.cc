@@ -276,7 +276,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
     {
       return 0.0;
     }
-    
+
   // get the BuildingsMobilityModel pointers
   Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
   Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
@@ -285,7 +285,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
   
   if (a1->IsOutdoor ())
     {
-      if (b1->IsIndoor ())
+      if (b1->IsOutdoor ())
         {
           if (distance > 1000)
             {

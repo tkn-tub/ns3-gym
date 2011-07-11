@@ -25,6 +25,8 @@
 
 #include "ns3/test.h"
 
+#include <ns3/buildings-mobility-model.h>
+
 
 using namespace ns3;
 
@@ -42,16 +44,21 @@ public:
 class LtePathlossModelTestCase : public TestCase
 {
 public:
-  LtePathlossModelTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
+  LtePathlossModelTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name);
   virtual ~LtePathlossModelTestCase ();
 
 private:
   virtual void DoRun (void);
 
-  Ptr<SpectrumValue> m_sv;
-  Ptr<const SpectrumModel> m_sm;
-  Ptr<SpectrumValue> m_sinr;
+//   Ptr<SpectrumValue> m_sv;
+//   Ptr<const SpectrumModel> m_sm;
+//   Ptr<SpectrumValue> m_sinr;
+  Ptr<BuildingsMobilityModel> m_node1;
+  Ptr<BuildingsMobilityModel> m_node2;
+  double m_lossRef;
+  
 };
 
 
 #endif /* LTE_TEST_PATHLOSS_MODEL_H */
+

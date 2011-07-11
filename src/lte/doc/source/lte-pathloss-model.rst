@@ -195,7 +195,7 @@ In the following the pseudo-code of the model is presented::
 
   if (txNode is outdoor)
     then
-      if (rxNode is indoor)
+      if (rxNode is outdoor)
         then
           if (distance > 1 km)
             then
