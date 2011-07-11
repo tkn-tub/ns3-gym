@@ -28,7 +28,6 @@ def build(bld):
         'model/lte-ue-net-device.cc',
         'model/ideal-control-messages.cc',
         'helper/lena-helper.cc',
-        'helper/epc-helper.cc',
         'helper/rlc-stats-calculator.cc',
         'helper/mac-stats-calculator.cc',
         'model/ff-mac-csched-sap.cc',
@@ -47,9 +46,7 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
-        'model/epc-gtpu-header.cc',
-        'model/epc-gtpu-l5-protocol.cc',
-        'model/epc-gtpu-tunnel.cc',
+        'model/epc-gtpu-v1.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -64,7 +61,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
-        'test/epc-test-gtpu.cc',
+        'test/epc-test-gtpu-v1.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -94,7 +91,6 @@ def build(bld):
         'model/lte-ue-net-device.h',
         'model/ideal-control-messages.h',
         'helper/lena-helper.h',
-        'helper/epc-helper.h',
         'helper/mac-stats-calculator.h',
         'helper/rlc-stats-calculator.h',
         'model/ff-mac-common.h',
@@ -114,9 +110,7 @@ def build(bld):
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
-        'model/epc-gtpu-header.h',
-        'model/epc-gtpu-l5-protocol.h',
-        'model/epc-gtpu-tunnel.h',
+        'model/epc-gtpu-v1.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-link-adaptation.h',
@@ -126,7 +120,7 @@ def build(bld):
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
-        'test/epc-test-gtpu.h',
+        'test/epc-test-gtpu-v1.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
