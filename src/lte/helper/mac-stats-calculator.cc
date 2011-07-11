@@ -77,8 +77,8 @@ MacStatsCalculator::SetDlOutputFilename (std::string outputFilename)
 }
 
 void
-MacStatsCalculator::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                  uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo,
+                                  uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Write DL Mac Stats in " << m_dlOutputFilename.c_str ());
@@ -93,7 +93,7 @@ MacStatsCalculator::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
           return;
         }
       m_dlFirstWrite = false;
-      outFile << "# time\tframe\tsframe\tRNTI\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2";
+      outFile << "# time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2";
       outFile << std::endl;
     }
   else
@@ -107,6 +107,8 @@ MacStatsCalculator::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
     }
 
   outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << (uint32_t) cellId << "\t";
+  outFile << imsi << "\t";
   outFile << frameNo << "\t";
   outFile << subframeNo << "\t";
   outFile << rnti << "\t";
@@ -118,8 +120,8 @@ MacStatsCalculator::DlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
 }
 
 void
-MacStatsCalculator::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                                  uint8_t mcs, uint16_t size)
+MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frameNo,
+                                  uint32_t subframeNo, uint16_t rnti,uint8_t mcs, uint16_t size)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Write UL Mac Stats in " << m_ulOutputFilename.c_str ());
@@ -134,7 +136,7 @@ MacStatsCalculator::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
           return;
         }
       m_ulFirstWrite = false;
-      outFile << "# time\tframe\tsframe\tRNTI\tmcs\tsize";
+      outFile << "# time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcs\tsize";
       outFile << std::endl;
     }
   else
@@ -148,6 +150,8 @@ MacStatsCalculator::UlScheduling (uint32_t frameNo, uint32_t subframeNo, uint16_
     }
 
   outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << (uint32_t) cellId << "\t";
+  outFile << imsi << "\t";
   outFile << frameNo << "\t";
   outFile << subframeNo << "\t";
   outFile << rnti << "\t";

@@ -181,7 +181,7 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
           station->m_tx_upper--;
         }
       break;
-    case - 1:
+    case -1:
       if (nrate > 0)
         {
           nrate--;

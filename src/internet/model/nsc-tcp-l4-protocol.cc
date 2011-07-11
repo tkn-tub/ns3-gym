@@ -59,9 +59,9 @@ class NscInterfaceImpl : public ISendCallback, public IInterruptCallback
 public:
   NscInterfaceImpl (Ptr<NscTcpL4Protocol> prot);
 private:
-  virtual void send_callback(const void *data, int datalen);
-  virtual void wakeup();
-  virtual void gettime(unsigned int *, unsigned int *);
+  virtual void send_callback (const void *data, int datalen);
+  virtual void wakeup ();
+  virtual void gettime (unsigned int *, unsigned int *);
 private:
   Ptr<NscTcpL4Protocol> m_prot;
 };
@@ -72,17 +72,17 @@ NscInterfaceImpl::NscInterfaceImpl (Ptr<NscTcpL4Protocol> prot)
 }
 
 void
-NscInterfaceImpl::send_callback(const void *data, int datalen)
+NscInterfaceImpl::send_callback (const void *data, int datalen)
 {
   m_prot->send_callback (data, datalen);
 }
 void
-NscInterfaceImpl::wakeup()
+NscInterfaceImpl::wakeup ()
 {
   m_prot->wakeup ();
 }
 void
-NscInterfaceImpl::gettime(unsigned int *sec, unsigned int *usec)
+NscInterfaceImpl::gettime (unsigned int *sec, unsigned int *usec)
 {
   m_prot->gettime (sec,usec);
 }
@@ -105,14 +105,14 @@ NscTcpL4Protocol::GetTypeId (void)
     .AddAttribute ("Library",
                    "Set the linux library to be used to create the stack",
                    TypeId::ATTR_GET|TypeId::ATTR_CONSTRUCT,
-                   StringValue("liblinux2.6.26.so"),
+                   StringValue ("liblinux2.6.26.so"),
                    MakeStringAccessor (&NscTcpL4Protocol::GetNscLibrary,&NscTcpL4Protocol::SetNscLibrary),
                    MakeStringChecker ())
   ;
   return tid;
 }
 
-int external_rand()
+int external_rand ()
 {
   return 1;   // TODO
 }
@@ -124,25 +124,25 @@ NscTcpL4Protocol::NscTcpL4Protocol ()
     m_softTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_dlopenHandle = NULL;
-  NS_LOG_LOGIC("Made a NscTcpL4Protocol "<<this);
+  NS_LOG_LOGIC ("Made a NscTcpL4Protocol "<<this);
 }
 
 NscTcpL4Protocol::~NscTcpL4Protocol ()
 {
   NS_LOG_FUNCTION (this);
-  dlclose(m_dlopenHandle);
+  dlclose (m_dlopenHandle);
 }
 
 void
-NscTcpL4Protocol::SetNscLibrary(const std::string &soname)
+NscTcpL4Protocol::SetNscLibrary (const std::string &soname)
 {
   if (soname!="")
     {
       m_nscLibrary = soname;
-      NS_ASSERT(!m_dlopenHandle);
-      m_dlopenHandle = dlopen(soname.c_str (), RTLD_NOW);
+      NS_ASSERT (!m_dlopenHandle);
+      m_dlopenHandle = dlopen (soname.c_str (), RTLD_NOW);
       if (m_dlopenHandle == NULL)
-        NS_FATAL_ERROR (dlerror());
+        NS_FATAL_ERROR (dlerror ());
     }
 }
 
@@ -161,18 +161,18 @@ NscTcpL4Protocol::SetNode (Ptr<Node> node)
       return;
     }
 
-  NS_ASSERT(m_dlopenHandle);
+  NS_ASSERT (m_dlopenHandle);
 
-  FCreateStack create = (FCreateStack)dlsym(m_dlopenHandle, "nsc_create_stack");
-  NS_ASSERT(create);
-  m_nscStack = create(m_nscInterface, m_nscInterface, external_rand);
-  int hzval = m_nscStack->get_hz();
+  FCreateStack create = (FCreateStack)dlsym (m_dlopenHandle, "nsc_create_stack");
+  NS_ASSERT (create);
+  m_nscStack = create (m_nscInterface, m_nscInterface, external_rand);
+  int hzval = m_nscStack->get_hz ();
 
-  NS_ASSERT(hzval > 0);
+  NS_ASSERT (hzval > 0);
 
   m_softTimer.SetFunction (&NscTcpL4Protocol::SoftInterrupt, this);
   m_softTimer.SetDelay (MilliSeconds (1000/hzval));
-  m_nscStack->init(hzval);
+  m_nscStack->init (hzval);
   // This enables stack and NSC debug messages
   // m_nscStack->set_diagnostic(1000);
 
@@ -203,7 +203,7 @@ NscTcpL4Protocol::NotifyNewAggregate ()
               Ptr<NscTcpSocketFactoryImpl> tcpFactory = CreateObject<NscTcpSocketFactoryImpl> ();
               tcpFactory->SetTcp (this);
               node->AggregateObject (tcpFactory);
-              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
+              this->SetDownTarget (MakeCallback (&Ipv4L3Protocol::Send, ipv4));
             }
         }
     }
@@ -308,7 +308,7 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
 {
   NS_LOG_FUNCTION (this << packet << header << incomingInterface);
   Ipv4Header ipHeader;
-  uint32_t packetSize = packet->GetSize();
+  uint32_t packetSize = packet->GetSize ();
 
   // The way things work at the moment, the IP header has been removed
   // by the ns-3 IPv4 processing code. However, the NSC stack expects
@@ -323,15 +323,15 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
   // all NSC stacks check the IP checksum
   ipHeader.EnableChecksum ();
 
-  packet->AddHeader(ipHeader);
-  packetSize = packet->GetSize();
+  packet->AddHeader (ipHeader);
+  packetSize = packet->GetSize ();
 
   uint8_t *buf = new uint8_t[packetSize];
   packet->CopyData (buf, packetSize);
   const uint8_t *data = const_cast<uint8_t *>(buf);
 
   // deliver complete packet to the NSC network stack
-  m_nscStack->if_receive_packet(0, data, packetSize);
+  m_nscStack->if_receive_packet (0, data, packetSize);
   delete[] buf;
 
   wakeup ();
@@ -345,12 +345,12 @@ void NscTcpL4Protocol::SoftInterrupt (void)
   m_softTimer.Schedule ();
 }
 
-void NscTcpL4Protocol::send_callback(const void* data, int datalen)
+void NscTcpL4Protocol::send_callback (const void* data, int datalen)
 {
   Ptr<Packet> p;
   uint32_t ipv4Saddr, ipv4Daddr;
 
-  NS_ASSERT(datalen > 20);
+  NS_ASSERT (datalen > 20);
 
 
   // create packet, without IP header. The TCP header is not touched.
@@ -366,17 +366,17 @@ void NscTcpL4Protocol::send_callback(const void* data, int datalen)
   ipv4Saddr = *(ipheader+3);
   ipv4Daddr = *(ipheader+4);
 
-  Ipv4Address saddr(ntohl(ipv4Saddr));
-  Ipv4Address daddr(ntohl(ipv4Daddr));
+  Ipv4Address saddr (ntohl (ipv4Saddr));
+  Ipv4Address daddr (ntohl (ipv4Daddr));
 
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   NS_ASSERT_MSG (ipv4, "nsc callback invoked, but node has no ipv4 object");
 
   m_downTarget (p, saddr, daddr, PROT_NUMBER, 0);
-  m_nscStack->if_send_finish(0);
+  m_nscStack->if_send_finish (0);
 }
 
-void NscTcpL4Protocol::wakeup()
+void NscTcpL4Protocol::wakeup ()
 {
   // TODO
   // this should schedule a timer to read from all tcp sockets now... this is
@@ -386,11 +386,11 @@ void NscTcpL4Protocol::wakeup()
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++) {
       // NSC HACK: (ab)use TcpSocket::ForwardUp for signalling
-      (*endPoint)->ForwardUp (NULL, Ipv4Header(), 0, 0);
+      (*endPoint)->ForwardUp (NULL, Ipv4Header (), 0, 0);
     }
 }
 
-void NscTcpL4Protocol::gettime(unsigned int* sec, unsigned int* usec)
+void NscTcpL4Protocol::gettime (unsigned int* sec, unsigned int* usec)
 {
   // Only used by the Linux network stack, e.g. during ISN generation
   // and in the kernel rng initialization routine. Also used in Linux
@@ -402,7 +402,7 @@ void NscTcpL4Protocol::gettime(unsigned int* sec, unsigned int* usec)
 }
 
 
-void NscTcpL4Protocol::AddInterface(void)
+void NscTcpL4Protocol::AddInterface (void)
 {
   Ptr<Ipv4> ip = m_node->GetObject<Ipv4> ();
   const uint32_t nInterfaces = ip->GetNInterfaces ();
@@ -421,16 +421,16 @@ void NscTcpL4Protocol::AddInterface(void)
 
       std::ostringstream addrOss, maskOss;
 
-      addr.Print(addrOss);
-      mask.Print(maskOss);
+      addr.Print (addrOss);
+      mask.Print (maskOss);
 
-      NS_LOG_LOGIC ("if_attach " << addrOss.str().c_str() << " " << maskOss.str().c_str() << " " << mtu);
+      NS_LOG_LOGIC ("if_attach " << addrOss.str ().c_str () << " " << maskOss.str ().c_str () << " " << mtu);
 
-      std::string addrStr = addrOss.str();
-      std::string maskStr = maskOss.str();
-      const char* addrCStr = addrStr.c_str();
-      const char* maskCStr = maskStr.c_str();
-      m_nscStack->if_attach(addrCStr, maskCStr, mtu);
+      std::string addrStr = addrOss.str ();
+      std::string maskStr = maskOss.str ();
+      const char* addrCStr = addrStr.c_str ();
+      const char* maskCStr = maskStr.c_str ();
+      m_nscStack->if_attach (addrCStr, maskCStr, mtu);
 
       if (i == 1)
         {
@@ -438,7 +438,7 @@ void NscTcpL4Protocol::AddInterface(void)
           // correct really...
 
           uint8_t addrBytes[4];
-          addr.Serialize(addrBytes);
+          addr.Serialize (addrBytes);
 
           // XXX: this is all a bit of a horrible hack
           //
@@ -448,10 +448,10 @@ void NscTcpL4Protocol::AddInterface(void)
           // All we need is another address on the same network as the interface. This
           // will force the stack to output the packet out of the network interface.
           addrBytes[3]++;
-          addr.Deserialize(addrBytes);
-          addrOss.str("");
-          addr.Print(addrOss);
-          m_nscStack->add_default_gateway(addrOss.str().c_str());
+          addr.Deserialize (addrBytes);
+          addrOss.str ("");
+          addr.Print (addrOss);
+          m_nscStack->add_default_gateway (addrOss.str ().c_str ());
         }
     }
 }

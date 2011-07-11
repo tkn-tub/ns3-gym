@@ -26,7 +26,7 @@ arpt :: Tee(3);
 
 // Input and output paths for eth0
 c0 :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800, -);
-FromSimDevice(eth0, 4096) -> c0;
+FromSimDevice(eth0,SNAPLEN 4096) -> c0;
 out0 :: Queue(200) -> todevice0 :: ToSimDevice(eth0);
 c0[0] -> ar0 :: ARPResponder(eth0) -> out0;
 arpq0 :: ARPQuerier(eth0) -> out0;
@@ -37,9 +37,9 @@ c0[3] -> Discard;
 
 // Input and output paths for eth1
 c1 :: Classifier(12/0806 20/0001, 12/0806 20/0002, 12/0800, -);
-FromSimDevice(eth1, 4096) -> c1;
+FromSimDevice(eth1,SNAPLEN 4096) -> c1;
 out1 :: Queue(200) -> todevice1 :: ToSimDevice(eth1);
-c1[0] -> ar1 :: ARPResponder(eth0) -> out1;
+c1[0] -> ar1 :: ARPResponder(eth1) -> out1;
 arpq1 :: ARPQuerier(eth1) -> out1;
 c1[1] -> arpt;
 arpt[1] -> [1]arpq1;

@@ -60,7 +60,7 @@ YansErrorRateModel::GetQamBer (double snr, unsigned int m, uint32_t signalSpread
 {
   double EbNo = snr * signalSpread / phyRate;
   double z = sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
-  double z1 = ((1.0 - 1.0 / sqrt (m)) * erfc (z)) ;
+  double z1 = ((1.0 - 1.0 / sqrt (m)) * erfc (z));
   double z2 = 1 - pow ((1 - z1), 2.0);
   double ber = z2 / Log2 (m);
   NS_LOG_INFO ("Qam m=" << m << " rate=" << phyRate << " snr=" << snr << " ber=" << ber);

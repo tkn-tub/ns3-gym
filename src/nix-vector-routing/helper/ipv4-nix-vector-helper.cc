@@ -43,7 +43,7 @@ Ptr<Ipv4RoutingProtocol>
 Ipv4NixVectorHelper::Create (Ptr<Node> node) const
 {
   Ptr<Ipv4NixVectorRouting> agent = m_agentFactory.Create<Ipv4NixVectorRouting> ();
-  agent->SetNode(node);
+  agent->SetNode (node);
   node->AggregateObject (agent);
   return agent;
 }

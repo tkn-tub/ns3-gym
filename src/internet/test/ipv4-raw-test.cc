@@ -51,7 +51,7 @@ AddInternetStack (Ptr<Node> node)
 {
   //ARP
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject(arp);
+  node->AggregateObject (arp);
   //IPV4
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   //Routing for Ipv4
@@ -59,10 +59,10 @@ AddInternetStack (Ptr<Node> node)
   ipv4->SetRoutingProtocol (ipv4Routing);
   Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
   ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
-  node->AggregateObject(ipv4);
+  node->AggregateObject (ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
-  node->AggregateObject(icmp);
+  node->AggregateObject (icmp);
   // //Ipv4Raw
   // Ptr<Ipv4UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   // node->AggregateObject(udp); 
@@ -110,7 +110,7 @@ void Ipv4RawSocketImplTest::ReceivePkt (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   m_receivedPacket = socket->Recv (2, MSG_PEEK);
   NS_ASSERT (m_receivedPacket->GetSize () == 2);
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
@@ -123,7 +123,7 @@ void Ipv4RawSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (2, MSG_PEEK);
   NS_ASSERT (m_receivedPacket2->GetSize () == 2);
-  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
   //cast availableData to void, to suppress 'availableData' set but not used
   //compiler warning
@@ -133,7 +133,7 @@ void Ipv4RawSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 void
 Ipv4RawSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
-  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 0);
+  Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 0);
   NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
                          123, to);
 }
@@ -151,7 +151,7 @@ Ipv4RawSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
 void
 Ipv4RawSocketImplTest::DoSendData_IpHdr (Ptr<Socket> socket, std::string to)
 {
-  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 0);
+  Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 0);
   socket->SetAttribute ("IpHeaderInclude", BooleanValue (true));
   Ptr<Packet> p = Create<Packet> (123);
   Ipv4Header ipHeader;

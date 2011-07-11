@@ -37,12 +37,12 @@ public:
   PacketCounterCalculator();
   virtual ~PacketCounterCalculator();
 
-  void PacketUpdate(std::string path, Ptr<const Packet> packet);
-  void FrameUpdate(std::string path, Ptr<const Packet> packet,
-                   Mac48Address realto);
+  void PacketUpdate (std::string path, Ptr<const Packet> packet);
+  void FrameUpdate (std::string path, Ptr<const Packet> packet,
+                    Mac48Address realto);
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   // end class PacketCounterCalculator
 };
@@ -58,12 +58,12 @@ public:
   PacketSizeMinMaxAvgTotalCalculator();
   virtual ~PacketSizeMinMaxAvgTotalCalculator();
 
-  void PacketUpdate(std::string path, Ptr<const Packet> packet);
-  void FrameUpdate(std::string path, Ptr<const Packet> packet,
-                   Mac48Address realto);
+  void PacketUpdate (std::string path, Ptr<const Packet> packet);
+  void FrameUpdate (std::string path, Ptr<const Packet> packet,
+                    Mac48Address realto);
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   // end class PacketSizeMinMaxAvgTotalCalculator
 };

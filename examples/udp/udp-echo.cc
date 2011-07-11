@@ -44,8 +44,8 @@ main (int argc, char *argv[])
 //
 #if 0
   LogComponentEnable ("UdpEchoExample", LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
 //
 // Allow the user to override any of the defaults and the above Bind() at
@@ -68,7 +68,7 @@ main (int argc, char *argv[])
 // Explicitly create the channels required by the topology (shown above).
 //
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
   NetDeviceContainer d = csma.Install (n);
@@ -87,7 +87,7 @@ main (int argc, char *argv[])
 //
   uint16_t port = 9;  // well-known echo port number
   UdpEchoServerHelper server (port);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -111,12 +111,12 @@ main (int argc, char *argv[])
 // Users may find it convenient to initialize echo packets with actual data;
 // the below lines suggest how to do this
 //
-  client.SetFill(apps.Get (0), "Hello World");
+  client.SetFill (apps.Get (0), "Hello World");
 
-  client.SetFill(apps.Get (0), 0xa5, 1024);
+  client.SetFill (apps.Get (0), 0xa5, 1024);
 
   uint8_t fill[] = { 0, 1, 2, 3, 4, 5, 6};
-  client.SetFill(apps.Get (0), fill, sizeof(fill), 1024);
+  client.SetFill (apps.Get (0), fill, sizeof(fill), 1024);
 #endif
 
   AsciiTraceHelper ascii;

@@ -288,7 +288,7 @@ void
 MpiInterface::Disable ()
 {
 #ifdef NS3_MPI
-  int flag = 0 ;
+  int flag = 0;
   MPI_Initialized (&flag);
   if (flag)
     {

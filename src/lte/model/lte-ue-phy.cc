@@ -311,7 +311,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
   std::vector<int> cqi = LteAmc::CreateCqiFeedbacks (sinr);
 
-  // CREATE CqiIdealControlMessage
+  // CREATE DlCqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
   CqiListElement_s dlcqi;
 

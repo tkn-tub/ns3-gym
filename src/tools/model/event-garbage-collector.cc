@@ -65,7 +65,7 @@ EventGarbageCollector::Cleanup ()
           m_events.erase (iter++);
         }
       else
-        break; // EventIds are sorted by timestamp => further events are not expired for sure
+        break;  // EventIds are sorted by timestamp => further events are not expired for sure
     }
 
   // If after cleanup we are still over the limit, increase the limit.

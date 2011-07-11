@@ -388,14 +388,11 @@ Ipv4ClickRouting::WriteHandler (std::string elementName, std::string handlerName
 }
 
 void
-Ipv4ClickRouting::SetPromiscuous (std::string ifName)
+Ipv4ClickRouting::SetPromisc (int ifid)
 {
   Ptr<Ipv4L3ClickProtocol> ipv4l3 = DynamicCast<Ipv4L3ClickProtocol> (m_ipv4);
-  NS_ASSERT (ipv4l3);
-  // Interface ethN gets index 1+N, but netdevice will start at 0
-  // To ensure this, install a Click stack on a node only after
-  // all NetDevices have been installed.
-  ipv4l3->SetPromisc (GetInterfaceId (ifName.c_str ()) - 1);
+  NS_ASSERT(ipv4l3);
+  ipv4l3->SetPromisc (ifid);
 }
 
 Ptr<Ipv4Route>
@@ -625,6 +622,16 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         retval = simstrlcpy (buf, len, clickInstance->GetNodeName ());
 
         NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_GET_NODE_NAME: " << buf << " " << len);
+        break;
+      }
+
+    case SIMCLICK_IF_PROMISC:
+      {
+        int ifid = va_arg(val, int);
+        clickInstance->SetPromisc (ifid);
+
+        retval = 0;
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IF_PROMISC: " << ifid << " " << ns3::Simulator::Now ());
         break;
       }
 

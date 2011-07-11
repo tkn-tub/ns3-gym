@@ -73,7 +73,7 @@
   do                                                    \
     {                                                   \
       std::cerr << "msg=\"" << msg << "\", ";           \
-      NS_FATAL_ERROR_NO_MSG();                          \
+      NS_FATAL_ERROR_NO_MSG ();                          \
     }                                                   \
   while (false)
 

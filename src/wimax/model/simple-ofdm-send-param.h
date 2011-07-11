@@ -29,6 +29,10 @@
 #define SIMPLEOFDMSENDPARAM_H_
 
 namespace ns3 {
+
+/**
+ * \ingroup wimax
+ */
 class simpleOfdmSendParam
 {
 public:
@@ -103,7 +107,7 @@ public:
   /**
    * \return the received burst
    */
-  Ptr<PacketBurst> GetBurst(void);
+  Ptr<PacketBurst> GetBurst (void);
 
 private:
   bvec m_fecBlock;

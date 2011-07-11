@@ -22,6 +22,8 @@
 
 #include "ns3/log.h"
 
+#include "ns3/spectrum-test.h"
+
 #include "ns3/lte-phy-tag.h"
 #include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-sinr-chunk-processor.h"
@@ -265,6 +267,6 @@ LteDownlinkSinrTestCase::DoRun (void)
 
   NS_LOG_INFO ("Theoretical SINR: " << *m_sinr);
   NS_LOG_INFO ("Calculated SINR: " << calculatedSinr);
-
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, *m_sinr, 0.0000001, "Wrong SINR !");
+ 
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL(calculatedSinr, *m_sinr, 0.0000001, "Wrong SINR !");
 }

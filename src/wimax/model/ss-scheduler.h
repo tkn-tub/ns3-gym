@@ -34,6 +34,9 @@ namespace ns3 {
 class SubscriberStationNetDevice;
 class WimaxConnection;
 
+/**
+ * \ingroup wimax
+ */
 class SSScheduler : public Object
 {
 

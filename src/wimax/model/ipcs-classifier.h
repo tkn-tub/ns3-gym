@@ -30,6 +30,9 @@
 namespace ns3 {
 class SsServiceFlowManager;
 
+/**
+ * \ingroup wimax
+ */
 class IpcsClassifier : public Object
 {
 public:

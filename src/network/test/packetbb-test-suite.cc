@@ -259,7 +259,7 @@ PbbTestSuite::PbbTestSuite ()
     tlv2->SetTypeExt (100);
 
     uint8_t tlv2val[] = { 1, 2, 3, 4};
-    tlv2->SetValue(tlv2val, sizeof(tlv2val));
+    tlv2->SetValue (tlv2val, sizeof(tlv2val));
 
     packet->TlvPushBack (tlv2);
 
@@ -452,7 +452,7 @@ PbbTestSuite::PbbTestSuite ()
       0x25, 0x26, 0x27, 0x28,
       0x29, 0x2a, 0x2b, 0x2c
     };
-    tlv2->SetValue(tlv2val, sizeof(tlv2val));
+    tlv2->SetValue (tlv2val, sizeof(tlv2val));
 
     packet->TlvPushBack (tlv2);
 
@@ -622,7 +622,7 @@ PbbTestSuite::PbbTestSuite ()
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
-    msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
+    msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
@@ -679,7 +679,7 @@ PbbTestSuite::PbbTestSuite ()
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
-    msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
+    msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopCount (1);
     packet->MessagePushBack (msg2);
 
@@ -738,7 +738,7 @@ PbbTestSuite::PbbTestSuite ()
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
-    msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
+    msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     packet->MessagePushBack (msg2);
@@ -800,7 +800,7 @@ PbbTestSuite::PbbTestSuite ()
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
-    msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
+    msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
@@ -863,7 +863,7 @@ PbbTestSuite::PbbTestSuite ()
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
-    msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
+    msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
@@ -935,7 +935,7 @@ PbbTestSuite::PbbTestSuite ()
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
-    msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
+    msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
@@ -2223,7 +2223,7 @@ PbbTestSuite::PbbTestSuite ()
     msg2a2tlv1->SetIndexStop (3);
 
     uint8_t value[] = { 1, 2, 3};
-    msg2a2tlv1->SetValue(value, sizeof (value));
+    msg2a2tlv1->SetValue (value, sizeof (value));
     msg2a2tlv1->SetMultivalue (true);
 
     msg2a2->TlvPushBack (msg2a2tlv1);
@@ -2505,7 +2505,7 @@ PbbTestSuite::PbbTestSuite ()
       0x25, 0x26, 0x27, 0x28,
       0x29, 0x2a, 0x2b, 0x2c,
     };
-    msg2a2tlv1->SetValue(value, sizeof (value));
+    msg2a2tlv1->SetValue (value, sizeof (value));
 
     msg2a2->TlvPushBack (msg2a2tlv1);
 
@@ -2630,7 +2630,7 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
+    m1->SetType (1);
 
     packet->MessagePushBack (m1);
 
@@ -2661,8 +2661,8 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
-    m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
+    m1->SetType (1);
+    m1->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
     packet->MessagePushBack (m1);
 
@@ -2701,8 +2701,8 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
-    m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
+    m1->SetType (1);
+    m1->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
     Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::1"));
@@ -2751,8 +2751,8 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
-    m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
+    m1->SetType (1);
+    m1->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
     Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::1"));
@@ -2803,8 +2803,8 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
-    m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
+    m1->SetType (1);
+    m1->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
     Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
@@ -2860,8 +2860,8 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
-    m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
+    m1->SetType (1);
+    m1->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
     Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
@@ -2926,8 +2926,8 @@ PbbTestSuite::PbbTestSuite ()
     Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
-    m1->SetType(1);
-    m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
+    m1->SetType (1);
+    m1->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
     Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::2"));

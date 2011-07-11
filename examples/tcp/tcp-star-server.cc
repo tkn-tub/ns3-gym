@@ -78,24 +78,24 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults and the above
   // Config::SetDefault()s at run-time, via command-line arguments
   CommandLine cmd;
-  cmd.AddValue("nNodes", "Number of nodes to place in the star", N);
+  cmd.AddValue ("nNodes", "Number of nodes to place in the star", N);
   cmd.Parse (argc, argv);
 
   // Here, we will create N nodes in a star.
   NS_LOG_INFO ("Create nodes.");
   NodeContainer serverNode;
   NodeContainer clientNodes;
-  serverNode.Create(1);
-  clientNodes.Create(N-1);
-  NodeContainer allNodes = NodeContainer(serverNode, clientNodes);
+  serverNode.Create (1);
+  clientNodes.Create (N-1);
+  NodeContainer allNodes = NodeContainer (serverNode, clientNodes);
 
   // Install network stacks on the nodes
   InternetStackHelper internet;
   internet.Install (allNodes);
 
   //Collect an adjacency list of nodes for the p2p topology
-  std::vector<NodeContainer> nodeAdjacencyList(N-1);
-  for(uint32_t i=0; i<nodeAdjacencyList.size(); ++i)
+  std::vector<NodeContainer> nodeAdjacencyList (N-1);
+  for(uint32_t i=0; i<nodeAdjacencyList.size (); ++i)
     {
       nodeAdjacencyList[i] = NodeContainer (serverNode, clientNodes.Get (i));
     }
@@ -105,8 +105,8 @@ main (int argc, char *argv[])
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  std::vector<NetDeviceContainer> deviceAdjacencyList(N-1);
-  for(uint32_t i=0; i<deviceAdjacencyList.size(); ++i)
+  std::vector<NetDeviceContainer> deviceAdjacencyList (N-1);
+  for(uint32_t i=0; i<deviceAdjacencyList.size (); ++i)
     {
       deviceAdjacencyList[i] = p2p.Install (nodeAdjacencyList[i]);
     }
@@ -114,12 +114,12 @@ main (int argc, char *argv[])
   // Later, we add IP addresses.
   NS_LOG_INFO ("Assign IP Addresses.");
   Ipv4AddressHelper ipv4;
-  std::vector<Ipv4InterfaceContainer> interfaceAdjacencyList(N-1);
-  for(uint32_t i=0; i<interfaceAdjacencyList.size(); ++i)
+  std::vector<Ipv4InterfaceContainer> interfaceAdjacencyList (N-1);
+  for(uint32_t i=0; i<interfaceAdjacencyList.size (); ++i)
     {
       std::ostringstream subnet;
       subnet<<"10.1."<<i+1<<".0";
-      ipv4.SetBase (subnet.str().c_str(), "255.255.255.0");
+      ipv4.SetBase (subnet.str ().c_str (), "255.255.255.0");
       interfaceAdjacencyList[i] = ipv4.Assign (deviceAdjacencyList[i]);
     }
 
@@ -128,7 +128,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink on the star "hub" to receive these packets
   uint16_t port = 50000;
-  Address sinkLocalAddress(InetSocketAddress (Ipv4Address::GetAny (), port));
+  Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
   ApplicationContainer sinkApp = sinkHelper.Install (serverNode);
   sinkApp.Start (Seconds (1.0));
@@ -137,18 +137,18 @@ main (int argc, char *argv[])
   // Create the OnOff applications to send TCP to the server
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
   clientHelper.SetAttribute 
-            ("OnTime", RandomVariableValue (ConstantVariable (1)));
+    ("OnTime", RandomVariableValue (ConstantVariable (1)));
   clientHelper.SetAttribute 
-            ("OffTime", RandomVariableValue (ConstantVariable (0)));
+    ("OffTime", RandomVariableValue (ConstantVariable (0)));
   //normally wouldn't need a loop here but the server IP address is different
   //on each p2p subnet
   ApplicationContainer clientApps;
-  for(uint32_t i=0; i<clientNodes.GetN(); ++i)
+  for(uint32_t i=0; i<clientNodes.GetN (); ++i)
     {
       AddressValue remoteAddress
-              (InetSocketAddress (interfaceAdjacencyList[i].GetAddress (0), port));
+        (InetSocketAddress (interfaceAdjacencyList[i].GetAddress (0), port));
       clientHelper.SetAttribute ("Remote", remoteAddress);
-      clientApps.Add(clientHelper.Install (clientNodes.Get(i)));
+      clientApps.Add (clientHelper.Install (clientNodes.Get (i)));
     }
   clientApps.Start (Seconds (1.0));
   clientApps.Stop (Seconds (10.0));

@@ -82,7 +82,7 @@ std::ostream& operator<< (std::ostream& os, Ipv6Route const& route)
 
 Ipv6MulticastRoute::Ipv6MulticastRoute ()
 {
-  m_ttls.clear();
+  m_ttls.clear ();
 }
 
 Ipv6MulticastRoute::~Ipv6MulticastRoute ()
@@ -125,10 +125,10 @@ void Ipv6MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
     {
       // This TTL value effectively disables the interface
       std::map<uint32_t, uint32_t>::iterator iter;
-      iter = m_ttls.find(oif);
-      if (iter != m_ttls.end())
+      iter = m_ttls.find (oif);
+      if (iter != m_ttls.end ())
         {
-          m_ttls.erase(iter);
+          m_ttls.erase (iter);
         }
     }
   else
@@ -140,13 +140,13 @@ void Ipv6MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
 uint32_t Ipv6MulticastRoute::GetOutputTtl (uint32_t oif)
 {
   // We keep this interface around for compatibility (for now)
-  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find(oif);
-  if (iter == m_ttls.end())
+  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find (oif);
+  if (iter == m_ttls.end ())
     return((uint32_t)MAX_TTL);
   return(iter->second);
 }
 
-std::map<uint32_t, uint32_t> Ipv6MulticastRoute::GetOutputTtlMap() const
+std::map<uint32_t, uint32_t> Ipv6MulticastRoute::GetOutputTtlMap () const
 {
   return(m_ttls);
 }

@@ -44,12 +44,12 @@ public:
   TimeMinMaxAvgTotalCalculator();
   virtual ~TimeMinMaxAvgTotalCalculator();
 
-  void Update(const Time i);
+  void Update (const Time i);
 
-  virtual void Output(DataOutputCallback &callback) const;
+  virtual void Output (DataOutputCallback &callback) const;
 
 protected:
-  virtual void DoDispose(void);
+  virtual void DoDispose (void);
 
   uint32_t m_count;
   Time m_total, m_min, m_max;

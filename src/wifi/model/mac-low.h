@@ -388,6 +388,7 @@ public:
   void SetSlotTime (Time slotTime);
   void SetPifs (Time pifs);
   void SetBssid (Mac48Address ad);
+  void SetPromisc (void);
   Mac48Address GetAddress (void) const;
   Time GetAckTimeout (void) const;
   Time GetBasicBlockAckTimeout () const;
@@ -631,6 +632,8 @@ private:
 
   Time m_lastNavStart;
   Time m_lastNavDuration;
+
+  bool m_promisc;
 
   // Listerner needed to monitor when a channel switching occurs.
   class PhyMacLowListener * m_phyMacLowListener;

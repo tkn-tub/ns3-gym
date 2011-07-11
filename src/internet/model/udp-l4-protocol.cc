@@ -95,7 +95,7 @@ UdpL4Protocol::NotifyNewAggregate ()
               Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
               udpFactory->SetUdp (this);
               node->AggregateObject (udpFactory);
-              this->SetDownTarget (MakeCallback(&Ipv4::Send, ipv4));
+              this->SetDownTarget (MakeCallback (&Ipv4::Send, ipv4));
             }
         }
     }
@@ -214,15 +214,15 @@ UdpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
 }
 
 enum Ipv4L4Protocol::RxStatus
-UdpL4Protocol::Receive(Ptr<Packet> packet, 
-                       Ipv4Header const &header,
-                       Ptr<Ipv4Interface> interface)
+UdpL4Protocol::Receive (Ptr<Packet> packet,
+                        Ipv4Header const &header,
+                        Ptr<Ipv4Interface> interface)
 {
   NS_LOG_FUNCTION (this << packet << header);
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
     {
-      udpHeader.EnableChecksums();
+      udpHeader.EnableChecksums ();
     }
 
   udpHeader.InitializeChecksum (header.GetSource (), header.GetDestination (), PROT_NUMBER);
@@ -231,7 +231,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
 
   if(!udpHeader.IsChecksumOk ())
     {
-      NS_LOG_INFO("Bad checksum : dropping packet!");
+      NS_LOG_INFO ("Bad checksum : dropping packet!");
       return Ipv4L4Protocol::RX_CSUM_FAILED;
     }
 
@@ -263,7 +263,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
     {
-      udpHeader.EnableChecksums();
+      udpHeader.EnableChecksums ();
       udpHeader.InitializeChecksum (saddr,
                                     daddr,
                                     PROT_NUMBER);
@@ -286,7 +286,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
     {
-      udpHeader.EnableChecksums();
+      udpHeader.EnableChecksums ();
       udpHeader.InitializeChecksum (saddr,
                                     daddr,
                                     PROT_NUMBER);

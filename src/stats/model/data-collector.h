@@ -48,30 +48,30 @@ public:
   DataCollector();
   virtual ~DataCollector();
 
-  void DescribeRun(std::string experiment,
-                   std::string strategy,
-                   std::string input,
-                   std::string runID,
-                   std::string description = "");
+  void DescribeRun (std::string experiment,
+                    std::string strategy,
+                    std::string input,
+                    std::string runID,
+                    std::string description = "");
 
-  std::string GetExperimentLabel() const { return m_experimentLabel; }
-  std::string GetStrategyLabel() const { return m_strategyLabel; }
-  std::string GetInputLabel() const { return m_inputLabel; }
-  std::string GetRunLabel() const { return m_runLabel; }
-  std::string GetDescription() const { return m_description; }
+  std::string GetExperimentLabel () const { return m_experimentLabel; }
+  std::string GetStrategyLabel () const { return m_strategyLabel; }
+  std::string GetInputLabel () const { return m_inputLabel; }
+  std::string GetRunLabel () const { return m_runLabel; }
+  std::string GetDescription () const { return m_description; }
 
-  void AddMetadata(std::string key, std::string value);
-  void AddMetadata(std::string key, double value);
-  void AddMetadata(std::string key, uint32_t value);
-  MetadataList::iterator MetadataBegin();
-  MetadataList::iterator MetadataEnd();
+  void AddMetadata (std::string key, std::string value);
+  void AddMetadata (std::string key, double value);
+  void AddMetadata (std::string key, uint32_t value);
+  MetadataList::iterator MetadataBegin ();
+  MetadataList::iterator MetadataEnd ();
 
-  void AddDataCalculator(Ptr<DataCalculator> datac);
-  DataCalculatorList::iterator DataCalculatorBegin();
-  DataCalculatorList::iterator DataCalculatorEnd();
+  void AddDataCalculator (Ptr<DataCalculator> datac);
+  DataCalculatorList::iterator DataCalculatorBegin ();
+  DataCalculatorList::iterator DataCalculatorEnd ();
 
 protected:
-  virtual void DoDispose();
+  virtual void DoDispose ();
 
 private:
   std::string m_experimentLabel;

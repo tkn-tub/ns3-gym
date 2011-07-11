@@ -36,12 +36,12 @@ private:
   std::string m_name;
 };
 
-bool NscStackStringAccessor::HasGetter(void) const
+bool NscStackStringAccessor::HasGetter (void) const
 {
   return true;
 }
 
-bool NscStackStringAccessor::HasSetter(void) const
+bool NscStackStringAccessor::HasSetter (void) const
 {
   return true;
 }
@@ -106,7 +106,7 @@ Ns3NscStack::GetInstanceTypeId (void) const
       tid = TypeId (name.c_str ());
       tid.SetParent<Ns3NscStack> ();
       char buf[256];
-      for (int i=0; m_stack->sysctl_getnum(i, buf, sizeof(buf)) > 0 ; i++)
+      for (int i=0; m_stack->sysctl_getnum (i, buf, sizeof(buf)) > 0; i++)
         {
           char value[256];
           if (m_stack->sysctl_get (buf, value, sizeof(value)) > 0)
@@ -129,7 +129,7 @@ Ns3NscStack::Get (std::string name) const
     { // name.c_str () is not a valid sysctl name, or internal NSC error (eg. error converting value)
       return NULL;
     }
-  return std::string(buf);
+  return std::string (buf);
 }
 
 void

@@ -50,7 +50,7 @@ public:
    * \return If the net device pointed to by the devicePtr is active
    * and ready to RX/TX.
    */
-  bool IsActive();
+  bool IsActive ();
 };
 
 /**
@@ -130,7 +130,7 @@ public:
    * channel, false if the device is currently connected to the
    * channel or can't be found.
    */
-  bool Reattach(uint32_t deviceId);
+  bool Reattach (uint32_t deviceId);
 
   /**
    * \brief Reattach a previously detached net device to the channel
@@ -144,7 +144,7 @@ public:
    * channel, false if the device is currently connected to the
    * channel or can't be found.
    */
-  bool Reattach(Ptr<CsmaNetDevice> device);
+  bool Reattach (Ptr<CsmaNetDevice> device);
 
   /**
    * \brief Start transmitting a packet over the channel

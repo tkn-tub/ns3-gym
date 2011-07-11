@@ -72,7 +72,8 @@ NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 
 LteUeRrc::LteUeRrc ()
   : m_cmacSapProvider (0),
-    m_macSapProvider (0)
+    m_macSapProvider (0),
+    m_cellId (0)
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new UeMemberLteUeCmacSapUser (this);
@@ -115,7 +116,6 @@ LteUeRrc::GetTypeId (void)
   ;
   return tid;
 }
-
 
 void
 LteUeRrc::SetLteUeCmacSapProvider (LteUeCmacSapProvider * s)
@@ -189,6 +189,13 @@ LteUeRrc::GetRnti ()
 {
   NS_LOG_FUNCTION (this);
   return m_rnti;
+}
+
+uint16_t
+LteUeRrc::GetCellId ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_cellId;
 }
 
 std::vector<uint8_t>

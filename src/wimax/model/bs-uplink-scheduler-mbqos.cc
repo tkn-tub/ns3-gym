@@ -307,7 +307,7 @@ UplinkSchedulerMBQoS::Schedule (void)
                       // Recover period interval information for UGS flow
                       Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
                       Time
-                      timestamp =
+                        timestamp =
                         (*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetRecord ()->GetLastGrantTime ()
                         + MilliSeconds ((*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetUnsolicitedGrantInterval ());
 
@@ -688,7 +688,7 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
                           continue;
                         }
 
-                      uint32_t symbolsToAllocate = GetBs ()->GetPhy ()->GetNrSymbols(allocationSize, job->GetSsRecord ()->GetModulationType ());
+                      uint32_t symbolsToAllocate = GetBs ()->GetPhy ()->GetNrSymbols (allocationSize, job->GetSsRecord ()->GetModulationType ());
                       if (symbolsToAllocate > availableSymbols)
                         {
                           symbolsToAllocate = availableSymbols;

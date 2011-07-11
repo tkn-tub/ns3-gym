@@ -596,8 +596,8 @@ public:
 protected:
   void NotifyConnectionSucceeded (void);
   void NotifyConnectionFailed (void);
-  void NotifyNormalClose(void);
-  void NotifyErrorClose(void);
+  void NotifyNormalClose (void);
+  void NotifyErrorClose (void);
   bool NotifyConnectionRequest (const Address &from);
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
   void NotifyDataSent (uint32_t size);

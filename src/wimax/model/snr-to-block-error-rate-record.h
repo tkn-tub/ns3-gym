@@ -19,17 +19,17 @@
  *                              <amine.ismail@udcast.com>
  */
 
+#ifndef SNRTOBLOCKERRORRATERECORD_H_
+#define SNRTOBLOCKERRORRATERECORD_H_
+namespace ns3 {
+
 /**
+ * \ingroup wimax
  * \brief This class represents a record (handled by SnrToBlockErrorRate manager) that keeps a mapping between
  * an SNR value and its corresponding (1) Bit Error Rate, (2) Block Error Rate, (3) Standard deviation, (4 and 5)
  * confidence interval.
  *
  */
-
-#ifndef SNRTOBLOCKERRORRATERECORD_H_
-#define SNRTOBLOCKERRORRATERECORD_H_
-namespace ns3 {
-
 class SNRToBlockErrorRateRecord
 {
 public:

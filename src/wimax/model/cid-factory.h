@@ -30,6 +30,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup wimax
  * This class is used exclusively by the BS to allocate CIDs to new connections.
  * This class uses the definitions from Table 345 in ieee-802.16-2004 to
  * allocate cids in different integer ranges according to their type.

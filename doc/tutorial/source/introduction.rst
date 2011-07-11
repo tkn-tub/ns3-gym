@@ -9,18 +9,6 @@ primarily for research and educational use.  The
 <http://www.nsnam.org>`_, 
 started in 2006, is an open-source project developing |ns3|.
 
-Primary documentation for the |ns3| project is available in four
-forms:
-
-* `ns-3 Doxygen/Manual
-  <http://www.nsnam.org/doxygen/index.html>`_:  
-  Documentation of the public APIs of the simulator
-* Tutorial (this document)
-* `Reference Manual
-  <http://www.nsnam.org/docs/manual.html>`_:  Reference Manual
-* `ns-3 wiki
-  <http://www.nsnam.org/wiki/index.php>`_
-
 The purpose of this tutorial is to introduce new |ns3| users to the 
 system in a structured way.  It is sometimes difficult for new users to
 glean essential information from detailed manuals and to convert this
@@ -89,18 +77,15 @@ community to develop new models, debug or maintain existing ones, and share
 results.  There are a few policies that we hope will encourage people to 
 contribute to |ns3| like they have for ns-2:
 
-* Open source licensing based on GNU GPLv2 compatibility;
+* Open source licensing based on GNU GPLv2 compatibility
 * `wiki
-  <http://www.nsnam.org/wiki/index.php>`_;
+  <http://www.nsnam.org/wiki/index.php>`_
 * `Contributed Code
   <http://www.nsnam.org/wiki/index.php/Contributed_Code>`_ page, similar to ns-2's popular Contributed Code
   `page
-  <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_; 
+  <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_ 
 * Open `bug tracker
-  <http://www.nsnam.org/bugzilla>`_;
-* |ns3| developers will gladly help potential contributors to get
-  started with the simulator (please contact `one of us
-  <http://www.nsnam.org/people.html>`_).
+  <http://www.nsnam.org/bugzilla>`_
 
 We realize that if you are reading this document, contributing back to 
 the project is probably not your foremost concern at this point, but

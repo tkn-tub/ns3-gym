@@ -12,7 +12,7 @@ How to enable a subset of |ns3|'s modules
 
 If shared libraries are being built, then enabling a module will cause at least one library to be built: ::
 
-  libns3-modulename.so.
+  libns3-modulename.so
 
 If the module has a test library and test libraries are being built, then ::
 

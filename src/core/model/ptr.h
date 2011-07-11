@@ -100,7 +100,7 @@ public:
   // allow conversions from T to T const.
   template <typename U>
   Ptr (Ptr<U> const &o);
-  ~Ptr () ;
+  ~Ptr ();
   Ptr<T> &operator = (Ptr const& o);
 
   T *operator -> () const;
@@ -453,7 +453,7 @@ Ptr<T>::~Ptr ()
 {
   if (m_ptr != 0) 
     {
-      m_ptr->Unref();
+      m_ptr->Unref ();
     }
 }
 
@@ -467,7 +467,7 @@ Ptr<T>::operator = (Ptr const& o)
     }
   if (m_ptr != 0) 
     {
-      m_ptr->Unref();
+      m_ptr->Unref ();
     }
   m_ptr = o.m_ptr;
   Acquire ();

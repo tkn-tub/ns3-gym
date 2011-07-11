@@ -175,7 +175,7 @@ public:
     : m_data (o.m_data)
   {}
   explicit inline Time (double v)
-    : m_data (lround(v))
+    : m_data (lround (v))
   {}
   explicit inline Time (int v)
     : m_data (v)

@@ -97,7 +97,7 @@ EthernetHeader::GetPacketType (void) const
 uint32_t 
 EthernetHeader::GetHeaderSize (void) const
 {
-  return GetSerializedSize();
+  return GetSerializedSize ();
 }
 
 
@@ -148,7 +148,7 @@ EthernetHeader::Serialize (Buffer::Iterator start) const
 
   if (m_enPreambleSfd)
     {
-      i.WriteU64(m_preambleSfd);
+      i.WriteU64 (m_preambleSfd);
     }
   WriteTo (i, m_destination);
   WriteTo (i, m_source);

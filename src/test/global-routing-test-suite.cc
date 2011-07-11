@@ -95,7 +95,7 @@ DynamicGlobalRoutingTestCase::HandleRead (Ptr<Socket> socket)
   Address from;
   while (packet = socket->RecvFrom (from))
     {
-      if (packet->GetSize() == 0)
+      if (packet->GetSize () == 0)
         { //EOF
           break;
         }
@@ -230,7 +230,7 @@ DynamicGlobalRoutingTestCase::DoRun (void)
   sink2->ShutdownSend ();
 
   sink2->SetRecvPktInfo (true);
-  sink2->SetRecvCallback (MakeCallback(&DynamicGlobalRoutingTestCase::HandleRead, this));
+  sink2->SetRecvCallback (MakeCallback (&DynamicGlobalRoutingTestCase::HandleRead, this));
 
   Ptr<Node> n1 = c.Get (1);
   Ptr<Ipv4> ipv41 = n1->GetObject<Ipv4> ();
@@ -368,7 +368,7 @@ GlobalRoutingSlash32TestCase::DoRun (void)
   // 210 bytes at a rate of 448 Kb/s
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
-                     Address (InetSocketAddress (ifInAddrC.GetLocal(), port)));
+                     Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));

@@ -115,12 +115,12 @@ main (int argc, char *argv[])
   // "--backboneNodes=20"
   //
   CommandLine cmd;
-  cmd.AddValue("backboneNodes", "number of backbone nodes", backboneNodes);
+  cmd.AddValue ("backboneNodes", "number of backbone nodes", backboneNodes);
   cmd.AddValue ("infraNodes", "number of leaf nodes", infraNodes);
-  cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes);
-  cmd.AddValue("stopTime", "simulation stop time (seconds)", stopTime);
-  cmd.AddValue("useCourseChangeCallback", "whether to enable course change tracing", useCourseChangeCallback);
-  cmd.AddValue("enableTracing", "enable tracing", enableTracing);
+  cmd.AddValue ("lanNodes", "number of LAN nodes", lanNodes);
+  cmd.AddValue ("stopTime", "simulation stop time (seconds)", stopTime);
+  cmd.AddValue ("useCourseChangeCallback", "whether to enable course change tracing", useCourseChangeCallback);
+  cmd.AddValue ("enableTracing", "enable tracing", enableTracing);
 
   //
   // The system global variables and the local values added to the argument
@@ -273,10 +273,10 @@ main (int argc, char *argv[])
       NqosWifiMacHelper macInfra = NqosWifiMacHelper::Default ();
       wifiPhy.SetChannel (wifiChannel.Create ());
       // Create unique ssids for these networks
-      std::string ssidString("wifi-infra");
+      std::string ssidString ("wifi-infra");
       std::stringstream ss;
       ss << i;
-      ssidString += ss.str();
+      ssidString += ss.str ();
       Ssid ssid = Ssid (ssidString);
       wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
       // setup stas
@@ -359,7 +359,7 @@ main (int argc, char *argv[])
   uint32_t lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1;
   Ptr<Node> appSink = NodeList::GetNode (lastNodeIndex);
   // Let's fetch the IP address of the last node, which is on Ipv4Interface 1
-  Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress(1, 0).GetLocal ();
+  Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
 
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (remoteAddr, port)));

@@ -38,6 +38,12 @@ class PointToPointChannel;
 class ErrorModel;
 
 /**
+ * \defgroup point-to-point PointToPointNetDevice
+ * This section documents the API of the ns-3 point-to-point module. For a generic functional description, please refer to the ns-3 manual.
+ */
+
+/**
+ * \ingroup point-to-point
  * \class PointToPointNetDevice
  * \brief A Device for a Point to Point Network Link.
  *
@@ -112,7 +118,7 @@ public:
    *
    * @returns Ptr to the queue.
    */
-  Ptr<Queue> GetQueue(void) const; 
+  Ptr<Queue> GetQueue (void) const;
 
   /**
    * Attach a receive ErrorModel to the PointToPointNetDevice.
@@ -123,7 +129,7 @@ public:
    * @see ErrorModel
    * @param em Ptr to the ErrorModel.
    */
-  void SetReceiveErrorModel(Ptr<ErrorModel> em);
+  void SetReceiveErrorModel (Ptr<ErrorModel> em);
 
   /**
    * Receive a packet from a connected PointToPointChannel.
@@ -140,8 +146,8 @@ public:
 
   // The remaining methods are documented in ns3::NetDevice*
 
-  virtual void SetIfIndex(const uint32_t index);
-  virtual uint32_t GetIfIndex(void) const;
+  virtual void SetIfIndex (const uint32_t index);
+  virtual uint32_t GetIfIndex (void) const;
 
   virtual Ptr<Channel> GetChannel (void) const;
 
@@ -164,8 +170,8 @@ public:
   virtual bool IsPointToPoint (void) const;
   virtual bool IsBridge (void) const;
 
-  virtual bool Send(Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual bool Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
 
   virtual Ptr<Node> GetNode (void) const;
   virtual void SetNode (Ptr<Node> node);
@@ -203,7 +209,7 @@ private:
    * \param p packet
    * \param protocolNumber protocol number
    */
-  void AddHeader(Ptr<Packet> p, uint16_t protocolNumber);
+  void AddHeader (Ptr<Packet> p, uint16_t protocolNumber);
 
   /**
    * Removes, from a packet of data, all headers and trailers that
@@ -213,7 +219,7 @@ private:
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
-  bool ProcessHeader(Ptr<Packet> p, uint16_t& param);
+  bool ProcessHeader (Ptr<Packet> p, uint16_t& param);
 
   /**
    * Start Sending a Packet Down the Wire.
@@ -238,7 +244,7 @@ private:
    * The TransmitComplete method is used internally to finish the process
    * of sending a packet out on the channel.
    */
-  void TransmitComplete(void);
+  void TransmitComplete (void);
 
   void NotifyLinkUp (void);
 
@@ -450,14 +456,14 @@ private:
    * \param protocol A PPP protocol number
    * \return The corresponding Ethernet protocol number
    */
-  static uint16_t PppToEther(uint16_t protocol);
+  static uint16_t PppToEther (uint16_t protocol);
 
   /**
    * \brief Ethernet to PPP protocol number mapping
    * \param protocol An Ethernet protocol number
    * \return The corresponding PPP protocol number
    */
-  static uint16_t EtherToPpp(uint16_t protocol);
+  static uint16_t EtherToPpp (uint16_t protocol);
 };
 
 } // namespace ns3

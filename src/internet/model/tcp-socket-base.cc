@@ -1099,7 +1099,7 @@ TcpSocketBase::DoPeerClose (void)
     }
   if (m_shutdownSend)
     { // The application declares that it would not sent any more, close this socket
-      Close();
+      Close ();
     }
   else
     { // Need to ack, the application will close later
@@ -1270,7 +1270,7 @@ bool
 TcpSocketBase::SendPendingData (bool withAck)
 {
   NS_LOG_FUNCTION (this << withAck);
-  if (m_txBuffer.Size () == 0) return false; // Nothing to send
+  if (m_txBuffer.Size () == 0) return false;  // Nothing to send
   if (m_endPoint == 0)
     {
       NS_LOG_INFO ("TcpSocketBase::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
@@ -1439,7 +1439,7 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
         }
       // If we received FIN before and now completed all "holes" in rx buffer,
       // invoke peer close procedure
-      if (m_rxBuffer.Finished () && (tcpHeader.GetFlags() & TcpHeader::FIN) == 0)
+      if (m_rxBuffer.Finished () && (tcpHeader.GetFlags () & TcpHeader::FIN) == 0)
         {
           DoPeerClose ();
         }

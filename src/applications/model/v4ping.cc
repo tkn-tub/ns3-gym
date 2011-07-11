@@ -119,7 +119,7 @@ V4Ping::Receive (Ptr<Socket> socket)
         {
           Icmpv4Echo echo;
           p->RemoveHeader (echo);
-          std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
+          std::map<uint16_t, Time>::iterator i = m_sent.find (echo.GetSequenceNumber ());
 
           if (i != m_sent.end () && echo.GetIdentifier () == 0)
             {
@@ -141,16 +141,16 @@ V4Ping::Receive (Ptr<Socket> socket)
                       Time delta = Simulator::Now () - sendTime;
 
                       m_sent.erase (i);
-                      m_avgRtt.Update (delta.GetMilliSeconds());
+                      m_avgRtt.Update (delta.GetMilliSeconds ());
                       m_recv++;
                       m_traceRtt (delta);
 
                       if (m_verbose)
                         {
-                          std::cout << recvSize << " bytes from " << realFrom.GetIpv4() << ":"
+                          std::cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
                                     << " icmp_seq=" << echo.GetSequenceNumber ()
                                     << " ttl=" << (unsigned)ipv4.GetTtl ()
-                                    << " time=" << delta.GetMilliSeconds() << " ms\n";
+                                    << " time=" << delta.GetMilliSeconds () << " ms\n";
                         }
                     }
                 }
@@ -214,7 +214,7 @@ V4Ping::Send ()
       header.EnableChecksum ();
     }
   p->AddHeader (header);
-  m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now()));
+  m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now ()));
   m_socket->Send (p, 0);
   m_next = Simulator::Schedule (m_interval, &V4Ping::Send, this);
 }
@@ -251,7 +251,7 @@ void
 V4Ping::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  m_next.Cancel();
+  m_next.Cancel ();
   m_socket->Close ();
 
   if (m_verbose)
@@ -264,10 +264,10 @@ V4Ping::StopApplication (void)
          << "time " << (Simulator::Now () - m_started).GetMilliSeconds () << "ms\n";
 
       if (m_avgRtt.Count () > 0)
-        os << "rtt min/avg/max/mdev = " << m_avgRtt.Min() << "/" << m_avgRtt.Avg() << "/"
-           << m_avgRtt.Max() << "/" << m_avgRtt.Stddev()
+        os << "rtt min/avg/max/mdev = " << m_avgRtt.Min () << "/" << m_avgRtt.Avg () << "/"
+           << m_avgRtt.Max () << "/" << m_avgRtt.Stddev ()
            << " ms\n";
-      std::cout << os.str();
+      std::cout << os.str ();
     }
 }
 

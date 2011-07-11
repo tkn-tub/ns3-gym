@@ -60,9 +60,9 @@ class RoutingTableEntry
 {
 public:
   /// c-to
-  RoutingTableEntry (Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, uint32_t m_seqNo = 0,
-                     Ipv4InterfaceAddress iface = Ipv4InterfaceAddress(), uint16_t  hops = 0,
-                     Ipv4Address nextHop = Ipv4Address(), Time lifetime = Simulator::Now());
+  RoutingTableEntry (Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address (), bool vSeqNo = false, uint32_t m_seqNo = 0,
+                     Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), uint16_t  hops = 0,
+                     Ipv4Address nextHop = Ipv4Address (), Time lifetime = Simulator::Now ());
 
   ~RoutingTableEntry ();
 
@@ -103,14 +103,14 @@ public:
   void Invalidate (Time badLinkLifetime);
   ///\name Fields
   //\{
-  Ipv4Address GetDestination () const { return m_ipv4Route->GetDestination(); }
+  Ipv4Address GetDestination () const { return m_ipv4Route->GetDestination (); }
   Ptr<Ipv4Route> GetRoute () const { return m_ipv4Route; }
   void SetRoute (Ptr<Ipv4Route> r) { m_ipv4Route = r; }
-  void SetNextHop (Ipv4Address nextHop) { m_ipv4Route->SetGateway(nextHop); }
-  Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
-  void SetOutputDevice (Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice(dev); }
-  Ptr<NetDevice> GetOutputDevice () const { return m_ipv4Route->GetOutputDevice(); }
-  Ipv4InterfaceAddress GetInterface () const { return m_iface;}
+  void SetNextHop (Ipv4Address nextHop) { m_ipv4Route->SetGateway (nextHop); }
+  Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway (); }
+  void SetOutputDevice (Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice (dev); }
+  Ptr<NetDevice> GetOutputDevice () const { return m_ipv4Route->GetOutputDevice (); }
+  Ipv4InterfaceAddress GetInterface () const { return m_iface; }
   void SetInterface (Ipv4InterfaceAddress iface) { m_iface = iface; }
   void SetValidSeqNo (bool s) { m_validSeqNo = s; }
   bool GetValidSeqNo () const { return m_validSeqNo; }
@@ -118,8 +118,8 @@ public:
   uint32_t GetSeqNo () const { return m_seqNo; }
   void SetHop (uint16_t hop) { m_hops = hop; }
   uint16_t GetHop () const { return m_hops; }
-  void SetLifeTime (Time lt) { m_lifeTime = lt + Simulator::Now(); }
-  Time GetLifeTime () const { return m_lifeTime - Simulator::Now(); }
+  void SetLifeTime (Time lt) { m_lifeTime = lt + Simulator::Now (); }
+  Time GetLifeTime () const { return m_lifeTime - Simulator::Now (); }
   void SetFlag (RouteFlags flag) { m_flag = flag; }
   RouteFlags GetFlag () const { return m_flag; }
   void SetRreqCnt (uint8_t n) { m_reqCount = n; }
@@ -141,7 +141,7 @@ public:
   {
     return (m_ipv4Route->GetDestination () == dst);
   }
-  void Print(Ptr<OutputStreamWrapper> stream) const;
+  void Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
   /// Valid Destination Sequence Number flag
@@ -241,9 +241,9 @@ public:
    * \param blacklistTimeout - time for which the neighboring node is put into the blacklist
    * \return true on success
    */
-  bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
+  bool MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
-  void Print(Ptr<OutputStreamWrapper> stream) const;
+  void Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;

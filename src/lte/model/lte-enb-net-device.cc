@@ -51,7 +51,7 @@ uint16_t LteEnbNetDevice::m_cellIdCounter = 0;
 TypeId LteEnbNetDevice::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::LteEnbNetDevice")
     .SetParent<LteNetDevice> ()
     .AddConstructor<LteEnbNetDevice> ()

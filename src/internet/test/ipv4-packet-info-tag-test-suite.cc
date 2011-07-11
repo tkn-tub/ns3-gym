@@ -55,7 +55,7 @@ AddInternetStack (Ptr<Node> node)
 {
   //ARP
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject(arp);
+  node->AggregateObject (arp);
   //IPV4
   Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
   //Routing for Ipv4
@@ -63,13 +63,13 @@ AddInternetStack (Ptr<Node> node)
   ipv4->SetRoutingProtocol (ipv4Routing);
   Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
   ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
-  node->AggregateObject(ipv4);
+  node->AggregateObject (ipv4);
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
-  node->AggregateObject(icmp);
+  node->AggregateObject (icmp);
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject(udp); 
+  node->AggregateObject (udp);
 }
 
 class Ipv4PacketInfoTagTest : public TestCase
@@ -94,7 +94,7 @@ Ipv4PacketInfoTagTest::RxCb (Ptr<Socket> socket)
   Ptr<Packet> m_receivedPacket;
 
   availableData = socket->GetRxAvailable ();
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
   NS_TEST_ASSERT_MSG_EQ (availableData, m_receivedPacket->GetSize (), "Did not read expected data");
 
   Ipv4PacketInfoTag tag;
@@ -106,7 +106,7 @@ Ipv4PacketInfoTagTest::RxCb (Ptr<Socket> socket)
 void
 Ipv4PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
-  Address realTo = InetSocketAddress (Ipv4Address (to.c_str()), 200);
+  Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 200);
   if (DynamicCast<UdpSocket> (socket) != 0)
     {
       NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),

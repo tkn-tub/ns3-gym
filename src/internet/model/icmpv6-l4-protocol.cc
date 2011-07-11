@@ -90,7 +90,7 @@ Icmpv6L4Protocol::~Icmpv6L4Protocol ()
 void Icmpv6L4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (CacheList::const_iterator it = m_cacheList.begin () ; it != m_cacheList.end () ; it++)
+  for (CacheList::const_iterator it = m_cacheList.begin (); it != m_cacheList.end (); it++)
     {
       Ptr<NdiscCache> cache = *it;
       cache->Dispose ();
@@ -413,7 +413,7 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
   Ipv6Address target = nsHeader.GetIpv6Target ();
 
-  for (i = 0 ; i < nb ; i++)
+  for (i = 0; i < nb; i++)
     {
       ifaddr = interface->GetAddress (i);
 
@@ -558,7 +558,7 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
       uint32_t i = 0;
       uint32_t nb = 0;
 
-      for (i = 0 ; i < nb ; i++)
+      for (i = 0; i < nb; i++)
         {
           if (ifaddr.GetAddress () == target)
             {
@@ -1093,7 +1093,7 @@ Ptr<NdiscCache> Icmpv6L4Protocol::FindCache (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
 
-  for (CacheList::const_iterator i = m_cacheList.begin () ; i != m_cacheList.end () ; i++)
+  for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
       if ((*i)->GetDevice () == device)
         {
@@ -1209,7 +1209,7 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Int
   uint32_t i = 0;
   uint32_t nb = interface->GetNAddresses ();
 
-  for (i = 0 ; i < nb ; i++)
+  for (i = 0; i < nb; i++)
     {
       ifaddr = interface->GetAddress (i);
 

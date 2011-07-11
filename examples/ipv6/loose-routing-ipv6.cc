@@ -51,13 +51,13 @@ NS_LOG_COMPONENT_DEFINE ("LooseRoutingIpv6Example");
 int main (int argc, char **argv)
 {
 #if 0 
-  LogComponentEnable("Ipv6ExtensionLooseRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6Extension", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6ExtensionLooseRouting", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6Extension", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+  LogComponentEnable ("NdiscCache", LOG_LEVEL_ALL);
 #endif
 
   CommandLine cmd;
@@ -91,9 +91,9 @@ int main (int argc, char **argv)
 
   NS_LOG_INFO ("Create channels.");
   CsmaHelper csma;
-  csma.SetDeviceAttribute ("Mtu", UintegerValue(1500));
-  csma.SetChannelAttribute ("DataRate", DataRateValue(5000000));
-  csma.SetChannelAttribute ("Delay", TimeValue(MilliSeconds (2)));
+  csma.SetDeviceAttribute ("Mtu", UintegerValue (1500));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   NetDeviceContainer d1 = csma.Install (net1);
   NetDeviceContainer d2 = csma.Install (net2);
   NetDeviceContainer d3 = csma.Install (net3);
@@ -152,7 +152,7 @@ int main (int argc, char **argv)
   /* remote address is first routers in RH0 => source routing */
   client.SetRemote (i1.GetAddress (1, 1));
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  client.SetAttribute ("Interval", TimeValue(interPacketInterval));
+  client.SetAttribute ("Interval", TimeValue (interPacketInterval));
   client.SetAttribute ("PacketSize", UintegerValue (packetSize));
   client.SetRoutersAddress (routersAddress);
   ApplicationContainer apps = client.Install (h0);

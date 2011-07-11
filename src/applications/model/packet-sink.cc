@@ -70,7 +70,7 @@ PacketSink::~PacketSink()
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t PacketSink::GetTotalRx() const
+uint32_t PacketSink::GetTotalRx () const
 {
   return m_totalRx;
 }
@@ -101,13 +101,13 @@ void PacketSink::DoDispose (void)
 
 
 // Application Methods
-void PacketSink::StartApplication()    // Called at time specified by Start
+void PacketSink::StartApplication ()    // Called at time specified by Start
 {
   NS_LOG_FUNCTION (this);
   // Create the socket if not already
   if (!m_socket)
     {
-      m_socket = Socket::CreateSocket (GetNode(), m_tid);
+      m_socket = Socket::CreateSocket (GetNode (), m_tid);
       m_socket->Bind (m_local);
       m_socket->Listen ();
       m_socket->ShutdownSend ();
@@ -126,23 +126,23 @@ void PacketSink::StartApplication()    // Called at time specified by Start
         }
     }
 
-  m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
+  m_socket->SetRecvCallback (MakeCallback (&PacketSink::HandleRead, this));
   m_socket->SetAcceptCallback (
     MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
-    MakeCallback(&PacketSink::HandleAccept, this));
+    MakeCallback (&PacketSink::HandleAccept, this));
   m_socket->SetCloseCallbacks (
-    MakeCallback(&PacketSink::HandlePeerClose, this),
-    MakeCallback(&PacketSink::HandlePeerError, this));
+    MakeCallback (&PacketSink::HandlePeerClose, this),
+    MakeCallback (&PacketSink::HandlePeerError, this));
 }
 
-void PacketSink::StopApplication()     // Called at time specified by Stop
+void PacketSink::StopApplication ()     // Called at time specified by Stop
 {
   NS_LOG_FUNCTION (this);
-  while(!m_socketList.empty()) //these are accepted sockets, close them
+  while(!m_socketList.empty ()) //these are accepted sockets, close them
     {
-      Ptr<Socket> acceptedSocket = m_socketList.front();
-      m_socketList.pop_front();
-      acceptedSocket->Close();
+      Ptr<Socket> acceptedSocket = m_socketList.front ();
+      m_socketList.pop_front ();
+      acceptedSocket->Close ();
     }
   if (m_socket) 
     {
@@ -158,16 +158,16 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   Address from;
   while (packet = socket->RecvFrom (from))
     {
-      if (packet->GetSize() == 0)
+      if (packet->GetSize () == 0)
         { //EOF
           break;
         }
       if (InetSocketAddress::IsMatchingType (from))
         {
-          m_totalRx += packet->GetSize();
+          m_totalRx += packet->GetSize ();
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-                       address.GetIpv4() << " [" << address << "]" 
+          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
+                       address.GetIpv4 () << " [" << address << "]"
                                    << " total Rx " << m_totalRx);
           //cast address to void , to suppress 'address' set but not used 
           //compiler warning in optimized builds
@@ -179,19 +179,19 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
 
 void PacketSink::HandlePeerClose (Ptr<Socket> socket)
 {
-  NS_LOG_INFO("PktSink, peerClose");
+  NS_LOG_INFO ("PktSink, peerClose");
 }
  
 void PacketSink::HandlePeerError (Ptr<Socket> socket)
 {
-  NS_LOG_INFO("PktSink, peerError");
+  NS_LOG_INFO ("PktSink, peerError");
 }
  
 
 void PacketSink::HandleAccept (Ptr<Socket> s, const Address& from)
 {
   NS_LOG_FUNCTION (this << s << from);
-  s->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
+  s->SetRecvCallback (MakeCallback (&PacketSink::HandleRead, this));
   m_socketList.push_back (s);
 }
 

@@ -92,11 +92,11 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
   cur = next;
   int64_t hi;
   uint64_t lo;
-  next = str.find(".", cur);
+  next = str.find (".", cur);
   if (next != std::string::npos)
     {
       hi = ReadDigits (str.substr (cur, next-cur));
-      lo = ReadDigits (str.substr (next+1, str.size()-(next+1)));
+      lo = ReadDigits (str.substr (next+1, str.size ()-(next+1)));
     }
   else
     {

@@ -75,7 +75,7 @@ UdpEchoServer::StartApplication (void)
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-      m_socket = Socket::CreateSocket (GetNode(), tid);
+      m_socket = Socket::CreateSocket (GetNode (), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
       m_socket->Bind (local);
       if (addressUtils::IsMulticast (m_local))
@@ -93,7 +93,7 @@ UdpEchoServer::StartApplication (void)
         }
     }
 
-  m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
+  m_socket->SetRecvCallback (MakeCallback (&UdpEchoServer::HandleRead, this));
 }
 
 void 
@@ -104,7 +104,7 @@ UdpEchoServer::StopApplication ()
   if (m_socket != 0) 
     {
       m_socket->Close ();
-      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
+      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 
@@ -117,8 +117,8 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-                       InetSocketAddress::ConvertFrom (from).GetIpv4());
+          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
+                       InetSocketAddress::ConvertFrom (from).GetIpv4 ());
 
           packet->RemoveAllPacketTags ();
           packet->RemoveAllByteTags ();

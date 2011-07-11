@@ -23,7 +23,7 @@
 
 namespace ns3 {
 
-ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(uint64_t,Uinteger);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME (uint64_t,Uinteger);
 
 namespace internal {
 

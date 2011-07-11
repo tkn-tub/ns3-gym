@@ -152,7 +152,7 @@ PcapFile::Swap (PcapFileHeader *from, PcapFileHeader *to)
   to->m_magicNumber = Swap (from->m_magicNumber);
   to->m_versionMajor = Swap (from->m_versionMajor);
   to->m_versionMinor = Swap (from->m_versionMinor);
-  to->m_zone = Swap (uint32_t(from->m_zone));
+  to->m_zone = Swap (uint32_t (from->m_zone));
   to->m_sigFigs = Swap (from->m_sigFigs);
   to->m_snapLen = Swap (from->m_snapLen);
   to->m_type = Swap (from->m_type);
@@ -512,7 +512,7 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
           break;
         }
 
-      if (std::memcmp(data1, data2, readLen1) != 0)
+      if (std::memcmp (data1, data2, readLen1) != 0)
         {
           diff = true; // Packet data do not match
           break;

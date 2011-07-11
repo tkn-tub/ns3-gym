@@ -90,7 +90,7 @@ void
 RemainingEnergy (double oldValue, double remainingEnergy)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
-      << "s Current remaining energy = " << remainingEnergy << "J");
+                 << "s Current remaining energy = " << remainingEnergy << "J");
 }
 
 /// Trace function for total energy consumption at node.
@@ -98,7 +98,7 @@ void
 TotalEnergy (double oldValue, double totalEnergy)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
-      << "s Total energy consumed by radio = " << totalEnergy << "J");
+                 << "s Total energy consumed by radio = " << totalEnergy << "J");
 }
 
 int

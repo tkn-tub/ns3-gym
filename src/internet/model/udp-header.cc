@@ -33,8 +33,8 @@ UdpHeader::UdpHeader ()
   : m_sourcePort (0xfffd),
     m_destinationPort (0xfffd),
     m_payloadSize (0xfffd),
-    m_calcChecksum(false),
-    m_goodChecksum(true)
+    m_calcChecksum (false),
+    m_goodChecksum (true)
 {
 }
 UdpHeader::~UdpHeader ()
@@ -151,8 +151,8 @@ UdpHeader::Serialize (Buffer::Iterator start) const
       uint16_t checksum = i.CalculateIpChecksum (start.GetSize (), headerChecksum);
 
       i = start;
-      i.Next(6);
-      i.WriteU16(checksum);
+      i.Next (6);
+      i.WriteU16 (checksum);
     }
 }
 uint32_t

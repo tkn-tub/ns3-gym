@@ -118,24 +118,24 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
   double log2 = a*a / b*std::log (std::sqrt ((b*b)/(a*a) + 1) + b/a);
   double expectedTravelTime = 1.0/6.0*(log1 + log2);
   expectedTravelTime += 1.0/15.0*((a*a*a)/(b*b) + (b*b*b)/(a*a)) -
-    1.0/15.0*std::sqrt(a*a + b*b)*((a*a)/(b*b) + (b*b)/(a*a) - 3);
+    1.0/15.0*std::sqrt (a*a + b*b)*((a*a)/(b*b) + (b*b)/(a*a) - 3);
   if (v0 == v1)
     {
       expectedTravelTime /= v0;
     }
   else
     {
-      expectedTravelTime *= std::log(v1/v0)/(v1 - v0);
+      expectedTravelTime *= std::log (v1/v0)/(v1 - v0);
     }
   double probabilityPaused = expectedPauseTime/(expectedPauseTime + expectedTravelTime);
   NS_ASSERT (probabilityPaused >= 0 && probabilityPaused <= 1);
 
   UniformVariable u_r;
-  double u = u_r.GetValue(0, 1);
+  double u = u_r.GetValue (0, 1);
   if (u < probabilityPaused) // node initially paused
     {
       m_helper.SetPosition (m_position->GetNext ());
-      u = u_r.GetValue(0, 1);
+      u = u_r.GetValue (0, 1);
       Time pause;
       if (m_minPause != m_maxPause)
         {
@@ -154,7 +154,7 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
         {
           pause = Seconds (u*expectedPauseTime);
         }
-      NS_ASSERT (!m_event.IsRunning());
+      NS_ASSERT (!m_event.IsRunning ());
       m_event = Simulator::Schedule (pause, &SteadyStateRandomWaypointMobilityModel::BeginWalk, this);
     }
   else // node initially moving
@@ -175,7 +175,7 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
         }
       double u2 = u_r.GetValue (0, 1);
       m_helper.SetPosition (Vector (m_minX + u2*x1 + (1 - u2)*x2, m_minY + u2*y1 + (1 - u2)*y2, 0));
-      NS_ASSERT (!m_event.IsRunning());
+      NS_ASSERT (!m_event.IsRunning ());
       m_event = Simulator::ScheduleNow (&SteadyStateRandomWaypointMobilityModel::SteadyStateBeginWalk, this, 
                                         Vector (m_minX + x2, m_minY + y2, 0));
     }

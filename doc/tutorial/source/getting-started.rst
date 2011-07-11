@@ -29,9 +29,7 @@ From this point forward, we are going to assume that the reader is working in
 Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
 toolchain installed and verified along with the prerequisites mentioned 
 above.  We are also going to assume that you have Mercurial and Waf installed
-and running on the target system as described in the "Getting Started" section 
-of the  |ns3| web site: 
-http://www.nsnam.org/getting_started.html.
+and running on the target system.
 
 The |ns3| code is available in Mercurial repositories on the server
 http://code.nsnam.org.  You can also download a tarball release at
@@ -91,8 +89,8 @@ you will see a number of repositories.  Many are the private repositories of
 the |ns3| development team.  The repositories of interest to you will
 be prefixed with "ns-3".  Official releases of |ns3| will be 
 numbered as ``ns-3.<release>.<hotfix>``.  For example, a second hotfix to a
-still hypothetical release nine of |ns3| would be numbered as
-``ns-3.9.2``.
+still hypothetical release forty two of |ns3| would be numbered as
+``ns-3.42.2``.
 
 The current development snapshot (unreleased) of |ns3| may be found 
 at http://code.nsnam.org/ns-3-dev/.  The 
@@ -106,9 +104,9 @@ the more constant ns-3-dev here in the tutorial, but you can replace the
 string "ns-3-dev" with your choice of release (e.g., ns-3.10) in the 
 text below.  You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
-`"Getting Started"
-<http://www.nsnam.org/getting_started.html>`_
-web page and looking for the latest release identifier.
+`"ns-3 Releases"
+<http://www.nsnam.org/releases>`_
+web page and clicking on the latest release link.
 
 Go ahead and change into the ``ns-3-allinone`` directory you created when
 you cloned that repository.  We are now going to use the ``download.py`` 
@@ -207,10 +205,9 @@ directory.  You should see something like the following there:
 
 ::
 
-  AUTHORS       examples/  RELEASE_NOTES  VERSION   wutils.py
-  bindings/     LICENSE    scratch/       waf*	    
-  CHANGES.html  ns3/       src/           waf.bat*
-  doc/          README     utils/         wscript
+  AUTHORS       doc       ns3            scratch   testpy.supp  VERSION   waf-tools
+  bindings      examples  README         src       utils        waf*      wscript
+  CHANGES.html  LICENSE   RELEASE_NOTES  test.py*  utils.py     waf.bat*  wutils.py
 
 You are now ready to build the |ns3| distribution.
 
@@ -281,19 +278,19 @@ following magic words:
   'build' finished successfully (2m30.586s)
   
   Modules built: 
-  aodv                      applications              bridge                   
-  click                     config-store              core                     
-  csma                      csma-layout               dsdv                     
-  emu                       energy                    flow-monitor             
-  internet                  lte                       mesh                     
-  mobility                  mpi                       netanim                  
-  network                   nix-vector-routing        ns3tcp                   
-  ns3wifi                   olsr                      openflow                 
-  point-to-point            point-to-point-layout     propagation              
-  spectrum                  stats                     tap-bridge               
-  test                      tools                     topology-read            
-  uan                       virtual-net-device        visualizer               
-  wifi                      wimax                    
+  aodv                      applications              bridge
+  click                     config-store              core
+  csma                      csma-layout               dsdv
+  emu                       energy                    flow-monitor
+  internet                  lte                       mesh
+  mobility                  mpi                       netanim
+  network                   nix-vector-routing        ns3tcp
+  ns3wifi                   olsr                      openflow
+  point-to-point            point-to-point-layout     propagation
+  spectrum                  stats                     tap-bridge
+  template                  test                      tools
+  topology-read             uan                       virtual-net-device
+  visualizer                wifi                      wimax
 
 Once the project has built you can say goodbye to your old friends, the 
 ``ns-3-allinone`` scripts.  You got what you needed from them and will now 
@@ -459,19 +456,19 @@ You will also see output from the test runner and the output will actually look 
   'build' finished successfully (1.799s)
   
   Modules built: 
-  aodv                      applications              bridge                   
-  click                     config-store              core                     
-  csma                      csma-layout               dsdv                     
-  emu                       energy                    flow-monitor             
-  internet                  lte                       mesh                     
-  mobility                  mpi                       netanim                  
-  network                   nix-vector-routing        ns3tcp                   
-  ns3wifi                   olsr                      openflow                 
-  point-to-point            point-to-point-layout     propagation              
-  spectrum                  stats                     tap-bridge               
-  test                      tools                     topology-read            
-  uan                       virtual-net-device        visualizer               
-  wifi                      wimax                    
+  aodv                      applications              bridge
+  click                     config-store              core
+  csma                      csma-layout               dsdv
+  emu                       energy                    flow-monitor
+  internet                  lte                       mesh
+  mobility                  mpi                       netanim
+  network                   nix-vector-routing        ns3tcp
+  ns3wifi                   olsr                      openflow
+  point-to-point            point-to-point-layout     propagation
+  spectrum                  stats                     tap-bridge
+  template                  test                      tools
+  topology-read             uan                       virtual-net-device
+  visualizer                wifi                      wimax
 
   PASS: TestSuite ns3-wifi-interference
   PASS: TestSuite histogram
@@ -489,7 +486,7 @@ You will also see output from the test runner and the output will actually look 
   PASS: TestSuite basic-random-number
   PASS: TestSuite object
   PASS: TestSuite random-number-generators
-  47 of 47 tests passed (47 passed, 0 failed, 0 crashed, 0 valgrind errors)
+  95 of 95 tests passed (95 passed, 0 failed, 0 crashed, 0 valgrind errors)
 
 This command is typically run by ``users`` to quickly verify that an 
 |ns3| distribution has built correctly.  

@@ -43,7 +43,7 @@ Channel::GetTypeId (void)
 }
 
 Channel::Channel ()
-  : m_id(0)
+  : m_id (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_id = ChannelList::Add (this);

@@ -21,8 +21,6 @@
 #include <ns3/simulator.h>
 #include <ns3/config.h>
 #include <ns3/names.h>
-#include <ns3/spectrum-propagation-loss-model.h>
-#include <ns3/propagation-delay-model.h>
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/single-model-spectrum-channel.h>
@@ -66,6 +64,38 @@ SpectrumChannelHelper::SetChannel (std::string type,
   m_channel.Set (n7, v7);
 }
 
+void
+SpectrumChannelHelper::AddPropagationLoss (std::string type,
+                                           std::string n0, const AttributeValue &v0,
+                                           std::string n1, const AttributeValue &v1,
+                                           std::string n2, const AttributeValue &v2,
+                                           std::string n3, const AttributeValue &v3,
+                                           std::string n4, const AttributeValue &v4,
+                                           std::string n5, const AttributeValue &v5,
+                                           std::string n6, const AttributeValue &v6,
+                                           std::string n7, const AttributeValue &v7)
+{
+  ObjectFactory factory;
+  factory.SetTypeId (type);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  Ptr<PropagationLossModel> m = factory.Create<PropagationLossModel> ();
+  AddPropagationLoss (m);
+}
+
+
+void 
+SpectrumChannelHelper::AddPropagationLoss (Ptr<PropagationLossModel> m)
+{
+  m->SetNext (m_propagationLossModel);
+  m_propagationLossModel = m;
+}
 
 void
 SpectrumChannelHelper::AddSpectrumPropagationLoss (std::string type,
@@ -88,7 +118,15 @@ SpectrumChannelHelper::AddSpectrumPropagationLoss (std::string type,
   factory.Set (n5, v5);
   factory.Set (n6, v6);
   factory.Set (n7, v7);
-  m_spectrumPropagationLoss.push_back (factory);
+  Ptr<SpectrumPropagationLossModel> m = factory.Create<SpectrumPropagationLossModel> ();
+  AddSpectrumPropagationLoss (m);
+}
+
+void 
+SpectrumChannelHelper::AddSpectrumPropagationLoss (Ptr<SpectrumPropagationLossModel> m)
+{
+  m->SetNext (m_spectrumPropagationLossModel);
+  m_spectrumPropagationLossModel = m;
 }
 
 void
@@ -119,28 +157,12 @@ Ptr<SpectrumChannel>
 SpectrumChannelHelper::Create (void) const
 {
   Ptr<SpectrumChannel> channel = (m_channel.Create ())->GetObject<SpectrumChannel> ();
-  Ptr<SpectrumPropagationLossModel> prev = 0;
-  for (std::vector<ObjectFactory>::const_iterator i = m_spectrumPropagationLoss.begin (); i != m_spectrumPropagationLoss.end (); ++i)
-    {
-      Ptr<SpectrumPropagationLossModel> cur = (*i).Create<SpectrumPropagationLossModel> ();
-      if (prev == 0)
-        {
-          channel->AddSpectrumPropagationLossModel (cur);
-        }
-      else
-        {
-          prev->SetNext (cur);
-        }
-      prev = cur;
-    }
+  channel->AddSpectrumPropagationLossModel (m_spectrumPropagationLossModel);
+  channel->AddPropagationLossModel (m_propagationLossModel);
   Ptr<PropagationDelayModel> delay = m_propagationDelay.Create<PropagationDelayModel> ();
   channel->SetPropagationDelayModel (delay);
   return channel;
 }
-
-
-
-
 
 
 void

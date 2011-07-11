@@ -15,7 +15,7 @@ It is important to distinguish between **modules** and **models**:
   protocols, devices, etc.  
 
 An |ns3| module may consist of more than one model (for instance, the
-:mod:`internet` model contains models for both TCP and UDP).  In general,
+:mod:`internet` module contains models for both TCP and UDP).  In general,
 ns-3 models do not span multiple software modules, however.  
 
 This manual provides documentation about the models of |ns3|.  It 
@@ -31,22 +31,17 @@ complements two other sources of documentation concerning models:
   `main web site <http://www.nsnam.org>`_ to find copies of the manual.
 
 Finally, additional documentation about various aspects of |ns3| may
-exist on the `project wiki <http://www.nsnam.org/wiki>`_).
-
-We organize this model library documentation loosely as follows.
-We start with the models found in the ``src/network`` module, as this 
-module contains some fundamental models for the simulator.
-The packet model, models for different address formats, and abstract 
-base classes for objects such as nodes, net devices, channels, sockets, and 
-applications are discussed here.    
-
-We next group documentation under the following major headings:
-
-* Devices and Channels
-* Emulation
-* Internet Models
-* Applications
-* Support
+exist on the `project wiki <http://www.nsnam.org/wiki>`_.
 
 A sample outline of how to write model library documentation can be
 found in :mod:`src/template/doc`.
+
+The remainder of this document is organized alphabetically by module name.
+
+If you are new to |ns3|, you might first want to read below about the network
+module, which contains some fundamental models for the simulator.
+The packet model, models for different address formats, and abstract 
+base classes for objects such as nodes, net devices, channels, sockets, and 
+applications are discussed there.
+
+

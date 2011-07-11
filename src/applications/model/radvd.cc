@@ -60,7 +60,7 @@ Radvd::Radvd ()
 Radvd::~Radvd ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (RadvdInterfaceListI it = m_configurations.begin () ; it != m_configurations.end () ; ++it)
+  for (RadvdInterfaceListI it = m_configurations.begin (); it != m_configurations.end (); ++it)
     {
       *it = 0;
     }
@@ -91,7 +91,7 @@ void Radvd::StartApplication ()
       m_socket->SetRecvCallback (MakeCallback (&Radvd::HandleRead, this));
     }
 
-  for (RadvdInterfaceListCI it = m_configurations.begin () ; it != m_configurations.end () ; it++)
+  for (RadvdInterfaceListCI it = m_configurations.begin (); it != m_configurations.end (); it++)
     {
       m_eventIds[(*it)->GetInterface ()] = EventId ();
       ScheduleTransmit (Seconds (0.), (*it), m_eventIds[(*it)->GetInterface ()], Ipv6Address::GetAllNodesMulticast (), true); 
@@ -107,7 +107,7 @@ void Radvd::StopApplication ()
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 
-  for (EventIdMapI it = m_eventIds.begin () ; it != m_eventIds.end () ; ++it)
+  for (EventIdMapI it = m_eventIds.begin (); it != m_eventIds.end (); ++it)
     {
       Simulator::Cancel ((*it).second);
     }
@@ -168,7 +168,7 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
     }
 
   /* add list of prefixes */
-  for (std::list<Ptr<RadvdPrefix> >::const_iterator jt = prefixes.begin () ; jt != prefixes.end () ; jt++)
+  for (std::list<Ptr<RadvdPrefix> >::const_iterator jt = prefixes.begin (); jt != prefixes.end (); jt++)
     {
       uint8_t flags = 0;
       prefixHdr = Icmpv6OptionPrefixInformation ();
@@ -212,8 +212,8 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
    * The ttl value should be set as a socket option, but this is not yet implemented
    */
   SocketIpTtlTag ttl;
-  ttl.SetTtl(255);
-  p->AddPacketTag(ttl);
+  ttl.SetTtl (255);
+  p->AddPacketTag (ttl);
 
   /* send RA */
   NS_LOG_LOGIC ("Send RA");
@@ -257,7 +257,7 @@ void Radvd::HandleRead (Ptr<Socket> socket)
               NS_LOG_INFO ("Received ICMPv6 Router Solicitation from " << hdr.GetSourceAddress () << " code = " << (uint32_t)rsHdr.GetCode ());
 
               /* XXX advertise just prefix(es) for the interface not all */
-              for (RadvdInterfaceListCI it = m_configurations.begin () ; it != m_configurations.end () ; it++)
+              for (RadvdInterfaceListCI it = m_configurations.begin (); it != m_configurations.end (); it++)
                 {
                   /* calculate minimum delay between RA */
                   delay = static_cast<uint64_t> (rnd.GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 

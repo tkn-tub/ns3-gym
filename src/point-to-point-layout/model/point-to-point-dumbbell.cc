@@ -30,7 +30,7 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
 
-NS_LOG_COMPONENT_DEFINE("PointToPointDumbbellHelper");
+NS_LOG_COMPONENT_DEFINE ("PointToPointDumbbellHelper");
 
 namespace ns3 {
 
@@ -54,7 +54,7 @@ PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
       NetDeviceContainer c = leftHelper.Install (m_routers.Get (0),
                                                  m_leftLeaf.Get (i));
       m_leftRouterDevices.Add (c.Get (0));
-      m_leftLeafDevices.Add (c.Get(1));
+      m_leftLeafDevices.Add (c.Get (1));
     }
   // Add the right side links
   for (uint32_t i = 0; i < nRightLeaf; ++i)
@@ -129,7 +129,7 @@ void PointToPointDumbbellHelper::AssignIpv4Addresses (Ipv4AddressHelper leftIp,
       NetDeviceContainer ndc;
       ndc.Add (m_leftLeafDevices.Get (i));
       ndc.Add (m_leftRouterDevices.Get (i));
-      Ipv4InterfaceContainer ifc = leftIp.Assign(ndc);
+      Ipv4InterfaceContainer ifc = leftIp.Assign (ndc);
       m_leftLeafInterfaces.Add (ifc.Get (0));
       m_leftRouterInterfaces.Add (ifc.Get (1));
       leftIp.NewNetwork ();

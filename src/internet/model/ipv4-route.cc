@@ -83,7 +83,7 @@ std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
 
 Ipv4MulticastRoute::Ipv4MulticastRoute ()
 {
-  m_ttls.clear();
+  m_ttls.clear ();
 }
 
 void 
@@ -129,10 +129,10 @@ Ipv4MulticastRoute::SetOutputTtl (uint32_t oif, uint32_t ttl)
     {
       // This TTL value effectively disables the interface
       std::map<uint32_t, uint32_t>::iterator iter;
-      iter = m_ttls.find(oif);
-      if (iter != m_ttls.end())
+      iter = m_ttls.find (oif);
+      if (iter != m_ttls.end ())
         {
-          m_ttls.erase(iter);
+          m_ttls.erase (iter);
         }
     }
   else
@@ -145,14 +145,14 @@ uint32_t
 Ipv4MulticastRoute::GetOutputTtl (uint32_t oif)
 {
   // We keep this interface around for compatibility (for now)
-  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find(oif);
-  if (iter == m_ttls.end())
+  std::map<uint32_t, uint32_t>::const_iterator iter = m_ttls.find (oif);
+  if (iter == m_ttls.end ())
     return((uint32_t)MAX_TTL);
   return(iter->second);
 }
 
 std::map<uint32_t, uint32_t>
-Ipv4MulticastRoute::GetOutputTtlMap() const
+Ipv4MulticastRoute::GetOutputTtlMap () const
 {
   return(m_ttls);
 }

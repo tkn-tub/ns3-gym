@@ -54,7 +54,7 @@ int main (int argc, char *argv[])
   Ptr <YansErrorRateModel> yans = CreateObject<YansErrorRateModel> ();
   Ptr <NistErrorRateModel> nist = CreateObject<NistErrorRateModel> ();
 
-  for (uint32_t i = 0; i < modes.size(); i++)
+  for (uint32_t i = 0; i < modes.size (); i++)
     {
       std::cout << modes[i] << std::endl;
       Gnuplot2dDataset yansdataset (modes[i]);
@@ -62,9 +62,9 @@ int main (int argc, char *argv[])
 
       for (double snr = -5.0; snr <= 30.0; snr += 0.1)
         {
-          double ps = yans->GetChunkSuccessRate(WifiMode(modes[i]), pow(10.0,snr/10.0), FrameSize*8);
+          double ps = yans->GetChunkSuccessRate (WifiMode (modes[i]), pow (10.0,snr/10.0), FrameSize*8);
           yansdataset.Add (snr, ps);
-          ps = nist->GetChunkSuccessRate(WifiMode(modes[i]), pow(10.0,snr/10.0), FrameSize*8);
+          ps = nist->GetChunkSuccessRate (WifiMode (modes[i]), pow (10.0,snr/10.0), FrameSize*8);
           nistdataset.Add (snr, ps);
         }
 

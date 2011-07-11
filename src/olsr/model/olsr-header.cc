@@ -31,7 +31,7 @@ namespace ns3 {
 namespace olsr {
 
 
-NS_LOG_COMPONENT_DEFINE("OlsrHeader");
+NS_LOG_COMPONENT_DEFINE ("OlsrHeader");
 
 /// Scaling factor used in RFC 3626.
 #define OLSR_C 0.0625
@@ -310,7 +310,7 @@ MessageHeader::Mid::Deserialize (Buffer::Iterator start, uint32_t messageSize)
   NS_ASSERT (messageSize % IPV4_ADDRESS_SIZE == 0);
 
   int numAddresses = messageSize / IPV4_ADDRESS_SIZE;
-  this->interfaceAddresses.erase (this->interfaceAddresses.begin(),
+  this->interfaceAddresses.erase (this->interfaceAddresses.begin (),
                                   this->interfaceAddresses.end ());
   for (int n = 0; n < numAddresses; ++n)
     this->interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));

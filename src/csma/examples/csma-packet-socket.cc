@@ -72,8 +72,8 @@ main (int argc, char *argv[])
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
   Ptr<CsmaChannel> channel = CreateObjectWithAttributes<CsmaChannel> (
-      "DataRate", DataRateValue (DataRate(5000000)),
-      "Delay", TimeValue (MilliSeconds(2)));
+      "DataRate", DataRateValue (DataRate (5000000)),
+      "Delay", TimeValue (MilliSeconds (2)));
 
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
@@ -84,7 +84,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   // Create the OnOff application to send raw datagrams
   PacketSocketAddress socket;
-  socket.SetSingleDevice(devs.Get (0)->GetIfIndex ());
+  socket.SetSingleDevice (devs.Get (0)->GetIfIndex ());
   socket.SetPhysicalAddress (devs.Get (1)->GetAddress ());
   socket.SetProtocol (2);
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));

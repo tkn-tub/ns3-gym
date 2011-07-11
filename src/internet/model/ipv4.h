@@ -149,7 +149,7 @@ public:
    * Adds a protocol to an internal list of L4 protocols.
    *
    */
-  virtual void Insert(Ptr<Ipv4L4Protocol> protocol) = 0;
+  virtual void Insert (Ptr<Ipv4L4Protocol> protocol) = 0;
 
   /**
    * \brief Determine whether address and interface corresponding to

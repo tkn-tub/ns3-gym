@@ -60,11 +60,11 @@ public:
    * \see ErrorModel
    * \param em Ptr to the ErrorModel.
    */
-  void SetReceiveErrorModel(Ptr<ErrorModel> em);
+  void SetReceiveErrorModel (Ptr<ErrorModel> em);
 
   // inherited from NetDevice base class.
-  virtual void SetIfIndex(const uint32_t index);
-  virtual uint32_t GetIfIndex(void) const;
+  virtual void SetIfIndex (const uint32_t index);
+  virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
   virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
@@ -78,8 +78,8 @@ public:
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
   virtual bool IsBridge (void) const;
-  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
-  virtual bool SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual Ptr<Node> GetNode (void) const;
   virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;

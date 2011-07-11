@@ -37,6 +37,7 @@ def build(bld):
     module_test.source = [
         'test/spectrum-interference-test.cc',
         'test/spectrum-value-test.cc',
+        'test/spectrum-ideal-phy-test.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')

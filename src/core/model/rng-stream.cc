@@ -110,7 +110,7 @@ double MultModM (double a, double s, double c, double m)
 
   a1 = static_cast<int32_t> (v / m);
   /* in case v < 0)*/
-  if ((v -= a1 * m) < 0.0) return v += m;else return v;
+  if ((v -= a1 * m) < 0.0) return v += m; else return v;
 }
 
 
@@ -250,13 +250,13 @@ double RngStream::U01 ()
 double RngStream::U01d ()
 {
   double u;
-  u = U01();
+  u = U01 ();
   if (anti) {
       // Don't forget that U01() returns 1 - u in the antithetic case
-      u += (U01() - 1.0) * fact;
+      u += (U01 () - 1.0) * fact;
       return (u < 0.0) ? u + 1.0 : u;
     } else {
-      u += U01() * fact;
+      u += U01 () * fact;
       return (u < 1.0) ? u : (u - 1.0);
     }
 }
@@ -361,7 +361,7 @@ RngStream::RngStream(const RngStream& r)
 }
 
 
-void RngStream::InitializeStream()
+void RngStream::InitializeStream ()
 { // Moved from the RngStream constructor above to allow seeding
   // AFTER the global package seed has been set in the Random
   // object constructor.
@@ -405,8 +405,8 @@ void RngStream::ResetStartSubstream ()
 //
 void RngStream::ResetNextSubstream ()
 {
-  MatVecModM(A1p76, Bg, Bg, m1);
-  MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
+  MatVecModM (A1p76, Bg, Bg, m1);
+  MatVecModM (A2p76, &Bg[3], &Bg[3], m2);
   for (int i = 0; i < 6; ++i)
     Cg[i] = Bg[i];
 }
@@ -418,8 +418,8 @@ void RngStream::ResetNthSubstream (uint32_t N)
 {
   if(N==0) return;
   for(uint32_t i=0; i<N; ++i) {
-      MatVecModM(A1p76, Bg, Bg, m1);
-      MatVecModM(A2p76, &Bg[3], &Bg[3], m2);
+      MatVecModM (A1p76, Bg, Bg, m1);
+      MatVecModM (A2p76, &Bg[3], &Bg[3], m2);
     }
   for (int i = 0; i < 6; ++i)
     Cg[i] = Bg[i];
@@ -466,7 +466,7 @@ RngStream::GetPackageRun (void)
   return run.Get ();
 }
 bool 
-RngStream::CheckSeed(uint32_t seed)
+RngStream::CheckSeed (uint32_t seed)
 {
   uint32_t seeds[6] = { seed, seed, seed, seed, seed, seed};
   return CheckSeed (seeds);
@@ -548,9 +548,9 @@ void RngStream::SetAntithetic (bool a)
 double RngStream::RandU01 ()
 {
   if (incPrec)
-    return U01d();
+    return U01d ();
   else
-    return U01();
+    return U01 ();
 }
 
 

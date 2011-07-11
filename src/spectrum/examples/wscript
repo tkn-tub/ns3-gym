@@ -5,6 +5,10 @@ def build(bld):
                                  ['spectrum', 'mobility'])
     obj.source = 'adhoc-aloha-ideal-phy.cc'
 
+    obj = bld.create_ns3_program('adhoc-aloha-ideal-phy-matrix-propagation-loss-model',
+                                 ['spectrum', 'mobility'])
+    obj.source = 'adhoc-aloha-ideal-phy-matrix-propagation-loss-model.cc'
+
     obj = bld.create_ns3_program('adhoc-aloha-ideal-phy-with-microwave-oven',
                                  ['spectrum', 'mobility'])
     obj.source = 'adhoc-aloha-ideal-phy-with-microwave-oven.cc'

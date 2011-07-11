@@ -85,7 +85,7 @@ public:
    * \brief Set routers for routing type 0 (loose routing).
    * \param routers routers addresses
    */
-  void SetRouters(std::vector<Ipv6Address> routers);
+  void SetRouters (std::vector<Ipv6Address> routers);
 
 protected:
   /**

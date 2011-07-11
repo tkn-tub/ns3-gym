@@ -58,7 +58,7 @@ static int gVerbose = 0; // Set to true to turn on logging messages.
 #define ABORT_IF(cond, msg, printErrno) \
   if (cond) \
     { \
-      ABORT(msg, printErrno); \
+      ABORT (msg, printErrno); \
     }
 
 //
@@ -213,7 +213,7 @@ SendSocket (const char *path, int fd)
   // so we call it "control."
   //
   size_t msg_size = sizeof(int);
-  char control[CMSG_SPACE(msg_size)];
+  char control[CMSG_SPACE (msg_size)];
 
   //
   // There is a msghdr that is used to minimize the number of parameters
@@ -247,10 +247,10 @@ SendSocket (const char *path, int fd)
   // the whole package we're sending.
   //
   struct cmsghdr *cmsg;
-  cmsg = CMSG_FIRSTHDR(&msg);
+  cmsg = CMSG_FIRSTHDR (&msg);
   cmsg->cmsg_level = SOL_SOCKET;
   cmsg->cmsg_type = SCM_RIGHTS;
-  cmsg->cmsg_len = CMSG_LEN(msg_size);
+  cmsg->cmsg_len = CMSG_LEN (msg_size);
   //
   // We also have to update the controllen in case other stuff is actually
   // in there we may not be aware of (due to macros).
@@ -261,13 +261,13 @@ SendSocket (const char *path, int fd)
   // Finally, we get a pointer to the start of the ancillary data array and
   // put our file descriptor in.
   //
-  int *fdptr = (int*)(CMSG_DATA(cmsg));
+  int *fdptr = (int*)(CMSG_DATA (cmsg));
   *fdptr = fd; // 
 
   //
   // Actually send the file descriptor back to the tap bridge.
   //
-  ssize_t len = sendmsg(sock, &msg, 0);
+  ssize_t len = sendmsg (sock, &msg, 0);
   ABORT_IF (len == -1, "Could not send socket back to tap bridge", 1);
 
   LOG ("sendmsg complete");

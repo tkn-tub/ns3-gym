@@ -73,7 +73,7 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (2));
+  Simulator::Stop (Seconds (5));
 
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
@@ -86,7 +86,7 @@ int main (int argc, char *argv[])
     {
       Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
       mm->SetPosition (Vector (userDistance[i], 0.0, 0.0));
-    } // rkwan 
+    } // rkwan
 
   Simulator::Run ();
 

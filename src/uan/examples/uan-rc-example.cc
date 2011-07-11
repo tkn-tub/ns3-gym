@@ -123,7 +123,7 @@ Experiment::CreateMode (uint32_t kass,
                                        fcmode,
                                        bw,
                                        2,
-                                       buf.str());
+                                       buf.str ());
   return mode;
 }
 
@@ -164,7 +164,7 @@ Experiment::Run (uint32_t param)
       nNodes = m_numNodes;
       a = param;
     }
-  Time pDelay = Seconds((double) m_maxRange / 1500.0);
+  Time pDelay = Seconds ((double) m_maxRange / 1500.0);
 
   uan.SetPhy ("ns3::UanPhyDual",
               "SupportedModesPhy1", UanModesListValue (m_dataModes),
@@ -174,20 +174,20 @@ Experiment::Run (uint32_t param)
               "NumberOfRates", UintegerValue (m_numRates),
               "NumberOfNodes", UintegerValue (nNodes),
               "MaxReservations", UintegerValue (a),
-              "RetryRate", DoubleValue(1/30.0),
+              "RetryRate", DoubleValue (1/30.0),
               "SIFS", TimeValue (m_sifs),
               "MaxPropDelay", TimeValue (pDelay),
               "FrameSize", UintegerValue (m_pktSize));
   Ptr<UanChannel> chan = CreateObject<UanChannel>();
 
   NodeContainer sink;
-  sink.Create(1);
-  NetDeviceContainer sinkDev = uan.Install(sink, chan);
+  sink.Create (1);
+  NetDeviceContainer sinkDev = uan.Install (sink, chan);
 
   uan.SetMac ("ns3::UanMacRc",
               "NumberOfRates", UintegerValue (m_numRates),
               "MaxPropDelay", TimeValue (pDelay),
-              "RetryRate", DoubleValue(1.0/100.0));
+              "RetryRate", DoubleValue (1.0/100.0));
   NodeContainer nodes;
   nodes.Create (nNodes);
   NetDeviceContainer devices = uan.Install (nodes, chan);
@@ -222,8 +222,8 @@ Experiment::Run (uint32_t param)
   pktskth.Install (sink);
 
   PacketSocketAddress socket;
-  socket.SetSingleDevice (sinkDev.Get(0)->GetIfIndex ());
-  socket.SetPhysicalAddress (sinkDev.Get(0)->GetAddress ());
+  socket.SetSingleDevice (sinkDev.Get (0)->GetIfIndex ());
+  socket.SetPhysicalAddress (sinkDev.Get (0)->GetAddress ());
   socket.SetProtocol (0);
 
   OnOffHelper app ("ns3::PacketSocketFactory", Address (socket));
@@ -235,23 +235,23 @@ Experiment::Run (uint32_t param)
   ApplicationContainer apps = app.Install (nodes);
 
   apps.Start (Seconds (0.5));
-  apps.Stop (m_simTime + Seconds(0.5));
+  apps.Stop (m_simTime + Seconds (0.5));
 
   Ptr<Node> sinkNode = sink.Get (0);
   TypeId psfid = TypeId::LookupByName ("ns3::PacketSocketFactory");
 
-  Ptr<Socket> sinkSocket = Socket::CreateSocket(sinkNode, psfid);
-  sinkSocket->Bind(socket);
+  Ptr<Socket> sinkSocket = Socket::CreateSocket (sinkNode, psfid);
+  sinkSocket->Bind (socket);
   sinkSocket->SetRecvCallback (MakeCallback (&Experiment::ReceivePacket, this));
 
-  Simulator::Stop (m_simTime + Seconds(0.6));
+  Simulator::Stop (m_simTime + Seconds (0.6));
   Simulator::Run ();
   Simulator::Destroy ();
 
   return m_bytesTotal;
 }
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
 
   LogComponentEnable ("UanRcExample", LOG_LEVEL_ALL);

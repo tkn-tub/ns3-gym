@@ -67,7 +67,7 @@ main (int argc, char *argv[])
   //
   NS_LOG_INFO ("Create channels.");
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate (5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
   NetDeviceContainer d = csma.Install (n);
@@ -87,7 +87,7 @@ main (int argc, char *argv[])
   //
   uint16_t port = 9;  // well-known echo port number
   UdpEchoServerHelper server (port);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 

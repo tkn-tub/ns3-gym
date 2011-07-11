@@ -157,7 +157,7 @@ There are two basic variants of ``Send()`` and ``Recv()`` supported::
 
 The non-Packet variants are provided for legacy API reasons.  When calling
 the raw buffer variant of :cpp:func:`ns3::Socket::Send`, the buffer is immediately
-written into a Packet and the :cpp:func:`ns3::Socket::Send (Ptr<Packet> p)` is invoked.
+written into a Packet and the packet variant is invoked.
 
 Users may find it semantically odd to pass a Packet to a stream socket
 such as TCP.  However, do not let the name bother you; think of 

@@ -318,7 +318,7 @@ SNIR function.
    
    *SNIR function over time.*
 
-From the SNIR function we can derive the Bit Error Rate (BER) and Packet Error Rate (PER) for the modulation and coding scheme being used for the transmission.  Please refer to [pei80211validation]_ and [lacage2006yans]_ for a detailed description of the available BER/PER models.
+From the SNIR function we can derive the Bit Error Rate (BER) and Packet Error Rate (PER) for the modulation and coding scheme being used for the transmission.  Please refer to [pei80211ofdm]_, [pei80211b]_ and [lacage2006yans]_ for a detailed description of the available BER/PER models.
 
 
 WifiChannel configuration
@@ -365,7 +365,9 @@ References
 
 .. [ieee80211] IEEE Std 802.11-2007 *Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications*
 
-.. [pei80211validation] \G. Pei and Tom Henderson, `Validation of ns-3 802.11b PHY model* <http://www.nsnam.org/~pei/80211b.pdf>`__ 
+.. [pei80211b] \G. Pei and Tom Henderson, `Validation of ns-3 802.11b PHY model <http://www.nsnam.org/~pei/80211b.pdf>`__ 
+
+.. [pei80211ofdm] \G. Pei and Tom Henderson, `Validation of OFDM error rate model in ns-3 <http://www.nsnam.org/~pei/80211ofdm.pdf>`__ 
 
 .. [lacage2006yans] \M. Lacage and T. Henderson, `Yet another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`__ 
 

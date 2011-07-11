@@ -48,6 +48,7 @@ class Icmpv4L4Protocol;
 /**
  * \brief Implement the Ipv4 layer specifically for Click nodes
  * to allow a clean integration of Click.
+ * \ingroup click
  *
  * This is code is mostly repeated from the Ipv4L3Protocol implementation.
  * Changes include:

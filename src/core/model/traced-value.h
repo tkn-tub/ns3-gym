@@ -135,7 +135,7 @@ private:
 template <typename T>
 std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
 {
-  return os<<rhs.Get();
+  return os<<rhs.Get ();
 }
 
 template <typename T, typename U>

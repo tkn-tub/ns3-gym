@@ -51,7 +51,7 @@ TcpTxBuffer::GetTypeId (void)
  * initialized below is insignificant.
  */
 TcpTxBuffer::TcpTxBuffer (uint32_t n)
-  : m_firstByteSeq(n), m_size (0), m_maxBuffer(32768), m_data (0)
+  : m_firstByteSeq (n), m_size (0), m_maxBuffer (32768), m_data (0)
 {
 }
 

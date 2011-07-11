@@ -70,9 +70,12 @@ public:
    */
   void SetMayFragment (void);
   /**
-   * \param offset the ipv4 fragment offset
+   * The offset is measured in bytes for the packet start.
+   * Mind that IPv4 "fragment offset" field is 13 bits long and is measured in 8-bytes words.
+   * Hence, the function does enforce that the offset is a multiple of 8.
+   * \param offsetBytes the ipv4 fragment offset measured in bytes from the start.
    */
-  void SetFragmentOffset (uint16_t offset);
+  void SetFragmentOffset (uint16_t offsetBytes);
   /**
    * \param ttl the ipv4 TTL
    */
@@ -110,7 +113,7 @@ public:
    */
   bool IsDontFragment (void) const;
   /**
-   * \returns the offset of this fragment.
+   * \returns the offset of this fragment measured in bytes from the start.
    */
   uint16_t GetFragmentOffset (void) const;
   /**
@@ -159,7 +162,7 @@ private:
   uint32_t m_ttl : 8;
   uint32_t m_protocol : 8;
   uint32_t m_flags : 3;
-  uint16_t m_fragmentOffset : 13;
+  uint16_t m_fragmentOffset;
   Ipv4Address m_source;
   Ipv4Address m_destination;
   uint16_t m_checksum;

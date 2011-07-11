@@ -70,7 +70,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       MgtBeaconHeader beacon_hdr;
       packet->RemoveHeader (beacon_hdr);
       MeshInformationElementVector elements;
-      packet->RemoveHeader(elements);
+      packet->RemoveHeader (elements);
       Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE11S_BEACON_TIMING));
       Ptr<IeMeshId> meshId = DynamicCast<IeMeshId> (elements.FindFirst (IE11S_MESH_ID));
 
@@ -124,7 +124,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       //Peer Management element is the last element in this frame - so, we can use MeshInformationElementVector
       MeshInformationElementVector elements;
       packet->RemoveHeader (elements);
-      peerElement = DynamicCast<IePeerManagement>(elements.FindFirst(IE11S_PEERING_MANAGEMENT));
+      peerElement = DynamicCast<IePeerManagement>(elements.FindFirst (IE11S_PEERING_MANAGEMENT));
       NS_ASSERT (peerElement != 0);
       //Check taht frame subtype corresponds peer link subtype
       if (peerElement->SubtypeIsOpen ())
@@ -200,7 +200,7 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
   meshConfig.SetNeighborCount (m_protocol->GetNumberOfLinks ());
   Ptr<Packet> packet = Create<Packet> ();
   MeshInformationElementVector elements;
-  elements.AddInformationElement(Ptr<IePeerManagement> (&peerElement));
+  elements.AddInformationElement (Ptr<IePeerManagement> (&peerElement));
   packet->AddHeader (elements);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
   fields.rates = m_parent->GetSupportedRates ();

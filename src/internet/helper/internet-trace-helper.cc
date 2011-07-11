@@ -31,7 +31,7 @@
 
 #include "internet-trace-helper.h"
 
-NS_LOG_COMPONENT_DEFINE("InternetTraceHelper");
+NS_LOG_COMPONENT_DEFINE ("InternetTraceHelper");
 
 namespace ns3 {
 

@@ -112,6 +112,7 @@ def build(bld):
         'model/yans-error-rate-model.h',
         'model/nist-error-rate-model.h',
         'model/dsss-error-rate-model.h',
+        'model/wifi-mac-queue.h',
         'model/dca-txop.h',
         'model/wifi-mac-header.h',
         'model/qos-utils.h',
@@ -142,9 +143,8 @@ def build(bld):
         obj.uselib      = 'GSL GSLCBLAS M'
         obj_test.uselib = 'GSL GSLCBLAS M'
 
-    obj = bld.create_ns3_program('wifi-phy-test',
-        ['core', 'mobility', 'network', 'wifi'])
-    obj.source = 'test/wifi-phy-test.cc'
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
 
     bld.ns3_python_bindings()
 

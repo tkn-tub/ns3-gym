@@ -42,13 +42,13 @@ std::ostream& operator<< (std::ostream& os, AlohaNoackNetDevice::State state)
   switch (state)
     {
     case AlohaNoackNetDevice::IDLE:
-      os << "IDLE" ;
+      os << "IDLE";
       break;
     case AlohaNoackNetDevice::TX:
-      os << "TX" ;
+      os << "TX";
       break;
     case AlohaNoackNetDevice::RX:
-      os << "RX" ;
+      os << "RX";
       break;
     }
   return os;
@@ -346,7 +346,7 @@ AlohaNoackNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Add
   m_macTxTrace (packet);
 
 
-
+  bool sendOk = true;
   //
   // If the device is idle, transmission starts immediately. Otherwise,
   // the transmission will be started by NotifyTransmissionEnd
@@ -366,12 +366,8 @@ AlohaNoackNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Add
           if (m_queue->Enqueue (packet) == false)
             {
               m_macTxDropTrace (packet);
-              return false;
+              sendOk = false;
             }
-          NS_LOG_LOGIC ("transmitting head-of-queue packet");
-          m_currentPkt = m_queue->Dequeue ();
-          NS_ASSERT (m_currentPkt != 0);
-          StartTransmission ();
         }
     }
   else
@@ -381,10 +377,10 @@ AlohaNoackNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Add
       if (m_queue->Enqueue (packet) == false)
         {
           m_macTxDropTrace (packet);
-          return false;
+          sendOk = false;
         }
     }
-  return true;
+  return sendOk;
 }
 
 void
@@ -425,6 +421,7 @@ AlohaNoackNetDevice::NotifyTransmissionEnd (Ptr<const Packet>)
     {
       m_currentPkt = m_queue->Dequeue ();
       NS_ASSERT (m_currentPkt);
+      NS_LOG_LOGIC ("scheduling transmission now");
       Simulator::ScheduleNow (&AlohaNoackNetDevice::StartTransmission, this);
     }
 }

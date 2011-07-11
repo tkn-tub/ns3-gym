@@ -29,19 +29,19 @@ namespace ns3 {
 
 class WimaxPhy;
 
+/**
+ * \ingroup wimax
+ * \brief The SendParams class defines the parameters with which Send() function of
+ *  a particular PHY is called. The sole purpose of this class is to allow
+ *  defining the pure virtual Send() function in the PHY base-class (WimaxPhy).
+ *  This class shall be sub-classed every time a new PHY is integrated (i.e.,
+ *  a new sub-class of WimaxPhy is created) which requires different or
+ *  additional parameters to call its Send() function. For example as it is
+ *  seen here, it has been sub-classed for the OFDM PHY layer since its Send()
+ *  function requires two additional parameters.
+ */
 class SendParams
 {
-  /**
-   * \brief The SendParams class defines the parameters with which Send() function of
-   *  a particular PHY is called. The sole purpose of this class is to allow
-   *  defining the pure virtual Send() function in the PHY base-class (WimaxPhy).
-   *  This class shall be sub-classed every time a new PHY is integrated (i.e.,
-   *  a new sub-class of WimaxPhy is created) which requires different or
-   *  additional parameters to call its Send() function. For example as it is
-   *  seen here, it has been sub-classed for the OFDM PHY layer since its Send()
-   *  function requires two additional parameters.
-   */
-
 public:
   SendParams ();
   virtual ~SendParams ();

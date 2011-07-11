@@ -28,7 +28,7 @@ namespace ns3 {
 UdpEchoServerHelper::UdpEchoServerHelper (uint16_t port)
 {
   m_factory.SetTypeId (UdpEchoServer::GetTypeId ());
-  SetAttribute ("Port", UintegerValue(port));
+  SetAttribute ("Port", UintegerValue (port));
 }
 
 void 

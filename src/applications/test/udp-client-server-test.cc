@@ -88,7 +88,7 @@ void UdpClientServerTestCase::DoRun (void)
 
   uint16_t port = 4000;
   UdpServerHelper server (port);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -161,7 +161,7 @@ void UdpTraceClientServerTestCase::DoRun (void)
 
   uint16_t port = 4000;
   UdpServerHelper server (port);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -206,53 +206,53 @@ PacketLossCounterTestCase::~PacketLossCounterTestCase ()
 
 void PacketLossCounterTestCase::DoRun (void)
 {
-  PacketLossCounter lossCounter(32);
-  lossCounter.NotifyReceived(32); //out of order
+  PacketLossCounter lossCounter (32);
+  lossCounter.NotifyReceived (32); //out of order
   for (uint32_t i=0; i<64; i++)
     {
-      lossCounter.NotifyReceived(i);
+      lossCounter.NotifyReceived (i);
     }
 
-  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 0, "Check that 0 packets are lost");
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost (), 0, "Check that 0 packets are lost");
 
   for (uint32_t i=65; i<128; i++) // drop (1) seqNum 64
     {
-      lossCounter.NotifyReceived(i);
+      lossCounter.NotifyReceived (i);
     }
-  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 1, "Check that 1 packet is lost");
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost (), 1, "Check that 1 packet is lost");
 
   for (uint32_t i=134; i<200; i++) // drop seqNum 128,129,130,131,132,133
     {
-      lossCounter.NotifyReceived(i);
+      lossCounter.NotifyReceived (i);
     }
-  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 7, "Check that 7 (6+1) packets are lost");
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost (), 7, "Check that 7 (6+1) packets are lost");
 
   // reordering without loss
-  lossCounter.NotifyReceived(205);
-  lossCounter.NotifyReceived(206);
-  lossCounter.NotifyReceived(207);
-  lossCounter.NotifyReceived(200);
-  lossCounter.NotifyReceived(201);
-  lossCounter.NotifyReceived(202);
-  lossCounter.NotifyReceived(203);
-  lossCounter.NotifyReceived(204);
+  lossCounter.NotifyReceived (205);
+  lossCounter.NotifyReceived (206);
+  lossCounter.NotifyReceived (207);
+  lossCounter.NotifyReceived (200);
+  lossCounter.NotifyReceived (201);
+  lossCounter.NotifyReceived (202);
+  lossCounter.NotifyReceived (203);
+  lossCounter.NotifyReceived (204);
   for (uint32_t i=205; i<250; i++)
     {
-      lossCounter.NotifyReceived(i);
+      lossCounter.NotifyReceived (i);
     }
-  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 7, "Check that 7 (6+1) packets are lost even when reordering happens");
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost (), 7, "Check that 7 (6+1) packets are lost even when reordering happens");
 
   // reordering with loss
-  lossCounter.NotifyReceived(255);
+  lossCounter.NotifyReceived (255);
   // drop (2) seqNum 250, 251
-  lossCounter.NotifyReceived(252);
-  lossCounter.NotifyReceived(253);
-  lossCounter.NotifyReceived(254);
+  lossCounter.NotifyReceived (252);
+  lossCounter.NotifyReceived (253);
+  lossCounter.NotifyReceived (254);
   for (uint32_t i=256; i<300; i++)
     {
-      lossCounter.NotifyReceived(i);
+      lossCounter.NotifyReceived (i);
     }
-  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 9, "Check that 9 (6+1+2) packet are lost");
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost (), 9, "Check that 9 (6+1+2) packet are lost");
 }
 class UdpClientServerTestSuite : public TestSuite
 {

@@ -226,15 +226,15 @@ main (int argc, char *argv[])
     {
       OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
       clientHelper.SetAttribute
-                                ("OnTime", RandomVariableValue (ConstantVariable (1)));
+        ("OnTime", RandomVariableValue (ConstantVariable (1)));
       clientHelper.SetAttribute
-                                ("OffTime", RandomVariableValue (ConstantVariable (0)));
+        ("OffTime", RandomVariableValue (ConstantVariable (0)));
 
       ApplicationContainer clientApps;
       for (uint32_t i = 0; i < 4; ++i)
         {
           AddressValue remoteAddress
-                                (InetSocketAddress (rightLeafInterfaces.GetAddress (i), port));
+            (InetSocketAddress (rightLeafInterfaces.GetAddress (i), port));
           clientHelper.SetAttribute ("Remote", remoteAddress);
           clientApps.Add (clientHelper.Install (leftLeafNodes.Get (i)));
         }

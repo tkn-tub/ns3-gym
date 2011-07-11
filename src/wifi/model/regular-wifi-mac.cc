@@ -391,6 +391,12 @@ RegularWifiMac::GetBssid (void) const
 }
 
 void
+RegularWifiMac::SetPromisc (void)
+{
+  m_low->SetPromisc ();
+}
+
+void
 RegularWifiMac::Enqueue (Ptr<const Packet> packet,
                          Mac48Address to, Mac48Address from)
 {

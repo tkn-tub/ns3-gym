@@ -122,8 +122,8 @@ public:
 
 
   // inherited from NetDevice base class.
-  virtual void SetIfIndex(const uint32_t index);
-  virtual uint32_t GetIfIndex(void) const;
+  virtual void SetIfIndex (const uint32_t index);
+  virtual uint32_t GetIfIndex (void) const;
   virtual Ptr<Channel> GetChannel (void) const;
   virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;

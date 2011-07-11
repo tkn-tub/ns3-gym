@@ -97,7 +97,7 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint
   Ptr<Ipv6Option> ipv6Option;
 
   uint8_t processedSize = 0;
-  uint32_t size = p->GetSize();
+  uint32_t size = p->GetSize ();
   uint8_t *data = new uint8_t[size];
   p->CopyData (data, size);
 
@@ -655,7 +655,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
   p->RemoveAtStart (offset);
 
   uint8_t buf[4];
-  packet->CopyData(buf, sizeof(buf));
+  packet->CopyData (buf, sizeof(buf));
 
   uint8_t routingNextHeader = buf[0];
   uint8_t routingLength = buf[1];
