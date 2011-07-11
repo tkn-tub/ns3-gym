@@ -22,6 +22,8 @@ REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 from TaskGen import feature, after
 import Task, ccroot
+from python import _get_python_variables # this comes from wafadmin/Tools/python.py
+
 
 @feature('pch')
 @after('apply_link')
@@ -112,6 +114,19 @@ def configure(conf):
     except Configure.ConfigurationError, ex:
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
+
+
+    # alternative code to computing PYTHONDIR, that is more correct than the one in waf 1.5.16
+    if 'PYTHONDIR' in conf.environ:
+        pydir = conf.environ['PYTHONDIR']
+    else:
+        (pydir,) = _get_python_variables(conf.env['PYTHON'],
+                                         ["get_python_lib(standard_lib=0, prefix=%r)" % conf.env['PREFIX']],
+                                         ['from distutils.sysconfig import get_python_lib'])
+    if hasattr(conf, 'define'): # conf.define is added by the C tool, so may not exist
+        conf.define('PYTHONDIR', pydir)
+    conf.env['PYTHONDIR'] = pydir
+
 
     # -fvisibility=hidden optimization
     if (conf.env['CXX_NAME'] == 'gcc' and [int(x) for x in conf.env['CC_VERSION']] >= [4,0,0]
