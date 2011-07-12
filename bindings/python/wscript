@@ -121,7 +121,7 @@ def configure(conf):
         pydir = conf.environ['PYTHONDIR']
     else:
         (pydir,) = _get_python_variables(conf.env['PYTHON'],
-                                         ["get_python_lib(standard_lib=0, prefix=%r)" % conf.env['PREFIX']],
+                                         ["get_python_lib(plat_specific=1, standard_lib=0, prefix=%r)" % conf.env['PREFIX']],
                                          ['from distutils.sysconfig import get_python_lib'])
     if hasattr(conf, 'define'): # conf.define is added by the C tool, so may not exist
         conf.define('PYTHONDIR', pydir)
