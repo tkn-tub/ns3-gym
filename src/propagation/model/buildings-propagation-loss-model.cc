@@ -55,11 +55,19 @@ BuildingsPropagationLossModel::GetTypeId (void)
                    DoubleValue (2.3e9),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_frequency),
                    MakeDoubleChecker<double> ())
+                   
+    .AddAttribute ("RooftopLevel",
+                  " The height of the rooftop [m].",
+                  DoubleValue (30.0),
+                  MakeDoubleAccessor (&BuildingsPropagationLossModel::m_rooftopThreshold),
+                  MakeDoubleChecker<double> ())
+                   
     .AddAttribute ("MinDistance",
                    "The distance under which the propagation model refuses to give results (m) ",
                    DoubleValue (0.5),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::SetMinDistance, &BuildingsPropagationLossModel::GetMinDistance),
                    MakeDoubleChecker<double> ());
+    
   return tid;
 }
 
@@ -119,7 +127,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
 {
   // Hp: a is the rooftop antenna (from GetLoss logic)
   double loss = 0.0;
-  if (m_frequency<=1500)
+  if (m_frequency<=1.500e9)
     {
       // standard Okumura Hata (from wikipedia)
       double log_f = log10 (m_frequency);
@@ -153,7 +161,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
         }
           
     }
-  else if (m_frequency <= 2170) // max 3GPP freq EUTRA band #1
+  else if (m_frequency <= 2.170e9) // max 3GPP freq EUTRA band #1
     {
       // COST 231 Okumura model
       double log_f = log10 (m_frequency);
@@ -170,7 +178,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
       
       loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log_f) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight;
     }
-  else if (m_frequency <= 2690) // max 3GPP freq EUTRA band #1
+  else if (m_frequency <= 2.690e9) // max 3GPP freq EUTRA band #1
     {
       // Empirical model from
       // "Path Loss Models for Suburban Scenario at 2.3GHz, 2.6GHz and 3.5GHz"
@@ -192,7 +200,7 @@ BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
   double pi = 3.141592653589793;
   double Lbp = 20*log10(m_lambda*m_lambda/(8*pi*a->GetPosition ().z*b->GetPosition ().z));
   double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
-  
+//   NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp);
   if (dist <= Rbp)
     {
       lossLow = Lbp + 20*log10(dist/Rbp);
@@ -204,7 +212,7 @@ BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
       lossUp = Lbp + 20 + 40*log10(dist/Rbp);
     }
   
-  double loss = (lossUp + lossLow) / 2; // CHECK!!!
+  double loss = (lossUp + lossLow) / 2;
   
   return (loss);
 }
@@ -282,6 +290,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
   Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
   
   double loss = 0.0;
+  NS_LOG_INFO (this << " rooftop " << m_rooftopThreshold);
   
   if (a1->IsOutdoor ())
     {
@@ -289,10 +298,12 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
         {
           if (distance > 1000)
             {
-              if (a1->GetPosition ().z > m_rooftopThreshold)
+              if ((a1->GetPosition ().z > m_rooftopThreshold)
+                || (b1->GetPosition ().z > m_rooftopThreshold))
                 {
                   // Over the rooftop tranmission -> Okumura Hata
                   loss = OkumuraHata (a1, b1);
+                  NS_LOG_INFO (this << " O-O (>1000): Over the rooftop -> OH : " << loss);
                 }
               else
                 {
@@ -300,12 +311,14 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
                   
                   // short range outdoor communication within street canyon
                   loss = ItuR1411 (a1, b1);
+                  NS_LOG_INFO (this << " 0-0 (>1000): down rooftop -> ITUR1411 : " << loss);
                 }
             }
           else
             {
               // short range outdoor communication within street canyon
               loss = ItuR1411 (a1, b1);
+              NS_LOG_INFO (this << " 0-0 (<1000) Street canyon -> ITUR1411 : " << loss);
             }
         }
       else
@@ -314,10 +327,12 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
           if (distance > 1000)
             {
               loss = OkumuraHata (a1, b1) + BEWPL(b1);
+              NS_LOG_INFO (this << " 0-I (>1000) OH + BEL : " << loss);
             }
           else
             {
               loss = ItuR1411 (a1, b1) + BEWPL(b1);
+              NS_LOG_INFO (this << " 0-I (<1000) ITUR1411 + BEL : " << loss);
             }
         } // end b1->isIndoor ()
     }
@@ -330,10 +345,14 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
             {
                 // nodes are in same building -> indoor communication ITU-R P.1238
                 loss = ItuR1238 (a1, b1);
+                NS_LOG_INFO (this << " I-I (same building) ITUR1238 + BEL : " << loss);
+                
             }
           else
             {
+              // nodes are in different buildings
               loss = ItuR1411 (a1, b1) + BEWPL(a1) + BEWPL(b1);
+              NS_LOG_INFO (this << " I-I (different) ITUR1238 + BEL : " << loss);
             }
         }
       else
@@ -341,18 +360,22 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
           // b is outdoor
           if (distance > 1000)
             {
-              if (b1->GetPosition ().z > m_rooftopThreshold)
+              if ((a1->GetPosition ().z > m_rooftopThreshold)
+                || (b1->GetPosition ().z > m_rooftopThreshold))
                 {
                   loss = OkumuraHata (a1, b1) + BEWPL(a1);
+                  NS_LOG_INFO (this << " I-0 (>1000) over rooftop OH + BEL : " << loss);
                 }
               else
                 {
                   loss = ItuR1411 (a1, b1) + BEWPL(a1);
+                  NS_LOG_INFO (this << " I-0 (>1000) down rooftop ITUR1411 + BEL : " << loss);
                 }
             }
           else
             {
               loss = ItuR1411 (a1, b1) + BEWPL(a1);
+              NS_LOG_INFO (this << " I-0 (<1000)  ITUR1411 + BEL : " << loss);
             }
         } // end b1->IsIndoor ()
     } // end a1->IsOutdoor ()

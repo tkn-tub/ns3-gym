@@ -38,6 +38,7 @@
 #include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
+#include <ns3/building.h>
 
 NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
 
@@ -86,11 +87,13 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   
   
   Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
-  mm1->SetPosition (Vector (0.0, 0.0, 0.0));
+  mm1->SetPosition (Vector (0.0, 0.0, 1.0));
   mm1->SetOutdoor ();
   Ptr<BuildingsMobilityModel> mm2 = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
-  mm2->SetPosition (Vector (10.0, 0.0, 0.0));
-  mm2->SetOutdoor ();
+  mm2->SetPosition (Vector (1010.0, 0.0, 1.0));
+  //Ptr<Building> building = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0, 1, 1, 1);
+  Ptr<Building> building = Create<Building> ();
+  mm2->SetIndoor (building);
          
   double thrLoss = 0.0;
   AddTestCase (new LtePathlossModelTestCase (mm1, mm2, thrLoss, "loss = ??"));
