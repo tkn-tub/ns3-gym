@@ -61,7 +61,15 @@ class BuildingsMobilityModel : public MobilityModel
     void SetIndoor (Ptr<Building> building);
     void SetOutdoor (void);
     
-    void SetSurroudingBuilding(Ptr<Building> building);
+    void SetSurroudingBuilding (Ptr<Building> building);
+    
+    void SetFloorNumber (uint8_t nfloor);
+    void SetRoomNumberX (uint8_t nroomx);
+    void SetRoomNumberY (uint8_t nroomy);
+    
+    uint8_t GetFloorNumber (void);
+    uint8_t GetRoomNumberX (void);
+    uint8_t GetRoomNumberY (void);
     
     Ptr<Building> GetBuilding ();
     
@@ -77,7 +85,9 @@ class BuildingsMobilityModel : public MobilityModel
     std::list < Ptr<Building> > m_surroudingBuildings;  // buildings blocks
     Ptr<Building> m_myBuilding;
     bool m_indoor;
-    
+    uint8_t m_nFloor;
+    uint8_t m_roomX;
+    uint8_t m_roomY;
 };
 
 

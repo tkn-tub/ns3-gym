@@ -49,6 +49,9 @@ BuildingsMobilityModel::GetTypeId (void)
 BuildingsMobilityModel::BuildingsMobilityModel ()
 {
   m_indoor = false;
+  m_nFloor = 1;
+  m_roomX = 1;
+  m_roomY = 1;
 }
 
 void
@@ -102,10 +105,48 @@ BuildingsMobilityModel::SetOutdoor (void)
 }
 
 void
-BuildingsMobilityModel::SetSurroudingBuilding(Ptr<Building> building)
+BuildingsMobilityModel::SetFloorNumber (uint8_t nfloor)
+{
+  m_nFloor = nfloor;
+}
+
+void
+BuildingsMobilityModel::SetRoomNumberX (uint8_t nroomx)
+{
+  m_roomX = nroomx;
+}
+
+void
+BuildingsMobilityModel::SetRoomNumberY (uint8_t nroomy)
+{
+  m_roomY = nroomy;
+}
+
+
+void
+BuildingsMobilityModel::SetSurroudingBuilding (Ptr<Building> building)
 {
   m_surroudingBuildings.push_back (building);
 }
+
+uint8_t
+BuildingsMobilityModel::GetFloorNumber (void)
+{
+  return (m_nFloor);
+}
+
+uint8_t
+BuildingsMobilityModel::GetRoomNumberX (void)
+{
+  return (m_roomX);
+}
+
+uint8_t
+BuildingsMobilityModel::GetRoomNumberY (void)
+{
+  return (m_roomY);
+}
+
 
 Ptr<Building>
 BuildingsMobilityModel::GetBuilding ()
