@@ -59,8 +59,8 @@ public:
   */
   Building (double _xMin, double _xMax,
             double _yMin, double _yMax,
-            double _zMin, double _zMax,
-            uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY);
+            double _zMin, double _zMax/*,
+            uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY*/);
   
   /**
   * Create a zero-sized building located at coordinates (0.0,0.0,0.0)
@@ -68,15 +68,79 @@ public:
   */
   Building ();
   
+  
   /**
+  * \param t the type of building (i.e., Residential, Office, Commercial)
+  *
+  * This method allows to set building type (default is Residential)
+  */
+  void SetBuildingType (Building::BuildingType_t t);
+  
+  /**
+  * \param t the type of external walls (i.e., Wood, ConcreteWithWindows,
+  * ConcreteWithoutWindows and StoneBlocks), used for evaluating the loss
+  * due to the penetration of external walls in outdoor <-> indoor comm.
+  *
+  * This method allows to set external walls type (default is Residential)
+  */
+  void SetExtWallsType (Building::ExtWallsType_t t);
+  
+  /**
+  * \param nfloors the number of floors in the building
+  *
+  * This method allows to set the number of floors in the building
+  * (default is 1)
+  */
+  void SetFloorsNumber (uint8_t nfloors);
+  
+  /**
+  * \param nroomx the number of rooms in the x axis
+  *
+  * This method allows to set the number of room in x-axis (default is 1)
+  * The rooms are disposed as a grid of nº of rooms in X per nº of rooms in Y
+  */
+  void SetNumberRoomX (uint8_t nroomx);
+  
+  /**
+  * \param nroomy the number of floors in the building
+  *
+  * This method allows to set the number of floors in the building
+  * (default is 1)
+  */
+  void SetNumberRoomY (uint8_t nroomy);
+  
+  
+  /**
+  * \return the type of building
   * Return the type of building (i.e., Residential, Office, Commercial)
   */
   BuildingType_t GetBuildingType ();
   
   /**
-  * Return the type of external walls (i.e., Wood, ConcreteWithWindows, ConcreteWithoutWindows)
+  * \return the type of external walls
+  * Return the type of external walls (i.e., Wood, ConcreteWithWindows,
+  * ConcreteWithoutWindows)
   */
   ExtWallsType_t GetExtWallsType ();
+  
+  /**
+  * \return the number of floors
+  * Return the number of floors
+  */
+  uint8_t GetNumberFloors ();
+  
+  /**
+  * \return the number of room in x-axis
+  * Return the number of room in x-axis
+  */
+  uint8_t GetNumberRoomX ();
+  
+  /**
+  * \return the number of room in y-axis
+  * Return the number of room in y-axis
+  */
+  uint8_t GetNumberRoomY ();
+  
   
 private:
   Box m_buldingBounds;

@@ -29,11 +29,11 @@ namespace ns3 {
 
 Building::Building (double _xMin, double _xMax,
           double _yMin, double _yMax,
-          double _zMin, double _zMax,
-          uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY) :
-     m_floor (_nFloors),
-     m_roomX (_nRoomX),
-     m_roomY (_nRoomY),
+          double _zMin, double _zMax/*,
+          uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY*/) :
+     m_floor (1),
+     m_roomX (1),
+     m_roomY (1),
      m_buildingType (Residential),
      m_externalWalls (ConcreteWithWindows)
      
@@ -52,6 +52,38 @@ Building::Building ()
   m_buldingBounds = Box ();
 }
 
+
+void
+Building::SetBuildingType (Building::BuildingType_t t)
+{
+  m_buildingType = t;
+}
+
+void 
+Building::SetExtWallsType (Building::ExtWallsType_t t)
+{
+  m_externalWalls = t;
+}
+
+void
+Building::SetFloorsNumber (uint8_t nfloors)
+{
+  m_floor = nfloors;
+}
+
+void
+Building::SetNumberRoomX (uint8_t nroomx)
+{
+  m_roomX = nroomx;
+}
+
+void
+Building::SetNumberRoomY (uint8_t nroomy)
+{
+  m_roomY = nroomy;
+}
+
+
 Building::BuildingType_t 
 Building::GetBuildingType ()
 {
@@ -63,5 +95,24 @@ Building::GetExtWallsType ()
 {
   return (m_externalWalls);
 }
+
+uint8_t 
+Building::GetNumberFloors ()
+{
+  return (m_floor);
+}
+
+uint8_t 
+Building::GetNumberRoomX ()
+{
+  return (m_roomX);
+}
+
+uint8_t 
+Building::GetNumberRoomY ()
+{
+  return (m_roomY);
+}
+
 
 } // namespace ns3
