@@ -222,26 +222,31 @@ double
 BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
   double N = 0.0;
+  int n = abs (a->GetFloorNumber () - b->GetFloorNumber ());
+  NS_LOG_INFO (this << " A floor " << (uint16_t)a->GetFloorNumber () << " B floor " << (uint16_t)b->GetFloorNumber () << " n " << n);
+  double Lf = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
   if (aBuilding->GetBuildingType () == Building::Residential)
     {
       N = 28;
+      Lf = 4 * n;
     }
   else if (aBuilding->GetBuildingType () == Building::Office)
     {
       N = 30;
+      Lf = 15 + (4 * (n-1));
     }
   else if (aBuilding->GetBuildingType () == Building::Commercial)
     {
       N = 22;
-    
+      Lf = 6 + (3 * (n-1));
     }
   else
     {
       NS_LOG_ERROR (this << " Unkwnon Wall Type");
     }
     
-  double loss = 20*log10(m_frequency) + N*log10(a->GetDistanceFrom (b)) - 28.0;
+  double loss = 20*log10(m_frequency) + N*log10(a->GetDistanceFrom (b)) + Lf - 28.0;
   
   return (loss);
 }
@@ -345,14 +350,14 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
             {
                 // nodes are in same building -> indoor communication ITU-R P.1238
                 loss = ItuR1238 (a1, b1);
-                NS_LOG_INFO (this << " I-I (same building) ITUR1238 + BEL : " << loss);
+                NS_LOG_INFO (this << " I-I (same building) ITUR1238 : " << loss);
                 
             }
           else
             {
               // nodes are in different buildings
               loss = ItuR1411 (a1, b1) + BEWPL(a1) + BEWPL(b1);
-              NS_LOG_INFO (this << " I-I (different) ITUR1238 + BEL : " << loss);
+              NS_LOG_INFO (this << " I-I (different) ITUR1238 + 2*BEL : " << loss);
             }
         }
       else
