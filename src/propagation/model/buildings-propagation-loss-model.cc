@@ -59,7 +59,7 @@ BuildingsPropagationLossModel::GetTypeId (void)
     .AddAttribute ("RooftopLevel",
                   " The height of the rooftop [m].",
                   DoubleValue (30.0),
-                  MakeDoubleAccessor (&BuildingsPropagationLossModel::m_rooftopThreshold),
+                  MakeDoubleAccessor (&BuildingsPropagationLossModel::m_rooftopHeight),
                   MakeDoubleChecker<double> ())
                    
     .AddAttribute ("MinDistance",
@@ -191,8 +191,16 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
 }
 
 
+
 double
 BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  return (ItuR1411Los (a,b));
+}
+
+
+double
+BuildingsPropagationLossModel::ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
   double dist = a->GetDistanceFrom (b);
   double lossLow = 0.0;
@@ -200,21 +208,138 @@ BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
   double pi = 3.141592653589793;
   double Lbp = 20*log10(m_lambda*m_lambda/(8*pi*a->GetPosition ().z*b->GetPosition ().z));
   double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
-//   NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp);
+  //   NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp);
   if (dist <= Rbp)
-    {
-      lossLow = Lbp + 20*log10(dist/Rbp);
-      lossUp = Lbp + 20 + 25*log10(dist/Rbp);
-    }
+  {
+    lossLow = Lbp + 20*log10(dist/Rbp);
+    lossUp = Lbp + 20 + 25*log10(dist/Rbp);
+  }
   else
-    {
-      lossLow = Lbp + 40*log10(dist/Rbp);
-      lossUp = Lbp + 20 + 40*log10(dist/Rbp);
-    }
+  {
+    lossLow = Lbp + 40*log10(dist/Rbp);
+    lossUp = Lbp + 20 + 40*log10(dist/Rbp);
+  }
   
   double loss = (lossUp + lossLow) / 2;
   
   return (loss);
+}
+
+double
+BuildingsPropagationLossModel::ItuR1411Nlos (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  if ((a->GetPosition ().z>m_rooftopHeight) || (b->GetPosition ().z>m_rooftopHeight))
+  {
+    return (ItuR1411NlosOverRooftop (a,b));
+  }
+  else
+  {
+    return (ItuR1411NlosStreetCanyons (a,b));
+  }
+}
+
+double
+BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  double Lori = 0.0;
+  if ((m_streetsOrientation>=0)&&(m_streetsOrientation<35))
+    {
+      Lori = -10.0 + 0.354*m_streetsOrientation;
+    }
+  else if ((m_streetsOrientation>=35)&&(m_streetsOrientation<55))
+    {
+      Lori = 2.5 + 0.075*m_streetsOrientation;
+    }
+  else if ((m_streetsOrientation>=55)&&(m_streetsOrientation<90))
+    {
+      Lori = 2.5 + 0.075*m_streetsOrientation;
+    }
+  else
+    {
+      NS_LOG_ERROR (this << " Street Orientation must be in [0,90]");
+    }
+    
+  double Lrts = -8.2 -10*log10(m_streetsWidth) + 20*log10(m_rooftopHeight - b->GetPosition ().z) + Lori;
+  double distance = a->GetDistanceFrom (b);
+  double Dhb = a->GetPosition ().z - m_rooftopHeight;
+  double ds = (m_lambda * distance * distance) / (Dhb * Dhb);
+  double Lmsd = 0.0;
+  double pi = 3.141592653589793;
+  if (ds < m_buildingsExtend)
+    {
+      double Lbsh = 0.0;
+      double ka = 0.0;
+      double kd = 0.0;
+      double kf = 0.0;
+      if ((a->GetPosition ().z > m_rooftopHeight) || (b->GetPosition ().z > m_rooftopHeight))
+        {
+          Lbsh = -18*log10(1+Dhb);
+          ka = 54.0;
+          kd = 18.0;
+        }
+      else 
+        {
+          Lbsh = 0;
+          kd = 18.0 - 15*Dhb/a->GetPosition ().z;
+          if (distance <500)
+            {
+              ka = 54.0 - 1.6*Dhb*distance/1000;
+            }
+            else
+            {
+              ka = 54.0 - 0.8*Dhb;
+            }
+        }
+      if ((m_environment==Urban)&&(m_citySize==Large))
+        {
+          kf = 0.7*(m_frequency/925.0 -1);
+        }
+      else
+        {
+          kf = 1.5*(m_frequency/925.0 -1);
+        }
+      Lmsd = Lbsh + ka + kd*log10(distance/1000.0) + kf*log10(m_frequency) -9.0*log10(m_buildingSeparation); // CHECK last d (it's "b" in ITU)
+    }
+  else
+    {
+      double theta = atan (Dhb/m_buildingSeparation);
+      double rho = sqrt(Dhb*Dhb+m_buildingSeparation*m_buildingSeparation);
+      double hb = a->GetPosition ().z;
+      double Qm = 0.0;
+      if ((hb > m_rooftopHeight -1.0) && (hb < m_rooftopHeight + 1.0))
+        {
+          Qm = m_buildingSeparation / distance;
+        }
+      else if (hb > m_rooftopHeight)
+        {
+          Qm = 2.35*pow(Dhb/distance*sqrt(m_buildingSeparation/m_lambda), 0.9);
+        }
+      else
+        {
+          Qm = m_buildingSeparation/(2*pi*distance)*sqrt(m_lambda/rho)*(1/theta-(1/(2*pi+theta)));
+        }
+        
+      Lmsd = -10*log10(Qm*Qm);
+    }
+  double Lbf = 32.4 + 20*log10(distance/1000) + 20*log10(m_frequency);
+  
+  double loss = 0.0;
+  if (Lrts + Lmsd > 0)
+    {
+      loss = Lbf + Lrts + Lmsd;
+    }
+  else
+    {
+      loss = Lbf;
+    }
+  return (loss);
+}
+
+double
+BuildingsPropagationLossModel::ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  
+  return (0.0);
 }
 
 
@@ -227,25 +352,25 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
   double Lf = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
   if (aBuilding->GetBuildingType () == Building::Residential)
-    {
-      N = 28;
-      Lf = 4 * n;
-    }
+  {
+    N = 28;
+    Lf = 4 * n;
+  }
   else if (aBuilding->GetBuildingType () == Building::Office)
-    {
-      N = 30;
-      Lf = 15 + (4 * (n-1));
-    }
+  {
+    N = 30;
+    Lf = 15 + (4 * (n-1));
+  }
   else if (aBuilding->GetBuildingType () == Building::Commercial)
-    {
-      N = 22;
-      Lf = 6 + (3 * (n-1));
-    }
+  {
+    N = 22;
+    Lf = 6 + (3 * (n-1));
+  }
   else
-    {
-      NS_LOG_ERROR (this << " Unkwnon Wall Type");
-    }
-    
+  {
+    NS_LOG_ERROR (this << " Unkwnon Wall Type");
+  }
+  
   double loss = 20*log10(m_frequency) + N*log10(a->GetDistanceFrom (b)) + Lf - 28.0;
   
   return (loss);
@@ -295,7 +420,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
   Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
   
   double loss = 0.0;
-  NS_LOG_INFO (this << " rooftop " << m_rooftopThreshold);
+  NS_LOG_INFO (this << " rooftop " << m_rooftopHeight);
   
   if (a1->IsOutdoor ())
     {
@@ -303,8 +428,8 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
         {
           if (distance > 1000)
             {
-              if ((a1->GetPosition ().z > m_rooftopThreshold)
-                || (b1->GetPosition ().z > m_rooftopThreshold))
+              if ((a1->GetPosition ().z > m_rooftopHeight)
+                || (b1->GetPosition ().z > m_rooftopHeight))
                 {
                   // Over the rooftop tranmission -> Okumura Hata
                   loss = OkumuraHata (a1, b1);
@@ -365,8 +490,8 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
           // b is outdoor
           if (distance > 1000)
             {
-              if ((a1->GetPosition ().z > m_rooftopThreshold)
-                || (b1->GetPosition ().z > m_rooftopThreshold))
+              if ((a1->GetPosition ().z > m_rooftopHeight)
+                || (b1->GetPosition ().z > m_rooftopHeight))
                 {
                   loss = OkumuraHata (a1, b1) + BEWPL(a1);
                   NS_LOG_INFO (this << " I-0 (>1000) over rooftop OH + BEL : " << loss);
