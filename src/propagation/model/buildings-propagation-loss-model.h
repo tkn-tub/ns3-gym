@@ -101,11 +101,13 @@ private:
   double m_minDistance; // in meter
   double m_frequency; // frequency in MHz
   double m_rooftopHeight; // in meter (used to discriminate OH and short range canyoning)
+  double m_itu1411NlosThreshold; // in meters (switch Los -> NLoS)
   double m_streetsOrientation; // in degrees [0,90]
   double m_streetsWidth; // in meters
   double m_buildingsExtend; // in meters
   double m_buildingSeparation; // in meters
   
+  double m_cornerAngle; // in rad. (alpha in ITUR 1411) 1.570796325 = 90 degrees
 
 };
 

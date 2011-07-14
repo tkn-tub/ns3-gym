@@ -61,6 +61,12 @@ BuildingsPropagationLossModel::GetTypeId (void)
                   DoubleValue (30.0),
                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_rooftopHeight),
                   MakeDoubleChecker<double> ())
+                  
+    .AddAttribute ("Los2NlosThr",
+                    " Threshold from LoS to NLoS in ITU 1411 [m].",
+                    DoubleValue (200.0),
+                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_itu1411NlosThreshold),
+                    MakeDoubleChecker<double> ())
                    
     .AddAttribute ("MinDistance",
                    "The distance under which the propagation model refuses to give results (m) ",
@@ -195,7 +201,14 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
 double
 BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
-  return (ItuR1411Los (a,b));
+  if (a->GetDistanceFrom (b) < m_itu1411NlosThreshold)
+    {
+      return (ItuR1411Los (a,b);)
+    }
+  else
+    {
+      return (ItuR1411Nlos (a,b));
+    }
 }
 
 
@@ -338,8 +351,31 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
 double
 BuildingsPropagationLossModel::ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
+  // reflection pathloss
+  double x1 = a->GetStreetCrossingDistence ();
+  double x2 = b->GetStreetCrossingDistence ();
+  double f_alpha = 0.0;
+  if (m_cornerAngle<= 0.33)
+  {
+    f_alpha = -41.0 + 11*m_cornerAngle;
+  }
+  else if (m_cornerAngle<= 0.42)
+  {
+    f_alpha = -13.94 + 28*m_cornerAngle;
+  }
+  else if (m_cornerAngle<= 0.71)
+  {
+    f_alpha = -5.33 + 7.51*m_cornerAngle;
+  }
+  double pi = 3.141592653589793;
+  double Lr = -20*log10 (x1+x2) + (x1*x2*f_alpha/(m_streetsWidth*m_streetsWidth)) - 20*log10 (4*pi/m_lambda);
   
-  return (0.0);
+  // diffraction pathloss
+  double Da = -1*(40/(2*pi))*(atan (x2/m_streetsWidth) + atan (x1/m_streetsWidth) - (pi/2));
+  double Ld = -10*log10 (x2*x1*(x1+x2)) + 2*Da + 0.1*(90 - m_cornerAngle*(180/pi)) - 20*log10 (4*pi/m_lambda);
+  
+  double loss = -10*log10 (pow (10, Lr/10) + pow (10, Ld/10));
+  return (loss);
 }
 
 
