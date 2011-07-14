@@ -88,12 +88,14 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   
   Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, 1.0));
-  mm1->SetOutdoor ();
+  Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+  mm1->SetIndoor (building1);
   Ptr<BuildingsMobilityModel> mm2 = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm2->SetPosition (Vector (1010.0, 0.0, 1.0));
-  //Ptr<Building> building = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0, 1, 1, 1);
-  Ptr<Building> building = Create<Building> ();
-  mm2->SetIndoor (building);
+  Ptr<Building> building = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+  mm2->SetOutdoor ();
+  mm2->SetIndoor (building1);
+  mm2->SetFloorNumber (2);
          
   double thrLoss = 0.0;
   AddTestCase (new LtePathlossModelTestCase (mm1, mm2, thrLoss, "loss = ??"));

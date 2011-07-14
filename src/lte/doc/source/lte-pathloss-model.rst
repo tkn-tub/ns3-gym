@@ -122,7 +122,11 @@ While for 2600 MHz in literature we found that the COST231 model can be used wit
 Short Range Communications ITU-R P.1411 (I1411)
 ---------------------------------------
 
-This is model from the short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented will consider the LoS canyon configuration, in order to proper model the pathloss between the HeNB and the surrounding users which represent the most critical scenario at this distance. However, this will produce results a bit optmistic in terms of far nodes, where probably a NLoS model should been more conservative. In the following we give the expressions of this model.
+This is model from the short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tuneable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, both transmission over the rooftop and above aare considered in order to model small BS and macro one. In case on NLoS several parameters scenatio dependent have been included, such as average street width, orientation, corner angle, etc. The valuesof such parameters have to be properly setted according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used. In the following we give the expressions of the components of the model.
+
+
+LoS within street canyons
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This model provides an upper and lower bound resectively according to the following formulas
 
@@ -150,6 +154,108 @@ and the above parameters are
 
   :math:`d` : distance [m]
 
+and :math:`L_{bp}` is the value for the basic transmission loss at the break point, defined as:
+
+.. math::
+
+  L_{bp} = \left|20\log \left(\frac{\lambda^2}{8\pi h_\mathrm{b}h\mathrm{m}}\right)\right|
+
+The value used by the simulator is the average one for modelling the median pathloss.
+
+
+NLoS over the rooftops
+~~~~~~~~~~~~~~~~~~~~~~
+
+In this case the loss is expressed as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past rows of building (:math:`L_{msd}`). The formula is:
+
+.. math::
+
+  L_{NLOS1} = \left\{ \begin{array}{ll} L_{bf} + L_{rts} + L_{msd} & \mbox{for } L_{rts} + L_{msd} > 0 \\ L_{bf} & \mbox{for } L_{rts} + L_{msd} \le 0\end{array}\right.
+
+The free-space loss is given by:
+
+.. math::
+
+  L_{bf} = 32.4 + 20 \log {(d/1000)} + 20\log{(f)}
+
+where:
+
+  :math:`f` : frequency [MHz]
+
+  :math:`d` : distance (where :math:`d > 1`) [m]
+
+The term :math:`L_{rts}` takes into account the widhtt of the street and its orientation, according to the formulas
+
+.. math::
+
+  L_{rts} = -8.2 - 10\log {(w)} + 10\log{(f)} + 20\log{(\Delta h_m)} + L_{ori}
+
+  L_{ori} = \left\{ \begin{array}{lll} -10 + 0.354\varphi & \mbox{for } 0^{\circ} \le \varphi < 35^{\circ} \\ 2.5 + 0.075(\varphi-35) & \mbox{for } 35^{\circ} \le \varphi < 55^{\circ} \\ 4.0 -0.114(\varphi-55) & \mbox{for } 55^{\circ} \varphi \le 90^{\circ}\end{array}\right.
+
+  \Delta h_m = h_r - h_m
+
+where:
+
+  :math:`h_r` : is the height of the rooftop [m]
+
+  :math:`h_m` : is the height of the mobile [m]
+
+The multiple screen diffraction loss depends on the BS antenna height relative to the building height and on the incidence angle. Regarding the latter, the "settled filed distance" is used for select the proper model; its value is given by
+
+.. math::
+
+  d_{s} = \frac{\lambda d^2}{\Delta h_{b}^2}
+
+Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the building extend), it can be evaluated according to
+
+.. math::
+
+  L_{msd} = L_{bsh} + k_{a} + k_{d}\log{(d/1000)} + k_{f}\log{(f)} - 9\log{(b)}
+
+  L_{bsh} = \left\{ \begin{array}{ll} -18\log{(1+\Delta h_{b})} & \mbox{for } h_{b} > h_{r} \\ 0 & \mbox{for } h_{b} \le h_{hr} \end{array}\right.
+
+  k_a = \left\{ \begin{array}{lll} 
+      54 & \mbox{for } h_{b} > h_{r} \\
+      54-0.8\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d \ge 500 \mbox{ m} \\
+      54-1.6\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d < 500 \mbox{ m} \\
+      \end{array} \right.
+
+  k_d = \left\{ \begin{array}{ll}
+        18 & \mbox{for } h_{b} > h_{r} \\
+        18 -15\frac{\Delta h_b}{h_r} \mbox{for } h_{b} \le h_{r}
+        \end{array} \right.
+
+  k_f = \left\{ \begin{array}{ll}
+        0.7(f/925 -1) & \mbox{for medium city and suburban centres} \\
+        1.5(f/925 -1) & \mbox{for metropolitan centres} 
+        \end{array}\right.
+
+
+Alternatively, in case of :math:`l < d_s`, the formula is:
+
+.. math::
+
+  L_{msd} = -10\log{\left(Q_M^2\right)}
+
+where
+
+.. math::
+
+  Q_M = \left\{ \begin{array}{lll}
+        2.35\left(\frac{\Delta h_b}{d}\sqrt{\frac{b}{\lambda}}\right)^{0.9} & \mbox{for } h_{b} > h_{r} \\
+        \frac{b}{d} &  \mbox{for } h_{b} \approx h_{r} \\
+        \frac{b}{2\pi d}\sqrt{\frac{\lambda}{\rho}}\left(\frac{1}{\theta}-\frac{1}{2\pi + \theta}\right) & \mbox{for }  h_{b} < h_{r} 
+        \end{array}\right.
+
+
+where:
+
+.. math::
+
+  \theta = arc tan \left(\frac{\Delta h_b}{b}\right)
+
+  \rho = \sqrt{\Delta h_b^2 + b^2}
+
 
 Indoor Communications (I1238)
 -----------------------------
@@ -159,11 +265,15 @@ The analytical expression is given in the following.
 
 .. math::
 
-  L_\mathrm{total} = 20\log f + N\log d - 28 [dB]
+  L_\mathrm{total} = 20\log f + N\log d + L_f(n)- 28 [dB]
 
 where:
 
   :math:`N = \left\{ \begin{array}{lll} 28 & residential \\ 30 & office \\ 22 & commercial\end{array} \right.` : power loss coefficient [dB]
+
+  :math:`L_f = \left\{ \begin{array}{lll} 4n & residential \\ 15+4(n-1) & office \\ 6+3(n-1) & commercial\end{array} \right.`
+
+  :math:`n` : number of floors between base station and mobile (:math:`n\ge 1`)
 
   :math:`f` : frequency [MHz]
 
@@ -174,17 +284,23 @@ where:
 External Walls Penetration Loss (BEL)
 -------------------------------------
 
-From COST231 we have:
+This part model the penetration loss thruogh walls for indoor to outdoor communications and viceversa. The values are taken from the COST231 model.
 
   * Wood ~ 4 dB
   * Concrete with windows (no metallised) ~ 7 dB
   * Concrete without windows 10-20 dB
-
+  * Concrete without windows 10-20 dB
 
 Hybrid Model Indoor<->Outdoor
 -----------------------------
 
 The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to their distance, the external wall penetration loss due to the building.
+
+Height Gain Model
+-----------------
+
+This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and viceversa.
+
 
 
 Pathloss Logic Model
