@@ -291,15 +291,18 @@ This part model the penetration loss thruogh walls for indoor to outdoor communi
   * Concrete without windows 10-20 dB
   * Concrete without windows 10-20 dB
 
-Hybrid Model Indoor<->Outdoor
------------------------------
-
-The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to their distance, the external wall penetration loss due to the building.
 
 Height Gain Model
 -----------------
 
 This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and viceversa.
+
+
+
+Hybrid Model Indoor<->Outdoor
+-----------------------------
+
+The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to their distance, the external wall penetration loss due to the building.
 
 
 
@@ -348,7 +351,7 @@ In the following the pseudo-code of the model is presented::
           L = I1411 + BEL
 
 
-where `txNode` and `rxNode` can be one of the elements eNB, SC and UE.
+where ``txNode`` and ``rxNode`` can be one of the elements eNB, SC and UE.
 We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the tranmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level.
 
 
