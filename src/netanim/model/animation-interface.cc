@@ -19,6 +19,20 @@
 
 // Interface between ns3 and the network animator
 
+
+// ns3 includes
+#include "ns3/animation-interface.h"
+#include "ns3/netanim-config.h"
+#include "ns3/channel.h"
+#include "ns3/config.h"
+#include "ns3/node.h"
+#include "ns3/mobility-model.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
+#include "ns3/animation-interface-helper.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/wimax-mac-header.h"
+
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
@@ -33,18 +47,6 @@
 #else
 #include <fcntl.h>
 #endif
-
-// ns3 includes
-#include "ns3/animation-interface.h"
-#include "ns3/channel.h"
-#include "ns3/config.h"
-#include "ns3/node.h"
-#include "ns3/mobility-model.h"
-#include "ns3/packet.h"
-#include "ns3/simulator.h"
-#include "ns3/animation-interface-helper.h"
-#include "ns3/wifi-mac-header.h"
-#include "ns3/wimax-mac-header.h"
 
 NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 
@@ -102,7 +104,9 @@ bool AnimationInterface::SetServerPort (uint16_t port)
 {
 #if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
   if (ServerPortSet)
-    return;
+    {
+      return true;
+    }
   int s = socket (AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
