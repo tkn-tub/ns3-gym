@@ -200,6 +200,9 @@ where:
 
   :math:`h_m` : is the height of the mobile [m]
 
+  :math:`\varphi` : is the street orientation with respect to the direct path (degrees)
+
+
 The multiple screen diffraction loss depends on the BS antenna height relative to the building height and on the incidence angle. Regarding the latter, the "settled filed distance" is used for select the proper model; its value is given by
 
 .. math::
