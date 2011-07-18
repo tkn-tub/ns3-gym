@@ -85,12 +85,12 @@ where for small or medium sized city
 
 .. math::
 
-  C_\mathrm{H} = 0.8 + (1.1\log{f} - 0.7)h_\mathrm[M] -1.56\log{f}
+  C_\mathrm{H} = 0.8 + (1.1\log{f} - 0.7)h_\mathrm{M} -1.56\log{f}
 
 and for large cities
 
 .. math::
-  C = \left\{\begin{array}{ll} 8.29 (\log{(1.54h_\mathrm[M])})^2 -1.1 & \mbox{if } 150\leq f\leq 200 \\ 3.2(\log{(11.75h_\mathrm[M])})^2 -4.97 & \mbox{if } 200<f\leq 1500\end{array} \right.
+  C_\mathrm{H} = \left\{\begin{array}{ll} 8.29 (\log{(1.54h_M)})^2 -1.1 & \mbox{if } 150\leq f\leq 200 \\ 3.2(\log{(11.75h_M)})^2 -4.97 & \mbox{if } 200<f\leq 1500\end{array} \right.
 
 There extension for the standard OH in suburban is
 
@@ -206,6 +206,10 @@ The multiple screen diffraction loss depends on the BS antenna height relative t
 
   d_{s} = \frac{\lambda d^2}{\Delta h_{b}^2}
 
+with
+
+  :math:`\Delta h_b = h_b - h_m`
+
 Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the building extend), it can be evaluated according to
 
 .. math::
@@ -222,7 +226,7 @@ Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the 
 
   k_d = \left\{ \begin{array}{ll}
         18 & \mbox{for } h_{b} > h_{r} \\
-        18 -15\frac{\Delta h_b}{h_r} \mbox{for } h_{b} \le h_{r}
+        18 -15\frac{\Delta h_b}{h_r} & \mbox{for } h_{b} \le h_{r}
         \end{array} \right.
 
   k_f = \left\{ \begin{array}{ll}
@@ -256,6 +260,44 @@ where:
 
   \rho = \sqrt{\Delta h_b^2 + b^2}
 
+NLoS within street canyons
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this case, both antennas are below the rooftop level, the formula includes the component due the diffracted waves (:math:`L_d`)
+and the reflected ones (:math:`L_d`), in detail:
+
+.. math::
+
+ L_NLOS = -10\log{\left(10^{L_r/10}+10^{L_d/10}\right)}
+
+with
+
+.. math::
+
+  L_r = -20\log{(x_1+x_2)}+ x_1 x_2\frac{f(\alpha)}{W_1 W_2} -20\log{\frac{4\pi}{\lambda}}
+
+  f(\alpha) = \left\{ \begin{array}{lcr}
+              -41+110\alpha & \mbox{for }  & \alpha \leq 0.33 \\
+              -13.94+28\alpha & \mbox{for } & 0.33 < \alpha \leq 0.42 \\
+              -5.33+7.51\alpha & \mbox{for } & 0.42 < \alpha \leq 0.71 \\
+              0 & \mbox{for }  & \alpha > 0.71
+              \end{array}\right.
+  
+  L_d = -10\log{[x_2 x_1(x_1+x_2)]}+ 2 D_a + 0.1 \left(90-\alpha\frac{180}{\pi}\right) -20\log{(\frac{4\pi}{\lambda})}
+
+  D_a \approx -\left(\frac{40}{2*pi}\right) \left[arc tan\left(\frac{x_2}{w_2}\right) + arc tan \left(\frac{x_1}{w_1}\right) - \frac{pi}{2}\right]
+
+where
+
+ :math:`w_1` : street width at the position of the BS [m]
+
+ :math:`w_2` : street width at the position of the users [m]
+
+ :math:`x_1` : distance between BS and the street crossing [m]
+
+ :math:`x_2` : distance between user and the street crossing [m]
+
+ :math:`\alpha` : corner angle of the streets [rad.]
 
 Indoor Communications (I1238)
 -----------------------------
