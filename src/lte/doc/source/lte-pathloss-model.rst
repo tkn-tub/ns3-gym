@@ -166,7 +166,7 @@ The value used by the simulator is the average one for modelling the median path
 NLoS over the rooftops
 ~~~~~~~~~~~~~~~~~~~~~~
 
-In this case the loss is expressed as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past rows of building (:math:`L_{msd}`). The formula is:
+In this case the model is based on [walfisch]_ [ikegami]_ loss is expressed as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past rows of building (:math:`L_{msd}`). The formula is:
 
 .. math::
 
@@ -222,7 +222,8 @@ Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the 
   L_{bsh} = \left\{ \begin{array}{ll} -18\log{(1+\Delta h_{b})} & \mbox{for } h_{b} > h_{r} \\ 0 & \mbox{for } h_{b} \le h_{hr} \end{array}\right.
 
   k_a = \left\{ \begin{array}{lll} 
-      54 & \mbox{for } h_{b} > h_{r} \\
+      71.4 & \mbox{for } h_{b} > h_{r} \mbox{ and } f>2000 \mbox{ MHz} \\
+      54 & \mbox{for } h_{b} > h_{r} \mbox{ and } f\le2000 \mbox{ MHz} \\
       54-0.8\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d \ge 500 \mbox{ m} \\
       54-1.6\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d < 500 \mbox{ m} \\
       \end{array} \right.
@@ -233,8 +234,9 @@ Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the 
         \end{array} \right.
 
   k_f = \left\{ \begin{array}{ll}
-        0.7(f/925 -1) & \mbox{for medium city and suburban centres} \\
-        1.5(f/925 -1) & \mbox{for metropolitan centres} 
+        -8 & \mbox{for } f>2000 \mbox{ MHz} \\
+        -4 + 0.7(f/925 -1) & \mbox{for medium city and suburban centres and} f\le2000 \mbox{ MHz} \\
+        -4 + 1.5(f/925 -1) & \mbox{for metropolitan centres and } f\le2000 \mbox{ MHz}
         \end{array}\right.
 
 
