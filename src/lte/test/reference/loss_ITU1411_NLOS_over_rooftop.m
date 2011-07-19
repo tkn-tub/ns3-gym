@@ -11,19 +11,26 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
 
 
   lambda = 300000000.0 / f;
-  
+  fmhz = f/1e6;
   Dhb = hb - hr;
-  ds = (lambda.*(d).^2)/Dhb^2;
-
+  ds = (lambda*d*d)/(Dhb*Dhb);
   if (l>ds)
-    if (big==1)
-      kf = 1.5*((f/925)-1);
+    if (fmhz>2000)
+      kf = -8;
     else
-      kf = 0.7*((f/925)-1);
+      if (big==1)
+        kf = -4+1.5*((fmhz/925)-1);
+      else
+        kf = -4+0.7*((fmhz/925)-1);
+      endif
     endif
     if (hb>hr)
       kd = 18;
-      ka = 54;
+      if (fmhz>2000)
+         ka = 71.4;
+      else 
+         ka = 54;
+      endif
       Lbsh = -18*log10(1+Dhb);
     else
       kd = 18 - 15*(Dhb/hr);
@@ -34,19 +41,18 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
         ka = 54-1.6*Dhb;
       endif
     endif
-    Lmsd = Lbsh + ka + kd.*log10(d./1000) + kf*log10(f) - 9*log10(b);
+    Lmsd = Lbsh + ka + kd.*log10(d./1000) + kf*log10(fmhz) - 9*log10(b);
   else
     theta = atan (Dhb /b);
     rho = sqrt(Dhb^2 + b^2);
     if (hb-hr<1)
        Qm = b./d;
     elseif (hb>hr)
-       Qm = 2.35*((dhb./d)*sqrt(b/lamda))^0.9;
+       Qm = 2.35*((Dhb./d)*sqrt(b/lambda))^0.9;
     else
        Qm = (b/2*pi.*d)*sqrt(lambda/rho)*((1/theta)-(1/(2*pi+theta)));
     endif
-    
-    Lmsd = -10*log(Qm^2);
+    Lmsd = -10*log10(Qm*Qm);
   endif
   Dhm = hr-hm;
   if (phi<35)
@@ -56,12 +62,9 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
   else
     Lori = 4- 0.114*(phi-55);
   endif
+  Lrts = -8.2 -10*log10(st_w) + 10*log10(fmhz) + 20*log10(Dhm) + Lori;
   
-  Lrts = -8.2 -10*log10(st_w) + 10*log10(f) + 20*log10(Dhm) + Lori;
-
-  Lbf = 32.4 +20*log10(d/1000) + 20*log10(f);
-    
-
+  Lbf = 32.4 +20*log10(d/1000) + 20*log10(fmhz);
   g = zeros(size(d));
   if (Lrts+Lmsd>0)
     L = Lbf + Lrts + Lmsd;

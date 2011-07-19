@@ -45,20 +45,20 @@ BuildingsPropagationLossModel::GetTypeId (void)
     .AddConstructor<BuildingsPropagationLossModel> ()
 
     .AddAttribute ("Lambda",
-                   "The wavelength  (default is 2.3 GHz at 300 000 km/s).",
-                   DoubleValue (300000000.0 / 2.3e9),
+                   "The wavelength  (default is 2.106 GHz at 300 000 km/s).",
+                   DoubleValue (300000000.0 / 2160e6),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_lambda),
                    MakeDoubleChecker<double> ())
 
     .AddAttribute ("Frequency",
-                   "The Frequency  (default is 2.3 GHz).",
-                   DoubleValue (2.3e9),
+                   "The Frequency  (default is 2.106 GHz).",
+                   DoubleValue (2160e6),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_frequency),
                    MakeDoubleChecker<double> ())
                    
     .AddAttribute ("RooftopLevel",
                   " The height of the rooftop [m].",
-                  DoubleValue (30.0),
+                  DoubleValue (20.0),
                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_rooftopHeight),
                   MakeDoubleChecker<double> ())
                   
@@ -80,7 +80,11 @@ BuildingsPropagationLossModel::GetTypeId (void)
 BuildingsPropagationLossModel::BuildingsPropagationLossModel () :
   C (0),
   m_environment (Urban),
-  m_citySize (Large)
+  m_citySize (Large),
+  m_streetsOrientation (45.0),
+  m_streetsWidth (20.0),
+  m_buildingsExtend (80.0),
+  m_buildingSeparation (50.0)
 {
   NS_LOG_INFO (this << " BuildingsPropagationLossModel");
 }
@@ -121,11 +125,25 @@ BuildingsPropagationLossModel::SetEnvironment (Environment env)
 {
   m_environment = env;
 }
+
 BuildingsPropagationLossModel::Environment
 BuildingsPropagationLossModel::GetEnvironment (void) const
 {
   return m_environment;
 }
+
+void
+BuildingsPropagationLossModel::SetCitySize (CitySize size)
+{
+  m_citySize = size;
+}
+
+BuildingsPropagationLossModel::CitySize
+BuildingsPropagationLossModel::GetCitySize (void) const
+{
+  return m_citySize;
+}
+
 
 
 double
@@ -137,29 +155,32 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
     {
       // standard Okumura Hata (from wikipedia)
       double log_f = log10 (m_frequency);
-      double log_aHeight = 13.82 * log10 (a->GetPosition ().z);
+      double hb = (a->GetPosition ().z>b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+      double hm = (a->GetPosition ().z< b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+      double log_aHeight = 13.82 * log10 (hb);
       double log_bHeight = 0.0;
       if (m_citySize == Large)
         {
           if (m_frequency<200)
             {
-              log_bHeight = 8.29 * pow (log10 (1.54 * b->GetPosition ().z), 2) -  1.1;
+              log_bHeight = 8.29 * pow (log10 (1.54 * hm), 2) -  1.1;
             }
           else
             {
-              log_bHeight = 3.2 * pow (log10 (11.75 * b->GetPosition ().z), 2) - 4.97;
+              log_bHeight = 3.2 * pow (log10 (11.75 * hm), 2) - 4.97;
             }
         }
       else
         {
-          log_bHeight = 0.8 + (1.1*log10(m_frequency) - 0.7)*b->GetPosition ().z - 1.56*log10(m_frequency);
+          log_bHeight = 0.8 + (1.1*log_f - 0.7)*hm - 1.56*log_f;
         }
-      
-      loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * log_f) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight;
+        
+      //NS_LOG_INFO (this << " logf " << 26.16 * log_f << " loga " << log_aHeight << " X " << (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) << " logb " << log_bHeight);
+      loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight;
       
       if (m_environment == SubUrban)
         {
-          loss += 2 * (pow(log10 (m_frequency / 28), 2)) - 5.4;
+          loss += - 2 * (pow(log10 (m_frequency / 28), 2)) - 5.4;
         }
       else if (m_environment == OpenAreas)
         {
@@ -171,18 +192,23 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
     {
       // COST 231 Okumura model
       double log_f = log10 (m_frequency);
-      double log_aHeight = 13.83 * log10 (a->GetPosition ().z);
+      double hb = (a->GetPosition ().z>b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+      double hm = (a->GetPosition ().z< b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+      double log_aHeight = 13.82 * log10 (hb);
       double log_bHeight = 0.0;
+      double C = 0.0;
+        
       if (m_citySize == Large)
         {
-          log_bHeight = 3.2 * pow ((log10(11.75 * b->GetPosition ().z)),2);
+          log_bHeight = 3.2 * pow ((log10(11.75 * hm)),2);
+          C = 3;
         }
       else
         {
-          log_bHeight = 1.1*log10(m_frequency) - 0.7*b->GetPosition ().z - (1.56*log10(m_frequency) - 0.8);
+          log_bHeight = 1.1*log_f - 0.7*hm - (1.56*log_f - 0.8);
         }
       
-      loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log_f) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight;
+      loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight + C;
     }
   else if (m_frequency <= 2.690e9) // max 3GPP freq EUTRA band #1
     {
@@ -203,7 +229,7 @@ BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
 {
   if (a->GetDistanceFrom (b) < m_itu1411NlosThreshold)
     {
-      return (ItuR1411Los (a,b);)
+      return (ItuR1411Los (a,b));
     }
   else
     {
@@ -219,7 +245,7 @@ BuildingsPropagationLossModel::ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<B
   double lossLow = 0.0;
   double lossUp = 0.0;
   double pi = 3.141592653589793;
-  double Lbp = 20*log10(m_lambda*m_lambda/(8*pi*a->GetPosition ().z*b->GetPosition ().z));
+  double Lbp = abs(20*log10((m_lambda*m_lambda)/(8*pi*a->GetPosition ().z*b->GetPosition ().z)));
   double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
   //   NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp);
   if (dist <= Rbp)
@@ -255,39 +281,41 @@ double
 BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
   double Lori = 0.0;
+  double fmhz = m_frequency/1e6;
   if ((m_streetsOrientation>=0)&&(m_streetsOrientation<35))
     {
       Lori = -10.0 + 0.354*m_streetsOrientation;
     }
   else if ((m_streetsOrientation>=35)&&(m_streetsOrientation<55))
     {
-      Lori = 2.5 + 0.075*m_streetsOrientation;
+      Lori = 2.5 + 0.075*(m_streetsOrientation - 35);
     }
   else if ((m_streetsOrientation>=55)&&(m_streetsOrientation<90))
     {
-      Lori = 2.5 + 0.075*m_streetsOrientation;
+      Lori = 2.5 + 0.075*(m_streetsOrientation - 55);
     }
   else
     {
       NS_LOG_ERROR (this << " Street Orientation must be in [0,90]");
     }
-    
-  double Lrts = -8.2 -10*log10(m_streetsWidth) + 20*log10(m_rooftopHeight - b->GetPosition ().z) + Lori;
   double distance = a->GetDistanceFrom (b);
-  double Dhb = a->GetPosition ().z - m_rooftopHeight;
+  double hb = (a->GetPosition ().z>b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+  double hm = (a->GetPosition ().z< b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
+  double Dhb = hb - m_rooftopHeight;
   double ds = (m_lambda * distance * distance) / (Dhb * Dhb);
   double Lmsd = 0.0;
   double pi = 3.141592653589793;
+  //NS_LOG_INFO (this << " build " << m_buildingsExtend << " ds " << ds << " roof " << m_rooftopHeight << " hb " << hb << " lambda " << m_lambda);
   if (ds < m_buildingsExtend)
     {
       double Lbsh = 0.0;
       double ka = 0.0;
       double kd = 0.0;
       double kf = 0.0;
-      if ((a->GetPosition ().z > m_rooftopHeight) || (b->GetPosition ().z > m_rooftopHeight))
+      if (hb > m_rooftopHeight)
         {
           Lbsh = -18*log10(1+Dhb);
-          ka = 54.0;
+          ka = (fmhz > 2000 ? 71.4 : 54.0);
           kd = 18.0;
         }
       else 
@@ -303,21 +331,25 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
               ka = 54.0 - 0.8*Dhb;
             }
         }
-      if ((m_environment==Urban)&&(m_citySize==Large))
+      if (fmhz>2000)
         {
-          kf = 0.7*(m_frequency/925.0 -1);
+          kf = -8;
+        }
+      else if ((m_environment==Urban)&&(m_citySize==Large))
+        {
+          kf = -4 + 0.7*(fmhz/925.0 -1);
         }
       else
         {
-          kf = 1.5*(m_frequency/925.0 -1);
+          kf = -4 + 1.5*(fmhz/925.0 -1);
         }
-      Lmsd = Lbsh + ka + kd*log10(distance/1000.0) + kf*log10(m_frequency) -9.0*log10(m_buildingSeparation); // CHECK last d (it's "b" in ITU)
+      
+      Lmsd = Lbsh + ka + kd*log10(distance/1000.0) + kf*log10(fmhz) -9.0*log10(m_buildingSeparation); 
     }
   else
     {
       double theta = atan (Dhb/m_buildingSeparation);
       double rho = sqrt(Dhb*Dhb+m_buildingSeparation*m_buildingSeparation);
-      double hb = a->GetPosition ().z;
       double Qm = 0.0;
       if ((hb > m_rooftopHeight -1.0) && (hb < m_rooftopHeight + 1.0))
         {
@@ -334,8 +366,10 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
         
       Lmsd = -10*log10(Qm*Qm);
     }
-  double Lbf = 32.4 + 20*log10(distance/1000) + 20*log10(m_frequency);
-  
+  double Lbf = 32.4 + 20*log10(distance/1000) + 20*log10(fmhz);
+  double Dhm = m_rooftopHeight - hm;
+  double Lrts = -8.2 -10*log10 (m_streetsWidth) + 10*log10 (fmhz) + 20*log10 (Dhm) + Lori;
+  //NS_LOG_INFO (this << " Lbf " << Lbf << " Lrts " << Lrts << " Dhm" << Dhm);
   double loss = 0.0;
   if (Lrts + Lmsd > 0)
     {
@@ -351,6 +385,7 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
 double
 BuildingsPropagationLossModel::ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
+  NS_LOG_INFO (this);
   // reflection pathloss
   double x1 = a->GetStreetCrossingDistence ();
   double x2 = b->GetStreetCrossingDistence ();

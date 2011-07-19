@@ -69,11 +69,13 @@ LenaHelper::DoStart (void)
   //Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
   //m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
   //m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
-  m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  //m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  m_downlinkPropagationLossModel = m_dlPropagationModelFactory.Create<PropagationLossModel> ();
   m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
   m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  //m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  m_uplinkPropagationLossModel = m_ulPropagationModelFactory.Create<PropagationLossModel> ();
+  
   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
   m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
   m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
@@ -139,15 +141,18 @@ void
 LenaHelper::SetPropagationModelType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
-  m_propagationModelFactory = ObjectFactory ();
-  m_propagationModelFactory.SetTypeId (type);
+  m_dlPropagationModelFactory = ObjectFactory ();
+  m_dlPropagationModelFactory.SetTypeId (type);
+  m_ulPropagationModelFactory = ObjectFactory ();
+  m_ulPropagationModelFactory.SetTypeId (type);
 }
 
 void 
 LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
-  m_propagationModelFactory.Set (n, v);
+  m_dlPropagationModelFactory.Set (n, v);
+  m_ulPropagationModelFactory.Set (n, v);
 }
 
 

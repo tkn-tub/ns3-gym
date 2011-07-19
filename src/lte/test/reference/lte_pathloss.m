@@ -4,8 +4,11 @@ close all;
 %% LTE pathloss model
 %% ITU1411, ITU1238, COST231, OH, etc.
 
-f = 2160e6;  % carrier freq Hz, EARFCN = 500 (downlink)
-d = 100;
+f = 2114e6;  % carrier freq Hz, EARFCN = 500 (downlink)
+%f = 1900e6;  % carrier freq Hz, EARFCN = 500 (downlink)
+%f = 869e6;
+%f = 2620e6;
+d = 250;
 hb = 30;
 hm = 1;
 hr = 20;
@@ -49,7 +52,9 @@ alpha = 0.5;
 g = loss_ITU1411_NLOS_street_canyons (d, f, w1, w2, x1, x2, alpha);
 disp ("The value of ITU1411 in NLOS within street canyons is:"), disp (g)
 
-g = loss_ITU1238 (d, hb, hm, f);
+n_floors = 2;
+built_t = 1;
+g = loss_ITU1238 (d, f, n_floors, built_t);
 disp ("The value of ITU1238 is:"), disp (g)
 
 

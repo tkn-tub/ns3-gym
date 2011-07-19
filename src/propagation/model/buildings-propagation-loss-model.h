@@ -75,9 +75,11 @@ public:
    */
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   void SetEnvironment (Environment env);
+  void SetCitySize (CitySize size);
   void SetLambda (double lambda);
   void SetMinDistance (double minDistance);
   Environment GetEnvironment (void) const;
+  CitySize GetCitySize (void) const;
   double GetMinDistance (void) const;
   double GetLambda (void) const;
   void SetLambda (double frequency, double speed);

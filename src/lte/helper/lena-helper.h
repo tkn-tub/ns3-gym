@@ -55,6 +55,7 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
+  
   /**
    * \todo to be implemented
    *
@@ -203,6 +204,9 @@ private:
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
+  
+  ObjectFactory m_dlPropagationModelFactory;
+  ObjectFactory m_ulPropagationModelFactory;
 
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
