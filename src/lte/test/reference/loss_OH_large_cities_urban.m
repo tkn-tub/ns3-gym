@@ -14,6 +14,7 @@ function g = loss_OH_large_cities_urban(d, hb, hm, f)
   else
     Ch = 3.2*(log10(11.75*hm))^2-4.97;
   endif
+
   g = zeros(size(d));
   g(find(d > 0)) = 69.55 + (26.16*log10(f)) - (13.82*log10(hb)) + (44.9-(6.55*log10(hb))).*log10(d) - Ch;
 

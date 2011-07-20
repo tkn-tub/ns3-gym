@@ -39,6 +39,7 @@
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/building.h>
+#include <ns3/enum.h>
 
 NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
 
@@ -56,10 +57,13 @@ using namespace ns3;
 LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   : TestSuite ("lte-pathloss-model", SYSTEM)
 {
-  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+//    LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+// 
+//   LogComponentEnable ("LenaHelper", logLevel);
+//   LogComponentEnable ("LtePathlossModelTest", logLevel);
+//   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
 
-  // LogComponentEnable ("LteTestUePhy", logLevel);
-  // LogComponentEnable ("LteDownlinkSinrTest", logLevel);
+  LogComponentEnable ("LtePathlossModelTest", LOG_LEVEL_ALL);
 
   // NS_LOG_INFO ("Creating LteDownlinkSinrTestSuite");
   
@@ -67,67 +71,119 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
   
+//   lena->SetPropagationModelAttribute ("Environment", EnumValue (BuildingsPropagationLossModel::SubUrban));
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
+  NodeContainer henbNodes;
   NodeContainer ueNodes;
+  NodeContainer hueNodes;
   enbNodes.Create (1);
-  ueNodes.Create (1);
+  henbNodes.Create (1);
+  ueNodes.Create (3);
+  hueNodes.Create (1);
   
   // Install Mobility Model
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.Install (henbNodes);
   mobility.Install (ueNodes);
-  
-  
+  mobility.Install (hueNodes);
+
   NetDeviceContainer enbDevs;
+  NetDeviceContainer henbDevs;
   NetDeviceContainer ueDevs;
+  NetDeviceContainer hueDevs;
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);
+  henbDevs = lena->InstallEnbDevice (henbNodes);
+  hueDevs = lena->InstallUeDevice (hueNodes);
+
+  
   
   lena->Attach (ueDevs, enbDevs.Get (0));
+  lena->Attach (hueDevs, henbDevs.Get (0));
   
-  double distance = 250;
+  double distance = 2000;
   double hm = 1;
   double hb = 30;
+  //double hb = 15;
 //   double hr = 20;
-  
+
+  //   double freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
+  //double freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
+
   Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, hb));
   
-  Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
-  //mm1->SetIndoor (building1);
-  mm1->SetOutdoor ();
+//   Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+//   mm1->SetIndoor (building1);
+  //mm1->SetOutdoor ();
   Ptr<BuildingsMobilityModel> mm2 = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm2->SetPosition (Vector (distance, 0.0, hm));
   Ptr<Building> building = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
-  mm2->SetOutdoor ();
-  //mm2->SetIndoor (building1);
-  //mm2->SetFloorNumber (2);
-         
-  double thrLoss = 0.0;
-  AddTestCase (new LtePathlossModelTestCase (mm1, mm2, thrLoss, "loss_COST231_large_cities_urban = ??"));
+//   mm2->SetOutdoor ();
+//   mm2->SetIndoor (building1);
+//   mm2->SetFloorNumber (3);
   
+  // Test Okumura Hata Model (150 < freq < 1500 MHz)
   
+  freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 243.61, "OH Urban Large city = ??"));
   
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 243.55, "OH Urban small city = ??"));
   
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::SubUrban, BuildingsPropagationLossModel::Large, 233.70, "loss OH SubUrban"));
   
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::OpenAreas, BuildingsPropagationLossModel::Large, 215.89, "loss OH OpenAreas"));
   
-
-  /**
-   * TX signal #2: Power Spectral Density (W/Hz) of the signal of interest = [-63 -61] dBm and BW = [20 22] MHz
-   */
-//   Ptr<SpectrumValue> rxPsd2 = Create<SpectrumValue> (sm);
-//   (*rxPsd2)[0] = 2.505936168136e-17;
-//   (*rxPsd2)[1] = 3.610582885110e-17;
-// 
-//   Ptr<SpectrumValue> theoreticalSinr2 = Create<SpectrumValue> (sm);
-//   (*theoreticalSinr2)[0] = 0.0743413124381667;
-//   (*theoreticalSinr2)[1] = 0.1865697965291756;
-// 
-//   AddTestCase (new LtePathlossModelTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"));
-
+  // Test COST231 Model (1500 < freq < 2000~2170 MHz)
+  
+  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 254.22, "COST231 Urban Large city"));
+  
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 256.32, "COST231 Urban small city and suburban"));
+  
+  // Test 2.6 GHz model
+  
+  freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
+  
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 121.83, "2.6GHz model"));
+  
+  // Test ITU1411 LOS model
+  
+  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  distance = 100;
+  Ptr<BuildingsMobilityModel> mm3 = ueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
+  mm3->SetPosition (Vector (distance, 0.0, hm));
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm3, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 80.605, "ITU1411 LOS"));
+  
+  // Test ITU1411 NLOS model
+  
+  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  distance = 900;
+  
+  Ptr<BuildingsMobilityModel> mm4 = ueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
+  mm4->SetPosition (Vector (distance, 0.0, hm));
+  AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm4, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 143.69, "ITU1411 NLOS"));
+  
+  // Test ITUP1238
+  
+  distance = 30;
+  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  double henbHeight = 10.0;
+  Ptr<BuildingsMobilityModel> mm5 = henbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
+  Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+  mm5->SetIndoor (building1);
+  Ptr<BuildingsMobilityModel> mm6 = hueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  mm6->SetPosition (Vector (distance, 0.0, hm));
+  mm6->SetIndoor (building1);
+  mm6->SetFloorNumber (3);
+  AddTestCase (new LtePathlossModelTestCase (freq, mm5, mm6, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 88.3855, "ITUP1238"));
 }
 
 static LtePathlossModelTestSuite ltePathlossModelTestSuite;
@@ -137,13 +193,15 @@ static LtePathlossModelTestSuite ltePathlossModelTestSuite;
  * TestCase
  */
 
-LtePathlossModelTestCase::LtePathlossModelTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name)
+LtePathlossModelTestCase::LtePathlossModelTestCase (double freq, Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, BuildingsPropagationLossModel::Environment env, BuildingsPropagationLossModel::CitySize city, double refValue, std::string name)
   : TestCase ("LOSS calculation: " + name),
+    m_freq (freq),
     m_node1 (m1),
     m_node2 (m2),
+    m_env (env),
+    m_city (city),
     m_lossRef (refValue)
 {
-  NS_LOG_INFO ("Creating LtePathlossModelTestCase");
 }
 
 LtePathlossModelTestCase::~LtePathlossModelTestCase ()
@@ -182,23 +240,18 @@ LtePathlossModelTestCase::DoRun (void)
 //   LogComponentEnable ("LteEnbNetDevice", logLevel);
 
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  
-  LogComponentEnable ("LtePathlossModelTest", LOG_LEVEL_ALL);
-
+  NS_LOG_INFO ("Testing " << GetName());
 
   Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<BuildingsPropagationLossModel> m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  double freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  //double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
-  //double freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
-  m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (freq)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /freq)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  
+  m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  m_downlinkPropagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
+  m_downlinkPropagationLossModel->SetAttribute ("CitySize", EnumValue (m_city));
   Ptr<BuildingsPropagationLossModel>  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
   m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
   m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
   
@@ -212,5 +265,5 @@ LtePathlossModelTestCase::DoRun (void)
   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
  
-  NS_TEST_ASSERT_MSG_EQ_TOL(loss, m_lossRef, 0.0000001, "Wrong loss !");
+  NS_TEST_ASSERT_MSG_EQ_TOL(loss, m_lossRef, 0.1, "Wrong loss !");
 }

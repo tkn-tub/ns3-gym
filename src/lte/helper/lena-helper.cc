@@ -77,7 +77,7 @@ LenaHelper::DoStart (void)
   m_uplinkPropagationLossModel = m_ulPropagationModelFactory.Create<PropagationLossModel> ();
   
   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+  m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
   m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
   m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
   m_macStats = CreateObject<MacStatsCalculator> ();

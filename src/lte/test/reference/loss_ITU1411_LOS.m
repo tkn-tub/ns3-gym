@@ -21,6 +21,9 @@ function g = loss_ITU1411_LOS (d, hb, hm, hr, f)
     Lu = Lbp + 20 + 40.*log10(d./Rbp);
   endif
 
+  Lbp
+  Rbp
+lambda
   g = zeros(size(d));
   g(find(d > 0)) = (Ll.+Lu)./2;
 

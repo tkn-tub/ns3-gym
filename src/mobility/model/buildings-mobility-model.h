@@ -67,13 +67,9 @@ class BuildingsMobilityModel : public MobilityModel
     void SetRoomNumberX (uint8_t nroomx);
     void SetRoomNumberY (uint8_t nroomy);
     
-    void SetStreetCrossingDistence (double d);
-    
     uint8_t GetFloorNumber (void);
     uint8_t GetRoomNumberX (void);
     uint8_t GetRoomNumberY (void);
-    
-    double GetStreetCrossingDistence (void);
     
     Ptr<Building> GetBuilding ();
     
@@ -93,7 +89,6 @@ class BuildingsMobilityModel : public MobilityModel
     uint8_t m_roomX;
     uint8_t m_roomY;
     
-    double m_streetCrossingDistance; // in meters (used by ITU-R P.1411 for NLOS propagation within street canyons)
 };
 
 

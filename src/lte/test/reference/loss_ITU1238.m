@@ -25,8 +25,10 @@ function g = loss_ITU1238 (d, f, n_floors, build_t)
     Lf = 6 + 3*(n_floors-1);
   endif
 
- 
-  
+  N
+  Lf
+  d
+  log10(f)
   g(find(d > 0)) = 20*log10(f) + (N*log10(d)) + Lf - 28;
 
   g(find(d <= 0)) = 1;

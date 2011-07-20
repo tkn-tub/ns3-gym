@@ -26,6 +26,7 @@
 #include "ns3/test.h"
 
 #include <ns3/buildings-mobility-model.h>
+#include <ns3/buildings-propagation-loss-model.h>
 
 
 using namespace ns3;
@@ -44,7 +45,7 @@ public:
 class LtePathlossModelTestCase : public TestCase
 {
 public:
-  LtePathlossModelTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name);
+  LtePathlossModelTestCase (double freq, Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, BuildingsPropagationLossModel::Environment env, BuildingsPropagationLossModel::CitySize city, double refValue, std::string name);
   virtual ~LtePathlossModelTestCase ();
 
 private:
@@ -53,8 +54,11 @@ private:
 //   Ptr<SpectrumValue> m_sv;
 //   Ptr<const SpectrumModel> m_sm;
 //   Ptr<SpectrumValue> m_sinr;
+  double m_freq;
   Ptr<BuildingsMobilityModel> m_node1;
   Ptr<BuildingsMobilityModel> m_node2;
+  BuildingsPropagationLossModel::Environment m_env;
+  BuildingsPropagationLossModel::CitySize m_city;
   double m_lossRef;
   
 };

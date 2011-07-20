@@ -52,7 +52,6 @@ BuildingsMobilityModel::BuildingsMobilityModel ()
   m_nFloor = 1;
   m_roomX = 1;
   m_roomY = 1;
-  m_streetCrossingDistance = 10.0;
 }
 
 void
@@ -123,12 +122,6 @@ BuildingsMobilityModel::SetRoomNumberY (uint8_t nroomy)
   m_roomY = nroomy;
 }
 
-void
-BuildingsMobilityModel::SetStreetCrossingDistence (double d)
-{
-  m_streetCrossingDistance = d;
-}
-
 
 void
 BuildingsMobilityModel::SetSurroudingBuilding (Ptr<Building> building)
@@ -152,12 +145,6 @@ uint8_t
 BuildingsMobilityModel::GetRoomNumberY (void)
 {
   return (m_roomY);
-}
-
-double
-BuildingsMobilityModel::GetStreetCrossingDistence (void)
-{
-  return (m_streetCrossingDistance);
 }
 
 
