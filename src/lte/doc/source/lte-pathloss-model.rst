@@ -39,7 +39,7 @@ In the following we present the link pathloss models included.
 Okumura Hata (OH)
 -----------------
 
-This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need both the standard OH model and the COST231 one; in fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 one for the 1500 MHz up to 2000 MHz and [paper] for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
+This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need both the standard OH model and the COST231 one [cost231]_; in fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 one for the 1500 MHz up to 2000 MHz and [paper] for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
 
 
 
@@ -265,44 +265,6 @@ where:
 
   \rho = \sqrt{\Delta h_b^2 + b^2}
 
-NLoS within street canyons
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In this case, both antennas are below the rooftop level, the formula includes the component due the diffracted waves (:math:`L_d`)
-and the reflected ones (:math:`L_d`), in detail:
-
-.. math::
-
- L_NLOS = -10\log{\left(10^{L_r/10}+10^{L_d/10}\right)}
-
-with
-
-.. math::
-
-  L_r = -20\log{(x_1+x_2)}+ x_1 x_2\frac{f(\alpha)}{W_1 W_2} -20\log{\frac{4\pi}{\lambda}}
-
-  f(\alpha) = \left\{ \begin{array}{lcr}
-              -41+110\alpha & \mbox{for }  & \alpha \leq 0.33 \\
-              -13.94+28\alpha & \mbox{for } & 0.33 < \alpha \leq 0.42 \\
-              -5.33+7.51\alpha & \mbox{for } & 0.42 < \alpha \leq 0.71 \\
-              0 & \mbox{for }  & \alpha > 0.71
-              \end{array}\right.
-  
-  L_d = -10\log{[x_2 x_1(x_1+x_2)]}+ 2 D_a + 0.1 \left(90-\alpha\frac{180}{\pi}\right) -20\log{(\frac{4\pi}{\lambda})}
-
-  D_a \approx -\left(\frac{40}{2*pi}\right) \left[arc tan\left(\frac{x_2}{w_2}\right) + arc tan \left(\frac{x_1}{w_1}\right) - \frac{pi}{2}\right]
-
-where
-
- :math:`w_1` : street width at the position of the BS [m]
-
- :math:`w_2` : street width at the position of the users [m]
-
- :math:`x_1` : distance between BS and the street crossing [m]
-
- :math:`x_2` : distance between user and the street crossing [m]
-
- :math:`\alpha` : corner angle of the streets [rad.]
 
 Indoor Communications (I1238)
 -----------------------------
@@ -331,16 +293,16 @@ where:
 External Walls Penetration Loss (BEL)
 -------------------------------------
 
-This part model the penetration loss thruogh walls for indoor to outdoor communications and viceversa. The values are taken from the COST231 model.
+This part model the penetration loss thruogh walls for indoor to outdoor communications and viceversa. The values are taken from the [cost231]_ model.
 
   * Wood ~ 4 dB
   * Concrete with windows (no metallised) ~ 7 dB
-  * Concrete without windows 10-20 dB
-  * Concrete without windows 10-20 dB
+  * Concrete without windows ~ 15 dB (spans between 10 and 20 in COST231)
+  * Stone blocks ~ 12 dB
 
 
-Height Gain Model
------------------
+Height Gain Model (HG)
+-----------------------
 
 This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and viceversa.
 
@@ -374,10 +336,13 @@ In the following the pseudo-code of the model is presented::
               L = I1411
         else (rxNode is indoor)
           if (distance > 1 km)
-            then 
-              L = OH + BEL
+            then
+              if (rxNode or txNode is SC)
+                L = I1411 + BEL + HG
+              else
+                L = OH + BEL + HG
             else
-              L = I1411 + BEL
+              L = I1411 + BEL + HG
   else (txNode is indoor)
     if (rxNode is indoor)
       then
@@ -391,14 +356,14 @@ In the following the pseudo-code of the model is presented::
         then 
           if (rxNode or txNode is SC)
                 then
-                  L = I1411 + BEL
+                  L = I1411 + BEL + HG
                 else
-                  L = OH + BEL
+                  L = OH + BEL + HG
         else
           L = I1411 + BEL
 
 
 where ``txNode`` and ``rxNode`` can be one of the elements eNB, SC and UE.
-We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the tranmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level.
+We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the transmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold also or SC transmissions (called ``m_itu1411DistanceThreshold``) for pruning the communications between SCs and UEs too far (the defalut values is fixed to 2 km).
 
 
