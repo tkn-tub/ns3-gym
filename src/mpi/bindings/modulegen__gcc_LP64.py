@@ -726,6 +726,11 @@ def register_Ns3MpiInterface_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
+    ## mpi-interface.h (module 'mpi'): static void ns3::MpiInterface::Disable() [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [], 
+                   is_static=True)
     ## mpi-interface.h (module 'mpi'): static void ns3::MpiInterface::Enable(int * pargc, char * * * pargv) [member function]
     cls.add_method('Enable', 
                    'void', 

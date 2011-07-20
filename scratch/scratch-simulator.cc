@@ -23,5 +23,10 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
+  Time t1 = Seconds (2);
+  
+  int64x64_t t2 = 10*t1;
+  
+
   NS_LOG_UNCOND ("Scratch Simulator");
 }

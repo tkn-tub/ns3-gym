@@ -83,7 +83,7 @@ def register_types(module):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
-    module.add_class('Simulator', is_singleton=True)
+    module.add_class('Simulator', destructor_visibility='private')
     ## system-condition.h (module 'core'): ns3::SystemCondition [class]
     module.add_class('SystemCondition')
     ## system-mutex.h (module 'core'): ns3::SystemMutex [class]
