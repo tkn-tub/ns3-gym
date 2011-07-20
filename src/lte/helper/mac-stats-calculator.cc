@@ -93,7 +93,7 @@ MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
           return;
         }
       m_dlFirstWrite = false;
-      outFile << "# time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2";
+      outFile << "% time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcsTb1\tsizeTb1\tmcsTb2\tsizeTb2";
       outFile << std::endl;
     }
   else
