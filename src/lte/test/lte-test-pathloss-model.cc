@@ -31,9 +31,7 @@
 #include "ns3/lte-test-pathloss-model.h"
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/node-container.h>
-// #include "ns3/network-module.h"
 #include <ns3/mobility-helper.h>
-//#include "ns3/lte-module.h"
 #include <ns3/lena-helper.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
@@ -47,11 +45,12 @@ using namespace ns3;
 
 
 /**
- * Test 1.1 SINR calculation in downlink
+ * Test 1.1 Pathloss compound test
  */
 
 /**
- * TestSuite
+ * This TestSuite tests the BuildingPathlossModel by reproducing
+ * several communication scenarios 
  */
 
 LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
@@ -71,9 +70,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
   
-//   lena->SetPropagationModelAttribute ("Environment", EnumValue (BuildingsPropagationLossModel::SubUrban));
-
-  // Create Nodes: eNodeB and UE
+  // Create Nodes: eNodeB, home eNB, UE and home UE (UE attached to HeNB)
   NodeContainer enbNodes;
   NodeContainer henbNodes;
   NodeContainer ueNodes;
@@ -105,30 +102,18 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   lena->Attach (ueDevs, enbDevs.Get (0));
   lena->Attach (hueDevs, henbDevs.Get (0));
   
+// Test #1 Okumura Hata Model (150 < freq < 1500 MHz) (Macro<->UE)
+  
   double distance = 2000;
   double hm = 1;
   double hb = 30;
-  //double hb = 15;
-//   double hr = 20;
-
-  //   double freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
-  //double freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
-
   Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, hb));
   
-//   Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
-//   mm1->SetIndoor (building1);
-  //mm1->SetOutdoor ();
   Ptr<BuildingsMobilityModel> mm2 = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm2->SetPosition (Vector (distance, 0.0, hm));
-  Ptr<Building> building = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
-  building->SetBuildingType(Building::Office);
-
-  // Test #1 Okumura Hata Model (150 < freq < 1500 MHz) (Macro<->UE)
   
-  freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
   AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 243.61, "OH Urban Large city = ??"));
   
   AddTestCase (new LtePathlossModelTestCase (freq, mm1, mm2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 243.55, "OH Urban small city = ??"));
@@ -177,6 +162,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
   Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
   building1->SetBuildingType (Building::Residential);
+  building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);
   Ptr<BuildingsMobilityModel> mm6 = hueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm6->SetPosition (Vector (distance, 0.0, hm));
@@ -220,7 +206,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
   AddTestCase (new LtePathlossModelTestCase (freq, mm9, mm10, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 84.838, "ITU1411 LOS Indoor -> Outdoor"));
   
-  // Test #9 Indoor -> Outdoor NLOS (HeNB <-> UE)
+  // Test #10 Indoor -> Outdoor NLOS (HeNB <-> UE)
   
   distance = 500;
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
