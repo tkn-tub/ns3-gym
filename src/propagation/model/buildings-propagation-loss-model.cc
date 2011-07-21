@@ -284,9 +284,9 @@ BuildingsPropagationLossModel::ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<B
   double lossLow = 0.0;
   double lossUp = 0.0;
   double pi = 3.141592653589793;
-  double Lbp = abs(20*log10((m_lambda*m_lambda)/(8*pi*a->GetPosition ().z*b->GetPosition ().z)));
+  double Lbp = fabs (20*log10 ((m_lambda*m_lambda)/(8*pi*a->GetPosition ().z*b->GetPosition ().z)));
   double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
-  NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp << " lambda " << m_lambda);
+//   NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp << " lambda " << m_lambda);
   if (dist <= Rbp)
   {
     lossLow = Lbp + 20*log10(dist/Rbp);
@@ -333,7 +333,7 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
   double ds = (m_lambda * distance * distance) / (Dhb * Dhb);
   double Lmsd = 0.0;
   double pi = 3.141592653589793;
-  //NS_LOG_INFO (this << " build " << m_buildingsExtend << " ds " << ds << " roof " << m_rooftopHeight << " hb " << hb << " lambda " << m_lambda);
+//   NS_LOG_INFO (this << " build " << m_buildingsExtend << " ds " << ds << " roof " << m_rooftopHeight << " hb " << hb << " lambda " << m_lambda);
   if (ds < m_buildingsExtend)
     {
       double Lbsh = 0.0;
@@ -391,13 +391,12 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
         {
           Qm = m_buildingSeparation/(2*pi*distance)*sqrt(m_lambda/rho)*(1/theta-(1/(2*pi+theta)));
         }
-        
       Lmsd = -10*log10(Qm*Qm);
     }
   double Lbf = 32.4 + 20*log10(distance/1000) + 20*log10(fmhz);
   double Dhm = m_rooftopHeight - hm;
   double Lrts = -8.2 -10*log10 (m_streetsWidth) + 10*log10 (fmhz) + 20*log10 (Dhm) + Lori;
-  //NS_LOG_INFO (this << " Lbf " << Lbf << " Lrts " << Lrts << " Dhm" << Dhm);
+//   NS_LOG_INFO (this << " Lbf " << Lbf << " Lrts " << Lrts << " Dhm" << Dhm << " Lmsd "  << Lmsd);
   double loss = 0.0;
   if (Lrts + Lmsd > 0)
     {
@@ -512,7 +511,7 @@ BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) con
   double loss = 0.0;
   
   int nfloors  = node->GetFloorNumber ();
-  loss = -2*nfloors;
+  loss = -2*(nfloors);
   return (loss);
 }
 
@@ -538,6 +537,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
         {
           if (distance > 1000)
             {
+              NS_LOG_INFO (this << a1->GetPosition ().z<<b1->GetPosition ().z<< m_rooftopHeight);
               if ((a1->GetPosition ().z < m_rooftopHeight)
                 && (b1->GetPosition ().z < m_rooftopHeight))
                 {
@@ -575,22 +575,28 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
           if (distance > 1000)
             {
               if ((a1->GetPosition ().z < m_rooftopHeight)
-                || (b1->GetPosition ().z < m_rooftopHeight))
+                && (b1->GetPosition ().z < m_rooftopHeight))
                 {
                   
                   // ITU limit in distance (i.e., < 2000 for small cells)
                   if (distance < m_itu1411DistanceThreshold)
                     {  
                       // short range communication
-                      loss = ItuR1411 (a1, b1) + BEWPL(a1) + HeightGain (a1);
-                      NS_LOG_INFO (this << " 0-0 (>1000): down rooftop -> ITUR1411 : " << loss);
+                      loss = ItuR1411 (a1, b1) + BEWPL(b1) + HeightGain (a1);
+                      NS_LOG_INFO (this << " 0-I (>1000): down rooftop -> ITUR1411 : " << loss);
                     }
                   else
                     {
                       // out of bound
                       loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-0 (>2000): down rooftop -> ITUR1411 : " << loss);
+                      NS_LOG_INFO (this << " 0-I (>2000): down rooftop -> ITUR1411 : " << loss);
                     }
+                }
+              else
+                {
+                  // Over the rooftop tranmission -> Okumura Hata
+                  loss = OkumuraHata (a1, b1) + BEWPL(b1);
+                  NS_LOG_INFO (this << " O-I (>1000): Over the rooftop -> OH : " << loss);
                 }
             }
           else
@@ -625,7 +631,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
           if (distance > 1000)
             {
               if ((a1->GetPosition ().z < m_rooftopHeight)
-                || (b1->GetPosition ().z < m_rooftopHeight))
+                && (b1->GetPosition ().z < m_rooftopHeight))
                 {
                   
                   // ITU limit in distance (i.e., < 2000 for small cells)
@@ -633,26 +639,26 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
                     {  
                       // short range communication
                       loss = ItuR1411 (a1, b1) + BEWPL(a1) + HeightGain (a1);
-                      NS_LOG_INFO (this << " 0-0 (>1000): down rooftop -> ITUR1411 : " << loss);
+                      NS_LOG_INFO (this << " I-O (>1000): down rooftop -> ITUR1411 : " << loss);
                     }
                   else
                     {
                       // out of bound
                       loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-0 (>2000): down rooftop -> ITUR1411 : " << loss);
+                      NS_LOG_INFO (this << " I-O (>2000): down rooftop -> ITUR1411 : " << loss);
                     }
                 }
               else
                 {
                   // above rooftop -> OH
                   loss = OkumuraHata (a1, b1) + BEWPL(a1) + HeightGain (a1);
-                  NS_LOG_INFO (this << " I-0 (>1000) over rooftop OH + BEL : " << loss);
+                  NS_LOG_INFO (this << " =I-O (>1000) over rooftop OH + BEL + HG: " << loss);
                 }
             }
           else
             {
               loss = ItuR1411 (a1, b1) + BEWPL(a1)  + HeightGain (a1);
-              NS_LOG_INFO (this << " I-0 (<1000)  ITUR1411 + BEL : " << loss);
+              NS_LOG_INFO (this << " I-O (<1000)  ITUR1411 + BEL + HG: " << loss);
             }
         } // end b1->IsIndoor ()
     } // end a1->IsOutdoor ()

@@ -21,10 +21,10 @@
 
 
 #include <ns3/building.h>
-// #include <ns3/box.h>
+#include <ns3/enum.h>
+
 
 namespace ns3 {
-
 
 
 Building::Building (double _xMin, double _xMax,
@@ -43,9 +43,9 @@ Building::Building (double _xMin, double _xMax,
 
 
 Building::Building () 
-  : m_floor (0), 
-    m_roomX (0), 
-    m_roomY (0),
+  : m_floor (1), 
+    m_roomX (1), 
+    m_roomY (1),
     m_buildingType (Residential),
     m_externalWalls (ConcreteWithWindows)
 {

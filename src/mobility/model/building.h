@@ -27,6 +27,7 @@
 #include <ns3/box.h>
 #include <ns3/simple-ref-count.h>
 
+
 namespace ns3 {
 
 /**
@@ -36,6 +37,7 @@ namespace ns3 {
 class Building : public SimpleRefCount<Building>
 {
 public:
+  
   enum BuildingType_t
     {
       Residential, Office, Commercial
@@ -144,7 +146,10 @@ public:
   
 private:
   Box m_buldingBounds;
-  
+  /**
+  * number of floors must be greater then 0 and 1 means only one floor
+  * (i.e., groundfloor)
+  */
   uint8_t m_floor;
   uint8_t m_roomX;
   uint8_t m_roomY;

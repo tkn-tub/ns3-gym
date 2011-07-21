@@ -14,6 +14,7 @@ hm = 1;
 hr = 20;
 fmhz = f/1e6;
 
+% Test #1
 g = loss_OH_large_cities_urban (d, hb, hm, fmhz);
 disp ("The value of OH for large cities is:"), disp (g)
 
@@ -26,6 +27,7 @@ disp ("The value of OH in suburban is:"), disp (g)
 g = loss_OH_openareas (d, hb, hm, fmhz);
 disp ("The value of OH in openareas is:"), disp (g)
 
+% Test #2 and #7
 fmhz = 2114;
 g = loss_COST231_large_cities_urban (d, hb, hm, fmhz);
 disp ("The value of COST231 for large cities is:"), disp (g)
@@ -33,14 +35,17 @@ disp ("The value of COST231 for large cities is:"), disp (g)
 g = loss_COST231_small_cities_urban (d, hb, hm, fmhz);
 disp ("The value of COST231 for small cities is:"), disp (g)
 
+% Test #3
 g = loss_OH_2_6GHz (d);
 disp ("The value of OH at 2.6 GHz is:"), disp (g)
 
-d = 100;
+% Test #4
+d = 104.12;
 f = 2114e6;
 g = loss_ITU1411_LOS (d, hb, hm, hr, f);
 disp ("The value of ITU1411 in LOS is:"), disp (g)
 
+% Test #5
 d = 900;
 l = 80;
 b = 50;
@@ -50,11 +55,32 @@ big = 1; % metropolitan centre
 g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, big);
 disp ("The value of ITU1411 in NLOS over the roof-top is:"), disp (g)
 
+% Test #6
 n_floors = 2;
-built_t = 1;
+built_t = 2;
 d = 31.3209;
 g = loss_ITU1238 (d, fmhz, n_floors, built_t);
 disp ("The value of ITU1238 is:"), disp (g)
+
+% Test #9
+d = 100.404;
+f = 2114e6;
+hb = 10;
+g = loss_ITU1411_LOS (d, hb, hm, hr, f);
+disp ("The value of ITU1411 in LOS is:"), disp (g)
+
+
+
+% Test #10
+d = 500;
+l = 80;
+b = 50;
+st_w = 20;
+phi = 45;
+big = 1; % metropolitan centre
+hb = 10;
+g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, big);
+disp ("The value of ITU1411 in NLOS over the roof-top is:"), disp (g)
 
 
 %%snr = txPsd + g - kT - nf ; % dB

@@ -85,6 +85,9 @@ class BuildingsMobilityModel : public MobilityModel
     std::list < Ptr<Building> > m_surroudingBuildings;  // buildings blocks
     Ptr<Building> m_myBuilding;
     bool m_indoor;
+    /**
+    * floors numbering starts from 0 (basement)
+    */
     uint8_t m_nFloor;
     uint8_t m_roomX;
     uint8_t m_roomY;

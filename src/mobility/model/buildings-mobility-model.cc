@@ -49,7 +49,7 @@ BuildingsMobilityModel::GetTypeId (void)
 BuildingsMobilityModel::BuildingsMobilityModel ()
 {
   m_indoor = false;
-  m_nFloor = 1;
+  m_nFloor = 0;
   m_roomX = 1;
   m_roomY = 1;
 }
