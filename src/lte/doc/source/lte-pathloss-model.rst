@@ -39,7 +39,7 @@ In the following we present the link pathloss models included.
 Okumura Hata (OH)
 -----------------
 
-This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need both the standard OH model and the COST231 one [cost231]_; in fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 one for the 1500 MHz up to 2000 MHz and [paper] for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
+This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need to consider several variant of the well knwon Okumura Hata model. In fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 [cost231]_ one for the 1500 MHz up to 2000 MHz and [pl26ghz]_ for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
 
 
 
@@ -109,20 +109,22 @@ The extension for the standard OH in open area is
   L_\mathrm{O} = L_\mathrm{U} - 4.70 (\log{f})^2 + 18.33\log{f} - 40.94
 
 
-I did not find info on how to extend the COST231 to open area (for suburban it seems that we can just impose C = 0).
+The literature lacks of extensions of the COST231 to open area (for suburban it seems that we can just impose C = 0); therefore we consider it a special case fo the suburban one.
 
 
-While for 2600 MHz in literature we found that the COST231 model can be used with the assumption that the loss due to the higher frequency is compensated by the increase in the antenna gain. However, there is a formula coming from an empirical evaluation for urban area [pl26ghz]_:
+Regarding the pathloss at 2600 MHz, in literature we found a paper presenting a model coming from an empirical evaluation for urban area [pl26ghz]_:
 
 .. math::
 
   L = 36 + 26\log{d}
 
+Therefore, also in this case, the suburban and openareas environment scenarios are model as the urban one.
+
 
 Short Range Communications ITU-R P.1411 (I1411)
 ---------------------------------------
 
-This is model from the short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tuneable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, both transmission over the rooftop and above aare considered in order to model small BS and macro one. In case on NLoS several parameters scenatio dependent have been included, such as average street width, orientation, corner angle, etc. The valuesof such parameters have to be properly setted according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used. In the following we give the expressions of the components of the model.
+This model is designed for short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tuneable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, the over the roof-top model is taken in consideration for modeling both macro BS and SC. In case on NLoS several parameters scenatio dependent have been included, such as average street width, orientation, etc. The values of such parameters have to be properly setted according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used, apart for the height of the mobile and BS, which instead their integrity is tested directly in the code (i.e., they have to be greater then zero).  In the following we give the expressions of the components of the model.
 
 
 LoS within street canyons
@@ -166,7 +168,7 @@ The value used by the simulator is the average one for modelling the median path
 NLoS over the rooftops
 ~~~~~~~~~~~~~~~~~~~~~~
 
-In this case the model is based on [walfisch]_ [ikegami]_ loss is expressed as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past rows of building (:math:`L_{msd}`). The formula is:
+In this case the model is based on [walfisch]_ and [ikegami]_, where the loss is expressed as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past rows of building (:math:`L_{msd}`). The formula is:
 
 .. math::
 
@@ -184,7 +186,7 @@ where:
 
   :math:`d` : distance (where :math:`d > 1`) [m]
 
-The term :math:`L_{rts}` takes into account the widhtt of the street and its orientation, according to the formulas
+The term :math:`L_{rts}` takes into account the width of the street and its orientation, according to the formulas
 
 .. math::
 
@@ -203,7 +205,7 @@ where:
   :math:`\varphi` : is the street orientation with respect to the direct path (degrees)
 
 
-The multiple screen diffraction loss depends on the BS antenna height relative to the building height and on the incidence angle. Regarding the latter, the "settled filed distance" is used for select the proper model; its value is given by
+The multiple screen diffraction loss depends on the BS antenna height relative to the building height and on the incidence angle. The former is selected as the higher antenna in the communication link. Regarding the latter, the "settled field distance" is used for select the proper model; its value is given by
 
 .. math::
 
@@ -293,7 +295,7 @@ where:
 External Walls Penetration Loss (BEL)
 -------------------------------------
 
-This part model the penetration loss thruogh walls for indoor to outdoor communications and viceversa. The values are taken from the [cost231]_ model.
+This component models the penetration loss thruogh walls for indoor to outdoor communications and viceversa. The values are taken from the [cost231]_ model.
 
   * Wood ~ 4 dB
   * Concrete with windows (no metallised) ~ 7 dB
@@ -311,7 +313,7 @@ This component model the gain due to the fact that the transmitting device is on
 Hybrid Model Indoor<->Outdoor
 -----------------------------
 
-The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to their distance, the external wall penetration loss due to the building.
+The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to correspond distance, the external wall penetration loss due to the building (see Section BEL).
 
 
 
