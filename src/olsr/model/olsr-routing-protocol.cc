@@ -1112,6 +1112,13 @@ RoutingProtocol::RoutingTableComputation ()
   //   and if the announced network is not announced by the node itself,
   //   then a new routing entry is created.
   const AssociationSet &associationSet = m_state.GetAssociationSet ();
+
+  // Clear HNA routing table
+  for (uint32_t i = 0; i < m_hnaRoutingTable->GetNRoutes (); i++)
+    {
+      m_hnaRoutingTable->RemoveRoute (0);
+    }
+
   for (AssociationSet::const_iterator it = associationSet.begin ();
        it != associationSet.end (); it++)
     {
