@@ -188,14 +188,14 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
   // Hp: a is the rooftop antenna (from GetLoss logic)
   double loss = 0.0;
   double fmhz = m_frequency/1e6;
+  double dist = a->GetDistanceFrom (b) / 1000.0; 
   if (m_frequency<=1.500e9)
     {
       // standard Okumura Hata (from wikipedia)
       double log_f = log10 (fmhz);
       double hb = (a->GetPosition ().z>b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
-      NS_ASSERT (hb > 0);
       double hm = (a->GetPosition ().z< b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
-      NS_ASSERT (hm > 0);
+      NS_ASSERT_MSG (hb > 0 && hm > 0, "nodes' height must be greater then 0");
       double log_aHeight = 13.82 * log10 (hb);
       double log_bHeight = 0.0;
       if (m_citySize == Large)
@@ -215,7 +215,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
         }
         
 //       NS_LOG_INFO (this << " logf " << 26.16 * log_f << " loga " << log_aHeight << " X " << (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) << " logb " << log_bHeight);
-      loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight;
+      loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * log10(hb)) ))*log10 (dist)) - log_bHeight;
       if (m_environment == SubUrban)
         {
           loss += - 2 * (pow(log10 (fmhz / 28), 2)) - 5.4;
@@ -232,7 +232,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
       double log_f = log10 (fmhz);
       double hb = (a->GetPosition ().z>b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       double hm = (a->GetPosition ().z< b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
-      NS_ASSERT (hb > 0 && hm > 0);
+      NS_ASSERT_MSG (hb > 0 && hm > 0, "nodes' height must be greater then 0");
       double log_aHeight = 13.82 * log10 (hb);
       double log_bHeight = 0.0;
       double C = 0.0;
@@ -247,7 +247,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
           log_bHeight = 1.1*log_f - 0.7*hm - (1.56*log_f - 0.8);
         }
       
-      loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) - log_bHeight + C;
+      loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log10(hb)) ))*log10 (dist)) - log_bHeight + C;
     }
   else if (m_frequency <= 2.690e9) // max 3GPP freq EUTRA band #1
     {
@@ -255,7 +255,7 @@ BuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<B
       // "Path Loss Models for Suburban Scenario at 2.3GHz, 2.6GHz and 3.5GHz"
       // Sun Kun, Wang Ping, Li Yingze
       // Antennas, Propagation and EM Theory, 2008. ISAPE 2008. 8th International Symposium on 
-      loss = 36 + 26*log10(a->GetDistanceFrom (b));
+      loss = 36 + 26*log10(dist*1000);
     }
       
   return (loss);
@@ -280,10 +280,12 @@ BuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
 double
 BuildingsPropagationLossModel::ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
+  NS_LOG_INFO (this);
   double dist = a->GetDistanceFrom (b);
   double lossLow = 0.0;
   double lossUp = 0.0;
   double pi = 3.141592653589793;
+  NS_ASSERT_MSG (a->GetPosition ().z > 0 && b->GetPosition ().z > 0, "nodes' height must be greater then 0");
   double Lbp = fabs (20*log10 ((m_lambda*m_lambda)/(8*pi*a->GetPosition ().z*b->GetPosition ().z)));
   double Rbp = (4 * a->GetPosition ().z * b->GetPosition ().z) / m_lambda;
 //   NS_LOG_INFO (this << " Lbp " << Lbp << " Rbp " << Rbp << " lambda " << m_lambda);
@@ -307,6 +309,7 @@ BuildingsPropagationLossModel::ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<B
 double
 BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
+  NS_LOG_INFO (this);
   double Lori = 0.0;
   double fmhz = m_frequency/1e6;
   if ((m_streetsOrientation>=0)&&(m_streetsOrientation<35))
@@ -328,7 +331,7 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
   double distance = a->GetDistanceFrom (b);
   double hb = (a->GetPosition ().z>b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
   double hm = (a->GetPosition ().z< b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
-  NS_ASSERT (hm > 0 && hb > 0);
+  NS_ASSERT_MSG (hm > 0 && hb > 0, "nodes' height must be greater then 0");
   double Dhb = hb - m_rooftopHeight;
   double ds = (m_lambda * distance * distance) / (Dhb * Dhb);
   double Lmsd = 0.0;
@@ -524,7 +527,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
     {
       return 0.0;
     }
-
+  
   // get the BuildingsMobilityModel pointers
   Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
   Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
