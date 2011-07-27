@@ -77,93 +77,6 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
 {
  
   
-      LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  // 
-  //   LogComponentEnable ("LenaHelper", logLevel);
-     LogComponentEnable ("LtePathlossModelTest", logLevel);
-  //   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
-  
-  
-  struct SnrEfficiencyMcs
-  {
-    double  snrDb;
-    double  efficiency;
-    int  mcsIndex;
-  };
-  
-  /**
-  * Test vectors: SNRDB, Spectral Efficiency, MCS index
-  * From XXX
-  */
-  SnrEfficiencyMcs snrEfficiencyMcs[] = {
-    { -5.00000,  0.08024,        -1},
-    { -4.00000,  0.10030,        -1},
-    { -3.00000,  0.12518,        -1},
-    { -2.00000,  0.15589,        0},
-    { -1.00000,  0.19365,        0},
-    { 0.00000,   0.23983,        2},
-    { 1.00000,   0.29593,        2},
-    { 2.00000,   0.36360,        2},
-    { 3.00000,   0.44451,        4},
-    { 4.00000,   0.54031,        4},
-    { 5.00000,   0.65251,        6},
-    { 6.00000,   0.78240,        6},
-    { 7.00000,   0.93086,        8},
-    { 8.00000,   1.09835,        8},
-    { 9.00000,   1.28485,        10},
-    { 10.00000,  1.48981,        12},
-    { 11.00000,  1.71229,        12},
-    { 12.00000,  1.95096,        14},
-    { 13.00000,  2.20429,        14},
-    { 14.00000,  2.47062,        16},
-    { 15.00000,  2.74826,        18},
-    { 16.00000,  3.03560,        18},
-    { 17.00000,  3.33115,        20},
-    { 18.00000,  3.63355,        20},
-    { 19.00000,  3.94163,        22},
-    { 20.00000,  4.25439,        22},
-    { 21.00000,  4.57095,        24},
-    { 22.00000,  4.89060,        24},
-    { 23.00000,  5.21276,        26},
-    { 24.00000,  5.53693,        26},
-    { 25.00000,  5.86271,        28},
-    { 26.00000,  6.18980,        28},
-    { 27.00000,  6.51792,        28},
-    { 28.00000,  6.84687,        28},
-    { 29.00000,  7.17649,        28},
-    { 30.00000,  7.50663,        28},
-  };
-
-  
-  double txPowerDbm = 30; // default eNB TX power over whole bandwdith
-  double ktDbm = -174;    // reference LTE noise PSD
-  double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
-  double receiverNoiseFigureDb = 9.0; // default UE noise figure
-  
-  double loss[] = {80.605, 243.62};
-  double dist[] = {100.0, 1000.0};
-
-  int numOfTests = sizeof (loss) / sizeof (double);
-  for ( int i = 0 ; i < numOfTests; i++ )
-  {
-//     double lossDb = txPowerDbm - snrEfficiencyMcs[i].snrDb - noisePowerDbm - receiverNoiseFigureDb;
-    
-    double sinrDb = txPowerDbm- noisePowerDbm - receiverNoiseFigureDb - loss[i];
-    NS_LOG_INFO (" Ptx " << txPowerDbm << " Pn " << noisePowerDbm << " Fn " << receiverNoiseFigureDb << " Pl " << loss[i] << " dist " << dist);
-    std::ostringstream name;
-    name << " snr= " << sinrDb << " dB, "
-    << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
-//     AddTestCase (new LtePathlossModelSystemTestCase (name.str (),  sinrDb, dist[i], snrEfficiencyMcs[i].mcsIndex));
-  }
-  
-  
-  
-    
-    
-  
- 
-
-
 // -------------- COMPOUND TESTS ----------------------------------
 
   LogComponentEnable ("LtePathlossModelTest", LOG_LEVEL_ALL);
@@ -321,6 +234,96 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   // (2 floors x 2 dB/floor = 4) -> 180.90 + 7 - 4 = 183.90
   AddTestCase (new LtePathlossModelTestCase (freq, mm9, mm11, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
   
+  
+//------------------- SYSTEM TEST ------------------------------
+
+LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+// 
+//   LogComponentEnable ("LenaHelper", logLevel);
+LogComponentEnable ("LtePathlossModelTest", logLevel);
+//   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
+//   LogComponentEnable ("LteInterference", logLevel);
+//   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
+
+
+struct SnrEfficiencyMcs
+{
+  double  snrDb;
+  double  efficiency;
+  int  mcsIndex;
+};
+
+/**
+* Test vectors: SNRDB, Spectral Efficiency, MCS index
+* From XXX
+*/
+SnrEfficiencyMcs snrEfficiencyMcs[] = {
+  { -5.00000,  0.08024,        -1},
+  { -4.00000,  0.10030,        -1},
+  { -3.00000,  0.12518,        -1},
+  { -2.00000,  0.15589,        0},
+  { -1.00000,  0.19365,        0},
+  { 0.00000,   0.23983,        2},
+  { 1.00000,   0.29593,        2},
+  { 2.00000,   0.36360,        2},
+  { 3.00000,   0.44451,        4},
+  { 4.00000,   0.54031,        4},
+  { 5.00000,   0.65251,        6},
+  { 6.00000,   0.78240,        6},
+  { 7.00000,   0.93086,        8},
+  { 8.00000,   1.09835,        8},
+  { 9.00000,   1.28485,        10},
+  { 10.00000,  1.48981,        12},
+  { 11.00000,  1.71229,        12},
+  { 12.00000,  1.95096,        14},
+  { 13.00000,  2.20429,        14},
+  { 14.00000,  2.47062,        16},
+  { 15.00000,  2.74826,        18},
+  { 16.00000,  3.03560,        18},
+  { 17.00000,  3.33115,        20},
+  { 18.00000,  3.63355,        20},
+  { 19.00000,  3.94163,        22},
+  { 20.00000,  4.25439,        22},
+  { 21.00000,  4.57095,        24},
+  { 22.00000,  4.89060,        24},
+  { 23.00000,  5.21276,        26},
+  { 24.00000,  5.53693,        26},
+  { 25.00000,  5.86271,        28},
+  { 26.00000,  6.18980,        28},
+  { 27.00000,  6.51792,        28},
+  { 28.00000,  6.84687,        28},
+  { 29.00000,  7.17649,        28},
+  { 30.00000,  7.50663,        28},
+};
+
+
+double txPowerDbm = 30; // default eNB TX power over whole bandwdith
+double txPowerLin = pow (10, (txPowerDbm - 30)/10);
+double ktDbm = -174;    // reference LTE noise PSD
+double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
+double receiverNoiseFigureDb = 9.0; // default UE noise figure
+double noiseLin = pow (10, (noisePowerDbm-30+receiverNoiseFigureDb)/10);
+double loss[] = {81.0000, 134.0125, 144.1489};
+double dist[] = {100.0, 500.0, 1500};
+
+int numOfTests = sizeof (loss) / sizeof (double);
+for ( int i = 0 ; i < numOfTests; i++ )
+{
+  //     double lossDb = txPowerDbm - snrEfficiencyMcs[i].snrDb - noisePowerDbm - receiverNoiseFigureDb;
+  double sinrLin = (txPowerLin*(pow(10, loss[i]/10))) / noiseLin;
+  //     double sinrDb = txPowerDbm- noisePowerDbm - receiverNoiseFigureDb - loss[i];
+  double sinrDb = 10*log10(sinrLin);
+  NS_LOG_INFO (" Ptx " << txPowerDbm << " Pn " << noisePowerDbm << " Fn " << receiverNoiseFigureDb << " Pl " << loss[i] << " dist " << dist[i]);
+  std::ostringstream name;
+  name << " snr= " << sinrDb << " dB, "
+  << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
+  AddTestCase (new LtePathlossModelSystemTestCase (name.str (),  sinrDb, dist[i], snrEfficiencyMcs[i].mcsIndex));
+}
+
+
+
+
+  
 }
 
 static LtePathlossModelTestSuite ltePathlossModelTestSuite;
@@ -432,13 +435,14 @@ LtePathlossModelSystemTestCase::DoRun (void)
   /**
   * Simulation Topology
   */
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
+//   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
+  LogComponentDisable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
 //   
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   //   lena->EnableLogComponents ();
@@ -470,6 +474,8 @@ LtePathlossModelSystemTestCase::DoRun (void)
   Ptr<BuildingsMobilityModel> mm_ue = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm_ue->SetPosition (Vector (m_distance, 0.0, 1.0));
   
+  NS_LOG_INFO (" DISTANCE " << mm_ue->GetDistanceFrom (mm_enb));
+  
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -494,8 +500,8 @@ LtePathlossModelSystemTestCase::DoRun (void)
   Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
   uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testSinr);
    
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
-                   MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
+//   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+//                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
                    
   Simulator::Stop (Seconds (0.005));
   Simulator::Run ();
@@ -503,7 +509,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()[0]);
   NS_LOG_INFO ("Distance " << m_distance << " Calculated SINR " << calculatedSinrDb << " ref " << m_snrDb);
   Simulator::Destroy ();
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.0000001, "Wrong SINR !");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.001, "Wrong SINR !");
 }
 
 

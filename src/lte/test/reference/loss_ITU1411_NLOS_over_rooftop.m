@@ -14,7 +14,6 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
   fmhz = f/1e6;
   Dhb = hb - hr;
   ds = (lambda*d*d)/(Dhb*Dhb);
-ds
   if (l>ds)
     if (fmhz>2000)
       kf = -8;
@@ -56,7 +55,6 @@ ds
     endif
     Lmsd = -10*log10(Qm*Qm);
   endif
-Lmsd
   Dhm = hr-hm;
   if (phi<35)
     Lori = -10+(0.354*phi);
@@ -72,7 +70,7 @@ Lmsd
   if (Lrts+Lmsd>0)
     L = Lbf + Lrts + Lmsd;
   else
-    L0 Lbf
+    L = Lbf
   endif
   g(find(d > 0)) = L;
 
