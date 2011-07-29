@@ -19,42 +19,14 @@
 #include "test.h"
 #include "assert.h"
 #include "abort.h"
+#include "system-path.h"
 #include <math.h>
+#include <string.h>
+#include <vector>
+#include <list>
 
-// Set to true to enable a segmentation fault upon a test case macro test 
-// failing (for debugging purposes)
-bool gBreakOnFailure = false;
 
 namespace ns3 {
-
-//
-// XML files have restrictions on certain characters that may be present in
-// data.  We need to replace these characters with their alternate 
-// representation on the way into the XML file.
-//
-std::string
-ReplaceXmlSpecialCharacters (std::string xml)
-{
-  std::string specials = "<>&\"'";
-  std::string replacements[] = { "&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
-  std::string result;
-  std::size_t index, length = xml.length ();
-
-  for (size_t i = 0; i < length; ++i)
-    {
-      char character = xml[i];
-
-      if ((index = specials.find (character)) == std::string::npos)
-        {
-          result.push_back (character);
-        }
-      else
-        {
-          result += replacements[index];
-        }
-    }
-  return result;
-}
 
 bool
 TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
@@ -83,646 +55,291 @@ TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
   return true;
 } 
 
+struct TestCaseFailure
+{
+  TestCaseFailure (std::string _cond, std::string _actual, 
+                   std::string _limit, std::string _message, 
+                   std::string _file, int32_t _line);
+  std::string cond;
+  std::string actual;
+  std::string limit;
+  std::string message; 
+  std::string file;
+  int32_t line;
+};
+struct TestCase::Result
+{
+  Result ();
+  SystemWallClockMs clock;
+  std::vector<TestCaseFailure> failure;
+  bool childrenFailed;
+};
+
+class TestRunnerImpl
+{
+public:
+  void AddTestSuite (TestSuite *testSuite);
+  void StartTestCase (std::string name);
+  void EndTestCase (void);
+  void ReportTestFailure (std::string cond, std::string actual, 
+                      std::string limit, std::string message, 
+                      std::string file, int32_t line);
+  bool MustAssertOnFailure (void) const;
+  bool MustContinueOnFailure (void) const;
+  bool MustUpdateData (void) const;
+  std::string GetTopLevelSourceDir (void) const;
+  std::string GetTempDir (void) const;
+
+  int Run (int argc, char *argv[]);
+
+  static TestRunnerImpl *Instance (void);
+
+private:
+  TestRunnerImpl ();
+  ~TestRunnerImpl ();
+
+  bool IsTopLevelSourceDir (std::string path) const;
+  std::string ReplaceXmlSpecialCharacters (std::string xml) const;
+  void PrintReport (TestCase *test, std::ostream *os, bool xml, int level);
+  void PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
+                          std::list<TestCase *>::const_iterator end) const;
+  void PrintTestTypeList (void) const;
+  void PrintHelp (const char *programName) const;
+  std::list<TestCase *> FilterTests (std::string testName, enum TestSuite::Type testType) const;
+
+
+  typedef std::vector<TestSuite *> TestSuiteVector;
+
+  TestSuiteVector m_suites;
+  std::string m_tempDir;
+  bool m_verbose;
+  bool m_assertOnFailure;
+  bool m_continueOnFailure;
+  bool m_updateData;
+};
+
+
+
+TestCaseFailure::TestCaseFailure (std::string _cond, std::string _actual, 
+                                  std::string _limit, std::string _message, 
+                                  std::string _file, int32_t _line)
+  : cond (_cond), actual (_actual), limit (_limit),
+    message (_message), file (_file), line (_line)
+{}
+TestCase::Result::Result ()
+  : childrenFailed (false)
+{}
+
+
 
 TestCase::TestCase (std::string name)
-  : m_name (name), 
-    m_verbose (false), 
-    m_continueOnFailure (false), 
-    m_detailsReported (false), 
-    m_basedir ("invalid"), 
-    m_tempdir ("invalid"), 
-    m_ofs (0), 
-    m_error (false)
+  : m_parent (0),
+    m_dataDir (""),
+    m_runner (0),
+    m_result (0),
+    m_name (name)
 {
 }
 
 TestCase::~TestCase ()
 {
+  NS_ASSERT (m_runner == 0);
+  m_parent = 0;
+  delete m_result;
+  for (std::vector<TestCase *>::const_iterator i = m_children.begin (); i != m_children.end (); ++i)
+    {
+      delete *i;
+    }
+  m_children.clear ();
 }
 
 void
-TestCase::ReportStart  (void)
+TestCase::AddTestCase (TestCase *testCase)
 {
-  DoReportStart ();
+  m_children.push_back (testCase);
+  testCase->m_parent = this;
+
+  std::string::size_type slash, antislash;
+  slash = testCase->m_name.find ("/");
+  antislash = testCase->m_name.find ("\\");
+  if (slash != std::string::npos || antislash != std::string::npos)
+    {
+      std::string fullname = testCase->m_name;
+      TestCase *current = testCase->m_parent;
+      while (current != 0)
+        {
+          fullname = current->m_name + "/" + fullname;
+          current = current->m_parent;
+        }
+      if (slash != std::string::npos)
+        {
+          NS_FATAL_ERROR ("Invalid test name: cannot contain slashes: \"" << fullname << "\"");
+        }
+      if (antislash != std::string::npos)
+        {
+          NS_FATAL_ERROR ("Invalid test name: cannot contain antislashes: \"" << fullname << "\"");
+        }
+    }
 }
 
-void
-TestCase::ReportCaseSuccess  (void)
+bool
+TestCase::IsFailed (void) const
 {
-  UpdateErrorStatus (false);
-  DoReportCaseSuccess ();
+  return m_result->childrenFailed || !m_result->failure.empty ();
 }
 
-void
-TestCase::ReportCaseFailure  (void)
+void 
+TestCase::Run (TestRunnerImpl *runner)
 {
-  UpdateErrorStatus (true);
-  DoReportCaseFailure ();
-}
-
-void
-TestCase::ReportTestFailure  (
-  std::string cond, 
-  std::string actual, 
-  std::string limit, 
-  std::string message, 
-  std::string file, 
-  int32_t line)
-{
-  UpdateErrorStatus (true);
-  DoReportTestFailure (cond, actual, limit, message, file, line);
-  m_detailsReported = true; 
-}
-
-void
-TestCase::ReportEnd  (void)
-{
-  DoReportStart ();
-}
-
-void
-TestCase::Run (void)
-{
-  //
-  // We set up a flag to make sure the user plays by the rules and actually
-  // does something to report the details of an error.
-  //
-  m_detailsReported = false; 
-
-  DoReportStart ();
+  m_result = new Result ();
+  m_runner = runner;
   DoSetup ();
-
+  m_result->clock.Start ();
+  for (std::vector<TestCase *>::const_iterator i = m_children.begin (); i != m_children.end (); ++i)
+    {
+      TestCase *test = *i;
+      test->Run (runner);
+      if (IsFailed ())
+        {
+          goto out;
+        }
+    }
   DoRun ();
-
+ out:
+  m_result->clock.End ();
   DoTeardown ();
-
-  if (GetErrorStatus () == false)
-    {
-      DoReportCaseSuccess ();
-    }
-  else
-    {
-      //
-      // It is a programming error to return an error from a test case without 
-      // calling ReportTestFailure.  Typically this is done automagically when
-      // using the ASSERT or EXPECT macros.  If you don't use these, you must
-      // ReportTestFailure on any errors yourself, which will set 
-      // m_detailsReported and make us happy.
-      //
-      NS_ASSERT_MSG (m_detailsReported, "The details of a failing test was not reported");
-
-      DoReportCaseFailure ();
-    }
-
-  DoReportEnd ();
-
-  return;
+  m_runner = 0;
 }
-
-void 
-TestCase::SetVerbose (bool verbose)
-{
-  m_verbose = verbose;
-}
-
-void 
-TestCase::SetContinueOnFailure (bool continueOnFailure)
-{
-  m_continueOnFailure = continueOnFailure;
-}
-
-void 
-TestCase::SetName (std::string name)
-{
-  m_name = name;
-}
-
 std::string 
-TestCase::GetName (void)
+TestCase::GetName (void) const
 {
   return m_name;
 }
-
-void 
-TestCase::SetBaseDir (std::string basedir)
+void
+TestCase::ReportTestFailure (std::string cond, std::string actual, 
+                             std::string limit, std::string message, 
+                             std::string file, int32_t line)
 {
-  //
-  // C and C++ allow one to use forward slashes even on systems where the 
-  // separator is actually a backslash.
-  //
-  if (basedir[basedir.length () - 1] != '/')
+  m_result->failure.push_back (TestCaseFailure (cond, actual, limit,
+                                                message, file, line));
+  // set childrenFailed flag on parents.
+  struct TestCase *current = m_parent;
+  while (current != 0)
     {
-      m_basedir = basedir + "/";
+      current->m_result->childrenFailed = true;
+      current = current->m_parent;
+    }
+
+}
+bool 
+TestCase::MustAssertOnFailure (void) const
+{
+  return m_runner->MustAssertOnFailure ();
+}
+bool 
+TestCase::MustContinueOnFailure (void) const
+{
+  return m_runner->MustContinueOnFailure ();
+}
+
+std::string 
+TestCase::CreateDataDirFilename (std::string filename)
+{
+  const TestCase *current = this;
+  while (current->m_dataDir == "" && current != 0)
+    {
+      current = current->m_parent;
+    }
+  if (current == 0)
+    {
+      NS_FATAL_ERROR ("No one called SetDataDir prior to calling this function");
+    }
+
+  std::string a = SystemPath::Append (m_runner->GetTopLevelSourceDir (), current->m_dataDir);
+  std::string b = SystemPath::Append (a, filename);
+  return b;
+}
+std::string 
+TestCase::CreateTempDirFilename (std::string filename)
+{
+  if (m_runner->MustUpdateData ())
+    {
+      return CreateDataDirFilename (filename);
     }
   else
     {
-      m_basedir = basedir;
+      std::list<std::string> names;
+      const TestCase *current = this;
+      while (current != 0)
+        {
+          names.push_front (current->m_name);
+          current = current->m_parent;
+        }
+      std::string tempDir = SystemPath::Append (m_runner->GetTempDir (), SystemPath::Join (names.begin (), names.end ()));
+      SystemPath::MakeDirectories (tempDir);
+      return SystemPath::Append (tempDir, filename);
     }
 }
-
-std::string 
-TestCase::GetBaseDir (void)
+bool 
+TestCase::GetErrorStatus (void) const
 {
-  return m_basedir;
+  return IsStatusFailure ();
+}
+bool 
+TestCase::IsStatusFailure (void) const
+{
+  return !IsStatusSuccess ();
+}
+bool 
+TestCase::IsStatusSuccess (void) const
+{
+  return m_result->failure.empty ();
 }
 
 void 
-TestCase::SetTempDir (std::string tempdir)
+TestCase::SetDataDir (std::string directory)
 {
-  //
-  // C and C++ allow one to use forward slashes even on systems where the 
-  // separator is actually a backslash.
-  //
-  if (tempdir[tempdir.length () - 1] != '/')
-    {
-      m_tempdir = tempdir + "/";
-    }
-  else
-    {
-      m_tempdir = tempdir;
-    }
-}
-
-std::string 
-TestCase::GetTempDir (void)
-{
-  return m_tempdir;
-}
-
-std::string 
-TestCase::GetSourceDir (std::string file)
-{
-  //
-  // The <file> parameter is actually going to be __FILE__ which may have 
-  // backslashes in it on win32 systems.  For example,
-  //
-  //   ..\src\common\pcap-file-test-suite.cc  (win32)
-  //
-  // or
-  //
-  //   ../src/common/pcap-file-test-suite.cc  (grown-up systems)
-  //
-#ifdef WIN32
-  std::string::size_type relPathBegin = file.find_first_of ("\\");
-  std::string::size_type relPathEnd = file.find_last_of ("\\");
-#else
-  std::string::size_type relPathBegin = file.find_first_of ("/");
-  std::string::size_type relPathEnd = file.find_last_of ("/");
-#endif
-
-  NS_ABORT_MSG_IF (relPathBegin == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
-  NS_ABORT_MSG_IF (relPathEnd == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
-
-  return GetBaseDir () + file.substr (relPathBegin, relPathEnd + 1 - relPathBegin);
-}
-
-void 
-TestCase::SetStream (std::ofstream *ofs)
-{
-  m_ofs = ofs;
-}
-
-std::ofstream *
-TestCase::GetStream (void)
-{
-  return m_ofs;
-}
-
-void 
-TestCase::UpdateErrorStatus (bool error)
-{
-  m_error |= error;
-}
-
-void 
-TestCase::SetErrorStatus (bool error)
-{
-  m_error = error;
-}
-
-bool
-TestCase::GetErrorStatus (void)
-{
-  return m_error;
-}
-
-bool
-TestCase::ContinueOnFailure (void)
-{
-  return m_continueOnFailure;
-}
-
-void
-TestCase::DoReportStart  (void)
-{
-  m_msClock.Start ();
-
-  if (m_ofs == 0)
-    {
-      return;
-    }
-  *m_ofs << "  <TestCase>" << std::endl;
-  *m_ofs << "    <CaseName>" << ReplaceXmlSpecialCharacters (GetName ()) << "</CaseName>" << std::endl;
-}
-
-void
-TestCase::DoReportCaseSuccess  (void)
-{
-  if (m_ofs == 0)
-    {
-      return;
-    }
-  *m_ofs << "    <CaseResult>PASS</CaseResult>" << std::endl;
-}
-
-void
-TestCase::DoReportCaseFailure  (void)
-{
-  if (m_ofs == 0)
-    {
-      return;
-    }
-  *m_ofs << "    <CaseResult>FAIL</CaseResult>" << std::endl;
-}
-
-void
-TestCase::DoReportTestFailure  (
-  std::string cond, 
-  std::string actual, 
-  std::string limit, 
-  std::string message, 
-  std::string file, 
-  int32_t line)
-{
-  if (m_ofs == 0)
-    {
-      return;
-    }
-
-  *m_ofs << "    <FailureDetails>" << std::endl;
-  *m_ofs << "      <Condition>" << ReplaceXmlSpecialCharacters (cond) << "</Condition>" << std::endl;
-  *m_ofs << "      <Actual>" << ReplaceXmlSpecialCharacters (actual) << "</Actual>" << std::endl;
-  *m_ofs << "      <Limit>" << ReplaceXmlSpecialCharacters (limit) << "</Limit>" << std::endl;
-  *m_ofs << "      <Message>" << ReplaceXmlSpecialCharacters (message) << "</Message>" << std::endl;
-  *m_ofs << "      <File>" << ReplaceXmlSpecialCharacters (file) << "</File>" << std::endl;
-  *m_ofs << "      <Line>" << line << "</Line>" << std::endl;
-  *m_ofs << "    </FailureDetails>" << std::endl;
-}
-
-void
-TestCase::DoReportEnd  (void)
-{
-  m_msClock.End ();
-
-  if (m_ofs == 0)
-    {
-      return;
-    }
-
-  (*m_ofs).precision (3);
-  *m_ofs << std::fixed;
-
-  const double MS_PER_SEC = 1000.;
-
-  *m_ofs << "    <CaseTime>" << "real " << m_msClock.GetElapsedReal () / MS_PER_SEC
-         << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
-         << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
-         << "</CaseTime>" << std::endl;
-
-  *m_ofs << "  </TestCase>" << std::endl;
+  m_dataDir = directory;
 }
 
 void 
 TestCase::DoSetup (void)
-{
-}
-
+{}
 void 
 TestCase::DoTeardown (void)
-{
-}
+{}
 
-TestSuite::TestSuite (std::string name, TestType type)
-  : m_name (name), 
-    m_verbose (false), 
-    m_basedir ("invalid"), 
-    m_tempdir ("invalid"), 
-    m_ofs (0), 
-    m_error (false), 
+
+TestSuite::TestSuite (std::string name, TestSuite::Type type)
+  : TestCase (name), 
     m_type (type)
 {
-  TestRunner::AddTestSuite (this);
+  TestRunnerImpl::Instance ()->AddTestSuite (this);
 }
 
-TestSuite::~TestSuite ()
-{
-  for (TestCaseVector_t::iterator i = m_tests.begin (); i != m_tests.end (); ++i)
-    {
-      delete *i;
-      *i = 0;
-    }
-
-  m_tests.erase (m_tests.begin (), m_tests.end ());
-}
-
-void
-TestSuite::ReportStart (void)
-{
-  DoReportStart ();
-}
-
-void
-TestSuite::ReportSuccess (void)
-{
-  UpdateErrorStatus (false);
-  DoReportSuccess ();
-}
-
-void
-TestSuite::ReportFailure (void)
-{
-  UpdateErrorStatus (true);
-  DoReportFailure ();
-}
-
-void
-TestSuite::ReportEnd (void)
-{
-  DoReportEnd ();
-}
-
-bool
-TestSuite::Run (void)
-{
-  DoReportStart ();
-
-  DoSetup (); 
-  DoRun ();
-  DoTeardown ();
-
-  if (GetErrorStatus () == false)
-    {
-      DoReportSuccess ();
-    }
-  else
-    {
-      DoReportFailure ();
-    }
-
-  DoReportEnd ();
-
-  return GetErrorStatus ();
-}
-
-uint32_t
-TestSuite::AddTestCase (TestCase *testCase)
-{
-  uint32_t index = m_tests.size ();
-  m_tests.push_back (testCase);
-  return index;
-}
-
-uint32_t 
-TestSuite::GetNTestCases (void)
-{
-  return m_tests.size ();
-}
-
-TestCase *
-TestSuite::GetTestCase (uint32_t n)
-{
-  return m_tests[n];
-}
-
-TestSuite::TestType 
+TestSuite::Type 
 TestSuite::GetTestType (void)
 {
   return m_type;
 }
 
 void 
-TestSuite::SetVerbose (bool verbose)
-{
-  m_verbose = verbose;
-}
-
-void 
-TestSuite::SetContinueOnFailure (bool continueOnFailure)
-{
-  m_continueOnFailure = continueOnFailure;
-}
-
-void 
-TestSuite::SetName (std::string name)
-{
-  m_name = name;
-}
-
-std::string 
-TestSuite::GetName (void)
-{
-  return m_name;
-}
-
-void 
-TestSuite::SetBaseDir (std::string basedir)
-{
-  //
-  // C and C++ allow one to use forward slashes even on systems where the 
-  // separator is actually a backslash.
-  //
-  if (basedir[basedir.length () - 1] != '/')
-    {
-      m_basedir = basedir + "/";
-    }
-  else
-    {
-      m_basedir = basedir;
-    }
-}
-
-std::string 
-TestSuite::GetBaseDir (void)
-{
-  return m_basedir;
-}
-
-void 
-TestSuite::SetTempDir (std::string tempdir)
-{
-  //
-  // C and C++ allow one to use forward slashes even on systems where the 
-  // separator is actually a backslash.
-  //
-  if (tempdir[tempdir.length () - 1] != '/')
-    {
-      m_tempdir = tempdir + "/";
-    }
-  else
-    {
-      m_tempdir = tempdir;
-    }
-}
-
-std::string 
-TestSuite::GetTempDir (void)
-{
-  return m_tempdir;
-}
-
-void 
-TestSuite::SetStream (std::ofstream *ofs)
-{
-  m_ofs = ofs;
-}
-
-void 
-TestSuite::UpdateErrorStatus (bool error)
-{
-  m_error |= error;
-}
-
-void 
-TestSuite::SetErrorStatus (bool error)
-{
-  m_error = error;
-}
-
-bool
-TestSuite::GetErrorStatus (void)
-{
-  return m_error;
-}
-
-bool
-TestSuite::ContinueOnFailure (void)
-{
-  return m_continueOnFailure;
-}
-
-void
-TestSuite::DoReportStart (void)
-{
-  m_msClock.Start ();
-
-  if (m_ofs == 0)
-    {
-      return;
-    }
-  *m_ofs << "<TestSuite>" << std::endl;
-  *m_ofs << "  <SuiteName>" << ReplaceXmlSpecialCharacters (GetName ()) << "</SuiteName>" << std::endl;
-}
-
-void
-TestSuite::DoReportFailure (void)
-{
-  if (m_ofs == 0)
-    {
-      return;
-    }
-  *m_ofs << "  <SuiteResult>FAIL</SuiteResult>" << std::endl;
-}
-
-void
-TestSuite::DoReportSuccess (void)
-{
-  if (m_ofs == 0)
-    {
-      return;
-    }
-  *m_ofs << "  <SuiteResult>PASS</SuiteResult>" << std::endl;
-}
-
-void
-TestSuite::DoReportEnd (void)
-{
-  m_msClock.End ();
-
-  if (m_ofs == 0)
-    {
-      return;
-    }
-
-  (*m_ofs).precision (3);
-  *m_ofs << std::fixed;
-
-  const double MS_PER_SEC = 1000.;
-
-  *m_ofs << "  <SuiteTime>" << "real " << m_msClock.GetElapsedReal () / MS_PER_SEC
-         << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
-         << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
-         << "</SuiteTime>" << std::endl;
-
-  *m_ofs << "</TestSuite>" << std::endl;
-}
-
-void 
-TestSuite::DoSetup (void)
-{
-}
-
-void
 TestSuite::DoRun (void)
-{
-  SetErrorStatus (false);
-
-  for (TestCaseVector_t::iterator i = m_tests.begin (); i != m_tests.end (); ++i)
-    {
-      //
-      // Set the current options for the test case
-      //
-      (*i)->SetVerbose (m_verbose);
-      (*i)->SetContinueOnFailure (m_continueOnFailure);
-      (*i)->SetBaseDir (m_basedir);
-      (*i)->SetTempDir (m_tempdir);
-      (*i)->SetStream (m_ofs);
-
-      //
-      // Run the test case
-      //
-      (*i)->Run ();
-      UpdateErrorStatus ((*i)->GetErrorStatus ());
-
-      //
-      // Exit if we have detected an error and we are not allowing multiple failures
-      //
-      if (GetErrorStatus () && m_continueOnFailure == false)
-        {
-          return;
-        }
-    }
-
-}
-
-void 
-TestSuite::DoTeardown (void)
-{
-}
-
-class TestRunnerImpl
-{
-public:
-  uint32_t AddTestSuite (TestSuite *testSuite);
-  uint32_t GetNTestSuites (void);
-  TestSuite *GetTestSuite (uint32_t n);
-  bool RunTestSuite (uint32_t n);
-
-  static TestRunnerImpl *Instance (void);
-private:
-  TestRunnerImpl ();
-  ~TestRunnerImpl ();
-
-  typedef std::vector<TestSuite *> TestSuiteVector_t;
-  TestSuiteVector_t m_suites;
-};
+{}
 
 TestRunnerImpl::TestRunnerImpl ()
+ : m_tempDir (""),
+   m_assertOnFailure (false),
+   m_continueOnFailure (true),
+   m_updateData (false)
 {
 }
 
 TestRunnerImpl::~TestRunnerImpl ()
 {
 }
+
+
 
 TestRunnerImpl *
 TestRunnerImpl::Instance (void)
@@ -731,42 +348,456 @@ TestRunnerImpl::Instance (void)
   return &runner;
 }
 
-uint32_t
+void
 TestRunnerImpl::AddTestSuite (TestSuite *testSuite)
 {
-  uint32_t index = m_suites.size ();
   m_suites.push_back (testSuite);
-  return index;
 }
 
-uint32_t 
-TestRunnerImpl::GetNTestSuites (void)
+
+bool 
+TestRunnerImpl::MustAssertOnFailure (void) const
 {
-  return m_suites.size ();
+  return m_assertOnFailure;
+}
+bool 
+TestRunnerImpl::MustContinueOnFailure (void) const
+{
+  return m_continueOnFailure;
 }
 
-TestSuite *
-TestRunnerImpl::GetTestSuite (uint32_t n)
+bool 
+TestRunnerImpl::MustUpdateData (void) const
 {
-  return m_suites[n];
+  return m_updateData;
+}
+std::string
+TestRunnerImpl::GetTempDir (void) const
+{
+  return m_tempDir;
+}
+bool
+TestRunnerImpl::IsTopLevelSourceDir (std::string path) const
+{
+  bool haveVersion = false;
+  bool haveLicense = false;
+  
+  //
+  // If there's a file named VERSION and a file named LICENSE in this
+  // directory, we assume it's our top level source directory.
+  //
+
+  std::list<std::string> files = SystemPath::ReadFiles (path);
+  for (std::list<std::string>::const_iterator i = files.begin (); i != files.end (); ++i)
+    {
+      if (*i == "VERSION")
+        {
+          haveVersion = true;
+        }
+      else if (*i == "LICENSE")
+        {
+          haveLicense = true;
+        }
+    }
+  
+  return haveVersion && haveLicense;
 }
 
-uint32_t
-TestRunner::AddTestSuite (TestSuite *testSuite)
+std::string 
+TestRunnerImpl::GetTopLevelSourceDir (void) const
 {
-  return TestRunnerImpl::Instance ()->AddTestSuite (testSuite);
+  std::string self = SystemPath::FindSelfDirectory ();
+  std::list<std::string> elements = SystemPath::Split (self);
+  while (!elements.empty ())
+    {
+      std::string path = SystemPath::Join (elements.begin (), elements.end ());
+      if (IsTopLevelSourceDir (path))
+        {
+          return path;
+        }
+      elements.pop_back ();
+    }
+  NS_FATAL_ERROR ("Could not find source directory from self=" << self);
 }
 
-uint32_t
-TestRunner::GetNTestSuites (void)
+//
+// XML files have restrictions on certain characters that may be present in
+// data.  We need to replace these characters with their alternate 
+// representation on the way into the XML file.
+//
+std::string
+TestRunnerImpl::ReplaceXmlSpecialCharacters (std::string xml) const
 {
-  return TestRunnerImpl::Instance ()->GetNTestSuites ();
+  std::string specials = "<>&\"'";
+  std::string replacements[] = {"&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
+  std::string result;
+  std::size_t index, length = xml.length ();
+
+  for (size_t i = 0; i < length; ++i)
+    {
+      char character = xml[i];
+
+      if ((index = specials.find (character)) == std::string::npos)
+        {
+          result.push_back (character);
+        }
+      else
+        {
+          result += replacements[index];
+        }
+    }
+  return result;
 }
 
-TestSuite *
-TestRunner::GetTestSuite (uint32_t n)
+struct Indent
 {
-  return TestRunnerImpl::Instance ()->GetTestSuite (n);
+  Indent (int level);
+  int level;
+};
+Indent::Indent (int _level)
+  : level (_level)
+{}
+std::ostream &operator << (std::ostream &os, const Indent &val)
+{
+  for (int i = 0; i < val.level; i++)
+    {
+      os << "  ";
+    }
+  return os;
+}
+
+void
+TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int level)
+{
+  if (test->m_result == 0)
+    {
+      // Do not print reports for tests that were not run.
+      return;
+    }
+  const double MS_PER_SEC = 1000.;
+  double real = test->m_result->clock.GetElapsedReal () / MS_PER_SEC;
+  double user = test->m_result->clock.GetElapsedUser () / MS_PER_SEC;
+  double system = test->m_result->clock.GetElapsedSystem () / MS_PER_SEC;
+
+  (*os).precision (3);
+  *os << std::fixed;
+
+  std::string statusString = test->IsFailed ()?"FAIL":"PASS";
+  if (xml)
+    {
+      *os << Indent (level) << "<Test>" << std::endl;
+      *os << Indent (level+1) << "<Name>" << ReplaceXmlSpecialCharacters (test->m_name)
+          << "</Name>" << std::endl;
+      *os << Indent (level+1) << "<Result>" << statusString << "</Result>" << std::endl;
+      *os << Indent (level+1) << "<Time real=\"" << real << "\" user=\"" << user 
+          << "\" system=\"" << system << "\"/>" << std::endl;
+      for (uint32_t i = 0; i < test->m_result->failure.size (); i++)
+        {
+          TestCaseFailure failure = test->m_result->failure[i];
+          *os << Indent (level+2) << "<FailureDetails>" << std::endl
+              << Indent (level+3) << "<Condition>" 
+              << ReplaceXmlSpecialCharacters (failure.cond) << "</Condition>" << std::endl
+              << Indent (level+3) << "<Actual>" 
+              << ReplaceXmlSpecialCharacters (failure.actual) << "</Actual>" << std::endl
+              << Indent (level+3) << "<Limit>" 
+              << ReplaceXmlSpecialCharacters (failure.limit) << "</Limit>" << std::endl
+              << Indent (level+3) << "<Message>" 
+              << ReplaceXmlSpecialCharacters (failure.message) << "</Message>" << std::endl
+              << Indent (level+3) << "<File>" 
+              << ReplaceXmlSpecialCharacters (failure.file) << "</File>" << std::endl
+              << Indent (level+3) << "<Line>" << failure.line << "</Line>" << std::endl
+              << Indent (level+2) << "</FailureDetails>" << std::endl;
+        }
+      for (uint32_t i = 0; i < test->m_children.size (); i++)
+        {
+          TestCase *child = test->m_children[i];
+          PrintReport (child, os, xml, level + 1);
+        }
+      *os << Indent (level) << "</Test>" << std::endl;
+    }
+  else
+    {
+      *os << Indent (level) << statusString << " " << test->GetName () 
+          << " " << real << "ms" << std::endl;
+      if (m_verbose)
+        {
+          for (uint32_t i = 0; i < test->m_result->failure.size (); i++)
+            {
+              TestCaseFailure failure = test->m_result->failure[i];
+              *os << Indent (level) << "    got=\"" << failure.cond << "\" expected=\"" 
+                  << failure.actual << "\" in=\"" << failure.file << ":" << failure.line 
+                  << "\" " << failure.message << std::endl;
+            }
+          for (uint32_t i = 0; i < test->m_children.size (); i++)
+            {
+              TestCase *child = test->m_children[i];
+              PrintReport (child, os, xml, level + 1);
+            }
+        }
+    }
+}
+  
+void
+TestRunnerImpl::PrintHelp (const char *program_name) const
+{
+  std::cout << "Usage: " << program_name << " [OPTIONS]" << std::endl
+            << std::endl
+            << "Options: "
+            << "  --help                 : print these options" << std::endl
+            << "  --print-test-name-list : print the list of names of tests available" << std::endl
+            << "  --print-test-type-list : print the list of types of tests available" << std::endl
+            << "  --print-temp-dir       : Print name of temporary directory before running the tests" << std::endl
+            << "  --test-type=TYPE       : Process only tests of type TYPE" << std::endl
+            << "  --test-name=NAME       : Process only test whose name matches NAME" << std::endl
+            << "  --assert-on-failure    : when a test fails, crash immediately (useful" << std::endl
+            << "                           when running under a debugger" << std::endl
+            << "  --stop-on-failure      : when a test fails, stop immediately" << std::endl
+            << "  --verbose              : Print details of test execution" << std::endl
+            << "  --xml                  : format test run output as xml" << std::endl
+            << "  --tempdir=DIR          : set temp dir for tests to store output files" << std::endl
+            << "  --datadir=DIR          : set data dir for tests to read reference files" << std::endl
+            << "  --out=FILE             : send test result to FILE instead of standard "
+            << "output" << std::endl
+            << "  --append=FILE          : append test result to FILE instead of standard "
+            << "output" << std::endl
+    ;  
+}
+
+void
+TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
+                                   std::list<TestCase *>::const_iterator end) const
+{
+  for (std::list<TestCase *>::const_iterator i = begin; i != end; ++i)
+    {
+      TestCase *test = *i;
+      std::cout << test->GetName () << std::endl;
+    }
+}
+
+void
+TestRunnerImpl::PrintTestTypeList (void) const
+{
+  std::cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
+  std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
+  std::cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
+  std::cout << "  performance: Performance Tests (check to see if the system is as fast as expected)" << std::endl;
+  std::cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
+  std::cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
+}
+
+
+std::list<TestCase *>
+TestRunnerImpl::FilterTests (std::string testName, enum TestSuite::Type testType) const
+{
+  std::list<TestCase *> tests;
+  for (uint32_t i = 0; i < m_suites.size (); ++i)
+    {
+      TestSuite *test = m_suites[i];
+      if (testType != TestSuite::ALL && test->GetTestType () != testType)
+        {
+          // skip test
+          continue;
+        }
+      if (testName != "" && test->GetName () != testName)
+        {
+          // skip test
+          continue;
+        }
+      tests.push_back (test);
+    }
+  return tests;
+}
+
+
+int 
+TestRunnerImpl::Run (int argc, char *argv[])
+{
+  std::string testName = "";
+  std::string testTypeString = "";
+  std::string out = "";
+  bool xml = false;
+  bool append = false;
+  bool printTempDir = false;
+  bool printTestTypeList = false;
+  bool printTestNameList = false;
+  char *progname = argv[0];
+
+  argv++;
+
+  while (*argv != 0)
+    {
+      char *arg = *argv;
+
+      if (strcmp(arg, "--assert-on-failure") == 0)
+        {
+          m_assertOnFailure = true;
+        }
+      else if (strcmp (arg, "--stop-on-failure") == 0)
+        {
+          m_continueOnFailure = false;
+        }
+      else if (strcmp (arg, "--verbose") == 0)
+        {
+          m_verbose = true;
+        }
+      else if (strcmp (arg, "--print-temp-dir") == 0)
+        {
+          printTempDir = true;
+        }
+      else if (strcmp (arg, "--update-data") == 0)
+        {
+          m_updateData = true;
+        }
+      else if (strcmp (arg, "--help") == 0)
+        {
+          PrintHelp (progname);
+          return 0;
+        }
+      else if (strcmp (arg, "--print-test-name-list") == 0)
+        {
+          printTestNameList = true;
+        }
+      else if (strcmp (arg, "--print-test-type-list") == 0)
+        {
+          printTestTypeList = true;
+        }
+     else if (strcmp(arg, "--append") == 0)
+        {
+          append = true;
+        }
+      else if (strcmp(arg, "--xml") == 0)
+        {
+          xml = true;
+        }
+      else if (strncmp(arg, "--test-type=", strlen("--test-type=")) == 0)
+        {
+          testTypeString = arg + strlen("--test-type=");
+        }
+      else if (strncmp(arg, "--test-name=", strlen("--test-name=")) == 0)
+        {
+          testName = arg + strlen("--test-name=");
+        }
+      else if (strncmp(arg, "--tempdir=", strlen("--tempdir=")) == 0)
+        {
+          m_tempDir = arg + strlen("--tempdir=");
+        }
+      else if (strncmp(arg, "--out=", strlen("--out=")) == 0)
+        {
+          out = arg + strlen("--out=");
+        }
+      else
+        {
+          // un-recognized command-line argument
+          PrintHelp (progname);
+          return 0;
+        }
+      argv++;
+    }
+  enum TestSuite::Type testType;
+  if (testTypeString == "")
+    {
+      testType = TestSuite::ALL;
+    }
+  else if (testTypeString == "bvt")
+    {
+      testType = TestSuite::BVT;
+    }
+  else if (testTypeString == "core")
+    {
+      testType = TestSuite::ALL;
+    }
+  else if (testTypeString == "example")
+    {
+      testType = TestSuite::EXAMPLE;
+    }
+  else if (testTypeString == "unit")
+    {
+      testType = TestSuite::UNIT;
+    }
+  else if (testTypeString == "system")
+    {
+      testType = TestSuite::SYSTEM;
+    }
+  else
+    {
+      std::cout << "Invalid test type specified: " << testTypeString << std::endl;
+      PrintTestTypeList ();
+      return 1;
+    }
+
+  std::list<TestCase *> tests = FilterTests (testName, testType);
+
+  if (m_tempDir == "")
+    {
+      m_tempDir = SystemPath::MakeTemporaryDirectoryName ();
+    }
+  if (printTempDir)
+    {
+      std::cout << m_tempDir << std::endl;
+    }
+  if (printTestNameList)
+    {
+      PrintTestNameList (tests.begin (), tests.end ());
+      return 0;
+    }
+  if (printTestTypeList)
+    {
+      PrintTestTypeList ();
+      return 0;
+    }
+  
+
+  std::ostream *os;
+  if (out != "")
+    {
+      std::ofstream *ofs;
+      ofs = new std::ofstream();
+      std::ios_base::openmode mode = std::ios_base::out;
+      if (append)
+        {
+          mode |= std::ios_base::app;
+        }
+      else
+        {
+          mode |= std::ios_base::trunc;
+        }
+      ofs->open (out.c_str (), mode);
+      os = ofs;
+    }
+  else
+    {
+      os = &std::cout;
+    }
+
+  // let's run our tests now.
+  bool failed = false;
+  for (std::list<TestCase *>::const_iterator i = tests.begin (); i != tests.end (); ++i)
+    {
+      TestCase *test = *i;
+      test->Run (this);
+      PrintReport (test, os, xml, 0);
+      if (test->IsFailed ())
+        {
+          failed = true;
+          if (!m_continueOnFailure)
+            {
+              return 1;
+            }
+        }
+    }
+
+  if (out != "")
+    {
+      delete os;
+    }
+
+  return failed?1:0;
+}
+
+int 
+TestRunner::Run (int argc, char *argv[])
+{
+  return TestRunnerImpl::Instance ()->Run (argc, argv);
 }
 
 } // namespace ns3

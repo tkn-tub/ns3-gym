@@ -165,53 +165,49 @@ def parse_examples_to_run_file(
 #
 TMP_OUTPUT_DIR = "testpy-output"
 
-def get_node_text(node):
-    for child in node.childNodes:
-        if child.nodeType == child.TEXT_NODE:
-            return child.nodeValue
-    return "None"
+def read_test(test):
+    result = test.find('Result').text
+    name = test.find('Name').text
+    if not test.find('Time') is None:
+        time_real = test.find('Time').get('real')
+    else:
+        time_real = ''
+    return (result, name, time_real)
 
 #
 # A simple example of writing a text file with a test result summary.  It is 
 # expected that this output will be fine for developers looking for problems.
 #
+def node_to_text (test, f):
+    (result, name, time) = read_test(test)
+    output = "%s: Test Suite \"%s\" (%s)\n" % (result, name, time_real)
+    f.write(output)
+    for details in test.findall('FailureDetails'):
+        f.write("    Details:\n")
+        f.write("      Message:   %s\n" % details.find('Message').text)
+        f.write("      Condition: %s\n" % details.find('Condition').text)
+        f.write("      Actual:    %s\n" % details.find('Actual').text)
+        f.write("      Limit:     %s\n" % details.find('Limit').text)
+        f.write("      File:      %s\n" % details.find('File').text)
+        f.write("      Line:      %s\n" % details.find('Line').text)
+    for child in test.findall('Test'):
+        node_to_text(child, f)
+
 def translate_to_text(results_file, text_file):
     f = open(text_file, 'w')
-    try:
-      dom = xml.dom.minidom.parse(results_file)
-    except xml.parsers.expat.error:
-      print "\nAn error was encountered while parsing the XML file %s." % (results_file)
-      sys.exit(1)
+    import xml.etree.ElementTree as ET
+    et = ET.parse (results_file)
+    for test in et.findall('Test'):
+        node_to_text (test, f)
 
-    for suite in dom.getElementsByTagName("TestSuite"):
-        result = get_node_text(suite.getElementsByTagName("SuiteResult")[0])
-        name = get_node_text(suite.getElementsByTagName("SuiteName")[0])
-        time = get_node_text(suite.getElementsByTagName("SuiteTime")[0])
-        output = "%s: Test Suite \"%s\" (%s)\n" % (result, name, time)
-        f.write(output)
-        if result != "CRASH":
-            for case in suite.getElementsByTagName("TestCase"):
-                result = get_node_text(case.getElementsByTagName("CaseResult")[0])
-                name = get_node_text(case.getElementsByTagName("CaseName")[0])
-                time = get_node_text(case.getElementsByTagName("CaseTime")[0])
-                output =   "  %s: Test Case \"%s\" (%s)\n" % (result, name, time)
-                f.write(output)
-
-                if result == "FAIL":
-                    for details in case.getElementsByTagName("FailureDetails"):
-                        f.write("    Details:\n")
-                        f.write("      Message:   %s\n" % get_node_text(details.getElementsByTagName("Message")[0]))
-                        f.write("      Condition: %s\n" % get_node_text(details.getElementsByTagName("Condition")[0]))
-                        f.write("      Actual:    %s\n" % get_node_text(details.getElementsByTagName("Actual")[0]))
-                        f.write("      Limit:     %s\n" % get_node_text(details.getElementsByTagName("Limit")[0]))
-                        f.write("      File:      %s\n" % get_node_text(details.getElementsByTagName("File")[0]))
-                        f.write("      Line:      %s\n" % get_node_text(details.getElementsByTagName("Line")[0]))
-
-    for example in dom.getElementsByTagName("Example"):
-        result = get_node_text(example.getElementsByTagName("Result")[0])
-        name = get_node_text(example.getElementsByTagName("Name")[0])
-        time = get_node_text(example.getElementsByTagName("ElapsedTime")[0])
-        output = "%s: Example \"%s\" (%s)\n" % (result, name, time)
+    for example in et.findall('Example'):
+        result = example.find('Result').text
+        name = example.find('Name').text
+        if not example.find('Time') is None:
+            time_real = example.find('Time').get('real')
+        else:
+            time_real = ''
+        output = "%s: Example \"%s\" (%s)\n" % (result, name, time_real)
         f.write(output)
 
     f.close()
@@ -231,20 +227,18 @@ def translate_to_html(results_file, html_file):
     #
     # Read and parse the whole results file.
     #
-    dom = xml.dom.minidom.parse(results_file)
+    import xml.etree.ElementTree as ET
+    et = ET.parse(results_file)
 
     #
     # Iterate through the test suites
     #
     f.write("<h2>Test Suites</h2>\n")
-    for suite in dom.getElementsByTagName("TestSuite"):
-     
+    for suite in et.findall('Test'):     
         #
         # For each test suite, get its name, result and execution time info
         #
-        name = get_node_text(suite.getElementsByTagName("SuiteName")[0])
-        result = get_node_text(suite.getElementsByTagName("SuiteResult")[0])
-        time = get_node_text(suite.getElementsByTagName("SuiteTime")[0])
+        (result, name, time) = read_test (suite)
 
         # 
         # Print a level three header with the result, name and time.  If the 
@@ -316,15 +310,13 @@ def translate_to_html(results_file, html_file):
         #
         # Now iterate through all of the test cases.
         #
-        for case in suite.getElementsByTagName("TestCase"):
+        for case in suite.findall('Test'):
 
             #
             # Get the name, result and timing information from xml to use in
             # printing table below.
             #
-            name = get_node_text(case.getElementsByTagName("CaseName")[0])
-            result = get_node_text(case.getElementsByTagName("CaseResult")[0])
-            time = get_node_text(case.getElementsByTagName("CaseTime")[0])
+            (result, name, time) = read_test(case)
 
             #
             # If the test case failed, we iterate through possibly multiple
@@ -349,7 +341,7 @@ def translate_to_html(results_file, html_file):
                 #
 
                 first_row = True
-                for details in case.getElementsByTagName("FailureDetails"):
+                for details in case.findall('FailureDetails'):
 
                     #
                     # Start a new row in the table for each possible Failure Detail
@@ -367,12 +359,12 @@ def translate_to_html(results_file, html_file):
                         f.write("<td></td>\n")
 
                     f.write("<td>")
-                    f.write("<b>Message: </b>%s, " % get_node_text(details.getElementsByTagName("Message")[0]))
-                    f.write("<b>Condition: </b>%s, " % get_node_text(details.getElementsByTagName("Condition")[0]))
-                    f.write("<b>Actual: </b>%s, " % get_node_text(details.getElementsByTagName("Actual")[0]))
-                    f.write("<b>Limit: </b>%s, " % get_node_text(details.getElementsByTagName("Limit")[0]))
-                    f.write("<b>File: </b>%s, " % get_node_text(details.getElementsByTagName("File")[0]))
-                    f.write("<b>Line: </b>%s" % get_node_text(details.getElementsByTagName("Line")[0]))
+                    f.write("<b>Message: </b>%s, " % details.find('Message').text)
+                    f.write("<b>Condition: </b>%s, " % details.find('Condition').text)
+                    f.write("<b>Actual: </b>%s, " % details.find('Actual').text)
+                    f.write("<b>Limit: </b>%s, " % details.find('Limit').text)
+                    f.write("<b>File: </b>%s, " % details.find('File').text)
+                    f.write("<b>Line: </b>%s" % details.find('Line').text)
                     f.write("</td>\n")
                     
                     #
@@ -428,7 +420,7 @@ def translate_to_html(results_file, html_file):
     #
     # Now iterate through all of the examples
     #
-    for example in dom.getElementsByTagName("Example"):
+    for example in et.findall("Example"):
         
         #
         # Start a new row for each example
@@ -438,9 +430,7 @@ def translate_to_html(results_file, html_file):
         #
         # Get the result and name of the example in question
         #
-        result = get_node_text(example.getElementsByTagName("Result")[0])
-        name =   get_node_text(example.getElementsByTagName("Name")[0])
-        time =   get_node_text(example.getElementsByTagName("ElapsedTime")[0])
+        (result, name, time) = read_test(example)
 
         #
         # If the example either failed or crashed, print its result status
@@ -786,7 +776,7 @@ class Job:
     #
     # This is the shell command that will be executed in the job.  For example,
     #
-    #  "utils/test-runner --suite=some-test-suite"
+    #  "utils/test-runner --test-name=some-test-suite"
     #
     def set_shell_command(self, shell_command):
         self.shell_command = shell_command
@@ -919,8 +909,12 @@ class worker_thread(threading.Thread):
                     # to the test runner, specifically the base directory and temp
                     # file name
                     #
+                    if options.update_data:
+                        update_data = '--update-data'
+                    else:
+                        update_data = ''
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command + 
-                        " --basedir=%s --tempdir=%s --out=%s" % (job.basedir, job.tempdir, job.tmp_file_name), 
+                        " --xml --tempdir=%s --out=%s %s" % (job.tempdir, job.tmp_file_name, update_data), 
                         job.cwd, options.valgrind, False)
 
                 job.set_elapsed_time(et)
@@ -1063,12 +1057,12 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        path_cmd = os.path.join("utils", "test-runner --kinds")
+        path_cmd = os.path.join("utils", "test-runner --print-test-type-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print standard_out
 
     if options.list:
-        path_cmd = os.path.join("utils", "test-runner --list")
+        path_cmd = os.path.join("utils", "test-runner --print-test-name-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print standard_out
 
@@ -1113,7 +1107,7 @@ def run_tests():
     xml_results_file = os.path.join(testpy_output_dir, "results.xml")
     f = open(xml_results_file, 'w')
     f.write('<?xml version="1.0"?>\n')
-    f.write('<TestResults>\n')
+    f.write('<Results>\n')
     f.close()
 
     #
@@ -1141,10 +1135,10 @@ def run_tests():
         suites = options.suite + "\n"
     elif len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain):
-            path_cmd = os.path.join("utils", "test-runner --list --constrain=%s" % options.constrain)
+            path_cmd = os.path.join("utils", "test-runner --print-test-name-list --test-type=%s" % options.constrain)
             (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         else:
-            path_cmd = os.path.join("utils", "test-runner --list")
+            path_cmd = os.path.join("utils", "test-runner --print-test-name-list")
             (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
     else:
         suites = ""
@@ -1222,11 +1216,11 @@ def run_tests():
             job.set_basedir(os.getcwd())
             job.set_tempdir(testpy_output_dir)
             if (options.multiple):
-                multiple = " --multiple"
-            else:
                 multiple = ""
+            else:
+                multiple = " --stop-on-failure"
 
-            path_cmd = os.path.join("utils", "test-runner --suite=%s%s" % (test, multiple))
+            path_cmd = os.path.join("utils", "test-runner --test-name=%s%s" % (test, multiple))
             job.set_shell_command(path_cmd)
 
             if options.valgrind and test in core_valgrind_skip_tests:
@@ -1510,7 +1504,7 @@ def run_tests():
             else:
                 f.write('  <Result>CRASH</Result>\n')
 
-            f.write('  <ElapsedTime>%.3f</ElapsedTime>\n' % job.elapsed_time)
+            f.write('  <Time real="%.3f"/>\n' % job.elapsed_time)
             f.write('</Example>\n')
             f.close()
 
@@ -1561,11 +1555,10 @@ def run_tests():
             #
             if job.is_skip:
                 f = open(xml_results_file, 'a')
-                f.write("<TestSuite>\n")
-                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
-                f.write('  <SuiteResult>SKIP</SuiteResult>\n')
-                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
-                f.write("</TestSuite>\n")
+                f.write("<Test>\n")
+                f.write("  <Name>%s</Name>\n" % job.display_name)
+                f.write('  <Result>SKIP</Result>\n')
+                f.write("</Test>\n")
                 f.close()
             else:
                 if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
@@ -1576,20 +1569,18 @@ def run_tests():
                     f_from.close()
                 else:
                     f = open(xml_results_file, 'a')
-                    f.write("<TestSuite>\n")
-                    f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
-                    f.write('  <SuiteResult>CRASH</SuiteResult>\n')
-                    f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
-                    f.write("</TestSuite>\n")
+                    f.write("<Test>\n")
+                    f.write("  <Name>%s</Name>\n" % job.display_name)
+                    f.write('  <Result>CRASH</Suite>\n')
+                    f.write("</Test>\n")
                     f.close()
 
                     if job.returncode == 2:
                         f = open(xml_results_file, 'a')
-                        f.write("<TestSuite>\n")
-                        f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
-                        f.write('  <SuiteResult>VALGR</SuiteResult>\n')
-                        f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
-                        f.write("</TestSuite>\n")
+                        f.write("<Test>\n")
+                        f.write("  <Name>%s</Name>\n" % job.display_name)
+                        f.write('  <Result>VALGR</Result>\n')
+                        f.write("</Test>\n")
                         f.close()
 
     #
@@ -1607,7 +1598,7 @@ def run_tests():
     # document
     #
     f = open(xml_results_file, 'a')
-    f.write('</TestResults>\n')
+    f.write('</Results>\n')
     f.close()
 
     #
@@ -1668,6 +1659,9 @@ def main(argv):
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",
                       help="specify a single example to run (with relative path)")
+
+    parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
+                      help="If examples use reference data files, get them to re-generate them")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
                       help="run the test suites and examples using valgrind")

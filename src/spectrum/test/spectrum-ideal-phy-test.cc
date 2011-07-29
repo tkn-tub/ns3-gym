@@ -75,6 +75,7 @@ public:
 
 private:
   virtual void DoRun (void);
+  static std::string Name (std::string channelType, double snrLinear, uint64_t phyRate);
   
   double      m_snrLinear;
   uint64_t    m_phyRate;
@@ -82,24 +83,27 @@ private:
   std::string m_channelType;
 };
 
-
+std::string 
+SpectrumIdealPhyTestCase::Name (std::string channelType, double snrLinear, uint64_t phyRate)
+{
+  std::ostringstream oss;
+  oss << channelType
+      << " snr = " << snrLinear << " (linear), "
+      << " phyRate = " << phyRate << " bps";
+  return oss.str();
+}
 
 
 SpectrumIdealPhyTestCase::SpectrumIdealPhyTestCase (double snrLinear,
 						    uint64_t phyRate,
 						    bool rateIsAchievable,
 						    std::string channelType)
-  : TestCase (""),
+  : TestCase (Name (channelType, snrLinear, phyRate)),
     m_snrLinear (snrLinear),
     m_phyRate (phyRate),
     m_rateIsAchievable (rateIsAchievable),
     m_channelType (channelType)
 {
-  std::ostringstream oss;
-  oss << channelType
-      << " snr = " << snrLinear << " (linear), "
-      << " phyRate = " << phyRate << " bps";
-  SetName (oss.str ());
 }
 
 SpectrumIdealPhyTestCase::~SpectrumIdealPhyTestCase ()

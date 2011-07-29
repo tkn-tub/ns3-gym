@@ -32,13 +32,12 @@
 #include "ns3/abort.h"
 #include "ns3/udp-echo-helper.h"
 #include "ns3/mobility-model.h"
+#include "ns3/pcap-test.h"
 #include <sstream>
 #include "hwmp-proactive-regression.h"
 
 using namespace ns3;
 
-/// Set to true to rewrite reference traces, leave false to run regression test
-const bool WRITE_VECTORS = false;
 /// Unique PCAP file name prefix
 const char * const PREFIX = "hwmp-proactive-regression-test";
 
@@ -65,7 +64,7 @@ HwmpProactiveRegressionTest::DoRun ()
   Simulator::Run ();
   Simulator::Destroy ();
 
-  if (!WRITE_VECTORS) CheckResults ();
+  CheckResults ();
 
   delete m_nodes, m_nodes = 0;
 }
@@ -122,8 +121,7 @@ HwmpProactiveRegressionTest::CreateDevices ()
   address.SetBase ("10.1.1.0", "255.255.255.0");
   m_interfaces = address.Assign (meshDevices);
   // 4. write PCAP if needed
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string (GetTempDir ())) + PREFIX;
-  wifiPhy.EnablePcapAll (prefix);
+  wifiPhy.EnablePcapAll (CreateTempDirFilename (PREFIX));
 }
 
 void
@@ -131,15 +129,7 @@ HwmpProactiveRegressionTest::CheckResults ()
 {
   for (int i = 0; i < 5; ++i)
     {
-      std::ostringstream os1, os2;
-      // File naming conventions are hard-coded here.
-      os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
-      os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-
-      uint32_t sec (0), usec (0);
-      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec); // TODO support default PcapWriter snap length here
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
-                                                         << " differ starting from " << sec << " s " << usec << " us");
+      NS_PCAP_TEST_EXPECT_EQ (PREFIX << "-" << i << "-1.pcap");
     }
 }
 

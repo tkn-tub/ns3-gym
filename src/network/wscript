@@ -119,6 +119,7 @@ def build(bld):
         'utils/sgi-hashmap.h',
         'utils/simple-channel.h',
         'utils/simple-net-device.h',
+        'utils/pcap-test.h',
         'helper/application-container.h',
         'helper/net-device-container.h',
         'helper/node-container.h',

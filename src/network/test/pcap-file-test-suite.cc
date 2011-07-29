@@ -107,7 +107,7 @@ WriteModeCreateTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = GetTempDir () + filename.str () + ".pcap";
+  m_testFilename = CreateTempDirFilename (filename.str () + ".pcap");
 }
 
 void
@@ -219,7 +219,7 @@ ReadModeCreateTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = GetTempDir () + filename.str () + ".pcap";
+  m_testFilename = CreateTempDirFilename (filename.str () + ".pcap");
 }
 
 void
@@ -325,7 +325,7 @@ AppendModeCreateTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = GetTempDir () + filename.str () + ".pcap";
+  m_testFilename = CreateTempDirFilename (filename.str () + ".pcap");
 }
 
 void
@@ -431,7 +431,7 @@ FileHeaderTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = GetTempDir () + filename.str () + ".pcap";
+  m_testFilename = CreateTempDirFilename (filename.str () + ".pcap");
 }
 
 void
@@ -668,7 +668,7 @@ RecordHeaderTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = GetTempDir () + filename.str () + ".pcap";
+  m_testFilename = CreateTempDirFilename (filename.str () + ".pcap");
 }
 
 void
@@ -1008,7 +1008,7 @@ ReadFileTestCase::DoRun (void)
 
   //
   //
-  std::string filename = NS_TEST_SOURCEDIR + "known.pcap";
+  std::string filename = CreateDataDirFilename ("known.pcap");
   f.Open (filename, std::ios::in);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Open (" << filename << 
                          ", \"std::ios::in\") returns error");
@@ -1070,7 +1070,7 @@ DiffTestCase::DoRun (void)
   //
   // Check that PcapDiff(file, file) is false
   //
-  std::string filename = NS_TEST_SOURCEDIR + "known.pcap";
+  std::string filename = CreateDataDirFilename ("known.pcap");
   uint32_t sec (0), usec (0);
   bool diff = PcapFile::Diff (filename, filename, sec, usec);
   NS_TEST_EXPECT_MSG_EQ (diff, false, "PcapDiff(file, file) must always be false");
@@ -1110,6 +1110,7 @@ public:
 PcapFileTestSuite::PcapFileTestSuite ()
   : TestSuite ("pcap-file", UNIT)
 {
+  SetDataDir (NS_TEST_SOURCEDIR);
   AddTestCase (new WriteModeCreateTestCase);
   AddTestCase (new ReadModeCreateTestCase);
   //AddTestCase (new AppendModeCreateTestCase);

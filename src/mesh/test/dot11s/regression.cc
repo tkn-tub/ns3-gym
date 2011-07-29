@@ -31,6 +31,7 @@ class Dot11sRegressionSuite : public TestSuite
 public:
   Dot11sRegressionSuite () : TestSuite ("devices-mesh-dot11s-regression", SYSTEM) 
   {
+    SetDataDir (NS_TEST_SOURCEDIR);
     AddTestCase (new PeerManagementProtocolRegressionTest);
     AddTestCase (new HwmpSimplestRegressionTest);
     AddTestCase (new HwmpReactiveRegressionTest);

@@ -36,8 +36,10 @@ def configure(conf):
 
     conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H')
     conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
-
     conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
+    conf.check(header_name='sys/types.h', define_name='HAVE_SYS_TYPES_H')
+    conf.check(header_name='sys/stat.h', define_name='HAVE_SYS_STAT_H')
+    conf.check(header_name='dirent.h', define_name='HAVE_DIRENT_H')
 
     if conf.check(header_name='stdlib.h'):
         conf.define('HAVE_STDLIB_H', 1)
@@ -144,6 +146,7 @@ def build(bld):
         'model/names.cc',
         'model/vector.cc',
         'model/fatal-impl.cc',
+        'model/system-path.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')

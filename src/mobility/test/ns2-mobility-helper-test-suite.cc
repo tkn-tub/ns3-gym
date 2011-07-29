@@ -140,7 +140,7 @@ private:
   /// Dump NS-2 trace to tmp file
   bool WriteTrace ()
   {
-    m_traceFile = GetTempDir () + "Ns2MobilityHelperTest.tcl";
+    m_traceFile = CreateTempDirFilename ("Ns2MobilityHelperTest.tcl");
     std::ofstream of (m_traceFile.c_str ());
     NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (of.is_open (), true, "Need to write tmp. file");
     of << m_trace;
@@ -176,7 +176,7 @@ private:
 
         m_nextRefPoint++;
       }
-    return GetErrorStatus ();
+    return IsStatusFailure ();
   }
   /// Listen for course change events
   void CourseChange (std::string context, Ptr<const MobilityModel> mobility)
@@ -243,6 +243,8 @@ class Ns2MobilityHelperTestSuite : public TestSuite
 public:
   Ns2MobilityHelperTestSuite () : TestSuite ("mobility-ns2-trace-helper", UNIT)
   {
+    SetDataDir (NS_TEST_SOURCEDIR);
+
     // to be used as temporary variable for test cases.
     // Note that test suite takes care of deleting all test cases.
     Ns2MobilityHelperTest * t (0);

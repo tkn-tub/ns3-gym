@@ -28,9 +28,8 @@
 #include <limits>
 #include <stdint.h>
 
-#include "ns3/system-wall-clock-ms.h"
-
-extern bool gBreakOnFailure;
+#include "system-wall-clock-ms.h"
+#include "deprecated.h"
 
 // 
 // Note on below macros:
@@ -42,14 +41,31 @@ extern bool gBreakOnFailure;
 // defining a robust macro.
 //
 
-/**
- * \brief Convenience macro to extract the source directory of the current 
- * source file.
- *
- * \see TestCase::GetSourceDir
- */
-#define NS_TEST_SOURCEDIR \
-  TestCase::GetSourceDir (__FILE__)
+#define ASSERT_ON_FAILURE                       \
+  do {                                          \
+    if (MustAssertOnFailure ())                 \
+      {                                         \
+        *(int *)0 = 0;                          \
+      }                                         \
+  } while (false)
+
+#define CONTINUE_ON_FAILURE                                             \
+  do {                                                                  \
+    if (!MustContinueOnFailure ())                                      \
+      {                                                                 \
+        return;                                                         \
+      }                                                                 \
+  } while (false)
+
+#define CONTINUE_ON_FAILURE_RETURNS_BOOL                                \
+  do {                                                                  \
+    if (!MustContinueOnFailure ())                                      \
+      {                                                                 \
+        return IsStatusFailure ();                                      \
+      }                                                                 \
+  } while (false)
+
+
 
 // ===========================================================================
 // Test for equality (generic version)
@@ -58,25 +74,24 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)                                  \
-  do {                                                                                                  \
-      if (!((actual) == (limit)))                                                                         \
-        {                                                                                                 \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                           \
-          std::ostringstream msgStream;                                                                   \
-          msgStream << msg;                                                                               \
-          std::ostringstream actualStream;                                                                \
-          actualStream << actual;                                                                         \
-          std::ostringstream limitStream;                                                                 \
-          limitStream << limit;                                                                           \
-          ReportTestFailure (std::string (# actual) + " (actual) == " + std::string (# limit) + " (limit)", \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-          if (!ContinueOnFailure ())                                                                      \
-            {                                                                                             \
-              return;                                                                                \
-            }                                                                                             \
-        }                                                                                                 \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) == (limit)))                                         \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) == " +    \
+                           std::string (#limit) + " (limit)",           \
+                           actualStream.str (), limitStream.str (),     \
+                           msgStream.str (), file, line);               \
+        CONTINUE_ON_FAILURE;                                            \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -110,25 +125,24 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line)                                  \
-  do {                                                                                                  \
-      if (!((actual) == (limit)))                                                                         \
-        {                                                                                                 \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                           \
-          std::ostringstream msgStream;                                                                   \
-          msgStream << msg;                                                                               \
-          std::ostringstream actualStream;                                                                \
-          actualStream << actual;                                                                         \
-          std::ostringstream limitStream;                                                                 \
-          limitStream << limit;                                                                           \
-          ReportTestFailure (std::string (# actual) + " (actual) == " + std::string (# limit) + " (limit)", \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-          if (!ContinueOnFailure ())                                                                      \
-            {                                                                                             \
-              return true;                                                                                \
-            }                                                                                             \
-        }                                                                                                 \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
+  do {                                                                  \
+    if (!((actual) == (limit)))                                         \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) == " +        \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+        CONTINUE_ON_FAILURE_RETURNS_BOOL;                               \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -168,21 +182,23 @@ extern bool gBreakOnFailure;
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
  */
-#define NS_TEST_EXPECT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)                                  \
-  do {                                                                                                  \
-      if (!((actual) == (limit)))                                                                         \
-        {                                                                                                 \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                           \
-          std::ostringstream msgStream;                                                                   \
-          msgStream << msg;                                                                               \
-          std::ostringstream actualStream;                                                                \
-          actualStream << actual;                                                                         \
-          std::ostringstream limitStream;                                                                 \
-          limitStream << limit;                                                                           \
-          ReportTestFailure (std::string (# actual) + " (actual) == " + std::string (# limit) + " (limit)", \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-        }                                                                                                 \
-    } while (false)
+#define NS_TEST_EXPECT_MSG_EQ_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) == (limit)))                                         \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) == " +        \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -221,27 +237,28 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
-  do {                                                                                                                \
-      if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
-        {                                                                                                               \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                                         \
-          std::ostringstream msgStream;                                                                                 \
-          msgStream << msg;                                                                                             \
-          std::ostringstream actualStream;                                                                              \
-          actualStream << actual;                                                                                       \
-          std::ostringstream limitStream;                                                                               \
-          limitStream << limit << " +- " << tol;                                                                        \
-          std::ostringstream condStream;                                                                                \
-          condStream << # actual << " (actual) < " << # limit << " (limit) + " << # tol << " (tol) && " <<                 \
-          # actual << " (actual) > " << # limit << " (limit) - " << # tol << " (tol)";                       \
-          ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
-          if (!ContinueOnFailure ())                                                                                    \
-            {                                                                                                           \
-              return;                                                                                              \
-            }                                                                                                           \
-        }                                                                                                               \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
+  do {                                                                  \
+    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))       \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit << " +- " << tol;                          \
+        std::ostringstream condStream;                                  \
+        condStream << #actual << " (actual) < " << #limit               \
+                   << " (limit) + " << #tol << " (tol) && "             \
+                   << #actual << " (actual) > " << #limit               \
+                   << " (limit) - " << #tol << " (tol)";                \
+        ReportTestFailure (condStream.str (), actualStream.str (),          \
+                       limitStream.str (), msgStream.str (),            \
+                       file, line);                                     \
+        CONTINUE_ON_FAILURE;                                            \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that actual and expected (limit) values are equal to plus or minus
@@ -297,27 +314,28 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
-  do {                                                                                                                \
-      if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
-        {                                                                                                               \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                                         \
-          std::ostringstream msgStream;                                                                                 \
-          msgStream << msg;                                                                                             \
-          std::ostringstream actualStream;                                                                              \
-          actualStream << actual;                                                                                       \
-          std::ostringstream limitStream;                                                                               \
-          limitStream << limit << " +- " << tol;                                                                        \
-          std::ostringstream condStream;                                                                                \
-          condStream << # actual << " (actual) < " << # limit << " (limit) + " << # tol << " (tol) && " <<                 \
-          # actual << " (actual) > " << # limit << " (limit) - " << # tol << " (tol)";                       \
-          ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
-          if (!ContinueOnFailure ())                                                                                    \
-            {                                                                                                           \
-              return true;                                                                                              \
-            }                                                                                                           \
-        }                                                                                                               \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line) \
+  do {                                                                  \
+    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))       \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit << " +- " << tol;                          \
+        std::ostringstream condStream;                                  \
+        condStream << #actual << " (actual) < " << #limit               \
+                   << " (limit) + " << #tol << " (tol) && "             \
+                   << #actual << " (actual) > " << #limit               \
+                   << " (limit) - " << #tol << " (tol)";                \
+        ReportTestFailure (condStream.str (), actualStream.str (),          \
+                       limitStream.str (), msgStream.str (),            \
+                       file, line);                                     \
+        CONTINUE_ON_FAILURE_RETURNS_BOOL;                               \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that actual and expected (limit) values are equal to plus or minus
@@ -379,23 +397,27 @@ extern bool gBreakOnFailure;
  * Required to avoid use of return statement which allows use in methods 
  * (esp. callbacks) returning void.
  */
-#define NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
-  do {                                                                                                                \
-      if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
-        {                                                                                                               \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                                         \
-          std::ostringstream msgStream;                                                                                 \
-          msgStream << msg;                                                                                             \
-          std::ostringstream actualStream;                                                                              \
-          actualStream << actual;                                                                                       \
-          std::ostringstream limitStream;                                                                               \
-          limitStream << limit << " +- " << tol;                                                                        \
-          std::ostringstream condStream;                                                                                \
-          condStream << # actual << " (actual) < " << # limit << " (limit) + " << # tol << " (tol) && " <<                 \
-          # actual << " (actual) > " << # limit << " (limit) - " << # tol << " (tol)";                       \
-          ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
-        }                                                                                                               \
-    } while (false)
+#define NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL(actual, limit, tol, msg, file, line) \
+  do {                                                                  \
+    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))       \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit << " +- " << tol;                          \
+        std::ostringstream condStream;                                  \
+        condStream << #actual << " (actual) < " << #limit               \
+                   << " (limit) + " << #tol << " (tol) && "             \
+                   << #actual << " (actual) > " << #limit               \
+                   << " (limit) - " << #tol << " (tol)";                \
+        ReportTestFailure (condStream.str (), actualStream.str (),          \
+                       limitStream.str (), msgStream.str (),            \
+                       file, line);                                     \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that actual and expected (limit) values are equal to plus or minus
@@ -455,25 +477,24 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_NE_INTERNAL(actual, limit, msg, file, line)                                  \
-  do {                                                                                                  \
-      if (!((actual) != (limit)))                                                                         \
-        {                                                                                                 \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                           \
-          std::ostringstream msgStream;                                                                   \
-          msgStream << msg;                                                                               \
-          std::ostringstream actualStream;                                                                \
-          actualStream << actual;                                                                         \
-          std::ostringstream limitStream;                                                                 \
-          limitStream << limit;                                                                           \
-          ReportTestFailure (std::string (# actual) + " (actual) != " + std::string (# limit) + " (limit)", \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-          if (!ContinueOnFailure ())                                                                      \
-            {                                                                                             \
-              return;                                                                                \
-            }                                                                                             \
-        }                                                                                                 \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) != (limit)))                                         \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) != " +        \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+        CONTINUE_ON_FAILURE;                                            \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -506,25 +527,24 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line)                                  \
-  do {                                                                                                  \
-      if (!((actual) != (limit)))                                                                         \
-        {                                                                                                 \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                           \
-          std::ostringstream msgStream;                                                                   \
-          msgStream << msg;                                                                               \
-          std::ostringstream actualStream;                                                                \
-          actualStream << actual;                                                                         \
-          std::ostringstream limitStream;                                                                 \
-          limitStream << limit;                                                                           \
-          ReportTestFailure (std::string (# actual) + " (actual) != " + std::string (# limit) + " (limit)", \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-          if (!ContinueOnFailure ())                                                                      \
-            {                                                                                             \
-              return true;                                                                                \
-            }                                                                                             \
-        }                                                                                                 \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line) \
+  do {                                                                  \
+    if (!((actual) != (limit)))                                         \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) != " +        \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+        CONTINUE_ON_FAILURE_RETURNS_BOOL;                               \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -563,21 +583,23 @@ extern bool gBreakOnFailure;
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
  */
-#define NS_TEST_EXPECT_MSG_NE_INTERNAL(actual, limit, msg, file, line)                                  \
-  do {                                                                                                  \
-      if (!((actual) != (limit)))                                                                         \
-        {                                                                                                 \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                           \
-          std::ostringstream msgStream;                                                                   \
-          msgStream << msg;                                                                               \
-          std::ostringstream actualStream;                                                                \
-          actualStream << actual;                                                                         \
-          std::ostringstream limitStream;                                                                 \
-          limitStream << limit;                                                                           \
-          ReportTestFailure (std::string (# actual) + " (actual) != " + std::string (# limit) + " (limit)", \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
-        }                                                                                                 \
-    } while (false)
+#define NS_TEST_EXPECT_MSG_NE_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) != (limit)))                                         \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) != " +        \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual and expected (limit) value are equal and report
@@ -614,25 +636,24 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_LT_INTERNAL(actual, limit, msg, file, line)                                   \
-  do {                                                                                                   \
-      if (!((actual) < (limit)))                                                                           \
-        {                                                                                                  \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                            \
-          std::ostringstream msgStream;                                                                    \
-          msgStream << msg;                                                                                \
-          std::ostringstream actualStream;                                                                 \
-          actualStream << actual;                                                                          \
-          std::ostringstream limitStream;                                                                  \
-          limitStream << limit;                                                                            \
-          ReportTestFailure (std::string (# actual) + " (actual) < " + std::string (# limit) + " (limit)",   \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-          if (!ContinueOnFailure ())                                                                       \
-            {                                                                                              \
-              return;                                                                                 \
-            }                                                                                              \
-        }                                                                                                  \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) < (limit)))                                          \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) < " +         \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+        CONTINUE_ON_FAILURE;                                            \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual value is less than a limit and report and abort
@@ -658,21 +679,23 @@ extern bool gBreakOnFailure;
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
  */
-#define NS_TEST_EXPECT_MSG_LT_INTERNAL(actual, limit, msg, file, line)                                   \
-  do {                                                                                                   \
-      if (!((actual) < (limit)))                                                                           \
-        {                                                                                                  \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                            \
-          std::ostringstream msgStream;                                                                    \
-          msgStream << msg;                                                                                \
-          std::ostringstream actualStream;                                                                 \
-          actualStream << actual;                                                                          \
-          std::ostringstream limitStream;                                                                  \
-          limitStream << limit;                                                                            \
-          ReportTestFailure (std::string (# actual) + " (actual) < " + std::string (# limit) + " (limit)",   \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-        }                                                                                                  \
-    } while (false)
+#define NS_TEST_EXPECT_MSG_LT_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) < (limit)))                                          \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) < " +         \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual value is less than a limit and report if not.
@@ -698,25 +721,24 @@ extern bool gBreakOnFailure;
 /**
  * \internal
  */
-#define NS_TEST_ASSERT_MSG_GT_INTERNAL(actual, limit, msg, file, line)                                   \
-  do {                                                                                                   \
-      if (!((actual) > (limit)))                                                                           \
-        {                                                                                                  \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                            \
-          std::ostringstream msgStream;                                                                    \
-          msgStream << msg;                                                                                \
-          std::ostringstream actualStream;                                                                 \
-          actualStream << actual;                                                                          \
-          std::ostringstream limitStream;                                                                  \
-          limitStream << limit;                                                                            \
-          ReportTestFailure (std::string (# actual) + " (actual) > " + std::string (# limit) + " (limit)",   \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-          if (!ContinueOnFailure ())                                                                       \
-            {                                                                                              \
-              return;                                                                                 \
-            }                                                                                              \
-        }                                                                                                  \
-    } while (false)
+#define NS_TEST_ASSERT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) > (limit)))                                          \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                              \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) > " +         \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+        CONTINUE_ON_FAILURE;                                            \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual value is greater than a limit and report and abort
@@ -742,21 +764,23 @@ extern bool gBreakOnFailure;
  * Required to avoid use of return statement which allows use in methods 
  * (callbacks) returning void.
  */
-#define NS_TEST_EXPECT_MSG_GT_INTERNAL(actual, limit, msg, file, line)                                   \
-  do {                                                                                                   \
-      if (!((actual) > (limit)))                                                                           \
-        {                                                                                                  \
-          if (gBreakOnFailure) { *(int *)0 = 0; }                                                            \
-          std::ostringstream msgStream;                                                                    \
-          msgStream << msg;                                                                                \
-          std::ostringstream actualStream;                                                                 \
-          actualStream << actual;                                                                          \
-          std::ostringstream limitStream;                                                                  \
-          limitStream << limit;                                                                            \
-          ReporTesttFailure (std::string (# actual) + " (actual) > " + std::string (# limit) + " (limit)",   \
-                             actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
-        }                                                                                                  \
-    } while (false)
+#define NS_TEST_EXPECT_MSG_GT_INTERNAL(actual, limit, msg, file, line)  \
+  do {                                                                  \
+    if (!((actual) > (limit)))                                          \
+      {                                                                 \
+        ASSERT_ON_FAILURE;                                               \
+        std::ostringstream msgStream;                                   \
+        msgStream << msg;                                               \
+        std::ostringstream actualStream;                                \
+        actualStream << actual;                                         \
+        std::ostringstream limitStream;                                 \
+        limitStream << limit;                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) > " +      \
+                       std::string (#limit) + " (limit)",               \
+                       actualStream.str (), limitStream.str (),         \
+                       msgStream.str (), file, line);                   \
+      }                                                                 \
+  } while (false)
 
 /**
  * \brief Test that an actual value is greater than a limit and report if not.
@@ -795,256 +819,122 @@ namespace ns3 {
  * \param epsilon The second of double precision floating point numberss to compare
  * \returns Returns true if the doubles are equal to a precision defined by epsilon
  */
-bool TestDoubleIsEqual (const double a, const double b, const double epsilon = std::numeric_limits<double>::epsilon ());
+bool TestDoubleIsEqual (const double a, const double b, 
+                        const double epsilon = std::numeric_limits<double>::epsilon ());
+
+class TestRunnerImpl;
 
 /**
- * \brief A single test case.
+ * \brief encapsulates test code
+ *
+ * To allow a new test to be run within the ns-3 test framework, users
+ * need to create subclasses of this base class, override the DoRun method,
+ * and use the NS_TEST_* macros within DoRun.
  */
 class TestCase
 {
 public:
-  TestCase (std::string name);
   virtual ~TestCase ();
-
-  /**
-   * \brief Run this test case.
-   */
-  void Run (void);
-
-  /**
-   * \brief Set the verbosity of this test case.
-   * \param verbose Whether or not to turn on any output the
-   *                test case may provide.
-   */
-  void SetVerbose (bool verbose);
-
-  /**
-   * \brief Tell the test case whether or not to continue testing if an error is
-   * detected.
-   *
-   * Typically, test cases depend on some number of individual tests.  Often, 
-   * these tests build on functionality that has been previously verified.  In 
-   * this case, subsequent test failures may simply be alternate manifestations
-   * of previously detected errors.  Some developers may only be interested in 
-   * seeing the first failure.  Other developers may want to see all the 
-   * information they can get, and want to see all failures.  This is a matter
-   * of individual preference, so we allow this behavior to be configured.
-   *
-   * \param continueOnFailure If true, run tests after a failure has been 
-   *                          detected, otherwise stop on the first error.
-   */
-  void SetContinueOnFailure (bool continueOnFailure);
-
-  /**
-   * \brief Set the name of this test case.
-   */
-  void SetName (std::string name);
-
-  /**
-   * \brief Get the name of this test case.
-   */
-  std::string GetName (void);
-
-  /**
-   * \brief Set the base directory of the ns-3 distribution.
-   */
-  void SetBaseDir (std::string dir);
-
-  /**
-   * \brief Get the base directory of the ns-3 distribution.
-   */
-  std::string GetBaseDir (void);
-
-  /**
-   * \brief Set the temporary file directory (where to write temporary files).
-   */
-  void SetTempDir (std::string dir);
-
-  /**
-   * \brief Get the temporary file directory .
-   */
-  std::string GetTempDir (void);
-
-/**
- * \brief Get the source directory of the current source file.
- *
- * One of the basic models of the test environment is that dedicated test- 
- * and response vectors live in the same directory as the source file.  So it 
- * is a common operation to figure out what directory a given source file lives
- * in.
- *
- * __FILE__ provides almost all of what we need, but in the gnu toolchain it 
- * comes out as something like "../src/core/pcap-file-test-suite.cc".
- * 
- * We really don't want to have any dependency on the directory out of which a
- * test is run, so we ask that any test-runner give us the base directory of the 
- * distribution, which is set via TestCase::SetBaseDir().  That string will look 
- * something like "/home/user/repos/ns-3-allinone/ns-3-dev".
- *
- * This function stitches the two pieces together and removes the file name to 
- * return something like "/home/user/repos/ns-3-allinone/ns-3-dev/src/core/".
- *
- * \param file The current source file name relative to the base directory.
- * \returns The current source directory.
- *
- * \warning Always call this function as GetSourceDir (__FILE__) or use the 
- * convenience macro NS_TEST_SOURCEDIR.
- */
-  std::string GetSourceDir (std::string file);
-
-  /**
-   * \brief Set the stream to which status and result messages will be written.
-   *
-   * We really don't want to have to pass an ofstream around to every function
-   * and we especially don't want to have to make our clients plumb an ofstream
-   * around so we need to save it.  Since file streams are not designed to be
-   * copied or assigned (what does it mean to have duplicate streams to a file) 
-   * we have to stash a pointer to the stream.
-   *
-   * \param ofs output file stream
-   */
-  void SetStream (std::ofstream *ofs);
-
-  /**
-   * \brief Get the stream to which status and result messages will be written.
-   */
-  std::ofstream *GetStream (void);
-
-  /**
-   * \brief Manually update the error status of this test case.
-   *
-   * This does a logical OR of the error argument with the current error status.
-   * If the argument is false, it does nothing.  If the argument is true, it 
-   * sets the error status to "an error has occurred."
-   *
-   * \param error The status to use to update the test case error status
-   */
-  void UpdateErrorStatus (bool error);
-
-  /**
-   * \brief Manually set the error status of this test case.
-   *
-   * This sets the current error status to the argument provided.  Can be used
-   * to reset any previous errors if the argument is false.
-   *
-   * \param error The status to use to set the test case error status
-   */
-  void SetErrorStatus (bool error);
-
-  /**
-   * \brief Get the error status of this test case.
-   */
-  bool GetErrorStatus (void);
-
-  /**
-   * \brief Should test cases continue running in the presence of errors?
-   * \returns True if the test case should continue, false otherwise.
-   */
-  bool ContinueOnFailure (void);
-
-  /**
-   * \brief Issue a test report than the test suite has started running.
-   */
-  void ReportStart (void);
-
-  /**
-   * \brief Issue a test report than the test case has declared success.
-   */
-  void ReportCaseSuccess (void);
-
-  /**
-   * \brief Issue a test report than the test case has declared failure.
-   */
-  void ReportCaseFailure (void);
-
-  /**
-   * \brief Issue a test report than the test case has found an error and
-   * report the details.
-   */
-  void ReportTestFailure (std::string cond, std::string actual, std::string limit, std::string message, 
-                          std::string file, int32_t line);
-
-  /**
-   * \brief Issue a test report than the test case has completed its run.
-   */
-  void ReportEnd (void);
 
 protected:
   /**
-   * \internal
-   * \brief Implementation of reporting method for the start of the test case.
+   * \param name the name of the new test created
    */
-  virtual void DoReportStart (void);
+  TestCase (std::string name);
 
   /**
-   * \internal
-   * \brief Implementation of reporting method for success of the test case.
+   * \brief Add an individual test case to this test suite.
+   *
+   * \param testCase Pointer to the test case object to be added.
    */
-  virtual void DoReportCaseSuccess (void);
+  void AddTestCase (TestCase *testCase);
 
   /**
-   * \internal
-   * \brief Implementation of reporting method for failure of the test case.
+   * \param directory the directory where the test data is located
+   *
+   * In general, this method is invoked as SetDataDir (NS_TEST_SOURCEDIR);
    */
-  virtual void DoReportCaseFailure (void);
+  void SetDataDir (std::string directory);
 
   /**
-   * \internal
-   * \brief Implementation of reporting method for failure of the test case.
+   * This method is deprecated. IsStatusFailure replaces it.
    */
-  virtual void DoReportTestFailure (std::string cond, std::string actual, std::string limit, std::string message, 
-                                    std::string file, int32_t line);
+  bool GetErrorStatus (void) const NS_DEPRECATED;
+  /**
+   * \return true if the tests have failed, false otherwise.
+   */
+  bool IsStatusFailure (void) const;
+  /**
+   * \return true if the tests have succeeded, false otherwise.
+   */
+  bool IsStatusSuccess (void) const;
+
+  // The methods below are used only by test macros and should not
+  // be used by normal users.
+  void ReportTestFailure (std::string cond, std::string actual, 
+                      std::string limit, std::string message, 
+                      std::string file, int32_t line);
+  bool MustAssertOnFailure (void) const;
+  bool MustContinueOnFailure (void) const;
+  std::string CreateDataDirFilename (std::string filename);
+  std::string CreateTempDirFilename (std::string filename);
+private:
+  friend class TestRunnerImpl;
 
   /**
-   * \internal
-   * \brief Implementation of reporting method for the end of the test case.
-   */
-  virtual void DoReportEnd (void);
-
-  /**
-   * \internal
    * \brief Implementation to do any local setup required for this test case.
+   *
+   * Subclasses should override this method to perform any costly per-test setup
+   * before DoRun is invoked.
    */
   virtual void DoSetup (void);
 
   /**
-   * \internal
    * \brief Implementation to actually run this test case.
+   *
+   * Subclasses should override this method to conduct their tests.
    */
   virtual void DoRun (void) = 0;
 
   /**
-   * \internal
    * \brief Implementation to do any local setup required for this test case.
+   *
+   * Subclasses should override this method to perform any costly per-test teardown
    */
   virtual void DoTeardown (void);
 
-private:
+  // forbid copying objects
   TestCase (TestCase& tc);
   TestCase& operator= (TestCase& tc);
 
-  SystemWallClockMs m_msClock;
+  // methods called by TestRunnerImpl
+  void Run (TestRunnerImpl *runner);
+  std::string GetName (void) const;
+  bool IsFailed (void) const;
+
+
+  struct Result;
+
+  TestCase *m_parent;
+  std::vector<TestCase *> m_children;
+  std::string m_dataDir;
+  TestRunnerImpl *m_runner;
+  struct Result *m_result;
   std::string m_name;
-  bool m_verbose;
-  bool m_continueOnFailure;
-  bool m_detailsReported;
-  std::string m_basedir;
-  std::string m_tempdir;
-  std::ofstream *m_ofs;
-  bool m_error;
 };
 
 /**
  * \brief A suite of tests to run.
  */
-class TestSuite
+class TestSuite : public TestCase
 {
 public:
   /**
    * \enum TestType
    * \brief Type of test.
    */
-  enum TestType {
+  enum Type {
+    ALL = 0,
     BVT = 1,    /**< This test suite implements a Build Verification Test */
     UNIT,       /**< This test suite implements a Unit Test */
     SYSTEM,     /**< This test suite implements a System Test */
@@ -1058,226 +948,20 @@ public:
    * \param name The name of the test suite.
    * \param type The TestType of the test suite (defaults to UNIT test).
    */
-  TestSuite (std::string name, TestType type = UNIT);
-
-  /**
-   * \brief Destroy a test suite.
-   */
-  virtual ~TestSuite ();
-
-  /**
-   * \brief Run this test suite.
-   *
-   * \returns Boolean sense of "an error has occurred."
-   */
-  bool Run (void);
-
-  /**
-   * \brief Add an individual test case to this test suite.
-   *
-   * \param testCase Pointer to the test case object to be added.
-   * \returns Integer assigned as identifer of the provided test case.
-   */
-  uint32_t AddTestCase (TestCase *testCase);
-
-  /**
-   * \brief Get the number of test cases that have been added to this test suite.
-   *
-   * \returns Number of test cases in the suite.
-   */
-  uint32_t GetNTestCases (void);
-
-  /**
-   * \brief Get the test case at index i.
-   */
-  TestCase *GetTestCase (uint32_t i);
+  TestSuite (std::string name, Type type = UNIT);
 
   /**
    * \brief get the kind of test this test suite implements
    *
-   * \returns the TestType of the suite.
+   * \returns the Type of the suite.
    */
-  TestType GetTestType (void);
-
-  /**
-   * \brief Set the verbosity of this test suite.
-   * \param verbose Whether or not to turn on any output the
-   *                test case may provide.
-   */
-  void SetVerbose (bool verbose);
-
-  /**
-   * \brief Tell the test suite and its test cases whether or not to continue
-   * testing if an error is detected.
-   *
-   * Typically, test suites depend on some number of test cases, which in turn
-   * depend on some number of individual tests.  Often, these tests build on 
-   * functionality that has been previously verified.  In this case, subsequent
-   * test failures may simply be alternate manifestations of previously detected
-   * errors.  Some developers may only be interested in seeing the first failure.
-   * Other developers may want to see all the information they can get, and want
-   * to see all failures.  This is a matter of individual preference, so we allow
-   * this behavior to be configured.
-   *
-   * \param continueOnFailure If true, continue running test cases after a 
-   *                          failure has been detected, otherwise stop on the 
-   *                          first error.
-   */
-  void SetContinueOnFailure (bool continueOnFailure);
-
-  /**
-   * \brief Set the name of this test suite.
-   */
-  void SetName (std::string name);
-
-  /**
-   * \brief Get the name of this test suite.
-   */
-  std::string GetName (void);
-
-  /**
-   * \brief Set the base directory of the ns-3 distribution.
-   */
-  void SetBaseDir (std::string basedir);
-
-  /**
-   * \brief Get the base directory of the ns-3 distribution.
-   */
-  std::string GetBaseDir (void);
-
-  /**
-   * \brief Set the temporary file directory (where to write temporary files).
-   */
-  void SetTempDir (std::string dir);
-
-  /**
-   * \brief Get the temporary file directory.
-   */
-  std::string GetTempDir (void);
-
-  /**
-   * \brief Set the stream to which status and result messages will be written.
-   *
-   * We really don't want to have to pass an ofstream around to every function
-   * and we especially don't want to have to make our clients plumb an ofstream
-   * around so we need to save it.  Since file streams are not designed to be
-   * copied or assigned (what does it mean to have duplicate streams to a file) 
-   * we have to stash a pointer to the stream.
-   * \param ofs output file stream
-   */
-  void SetStream (std::ofstream *ofs);
-
-  /**
-   * \brief Manually update the error status of this test suite.
-   *
-   * This does a logical OR of the error argument with the current error status.
-   * If the argument is false, it does nothing.  If the argument is true, it 
-   * sets the error status to "an error has occurred."
-   *
-   * \param error The status to use to update the test suite error status
-   */
-  void UpdateErrorStatus (bool error);
-
-  /**
-   * \brief Manually set the error status of this test suite.
-   *
-   * This sets the current error status to the argument provided.  Can be used
-   * to reset any previous errors if the argument is false.
-   *
-   * \param error The status to use to set the test suite error status
-   */
-  void SetErrorStatus (bool error);
-
-  /**
-   * \brief Get the error status of this test suite.
-   */
-  bool GetErrorStatus (void);
-
-  /**
-   * \brief Should test suite continue running cases in the presence of errors?
-   * \returns True if the test suite should continue, false otherwise.
-   */
-  bool ContinueOnFailure (void);
-
-  /**
-   * \brief Issue a test report than the test suite has started running.
-   */
-  void ReportStart (void);
-
-  /**
-   * \brief Issue a test report than the test suite has declared success.
-   */
-  void ReportSuccess (void);
-
-  /**
-   * \brief Issue a test report than the test suite has found an error.
-   */
-  void ReportFailure (void);
-
-  /**
-   * \brief Issue a test report than the test suite has completed its run.
-   */
-  void ReportEnd (void);
-
-protected:
-  /**
-   * \internal
-   * \brief Implementation of reporting method for the start of the test suite.
-   */
-  virtual void DoReportStart (void);
-
-  /**
-   * \internal
-   * \brief Implementation of reporting method for success of the test suite.
-   */
-  virtual void DoReportSuccess (void);
-
-  /**
-   * \internal
-   * \brief Implementation of reporting method for failure of the test suite.
-   */
-  virtual void DoReportFailure (void);
-
-  /**
-   * \internal
-   * \brief Implementation of reporting method for the end of the test suite.
-   */
-  virtual void DoReportEnd (void);
-
-  /**
-   * \internal
-   * \brief Implementation to do any local setup required for this test suite.
-   */
-  virtual void DoSetup (void);
-
-  /**
-   * \internal
-   * \brief Implementation to actually run this test suite.
-   */
-  virtual void DoRun (void);
-
-  /**
-   * \internal
-   * \brief Implementation to do any local setup required for this test suite.
-   */
-  virtual void DoTeardown (void);
+  TestSuite::Type GetTestType (void);
 
 private:
-  TestSuite (TestSuite& ts);
-  TestSuite& operator= (TestSuite& ts);
+  virtual void DoRun (void);
 
-  SystemWallClockMs m_msClock;
-  std::string m_name;
-  bool m_verbose;
-  bool m_continueOnFailure;
-  std::string m_basedir;
-  std::string m_tempdir;
-  std::ofstream *m_ofs;
-  bool m_error;
-  TestType m_type;
 
-  typedef std::vector<TestCase *> TestCaseVector_t;
-  TestCaseVector_t m_tests;
+  TestSuite::Type m_type;  
 };
 
 /**
@@ -1286,9 +970,7 @@ private:
 class TestRunner
 {
 public:
-  static uint32_t AddTestSuite (TestSuite *testSuite);
-  static uint32_t GetNTestSuites (void);
-  static TestSuite *GetTestSuite (uint32_t n);
+  static int Run (int argc, char *argv[]);
 };
 
 /**
@@ -1313,8 +995,8 @@ private:
   TestVectors& operator= (const TestVectors& tv);
   bool operator== (const TestVectors& tv) const;
 
-  typedef std::vector<T> TestVector_t;
-  TestVector_t m_vectors;
+  typedef std::vector<T> TestVector;
+  TestVector m_vectors;
 };
 
 template <typename T>

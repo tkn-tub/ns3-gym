@@ -27,6 +27,7 @@ class FlameRegressionSuite : public TestSuite
 public:
   FlameRegressionSuite () : TestSuite ("devices-mesh-flame-regression", SYSTEM) 
   {
+    SetDataDir (NS_TEST_SOURCEDIR);
     AddTestCase (new FlameRegressionTest);
   }
 } g_flameRegressionSuite;

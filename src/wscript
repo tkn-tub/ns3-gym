@@ -151,7 +151,6 @@ class ns3module_taskgen(TaskGen.task_gen):
             pcfile = bld.new_task_gen('ns3pcfile')
             pcfile.module = self
 
-
     def _create_ns3_module(self, bld, name, dependencies, static):
 
         # FIXME: env modifications are overwritten by parent caller
@@ -169,22 +168,28 @@ class ns3module_taskgen(TaskGen.task_gen):
         module.features.extend(features)
         module.path = self.path
         module.uselib = self.uselib
+        module.target = 'ns3-' + name
         if hasattr(self, 'includes'):
             module.includes = self.includes
+        if hasattr(self, 'defines'):
+            module.defines = self.defines
+        else:
+            module.defines = []
+        if hasattr(self, 'add_objects'):
+            module.add_objects = self.add_objects
+        else:
+            module.add_objects = []
         if hasattr(self, "is_ns3_module"):
             module.is_ns3_module = self.is_ns3_module
         if hasattr(self, 'add_objects'):
             module.add_objects = self.add_objects
 
-        module.is_static = static
-        module.vnum = wutils.VNUM
-        # Add the proper path to the module's name.
-        module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(self.path), name)
-        # Set the libraries this module depends on.  
-        module.module_deps = list(dependencies)
+        linkflags = []
+        cxxflags = []
+        ccflags = []
         if not static:
-            module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
-            module.env.append_value('CCFLAGS', module.env['shlib_CXXFLAGS'])
+            cxxflags = module.env['shlib_CXXFLAGS']
+            ccflags = module.env['shlib_CXXFLAGS']
             # Turn on the link flags for shared libraries if we have the
             # proper compiler and platform.
             if module.env['CXX_NAME'] in ['gcc', 'icc'] and module.env['WL_SONAME_SUPPORTED']:
@@ -192,17 +197,54 @@ class ns3module_taskgen(TaskGen.task_gen):
                 # at its beginning because all of the libraries will end
                 # up in the same directory.
                 module_library_name = os.path.basename(ccroot.get_target_name(module))
-                module.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % module_library_name)
+                linkflags = '-Wl,--soname=%s' % module_library_name
         elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
                 os.uname()[4] == 'x86_64' and \
                 module.env['ENABLE_PYTHON_BINDINGS']:
             # enable that flag for static builds only on x86-64 platforms
             # when gcc is present and only when we want python bindings
             # (it's more efficient to not use this option if we can avoid it)
-            module.env.append_value('CXXFLAGS', '-mcmodel=large')
-            module.env.append_value('CCFLAGS', '-mcmodel=large')
-        module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
-        module.env.append_value('CCDEFINES', "NS3_MODULE_COMPILATION")
+            cxxflags = '-mcmodel=large'
+            ccflags = '-mcmodel=large'
+        cxxdefines = "NS3_MODULE_COMPILATION"
+        ccdefines = "NS3_MODULE_COMPILATION"
+
+        if len(module.source) > 0 and hasattr(self, 'ns3_dir_location'):
+            uselib_cpppath = []
+            for lib in module.uselib.split():
+                if 'CPPPATH_%s' % lib in module.env:
+                    uselib_cpppath.extend(module.env['CPPPATH_%s' % lib])
+            objects = []
+            for src in module.source[0:-1]:
+                full_src = os.path.join(self.ns3_dir_location, src)
+                path = os.path.dirname(full_src)
+                target = '%s_object' % src
+                # XXX: calculate the features correctly here.
+                obj = bld (source=[full_src], target=target, features='cxx cc',
+                           defines=['NS_TEST_SOURCEDIR="%s"' % path], 
+                           cxxflags = module.env['CXXFLAGS'] + cxxflags,
+                           ccflags = module.env['CCFLAGS'] + ccflags,
+                           includes=' '.join(uselib_cpppath))
+                objects.append(target)
+            last = module.source[-1]
+            full_src = os.path.join(self.ns3_dir_location, last)
+            path = os.path.dirname(full_src)
+            module.defines.append('NS_TEST_SOURCEDIR="%s"' % path)
+            module.source = [last]
+            module.add_objects.extend(objects)
+
+
+        module.is_static = static
+        module.vnum = wutils.VNUM
+        # Add the proper path to the module's name.
+        module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(self.path), name)
+        # Set the libraries this module depends on.  
+        module.module_deps = list(dependencies)
+        module.env.append_value('CXXFLAGS', cxxflags)
+        module.env.append_value('CCFLAGS', ccflags)
+        module.env.append_value('LINKFLAGS', linkflags)
+        module.env.append_value('CXXDEFINES', cxxdefines)
+        module.env.append_value('CCDEFINES', ccdefines)
 
         module.install_path = "${LIBDIR}"
 
@@ -221,6 +263,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.module_deps = list(dependencies)
     module.test = test
     module.is_ns3_module = True
+    module.ns3_dir_location = bld.path.relpath_gen(bld.srcnode)
 
     return module
 
@@ -439,7 +482,7 @@ class ns3pcfile_task(Task.Task):
     def _generate_pcfile(self, name, use, uselib_local, env, outfilename):
         outfile = open(outfilename, 'w')
         prefix = env.PREFIX
-        includedir = os.path.join(env.INCLUDEDIR, "ns3")
+        includedir = env.INCLUDEDIR
         libdir = env.LIBDIR
         libs = self._self_libs(self.env, name, '${libdir}')
         for dep in use:

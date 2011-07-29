@@ -72,8 +72,8 @@ SpectrumValueTestCase::MoreOrLessEqual (SpectrumValue x, SpectrumValue y)
 void
 SpectrumValueTestCase::DoRun (void)
 {
-  NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL (*m_a.GetSpectrumModel (), *m_b.GetSpectrumModel (), TOLERANCE, GetName ());
-  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (m_a, m_b, TOLERANCE, GetName ());
+  NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL (*m_a.GetSpectrumModel (), *m_b.GetSpectrumModel (), TOLERANCE, "");
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (m_a, m_b, TOLERANCE, "");
 }
 
 

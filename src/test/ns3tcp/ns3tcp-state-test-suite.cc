@@ -190,7 +190,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
       //
       // Avoid streams of errors -- only report the first.
       //
-      if (GetErrorStatus () == false)
+      if (IsStatusSuccess ())
         {
           NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
         }
