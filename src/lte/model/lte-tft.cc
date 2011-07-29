@@ -30,6 +30,24 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteTft");
 
+std::ostream& operator<< (std::ostream& os, LteTft::Direction& d)
+{
+ switch (d)
+    {
+    case LteTft::DOWNLINK:
+      os << "DOWNLINK";
+      break;
+    case LteTft::UPLINK:
+      os << "UPLINK";
+      break;
+    default:
+      os << "BIDIRECTIONAL";
+      break;
+    }
+  return os;
+}
+
+
 std::ostream& operator<< (std::ostream& os, LteTft::PacketFilter& f)
 {
   os << " direction: " << f.direction

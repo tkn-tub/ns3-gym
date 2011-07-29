@@ -32,6 +32,11 @@ namespace ns3 {
 
 
 
+/**
+ * This class implements the EPS bearer Traffic Flow Template (TFT),
+ * which is the set of all packet filters associated with an EPS bearer. 
+ * 
+ */
 class LteTft : public SimpleRefCount<LteTft>
 {
 
@@ -54,6 +59,8 @@ public:
    * the following features are NOT supported:
    *  - IPv6 filtering (including flow labels)
    *  - IPSec filtering
+   *  - filter precedence field is not evaluated, hence it is recommended to setup
+   *    the TFTs within a PDP context such that TFTs are mutually exclusive
    */
   struct PacketFilter
   {
@@ -144,6 +151,7 @@ private:
 };
 
 
+std::ostream& operator<< (std::ostream& os, LteTft::Direction& d);
 
 
 } // namespace ns3
