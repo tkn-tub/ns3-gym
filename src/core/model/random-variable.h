@@ -158,9 +158,8 @@ protected:
  * The low end of the range is always included and the high end
  * of the range is always excluded.
  * \code
- * UniformVariable x(0,10);
- * x.GetValue();  //will always return numbers [0,10)
- * UniformVariable::GetSingleValue(100,1000); //returns a value [100,1000)
+ * UniformVariable x (0,10);
+ * x.GetValue ();  //will always return numbers [0,10)
  * \endcode
  */
 class UniformVariable : public RandomVariable
@@ -296,9 +295,7 @@ public:
  *
  * \code
  * ExponentialVariable x(3.14);
- * x.GetValue();  //will always return with mean 3.14
- * ExponentialVariable::GetSingleValue(20.1); //returns with mean 20.1
- * ExponentialVariable::GetSingleValue(108); //returns with mean 108
+ * x.GetValue ();  //will always return with mean 3.14
  * \endcode
  *
  */
@@ -348,10 +345,8 @@ public:
  * with the equation \f$ x_m = mean \frac{k-1}{k},  k > 1\f$.
  *
  * \code
- * ParetoVariable x(3.14);
- * x.GetValue();  //will always return with mean 3.14
- * ParetoVariable::GetSingleValue(20.1); //returns with mean 20.1
- * ParetoVariable::GetSingleValue(108); //returns with mean 108
+ * ParetoVariable x (3.14);
+ * x.GetValue ();  //will always return with mean 3.14
  * \endcode
  */
 class ParetoVariable : public RandomVariable
