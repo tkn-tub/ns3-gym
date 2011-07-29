@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: 
- *   Nicola Baldo <nbaldo@cttc.es> (the LteTftClassifier class)
- *   Giuseppe Piro <g.piro@poliba.it> (part of the code in LteTftClassifier::Classify () 
+ *   Nicola Baldo <nbaldo@cttc.es> (the EpsTftClassifier class)
+ *   Giuseppe Piro <g.piro@poliba.it> (part of the code in EpsTftClassifier::Classify () 
  *       which comes from RrcEntity::Classify of the GSoC 2010 LTE module)
  *
  */
@@ -26,7 +26,7 @@
 
 
 
-#include "lte-tft-classifier.h"
+#include "eps-tft-classifier.h"
 #include "lte-tft.h"
 #include "ns3/abort.h"
 #include "ns3/log.h"
@@ -37,18 +37,18 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteTftClassifier");
+NS_LOG_COMPONENT_DEFINE ("EpsTftClassifier");
 
 namespace ns3 {
 
-LteTftClassifier::LteTftClassifier ()
+EpsTftClassifier::EpsTftClassifier ()
   : m_tftCount (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint32_t 
-LteTftClassifier::Add (Ptr<LteTft> tft)
+EpsTftClassifier::Add (Ptr<LteTft> tft)
 {
   NS_LOG_FUNCTION (this << tft);
   // simple sanity check. If you ever need more than 4M TFTs within a same classifiers, you'll need to implement a smarter id management algorithm.
@@ -59,7 +59,7 @@ LteTftClassifier::Add (Ptr<LteTft> tft)
 }
 
 void
-LteTftClassifier::Delete (uint32_t id)
+EpsTftClassifier::Delete (uint32_t id)
 {
   NS_LOG_FUNCTION (this << id);
   m_tftMap.erase (id);
@@ -67,7 +67,7 @@ LteTftClassifier::Delete (uint32_t id)
 
  
 uint32_t 
-LteTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
+EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
 {
   NS_LOG_FUNCTION (this << *p << direction);
 

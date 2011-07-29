@@ -19,8 +19,8 @@
  */
 
 
-#ifndef LTE_TFT_CLASSIFIER_H
-#define LTE_TFT_CLASSIFIER_H
+#ifndef EPS_TFT_CLASSIFIER_H
+#define EPS_TFT_CLASSIFIER_H
 
 
 #include "ns3/ptr.h"
@@ -40,11 +40,11 @@ class Packet;
  * 
  * \note this implementation works with IPv4 only.
  */
-class LteTftClassifier : public SimpleRefCount<LteTftClassifier>
+class EpsTftClassifier : public SimpleRefCount<EpsTftClassifier>
 {
 public:
   
-  LteTftClassifier ();
+  EpsTftClassifier ();
   
   /** 
    * add a TFT to the Classifier

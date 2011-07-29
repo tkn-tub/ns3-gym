@@ -29,18 +29,18 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
-#include "ns3/lte-tft-classifier.h"
+#include "ns3/eps-tft-classifier.h"
 
 #include <iomanip>
 
-NS_LOG_COMPONENT_DEFINE ("LteTestTftClassifier");
+NS_LOG_COMPONENT_DEFINE ("TestEpsTftClassifier");
 
 namespace ns3 {
 
-class LteTftClassifierTestCase : public TestCase
+class EpsTftClassifierTestCase : public TestCase
 {
 public:
-  LteTftClassifierTestCase (Ptr<LteTftClassifier> c,
+  EpsTftClassifierTestCase (Ptr<EpsTftClassifier> c,
                             LteTft::Direction d,
                             Ipv4Address sa, 
                             Ipv4Address da, 
@@ -48,11 +48,11 @@ public:
                             uint16_t dp,
                             uint8_t tos,
                             uint32_t tftId);
-  virtual ~LteTftClassifierTestCase ();
+  virtual ~EpsTftClassifierTestCase ();
 
 private:
   
-  Ptr<LteTftClassifier> m_c;
+  Ptr<EpsTftClassifier> m_c;
   LteTft::Direction m_d;
   uint8_t m_tftId;
   Ipv4Header m_ipHeader;
@@ -62,7 +62,7 @@ private:
   virtual void DoRun (void);
 };
 
-LteTftClassifierTestCase::LteTftClassifierTestCase (Ptr<LteTftClassifier> c,
+EpsTftClassifierTestCase::EpsTftClassifierTestCase (Ptr<EpsTftClassifier> c,
                                                     LteTft::Direction d,
                                                     Ipv4Address sa, 
                                                     Ipv4Address da, 
@@ -100,12 +100,12 @@ LteTftClassifierTestCase::LteTftClassifierTestCase (Ptr<LteTftClassifier> c,
   
 }
 
-LteTftClassifierTestCase::~LteTftClassifierTestCase ()
+EpsTftClassifierTestCase::~EpsTftClassifierTestCase ()
 {
 }
 
 void 
-LteTftClassifierTestCase::DoRun (void)
+EpsTftClassifierTestCase::DoRun (void)
 {
   ns3::PacketMetadata::Enable ();
 
@@ -121,20 +121,20 @@ LteTftClassifierTestCase::DoRun (void)
 
 
 
-class LteTftClassifierTestSuite : public TestSuite
+class EpsTftClassifierTestSuite : public TestSuite
 {
 public:
-  LteTftClassifierTestSuite ();
+  EpsTftClassifierTestSuite ();
 };
 
-static LteTftClassifierTestSuite g_lteTftClassifierTestSuite;
+static EpsTftClassifierTestSuite g_lteTftClassifierTestSuite;
 
-LteTftClassifierTestSuite::LteTftClassifierTestSuite ()
-  : TestSuite ("lte-tft-classifier", UNIT)
+EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
+  : TestSuite ("eps-tft-classifier", UNIT)
 {
   NS_LOG_FUNCTION (this);
   
-  Ptr<LteTftClassifier> c1 = Create<LteTftClassifier> ();
+  Ptr<EpsTftClassifier> c1 = Create<EpsTftClassifier> ();
   
 
   Ptr<LteTft> tft1_1 = Create<LteTft> ();
@@ -176,29 +176,29 @@ LteTftClassifierTestSuite::LteTftClassifierTestSuite ()
   // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
 
   // test IP addresses
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    1));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.0.0.0"),     2,      123,     5,    1));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("6.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    1));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("3.3.4.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.2.1"),     4,     1234,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.0.0.0"),     2,      123,     5,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("6.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("3.3.4.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.2.1"),     4,     1234,     0,    0));
 
   // test remote port
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    2));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    2));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    2));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1234,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1234,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    0));
 
   // test local port
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3456,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3457,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3489,     0,    0));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3456,        6,     0,    2));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3461,     3461,     0,    2));
-  AddTestCase (new LteTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     3489,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3456,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3457,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3489,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3456,        6,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3461,     3461,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     3489,     0,    2));
 }
 
 
