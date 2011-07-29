@@ -27,7 +27,6 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/mac48-address.h"
-#include "ns3/ppp-header.h"
 
 namespace ns3 {
 
