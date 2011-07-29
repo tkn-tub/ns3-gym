@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string>
+
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
@@ -110,7 +112,8 @@ Ns3TcpInteroperabilityTestCase::DoSetup (void)
   // We expect there to be a file called tcp-interop-response-vectors.pcap in
   // response-vectors/ of this directory
   //
-  m_pcapFilename = NS_TEST_SOURCEDIR + "/response-vectors/ns3tcp-interop-response-vectors.pcap";
+  m_pcapFilename = static_cast<std::string> (NS_TEST_SOURCEDIR) + 
+    static_cast<std::string> ("/response-vectors/ns3tcp-interop-response-vectors.pcap");
 
   if (m_writeVectors)
     {
