@@ -147,6 +147,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
 void
 TcpNewReno::DupAck (const TcpHeader& t, uint32_t count)
 {
+  NS_LOG_FUNCTION (this << count);
   if (count == 3 && !m_inFastRec)
     { // triple duplicate ack triggers fast retransmit (RFC2582 sec.3 bullet #1)
       m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
