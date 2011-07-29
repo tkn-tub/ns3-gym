@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'point-to-point', 'virtual-net-device', 'spectrum', 'stats'])
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -47,9 +47,12 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
-        'model/epc-gtpu-header.cc',
-        'model/epc-gtpu-l5-protocol.cc',
-        'model/epc-gtpu-tunnel.cc',
+#        'model/epc-gtpu-header.cc',
+#        'model/epc-gtpu-l5-protocol.cc',
+#        'model/epc-gtpu-tunnel.cc',
+#        'model/epc-gtpu-l5-protocol.cc',
+        'model/lte-tft.cc',
+        'model/lte-tft-classifier.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -64,7 +67,8 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
-        'test/epc-test-gtpu.cc',
+#        'test/epc-test-gtpu.cc',
+        'test/lte-test-tft-classifier.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -127,6 +131,8 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/epc-test-gtpu.h',
+        'model/lte-tft.h',
+        'model/lte-tft-classifier.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
