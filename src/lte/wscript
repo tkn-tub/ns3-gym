@@ -50,6 +50,8 @@ def build(bld):
         'model/epc-gtpu-header.cc',
         'model/epc-gtpu-l5-protocol.cc',
         'model/epc-gtpu-tunnel-endpoint.cc',
+        'model/lte-tft.cc',
+        'model/eps-tft-classifier.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -65,6 +67,7 @@ def build(bld):
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
         'test/epc-test-gtpu.cc',
+        'test/test-eps-tft-classifier.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -127,6 +130,8 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/epc-test-gtpu.h',
+        'model/lte-tft.h',
+        'model/eps-tft-classifier.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
