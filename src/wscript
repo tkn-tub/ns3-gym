@@ -204,10 +204,16 @@ class ns3module_taskgen(TaskGen.task_gen):
             # enable that flag for static builds only on x86-64 platforms
             # when gcc is present and only when we want python bindings
             # (it's more efficient to not use this option if we can avoid it)
-            cxxflags = '-mcmodel=large'
-            ccflags = '-mcmodel=large'
-        cxxdefines = "NS3_MODULE_COMPILATION"
-        ccdefines = "NS3_MODULE_COMPILATION"
+            cxxflags = ['-mcmodel=large']
+            ccflags = ['-mcmodel=large']
+        cxxdefines = ["NS3_MODULE_COMPILATION"]
+        ccdefines = ["NS3_MODULE_COMPILATION"]
+
+        module.env.append_value('CXXFLAGS', cxxflags)
+        module.env.append_value('CCFLAGS', ccflags)
+        module.env.append_value('LINKFLAGS', linkflags)
+        module.env.append_value('CXXDEFINES', cxxdefines)
+        module.env.append_value('CCDEFINES', ccdefines)
 
         if len(module.source) > 0 and hasattr(self, 'ns3_dir_location'):
             uselib_cpppath = []
@@ -222,9 +228,8 @@ class ns3module_taskgen(TaskGen.task_gen):
                 # XXX: calculate the features correctly here.
                 obj = bld (source=[full_src], target=target, features='cxx cc',
                            defines=['NS_TEST_SOURCEDIR="%s"' % path], 
-                           cxxflags = module.env['CXXFLAGS'] + cxxflags,
-                           ccflags = module.env['CCFLAGS'] + ccflags,
-                           includes=' '.join(uselib_cpppath))
+                           includes=' '.join(uselib_cpppath),
+                           env = module.env)
                 objects.append(target)
             last = module.source[-1]
             full_src = os.path.join(self.ns3_dir_location, last)
@@ -240,11 +245,6 @@ class ns3module_taskgen(TaskGen.task_gen):
         module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(self.path), name)
         # Set the libraries this module depends on.  
         module.module_deps = list(dependencies)
-        module.env.append_value('CXXFLAGS', cxxflags)
-        module.env.append_value('CCFLAGS', ccflags)
-        module.env.append_value('LINKFLAGS', linkflags)
-        module.env.append_value('CXXDEFINES', cxxdefines)
-        module.env.append_value('CCDEFINES', ccdefines)
 
         module.install_path = "${LIBDIR}"
 
