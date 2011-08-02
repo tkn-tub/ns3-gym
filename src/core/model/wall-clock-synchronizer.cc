@@ -19,8 +19,8 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "ns3/log.h"
-#include "ns3/system-condition.h"
+#include "log.h"
+#include "system-condition.h"
 
 #include "wall-clock-synchronizer.h"
 

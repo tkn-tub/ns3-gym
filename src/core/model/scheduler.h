@@ -22,7 +22,7 @@
 #define SCHEDULER_H
 
 #include <stdint.h>
-#include "ns3/object.h"
+#include "object.h"
 
 namespace ns3 {
 

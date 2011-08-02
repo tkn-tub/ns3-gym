@@ -21,7 +21,7 @@
 #define EVENT_ID_H
 
 #include <stdint.h>
-#include "ns3/ptr.h"
+#include "ptr.h"
 #include "event-impl.h"
 
 namespace ns3 {

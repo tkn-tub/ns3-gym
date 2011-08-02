@@ -24,11 +24,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "ns3/log.h"
-#include "ns3/fatal-error.h"
-#include "ns3/simple-ref-count.h"
-#include "ns3/system-thread.h"
-#include "ns3/simulator.h"
+#include "log.h"
+#include "fatal-error.h"
+#include "simple-ref-count.h"
+#include "system-thread.h"
+#include "simulator.h"
 
 #include "unix-fd-reader.h"
 

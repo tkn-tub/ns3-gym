@@ -19,7 +19,7 @@
 #ifndef WALL_CLOCK_CLOCK_SYNCHRONIZER_H
 #define WALL_CLOCK_CLOCK_SYNCHRONIZER_H
 
-#include "ns3/system-condition.h"
+#include "system-condition.h"
 #include "synchronizer.h"
 
 namespace ns3 {

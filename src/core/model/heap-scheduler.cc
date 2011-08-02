@@ -22,8 +22,8 @@
 
 #include "heap-scheduler.h"
 #include "event-impl.h"
-#include "ns3/assert.h"
-#include "ns3/log.h"
+#include "assert.h"
+#include "log.h"
 
 NS_LOG_COMPONENT_DEFINE ("HeapScheduler");
 

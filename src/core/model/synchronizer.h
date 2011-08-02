@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 #include "nstime.h"
-#include "ns3/object.h"
+#include "object.h"
 
 namespace ns3 {
 

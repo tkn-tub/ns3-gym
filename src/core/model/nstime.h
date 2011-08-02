@@ -20,10 +20,10 @@
 #ifndef TIME_H
 #define TIME_H
 
-#include "ns3/assert.h"
-#include "ns3/attribute.h"
-#include "ns3/attribute-helper.h"
-#include "ns3/int64x64.h"
+#include "assert.h"
+#include "attribute.h"
+#include "attribute-helper.h"
+#include "int64x64.h"
 #include <stdint.h>
 #include <math.h>
 #include <ostream>

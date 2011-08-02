@@ -26,8 +26,8 @@
 #include "make-event.h"
 #include "nstime.h"
 
-#include "ns3/deprecated.h"
-#include "ns3/object-factory.h"
+#include "deprecated.h"
+#include "object-factory.h"
 
 #include <stdint.h>
 #include <string>

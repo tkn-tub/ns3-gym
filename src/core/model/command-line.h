@@ -24,7 +24,7 @@
 #include <sstream>
 #include <list>
 
-#include "ns3/callback.h"
+#include "callback.h"
 
 namespace ns3 {
 

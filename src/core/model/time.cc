@@ -20,12 +20,12 @@
  * TimeStep support by Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
 #include "nstime.h"
-#include "ns3/abort.h"
-#include "ns3/global-value.h"
-#include "ns3/enum.h"
-#include "ns3/string.h"
-#include "ns3/object.h"
-#include "ns3/config.h"
+#include "abort.h"
+#include "global-value.h"
+#include "enum.h"
+#include "string.h"
+#include "object.h"
+#include "config.h"
 #include <math.h>
 #include <sstream>
 

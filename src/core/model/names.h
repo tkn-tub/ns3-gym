@@ -19,8 +19,8 @@
 #ifndef OBJECT_NAMES_H
 #define OBJECT_NAMES_H
 
-#include "ns3/ptr.h"
-#include "ns3/object.h"
+#include "ptr.h"
+#include "object.h"
 
 namespace ns3 {
 

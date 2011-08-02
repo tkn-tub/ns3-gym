@@ -23,9 +23,9 @@
 
 #include <stdint.h>
 
-#include "ns3/callback.h"
-#include "ns3/system-thread.h"
-#include "ns3/event-id.h"
+#include "callback.h"
+#include "system-thread.h"
+#include "event-id.h"
 
 namespace ns3 {
 
