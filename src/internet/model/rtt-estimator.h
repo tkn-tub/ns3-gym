@@ -113,6 +113,6 @@ public:
   double       gain;       // Filter gain
   int64x64_t   variance;   // Current variance
 };
-} //namespace ns3
+} // namespace ns3
 
 #endif /* RTT_ESTIMATOR_H */

@@ -59,6 +59,6 @@ private:
   Vector m_location;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CANVAS_LOCATION_H */

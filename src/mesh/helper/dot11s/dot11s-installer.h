@@ -72,7 +72,7 @@ private:
   Mac48Address m_root;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif
 

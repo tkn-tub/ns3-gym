@@ -775,4 +775,4 @@ Ipv4StaticRouting::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address de
   return candidate;
 }
 
-} //namespace ns3
+} // namespace ns3

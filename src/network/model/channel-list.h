@@ -69,6 +69,6 @@ public:
   static uint32_t GetNChannels (void);
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* CHANNEL_LIST_H */

@@ -70,4 +70,4 @@ FlameStack::ResetStats (const Ptr<MeshPointDevice> mp)
 
   flame->ResetStats ();
 }
-} //namespace ns3
+} // namespace ns3

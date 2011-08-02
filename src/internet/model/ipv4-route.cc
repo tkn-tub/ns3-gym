@@ -157,4 +157,4 @@ Ipv4MulticastRoute::GetOutputTtlMap () const
   return(m_ttls);
 }
 
-} //namespace ns3
+} // namespace ns3

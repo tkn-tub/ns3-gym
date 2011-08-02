@@ -254,4 +254,4 @@ uint32_t TcpHeader::Deserialize (Buffer::Iterator start)
 }
 
 
-}; // namespace ns3
+} // namespace ns3

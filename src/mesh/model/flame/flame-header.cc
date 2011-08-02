@@ -145,5 +145,5 @@ operator== (const FlameHeader & a, const FlameHeader & b)
                                                                                                  == b.m_origSrc) && (a.m_protocol == b.m_protocol));
 }
 
-} //namespace flame
+} // namespace flame
 } // namespace ns3

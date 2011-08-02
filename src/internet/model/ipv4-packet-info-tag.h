@@ -84,6 +84,6 @@ private:
   // Uset for IP_RECVTTL, though not implemented yet.
   uint8_t m_ttl;
 };
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_PACKET_INFO_TAG_H */

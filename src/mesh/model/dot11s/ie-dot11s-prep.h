@@ -82,6 +82,6 @@ private:
 bool operator== (const IePrep & a, const IePrep & b);
 std::ostream &operator << (std::ostream &os, const IePrep &prep);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif
 

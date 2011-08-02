@@ -61,8 +61,7 @@ private:
   uint8_t m_type;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* MAC_HEADER_TYPE_H */
 
@@ -129,8 +128,7 @@ private:
 
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* GENERIC_MAC_HEADER */
 
@@ -193,8 +191,7 @@ private:
 
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* BANDWIDTH_REQUEST_HEADER_H */
 
@@ -244,8 +241,7 @@ private:
   uint16_t m_pbr; // PiggyBack Request
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* GRANT_MANAGEMENT_SUBHEADER_H */
 
@@ -289,7 +285,6 @@ private:
   uint8_t m_fc;  // Fragment Control
   uint8_t m_fsn; // Fragment Sequence Number
 };
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* FRAGMENTATION_SUBHEADER_H */

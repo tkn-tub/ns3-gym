@@ -88,6 +88,6 @@ private:
   bool m_destroyable;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* OUTPUT_STREAM_WRAPPER_H */

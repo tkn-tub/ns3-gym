@@ -75,4 +75,4 @@ NqosWifiMacHelper::Create (void) const
   return mac;
 }
 
-} //namespace ns3
+} // namespace ns3

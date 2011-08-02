@@ -63,6 +63,6 @@ protected:
   EventId m_inactivityEvent;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_AGREEMENT_H */

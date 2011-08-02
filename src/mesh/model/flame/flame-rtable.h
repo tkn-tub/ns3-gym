@@ -101,6 +101,6 @@ private:
   std::map<Mac48Address, Route>  m_routes;
 };
 
-} //namespace flame
-} //namespace ns3
+} // namespace flame
+} // namespace ns3
 #endif /* FLAME_PROTOCOL_H */

@@ -177,4 +177,4 @@ UdpHeader::Deserialize (Buffer::Iterator start)
 }
 
 
-}; // namespace ns3
+} // namespace ns3

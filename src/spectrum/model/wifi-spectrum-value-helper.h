@@ -92,7 +92,7 @@ public:
 
 
 
-} //namespace ns3
+} // namespace ns3
 
 
 

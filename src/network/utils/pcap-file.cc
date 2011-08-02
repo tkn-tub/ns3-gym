@@ -534,4 +534,4 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
   return diff;
 }
 
-} //namespace ns3
+} // namespace ns3

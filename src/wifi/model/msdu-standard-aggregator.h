@@ -56,6 +56,6 @@ private:
   uint32_t m_maxAmsduLength;
 };
 
-}  //namespace ns3
+}  // namespace ns3
 
 #endif /* MSDU_STANDARD_AGGREGATOR_H */

@@ -87,8 +87,7 @@ private:
   CidFactory *m_cidFactory;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* CONNECTION_MANAGER_H */
 

@@ -160,6 +160,6 @@ operator << (std::ostream & os, const IePerr & a)
   return os;
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 
 

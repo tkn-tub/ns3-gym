@@ -59,6 +59,6 @@ bool operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
 bool operator>  (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
 bool operator<  (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
 std::ostream &operator << (std::ostream &os, const IeLinkMetricReport &linkMetricReport);
-} //namespace dot11s
+} // namespace dot11s
 } // namespace ns3
 #endif /* METRIC_REPORT_H */

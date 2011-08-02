@@ -331,4 +331,4 @@ public:
   }
 } g_udpTestSuite;
 
-}; // namespace ns3
+} // namespace ns3

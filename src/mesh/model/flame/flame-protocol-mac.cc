@@ -126,5 +126,5 @@ FlameProtocolMac::ResetStats ()
   m_stats = Statistics ();
 }
 
-} //namespace flame
-} //namespace ns3
+} // namespace flame
+} // namespace ns3

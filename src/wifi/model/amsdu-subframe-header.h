@@ -56,6 +56,6 @@ private:
   uint16_t m_length;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* AMSDU_SUBFRAME_HEADER_H */

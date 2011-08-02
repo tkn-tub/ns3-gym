@@ -172,4 +172,4 @@ ArpHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-}; // namespace ns3
+} // namespace ns3

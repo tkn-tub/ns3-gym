@@ -92,7 +92,7 @@ private:
   uint16_t m_protocol;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* PPP_HEADER_H */

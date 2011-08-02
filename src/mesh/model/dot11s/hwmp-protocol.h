@@ -269,6 +269,6 @@ private:
   ///\}
   Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

@@ -159,4 +159,4 @@ EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
   return ~crc;
 }
 
-}; // namespace ns3
+} // namespace ns3

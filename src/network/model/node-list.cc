@@ -188,4 +188,4 @@ NodeList::GetNNodes (void)
   return NodeListPriv::Get ()->GetNNodes ();
 }
 
-} //namespace ns3
+} // namespace ns3

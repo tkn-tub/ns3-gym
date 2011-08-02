@@ -488,4 +488,4 @@ PacketSocket::GetAllowBroadcast () const
   return false;
 }
 
-} //namespace ns3
+} // namespace ns3

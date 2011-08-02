@@ -114,4 +114,4 @@ WifiSpectrumValue5MhzFactory::CreateRfFilter (uint32_t channel)
 }
 
 
-} //namespace ns3
+} // namespace ns3

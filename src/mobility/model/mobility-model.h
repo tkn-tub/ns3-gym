@@ -97,6 +97,6 @@ private:
 
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* MOBILITY_MODEL_H */

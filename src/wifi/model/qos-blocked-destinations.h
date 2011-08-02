@@ -43,6 +43,6 @@ private:
   BlockedPackets m_blockedQosPackets;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* QOS_BLOCKED_DESTINATIONS_H */

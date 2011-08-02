@@ -95,7 +95,7 @@ private:
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 
 #endif /* ARP_L3_PROTOCOL_H */

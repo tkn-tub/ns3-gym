@@ -51,6 +51,6 @@ private:
   Vector m_acceleration;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CONSTANT_ACCELERATION_MOBILITY_MODEL_H */

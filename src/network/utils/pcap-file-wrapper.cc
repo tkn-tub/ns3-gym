@@ -172,4 +172,4 @@ PcapFileWrapper::GetDataLinkType (void)
   return m_file.GetDataLinkType ();
 }
 
-} //namespace ns3
+} // namespace ns3

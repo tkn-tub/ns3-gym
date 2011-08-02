@@ -91,4 +91,4 @@ QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
   return (distance >= 2048);
 }
 
-} //namespace ns3
+} // namespace ns3

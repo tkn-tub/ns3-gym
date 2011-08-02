@@ -73,7 +73,7 @@ public:
   void ResetStats (const Ptr<MeshPointDevice> mp);
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* FLAME_INSTALLER_H */
 

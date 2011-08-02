@@ -36,4 +36,4 @@ UanNoiseModel::DoDispose (void)
 
 
 
-} //namespace ns3
+} // namespace ns3

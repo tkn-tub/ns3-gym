@@ -211,4 +211,4 @@ Ipv6StaticRoutingHelper::SetDefaultMulticastRoute (
 }
 #endif
 
-}; // namespace ns3
+} // namespace ns3

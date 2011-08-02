@@ -154,5 +154,5 @@ std::istream &operator >> (std::istream &is, IeMeshId &a)
 ATTRIBUTE_HELPER_CPP (IeMeshId);
 
 
-} //namespace dot11s
+} // namespace dot11s
 } // namespace ns3

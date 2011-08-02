@@ -726,4 +726,4 @@ CtrlBAckResponseHeader::ResetBitmap (void)
   memset (&bitmap, 0, sizeof (bitmap));
 }
 
-}  //namespace ns3
+}  // namespace ns3

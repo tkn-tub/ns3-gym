@@ -67,6 +67,6 @@ public:
   Ipv4Address m_ipv4Dest;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* ARP_HEADER_H */

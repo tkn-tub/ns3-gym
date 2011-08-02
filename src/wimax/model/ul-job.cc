@@ -164,5 +164,4 @@ PriorityUlJob::SetUlJob (Ptr<UlJob> job)
   m_job = job;
 }
 
-}
-; // namespace ns3
+} // namespace ns3

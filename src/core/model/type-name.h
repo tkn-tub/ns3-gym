@@ -31,6 +31,6 @@ DEF_TYPE (double);
 
 #undef DEF_TYPE
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* TYPE_NAME_H */

@@ -122,4 +122,4 @@ Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
   NS_ASSERT (pmp != 0);
   pmp->ResetStats ();
 }
-} //namespace ns3
+} // namespace ns3

@@ -45,7 +45,7 @@ private:
   static void DeleteObject (void);
 };
 
-} //namespace ns3
+} // namespace ns3
 
 
 #include "simulator.h"

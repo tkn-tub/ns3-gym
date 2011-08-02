@@ -91,7 +91,7 @@ private:
   Callback<void> m_destroyCallback;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* IPV4_END_POINT_H */

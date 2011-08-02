@@ -173,7 +173,7 @@ public:
   virtual void SetIpv6 (Ptr<Ipv6> ipv6) = 0;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV6_ROUTING_PROTOCOL_H */
 

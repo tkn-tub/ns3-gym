@@ -1394,4 +1394,4 @@ Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4H
   m_fragmentsTimers.erase (key);
 }
 
-} //namespace ns3
+} // namespace ns3

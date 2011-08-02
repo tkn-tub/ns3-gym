@@ -118,4 +118,4 @@ BlockAckAgreement::IsAmsduSupported (void) const
   return (m_amsduSupported == 1) ? true : false;
 }
 
-} //namespace ns3
+} // namespace ns3

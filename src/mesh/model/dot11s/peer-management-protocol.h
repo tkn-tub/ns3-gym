@@ -262,5 +262,5 @@ private:
 };
 
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif

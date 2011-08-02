@@ -113,4 +113,4 @@ TcpSocket::~TcpSocket ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-}; // namespace ns3
+} // namespace ns3

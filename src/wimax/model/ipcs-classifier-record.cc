@@ -349,5 +349,4 @@ IpcsClassifierRecord::ToTlv (void) const
   return tmp_tlv;
 }
 
-}
-; // namespace ns3
+} // namespace ns3

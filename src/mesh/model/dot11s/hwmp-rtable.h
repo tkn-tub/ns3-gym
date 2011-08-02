@@ -141,6 +141,6 @@ private:
   /// Path to proactive tree root MP
   ProactiveRoute  m_root;
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

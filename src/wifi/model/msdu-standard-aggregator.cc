@@ -87,4 +87,4 @@ MsduStandardAggregator::CalculatePadding (Ptr<const Packet> packet)
   return (4 - (packet->GetSize () % 4 )) % 4;
 }
 
-}  //namespace ns3
+}  // namespace ns3

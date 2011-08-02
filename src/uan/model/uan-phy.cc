@@ -46,4 +46,4 @@ UanPhyPer::DoDispose ()
   Object::DoDispose ();
 }
 
-} //namespace ns3
+} // namespace ns3

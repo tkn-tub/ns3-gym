@@ -207,5 +207,5 @@ MeshHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
   NS_ASSERT (mp != 0);
   m_stack->ResetStats (mp);
 }
-} //namespace ns3
+} // namespace ns3
 

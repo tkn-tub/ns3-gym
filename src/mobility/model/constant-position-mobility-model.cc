@@ -57,4 +57,4 @@ ConstantPositionMobilityModel::DoGetVelocity (void) const
   return Vector (0.0, 0.0, 0.0);
 }
 
-}; // namespace ns3
+} // namespace ns3

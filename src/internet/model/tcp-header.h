@@ -169,6 +169,6 @@ private:
   bool m_goodChecksum;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* TCP_HEADER */

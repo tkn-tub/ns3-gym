@@ -327,4 +327,4 @@ public:
   }
 } g_ipv4rawTestSuite;
 
-}; // namespace ns3
+} // namespace ns3

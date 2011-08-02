@@ -131,4 +131,4 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
     }
 }
 
-} //namespace ns3
+} // namespace ns3

@@ -185,4 +185,4 @@ ChannelList::GetNChannels (void)
   return ChannelListPriv::Get ()->GetNChannels ();
 }
 
-} //namespace ns3
+} // namespace ns3

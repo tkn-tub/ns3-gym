@@ -869,4 +869,4 @@ RealtimeSimulatorImpl::GetHardLimit (void) const
   return m_hardLimit;
 }
 
-}; // namespace ns3
+} // namespace ns3

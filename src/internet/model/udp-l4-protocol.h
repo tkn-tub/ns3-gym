@@ -130,6 +130,6 @@ private:
   Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* UDP_L4_PROTOCOL_H */

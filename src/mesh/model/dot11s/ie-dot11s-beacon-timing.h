@@ -111,5 +111,5 @@ private:
 bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
 std::ostream &operator << (std::ostream &os, const IeBeaconTiming &beaconTiming);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif

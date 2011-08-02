@@ -91,5 +91,5 @@ operator << (std::ostream &os, const IeLinkMetricReport &a)
   a.Print (os);
   return os;
 }
-} //namespace dot11s
+} // namespace dot11s
 } // namespace ns3

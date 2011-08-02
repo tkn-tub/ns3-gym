@@ -144,4 +144,4 @@ Ipv4EndPoint::DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
   m_icmpCallback (icmpSource,icmpTtl,icmpType,icmpCode,icmpInfo);
 }
 
-}; // namespace ns3
+} // namespace ns3

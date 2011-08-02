@@ -190,4 +190,4 @@ WifiInformationElementVector::operator== (const WifiInformationElementVector & a
   return true;
 }
 
-} //namespace ns3
+} // namespace ns3

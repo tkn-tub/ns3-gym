@@ -106,6 +106,6 @@ private:
   uint8_t m_tid;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* QOS_TAG_H */

@@ -219,5 +219,5 @@ operator << (std::ostream &os, const IeBeaconTiming &a)
   return os;
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 

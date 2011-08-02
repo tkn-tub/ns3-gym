@@ -53,6 +53,6 @@ public:
   static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 };
 
-}  //namespace ns3
+}  // namespace ns3
 
 #endif /* MSDU_AGGREGATOR_H */

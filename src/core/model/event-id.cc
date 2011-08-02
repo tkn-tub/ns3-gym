@@ -89,4 +89,4 @@ bool operator != (const EventId &a, const EventId &b)
 
 
 
-}; // namespace ns3
+} // namespace ns3

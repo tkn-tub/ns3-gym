@@ -59,5 +59,5 @@ private:
 bool operator== (const IePerr & a, const IePerr & b);
 std::ostream &operator << (std::ostream &os, const IePerr &perr);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif

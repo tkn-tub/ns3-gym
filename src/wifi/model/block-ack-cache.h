@@ -52,6 +52,6 @@ private:
   uint16_t m_bitmap[4096];
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_CACHE_H */

@@ -337,4 +337,4 @@ operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route)
   return os;
 }
 
-} //namespace ns3
+} // namespace ns3

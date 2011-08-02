@@ -237,6 +237,6 @@ private:
   DeviceAdditionListenerList m_deviceAdditionListeners;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NODE_H */

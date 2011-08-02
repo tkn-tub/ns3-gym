@@ -48,7 +48,6 @@ public:
    */
   ServiceFlow * Classify (Ptr<const Packet> packet, Ptr<ServiceFlowManager> sfm, ServiceFlow::Direction dir);
 };
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* IPCS_CLASSIFIER_H */

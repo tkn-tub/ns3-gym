@@ -52,4 +52,4 @@ Ipv4L4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                              const uint8_t payload[8])
 {}
 
-} //namespace ns3
+} // namespace ns3

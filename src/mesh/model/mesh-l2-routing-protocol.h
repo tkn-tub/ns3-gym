@@ -122,5 +122,5 @@ protected:
   /// Host mesh point
   Ptr<MeshPointDevice> m_mp;
 };
-} //namespace ns3
+} // namespace ns3
 #endif

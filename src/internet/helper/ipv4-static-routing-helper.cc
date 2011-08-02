@@ -208,4 +208,4 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
   SetDefaultMulticastRoute (n, nd);
 }
 
-}; // namespace ns3
+} // namespace ns3

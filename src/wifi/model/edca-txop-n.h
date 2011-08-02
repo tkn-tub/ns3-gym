@@ -227,6 +227,6 @@ private:
   struct Bar m_currentBar;
 };
 
-}  //namespace ns3
+}  // namespace ns3
 
 #endif /* EDCA_TXOP_N_H */

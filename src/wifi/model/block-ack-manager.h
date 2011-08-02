@@ -315,6 +315,6 @@ private:
   Callback<void, Mac48Address, uint8_t> m_unblockPackets;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_MANAGER_H */

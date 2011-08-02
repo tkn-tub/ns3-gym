@@ -138,6 +138,6 @@ private:
   Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* UDP_SOCKET_IMPL_H */

@@ -128,6 +128,6 @@ ATTRIBUTE_HELPER_HEADER (DataRate);
 double operator* (const DataRate& lhs, const Time& rhs);
 double operator* (const Time& lhs, const DataRate& rhs);
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* DATA_RATE_H */

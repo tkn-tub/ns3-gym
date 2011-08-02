@@ -153,6 +153,6 @@ private:
   ///\}
 
 };
-} //namespace flame
-} //namespace ns3
+} // namespace flame
+} // namespace ns3
 #endif /* FLAME_PROTOCOL_H */

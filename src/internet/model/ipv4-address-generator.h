@@ -47,6 +47,6 @@ public:
   static void TestMode (void);
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_ADDRESS_GENERATOR_H */

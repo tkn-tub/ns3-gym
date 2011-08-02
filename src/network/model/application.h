@@ -130,6 +130,6 @@ protected:
   EventId m_stopEvent;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* APPLICATION_H */

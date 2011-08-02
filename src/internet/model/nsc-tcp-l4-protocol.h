@@ -126,6 +126,6 @@ private:
   Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* NSC_TCP_L4_PROTOCOL_H */

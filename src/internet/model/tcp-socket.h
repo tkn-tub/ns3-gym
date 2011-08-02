@@ -95,7 +95,7 @@ private:
 
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* TCP_SOCKET_H */
 

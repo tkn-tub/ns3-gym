@@ -292,6 +292,6 @@ private:
   bool m_swapMode;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PCAP_FILE_H */

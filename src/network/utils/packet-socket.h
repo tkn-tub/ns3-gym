@@ -140,7 +140,7 @@ private:
 
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PACKET_SOCKET_H */
 

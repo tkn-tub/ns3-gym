@@ -85,6 +85,6 @@ private:
 bool operator == (const EventId &a, const EventId &b);
 bool operator != (const EventId &a, const EventId &b);
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* EVENT_ID_H */

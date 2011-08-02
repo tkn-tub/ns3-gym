@@ -65,4 +65,4 @@ QosBlockedDestinations::Unblock (Mac48Address dest, uint8_t tid)
     }
 }
 
-} //namespace ns3
+} // namespace ns3

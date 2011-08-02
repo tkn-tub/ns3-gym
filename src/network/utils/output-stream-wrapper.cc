@@ -57,4 +57,4 @@ OutputStreamWrapper::GetStream (void)
   return m_ostream;
 }
 
-} //namespace ns3
+} // namespace ns3

@@ -32,4 +32,4 @@ TypeId Ipv4RoutingProtocol::GetTypeId (void)
   return tid;
 }
 
-} //namespace ns3
+} // namespace ns3

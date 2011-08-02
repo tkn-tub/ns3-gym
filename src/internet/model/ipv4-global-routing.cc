@@ -597,4 +597,4 @@ Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 }
 
 
-} //namespace ns3
+} // namespace ns3

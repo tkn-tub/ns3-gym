@@ -152,6 +152,6 @@ private:
   std::map<AcIndex, uint16_t> m_bAckInactivityTimeouts;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* QOS_WIFI_MAC_HELPER_H */

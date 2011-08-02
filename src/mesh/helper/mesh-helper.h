@@ -207,7 +207,7 @@ private:
   enum WifiPhyStandard m_standard;
   ///\}
 };
-} //namespace ns3
+} // namespace ns3
 
 #endif /* MESH_HELPER_H */
 

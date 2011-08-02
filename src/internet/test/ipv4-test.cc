@@ -107,5 +107,4 @@ public:
   }
 } g_ipv4protocolTestSuite;
 
-}
-; // namespace ns3
+} // namespace ns3

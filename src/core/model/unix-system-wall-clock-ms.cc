@@ -159,4 +159,4 @@ SystemWallClockMs::GetElapsedSystem (void) const
   return m_priv->GetElapsedSystem ();
 }
 
-}; // namespace ns3
+} // namespace ns3

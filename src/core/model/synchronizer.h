@@ -329,6 +329,6 @@ private:
   uint64_t NanosecondToTimeStep (uint64_t ns);
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* SYNCHRONIZER_H */

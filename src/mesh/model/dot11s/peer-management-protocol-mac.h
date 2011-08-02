@@ -130,7 +130,7 @@ private:
 };
 
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PEER_MANAGEMENT_PROTOCOL_MAC_H */
 

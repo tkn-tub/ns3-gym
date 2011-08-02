@@ -576,5 +576,5 @@ PeerManagementProtocol::GetBeaconCollisionAvoidance () const
   return m_enableBca;
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 

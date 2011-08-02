@@ -165,7 +165,6 @@ private:
 
   uint16_t m_cid;
 };
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* IPCS_CLASSIFIER_RECORD_H */

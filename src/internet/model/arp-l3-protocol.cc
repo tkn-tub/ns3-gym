@@ -344,4 +344,4 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Ad
   cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }
 
-} //namespace ns3
+} // namespace ns3

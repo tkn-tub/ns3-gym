@@ -94,5 +94,4 @@ UeRecord::GetCqiFeedbacks (void)
   return m_cqiFeedbacks;
 }
 
-}
-; // namespace ns3
+} // namespace ns3

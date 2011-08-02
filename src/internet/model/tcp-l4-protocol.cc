@@ -401,5 +401,5 @@ TcpL4Protocol::GetDownTarget (void) const
   return m_downTarget;
 }
 
-}; // namespace ns3
+} // namespace ns3
 

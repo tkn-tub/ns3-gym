@@ -93,4 +93,4 @@ OriginatorBlockAckAgreement::CompleteExchange (void)
   m_sentMpdus = 0;
 }
 
-} //namespace ns3
+} // namespace ns3

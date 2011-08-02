@@ -186,6 +186,6 @@ private:
   } bitmap;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* CTRL_HEADERS_H */

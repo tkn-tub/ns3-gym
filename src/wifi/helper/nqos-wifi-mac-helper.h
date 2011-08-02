@@ -93,6 +93,6 @@ private:
   ObjectFactory m_mac;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NQOS_WIFI_MAC_HELPER_H */

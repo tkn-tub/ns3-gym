@@ -299,6 +299,6 @@ namespace ns3 { namespace olsr {
                 typedef std::vector<Association>                Associations; ///< Association Set type.
 
 
-                }}; // namespace ns3, olsr
+                }} // namespace ns3, olsr
 
 #endif /* OLSR_REPOSITORIES_H */

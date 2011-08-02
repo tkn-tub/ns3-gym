@@ -47,6 +47,6 @@ private:
   Vector m_position;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CONSTANT_POSITION_MOBILITY_MODEL_H */

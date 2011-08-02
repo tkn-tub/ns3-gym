@@ -191,6 +191,6 @@ protected:
   SystemCondition m_condition;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* WALL_CLOCK_SYNCHRONIZER_H */

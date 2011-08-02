@@ -115,7 +115,6 @@ private:
   CqiFeedbacks m_cqiFeedbacks;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* UE_RECORD_H */

@@ -199,6 +199,6 @@ private:
   uint32_t m_snapLen;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PCAP_FILE_WRAPPER_H */

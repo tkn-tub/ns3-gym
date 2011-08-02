@@ -145,6 +145,6 @@ public:
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const = 0;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_ROUTING_PROTOCOL_H */

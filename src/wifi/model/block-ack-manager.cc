@@ -649,4 +649,4 @@ BlockAckManager::GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid
   return 4096;
 }
 
-} //namespace ns3
+} // namespace ns3

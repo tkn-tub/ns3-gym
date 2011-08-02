@@ -192,5 +192,5 @@ TxDurationTestSuite::TxDurationTestSuite ()
 }
 
 static TxDurationTestSuite g_txDurationTestSuite;
-} //namespace ns3
+} // namespace ns3
 

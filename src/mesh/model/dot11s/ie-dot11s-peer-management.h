@@ -97,6 +97,6 @@ private:
 bool operator== (const IePeerManagement & a, const IePeerManagement & b);
 std::ostream &operator << (std::ostream &os, const IePeerManagement &peerMan);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IE_DOT11S_PEER_MANAGEMENT_H */

@@ -710,6 +710,6 @@ private:
   uint32_t m_mtu;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CSMA_NET_DEVICE_H */

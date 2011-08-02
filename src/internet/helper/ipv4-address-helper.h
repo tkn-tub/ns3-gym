@@ -189,6 +189,6 @@ private:
   uint32_t m_max;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_ADDRESS_HELPER_H */

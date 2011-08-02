@@ -233,6 +233,6 @@ private:
 };
 
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* ARP_CACHE_H */

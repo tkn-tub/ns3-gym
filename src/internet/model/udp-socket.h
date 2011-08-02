@@ -113,7 +113,7 @@ private:
   virtual bool GetMtuDiscover (void) const = 0;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* UDP_SOCKET_H */
 

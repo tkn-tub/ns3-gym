@@ -89,7 +89,7 @@ private:
   uint8_t m_hoplimit;
   uint8_t m_tclass;
 };
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV6_PACKET_INFO_TAG_H */
 

@@ -456,6 +456,6 @@ Names::Find (Ptr<Object> context, std::string name)
     }
 }
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* OBJECT_NAMES_H */

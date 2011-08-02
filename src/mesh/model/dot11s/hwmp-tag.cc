@@ -147,5 +147,5 @@ HwmpTag::DecrementTtl ()
 {
   m_ttl--;
 }
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3

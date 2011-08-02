@@ -368,5 +368,5 @@ Ipv4EndPointDemux::AllocateEphemeralPort (void)
   return 0;
 }
 
-} //namespace ns3
+} // namespace ns3
 

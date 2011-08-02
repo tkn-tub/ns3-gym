@@ -682,4 +682,4 @@ Names::FindInternal (Ptr<Object> context, std::string name)
   return NamesPriv::Get ()->Find (context, name);
 }
 
-} //namespace ns3
+} // namespace ns3

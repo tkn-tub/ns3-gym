@@ -133,7 +133,7 @@ private:
   Ptr<Ipv6> m_ipv6;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV6_LIST_ROUTING_H */
 

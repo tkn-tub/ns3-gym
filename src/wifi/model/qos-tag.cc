@@ -96,4 +96,4 @@ QosTag::Print (std::ostream &os) const
   os << "Tid=" << m_tid;
 }
 
-} //namespace ns3
+} // namespace ns3

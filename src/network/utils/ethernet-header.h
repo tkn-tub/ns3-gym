@@ -124,7 +124,7 @@ private:
   Mac48Address m_destination;   /// Destination address
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* ETHERNET_HEADER_H */

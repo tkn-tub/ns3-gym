@@ -78,4 +78,4 @@ ConstantAccelerationMobilityModel::SetVelocityAndAcceleration (const Vector &vel
 }
 
 
-}; // namespace ns3
+} // namespace ns3

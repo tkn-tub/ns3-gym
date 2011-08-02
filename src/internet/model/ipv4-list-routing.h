@@ -100,6 +100,6 @@ private:
 
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_LIST_ROUTING_H */

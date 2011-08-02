@@ -420,4 +420,4 @@ WallClockSynchronizer::TimevalAdd (
     }
 }
 
-}; // namespace ns3
+} // namespace ns3

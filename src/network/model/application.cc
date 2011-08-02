@@ -115,6 +115,6 @@ void Application::StopApplication ()
 { // Provide null functionality in case subclass is not interested
 }
 
-} //namespace ns3
+} // namespace ns3
 
 

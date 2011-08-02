@@ -180,6 +180,6 @@ private:
   uint32_t m_rcvBufSize;   // maximum receive socket buffer size
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NSC_TCP_SOCKET_IMPL_H */

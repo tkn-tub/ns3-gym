@@ -657,5 +657,4 @@ FragmentationSubheader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
-}
-; // namespace ns3
+} // namespace ns3

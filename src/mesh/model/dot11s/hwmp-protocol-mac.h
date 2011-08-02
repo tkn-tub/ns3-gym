@@ -135,6 +135,6 @@ private:
   /// Receive action management frame
   bool ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header);
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

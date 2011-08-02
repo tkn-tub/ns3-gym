@@ -476,5 +476,5 @@ HwmpProtocolMac::ResetStats ()
   m_stats = Statistics ();
 }
 
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3

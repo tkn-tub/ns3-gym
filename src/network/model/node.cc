@@ -331,4 +331,4 @@ Node::NotifyDeviceAdded (Ptr<NetDevice> device)
 }
  
 
-} //namespace ns3
+} // namespace ns3

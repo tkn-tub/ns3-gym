@@ -170,7 +170,7 @@ private:
   uint8_t m_fragmentNumber;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 
 

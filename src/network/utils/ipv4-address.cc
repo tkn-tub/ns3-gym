@@ -55,7 +55,7 @@ AsciiToIpv4Host (char const *address)
   return host;
 }
 
-} //namespace ns3
+} // namespace ns3
 
 namespace ns3 {
 

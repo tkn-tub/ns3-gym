@@ -1168,5 +1168,5 @@ HwmpProtocol::QueuedPacket::QueuedPacket () :
   inInterface (0)
 {
 }
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3

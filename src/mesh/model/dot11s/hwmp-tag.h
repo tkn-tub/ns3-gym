@@ -72,6 +72,6 @@ private:
   uint32_t m_metric;
   uint32_t m_seqno;
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

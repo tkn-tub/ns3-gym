@@ -115,4 +115,4 @@ AmsduSubframeHeader::GetLength (void) const
   return m_length;
 }
 
-} //namespace ns3
+} // namespace ns3

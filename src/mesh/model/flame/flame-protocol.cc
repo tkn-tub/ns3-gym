@@ -383,5 +383,5 @@ FlameProtocol::ResetStats ()
     }
 }
 
-} //namespace flame
-} //namespace ns3
+} // namespace flame
+} // namespace ns3

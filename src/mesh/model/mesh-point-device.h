@@ -181,5 +181,5 @@ private:
   Statistics m_rxStats, m_txStats, m_fwdStats;
   ///\}
 };
-} //namespace ns3
+} // namespace ns3
 #endif

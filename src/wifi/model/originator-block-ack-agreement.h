@@ -115,6 +115,6 @@ private:
   bool m_needBlockAckReq;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* ORIGINATOR_BLOCK_ACK_AGREEMENT_H */

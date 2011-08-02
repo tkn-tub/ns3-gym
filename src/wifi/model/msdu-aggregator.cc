@@ -73,4 +73,4 @@ MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
   return set;
 }
 
-} //namespace ns3
+} // namespace ns3

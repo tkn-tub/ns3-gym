@@ -162,4 +162,4 @@ MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo2 ()
 
 
 
-} //namespace ns3
+} // namespace ns3

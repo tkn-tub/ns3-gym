@@ -58,6 +58,6 @@ private:
   ConstantVelocityHelper m_helper;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CONSTANT_VELOCITY_POSITION */

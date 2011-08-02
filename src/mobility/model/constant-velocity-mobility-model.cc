@@ -68,4 +68,4 @@ ConstantVelocityMobilityModel::DoGetVelocity (void) const
   return m_helper.GetVelocity ();
 }
 
-}; // namespace ns3
+} // namespace ns3

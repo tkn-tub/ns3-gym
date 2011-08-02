@@ -686,6 +686,6 @@ private:
   bool m_dontFragment;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NS3_SOCKET_H */
