@@ -25,11 +25,13 @@
 #include <ns3/object.h>
 #include <ns3/packet.h>
 
-namespace ns3
-{
+namespace ns3 {
 
 /**
- * Implementation of the GTP-U v1 protocol
+ * \ingroup lte
+ *
+ * Implementation of the GTP-U v1 protocol. Basically, given a TEID, it adds and
+ * removes the GTPU header of the packets going in and out of the tunnel.
  */
 class GtpuL5Protocol : public Object
 {
@@ -40,14 +42,34 @@ public:
   GtpuL5Protocol (uint32_t teid);
   virtual  ~GtpuL5Protocol ();
 
+  /**
+   * \brief Adds the GTPv1-U header to a packet
+   * \param p packet to add the header
+   * \return  packet with the header added
+   */
   Ptr<Packet> AddHeader (Ptr<Packet> p);
+  /**
+   * \brief Strips the GTPv1-U header of a packet and
+   * checks its coherence
+   * \param p packet to strip the header
+   */
   void  RemoveHeader (Ptr<Packet> p);
 
+  /**
+   * \brief Returns the Tunnel Endpoint IDentifier of the the GTPv1-U instance
+   * \return the TEID
+   */
   uint32_t GetTeid (void);
+  /**
+   * \brief Sets the Tunnel Endpoint IDentifier of the the GTPv1-U instance
+   * \param teid the TEID
+   */
   void  SetTeid (uint32_t teid);
 
 private:
-
+  /**
+   * Tunnel Endpoint IDentifier
+   */
   uint32_t m_teid;
 
 };

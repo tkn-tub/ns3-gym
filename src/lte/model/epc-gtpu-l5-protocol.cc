@@ -18,9 +18,8 @@
  * Author: Jaume Nin <jnin@cttc.cat>
  */
 
+#include "ns3/log.h"
 #include "ns3/epc-gtpu-l5-protocol.h"
-#include <ns3/log.h>
-#include <ns3/uinteger.h>
 #include "ns3/epc-gtpu-header.h"
 
 NS_LOG_COMPONENT_DEFINE ("GtpuL5Protocol");
@@ -29,7 +28,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (GtpuL5Protocol);
 
-TypeId 
+TypeId
 GtpuL5Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::GtpuL5Protocol")
@@ -82,7 +81,7 @@ GtpuL5Protocol::RemoveHeader (Ptr<Packet> p)
   GtpuHeader h;
   p->RemoveHeader (h);
   NS_LOG_DEBUG (this << h);
-  NS_ASSERT( h.GetTeid () == m_teid);
+  NS_ASSERT ( h.GetTeid () == m_teid);
 }
 
 }; // namespace ns3

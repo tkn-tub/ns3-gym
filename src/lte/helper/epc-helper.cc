@@ -20,7 +20,9 @@
 
 #include <ns3/epc-helper.h>
 #include <ns3/log.h>
-
+#include "ns3/inet-socket-address.h"
+#include "ns3/mac48-address.h"
+#include "ns3/epc-gtpu-tunnel-endpoint.h"
 
 
 namespace ns3 {
@@ -29,9 +31,11 @@ NS_LOG_COMPONENT_DEFINE ("EpcHelper");
 
 NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 
-EpcHelper::EpcHelper ()
+EpcHelper::EpcHelper () : m_udpPort (2152)
 {
   NS_LOG_FUNCTION (this);
+  m_mask = "255.255.255.0";
+  m_ipv4.SetBase ( "100.0.0.0", m_mask);
 }
 
 EpcHelper::~EpcHelper ()
@@ -47,6 +51,40 @@ EpcHelper::GetTypeId (void)
     .AddConstructor<EpcHelper> ()
   ;
   return tid;
+}
+
+void
+EpcHelper::InstallGtpu (Ptr<Node> n)
+{
+  InstallGtpu (n, m_ipv4.NewAddress ());
+}
+
+void
+EpcHelper::InstallGtpu (Ptr<Node> n, Ipv4Address addr)
+{
+  NS_LOG_FUNCTION (this);
+  // UDP socket creation and configuration
+  Ptr<Socket> m_socket = Socket::CreateSocket (n, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  m_socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_udpPort));
+
+  // tap device creation and configuration
+  Ptr<VirtualNetDevice> m_tap = CreateObject<VirtualNetDevice> ();
+  m_tap->SetAddress (Mac48Address::Allocate ());
+
+  n->AddDevice (m_tap);
+  Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
+  uint32_t i = ipv4->AddInterface (m_tap);
+  ipv4->AddAddress (i, Ipv4InterfaceAddress (addr, m_mask));
+  ipv4->SetUp (i);
+  Ptr<GtpuTunnelEndpoint> tunnel = CreateObject<GtpuTunnelEndpoint> (m_tap, m_socket);
+  m_gtpuEndpoint[n] = tunnel;
+}
+
+void
+EpcHelper::CreateGtpuTunnel (Ptr<Node> n, Ipv4Address nAddr, Ptr<Node> m, Ipv4Address mAddr)
+{
+  uint32_t teid = m_gtpuEndpoint[n]->CreateGtpuTunnel (mAddr);
+  m_gtpuEndpoint[m]->CreateGtpuTunnel (nAddr, teid);
 }
 
 

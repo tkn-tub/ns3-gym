@@ -22,9 +22,16 @@
 #define EPC_HELPER_H_
 
 #include "ns3/object.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-address-helper.h"
+#include <map>
+
+
 
 namespace ns3 {
 
+class Node;
+class GtpuTunnelEndpoint;
 /**
  * Helper class to handle the creation of the EPC entities and protocols
  */
@@ -46,9 +53,32 @@ public:
    */
   static TypeId GetTypeId (void);
 
+  /**
+   * Creates and configure the necessary instances for the node to act as a
+   * GTP endpoint. The IP address of the new interfaces are within 100.0.0./24
+   * \param n node to install GTPv1-U
+   */
+  void InstallGtpu (Ptr<Node> n);
+  /**
+   * Creates and configure the necessary instances for the node to act as a
+   * GTP endpoint.
+   */
+  void InstallGtpu (Ptr<Node> n, Ipv4Address addr);
 
+  /**
+   * Creates a GTPv1-U tunnel between two nodes, both of them need to have GTPv1-U installed.
+   * \param n First tunnel endpoint node
+   * \param nAddr First tunnel endpoing address
+   * \param m Second tunnel endpoint node
+   * \param mAddr Second tunnel endpoing address
+   */
+  void CreateGtpuTunnel (Ptr<Node> n, Ipv4Address nAddr, Ptr<Node> m, Ipv4Address mAddr);
 
 private:
+  uint16_t m_udpPort;
+  Ipv4AddressHelper m_ipv4;
+  Ipv4Mask m_mask;
+  std::map <Ptr<Node>, Ptr<GtpuTunnelEndpoint> > m_gtpuEndpoint;
 
 };
 
