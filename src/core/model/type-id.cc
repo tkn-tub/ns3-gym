@@ -618,12 +618,6 @@ TypeId::GetAttribute(uint32_t i) const
   return Singleton<IidManager>::Get ()->GetAttribute(m_tid, i);
 }
 std::string 
-TypeId::GetAttributeHelp (uint32_t i) const
-{
-  std::string help = Singleton<IidManager>::Get ()->GetAttributeHelp (m_tid, i);
-  return help;
-}
-std::string 
 TypeId::GetAttributeFullName (uint32_t i) const
 {
   struct TypeId::AttributeInformation info = GetAttribute(i);
@@ -645,22 +639,6 @@ struct TypeId::TraceSourceInformation
 TypeId::GetTraceSource(uint32_t i) const
 {
   return Singleton<IidManager>::Get ()->GetTraceSource(m_tid, i);
-}
-
-std::string 
-TypeId::GetTraceSourceName (uint32_t i) const
-{
-  return Singleton<IidManager>::Get ()->GetTraceSourceName (m_tid, i);
-}
-std::string 
-TypeId::GetTraceSourceHelp (uint32_t i) const
-{
-  return Singleton<IidManager>::Get ()->GetTraceSourceHelp (m_tid, i);
-}
-Ptr<const TraceSourceAccessor> 
-TypeId::GetTraceSourceAccessor (uint32_t i) const
-{
-  return Singleton<IidManager>::Get ()->GetTraceSourceAccessor (m_tid, i);
 }
 
 TypeId 
@@ -689,10 +667,10 @@ TypeId::LookupTraceSourceByName (std::string name) const
       tid = nextTid;
       for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
         {
-          std::string srcName = tid.GetTraceSourceName (i);
-          if (srcName == name)
+          struct TypeId::TraceSourceInformation info = tid.GetTraceSource (i);
+          if (info.name == name)
             {
-              return tid.GetTraceSourceAccessor (i);
+              return info.accessor;
             }
         }
       nextTid = tid.GetParent ();

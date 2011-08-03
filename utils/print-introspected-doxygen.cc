@@ -58,8 +58,9 @@ PrintTraceSources (TypeId tid, std::ostream &os)
   os << "<ul>"<<std::endl;
   for (uint32_t i = 0; i < tid.GetTraceSourceN (); ++i)
     {
-      os << "<li><b>" << tid.GetTraceSourceName (i) << "</b>: "
-	 << tid.GetTraceSourceHelp (i)
+      struct TypeId::TraceSourceInformation info = tid.GetTraceSource (i);
+      os << "<li><b>" << info.name << "</b>: "
+	 << info.help
 	 << std::endl;
       os << "</li>" << std::endl;
     }
@@ -362,7 +363,8 @@ int main (int argc, char *argv[])
 		<< "<ul>" << std::endl;
       for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
 	{
-	  std::cout << "<li>" << tid.GetTraceSourceName (j) << ": " << tid.GetTraceSourceHelp (j) << "</li>" << std::endl;
+	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
+	  std::cout << "<li>" << info.name << ": " << info.help << "</li>" << std::endl;
 	}
       std::cout << "</ul>" << std::endl;
     }

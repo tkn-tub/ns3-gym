@@ -22,6 +22,7 @@
 
 #include "attribute.h"
 #include "attribute-accessor-helper.h"
+#include "trace-source-accessor.h"
 #include "attribute-helper.h"
 #include "callback.h"
 #include <string>
@@ -30,7 +31,6 @@
 namespace ns3 {
 
 class ObjectBase;
-class TraceSourceAccessor;
 
 /**
  * \brief a unique identifier for an interface.
@@ -152,12 +152,6 @@ public:
    */
   struct TypeId::AttributeInformation GetAttribute(uint32_t i) const;
   /**
-   * \param i index into attribute array.
-   * \returns the help text associated to the attribute whose
-   *          index is i.
-   */
-  std::string GetAttributeHelp (uint32_t i) const;
-  /**
    * \param i index into attribute array
    * \returns the full name associated to the attribute whose
    *          index is i.
@@ -193,23 +187,6 @@ public:
    * \returns detailed information about the requested trace source.
    */
   struct TypeId::TraceSourceInformation GetTraceSource(uint32_t i) const;
-  /**
-   * \param i index into trace source array.
-   * \returns the name of the requested trace source.
-   */
-  std::string GetTraceSourceName (uint32_t i) const;
-  /**
-   * \param i index into trace source array.
-   * \returns the help text of the requested trace source.
-   */
-  std::string GetTraceSourceHelp (uint32_t i) const;
-  /**
-   * \param i index into trace source array.
-   * \returns the accessor used to get access to the requested
-   *          trace source.
-   */
-  Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
-
 
   /**
    * \param tid the TypeId of the base class.
