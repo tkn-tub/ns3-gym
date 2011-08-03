@@ -58,7 +58,7 @@ public:
     std::string help;
     uint32_t flags;
     ns3::Ptr<const ns3::AttributeValue> initialValue;
-    ns3::Ptr<const ns3::AttributeAccessor> param;
+    ns3::Ptr<const ns3::AttributeAccessor> accessor;
     ns3::Ptr<const ns3::AttributeChecker> checker;
   };
   struct TraceSourceInformation {

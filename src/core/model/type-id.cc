@@ -257,7 +257,7 @@ IidManager::AddAttribute (uint16_t uid,
                           std::string help, 
                           uint32_t flags,
                           ns3::Ptr<const ns3::AttributeValue> initialValue,
-                          ns3::Ptr<const ns3::AttributeAccessor> spec,
+                          ns3::Ptr<const ns3::AttributeAccessor> accessor,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
   struct IidInformation *information = LookupInformation (uid);
@@ -266,14 +266,14 @@ IidManager::AddAttribute (uint16_t uid,
       NS_FATAL_ERROR ("Attribute \"" << name << "\" already registered on tid=\"" << 
                       information->name << "\"");
     }
-  struct ns3::TypeId::AttributeInformation param;
-  param.name = name;
-  param.help = help;
-  param.flags = flags;
-  param.initialValue = initialValue;
-  param.param = spec;
-  param.checker = checker;
-  information->attributes.push_back (param);
+  struct ns3::TypeId::AttributeInformation info;
+  info.name = name;
+  info.help = help;
+  info.flags = flags;
+  info.initialValue = initialValue;
+  info.accessor = accessor;
+  info.checker = checker;
+  information->attributes.push_back (info);
 }
 
 
@@ -323,7 +323,7 @@ IidManager::GetAttributeAccessor (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].param;
+  return information->attributes[i].accessor;
 }
 ns3::Ptr<const ns3::AttributeChecker>
 IidManager::GetAttributeChecker (uint16_t uid, uint32_t i) const
@@ -576,10 +576,10 @@ TypeId
 TypeId::AddAttribute (std::string name,
                       std::string help, 
                       const AttributeValue &initialValue,
-                      Ptr<const AttributeAccessor> param,
+                      Ptr<const AttributeAccessor> accessor,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), param, checker);
+  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue.Copy (), accessor, checker);
   return *this;
 }
 
@@ -588,10 +588,10 @@ TypeId::AddAttribute (std::string name,
                       std::string help, 
                       uint32_t flags,
                       const AttributeValue &initialValue,
-                      Ptr<const AttributeAccessor> param,
+                      Ptr<const AttributeAccessor> accessor,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), param, checker);
+  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), accessor, checker);
   return *this;
 }
 
@@ -647,8 +647,8 @@ Ptr<const AttributeAccessor>
 TypeId::GetAttributeAccessor (uint32_t i) const
 {
   // Used exclusively by the Object class.
-  Ptr<const AttributeAccessor> param = Singleton<IidManager>::Get ()->GetAttributeAccessor (m_tid, i);
-  return param;
+  Ptr<const AttributeAccessor> accessor = Singleton<IidManager>::Get ()->GetAttributeAccessor (m_tid, i);
+  return accessor;
 }
 uint32_t 
 TypeId::GetAttributeFlags (uint32_t i) const
