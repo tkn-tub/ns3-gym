@@ -132,19 +132,15 @@ bool
 UanTest::DoPhyTests ()
 {
   // Phy Gen / Default PER / Default SINR
-  AttributeList phyList;
   UanModesList mList;
   UanTxMode mode = UanTxModeFactory::CreateMode (UanTxMode::FSK, 80, 80, 10000, 4000, 2, "TestMode");
   mList.AppendMode (UanTxMode (mode));
   Ptr<UanPhyPerGenDefault> perDef = CreateObject<UanPhyPerGenDefault> ();
   Ptr<UanPhyCalcSinrDefault> sinrDef = CreateObject<UanPhyCalcSinrDefault> ();
-  TypeId phyId = TypeId::LookupByName ("ns3::UanPhyGen");
-  m_phyFac.SetTypeId (phyId);
-  phyList.SetWithTid (phyId, "PerModel", PointerValue (perDef));
-  phyList.SetWithTid (phyId, "SinrModel", PointerValue (sinrDef));
-  phyList.SetWithTid (phyId, "SupportedModes", UanModesListValue (mList));
-
-  m_phyFac.Set (phyList);
+  m_phyFac.SetTypeId ("ns3::UanPhyGen");
+  m_phyFac.Set ("PerModel", PointerValue (perDef));
+  m_phyFac.Set ("SinrModel", PointerValue (sinrDef));
+  m_phyFac.Set ("SupportedModes", UanModesListValue (mList));
 
   Ptr<UanPropModelIdeal> prop = CreateObject<UanPropModelIdeal> ();
 
@@ -160,11 +156,9 @@ UanTest::DoPhyTests ()
   // Phy Gen / FH-FSK SINR check
 
   Ptr<UanPhyCalcSinrFhFsk> sinrFhfsk = CreateObject <UanPhyCalcSinrFhFsk> ();
-  phyList.Reset ();
-  phyList.SetWithTid (phyId, "PerModel", PointerValue (perDef));
-  phyList.SetWithTid (phyId, "SinrModel", PointerValue (sinrFhfsk));
-  phyList.SetWithTid (phyId, "SupportedModes", UanModesListValue (mList));
-  m_phyFac.Set (phyList);
+  m_phyFac.Set ("PerModel", PointerValue (perDef));
+  m_phyFac.Set ("SinrModel", PointerValue (sinrFhfsk));
+  m_phyFac.Set ("SupportedModes", UanModesListValue (mList));
 
 #ifdef UAN_PROP_BH_INSTALLED
   Ptr<UanPropModelBh> prop = CreateObject<UanPropModelBh> ();
@@ -199,12 +193,10 @@ UanTest::DoPhyTests ()
   m1.AppendMode (mode11);
   m1.AppendMode (mode21);
 
-  phyId = TypeId::LookupByName ("ns3::UanPhyDual");
-  m_phyFac.SetTypeId (phyId);
-  phyList.Reset ();
-  phyList.SetWithTid (phyId, "SupportedModesPhy1", UanModesListValue (m0));
-  phyList.SetWithTid (phyId, "SupportedModesPhy2", UanModesListValue (m1));
-  m_phyFac.Set (phyList);
+  m_phyFac = ObjectFactory ();
+  m_phyFac.SetTypeId ("ns3::UanPhyDual");
+  m_phyFac.Set ("SupportedModesPhy1", UanModesListValue (m0));
+  m_phyFac.Set ("SupportedModesPhy2", UanModesListValue (m1));
 
   // No collision (Get 2 packets)
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (3.01), 50, 50, prop),
