@@ -459,7 +459,7 @@ TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
 }
 
 bool
-TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::AttributeInfo *info)
+TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::AttributeInformation *info)
 {
   std::string::size_type pos = fullName.rfind ("::");
   if (pos == std::string::npos)
@@ -488,7 +488,7 @@ TypeId::GetRegistered (uint32_t i)
 }
 
 bool
-TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *info) const
+TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInformation *info) const
 {
   TypeId tid;
   TypeId nextTid = *this;
@@ -496,13 +496,10 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *i
       tid = nextTid;
       for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
         {
-          std::string paramName = tid.GetAttributeName (i);
-          if (paramName == name)
+          struct TypeId::AttributeInformation tmp = tid.GetAttribute(i);
+          if (tmp.name == name)
             {
-              info->accessor = tid.GetAttributeAccessor (i);
-              info->flags = tid.GetAttributeFlags (i);
-              info->initialValue = tid.GetAttributeInitialValue (i);
-              info->checker = tid.GetAttributeChecker (i);
+              *info = tmp;
               return true;
             }
         }
@@ -642,27 +639,6 @@ TypeId::GetAttributeInitialValue (uint32_t i) const
 {
   Ptr<const AttributeValue> value = Singleton<IidManager>::Get ()->GetAttributeInitialValue (m_tid, i);
   return value;
-}
-Ptr<const AttributeAccessor>
-TypeId::GetAttributeAccessor (uint32_t i) const
-{
-  // Used exclusively by the Object class.
-  Ptr<const AttributeAccessor> accessor = Singleton<IidManager>::Get ()->GetAttributeAccessor (m_tid, i);
-  return accessor;
-}
-uint32_t 
-TypeId::GetAttributeFlags (uint32_t i) const
-{
-  // Used exclusively by the Object class.
-  uint32_t flags = Singleton<IidManager>::Get ()->GetAttributeFlags (m_tid, i);
-  return flags;
-}
-Ptr<const AttributeChecker>
-TypeId::GetAttributeChecker (uint32_t i) const
-{
-  // Used exclusively by the Object class.
-  Ptr<const AttributeChecker> checker = Singleton<IidManager>::Get ()->GetAttributeChecker (m_tid, i);
-  return checker;
 }
 
 uint32_t 

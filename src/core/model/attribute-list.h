@@ -101,7 +101,7 @@ private:
 
 
 
-  bool DoSet (struct TypeId::AttributeInfo *info, const AttributeValue &param);
+  bool DoSet (struct TypeId::AttributeInformation *info, const AttributeValue &param);
   void DoSetOne (Ptr<const AttributeChecker> checker, const AttributeValue &param);
   std::string LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checker) const;
 

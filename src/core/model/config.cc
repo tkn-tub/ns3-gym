@@ -377,7 +377,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
     {
       // this is a normal attribute.
       TypeId tid = root->GetInstanceTypeId ();
-      struct TypeId::AttributeInfo info;
+      struct TypeId::AttributeInformation info;
       if (!tid.LookupAttributeByName (item, &info))
         {
           NS_LOG_DEBUG ("Requested item="<<item<<" does not exist on path="<<GetResolvedPath ());

@@ -176,21 +176,6 @@ public:
    *          is initialized.
    */
   Ptr<const AttributeValue> GetAttributeInitialValue (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the flags associated to the requested attribute.
-   */
-  uint32_t GetAttributeFlags (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the checker associated to the requested attribute.
-   */
-  Ptr<const AttributeChecker> GetAttributeChecker (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the accessor associated to the requested attribute.
-   */
-  Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
 
   /**
    * \returns a callback which can be used to instanciate an object
@@ -319,25 +304,12 @@ public:
   TypeId HideFromDocumentation (void);
 
   /**
-   * \brief store together a set of attribute properties.
-   */
-  struct AttributeInfo {
-    // The accessor associated to the attribute.
-    Ptr<const AttributeAccessor> accessor;
-    // The initial value associated to the attribute.
-    Ptr<const AttributeValue> initialValue;
-    // The set of access control flags associated to the attribute.
-    uint32_t flags;
-    // The checker associated to the attribute.
-    Ptr<const AttributeChecker> checker;
-  };
-  /**
    * \param name the name of the requested attribute
-   * \param info a pointer to the TypeId::AttributeInfo data structure
+   * \param info a pointer to the TypeId::AttributeInformation data structure
    *        where the result value of this method will be stored.
    * \returns true if the requested attribute could be found, false otherwise.
    */
-  bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
+  bool LookupAttributeByName (std::string name, struct AttributeInformation *info) const;
   /**
    * \param name the name of the requested trace source
    * \returns the trace source accessor which can be used to connect and disconnect
@@ -350,11 +322,11 @@ public:
 
   /**
    * \param fullName the full name of the requested attribute
-   * \param info a pointer to the TypeId::AttributeInfo data structure
+   * \param info a pointer to the TypeId::AttributeInformation data structure
    *        where the result value of this method will be stored.
    * \returns the Accessor associated to the requested attribute
    */
-  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
+  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInformation *info);
 
   /**
    * \returns the internal integer which uniquely identifies this

@@ -62,7 +62,7 @@ AttributeList::~AttributeList ()
 void
 AttributeList::Set (std::string name, const AttributeValue &value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   bool ok = TypeId::LookupAttributeByFullName (name, &info);
   if (!ok)
     {
@@ -77,7 +77,7 @@ AttributeList::Set (std::string name, const AttributeValue &value)
 bool 
 AttributeList::SetFailSafe (std::string name, const AttributeValue &value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   bool ok = TypeId::LookupAttributeByFullName (name, &info);
   if (!ok)
     {
@@ -89,7 +89,7 @@ AttributeList::SetFailSafe (std::string name, const AttributeValue &value)
 void
 AttributeList::SetWithTid (TypeId tid, std::string name, const AttributeValue & value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   bool ok = tid.LookupAttributeByName (name, &info);
   if (!ok)
     {
@@ -122,7 +122,7 @@ AttributeList::DoSetOne (Ptr<const AttributeChecker> checker, const AttributeVal
   m_attributes.push_back (attr);
 }
 bool
-AttributeList::DoSet (struct TypeId::AttributeInfo *info, const AttributeValue &value)
+AttributeList::DoSet (struct TypeId::AttributeInformation *info, const AttributeValue &value)
 {
   if (info->checker == 0)
     {
@@ -175,7 +175,8 @@ AttributeList::LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> che
       TypeId tid = TypeId::GetRegistered (i);
       for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
         {
-          if (checker == tid.GetAttributeChecker (j))
+          struct TypeId::AttributeInformation info = tid.GetAttribute(j);
+          if (checker == info.checker)
             {
               return tid.GetAttributeFullName (j);
             }
@@ -220,7 +221,7 @@ AttributeList::DeserializeFromString (std::string str)
       else
         {
           std::string name = str.substr (cur, equal-cur);
-          struct TypeId::AttributeInfo info;
+          struct TypeId::AttributeInformation info;
           if (!TypeId::LookupAttributeByFullName (name, &info))
             {
               NS_FATAL_ERROR ("Error while parsing serialized attribute: name does not exist: \"" << name << "\"");

@@ -158,14 +158,14 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
 }
 
 bool
-ObjectBase::DoSet (Ptr<const AttributeAccessor> spec, 
+ObjectBase::DoSet (Ptr<const AttributeAccessor> accessor, 
                    Ptr<const AttributeChecker> checker,
                    const AttributeValue &value)
 {
   bool ok = checker->Check (value);
   if (ok)
     {
-      ok = spec->Set (this, value);
+      ok = accessor->Set (this, value);
       return ok;
     }
   // attempt to convert to string
@@ -186,13 +186,13 @@ ObjectBase::DoSet (Ptr<const AttributeAccessor> spec,
     {
       return false;
     }
-  ok = spec->Set (this, *v);
+  ok = accessor->Set (this, *v);
   return ok;
 }
 void
 ObjectBase::SetAttribute (std::string name, const AttributeValue &value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
@@ -211,7 +211,7 @@ ObjectBase::SetAttribute (std::string name, const AttributeValue &value)
 bool 
 ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
@@ -228,7 +228,7 @@ ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
 void
 ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
@@ -262,7 +262,7 @@ ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
 bool
 ObjectBase::GetAttributeFailSafe (std::string name, AttributeValue &value) const
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
