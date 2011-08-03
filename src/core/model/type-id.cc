@@ -618,12 +618,6 @@ TypeId::GetAttribute(uint32_t i) const
   return Singleton<IidManager>::Get ()->GetAttribute(m_tid, i);
 }
 std::string 
-TypeId::GetAttributeName (uint32_t i) const
-{
-  std::string name = Singleton<IidManager>::Get ()->GetAttributeName (m_tid, i);
-  return name;
-}
-std::string 
 TypeId::GetAttributeHelp (uint32_t i) const
 {
   std::string help = Singleton<IidManager>::Get ()->GetAttributeHelp (m_tid, i);
@@ -632,7 +626,8 @@ TypeId::GetAttributeHelp (uint32_t i) const
 std::string 
 TypeId::GetAttributeFullName (uint32_t i) const
 {
-  return GetName () + "::" + GetAttributeName (i);
+  struct TypeId::AttributeInformation info = GetAttribute(i);
+  return GetName () + "::" + info.name;
 }
 Ptr<const AttributeValue>
 TypeId::GetAttributeInitialValue (uint32_t i) const

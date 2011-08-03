@@ -384,7 +384,8 @@ int main (int argc, char *argv[])
 		<< "<ul>" << std::endl;
       for (uint32_t j = 0; j < tid.GetAttributeN (); ++j)
 	{
-	  std::cout << "<li>" << tid.GetAttributeName (j) << ": " << tid.GetAttributeHelp (j) << "</li>" << std::endl;
+	  struct TypeId::AttributeInformation info = tid.GetAttribute(j);
+	  std::cout << "<li>" << info.name << ": " << info.help << "</li>" << std::endl;
 	}
       std::cout << "</ul>" << std::endl;
     }

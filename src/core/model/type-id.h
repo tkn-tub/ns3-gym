@@ -152,12 +152,6 @@ public:
    */
   struct TypeId::AttributeInformation GetAttribute(uint32_t i) const;
   /**
-   * \param i index into attribute array
-   * \returns the name associated to the attribute whose
-   *          index is i.
-   */
-  std::string GetAttributeName (uint32_t i) const;
-  /**
    * \param i index into attribute array.
    * \returns the help text associated to the attribute whose
    *          index is i.
