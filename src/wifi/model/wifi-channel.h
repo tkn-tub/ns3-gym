@@ -21,7 +21,6 @@
 #define WIFI_CHANNEL_H
 
 #include "ns3/channel.h"
-#include "ns3/attribute-list.h"
 
 namespace ns3 {
 
