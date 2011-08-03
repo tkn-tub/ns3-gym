@@ -53,6 +53,19 @@ public:
     ATTR_CONSTRUCT = 1<<2, /**< The attribute can be written at construction-time */
     ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /**< The attribute can be read, and written at any time */
   };
+  struct AttributeInformation {
+    std::string name;
+    std::string help;
+    uint32_t flags;
+    ns3::Ptr<const ns3::AttributeValue> initialValue;
+    ns3::Ptr<const ns3::AttributeAccessor> param;
+    ns3::Ptr<const ns3::AttributeChecker> checker;
+  };
+  struct TraceSourceInformation {
+    std::string name;
+    std::string help;
+    ns3::Ptr<const ns3::TraceSourceAccessor> accessor;
+  };
 
   /**
    * \param name the name of the requested TypeId
@@ -134,6 +147,12 @@ public:
   uint32_t GetAttributeN (void) const;
   /**
    * \param i index into attribute array
+   * \returns the information associated to attribute whose 
+   *          index is i.
+   */
+  struct TypeId::AttributeInformation GetAttribute(uint32_t i) const;
+  /**
+   * \param i index into attribute array
    * \returns the name associated to the attribute whose
    *          index is i.
    */
@@ -190,6 +209,11 @@ public:
    * \returns the number of trace sources defined in this TypeId.
    */
   uint32_t GetTraceSourceN (void) const;
+  /**
+   * \param i index into trace source array.
+   * \returns detailed information about the requested trace source.
+   */
+  struct TypeId::TraceSourceInformation GetTraceSource(uint32_t i) const;
   /**
    * \param i index into trace source array.
    * \returns the name of the requested trace source.

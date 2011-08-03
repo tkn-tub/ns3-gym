@@ -54,6 +54,7 @@ public:
                      ns3::Ptr<const ns3::AttributeAccessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
   uint32_t GetAttributeN (uint16_t uid) const;
+  struct ns3::TypeId::AttributeInformation GetAttribute(uint16_t uid, uint32_t i) const;
   std::string GetAttributeName (uint16_t uid, uint32_t i) const;
   std::string GetAttributeHelp (uint16_t uid, uint32_t i) const;
   uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
@@ -65,6 +66,7 @@ public:
                        std::string help,
                        ns3::Ptr<const ns3::TraceSourceAccessor> accessor);
   uint32_t GetTraceSourceN (uint16_t uid) const;
+  struct ns3::TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;
   std::string GetTraceSourceName (uint16_t uid, uint32_t i) const;
   std::string GetTraceSourceHelp (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::TraceSourceAccessor> GetTraceSourceAccessor (uint16_t uid, uint32_t i) const;
@@ -74,19 +76,6 @@ private:
   bool HasTraceSource (uint16_t uid, std::string name);
   bool HasAttribute (uint16_t uid, std::string name);
 
-  struct AttributeInformation {
-    std::string name;
-    std::string help;
-    uint32_t flags;
-    ns3::Ptr<const ns3::AttributeValue> initialValue;
-    ns3::Ptr<const ns3::AttributeAccessor> param;
-    ns3::Ptr<const ns3::AttributeChecker> checker;
-  };
-  struct TraceSourceInformation {
-    std::string name;
-    std::string help;
-    ns3::Ptr<const ns3::TraceSourceAccessor> accessor;
-  };
   struct IidInformation {
     std::string name;
     uint16_t parent;
@@ -94,8 +83,8 @@ private:
     bool hasConstructor;
     ns3::Callback<ns3::ObjectBase *> constructor;
     bool mustHideFromDocumentation;
-    std::vector<struct AttributeInformation> attributes;
-    std::vector<struct TraceSourceInformation> traceSources;
+    std::vector<struct ns3::TypeId::AttributeInformation> attributes;
+    std::vector<struct ns3::TypeId::TraceSourceInformation> traceSources;
   };
   typedef std::vector<struct IidInformation>::const_iterator Iterator;
 
@@ -242,7 +231,7 @@ IidManager::HasAttribute (uint16_t uid,
   struct IidInformation *information  = LookupInformation (uid);
   while (true)
     {
-      for (std::vector<struct AttributeInformation>::const_iterator i = information->attributes.begin ();
+      for (std::vector<struct ns3::TypeId::AttributeInformation>::const_iterator i = information->attributes.begin ();
            i != information->attributes.end (); ++i)
         {
           if (i->name == name)
@@ -277,7 +266,7 @@ IidManager::AddAttribute (uint16_t uid,
       NS_FATAL_ERROR ("Attribute \"" << name << "\" already registered on tid=\"" << 
                       information->name << "\"");
     }
-  struct AttributeInformation param;
+  struct ns3::TypeId::AttributeInformation param;
   param.name = name;
   param.help = help;
   param.flags = flags;
@@ -293,6 +282,13 @@ IidManager::GetAttributeN (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->attributes.size ();
+}
+struct ns3::TypeId::AttributeInformation 
+IidManager::GetAttribute(uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i];
 }
 std::string 
 IidManager::GetAttributeName (uint16_t uid, uint32_t i) const
@@ -344,7 +340,7 @@ IidManager::HasTraceSource (uint16_t uid,
   struct IidInformation *information  = LookupInformation (uid);
   while (true)
     {
-      for (std::vector<struct TraceSourceInformation>::const_iterator i = information->traceSources.begin ();
+      for (std::vector<struct ns3::TypeId::TraceSourceInformation>::const_iterator i = information->traceSources.begin ();
            i != information->traceSources.end (); ++i)
         {
           if (i->name == name)
@@ -376,7 +372,7 @@ IidManager::AddTraceSource (uint16_t uid,
       NS_FATAL_ERROR ("Trace source \"" << name << "\" already registered on tid=\"" << 
                       information->name << "\"");
     }
-  struct TraceSourceInformation source;
+  struct ns3::TypeId::TraceSourceInformation source;
   source.name = name;
   source.help = help;
   source.accessor = accessor;
@@ -387,6 +383,13 @@ IidManager::GetTraceSourceN (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->traceSources.size ();
+}
+struct ns3::TypeId::TraceSourceInformation 
+IidManager::GetTraceSource(uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->traceSources.size ());
+  return information->traceSources[i];
 }
 std::string 
 IidManager::GetTraceSourceName (uint16_t uid, uint32_t i) const
@@ -612,6 +615,11 @@ TypeId::GetAttributeN (void) const
   uint32_t n = Singleton<IidManager>::Get ()->GetAttributeN (m_tid);
   return n;
 }
+struct TypeId::AttributeInformation 
+TypeId::GetAttribute(uint32_t i) const
+{
+  return Singleton<IidManager>::Get ()->GetAttribute(m_tid, i);
+}
 std::string 
 TypeId::GetAttributeName (uint32_t i) const
 {
@@ -662,6 +670,12 @@ TypeId::GetTraceSourceN (void) const
 {
   return Singleton<IidManager>::Get ()->GetTraceSourceN (m_tid);
 }
+struct TypeId::TraceSourceInformation 
+TypeId::GetTraceSource(uint32_t i) const
+{
+  return Singleton<IidManager>::Get ()->GetTraceSource(m_tid, i);
+}
+
 std::string 
 TypeId::GetTraceSourceName (uint32_t i) const
 {
