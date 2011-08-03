@@ -55,21 +55,12 @@ public:
                      ns3::Ptr<const ns3::AttributeChecker> checker);
   uint32_t GetAttributeN (uint16_t uid) const;
   struct ns3::TypeId::AttributeInformation GetAttribute(uint16_t uid, uint32_t i) const;
-  std::string GetAttributeName (uint16_t uid, uint32_t i) const;
-  std::string GetAttributeHelp (uint16_t uid, uint32_t i) const;
-  uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::AttributeValue> GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::AttributeAccessor> GetAttributeAccessor (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::AttributeChecker> GetAttributeChecker (uint16_t uid, uint32_t i) const;
   void AddTraceSource (uint16_t uid,
                        std::string name, 
                        std::string help,
                        ns3::Ptr<const ns3::TraceSourceAccessor> accessor);
   uint32_t GetTraceSourceN (uint16_t uid) const;
   struct ns3::TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;
-  std::string GetTraceSourceName (uint16_t uid, uint32_t i) const;
-  std::string GetTraceSourceHelp (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::TraceSourceAccessor> GetTraceSourceAccessor (uint16_t uid, uint32_t i) const;
   bool MustHideFromDocumentation (uint16_t uid) const;
 
 private:
@@ -290,48 +281,6 @@ IidManager::GetAttribute(uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->attributes.size ());
   return information->attributes[i];
 }
-std::string 
-IidManager::GetAttributeName (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].name;
-}
-std::string 
-IidManager::GetAttributeHelp (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].help;
-}
-uint32_t
-IidManager::GetAttributeFlags (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].flags;
-}
-ns3::Ptr<const ns3::AttributeValue> 
-IidManager::GetAttributeInitialValue (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].initialValue;
-}
-ns3::Ptr<const ns3::AttributeAccessor>
-IidManager::GetAttributeAccessor (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].accessor;
-}
-ns3::Ptr<const ns3::AttributeChecker>
-IidManager::GetAttributeChecker (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->attributes.size ());
-  return information->attributes[i].checker;
-}
 
 bool
 IidManager::HasTraceSource (uint16_t uid,
@@ -390,27 +339,6 @@ IidManager::GetTraceSource(uint16_t uid, uint32_t i) const
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->traceSources.size ());
   return information->traceSources[i];
-}
-std::string 
-IidManager::GetTraceSourceName (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->traceSources.size ());
-  return information->traceSources[i].name;
-}
-std::string 
-IidManager::GetTraceSourceHelp (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->traceSources.size ());
-  return information->traceSources[i].help;
-}
-ns3::Ptr<const ns3::TraceSourceAccessor> 
-IidManager::GetTraceSourceAccessor (uint16_t uid, uint32_t i) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->traceSources.size ());
-  return information->traceSources[i].accessor;
 }
 bool 
 IidManager::MustHideFromDocumentation (uint16_t uid) const
@@ -622,12 +550,6 @@ TypeId::GetAttributeFullName (uint32_t i) const
 {
   struct TypeId::AttributeInformation info = GetAttribute(i);
   return GetName () + "::" + info.name;
-}
-Ptr<const AttributeValue>
-TypeId::GetAttributeInitialValue (uint32_t i) const
-{
-  Ptr<const AttributeValue> value = Singleton<IidManager>::Get ()->GetAttributeInitialValue (m_tid, i);
-  return value;
 }
 
 uint32_t 

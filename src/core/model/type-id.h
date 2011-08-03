@@ -159,13 +159,6 @@ public:
   std::string GetAttributeFullName (uint32_t i) const;
 
   /**
-   * \param i index into attribute array.
-   * \returns the value with which the associated attribute 
-   *          is initialized.
-   */
-  Ptr<const AttributeValue> GetAttributeInitialValue (uint32_t i) const;
-
-  /**
    * \returns a callback which can be used to instanciate an object
    *          of this type.
    */
