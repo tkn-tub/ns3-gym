@@ -66,12 +66,10 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
       NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
       for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
         {
-          Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
-          Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
-          Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
+          struct TypeId::AttributeInformation info = tid.GetAttribute(i);
           NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
-                        tid.GetAttributeName (i)<<"\"");
-          if (!(tid.GetAttributeFlags (i) & TypeId::ATTR_CONSTRUCT))
+                        info.name <<"\"");
+          if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
               continue;
             }
@@ -80,13 +78,13 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
           for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
                j != attributes.m_attributes.end (); j++)
             {
-              if (j->checker == checker)
+              if (j->checker == info.checker)
                 {
                   // We have a matching attribute value.
-                  if (DoSet (accessor, checker, *j->value))
+                  if (DoSet (info.accessor, info.checker, *j->value))
                     {
                       NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                    tid.GetAttributeName (i)<<"\"");
+                                    info.name<<"\"");
                       found = true;
                       break;
                     }
@@ -98,13 +96,13 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
               for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
                    j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
                 {
-                  if (j->checker == checker)
+                  if (j->checker == info.checker)
                     {
                       // We have a matching attribute value.
-                      if (DoSet (accessor, checker, *j->value))
+                      if (DoSet (info.accessor, info.checker, *j->value))
                         {
                           NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                        tid.GetAttributeName (i)<<"\" from global");
+                                        info.name <<"\" from global");
                           found = true;
                           break;
                         }
@@ -132,10 +130,10 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
                           std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
                           if (name == tid.GetAttributeFullName (i))
                             {
-                              if (DoSet (accessor, checker, StringValue (value)))
+                              if (DoSet (info.accessor, info.checker, StringValue (value)))
                                 {
                                   NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                                tid.GetAttributeName (i)<<"\" from env var");
+                                                info.name <<"\" from env var");
                                   found = true;
                                   break;
                                 }
@@ -149,9 +147,9 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
           if (!found)
             {
               // No matching attribute value so we try to set the default value.
-              DoSet (accessor, checker, *initial);
+              DoSet (info.accessor, info.checker, *info.initialValue);
               NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                            tid.GetAttributeName (i)<<"\" from initial value.");
+                            info.name <<"\" from initial value.");
             }
         }
       tid = tid.GetParent ();
