@@ -3,8 +3,8 @@
 #include "ns3/string.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/attribute-construction-list.h"
 #include "ns3/enum.h"
-#include "ns3/attribute-list.h"
 #include "ns3/config-store-config.h"
 #ifdef HAVE_LIBXML2
 #include "xml-config.h"
@@ -59,7 +59,7 @@ ConfigStore::GetInstanceTypeId (void) const
 
 ConfigStore::ConfigStore ()
 {
-  ObjectBase::ConstructSelf (AttributeList ());
+  ObjectBase::ConstructSelf (AttributeConstructionList ());
 
 #ifdef HAVE_LIBXML2
   if (m_fileFormat == ConfigStore::XML)

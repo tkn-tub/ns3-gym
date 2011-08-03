@@ -53,6 +53,9 @@ public:
                      ns3::Ptr<const ns3::AttributeValue> initialValue,
                      ns3::Ptr<const ns3::AttributeAccessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
+  void SetAttributeInitialValue(uint16_t uid,
+                                uint32_t i,
+                                ns3::Ptr<const ns3::AttributeValue> initialValue);
   uint32_t GetAttributeN (uint16_t uid) const;
   struct ns3::TypeId::AttributeInformation GetAttribute(uint16_t uid, uint32_t i) const;
   void AddTraceSource (uint16_t uid,
@@ -262,10 +265,21 @@ IidManager::AddAttribute (uint16_t uid,
   info.help = help;
   info.flags = flags;
   info.initialValue = initialValue;
+  info.originalInitialValue = initialValue;
   info.accessor = accessor;
   info.checker = checker;
   information->attributes.push_back (info);
 }
+void 
+IidManager::SetAttributeInitialValue(uint16_t uid,
+                                     uint32_t i,
+                                     ns3::Ptr<const ns3::AttributeValue> initialValue)
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->attributes.size ());
+  information->attributes[i].initialValue = initialValue;
+}
+
 
 
 uint32_t 
@@ -386,24 +400,6 @@ TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
   return true;
 }
 
-bool
-TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::AttributeInformation *info)
-{
-  std::string::size_type pos = fullName.rfind ("::");
-  if (pos == std::string::npos)
-    {
-      return 0;
-    }
-  std::string tidName = fullName.substr (0, pos);
-  std::string paramName = fullName.substr (pos+2, fullName.size () - (pos+2));
-  TypeId tid;
-  bool ok = LookupByNameFailSafe (tidName, &tid);
-  if (!ok)
-    {
-      return false;
-    }
-  return tid.LookupAttributeByName (paramName, info);
-}
 uint32_t 
 TypeId::GetRegisteredN (void)
 {
@@ -519,6 +515,15 @@ TypeId::AddAttribute (std::string name,
   Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue.Copy (), accessor, checker);
   return *this;
 }
+
+bool 
+TypeId::SetAttributeInitialValue(uint32_t i, 
+                                 Ptr<const AttributeValue> initialValue)
+{
+  Singleton<IidManager>::Get ()->SetAttributeInitialValue (m_tid, i, initialValue);
+  return true;
+}
+
 
 Callback<ObjectBase *> 
 TypeId::GetConstructor (void) const

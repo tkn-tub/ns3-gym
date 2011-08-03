@@ -583,17 +583,66 @@ ConfigImpl::GetRootNamespaceObject (uint32_t i) const
 
 namespace Config {
 
+void Reset (void)
+{
+  // First, let's reset the initial value of every attribute
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
+        {
+          struct TypeId::AttributeInformation info = tid.GetAttribute (j);
+          tid.SetAttributeInitialValue (j, info.originalInitialValue);
+        }
+    }
+  // now, let's reset the initial value of every global value.
+  for (GlobalValue::Iterator i = GlobalValue::Begin (); i != GlobalValue::End (); ++i)
+    {
+      (*i)->ResetInitialValue ();
+    }
+}
+
 void Set (std::string path, const AttributeValue &value)
 {
   Singleton<ConfigImpl>::Get ()->Set (path, value);
 }
 void SetDefault (std::string name, const AttributeValue &value)
 {
-  AttributeList::GetGlobal ()->Set (name, value);
+  if (!SetDefaultFailSafe(name, value))
+    {
+      NS_FATAL_ERROR ("Could not set default value for " << name);
+    }
 }
-bool SetDefaultFailSafe (std::string name, const AttributeValue &value)
+bool SetDefaultFailSafe (std::string fullName, const AttributeValue &value)
 {
-  return AttributeList::GetGlobal ()->SetFailSafe (name, value);
+  std::string::size_type pos = fullName.rfind ("::");
+  if (pos == std::string::npos)
+    {
+      return false;
+    }
+  std::string tidName = fullName.substr (0, pos);
+  std::string paramName = fullName.substr (pos+2, fullName.size () - (pos+2));
+  TypeId tid;
+  bool ok = TypeId::LookupByNameFailSafe (tidName, &tid);
+  if (!ok)
+    {
+      return false;
+    }
+  for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
+    {
+      struct TypeId::AttributeInformation tmp = tid.GetAttribute(j);
+      if (tmp.name == paramName)
+        {
+          Ptr<AttributeValue> v = tmp.checker->CreateValidValue (value);
+          if (v == 0)
+            {
+              return false;
+            }
+          tid.SetAttributeInitialValue (j, v);
+          return true;
+        }
+    }
+  return false;
 }
 void SetGlobal (std::string name, const AttributeValue &value)
 {

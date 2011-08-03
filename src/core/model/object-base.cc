@@ -20,7 +20,7 @@
 #include "object-base.h"
 #include "log.h"
 #include "trace-source-accessor.h"
-#include "attribute-list.h"
+#include "attribute-construction-list.h"
 #include "string.h"
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
@@ -57,7 +57,7 @@ ObjectBase::NotifyConstructionCompleted (void)
 {}
 
 void
-ObjectBase::ConstructSelf (const AttributeList &attributes)
+ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
 {
   // loop over the inheritance tree back to the Object base class.
   TypeId tid = GetInstanceTypeId ();
@@ -74,41 +74,19 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
               continue;
             }
           bool found = false;
-          // is this attribute stored in this AttributeList instance ?
-          for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
-               j != attributes.m_attributes.end (); j++)
+          // is this attribute stored in this AttributeConstructionList instance ?
+          Ptr<AttributeValue> value = attributes.Find(info.checker);
+          if (value != 0)
             {
-              if (j->checker == info.checker)
+              // We have a matching attribute value.
+              if (DoSet (info.accessor, info.checker, *value))
                 {
-                  // We have a matching attribute value.
-                  if (DoSet (info.accessor, info.checker, *j->value))
-                    {
-                      NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                    info.name<<"\"");
-                      found = true;
-                      break;
-                    }
+                  NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
+                                info.name<<"\"");
+                  found = true;
+                  continue;
                 }
-            }
-          if (!found)
-            {
-              // is this attribute stored in the global instance ?
-              for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
-                   j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
-                {
-                  if (j->checker == info.checker)
-                    {
-                      // We have a matching attribute value.
-                      if (DoSet (info.accessor, info.checker, *j->value))
-                        {
-                          NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                        info.name <<"\" from global");
-                          found = true;
-                          break;
-                        }
-                    }
-                }
-            }
+            }              
           if (!found)
             {
               // No matching attribute value so we try to look at the env var.
@@ -162,31 +140,12 @@ ObjectBase::DoSet (Ptr<const AttributeAccessor> accessor,
                    Ptr<const AttributeChecker> checker,
                    const AttributeValue &value)
 {
-  bool ok = checker->Check (value);
-  if (ok)
-    {
-      ok = accessor->Set (this, value);
-      return ok;
-    }
-  // attempt to convert to string
-  const StringValue *str = dynamic_cast<const StringValue *> (&value);
-  if (str == 0)
+  Ptr<AttributeValue> v = checker->CreateValidValue (value);
+  if (v == 0)
     {
       return false;
     }
-  // attempt to convert back from string.
-  Ptr<AttributeValue> v = checker->Create ();
-  ok = v->DeserializeFromString (str->Get (), checker);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = checker->Check (*v);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = accessor->Set (this, *v);
+  bool ok = accessor->Set (this, *v);
   return ok;
 }
 void

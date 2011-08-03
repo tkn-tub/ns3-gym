@@ -35,12 +35,19 @@ GlobalValue::GlobalValue (std::string name, std::string help,
                           Ptr<const AttributeChecker> checker)
   : m_name (name),
     m_help (help),
-    m_initialValue (initialValue.Copy ()),
+    m_initialValue (0),
+    m_currentValue (0),
     m_checker (checker)
 {
   if (m_checker == 0)
     {
       NS_FATAL_ERROR ("Checker should not be zero.");
+    }
+  m_initialValue = m_checker->CreateValidValue (initialValue);
+  m_currentValue = m_initialValue;
+  if (m_initialValue == 0)
+    {
+      NS_FATAL_ERROR ("Value set by user is invalid.");
     }
   GetVector ()->push_back (this);
   InitializeFromEnv ();
@@ -69,7 +76,13 @@ GlobalValue::InitializeFromEnv (void)
           std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
           if (name == m_name)
             {
-              SetValue (StringValue (value));
+              Ptr<AttributeValue> v = m_checker->CreateValidValue (StringValue (value));
+              if (v != 0)
+                {
+                  m_initialValue = v;
+                  m_currentValue = v;
+                }
+              return;
             }
         }
       cur = next + 1;
@@ -90,7 +103,7 @@ GlobalValue::GetHelp (void) const
 void
 GlobalValue::GetValue (AttributeValue &value) const
 {
-  bool ok = m_checker->Copy (*m_initialValue, value);
+  bool ok = m_checker->Copy (*m_currentValue, value);
   if (ok)
     {
       return;
@@ -100,7 +113,7 @@ GlobalValue::GetValue (AttributeValue &value) const
     {
       NS_FATAL_ERROR ("GlobalValue name="<<m_name<<": input value is not a string");
     }
-  str->Set (m_initialValue->SerializeToString (m_checker));
+  str->Set (m_currentValue->SerializeToString (m_checker));
 }
 Ptr<const AttributeChecker> 
 GlobalValue::GetChecker (void) const
@@ -111,30 +124,12 @@ GlobalValue::GetChecker (void) const
 bool
 GlobalValue::SetValue (const AttributeValue &value)
 {
-  if (m_checker->Check (value))
+  Ptr<AttributeValue> v = m_checker->CreateValidValue (value);
+  if (v == 0)
     {
-      m_initialValue = value.Copy ();
-      return true;
+      return 0;
     }
-  // attempt to convert to string.
-  const StringValue *str = dynamic_cast<const StringValue *> (&value);
-  if (str == 0)
-    {
-      return false;
-    }
-  // attempt to convert back to value.
-  Ptr<AttributeValue> v = m_checker->Create ();
-  bool ok = v->DeserializeFromString (str->Get (), m_checker);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = m_checker->Check (*v);
-  if (!ok)
-    {
-      return false;
-    }
-  m_checker->Copy (*v, *PeekPointer (m_initialValue));
+  m_currentValue = v;
   return true;
 }
 
@@ -175,6 +170,12 @@ GlobalValue::Iterator
 GlobalValue::End (void)
 {
   return GetVector ()->end ();
+}
+
+void 
+GlobalValue::ResetInitialValue (void)
+{
+  m_currentValue = m_initialValue;
 }
 
 bool

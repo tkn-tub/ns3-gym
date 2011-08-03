@@ -151,6 +151,8 @@ class AttributeChecker : public SimpleRefCount<AttributeChecker>
 public:
   AttributeChecker ();
   virtual ~AttributeChecker ();
+
+  Ptr<AttributeValue> CreateValidValue (const AttributeValue &value) const;
   /**
    * \param value a pointer to the value to check
    * \returns true if the input value is both of the right type
@@ -191,6 +193,7 @@ public:
 
   virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const = 0;
 
+  
 };
 
 /**

@@ -57,6 +57,7 @@ public:
     std::string name;
     std::string help;
     uint32_t flags;
+    ns3::Ptr<const ns3::AttributeValue> originalInitialValue;
     ns3::Ptr<const ns3::AttributeValue> initialValue;
     ns3::Ptr<const ns3::AttributeAccessor> accessor;
     ns3::Ptr<const ns3::AttributeChecker> checker;
@@ -66,6 +67,12 @@ public:
     std::string help;
     ns3::Ptr<const ns3::TraceSourceAccessor> accessor;
   };
+
+  /**
+   * Reset the initial value of every attribute to the one
+   * that was specified by the associated object implementation.
+   */
+  static void ResetInitialValues(void);
 
   /**
    * \param name the name of the requested TypeId
@@ -235,6 +242,14 @@ public:
                        Ptr<const AttributeChecker> checker);
 
   /**
+   * \param i the attribute to manipulate
+   * \param initialValue the new initial value to use for this attribute.
+   * \returns true if the call was successfuly, false otherwise.
+   */
+  bool SetAttributeInitialValue(uint32_t i, 
+                                Ptr<const AttributeValue> initialValue);
+
+  /**
    * \param name the name of the new attribute
    * \param help some help text which describes the purpose of this
    *        attribute
@@ -282,15 +297,6 @@ public:
    * If no matching trace source is found, this method returns zero.
    */
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
-
-
-  /**
-   * \param fullName the full name of the requested attribute
-   * \param info a pointer to the TypeId::AttributeInformation data structure
-   *        where the result value of this method will be stored.
-   * \returns the Accessor associated to the requested attribute
-   */
-  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInformation *info);
 
   /**
    * \returns the internal integer which uniquely identifies this

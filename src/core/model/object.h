@@ -27,7 +27,7 @@
 #include "ptr.h"
 #include "attribute.h"
 #include "object-base.h"
-#include "attribute-list.h"
+#include "attribute-construction-list.h"
 #include "simple-ref-count.h"
 
 
@@ -36,7 +36,6 @@ namespace ns3 {
 class Object;
 class AttributeAccessor;
 class AttributeValue;
-class AttributeList;
 class TraceSourceAccessor;
 
 struct ObjectDeleter
@@ -217,15 +216,13 @@ protected:
 private:
 
   template <typename T>
-  friend Ptr<T> CreateObjectWithAttributes (const AttributeList &attributes);
-  template <typename T>
   friend Ptr<T> CopyObject (Ptr<T> object);
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<const T> object);
   // The following friend method declaration is used only
   // by our python bindings to call the protected ObjectBase::Construct
   // method.
-  friend void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeList &attributes);
+  friend void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeConstructionList &attributes);
   template <typename T>
   friend Ptr<T> CompleteConstruct (T *object);
 
@@ -267,7 +264,7 @@ private:
   * Initialize all the member variables which were
   * registered with the associated TypeId.
   */
-  void Construct (const AttributeList &attributes);
+  void Construct (const AttributeConstructionList &attributes);
 
   void UpdateSortedArray (struct Aggregates *aggregates, uint32_t i) const;
   /**
@@ -319,56 +316,6 @@ template <typename T>
 Ptr<T> CopyObject (Ptr<const T> object);
 template <typename T>
 Ptr<T> CopyObject (Ptr<T> object);
-
-
-/**
- * \param attributes a list of attributes to set on the 
- *        object during construction.
- * \returns a pointer to a newly allocated object.
- *
- * This allocates an object on the heap and initializes
- * it with a set of attributes.
- */
-template <typename T>
-Ptr<T> CreateObjectWithAttributes (const AttributeList &attributes);
-
-/**
- * \param n1 name of attribute
- * \param v1 value of attribute
- * \param n2 name of attribute
- * \param v2 value of attribute
- * \param n3 name of attribute
- * \param v3 value of attribute
- * \param n4 name of attribute
- * \param v4 value of attribute
- * \param n5 name of attribute
- * \param v5 value of attribute
- * \param n6 name of attribute
- * \param v6 value of attribute
- * \param n7 name of attribute
- * \param v7 value of attribute
- * \param n8 name of attribute
- * \param v8 value of attribute
- * \param n9 name of attribute
- * \param v9 value of attribute
- * \returns a pointer to a newly allocated object.
- *
- * This allocates an object on the heap and initializes
- * it with a set of attributes.
- */
-template <typename T>
-Ptr<T> 
-CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
-                            std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
-                            std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
-                            std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
-                            std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
-                            std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
-                            std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
-                            std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
-                            std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ());
-
-
 
 } // namespace ns3
 
@@ -440,78 +387,8 @@ template <typename T>
 Ptr<T> CompleteConstruct (T *p)
 {
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (AttributeList ());
+  p->Object::Construct (AttributeConstructionList ());
   return Ptr<T> (p, false);
-}
-template <typename T>
-Ptr<T> CreateObjectWithAttributes (const AttributeList &attributes)
-{
-  Ptr<T> p = Ptr<T> (new T (), false);
-  p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (attributes);
-  return p;
-}
-
-template <typename T>
-Ptr<T> 
-CreateObjectWithAttributes (std::string n1, const AttributeValue & v1,
-                            std::string n2, const AttributeValue & v2,
-                            std::string n3, const AttributeValue & v3,
-                            std::string n4, const AttributeValue & v4,
-                            std::string n5, const AttributeValue & v5,
-                            std::string n6, const AttributeValue & v6,
-                            std::string n7, const AttributeValue & v7,
-                            std::string n8, const AttributeValue & v8,
-                            std::string n9, const AttributeValue & v9)
-{
-  AttributeList attributes;
-  if (n1 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n1, v1);
-  if (n2 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n2, v2);
-  if (n3 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n3, v3);
-  if (n4 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n4, v4);
-  if (n5 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n5, v5);
-  if (n6 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n6, v6);
-  if (n7 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n7, v7);
-  if (n8 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n8, v8);
-  if (n9 == "")
-    {
-      goto end;
-    }
-  attributes.SetWithTid (T::GetTypeId (), n9, v9);
-end:
-  return CreateObjectWithAttributes<T> (attributes);
 }
 
 template <typename T>
