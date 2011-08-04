@@ -219,10 +219,6 @@ private:
   friend Ptr<T> CopyObject (Ptr<T> object);
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<const T> object);
-  // The following friend method declaration is used only
-  // by our python bindings to call the protected ObjectBase::Construct
-  // method.
-  friend void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeConstructionList &attributes);
   template <typename T>
   friend Ptr<T> CompleteConstruct (T *object);
 
