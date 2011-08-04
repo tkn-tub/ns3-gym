@@ -4109,10 +4109,6 @@ def register_functions(root_module):
     module.add_function('PicoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ps')])
-    ## object.h (module 'core'): extern void ns3::PythonCompleteConstruct(ns3::Ptr<ns3::Object> object, ns3::TypeId typeId, ns3::AttributeConstructionList const & attributes) [free function]
-    module.add_function('PythonCompleteConstruct', 
-                        'void', 
-                        [param('ns3::Ptr< ns3::Object >', 'object'), param('ns3::TypeId', 'typeId'), param('ns3::AttributeConstructionList const &', 'attributes')])
     ## nstime.h (module 'core'): ns3::Time ns3::Seconds(ns3::int64x64_t seconds) [free function]
     module.add_function('Seconds', 
                         'ns3::Time', 
