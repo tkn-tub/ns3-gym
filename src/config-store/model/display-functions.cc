@@ -195,8 +195,8 @@ out: if (col == 0)
           }
         else
           {
-            Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (
-                attrIndex);
+            struct TypeId::AttributeInformation info = tid.GetAttribute (attrIndex);
+            Ptr<const AttributeChecker> checker = info.checker;
             std::string tip;
             tip = "This attribute is of type " + checker->GetValueTypeName ();
             if (checker->HasUnderlyingTypeInformation ())
@@ -460,7 +460,7 @@ cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
           }
         else
           {
-            Ptr<const AttributeChecker> checker = node->tid.GetAttributeChecker (attrIndex);
+            Ptr<const AttributeChecker> checker = node->tid.GetAttribute (attrIndex).checker;
             std::string tip;
             tip = "This attribute is of type " + checker->GetValueTypeName ();
             if (checker->HasUnderlyingTypeInformation ())
