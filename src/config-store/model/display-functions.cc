@@ -181,7 +181,7 @@ cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
           {
             for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
               {
-                if (tid.GetAttributeName (i) == node->name)
+                if (tid.GetAttribute (i).name == node->name)
                   {
                     attrIndex = i;
                     goto out;
@@ -190,7 +190,7 @@ cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
           }
 out: if (col == 0)
           {
-            std::string tip = tid.GetAttributeHelp (attrIndex);
+            std::string tip = tid.GetAttribute (attrIndex).help;
             gtk_tooltip_set_text (tooltip, tip.c_str ());
           }
         else
@@ -455,7 +455,7 @@ cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
         uint32_t attrIndex = node->index;
         if (col == 0)
           {
-            std::string tip = node->tid.GetAttributeHelp (attrIndex);
+            std::string tip = node->tid.GetAttribute (attrIndex).help;
             gtk_tooltip_set_text (tooltip, tip.c_str ());
           }
         else
