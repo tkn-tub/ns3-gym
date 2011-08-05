@@ -179,7 +179,7 @@ def read_test(test):
 # expected that this output will be fine for developers looking for problems.
 #
 def node_to_text (test, f):
-    (result, name, time) = read_test(test)
+    (result, name, time_real) = read_test(test)
     output = "%s: Test Suite \"%s\" (%s)\n" % (result, name, time_real)
     f.write(output)
     for details in test.findall('FailureDetails'):
