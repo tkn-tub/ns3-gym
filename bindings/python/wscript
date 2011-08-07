@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 794)
+REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 795)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -247,6 +247,23 @@ int main ()
         msg = conf.env['BINDINGS_TYPE']
     conf.check_message_custom('type of bindings to build', '', msg)
 
+
+    # check cxxabi stuff (which Mac OS X Lion breaks)
+    fragment = r"""
+# include <cxxabi.h>
+int main ()
+{
+   const abi::__si_class_type_info *_typeinfo  __attribute__((unused)) = NULL;
+   return 0;
+}
+"""
+    gcc_rtti_abi = conf.check(fragment=fragment, msg="Checking for internal GCC cxxabi",
+                              okmsg="complete", errmsg='incomplete',
+                              mandatory=False)
+    conf.env["GCC_RTTI_ABI_COMPLETE"] = str(bool(gcc_rtti_abi))
+
+
+
     ## Check for pygccxml
     try:
         conf.check_python_module('pygccxml')
@@ -295,9 +312,6 @@ int main ()
     ## If we reached
     conf.env['ENABLE_PYTHON_SCANNING'] = True
     conf.report_optional_feature("pygccxml", "Python API Scanning Support", True, None)
-
-    
-
 
 # ---------------------
 
