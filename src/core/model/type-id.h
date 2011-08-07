@@ -69,12 +69,6 @@ public:
   };
 
   /**
-   * Reset the initial value of every attribute to the one
-   * that was specified by the associated object implementation.
-   */
-  static void ResetInitialValues(void);
-
-  /**
    * \param name the name of the requested TypeId
    * \returns the unique id associated with the requested
    *          name. 
