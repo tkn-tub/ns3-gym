@@ -853,6 +853,13 @@ protected:
    * \param directory the directory where the test data is located
    *
    * In general, this method is invoked as SetDataDir (NS_TEST_SOURCEDIR);
+   * However, if a module contains a test directory with subdirectories
+   * (e.g. src/mesh/test), and the test data (e.g. pcap traces) is located
+   * in one of these subdirectories, then the variable NS_TEST_SOURCEDIR 
+   * may not work and the user may want to explicitly pass in a 
+   * directory string.
+   *
+   * Note that NS_TEST_SOURCEDIR is set in src/wscript for each module
    */
   void SetDataDir (std::string directory);
 
