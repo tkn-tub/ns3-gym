@@ -1132,7 +1132,15 @@ def run_tests():
     # execution quite easily.
     #
     if len(options.suite):
-        suites = options.suite + "\n"
+        # See if this is a valid test suite.
+        path_cmd = os.path.join("utils", "test-runner --print-test-name-list")
+        (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        if options.suite in suites:
+            suites = options.suite + "\n"
+        else:
+            print >> sys.stderr, 'The test suite was not run because an unknown test suite name was requested.'
+            sys.exit(2)
+
     elif len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain):
             path_cmd = os.path.join("utils", "test-runner --print-test-name-list --test-type=%s" % options.constrain)
