@@ -297,6 +297,7 @@ ClickInternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> 
       result = ipv4L3Protocol->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv4L3ProtocolRxTxSink));
       NS_ASSERT_MSG (result == true, "ClickInternetStackHelper::EnablePcapIpv4Internal():  "
                      "Unable to connect ipv4L3Protocol \"Rx\"");
+      (void) result; //cast to void to suppress variable set but not used compiler warning in optimized builds
     }
 
   g_interfaceFileMapIpv4[std::make_pair (ipv4, interface)] = file;
