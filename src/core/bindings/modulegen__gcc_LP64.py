@@ -238,12 +238,12 @@ def register_types(module):
     module.add_class('ObjectFactoryChecker', parent=root_module['ns3::AttributeChecker'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
     module.add_class('ObjectFactoryValue', parent=root_module['ns3::AttributeValue'])
-    ## object-vector.h (module 'core'): ns3::ObjectVectorAccessor [class]
-    module.add_class('ObjectVectorAccessor', parent=root_module['ns3::AttributeAccessor'])
-    ## object-vector.h (module 'core'): ns3::ObjectVectorChecker [class]
-    module.add_class('ObjectVectorChecker', parent=root_module['ns3::AttributeChecker'])
-    ## object-vector.h (module 'core'): ns3::ObjectVectorValue [class]
-    module.add_class('ObjectVectorValue', parent=root_module['ns3::AttributeValue'])
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerAccessor [class]
+    module.add_class('ObjectPtrContainerAccessor', parent=root_module['ns3::AttributeAccessor'])
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerChecker [class]
+    module.add_class('ObjectPtrContainerChecker', parent=root_module['ns3::AttributeChecker'])
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerValue [class]
+    module.add_class('ObjectPtrContainerValue', parent=root_module['ns3::AttributeValue'])
     ## pointer.h (module 'core'): ns3::PointerChecker [class]
     module.add_class('PointerChecker', parent=root_module['ns3::AttributeChecker'])
     ## pointer.h (module 'core'): ns3::PointerValue [class]
@@ -280,6 +280,10 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
+    typehandlers.add_type_alias('ns3::ObjectPtrContainerValue', 'ns3::ObjectVectorValue')
+    typehandlers.add_type_alias('ns3::ObjectPtrContainerValue*', 'ns3::ObjectVectorValue*')
+    typehandlers.add_type_alias('ns3::ObjectPtrContainerValue&', 'ns3::ObjectVectorValue&')
+    module.add_typedef(root_module['ns3::ObjectPtrContainerValue'], 'ObjectVectorValue')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogTimePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogTimePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogTimePrinter&')
@@ -294,6 +298,10 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
     typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
     module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
+    typehandlers.add_type_alias('ns3::ObjectPtrContainerValue', 'ns3::ObjectMapValue')
+    typehandlers.add_type_alias('ns3::ObjectPtrContainerValue*', 'ns3::ObjectMapValue*')
+    typehandlers.add_type_alias('ns3::ObjectPtrContainerValue&', 'ns3::ObjectMapValue&')
+    module.add_typedef(root_module['ns3::ObjectPtrContainerValue'], 'ObjectMapValue')
     typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
     typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
     typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
@@ -430,9 +438,9 @@ def register_methods(root_module):
     register_Ns3Ns2CalendarScheduler_methods(root_module, root_module['ns3::Ns2CalendarScheduler'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
-    register_Ns3ObjectVectorAccessor_methods(root_module, root_module['ns3::ObjectVectorAccessor'])
-    register_Ns3ObjectVectorChecker_methods(root_module, root_module['ns3::ObjectVectorChecker'])
-    register_Ns3ObjectVectorValue_methods(root_module, root_module['ns3::ObjectVectorValue'])
+    register_Ns3ObjectPtrContainerAccessor_methods(root_module, root_module['ns3::ObjectPtrContainerAccessor'])
+    register_Ns3ObjectPtrContainerChecker_methods(root_module, root_module['ns3::ObjectPtrContainerChecker'])
+    register_Ns3ObjectPtrContainerValue_methods(root_module, root_module['ns3::ObjectPtrContainerValue'])
     register_Ns3PointerChecker_methods(root_module, root_module['ns3::PointerChecker'])
     register_Ns3PointerValue_methods(root_module, root_module['ns3::PointerValue'])
     register_Ns3RandomVariableChecker_methods(root_module, root_module['ns3::RandomVariableChecker'])
@@ -3297,91 +3305,91 @@ def register_Ns3ObjectFactoryValue_methods(root_module, cls):
                    [param('ns3::ObjectFactory const &', 'value')])
     return
 
-def register_Ns3ObjectVectorAccessor_methods(root_module, cls):
-    ## object-vector.h (module 'core'): ns3::ObjectVectorAccessor::ObjectVectorAccessor() [constructor]
+def register_Ns3ObjectPtrContainerAccessor_methods(root_module, cls):
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerAccessor::ObjectPtrContainerAccessor() [constructor]
     cls.add_constructor([])
-    ## object-vector.h (module 'core'): ns3::ObjectVectorAccessor::ObjectVectorAccessor(ns3::ObjectVectorAccessor const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ObjectVectorAccessor const &', 'arg0')])
-    ## object-vector.h (module 'core'): bool ns3::ObjectVectorAccessor::Get(ns3::ObjectBase const * object, ns3::AttributeValue & value) const [member function]
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerAccessor::ObjectPtrContainerAccessor(ns3::ObjectPtrContainerAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectPtrContainerAccessor const &', 'arg0')])
+    ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::Get(ns3::ObjectBase const * object, ns3::AttributeValue & value) const [member function]
     cls.add_method('Get', 
                    'bool', 
                    [param('ns3::ObjectBase const *', 'object'), param('ns3::AttributeValue &', 'value')], 
                    is_const=True, is_virtual=True)
-    ## object-vector.h (module 'core'): bool ns3::ObjectVectorAccessor::HasGetter() const [member function]
+    ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::HasGetter() const [member function]
     cls.add_method('HasGetter', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## object-vector.h (module 'core'): bool ns3::ObjectVectorAccessor::HasSetter() const [member function]
+    ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::HasSetter() const [member function]
     cls.add_method('HasSetter', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## object-vector.h (module 'core'): bool ns3::ObjectVectorAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
+    ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
     cls.add_method('Set', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'object'), param('ns3::AttributeValue const &', 'value')], 
                    is_const=True, is_virtual=True)
-    ## object-vector.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectVectorAccessor::DoGet(ns3::ObjectBase const * object, uint32_t i) const [member function]
+    ## object-ptr-container.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectPtrContainerAccessor::DoGet(ns3::ObjectBase const * object, uint32_t i) const [member function]
     cls.add_method('DoGet', 
                    'ns3::Ptr< ns3::Object >', 
                    [param('ns3::ObjectBase const *', 'object'), param('uint32_t', 'i')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
-    ## object-vector.h (module 'core'): bool ns3::ObjectVectorAccessor::DoGetN(ns3::ObjectBase const * object, uint32_t * n) const [member function]
+    ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::DoGetN(ns3::ObjectBase const * object, uint32_t * n) const [member function]
     cls.add_method('DoGetN', 
                    'bool', 
                    [param('ns3::ObjectBase const *', 'object'), param('uint32_t *', 'n')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3ObjectVectorChecker_methods(root_module, cls):
-    ## object-vector.h (module 'core'): ns3::ObjectVectorChecker::ObjectVectorChecker() [constructor]
+def register_Ns3ObjectPtrContainerChecker_methods(root_module, cls):
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerChecker::ObjectPtrContainerChecker() [constructor]
     cls.add_constructor([])
-    ## object-vector.h (module 'core'): ns3::ObjectVectorChecker::ObjectVectorChecker(ns3::ObjectVectorChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ObjectVectorChecker const &', 'arg0')])
-    ## object-vector.h (module 'core'): ns3::TypeId ns3::ObjectVectorChecker::GetItemTypeId() const [member function]
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerChecker::ObjectPtrContainerChecker(ns3::ObjectPtrContainerChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectPtrContainerChecker const &', 'arg0')])
+    ## object-ptr-container.h (module 'core'): ns3::TypeId ns3::ObjectPtrContainerChecker::GetItemTypeId() const [member function]
     cls.add_method('GetItemTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
-def register_Ns3ObjectVectorValue_methods(root_module, cls):
-    ## object-vector.h (module 'core'): ns3::ObjectVectorValue::ObjectVectorValue(ns3::ObjectVectorValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ObjectVectorValue const &', 'arg0')])
-    ## object-vector.h (module 'core'): ns3::ObjectVectorValue::ObjectVectorValue() [constructor]
+def register_Ns3ObjectPtrContainerValue_methods(root_module, cls):
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerValue::ObjectPtrContainerValue(ns3::ObjectPtrContainerValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectPtrContainerValue const &', 'arg0')])
+    ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerValue::ObjectPtrContainerValue() [constructor]
     cls.add_constructor([])
-    ## object-vector.h (module 'core'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Object>*,std::vector<ns3::Ptr<ns3::Object>, std::allocator<ns3::Ptr<ns3::Object> > > > ns3::ObjectVectorValue::Begin() const [member function]
+    ## object-ptr-container.h (module 'core'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Object>*,std::vector<ns3::Ptr<ns3::Object>, std::allocator<ns3::Ptr<ns3::Object> > > > ns3::ObjectPtrContainerValue::Begin() const [member function]
     cls.add_method('Begin', 
                    '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Object > const, std::vector< ns3::Ptr< ns3::Object > > >', 
                    [], 
                    is_const=True)
-    ## object-vector.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::ObjectVectorValue::Copy() const [member function]
+    ## object-ptr-container.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::ObjectPtrContainerValue::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## object-vector.h (module 'core'): bool ns3::ObjectVectorValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_virtual=True)
-    ## object-vector.h (module 'core'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Object>*,std::vector<ns3::Ptr<ns3::Object>, std::allocator<ns3::Ptr<ns3::Object> > > > ns3::ObjectVectorValue::End() const [member function]
+    ## object-ptr-container.h (module 'core'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Object>*,std::vector<ns3::Ptr<ns3::Object>, std::allocator<ns3::Ptr<ns3::Object> > > > ns3::ObjectPtrContainerValue::End() const [member function]
     cls.add_method('End', 
                    '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Object > const, std::vector< ns3::Ptr< ns3::Object > > >', 
                    [], 
                    is_const=True)
-    ## object-vector.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectVectorValue::Get(uint32_t i) const [member function]
+    ## object-ptr-container.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectPtrContainerValue::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'ns3::Ptr< ns3::Object >', 
                    [param('uint32_t', 'i')], 
                    is_const=True)
-    ## object-vector.h (module 'core'): uint32_t ns3::ObjectVectorValue::GetN() const [member function]
+    ## object-ptr-container.h (module 'core'): uint32_t ns3::ObjectPtrContainerValue::GetN() const [member function]
     cls.add_method('GetN', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## object-vector.h (module 'core'): std::string ns3::ObjectVectorValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    ## object-ptr-container.h (module 'core'): std::string ns3::ObjectPtrContainerValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
@@ -3950,11 +3958,11 @@ def register_functions(root_module):
     module.add_function('CalculateDistance', 
                         'double', 
                         [param('ns3::Vector3D const &', 'a'), param('ns3::Vector3D const &', 'b')])
-    ## ptr.h (module 'core'): extern ns3::Ptr<ns3::ObjectVectorValue> ns3::Create() [free function]
+    ## ptr.h (module 'core'): extern ns3::Ptr<ns3::ObjectPtrContainerValue> ns3::Create() [free function]
     module.add_function('Create', 
-                        'ns3::Ptr< ns3::ObjectVectorValue >', 
+                        'ns3::Ptr< ns3::ObjectPtrContainerValue >', 
                         [], 
-                        template_parameters=['ns3::ObjectVectorValue'])
+                        template_parameters=['ns3::ObjectPtrContainerValue'])
     ## ptr.h (module 'core'): extern ns3::Ptr<ns3::PointerValue> ns3::Create() [free function]
     module.add_function('Create', 
                         'ns3::Ptr< ns3::PointerValue >', 

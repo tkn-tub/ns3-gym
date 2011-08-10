@@ -27,6 +27,10 @@
 #include "ns3/core-config.h"
 #include "fatal-error.h"
 
+#ifdef HAVE_GETENV
+#include <string.h>
+#endif
+
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
