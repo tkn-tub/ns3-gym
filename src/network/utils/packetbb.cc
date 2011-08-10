@@ -2084,7 +2084,7 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
               SerializeAddress (mid, iter);
               start.Write (mid + headlen, GetAddressLength () - headlen - taillen);
             }
-          delete mid;
+          delete[] mid;
         }
 
       flags |= GetPrefixFlags ();
