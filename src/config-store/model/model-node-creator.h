@@ -63,9 +63,10 @@ private:
   virtual void DoEndVisitObject (void);
   virtual void DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
   virtual void DoEndVisitPointerAttribute (void);
-  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector);
+  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name,
+                                           const ObjectPtrContainerValue &vector);
   virtual void DoEndVisitArrayAttribute (void);
-  virtual void DoStartVisitArrayItem (const ObjectVectorValue &vector,
+  virtual void DoStartVisitArrayItem (const ObjectPtrContainerValue &vector,
                                       uint32_t index, Ptr<Object> item);
   virtual void DoEndVisitArrayItem (void);
   void Add (ModelNode *node);
