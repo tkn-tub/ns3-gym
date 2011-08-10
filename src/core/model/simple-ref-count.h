@@ -24,7 +24,9 @@
 
 #include "empty.h"
 #include "default-deleter.h"
+#include "assert.h"
 #include <stdint.h>
+#include <limits>
 
 namespace ns3 {
 
@@ -79,6 +81,7 @@ public:
    */
   inline void Ref (void) const
   {
+    NS_ASSERT (m_count < std::numeric_limits<uint32_t>::max());
     m_count++;
   }
   /**
