@@ -17,8 +17,8 @@
  *
  * Authors: Mathieu Lacage <mathieu.lacage@gmail.com>
  */
-#ifndef OBJECT_VECTOR_H
-#define OBJECT_VECTOR_H
+#ifndef OBJECT_MAP_H
+#define OBJECT_MAP_H
 
 #include <vector>
 #include "object.h"
@@ -28,14 +28,14 @@
 
 namespace ns3 {
 
-typedef ObjectPtrContainerValue ObjectVectorValue;
+typedef ObjectPtrContainerValue ObjectMapValue;
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (U T::*memberContainer);
+MakeObjectMapAccessor (U T::*memberContainer);
 
 template <typename T>
-Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
+Ptr<const AttributeChecker> MakeObjectMapChecker (void);
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
@@ -53,7 +53,7 @@ namespace ns3 {
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (U T::*memberVector)
+MakeObjectMapAccessor (U T::*memberVector)
 {
   struct MemberStdContainer : public ObjectPtrContainerAccessor
   {
@@ -75,7 +75,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
         {
           if (k == i)
             {
-              return *j;
+              return (*j).second;
               break;
             }
         }
@@ -90,23 +90,23 @@ MakeObjectVectorAccessor (U T::*memberVector)
 }
 
 template <typename T>
-Ptr<const AttributeChecker> MakeObjectVectorChecker (void)
+Ptr<const AttributeChecker> MakeObjectMapChecker (void)
 {
   return MakeObjectPtrContainerChecker<T> ();
 }
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (Ptr<U> (T::*get)(INDEX) const,
-			  INDEX (T::*getN)(void) const)
+MakeObjectMapAccessor (Ptr<U> (T::*get)(INDEX) const,
+		       INDEX (T::*getN)(void) const)
 {
   return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
-			  Ptr<U> (T::*get)(INDEX) const)
+MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
+		       Ptr<U> (T::*get)(INDEX) const)
 {
   return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
@@ -115,4 +115,4 @@ MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
 
 } // namespace ns3
 
-#endif /* OBJECT_VECTOR_H */
+#endif /* OBJECT_MAP_H */

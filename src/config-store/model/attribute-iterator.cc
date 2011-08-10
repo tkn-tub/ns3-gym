@@ -20,7 +20,7 @@
 #include "ns3/config.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
-#include "ns3/object-vector.h"
+#include "ns3/object-ptr-container.h"
 #include "ns3/string.h"
 #include <fstream>
 
@@ -109,7 +109,7 @@ AttributeIterator::DoEndVisitPointerAttribute (void)
 {
 }
 void 
-AttributeIterator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
+AttributeIterator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector)
 {
 }
 void 
@@ -117,7 +117,7 @@ AttributeIterator::DoEndVisitArrayAttribute (void)
 {
 }
 void 
-AttributeIterator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
+AttributeIterator::DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item)
 {
 }
 void 
@@ -160,7 +160,7 @@ AttributeIterator::EndVisitPointerAttribute (void)
   DoEndVisitPointerAttribute ();
 }
 void 
-AttributeIterator::StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
+AttributeIterator::StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector)
 {
   m_currentPath.push_back (name);
   DoStartVisitArrayAttribute (object, name, vector);
@@ -173,7 +173,7 @@ AttributeIterator::EndVisitArrayAttribute (void)
 }
 
 void 
-AttributeIterator::StartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
+AttributeIterator::StartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item)
 {
   std::ostringstream oss;
   oss << index;
@@ -223,11 +223,11 @@ AttributeIterator::DoIterate (Ptr<Object> object)
               continue;
             }
           // attempt to cast to an object vector.
-          const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (info.checker));
+          const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
           if (vectorChecker != 0)
             {
               NS_LOG_DEBUG ("vector attribute " << info.name);
-              ObjectVectorValue vector;
+              ObjectPtrContainerValue vector;
               object->GetAttribute (info.name, vector);
               StartVisitArrayAttribute (object, info.name, vector);
               for (uint32_t j = 0; j < vector.GetN (); ++j)

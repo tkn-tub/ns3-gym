@@ -21,11 +21,10 @@
 
 #include "ns3/ptr.h"
 #include "ns3/object.h"
+#include "ns3/object-ptr-container.h"
 #include <vector>
 
 namespace ns3 {
-
-class ObjectVectorValue;
 
 /**
  * \ingroup configstore
@@ -47,9 +46,9 @@ private:
   virtual void DoEndVisitObject (void);
   virtual void DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
   virtual void DoEndVisitPointerAttribute (void);
-  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector);
+  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector);
   virtual void DoEndVisitArrayAttribute (void);
-  virtual void DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item);
+  virtual void DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item);
   virtual void DoEndVisitArrayItem (void);
 
   void DoIterate (Ptr<Object> object);
@@ -61,9 +60,9 @@ private:
   void EndVisitObject (void);
   void StartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
   void EndVisitPointerAttribute (void);
-  void StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector);
+  void StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector);
   void EndVisitArrayAttribute (void);
-  void StartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item);
+  void StartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item);
   void EndVisitArrayItem (void);
 
 

@@ -21,7 +21,7 @@
 #include "singleton.h"
 #include "object.h"
 #include "global-value.h"
-#include "object-vector.h"
+#include "object-ptr-container.h"
 #include "names.h"
 #include "pointer.h"
 #include "log.h"
@@ -226,7 +226,7 @@ public:
 private:
   void Canonicalize (void);
   void DoResolve (std::string path, Ptr<Object> root);
-  void DoArrayResolve (std::string path, const ObjectVectorValue &vector);
+  void DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector);
   void DoResolveOne (Ptr<Object> object);
   std::string GetResolvedPath (void) const;
   virtual void DoOne (Ptr<Object> object, std::string path) = 0;
@@ -403,11 +403,11 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
           m_workStack.pop_back ();
         }
       // attempt to cast to an object vector.
-      const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (info.checker));
+      const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
       if (vectorChecker != 0)
         {
           NS_LOG_DEBUG ("GetAttribute(vector)="<<item<<" on path="<<GetResolvedPath ());
-          ObjectVectorValue vector;
+          ObjectPtrContainerValue vector;
           root->GetAttribute (item, vector);
           m_workStack.push_back (item);
           DoArrayResolve (pathLeft, vector);
@@ -419,7 +419,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 }
 
 void 
-Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
+Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector)
 {
   NS_ASSERT (path != "");
   NS_ASSERT ((path.find ("/")) == 0);

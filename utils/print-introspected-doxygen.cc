@@ -184,7 +184,7 @@ StaticInformation::DoGather (TypeId tid)
           continue;
         }
       // attempt to cast to an object vector.
-      const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (info.checker));
+      const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
       if (vectorChecker != 0)
         {
           TypeId item = vectorChecker->GetItemTypeId ();
