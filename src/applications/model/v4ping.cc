@@ -123,11 +123,11 @@ V4Ping::Receive (Ptr<Socket> socket)
 
           if (i != m_sent.end () && echo.GetIdentifier () == 0)
             {
-              uint32_t * buf = new uint32_t [m_size / 4];
+              uint32_t * buf = new uint32_t [m_size];
               uint32_t dataSize = echo.GetDataSize ();
               uint32_t nodeId;
               uint32_t appId;
-              if (dataSize == sizeof(buf))
+              if (dataSize == m_size)
                 {
                   echo.GetData ((uint8_t *)buf);
                   Read32 ((const uint8_t *) &buf[0], nodeId);
@@ -204,7 +204,7 @@ V4Ping::Send ()
   tmp = GetApplicationId ();
   Write32 (&data[1 * sizeof(uint32_t)], tmp);
 
-  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) &data, m_size);
+  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) data, m_size);
   echo.SetData (dataPacket);
   p->AddHeader (echo);
   Icmpv4Header header;
