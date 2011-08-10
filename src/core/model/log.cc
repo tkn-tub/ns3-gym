@@ -22,6 +22,7 @@
 #include <list>
 #include <utility>
 #include <iostream>
+#include <string.h>
 #include "assert.h"
 #include "ns3/core-config.h"
 #include "fatal-error.h"
