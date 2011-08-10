@@ -34,7 +34,7 @@ public:
   {
 
     /*
-     * Operating  Bands for the UL: 1920 MHz – 1980 MHz
+     * Operating  Bands for the DL: 2110 MHz – 2170 MHz
      * see for details TR.36.101 - Tab 5.5-1
      *
      */
@@ -43,7 +43,7 @@ public:
     for (int i = 0; i < 100; ++i)
       {
 
-        double centralFrequencyOfPRB = 1.920 + (i * 0.00018);
+        double centralFrequencyOfPRB = 2.110 + (i * 0.00018);
         freqs.push_back (centralFrequencyOfPRB * 1e9);
       }
 
@@ -61,7 +61,7 @@ public:
   {
 
     /*
-     * Operating  Bands for the DL: 2110 MHz – 2170 MHz
+     * Operating  Bands for the UL: 1920 MHz – 1980 MHz
      * see for details TR.36.101 - Tab 5.5-1
      *
      */
@@ -70,7 +70,7 @@ public:
     for (int i = 0; i < 100; ++i)
       {
 
-        double centralFrequencyOfPRB = 2.110 + (i * 0.00018);
+        double centralFrequencyOfPRB = 1.920 + (i * 0.00018);
         freqs.push_back (centralFrequencyOfPRB * 1e9);
       }
 
