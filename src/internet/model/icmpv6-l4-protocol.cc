@@ -232,7 +232,7 @@ void Icmpv6L4Protocol::HandleEchoRequest (Ptr<Packet> packet, Ipv6Address const 
 {
   NS_LOG_FUNCTION (this << packet << src << dst << interface);
   Icmpv6Echo request;
-  uint8_t buf[packet->GetSize ()];
+  uint8_t* buf = new uint8_t[packet->GetSize ()];
 
   packet->RemoveHeader (request);
   /* XXX IPv6 extension: obtain a fresh copy of data otherwise it crash... */
@@ -241,6 +241,7 @@ void Icmpv6L4Protocol::HandleEchoRequest (Ptr<Packet> packet, Ipv6Address const 
 
   /* if we send message from ff02::* (link-local multicast), we use our link-local address */
   SendEchoReply (dst.IsMulticast () ? interface->GetLinkLocalAddress ().GetAddress () : dst, src, request.GetId (), request.GetSeq (), p);
+  delete[] buf;
 }
 
 void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)

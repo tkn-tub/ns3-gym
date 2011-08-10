@@ -162,7 +162,7 @@ void Ping6::Send ()
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> p = 0;
-  uint8_t data[m_size];
+  uint8_t* data = new uint8_t[m_size];
   Ipv6Address src;
   Ptr<Ipv6> ipv6 = GetNode ()->GetObject<Ipv6> ();
 
@@ -221,6 +221,8 @@ void Ping6::Send ()
     {
       ScheduleTransmit (m_interval);
     }
+
+  delete[] data;
 }
 
 void Ping6::HandleRead (Ptr<Socket> socket)
