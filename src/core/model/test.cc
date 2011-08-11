@@ -545,10 +545,13 @@ TestRunnerImpl::PrintHelp (const char *program_name) const
             << "Options: "
             << "  --help                 : print these options" << std::endl
             << "  --print-test-name-list : print the list of names of tests available" << std::endl
+            << "  --list                 : an alias for --print-test-name-list" << std::endl
             << "  --print-test-type-list : print the list of types of tests available" << std::endl
             << "  --print-temp-dir       : Print name of temporary directory before running the tests" << std::endl
             << "  --test-type=TYPE       : Process only tests of type TYPE" << std::endl
             << "  --test-name=NAME       : Process only test whose name matches NAME" << std::endl
+            << "  --suite=NAME           : an alias (here for compatibility reasons only) "
+            << "for --test-name=NAME" << std::endl
             << "  --assert-on-failure    : when a test fails, crash immediately (useful" << std::endl
             << "                           when running under a debugger" << std::endl
             << "  --stop-on-failure      : when a test fails, stop immediately" << std::endl
@@ -653,7 +656,8 @@ TestRunnerImpl::Run (int argc, char *argv[])
           PrintHelp (progname);
           return 0;
         }
-      else if (strcmp (arg, "--print-test-name-list") == 0)
+      else if (strcmp (arg, "--print-test-name-list") == 0 ||
+               strcmp(arg, "--list") == 0)
         {
           printTestNameList = true;
         }
@@ -676,6 +680,10 @@ TestRunnerImpl::Run (int argc, char *argv[])
       else if (strncmp(arg, "--test-name=", strlen("--test-name=")) == 0)
         {
           testName = arg + strlen("--test-name=");
+        }
+      else if (strncmp(arg, "--suite=", strlen("--suite=")) == 0)
+        {
+          testName = arg + strlen("--suite=");
         }
       else if (strncmp(arg, "--tempdir=", strlen("--tempdir=")) == 0)
         {
