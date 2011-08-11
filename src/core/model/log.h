@@ -104,37 +104,6 @@ void LogComponentDisableAll (enum LogLevel level);
 
 } // namespace ns3
 
-
-#ifdef NS3_LOG_ENABLE
-
-
-/**
- * \ingroup debugging
- * \defgroup logging Logging
- * \brief Logging functions and macros
- *
- * LOG functionality: macros which allow developers to
- * send information out on screen. All logging messages 
- * are disabled by default. To enable selected logging 
- * messages, use the ns3::LogComponentEnable
- * function or use the NS_LOG environment variable 
- *
- * Use the environment variable NS_LOG to define a ':'-separated list of
- * logging components to enable. For example (using bash syntax), 
- * NS_LOG="OlsrAgent" would enable one component at all log levels. 
- * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
- * at all log levels, etc.
- * NS_LOG="*" will enable all available log components at all levels.
- *
- * To control more selectively the log levels for each component, use
- * this syntax: NS_LOG='Component1=func|warn:Component2=error|debug'
- * This example would enable the 'func', and 'warn' log
- * levels for 'Component1' and the 'error' and 'debug' log levels
- * for 'Component2'.  The wildcard can be used here as well.  For example
- * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
- * prints with the component and function names.
- */
-
 /**
  * \ingroup logging
  * \param name a string
@@ -182,6 +151,38 @@ void LogComponentDisableAll (enum LogLevel level);
 #ifndef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT
 #endif /* NS_LOG_APPEND_CONTEXT */
+
+
+
+#ifdef NS3_LOG_ENABLE
+
+
+/**
+ * \ingroup debugging
+ * \defgroup logging Logging
+ * \brief Logging functions and macros
+ *
+ * LOG functionality: macros which allow developers to
+ * send information out on screen. All logging messages 
+ * are disabled by default. To enable selected logging 
+ * messages, use the ns3::LogComponentEnable
+ * function or use the NS_LOG environment variable 
+ *
+ * Use the environment variable NS_LOG to define a ':'-separated list of
+ * logging components to enable. For example (using bash syntax), 
+ * NS_LOG="OlsrAgent" would enable one component at all log levels. 
+ * NS_LOG="OlsrAgent:Ipv4L3Protocol" would enable two components, 
+ * at all log levels, etc.
+ * NS_LOG="*" will enable all available log components at all levels.
+ *
+ * To control more selectively the log levels for each component, use
+ * this syntax: NS_LOG='Component1=func|warn:Component2=error|debug'
+ * This example would enable the 'func', and 'warn' log
+ * levels for 'Component1' and the 'error' and 'debug' log levels
+ * for 'Component2'.  The wildcard can be used here as well.  For example
+ * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
+ * prints with the component and function names.
+ */
 
 
 /**
@@ -325,7 +326,6 @@ void LogComponentDisableAll (enum LogLevel level);
 
 #else /* LOG_ENABLE */
 
-#define NS_LOG_COMPONENT_DEFINE(component)
 #define NS_LOG(level, msg)
 #define NS_LOG_ERROR(msg)
 #define NS_LOG_WARN(msg)
