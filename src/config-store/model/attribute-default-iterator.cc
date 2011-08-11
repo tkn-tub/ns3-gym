@@ -19,10 +19,10 @@
  
 #include "attribute-default-iterator.h"
 #include "ns3/attribute.h"
-#include "ns3/object-vector.h"
 #include "ns3/pointer.h"
 #include "ns3/global-value.h"
 #include "ns3/string.h"
+#include "ns3/object-ptr-container.h"
 
 namespace ns3
 {
@@ -70,7 +70,7 @@ AttributeDefaultIterator::Iterate (void)
               //No value, check next attribute
               continue;
             }
-          Ptr<const ObjectVectorValue> vector = DynamicCast<const ObjectVectorValue> (info.initialValue);
+          Ptr<const ObjectPtrContainerValue> vector = DynamicCast<const ObjectPtrContainerValue> (info.initialValue);
           if (vector != 0)
             {
               //a vector value, won't take it

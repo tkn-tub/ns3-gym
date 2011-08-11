@@ -18,7 +18,6 @@
  */
 
 #include "attribute-iterator.h"
-#include "ns3/object-vector.h"
 #include <gtk/gtk.h>
 
 namespace ns3
