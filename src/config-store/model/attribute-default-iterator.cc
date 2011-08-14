@@ -85,7 +85,7 @@ AttributeDefaultIterator::Iterate (void)
           //We take only values, no pointers or vectors
           if (!calledStart)
             {
-              StartVisitTypeId (info.name);
+              StartVisitTypeId (tid.GetName ());
             }
           VisitAttribute (tid, info.name, info.initialValue->SerializeToString (info.checker), j);
           calledStart = true;
