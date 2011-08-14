@@ -767,8 +767,8 @@ Ubuntu installation command is:::
 
     sudo apt-get install libgtk2.0-0 libgtk2.0-dev
 
-To check whether it is configured or not, check the output of the
-./waf configure --enable-examples --enable-tests step:::
+To check whether it is configured or not, check the output of the step:::
+./waf configure --enable-examples --enable-tests 
 
     ---- Summary of optional NS-3 features:
     Threading Primitives          : enabled

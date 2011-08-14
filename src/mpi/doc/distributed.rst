@@ -125,7 +125,7 @@ Configure |ns3| with the --enable-mpi option:::
 Ensure that MPI is enabled by checking the optional features shown from the
 output of configure.
 
-Next, build |ns3|:
+Next, build |ns3|:::
 
     ./waf
 
