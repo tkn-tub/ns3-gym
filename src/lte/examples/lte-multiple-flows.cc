@@ -126,27 +126,27 @@ int main (int argc, char *argv[])
 
   udpServer_1 = UdpServerHelper (100);
   serverApp_1 = udpServer_1.Install (ueNodes.Get (0));
-  serverApp_1.Start (Seconds (0.02));
+  serverApp_1.Start (Seconds (0.01));
   serverApp_1.Stop (Seconds (2));
 
   udpClient_1 = UdpClientHelper (UEinterfaces.GetAddress (0), 100);
   udpClient_1.SetAttribute ("MaxPackets", UintegerValue (1200));
   udpClient_1.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
-  udpClient_1.SetAttribute ("PacketSize", UintegerValue (800));
+  udpClient_1.SetAttribute ("PacketSize", UintegerValue (100));
   clientApp_1 = udpClient_1.Install (enbNodes.Get (0));
-  clientApp_1.Start (Seconds (0.01));
+  clientApp_1.Start (Seconds (0.02));
   clientApp_1.Stop (Seconds (2));
 
   Ptr<RadioBearerInstance> bearer_1 = CreateObject<RadioBearerInstance> ();
   bearer_1->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
   bearer_1->SetBearerType (RadioBearerInstance::BEARER_TYPE_DRB);
-  IpcsClassifierRecord *ipcs_1 = new IpcsClassifierRecord (UEinterfaces.GetAddress (0),
+  IpcsClassifierRecord *ipcs_1 = new IpcsClassifierRecord (ENBinterface.GetAddress (0),
                                                            "255.255.255.0",
-                                                           ENBinterface.GetAddress (0),
+                                                           UEinterfaces.GetAddress (0),
                                                            "255.255.255.0",
-                                                           100, 100, 0, 10000, 17, 1);
+                                                           0, 65535, 100, 100, 17, 1);
   bearer_1->SetIpcsClassifierRecord (ipcs_1);
-  enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer_1);
+  enb->GetRrcEntity ()->AddDownlinkGbrBearer (bearer_1);
 
 
 
@@ -160,27 +160,27 @@ int main (int argc, char *argv[])
 
   udpServer_2 = UdpServerHelper (100);
   serverApp_2 = udpServer_2.Install (ueNodes.Get (1));
-  serverApp_2.Start (Seconds (0.02));
+  serverApp_2.Start (Seconds (0.01));
   serverApp_2.Stop (Seconds (2));
 
   udpClient_2 = UdpClientHelper (UEinterfaces.GetAddress (1), 100);
   udpClient_2.SetAttribute ("MaxPackets", UintegerValue (1200));
   udpClient_2.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
-  udpClient_2.SetAttribute ("PacketSize", UintegerValue (800));
+  udpClient_2.SetAttribute ("PacketSize", UintegerValue (200));
   clientApp_2 = udpClient_2.Install (enbNodes.Get (0));
   clientApp_2.Start (Seconds (0.011));
-  clientApp_2.Stop (Seconds (2));
+  clientApp_2.Stop (Seconds (3));
 
   Ptr<RadioBearerInstance> bearer_2 = CreateObject<RadioBearerInstance> ();
   bearer_2->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
   bearer_2->SetBearerType (RadioBearerInstance::BEARER_TYPE_DRB);
-  IpcsClassifierRecord *ipcs_2 = new IpcsClassifierRecord (UEinterfaces.GetAddress (1),
+  IpcsClassifierRecord *ipcs_2 = new IpcsClassifierRecord (ENBinterface.GetAddress (1),
                                                            "255.255.255.0",
-                                                           ENBinterface.GetAddress (0),
+                                                           UEinterfaces.GetAddress (0),
                                                            "255.255.255.0",
-                                                           100, 100, 0, 10000, 17, 1);
+                                                           0, 65535, 100, 100, 17, 1);
   bearer_2->SetIpcsClassifierRecord (ipcs_2);
-  enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer_2);
+  enb->GetRrcEntity ()->AddDownlinkGbrBearer (bearer_2);
 
 
 
@@ -193,34 +193,27 @@ int main (int argc, char *argv[])
 
   udpServer_3 = UdpServerHelper (100);
   serverApp_3 = udpServer_3.Install (ueNodes.Get (2));
-  serverApp_3.Start (Seconds (0.02));
+  serverApp_3.Start (Seconds (0.01));
   serverApp_3.Stop (Seconds (2));
 
   udpClient_3 = UdpClientHelper (UEinterfaces.GetAddress (2), 100);
   udpClient_3.SetAttribute ("MaxPackets", UintegerValue (1200));
   udpClient_3.SetAttribute ("Interval", TimeValue (Seconds (0.12)));
-  udpClient_3.SetAttribute ("PacketSize", UintegerValue (800));
+  udpClient_3.SetAttribute ("PacketSize", UintegerValue (300));
   clientApp_3 = udpClient_2.Install (enbNodes.Get (0));
-  clientApp_3.Start (Seconds (0.011));
+  clientApp_3.Start (Seconds (0.04));
   clientApp_3.Stop (Seconds (2));
 
   Ptr<RadioBearerInstance> bearer_3 = CreateObject<RadioBearerInstance> ();
   bearer_3->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
   bearer_3->SetBearerType (RadioBearerInstance::BEARER_TYPE_DRB);
-  IpcsClassifierRecord *ipcs_3 = new IpcsClassifierRecord (UEinterfaces.GetAddress (2),
+  IpcsClassifierRecord *ipcs_3 = new IpcsClassifierRecord (ENBinterface.GetAddress (2),
                                                            "255.255.255.0",
-                                                           ENBinterface.GetAddress (0),
+                                                           UEinterfaces.GetAddress (0),
                                                            "255.255.255.0",
-                                                           100, 100, 0, 10000, 17, 1);
+                                                           0, 65535, 100, 100, 17, 1);
   bearer_3->SetIpcsClassifierRecord (ipcs_3);
-  enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer_3);
-
-
-
-
-
-
-
+  enb->GetRrcEntity ()->AddDownlinkGbrBearer (bearer_3);
 
 
   std::cout << "Starting simulation....." << std::endl;

@@ -48,7 +48,7 @@ LteMacHeader::GetInstanceTypeId (void) const
 uint32_t
 LteMacHeader::GetSerializedSize (void) const
 {
-  return 13;
+  return 12;
 }
 
 
