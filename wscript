@@ -827,7 +827,8 @@ def shutdown(ctx):
     if ((not Options.options.run)
         and (not Options.options.pyrun) 
         and ('clean' not in Options.arg_line)
-        and ('distclean' not in Options.arg_line)):
+        and ('distclean' not in Options.arg_line)
+        and ('shell' not in Options.arg_line)):
 
         # Print the list of built modules.
         print
