@@ -110,15 +110,13 @@ void FdReader::Stop (void)
 {
   m_stop = true;
 
-  // signal the read thread and close the write end of the event pipe
+  // signal the read thread
   if (m_evpipe[1] != -1)
     {
       char zero = 0;
       ssize_t len = write (m_evpipe[1], &zero, sizeof (zero));
       if (len != sizeof (zero))
         NS_LOG_WARN ("incomplete write(): " << strerror (errno));
-      close (m_evpipe[1]);
-      m_evpipe[1] = -1;
     }
 
   // join the read thread
@@ -126,6 +124,13 @@ void FdReader::Stop (void)
     {
       m_readThread->Join ();
       m_readThread = 0;
+    }
+
+  // close the write end of the event pipe
+  if (m_evpipe[1] != -1)
+    {
+      close (m_evpipe[1]);
+      m_evpipe[1] = -1;
     }
 
   // close the read end of the event pipe
@@ -167,25 +172,25 @@ void FdReader::Run (void)
       if (FD_ISSET (m_evpipe[0], &readfds))
         {
           // drain the event pipe
-          ssize_t len;
           for (;;)
             {
               char buf[1024];
-              len = read (m_evpipe[0], buf, sizeof (buf));
+              ssize_t len = read (m_evpipe[0], buf, sizeof (buf));
               if (len == 0)
                 {
                   NS_FATAL_ERROR ("event pipe closed");
                 }
               if (len < 0)
                 {
-                  break;
+                  if (errno == EAGAIN || errno == EINTR || errno == EWOULDBLOCK)
+                    {
+                      break;
+                    }
+                  else
+                    {
+                      NS_FATAL_ERROR ("read() failed: " << strerror (errno));
+                    }
                 }
-            }
-
-          if (len < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
-            {
-              NS_LOG_WARN ("read() failed: " << strerror (errno));
-              break;
             }
         }
 
