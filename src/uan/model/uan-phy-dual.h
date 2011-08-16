@@ -248,6 +248,11 @@ public:
    */
   void SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> calcSinr);
 
+  virtual void SetSleepMode (bool sleep)
+  {
+    //TODO This method has to be implemented
+  }
+
   /**
    * \returns Packet currently being received on Phy1 (Null Ptr if none)
    */

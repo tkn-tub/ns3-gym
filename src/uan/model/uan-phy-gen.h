@@ -203,6 +203,8 @@ public:
   virtual Ptr<Packet> GetPacketRx (void) const;
   virtual void Clear (void);
 
+  virtual void SetSleepMode (bool sleep);
+
 private:
   typedef std::list<UanPhyListener *> ListenerList;
 

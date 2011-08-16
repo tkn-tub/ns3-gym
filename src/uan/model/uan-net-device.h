@@ -101,6 +101,8 @@ public:
    */
   void Clear (void);
 
+  void SetSleepMode (bool sleep);
+
   // Purely virtual functions from base class
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;

@@ -374,6 +374,8 @@ public:
    * Clears all pointer references
    */
   virtual void Clear (void) = 0;
+
+  virtual void SetSleepMode (bool sleep) = 0;
 };
 
 }

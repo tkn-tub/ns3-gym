@@ -389,5 +389,11 @@ UanNetDevice::SetAddress (Address address)
   m_mac->SetAddress (UanAddress::ConvertFrom (address));
 }
 
+void
+UanNetDevice::SetSleepMode (bool sleep)
+{
+  m_phy->SetSleepMode (sleep);
+}
+
 } // namespace ns3
 
