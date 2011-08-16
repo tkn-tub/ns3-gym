@@ -335,7 +335,7 @@ UanMacCw::PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode)
   UanHeaderCommon header;
   packet->RemoveHeader (header);
 
-  if (header.GetDest () == m_address)
+  if (header.GetDest () == m_address || header.GetDest () == UanAddress::GetBroadcast ())
     {
       m_forwardUpCb (packet, header.GetSrc ());
     }
