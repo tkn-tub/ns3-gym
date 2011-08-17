@@ -695,6 +695,11 @@ std::string AnimationInterface::GetPreamble ()
     * id = Node Id\n\
     * locX = X coordinate\n\
     * locY = Y coordinate\n\
+    link\n\
+    * fromLp = From logical processor Id\n\
+    * fromId = From Node Id\n\
+    * toLp   = To logical processor Id\n\
+    * toId   = To Node Id\n\
     packet\n\
     * fromLp = From logical processor Id\n\
     * fbTx = First bit transmit time\n\
