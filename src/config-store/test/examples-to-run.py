@@ -8,5 +8,5 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("config-store-save", "True", "True"),
+    ("config-store-save", "True", "False"),
 ]
