@@ -358,7 +358,6 @@ public:
     return Time (value);
   }
   /**
-   * \param time a Time object
    * \param timeUnit the unit of the value to return
    *
    * Convert the input time into an integer value according to the requested
@@ -390,7 +389,6 @@ public:
     return From (int64x64_t (value), timeUnit);
   }
   /**
-   * \param time a Time object
    * \param timeUnit the unit of the value to return
    *
    * Convert the input time into a floating point value according to the requested

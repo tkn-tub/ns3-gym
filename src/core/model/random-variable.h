@@ -133,7 +133,7 @@ public:
 
   /**
    * \brief Returns a random integer integer from the underlying distribution
-   * \return  Integer cast of ::GetValue()
+   * \return  Integer cast of RandomVariable::GetValue
    */
   uint32_t GetInteger (void) const;
 
@@ -571,7 +571,7 @@ public:
    * \brief Constructor
    *
    * Creates a generator that returns successive elements of the d array
-   * on successive calls to ::Value().  Note that the d pointer is copied
+   * on successive calls to RandomVariable::GetValue.  Note that the d pointer is copied
    * for use by the generator (shallow-copy), not its contents, so the
    * contents of the array d points to have to remain unchanged for the use
    * of DeterministicVariable to be meaningful.

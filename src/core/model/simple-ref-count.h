@@ -49,7 +49,7 @@ namespace ns3 {
  *      class. Yes, this is weird but it's a common C++ template pattern
  *      whose name is CRTP (Curiously Recursive Template Pattern)
  *    - PARENT: the typename of the parent of this template. By default,
- *      this typename is 'ns3::empty' which is an empty class: compilers
+ *      this typename is "'ns3::empty'" which is an empty class: compilers
  *      which implement the RBCO optimization (empty base class optimization)
  *      will make this a no-op
  *    - DELETER: the typename of a class which implements a public static 

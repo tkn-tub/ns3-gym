@@ -53,7 +53,7 @@ class Scheduler;
  * 
  * A simple example of how to use the Simulator class to schedule events
  * is shown below:
- * \include samples/main-simulator.cc
+ * \include src/core/examples/sample-simulator.cc
  */
 class Simulator 
 {
