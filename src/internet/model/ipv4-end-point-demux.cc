@@ -347,25 +347,27 @@ Ipv4EndPointDemux::SimpleLookup (Ipv4Address daddr,
     }
   return generic;
 }
-
 uint16_t
 Ipv4EndPointDemux::AllocateEphemeralPort (void)
 {
+  // Similar to counting up logic in netinet/in_pcb.c
   NS_LOG_FUNCTION_NOARGS ();
   uint16_t port = m_ephemeral;
+  int count = m_portLast - m_portFirst;
   do 
     {
-      port++;
-      if (port == 65535) 
+      if (count-- < 0)
         {
-          port = 49152;
+          return 0;
         }
-      if (!LookupPortLocal (port)) 
+      ++port;
+      if (port < m_portFirst || port > m_portLast)
         {
-          return port;
+          port = m_portFirst;
         }
-    } while (port != m_ephemeral);
-  return 0;
+    } while (LookupPortLocal (port));
+  m_ephemeral = port;
+  return port;
 }
 
 } // namespace ns3
