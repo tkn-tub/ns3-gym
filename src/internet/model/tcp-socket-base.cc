@@ -219,6 +219,11 @@ TcpSocketBase::Bind (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_endPoint = m_tcp->Allocate ();
+  if (0 == m_endPoint)
+    {
+      m_errno = ERROR_ADDRNOTAVAIL;
+      return -1;
+    }
   return SetupCallback ();
 }
 
@@ -238,6 +243,11 @@ TcpSocketBase::Bind (const Address &address)
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate ();
+      if (0 == m_endPoint)
+        {
+	  m_errno = ERROR_ADDRNOTAVAIL;
+          return -1;
+	}
     }
   else if (ipv4 == Ipv4Address::GetAny () && port != 0)
     {
@@ -251,6 +261,11 @@ TcpSocketBase::Bind (const Address &address)
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate (ipv4);
+      if (0 == m_endPoint)
+        {
+	  m_errno = ERROR_ADDRNOTAVAIL;
+	  return -1;
+        }
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {

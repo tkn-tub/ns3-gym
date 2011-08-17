@@ -77,6 +77,8 @@ private:
   uint16_t AllocateEphemeralPort (void);
 
   uint16_t m_ephemeral;
+  uint16_t m_portLast;
+  uint16_t m_portFirst;
   EndPoints m_endPoints;
 };
 

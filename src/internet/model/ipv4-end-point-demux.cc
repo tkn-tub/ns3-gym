@@ -27,7 +27,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("Ipv4EndPointDemux");
 
 Ipv4EndPointDemux::Ipv4EndPointDemux ()
-  : m_ephemeral (49152)
+  : m_ephemeral (49152), m_portLast (65535), m_portFirst (49152)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
