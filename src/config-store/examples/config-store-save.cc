@@ -49,6 +49,7 @@ int main (int argc, char *argv[])
   // ConfigureAttributes() will work below.
   Config::RegisterRootNamespaceObject (a2_obj);
   
+#ifdef HAVE_LIBXML2
   // Output config store to XML format
   Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.xml"));
   Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
@@ -56,6 +57,7 @@ int main (int argc, char *argv[])
   ConfigStore outputConfig;
   outputConfig.ConfigureDefaults ();
   outputConfig.ConfigureAttributes ();
+#endif /* HAVE_LIBXML2 */
 
   // Output config store to txt format
   Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.txt"));

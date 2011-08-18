@@ -1,5 +1,6 @@
 #include "config-store.h"
 #include "raw-text-config.h"
+#include "ns3/abort.h"
 #include "ns3/string.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
@@ -77,8 +78,20 @@ ConfigStore::ConfigStore ()
           m_file = new NoneFileConfig ();
         }
     }
-  else 
+#else
+  if (m_fileFormat == ConfigStore::XML)
+    {
+      if (m_mode == ConfigStore::SAVE || m_mode == ConfigStore::LOAD)
+        {
+	  NS_ABORT_MSG ("ConfigStore tried to read or write an XML file but XML is not supported.");
+        }
+      else
+        {
+          m_file = new NoneFileConfig ();
+        }
+    }
 #endif /* HAVE_LIBXML2 */
+
   if (m_fileFormat == ConfigStore::RAW_TEXT)
     {
       if (m_mode == ConfigStore::SAVE)
