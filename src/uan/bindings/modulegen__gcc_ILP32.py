@@ -2391,11 +2391,6 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## type-id.h (module 'core'): static void ns3::TypeId::ResetInitialValues() [member function]
-    cls.add_method('ResetInitialValues', 
-                   'void', 
-                   [], 
-                   is_static=True)
     ## type-id.h (module 'core'): bool ns3::TypeId::SetAttributeInitialValue(uint32_t i, ns3::Ptr<ns3::AttributeValue const> initialValue) [member function]
     cls.add_method('SetAttributeInitialValue', 
                    'bool', 
@@ -4309,6 +4304,11 @@ def register_Ns3UanPhy_methods(root_module, cls):
                    'void', 
                    [param('double', 'thresh')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetSleepMode(bool sleep) [member function]
+    cls.add_method('SetSleepMode', 
+                   'void', 
+                   [param('bool', 'sleep')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetTransducer(ns3::Ptr<ns3::UanTransducer> trans) [member function]
     cls.add_method('SetTransducer', 
                    'void', 
@@ -4708,6 +4708,11 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
     cls.add_method('SetSinrModelPhy2', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhyCalcSinr >', 'calcSinr')])
+    ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetSleepMode(bool sleep) [member function]
+    cls.add_method('SetSleepMode', 
+                   'void', 
+                   [param('bool', 'sleep')], 
+                   is_virtual=True)
     ## uan-phy-dual.h (module 'uan'): void ns3::UanPhyDual::SetTransducer(ns3::Ptr<ns3::UanTransducer> trans) [member function]
     cls.add_method('SetTransducer', 
                    'void', 
@@ -4907,6 +4912,11 @@ def register_Ns3UanPhyGen_methods(root_module, cls):
     cls.add_method('SetRxThresholdDb', 
                    'void', 
                    [param('double', 'thresh')], 
+                   is_virtual=True)
+    ## uan-phy-gen.h (module 'uan'): void ns3::UanPhyGen::SetSleepMode(bool sleep) [member function]
+    cls.add_method('SetSleepMode', 
+                   'void', 
+                   [param('bool', 'sleep')], 
                    is_virtual=True)
     ## uan-phy-gen.h (module 'uan'): void ns3::UanPhyGen::SetTransducer(ns3::Ptr<ns3::UanTransducer> trans) [member function]
     cls.add_method('SetTransducer', 
@@ -6853,6 +6863,10 @@ def register_Ns3UanNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
+    ## uan-net-device.h (module 'uan'): void ns3::UanNetDevice::SetSleepMode(bool sleep) [member function]
+    cls.add_method('SetSleepMode', 
+                   'void', 
+                   [param('bool', 'sleep')])
     ## uan-net-device.h (module 'uan'): void ns3::UanNetDevice::SetTransducer(ns3::Ptr<ns3::UanTransducer> trans) [member function]
     cls.add_method('SetTransducer', 
                    'void', 

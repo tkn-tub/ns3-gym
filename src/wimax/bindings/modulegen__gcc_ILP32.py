@@ -4396,11 +4396,6 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## type-id.h (module 'core'): static void ns3::TypeId::ResetInitialValues() [member function]
-    cls.add_method('ResetInitialValues', 
-                   'void', 
-                   [], 
-                   is_static=True)
     ## type-id.h (module 'core'): bool ns3::TypeId::SetAttributeInitialValue(uint32_t i, ns3::Ptr<ns3::AttributeValue const> initialValue) [member function]
     cls.add_method('SetAttributeInitialValue', 
                    'bool', 

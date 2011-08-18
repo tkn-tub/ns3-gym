@@ -198,6 +198,8 @@ def register_types(module):
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     ## packet-data-calculators.h (module 'stats'): ns3::PacketSizeMinMaxAvgTotalCalculator [class]
     module.add_class('PacketSizeMinMaxAvgTotalCalculator', parent=root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
+    ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput [class]
+    module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## nstime.h (module 'core'): ns3::TimeChecker [class]
     module.add_class('TimeChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## time-data-calculators.h (module 'stats'): ns3::TimeMinMaxAvgTotalCalculator [class]
@@ -315,6 +317,7 @@ def register_methods(root_module):
     register_Ns3OmnetDataOutput_methods(root_module, root_module['ns3::OmnetDataOutput'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::PacketSizeMinMaxAvgTotalCalculator'])
+    register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
@@ -2003,11 +2006,6 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## type-id.h (module 'core'): static void ns3::TypeId::ResetInitialValues() [member function]
-    cls.add_method('ResetInitialValues', 
-                   'void', 
-                   [], 
-                   is_static=True)
     ## type-id.h (module 'core'): bool ns3::TypeId::SetAttributeInitialValue(uint32_t i, ns3::Ptr<ns3::AttributeValue const> initialValue) [member function]
     cls.add_method('SetAttributeInitialValue', 
                    'bool', 
@@ -3505,6 +3503,23 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## packet-data-calculators.h (module 'stats'): void ns3::PacketSizeMinMaxAvgTotalCalculator::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3SqliteDataOutput_methods(root_module, cls):
+    ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput::SqliteDataOutput(ns3::SqliteDataOutput const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SqliteDataOutput const &', 'arg0')])
+    ## sqlite-data-output.h (module 'stats'): ns3::SqliteDataOutput::SqliteDataOutput() [constructor]
+    cls.add_constructor([])
+    ## sqlite-data-output.h (module 'stats'): void ns3::SqliteDataOutput::Output(ns3::DataCollector & dc) [member function]
+    cls.add_method('Output', 
+                   'void', 
+                   [param('ns3::DataCollector &', 'dc')], 
+                   is_virtual=True)
+    ## sqlite-data-output.h (module 'stats'): void ns3::SqliteDataOutput::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
