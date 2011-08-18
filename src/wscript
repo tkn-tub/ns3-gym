@@ -306,8 +306,6 @@ def ns3_python_bindings(bld):
 
     if not env['ENABLE_PYTHON_BINDINGS']:
         return
-    if env['BINDINGS_TYPE'] not in ('modular', 'both'):
-        return
 
     bindings_dir = bld.path.find_dir("bindings")
     if bindings_dir is None or not os.path.exists(bindings_dir.abspath()):
