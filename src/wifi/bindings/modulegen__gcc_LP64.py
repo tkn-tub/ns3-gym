@@ -20,6 +20,8 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
+    ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
+    module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## wifi-mac-header.h (module 'wifi'): ns3::WifiMacType [enumeration]
     module.add_enum('WifiMacType', ['WIFI_MAC_CTL_RTS', 'WIFI_MAC_CTL_CTS', 'WIFI_MAC_CTL_ACK', 'WIFI_MAC_CTL_BACKREQ', 'WIFI_MAC_CTL_BACKRESP', 'WIFI_MAC_MGT_BEACON', 'WIFI_MAC_MGT_ASSOCIATION_REQUEST', 'WIFI_MAC_MGT_ASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_DISASSOCIATION', 'WIFI_MAC_MGT_REASSOCIATION_REQUEST', 'WIFI_MAC_MGT_REASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_PROBE_REQUEST', 'WIFI_MAC_MGT_PROBE_RESPONSE', 'WIFI_MAC_MGT_AUTHENTICATION', 'WIFI_MAC_MGT_DEAUTHENTICATION', 'WIFI_MAC_MGT_ACTION', 'WIFI_MAC_MGT_ACTION_NO_ACK', 'WIFI_MAC_MGT_MULTIHOP_ACTION', 'WIFI_MAC_DATA', 'WIFI_MAC_DATA_CFACK', 'WIFI_MAC_DATA_CFPOLL', 'WIFI_MAC_DATA_CFACK_CFPOLL', 'WIFI_MAC_DATA_NULL', 'WIFI_MAC_DATA_NULL_CFACK', 'WIFI_MAC_DATA_NULL_CFPOLL', 'WIFI_MAC_DATA_NULL_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA', 'WIFI_MAC_QOSDATA_CFACK', 'WIFI_MAC_QOSDATA_CFPOLL', 'WIFI_MAC_QOSDATA_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA_NULL', 'WIFI_MAC_QOSDATA_NULL_CFPOLL', 'WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL'])
     ## wifi-preamble.h (module 'wifi'): ns3::WifiPreamble [enumeration]
@@ -28,8 +30,6 @@ def register_types(module):
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT'])
     ## wifi-phy-standard.h (module 'wifi'): ns3::WifiPhyStandard [enumeration]
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH'])
-    ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
-    module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## qos-tag.h (module 'wifi'): ns3::UserPriority [enumeration]
     module.add_enum('UserPriority', ['UP_BK', 'UP_BE', 'UP_EE', 'UP_CL', 'UP_VI', 'UP_VO', 'UP_NC'])
     ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
@@ -266,10 +266,20 @@ def register_types(module):
     module.add_class('ParetoVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel [class]
+    module.add_class('PropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::PropagationLossModel [class]
+    module.add_class('PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## qos-tag.h (module 'wifi'): ns3::QosTag [class]
     module.add_class('QosTag', parent=root_module['ns3::Tag'])
     ## qos-wifi-mac-helper.h (module 'wifi'): ns3::QosWifiMacHelper [class]
     module.add_class('QosWifiMacHelper', parent=root_module['ns3::WifiMacHelper'])
+    ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel [class]
+    module.add_class('RandomPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::RandomPropagationLossModel [class]
+    module.add_class('RandomPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::RangePropagationLossModel [class]
+    module.add_class('RangePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
@@ -292,6 +302,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::WifiInformationElement', 'ns3::empty', 'ns3::DefaultDeleter<ns3::WifiInformationElement>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel [class]
+    module.add_class('ThreeLogDistancePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
@@ -302,6 +314,8 @@ def register_types(module):
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
     module.add_class('Trailer', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::TwoRayGroundPropagationLossModel [class]
+    module.add_class('TwoRayGroundPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader [class]
     module.add_class('WifiActionHeader', parent=root_module['ns3::Header'])
     ## mgt-headers.h (module 'wifi'): ns3::WifiActionHeader::CategoryValue [enumeration]
@@ -372,6 +386,12 @@ def register_types(module):
     module.add_class('Channel', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## constant-rate-wifi-manager.h (module 'wifi'): ns3::ConstantRateWifiManager [class]
     module.add_class('ConstantRateWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
+    ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel [class]
+    module.add_class('ConstantSpeedPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
+    ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel [class]
+    module.add_class('Cost231PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel::Environment [enumeration]
+    module.add_enum('Environment', ['SubUrban', 'MediumCity', 'Metropolitan'], outer_class=root_module['ns3::Cost231PropagationLossModel'], import_from_module='ns.propagation')
     ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckRequestHeader [class]
     module.add_class('CtrlBAckRequestHeader', parent=root_module['ns3::Header'])
     ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckResponseHeader [class]
@@ -390,6 +410,10 @@ def register_types(module):
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
     ## supported-rates.h (module 'wifi'): ns3::ExtendedSupportedRatesIE [class]
     module.add_class('ExtendedSupportedRatesIE', parent=root_module['ns3::WifiInformationElement'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::FixedRssLossModel [class]
+    module.add_class('FixedRssLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel [class]
+    module.add_class('FriisPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## ideal-wifi-manager.h (module 'wifi'): ns3::IdealWifiManager [class]
     module.add_class('IdealWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
@@ -408,18 +432,26 @@ def register_types(module):
     module.add_class('Ipv6PrefixChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue [class]
     module.add_class('Ipv6PrefixValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel [class]
+    module.add_class('JakesPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::LogDistancePropagationLossModel [class]
+    module.add_class('LogDistancePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker [class]
     module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
     module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## mac-low.h (module 'wifi'): ns3::MacLow [class]
     module.add_class('MacLow', parent=root_module['ns3::Object'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::MatrixPropagationLossModel [class]
+    module.add_class('MatrixPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## mgt-headers.h (module 'wifi'): ns3::MgtBeaconHeader [class]
     module.add_class('MgtBeaconHeader', parent=root_module['ns3::MgtProbeResponseHeader'])
     ## minstrel-wifi-manager.h (module 'wifi'): ns3::MinstrelWifiManager [class]
     module.add_class('MinstrelWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## msdu-aggregator.h (module 'wifi'): ns3::MsduAggregator [class]
     module.add_class('MsduAggregator', parent=root_module['ns3::Object'])
+    ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel [class]
+    module.add_class('NakagamiPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
@@ -633,8 +665,13 @@ def register_methods(root_module):
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
+    register_Ns3PropagationDelayModel_methods(root_module, root_module['ns3::PropagationDelayModel'])
+    register_Ns3PropagationLossModel_methods(root_module, root_module['ns3::PropagationLossModel'])
     register_Ns3QosTag_methods(root_module, root_module['ns3::QosTag'])
     register_Ns3QosWifiMacHelper_methods(root_module, root_module['ns3::QosWifiMacHelper'])
+    register_Ns3RandomPropagationDelayModel_methods(root_module, root_module['ns3::RandomPropagationDelayModel'])
+    register_Ns3RandomPropagationLossModel_methods(root_module, root_module['ns3::RandomPropagationLossModel'])
+    register_Ns3RangePropagationLossModel_methods(root_module, root_module['ns3::RangePropagationLossModel'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
@@ -646,9 +683,11 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3SimpleRefCount__Ns3WifiInformationElement_Ns3Empty_Ns3DefaultDeleter__lt__ns3WifiInformationElement__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >'])
+    register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
+    register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, root_module['ns3::TwoRayGroundPropagationLossModel'])
     register_Ns3WifiActionHeader_methods(root_module, root_module['ns3::WifiActionHeader'])
     register_Ns3WifiActionHeaderActionValue_methods(root_module, root_module['ns3::WifiActionHeader::ActionValue'])
     register_Ns3WifiInformationElement_methods(root_module, root_module['ns3::WifiInformationElement'])
@@ -674,6 +713,8 @@ def register_methods(root_module):
     register_Ns3CaraWifiManager_methods(root_module, root_module['ns3::CaraWifiManager'])
     register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
     register_Ns3ConstantRateWifiManager_methods(root_module, root_module['ns3::ConstantRateWifiManager'])
+    register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
+    register_Ns3Cost231PropagationLossModel_methods(root_module, root_module['ns3::Cost231PropagationLossModel'])
     register_Ns3CtrlBAckRequestHeader_methods(root_module, root_module['ns3::CtrlBAckRequestHeader'])
     register_Ns3CtrlBAckResponseHeader_methods(root_module, root_module['ns3::CtrlBAckResponseHeader'])
     register_Ns3Dcf_methods(root_module, root_module['ns3::Dcf'])
@@ -683,6 +724,8 @@ def register_methods(root_module):
     register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3ExtendedSupportedRatesIE_methods(root_module, root_module['ns3::ExtendedSupportedRatesIE'])
+    register_Ns3FixedRssLossModel_methods(root_module, root_module['ns3::FixedRssLossModel'])
+    register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
     register_Ns3IdealWifiManager_methods(root_module, root_module['ns3::IdealWifiManager'])
     register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
     register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
@@ -692,12 +735,16 @@ def register_methods(root_module):
     register_Ns3Ipv6AddressValue_methods(root_module, root_module['ns3::Ipv6AddressValue'])
     register_Ns3Ipv6PrefixChecker_methods(root_module, root_module['ns3::Ipv6PrefixChecker'])
     register_Ns3Ipv6PrefixValue_methods(root_module, root_module['ns3::Ipv6PrefixValue'])
+    register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
+    register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
     register_Ns3Mac48AddressChecker_methods(root_module, root_module['ns3::Mac48AddressChecker'])
     register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
     register_Ns3MacLow_methods(root_module, root_module['ns3::MacLow'])
+    register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3MgtBeaconHeader_methods(root_module, root_module['ns3::MgtBeaconHeader'])
     register_Ns3MinstrelWifiManager_methods(root_module, root_module['ns3::MinstrelWifiManager'])
     register_Ns3MsduAggregator_methods(root_module, root_module['ns3::MsduAggregator'])
+    register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NistErrorRateModel_methods(root_module, root_module['ns3::NistErrorRateModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
@@ -4998,6 +5045,47 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
                    [])
     return
 
+def register_Ns3PropagationDelayModel_methods(root_module, cls):
+    ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel::PropagationDelayModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel::PropagationDelayModel(ns3::PropagationDelayModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PropagationDelayModel const &', 'arg0')])
+    ## propagation-delay-model.h (module 'propagation'): ns3::Time ns3::PropagationDelayModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetDelay', 
+                   'ns3::Time', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::PropagationDelayModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3PropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::PropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::PropagationLossModel::PropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::PropagationLossModel::SetNext(ns3::Ptr<ns3::PropagationLossModel> next) [member function]
+    cls.add_method('SetNext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PropagationLossModel >', 'next')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::PropagationLossModel::CalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('CalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): double ns3::PropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3QosTag_methods(root_module, cls):
     ## qos-tag.h (module 'wifi'): ns3::QosTag::QosTag(ns3::QosTag const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::QosTag const &', 'arg0')])
@@ -5080,6 +5168,53 @@ def register_Ns3QosWifiMacHelper_methods(root_module, cls):
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::WifiMac >', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
+    ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel::RandomPropagationDelayModel(ns3::RandomPropagationDelayModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomPropagationDelayModel const &', 'arg0')])
+    ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel::RandomPropagationDelayModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-delay-model.h (module 'propagation'): ns3::Time ns3::RandomPropagationDelayModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetDelay', 
+                   'ns3::Time', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::RandomPropagationDelayModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::RandomPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::RandomPropagationLossModel::RandomPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::RandomPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RangePropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::RangePropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::RangePropagationLossModel::RangePropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::RangePropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
     return
 
@@ -5213,6 +5348,21 @@ def register_Ns3SimpleRefCount__Ns3WifiInformationElement_Ns3Empty_Ns3DefaultDel
                    'void', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeLogDistancePropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel::ThreeLogDistancePropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::ThreeLogDistancePropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -5429,6 +5579,56 @@ def register_Ns3Trailer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::TwoRayGroundPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::TwoRayGroundPropagationLossModel::TwoRayGroundPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetLambda(double frequency, double speed) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'frequency'), param('double', 'speed')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetLambda(double lambda) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'lambda')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetSystemLoss(double systemLoss) [member function]
+    cls.add_method('SetSystemLoss', 
+                   'void', 
+                   [param('double', 'systemLoss')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetMinDistance(double minDistance) [member function]
+    cls.add_method('SetMinDistance', 
+                   'void', 
+                   [param('double', 'minDistance')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::TwoRayGroundPropagationLossModel::GetMinDistance() const [member function]
+    cls.add_method('GetMinDistance', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): double ns3::TwoRayGroundPropagationLossModel::GetLambda() const [member function]
+    cls.add_method('GetLambda', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): double ns3::TwoRayGroundPropagationLossModel::GetSystemLoss() const [member function]
+    cls.add_method('GetSystemLoss', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): void ns3::TwoRayGroundPropagationLossModel::SetHeightAboveZ(double heightAboveZ) [member function]
+    cls.add_method('SetHeightAboveZ', 
+                   'void', 
+                   [param('double', 'heightAboveZ')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::TwoRayGroundPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3WifiActionHeader_methods(root_module, cls):
@@ -7913,6 +8113,109 @@ def register_Ns3ConstantRateWifiManager_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
+    ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel(ns3::ConstantSpeedPropagationDelayModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ConstantSpeedPropagationDelayModel const &', 'arg0')])
+    ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-delay-model.h (module 'propagation'): ns3::Time ns3::ConstantSpeedPropagationDelayModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetDelay', 
+                   'ns3::Time', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## propagation-delay-model.h (module 'propagation'): double ns3::ConstantSpeedPropagationDelayModel::GetSpeed() const [member function]
+    cls.add_method('GetSpeed', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::ConstantSpeedPropagationDelayModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-delay-model.h (module 'propagation'): void ns3::ConstantSpeedPropagationDelayModel::SetSpeed(double speed) [member function]
+    cls.add_method('SetSpeed', 
+                   'void', 
+                   [param('double', 'speed')])
+    return
+
+def register_Ns3Cost231PropagationLossModel_methods(root_module, cls):
+    ## cost231-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::Cost231PropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel::Cost231PropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetBSAntennaHeight(double height) [member function]
+    cls.add_method('SetBSAntennaHeight', 
+                   'void', 
+                   [param('double', 'height')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetSSAntennaHeight(double height) [member function]
+    cls.add_method('SetSSAntennaHeight', 
+                   'void', 
+                   [param('double', 'height')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetEnvironment(ns3::Cost231PropagationLossModel::Environment env) [member function]
+    cls.add_method('SetEnvironment', 
+                   'void', 
+                   [param('ns3::Cost231PropagationLossModel::Environment', 'env')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetLambda(double lambda) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'lambda')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetMinDistance(double minDistance) [member function]
+    cls.add_method('SetMinDistance', 
+                   'void', 
+                   [param('double', 'minDistance')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetBSAntennaHeight() const [member function]
+    cls.add_method('GetBSAntennaHeight', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetSSAntennaHeight() const [member function]
+    cls.add_method('GetSSAntennaHeight', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): ns3::Cost231PropagationLossModel::Environment ns3::Cost231PropagationLossModel::GetEnvironment() const [member function]
+    cls.add_method('GetEnvironment', 
+                   'ns3::Cost231PropagationLossModel::Environment', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetMinDistance() const [member function]
+    cls.add_method('GetMinDistance', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetLambda() const [member function]
+    cls.add_method('GetLambda', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetLambda(double frequency, double speed) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'frequency'), param('double', 'speed')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::GetShadowing() [member function]
+    cls.add_method('GetShadowing', 
+                   'double', 
+                   [])
+    ## cost231-propagation-loss-model.h (module 'propagation'): void ns3::Cost231PropagationLossModel::SetShadowing(double shadowing) [member function]
+    cls.add_method('SetShadowing', 
+                   'void', 
+                   [param('double', 'shadowing')])
+    ## cost231-propagation-loss-model.h (module 'propagation'): double ns3::Cost231PropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3CtrlBAckRequestHeader_methods(root_module, cls):
     ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckRequestHeader::CtrlBAckRequestHeader(ns3::CtrlBAckRequestHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::CtrlBAckRequestHeader const &', 'arg0')])
@@ -8552,6 +8855,71 @@ def register_Ns3ExtendedSupportedRatesIE_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
+def register_Ns3FixedRssLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::FixedRssLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::FixedRssLossModel::FixedRssLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::FixedRssLossModel::SetRss(double rss) [member function]
+    cls.add_method('SetRss', 
+                   'void', 
+                   [param('double', 'rss')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::FixedRssLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::FriisPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel::FriisPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetLambda(double frequency, double speed) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'frequency'), param('double', 'speed')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetLambda(double lambda) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'lambda')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetSystemLoss(double systemLoss) [member function]
+    cls.add_method('SetSystemLoss', 
+                   'void', 
+                   [param('double', 'systemLoss')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::FriisPropagationLossModel::SetMinDistance(double minDistance) [member function]
+    cls.add_method('SetMinDistance', 
+                   'void', 
+                   [param('double', 'minDistance')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::FriisPropagationLossModel::GetMinDistance() const [member function]
+    cls.add_method('GetMinDistance', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): double ns3::FriisPropagationLossModel::GetLambda() const [member function]
+    cls.add_method('GetLambda', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): double ns3::FriisPropagationLossModel::GetSystemLoss() const [member function]
+    cls.add_method('GetSystemLoss', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): double ns3::FriisPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3IdealWifiManager_methods(root_module, cls):
     ## ideal-wifi-manager.h (module 'wifi'): ns3::IdealWifiManager::IdealWifiManager(ns3::IdealWifiManager const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::IdealWifiManager const &', 'arg0')])
@@ -8784,6 +9152,67 @@ def register_Ns3Ipv6PrefixValue_methods(root_module, cls):
                    [param('ns3::Ipv6Prefix const &', 'value')])
     return
 
+def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
+    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::JakesPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## jakes-propagation-loss-model.h (module 'propagation'): uint8_t ns3::JakesPropagationLossModel::GetNOscillators() const [member function]
+    cls.add_method('GetNOscillators', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## jakes-propagation-loss-model.h (module 'propagation'): uint8_t ns3::JakesPropagationLossModel::GetNRays() const [member function]
+    cls.add_method('GetNRays', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## jakes-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::JakesPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## jakes-propagation-loss-model.h (module 'propagation'): void ns3::JakesPropagationLossModel::SetNOscillators(uint8_t nOscillators) [member function]
+    cls.add_method('SetNOscillators', 
+                   'void', 
+                   [param('uint8_t', 'nOscillators')])
+    ## jakes-propagation-loss-model.h (module 'propagation'): void ns3::JakesPropagationLossModel::SetNRays(uint8_t nRays) [member function]
+    cls.add_method('SetNRays', 
+                   'void', 
+                   [param('uint8_t', 'nRays')])
+    ## jakes-propagation-loss-model.h (module 'propagation'): double ns3::JakesPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::LogDistancePropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::LogDistancePropagationLossModel::LogDistancePropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::LogDistancePropagationLossModel::SetPathLossExponent(double n) [member function]
+    cls.add_method('SetPathLossExponent', 
+                   'void', 
+                   [param('double', 'n')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::LogDistancePropagationLossModel::GetPathLossExponent() const [member function]
+    cls.add_method('GetPathLossExponent', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): void ns3::LogDistancePropagationLossModel::SetReference(double referenceDistance, double referenceLoss) [member function]
+    cls.add_method('SetReference', 
+                   'void', 
+                   [param('double', 'referenceDistance'), param('double', 'referenceLoss')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::LogDistancePropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3Mac48AddressChecker_methods(root_module, cls):
     ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker::Mac48AddressChecker() [constructor]
     cls.add_constructor([])
@@ -8970,6 +9399,29 @@ def register_Ns3MacLow_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
+def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::MatrixPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::MatrixPropagationLossModel::MatrixPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::MatrixPropagationLossModel::SetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b, double loss, bool symmetric=true) [member function]
+    cls.add_method('SetLoss', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('double', 'loss'), param('bool', 'symmetric', default_value='true')])
+    ## propagation-loss-model.h (module 'propagation'): void ns3::MatrixPropagationLossModel::SetDefaultLoss(double arg0) [member function]
+    cls.add_method('SetDefaultLoss', 
+                   'void', 
+                   [param('double', 'arg0')])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::MatrixPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3MgtBeaconHeader_methods(root_module, cls):
     ## mgt-headers.h (module 'wifi'): ns3::MgtBeaconHeader::MgtBeaconHeader() [constructor]
     cls.add_constructor([])
@@ -9069,6 +9521,21 @@ def register_Ns3MsduAggregator_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::NakagamiPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel::NakagamiPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h (module 'propagation'): double ns3::NakagamiPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3NetDevice_methods(root_module, cls):
