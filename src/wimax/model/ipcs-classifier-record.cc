@@ -34,8 +34,8 @@ IpcsClassifierRecord::IpcsClassifierRecord (void)
   m_tosHigh = 0;
   m_tosMask = 0;
   m_cid = 0;
-  m_protocol.push_back (6); // udp
-  m_protocol.push_back (17); // tcp
+  m_protocol.push_back (6); // tcp
+  m_protocol.push_back (17); // udp
   AddSrcAddr (Ipv4Address ("0.0.0.0"), Ipv4Mask ("0.0.0.0"));
   AddDstAddr (Ipv4Address ("0.0.0.0"), Ipv4Mask ("0.0.0.0"));
   AddSrcPortRange (0, 65535);
