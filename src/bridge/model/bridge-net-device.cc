@@ -49,7 +49,7 @@ BridgeNetDevice::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("ExpirationTime",
                    "Time it takes for learned MAC state entry to expire.",
-                   TimeValue (Seconds (30)),
+                   TimeValue (Seconds (300)),
                    MakeTimeAccessor (&BridgeNetDevice::m_expirationTime),
                    MakeTimeChecker ())
   ;
