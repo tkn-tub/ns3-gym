@@ -45,18 +45,27 @@ us a note on ns-developers mailing list.  </p>
 
 <hr>
 <h1>Changes from ns-3.11 to ns-3.12</h1>
+
+<h2>Changes to build system:</h2>
 <ul>
 </ul>
 
 <h2>New API:</h2>
 <ul>
+<li> New method, RegularWifiMac::SetPromisc (void), to set the interface
+to promiscuous mode.
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
-<li> The spelling of the attribute "IntialCellVoltage" from LiIonEnergySource 
-was corrected; this will affect existing users who were using the attribute
-with the misspelling.
+<li> The spelling of the attribute 'IntialCellVoltage' from LiIonEnergySource 
+was corrected to 'InitialCellVoltage'; this will affect existing users who 
+were using the attribute with the misspelling.
+<li> Two trace sources in class WifiPhy have had their names changed:
+<ul> 
+<li> 'PromiscSnifferRx' is now 'MonitorSnifferRx'
+<li> 'PromiscSnifferTx' is now 'MonitorSnifferTx'
+</ul>
 </ul>
 
 <h2>Changed behavior:</h2>

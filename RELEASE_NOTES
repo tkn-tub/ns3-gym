@@ -14,9 +14,26 @@ Release 3.12
 
 Availability
 ------------
+This release is not yet available.
 
 Supported platforms
 -------------------
+ns-3.11 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
+
+- Linux x86_64 Ubuntu 11.04
+  - g++-4.5.2
+- Linux i686 Ubuntu 11.04
+  - g++-4.5.2, g++-4.4.5
+- Linux x86_64 Fedora Core 15
+  - g++-4.6.0
+- Linux x86_64 Fedora Core 14
+  - g++-4.5.3, g++-4.4.6, g++-4.3.4
+- Linux x86_64 Fedora Core 10
+  - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.2, 4.4.0
+- OS X Snow Leopard
+  - g++-4.2.1 
+- OS X Lion
 
 New user-visible features
 -------------------------
@@ -28,16 +45,55 @@ New user-visible features
   SpectrumPropagationLossModel class already supported by
   SpectrumChannel. 
 
+- Extend the attribute system extend the attribute system to store map
+  container objects in addition to vector containers.  The ObjectMap
+  and related classes are patterned after ObjectVector.
+
+- Support to IPv4 fragmentation has been added.
+
+- Significant performance improvement for AODV in dense mobile scenarios
+  due to a fixed bug in RERR processing.
+
+- WiFi traces that were named promiscuous are now renamed monitor, and
+  a separate flag for setting the interface to promiscuous mode has been
+  introduced.  This disambiguates monitor mode from promiscuous mode.
 
 Bugs fixed
 ----------
+ - bug 845 -  fix ConfigStore output for changing default values
+ - bug 1010 - Uan model Sleep patch
  - bug 1033 - Mesh airtime-metric fixed
+ - bug 1043 - lte-spectrum-value-helper.cc file swapped uplink/downlink freq.
+ - bug 1050 - ISO C++ forbids variable length array; remove all instances
+ - bug 1057 - LTE bearers differentiation issue
+ - bug 1082 - Check that log component names are correct when taken from NS_LOG
+ - bug 1100 - IPv6 fragmentation enhancements
  - bug 1102 - IPv4 header fragment offset field not set correctly
  - bug 1123 - class MinMaxAvgTotalCalculator does not implement all methods
+ - bug 1134:  Fix LiIonEnergySource attribute spelling for InitialCellVoltage
+ - bug 1139 - Broadcast packets issue in uan cw mac
  - bug 1141 - MeshWifiInterfaceMac adds supported modes to wrong remote station
+ - bug 1163 - Ipv4EndPointDemux::AllocateEphemeralPort forget to increment port
+ - bug 1164 - IPV4 TCP Bind already used port failed, but without setting errno
+ - bug 1174 - Ns-3 does not generate static libraries
  - bug 1175 - shared libraries are not versioned
- - bug 1192 - some test cases fail to clean up properly
+ - bug 1193 - AODV Hello timers scheduling skewed when RREP, RREQ are processed
+ - bug 1194 - AODV Incorrect RERR processing
  - bug 1201 - UDP sockets need to set connected state before notifying the ConnectionSucceeded callback
+ - bug 1208 - Spectrum module example causing valgrind errors
+ - bug 1209 - ns-3-click fails to build on Fedora 15 when tests are enabled
+ - bug 1220 - FdReader always stops with NS_FATAL_ERROR
+ - bug 1222 - Incomplete PointToPointNetDevice Python bindings
+ - bug 1224 - Ns-3-allinone fails to compile on Lion
+ - bug 1234 - GetAttributeChecker is not defined anymore but still used
+ - bug 1239 - Add assertion that reference count never overflows
+ - bug 1244 - Seg Faults in optimized builds due to missing Logging components
+ - Fix ARP issue in nsclick-ip-router.click and static route in nsclick-routing-node2.click
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
 
 Release 3.11
 ===========
