@@ -55,21 +55,21 @@ namespace ns3 {
 AnimationInterface::AnimationInterface ()
   : m_fHandle (STDOUT_FILENO), m_xml (false), mobilitypollinterval (Seconds(0.25)),
     usingSockets (false), mport (0), outputfilename (""),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0)
+    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), m_writeCallback (0)
 {
 }
 
 AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (false), mport (0), outputfilename (fn),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0)
+    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), m_writeCallback (0)
 {
 }
 
 AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (true), mport (port), outputfilename (""),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0)
+    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), m_writeCallback (0)
 {
 }
 
@@ -87,7 +87,14 @@ void AnimationInterface::SetXMLOutput ()
 bool AnimationInterface::SetOutputFile (const std::string& fn)
 {
   if (OutputFileSet)
-    return true;
+    {
+      return true;
+    }
+  if (fn == "")
+    {
+      OutputFileSet = true;
+      return true;
+    }
   FILE* f = fopen (fn.c_str (), "w");
   if (!f)
     {
@@ -96,8 +103,19 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
     }
   m_fHandle = fileno (f); // Set the file handle
   usingSockets = false;
+  outputfilename = fn;
   OutputFileSet = true;
   return true;
+}
+
+void AnimationInterface::SetAnimWriteCallback (AnimWriteCallback cb)
+{
+  m_writeCallback = cb;
+}
+
+void AnimationInterface::ResetAnimWriteCallback ()
+{
+  m_writeCallback = 0;
 }
 
 bool AnimationInterface::SetServerPort (uint16_t port)
@@ -332,6 +350,10 @@ void AnimationInterface::StopAnimation ()
 
 int AnimationInterface::WriteN (int h, const std::string& st)
 {
+  if (m_writeCallback)
+    {
+      m_writeCallback (st.c_str ());
+    }
   return WriteN (h, st.c_str (), st.length ());
 }
 

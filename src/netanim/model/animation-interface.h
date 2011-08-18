@@ -148,6 +148,27 @@ public:
    */
   void SetMobilityPollInterval (Time t);
 
+  /**
+   * \brief typedef for WriteCallBack used for listening to AnimationInterface
+   * write messages
+   * 
+   */
+  typedef void (*AnimWriteCallback) (const char * str);
+
+  /**
+   * \brief Set a callback function to listen to AnimationInterface write events
+   *
+   * \param cb Address of callback function
+   *
+   */
+  void SetAnimWriteCallback (AnimWriteCallback cb);
+
+  /**
+   * \brief Reset the write callback function
+   *
+   */
+  void ResetAnimWriteCallback ();
+
 private:
   
   int       m_fHandle;  // File handle for output (-1 if none)
@@ -217,6 +238,8 @@ private:
   // Recalculate topology bounds
   void RecalcTopoBounds (Vector v);
   std::vector < Ptr <Node> > RecalcTopoBounds ();
+
+  AnimWriteCallback m_writeCallback;
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);
@@ -313,7 +336,6 @@ public:
   uint64_t Get (void) const;
 
 private:
-
   uint64_t m_AnimUid;
 };
 
