@@ -58,6 +58,8 @@ New user-visible features
   a separate flag for setting the interface to promiscuous mode has been
   introduced.  This disambiguates monitor mode from promiscuous mode.
 
+- Monolithic Python bindings have been removed
+
 Bugs fixed
 ----------
  - bug 845 -  fix ConfigStore output for changing default values
@@ -75,6 +77,7 @@ Bugs fixed
  - bug 1141 - MeshWifiInterfaceMac adds supported modes to wrong remote station
  - bug 1163 - Ipv4EndPointDemux::AllocateEphemeralPort forget to increment port
  - bug 1164 - IPV4 TCP Bind already used port failed, but without setting errno
+ - bug 1168 - BridgeNetDevice: default expiration time not realistic
  - bug 1174 - Ns-3 does not generate static libraries
  - bug 1175 - shared libraries are not versioned
  - bug 1193 - AODV Hello timers scheduling skewed when RREP, RREQ are processed
@@ -85,6 +88,7 @@ Bugs fixed
  - bug 1220 - FdReader always stops with NS_FATAL_ERROR
  - bug 1222 - Incomplete PointToPointNetDevice Python bindings
  - bug 1224 - Ns-3-allinone fails to compile on Lion
+ - bug 1226 - Incomplete YansWifiChannel Python bindings
  - bug 1234 - GetAttributeChecker is not defined anymore but still used
  - bug 1239 - Add assertion that reference count never overflows
  - bug 1244 - Seg Faults in optimized builds due to missing Logging components
