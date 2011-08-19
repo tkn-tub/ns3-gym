@@ -118,7 +118,5 @@ int main (int argc, char *argv[])
   Simulator::Run ();
   std::cout << "Destroying the simulation" << std::endl;
   Simulator::Destroy ();
-  std::cout << "Stopping the animation" << std::endl;
-  anim.StopAnimation ();
   return 0;
 }
