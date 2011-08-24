@@ -14,26 +14,21 @@ Release 3.12
 
 Availability
 ------------
-This release is not yet available.
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.12.tar.bz2
 
 Supported platforms
 -------------------
-ns-3.11 has been tested on the following platforms.  Not all features are
+ns-3.12 has been tested on the following platforms.  Not all features are
 available on all platforms; check the Installation page on the project wiki.
 
-- Linux x86_64 Ubuntu 11.04
-  - g++-4.5.2
-- Linux i686 Ubuntu 11.04
-  - g++-4.5.2, g++-4.4.5
-- Linux x86_64 Fedora Core 15
-  - g++-4.6.0
-- Linux x86_64 Fedora Core 14
-  - g++-4.5.3, g++-4.4.6, g++-4.3.4
-- Linux x86_64 Fedora Core 10
-  - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.2, 4.4.0
-- OS X Snow Leopard
-  - g++-4.2.1 
-- OS X Lion
+- Fedora Core 15 (32/64 bit) with g++-4.6.0 
+- Ubuntu 11.04 (32/64 bit) with g++-4.5.2 
+- OS X Lion with g++-4.2.1 
+- Fedora Core 14 (64 bit) with g++-4.3.4, g++-4.5.3, g++-4.4.6 
+- Fedora Core 12 (64 bit) with g++-4.4.4 
+- OS X Snow Leopard with g++-4.2.1 
+- Ubuntu 10.04.3 LTS (64 bit) with g++-4.4.3, g++-3.4.6 
 
 New user-visible features
 -------------------------
@@ -49,7 +44,7 @@ New user-visible features
   container objects in addition to vector containers.  The ObjectMap
   and related classes are patterned after ObjectVector.
 
-- Support to IPv4 fragmentation has been added.
+- Support for IPv4 fragmentation has been added.
 
 - Significant performance improvement for AODV in dense mobile scenarios
   due to a fixed bug in RERR processing.
@@ -62,7 +57,7 @@ New user-visible features
 
 Bugs fixed
 ----------
- - bug 845 -  fix ConfigStore output for changing default values
+ - bug 845  - fix ConfigStore output for changing default values
  - bug 1010 - Uan model Sleep patch
  - bug 1033 - Mesh airtime-metric fixed
  - bug 1043 - lte-spectrum-value-helper.cc file swapped uplink/downlink freq.
@@ -72,7 +67,7 @@ Bugs fixed
  - bug 1100 - IPv6 fragmentation enhancements
  - bug 1102 - IPv4 header fragment offset field not set correctly
  - bug 1123 - class MinMaxAvgTotalCalculator does not implement all methods
- - bug 1134:  Fix LiIonEnergySource attribute spelling for InitialCellVoltage
+ - bug 1134 - Fix LiIonEnergySource attribute spelling for InitialCellVoltage
  - bug 1139 - Broadcast packets issue in uan cw mac
  - bug 1141 - MeshWifiInterfaceMac adds supported modes to wrong remote station
  - bug 1163 - Ipv4EndPointDemux::AllocateEphemeralPort forget to increment port
@@ -87,7 +82,7 @@ Bugs fixed
  - bug 1209 - ns-3-click fails to build on Fedora 15 when tests are enabled
  - bug 1220 - FdReader always stops with NS_FATAL_ERROR
  - bug 1222 - Incomplete PointToPointNetDevice Python bindings
- - bug 1224 - Ns-3-allinone fails to compile on Lion
+ - bug 1224 - ns-3-allinone fails to compile on OS X Lion
  - bug 1226 - Incomplete YansWifiChannel Python bindings
  - bug 1234 - GetAttributeChecker is not defined anymore but still used
  - bug 1239 - Add assertion that reference count never overflows
@@ -105,7 +100,7 @@ Release 3.11
 Availability
 ------------
 This release is available from: 
-http://www.nsnam.org/releases/ns-allinone-3.11.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.11.tar.bz2
 
 Supported platforms
 -------------------
@@ -246,7 +241,7 @@ Release 3.10
 Availability
 ------------
 This release is available from: 
-http://www.nsnam.org/releases/ns-allinone-3.10.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.10.tar.bz2
 
 Supported platforms
 -------------------
@@ -411,7 +406,7 @@ Release 3.9
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-allinone-3.9.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.9.tar.bz2
 
 Supported platforms
 -------------------
@@ -571,7 +566,7 @@ Release 3.8
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-allinone-3.8.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.8.tar.bz2
 
 Supported platforms
 -------------------
@@ -711,7 +706,7 @@ Release 3.7
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-allinone-3.7.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.7.tar.bz2
 
 Supported platforms
 -------------------
@@ -835,7 +830,7 @@ Release 3.6
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-allinone-3.6.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.6.tar.bz2
 
 Supported platforms
 -------------------
@@ -911,7 +906,7 @@ Release 3.5
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-allinone-3.5.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.5.tar.bz2
 
 Supported platforms
 -------------------
@@ -970,7 +965,7 @@ Release 3.4
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-allinone-3.4.tar.bz2
+http://www.nsnam.org/release/ns-allinone-3.4.tar.bz2
 
 Supported platforms
 -------------------
@@ -1034,7 +1029,7 @@ Release 3.3
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-3.3.tar.bz2
+http://www.nsnam.org/release/ns-3.3.tar.bz2
 
 Supported platforms
 -------------------
@@ -1101,7 +1096,7 @@ Release 3.2
 Availability
 ------------
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-3.2.tar.bz2
+http://www.nsnam.org/release/ns-3.2.tar.bz2
 
 Supported platforms
 -------------------
@@ -1172,7 +1167,7 @@ The first ns-3 stable release
 -----------------------------
 
 This release is immediately available from:
-http://www.nsnam.org/releases/ns-3.1.tar.bz2
+http://www.nsnam.org/release/ns-3.1.tar.bz2
 
 We dedicate this initial ns-3 release to our late contributor and friend, 
 Federico Maguolo.
