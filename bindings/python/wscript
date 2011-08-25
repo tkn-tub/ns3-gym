@@ -25,6 +25,15 @@ import Task, ccroot
 from python import _get_python_variables # this comes from wafadmin/Tools/python.py
 
 
+# Patch a bug in waf-1.5.16's python detection, see
+# https://www.nsnam.org/bugzilla/show_bug.cgi?id=1250
+import python
+python.FRAG_2 = """
+#include <Python.h>
+""" + python.FRAG_2
+del python
+
+
 
 def add_to_python_path(path):
     if os.environ.get('PYTHONPATH', ''):
