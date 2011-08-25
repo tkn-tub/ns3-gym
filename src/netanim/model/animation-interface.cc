@@ -246,6 +246,7 @@ void AnimationInterface::StartAnimation ()
         {
           Vector v = GetPosition (n);
           oss << GetXMLOpenClose_node (0,n->GetId (),v.x,v.y);
+	  WriteN (m_fHandle, oss.str ());
         }
       else
         {
@@ -253,9 +254,8 @@ void AnimationInterface::StartAnimation ()
           Vector v = GetPosition (n);
           oss << "0.0 N " << n->GetId () 
               << " " << v.x << " " << v.y << std::endl;
+      	  WriteN (m_fHandle, oss.str ().c_str (), oss.str ().length ());
         }
-
-      WriteN (m_fHandle, oss.str ().c_str (), oss.str ().length ());
     }
   NS_LOG_INFO ("Setting p2p links");
   // Now dump the p2p links
