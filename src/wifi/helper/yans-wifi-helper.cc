@@ -458,7 +458,7 @@ YansWifiPhyHelper::EnableAsciiInternal (
   //
   // All of the ascii enable functions vector through here including the ones
   // that are wandering through all of devices on perhaps all of the nodes in
-  // the system.  We can only deal with devices of type CsmaNetDevice.
+  // the system.  We can only deal with devices of type WifiNetDevice.
   //
   Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
   if (device == 0)
