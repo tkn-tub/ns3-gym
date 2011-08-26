@@ -67,10 +67,10 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
-if re.match(r"\d+\.\d+(\.\d+)?", VERSION) is not None:
+# note: here we disable the VNUM for OSX since it causes problems (bug #1251)
+wutils.VNUM = None
+if sys.platform != 'darwin' and re.match(r"^\d+\.\d+(\.\d+)?$", VERSION) is not None:
     wutils.VNUM = VERSION
-else:
-    wutils.VNUM = None
 
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
