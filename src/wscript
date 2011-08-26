@@ -200,6 +200,7 @@ class ns3module_taskgen(TaskGen.task_gen):
                 linkflags = '-Wl,--soname=%s' % module_library_name
         elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
                 os.uname()[4] == 'x86_64' and \
+                sys.platform != 'darwin' and \
                 module.env['ENABLE_PYTHON_BINDINGS']:
             # enable that flag for static builds only on x86-64 platforms
             # when gcc is present and only when we want python bindings
