@@ -73,6 +73,12 @@ def configure(conf):
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "disabled by user request")
         return
+    # Disable python in static builds (bug #1253)
+    if ((conf.env['ENABLE_STATIC_NS3']) or \
+      (conf.env['ENABLE_SHARED_AND_STATIC_NS3'])):
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "bindings incompatible with static build")
+        return
 
     enabled_modules = list(conf.env['NS3_ENABLED_MODULES'])
     enabled_modules.sort()
