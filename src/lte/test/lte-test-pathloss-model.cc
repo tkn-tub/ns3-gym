@@ -229,7 +229,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   Ptr<BuildingsMobilityModel> mm11 = hueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
   mm11->SetPosition (Vector (distance, 0.0, hm));
-  // The loss is as in test #4 plus the building penetration loss
+  // The loss is similar as in test #4 plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB and the height gain
   // (2 floors x 2 dB/floor = 4) -> 180.90 + 7 - 4 = 183.90
   AddTestCase (new LtePathlossModelTestCase (freq, mm9, mm11, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
