@@ -1,5 +1,6 @@
 import math
-import ns3
+import ns.wifi
+import ns.network
 import goocanvas
 from visualizer.base import Link, transform_distance_canvas_to_simulation
 
@@ -77,17 +78,17 @@ class WifiLinkMonitor(object):
         self.stations = []
 
         for node in viz.nodes.itervalues():
-            ns3_node = ns3.NodeList.GetNode(node.node_index)
+            ns3_node = ns.network.NodeList.GetNode(node.node_index)
             for devI in range(ns3_node.GetNDevices()):
                 dev = ns3_node.GetDevice(devI)
-                if not isinstance(dev, ns3.WifiNetDevice):
+                if not isinstance(dev, ns.wifi.WifiNetDevice):
                     continue
                 wifi_mac = dev.GetMac()
-                if isinstance(wifi_mac, ns3.StaWifiMac):
+                if isinstance(wifi_mac, ns.wifi.StaWifiMac):
                     wifi_link = WifiLink(viz.links_group, node, dev)
                     self.stations.append((dev, node, wifi_link))
-                elif isinstance(wifi_mac, ns3.ApWifiMac):
-                    bssid = ns3.Mac48Address.ConvertFrom(dev.GetAddress())
+                elif isinstance(wifi_mac, ns.wifi.ApWifiMac):
+                    bssid = ns.network.Mac48Address.ConvertFrom(dev.GetAddress())
                     self.access_points[str(bssid)] = node
         #print "APs: ", self.access_points
         #print "STAs: ", self.stations

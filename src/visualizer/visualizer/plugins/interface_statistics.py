@@ -1,5 +1,6 @@
 import gtk
-import ns3
+import ns.core
+import ns.network
 from visualizer.base import InformationWindow
 
 NODE_STATISTICS_MEMORY = 10
@@ -125,13 +126,13 @@ class ShowInterfaceStatistics(InformationWindow):
         self.visualizer.remove_information_window(self)
     
     def update(self):
-        node = ns3.NodeList.GetNode(self.node_index)
+        node = ns.network.NodeList.GetNode(self.node_index)
         stats_list = self.statistics_collector.get_interface_statistics(self.node_index)
         self.table_model.clear()
         for iface, stats in enumerate(stats_list):
             tree_iter = self.table_model.append()
             netdevice = node.GetDevice(iface)
-            interface_name = ns3.Names.FindName(netdevice)
+            interface_name = ns.core.Names.FindName(netdevice)
             if not interface_name:
                 interface_name = "(interface %i)" % iface
             self.table_model.set(tree_iter,
