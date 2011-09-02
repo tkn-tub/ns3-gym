@@ -9,6 +9,19 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3.12.1
+==============
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.12.1.tar.bz2
+
+Bugs fixed
+----------
+This release fixes PyViz visualizer's python bindings; otherwise, it
+is the same as the ns-3.12 release.
+
 Release 3.12
 ===========
 
