@@ -179,6 +179,11 @@ ns-3 wiki edits
 
 2. edit front page and Roadmap
 
+Bugzilla
+--------
+
+1. Add a product version "ns-3.x" to the available versions.
+
 Announcing
 ----------
 
