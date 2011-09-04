@@ -108,7 +108,7 @@ int main (int argc, char *argv[])
     }
 
   // Uncomment the below statement to generate Animation trace in XML 
-  // anim.SetXMLOutput ();
+  anim.SetXMLOutput ();
   anim.StartAnimation ();
 
   // Set up the acutal simulation

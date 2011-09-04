@@ -92,6 +92,7 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
     }
   if (fn == "")
     {
+      m_fHandle = STDOUT_FILENO;
       OutputFileSet = true;
       return true;
     }
@@ -343,13 +344,21 @@ void AnimationInterface::StopAnimation ()
         { // Terminate the anim element
           WriteN (m_fHandle, GetXMLClose ("anim"));
         }
-      close (m_fHandle);
-      m_fHandle = 0;
+      if (m_fHandle != STDOUT_FILENO)
+        {
+          close (m_fHandle);
+        }
+      OutputFileSet = false;
+      m_fHandle = -1;
     }
 }
 
 int AnimationInterface::WriteN (int h, const std::string& st)
 {
+  if (h < 0)
+    { 
+      return 0;
+    }
   if (m_writeCallback)
     {
       m_writeCallback (st.c_str ());
@@ -422,7 +431,12 @@ void AnimationInterface::RecalcTopoBounds (Vector v)
 }
 
 int AnimationInterface::WriteN (int h, const char* data, uint32_t count)
-{ // Write count bytes to h from data
+{ 
+  if (h < 0)
+    {
+      return 0;
+    }
+  // Write count bytes to h from data
   uint32_t    nLeft   = count;
   const char* p       = data;
   uint32_t    written = 0;
