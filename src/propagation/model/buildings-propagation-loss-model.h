@@ -27,8 +27,14 @@
 #include <ns3/building.h>
 #include <ns3/buildings-mobility-model.h>
 
+// #include <ns3/jakes-fading-loss-model.h>
+// #include <ns3/shadowing-loss-model.h>
+
 namespace ns3 {
 
+class ShadowingLossModel;
+class JakesFadingLossModel;
+  
 /**
  * \ingroup propagation
  *
@@ -58,6 +64,7 @@ class BuildingsPropagationLossModel : public PropagationLossModel
 public:
   static TypeId GetTypeId (void);
   BuildingsPropagationLossModel ();
+  ~BuildingsPropagationLossModel ();
   enum Environment
   {
     Urban, SubUrban, OpenAreas
@@ -83,6 +90,7 @@ public:
   double GetMinDistance (void) const;
   double GetLambda (void) const;
   void SetLambda (double frequency, double speed);
+  
   
 private:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
@@ -110,6 +118,24 @@ private:
   double m_streetsWidth; // in meters
   double m_buildingsExtend; // in meters
   double m_buildingSeparation; // in meters
+  
+  // the shadowing tx/rx pairs management has been inspired by the
+  // JakesFadingLossModel developed by Federico Maguolo (see jakes-propagation-model.h/cc)
+  class ShadowingLoss;
+  friend class ShadowingLoss;
+  typedef std::vector<ShadowingLoss *> DestinationList;
+  struct PairsSet {
+    Ptr<MobilityModel> sender;
+    DestinationList receivers;
+  };
+  typedef std::vector<PairsSet *> PairsList;
+  double EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  
+  
+  double m_shadowingSigmaExtWalls;
+  double m_shadowingSigmaOutdoor;
+  double m_shadowingSigmaIndoor;
+  mutable PairsList m_shadowingPairs;
 
 };
 

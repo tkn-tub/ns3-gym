@@ -29,13 +29,55 @@
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
 
+#include <ns3/shadowing-loss-model.h>
+#include <ns3/jakes-fading-loss-model.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
 
 namespace ns3 {
-
-
+  
 NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
+
+
+
+class BuildingsPropagationLossModel::ShadowingLoss 
+{
+  public:
+  ShadowingLoss (double mean, double sigma);
+  ~ShadowingLoss ();
+  double GetLoss ();
+  Ptr<MobilityModel> GetReceiver (void);
+  private:
+  Ptr<MobilityModel> m_receiver;
+  NormalVariable m_randVariable;
+  double m_shadowingValue;
+};
+
+
+BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma) :
+  m_randVariable (mean, sigma)
+{
+  m_shadowingValue = m_randVariable.GetValue ();
+  NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
+}
+
+BuildingsPropagationLossModel::ShadowingLoss::~ShadowingLoss ()
+{
+  
+}
+  
+double
+BuildingsPropagationLossModel::ShadowingLoss::GetLoss ()
+{
+  return (m_shadowingValue);
+}
+
+Ptr<MobilityModel>
+BuildingsPropagationLossModel::ShadowingLoss::GetReceiver ()
+{
+  return m_receiver;
+}
 
 TypeId
 BuildingsPropagationLossModel::GetTypeId (void)
@@ -57,6 +99,23 @@ BuildingsPropagationLossModel::GetTypeId (void)
                    DoubleValue (2160e6),
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_frequency),
                    MakeDoubleChecker<double> ())
+                   
+     .AddAttribute ("ShadowSigmaOutdoor",
+                    "Standard deviation of the normal distribution used for calculate the shadowing for outdoor nodes",
+                      DoubleValue (7.0),
+                     MakeDoubleAccessor (&BuildingsPropagationLossModel::m_shadowingSigmaOutdoor),
+                      MakeDoubleChecker<double> ())
+                      
+      .AddAttribute ("ShadowSigmaIndoor",
+                     "Standard deviation of the normal distribution used for calculate the shadowing for indoor nodes ",
+                      DoubleValue (8.0),
+                     MakeDoubleAccessor (&BuildingsPropagationLossModel::m_shadowingSigmaIndoor),
+                      MakeDoubleChecker<double> ())
+      .AddAttribute ("ShadowSigmaExtWalls",
+                    "Standard deviation of the normal distribution used for calculate the shadowing due to ext walls ",
+                    DoubleValue (5.0),
+                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_shadowingSigmaExtWalls),
+                    MakeDoubleChecker<double> ())
                    
     .AddAttribute ("RooftopLevel",
                   " The height of the rooftop [m].",
@@ -98,6 +157,7 @@ BuildingsPropagationLossModel::GetTypeId (void)
                       MakeEnumChecker (BuildingsPropagationLossModel::Small, "Small",
                                       BuildingsPropagationLossModel::Medium, "Medium",
                                       BuildingsPropagationLossModel::Large, "Large"));
+
     
   return tid;
 }
@@ -111,6 +171,23 @@ BuildingsPropagationLossModel::BuildingsPropagationLossModel () :
   m_buildingsExtend (80.0),
   m_buildingSeparation (50.0)
 {
+}
+
+BuildingsPropagationLossModel::~BuildingsPropagationLossModel ()
+{
+  for (PairsList::reverse_iterator i = m_shadowingPairs.rbegin (); i != m_shadowingPairs.rend (); i++)
+  {
+    PairsSet *ps = *i;
+    for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++)
+    {
+      ShadowingLoss *pc = *r;
+      delete pc;
+    }
+    ps->sender = 0;
+    ps->receivers.clear ();
+    delete ps;
+  }
+  m_shadowingPairs.clear ();
 }
 
 void
@@ -518,6 +595,9 @@ BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) con
   return (loss);
 }
 
+
+
+
 double
 BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
@@ -666,14 +746,85 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
         } // end b1->IsIndoor ()
     } // end a1->IsOutdoor ()
 
-  return (loss);
+  // Evaluate the shadowing
+  PairsList::iterator i = m_shadowingPairs.end ();
+  while (i != m_shadowingPairs.begin ()) 
+    {
+      i--;
+      PairsSet *ps = *i;
+      if (ps->sender == a) 
+        {
+          m_shadowingPairs.erase (i);
+          m_shadowingPairs.push_back (ps);
+          for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
+            {
+              ShadowingLoss *pc = *r;
+              if (pc->GetReceiver () == b) 
+                {
+                  ps->receivers.erase (r);
+                  ps->receivers.push_back (pc);
+                  return loss + pc->GetLoss ();
+                }
+            }
+            double sigma = EvaluateSigma (a1, b1);
+            ShadowingLoss *pc = new ShadowingLoss (0.0, sigma);
+          ps->receivers.push_back (pc);
+          return loss + pc->GetLoss ();
+        }
+    }
+  PairsSet *ps = new PairsSet;
+  ps->sender = a;
+  double sigma = EvaluateSigma (a1, b1);
+  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma);
+  ps->receivers.push_back (pc);
+  m_shadowingPairs.push_back (ps);
+  return loss + pc->GetLoss ();
+  
+  
+  
+//   if (m_shadowingValue==0)
+//     {
+//       m_shadowingValue = new ShadowingLoss (m_shadowingMean, m_shadowingSigma);
+//     }
+//   
+//   return (loss + m_shadowingValue->GetLoss ());
 
 }
+
+double
+BuildingsPropagationLossModel::EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b)
+const
+{
+  if (a->IsOutdoor ())
+  {
+    if (b->IsOutdoor ())
+    {
+      return (m_shadowingSigmaOutdoor);
+    }
+    else
+    {
+      double sigma = sqrt((m_shadowingSigmaOutdoor*m_shadowingSigmaOutdoor) + (m_shadowingSigmaExtWalls*m_shadowingSigmaExtWalls));
+      return (sigma);
+    }
+  }
+  else
+    if (b->IsIndoor ())
+    {
+      return (m_shadowingSigmaIndoor);
+    }
+    else
+    {
+      double sigma = sqrt((m_shadowingSigmaOutdoor*m_shadowingSigmaOutdoor) + (m_shadowingSigmaExtWalls*m_shadowingSigmaExtWalls));
+      return (sigma);
+    }
+}
+
 
 double
 BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
   return txPowerDbm + GetLoss (a, b);
 }
+
 
 } // namespace ns3
