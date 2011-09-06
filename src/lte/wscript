@@ -63,6 +63,7 @@ def build(bld):
         'test/lte-test-spectrum-value-helper.cc',
         'test/lte-test-pathloss-model.cc',
         'test/epc-test-gtpu-v1.cc',
+        'test/lte-test-shadowing.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -123,6 +124,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu-v1.h',
+        'test/lte-test-shadowing.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

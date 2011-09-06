@@ -199,7 +199,7 @@ JakesFadingLossModel::SetValue (void)
 
       else if (x == 2)
         {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
+          // SELECTED 8 MULTIPLE PATH FOR JAKES MODEL
           if (speed == 0)
             {
               for (int j = 0; j < 500; j++)
@@ -232,7 +232,7 @@ JakesFadingLossModel::SetValue (void)
 
       else if (x == 3)
         {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
+          // SELECTED 10 MULTIPLE PATH FOR JAKES MODEL
           if (speed == 0)
             {
               for (int j = 0; j < 500; j++)
@@ -265,7 +265,7 @@ JakesFadingLossModel::SetValue (void)
 
       else if (x == 4)
         {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
+          // SELECTED 12 MULTIPLE PATH FOR JAKES MODEL
           if (speed == 0)
             {
               for (int j = 0; j < 500; j++)
