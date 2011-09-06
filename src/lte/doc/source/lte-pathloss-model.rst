@@ -318,7 +318,7 @@ The pathloss model characterizes the hybrid cases (i.e., when an outdoor node tr
 
 
 Pathloss Logic Model
--------------------
+--------------------
 
 
 In the following the pseudo-code of the model is presented::
@@ -368,4 +368,21 @@ In the following the pseudo-code of the model is presented::
 where ``txNode`` and ``rxNode`` can be one of the elements eNB, SC and UE.
 We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the transmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold also or SC transmissions (called ``m_itu1411DistanceThreshold``) for pruning the communications between SCs and UEs too far (the defalut values is fixed to 2 km).
 
+
+Shadowing Model
+---------------
+
+The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the connection characteristics. In the implementation we considered three main possible scenarios for the standard deviation, in detail:
+
+ * outdoor (defaul value of 7 dB).
+ * indoor (defaul value of 10 dB).
+ * external walls penetration (default value 5 dB). 
+
+The simulator generates a shadowing value per each active link according to nodes'position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and viceversa, the standard deviation has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that, the variance of a distribution resulting from the sum of two normal is the sum of the variances. 
+
+.. math::
+  
+  X \sim N(\mu,\sigma^2) \mbox{ and } Y \sim N(\nu,\tau^2)
+
+  Z = X + Y \sim Z (\mu + \nu, \sigma^2 + \tau^2) \Rightarrow \sigma_Z = \sqrt{\sigma^2 + \tau^2}
 
