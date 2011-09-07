@@ -20,7 +20,10 @@ def build(bld):
         'model/lte-amc.cc',
         'model/lte-enb-rrc.cc',
         'model/lte-ue-rrc.cc',
+        'model/lte-rlc-sap.cc',
         'model/lte-rlc.cc',
+        'model/lte-rlc-header.cc',
+        'model/lte-rlc-um.cc',
         'model/lte-rlc-tag.cc',
         'model/eps-bearer.cc',        
         'model/lte-net-device.cc',
@@ -66,10 +69,11 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
+        'test/lte-test-rlc-um-transmitter.cc',
         'test/epc-test-gtpu.cc',
         'test/test-eps-tft-classifier.cc',
         ]
-    
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'lte'
     headers.source = [
@@ -89,9 +93,12 @@ def build(bld):
         'model/lte-amc.h',
         'model/lte-enb-rrc.h',
         'model/lte-ue-rrc.h',
+        'model/lte-rlc-sap.h',
         'model/lte-rlc.h',
+        'model/lte-rlc-header.h',
+        'model/lte-rlc-um.h',
         'model/lte-rlc-tag.h',
-        'model/eps-bearer.h',        
+        'model/eps-bearer.h',
         'model/lte-net-device.h',
         'model/lte-enb-net-device.h',
         'model/lte-ue-net-device.h',
@@ -129,6 +136,7 @@ def build(bld):
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
+        'test/lte-test-rlc-um-transmitter.h',
         'test/epc-test-gtpu.h',
         'model/lte-tft.h',
         'model/eps-tft-classifier.h',
