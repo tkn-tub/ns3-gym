@@ -149,6 +149,15 @@ public:
   void SetMobilityPollInterval (Time t);
 
   /**
+   * \brief Set random position if a Mobility Model does not exists for the node
+   *
+   * \param setRandPos True if a random position can be set for a node without a
+   * Mobililty model
+   *
+   */
+  void SetRandomPosition (bool setRandPos);
+
+  /**
    * \brief typedef for WriteCallBack used for listening to AnimationInterface
    * write messages
    * 
@@ -239,6 +248,7 @@ private:
   void RecalcTopoBounds (Vector v);
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
+  bool randomPosition;
   AnimWriteCallback m_writeCallback;
 
   // Path helper

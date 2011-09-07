@@ -107,7 +107,6 @@ int main (int argc, char *argv[])
       anim.SetOutputFile (animFile);
     }
 
-  // Uncomment the below statement to generate Animation trace in XML 
   anim.SetXMLOutput ();
   anim.StartAnimation ();
 

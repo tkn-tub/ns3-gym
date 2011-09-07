@@ -26,6 +26,7 @@
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/node.h"
+#include "ns3/random-variable.h"
 #include "ns3/mobility-model.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -55,21 +56,24 @@ namespace ns3 {
 AnimationInterface::AnimationInterface ()
   : m_fHandle (STDOUT_FILENO), m_xml (false), mobilitypollinterval (Seconds(0.25)),
     usingSockets (false), mport (0), outputfilename (""),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), m_writeCallback (0)
+    OutputFileSet (false), ServerPortSet (false), gAnimUid (0),randomPosition (true),
+    m_writeCallback (0)
 {
 }
 
 AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (false), mport (0), outputfilename (fn),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), m_writeCallback (0)
+    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
+    m_writeCallback (0)
 {
 }
 
 AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (true), mport (port), outputfilename (""),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), m_writeCallback (0)
+    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
+    m_writeCallback (0)
 {
 }
 
@@ -168,20 +172,37 @@ void AnimationInterface::SetMobilityPollInterval (Time t)
   mobilitypollinterval = t;
 }
 
+void AnimationInterface::SetRandomPosition (bool setRandPos)
+{
+  randomPosition = setRandPos;
+}
+
 Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
 {
   Ptr<MobilityModel> loc = n->GetObject<MobilityModel> ();
-  Vector v(100,100,0);
   if (loc)
     {
-      v = loc->GetPosition ();
+      nodeLocation[n->GetId ()] = loc->GetPosition ();
     }
   else
    {
      NS_LOG_WARN ( "Node:" << n->GetId () << " Does not have a mobility model");
+     if (randomPosition)
+       {
+         Vector deterministicVector (100,100,0);
+         Vector randomVector (UniformVariable ().GetInteger (0,1000), UniformVariable ().GetInteger (0,1000), 0);
+         if (randomPosition)
+           {
+             nodeLocation[n->GetId ()] = randomVector;
+           }
+         else
+           {
+             nodeLocation[n->GetId ()] = deterministicVector;
+           }
+       }
+     
    }
-  nodeLocation[n->GetId ()] = v;
-  return v;
+  return nodeLocation[n->GetId ()];
 }
 
 Vector AnimationInterface::UpdatePosition (Ptr <Node> n, Vector v)
