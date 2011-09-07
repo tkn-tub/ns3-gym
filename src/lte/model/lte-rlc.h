@@ -30,12 +30,17 @@
 
 #include "ns3/object.h"
 
+#include "ns3/lte-rlc-sap.h"
+#include "ns3/lte-mac-sap.h"
 
 namespace ns3 {
 
 
-class LteMacSapProvider;
-class LteMacSapUser;
+// class LteRlcSapProvider;
+// class LteRlcSapUser;
+// 
+// class LteMacSapProvider;
+// class LteMacSapUser;
 
 /**
  * This abstract base class defines the API to interact with the Radio Link Control
@@ -45,6 +50,7 @@ class LteMacSapUser;
 class LteRlc : public Object // SimpleRefCount<LteRlc>
 {
   friend class LteRlcSpecificLteMacSapUser;
+  friend class LteRlcSpecificLteRlcSapProvider<LteRlc>;
 public:
   LteRlc ();
   virtual ~LteRlc ();
@@ -67,7 +73,21 @@ public:
   /**
    *
    *
-   * \param s the MAC SAP Providerto be used by this LTE_RLC
+   * \param s the RLC SAP user to be used by this LTE_RLC
+   */
+  void SetLteRlcSapUser (LteRlcSapUser * s);
+
+  /**
+   *
+   *
+   * \param s the RLC SAP Provider interface offered to the PDCP by this LTE_RLC
+   */
+  LteRlcSapProvider* GetLteRlcSapProvider ();
+
+  /**
+   *
+   *
+   * \param s the MAC SAP Provider to be used by this LTE_RLC
    */
   void SetLteMacSapProvider (LteMacSapProvider * s);
 
@@ -80,9 +100,15 @@ public:
 
 
 
-
+  // TODO MRE What is the sense to duplicate all the interfaces here???
 protected:
-  // methods forwarded by LteMacSapUser
+  // Interface forwarded by LteRlcSapProvider
+  virtual void DoTransmitPdcpPdu (Ptr<Packet> p) = 0;
+
+  LteRlcSapUser* m_rlcSapUser;
+  LteRlcSapProvider* m_rlcSapProvider;
+
+  // Interface forwarded by LteMacSapUser
   virtual void DoNotifyTxOpportunity (uint32_t bytes) = 0;
   virtual void DoNotifyHarqDeliveryFailure () = 0;
   virtual void DoReceivePdu (Ptr<Packet> p) = 0;
@@ -121,6 +147,7 @@ public:
   virtual ~LteRlcSm ();
   static TypeId GetTypeId (void);
 
+  virtual void DoTransmitPdcpPdu (Ptr<Packet> p);
   virtual void DoNotifyTxOpportunity (uint32_t bytes);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
