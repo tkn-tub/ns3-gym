@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ *        remove dependencies from Phy and Mobility models
  */
 
 #ifndef MULTIPATH_LOSS_MODEL_H
@@ -46,15 +48,24 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * \brief Set the value of the considered loss model
-   */
-  void SetValue (void);
+  * \brief Set the value of the considered loss model
+  * \param speed the relative speed of the two devices
+  */
+  void SetValue (double speed);
   /**
    * \brief Get the value for a particular sub channel
    * \param subChannel the sub channel for which a value is requested
    * \return the loss for a particular sub channel
    */
   double GetValue (int subChannel);
+  
+  /**
+  * \brief Get the value for a particular sub channel and a given speed
+  * \param subChannel the sub channel for which a value is requested
+  * \param speed the relative speed of the two devices
+  * \return the loss for a particular sub channel
+  */
+  double GetValue (int subChannel, double speed);
 
   /**
    * \brief Set the physical layer

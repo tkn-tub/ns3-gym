@@ -47,6 +47,7 @@ def build(bld):
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
         'model/epc-gtpu-v1.cc',
+        'model/trace-fading-loss-model.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -64,6 +65,7 @@ def build(bld):
         'test/lte-test-pathloss-model.cc',
         'test/epc-test-gtpu-v1.cc',
         'test/lte-test-shadowing.cc',
+        'test/lte-test-fading.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -113,6 +115,7 @@ def build(bld):
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
         'model/epc-gtpu-v1.h',
+        'model/trace-fading-loss-model.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-link-adaptation.h',
@@ -125,6 +128,7 @@ def build(bld):
         'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu-v1.h',
         'test/lte-test-shadowing.h',
+        'test/lte-test-fading.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

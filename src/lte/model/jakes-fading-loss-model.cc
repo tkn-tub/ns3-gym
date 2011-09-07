@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ *        remove dependencies from Phy and Mobility models
  */
 
 #include <cmath>
@@ -57,7 +59,7 @@ NS_OBJECT_ENSURE_REGISTERED (JakesFadingLossModel);
 
 JakesFadingLossModel::JakesFadingLossModel ()
   : m_nbOfPaths (1, 4),
-    m_startJakes (1, 2000),
+    m_startJakes (1, 2500),
     m_phy (0)
 {
   NS_LOG_FUNCTION (this);
@@ -88,7 +90,7 @@ JakesFadingLossModel::SetPhy (Ptr<LtePhy> phy)
   NS_LOG_FUNCTION (this);
   m_phy = phy;
 
-  SetValue ();
+  //SetValue ();
 }
 
 
@@ -101,23 +103,13 @@ JakesFadingLossModel::GetPhy (void)
 
 
 void
-JakesFadingLossModel::SetValue (void)
+JakesFadingLossModel::SetValue (double speed)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << speed);
 
   m_multipath.clear ();
 
   int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
-
-  Ptr<MobilityModel> mobility = 0;
-  // this needs to be fixed, we cannot allow a propagation model to need pointers to all PHYs
-  // mobility = GetPhy ()->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-  Vector speedVector = mobility->GetVelocity ();
-
-  double speed = sqrt (pow (speedVector.x,2) +  pow (speedVector.y,2));
-
-  NS_LOG_FUNCTION (this << mobility << speedVector << speed);
-
 
   /*
    * Several 3GPP standards propose a simulation scenario to use duirng the
@@ -141,8 +133,6 @@ JakesFadingLossModel::SetValue (void)
     {
       speed = 120;
     }
-
-  NS_LOG_FUNCTION (this << mobility << speedVector << speed);
 
 
   /*
@@ -308,12 +298,12 @@ JakesFadingLossModel::SetValue (void)
 }
 
 double
-JakesFadingLossModel::GetValue (int subChannel)
+JakesFadingLossModel::GetValue (int subChannel, double speed)
 {
   NS_LOG_FUNCTION (this);
   if (NeedForUpdate ())
     {
-      SetValue ();
+      SetValue (speed);
       SetLastUpdate ();
     }
 
