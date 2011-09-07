@@ -75,7 +75,7 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
 {
   
   
-  // -------------- COMPOUND TESTS ----------------------------------
+  // -------------- UNIT TESTS ----------------------------------
   
   LogComponentEnable ("LteShadowingTest", LOG_LEVEL_ALL);
   
@@ -117,7 +117,7 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
   lena->Attach (ueDevs, enbDevs.Get (0));
   lena->Attach (hueDevs, henbDevs.Get (0));
   
-  // Test #1 Okumura Hata Model (150 < freq < 1500 MHz) (Macro<->UE)
+  // Test #1 Outdoor Model
   
   double distance = 2000;
   double hm = 1;
@@ -129,46 +129,9 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
   Ptr<BuildingsMobilityModel> mm2 = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm2->SetPosition (Vector (distance, 0.0, hm));
   
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 137.93, "OH Urban Large city"));
+  AddTestCase (new LteShadowingTestCase (mm1, mm2, 148.86, 7.0, "Outdoor Shadowing"));
   
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 137.88, "OH Urban small city = ??"));
-  
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 128.03, "loss OH SubUrban"));
-  
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 110.21, "loss OH OpenAreas"));
-  
-  // Test #2 COST231 Model (1500 < freq < 2000~2170 MHz) (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 148.55, "COST231 Urban Large city"));
-  
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 150.64, "COST231 Urban small city and suburban"));
-  
-  // Test #3 2.6 GHz model (Macro<->UE)
-  
-  freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
-  
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 121.83, "2.6GHz model"));
-  
-  // Test #4 ITU1411 LOS model (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm3 = ueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
-  mm3->SetPosition (Vector (distance, 0.0, hm));
-  AddTestCase (new LteShadowingTestCase (mm1, mm3, 81.00, "ITU1411 LOS"));
-  
-  // Test #5 ITU1411 NLOS model (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 900;
-  
-  Ptr<BuildingsMobilityModel> mm4 = ueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
-  mm4->SetPosition (Vector (distance, 0.0, hm));
-  AddTestCase (new LteShadowingTestCase (mm1, mm4, 143.69, "ITU1411 NLOS"));
-  
-  // Test #6 ITUP1238 (HeNB <-> UE)
+  // Test #2 Indoor model
   
   distance = 30;
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
@@ -183,30 +146,9 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
   mm6->SetPosition (Vector (distance, 0.0, hm));
   mm6->SetIndoor (building1);
   mm6->SetFloorNumber (2);
-  AddTestCase (new LteShadowingTestCase (mm5, mm6, 88.3855, "ITUP1238"));
+  AddTestCase (new LteShadowingTestCase (mm5, mm6, 88.5724, 8.0, "Indoor Shadowing"));
   
-  // Test #7 Outdoor -> Indoor OkumuraHata (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 2000;
-  // The loss is as in test #2 (large city) plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB -> 148.55 + 7 = 155.55
-  Ptr<BuildingsMobilityModel> mm7 = ueNodes.Get (3)->GetObject<BuildingsMobilityModel> ();
-  mm7->SetPosition (Vector (distance, 0.0, hm));
-  mm7->SetIndoor (building1);
-  AddTestCase (new LteShadowingTestCase (mm1, mm7, 155.55, "Okumura Hata Outdoor -> Indoor"));
-  
-  // Test #8 Outdoor -> Indoor ITU1411 (Macro<->UE)
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm8 = ueNodes.Get (4)->GetObject<BuildingsMobilityModel> ();
-  mm8->SetPosition (Vector (distance, 0.0, hm));
-  mm8->SetIndoor (building1);
-  // The loss is as in test #4 plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB -> 81.000 + 7 = 88.000
-  AddTestCase (new LteShadowingTestCase (mm1, mm8, 88.000, "ITU1411 LOS Outdoor -> Indoor"));
-  
-  // Test #9 Indoor -> Outdoor LOS (HeNB <-> UE)
+  // Test #3 Indoor -> Outdoor
   
   distance = 100;
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
@@ -219,23 +161,12 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
   // The loss is similar of test #4 plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB and the height gain
   // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
-  AddTestCase (new LteShadowingTestCase (mm9, mm10, 84.838, "ITU1411 LOS Indoor -> Outdoor"));
-  
-  // Test #10 Indoor -> Outdoor NLOS (HeNB <-> UE)
-  
-  distance = 500;
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  Ptr<BuildingsMobilityModel> mm11 = hueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
-  mm11->SetPosition (Vector (distance, 0.0, hm));
-  // The loss is similar as in test #4 plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB and the height gain
-  // (2 floors x 2 dB/floor = 4) -> 180.90 + 7 - 4 = 183.90
-  AddTestCase (new LteShadowingTestCase (mm9, mm11, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
+  AddTestCase (new LteShadowingTestCase (mm9, mm10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
   
   
   //------------------- SYSTEM TEST ------------------------------
   
-//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+/*//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   // 
   //   LogComponentEnable ("LenaHelper", logLevel);
   LogComponentEnable ("LteShadowingTest", LOG_LEVEL_ALL);
@@ -315,7 +246,7 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
     AddTestCase (new LteShadowingSystemTestCase (name.str (),  sinrDb, dist[i], snrEfficiencyMcs[i].mcsIndex));
   }
   
-  
+  */
   
   
   
@@ -328,11 +259,12 @@ static LteShadowingTestSuite lteShadowingTestSuite;
 * TestCase
 */
 
-LteShadowingTestCase::LteShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name)
+LteShadowingTestCase::LteShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name)
 : TestCase ("SHADOWING calculation: " + name),
 m_node1 (m1),
 m_node2 (m2),
-m_lossRef (refValue)
+m_lossRef (refValue),
+m_sigmaRef (sigmaRef)
 {
 }
 
@@ -343,7 +275,7 @@ LteShadowingTestCase::~LteShadowingTestCase ()
 void
 LteShadowingTestCase::DoRun (void)
 {
-  //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+//     LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   
   //   LogComponentEnable ("LteEnbRrc", logLevel);
   //   LogComponentEnable ("LteUeRrc", logLevel);
@@ -362,7 +294,7 @@ LteShadowingTestCase::DoRun (void)
   // 
   //   LogComponentEnable ("LtePropagationLossModel", logLevel);
   //   LogComponentEnable ("LossModel", logLevel);
-  //   LogComponentEnable ("ShadowingLossModel", logLevel);
+//     LogComponentEnable ("ShadowingLossModel", logLevel);
   //   LogComponentEnable ("PenetrationLossModel", logLevel);
   //   LogComponentEnable ("MultipathLossModel", logLevel);
   //   LogComponentEnable ("PathLossModel", logLevel);
@@ -371,9 +303,14 @@ LteShadowingTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", logLevel);
   //   LogComponentEnable ("LteEnbNetDevice", logLevel);
   
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   NS_LOG_INFO ("Testing " << GetName());
-  
+  std::vector<double> loss;
+  double sum = 0.0;
+  double sumSquared = 0.0;
+  int samples = 10000;
+  for (int i = 0; i < samples; i++)
+  {
   Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<BuildingsPropagationLossModel> m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
@@ -386,18 +323,17 @@ LteShadowingTestCase::DoRun (void)
 //   m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
   m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
   m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
+  loss.push_back (m_downlinkPropagationLossModel->GetLoss (m_node1, m_node2) - m_lossRef);
+//   NS_LOG_INFO (loss.at (loss.size()-1));
+  sum += loss.at (loss.size()-1);
+  sumSquared += (loss.at (loss.size()-1)*loss.at (loss.size()-1));
+  }
+  double mean = sum/samples;
+  double sigma = sumSquared/samples - (mean*mean);
+  NS_LOG_INFO ("Sigma from simulation " << sigma << ", reference value " << m_sigmaRef);
   
-  
-  
-  Simulator::Stop (Seconds (0.1));
-  Simulator::Run ();
-  Simulator::Destroy ();
-  double loss = m_downlinkPropagationLossModel->GetLoss (m_node1, m_node2);
-  
-  NS_LOG_INFO ("Calculated loss: " << loss);
-  NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
-  
-//   NS_TEST_ASSERT_MSG_EQ_TOL(loss, m_lossRef, 0.1, "Wrong loss !");
+  NS_TEST_ASSERT_MSG_EQ_TOL(mean, 0.0, 0.1, "Wrong mean !");
+  NS_TEST_ASSERT_MSG_EQ_TOL(sigma, m_sigmaRef, 0.2, "Wrong sigma !");
 }
 
 

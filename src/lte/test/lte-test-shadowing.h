@@ -45,7 +45,7 @@ class LteShadowingTestSuite : public TestSuite
 class LteShadowingTestCase : public TestCase
 {
   public:
-    LteShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name);
+    LteShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name);
     virtual ~LteShadowingTestCase ();
     
   private:
@@ -53,7 +53,8 @@ class LteShadowingTestCase : public TestCase
     
     Ptr<BuildingsMobilityModel> m_node1;
     Ptr<BuildingsMobilityModel> m_node2;
-    double m_lossRef;
+    double m_lossRef;   // pathloss value (without shadowing)
+    double m_sigmaRef;
     
 };
 
