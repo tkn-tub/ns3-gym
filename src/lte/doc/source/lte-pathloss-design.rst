@@ -36,7 +36,7 @@ For discriminate indoor and outdoor users, the model includes a specific class c
     * ConcreteWithoutWindows
     * StoneBlocks
 
-  * number of floors (default value 1, which means only grondfloor)
+  * number of floors (default value 1, which means only ground-floor)
   * number of rooms in x-axis (default value 1)
   * number of rooms in x-axis (default value 1)
 
@@ -44,7 +44,7 @@ By means of the number of rooms in x and y axis it is possible the definition of
 
 The ``Building`` class is included in ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel`` and it is in charge of managing the standard mobility functionalities plus the building ones (e.g., floor and room of the node).
 
-The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacoles in the main path (i.e., vegetation, buildings, etc.).
+The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 
 The model provides the following pathloss link computations:
 
@@ -63,7 +63,7 @@ In the following we present the link pathloss models included.
 Okumura Hata (OH)
 -----------------
 
-This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need to consider several variant of the well knwon Okumura Hata model. In fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 [cost231]_ one for the 1500 MHz up to 2000 MHz and [pl26ghz]_ for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
+This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need to consider several variant of the well known Okumura Hata model. In fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 [cost231]_ one for the 1500 MHz up to 2000 MHz and [pl26ghz]_ for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
 
 
 
@@ -148,13 +148,13 @@ Therefore, also in this case, the suburban and openareas environment scenarios a
 Short Range Communications ITU-R P.1411 (I1411)
 ---------------------------------------
 
-This model is designed for short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tuneable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, the over the roof-top model is taken in consideration for modeling both macro BS and SC. In case on NLoS several parameters scenatio dependent have been included, such as average street width, orientation, etc. The values of such parameters have to be properly setted according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used, apart for the height of the mobile and BS, which instead their integrity is tested directly in the code (i.e., they have to be greater then zero).  In the following we give the expressions of the components of the model.
+This model is designed for short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tunable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, the over the roof-top model is taken in consideration for modeling both macro BS and SC. In case on NLoS several parameters scenario dependent have been included, such as average street width, orientation, etc. The values of such parameters have to be properly set according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used, apart for the height of the mobile and BS, which instead their integrity is tested directly in the code (i.e., they have to be greater then zero).  In the following we give the expressions of the components of the model.
 
 
 LoS within street canyons
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This model provides an upper and lower bound resectively according to the following formulas
+This model provides an upper and lower bound respectively according to the following formulas
 
 .. math::
 
@@ -164,7 +164,7 @@ This model provides an upper and lower bound resectively according to the follow
 
   L_\mathrm{LoS,u} = L_\mathrm{bp} + 20 + \left\{\begin{array}{ll} 25\log{\frac{d}{R_\mathrm{bp}}} & \mbox{for $d \le R_\mathrm{bp}$} \\ 40\log{\frac{d}{R_\mathrm{bp}}} & \mbox{for $d > R_\mathrm{bp}$}\end{array} \right.
 
-where the breackpoint distance is given by
+where the breakpoint distance is given by
 
 .. math::
 
@@ -186,7 +186,7 @@ and :math:`L_{bp}` is the value for the basic transmission loss at the break poi
 
   L_{bp} = \left|20\log \left(\frac{\lambda^2}{8\pi h_\mathrm{b}h\mathrm{m}}\right)\right|
 
-The value used by the simulator is the average one for modelling the median pathloss.
+The value used by the simulator is the average one for modeling the median pathloss.
 
 
 NLoS over the rooftops
@@ -319,7 +319,7 @@ where:
 External Walls Penetration Loss (BEL)
 -------------------------------------
 
-This component models the penetration loss thruogh walls for indoor to outdoor communications and viceversa. The values are taken from the [cost231]_ model.
+This component models the penetration loss through walls for indoor to outdoor communications and vice-versa. The values are taken from the [cost231]_ model.
 
   * Wood ~ 4 dB
   * Concrete with windows (no metallised) ~ 7 dB
@@ -330,14 +330,14 @@ This component models the penetration loss thruogh walls for indoor to outdoor c
 Height Gain Model (HG)
 -----------------------
 
-This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and viceversa.
+This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and vice-versa.
 
 
 
 Hybrid Model Indoor<->Outdoor
 -----------------------------
 
-The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and viceversa) by adding to the proper model, evaluated according to correspond distance, the external wall penetration loss due to the building (see Section BEL).
+The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and vice-versa) by adding to the proper model, evaluated according to correspond distance, the external wall penetration loss due to the building (see Section BEL).
 
 
 
@@ -390,7 +390,7 @@ In the following the pseudo-code of the model is presented::
 
 
 where ``txNode`` and ``rxNode`` can be one of the elements eNB, SC and UE.
-We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the transmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold also or SC transmissions (called ``m_itu1411DistanceThreshold``) for pruning the communications between SCs and UEs too far (the defalut values is fixed to 2 km).
+We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the transmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold also or SC transmissions (called ``m_itu1411DistanceThreshold``) for pruning the communications between SCs and UEs too far (the default values is fixed to 2 km).
 
 
 Shadowing Model
@@ -402,7 +402,7 @@ The shadowing is modeled according to a log-normal distribution with variable st
  * indoor (defaul value of 10 dB) :math:`\rightarrow X_\mathrm{I} \sim N(\mu_\mathrm{I}, \sigma_\mathrm{I}^2)`.
  * external walls penetration (default value 5 dB) :math:`\rightarrow X_\mathrm{W} \sim N(\mu_\mathrm{W}, \sigma_\mathrm{W}^2)`
 
-The simulator generates a shadowing value per each active link according to nodes'position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and viceversa, the standard deviation (:math:`\sigma_\mathrm{IO}`) has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that that the components producing the shadowing are independent of ewach other; therefore, the variance of a distribution resulting from the sum of two independent normal ones is the sum of the variances. 
+The simulator generates a shadowing value per each active link according to nodes' position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and vice-versa, the standard deviation (:math:`\sigma_\mathrm{IO}`) has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that that the components producing the shadowing are independent of each other; therefore, the variance of a distribution resulting from the sum of two independent normal ones is the sum of the variances. 
 
 .. math::
   
