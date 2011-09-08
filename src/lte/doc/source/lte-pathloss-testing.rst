@@ -37,7 +37,9 @@ both unit and system tests. The formers validate the single component model and 
 Unit Tests
 ~~~~~~~~~~
 
-The unit tests are carried out by comparing the expected results of the pathloss module in specific scenarios with pre calculated values obtained offline with an Octave script (/test/reference/lte-pathloss.m). In the following we detailed the scenarios considered, their selection has been done for covering the wide set of possible pathloss logic combinations. The pathloss logic results therefore implicitly tested.
+The unit tests are carried out by comparing the expected results of the pathloss module in specific scenarios with pre calculated values obtained offline with an Octave script (/test/reference/lte-pathloss.m). The tests are considered passed if the two values differs only for a predefined tolerance (0.1) that accounts for the approximations due to floating point arithmetics.
+
+In the following we detailed the scenarios considered, their selection has been done for covering the wide set of possible pathloss logic combinations. The pathloss logic results therefore implicitly tested.
 
 Test #1 Okumura Hata
 --------------------
@@ -67,7 +69,7 @@ This test is aimed at validating the ITU1411 model in case of non line of sight 
 Test #6 ITUP1238 model
 ----------------------
 
-This test is aimed at validating the ITUP1238 model in case of indoor transmissions. In this case both the UE and the eNB are placed in a residential building with walls made of concrete with windows. Ue is placed at the second floor and distaces 30 meters far from the eNB, which is placed at the first floor.
+This test is aimed at validating the ITUP1238 model in case of indoor transmissions. In this case both the UE and the eNB are placed in a residential building with walls made of concrete with windows. Ue is placed at the second floor and distances 30 meters far from the eNB, which is placed at the first floor.
 
 Test #7 Outdoor -> Indoor with Okumura Hata model
 -------------------------------------------------
@@ -94,5 +96,5 @@ This test validates the outdoor to indoor transmissions for short distances. In 
 System Test
 ~~~~~~~~~~~
 
-The aim of the system test is to verify the integration of the BuildingPathlossModel with the ns3 simulator and in particular with the lte module. The test exploits a set of three pre calculated losses for generating the expected SINR at the receiver conting the transmission and the noise powers. These SINR values are compared with the results obtained from a lte simulation. The losses are calculated off-line with an Octave script (/test/reference/lte-pathloss.m).
+The aim of the system test is to verify the integration of the BuildingPathlossModel with the ns3 simulator and in particular with the lte module. The test exploits a set of three pre calculated losses for generating the expected SINR at the receiver counting the transmission and the noise powers. These SINR values are compared with the results obtained from a lte simulation. The losses are calculated off-line with an Octave script (/test/reference/lte-pathloss.m).
 
