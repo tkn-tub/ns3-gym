@@ -56,7 +56,7 @@ class BuildingsPropagationLossModel::ShadowingLoss
 
 
 BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma) :
-  m_randVariable (mean, sigma)
+m_randVariable (mean, sigma*sigma)  // NormalVariable class wants mean and variance (sigma is a standard deviation)
 {
   m_shadowingValue = m_randVariable.GetValue ();
   NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
