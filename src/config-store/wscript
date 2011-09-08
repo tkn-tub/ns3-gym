@@ -29,7 +29,7 @@ def build(bld):
         'model/raw-text-config.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'config-store'
     headers.source = [
         'model/file-config.h',

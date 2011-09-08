@@ -13,7 +13,7 @@ def build(bld):
     if 'visualizer' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'visualizer'
     headers.source = [
         ]

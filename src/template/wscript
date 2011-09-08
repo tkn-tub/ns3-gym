@@ -27,7 +27,7 @@ def build(bld):
         ]
 
     # Make headers be installed for this module.
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'template'
 
     # Set the C++ header files for this module.

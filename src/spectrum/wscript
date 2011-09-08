@@ -39,7 +39,7 @@ def build(bld):
         'test/spectrum-ideal-phy-test.cc',
         ]
     
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'spectrum'
     headers.source = [
         'model/spectrum-model.h',

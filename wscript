@@ -11,18 +11,18 @@ import shlex
 import textwrap
 
 # WAF modules
-import pproc as subprocess
+import subprocess
 import Options
 
 import Logs
 import TaskGen
-import Constants
+#import Constants
 
-import ccroot
-ccroot.USE_TOP_LEVEL = True
+#import ccroot
+#ccroot.USE_TOP_LEVEL = True
 
 import Task
-Task.algotype = Constants.JOBCONTROL # so that Task.maxjobs=1 takes effect
+#Task.algotype = Constants.JOBCONTROL # so that Task.maxjobs=1 takes effect
 
 import Utils
 import Build
@@ -58,7 +58,7 @@ cflags.default_profile = 'debug'
 # local modules
 import wutils
 
-Configure.autoconfig = 1
+Configure.autoconfig = 0
 
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION", "rt").read().strip()
@@ -124,12 +124,12 @@ def print_module_names(names):
     if i != 1:
         print
 
-def set_options(opt):
+def options(opt):
     # options provided by the modules
-    opt.tool_options('compiler_cc')
-    opt.tool_options('compiler_cxx')
-    opt.tool_options('cflags')
-    opt.tool_options('gnu_dirs')
+    opt.load('compiler_c')
+    opt.load('compiler_cxx')
+    opt.load('cflags')
+    opt.load('gnu_dirs')
 
     opt.add_option('--cwd',
                    help=('Set the working directory for a program.'),
@@ -234,6 +234,7 @@ def _check_compilation_flag(conf, flag, mode='cxx'):
     flag: can be a string or a list of strings
     """
 
+    conf.start_msg('Checking for compilation flag %r support' % (flag,))
     env = conf.env.copy()
     if mode == 'cxx':
         fname = 'test.cc'
@@ -244,26 +245,36 @@ def _check_compilation_flag(conf, flag, mode='cxx'):
     try:
         retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
                                  env=env, compile_filename=fname,
-                                 compile_mode=mode, type='cprogram', execute=False)
+                                 compile_mode=mode, features='c cprogram', execute=False)
     except Configure.ConfigurationError:
         ok = False
     else:
         ok = (retval == 0)
-    conf.check_message_custom(flag, 'support', (ok and 'yes' or 'no'))
+    conf.end_msg(ok)
     return ok
 
     
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
-    conf.env.append_value('NS3_OPTIONAL_FEATURES', (name, caption, was_enabled, reason_not_enabled))
+    conf.env.append_value('NS3_OPTIONAL_FEATURES', [(name, caption, was_enabled, reason_not_enabled)])
+
+
+# starting with waf 1.6, conf.check() becomes fatal by default if the
+# test fails, this alternative method makes the test non-fatal, as it
+# was in waf <= 1.5
+def _check_nonfatal(conf, *args, **kwargs):
+    try:
+        return conf.check(*args, **kwargs)
+    except conf.errors.ConfigurationError:
+        return None
 
 def configure(conf):
     # attach some extra methods
+    conf.check_nonfatal = types.MethodType(_check_nonfatal, conf)
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
-    conf.env['NS3_BUILDDIR'] = conf.blddir
-    conf.check_tool('compiler_cc')
+    conf.check_tool('compiler_c')
     conf.check_tool('compiler_cxx')
     conf.check_tool('cflags', ['waf-tools'])
     try:
@@ -276,24 +287,20 @@ def configure(conf):
     #if os.path.exists('/usr/lib64'):
     #    conf.env.LIBDIR = os.path.join(conf.env.PREFIX, "lib64")
 
-    # create the second environment, set the variant and set its name
-    variant_env = conf.env.copy()
-    variant_name = Options.options.build_profile
+
+    # variant_name = Options.options.build_profile
+    # if Options.options.enable_gcov:
+    #     variant_name += '-gcov'
+    # conf.env['NS3_ACTIVE_VARIANT'] = variant_name
+    # conf.setenv(variant_name, env=conf.env.derive()) # start with a copy instead of a new env
+    env = conf.env
 
     if Options.options.enable_gcov:
-        variant_name += '-gcov'
-        variant_env.append_value('CCFLAGS', '-fprofile-arcs')
-        variant_env.append_value('CCFLAGS', '-ftest-coverage')
-        variant_env.append_value('CXXFLAGS', '-fprofile-arcs')
-        variant_env.append_value('CXXFLAGS', '-ftest-coverage')
-        variant_env.append_value('LINKFLAGS', '-fprofile-arcs')
-    
-    conf.env['NS3_ACTIVE_VARIANT'] = variant_name
-    variant_env['NS3_ACTIVE_VARIANT'] = variant_name
-    variant_env.set_variant(variant_name)
-    conf.set_env_name(variant_name, variant_env)
-    conf.setenv(variant_name)
-    env = variant_env
+        env.append_value('CCFLAGS', '-fprofile-arcs')
+        env.append_value('CCFLAGS', '-ftest-coverage')
+        env.append_value('CXXFLAGS', '-fprofile-arcs')
+        env.append_value('CXXFLAGS', '-ftest-coverage')
+        env.append_value('LINKFLAGS', '-fprofile-arcs')
 
     if Options.options.build_profile == 'debug':
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
@@ -332,8 +339,6 @@ def configure(conf):
                 conf.report_optional_feature("static", "Static build", True, '')
                 if Options.options.enable_static:
                     env['ENABLE_STATIC_NS3'] = True
-                if Options.options.enable_shared_and_static:
-                    env['ENABLE_SHARED_AND_STATIC_NS3'] = True
             elif os.uname()[4] == 'x86_64':
                 if env['ENABLE_PYTHON_BINDINGS'] and \
                         not conf.check_compilation_flag('-mcmodel=large'):
@@ -346,8 +351,6 @@ def configure(conf):
                     conf.report_optional_feature("static", "Static build", True, '')
                     if Options.options.enable_static:
                         env['ENABLE_STATIC_NS3'] = True
-                    if Options.options.enable_shared_and_static:
-                        env['ENABLE_SHARED_AND_STATIC_NS3'] = True
         elif env['CXX_NAME'] == 'gcc' and \
                 (env['PLATFORM'].startswith('darwin') or \
                      env['PLATFORM'].startswith('cygwin')):
@@ -553,13 +556,12 @@ class SuidBuildTask(Task.TaskBase):
         "RUN_ME SKIP_ME or ASK_LATER"
         st = os.stat(self.filename)
         if st.st_uid == 0:
-            return Constants.SKIP_ME
+            return Task.SKIP_ME
         else:
-            return Constants.RUN_ME
-
+            return Task.RUN_ME
 
 def create_suid_program(bld, name):
-    program = bld.new_task_gen('cxx', 'program')
+    program = bld.new_task_gen(features=['cxx', 'cxxprogram'])
     program.is_ns3_program = True
     program.module_deps = list()
     program.name = name
@@ -571,20 +573,21 @@ def create_suid_program(bld, name):
     return program
 
 def create_ns3_program(bld, name, dependencies=('core',)):
-    program = bld.new_task_gen('cxx', 'program')
+    program = bld.new_task_gen(features=['cxx', 'cxxprogram'])
     program.is_ns3_program = True
     program.name = name
     program.target = program.name
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
+    program.includes = "# #/.."
     return program
 
 def register_ns3_script(bld, name, dependencies=('core',)):
     ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
-    bld.env.append_value('NS3_SCRIPT_DEPENDENCIES', (name, ns3_module_dependencies))
+    bld.env.append_value('NS3_SCRIPT_DEPENDENCIES', [(name, ns3_module_dependencies)])
 
 def add_examples_programs(bld):
-    env = bld.env_of_name('default')
+    env = bld.env
     if env['ENABLE_EXAMPLES']:
         for dir in os.listdir('examples'):
             if dir.startswith('.') or dir == 'CVS':
@@ -615,8 +618,9 @@ def add_scratch_programs(bld):
 
 def _add_ns3_program_missing_deps(bld, program):
     deps_found = program.ns3_module_dependencies
-    program.uselib_local = getattr(program, "uselib_local", []) + [dep + "--lib" for dep in deps_found]
-    if program.env['ENABLE_STATIC_NS3'] and not program.env['ENABLE_SHARED_AND_STATIC_NS3']:
+    program.use = getattr(program, "use", []) + [dep #+ "--lib"
+                                                          for dep in deps_found]
+    if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.append_value('LINKFLAGS', '-Wl,-all_load')
             for dep in deps_found:
@@ -628,8 +632,62 @@ def _add_ns3_program_missing_deps(bld, program):
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
 
 
+from waflib.Build import BuildContext, CleanContext, InstallContext, UninstallContext
+class Ns3BuildContext(BuildContext):
+    cmd = 'build'
+    #variant = 'debug' # FIXME
+
+    # @property
+    # def variant(self):
+    #     if not self.all_envs:
+    #         self.load_envs()
+    #     return self.all_envs[''].NS3_ACTIVE_VARIANT
+
+    def get_all_task_gen(self):
+        for group in self.groups:
+            for taskgen in group:
+                yield taskgen
+    all_task_gen = property(get_all_task_gen)
+
+    def get_taskgen(self, name):
+        for group in self.groups:
+            for taskgen in group:
+                if taskgen.name == name:
+                    return taskgen
+        raise KeyError(name)
+
+    def exclude_taskgen(self, taskgen):
+        # ok, so WAF does not provide an API to prevent an
+        # arbitrary taskgen from running; we have to muck around with
+        # WAF internal state, something that might stop working if
+        # WAF is upgraded...
+        for group in self.groups:
+            for tg1 in group:
+                if tg1 is taskgen:
+                    group.remove(tg1)
+                    break
+            else:
+                continue
+            break
+
 
 def build(bld):
+
+
+    # switch to the variant matching our debug level
+    #variant_name = bld.env['NS3_ACTIVE_VARIANT']
+    #print variant_name
+    #bld.variant = variant_name
+    #variant_env = bld.env_of_name(variant_name)
+    #bld.all_envs['default'] = variant_env
+
+    env = bld.env
+    #bld.variant = bld.env.NS3_ACTIVE_VARIANT
+    #bld.init_dirs()
+    #env = bld.env
+    #print "-----------------------------------------------------------------------"
+    #print env
+
     # If --enabled-modules option was given, then print a warning
     # message and exit this function.
     if Options.options.enable_modules:
@@ -654,15 +712,10 @@ def build(bld):
     bld.register_ns3_script = types.MethodType(register_ns3_script, bld)
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
 
-    # switch default variant to the one matching our debug level
-    variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
-    variant_env = bld.env_of_name(variant_name)
-    bld.all_envs['default'] = variant_env
-
     # process subfolders from here
     bld.add_subdirs('src')
 
-    env = bld.env
+    #env = bld.env
 
     # If modules have been enabled, then set lists of enabled modules
     # and enabled module test libraries.
@@ -679,7 +732,7 @@ def build(bld):
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
                 # Each enabled module has its own library.
-                for dep in module_obj.uselib_local:
+                for dep in module_obj.use:
                     if not dep.startswith('ns3-'):
                         continue
                     if dep not in modules:
@@ -701,20 +754,6 @@ def build(bld):
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
 
-        def exclude_taskgen(bld, taskgen):
-            # ok, so WAF does not provide an API to prevent an
-            # arbitrary taskgen from running; we have to muck around with
-            # WAF internal state, something that might stop working if
-            # WAF is upgraded...
-            bld.all_task_gen.remove(taskgen)
-            for group in bld.task_manager.groups:
-                try:
-                    group.tasks_gen.remove(taskgen)
-                except ValueError:
-                    pass
-                else:
-                    break
-
         # Exclude the programs other misc task gens that depend on disabled modules
         for obj in list(bld.all_task_gen):
 
@@ -729,7 +768,7 @@ def build(bld):
                 program_built = True
                 for dep in obj.ns3_module_dependencies:
                     if dep not in modules: # prog. depends on a module that isn't enabled?
-                        exclude_taskgen(bld, obj)
+                        bld.exclude_taskgen(obj)
                         program_built = False
                         break
 
@@ -740,12 +779,12 @@ def build(bld):
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
-                exclude_taskgen(bld, obj) # kill the module
+                bld.exclude_taskgen(obj) # kill the module
 
             # disable the module test libraries
             if hasattr(obj, "is_ns3_module_test_library"):
                 if not env['ENABLE_TESTS'] or (obj.module_name not in modules):
-                    exclude_taskgen(bld, obj) # kill the module test library
+                    bld.exclude_taskgen(obj) # kill the module test library
 
             # disable the ns3header_taskgen
             if type(obj).__name__ == 'ns3header_taskgen':
@@ -806,7 +845,7 @@ def build(bld):
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
-        Options.options.compile_targets += ',' + os.path.basename(program_name)
+        Options.options.targets += ',' + os.path.basename(program_name)
         for gen in bld.all_task_gen:
             if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
                 gen.post()
@@ -826,9 +865,9 @@ def shutdown(ctx):
     # clean.
     if ((not Options.options.run)
         and (not Options.options.pyrun) 
-        and ('clean' not in Options.arg_line)
-        and ('distclean' not in Options.arg_line)
-        and ('shell' not in Options.arg_line)):
+        and ('clean' not in Options.commands)
+        and ('distclean' not in Options.commands)
+        and ('shell' not in Options.commands)):
 
         # Print the list of built modules.
         print
@@ -844,7 +883,8 @@ def shutdown(ctx):
             print
 
     # Write the build status file.
-    build_status_file = os.path.join (env['NS3_BUILDDIR'], env['NS3_ACTIVE_VARIANT'], 'build-status.py')
+    build_status_file = os.path.join(bld.out_dir, #env['NS3_ACTIVE_VARIANT'],
+                                     'build-status.py')
     out = open(build_status_file, 'w')
     out.write('#! /usr/bin/env python\n')
     out.write('\n')
@@ -955,21 +995,31 @@ def check_shell(bld):
         raise Utils.WafError(msg)
 
 
-shell_context = Build.BuildContext
-def shell(ctx):
+from waflib import Context, Build
+class Ns3ShellContext(Context.Context):
     """run a shell with an environment suitably modified to run locally built programs"""
+    cmd = 'shell'
 
-    #make sure we build first"
-    Scripting.build(ctx)
+    def execute(self):
 
-    if sys.platform == 'win32':
-        shell = os.environ.get("COMSPEC", "cmd.exe")
-    else:
-        shell = os.environ.get("SHELL", "/bin/sh")
+        # first we execute the build
+	bld = Context.create_context("build")
+	bld.options = Options.options # provided for convenience
+	bld.cmd = "build"
+	bld.execute()
 
-    env = wutils.bld.env
-    os_env = {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH']), 'NS3_EXECUTABLE_PATH': os.pathsep.join(env['NS3_EXECUTABLE_PATH'])}
-    wutils.run_argv([shell], env, os_env)
+        if sys.platform == 'win32':
+            shell = os.environ.get("COMSPEC", "cmd.exe")
+        else:
+            shell = os.environ.get("SHELL", "/bin/sh")
+
+        env = bld.env
+        os_env = {
+            'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH']),
+            'NS3_EXECUTABLE_PATH': os.pathsep.join(env['NS3_EXECUTABLE_PATH']),
+            }
+        wutils.run_argv([shell], env, os_env)
+
 
 def _doxygen(bld):
     env = wutils.bld.env
@@ -1049,109 +1099,109 @@ def lcov_report():
 ## and the .hg repository tree.  Here we provide a replacement DistDir
 ## implementation that is more efficient.
 ##
-import Scripting
-from Scripting import dist_exts, excludes, BLDDIR
-import Utils
-import os
+# import Scripting
+# from Scripting import dist_exts, excludes, BLDDIR
+# import Utils
+# import os
 
-def _copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
-    """Recursively copy a directory tree using copy2().
+# def _copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
+#     """Recursively copy a directory tree using copy2().
 
-    The destination directory must not already exist.
-    If exception(s) occur, an Error is raised with a list of reasons.
+#     The destination directory must not already exist.
+#     If exception(s) occur, an Error is raised with a list of reasons.
 
-    If the optional symlinks flag is true, symbolic links in the
-    source tree result in symbolic links in the destination tree; if
-    it is false, the contents of the files pointed to by symbolic
-    links are copied.
+#     If the optional symlinks flag is true, symbolic links in the
+#     source tree result in symbolic links in the destination tree; if
+#     it is false, the contents of the files pointed to by symbolic
+#     links are copied.
 
-    XXX Consider this example code rather than the ultimate tool.
+#     XXX Consider this example code rather than the ultimate tool.
 
-    Note: this is a modified version of shutil.copytree from python
-    2.5.2 library; modified for WAF purposes to exclude dot dirs and
-    another list of files.
-    """
-    names = os.listdir(src)
-    os.makedirs(dst)
-    errors = []
-    for name in names:
-        srcname = os.path.join(src, name)
-        dstname = os.path.join(dst, name)
-        try:
-            if symlinks and os.path.islink(srcname):
-                linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
-                if name in excludes:
-                    continue
-                elif name.startswith('.') or name.startswith(',,') or name.startswith('++') or name.startswith('CVS'):
-                    continue
-                elif name == build_dir:
-                    continue
-                else:
-                    ## build_dir is not passed into the recursive
-                    ## copytree, but that is intentional; it is a
-                    ## directory name valid only at the top level.
-                    copytree(srcname, dstname, symlinks, excludes)
-            else:
-                ends = name.endswith
-                to_remove = False
-                if name.startswith('.') or name.startswith('++'):
-                    to_remove = True
-                else:
-                    for x in dist_exts:
-                        if ends(x):
-                            to_remove = True
-                            break
-                if not to_remove:
-                    shutil.copy2(srcname, dstname)
-            # XXX What about devices, sockets etc.?
-        except (IOError, os.error), why:
-            errors.append((srcname, dstname, str(why)))
-        # catch the Error from the recursive copytree so that we can
-        # continue with other files
-        except shutil.Error, err:
-            errors.extend(err.args[0])
-    try:
-        shutil.copystat(src, dst)
-    except WindowsError:
-        # can't copy file access times on Windows
-        pass
-    except OSError, why:
-        errors.extend((src, dst, str(why)))
-    if errors:
-        raise shutil.Error, errors
+#     Note: this is a modified version of shutil.copytree from python
+#     2.5.2 library; modified for WAF purposes to exclude dot dirs and
+#     another list of files.
+#     """
+#     names = os.listdir(src)
+#     os.makedirs(dst)
+#     errors = []
+#     for name in names:
+#         srcname = os.path.join(src, name)
+#         dstname = os.path.join(dst, name)
+#         try:
+#             if symlinks and os.path.islink(srcname):
+#                 linkto = os.readlink(srcname)
+#                 os.symlink(linkto, dstname)
+#             elif os.path.isdir(srcname):
+#                 if name in excludes:
+#                     continue
+#                 elif name.startswith('.') or name.startswith(',,') or name.startswith('++') or name.startswith('CVS'):
+#                     continue
+#                 elif name == build_dir:
+#                     continue
+#                 else:
+#                     ## build_dir is not passed into the recursive
+#                     ## copytree, but that is intentional; it is a
+#                     ## directory name valid only at the top level.
+#                     copytree(srcname, dstname, symlinks, excludes)
+#             else:
+#                 ends = name.endswith
+#                 to_remove = False
+#                 if name.startswith('.') or name.startswith('++'):
+#                     to_remove = True
+#                 else:
+#                     for x in dist_exts:
+#                         if ends(x):
+#                             to_remove = True
+#                             break
+#                 if not to_remove:
+#                     shutil.copy2(srcname, dstname)
+#             # XXX What about devices, sockets etc.?
+#         except (IOError, os.error), why:
+#             errors.append((srcname, dstname, str(why)))
+#         # catch the Error from the recursive copytree so that we can
+#         # continue with other files
+#         except shutil.Error, err:
+#             errors.extend(err.args[0])
+#     try:
+#         shutil.copystat(src, dst)
+#     except WindowsError:
+#         # can't copy file access times on Windows
+#         pass
+#     except OSError, why:
+#         errors.extend((src, dst, str(why)))
+#     if errors:
+#         raise shutil.Error, errors
 
 
-def DistDir(appname, version):
-    #"make a distribution directory with all the sources in it"
-    import shutil
+# def DistDir(appname, version):
+#     #"make a distribution directory with all the sources in it"
+#     import shutil
 
-    # Our temporary folder where to put our files
-    TMPFOLDER=appname+'-'+version
+#     # Our temporary folder where to put our files
+#     TMPFOLDER=appname+'-'+version
 
-    # Remove an old package directory
-    if os.path.exists(TMPFOLDER): shutil.rmtree(TMPFOLDER)
+#     # Remove an old package directory
+#     if os.path.exists(TMPFOLDER): shutil.rmtree(TMPFOLDER)
 
-    global g_dist_exts, g_excludes
+#     global g_dist_exts, g_excludes
 
-    # Remove the Build dir
-    build_dir = getattr(Utils.g_module, BLDDIR, None)
+#     # Remove the Build dir
+#     build_dir = getattr(Utils.g_module, BLDDIR, None)
 
-    # Copy everything into the new folder
-    _copytree('.', TMPFOLDER, excludes=excludes, build_dir=build_dir)
+#     # Copy everything into the new folder
+#     _copytree('.', TMPFOLDER, excludes=excludes, build_dir=build_dir)
 
-    # TODO undocumented hook
-    dist_hook = getattr(Utils.g_module, 'dist_hook', None)
-    if dist_hook:
-        os.chdir(TMPFOLDER)
-        try:
-            dist_hook()
-        finally:
-            # go back to the root directory
-            os.chdir('..')
-    return TMPFOLDER
+#     # TODO undocumented hook
+#     dist_hook = getattr(Utils.g_module, 'dist_hook', None)
+#     if dist_hook:
+#         os.chdir(TMPFOLDER)
+#         try:
+#             dist_hook()
+#         finally:
+#             # go back to the root directory
+#             os.chdir('..')
+#     return TMPFOLDER
 
-Scripting.DistDir = DistDir
+# Scripting.DistDir = DistDir
 
 

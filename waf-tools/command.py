@@ -1,9 +1,10 @@
-from TaskGen import feature, taskgen, before, task_gen
-import Node, Task, Utils, Build, pproc, Constants
+import TaskGen# import feature, taskgen_method, before_method, task_gen
+import Node, Task, Utils, Build
+import subprocess
 import Options
 
 import shellcmd
-shellcmd.subprocess = pproc # the WAF version of the subprocess module is supposedly less buggy
+#shellcmd.subprocess = pproc # the WAF version of the subprocess module is supposedly less buggy
 
 from Logs import debug, error
 shellcmd.debug = debug
@@ -18,7 +19,7 @@ arg_rx = re.compile(r"(?P<dollar>\$\$)|(?P<subst>\$\{(?P<var>\w+)(?P<code>.*?)\}
 class command_task(Task.Task):
 	color = "BLUE"
 	def __init__(self, env, generator):
-		Task.Task.__init__(self, env, normal=1, generator=generator)
+		Task.Task.__init__(self, env=env, normal=1, generator=generator)
 
 	def __str__(self):
 		"string to display to the user"
@@ -33,7 +34,6 @@ class command_task(Task.Task):
 		pipeline = shellcmd.Pipeline()
 		pipeline.parse(self.generator.command)
 		cmd = pipeline.get_abbreviated_command()
-
 		return 'command (%s): %s%s%s\n' % (cmd, src_str, sep, tgt_str)
 
 	def _subst_arg(self, arg, direction, namespace):
@@ -50,21 +50,24 @@ class command_task(Task.Task):
 				result = eval(var+code, namespace)
 				if isinstance(result, Node.Node):
 					if var == 'TGT':
-						return result.bldpath(self.env)
+						return result.get_bld().abspath()
 					elif var == 'SRC':
-						return result.srcpath(self.env)
+						return result.srcpath()
 					else:
 						raise ValueError("Bad subst variable %r" % var)
 				elif result is self.inputs:
 					if len(self.inputs) == 1:
-						return result[0].srcpath(self.env)
+						return result[0].srcpath()
 					else:
 						raise ValueError("${SRC} requested but have multiple sources; which one?")
 				elif result is self.outputs:
 					if len(self.outputs) == 1:
-						return result[0].bldpath(self.env)
+						return result[0].get_bld().abspath()
 					else:
 						raise ValueError("${TGT} requested but have multiple targets; which one?")
+				elif isinstance(result, list):
+					assert len(result) == 1
+					return result[0]
 				else:
 					return result
 			return None
@@ -95,11 +98,10 @@ class command_task(Task.Task):
 					cmd.env_vars = env_vars
 			elif isinstance(cmd, shellcmd.Chdir):
 				cmd.dir = self._subst_arg(cmd.dir, None, namespace)
-
 		return pipeline.run(verbose=(Options.options.verbose > 0))
 
-@taskgen
-@feature('command')
+@TaskGen.taskgen_method
+@TaskGen.feature('command')
 def init_command(self):
 	Utils.def_attrs(self,
 			# other variables that can be used in the command: ${VARIABLE}
@@ -107,28 +109,25 @@ def init_command(self):
 
 
 
-@taskgen
-@feature('command')
-@before('apply_core')
+@TaskGen.feature('command')
+@TaskGen.after_method('process_rule')
 def apply_command(self):
-	self.meths.remove('apply_core')
+	#self.meths.remove('apply_core')
 	# create the task
 	task = self.create_task('command')
 	setattr(task, "dep_vars", getattr(self, "dep_vars", None))
 	# process the sources
 	inputs = []
-	for src in self.to_list(self.source):
-		node = self.path.find_resource(src)
-		if node is None:
-			raise Utils.WafError("source %s not found" % src)
-                inputs.append(node)
+	for node in self.source:
+		inputs.append(node)
 	task.set_inputs(inputs)
 	task.set_outputs([self.path.find_or_declare(tgt) for tgt in self.to_list(self.target)])
+	self.source = ''
 	#Task.file_deps = Task.extract_deps
 
 
 
-class command_taskgen(task_gen):
-	def __init__(self, *k, **kw):
-		task_gen.__init__(self, *k, **kw)
-		self.features.append('command')
+# class command_taskgen(task_gen):
+# 	def __init__(self, *k, **kw):
+# 		task_gen.__init__(self, *k, **kw)
+# 		self.features.append('command')

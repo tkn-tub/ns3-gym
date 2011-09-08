@@ -32,7 +32,7 @@ def build(bld):
         'test/uan-test.cc',
         'test/uan-energy-model-test.cc',
         ]
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'uan'
     headers.source = [
         'model/uan-channel.h',

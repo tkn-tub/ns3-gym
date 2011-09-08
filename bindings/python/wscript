@@ -2,7 +2,7 @@
 import types
 import re
 import os
-import pproc as subprocess
+import subprocess
 import shutil
 import sys
 
@@ -21,17 +21,17 @@ REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
 from TaskGen import feature, after
-import Task, ccroot
-from python import _get_python_variables # this comes from wafadmin/Tools/python.py
+import Task
+#from python import _get_python_variables # this comes from wafadmin/Tools/python.py
 
-
-# Patch a bug in waf-1.5.16's python detection, see
-# https://www.nsnam.org/bugzilla/show_bug.cgi?id=1250
-import python
-python.FRAG_2 = """
-#include <Python.h>
-""" + python.FRAG_2
-del python
+if 0:
+    # Patch a bug in waf-1.5.16's python detection, see
+    # https://www.nsnam.org/bugzilla/show_bug.cgi?id=1250
+    import python
+    python.FRAG_2 = """
+    #include <Python.h>
+    """ + python.FRAG_2
+    del python
 
 
 
@@ -86,7 +86,7 @@ def configure(conf):
     available_modules.sort()
     all_modules_enabled = (enabled_modules == available_modules)
 
-    conf.check_tool('misc')
+    conf.check_tool('misc', tooldir=['waf-tools'])
 
     if sys.platform == 'cygwin':
         conf.report_optional_feature("python", "Python Bindings", False,
@@ -104,16 +104,17 @@ def configure(conf):
         return
 
 
-    # alternative code to computing PYTHONDIR, that is more correct than the one in waf 1.5.16
-    if 'PYTHONDIR' in conf.environ:
-        pydir = conf.environ['PYTHONDIR']
-    else:
-        (pydir,) = _get_python_variables(conf.env['PYTHON'],
-                                         ["get_python_lib(plat_specific=1, standard_lib=0, prefix=%r)" % conf.env['PREFIX']],
-                                         ['from distutils.sysconfig import get_python_lib'])
-    if hasattr(conf, 'define'): # conf.define is added by the C tool, so may not exist
-        conf.define('PYTHONDIR', pydir)
-    conf.env['PYTHONDIR'] = pydir
+    if 0:
+        # alternative code to computing PYTHONDIR, that is more correct than the one in waf 1.5.16
+        if 'PYTHONDIR' in conf.environ:
+            pydir = conf.environ['PYTHONDIR']
+        else:
+            (pydir,) = _get_python_variables(conf.env['PYTHON'],
+                                             ["get_python_lib(plat_specific=1, standard_lib=0, prefix=%r)" % conf.env['PREFIX']],
+                                             ['from distutils.sysconfig import get_python_lib'])
+        if hasattr(conf, 'define'): # conf.define is added by the C tool, so may not exist
+            conf.define('PYTHONDIR', pydir)
+        conf.env['PYTHONDIR'] = pydir
 
 
     # -fvisibility=hidden optimization
@@ -125,7 +126,7 @@ def configure(conf):
     # Check for the location of pybindgen
     if Options.options.with_pybindgen is not None:
         if os.path.isdir(Options.options.with_pybindgen):
-            conf.check_message("pybindgen location", '', True, ("%s (given)" % Options.options.with_pybindgen))
+            conf.msg("Checking for pybindgen location", ("%s (given)" % Options.options.with_pybindgen))
             conf.env['WITH_PYBINDGEN'] = os.path.abspath(Options.options.with_pybindgen)
     else:
         # ns-3-dev uses ../pybindgen, while ns-3 releases use ../REQUIRED_PYBINDGEN_VERSION
@@ -133,15 +134,15 @@ def configure(conf):
         pybindgen_release_str = "pybindgen-" + '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])
         pybindgen_release_dir = os.path.join('..', pybindgen_release_str)
         if os.path.isdir(pybindgen_dir):
-            conf.check_message("pybindgen location", '', True, ("%s (guessed)" % pybindgen_dir))
+            conf.msg("Checking for pybindgen location", ("%s (guessed)" % pybindgen_dir))
             conf.env['WITH_PYBINDGEN'] = os.path.abspath(pybindgen_dir)
         elif os.path.isdir(pybindgen_release_dir):
-            conf.check_message("pybindgen location", '', True, ("%s (guessed)" % pybindgen_release_dir))
+            conf.msg("Checking for pybindgen location", ("%s (guessed)" % pybindgen_release_dir))
             conf.env['WITH_PYBINDGEN'] = os.path.abspath(pybindgen_release_dir)
         del pybindgen_dir
         del pybindgen_release_dir
     if not conf.env['WITH_PYBINDGEN']:
-        conf.check_message("pybindgen location", '', False)
+        conf.msg("pybindgen location", False)
 
     # Check for pybindgen
 
@@ -155,15 +156,13 @@ def configure(conf):
                                      "PyBindGen missing")
         return
     else:
-        out = subprocess.Popen([conf.env['PYTHON'], "-c",
+        out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                                 "import pybindgen.version; "
                                 "print '.'.join([str(x) for x in pybindgen.version.__version__])"],
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version_str = out.strip()
         pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
-        conf.check_message('pybindgen', 'version',
-                           (pybindgen_version == REQUIRED_PYBINDGEN_VERSION),
-                           pybindgen_version_str)
+        conf.msg('Checking for pybindgen version', pybindgen_version_str)
         if not (pybindgen_version == REQUIRED_PYBINDGEN_VERSION):
             Logs.warn("pybindgen (found %s), (need %s)" %
                     (pybindgen_version_str,
@@ -188,10 +187,10 @@ int main ()
         try:
             ret = conf.run_c_code(code=test_program,
                                   env=conf.env.copy(), compile_filename='test.cc',
-                                  compile_mode='cxx',type='cprogram', execute=False)
+                                  features='cxx cprogram', execute=False)
         except Configure.ConfigurationError:
             ret = 1
-        conf.check_message_custom('types %s and %s' % (t1, t2), 'equivalency', (ret and 'no' or 'yes'))
+        conf.msg('Checking for types %s and %s equivalence' % (t1, t2), (ret and 'no' or 'yes'))
         return not ret
 
     uint64_is_long = test("uint64_t", "unsigned long")
@@ -208,7 +207,7 @@ int main ()
     else:
         msg = conf.env['PYTHON_BINDINGS_APIDEFS']
 
-    conf.check_message_custom('the apidefs that can be used for Python bindings', '', msg)
+    conf.msg('Checking for the apidefs that can be used for Python bindings', msg)
 
     if conf.env['PYTHON_BINDINGS_APIDEFS'] is None:
         conf.report_optional_feature("python", "Python Bindings", False,
@@ -230,9 +229,9 @@ int main ()
    return 0;
 }
 """
-    gcc_rtti_abi = conf.check(fragment=fragment, msg="Checking for internal GCC cxxabi",
-                              okmsg="complete", errmsg='incomplete',
-                              mandatory=False)
+    gcc_rtti_abi = conf.check_nonfatal(fragment=fragment, msg="Checking for internal GCC cxxabi",
+                                       okmsg="complete", errmsg='incomplete',
+                                       mandatory=False)
     conf.env["GCC_RTTI_ABI_COMPLETE"] = str(bool(gcc_rtti_abi))
 
 
@@ -245,14 +244,12 @@ int main ()
                                      "Missing 'pygccxml' Python module")
         return
 
-    out = subprocess.Popen([conf.env['PYTHON'], "-c",
+    out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                             "import pygccxml; print pygccxml.__version__"],
                             stdout=subprocess.PIPE).communicate()[0]
     pygccxml_version_str = out.strip()
     pygccxml_version = tuple([int(x) for x in pygccxml_version_str.split('.')])
-    conf.check_message('pygccxml', 'version',
-                       (pygccxml_version >= REQUIRED_PYGCCXML_VERSION),
-                       pygccxml_version_str)
+    conf.msg('Checking for pygccxml version', pygccxml_version_str)
     if not (pygccxml_version >= REQUIRED_PYGCCXML_VERSION):
         Logs.warn("pygccxml (found %s) is too old (need %s) => "
                 "automatic scanning of API definitions will not be possible" %
@@ -275,7 +272,7 @@ int main ()
     m = re.match( "^GCC-XML version (\d\.\d(\.\d)?)$", gccxml_version_line)
     gccxml_version = m.group(1)
     gccxml_version_ok = ([int(s) for s in gccxml_version.split('.')] >= [0, 9])
-    conf.check_message('gccxml', 'version', True, gccxml_version)
+    conf.msg('Checking for gccxml version', gccxml_version)
     if not gccxml_version_ok:
         Logs.warn("gccxml too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
@@ -311,7 +308,7 @@ def get_module_path(bld, module):
 class apiscan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
-    after = 'gen_ns3_module_header_task ns3header_task'
+    after = 'gen_ns3_module_header ns3header'
     before = 'cc cxx gchx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
@@ -378,47 +375,11 @@ def get_modules_and_headers(bld):
 
 
 
-class python_scan_task(Task.TaskBase):
-    """Uses gccxml to scan the file 'everything.h' and extract API definitions.
-    """
-    after = 'gen_everything_h_task'
-    before = 'cc cxx gchx'
-    color = "BLUE"
-    def __init__(self, curdirnode, env, bld, target, cflags):
-        self.bld = bld
-        super(python_scan_task, self).__init__(generator=self)
-        self.curdirnode = curdirnode
-        self.env = env
-        self.target = target
-        self.cflags = cflags
-
-    def display(self):
-        return 'python-scan-%s\n' % (self.target,)
-
-    def run(self):
-        defsdir = os.path.join(self.curdirnode.abspath(), 'apidefs', self.target)
-        try:
-            os.mkdir(defsdir)
-        except OSError:
-            pass
-        argv = [
-            self.env['PYTHON'],
-            os.path.join(self.curdirnode.abspath(), 'ns3modulescan.py'), # scanning script
-            self.curdirnode.find_dir('../..').abspath(self.env), # include path (where the ns3 include dir is)
-            self.curdirnode.find_or_declare('everything.h').abspath(self.env),
-            os.path.join(defsdir, 'ns3modulegen_generated.py'), # output file
-            self.cflags,
-            ]
-        scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
-        print >> scan.stdin, repr(get_modules_and_headers(self.bld))
-        scan.stdin.close()
-        retval = scan.wait()
-        return retval
 
 class python_scan_task_collector(Task.TaskBase):
     """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
     """
-    after = 'python_scan_task apiscan_task'
+    after = 'apiscan'
     before = 'cc cxx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld):
@@ -512,7 +473,7 @@ def build(bld):
 
 
     if env['ENABLE_PYTHON_BINDINGS']:
-        task = gen_ns3_compat_pymod_task(env)
+        task = gen_ns3_compat_pymod_task(env=env)
         task.set_outputs(bld.path.find_or_declare("ns3.py"))
         task.dep_vars = ['PYTHON_MODULES_BUILT']
 

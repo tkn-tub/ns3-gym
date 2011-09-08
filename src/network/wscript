@@ -67,7 +67,7 @@ def build(bld):
         'test/sequence-number-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'network'
     headers.source = [
         'model/address.h',

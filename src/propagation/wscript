@@ -15,7 +15,7 @@ def build(bld):
         'test/propagation-loss-model-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'propagation'
     headers.source = [
         'model/propagation-delay-model.h',

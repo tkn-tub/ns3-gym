@@ -15,7 +15,7 @@ def configure(conf):
                                      "needs threading support which is not available")
 
     if conf.env['ENABLE_TAP']:
-        blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
+        blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
         tapcreatordir = os.path.abspath(os.path.join(blddir, "src/tap-bridge"))
         conf.env.append_value('NS3_EXECUTABLE_PATH', tapcreatordir)
     else:
@@ -34,7 +34,7 @@ def build(bld):
         'model/tap-encode-decode.cc',
         'helper/tap-bridge-helper.cc',
         ]
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'tap-bridge'
     headers.source = [
         'model/tap-bridge.h',
