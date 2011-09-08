@@ -12,7 +12,7 @@ Introduction
 
 The goal of Python bindings for |ns3| are two fold:
 
-#. Allow the programmer to write complete simulation scripts in Python (http://wwww.python.org);
+#. Allow the programmer to write complete simulation scripts in Python (http://www.python.org);
 #. Prototype new models (e.g. routing protocols).
 
 For the time being, the primary focus of the bindings is the first goal, but the second goal will eventually be supported as well.
