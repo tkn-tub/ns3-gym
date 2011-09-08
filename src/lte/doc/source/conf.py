@@ -182,7 +182,7 @@ latex_documents = [
 #  ('lte-design', 'lte-doc-design.tex', u'LTE Simulator Design Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
 #  ('lte-user', 'lte-doc-user.tex', u'LTE Simulator User Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
 #('lte', 'lte-sim-doc.tex', u'LTE Simulator Documentation', u'Centre Tecnològic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
-  ('lte-pathloss-model', 'lte-pathloss-model.tex', u'LTE Simulator Pathloss Model Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
+  ('lte-pathloss-design', 'lte-pathloss-design.tex', u'LTE Simulator Pathloss Desing Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
   ('lte-pathloss-testing', 'lte-pathloss-testing.tex', u'LTE Simulator Pathloss Testing Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
 ]
 
