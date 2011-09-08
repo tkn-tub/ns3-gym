@@ -138,10 +138,15 @@ void LteRlcHeader::Print (std::ostream &os)  const
   os << " E=" << (uint16_t)(*it1);
   os << " SN=" << m_sequenceNumber;
 
-  for (it1++; *it1 && *it2; i++, it1++, it2++)
+  it1++;
+  while ( it1 != m_extensionBits.end () &&
+          it2 != m_lengthIndicators.end () )
     {
       os << " E(" << i << ")=" << (uint16_t)(*it1);
       os << " LI(" << i << ")=" << (uint16_t)(*it2);
+
+      it1++;
+      it2++;
     }
 }
 
