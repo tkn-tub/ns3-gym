@@ -27,13 +27,13 @@ using namespace ns3;
 namespace {
 
 //===========================================================================
-// Function: create2DPlotFile
+// Function: Create2DPlotFile
 //
 //
 // This function creates a 2-D plot file.
 //===========================================================================
 
-void create2DPlotFile ()
+void Create2DPlotFile ()
 {
   using namespace std;
 
@@ -95,13 +95,13 @@ void create2DPlotFile ()
 
 
 //===========================================================================
-// Function: create2DPlotWithErrorBarsFile
+// Function: Create2DPlotWithErrorBarsFile
 //
 //
 // This function creates a 2-D plot with error bars file.
 //===========================================================================
 
-void create2DPlotWithErrorBarsFile ()
+void Create2DPlotWithErrorBarsFile ()
 {
   using namespace std;
 
@@ -175,13 +175,13 @@ void create2DPlotWithErrorBarsFile ()
 
 
 //===========================================================================
-// Function: create3DPlotFile
+// Function: Create3DPlotFile
 //
 //
 // This function creates a 3-D plot file.
 //===========================================================================
 
-void create3DPlotFile ()
+void Create3DPlotFile ()
 {
   using namespace std;
 
@@ -265,13 +265,13 @@ void create3DPlotFile ()
 int main (int argc, char *argv[])
 {
   // Create a 2-D plot file.
-  create2DPlotFile();
+  Create2DPlotFile();
 
   // Create a 2-D plot with error bars file.
-  create2DPlotWithErrorBarsFile();
+  Create2DPlotWithErrorBarsFile();
 
   // Create a 3-D plot file.
-  create3DPlotFile();
+  Create3DPlotFile();
 
   return 0;
 }
