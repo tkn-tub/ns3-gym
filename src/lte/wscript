@@ -54,6 +54,8 @@ def build(bld):
         'model/epc-gtpu-header.cc',
         'model/epc-gtpu-l5-protocol.cc',
         'model/epc-gtpu-tunnel-endpoint.cc',
+        'model/epc-enb-application.cc',
+        'model/epc-sgw-pgw-application.cc',
         'model/lte-tft.cc',
         'model/eps-tft-classifier.cc',
         ]
@@ -129,6 +131,8 @@ def build(bld):
         'model/epc-gtpu-header.h',
         'model/epc-gtpu-l5-protocol.h',
         'model/epc-gtpu-tunnel-endpoint.h',
+        'model/epc-enb-application.h',
+        'model/epc-sgw-pgw-application.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-link-adaptation.h',
