@@ -638,18 +638,25 @@ error message, what in the world does it mean"?
 What Trace Sources are Available?
 +++++++++++++++++++++++++++++++++
 
-The answer to this question is found in the |ns3| Doxygen.  Go to the 
-|ns3| web site `"here"
-<http://www.nsnam.org/getting_started.html>`_ 
-and select the "Doxygen (stable)" link "Documentation" on the navigation
-bar to the left side of the page.  Expand the "Modules" book in the NS-3 
-documentation tree a the upper left by clicking the "+" box.  Now, expand
-the "Core" book in the tree by clicking its "+" box.  You should now
-see three extremely useful links:
+The answer to this question is found in the |ns3| Doxygen.  If you go to 
+the project web site, 
+`ns-3 project
+<http://www.nsnam.org>`_, you will find a link to "Documentation" in the navigation bar.  If you select this link, you will be
+taken to our documentation page. There 
+is a link to "Latest Release" that will take you to the documentation
+for the latest stable release of |ns3|.
+If you select the "API Documentation" link, you will be
+taken to the |ns3| API documentation page.
+
+Expand the "Modules" book in the NS-3 
+documentation tree by clicking the "+" box.  Now, expand
+the "C++ Constructs Used by All Modules" book in the tree by clicking its "+" box.  You should now
+see four extremely useful links:
 
 * The list of all trace sources
 * The list of all attributes
 * The list of all global values
+* Debugging
 
 The list of interest to us here is "the list of all trace sources".  Go 
 ahead and select that link.  You will see, perhaps not too surprisingly, a
@@ -1169,7 +1176,7 @@ Are There Trace Sources Available?
 The first thing to think about is how we want to get the data out.  What is it
 that we need to trace?  The first thing to do is to consult "The list of all
 trace sources" to see what we have to work with.  Recall that this is found
-in the |ns3| Doxygen in the "Core" Module section.  If you scroll
+in the |ns3| Doxygen in the "C++ Constructs Used by All Modules" Module section.  If you scroll
 through the list, you will eventually find:
 
 ::
