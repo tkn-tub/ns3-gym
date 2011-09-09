@@ -184,6 +184,7 @@ latex_documents = [
 #('lte', 'lte-sim-doc.tex', u'LTE Simulator Documentation', u'Centre Tecnològic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
   ('lte-pathloss-design', 'lte-pathloss-design.tex', u'LTE Simulator Pathloss Desing Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
   ('lte-pathloss-testing', 'lte-pathloss-testing.tex', u'LTE Simulator Pathloss Testing Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
+  ('lte-building-user', 'lte-building-user.tex', u'LTE Simulator Building Propagation User Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
