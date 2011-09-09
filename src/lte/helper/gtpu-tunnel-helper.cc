@@ -18,7 +18,7 @@
  * Author: Jaume Nin <jnin@cttc.es>
  */
 
-#include <ns3/epc-helper.h>
+#include <ns3/gtpu-tunnel-helper.h>
 #include <ns3/log.h>
 #include "ns3/inet-socket-address.h"
 #include "ns3/mac48-address.h"
@@ -27,40 +27,40 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("EpcHelper");
+NS_LOG_COMPONENT_DEFINE ("GtpuTunnerHelper");
 
-NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
+NS_OBJECT_ENSURE_REGISTERED (GtpuTunnerHelper);
 
-EpcHelper::EpcHelper () : m_udpPort (2152)
+GtpuTunnerHelper::GtpuTunnerHelper () : m_udpPort (2152)
 {
   NS_LOG_FUNCTION (this);
   m_mask = "255.255.255.0";
   m_ipv4.SetBase ( "100.0.0.0", m_mask);
 }
 
-EpcHelper::~EpcHelper ()
+GtpuTunnerHelper::~GtpuTunnerHelper ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-EpcHelper::GetTypeId (void)
+GtpuTunnerHelper::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::EpcHelper")
+  static TypeId tid = TypeId ("ns3::GtpuTunnerHelper")
     .SetParent<Object> ()
-    .AddConstructor<EpcHelper> ()
+    .AddConstructor<GtpuTunnerHelper> ()
   ;
   return tid;
 }
 
 void
-EpcHelper::InstallGtpu (Ptr<Node> n)
+GtpuTunnerHelper::InstallGtpu (Ptr<Node> n)
 {
   InstallGtpu (n, m_ipv4.NewAddress ());
 }
 
 void
-EpcHelper::InstallGtpu (Ptr<Node> n, Ipv4Address addr)
+GtpuTunnerHelper::InstallGtpu (Ptr<Node> n, Ipv4Address addr)
 {
   NS_LOG_FUNCTION (this);
   // UDP socket creation and configuration
@@ -81,7 +81,7 @@ EpcHelper::InstallGtpu (Ptr<Node> n, Ipv4Address addr)
 }
 
 void
-EpcHelper::CreateGtpuTunnel (Ptr<Node> n, Ipv4Address nAddr, Ptr<Node> m, Ipv4Address mAddr)
+GtpuTunnerHelper::CreateGtpuTunnel (Ptr<Node> n, Ipv4Address nAddr, Ptr<Node> m, Ipv4Address mAddr)
 {
   uint32_t teid = m_gtpuEndpoint[n]->CreateGtpuTunnel (mAddr);
   m_gtpuEndpoint[m]->CreateGtpuTunnel (nAddr, teid);

@@ -28,7 +28,7 @@
 #include "ns3/csma-helper.h"
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/epc-helper.h"
+#include "ns3/gtpu-tunnel-helper.h"
 //#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   csma.EnableAsciiAll (ascii.CreateFileStream ("epc-gtp.tr"));
   csma.EnablePcapAll ("epc-gtp");
 
-  EpcHelper epcHelper;
+  GtpuTunnerHelper epcHelper;
 
   epcHelper.InstallGtpu (c.Get (0));
   epcHelper.InstallGtpu (c.Get (1));

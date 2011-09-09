@@ -18,8 +18,8 @@
  * Author: Jaume Nin <jnin@cttc.es>
  */
 
-#ifndef EPC_HELPER_H_
-#define EPC_HELPER_H_
+#ifndef GTPU_TUNNEL_HELPER_H_
+#define GTPU_TUNNEL_HELPER_H_
 
 #include "ns3/object.h"
 #include "ns3/ipv4-address.h"
@@ -35,18 +35,18 @@ class GtpuTunnelEndpoint;
 /**
  * Helper class to handle the creation of the EPC entities and protocols
  */
-class EpcHelper : public Object
+class GtpuTunnerHelper : public Object
 {
 public:
   /**
    * Constructor
    */
-  EpcHelper ();
+  GtpuTunnerHelper ();
 
   /**
    * Destructor
    */
-  virtual ~EpcHelper ();
+  virtual ~GtpuTunnerHelper ();
 
   /**
    * Inherited from ns3::Object
@@ -84,4 +84,4 @@ private:
 
 } // namespace ns3
 
-#endif /* EPC_HELPER_H_ */
+#endif /* GTPU_TUNNEL_HELPER_H_ */
