@@ -208,10 +208,6 @@ def options(opt):
                    help=('Compile NS-3 statically: works only on linux, without python'),
                    dest='enable_static', action='store_true',
                    default=False)
-    opt.add_option('--enable-shared-and-static',
-                   help=('Compile NS-3 both shared and static libraries at the same time: static works only on linux'),
-                   dest='enable_shared_and_static', action='store_true',
-                   default=False)
     opt.add_option('--enable-mpi',
                    help=('Compile NS-3 with MPI and distributed simulation support'),
                    dest='enable_mpi', action='store_true',
@@ -332,7 +328,7 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     env['ENABLE_STATIC_NS3'] = False
-    if Options.options.enable_static or Options.options.enable_shared_and_static:
+    if Options.options.enable_static:
         if env['PLATFORM'].startswith('linux') and \
                 env['CXX_NAME'] in ['gcc', 'icc']:
             if re.match('i[3-6]86', os.uname()[4]):
@@ -357,8 +353,6 @@ def configure(conf):
                 conf.report_optional_feature("static", "Static build", True, '')
                 if Options.options.enable_static:
                     env['ENABLE_STATIC_NS3'] = True
-                if Options.options.enable_shared_and_static:
-                    env['ENABLE_SHARED_AND_STATIC_NS3'] = True
         else:
             conf.report_optional_feature("static", "Static build", False,
                                          "Unsupported platform")
