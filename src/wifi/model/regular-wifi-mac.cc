@@ -658,8 +658,8 @@ RegularWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
-    case WIFI_PHY_STANDARD_80211_10Mhz:
-    case WIFI_PHY_STANDARD_80211_5Mhz:
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+    case WIFI_PHY_STANDARD_80211_5MHZ:
       cwmin = 15;
       cwmax = 1023;
       break;
