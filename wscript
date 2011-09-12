@@ -894,7 +894,7 @@ def check(bld):
     wutils.run_python_program("test.py -n -c core", env)
 
 class print_introspected_doxygen_task(Task.TaskBase):
-    after = 'cc cxx cc_link cxx_link'
+    after = 'cc cxx link'
     color = 'BLUE'
 
     def __init__(self, bld):
@@ -925,7 +925,7 @@ class print_introspected_doxygen_task(Task.TaskBase):
             out.close()
 
 class run_python_unit_tests_task(Task.TaskBase):
-    after = 'cc cxx cc_link cxx_link'
+    after = 'cc cxx link'
     color = 'BLUE'
 
     def __init__(self, bld):

@@ -195,6 +195,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
         module = bld.new_task_gen(features=['cxx', 'cxxstlib', 'ns3module'])
     else:
         module = bld.new_task_gen(features=['cxx', 'cxxshlib', 'ns3module'])
+    module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(module.path), name)
     linkflags = []
     cxxflags = []
     ccflags = []
@@ -207,9 +208,8 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
             # Get the module library name without any relative paths
             # at its beginning because all of the libraries will end
             # up in the same directory.
-            if 0: # TODO FIXME
-                module_library_name = os.path.basename(ccroot.get_target_name(module))
-                linkflags = '-Wl,--soname=%s' % module_library_name
+            module_library_name = module.env.cshlib_PATTERN % (os.path.basename(module.target),)
+            linkflags = '-Wl,--soname=' + module_library_name
     elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
             os.uname()[4] == 'x86_64' and \
             sys.platform != 'darwin' and \
@@ -231,7 +231,6 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.is_static = static
     module.vnum = wutils.VNUM
     # Add the proper path to the module's name.
-    module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(module.path), name)
     # Set the libraries this module depends on.  
     module.module_deps = list(dependencies)
 

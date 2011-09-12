@@ -104,8 +104,9 @@ class command_task(Task.Task):
 @TaskGen.feature('command')
 def init_command(self):
 	Utils.def_attrs(self,
-			# other variables that can be used in the command: ${VARIABLE}
-			variables = None)
+					# other variables that can be used in the command: ${VARIABLE}
+					variables = None,
+					rule='')
 
 
 

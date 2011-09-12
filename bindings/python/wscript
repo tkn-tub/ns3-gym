@@ -309,7 +309,7 @@ class apiscan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
     after = 'gen_ns3_module_header ns3header'
-    before = 'cc cxx gchx'
+    before = 'cc cxx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
         self.bld = bld
@@ -402,7 +402,7 @@ class python_scan_task_collector(Task.TaskBase):
 
 class gen_ns3_compat_pymod_task(Task.Task):
     """Generates a 'ns3.py' compatibility module."""
-    before = 'cc cxx gchx'
+    before = 'cc cxx'
     color = 'BLUE'
     
     def run(self):
