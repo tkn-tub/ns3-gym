@@ -278,6 +278,7 @@ def configure(conf):
     env = conf.env
 
     if Options.options.enable_gcov:
+        env['GCOV_ENABLED'] = True
         env.append_value('CCFLAGS', '-fprofile-arcs')
         env.append_value('CCFLAGS', '-ftest-coverage')
         env.append_value('CXXFLAGS', '-fprofile-arcs')
@@ -846,7 +847,7 @@ def shutdown(ctx):
     out.close()
 
     if Options.options.lcov_report:
-        lcov_report()
+        lcov_report(bld)
 
     if Options.options.run:
         wutils.run_program(Options.options.run, env, wutils.get_command_template(env),
@@ -1009,28 +1010,26 @@ def doxygen(bld):
     Scripting.build(bld)
     _doxygen(bld)
 
-def lcov_report():
-    env = Build.bld.env
-    variant_name = env['NS3_ACTIVE_VARIANT']
+def lcov_report(bld):
+    env = bld.env
 
-    if 'gcov' not in variant_name:
-        raise Utils.WafError("project not configured for code coverage;"
-                     " reconfigure with --enable-gcov")
+    if not env['GCOV_ENABLED']:
+        raise WafError("project not configured for code coverage;"
+                       " reconfigure with --enable-gcov")
 
-    os.chdir(blddir)
+    os.chdir(out)
     try:
-        lcov_report_dir = os.path.join(variant_name, 'lcov-report')
+        lcov_report_dir = 'lcov-report'
         create_dir_command = "rm -rf " + lcov_report_dir
         create_dir_command += " && mkdir " + lcov_report_dir + ";"
 
         if subprocess.Popen(create_dir_command, shell=True).wait():
             raise SystemExit(1)
 
-        info_file = os.path.join(lcov_report_dir, variant_name + '.info')
+        info_file = os.path.join(lcov_report_dir, 'report.info')
         lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
         lcov_command += " --source-dirs=" + os.getcwd()
-        lcov_command += ":" + os.path.join(
-            os.getcwd(), variant_name, 'include')
+        lcov_command += ":" + os.path.join(os.getcwd(), 'include')
         if subprocess.Popen(lcov_command, shell=True).wait():
             raise SystemExit(1)
 
