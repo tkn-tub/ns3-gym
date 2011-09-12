@@ -13,10 +13,6 @@ import Task
 import Options
 import Build
 import Utils
-#import Constants
-
-#import ccroot
-#ccroot.USE_TOP_LEVEL = True
 
 import wutils
 
@@ -105,87 +101,12 @@ def configure(conf):
     conf.env['NS3_MODULES'] = ['ns3-' + module.split('/')[-1] for module in all_modules]
 
 
-# class ns3module_taskgen(TaskGen.task_gen):
-#     def __init__(self, *args, **kwargs):
-#         super(ns3module_taskgen, self).__init__(*args, **kwargs)
-#         self.libs = []
 
-#     def apply(self):
-#         print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-#         static_enabled = False
-#         shared_enabled = True
-#         bld = self.bld
-#         if bld.env['ENABLE_STATIC_NS3']:
-#             static_enabled = True
-#             shared_enabled = False
-#         if bld.env['ENABLE_SHARED_AND_STATIC_NS3']:
-#             static_enabled = True
-#             shared_enabled = True
-
-#         assert self.name.startswith("ns3-")
-#         name = self.name.split("ns3-")[1]
-
-#         if static_enabled:
-#             static = self._create_ns3_module(self.bld, name, self.dependencies, True)
-#             self.libs.append(static)
-#         else:
-#             static = None
-
-#         if shared_enabled:
-#             shared = self._create_ns3_module(self.bld, name, self.dependencies, False)
-#             self.libs.append(shared)
-#         else:
-#             shared = None
-
-#         if static is not None and shared is None:
-#             static.name = self.name + "--lib"
-#             static.uselib_local = ['ns3-%s--lib' % (dep,) for dep in self.dependencies]
-
-#         elif shared is not None and static is None:
-#             shared.name = self.name + "--lib"
-#             shared.uselib_local = ['ns3-%s--lib' % (dep,) for dep in self.dependencies]
-#         else:
-#             shared.name = self.name + "--lib"
-#             shared.uselib_local = ['ns3-%s--lib' % (dep,) for dep in self.dependencies]
-#             static.name = self.name + "--static"
-#             static.uselib_local = ['ns3-%s--static' % (dep,) for dep in self.dependencies]
-
-#         if not self.test:
-#             pcfile = bld.new_task_gen('ns3pcfile')
-#             pcfile.module = self
-
-#     def _create_ns3_module(self, bld, name, dependencies, static):
-
-#         # FIXME: env modifications are overwritten by parent caller
-
-
+# we need the 'ns3module' waf "feature" to be created because code
+# elsewhere looks for it to find the ns3 module objects.
 @TaskGen.feature('ns3module')
-@TaskGen.after_method('process_rule')
 def _add_test_code(module):
-    bld = module.bld
-    if 0: #len(module.source) > 0 and hasattr(module, 'ns3_dir_location'):
-        uselib_cpppath = []
-        for lib in module.uselib.split():
-            if 'CPPPATH_%s' % lib in module.env:
-                uselib_cpppath.extend(module.env['CPPPATH_%s' % lib])
-        objects = []
-        for src in module.source[0:-1]:
-            full_src = os.path.join(module.ns3_dir_location, src)
-            path = os.path.dirname(full_src)
-            target = '%s_object' % src
-            # XXX: calculate the features correctly here.
-            obj = bld.objects(source=[full_src], target=target, features='cxx cc',
-                              env = module.env.copy())
-            obj.env.CXXDEFINES += 'NS_TEST_SOURCEDIR="%s"' % path
-            obj.env.INCLUDES += uselib_cpppath
-            obj.name = module.name + '--test'
-            objects.append(target)
-        last = module.source[-1]
-        full_src = os.path.join(module.ns3_dir_location, last)
-        path = os.path.dirname(full_src)
-        module.env.CXXDEFINES += 'NS_TEST_SOURCEDIR="%s"' % path
-        module.source = [last] + objects
-        #module.add_objects.extend(objects)
+    pass
 
 
 def create_ns3_module(bld, name, dependencies=(), test=False):
@@ -522,31 +443,13 @@ class ns3pcfile_taskgen(TaskGen.task_gen):
         task.module = self.module
 
 
-# @TaskGen.extension('.h')
-# class ns3header_taskgen(TaskGen.task_gen):
-#     """A set of NS-3 header files"""
-#     COLOR = 'BLUE'
-#     def __init__(self, *args, **kwargs):
-#         super(ns3header_taskgen, self).__init__(*args, **kwargs)
-#         self.install_path = None
-#         self.sub_dir = None # if not None, header files will be published as ns3/sub_dir/file.h
-#         self.module = None # module name
-#         self.mode = 'install'
-#         self.features.append(features=['ns3header'])
-#         print "YYYYYYYYYYYYYYYYYYYYYYYYYYY", self
-
 
 @TaskGen.feature('ns3header')
 @TaskGen.after_method('process_rule')
 def apply_ns3header(self):
-    #for filename in set(self.to_list(self.source)):
-    #    src_node = self.path.find_resource(filename)
     if self.module is None:
         raise Utils.WafError("'module' missing on ns3headers object %s" % self)
     ns3_dir_node = self.bld.path.find_dir("ns3")
-    #if self.sub_dir is not None:
-    #    ns3_dir_node = ns3_dir_node.find_dir(self.sub_dir)
-
     for filename in set(self.to_list(self.source)):
         src_node = self.path.find_resource(filename)
         if src_node is None:
@@ -563,6 +466,7 @@ def apply_ns3header(self):
             task.header_to_remove = dst_node
     self.headers = set(self.to_list(self.source))
     self.source = '' # tell WAF not to process these files further
+
 
 class ns3header_task(Task.Task):
     before = 'cc cxx gen_ns3_module_header'
