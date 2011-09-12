@@ -73,8 +73,8 @@ if sys.platform != 'darwin' and re.match(r"^\d+\.\d+(\.\d+)?$", VERSION) is not 
     wutils.VNUM = VERSION
 
 # these variables are mandatory ('/' are converted automatically)
-srcdir = '.'
-blddir = 'build'
+top = '.'
+out = 'build'
 
 def load_env():
     bld_cls = getattr(Utils.g_module, 'build_context', Utils.Context)
@@ -525,23 +525,20 @@ def configure(conf):
             status = 'not enabled (%s)' % reason_not_enabled
         print "%-30s: %s" % (caption, status)
 
-class SuidBuildTask(Task.TaskBase):
+
+class SuidBuild_task(Task.TaskBase):
     """task that makes a binary Suid
     """
-    after = 'cxx_link cc_link'
-    maxjobs = 1
-    def __init__(self, bld, program):
-        self.bld = bld
+    after = 'link'
+    def __init__(self, *args, **kwargs):
+        super(SuidBuild_task, self).__init__(*args, **kwargs)
         self.m_display = 'build-suid'
-        self.__program = program
-        self.__env = bld.env.copy ()
-        super(SuidBuildTask, self).__init__(generator=self)
         try:
-            program_obj = wutils.find_program(self.__program.target, self.__env)
+            program_obj = wutils.find_program(self.generator.target, self.generator.env)
         except ValueError, ex:
-            raise Utils.WafError(str(ex))
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        self.filename = program_node.abspath(self.__env)
+            raise WafError(str(ex))
+        program_node = program_obj.path.find_or_declare(program_obj.target)
+        self.filename = program_node.abspath()
 
 
     def run(self):
@@ -561,6 +558,8 @@ class SuidBuildTask(Task.TaskBase):
             return Task.RUN_ME
 
 def create_suid_program(bld, name):
+    grp = bld.current_group
+    bld.add_group() # this to make sure no two sudo tasks run at the same time
     program = bld.new_task_gen(features=['cxx', 'cxxprogram'])
     program.is_ns3_program = True
     program.module_deps = list()
@@ -568,7 +567,9 @@ def create_suid_program(bld, name):
     program.target = name
 
     if bld.env['ENABLE_SUDO']:
-        SuidBuildTask(bld, program)
+        program.create_task("SuidBuild")
+
+    bld.set_group(grp)
 
     return program
 
@@ -632,61 +633,29 @@ def _add_ns3_program_missing_deps(bld, program):
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
 
 
-from waflib.Build import BuildContext, CleanContext, InstallContext, UninstallContext
-class Ns3BuildContext(BuildContext):
-    cmd = 'build'
-    #variant = 'debug' # FIXME
+def _get_all_task_gen(self):
+    for group in self.groups:
+        for taskgen in group:
+            yield taskgen
 
-    # @property
-    # def variant(self):
-    #     if not self.all_envs:
-    #         self.load_envs()
-    #     return self.all_envs[''].NS3_ACTIVE_VARIANT
 
-    def get_all_task_gen(self):
-        for group in self.groups:
-            for taskgen in group:
-                yield taskgen
-    all_task_gen = property(get_all_task_gen)
-
-    def get_taskgen(self, name):
-        for group in self.groups:
-            for taskgen in group:
-                if taskgen.name == name:
-                    return taskgen
-        raise KeyError(name)
-
-    def exclude_taskgen(self, taskgen):
-        # ok, so WAF does not provide an API to prevent an
-        # arbitrary taskgen from running; we have to muck around with
-        # WAF internal state, something that might stop working if
-        # WAF is upgraded...
-        for group in self.groups:
-            for tg1 in group:
-                if tg1 is taskgen:
-                    group.remove(tg1)
-                    break
-            else:
-                continue
-            break
+# ok, so WAF does not provide an API to prevent an
+# arbitrary taskgen from running; we have to muck around with
+# WAF internal state, something that might stop working if
+# WAF is upgraded...
+def _exclude_taskgen(self, taskgen):
+    for group in self.groups:
+        for tg1 in group:
+            if tg1 is taskgen:
+                group.remove(tg1)
+                break
+        else:
+            continue
+        break
 
 
 def build(bld):
-
-
-    # switch to the variant matching our debug level
-    #variant_name = bld.env['NS3_ACTIVE_VARIANT']
-    #print variant_name
-    #bld.variant = variant_name
-    #variant_env = bld.env_of_name(variant_name)
-    #bld.all_envs['default'] = variant_env
-
     env = bld.env
-    #bld.variant = bld.env.NS3_ACTIVE_VARIANT
-    #bld.init_dirs()
-    #env = bld.env
-    #print "-----------------------------------------------------------------------"
-    #print env
 
     # If --enabled-modules option was given, then print a warning
     # message and exit this function.
@@ -711,11 +680,11 @@ def build(bld):
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
     bld.register_ns3_script = types.MethodType(register_ns3_script, bld)
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
+    bld.__class__.all_task_gen = property(_get_all_task_gen)
+    bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
 
     # process subfolders from here
     bld.add_subdirs('src')
-
-    #env = bld.env
 
     # If modules have been enabled, then set lists of enabled modules
     # and enabled module test libraries.
@@ -728,7 +697,7 @@ def build(bld):
         while changed:
             changed = False
             for module in modules:
-                module_obj = bld.name_to_obj(module, env)
+                module_obj = bld.get_tgen_by_name(module)
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
                 # Each enabled module has its own library.
@@ -758,7 +727,7 @@ def build(bld):
         for obj in list(bld.all_task_gen):
 
             # check for ns3moduleheader_taskgen
-            if type(obj).__name__ == 'ns3moduleheader_taskgen':
+            if 'ns3moduleheader' in getattr(obj, "features", []):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing
 
@@ -787,7 +756,7 @@ def build(bld):
                     bld.exclude_taskgen(obj) # kill the module test library
 
             # disable the ns3header_taskgen
-            if type(obj).__name__ == 'ns3header_taskgen':
+            if 'ns3header' in getattr(obj, "features", []):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
@@ -823,7 +792,7 @@ def build(bld):
 
     # we need to post() the ns3 modules, so they create libraries underneath, and programs can list them in uselib_local
     for module in sorted_ns3_modules:
-        gen = bld.name_to_obj(module, bld.env)
+        gen = bld.get_tgen_by_name(module)
         if type(gen).__name__ in ['ns3module_taskgen']:
             gen.post()
             for lib in gen.libs:

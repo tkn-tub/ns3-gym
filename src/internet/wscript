@@ -11,7 +11,7 @@ import Task
 NSC_RELEASE_NAME = "nsc-0.5.2"
 
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--with-nsc',
                    help=('Use Network Simulation Cradle, given by the indicated path,'
                          ' to allow the use of real-world network stacks'),

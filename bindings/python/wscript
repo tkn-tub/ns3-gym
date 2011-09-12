@@ -46,7 +46,7 @@ def set_pybindgen_pythonpath(env):
         add_to_python_path(env['WITH_PYBINDGEN'])
 
 
-def set_options(opt):
+def options(opt):
     opt.tool_options('python')
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),

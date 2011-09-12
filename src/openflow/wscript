@@ -3,7 +3,7 @@
 import os
 import Options
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--with-openflow',
 		   help=('Path to OFSID source for NS-3 OpenFlow Integration support'),
 		   default='', dest='with_openflow')

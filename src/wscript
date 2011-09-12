@@ -6,6 +6,8 @@ import shutil
 import types
 import warnings
 
+from waflib.Errors import WafError
+
 import TaskGen
 import Task
 import Options
@@ -65,7 +67,7 @@ all_modules = [
     'template',
     ]
 
-def set_options(opt):
+def options(opt):
     opt.sub_options('core')
     opt.sub_options('click')
     opt.sub_options('openflow')
@@ -157,14 +159,42 @@ def configure(conf):
 #         # FIXME: env modifications are overwritten by parent caller
 
 
+@TaskGen.feature('ns3module')
+@TaskGen.after_method('process_rule')
+def _add_test_code(module):
+    bld = module.bld
+    if 0: #len(module.source) > 0 and hasattr(module, 'ns3_dir_location'):
+        uselib_cpppath = []
+        for lib in module.uselib.split():
+            if 'CPPPATH_%s' % lib in module.env:
+                uselib_cpppath.extend(module.env['CPPPATH_%s' % lib])
+        objects = []
+        for src in module.source[0:-1]:
+            full_src = os.path.join(module.ns3_dir_location, src)
+            path = os.path.dirname(full_src)
+            target = '%s_object' % src
+            # XXX: calculate the features correctly here.
+            obj = bld.objects(source=[full_src], target=target, features='cxx cc',
+                              env = module.env.copy())
+            obj.env.CXXDEFINES += 'NS_TEST_SOURCEDIR="%s"' % path
+            obj.env.INCLUDES += uselib_cpppath
+            obj.name = module.name + '--test'
+            objects.append(target)
+        last = module.source[-1]
+        full_src = os.path.join(module.ns3_dir_location, last)
+        path = os.path.dirname(full_src)
+        module.env.CXXDEFINES += 'NS_TEST_SOURCEDIR="%s"' % path
+        module.source = [last] + objects
+        #module.add_objects.extend(objects)
+
 
 def create_ns3_module(bld, name, dependencies=(), test=False):
     static = bool(bld.env.ENABLE_STATIC_NS3)
     # Create a separate library for this module.
     if static:
-        module = bld.new_task_gen(features=['cxx', 'cxxstlib'])
+        module = bld.new_task_gen(features=['cxx', 'cxxstlib', 'ns3module'])
     else:
-        module = bld.new_task_gen(features=['cxx', 'cxxshlib'])
+        module = bld.new_task_gen(features=['cxx', 'cxxshlib', 'ns3module'])
     linkflags = []
     cxxflags = []
     ccflags = []
@@ -219,38 +249,24 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.ns3_dir_location = bld.path.relpath_gen(bld.srcnode)
 
     module.env.append_value("INCLUDES", '#')
-
-    if len(module.source) > 0 and hasattr(self, 'ns3_dir_location'):
-        uselib_cpppath = []
-        for lib in module.uselib.split():
-            if 'CPPPATH_%s' % lib in module.env:
-                uselib_cpppath.extend(module.env['CPPPATH_%s' % lib])
-        objects = []
-        for src in module.source[0:-1]:
-            full_src = os.path.join(self.ns3_dir_location, src)
-            path = os.path.dirname(full_src)
-            target = '%s_object' % src
-            # XXX: calculate the features correctly here.
-            obj = bld (source=[full_src], target=target, features='cxx cc',
-                       defines=['NS_TEST_SOURCEDIR="%s"' % path], 
-                       includes=' '.join(uselib_cpppath),
-                       env = module.env)
-            objects.append(target)
-        last = module.source[-1]
-        full_src = os.path.join(self.ns3_dir_location, last)
-        path = os.path.dirname(full_src)
-        module.defines.append('NS_TEST_SOURCEDIR="%s"' % path)
-        module.source = [last]
-        module.add_objects.extend(objects)
-
+    
     return module
+
+@TaskGen.feature("ns3testlib")
+@TaskGen.before_method("apply_incpaths")
+def apply_incpaths_ns3testlib(self):
+    if not self.source:
+        return
+    testdir = self.source[-1].parent.relpath_gen(self.bld.srcnode)
+    self.env.append_value("DEFINES", 'NS_TEST_SOURCEDIR="%s"' % (testdir,))
 
 
 def create_ns3_module_test_library(bld, name):
     # Create an ns3 module for the test library that depends only on
     # the module being tested.
     library_name = name + "-test"
-    library = bld.create_ns3_module(library_name, [name], test = True)
+    library = bld.create_ns3_module(library_name, [name], test=True)
+    library.features.append("ns3testlib")
 
     # Modify attributes for the test library that are different from a
     # normal module.
@@ -259,7 +275,7 @@ def create_ns3_module_test_library(bld, name):
     library.module_name = 'ns3-' + name
 
     # Add this module and test library to the list.
-    bld.env.append_value('NS3_MODULES_WITH_TEST_LIBRARIES', (library.module_name, library.name))
+    bld.env.append_value('NS3_MODULES_WITH_TEST_LIBRARIES', [(library.module_name, library.name)])
 
     # Set the include path from the build directory to modules. 
     relative_path_from_build_to_here = bld.path.relpath_gen(bld.bldnode)
@@ -528,6 +544,7 @@ def apply_ns3header(self):
     ns3_dir_node = self.bld.path.find_dir("ns3")
     #if self.sub_dir is not None:
     #    ns3_dir_node = ns3_dir_node.find_dir(self.sub_dir)
+
     for filename in set(self.to_list(self.source)):
         src_node = self.path.find_resource(filename)
         if src_node is None:
@@ -557,12 +574,30 @@ class ns3header_task(Task.Task):
         if self.outputs: sep = ' -> '
         else: sep = ''
         if self.mode == 'remove':
-            return 'rm-ns3-header %s\n' % (self.header_to_remove.bldpath(self.env),)
+            return 'rm-ns3-header %s\n' % (self.header_to_remove.abspath(),)
         return 'install-ns3-header: %s%s%s\n' % (src_str, sep, tgt_str)
+
+    def __repr__(self):
+        return str(self)
+
+    def uid(self):
+        try:
+            return self.uid_
+        except AttributeError:
+            m = Utils.md5()
+            up = m.update
+            up(self.__class__.__name__.encode())
+            for x in self.inputs + self.outputs:
+                up(x.abspath().encode())
+            up(self.mode)
+            if self.mode == 'remove':
+                up(self.header_to_remove.abspath().encode())
+            self.uid_ = m.digest()
+            return self.uid_
 
     def runnable_status(self):
         if self.mode == 'remove':
-            if os.path.exists(self.header_to_remove.bldpath(self.env)):
+            if os.path.exists(self.header_to_remove.abspath()):
                 return Task.RUN_ME
             else:
                 return Task.SKIP_ME
@@ -587,7 +622,7 @@ class ns3header_task(Task.Task):
         else:
             assert len(self.inputs) == 0
             assert len(self.outputs) == 0
-            out_file_name = self.header_to_remove.bldpath(self.env)
+            out_file_name = self.header_to_remove.abspath()
             try:
                 os.unlink(out_file_name)
             except OSError, ex:
@@ -603,7 +638,7 @@ class gen_ns3_module_header_task(Task.Task):
 
     def runnable_status(self):
         if self.mode == 'remove':
-            if os.path.exists(self.header_to_remove.bldpath(self.env)):
+            if os.path.exists(self.header_to_remove.abspath()):
                 return Task.RUN_ME
             else:
                 return Task.SKIP_ME
@@ -618,14 +653,14 @@ class gen_ns3_module_header_task(Task.Task):
         if self.outputs: sep = ' -> '
         else: sep = ''
         if self.mode == 'remove':
-            return 'rm-module-header %s\n' % (self.header_to_remove.bldpath(self.env),)
+            return 'rm-module-header %s\n' % (self.header_to_remove.abspath(),)
         return 'gen-module-header: %s%s%s\n' % (src_str, sep, tgt_str)
 
     def run(self):
         if self.mode == 'remove':
             assert len(self.inputs) == 0
             assert len(self.outputs) == 0
-            out_file_name = self.header_to_remove.bldpath(self.env)
+            out_file_name = self.header_to_remove.abspath()
             try:
                 os.unlink(out_file_name)
             except OSError, ex:
@@ -702,8 +737,8 @@ def apply_ns3moduleheader(self):
         return
 
     try:
-        module_obj = self.bld.get_taskgen("ns3-" + self.module)
-    except KeyError: # maybe the module was disabled, and therefore removed
+        module_obj = self.bld.get_tgen_by_name("ns3-" + self.module)
+    except WafError: # maybe the module was disabled, and therefore removed
         return
 
     all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]

@@ -3,7 +3,7 @@ import sys
 
 import Options
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--int64x64-as-double',
                    help=('Whether to use a double floating point'
                          ' type for int64x64 values'

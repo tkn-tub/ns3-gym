@@ -4,7 +4,7 @@ import os
 import Options
 
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--with-nsclick',
                    help=('Path to Click source or installation prefix for NS-3 Click Integration support'),
                    dest='with_nsclick', default=None)
