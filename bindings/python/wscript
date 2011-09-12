@@ -288,19 +288,18 @@ int main ()
 def get_headers_map(bld):
     headers_map = {} # header => module
     for ns3headers in bld.all_task_gen:
-        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+        if 'ns3header' in getattr(ns3headers, "features", []):
             if ns3headers.module.endswith('-test'):
                 continue
-            for h in ns3headers.to_list(ns3headers.source):
+            for h in ns3headers.to_list(ns3headers.headers):
                 headers_map[os.path.basename(h)] = ns3headers.module
     return headers_map
 
 def get_module_path(bld, module):
     for ns3headers in bld.all_task_gen:
-        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+        if 'ns3header' in getattr(ns3headers, "features", []):
             if ns3headers.module == module:
                 break
-
     else:
         raise ValueError("Module %r not found" % module)
     return ns3headers.path.abspath()
@@ -309,7 +308,7 @@ class apiscan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
     after = 'gen_ns3_module_header ns3header'
-    before = 'cc cxx'
+    before = 'cc cxx command'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
         self.bld = bld
@@ -324,7 +323,7 @@ class apiscan_task(Task.TaskBase):
         return 'api-scan-%s\n' % (self.target,)
 
     def run(self):
-        top_builddir = self.curdirnode.find_dir('../..').abspath(self.env)
+        top_builddir = self.bld.bldnode.abspath()
         module_path = get_module_path(self.bld, self.module)
         headers_map = get_headers_map(self.bld)
         scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % self.module)
@@ -334,7 +333,7 @@ class apiscan_task(Task.TaskBase):
             return 0
 
         argv = [
-            self.env['PYTHON'],
+            self.env['PYTHON'][0],
             os.path.join(self.curdirnode.abspath(), 'ns3modulescan-modular.py'), # scanning script
             top_builddir,
             self.module,
@@ -364,11 +363,11 @@ def get_modules_and_headers(bld):
         ## find the headers object for this module
         headers = []
         for ns3headers in bld.all_task_gen:
-            if type(ns3headers).__name__ != 'ns3header_taskgen': # XXX: find less hackish way to compare
+            if 'ns3header' not in getattr(ns3headers, "features", []):
                 continue
             if ns3headers.module != module_name:
                 continue
-            for source in ns3headers.to_list(ns3headers.source):
+            for source in ns3headers.to_list(ns3headers.headers):
                 headers.append(os.path.basename(source))
         retval[module_name] = (list(module.module_deps), headers)
     return retval
@@ -395,7 +394,8 @@ class python_scan_task_collector(Task.TaskBase):
         # signal stop (we generated files into the source dir and WAF
         # can't cope with it, so we have to force the user to restart
         # WAF)
-        self.bld.generator.stop = 1
+        self.bld.producer.stop = 1
+        self.bld.producer.free_task_pool()
         return 0
 
 
@@ -407,7 +407,7 @@ class gen_ns3_compat_pymod_task(Task.Task):
     
     def run(self):
         assert len(self.outputs) == 1
-        outfile = file(self.outputs[0].abspath(self.env), "w")
+        outfile = file(self.outputs[0].abspath(), "w")
         print >> outfile, "import warnings"
         print >> outfile, 'warnings.warn("the ns3 module is a compatibility layer '\
             'and should not be used in newly written code", DeprecationWarning, stacklevel=2)'
@@ -466,16 +466,20 @@ def build(bld):
             scan_modules = Options.options.apiscan.split(',')
         print "Modules to scan: ", scan_modules
         for target, cflags in scan_targets:
+            group = bld.get_group(bld.current_group)
             for module in scan_modules:
-                apiscan_task(bld.path, env, bld, target, cflags, module)
-        python_scan_task_collector(bld.path, env, bld)
+                group.append(apiscan_task(bld.path, env, bld, target, cflags, module))
+        group.append(python_scan_task_collector(bld.path, env, bld))
         return
 
 
     if env['ENABLE_PYTHON_BINDINGS']:
-        task = gen_ns3_compat_pymod_task(env=env)
+        task = gen_ns3_compat_pymod_task(env=env.derive())
         task.set_outputs(bld.path.find_or_declare("ns3.py"))
         task.dep_vars = ['PYTHON_MODULES_BUILT']
+        task.bld = bld
+        grp = bld.get_group(bld.current_group)
+        grp.append(task)
 
     # note: the actual build commands for the python bindings are in
     # src/wscript, not here.
