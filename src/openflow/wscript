@@ -2,6 +2,7 @@
 
 import os
 import Options
+from waflib.Errors import WafError
 
 def options(opt):
     opt.add_option('--with-openflow',
@@ -10,17 +11,20 @@ def options(opt):
     opt.tool_options('boost', tooldir=["waf-tools"])
 
 def configure(conf):
-    conf.check_tool('boost')
-    conf.env['BOOST'] = conf.check_boost(lib = 'signals filesystem',
-                                         kind = 'STATIC_BOTH',
-                                         score_version = (-1000, 1000),
-                                         tag_minscore = 1000)
-    if not conf.env['BOOST']:
+    try:
+        conf.check_tool('boost')
         conf.env['BOOST'] = conf.check_boost(lib = 'signals filesystem',
-                                            kind = 'STATIC_BOTH',
-                                            score_version = (-1000, 1000),
-                                            tag_minscore = 1000,
-                                            libpath="/usr/lib64")
+                                             kind = 'STATIC_BOTH',
+                                             score_version = (-1000, 1000),
+                                             tag_minscore = 1000)
+        if not conf.env['BOOST']:
+            conf.env['BOOST'] = conf.check_boost(lib = 'signals filesystem',
+                                                kind = 'STATIC_BOTH',
+                                                score_version = (-1000, 1000),
+                                                tag_minscore = 1000,
+                                                libpath="/usr/lib64")
+    except WafError:
+        conf.env['BOOST'] = False
 
     if not conf.env['BOOST']:
 	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,

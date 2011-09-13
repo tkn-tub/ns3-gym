@@ -36,8 +36,8 @@ def build(bld):
         return
 
     module.features.append('pyembed')
-    module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
-    module.includes = '.'
+    #module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+    #module.includes = '.'
 
     module.source.extend([
         'model/pyviz.cc',

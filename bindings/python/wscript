@@ -14,6 +14,8 @@ import Logs
 import Build
 import Utils
 
+from waflib.Errors import WafError
+
 ## https://launchpad.net/pybindgen/
 REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 795)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
@@ -52,10 +54,6 @@ def options(opt):
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
                    dest='python_disable')
-    opt.add_option('--python-scan',
-                   help=("Rescan Python bindings.  Needs working GCCXML / pygccxml environment."),
-                   action="store_true", default=False,
-                   dest='python_scan')
     opt.add_option('--apiscan',
                    help=("EXPERIMENTAL: Rescan the API for the indicated module(s), for Python bindings.  "
                          "Needs working GCCXML / pygccxml environment.  "
@@ -103,6 +101,21 @@ def configure(conf):
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
 
+    # stupid Mac OSX Python wants to build extensions as "universal
+    # binaries", i386, x86_64, and ppc, but this way the type
+    # __uint128_t is not available.  We need to disable the multiarch
+    # crap by removing the -arch parameters.
+    for flags_var in ["CFLAGS_PYEXT", "CFLAGS_PYEMBED", "CXXFLAGS_PYEMBED",
+                      "CXXFLAGS_PYEXT", "LINKFLAGS_PYEMBED", "LINKFLAGS_PYEXT"]:
+        flags = conf.env[flags_var]
+        i = 0
+        while i < len(flags):
+            if flags[i] == '-arch':
+                del flags[i]
+                del flags[i]
+                continue
+            i += 1
+        conf.env[flags_var] = flags
 
     if 0:
         # alternative code to computing PYTHONDIR, that is more correct than the one in waf 1.5.16
@@ -261,7 +274,10 @@ int main ()
     
 
     ## Check gccxml version
-    gccxml = conf.find_program('gccxml', var='GCCXML')
+    try:
+        gccxml = conf.find_program('gccxml', var='GCCXML')
+    except WafError:
+        gccxml = None
     if not gccxml:
         Logs.warn("gccxml missing; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,

@@ -4,7 +4,7 @@ import os.path
 
 def configure(conf):
     if conf.env['ENABLE_THREADING']:
-        conf.env['ENABLE_TAP'] = conf.check(header_name='linux/if_tun.h',
+        conf.env['ENABLE_TAP'] = conf.check_nonfatal(header_name='linux/if_tun.h',
                                             define_name='HAVE_IF_TUN_H')
         conf.report_optional_feature("TapBridge", "Tap Bridge",
                                      conf.env['ENABLE_TAP'],

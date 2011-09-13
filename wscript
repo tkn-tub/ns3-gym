@@ -24,6 +24,8 @@ import Build
 import Configure
 import Scripting
 
+from waflib.Errors import WafError
+
 from utils import read_config_file
 
 # By default, all modules will be enabled, examples will be disabled,
@@ -286,8 +288,8 @@ def configure(conf):
         env.append_value('LINKFLAGS', '-fprofile-arcs')
 
     if Options.options.build_profile == 'debug':
-        env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
-        env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
+        env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')
+        env.append_value('DEFINES', 'NS3_LOG_ENABLE')
 
     env['PLATFORM'] = sys.platform
 
@@ -467,12 +469,10 @@ def configure(conf):
                                  conf.env['ENABLE_GSL'],
                                  "GSL not found")
     if have_gsl:
-        conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
-        conf.env.append_value('CCDEFINES', "ENABLE_GSL")
+        conf.env.append_value('DEFINES', "ENABLE_GSL")
 
     # for compiling C code, copy over the CXX* flags
     conf.env.append_value('CCFLAGS', conf.env['CXXFLAGS'])
-    conf.env.append_value('CCDEFINES', conf.env['CXXDEFINES'])
 
     def add_gcc_flag(flag):
         if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
@@ -486,7 +486,10 @@ def configure(conf):
     add_gcc_flag('-fstrict-aliasing')
     add_gcc_flag('-Wstrict-aliasing')
 
-    conf.find_program('doxygen', var='DOXYGEN')
+    try:
+        conf.find_program('doxygen', var='DOXYGEN')
+    except WafError:
+        pass
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],

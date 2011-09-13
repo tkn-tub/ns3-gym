@@ -4,7 +4,7 @@ import os.path
 
 def configure(conf):
     if conf.env['ENABLE_THREADING']:
-        conf.env['ENABLE_EMU'] = conf.check(header_name='netpacket/packet.h',
+        conf.env['ENABLE_EMU'] = conf.check_nonfatal(header_name='netpacket/packet.h',
                                             define_name='HAVE_PACKET_H')
         conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
                                      conf.env['ENABLE_EMU'],
