@@ -21,53 +21,21 @@ try:
 except NameError:
     from sets import Set as set # Python 2.3 fallback
 
-all_modules = [
-    'core',
-    'network',
-    'config-store',
-    'internet',
-    'propagation',
-    'point-to-point',
-    'csma',
-    'emu',
-    'bridge',
-    'tap-bridge',
-    'virtual-net-device',
-    'applications',
-    'nix-vector-routing',
-    'olsr',
-    'aodv',
-    'dsdv',
-    'click',
-    'openflow',
-    'mobility',
-    'wifi',
-    'netanim',
-    'stats',
-    'uan',
-    'spectrum',
-    'mesh',   
-    'test',
-    'test/ns3tcp',
-    'test/ns3wifi',
-    'flow-monitor',
-    'wimax',
-    'lte',
-    'mpi',
-    'topology-read',
-    'energy',
-    'tools',
-    'visualizer',
-    'point-to-point-layout',
-    'csma-layout',
-    'template',
-    ]
+
+all_modules = []
+for dirname in os.listdir('src'):
+    if dirname.startswith('.') or dir == 'CVS':
+        continue
+    path = os.path.join('src', dirname)
+    if not os.path.isdir(path):
+        continue
+    if os.path.exists(os.path.join(path, 'wscript')):
+        all_modules.append(dirname)
+all_modules.sort()
+
+
 
 def options(opt):
-    opt.sub_options('core')
-    opt.sub_options('click')
-    opt.sub_options('openflow')
-
     opt.add_option('--enable-rpath',
                    help=("Link programs with rpath"
                          " (normally not needed, see "
@@ -79,18 +47,13 @@ def options(opt):
                    help=("Build only these modules (and dependencies)"),
                    dest='enable_modules')
 
+    for module in all_modules:
+        opt.sub_options(module, mandatory=False)
+
+
 def configure(conf):
-    conf.sub_config('core')
-    conf.sub_config('emu')
-    conf.sub_config('tap-bridge')
-    conf.sub_config('config-store')
-    conf.sub_config('internet')
-    conf.sub_config('netanim')
-    conf.sub_config('test')
-    conf.sub_config('click')
-    conf.sub_config('openflow')
-    conf.sub_config('stats')
-    conf.sub_config('visualizer')
+    for module in all_modules:
+        conf.sub_config(module, mandatory=False)
 
     blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
@@ -157,7 +120,6 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
 
     module.install_path = "${LIBDIR}"
 
-    module.bld = bld
     module.name = "ns3-" + name
     module.dependencies = dependencies
     # Initially create an empty value for this because the pcfile
@@ -448,12 +410,12 @@ class ns3pcfile_taskgen(TaskGen.task_gen):
 @TaskGen.after_method('process_rule')
 def apply_ns3header(self):
     if self.module is None:
-        raise Utils.WafError("'module' missing on ns3headers object %s" % self)
+        raise WafError("'module' missing on ns3headers object %s" % self)
     ns3_dir_node = self.bld.path.find_dir("ns3")
     for filename in set(self.to_list(self.source)):
         src_node = self.path.find_resource(filename)
         if src_node is None:
-            raise Utils.WafError("source ns3 header file %s not found" % (filename,))
+            raise WafError("source ns3 header file %s not found" % (filename,))
         dst_node = ns3_dir_node.find_or_declare(src_node.name)
         assert dst_node is not None
         task = self.create_task('ns3header')
@@ -638,7 +600,7 @@ def apply_ns3moduleheader(self):
                     fatal("missing header file %s" % (source,))
                 all_headers_inputs.append(node)
     if not found_the_module:
-        raise Utils.WscriptError("error finding headers for module %s" % self.module)
+        raise WafError("error finding headers for module %s" % self.module)
     if not all_headers_inputs:
         return
 

@@ -381,7 +381,7 @@ def configure(conf):
         if not_built_name in conf.env['NS3_ENABLED_MODULES']:
             conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
-                raise Utils.WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
+                raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
 
     conf.sub_config('bindings/python')
 
@@ -830,10 +830,10 @@ def shutdown(ctx):
         raise SystemExit(0)
 
     if Options.options.shell:
-        raise Utils.WafError("Please run `./waf shell' now, instead of `./waf --shell'")
+        raise WafError("Please run `./waf shell' now, instead of `./waf --shell'")
 
     if Options.options.check:
-        raise Utils.WafError("Please run `./test.py' now, instead of `./waf --check'")
+        raise WafError("Please run `./test.py' now, instead of `./waf --check'")
 
     check_shell(bld)
 
@@ -913,7 +913,7 @@ def check_shell(bld):
                "You should correct this situation before running any program.  Possible solutions:\n"
                "  1. Exit this shell, and start a new one\n"
                "  2. Run a new nested shell")
-        raise Utils.WafError(msg)
+        raise WafError(msg)
 
 
 from waflib import Context, Build
