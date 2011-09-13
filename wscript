@@ -565,6 +565,13 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "# #/.."
+    program.use = program.ns3_module_dependencies
+    if program.env['ENABLE_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            program.env.STLIB_MARKER = '-Wl,-all_load'
+        else:
+            program.env.STLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
+            program.env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
     return program
 
 def register_ns3_script(bld, name, dependencies=('core',)):
@@ -599,22 +606,6 @@ def add_scratch_programs(bld):
             obj.source = filename
             obj.target = name
             obj.name = obj.target
-
-
-def _add_ns3_program_missing_deps(bld, program):
-    deps_found = program.ns3_module_dependencies
-    program.use = getattr(program, "use", []) + [dep #+ "--lib"
-                                                          for dep in deps_found]
-    if program.env['ENABLE_STATIC_NS3']:
-        if sys.platform == 'darwin':
-            program.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            for dep in deps_found:
-                program.env.append_value('LINKFLAGS', '-l' + dep)
-        else:
-            program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            for dep in deps_found:
-                program.env.append_value('LINKFLAGS', '-l' + dep)
-            program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
 
 
 def _get_all_task_gen(self):
@@ -762,34 +753,9 @@ def build(bld):
 
     bld.add_subdirs('bindings/python')
 
-    ## do a topological sort on the modules graph
-    dep_graph = []
-    for gen in bld.all_task_gen:
-        if type(gen).__name__ in ['ns3module_taskgen']:
-            for dep in gen.dependencies:
-                dep_graph.append(("ns3-"+dep, gen.name))
-    dep_graph.sort()
-    sys.path.insert(0, "bindings/python")
-    from topsort import topsort
-    sorted_ns3_modules = topsort(dep_graph)
-    #print sorted_ns3_modules
-
-    # we need to post() the ns3 modules, so they create libraries underneath, and programs can list them in uselib_local
-    for module in sorted_ns3_modules:
-        gen = bld.get_tgen_by_name(module)
-        if type(gen).__name__ in ['ns3module_taskgen']:
-            gen.post()
-            for lib in gen.libs:
-                lib.post()
-
     # Process this subfolder here after the lists of enabled modules
     # and module test libraries have been set.
     bld.add_subdirs('utils')
-
-    for gen in bld.all_task_gen:
-        if not getattr(gen, "is_ns3_program", False) or not hasattr(gen, "ns3_module_dependencies"):
-            continue
-        _add_ns3_program_missing_deps(bld, gen)
 
     if Options.options.run:
         # Check that the requested program name is valid
@@ -806,6 +772,8 @@ def build(bld):
     if Options.options.doxygen_no_build:
         _doxygen(bld)
         raise SystemExit(0)
+
+
 
 def shutdown(ctx):
     bld = wutils.bld
@@ -836,8 +804,7 @@ def shutdown(ctx):
             print
 
     # Write the build status file.
-    build_status_file = os.path.join(bld.out_dir, #env['NS3_ACTIVE_VARIANT'],
-                                     'build-status.py')
+    build_status_file = os.path.join(bld.out_dir, 'build-status.py')
     out = open(build_status_file, 'w')
     out.write('#! /usr/bin/env python\n')
     out.write('\n')
@@ -870,12 +837,13 @@ def shutdown(ctx):
 
     check_shell(bld)
 
-check_context = Build.BuildContext
 
+check_context = Build.BuildContext
 def check(bld):
     """run the equivalent of the old ns-3 unit tests using test.py"""
     env = wutils.bld.env
     wutils.run_python_program("test.py -n -c core", env)
+
 
 class print_introspected_doxygen_task(Task.TaskBase):
     after = 'cc cxx link'
