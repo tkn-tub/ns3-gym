@@ -353,7 +353,7 @@ In the following the pseudo-code of the model is presented::
         then
           if (distance > 1 km)
             then
-              if (rxNode or txNode is SC)
+              if (rxNode or txNode is below the rooftop)
                 then
                   L = I1411
                 else
@@ -363,7 +363,7 @@ In the following the pseudo-code of the model is presented::
         else (rxNode is indoor)
           if (distance > 1 km)
             then
-              if (rxNode or txNode is SC)
+              if (rxNode or txNode is below the rooftop)
                 L = I1411 + BEL + HG
               else
                 L = OH + BEL + HG
@@ -380,7 +380,7 @@ In the following the pseudo-code of the model is presented::
      else (rxNode is outdoor)
       if (distance > 1 km)
         then 
-          if (rxNode or txNode is SC)
+          if (rxNode or txNode is below the rooftop)
                 then
                   L = I1411 + BEL + HG
                 else
