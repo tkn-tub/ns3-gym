@@ -389,9 +389,17 @@ LtePathlossModelTestCase::DoRun (void)
   m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
   m_downlinkPropagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
   m_downlinkPropagationLossModel->SetAttribute ("CitySize", EnumValue (m_city));
+  // cancel shadowing effect
+  m_downlinkPropagationLossModel->SetAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
+  m_downlinkPropagationLossModel->SetAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
+  m_downlinkPropagationLossModel->SetAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   Ptr<BuildingsPropagationLossModel>  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
   m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
+  // cancel shadowing effect
+  m_uplinkPropagationLossModel->SetAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
+  m_uplinkPropagationLossModel->SetAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
+  m_uplinkPropagationLossModel->SetAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
   m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
   
@@ -441,14 +449,19 @@ LtePathlossModelSystemTestCase::DoRun (void)
 //   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
-  LogComponentDisable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
+//   LogComponentDisable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
 //   
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   //   lena->EnableLogComponents ();
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  // remove shadowing component
+  lena->SetPropagationModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
+  lena->SetPropagationModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
+  lena->SetPropagationModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -474,8 +487,6 @@ LtePathlossModelSystemTestCase::DoRun (void)
   Ptr<BuildingsMobilityModel> mm_ue = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm_ue->SetPosition (Vector (m_distance, 0.0, 1.0));
   
-  NS_LOG_INFO (" DISTANCE " << mm_ue->GetDistanceFrom (mm_enb));
-  
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -485,6 +496,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   Ptr<LteUePhy> uePhy = lteUeDev->GetPhy ();
   uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
   uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
+  
   
   // Attach a UE to a eNB
   lena->Attach (ueDevs, enbDevs.Get (0));
