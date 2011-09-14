@@ -51,18 +51,18 @@ In what following, a few guidelines for the usage of the ``BuildingMobilityModel
     #include <ns3/buildings-propagation-loss-model.h>
     #include <ns3/building.h>
 
-#. Propagation model selection
+#. Propagation model selection::
 
     Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
     lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
 
-#. Mobility model selection
+#. Mobility model selection::
 
     MobilityHelper mobility;
     mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
 
-#. Node creation and positioning
+#. Node creation and positioning::
 
     ueNodes.Create (1);
     mobility.Install (ueNodes);
@@ -74,7 +74,7 @@ In what following, a few guidelines for the usage of the ``BuildingMobilityModel
     double z_axis = 0.0;
     mm->SetPosition (Vector (x_axis, y_axis, z_axis));
 
-#. Building creation
+#. Building creation::
 
     double x_min = 0.0;
     double x_max = 10.0;
@@ -91,12 +91,15 @@ In what following, a few guidelines for the usage of the ``BuildingMobilityModel
 
    This will instantiate a residential building with base of 10 x 20 meters and height of 10 meters with concrete with windows as external walls, three floors and a grid of rooms of 3 x 2.
 
-#. Building and nodes interactions
+#. Building and nodes interactions::
 
     mm->SetIndoor (building);
     mm->SetFloorNumber (2);
+    mm->SetRoomNumberX (1);
+    mm->SetRoomNumberY (1);
 
-   This informs node's mobility model the fact that the node is inside the building at the second floor. It has to be noted that the simulator does not check the consistence between the node's position and the bulding site, which is user's responsibility.
+   This informs node's mobility model the fact that the node is inside the building at the second floor in the corner room of the 3 x 2 grid. 
+   It has to be noted that the simulator does not check the consistence between the node's position and the building site, which is user's responsibility.
 
 
 
