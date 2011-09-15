@@ -458,6 +458,12 @@ LtePathlossModelSystemTestCase::DoRun (void)
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  // set frequency
+  // this should not be done, since it is charge the Helper of this task using the netdevice settings (earfc parameter)
+  double freq = 2.114e+09;
+  lena->SetPropagationModelAttribute ("Frequency", DoubleValue (freq));
+  lena->SetPropagationModelAttribute ("Lambda", DoubleValue (300000000.0 /freq));
+  
   // remove shadowing component
   lena->SetPropagationModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lena->SetPropagationModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
