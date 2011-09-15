@@ -8,8 +8,16 @@ def options(opt):
     opt.add_option('--with-nsclick',
                    help=('Path to Click source or installation prefix for NS-3 Click Integration support'),
                    dest='with_nsclick', default=None)
+    opt.add_option('--disable-nsclick',
+                   help=('Disable NS-3 Click Integration support'),
+                   dest='disable_nsclick', default=False, action="store_true")
 
 def configure(conf):
+    if Options.options.disable_nsclick:
+        conf.report_optional_feature("nsclick", "NS-3 Click Integration", False,
+                                     "disabled by user request")
+        return
+        
     if Options.options.with_nsclick:
         if os.path.isdir(Options.options.with_nsclick):
             conf.msg("libnsclick.so location", ("%s (given)" % Options.options.with_nsclick))
