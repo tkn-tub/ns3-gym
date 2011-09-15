@@ -80,7 +80,7 @@ int main()
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
                                   conf.env['NSCLICK'], "nsclick library not found")
     if conf.env['NSCLICK']:
-        conf.env.append_value('CXXDEFINES', 'NS3_CLICK')
+        conf.env.append_value('DEFINES', 'NS3_CLICK')
         conf.env.append_value('CPPPATH', conf.env['CPPPATH_NSCLICK'])
     else:
         # Add this module to the list of modules that won't be built
