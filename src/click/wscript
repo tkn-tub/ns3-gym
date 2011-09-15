@@ -58,7 +58,7 @@ int main()
   return 0;
 }
 '''
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
+    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
 
     for tmp in ['lib', 'ns']:
         libdir = os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],tmp))
@@ -68,7 +68,7 @@ int main()
 
     conf.env['CPPPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
     
-    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, lib='nsclick', uselib='NSCLICK DL')
+    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, lib='nsclick', use='DL', uselib_store='NSCLICK')
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
                                   conf.env['NSCLICK'], "nsclick library not found")
     if conf.env['NSCLICK']:
@@ -84,7 +84,7 @@ def build(bld):
     if 'click' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    module = bld.create_ns3_module('click', ['internet'])
+    module = bld.create_ns3_module('click', ['core', 'network', 'internet'])
     module.includes = '. CPPPATH_NSCLICK'
     module.source = [
         'model/ipv4-click-routing.cc',
@@ -98,8 +98,8 @@ def build(bld):
         ]
 
     if bld.env['NSCLICK'] and bld.env['DL']:
-        module.uselib      = 'NSCLICK DL'
-        module_test.uselib = 'NSCLICK DL'
+        module.use      = 'NSCLICK DL'
+        module_test.use = 'NSCLICK DL'
 
     headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'click'
