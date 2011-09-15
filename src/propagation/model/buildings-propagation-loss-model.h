@@ -89,7 +89,7 @@ public:
   CitySize GetCitySize (void) const;
   double GetMinDistance (void) const;
   double GetLambda (void) const;
-  void SetLambda (double frequency, double speed);
+//   void SetLambda (double frequency, double speed);
   
   
 private:

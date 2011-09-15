@@ -91,7 +91,7 @@ BuildingsPropagationLossModel::GetTypeId (void)
     .AddAttribute ("Lambda",
                    "The wavelength  (default is 2.106 GHz at 300 000 km/s).",
                    DoubleValue (300000000.0 / 2160e6),
-                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_lambda),
+                   MakeDoubleAccessor (&BuildingsPropagationLossModel::SetLambda, &BuildingsPropagationLossModel::GetLambda),
                    MakeDoubleChecker<double> ())
 
     .AddAttribute ("Frequency",
@@ -190,12 +190,12 @@ BuildingsPropagationLossModel::~BuildingsPropagationLossModel ()
   m_shadowingPairs.clear ();
 }
 
-void
-BuildingsPropagationLossModel::SetLambda (double frequency, double speed)
-{
-  m_lambda = speed / frequency;
-  m_frequency = frequency;
-}
+// void
+// BuildingsPropagationLossModel::SetLambda (double frequency, double speed)
+// {
+//   m_lambda = speed / frequency;
+//   m_frequency = frequency;
+// }
 
 void
 BuildingsPropagationLossModel::SetLambda (double lambda)
