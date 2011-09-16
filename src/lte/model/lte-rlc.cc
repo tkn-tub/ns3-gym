@@ -109,9 +109,9 @@ TypeId LteRlc::GetTypeId (void)
 }
 
 void
-LteRlc::SetRnti (uint8_t rnti)
+LteRlc::SetRnti (uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)  rnti);
+  NS_LOG_FUNCTION (this << (uint32_t) rnti);
   m_rnti = rnti;
 }
 
@@ -199,7 +199,7 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
   Time delay;
   if (p->FindFirstMatchingByteTag(rlcTag))
     {
-      delay = Simulator::Now() - rlcTag.getSenderTimestamp ();
+      delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
     }
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << delay.GetNanoSeconds ());
   m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
