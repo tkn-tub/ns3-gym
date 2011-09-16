@@ -84,7 +84,8 @@ disp ("Test #10: the value of ITU1411 in NLOS over the roof-top is:"), disp (g)
 
 % Test #11
 d = 104.12;
-fmhz = 2114;
+fmhz = 2120;
+f = 2120e6;
 hb = 30;
 hm = 1;
 hr = 20;
