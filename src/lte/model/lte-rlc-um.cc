@@ -82,10 +82,11 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
   tag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
   p->AddPacketTag (tag);
 
+  NS_LOG_LOGIC ("Tx Buffer: New packet added");
   m_txBuffer.push_back (p);
   m_txBufferSize += p->GetSize ();
-  NS_LOG_LOGIC ("Tx Buffer: New packet added");
   NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
+  NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
 
   /** Report Buffer Status */
 
@@ -96,7 +97,7 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
   LteMacSapProvider::ReportBufferStatusParameters r;
   r.rnti = m_rnti;
   r.lcid = m_lcid;
-  r.txQueueSize = m_txBufferSize;
+  r.txQueueSize = m_txBufferSize + 2 * m_txBuffer.size (); // Data in tx queue + estimated headers size
   r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
   r.retxQueueSize = 0;
   r.retxQueueHolDelay = 0;
@@ -150,6 +151,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
   NS_LOG_LOGIC ("Remove SDU from TxBuffer");
   Ptr<Packet> firstSegment = (*(m_txBuffer.begin ()))->Copy ();
   m_txBufferSize -= (*(m_txBuffer.begin()))->GetSize ();
+  NS_LOG_LOGIC ("txBufferSize      = " << m_txBufferSize );
   m_txBuffer.erase (m_txBuffer.begin ());
 
   while ( firstSegment && (firstSegment->GetSize () > 0) && (nextSegmentSize > 0) )
@@ -192,6 +194,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
           NS_LOG_LOGIC ("    TX buffer: Give back the remaining segment");
           NS_LOG_LOGIC ("    TX buffers = " << m_txBuffer.size ());
           NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txBuffer.begin()))->GetSize ());
+          NS_LOG_LOGIC ("    txBufferSize = " << m_txBufferSize );
 
           // Add Segment to Data field
           dataFieldAddedSize = newSegment->GetSize ();
@@ -270,7 +273,9 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
 
           // (more segments)
           firstSegment = (*(m_txBuffer.begin ()))->Copy ();
+          m_txBufferSize -= (*(m_txBuffer.begin()))->GetSize ();
           m_txBuffer.erase (m_txBuffer.begin ());
+          NS_LOG_LOGIC ("        txBufferSize = " << m_txBufferSize );
         }
 
     }
