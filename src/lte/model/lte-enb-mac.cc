@@ -33,6 +33,7 @@
 #include <ns3/lte-mac-tag.h>
 #include <ns3/lte-ue-phy.h>
 
+#include "ns3/lte-mac-sap.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
@@ -100,41 +101,6 @@ EnbMacMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
 {
   m_mac->DoReleaseLc (rnti, lcid);
 }
-
-
-
-class EnbMacMemberLteMacSapProvider : public LteMacSapProvider
-{
-public:
-  EnbMacMemberLteMacSapProvider (LteEnbMac* mac);
-
-  // inherited from LteMacSapProvider
-  virtual void TransmitPdu (TransmitPduParameters params);
-  virtual void ReportBufferStatus (ReportBufferStatusParameters params);
-
-private:
-  LteEnbMac* m_mac;
-};
-
-
-EnbMacMemberLteMacSapProvider::EnbMacMemberLteMacSapProvider (LteEnbMac* mac)
-  : m_mac (mac)
-{
-}
-
-void
-EnbMacMemberLteMacSapProvider::TransmitPdu (TransmitPduParameters params)
-{
-  m_mac->DoTransmitPdu (params);
-}
-
-
-void
-EnbMacMemberLteMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters params)
-{
-  m_mac->DoReportBufferStatus (params);
-}
-
 
 
 
@@ -314,7 +280,7 @@ LteEnbMac::GetTypeId (void)
 LteEnbMac::LteEnbMac ()
 {
   NS_LOG_FUNCTION (this);
-  m_macSapProvider = new EnbMacMemberLteMacSapProvider (this);
+  m_macSapProvider = new EnbMacMemberLteMacSapProvider<LteEnbMac> (this);
   m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
   m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
   m_cschedSapUser = new EnbMacMemberFfMacCschedSapUser (this);

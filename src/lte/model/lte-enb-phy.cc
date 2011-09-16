@@ -209,13 +209,13 @@ LteEnbPhy::GetNoiseFigure () const
 }
 
 bool
-LteEnbPhy::AddUePhy (uint8_t rnti, Ptr<LteUePhy> phy)
+LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
 {
-  std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
+  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
-      m_ueAttached.insert (std::pair<uint8_t, Ptr<LteUePhy> > (rnti, phy));
+      m_ueAttached.insert (std::pair<uint16_t, Ptr<LteUePhy> > (rnti, phy));
       return (true);
     }
   else
@@ -226,9 +226,9 @@ LteEnbPhy::AddUePhy (uint8_t rnti, Ptr<LteUePhy> phy)
 }
 
 bool
-LteEnbPhy::DeleteUePhy (uint8_t rnti)
+LteEnbPhy::DeleteUePhy (uint16_t rnti)
 {
-  std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
+  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
@@ -340,7 +340,7 @@ LteEnbPhy::StartSubFrame (void)
           Ptr<IdealControlMessage> msg = (*it);
           if (msg->GetMessageType () == IdealControlMessage::DL_DCI)
             {
-              std::map <uint8_t, Ptr<LteUePhy> >::iterator it2;
+              std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<DlDciIdealControlMessage> dci = DynamicCast<DlDciIdealControlMessage> (msg);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
 
@@ -370,7 +370,7 @@ LteEnbPhy::StartSubFrame (void)
             }
           else if (msg->GetMessageType () == IdealControlMessage::UL_DCI)
             {
-              std::map <uint8_t, Ptr<LteUePhy> >::iterator it2;
+              std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<UlDciIdealControlMessage> dci = DynamicCast<UlDciIdealControlMessage> (msg);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
 
@@ -403,7 +403,7 @@ LteEnbPhy::StartSubFrame (void)
 
 
   // trigger the UE(s)
-  std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
+  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
   for (it = m_ueAttached.begin (); it != m_ueAttached.end (); it++)
     {
       (*it).second->SubframeIndication (m_nrFrames, m_nrSubFrames);

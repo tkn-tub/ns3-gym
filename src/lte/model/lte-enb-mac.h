@@ -48,7 +48,7 @@ class PdcchMapIdealControlMessage;
 class LteEnbMac :   public Object
 {
   friend class EnbMacMemberLteEnbCmacSapProvider;
-  friend class EnbMacMemberLteMacSapProvider;
+  friend class EnbMacMemberLteMacSapProvider<LteEnbMac>;
   friend class EnbMacMemberFfMacSchedSapUser;
   friend class EnbMacMemberFfMacCschedSapUser;
   friend class EnbMacMemberLteEnbPhySapUser;
