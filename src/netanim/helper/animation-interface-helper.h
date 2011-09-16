@@ -62,8 +62,7 @@ public:
    *
    */
   AnimRxInfo (const Time& fbRx, Ptr <const NetDevice> nd ,double rxRange)
-    : m_fbRx (fbRx.GetSeconds ()), m_lbRx (0), m_rxnd (nd), 
-      rxRange (rxRange) {}
+    : m_fbRx (fbRx.GetSeconds ()), m_lbRx (0), m_rxnd (nd), rxRange (rxRange), m_PhyRxComplete (false){}
 
   /** 
    * \brief First bit receive time
@@ -92,6 +91,22 @@ public:
    *
    */
   double rxRange;
+  
+  /**
+   * \brief Check if Wifi Phy Rx is Complete
+   * \returns true if Wifi Phy Rx is complete
+   *
+   */
+  bool IsPhyRxComplete ();
+
+  /**
+   * \brief Set Wifi Phy Rx Complete
+   *
+   */
+  void SetPhyRxComplete ();
+
+private:
+  bool m_PhyRxComplete;
 
 };
 

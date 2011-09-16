@@ -106,7 +106,7 @@ public:
   void SetXMLOutput ();
 
   /**
-   * \brief Specify that animation commands are to be written to
+   * \brief (Deprecated) Specify that animation commands are to be written to
    * a socket.
    *
    * This call is used to set the ns3 process in server mode, waiting
@@ -204,6 +204,8 @@ private:
                             Ptr<const Packet> p);
   void WifiPhyRxEndTrace (std::string context,
                           Ptr<const Packet> p);
+  void WifiMacRxTrace (std::string context,
+                       Ptr<const Packet> p);
   void WifiPhyRxDropTrace (std::string context,
                            Ptr<const Packet> p);
   void WimaxTxTrace (std::string context,
@@ -212,6 +214,14 @@ private:
   void WimaxRxTrace (std::string context,
                      Ptr<const Packet> p,
                      const Mac48Address &);
+  void CsmaPhyTxBeginTrace (std::string context,
+                            Ptr<const Packet> p);
+  void CsmaPhyTxEndTrace (std::string context,
+                            Ptr<const Packet> p);
+  void CsmaPhyRxEndTrace (std::string context,
+                          Ptr<const Packet> p);
+  void CsmaMacRxTrace (std::string context,
+                       Ptr<const Packet> p);
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write specified amount of data to the specified handle
@@ -220,8 +230,8 @@ private:
   // Write a string to the specified handle;
   int  WriteN (int, const std::string&);
 
-  //Helpers to output xml wireless packet
   void OutputWirelessPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void OutputCsmaPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void MobilityAutoCheck ();
   
   uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
@@ -233,6 +243,10 @@ private:
   std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
   void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WimaxPacketIsPending (uint64_t AnimUid); 
+
+  std::map<uint64_t, AnimPacketInfo> pendingCsmaPackets;
+  void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool CsmaPacketIsPending (uint64_t AnimUid);
 
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
 
@@ -267,7 +281,7 @@ private:
   std::string GetXMLOpen_topology (double minX,double minY,double maxX,double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY);
   std::string GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId);
-  std::string GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx);
+  std::string GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
   std::string GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }

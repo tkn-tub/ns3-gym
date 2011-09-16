@@ -60,6 +60,7 @@ bool AnimPacketInfo::ProcessRxEnd (Ptr<const NetDevice> nd, const Time& lbRx, Ve
     }
   rxInfo.rxRange = CalculateDistance (m_txLoc, rxLoc);
   rxInfo.m_lbRx = lbRx.GetSeconds ();
+  rxInfo.SetPhyRxComplete ();
   firstlastbitDelta = rxInfo.m_lbRx - rxInfo.m_fbRx;
   return true;
 }
@@ -81,5 +82,14 @@ void AnimPacketInfo::ProcessRxDrop (Ptr<const NetDevice> nd)
 {
 }
 
+bool AnimRxInfo::IsPhyRxComplete ()
+{
+  return m_PhyRxComplete;
+}
+
+void AnimRxInfo::SetPhyRxComplete ()
+{
+  m_PhyRxComplete = true; 
+}
 
 } // namespace ns3
