@@ -24,6 +24,7 @@
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-um.h"
 #include "ns3/lte-rlc-sdu-status-tag.h"
+#include "ns3/lte-rlc-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcUm");
 
@@ -32,7 +33,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteRlcUm);
 
 LteRlcUm::LteRlcUm ()
-  : m_sequenceNumber (0),
+  : m_txBufferSize (0),
+    m_sequenceNumber (0),
     m_vrUr (0),
     m_vrUx (0),
     m_vrUh (0),
@@ -69,6 +71,11 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
 
+  /** Store arrival time */
+  Time now = Simulator::Now ();
+  RlcTag timeTag (now);
+  p->AddPacketTag (timeTag);
+
   /** Store PDCP PDU */
 
   LteRlcSduStatusTag tag;
@@ -76,19 +83,28 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
   p->AddPacketTag (tag);
 
   m_txBuffer.push_back (p);
-  NS_LOG_LOGIC ("Tx Buffer. New packet added. New size = " << m_txBuffer.size() );
+  m_txBufferSize += p->GetSize ();
+  NS_LOG_LOGIC ("Tx Buffer: New packet added");
+  NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
 
   /** Report Buffer Status */
+
+  RlcTag holTimeTag;
+  m_txBuffer.front ()->PeekPacketTag (holTimeTag);
+  Time holDelay = now - holTimeTag.GetSenderTimestamp ();
 
   LteMacSapProvider::ReportBufferStatusParameters r;
   r.rnti = m_rnti;
   r.lcid = m_lcid;
-  r.txQueueSize = p->GetSize ();
-  r.txQueueHolDelay = 0;
+  r.txQueueSize = m_txBufferSize;
+  r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
   r.retxQueueSize = 0;
   r.retxQueueHolDelay = 0;
   r.statusPduSize = 0;
 
+  NS_LOG_LOGIC ("Send ReportBufferStatus");
+  NS_LOG_LOGIC ("Queue size = " << r.txQueueSize);
+  NS_LOG_LOGIC ("HOL delay = " << r.txQueueHolDelay);
   m_macSapProvider->ReportBufferStatus (r);
 }
 
@@ -129,13 +145,11 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
 
   NS_LOG_LOGIC ("SDUs in TxBuffer  = " << m_txBuffer.size ());
   NS_LOG_LOGIC ("First SDU buffer  = " << *(m_txBuffer.begin()));
-  if (m_txBuffer.size () > 0)
-    {
-      NS_LOG_LOGIC ("First SDU size    = " << (*(m_txBuffer.begin()))->GetSize ());
-    }
+  NS_LOG_LOGIC ("First SDU size    = " << (*(m_txBuffer.begin()))->GetSize ());
   NS_LOG_LOGIC ("Next segment size = " << nextSegmentSize);
   NS_LOG_LOGIC ("Remove SDU from TxBuffer");
   Ptr<Packet> firstSegment = (*(m_txBuffer.begin ()))->Copy ();
+  m_txBufferSize -= (*(m_txBuffer.begin()))->GetSize ();
   m_txBuffer.erase (m_txBuffer.begin ());
 
   while ( firstSegment && (firstSegment->GetSize () > 0) && (nextSegmentSize > 0) )
@@ -172,6 +186,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
           // Give back the remaining segment to the transmission buffer
           firstSegment->RemoveAtStart (nextSegmentSize);
           m_txBuffer.insert (m_txBuffer.begin (), firstSegment);
+          m_txBufferSize += (*(m_txBuffer.begin()))->GetSize ();
           firstSegment = 0; // TODO how to put a null ptr to Packet?
 
           NS_LOG_LOGIC ("    TX buffer: Give back the remaining segment");

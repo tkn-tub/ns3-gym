@@ -68,6 +68,7 @@ private:
   void ReassembleAndDeliver (Ptr<Packet> packet);
 
 private:
+  uint32_t m_txBufferSize;
   std::vector < Ptr<Packet> > m_txBuffer;       // Transmission buffer
   std::map <uint16_t, Ptr<Packet> > m_rxBuffer; // Reception buffer
   std::vector < Ptr<Packet> > m_reasBuffer;     // Reassembling buffer
