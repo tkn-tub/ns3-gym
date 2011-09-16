@@ -121,7 +121,7 @@ LteTestRrc::SendData (Time at, std::string dataToSend)
   NS_LOG_FUNCTION (this);
 
   LtePdcpSapProvider::TransmitRrcPduParameters p;
-  p.rnti = 111;
+  p.rnti = 1111;
   p.lcid = 222;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
@@ -217,19 +217,19 @@ LteTestPdcp::Start ()
 }
 
 void
-LteTestPdcp::SendData (Time at, std::string dataToSend)
+LteTestPdcp::SendData (Time time, std::string dataToSend)
 {
   NS_LOG_FUNCTION (this);
 
   LteRlcSapProvider::TransmitPdcpPduParameters p;
-  p.rnti = 111;
+  p.rnti = 1111;
   p.lcid = 222;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.pdcpPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
 
   NS_LOG_LOGIC ("Packet(" << p.pdcpPdu->GetSize () << ")");
-  Simulator::Schedule (at, &LteRlcSapProvider::TransmitPdcpPdu, m_rlcSapProvider, p);
+  Simulator::Schedule (time, &LteRlcSapProvider::TransmitPdcpPdu, m_rlcSapProvider, p);
   Simulator::Run ();
 }
 
@@ -303,12 +303,12 @@ LteTestMac::GetDataReceived (void)
 }
 
 void
-LteTestMac::SendTxOpportunity (uint32_t bytes)
+LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Bytes = " << bytes);
 
-  Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes);
+  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes);
   Simulator::Run ();
 }
 

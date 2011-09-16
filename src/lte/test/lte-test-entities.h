@@ -114,7 +114,7 @@ class LteTestPdcp : public Object
 
     void Start ();
 
-    void SendData (Time at, std::string dataToSend);
+    void SendData (Time time, std::string dataToSend);
     std::string GetDataReceived (void);
 
   private:
@@ -148,7 +148,7 @@ class LteTestMac : public Object
     virtual ~LteTestMac (void);
     virtual void DoDispose (void);
 
-    void SendTxOpportunity (uint32_t);
+    void SendTxOpportunity (Time, uint32_t);
     std::string GetDataReceived (void);
 
     /**
