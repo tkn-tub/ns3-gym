@@ -20,6 +20,11 @@
 #include <mach-o/dyld.h>
 #endif /* __APPLE__ */
 
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
+
 
 #if defined (__win32__)
 #define SYSTEM_PATH_SEP "\\"
@@ -110,6 +115,20 @@ std::string FindSelfDirectory (void)
     filename = buffer;
     free (buffer);
   } 
+#elif defined (__FreeBSD__)
+  {
+    int     mib[4];
+    size_t  bufSize = 1024;
+    char   *buf = (char *) malloc(bufSize);
+
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PATHNAME;
+    mib[3] = -1;
+
+    sysctl(mib, 4, buf, &bufSize, NULL, 0);
+    filename = buf;
+  }
 #endif
     return Dirname (filename);
 }

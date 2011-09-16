@@ -40,6 +40,10 @@
 #include <ns3/applications-module.h>
 #include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
 
+#ifdef __FreeBSD__
+#define log2(x) (log(x)/M_LN2)
+#endif
+
 NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
 
 using namespace ns3;

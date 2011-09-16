@@ -49,6 +49,10 @@
 #include <ns3/on-off-helper.h>
 #include <ns3/config.h>
 
+#ifdef __FreeBSD__
+#define log2(x) (log(x)/M_LN2)
+#endif
+
 NS_LOG_COMPONENT_DEFINE ("SpectrumIdealPhyTest");
 
 namespace ns3 {

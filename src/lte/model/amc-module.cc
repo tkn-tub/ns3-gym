@@ -23,6 +23,10 @@
 #include <ns3/log.h>
 #include <math.h>
 
+#ifdef __FreeBSD__
+#define log2(x) (log(x)/M_LN2)
+#endif
+
 NS_LOG_COMPONENT_DEFINE ("AmcModule");
 
 namespace ns3 {

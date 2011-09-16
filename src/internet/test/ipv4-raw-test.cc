@@ -44,6 +44,8 @@
 #include <string>
 #include <limits>
 #include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 namespace ns3 {
 
 static void

@@ -23,6 +23,9 @@
 #include <math.h>
 #include <ns3/log.h>
 
+#ifdef __FreeBSD__
+#define log2(x) (log(x)/M_LN2)
+#endif
 
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumValue");
