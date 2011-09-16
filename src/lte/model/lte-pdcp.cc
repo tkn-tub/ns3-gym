@@ -93,9 +93,9 @@ LtePdcp::GetTypeId (void)
 }
 
 void
-LtePdcp::SetRnti (uint8_t rnti)
+LtePdcp::SetRnti (uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)  rnti);
+  NS_LOG_FUNCTION (this << (uint32_t) rnti);
   m_rnti = rnti;
 }
 
