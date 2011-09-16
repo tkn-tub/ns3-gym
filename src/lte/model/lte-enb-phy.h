@@ -137,9 +137,9 @@ public:
 
   void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
 
-  bool AddUePhy (uint8_t rnti, Ptr<LteUePhy> phy);
+  bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
-  bool DeleteUePhy (uint8_t rnti);
+  bool DeleteUePhy (uint16_t rnti);
 
 
   /**
@@ -169,7 +169,7 @@ public:
 
 
 private:
-  std::map <uint8_t, Ptr<LteUePhy> > m_ueAttached;
+  std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
