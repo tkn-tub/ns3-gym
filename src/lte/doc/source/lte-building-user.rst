@@ -57,6 +57,15 @@ In what following, a few guidelines for the usage of the ``BuildingMobilityModel
   
     lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
 
+#. EUTRA Band Selection
+   
+The selection of the working frequency of the propagation model has to be done with the standard ns-3 attribute system as described in the correspond section ("Configuration of LTE model parameters") by means of the DlEarfcn and UlEarfcn parameters, for instance::
+
+   default ns3::LteEnbNetDevice::DlEarfcn "100"
+   default ns3::LteEnbNetDevice::UlEarfcn "18100"
+
+It is to be noted that any other configuration (i.e., with BuildingsPropagationLossModel attributes) might generates conflicts in the frequencies definition in the modules during the simulation.
+
 #. Mobility model selection::
 
     MobilityHelper mobility;
