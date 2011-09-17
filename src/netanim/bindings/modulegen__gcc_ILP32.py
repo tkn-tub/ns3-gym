@@ -488,6 +488,14 @@ def register_Ns3AnimRxInfo_methods(root_module, cls):
     cls.add_constructor([])
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimRxInfo::AnimRxInfo(ns3::Time const & fbRx, ns3::Ptr<ns3::NetDevice const> nd, double rxRange) [constructor]
     cls.add_constructor([param('ns3::Time const &', 'fbRx'), param('ns3::Ptr< ns3::NetDevice const >', 'nd'), param('double', 'rxRange')])
+    ## animation-interface-helper.h (module 'netanim'): bool ns3::AnimRxInfo::IsPhyRxComplete() [member function]
+    cls.add_method('IsPhyRxComplete', 
+                   'bool', 
+                   [])
+    ## animation-interface-helper.h (module 'netanim'): void ns3::AnimRxInfo::SetPhyRxComplete() [member function]
+    cls.add_method('SetPhyRxComplete', 
+                   'void', 
+                   [])
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimRxInfo::m_fbRx [variable]
     cls.add_instance_attribute('m_fbRx', 'double', is_const=False)
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimRxInfo::m_lbRx [variable]
@@ -507,6 +515,14 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_constructor([param('std::string const', 'filename'), param('bool', 'usingXML', default_value='true')])
     ## animation-interface.h (module 'netanim'): ns3::AnimationInterface::AnimationInterface(uint16_t port, bool usingXML=true) [constructor]
     cls.add_constructor([param('uint16_t', 'port'), param('bool', 'usingXML', default_value='true')])
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::ResetAnimWriteCallback() [member function]
+    cls.add_method('ResetAnimWriteCallback', 
+                   'void', 
+                   [])
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetAnimWriteCallback(void (*)( char const * ) * cb) [member function]
+    cls.add_method('SetAnimWriteCallback', 
+                   'void', 
+                   [param('void ( * ) ( char const * ) *', 'cb')])
     ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetMobilityPollInterval(ns3::Time t) [member function]
     cls.add_method('SetMobilityPollInterval', 
                    'void', 
@@ -515,6 +531,10 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_method('SetOutputFile', 
                    'bool', 
                    [param('std::string const &', 'fn')])
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetRandomPosition(bool setRandPos) [member function]
+    cls.add_method('SetRandomPosition', 
+                   'void', 
+                   [param('bool', 'setRandPos')])
     ## animation-interface.h (module 'netanim'): bool ns3::AnimationInterface::SetServerPort(uint16_t port) [member function]
     cls.add_method('SetServerPort', 
                    'bool', 

@@ -1648,10 +1648,10 @@ def register_Ns3Gnuplot2dDataset_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('double', 'x'), param('double', 'y'), param('double', 'errorDelta')])
-    ## gnuplot.h (module 'tools'): void ns3::Gnuplot2dDataset::Add(double x, double y, double minY, double maxY) [member function]
+    ## gnuplot.h (module 'tools'): void ns3::Gnuplot2dDataset::Add(double x, double y, double xErrorDelta, double yErrorDelta) [member function]
     cls.add_method('Add', 
                    'void', 
-                   [param('double', 'x'), param('double', 'y'), param('double', 'minY'), param('double', 'maxY')])
+                   [param('double', 'x'), param('double', 'y'), param('double', 'xErrorDelta'), param('double', 'yErrorDelta')])
     ## gnuplot.h (module 'tools'): void ns3::Gnuplot2dDataset::AddEmptyLine() [member function]
     cls.add_method('AddEmptyLine', 
                    'void', 
