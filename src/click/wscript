@@ -74,15 +74,14 @@ int main()
             conf.env.append_value('NS3_MODULE_PATH',libdir)
             conf.env['LIBPATH_NSCLICK'] = [libdir]
 
-    conf.env['CPPPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
+    conf.env['INCLUDES_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
+    conf.env['LIB_NSCLICK'] = ['nsclick']
+    conf.env['DEFINES_NSCLICK'] = ['NS3_CLICK']
     
-    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, lib='nsclick', use='DL', uselib_store='NSCLICK')
+    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, use='DL NSCLICK')
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
                                   conf.env['NSCLICK'], "nsclick library not found")
-    if conf.env['NSCLICK']:
-        conf.env.append_value('DEFINES', 'NS3_CLICK')
-        conf.env.append_value('CPPPATH', conf.env['CPPPATH_NSCLICK'])
-    else:
+    if not conf.env['NSCLICK']:
         # Add this module to the list of modules that won't be built
         # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('click')
@@ -93,7 +92,6 @@ def build(bld):
         return
 
     module = bld.create_ns3_module('click', ['core', 'network', 'internet'])
-    module.includes = '. CPPPATH_NSCLICK'
     module.source = [
         'model/ipv4-click-routing.cc',
         'model/ipv4-l3-click-protocol.cc',
