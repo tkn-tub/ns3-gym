@@ -9,6 +9,27 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3.13
+==============
+
+Availability
+------------
+This release is not yet available.
+
+Bugs fixed
+----------
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
 Release 3.12.1
 ==============
 
