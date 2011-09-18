@@ -48,6 +48,30 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>Changes to build system:</h2>
 <ul>
+<li> The underlying version of waf used by ns-3 was upgraded to 1.6.7.  
+This has a few changes for users and developers:
+<ul>
+<li> by default, "build" no longer has a subdirectory debug or optimized.  
+To get different build directories for different build types, you can use 
+the waf configure -o xxx option, e.g.:
+<pre>
+  ./waf configure -o shared
+  ./waf configure --enable-static -o static
+</pre>
+</li>
+<li> (for developers) the ns3headers taskgen needs to be created with a 
+features parameter name:
+<pre>
+  -  headers = bld.new_task_gen('ns3header')
+  +  headers = bld.new_task_gen(features=['ns3header'])
+</pre>
+<li> no longer need to edit src/wscript to add a module, just create your 
+module directory inside src and ns-3 will pick it up
+<li> In WAF 1.6, adding -Dxxx options is done via the DEFINES env. var.
+instead of CXXDEFINES
+<li> waf env values are always lists now, e.g. env['PYTHON'] returns
+['/usr/bin/python'], so you may need to add [0] to the value in some places
+</ul> 
 </ul>
 
 <h2>New API:</h2>
@@ -56,6 +80,12 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li> The WifiPhyStandard enumerators for specifying half- and quarter-channel 
+width standards has had a change in capitalization:
+<ul>
+<li> WIFI_PHY_STANDARD_80211_10Mhz was changed to WIFI_PHY_STANDARD_80211_10MHZ
+<li> WIFI_PHY_STANDARD_80211_5Mhz was changed to WIFI_PHY_STANDARD_80211_5MHZ
+</ul>
 </ul>
 
 <h2>Changed behavior:</h2>
