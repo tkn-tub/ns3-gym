@@ -55,7 +55,7 @@ def options(opt):
                    action="store_true", default=False,
                    dest='python_disable')
     opt.add_option('--apiscan',
-                   help=("EXPERIMENTAL: Rescan the API for the indicated module(s), for Python bindings.  "
+                   help=("Rescan the API for the indicated module(s), for Python bindings.  "
                          "Needs working GCCXML / pygccxml environment.  "
                          "The metamodule 'all' expands to all available ns-3 modules."),
                    default=None, dest='apiscan', metavar="MODULE[,MODULE...]")
