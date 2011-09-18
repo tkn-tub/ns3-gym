@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-   conf.env['SQLITE_STATS'] = conf.check(lib='sqlite3', define_name='SQLITE3', uselib='SQLITE3')
+   conf.env['SQLITE_STATS'] = conf.check_nonfatal(lib='sqlite3', define_name='SQLITE3', uselib='SQLITE3')
    conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
                                 conf.env['SQLITE_STATS'],
                                 "library 'sqlite3' not found")
@@ -23,7 +23,7 @@ def build(bld):
         'test/basic-data-calculators-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'stats'
     headers.source = [
         'model/data-calculator.h',

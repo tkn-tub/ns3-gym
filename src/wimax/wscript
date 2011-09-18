@@ -63,7 +63,7 @@ def build(bld):
             'test/wimax-fragmentation-test.cc',
             ]
 		            
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'wimax'
     headers.source = [
             'model/wimax-channel.h',

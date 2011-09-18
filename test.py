@@ -42,7 +42,6 @@ from utils import get_list_from_file
 # found in the associated subdirectory wscript files.
 #
 interesting_config_items = [
-    "NS3_BUILDDIR",
     "NS3_ENABLED_MODULES",
     "NS3_MODULE_PATH",
     "NSC_ENABLED",
@@ -483,24 +482,6 @@ def sigint_hook(signal, frame):
     thread_exit = True
     return 0
 
-#
-# Waf can be configured to compile in debug or optimized modes.  In each
-# case, the resulting built goes into a different directory.  If we want
-# test tests to run from the correct code-base, we have to figure out which
-# mode waf is running in.  This is called its active variant.
-#
-# XXX This function pokes around in the waf internal state file.  To be a
-# little less hacky, we should add a commmand to waf to return this info
-# and use that result.
-#
-def read_waf_active_variant():
-    for line in open("build/c4che/default.cache.py").readlines():
-        if line.startswith("NS3_ACTIVE_VARIANT"):
-            exec(line, globals())
-            break
-
-    if options.verbose:
-        print "NS3_ACTIVE_VARIANT == %s" % NS3_ACTIVE_VARIANT
 
 #
 # In general, the build process itself naturally takes care of figuring out
@@ -519,7 +500,13 @@ def read_waf_active_variant():
 # and use that result.
 #
 def read_waf_config():
-    for line in open("build/c4che/%s.cache.py" % NS3_ACTIVE_VARIANT).readlines():
+    for line in open(".lock-wafbuild", "rt"):
+        if line.startswith("out_dir ="):
+            key, val = line.split('=')
+            out_dir = eval(val.strip())
+    global NS3_BUILDDIR
+    NS3_BUILDDIR = out_dir
+    for line in open("%s/c4che/_cache.py" % out_dir).readlines():
         for item in interesting_config_items:
             if line.startswith(item):
                 exec(line, globals())
@@ -555,7 +542,7 @@ def make_paths():
         if key == "PYTHONPATH":
             have_PYTHONPATH = True
 
-    pypath = os.environ["PYTHONPATH"] = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, "bindings", "python")
+    pypath = os.environ["PYTHONPATH"] = os.path.join (NS3_BUILDDIR, "bindings", "python")
 
     if not have_PYTHONPATH:
         os.environ["PYTHONPATH"] = pypath
@@ -684,7 +671,7 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
         if len(build_path):
             path_cmd = os.path.join (build_path, shell_command)
         else:
-            path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+            path_cmd = os.path.join (NS3_BUILDDIR, shell_command)
 
     if valgrind:
         cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, 
@@ -991,12 +978,11 @@ def run_tests():
     # pieces of the system have been built.  This will tell us what examples 
     # are runnable.
     #
-    read_waf_active_variant()
     read_waf_config()
     make_paths()
 
     # Get the information from the build status file.
-    build_status_file = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, 'build-status.py')
+    build_status_file = os.path.join (NS3_BUILDDIR, 'build-status.py')
     if os.path.exists(build_status_file):
         ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
         ns3_runnable_scripts = get_list_from_file(build_status_file, "ns3_runnable_scripts")
@@ -1013,7 +999,7 @@ def run_tests():
         # Set the directories and paths for this example. 
         example_directory   = os.path.join("examples", directory)
         examples_to_run_path = os.path.join(example_directory, "examples-to-run.py")
-        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, NS3_ACTIVE_VARIANT, example_directory)
+        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, example_directory)
         python_script_dir    = os.path.join(example_directory)
 
         # Parse this example directory's file.
@@ -1032,7 +1018,7 @@ def run_tests():
         module_directory     = os.path.join("src", module)
         example_directory    = os.path.join(module_directory, "examples")
         examples_to_run_path = os.path.join(module_directory, "test", "examples-to-run.py")
-        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, NS3_ACTIVE_VARIANT, example_directory)
+        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, example_directory)
         python_script_dir    = os.path.join(example_directory)
 
         # Parse this module's file.

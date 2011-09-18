@@ -4,24 +4,32 @@ import os
 import Options
 
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--with-nsclick',
                    help=('Path to Click source or installation prefix for NS-3 Click Integration support'),
                    dest='with_nsclick', default=None)
+    opt.add_option('--disable-nsclick',
+                   help=('Disable NS-3 Click Integration support'),
+                   dest='disable_nsclick', default=False, action="store_true")
 
 def configure(conf):
+    if Options.options.disable_nsclick:
+        conf.report_optional_feature("nsclick", "NS-3 Click Integration", False,
+                                     "disabled by user request")
+        return
+        
     if Options.options.with_nsclick:
         if os.path.isdir(Options.options.with_nsclick):
-            conf.check_message("libnsclick.so location", '', True, ("%s (given)" % Options.options.with_nsclick))
+            conf.msg("libnsclick.so location", ("%s (given)" % Options.options.with_nsclick))
             conf.env['WITH_NSCLICK'] = os.path.abspath(Options.options.with_nsclick)
     else:
         nsclick_dir = os.path.join('..','click')
         if os.path.isdir(nsclick_dir):
-            conf.check_message("click location", '', True, ("%s (guessed)" % nsclick_dir))
+            conf.msg("click location", ("%s (guessed)" % nsclick_dir))
             conf.env['WITH_NSCLICK'] = os.path.abspath(nsclick_dir)
         del nsclick_dir
     if not conf.env['WITH_NSCLICK']:
-        conf.check_message("click location", '', False)
+        conf.msg("click location", False)
         conf.report_optional_feature("nsclick", "NS-3 Click Integration", False,
                                      "nsclick not enabled (see option --with-nsclick)")
 
@@ -58,7 +66,7 @@ int main()
   return 0;
 }
 '''
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
+    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
 
     for tmp in ['lib', 'ns']:
         libdir = os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],tmp))
@@ -68,11 +76,11 @@ int main()
 
     conf.env['CPPPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
     
-    conf.env['NSCLICK'] = conf.check(fragment=test_code, lib='nsclick', uselib='NSCLICK DL')
+    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, lib='nsclick', use='DL', uselib_store='NSCLICK')
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
                                   conf.env['NSCLICK'], "nsclick library not found")
     if conf.env['NSCLICK']:
-        conf.env.append_value('CXXDEFINES', 'NS3_CLICK')
+        conf.env.append_value('DEFINES', 'NS3_CLICK')
         conf.env.append_value('CPPPATH', conf.env['CPPPATH_NSCLICK'])
     else:
         # Add this module to the list of modules that won't be built
@@ -84,7 +92,7 @@ def build(bld):
     if 'click' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    module = bld.create_ns3_module('click', ['internet'])
+    module = bld.create_ns3_module('click', ['core', 'network', 'internet'])
     module.includes = '. CPPPATH_NSCLICK'
     module.source = [
         'model/ipv4-click-routing.cc',
@@ -98,10 +106,10 @@ def build(bld):
         ]
 
     if bld.env['NSCLICK'] and bld.env['DL']:
-        module.uselib      = 'NSCLICK DL'
-        module_test.uselib = 'NSCLICK DL'
+        module.use      = 'NSCLICK DL'
+        module_test.use = 'NSCLICK DL'
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'click'
     headers.source = [
         'model/ipv4-click-routing.h',

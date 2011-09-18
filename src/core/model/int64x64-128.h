@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#if defined(HAVE___UINT128_T)and !defined(HAVE_UINT128_T)
+#if defined(HAVE___UINT128_T) && !defined(HAVE_UINT128_T)
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 #endif

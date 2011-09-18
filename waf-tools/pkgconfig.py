@@ -3,10 +3,11 @@
 
 import Options
 import Configure
-import pproc as subprocess
+import subprocess
 import config_c
+import sys
 
-def detect(conf):
+def configure(conf):
 	pkg_config = conf.find_program('pkg-config', var='PKG_CONFIG')
 	if not pkg_config: return
 
@@ -19,25 +20,31 @@ def pkg_check_modules(conf, uselib_name, expression, mandatory=True):
 		else:
 			return False
 
+	if Options.options.verbose:
+		extra_msg = ' (%s)' % expression
+	else:
+		extra_msg = ''
+
+	conf.start_msg('pkg-config flags for %s%s' % (uselib_name, extra_msg))
+
 	argv = [pkg_config, '--cflags', '--libs', expression]
-	cmd = subprocess.Popen(argv, stdout=subprocess.PIPE)
-	out, dummy = cmd.communicate()
+	cmd = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	out, err = cmd.communicate()
 	retval = cmd.wait()
 
-	msg_checking = ("pkg-config flags for %s" % (uselib_name,))
-	if Options.options.verbose:
-		if retval == 0:
-			conf.check_message_custom(msg_checking,
-						  ('(%s)' % expression), out)
-		else:
-			conf.check_message(msg_checking, ('(%s)' % expression), False)
+	conf.to_log('%r: %r (exit code %i)\n%s' % (argv, out, retval, err))
+
+	if retval != 0:
+		conf.end_msg(False)
+		sys.stderr.write(err)
 	else:
-		conf.check_message(msg_checking, '', (retval == 0), '')
-	conf.log.write('%r: %r (exit code %i)\n' % (argv, out, retval))
+		if Options.options.verbose:
+			conf.end_msg(out)
+		else:
+			conf.end_msg(True)
 
 	if retval == 0:
-
-		config_c.parse_flags(out, uselib_name, conf.env)
+		conf.parse_flags(out, uselib_name, conf.env)
 		conf.env[uselib_name] = True
 		return True
 

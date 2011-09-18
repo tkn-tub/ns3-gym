@@ -1,18 +1,17 @@
 import os
 import os.path
 import sys
-import pproc as subprocess
+import subprocess
 import shlex
 
 # WAF modules
-import ccroot
 import Options
 import Utils
 import Logs
 import TaskGen
 import Build
 import re
-
+from waflib.Errors import WafError
 
 # these are set from the main wscript file
 APPNAME=None
@@ -48,10 +47,10 @@ else:
             return os.path.curdir
         return os.path.join(*rel_list)
 
-
+from waflib import Context
 def find_program(program_name, env):
-    launch_dir = os.path.abspath(Options.cwd_launch)
-    top_dir = os.path.abspath(Options.launch_dir)
+    launch_dir = os.path.abspath(Context.launch_dir)
+    #top_dir = os.path.abspath(Options.cwd_launch)
     found_programs = []
     for obj in bld.all_task_gen:
         if not getattr(obj, 'is_ns3_program', False):
@@ -63,7 +62,7 @@ def find_program(program_name, env):
             continue
         
         name1 = obj.target
-        name2 = os.path.join(relpath(obj.path.abspath(), top_dir), obj.target)
+        name2 = os.path.join(relpath(obj.path.abspath(), launch_dir), obj.target)
         names = [name1, name2]
         found_programs.extend(names)
         if program_name in names:
@@ -99,7 +98,7 @@ def get_proc_env(os_env=None):
         else:
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
-    pymoddir = bld.path.find_dir('bindings/python').abspath(env)
+    pymoddir = bld.path.find_dir('bindings/python').get_bld().abspath()
     pyvizdir = bld.path.find_dir('src/visualizer').abspath()
     if 'PYTHONPATH' in proc_env:
         proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir, pyvizdir] + [proc_env['PYTHONPATH']])
@@ -117,9 +116,9 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
     proc_env = get_proc_env(os_env)
     if Options.options.valgrind and not force_no_valgrind:
         if Options.options.command_template:
-            raise Utils.WafError("Options --command-template and --valgrind are conflicting")
+            raise WafError("Options --command-template and --valgrind are conflicting")
         if not env['VALGRIND']:
-            raise Utils.WafError("valgrind is not installed")
+            raise WafError("valgrind is not installed")
         argv = [env['VALGRIND'], "--leak-check=full", "--show-reachable=yes", "--error-exitcode=1"] + argv
         proc = subprocess.Popen(argv, env=proc_env, cwd=cwd, stderr=subprocess.PIPE)
         error = False
@@ -139,7 +138,7 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
             try:
                 retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
             except WindowsError, ex:
-                raise Utils.WafError("Command %s raised exception %s" % (argv, ex))
+                raise WafError("Command %s raised exception %s" % (argv, ex))
     if retval:
         signame = None
         if retval < 0: # signal?
@@ -150,11 +149,11 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
                         signame = name
                         break
         if signame:
-            raise Utils.WafError("Command %s terminated with signal %s."
+            raise WafError("Command %s terminated with signal %s."
                                  " Run it under a debugger to get more information "
                                  "(./waf --run <program> --command-template=\"gdb --args %%s <args>\")." % (argv, signame))
         else:
-            raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
+            raise WafError("Command %s exited with code %i" % (argv, retval))
     return retval
 
 def get_run_program(program_string, command_template=None):
@@ -173,15 +172,15 @@ def get_run_program(program_string, command_template=None):
         try:
             program_obj = find_program(program_name, env)
         except ValueError, ex:
-            raise Utils.WafError(str(ex))
+            raise WafError(str(ex))
 
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+        program_node = program_obj.path.find_or_declare(program_obj.target)
         #try:
         #    program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         #except AttributeError:
         #    raise Utils.WafError("%s does not appear to be a program" % (program_name,))
 
-        execvec = [program_node.abspath(env)] + argv[1:]
+        execvec = [program_node.abspath()] + argv[1:]
 
     else:
 
@@ -189,9 +188,9 @@ def get_run_program(program_string, command_template=None):
         try:
             program_obj = find_program(program_name, env)
         except ValueError, ex:
-            raise Utils.WafError(str(ex))
+            raise WafError(str(ex))
 
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+        program_node = program_obj.path.find_or_declare(program_obj.target)
         #try:
         #    program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         #except AttributeError:

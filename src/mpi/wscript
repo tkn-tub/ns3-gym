@@ -2,11 +2,14 @@
 import sys
 import subprocess
 import Options
-
+from waflib.Errors import WafError
 
 def configure(conf):
     env = conf.env
-    conf.find_program('mpic++', var='MPI')
+    try:
+        conf.find_program('mpic++', var='MPI')
+    except WafError:
+        return
     if Options.options.enable_mpi and conf.env['MPI']:
         p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
         flags = p.stdout.read().rstrip().split()
@@ -29,7 +32,7 @@ def configure(conf):
 
 
 def build(bld):
-    env = bld.env_of_name('default')
+    env = bld.env
     sim = bld.create_ns3_module('mpi', ['core', 'network'])
     sim.source = [
         'model/distributed-simulator-impl.cc',
@@ -37,7 +40,7 @@ def build(bld):
         'model/mpi-receiver.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'mpi'
     headers.source = [
         'model/distributed-simulator-impl.h',

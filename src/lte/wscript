@@ -47,7 +47,7 @@ def build(bld):
         'test/lte-propagation-loss-model-test.cc',
         ]
     
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'lte'
     headers.source = [
         'model/lte-spectrum-phy.h',

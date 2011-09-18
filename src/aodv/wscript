@@ -23,7 +23,7 @@ def build(bld):
         'test/loopback.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'aodv'
     headers.source = [
         'model/aodv-id-cache.h',

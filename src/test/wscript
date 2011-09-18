@@ -20,7 +20,7 @@ def build(bld):
         return
 
     test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point', 'csma-layout', 'flow-monitor'])
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'test'
 
     test_test = bld.create_ns3_module_test_library('test')
