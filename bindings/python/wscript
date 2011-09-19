@@ -21,19 +21,8 @@ REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 795)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
-
 from TaskGen import feature, after
 import Task
-#from python import _get_python_variables # this comes from wafadmin/Tools/python.py
-
-if 0:
-    # Patch a bug in waf-1.5.16's python detection, see
-    # https://www.nsnam.org/bugzilla/show_bug.cgi?id=1250
-    import python
-    python.FRAG_2 = """
-    #include <Python.h>
-    """ + python.FRAG_2
-    del python
 
 
 
@@ -117,19 +106,6 @@ def configure(conf):
             i += 1
         conf.env[flags_var] = flags
 
-    if 0:
-        # alternative code to computing PYTHONDIR, that is more correct than the one in waf 1.5.16
-        if 'PYTHONDIR' in conf.environ:
-            pydir = conf.environ['PYTHONDIR']
-        else:
-            (pydir,) = _get_python_variables(conf.env['PYTHON'],
-                                             ["get_python_lib(plat_specific=1, standard_lib=0, prefix=%r)" % conf.env['PREFIX']],
-                                             ['from distutils.sysconfig import get_python_lib'])
-        if hasattr(conf, 'define'): # conf.define is added by the C tool, so may not exist
-            conf.define('PYTHONDIR', pydir)
-        conf.env['PYTHONDIR'] = pydir
-
-
     # -fvisibility=hidden optimization
     if (conf.env['CXX_NAME'] == 'gcc' and [int(x) for x in conf.env['CC_VERSION']] >= [4,0,0]
         and conf.check_compilation_flag('-fvisibility=hidden')):
@@ -155,7 +131,7 @@ def configure(conf):
         del pybindgen_dir
         del pybindgen_release_dir
     if not conf.env['WITH_PYBINDGEN']:
-        conf.msg("pybindgen location", False)
+        conf.msg("Checking for pybindgen location", False)
 
     # Check for pybindgen
 
