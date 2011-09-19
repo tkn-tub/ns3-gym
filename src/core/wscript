@@ -238,6 +238,7 @@ def build(bld):
         'model/vector.h',
         'model/default-deleter.h',
         'model/fatal-impl.h',
+        'model/system-path.h'
         ]
 
     if sys.platform == 'win32':
