@@ -67,21 +67,31 @@ LenaHelper::DoStart (void)
   NS_LOG_FUNCTION (this);
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  //Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
-  //Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
-  //m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
-  //m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
-  //m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_downlinkPropagationLossModel = m_dlPropagationModelFactory.Create<PropagationLossModel> ();
-//   m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-//   m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  //m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_uplinkPropagationLossModel = m_ulPropagationModelFactory.Create<PropagationLossModel> ();
-  
-//   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-//   m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
-  m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
+  if ((m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::FriisSpectrumPropagationLossModel") == 0) || (m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::ConstantSpectrumPropagationLossModel") == 0) )
+    {
+      Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_dlPropagationModelFactory.Create<SpectrumPropagationLossModel> ();
+      Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_ulPropagationModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+    }
+  else if (m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::BuildingsPropagationLossModel") == 0)
+    {
+      //m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+      m_downlinkPropagationLossModel = m_dlPropagationModelFactory.Create<PropagationLossModel> ();
+    //   m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+    //   m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+      //m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+      m_uplinkPropagationLossModel = m_ulPropagationModelFactory.Create<PropagationLossModel> ();
+      
+    //   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+    //   m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+      m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
+      m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
+    }
+  else
+    {
+      NS_LOG_ERROR ("Unknown propagation model");
+    }
   m_macStats = CreateObject<MacStatsCalculator> ();
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
