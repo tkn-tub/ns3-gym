@@ -131,6 +131,9 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.ns3_dir_location = bld.path.relpath_gen(bld.srcnode)
 
     module.env.append_value("INCLUDES", '#')
+
+    pcfilegen = bld(features='ns3pcfile')
+    pcfilegen.module = module
     
     return module
 
@@ -387,22 +390,22 @@ Cflags: %s
         outfile.close()
 
     def run(self):
-        output_filename = self.outputs[0].bldpath(self.env)
+        output_filename = self.outputs[0].abspath()
         self._generate_pcfile(self.module.name, self.module.uselib, 
                               self.module.use,
                               self.env, output_filename)
 
-class ns3pcfile_taskgen(TaskGen.task_gen):
-    def __init__(self, *args, **kwargs):
-        super(ns3pcfile_taskgen, self).__init__(*args, **kwargs)
-    def apply(self):
-        output_filename = 'lib%s.pc' % self.module.name
-        output_node = self.path.find_or_declare(output_filename)
-        assert output_node is not None, str(self)
-        task = self.create_task('ns3pcfile', env=self.env)
-        self.bld.install_files('${LIBDIR}/pkgconfig', output_node)
-        task.set_outputs([output_node])
-        task.module = self.module
+
+@TaskGen.feature('ns3pcfile')
+@TaskGen.after_method('process_rule')
+def apply(self):
+    output_filename = 'lib%s.pc' % self.module.name
+    output_node = self.path.find_or_declare(output_filename)
+    assert output_node is not None, str(self)
+    task = self.create_task('ns3pcfile')
+    self.bld.install_files('${LIBDIR}/pkgconfig', output_node)
+    task.set_outputs([output_node])
+    task.module = self.module
 
 
 
