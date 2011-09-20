@@ -20,16 +20,16 @@ def configure(conf):
         
     if Options.options.with_nsclick:
         if os.path.isdir(Options.options.with_nsclick):
-            conf.msg("libnsclick.so location", ("%s (given)" % Options.options.with_nsclick))
+            conf.msg("Checking for libnsclick.so location", ("%s (given)" % Options.options.with_nsclick))
             conf.env['WITH_NSCLICK'] = os.path.abspath(Options.options.with_nsclick)
     else:
         nsclick_dir = os.path.join('..','click')
         if os.path.isdir(nsclick_dir):
-            conf.msg("click location", ("%s (guessed)" % nsclick_dir))
+            conf.msg("Checking for click location", ("%s (guessed)" % nsclick_dir))
             conf.env['WITH_NSCLICK'] = os.path.abspath(nsclick_dir)
         del nsclick_dir
     if not conf.env['WITH_NSCLICK']:
-        conf.msg("click location", False)
+        conf.msg("Checking for click location", False)
         conf.report_optional_feature("nsclick", "NS-3 Click Integration", False,
                                      "nsclick not enabled (see option --with-nsclick)")
 
@@ -77,8 +77,8 @@ int main()
     conf.env['INCLUDES_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
     conf.env['LIB_NSCLICK'] = ['nsclick']
     conf.env['DEFINES_NSCLICK'] = ['NS3_CLICK']
-    
-    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, use='DL NSCLICK')
+    conf.env['NSCLICK'] = conf.check_nonfatal(fragment=test_code, use='DL NSCLICK',
+                                              msg="Checking for library nsclick")
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
                                   conf.env['NSCLICK'], "nsclick library not found")
     if not conf.env['NSCLICK']:

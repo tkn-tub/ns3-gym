@@ -32,23 +32,23 @@ def configure(conf):
     # Check for the location of NSC
     if Options.options.with_nsc:
         if os.path.isdir(Options.options.with_nsc):
-            conf.msg("NSC location", ("%s (given)" % Options.options.with_nsc))
+            conf.msg("Checking for NSC location", ("%s (given)" % Options.options.with_nsc))
             conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
     else:
         # ns-3-dev uses ../nsc, while ns-3 releases use ../NSC_RELEASE_NAME
         nsc_dir = os.path.join('..', "nsc")
         nsc_release_dir = os.path.join('..', NSC_RELEASE_NAME)
         if os.path.isdir(nsc_dir):
-            conf.msg("NSC location",("%s (guessed)" % nsc_dir))
+            conf.msg("Checking for NSC location",("%s (guessed)" % nsc_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
         elif os.path.isdir(nsc_release_dir):
-            conf.msg("NSC location", ("%s (guessed)" % nsc_release_dir))
+            conf.msg("Checking for NSC location", ("%s (guessed)" % nsc_release_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
         del nsc_dir
         del nsc_release_dir
 
     if not conf.env['WITH_NSC']:
-        conf.msg("NSC location", False)
+        conf.msg("Checking for NSC location", False)
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
                                      "NSC not found (see option --with-nsc)")
 	return
@@ -63,7 +63,7 @@ def configure(conf):
         conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
         conf.check_nonfatal(mandatory=True, lib='dl', define_name='HAVE_DL', uselib='DL')
         ok = True
-    conf.msg('NSC supported architecture ' + arch, ok)
+    conf.msg('Checking for NSC supported architecture ' + arch, ok)
     
     if not ok:
         conf.env['NSC_ENABLED'] = False

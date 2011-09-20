@@ -25,7 +25,7 @@ def pkg_check_modules(conf, uselib_name, expression, mandatory=True):
 	else:
 		extra_msg = ''
 
-	conf.start_msg('pkg-config flags for %s%s' % (uselib_name, extra_msg))
+	conf.start_msg('Checking for pkg-config flags for %s%s' % (uselib_name, extra_msg))
 
 	argv = [pkg_config, '--cflags', '--libs', expression]
 	cmd = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -68,7 +68,7 @@ def pkg_check_module_variable(conf, module, variable):
 	retval = cmd.wait()
 	out = out.rstrip() # strip the trailing newline
 
-	msg_checking = ("pkg-config variable %r in %s" % (variable, module,))
+	msg_checking = ("Checking for pkg-config variable %r in %s" % (variable, module,))
 	conf.check_message_custom(msg_checking, '', out)
 	conf.log.write('%r: %r (exit code %i)\n' % (argv, out, retval))
 
