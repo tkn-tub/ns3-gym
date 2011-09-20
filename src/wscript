@@ -324,9 +324,9 @@ class ns3pcfile_task(Task.Task):
 
     def _self_libs(self, env, name, libdir):
         if env['ENABLE_STATIC_NS3']:
-            path_st = 'STATICLIBPATH_ST'
-            lib_st = 'STATICLIB_ST'
-            lib_marker = 'STATICLIB_MARKER'
+            path_st = 'STLIBPATH_ST'
+            lib_st = 'STLIB_ST'
+            lib_marker = 'STLIB_MARKER'
         else:
             path_st = 'LIBPATH_ST'
             lib_st = 'LIB_ST'
