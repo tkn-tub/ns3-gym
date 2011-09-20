@@ -313,12 +313,15 @@ def build(bld):
 
 class ns3pcfile_task(Task.Task):
     after = 'cc cxx'
+
     def __str__(self):
         "string to display to the user"
         tgt_str = ' '.join([a.nice_path(self.env) for a in self.outputs])
         return 'pcfile: %s\n' % (tgt_str)
+
     def runnable_status(self):
         return super(ns3pcfile_task, self).runnable_status()
+
     def _self_libs(self, env, name, libdir):
         if env['ENABLE_STATIC_NS3']:
             path_st = 'STATICLIBPATH_ST'
@@ -332,6 +335,7 @@ class ns3pcfile_task(Task.Task):
                   env[lib_marker],
                   env[lib_st] % name]
         return retval
+
     def _lib(self, env, dep):
         libpath = env['LIBPATH_%s' % dep]
         linkflags = env['LINKFLAGS_%s' % dep]
@@ -343,34 +347,37 @@ class ns3pcfile_task(Task.Task):
         for lib in libs:
             retval.append(env['LIB_ST'] % lib)
         return retval
+
     def _listify(self, v):
         if isinstance(v, list):
             return v
         else:
             return [v]
+
     def _cflags(self, dep):
         flags = self.env['CFLAGS_%s' % dep]
         return self._listify(flags)
+
     def _cxxflags(self, dep):
         return self._listify(self.env['CXXFLAGS_%s' % dep])
+
     def _defines(self, dep):
-        defines = self.env['CCDEFINES_%s' % dep] + self.env['CXXDEFINES_%s' % dep]
-        return [self.env['CCDEFINES_ST'] % define for define in self.env['CCDEFINES_%s' % dep]] + \
-            [self.env['CXXDEFINES_ST'] % define for define in self.env['CXXDEFINES_%s' % dep]] 
+        return [self.env['DEFINES_ST'] % define for define in self.env['DEFINES_%s' % dep]] 
+
     def _includes(self, dep):
-        includes = self.env['CPPPATH_%s' % dep]
+        includes = self.env['INCLUDES_%s' % dep]
         return [self.env['CPPPATH_ST'] % include for include in includes]
 
-    def _generate_pcfile(self, name, uselib, use, env, outfilename):
-        outfile = open(outfilename, 'w')
+    def _generate_pcfile(self, name, use, env, outfilename):
+        outfile = open(outfilename, 'wt')
         prefix = env.PREFIX
         includedir = env.INCLUDEDIR
         libdir = env.LIBDIR
-        libs = self._self_libs(self.env, name, '${libdir}')
+        libs = self._self_libs(env, name, '${libdir}')
         for dep in use:
-            libs = libs + self._lib(self.env, dep)
-        for dep in uselib:
-            libs = libs + [self.env['LIB_ST'] % dep]
+            libs += self._lib(env, dep)
+        for dep in env.LIBS:
+            libs += self.env['LIB_ST'] % dep
         cflags = [self.env['CPPPATH_ST'] % '${includedir}']
         for dep in use:
             cflags = cflags + self._cflags(dep) + self._cxxflags(dep) + \
@@ -391,8 +398,8 @@ Cflags: %s
 
     def run(self):
         output_filename = self.outputs[0].abspath()
-        self._generate_pcfile(self.module.name, self.module.uselib, 
-                              self.module.use,
+        self._generate_pcfile(self.module.name, 
+                              self.module.to_list(self.module.use),
                               self.env, output_filename)
 
 
