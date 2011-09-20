@@ -52,6 +52,9 @@ def options(opt):
                    help=('Path to an existing pybindgen source tree to use.'),
                    default=None,
                    dest='with_pybindgen', type="string")
+    opt.add_option('--with-python',
+                   help=('Path to the Python interpreter to use.'),
+                   default=None, dest='with_python', type="string")
 
 
 def configure(conf):
@@ -81,7 +84,12 @@ def configure(conf):
         Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
         return
 
+
     ## Check for Python
+
+    if Options.options.with_python is not None:
+        conf.env.PYTHON = Options.options.with_python
+
     try:
         conf.check_tool('python')
         conf.check_python_version((2,3))
