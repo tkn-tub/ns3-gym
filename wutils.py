@@ -229,5 +229,5 @@ def run_python_program(program_string, env, visualize=False):
         cwd = Options.cwd_launch
     if visualize:
         execvec.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
-    return run_argv([env['PYTHON']] + execvec, env, cwd=cwd)
+    return run_argv([env['PYTHON'][0]] + execvec, env, cwd=cwd)
 

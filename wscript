@@ -838,11 +838,22 @@ def shutdown(ctx):
     check_shell(bld)
 
 
-check_context = Build.BuildContext
-def check(bld):
+
+from waflib import Context, Build
+class CheckContext(Context.Context):
     """run the equivalent of the old ns-3 unit tests using test.py"""
-    env = wutils.bld.env
-    wutils.run_python_program("test.py -n -c core", env)
+    cmd = 'check'
+
+    def execute(self):
+
+        # first we execute the build
+	bld = Context.create_context("build")
+	bld.options = Options.options # provided for convenience
+	bld.cmd = "build"
+	bld.execute()
+
+        wutils.bld = bld
+        wutils.run_python_program("test.py -n -c core", bld.env)
 
 
 class print_introspected_doxygen_task(Task.TaskBase):
