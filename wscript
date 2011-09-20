@@ -969,7 +969,7 @@ def _doxygen(bld):
         raise SystemExit(1)
         return
 
-    prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
+    prog = program_obj.path.find_or_declare(program_obj.target).abspath()
 
     if not os.path.exists(prog):
         Logs.error("print-introspected-doxygen has not been built yet."
@@ -987,11 +987,22 @@ def _doxygen(bld):
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
         raise SystemExit(1)
 
-def doxygen(bld):
-    """do a full build, generate the introspected doxygen and then the doxygen"""
-    Scripting.build(bld)
-    _doxygen(bld)
 
+from waflib import Context, Build
+
+class Ns3ShellContext(Context.Context):
+    """do a full build, generate the introspected doxygen and then the doxygen"""
+    cmd = 'doxygen'
+    def execute(self):
+        # first we execute the build
+	bld = Context.create_context("build")
+	bld.options = Options.options # provided for convenience
+	bld.cmd = "build"
+	bld.execute()
+        _doxygen(bld)
+
+
+    
 def lcov_report(bld):
     env = bld.env
 
