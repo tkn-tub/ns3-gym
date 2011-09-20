@@ -379,9 +379,12 @@ class ns3pcfile_task(Task.Task):
         for dep in env.LIBS:
             libs += self.env['LIB_ST'] % dep
         cflags = [self.env['CPPPATH_ST'] % '${includedir}']
+        requires = []
         for dep in use:
             cflags = cflags + self._cflags(dep) + self._cxxflags(dep) + \
                 self._defines(dep) + self._includes(dep)
+            if dep.startswith('ns3-'):
+                requires.append("lib"+dep)
         print >> outfile, """
 prefix=%s
 libdir=%s
@@ -392,8 +395,9 @@ Description: ns-3 module %s
 Version: devel
 Libs: %s
 Cflags: %s
+Requires: %s
 """ % (prefix, libdir, includedir,
-       name, name, ' '.join(libs), ' '.join(cflags))
+       name, name, ' '.join(libs), ' '.join(cflags), ' '.join(requires))
         outfile.close()
 
     def run(self):
