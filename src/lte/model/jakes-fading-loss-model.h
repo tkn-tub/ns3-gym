@@ -106,6 +106,8 @@ private:
   UniformVariable m_startJakes;
 
   Ptr<LtePhy> m_phy;
+  
+  uint8_t m_subChannelsNum;
 };
 
 }

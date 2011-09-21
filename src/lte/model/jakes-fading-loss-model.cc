@@ -60,7 +60,8 @@ NS_OBJECT_ENSURE_REGISTERED (JakesFadingLossModel);
 JakesFadingLossModel::JakesFadingLossModel ()
   : m_nbOfPaths (1, 4),
     m_startJakes (1, 2500),
-    m_phy (0)
+    m_phy (0),
+    m_subChannelsNum (100)
 {
   NS_LOG_FUNCTION (this);
   SetSamplingPeriod (0.5); // default value
@@ -109,7 +110,7 @@ JakesFadingLossModel::SetValue (double speed)
 
   m_multipath.clear ();
 
-  int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
+//   int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
 
   /*
    * Several 3GPP standards propose a simulation scenario to use duirng the
@@ -147,7 +148,7 @@ JakesFadingLossModel::SetValue (double speed)
   // x = 1 -> M=6, x = 2 -> M=8, x = 3 -> M=10, x = 4 -> M=12
   int x = static_cast<int> (m_nbOfPaths.GetValue ());
 
-  for (int i = 0; i < downlinkSubChannels; i++)
+  for (int i = 0; i < m_subChannelsNum; i++)
     {
       // StartJakes allow us to select a window of 0.5ms into the Jakes realization lasting 3s.
       int startJakes = static_cast<int> (m_startJakes.GetValue ());
@@ -300,9 +301,11 @@ JakesFadingLossModel::SetValue (double speed)
 double
 JakesFadingLossModel::GetValue (int subChannel, double speed)
 {
-  NS_LOG_FUNCTION (this);
-  if (NeedForUpdate ())
+  NS_LOG_FUNCTION (this << subChannel);
+  NS_LOG_INFO (this << Simulator::Now ().GetSeconds () << " " << GetLastUpdate ().GetSeconds () << " " << GetSamplingPeriod ());
+  if ((NeedForUpdate ())||(m_multipath.empty ()))
     {
+      NS_LOG_INFO ("Shadowing updated");
       SetValue (speed);
       SetLastUpdate ();
     }
