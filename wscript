@@ -388,7 +388,10 @@ def configure(conf):
     conf.sub_config('src/mpi')
 
     # for suid bits
-    conf.find_program('sudo', var='SUDO')
+    try:
+        conf.find_program('sudo', var='SUDO')
+    except WafError:
+        pass
 
     why_not_sudo = "because we like it"
     if Options.options.enable_sudo and conf.env['SUDO']:
@@ -452,7 +455,10 @@ def configure(conf):
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
-    conf.find_program('valgrind', var='VALGRIND')
+    try:
+        conf.find_program('valgrind', var='VALGRIND')
+    except WafError:
+        pass
 
     # These flags are used for the implicitly dependent modules.
     if env['ENABLE_STATIC_NS3']:
