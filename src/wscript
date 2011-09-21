@@ -331,9 +331,10 @@ class ns3pcfile_task(Task.Task):
             path_st = 'LIBPATH_ST'
             lib_st = 'LIB_ST'
             lib_marker = 'SHLIB_MARKER'
-        retval = [env[path_st] % libdir,
-                  env[lib_marker],
-                  env[lib_st] % name]
+        retval = [env[path_st] % libdir]
+        if env[lib_marker]:
+            retval.append(env[lib_marker])
+        retval.append(env[lib_st] % name)
         return retval
 
     def _lib(self, env, dep):
