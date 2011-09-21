@@ -402,7 +402,7 @@ Requires: %s
 
     def run(self):
         output_filename = self.outputs[0].abspath()
-        self._generate_pcfile(self.module.name, 
+        self._generate_pcfile(self.module.name[0], 
                               self.module.to_list(self.module.use),
                               self.env, output_filename)
 
