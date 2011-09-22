@@ -193,7 +193,7 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
    {
      NS_LOG_WARN ( "Node:" << n->GetId () << " Does not have a mobility model");
      Vector deterministicVector (100,100,0);
-     Vector randomVector (UniformVariable ().GetInteger (0, topo_maxX-topo_minX), UniformVariable ().GetInteger (0,topo_maxY-topo_minY), 0);
+     Vector randomVector (UniformVariable (0, topo_maxX-topo_minX).GetValue (), UniformVariable (0, topo_maxY-topo_minY).GetValue (), 0);
      if (randomPosition)
        {
          nodeLocation[n->GetId ()] = randomVector;
