@@ -303,14 +303,14 @@ double ktDbm = -174;    // reference LTE noise PSD
 double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
 double receiverNoiseFigureDb = 9.0; // default UE noise figure
 double noiseLin = pow (10, (noisePowerDbm-30+receiverNoiseFigureDb)/10);
-double loss[] = {81.0214, 134.038391, 144.190675};
+double loss[] = {81.021418, 134.038391, 144.190675};
 double dist[] = {100.0, 500.0, 1500};
 
 int numOfTests = sizeof (loss) / sizeof (double);
 for ( int i = 0 ; i < numOfTests; i++ )
 {
   //     double lossDb = txPowerDbm - snrEfficiencyMcs[i].snrDb - noisePowerDbm - receiverNoiseFigureDb;
-  double sinrLin = (txPowerLin*(pow(10, loss[i]/10))) / noiseLin;
+  double sinrLin = (txPowerLin/(pow(10, loss[i]/10))) / noiseLin;
   //     double sinrDb = txPowerDbm- noisePowerDbm - receiverNoiseFigureDb - loss[i];
   double sinrDb = 10*log10(sinrLin);
   NS_LOG_INFO (" Ptx " << txPowerDbm << " Pn " << noisePowerDbm << " Fn " << receiverNoiseFigureDb << " Pl " << loss[i] << " dist " << dist[i]);
