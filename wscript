@@ -888,10 +888,18 @@ class print_introspected_doxygen_task(Task.TaskBase):
             pass
         else:
             prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
-            out = open(os.path.join('..', 'doc', 'introspected-doxygen.h'), 'w')
-            if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
-                raise SystemExit(1)
-            out.close()
+
+        # Create a header file with the introspected information.
+        doxygen_out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
+        if subprocess.Popen([prog], stdout=doxygen_out, env=proc_env).wait():
+            raise SystemExit(1)
+        doxygen_out.close()
+    
+        # Create a text file with the introspected information.
+        text_out = open(os.path.join('doc', 'ns3-object.txt'), 'w')
+        if subprocess.Popen([prog, '--output-text'], stdout=text_out, env=proc_env).wait():
+            raise SystemExit(1)
+        text_out.close()
 
 class run_python_unit_tests_task(Task.TaskBase):
     after = 'cc cxx link'
@@ -983,11 +991,17 @@ def _doxygen(bld):
                    "generating doxygen docs...")
         raise SystemExit(1)
 
-    out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
-
-    if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
+    # Create a header file with the introspected information.
+    doxygen_out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
+    if subprocess.Popen([prog], stdout=doxygen_out, env=proc_env).wait():
         raise SystemExit(1)
-    out.close()
+    doxygen_out.close()
+
+    # Create a text file with the introspected information.
+    text_out = open(os.path.join('doc', 'ns3-object.txt'), 'w')
+    if subprocess.Popen([prog, '--output-text'], stdout=text_out, env=proc_env).wait():
+        raise SystemExit(1)
+    text_out.close()
 
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
