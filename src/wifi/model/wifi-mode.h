@@ -98,11 +98,11 @@ public:
    * If a transmission mode uses 1/2 FEC, and if its
    * data rate is 3Mbs, the phy rate is 6Mbs
    */
-  uint32_t GetPhyRate (void) const;
+  uint64_t GetPhyRate (void) const;
   /**
    * \returns the data bit rate of this signal.
    */
-  uint32_t GetDataRate (void) const;
+  uint64_t GetDataRate (void) const;
   /**
    * \returns the coding rate of this transmission mode
    */
