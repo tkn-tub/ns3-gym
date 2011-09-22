@@ -823,7 +823,7 @@ const
 double
 BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  return txPowerDbm + GetLoss (a, b);
+  return txPowerDbm - GetLoss (a, b);
 }
 
 
