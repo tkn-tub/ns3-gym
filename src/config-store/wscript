@@ -43,14 +43,11 @@ def build(bld):
                                'model/model-typeid-creator.cc',
                                'model/display-functions.cc',
                                ])
-        module.use = 'GTK_CONFIG_STORE'
+        module.use.append('GTK_CONFIG_STORE')
 
     if bld.env['ENABLE_LIBXML2']:
         module.source.append ('model/xml-config.cc')
-        if bld.env['ENABLE_GTK_CONFIG_STORE']:
-            module.use = module.use + ' LIBXML2'
-        else:
-            module.use = 'LIBXML2'
+        module.use.append('LIBXML2')
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')

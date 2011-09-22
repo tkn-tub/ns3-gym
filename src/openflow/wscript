@@ -96,8 +96,8 @@ int main()
 }
 '''
 
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
-    conf.env['XML2'] = conf.check(mandatory=True, lib='xml2', define_name='XML2', uselib='XML2')
+    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
+    conf.env['XML2'] = conf.check(mandatory=True, lib='xml2', define_name='XML2', uselib_store='XML2')
     
     conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')))
     
@@ -136,8 +136,8 @@ def build(bld):
         ]
 
     if bld.env['OPENFLOW'] and bld.env['DL'] and bld.env['XML2']:
-	obj.uselib      = 'OPENFLOW DL XML2' 
-	obj_test.uselib = 'OPENFLOW DL XML2' 
+	obj.use.extend('OPENFLOW DL XML2'.split())
+	obj_test.use.extend('OPENFLOW DL XML2'.split())
 
     headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'openflow'
@@ -150,7 +150,7 @@ def build(bld):
 	obj.source.append('helper/openflow-switch-helper.cc')
 
         obj.env.append_value('DEFINES', 'NS3_OPENFLOW')
-        obj.use = "OPENFLOW"
+        obj.use.append("OPENFLOW")
 
 	obj_test.source.append('test/openflow-switch-test-suite.cc')
 	headers.source.append('model/openflow-interface.h')

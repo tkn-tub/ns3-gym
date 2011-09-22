@@ -61,7 +61,7 @@ def configure(conf):
     if arch in ('x86_64', 'i686', 'i586', 'i486', 'i386'):
         conf.env['NSC_ENABLED'] = True
         conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
-        conf.check_nonfatal(mandatory=True, lib='dl', define_name='HAVE_DL', uselib='DL')
+        conf.check_nonfatal(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
         ok = True
     conf.msg('Checking for NSC supported architecture ' + arch, ok)
     
@@ -283,8 +283,8 @@ def build(bld):
         obj.source.append ('model/nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('model/nsc-sysctl.cc')
         headers.source.append('model/nsc-tcp-l4-protocol.h')
-        obj.uselib           = 'DL'
-        internet_test.uselib = 'DL'
+        obj.use.append('DL')
+        internet_test.use.append('DL')
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.add_subdirs('examples')

@@ -49,7 +49,7 @@ def build(bld):
         ]
 
     if env['ENABLE_MPI']:
-        sim.uselib = 'MPI'
+        sim.use.append('MPI')
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')

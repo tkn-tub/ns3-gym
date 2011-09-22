@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def configure(conf):
-   conf.env['SQLITE_STATS'] = conf.check_nonfatal(lib='sqlite3', define_name='SQLITE3', uselib='SQLITE3')
+   conf.env['SQLITE_STATS'] = conf.check_nonfatal(lib='sqlite3', define_name='SQLITE3', uselib_store='SQLITE3')
    conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
                                 conf.env['SQLITE_STATS'],
                                 "library 'sqlite3' not found")
@@ -38,6 +38,6 @@ def build(bld):
     if bld.env['SQLITE_STATS']:
         headers.source.append('model/sqlite-data-output.h')
         obj.source.append('model/sqlite-data-output.cc')
-        obj.uselib = 'SQLITE3'
+        obj.use.append('SQLITE3')
 
     bld.ns3_python_bindings()

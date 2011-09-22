@@ -140,8 +140,8 @@ def build(bld):
         ]
 
     if bld.env['ENABLE_GSL']:
-        obj.uselib      = 'GSL GSLCBLAS M'
-        obj_test.uselib = 'GSL GSLCBLAS M'
+        obj.use.extend(['GSL', 'GSLCBLAS', 'M'])
+        obj_test.use.extend(['GSL', 'GSLCBLAS', 'M'])
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.add_subdirs('examples')
