@@ -193,7 +193,7 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
    {
      NS_LOG_WARN ( "Node:" << n->GetId () << " Does not have a mobility model");
      Vector deterministicVector (100,100,0);
-     Vector randomVector (UniformVariable ().GetInteger (0,1000), UniformVariable ().GetInteger (0,1000), 0);
+     Vector randomVector (UniformVariable ().GetInteger (0, topo_maxX-topo_minX), UniformVariable ().GetInteger (0,topo_maxY-topo_minY), 0);
      if (randomPosition)
        {
          nodeLocation[n->GetId ()] = randomVector;
@@ -235,10 +235,10 @@ void AnimationInterface::StartAnimation ()
     }      
 
   // Find the min/max x/y for the xml topology element
-  topo_minX = 0;
-  topo_minY = 0;
-  topo_maxX = 0;
-  topo_maxY = 0;
+  topo_minX = -2;
+  topo_minY = -2;
+  topo_maxX = 2;
+  topo_maxY = 2;
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
     {
       Ptr<Node> n = *i;
@@ -621,7 +621,12 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
   NS_ASSERT (ndev);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
   NS_LOG_INFO ("RxBeginTrace for packet:" << AnimUid);
-  NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
+  if (!WifiPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("WifiPhyRxBeginTrace: unknown Uid");
+      return;
+    }
+  // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
   pendingWifiPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
 }
 
@@ -634,7 +639,12 @@ void AnimationInterface::WifiPhyRxEndTrace (std::string context,
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
-  NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
+  if (!WifiPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("WifiPhyRxEndTrace: unknown Uid");
+      return;
+    }
+  // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingWifiPackets[AnimUid];
   pktInfo.ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
 }
@@ -647,7 +657,12 @@ void AnimationInterface::WifiMacRxTrace (std::string context,
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
-  NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
+  if (!WifiPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("WifiMacRxTrace: unknown Uid");
+      return;
+    }
+  // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingWifiPackets[AnimUid];
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
   if (pktrxInfo.IsPhyRxComplete ())
@@ -718,7 +733,12 @@ void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packe
   NS_ASSERT (ndev);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
   NS_LOG_INFO ("CsmaPhyTxEndTrace for packet:" << AnimUid);
-  NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
+  if (!CsmaPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("CsmaPhyTxEndTrace: unknown Uid"); 
+      return;
+    }
+  // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
   pktInfo.m_lbTx = Simulator::Now ().GetSeconds ();
 }
@@ -730,7 +750,12 @@ void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packe
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
-  NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
+  if (!CsmaPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("CsmaPhyRxEndTrace: unknown Uid"); 
+      return;
+    }
+  // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
   pendingCsmaPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
   pktInfo.ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
@@ -747,7 +772,12 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
-  NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
+  if (!CsmaPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("CsmaMacRxTrace: unknown Uid"); 
+      return;
+    }
+  // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
   if (pktrxInfo.IsPhyRxComplete ())

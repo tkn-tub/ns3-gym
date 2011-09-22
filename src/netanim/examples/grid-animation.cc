@@ -35,13 +35,11 @@ int main (int argc, char *argv[])
 
   uint32_t xSize = 5;
   uint32_t ySize = 5;
-  uint16_t port = 0;
   std::string animFile;
 
   CommandLine cmd;
   cmd.AddValue ("xSize", "Number of rows of nodes", xSize);
   cmd.AddValue ("ySize", "Number of columns of nodes", ySize);
-  cmd.AddValue ("port",  "Port Number for Remote Animation", port);
   cmd.AddValue ("animFile",  "File Name for Animation Output", animFile);
 
   cmd.Parse (argc,argv);
@@ -86,11 +84,7 @@ int main (int argc, char *argv[])
 
   // Create the animation object and configure for specified output
   AnimationInterface anim;
-  if (port > 0)
-    {
-      anim.SetServerPort (port);
-    }
-  else if (!animFile.empty ())
+  if (!animFile.empty ())
     {
       anim.SetOutputFile (animFile);
     }

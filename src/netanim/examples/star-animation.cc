@@ -55,12 +55,10 @@ main (int argc, char *argv[])
   // Default number of nodes in the star.  Overridable by command line argument.
   //
   uint32_t nSpokes = 8;
-  uint32_t animPort = 0;
   std::string animFile;
 
   CommandLine cmd;
   cmd.AddValue ("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
-  cmd.AddValue ("animPort",      "Port Number for Remote Animation", animPort);
   cmd.AddValue ("animFile",  "File Name for Animation Output", animFile);
 
   cmd.Parse (argc, argv);
@@ -118,11 +116,7 @@ main (int argc, char *argv[])
 
   // Create the animation object and configure for specified output
   AnimationInterface anim;
-  if (animPort > 0)
-    {
-      anim.SetServerPort (animPort);
-    }
-  else if (!animFile.empty ())
+  if (!animFile.empty ())
     {
       anim.SetOutputFile (animFile);
     }
