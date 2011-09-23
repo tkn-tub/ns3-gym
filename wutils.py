@@ -196,7 +196,7 @@ def get_run_program(program_string, command_template=None):
         #except AttributeError:
         #    raise Utils.WafError("%s does not appear to be a program" % (program_name,))
 
-        tmpl = command_template % (program_node.abspath(env),)
+        tmpl = command_template % (program_node.abspath(),)
         execvec = shlex.split(tmpl.replace('\\', '\\\\'))
         #print "%r ==shlex.split==> %r" % (command_template % (program_node.abspath(env),), execvec)
     return program_name, execvec
