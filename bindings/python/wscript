@@ -428,11 +428,6 @@ def build(bld):
 
     set_pybindgen_pythonpath(env)
 
-    bld.new_task_gen(features='copy',
-                     source="ns__init__.py",
-                     target='ns/__init__.py')
-    bld.install_as('${PYTHONDIR}/ns/__init__.py', 'ns__init__.py')
-
     if Options.options.apiscan:
         if not env['ENABLE_PYTHON_SCANNING']:
             raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
@@ -480,6 +475,12 @@ def build(bld):
         task.bld = bld
         grp = bld.get_group(bld.current_group)
         grp.append(task)
+
+        bld.new_task_gen(features='copy',
+                         source="ns__init__.py",
+                         target='ns/__init__.py')
+        bld.install_as('${PYTHONDIR}/ns/__init__.py', 'ns__init__.py')
+
 
     # note: the actual build commands for the python bindings are in
     # src/wscript, not here.
