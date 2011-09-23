@@ -224,6 +224,15 @@ Ipv4ClickRouting::GetIpAddressFromInterfaceId (int ifid)
 }
 
 std::string
+Ipv4ClickRouting::GetIpPrefixFromInterfaceId (int ifid)
+{
+  std::stringstream addr;
+  m_ipv4->GetAddress (ifid, 0).GetMask ().Print (addr);
+
+  return addr.str ();
+}
+
+std::string
 Ipv4ClickRouting::GetMacAddressFromInterfaceId (int ifid)
 {
   std::stringstream addr;
@@ -580,6 +589,27 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
           }
 
         NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IPADDR_FROM_NAME: " << ifname << " " << buf << " " << len);
+        break;
+      }
+
+    case SIMCLICK_IPPREFIX_FROM_NAME:
+      {
+        const char *ifname = va_arg (val, const char *);
+        char *buf = va_arg (val, char *);
+        int len = va_arg (val, int);
+
+        int ifid = clickInstance->GetInterfaceId (ifname);
+
+        if (ifid >= 0)
+          {
+            retval = simstrlcpy (buf, len, clickInstance->GetIpPrefixFromInterfaceId (ifid));
+          }
+        else
+          {
+            retval = -1;
+          }
+
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IPPREFIX_FROM_NAME: " << ifname << " " << buf << " " << len);
         break;
       }
 
