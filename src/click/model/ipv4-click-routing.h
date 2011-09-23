@@ -143,6 +143,13 @@ public:
   std::string GetIpAddressFromInterfaceId (int ifid);
 
   /**
+   * \brief Provides for SIMCLICK_IPPREFIX_FROM_NAME
+   * \param ifid The interface ID for which the IP Prefix is required
+   * \return The IP Prefix of the interface in string format
+   */
+  std::string GetIpPrefixFromInterfaceId (int ifid);
+
+  /**
    * \brief Provides for SIMCLICK_MACADDR_FROM_NAME
    * \param ifid The interface ID for which the MAC Address is required
    * \return The MAC Address of the interface in string format
