@@ -53,17 +53,17 @@ def configure(conf):
                                      "NSC not found (see option --with-nsc)")
 	return
     
-    if sys.platform in ['linux2']:
+    if Options.platform in ['linux', 'freebsd']:
         arch = os.uname()[4]
     else:
         arch = None
     ok = False
-    if arch in ('x86_64', 'i686', 'i586', 'i486', 'i386'):
+    if arch in ('amd64', 'x86_64', 'i686', 'i586', 'i486', 'i386'):
         conf.env['NSC_ENABLED'] = True
         conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
         conf.check_nonfatal(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
         ok = True
-    conf.msg('Checking for NSC supported architecture ' + arch, ok)
+    conf.msg('Checking for NSC supported architecture ' + (arch or ''), ok)
     
     if not ok:
         conf.env['NSC_ENABLED'] = False
