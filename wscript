@@ -1010,7 +1010,7 @@ def _doxygen(bld):
 
 from waflib import Context, Build
 
-class Ns3ShellContext(Context.Context):
+class Ns3DoxygenContext(Context.Context):
     """do a full build, generate the introspected doxygen and then the doxygen"""
     cmd = 'doxygen'
     def execute(self):
