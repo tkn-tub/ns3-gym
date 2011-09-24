@@ -231,3 +231,90 @@ def run_python_program(program_string, env, visualize=False):
         execvec.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
     return run_argv([env['PYTHON'][0]] + execvec, env, cwd=cwd)
 
+
+
+def monkey_patch_Runner_start():
+    """http://code.google.com/p/waf/issues/detail?id=1039"""
+    from waflib import Task
+    def start(self):
+        """
+        Give tasks to :py:class:`waflib.Runner.TaskConsumer` instances until the build finishes or the ``stop`` flag is set.
+        If only one job is used, then execute the tasks one by one, without consumers.
+        """
+
+        self.total = self.bld.total()
+
+        while not self.stop:
+
+            self.refill_task_list()
+
+            # consider the next task
+            tsk = self.get_next_task()
+            if not tsk:
+                if self.count:
+                    # tasks may add new ones after they are run
+                    continue
+                else:
+                    # no tasks to run, no tasks running, time to exit
+                    break
+
+            if tsk.hasrun:
+                # if the task is marked as "run", just skip it
+                self.processed += 1
+                continue
+
+            if self.stop: # stop immediately after a failure was detected
+                break
+
+            try:
+                st = tsk.runnable_status()
+            except Exception:
+                self.processed += 1
+                if not self.stop and self.bld.keep:
+                    tsk.hasrun = Task.SKIPPED
+                    if self.bld.keep == 1:
+                        # if -k stop at the first exception, if -kk try to go as far as possible
+                        self.stop = True
+                    continue
+                tsk.err_msg = Utils.ex_stack()
+                tsk.hasrun = Task.EXCEPTION
+                self.error_handler(tsk)
+                continue
+
+            if st == Task.ASK_LATER:
+                self.postpone(tsk)
+                # TODO optimize this
+                # if self.outstanding:
+                #   for x in tsk.run_after:
+                #       if x in self.outstanding:
+                #           self.outstanding.remove(x)
+                #           self.outstanding.insert(0, x)
+            elif st == Task.SKIP_ME:
+                self.processed += 1
+                tsk.hasrun = Task.SKIPPED
+                self.add_more_tasks(tsk)
+            else:
+                # run me: put the task in ready queue
+                tsk.position = (self.processed, self.total)
+                self.count += 1
+                tsk.master = self
+                self.processed += 1
+
+                if self.numjobs == 1:
+                    tsk.process()
+                else:
+                    self.add_task(tsk)
+
+        # self.count represents the tasks that have been made available to the consumer threads
+        # collect all the tasks after an error else the message may be incomplete
+        while self.error and self.count:
+            self.get_out()
+
+        #print loop
+        assert (self.count == 0 or self.stop)
+
+        # free the task pool, if any
+        self.free_task_pool()
+
+    from waflib.Runner import Parallel
+    Parallel.start = start
