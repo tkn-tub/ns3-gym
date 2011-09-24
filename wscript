@@ -225,24 +225,46 @@ def options(opt):
     opt.sub_options('src/internet')
 
 
-def _check_compilation_flag(conf, flag, mode='cxx'):
+def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
     """
     Checks if the C++ compiler accepts a certain compilation flag or flags
     flag: can be a string or a list of strings
     """
+    l = []
+    if flag:
+        l.append(flag)
+    if isinstance(linkflags, list):
+        l.extend(linkflags)
+    else:
+        if linkflags:
+            l.append(linkflags)
+    if len(l) > 1:
+        flag_str = 'flags ' + ' '.join(l)
+    else:
+        flag_str = 'flag ' + ' '.join(l)
+    if flag_str > 28:
+        flag_str = flag_str[:28] + "..."
 
-    conf.start_msg('Checking for compilation flag %r support' % (flag,))
+    conf.start_msg('Checking for compilation %s support' % (flag_str,))
     env = conf.env.copy()
+
+    if mode == 'cc':
+        mode = 'c'
+
     if mode == 'cxx':
         fname = 'test.cc'
         env.append_value('CXXFLAGS', flag)
     else:
         fname = 'test.c'
-        env.append_value('CCFLAGS', flag)
+        env.append_value('CFLAGS', flag)
+
+    if linkflags is not None:
+        env.append_value("LINKFLAGS", linkflags)
+
     try:
         retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
                                  env=env, compile_filename=fname,
-                                 compile_mode=mode, features='c cprogram', execute=False)
+                                 features=[mode, mode+'program'], execute=False)
     except Configure.ConfigurationError:
         ok = False
     else:
@@ -322,36 +344,20 @@ def configure(conf):
 
     env['ENABLE_STATIC_NS3'] = False
     if Options.options.enable_static:
-        if env['PLATFORM'].startswith('linux') and \
-                env['CXX_NAME'] in ['gcc', 'icc']:
-            if re.match('i[3-6]86', os.uname()[4]):
+        if Options.platform == 'darwin':
+            if conf.check_compilation_flag(flag=[], linkflags=['-Wl,-all_load']):
                 conf.report_optional_feature("static", "Static build", True, '')
-                if Options.options.enable_static:
-                    env['ENABLE_STATIC_NS3'] = True
-            elif os.uname()[4] == 'x86_64':
-                if env['ENABLE_PYTHON_BINDINGS'] and \
-                        not conf.check_compilation_flag('-mcmodel=large'):
-                    conf.report_optional_feature("static", "Static build", False,
-                                                 "Can't enable static builds because " + \
-                                                     "no -mcmodel=large compiler " \
-                                                     "option. Try --disable-python or upgrade your " \
-                                                     "compiler to at least gcc 4.3.x.")
-                else:
-                    conf.report_optional_feature("static", "Static build", True, '')
-                    if Options.options.enable_static:
-                        env['ENABLE_STATIC_NS3'] = True
-        elif env['CXX_NAME'] == 'gcc' and \
-                (env['PLATFORM'].startswith('darwin') or \
-                     env['PLATFORM'].startswith('cygwin')):
-                conf.report_optional_feature("static", "Static build", True, '')
-                if Options.options.enable_static:
-                    env['ENABLE_STATIC_NS3'] = True
+                env['ENABLE_STATIC_NS3'] = True
+            else:
+                conf.report_optional_feature("static", "Static build", False,
+                                             "Link flag -Wl,-all_load does not work")
         else:
-            conf.report_optional_feature("static", "Static build", False,
-                                         "Unsupported platform")
-    else:
-        conf.report_optional_feature("static", "Static build", False,
-                                     "option --enable-static not selected")
+            if conf.check_compilation_flag(flag=[], linkflags=['-Wl,--whole-archive,-Bstatic', '-Wl,-Bdynamic,--no-whole-archive']):
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
+            else:
+                conf.report_optional_feature("static", "Static build", False,
+                                             "Link flag -Wl,--whole-archive,-Bstatic does not work")
 
     conf.env['MODULES_NOT_BUILT'] = []
 
