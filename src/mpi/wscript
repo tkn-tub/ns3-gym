@@ -6,8 +6,18 @@ from waflib.Errors import WafError
 
 def configure(conf):
     if Options.options.enable_mpi:
-        if conf.check_cfg(path='mpic++', args='-showme',
-                          package='', uselib_store='MPI', mandatory=False):
+        # try to detect openmpi installation
+        mpi = conf.check_cfg(path='mpic++', args='-showme',
+                             package='', uselib_store='MPI', mandatory=False)
+        if mpi:
+            conf.env.append_value('DEFINES_MPI', 'NS3_OPENMPI')
+        else:
+            # try the MPICH2 flags
+            mpi = conf.check_cfg(path='mpic++', args='-compile-info -link-info',
+                                 package='', uselib_store='MPI', mandatory=False)
+            if mpi:
+                conf.env.append_value('DEFINES_MPI', 'NS3_MPICH')
+        if mpi:
             conf.env.append_value('DEFINES_MPI', 'NS3_MPI')
             conf.env['ENABLE_MPI'] = True
             for libpath in conf.env.LIBPATH_MPI:
