@@ -520,6 +520,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uint16_t RgbPerRnti = (*itMap).second.size ();
       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
       itCqi = m_a30CqiRxed.find ((*itMap).first);
+      NS_ASSERT_MSG (itCqi != m_a30CqiRxed.end (), "element not found in m_a30CqiRxed ");
       uint8_t worstCqi = 15;
       for (uint16_t k = 0; k < (*itMap).second.size (); k++)
         {
