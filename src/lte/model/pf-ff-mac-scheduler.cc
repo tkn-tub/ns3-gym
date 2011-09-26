@@ -520,22 +520,28 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uint16_t RgbPerRnti = (*itMap).second.size ();
       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
       itCqi = m_a30CqiRxed.find ((*itMap).first);
-      NS_ASSERT_MSG (itCqi != m_a30CqiRxed.end (), "element not found in m_a30CqiRxed ");
       uint8_t worstCqi = 15;
-      for (uint16_t k = 0; k < (*itMap).second.size (); k++)
+      if (itCqi != m_a30CqiRxed.end ())
         {
-          if ((*itCqi).second.m_higherLayerSelected.size () > (*itMap).second.at (k))
+          for (uint16_t k = 0; k < (*itMap).second.size (); k++)
             {
-//             NS_LOG_DEBUG (this << " RBG " << (*itMap).second.at (k) << " CQI " << (uint16_t)((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) );
-              if (((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) < worstCqi)
+              if ((*itCqi).second.m_higherLayerSelected.size () > (*itMap).second.at (k))
                 {
-                  worstCqi = ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0));
+    //             NS_LOG_DEBUG (this << " RBG " << (*itMap).second.at (k) << " CQI " << (uint16_t)((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) );
+                  if (((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) < worstCqi)
+                    {
+                      worstCqi = ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0));
+                    }
+                }
+              else
+                {
+                  worstCqi = 1; // try with lowest MCS in RBG with no info on channel
                 }
             }
-          else
-            {
-              worstCqi = 1; // try with lowest MCS in RBG with no info on channel
-            }
+        }
+      else
+        {
+          worstCqi = 1; // try with lowest MCS in RBG with no info on channel
         }
 //       NS_LOG_DEBUG (this << " CQI " << (uint16_t)worstCqi);
       newDci.m_mcs.push_back (LteAmc::GetMcsFromCqi (worstCqi));
