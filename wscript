@@ -287,6 +287,8 @@ def _check_nonfatal(conf, *args, **kwargs):
         return None
 
 def configure(conf):
+    conf.check_tool("relocation", ["waf-tools"])
+
     # attach some extra methods
     conf.check_nonfatal = types.MethodType(_check_nonfatal, conf)
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
