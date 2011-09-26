@@ -245,6 +245,7 @@ def ns3_python_bindings(bld):
     bindgen.before = 'cxx'
     bindgen.after = 'gen_ns3_module_header'
     bindgen.name = "pybindgen(ns3 module %s)" % module
+    bindgen.install_path = None
 
     # generate the extension module
     pymod = bld.new_task_gen(features='cxx cxxshlib pyext')

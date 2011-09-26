@@ -38,7 +38,7 @@ def set_pybindgen_pythonpath(env):
 
 
 def options(opt):
-    opt.tool_options('python')
+    opt.tool_options('python', ["waf-tools"])
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
@@ -91,7 +91,7 @@ def configure(conf):
         conf.env.PYTHON = Options.options.with_python
 
     try:
-        conf.check_tool('python')
+        conf.check_tool('python', ["waf-tools"])
         conf.check_python_version((2,3))
         conf.check_python_headers()
     except Configure.ConfigurationError, ex:
