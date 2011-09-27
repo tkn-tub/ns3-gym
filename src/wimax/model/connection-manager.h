@@ -44,6 +44,7 @@ class SubscriberStationNetDevice;
 class ConnectionManager : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   ConnectionManager (void);
   ~ConnectionManager (void);
   void DoDispose (void);

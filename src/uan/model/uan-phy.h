@@ -44,6 +44,8 @@ class UanPhyCalcSinr : public Object
 {
 
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \param pkt Packet to calculate SINR for
    * \param arrTime Arrival time of pkt
@@ -97,6 +99,8 @@ public:
 class UanPhyPer : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Calculates the prob. of packet error based on
    * SINR at the receiver and a tx mode.
@@ -163,6 +167,8 @@ public:
 class UanPhy : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   // / Enum defining possible Phy states
   enum State
   {

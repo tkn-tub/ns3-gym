@@ -216,6 +216,8 @@ std::istream &operator>> (std::ostream &is, UanPdp &pdp);
 class UanPropModel : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Computes pathloss between nodes a and b.
    * \returns Pathloss in dB re 1 uPa

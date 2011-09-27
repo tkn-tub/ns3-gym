@@ -47,6 +47,8 @@ class UanAddress;
 class UanMac : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \returns MAC Address
    */

@@ -27,6 +27,15 @@ NS_LOG_COMPONENT_DEFINE ("WimaxChannel");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WimaxChannel);
+
+TypeId WimaxChannel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WimaxChannel")
+    .SetParent<Channel> ();
+  return tid;
+}
+
 WimaxChannel::WimaxChannel (void)
 {
 }

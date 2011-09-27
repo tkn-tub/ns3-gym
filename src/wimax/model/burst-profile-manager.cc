@@ -31,6 +31,15 @@ NS_LOG_COMPONENT_DEFINE ("BurstProfileManager");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (BurstProfileManager);
+
+TypeId BurstProfileManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BurstProfileManager")
+    .SetParent<Object> ();
+  return tid;
+}
+
 BurstProfileManager::BurstProfileManager (Ptr<WimaxNetDevice> device)
   : m_device (device)
 {

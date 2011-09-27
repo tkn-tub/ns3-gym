@@ -123,6 +123,8 @@ private:
 class UanTransducer : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \brief Transducer state (receiving or transmitting)
    */

@@ -336,6 +336,15 @@ UanPdp::CreateImpulsePdp (void)
   return pdp;
 }
 
+NS_OBJECT_ENSURE_REGISTERED (UanPropModel);
+
+TypeId UanPropModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UanPropModel")
+    .SetParent<Object> ();
+  return tid;
+}
+
 void
 UanPropModel::Clear (void)
 {

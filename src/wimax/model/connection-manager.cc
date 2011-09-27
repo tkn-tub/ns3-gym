@@ -35,6 +35,15 @@ NS_LOG_COMPONENT_DEFINE ("ConnectionManager");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (ConnectionManager);
+
+TypeId ConnectionManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ConnectionManager")
+    .SetParent<Object> ();
+  return tid;
+}
+
 ConnectionManager::ConnectionManager (void)
   : m_cidFactory (0)
 {

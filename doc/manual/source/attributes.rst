@@ -278,7 +278,7 @@ Default values and command-line arguments
 +++++++++++++++++++++++++++++++++++++++++
 
 Let's look at how a user script might access these values.  
-This is based on the script found at ``src/core/examples/main-attribute-value.cc``,
+This is based on the script found at ``src/point-to-point/examples/main-attribute-value.cc``,
 with some details stripped out.::
 
     //

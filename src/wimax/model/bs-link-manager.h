@@ -38,6 +38,7 @@ namespace ns3 {
 class BSLinkManager : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   BSLinkManager (Ptr<BaseStationNetDevice> bs);
   ~BSLinkManager (void);
   /**

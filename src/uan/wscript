@@ -5,6 +5,8 @@ def build(bld):
     module.source = [
         'model/uan-channel.cc',
         'model/uan-phy-gen.cc',
+        'model/uan-mac.cc',
+        'model/uan-transducer.cc',
         'model/uan-transducer-hd.cc',
         'model/uan-address.cc',
         'model/uan-net-device.cc',
