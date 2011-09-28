@@ -47,6 +47,9 @@
 #include <ns3/lte-ue-phy.h>
 #include "lte-test-sinr-chunk-processor.h"
 
+// #include <ns3/trace-fading-loss-model.h>
+// #include <ns3/spectrum-value.h>
+
 NS_LOG_COMPONENT_DEFINE ("LteFadingTest");
 
 using namespace ns3;
@@ -121,7 +124,7 @@ LteFadingTestSuite::LteFadingTestSuite ()
   double distance = 2000;
   double hm = 1;
   double hb = 30;
-  double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
+//   double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
   Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, hb));
   
@@ -130,106 +133,106 @@ LteFadingTestSuite::LteFadingTestSuite ()
   
   AddTestCase (new LteFadingTestCase (mm1, mm2, 137.93, "OH Urban Large city"));
   
-  AddTestCase (new LteFadingTestCase (mm1, mm2, 137.88, "OH Urban small city = ??"));
-  
-  AddTestCase (new LteFadingTestCase (mm1, mm2, 128.03, "loss OH SubUrban"));
-  
-  AddTestCase (new LteFadingTestCase (mm1, mm2, 110.21, "loss OH OpenAreas"));
-  
-  // Test #2 COST231 Model (1500 < freq < 2000~2170 MHz) (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  
-  AddTestCase (new LteFadingTestCase (mm1, mm2, 148.55, "COST231 Urban Large city"));
-  
-  AddTestCase (new LteFadingTestCase (mm1, mm2, 150.64, "COST231 Urban small city and suburban"));
-  
-  // Test #3 2.6 GHz model (Macro<->UE)
-  
-  freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
-  
-  AddTestCase (new LteFadingTestCase (mm1, mm2, 121.83, "2.6GHz model"));
-  
-  // Test #4 ITU1411 LOS model (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm3 = ueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
-  mm3->SetPosition (Vector (distance, 0.0, hm));
-  AddTestCase (new LteFadingTestCase (mm1, mm3, 81.00, "ITU1411 LOS"));
-  
-  // Test #5 ITU1411 NLOS model (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 900;
-  
-  Ptr<BuildingsMobilityModel> mm4 = ueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
-  mm4->SetPosition (Vector (distance, 0.0, hm));
-  AddTestCase (new LteFadingTestCase (mm1, mm4, 143.69, "ITU1411 NLOS"));
-  
-  // Test #6 ITUP1238 (HeNB <-> UE)
-  
-  distance = 30;
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  double henbHeight = 10.0;
-  Ptr<BuildingsMobilityModel> mm5 = henbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
-  mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
-  Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
-  building1->SetBuildingType (Building::Residential);
-  building1->SetExtWallsType (Building::ConcreteWithWindows);
-  mm5->SetIndoor (building1);
-  Ptr<BuildingsMobilityModel> mm6 = hueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
-  mm6->SetPosition (Vector (distance, 0.0, hm));
-  mm6->SetIndoor (building1);
-  mm6->SetFloorNumber (2);
-  AddTestCase (new LteFadingTestCase (mm5, mm6, 88.3855, "ITUP1238"));
-  
-  // Test #7 Outdoor -> Indoor OkumuraHata (Macro<->UE)
-  
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 2000;
-  // The loss is as in test #2 (large city) plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB -> 148.55 + 7 = 155.55
-  Ptr<BuildingsMobilityModel> mm7 = ueNodes.Get (3)->GetObject<BuildingsMobilityModel> ();
-  mm7->SetPosition (Vector (distance, 0.0, hm));
-  mm7->SetIndoor (building1);
-  AddTestCase (new LteFadingTestCase (mm1, mm7, 155.55, "Okumura Hata Outdoor -> Indoor"));
-  
-  // Test #8 Outdoor -> Indoor ITU1411 (Macro<->UE)
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm8 = ueNodes.Get (4)->GetObject<BuildingsMobilityModel> ();
-  mm8->SetPosition (Vector (distance, 0.0, hm));
-  mm8->SetIndoor (building1);
-  // The loss is as in test #4 plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB -> 81.000 + 7 = 88.000
-  AddTestCase (new LteFadingTestCase (mm1, mm8, 88.000, "ITU1411 LOS Outdoor -> Indoor"));
-  
-  // Test #9 Indoor -> Outdoor LOS (HeNB <-> UE)
-  
-  distance = 100;
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  Ptr<BuildingsMobilityModel> mm9 = henbNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
-  mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
-  mm9->SetIndoor (building1);
-  mm9->SetFloorNumber (2);
-  Ptr<BuildingsMobilityModel> mm10 = hueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
-  mm10->SetPosition (Vector (distance, 0.0, hm));
-  // The loss is similar of test #4 plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB and the height gain
-  // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
-  AddTestCase (new LteFadingTestCase (mm9, mm10, 84.838, "ITU1411 LOS Indoor -> Outdoor"));
-  
-  // Test #10 Indoor -> Outdoor NLOS (HeNB <-> UE)
-  
-  distance = 500;
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  Ptr<BuildingsMobilityModel> mm11 = hueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
-  mm11->SetPosition (Vector (distance, 0.0, hm));
-  // The loss is similar as in test #4 plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB and the height gain
-  // (2 floors x 2 dB/floor = 4) -> 180.90 + 7 - 4 = 183.90
-  AddTestCase (new LteFadingTestCase (mm9, mm11, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
+//   AddTestCase (new LteFadingTestCase (mm1, mm2, 137.88, "OH Urban small city = ??"));
+//   
+//   AddTestCase (new LteFadingTestCase (mm1, mm2, 128.03, "loss OH SubUrban"));
+//   
+//   AddTestCase (new LteFadingTestCase (mm1, mm2, 110.21, "loss OH OpenAreas"));
+//   
+//   // Test #2 COST231 Model (1500 < freq < 2000~2170 MHz) (Macro<->UE)
+//   
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   
+//   AddTestCase (new LteFadingTestCase (mm1, mm2, 148.55, "COST231 Urban Large city"));
+//   
+//   AddTestCase (new LteFadingTestCase (mm1, mm2, 150.64, "COST231 Urban small city and suburban"));
+//   
+//   // Test #3 2.6 GHz model (Macro<->UE)
+//   
+//   freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
+//   
+//   AddTestCase (new LteFadingTestCase (mm1, mm2, 121.83, "2.6GHz model"));
+//   
+//   // Test #4 ITU1411 LOS model (Macro<->UE)
+//   
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   distance = 100;
+//   Ptr<BuildingsMobilityModel> mm3 = ueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
+//   mm3->SetPosition (Vector (distance, 0.0, hm));
+//   AddTestCase (new LteFadingTestCase (mm1, mm3, 81.00, "ITU1411 LOS"));
+//   
+//   // Test #5 ITU1411 NLOS model (Macro<->UE)
+//   
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   distance = 900;
+//   
+//   Ptr<BuildingsMobilityModel> mm4 = ueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
+//   mm4->SetPosition (Vector (distance, 0.0, hm));
+//   AddTestCase (new LteFadingTestCase (mm1, mm4, 143.69, "ITU1411 NLOS"));
+//   
+//   // Test #6 ITUP1238 (HeNB <-> UE)
+//   
+//   distance = 30;
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   double henbHeight = 10.0;
+//   Ptr<BuildingsMobilityModel> mm5 = henbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+//   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
+//   Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+//   building1->SetBuildingType (Building::Residential);
+//   building1->SetExtWallsType (Building::ConcreteWithWindows);
+//   mm5->SetIndoor (building1);
+//   Ptr<BuildingsMobilityModel> mm6 = hueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+//   mm6->SetPosition (Vector (distance, 0.0, hm));
+//   mm6->SetIndoor (building1);
+//   mm6->SetFloorNumber (2);
+//   AddTestCase (new LteFadingTestCase (mm5, mm6, 88.3855, "ITUP1238"));
+//   
+//   // Test #7 Outdoor -> Indoor OkumuraHata (Macro<->UE)
+//   
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   distance = 2000;
+//   // The loss is as in test #2 (large city) plus the building penetration loss
+//   // which for ConcreteWithWindows is equal to 7 dB -> 148.55 + 7 = 155.55
+//   Ptr<BuildingsMobilityModel> mm7 = ueNodes.Get (3)->GetObject<BuildingsMobilityModel> ();
+//   mm7->SetPosition (Vector (distance, 0.0, hm));
+//   mm7->SetIndoor (building1);
+//   AddTestCase (new LteFadingTestCase (mm1, mm7, 155.55, "Okumura Hata Outdoor -> Indoor"));
+//   
+//   // Test #8 Outdoor -> Indoor ITU1411 (Macro<->UE)
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   distance = 100;
+//   Ptr<BuildingsMobilityModel> mm8 = ueNodes.Get (4)->GetObject<BuildingsMobilityModel> ();
+//   mm8->SetPosition (Vector (distance, 0.0, hm));
+//   mm8->SetIndoor (building1);
+//   // The loss is as in test #4 plus the building penetration loss
+//   // which for ConcreteWithWindows is equal to 7 dB -> 81.000 + 7 = 88.000
+//   AddTestCase (new LteFadingTestCase (mm1, mm8, 88.000, "ITU1411 LOS Outdoor -> Indoor"));
+//   
+//   // Test #9 Indoor -> Outdoor LOS (HeNB <-> UE)
+//   
+//   distance = 100;
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   Ptr<BuildingsMobilityModel> mm9 = henbNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
+//   mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
+//   mm9->SetIndoor (building1);
+//   mm9->SetFloorNumber (2);
+//   Ptr<BuildingsMobilityModel> mm10 = hueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
+//   mm10->SetPosition (Vector (distance, 0.0, hm));
+//   // The loss is similar of test #4 plus the building penetration loss
+//   // which for ConcreteWithWindows is equal to 7 dB and the height gain
+//   // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
+//   AddTestCase (new LteFadingTestCase (mm9, mm10, 84.838, "ITU1411 LOS Indoor -> Outdoor"));
+//   
+//   // Test #10 Indoor -> Outdoor NLOS (HeNB <-> UE)
+//   
+//   distance = 500;
+//   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
+//   Ptr<BuildingsMobilityModel> mm11 = hueNodes.Get (2)->GetObject<BuildingsMobilityModel> ();
+//   mm11->SetPosition (Vector (distance, 0.0, hm));
+//   // The loss is similar as in test #4 plus the building penetration loss
+//   // which for ConcreteWithWindows is equal to 7 dB and the height gain
+//   // (2 floors x 2 dB/floor = 4) -> 180.90 + 7 - 4 = 183.90
+//   AddTestCase (new LteFadingTestCase (mm9, mm11, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
   
   
   //------------------- SYSTEM TEST ------------------------------
@@ -328,7 +331,7 @@ static LteFadingTestSuite lteFadingTestSuite;
 */
 
 LteFadingTestCase::LteFadingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, std::string name)
-: TestCase ("SHADOWING calculation: " + name),
+: TestCase ("FADING calculation: " + name),
 m_node1 (m1),
 m_node2 (m2),
 m_lossRef (refValue)
@@ -370,33 +373,117 @@ LteFadingTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", logLevel);
   //   LogComponentEnable ("LteEnbNetDevice", logLevel);
   
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("JakesFadingLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("TraceFadingLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   NS_LOG_INFO ("Testing " << GetName());
   
-  Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<BuildingsPropagationLossModel> m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  /*m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
-  m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
-  m_downlinkPropagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
-  m_downlinkPropagationLossModel->SetAttribute ("CitySize", EnumValue (m_city));
-  */Ptr<BuildingsPropagationLossModel>  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  //   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
-  //   m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
-  m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
-  m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
   
+  m_fadingModule = CreateObject<TraceFadingLossModel> ();
   
+  m_fadingModule->CreateFadingChannelRealization (m_node1, m_node2);
   
-  Simulator::Stop (Seconds (0.1));
+//   Ptr<SpectrumModel> sm;
+//   
+//   Bands bands;
+//   BandInfo bi;
+//   
+//   bi.fl = 2.400e9;
+//   bi.fc = 2.410e9;
+//   bi.fh = 2.420e9;
+//   bands.push_back (bi);
+//   
+//   bi.fl = 2.420e9;
+//   bi.fc = 2.431e9;
+//   bi.fh = 2.442e9;
+//   bands.push_back (bi);
+//   
+//   sm = Create<SpectrumModel> (bands);
+//   
+//   /**
+//   * TX signal #1: Power Spectral Density (W/Hz) of the signal  = [0 0] dBm and BW = [20 22] MHz
+//   */
+//   Ptr<SpectrumValue> inPsd1 = Create<SpectrumValue> (sm);
+//   (*inPsd1)[0] = 1.;
+//   (*inPsd1)[1] = 1.;
+//   Ptr<SpectrumValue> outPsd1 = Create<SpectrumValue> (sm);
+//   outPsd1 = m_fadingModule->CalcRxPowerSpectralDensity (inPsd1, m_node1, m_node2);
+//   
+//   NS_LOG_INFO ("A ver " << (*outPsd1)[0] << " " << (*outPsd1)[1]);
+  double samplingInterval = 0.001;
+  double time = 0.0;
+  while (time<1.)
+    {
+      Time t = Seconds (time);
+      Simulator::Schedule(t, &LteFadingTestCase::GetFadingSample, this);
+      time += samplingInterval;
+    }
+  Simulator::Stop (Seconds (10.1));
   Simulator::Run ();
   Simulator::Destroy ();
-  double loss = m_downlinkPropagationLossModel->GetLoss (m_node1, m_node2);
-  
-  NS_LOG_INFO ("Calculated loss: " << loss);
+//   double loss = m_downlinkPropagationLossModel->GetLoss (m_node1, m_node2);
+  time = 0.0;
+  int rbNum = 2;
+  std::vector<double> sum (rbNum);
+  std::vector<double> sumSquared (rbNum);
+  for (int i = 0; i < rbNum; i++)
+    {
+      sum.at (i) = 0.;
+      sumSquared.at (i) = 0.;
+    }
+  for (uint i = 0; i < m_fadingSamples.size (); i++)
+  {
+    NS_LOG_INFO ("Sample time " << time << " : " << m_fadingSamples.at(i)[0] << " " << m_fadingSamples.at(i)[1]);
+    time += samplingInterval;
+    for (int j = 0; j < rbNum; j++)
+    {
+      sum.at (j) += m_fadingSamples.at(i)[j];
+      sumSquared.at (j) += (m_fadingSamples.at(i)[j]*m_fadingSamples.at(i)[j]);
+    }
+  }
+//   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
+  for (int i = 0; i < rbNum; i++)
+    {
+      double mean = sum.at (i)/m_fadingSamples.size ();
+      double sigma = sqrt(sumSquared.at (i)/m_fadingSamples.size () - (mean*mean));
+      NS_LOG_INFO (" Mean " << mean << " sigma " << sigma);
+    }
   
   //   NS_TEST_ASSERT_MSG_EQ_TOL(loss, m_lossRef, 0.1, "Wrong loss !");
+}
+
+void
+LteFadingTestCase::GetFadingSample ()
+{
+  Ptr<SpectrumModel> sm;
+  
+  Bands bands;
+  BandInfo bi;
+  
+  bi.fl = 2.400e9;
+  bi.fc = 2.410e9;
+  bi.fh = 2.420e9;
+  bands.push_back (bi);
+  
+  bi.fl = 2.420e9;
+  bi.fc = 2.431e9;
+  bi.fh = 2.442e9;
+  bands.push_back (bi);
+  
+  sm = Create<SpectrumModel> (bands);
+  
+  /**
+  * TX signal #1: Power Spectral Density (W/Hz) of the signal  = [0 0] dBm and BW = [20 22] MHz
+  */
+  Ptr<SpectrumValue> inPsd1 = Create<SpectrumValue> (sm);
+  (*inPsd1)[0] = 1.;
+  (*inPsd1)[1] = 1.;
+  Ptr<SpectrumValue> outPsd1 = Create<SpectrumValue> (sm);
+  outPsd1 = m_fadingModule->CalcRxPowerSpectralDensity (inPsd1, m_node1, m_node2);
+  (*outPsd1)[0] = (10 * log10 (180000*(*outPsd1)[0])) - (10 * log10 (180000*(*inPsd1)[0]));
+  (*outPsd1)[1] = (10 * log10 (180000*(*outPsd1)[1])) - (10 * log10 (180000*(*inPsd1)[1]));
+  m_fadingSamples.push_back ((*outPsd1));
 }
 
 

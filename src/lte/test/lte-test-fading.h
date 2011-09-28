@@ -27,7 +27,9 @@
 
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/spectrum-value.h>
 
+#include <ns3/trace-fading-loss-model.h>
 
 using namespace ns3;
 
@@ -35,6 +37,7 @@ using namespace ns3;
 /**
 * Test 1.1 fading model
 */
+
 class LteFadingTestSuite : public TestSuite
 {
   public:
@@ -51,9 +54,14 @@ class LteFadingTestCase : public TestCase
   private:
     virtual void DoRun (void);
     
+    void GetFadingSample ();
+    
     Ptr<BuildingsMobilityModel> m_node1;
     Ptr<BuildingsMobilityModel> m_node2;
+    Ptr<TraceFadingLossModel> m_fadingModule;
     double m_lossRef;
+    std::vector<SpectrumValue> m_fadingSamples;
+     
     
 };
 
