@@ -95,16 +95,11 @@ important components are provided in the following sections.
 
    Architecture of the LTE UE
 
-Design
-++++++
-
-The MAC Scheduler interface is **specified** or defined as **abstract classes**. The MAC Scheduler interface is **implemented** as **derived classes** from the abstract classes. We have splitted the MAC Scheduler interface into 4 abstract classes:
 
 
-  * Provider Side is specified in the ``FfMacSchedSapProvider`` class
-  * User Side is specified in the ``FfMacSchedSapUser`` class
+Description of the components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
-* CSCHED SAP API
 
 The FemtoForum MAC Scheduler Interface
 ++++++++++++++++++++++++++++++++++++++
@@ -370,4 +365,42 @@ inter cell intereference calculation and the simulation of uplink traffic, inclu
 has been refined to comply with the scheduler interface specification [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
+
+
+
+
+Sequence Diagrams
+~~~~~~~~~~~~~~~~~
+
+In this section we provide some sequence diagram that illustrate some important interactions among the components of the LTE module.
+
+
+Physical Layer
+++++++++++++++
+
+TODO: add diagram showing interference calculation
+
+
+RLC buffer status report
+++++++++++++++++++++++++
+
+These sequence diagrams represent how the RLC buffer status is updated in the different cases of the downlink and the uplink.
+
+For the downlink:
+
+.. seqdiag:: rlc_buffer_status_report_downlink.seqdiag
+
+
+For the uplink:
+
+.. seqdiag:: rlc_buffer_status_report_uplink.seqdiag
+
+
+Helpers
++++++++
+
+.. seqdiag:: helpers.seqdiag
+
+
+
 

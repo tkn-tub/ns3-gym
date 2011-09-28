@@ -1,0 +1,22 @@
+
+
+diagram {
+
+LenaHelper => EpcHelper [label="AddEnb"] {
+  EpcHelper  -> EpcHelper [label="create EpcEnbApplication"];
+  EpcHelper  => EpcSgwPgwApplication [label="SetupS1Link"];
+  EpcHelper  => EpcEnbApplication [label="SetupS1Link"];
+}
+
+LenaHelper => EpcHelper [label="SetupEpsBearer"] {
+  EpcHelper => EpcSgwPgwApplication [label="GTP/C CreateSessionRequest / BearerResourceCommand"] {
+    EpcSgwPgwApplication => EpcSgwPgwApplication [label="Setup S1 Bearer"];
+    EpcSgwPgwApplication => EpcEnbApplication [label="CreateBearer(TEID)"] {
+      EpcEnbApplication => EpcEnbApplication [label="SetupS1Bearer"];
+      EpcEnbApplication => LteEnbNetDevice [label="SetupRadioBearer", return="RBID"];
+    }
+  }
+  
+}
+
+}
