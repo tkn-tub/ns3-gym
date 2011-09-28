@@ -131,17 +131,31 @@ void LteRlcHeader::Print (std::ostream &os)  const
 {
   std::list <uint8_t>::const_iterator it1 = m_extensionBits.begin ();
   std::list <uint16_t>::const_iterator it2 = m_lengthIndicators.begin ();
-  uint16_t i = 1;
 
   os << "Len=" << m_headerLength;
   os << " FI=" << (uint16_t)m_framingInfo;
   os << " E=" << (uint16_t)(*it1);
   os << " SN=" << m_sequenceNumber;
 
-  for (it1++; *it1 && *it2; i++, it1++, it2++)
+  it1++;
+  if (it1 != m_extensionBits.end ())
     {
-      os << " E(" << i << ")=" << (uint16_t)(*it1);
-      os << " LI(" << i << ")=" << (uint16_t)(*it2);
+      os << " E=";
+    }
+  while ( it1 != m_extensionBits.end () )
+    {
+      os << (uint16_t)(*it1);
+      it1++;
+    }
+
+  if (it2 != m_lengthIndicators.end ())
+    {
+      os << " LI=";
+    }
+  while ( it2 != m_lengthIndicators.end () )
+    {
+      os << (uint16_t)(*it2) << " ";
+      it2++;
     }
 }
 

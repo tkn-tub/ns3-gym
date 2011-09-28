@@ -20,7 +20,6 @@
 
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-#include "ns3/string.h"
 
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-um.h"
@@ -47,6 +46,7 @@ LteRlcUmTransmitterTestSuite::LteRlcUmTransmitterTestSuite ()
   AddTestCase (new LteRlcUmTransmitterOneSduTestCase ("One SDU, one PDU"));
   AddTestCase (new LteRlcUmTransmitterSegmentationTestCase ("Segmentation"));
   AddTestCase (new LteRlcUmTransmitterConcatenationTestCase ("Concatenation"));
+  AddTestCase (new LteRlcUmTransmitterReportBufferStatusTestCase ("ReportBufferStatus primitive"));
 
 }
 
@@ -68,12 +68,13 @@ LteRlcUmTransmitterTestCase::DoRun (void)
 {
   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlcUmTransmitterTest", logLevel);
+  LogComponentEnable ("LteTestEntities", logLevel);
   LogComponentEnable ("LteRlc", logLevel);
   LogComponentEnable ("LteRlcUm", logLevel);
   LogComponentEnable ("LteRlcHeader", logLevel);
 
   uint16_t rnti = 1111;
-  uint16_t lcid = 2222;
+  uint8_t lcid = 222;
 
   Packet::EnablePrinting ();
 
@@ -129,7 +130,7 @@ LteRlcUmTransmitterOneSduTestCase::DoRun (void)
   dataToSend = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   txPdcp->SendData (Seconds (0.0), dataToSend);
 
-  txMac->SendTxOpportunity (28);
+  txMac->SendTxOpportunity (Seconds (0.1), 28);
   NS_TEST_ASSERT_MSG_EQ ("ABCDEFGHIJKLMNOPQRSTUVWXYZ", txMac->GetDataReceived (), "SDU is not OK");
 
   Simulator::Destroy ();
@@ -165,16 +166,16 @@ LteRlcUmTransmitterSegmentationTestCase::DoRun (void)
   dataToSend = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   txPdcp->SendData (Seconds (0.0), dataToSend);
 
-  txMac->SendTxOpportunity (10);
+  txMac->SendTxOpportunity (Seconds (0.1), 10);
   NS_TEST_ASSERT_MSG_EQ ("ABCDEFGH", txMac->GetDataReceived (), "Segmentation is not OK");
 
-  txMac->SendTxOpportunity (10);
+  txMac->SendTxOpportunity (Seconds (0.1), 10);
   NS_TEST_ASSERT_MSG_EQ ("IJKLMNOP", txMac->GetDataReceived (), "2 Segmentation is not OK");
 
-  txMac->SendTxOpportunity (10);
+  txMac->SendTxOpportunity (Seconds (0.1), 10);
   NS_TEST_ASSERT_MSG_EQ ("QRSTUVWX", txMac->GetDataReceived (), "3 Segmentation is not OK");
 
-  txMac->SendTxOpportunity (4);
+  txMac->SendTxOpportunity (Seconds (0.1), 4);
   NS_TEST_ASSERT_MSG_EQ ("YZ", txMac->GetDataReceived (), "4 Segmentation is not OK");
 
   Simulator::Destroy ();
@@ -216,217 +217,97 @@ LteRlcUmTransmitterConcatenationTestCase::DoRun (void)
   dataToSend = "STUVWXYZ";
   txPdcp->SendData (Seconds (0.0), dataToSend);
 
-  txMac->SendTxOpportunity (31);
+  txMac->SendTxOpportunity (Seconds (0.1), 31);
   NS_TEST_ASSERT_MSG_EQ ("ABCDEFGHIJKLMNOPQRSTUVWXYZ", txMac->GetDataReceived (), "Concatenation is not OK");
 
   Simulator::Destroy ();
 }
 
-/////////////////////////////////////////////////////////////////////
-
-TypeId
-LteTestMac::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::LteTestMac")
-    .SetParent<Object> ()
-    .AddConstructor<LteTestMac> ()
-    ;
-
-  return tid;
-}
-
-LteTestMac::LteTestMac ()
-{
-  NS_LOG_FUNCTION (this);
-  m_macSapProvider = new EnbMacMemberLteMacSapProvider<LteTestMac> (this);
-//   m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
-//   m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
-//   m_cschedSapUser = new EnbMacMemberFfMacCschedSapUser (this);
-//   m_enbPhySapUser = new EnbMacMemberLteEnbPhySapUser (this);
-}
-
-LteTestMac::~LteTestMac ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-void
-LteTestMac::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  delete m_macSapProvider;
-//   delete m_cmacSapProvider;
-//   delete m_schedSapUser;
-//   delete m_cschedSapUser;
-//   delete m_enbPhySapUser;
-}
-
-void
-LteTestMac::SetLteMacSapUser (LteMacSapUser* s)
-{
-  m_macSapUser = s;
-}
-
-LteMacSapProvider*
-LteTestMac::GetLteMacSapProvider (void)
-{
-  return m_macSapProvider;
-}
-
-void
-LteTestMac::SetLteMacLoopback (Ptr<LteTestMac> s)
-{
-  m_macLoopback = s;
-}
-
-std::string
-LteTestMac::GetDataReceived (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  return m_receivedData;
-}
-
-void
-LteTestMac::SendTxOpportunity (uint32_t bytes)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("Bytes = " << bytes);
-
-  Simulator::Schedule (Seconds (0.0), &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes);
-  Simulator::Run ();
-}
-
-
 /**
- * MAC SAP
+ * Test 4.1.1.4 Report Buffer Status (test primitive parameters)
  */
-
-void
-LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
+LteRlcUmTransmitterReportBufferStatusTestCase::LteRlcUmTransmitterReportBufferStatusTestCase (std::string name)
+  : LteRlcUmTransmitterTestCase (name)
 {
-  NS_LOG_FUNCTION (this);
+}
 
-  LteRlcHeader rlcHeader;
-
-  // Remove RLC header
-  params.pdu->RemoveHeader (rlcHeader);
-  NS_LOG_LOGIC ("RLC header: " << rlcHeader);
-
-  // Copy data to a string
-  uint32_t dataLen = params.pdu->GetSize ();
-  uint8_t *buf = new uint8_t[dataLen];
-  params.pdu->CopyData (buf, dataLen);
-  m_receivedData = std::string ((char *)buf, dataLen);
-
-  NS_LOG_LOGIC ("Data (" << dataLen << ") = " << m_receivedData);
-  delete [] buf;
+LteRlcUmTransmitterReportBufferStatusTestCase::~LteRlcUmTransmitterReportBufferStatusTestCase ()
+{
 }
 
 void
-LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
+LteRlcUmTransmitterReportBufferStatusTestCase::DoRun (void)
 {
-  NS_LOG_FUNCTION (this);
-}
+  // Create topology
+  LteRlcUmTransmitterTestCase::DoRun ();
 
-/////////////////////////////////////////////////////////////////////
+  // The tests...
+  std::string dataToSend;
+  std::string dataReceived;
 
-TypeId
-LteTestPdcp::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::LteTestPdcp")
-    .SetParent<Object> ()
-    .AddConstructor<LteTestPdcp> ()
-    ;
+  //
+  // d) Test the parameters of the ReportBufferStatus primitive
+  //
 
-  return tid;
-}
+  txMac->SendTxOpportunity (Seconds (0.1), (2+2) + (10+6));
 
-LteTestPdcp::LteTestPdcp ()
-{
-  NS_LOG_FUNCTION (this);
-  m_rlcSapUser = new LteRlcSpecificLteRlcSapUser<LteTestPdcp> (this);
-  Simulator::ScheduleNow (&LteTestPdcp::Start, this);
-}
+  // PDCP entity sends data
+  txPdcp->SendData (Seconds (1.0), "ABCDEFGHIJ"); // 10
+  txPdcp->SendData (Seconds (1.0), "KLMNOPQRS");  // 9
+  txPdcp->SendData (Seconds (1.0), "TUVWXYZ");    // 7
 
-LteTestPdcp::~LteTestPdcp ()
-{
-  NS_LOG_FUNCTION (this);
-}
+  txMac->SendTxOpportunity (Seconds (0.1), (2+2) + (10+6));
+  NS_TEST_ASSERT_MSG_EQ ("ABCDEFGHIJKLMNOP",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-void
-LteTestPdcp::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  delete m_rlcSapUser;
-}
+  txPdcp->SendData (Seconds (1.0), "ABCDEFGH");     // 8
+  txPdcp->SendData (Seconds (1.0), "IJKLMNOPQRST"); // 12
+  txPdcp->SendData (Seconds (1.0), "UVWXYZ");       // 6
 
-void
-LteTestPdcp::SetLteRlcSapProvider (LteRlcSapProvider* s)
-{
-  m_rlcSapProvider = s;
-}
+  txMac->SendTxOpportunity (Seconds (0.1), 2 + 3);
+  NS_TEST_ASSERT_MSG_EQ ("QRS",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-LteRlcSapUser*
-LteTestPdcp::GetLteRlcSapUser (void)
-{
-  return m_rlcSapUser;
-}
+  txPdcp->SendData (Seconds (1.0), "ABCDEFGH");     // 8
+  txPdcp->SendData (Seconds (1.0), "IJKLMNOPQRST"); // 12
+  txPdcp->SendData (Seconds (1.0), "UVWXYZ");       // 6
 
+  txPdcp->SendData (Seconds (1.0), "ABCDEFGHIJ");   // 10
+  txPdcp->SendData (Seconds (1.0), "KLMNOPQRST");   // 10
+  txPdcp->SendData (Seconds (1.0), "UVWXYZ");       // 6
 
-std::string
-LteTestPdcp::GetDataReceived (void)
-{
-  NS_LOG_FUNCTION (this);
+  txMac->SendTxOpportunity (Seconds (0.1), 2 + 7);
+  NS_TEST_ASSERT_MSG_EQ ("TUVWXYZ",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-  return m_receivedData;
-}
+  txMac->SendTxOpportunity (Seconds (0.1), (2+2) + (8+2));
+  NS_TEST_ASSERT_MSG_EQ ("ABCDEFGHIJ",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
+  txPdcp->SendData (Seconds (1.0), "ABCDEFGHIJ");   // 10
+  txPdcp->SendData (Seconds (1.0), "KLMNOPQRST");   // 10
+  txPdcp->SendData (Seconds (1.0), "UVWXYZ");       // 6
 
-/**
- * RLC SAP
- */
+  txMac->SendTxOpportunity (Seconds (0.1), 2 + 2);
+  NS_TEST_ASSERT_MSG_EQ ("KL",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-void
-LteTestPdcp::DoReceivePdcpPdu (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("PDU received = " << (*p));
+  txMac->SendTxOpportunity (Seconds (0.1), 2 + 3);
+  NS_TEST_ASSERT_MSG_EQ ("MNO",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-  uint32_t dataLen = p->GetSize ();
-  uint8_t *buf = new uint8_t[dataLen];
-  p->CopyData (buf, dataLen);
-  m_receivedData = std::string ((char *)buf, dataLen);
+  txMac->SendTxOpportunity (Seconds (0.1), 2 + 5);
+  NS_TEST_ASSERT_MSG_EQ ("PQRST",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-  NS_LOG_LOGIC (m_receivedData);
+  txMac->SendTxOpportunity (Seconds (0.1), (2+2+1+2+1+2+1) + (6+8+12+6+10+10+3));
+  NS_TEST_ASSERT_MSG_EQ ("UVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVW",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-  delete [] buf;
-}
+  txMac->SendTxOpportunity (Seconds (0.1), (2+2+1+2) + (3+10+10+6));
+  NS_TEST_ASSERT_MSG_EQ ("XYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                         txMac->GetDataReceived (), "SDU is not OK");
 
-/**
- * START
- */
-
-void
-LteTestPdcp::Start ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-void
-LteTestPdcp::SendData (Time at, std::string dataToSend)
-{
-  NS_LOG_FUNCTION (this);
-
-  LteRlcSapProvider::TransmitPdcpPduParameters p;
-  p.rnti = 111;
-  p.lcid = 222;
-
-  NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
-  p.pdcpPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
-
-  NS_LOG_LOGIC ("Packet(" << p.pdcpPdu->GetSize () << ")");
-  Simulator::Schedule (at, &LteRlcSapProvider::TransmitPdcpPdu, m_rlcSapProvider, p);
-  Simulator::Run ();
+  Simulator::Destroy ();
 }
 

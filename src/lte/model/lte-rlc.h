@@ -61,7 +61,7 @@ public:
    *
    * \param rnti
    */
-  void SetRnti (uint8_t rnti);
+  void SetRnti (uint16_t rnti);
 
   /**
    *

@@ -22,117 +22,11 @@
 #define LTE_TEST_RLC_UM_TRANSMITTER_H
 
 #include "ns3/test.h"
-#include "ns3/type-id.h"
 
-#include "ns3/lte-mac-sap.h"
-#include "ns3/lte-enb-mac.h"
-#include "ns3/lte-rlc-sap.h"
-
+#include "ns3/lte-test-entities.h"
 
 using namespace ns3;
 
-
-/**
- * This class implements a testing loopback MAC layer
- */
-class LteTestMac : public Object
-{
-//   friend class EnbMacMemberLteEnbCmacSapProvider;
-    friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
-//   friend class EnbMacMemberFfMacSchedSapUser;
-//   friend class EnbMacMemberFfMacCschedSapUser;
-//   friend class EnbMacMemberLteEnbPhySapUser;
-
-  public:
-    static TypeId GetTypeId (void);
-
-    LteTestMac (void);
-    virtual ~LteTestMac (void);
-    virtual void DoDispose (void);
-
-    void SendTxOpportunity (uint32_t);
-    std::string GetDataReceived (void);
-
-    /**
-    * \brief Set the MAC SAP user
-    * \param s a pointer to the MAC SAP user
-    */
-    void SetLteMacSapUser (LteMacSapUser* s);
-    /**
-    * \brief Get the MAC SAP provider
-    * \return a pointer to the SAP provider of the MAC
-    */
-    LteMacSapProvider* GetLteMacSapProvider (void);
-
-    /**
-    * \brief Set the other side of the MAC Loopback
-    * \param s a pointer to the other side of the MAC loopback
-    */
-    void SetLteMacLoopback (Ptr<LteTestMac> s);
-
-  private:
-    // forwarded from LteMacSapProvider
-    void DoTransmitPdu (LteMacSapProvider::TransmitPduParameters);
-    void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters);
-
-    LteMacSapProvider* m_macSapProvider;
-    LteMacSapUser* m_macSapUser;
-    Ptr<LteTestMac> m_macLoopback;
-
-    std::string m_receivedData;
-
-};
-
-/////////////////////////////////////////////////////////////////////
-
-/**
- * This class implements a testing PDCP layer
- */
-class LteTestPdcp : public Object
-{
-    friend class LteRlcSpecificLteRlcSapUser<LteTestPdcp>;
-//   friend class EnbMacMemberLteEnbCmacSapProvider;
-//   friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
-//   friend class EnbMacMemberFfMacSchedSapUser;
-//   friend class EnbMacMemberFfMacCschedSapUser;
-//   friend class EnbMacMemberLteEnbPhySapUser;
-
-  public:
-    static TypeId GetTypeId (void);
-
-    LteTestPdcp (void);
-    virtual ~LteTestPdcp (void);
-    virtual void DoDispose (void);
-
-
-    /**
-    * \brief Set the RLC SAP provider
-    * \param s a pointer to the RLC SAP provider
-    */
-    void SetLteRlcSapProvider (LteRlcSapProvider* s);
-    /**
-    * \brief Get the RLC SAP user
-    * \return a pointer to the SAP user of the RLC
-    */
-    LteRlcSapUser* GetLteRlcSapUser (void);
-
-    void Start ();
-
-    void SendData (Time at, std::string dataToSend);
-    std::string GetDataReceived (void);
-
-  private:
-    // Interface forwarded by LteRlcSapUser
-    virtual void DoReceivePdcpPdu (Ptr<Packet> p);
-
-    LteRlcSapUser* m_rlcSapUser;
-    LteRlcSapProvider* m_rlcSapProvider;
-
-    std::string m_receivedData;
-
-};
-
-/////////////////////////////////////////////////////////////////////
 
 /**
  * TestSuite 4.1.1 RLC UM: Only transmitter
@@ -198,6 +92,21 @@ class LteRlcUmTransmitterConcatenationTestCase : public LteRlcUmTransmitterTestC
     LteRlcUmTransmitterConcatenationTestCase (std::string name);
     LteRlcUmTransmitterConcatenationTestCase ();
     virtual ~LteRlcUmTransmitterConcatenationTestCase ();
+
+  private:
+    virtual void DoRun (void);
+
+};
+
+/**
+ * Test 4.1.1.4 Report Buffer Status (test primitive parameters)
+ */
+class LteRlcUmTransmitterReportBufferStatusTestCase : public LteRlcUmTransmitterTestCase
+{
+  public:
+    LteRlcUmTransmitterReportBufferStatusTestCase (std::string name);
+    LteRlcUmTransmitterReportBufferStatusTestCase ();
+    virtual ~LteRlcUmTransmitterReportBufferStatusTestCase ();
 
   private:
     virtual void DoRun (void);
