@@ -162,28 +162,29 @@ JakesFadingLossModel::SetValue (double speed)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_0 [j + startJakes]);
+//                   multipathForTimeDomain.push_back (multipath_M6_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_120 [j + startJakes]);
                 }
             }
         }
@@ -195,28 +196,28 @@ JakesFadingLossModel::SetValue (double speed)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_120 [j + startJakes]);
                 }
             }
         }
@@ -228,28 +229,28 @@ JakesFadingLossModel::SetValue (double speed)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_120 [j + startJakes]);
                 }
             }
         }
@@ -261,28 +262,28 @@ JakesFadingLossModel::SetValue (double speed)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_120 [j + startJakes]);
                 }
             }
         }
@@ -317,7 +318,7 @@ JakesFadingLossModel::GetValue (int subChannel, double speed)
   NS_LOG_FUNCTION (this << subChannel << now_ms
                         << lastUpdate_ms << index << m_multipath.at (subChannel).at (index));
 
-  return m_multipath.at (subChannel).at (index);
+  return (*m_multipath.at (subChannel).at (index));
 }
 
 

@@ -93,7 +93,7 @@ public:
   /**
    * brief a list of multipath values for the time domain
    */
-  typedef std::vector<double> MultipathForTimeDomain;
+  typedef std::vector<double*> MultipathForTimeDomain;
   /**
    * brief a list of multipath values for the frequency domain
    */
