@@ -31,6 +31,7 @@ import sys
 import re
 from waflib import Utils, Logs
 from waflib.Configure import conf
+from waflib.Errors import WafError
 
 BOOST_LIBS = ('/usr/lib', '/usr/local/lib',
 			  '/opt/local/lib', '/sw/lib', '/lib')
@@ -249,8 +250,12 @@ def check_boost(self, *k, **kw):
 	var = kw.get('uselib_store', 'BOOST')
 
 	self.start_msg('Checking boost includes')
-	self.env['INCLUDES_%s' % var] = self.boost_get_includes(**params)
-	self.env.BOOST_VERSION = self.boost_get_version(self.env['INCLUDES_%s' % var])
+	try:
+		self.env['INCLUDES_%s' % var] = self.boost_get_includes(**params)
+		self.env.BOOST_VERSION = self.boost_get_version(self.env['INCLUDES_%s' % var])
+	except WafError:
+		self.end_msg("not found", 'YELLOW')
+		raise
 	self.end_msg(self.env.BOOST_VERSION)
 	if Logs.verbose:
 		Logs.pprint('CYAN', '	path : %s' % self.env['INCLUDES_%s' % var])
@@ -258,8 +263,12 @@ def check_boost(self, *k, **kw):
 	if not params['lib']:
 		return
 	self.start_msg('Checking boost libs')
-	suffix = params.get('static', 'ST') or ''
-	path, libs = self.boost_get_libs(**params)
+	try:
+		suffix = params.get('static', 'ST') or ''
+		path, libs = self.boost_get_libs(**params)
+	except WafError:
+		self.end_msg("not found", 'YELLOW')
+		raise
 	self.env['%sLIBPATH_%s' % (suffix, var)] = [path]
 	self.env['%sLIB_%s' % (suffix, var)] = libs
 	self.end_msg('ok')
