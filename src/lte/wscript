@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'buildings', 'stats'])
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -62,10 +62,9 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
-        'test/lte-test-pathloss-model.cc',
         'test/epc-test-gtpu-v1.cc',
-        'test/lte-test-shadowing.cc',
         'test/lte-test-fading.cc',
+        'test/lte-test-pathloss-model.cc'
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -125,10 +124,9 @@ def build(bld):
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
-        'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu-v1.h',
-        'test/lte-test-shadowing.h',
         'test/lte-test-fading.h',
+        'test/lte-test-pathloss-model.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

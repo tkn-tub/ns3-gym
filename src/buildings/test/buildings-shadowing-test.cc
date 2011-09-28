@@ -19,35 +19,25 @@
 */
 
 #include "ns3/simulator.h"
-
 #include "ns3/log.h"
-
-#include "ns3/spectrum-test.h"
-
-#include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
-#include "ns3/lte-sinr-chunk-processor.h"
-
-#include "ns3/lte-test-shadowing.h"
+#include "ns3/buildings-shadowing-test.h"
 #include <ns3/buildings-propagation-loss-model.h>
-#include <ns3/node-container.h>
-#include <ns3/mobility-helper.h>
-#include <ns3/lena-helper.h>
+#include <ns3/spectrum-model.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/building.h>
 #include <ns3/enum.h>
-#include <ns3/net-device-container.h>
-#include <ns3/lte-ue-net-device.h>
-#include <ns3/lte-enb-net-device.h>
-#include <ns3/lte-ue-rrc.h>
-#include <ns3/lena-helper.h>
-#include <ns3/lte-enb-phy.h>
-#include <ns3/lte-ue-phy.h>
-#include "lte-test-sinr-chunk-processor.h"
+// #include <ns3/net-device-container.h>
+// #include <ns3/lte-ue-net-device.h>
+// #include <ns3/lte-enb-net-device.h>
+// #include <ns3/lte-ue-rrc.h>
+// #include <ns3/lena-helper.h>
+// #include <ns3/lte-enb-phy.h>
+// #include <ns3/lte-ue-phy.h>
+// #include <ns3/lte-test-sinr-chunk-processor.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteShadowingTest");
+NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
 
 using namespace ns3;
 
@@ -62,52 +52,12 @@ using namespace ns3;
 */
 
 
-LteShadowingTestSuite::LteShadowingTestSuite ()
-: TestSuite ("lte-shadowing-model", SYSTEM)
+BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
+: TestSuite ("buildings-shadowing-test", SYSTEM)
 {
   
   
-  // -------------- UNIT TESTS ----------------------------------
-  
-  LogComponentEnable ("LteShadowingTest", LOG_LEVEL_ALL);
-  
-  // NS_LOG_INFO ("Creating LteDownlinkSinrTestSuite");
-  
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
-  
-  // Create Nodes: eNodeB, home eNB, UE and home UE (UE attached to HeNB)
-  NodeContainer enbNodes;
-  NodeContainer henbNodes;
-  NodeContainer ueNodes;
-  NodeContainer hueNodes;
-  enbNodes.Create (1);
-  henbNodes.Create (2);
-  ueNodes.Create (5);
-  hueNodes.Create (3);
-  
-  // Install Mobility Model
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
-  mobility.Install (enbNodes);
-  mobility.Install (henbNodes);
-  mobility.Install (ueNodes);
-  mobility.Install (hueNodes);
-  
-  NetDeviceContainer enbDevs;
-  NetDeviceContainer henbDevs;
-  NetDeviceContainer ueDevs;
-  NetDeviceContainer hueDevs;
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
-  henbDevs = lena->InstallEnbDevice (henbNodes);
-  hueDevs = lena->InstallUeDevice (hueNodes);
-  
-  
-  
-  lena->Attach (ueDevs, enbDevs.Get (0));
-  lena->Attach (hueDevs, henbDevs.Get (0));
+  LogComponentEnable ("BuildingsShadowingTest", LOG_LEVEL_ALL);
   
   // Test #1 Outdoor Model
   
@@ -115,56 +65,56 @@ LteShadowingTestSuite::LteShadowingTestSuite ()
   double hm = 1;
   double hb = 30;
   double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
-  Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<BuildingsMobilityModel> mm1 = CreateObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, hb));
   
-  Ptr<BuildingsMobilityModel> mm2 = ueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<BuildingsMobilityModel> mm2 = CreateObject<BuildingsMobilityModel> ();
   mm2->SetPosition (Vector (distance, 0.0, hm));
   
-  AddTestCase (new LteShadowingTestCase (mm1, mm2, 148.86, 7.0, "Outdoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (mm1, mm2, 148.86, 7.0, "Outdoor Shadowing"));
   
   // Test #2 Indoor model
   
   distance = 30;
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   double henbHeight = 10.0;
-  Ptr<BuildingsMobilityModel> mm5 = henbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
   Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);
-  Ptr<BuildingsMobilityModel> mm6 = hueNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+  Ptr<BuildingsMobilityModel> mm6 = CreateObject<BuildingsMobilityModel> ();
   mm6->SetPosition (Vector (distance, 0.0, hm));
   mm6->SetIndoor (building1);
   mm6->SetFloorNumber (2);
-  AddTestCase (new LteShadowingTestCase (mm5, mm6, 88.5724, 8.0, "Indoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (mm5, mm6, 88.5724, 8.0, "Indoor Shadowing"));
   
   // Test #3 Indoor -> Outdoor
   
   distance = 100;
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  Ptr<BuildingsMobilityModel> mm9 = henbNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
+  Ptr<BuildingsMobilityModel> mm9 = CreateObject<BuildingsMobilityModel> ();
   mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
   mm9->SetIndoor (building1);
   mm9->SetFloorNumber (2);
-  Ptr<BuildingsMobilityModel> mm10 = hueNodes.Get (1)->GetObject<BuildingsMobilityModel> ();
+  Ptr<BuildingsMobilityModel> mm10 = CreateObject<BuildingsMobilityModel> ();
   mm10->SetPosition (Vector (distance, 0.0, hm));
   // The loss is similar of test #4 plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB and the height gain
   // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
-  AddTestCase (new LteShadowingTestCase (mm9, mm10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (mm9, mm10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
 
 }
 
-static LteShadowingTestSuite lteShadowingTestSuite;
+static BuildingsShadowingTestSuite buildingsShadowingTestSuite;
 
 
 /**
 * TestCase
 */
 
-LteShadowingTestCase::LteShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name)
+BuildingsShadowingTestCase::BuildingsShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name)
 : TestCase ("SHADOWING calculation: " + name),
 m_node1 (m1),
 m_node2 (m2),
@@ -173,12 +123,12 @@ m_sigmaRef (sigmaRef)
 {
 }
 
-LteShadowingTestCase::~LteShadowingTestCase ()
+BuildingsShadowingTestCase::~BuildingsShadowingTestCase ()
 {
 }
 
 void
-LteShadowingTestCase::DoRun (void)
+BuildingsShadowingTestCase::DoRun (void)
 {
 //     LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   
@@ -210,6 +160,7 @@ LteShadowingTestCase::DoRun (void)
   
 //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   NS_LOG_INFO ("Testing " << GetName());
+  
   std::vector<double> loss;
   double sum = 0.0;
   double sumSquared = 0.0;

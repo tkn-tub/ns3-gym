@@ -8,7 +8,6 @@ def build(bld):
         'model/propagation-loss-model.cc',
         'model/jakes-propagation-loss-model.cc',
         'model/cost231-propagation-loss-model.cc',
-        'model/buildings-propagation-loss-model.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('propagation')
@@ -23,7 +22,6 @@ def build(bld):
         'model/propagation-loss-model.h',
         'model/jakes-propagation-loss-model.h',
         'model/cost231-propagation-loss-model.h',
-        'model/buildings-propagation-loss-model.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

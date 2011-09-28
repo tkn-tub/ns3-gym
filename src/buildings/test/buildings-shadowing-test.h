@@ -18,10 +18,8 @@
 * Author: Marco Miozzo <marco.miozzo@cttc.es>
 */
 
-#ifndef LTE_TEST_SHADOWING_MODEL_H
-#define LTE_TEST_SHADOWING_MODEL_H
-
-#include "ns3/spectrum-value.h"
+#ifndef BUILDINGS_SHADOWING_TEST_H
+#define BUILDINGS_SHADOWING_TEST_H
 
 #include "ns3/test.h"
 
@@ -35,18 +33,18 @@ using namespace ns3;
 /**
 * Test 1.1 shadowing calculation
 */
-class LteShadowingTestSuite : public TestSuite
+class BuildingsShadowingTestSuite : public TestSuite
 {
   public:
-    LteShadowingTestSuite ();
+    BuildingsShadowingTestSuite ();
 };
 
 
-class LteShadowingTestCase : public TestCase
+class BuildingsShadowingTestCase : public TestCase
 {
   public:
-    LteShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name);
-    virtual ~LteShadowingTestCase ();
+    BuildingsShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name);
+    virtual ~BuildingsShadowingTestCase ();
     
   private:
     virtual void DoRun (void);
@@ -58,4 +56,4 @@ class LteShadowingTestCase : public TestCase
     
 };
 
-#endif /*LTE_TEST_SHADOWING_MODEL_H*/
+#endif /*BUILDINGS_SHADOWING_TEST_H*/
