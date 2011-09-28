@@ -38,24 +38,73 @@ TypeId
 EpcEnbApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcEnbApplication")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+     .AddAttribute("GtpuPort",
+                   "UDP Port to be used for GTP-U",
+                   UintegerValue (2152),
+                   MakeUintegerAccessor (&EpcEnbApplication::m_updPort),
+                   MakeUintegerChecker<uint16_t> ());
   return tid;
 }
 
-EpcEnbApplication::EpcEnbApplication (const Ptr<VirtualNetDevice> tap, const Ptr<Socket> s)
-  : m_udpPort (2152)
+EpcEnbApplication::EpcEnbApplication (Address sgwAddress)
 {
   NS_LOG_FUNCTION (this);
-  m_tap = tap;
-  m_tap->SetSendCallback (MakeCallback (&EpcEnbApplication::GtpuSend, this));
-  m_socket = s;
-  m_socket->SetRecvCallback (MakeCallback (&EpcEnbApplication::GtpuRecv, this));
 }
+
+
+EpcEnbApplication::~EpcEnbApplication (void)
+{
+}
+ 
+
+void 
+EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
+{
+  NS_LOG_FUNCTION (this);  
+  NS_ASSERT (socket == m_lteSocket);
+  Ptr<Packet> packet = socket->Recv ();
+  GtpuHeader gtpu;
+  // TODO: should determine the TEID based on the Radio Bearer ID
+  // which should be conveyed by means of a Packet Tag 
+  uint32_t teid = 0;
+  SendToS1uSocket (packet, teid);
+}
+
+void 
+EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
+{
+  NS_LOG_FUNCTION (this);  
+  NS_ASSERT (socket == m_s1uSocket);
+  Ptr<Packet> packet = socket->Recv ();
+  GtpuHeader gtpu;
+  packet->RemoveHeader (gtpu);
+  uint32_t teid = gtpu.GetTeid ();
+  uint32_t rbid = GetRbid (teid);
+  SendToLteSocket (packet, rbid);
+}
+
+void 
+EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
+{
+  gtpu.SetTeid (teid);
+  // From 3GPP TS 29.281 v10.0.0 Section 5.1
+  // Length of the payload + the non obligatory GTP-U header
+  gtpu.SetLength (p->GetSize () + h.GetSerializedSize () - 8);  
+  packet->AddHeader (gtpu);
+  uint32_t flags = 0;
+  m_s1uSocket->SendTo (packet, flags, m_sgwAddress);
+}
+
 
 uint32_t
 EpcEnbApplication::CreateGtpuTunnel (Ipv4Address destination)
 {
   NS_LOG_FUNCTION (this);
+  if (m_teidCounter == 0xffffffff)
+    {
+      NS_FATAL_ERROR ("TEID space exhausted, please implement some TEID reuse mechanism"); 
+    }
   CreateGtpuTunnel (destination, ++m_teidCounter);
   return m_teidCounter;
 }
@@ -68,12 +117,25 @@ EpcEnbApplication::CreateGtpuTunnel (Ipv4Address destination, uint32_t teid)
   m_dstAddrMap[m_indexCounter] = destination;
 }
 
+uint32_t 
+EpcEnbApplication::GetRbid (uint32_t teid)
+{
+  // since we don't have SRBs for now, we can just use the same identifiers
+  return teid;
+}
+
+uint32_t 
+EpcEnbApplication::GetTeid (uint32_t rbid)
+{
+  // since we don't have SRBs for now, we can just use the same identifiers
+  return rbid;
+}
 
 void
 EpcEnbApplication::GtpuRecv (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this);
-  Ptr<Packet> packet = socket->Recv (65535, 0);
+  NS_LOG_FUNCTION (this);  
+  Ptr<Packet> packet = socket->Recv ();
   uint32_t index = 0;
   m_gtpuMap[index]->RemoveHeader (packet);
   m_tap->Receive (packet, 0x0800, m_tap->GetAddress (), m_tap->GetAddress (), NetDevice::PACKET_HOST);

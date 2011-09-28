@@ -44,25 +44,64 @@ class EpcEnbApplication : public Object
 
 public:
   static TypeId GetTypeId (void);
+  
+
+  /** 
+   * 
+   * 
+   * \param radioSocket the socket to be used to send/receive packets to/from the LTE radio interface
+   * \param s1uSocket the socket to be used to send/receive packets
+   * to/from the S1-U interface connected with the SGW 
+   * \param sgwAddress the IPv4 address at which this eNB will be able to reach its SGW
+   * 
+   */
+  EpcEnbApplication (Ptr<Socket> radioSocket, Ptr<Socket> s1uSocket, Address sgwAddress);
 
   /**
-   * Method assigned to the send callback of the upper end of the tunnel. It adds
-   * the GTP header and sends it through the tunnel
+   * destructor
+   * 
    */
-  bool GtpuSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  /**
-   * Method assigned to the receive callback of the upper end of the tunnel. It strips
-   * the GTP header and sends it up to the application
-   */
-  void GtpuRecv (Ptr<Socket> socket);
-
-  /**
-   * Constructor that binds the tap device to the callback methods.
-   * \param tap VirtualNetDevice used to tunnel the packets
-   * \param s Socket used to send the tunneled packets
-   */
-  EpcEnbApplication (const Ptr<VirtualNetDevice> tap, const Ptr<Socket> s);
   virtual ~EpcEnbApplication (void);
+
+
+
+  void SetupS1Bearer ()
+
+  /** 
+   * Method to be assigned to the recv callback of the LTE socket. It is called when the eNB receives a data packet from the radio interface that is to be forwarded to the SGW.
+   * 
+   * \param socket pointer to the LTE socket
+   */
+  void RecvFromLteSocket (Ptr<Socket> socket);
+
+
+  /** 
+   * Method to be assigned to the recv callback of the S1-U socket. It is called when the eNB receives a data packet from the SGW that is to be forwarded to the UE.
+   * 
+   * \param socket pointer to the S1-U socket
+   */
+  void RecvFromS1uSocket (Ptr<Socket> socket);
+
+  /** 
+   * Send a packet to the UE via the LTE radio interface of the eNB
+   * 
+   * \param packet t
+   * \param rbid the Radio Bearer IDentifier
+   */
+  void SendToLteSocket (Ptr<Packet> packet, uint32_t rbid);
+
+
+  /** 
+   * Send a packet to the SGW via the S1-U interface
+   * 
+   * \param packet packet to be sent
+   * \param teid the Tunnel Enpoint IDentifier
+   */
+  void SendToS1uSocket (Ptr<Packet> packet, uint32_t teid);
+
+
+private:
+
 
   /**
    * Creates a GTPv1-U tunnel between the given destination and the enpoint
@@ -76,31 +115,54 @@ public:
    * Creates a GTPv1-U tunnel between the given destination and the enpoint. The
    * TEID is automatically sellected.
    * \param destination IP address of the other end of the tunnel
-   * \return teid Tunnel Endpoint IDentifier assigned to the tunnel
+   * \return the Tunnel Endpoint IDentifier (TEID) assigned to the tunnel
    */
   uint32_t CreateGtpuTunnel (Ipv4Address destination);
 
-private:
-  /**
-   * UDP socket to send and receive the packets to and from the tunnel
+
+  /** 
+   * this function implements the 1-to-1 mapping between S1 Bearers and Radio Bearers
+   * 
+   * \param teid the Tunnel Endpoint IDentifier (TEID) that identifies an S1-bearer on this eNB
+   * 
+   * \return the corresponding Radio Bearer Identifier
    */
-  Ptr<Socket> m_socket;
+  uint32_t GetRbid (uint32_t teid);
+
+
+  /** 
+   * this function implements the 1-to-1 mapping between Radio Bearers and S1 Bearers 
+   * 
+   * \param rbid the Radio Bearer Identifier
+   * 
+   * \return the corresponding the Tunnel Endpoint IDentifier (TEID) that identifies an S1-bearer on this eNB
+   */
+  uint32_t GetTeid (uint32_t rbid);
+
   /**
-   * UDP port where the socket is bind, fixed by the standard as 2152
+   * raw packet socket to send and receive the packets to and from the LTE radio interface
+   */
+  Ptr<Socket> m_lteSocket;
+
+  /**
+   * UDP socket to send and receive GTP-U the packets to and from the S1-U interface
+   */
+  Ptr<Socket> m_epcSocket;
+
+  /**
+   * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152
    */
   uint16_t m_udpPort;
-  /**
-   * VirtualNetDevice to create the tunnel
-   */
-  Ptr<VirtualNetDevice> m_tap;
+
   /**
    * Map holding the GTP instances of the active tunnels on this endpoint
    */
   std::map<uint32_t, Ptr<GtpuL5Protocol> > m_gtpuMap;
+
   /**
-   * Map holding the destination address of the active tunnels on this endpoint
+   * address of the SGW which terminates all tunnels
    */
-  std::map<uint32_t, Ipv4Address> m_dstAddrMap;
+  Ipv4Address m_sgwAddress;
 
   static uint16_t m_teidCounter;
   static uint32_t m_indexCounter;
