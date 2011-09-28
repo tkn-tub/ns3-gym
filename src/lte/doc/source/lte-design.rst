@@ -399,6 +399,8 @@ For the uplink:
 Helpers
 +++++++
 
+Note: the role of the MME is taken by the EpcHelper, since we don't have an MME at the moment (the current code supports data plane only).
+
 .. seqdiag:: helpers.seqdiag
 
 

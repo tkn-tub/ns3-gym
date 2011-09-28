@@ -4,18 +4,21 @@ diagram {
 
 LenaHelper => EpcHelper [label="AddEnb"] {
   EpcHelper  -> EpcHelper [label="create EpcEnbApplication"];
-  EpcHelper  => EpcSgwPgwApplication [label="SetupS1Link"];
-  EpcHelper  => EpcEnbApplication [label="SetupS1Link"];
+  EpcHelper  -> EpcHelper [label="Setup S1 link"];
 }
 
-LenaHelper => EpcHelper [label="SetupEpsBearer"] {
-  EpcHelper => EpcSgwPgwApplication [label="GTP/C CreateSessionRequest / BearerResourceCommand"] {
+LenaHelper => EpcHelper [label="ActivateEpsBearer"] {
+  EpcHelper => EpcSgwPgwApplication [label="CreateSessionRequestOrBearerResourceCommand", return="TEID"] {
     EpcSgwPgwApplication => EpcSgwPgwApplication [label="Setup S1 Bearer"];
-    EpcSgwPgwApplication => EpcEnbApplication [label="CreateBearer(TEID)"] {
-      EpcEnbApplication => EpcEnbApplication [label="SetupS1Bearer"];
-      EpcEnbApplication => LteEnbNetDevice [label="SetupRadioBearer", return="RBID"];
-    }
   }
+  EpcHelper => EpcEnbApplication [label="ErabSetupRequest(TEID)"] {
+    EpcEnbApplication => EpcEnbApplication [label="Setup S1 Bearer"];
+    EpcEnbApplication => LteEnbNetDevice [label="SetupRadioBearer", return="RBID"] {
+      LteEnbNetDevice -> LteEnbNetDevice [label="Setup Radio Bearer"]
+    }
+    EpcEnbApplication -> EpcEnbApplication [label="store TEID<->RBID mapping"]
+  }
+
   
 }
 
