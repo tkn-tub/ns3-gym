@@ -45,6 +45,10 @@
 
 #include <iostream>
 
+#include <ns3/buildings-propagation-loss-model.h>
+
+#include <ns3/lte-spectrum-value-helper.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("LenaHelper");
 
@@ -63,10 +67,31 @@ LenaHelper::DoStart (void)
   NS_LOG_FUNCTION (this);
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
-  Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
-  m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
-  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+  if ((m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::FriisSpectrumPropagationLossModel") == 0) || (m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::ConstantSpectrumPropagationLossModel") == 0) )
+    {
+      Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_dlPropagationModelFactory.Create<SpectrumPropagationLossModel> ();
+      Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_ulPropagationModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+    }
+  else if (m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::BuildingsPropagationLossModel") == 0)
+    {
+      //m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+      m_downlinkPropagationLossModel = m_dlPropagationModelFactory.Create<PropagationLossModel> ();
+    //   m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+    //   m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /2.1140e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+      //m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+      m_uplinkPropagationLossModel = m_ulPropagationModelFactory.Create<PropagationLossModel> ();
+      
+    //   m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+    //   m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /1.950e9)); // E_UTRA BAND #1 see table 5.5-1 of 36.101
+      m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
+      m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
+    }
+  else
+    {
+      NS_LOG_ERROR ("Unknown propagation model");
+    }
   m_macStats = CreateObject<MacStatsCalculator> ();
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
@@ -101,7 +126,7 @@ TypeId LenaHelper::GetTypeId (void)
                    MakeStringChecker ())
     .AddAttribute ("PropagationModel",
                    "The type of propagation model to be used",
-                   StringValue ("ns3::FriisSpectrumPropagationLossModel"),
+                   StringValue ("ns3::BuildingsPropagationLossModel"),
                    MakeStringAccessor (&LenaHelper::SetPropagationModelType),
                    MakeStringChecker ())
   ;
@@ -128,15 +153,18 @@ void
 LenaHelper::SetPropagationModelType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
-  m_propagationModelFactory = ObjectFactory ();
-  m_propagationModelFactory.SetTypeId (type);
+  m_dlPropagationModelFactory = ObjectFactory ();
+  m_dlPropagationModelFactory.SetTypeId (type);
+  m_ulPropagationModelFactory = ObjectFactory ();
+  m_ulPropagationModelFactory.SetTypeId (type);
 }
 
 void 
 LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
-  m_propagationModelFactory.Set (n, v);
+  m_dlPropagationModelFactory.Set (n, v);
+  m_ulPropagationModelFactory.Set (n, v);
 }
 
 
@@ -203,7 +231,6 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LenaHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
-
   m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
@@ -232,7 +259,20 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   n->AddDevice (dev);
   ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
-
+  // set the propagation model frequencies
+  if (m_dlPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::BuildingsPropagationLossModel") == 0)
+    {
+      double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
+      m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
+      m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /dlFreq));
+    }
+  if (m_ulPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::BuildingsPropagationLossModel") == 0)
+    {
+      double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
+      m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
+      m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /ulFreq));
+    }
+  
   dev->Start ();
   return dev;
 }

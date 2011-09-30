@@ -235,6 +235,8 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 
   SetVerbose (true);
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  
+  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -263,8 +265,6 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
-
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -411,6 +411,8 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
 
   SetVerbose (true);
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  
+  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -439,8 +441,6 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
-
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();

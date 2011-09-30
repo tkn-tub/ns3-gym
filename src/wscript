@@ -63,6 +63,7 @@ all_modules = [
     'point-to-point-layout',
     'csma-layout',
     'template',
+    'buildings',
     ]
 
 def set_options(opt):

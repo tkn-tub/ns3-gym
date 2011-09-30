@@ -56,6 +56,8 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
 
 
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,3000,1383000,1239000));
+  
   // DOWNLINK- DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
@@ -212,7 +214,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 
 //   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
 //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 
 
@@ -223,6 +225,8 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   SetVerbose (true);
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  
+  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -251,8 +255,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
-
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();

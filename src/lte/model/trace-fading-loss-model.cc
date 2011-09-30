@@ -16,35 +16,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
 
-#include "lte-propagation-loss-model.h"
+#include "trace-fading-loss-model.h"
 #include <ns3/mobility-model.h>
 #include <ns3/spectrum-value.h>
 #include <ns3/log.h>
 
-NS_LOG_COMPONENT_DEFINE ("LtePropagationLossModel");
+NS_LOG_COMPONENT_DEFINE ("TraceFadingLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LtePropagationLossModel);
+  NS_OBJECT_ENSURE_REGISTERED (TraceFadingLossModel);
 
-LtePropagationLossModel::LtePropagationLossModel ()
+TraceFadingLossModel::TraceFadingLossModel ()
 {
   SetNext (NULL);
 }
 
 
-LtePropagationLossModel::~LtePropagationLossModel ()
+TraceFadingLossModel::~TraceFadingLossModel ()
 {
 }
 
 
 TypeId
-LtePropagationLossModel::GetTypeId (void)
+TraceFadingLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::LtePropagationLossModel")
+  static TypeId tid = TypeId ("ns3::TraceFadingLossModel")
     .SetParent<SpectrumPropagationLossModel> ()
   ;
   return tid;
@@ -53,33 +54,14 @@ LtePropagationLossModel::GetTypeId (void)
 
 
 Ptr<SpectrumValue>
-LtePropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
-                                                       Ptr<const MobilityModel> a,
-                                                       Ptr<const MobilityModel> b) const
+TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
+  Ptr<const SpectrumValue> txPsd,
+  Ptr<const MobilityModel> a,
+  Ptr<const MobilityModel> b) const
 {
   NS_LOG_FUNCTION (this << *txPsd << a << b);
-  /*
-   * The loss propagation model for LTE networks is based on
-   * a on a combination of four different models:
-   * - the path loss
-   * - the penetration loss
-   * - the shadowind
-   * - the multipath
-   *
-   * The rxPsd will be obtained considering, for each sub channel, the following
-   * relations:
-   * rxPsd (i) = txPsd (i) + m(i,t) - sh(i,t) - pnl(i,t) - pl (a,b);
-   * where i is the i-th sub-channel and t is the current time (Simulator::Now()).
-   */
-
-
-  Ptr<ChannelRealization> c = GetChannelRealization (a,b);
-
-  double multipath; // its value is different for each sub channels
-  double pathLoss = c->GetPathLossModel ()->GetValue (a,b);
-  double shadowind = c->GetShadowingLossModel ()->GetValue ();
-  double penetration = c->GetPenetrationLossModel ()->GetValue ();
-
+  
+  Ptr<JakesFadingLossModel> c = GetFadingChannelRealization (a,b);
 
   Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
   Values::iterator vit = rxPsd->ValuesBegin ();
@@ -97,18 +79,14 @@ LtePropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> 
       NS_ASSERT (subChannel < 100);
       if (*vit != 0.)
         {
-          multipath = c->GetJakesFadingLossModel ()->GetValue (subChannel, speed);
-
-          // computei PROPRAGATION LOSS:
-          double loss = multipath - pathLoss - shadowind - penetration; // in dB
+          double fading = c->GetValue (subChannel, speed);
 
           double power = *vit; // in Watt/Hz
           power = 10 * log10 (180000 * power); // in dB
 
-          NS_LOG_FUNCTION (this << subChannel << *vit  << power << multipath
-                                << pathLoss << shadowind  << penetration);
+          NS_LOG_FUNCTION (this << subChannel << *vit  << power << fading);
 
-          *vit = pow (10., ((power + loss) / 10)) / 180000; // in Watt
+          *vit = pow (10., ((power + fading) / 10)) / 180000; // in Watt
 
           NS_LOG_FUNCTION (this << subChannel << *vit);
 
@@ -125,18 +103,18 @@ LtePropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> 
 
 
 void
-LtePropagationLossModel::CreateChannelRealization (Ptr<const MobilityModel> enbMobility, Ptr<const MobilityModel> ueMobility)
+TraceFadingLossModel::CreateFadingChannelRealization (Ptr<const MobilityModel> enbMobility, Ptr<const MobilityModel> ueMobility)
 {
   NS_LOG_FUNCTION (this << enbMobility << ueMobility);
 
-  Ptr<ChannelRealization> c = CreateObject<ChannelRealization> ();
+  Ptr<JakesFadingLossModel> c = CreateObject<JakesFadingLossModel> ();
   ChannelRealizationId_t mobilities = std::make_pair (enbMobility, ueMobility);
 
   NS_LOG_FUNCTION (this <<
                    "insert new channel realization, m_channelRealizationMap.size () = "
                         << m_channelRealizationMap.size ());
 
-  m_channelRealizationMap.insert ( std::pair<ChannelRealizationId_t,Ptr<ChannelRealization> > (mobilities, c) );
+  m_channelRealizationMap.insert ( std::pair<ChannelRealizationId_t,Ptr<JakesFadingLossModel> > (mobilities, c) );
 
   NS_LOG_FUNCTION (this <<
                    "m_channelRealizationMap.size () = "
@@ -145,13 +123,13 @@ LtePropagationLossModel::CreateChannelRealization (Ptr<const MobilityModel> enbM
 }
 
 
-Ptr<ChannelRealization>
-LtePropagationLossModel::GetChannelRealization (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const
+Ptr<JakesFadingLossModel>
+TraceFadingLossModel::GetFadingChannelRealization (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const
 {
 
   NS_LOG_FUNCTION (this << a << b);
 
-  std::map <ChannelRealizationId_t, Ptr<ChannelRealization> >::const_iterator it;
+  std::map <ChannelRealizationId_t, Ptr<JakesFadingLossModel> >::const_iterator it;
 
   ChannelRealizationId_t mobilities = std::make_pair (a,b);
   it = m_channelRealizationMap.find (mobilities);

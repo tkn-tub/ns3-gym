@@ -39,6 +39,7 @@ namespace ns3 {
 class LteUePhy;
 class LteEnbPhy;
 class SpectrumChannel;
+class PropagationLossModel;
 
 
 /**
@@ -54,6 +55,7 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
+  
   /**
    * \todo to be implemented
    *
@@ -196,9 +198,15 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
+  
+  Ptr<PropagationLossModel> m_downlinkPropagationLossModel;
+  Ptr<PropagationLossModel> m_uplinkPropagationLossModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
+  
+  ObjectFactory m_dlPropagationModelFactory;
+  ObjectFactory m_ulPropagationModelFactory;
 
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;

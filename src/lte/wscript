@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'buildings', 'stats'])
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -47,6 +47,7 @@ def build(bld):
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
         'model/epc-gtpu-v1.cc',
+        'model/trace-fading-loss-model.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -62,6 +63,7 @@ def build(bld):
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
         'test/epc-test-gtpu-v1.cc',
+        'test/lte-test-pathloss-model.cc'
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -111,6 +113,7 @@ def build(bld):
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
         'model/epc-gtpu-v1.h',
+        'model/trace-fading-loss-model.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-link-adaptation.h',
@@ -121,6 +124,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/epc-test-gtpu-v1.h',
+        'test/lte-test-pathloss-model.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
