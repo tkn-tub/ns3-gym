@@ -414,7 +414,11 @@ else
 $gcov_caps = get_gcov_capabilities();
 push(@gcov_options, "-b") if ($gcov_caps->{'branch-probabilities'});
 push(@gcov_options, "-c") if ($gcov_caps->{'branch-counts'});
-push(@gcov_options, "-a") if ($gcov_caps->{'all-blocks'});
+# Below branch option is disabled due to a reported compiler bug
+# present in gcc-4.5 version and earlier.  If enabled, gcov will hang on
+# such compilers.  This workaround just means that lcov won't be able
+# to separate multiple branch blocks in a line.
+# push(@gcov_options, "-a") if ($gcov_caps->{'all-blocks'});
 push(@gcov_options, "-p") if ($gcov_caps->{'preserve-paths'});
 
 # Check output filename
