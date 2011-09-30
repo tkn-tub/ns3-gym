@@ -313,7 +313,7 @@ def configure(conf):
         env.append_value('CCFLAGS', '-ftest-coverage')
         env.append_value('CXXFLAGS', '-fprofile-arcs')
         env.append_value('CXXFLAGS', '-ftest-coverage')
-        env.append_value('LINKFLAGS', '-fprofile-arcs')
+        env.append_value('LINKFLAGS', '-lgcov')
 
     if Options.options.build_profile == 'debug':
         env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')
@@ -1053,8 +1053,7 @@ def lcov_report(bld):
 
         info_file = os.path.join(lcov_report_dir, 'report.info')
         lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
-        lcov_command += " --source-dirs=" + os.getcwd()
-        lcov_command += ":" + os.path.join(os.getcwd(), 'include')
+        lcov_command += " -b " + os.getcwd()
         if subprocess.Popen(lcov_command, shell=True).wait():
             raise SystemExit(1)
 
