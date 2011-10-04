@@ -532,19 +532,28 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
   if (aBuilding->GetBuildingType () == Building::Residential)
   {
     N = 28;
-    Lf = 4 * n;
+    if (n>=1)
+      {
+        Lf = 4 * n;
+      }
 //     NS_LOG_INFO (this << " Residential ");
   }
   else if (aBuilding->GetBuildingType () == Building::Office)
   {
     N = 30;
-    Lf = 15 + (4 * (n-1));
+    if (n>=1)
+      {
+        Lf = 15 + (4 * (n-1));
+      }
 //     NS_LOG_INFO (this << " Office ");
   }
   else if (aBuilding->GetBuildingType () == Building::Commercial)
   {
     N = 22;
-    Lf = 6 + (3 * (n-1));
+    if (n>=1)
+      {
+        Lf = 6 + (3 * (n-1));
+      }
 //     NS_LOG_INFO (this << " Commercial ");
   }
   else
