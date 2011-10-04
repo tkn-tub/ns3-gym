@@ -24,6 +24,7 @@
 
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-model.h>
+#include <ns3/traced-callback.h>
 
 namespace ns3 {
 
@@ -114,6 +115,8 @@ private:
 
 
   double m_maxLossDb;
+
+  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_propagationLossTrace;
 };
 
 

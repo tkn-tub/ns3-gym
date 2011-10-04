@@ -80,6 +80,15 @@ SingleModelSpectrumChannel::GetTypeId (void)
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&SingleModelSpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
+    .AddTraceSource ("PropagationLoss",
+                     "If a PropagationLossModel is plugged on the channel, this trace is fired "
+                     "whenever a new path loss value is calculated. The first and second parameters "
+                     "to the trace are pointers respectively to the TX and RX SpectrumPhy instances, "
+                     "whereas the third parameters is the loss value in dB. Note that the loss value "
+                     "reported by this trace is the single-frequency loss value obtained by "
+                     "PropagationLossModel, and is not affected by whether an additional "
+                     "SpectrumPropagationLossModel is being used or not.",
+                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_propagationLossTrace))
   ;
   return tid;
 }
@@ -134,6 +143,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
               if (m_propagationLoss)
                 {
                   double gainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
+                  m_propagationLossTrace (txPhy, *rxPhyIterator, -gainDb);
                   if ( (-gainDb) > m_maxLossDb)
                     {
                       // beyond range
