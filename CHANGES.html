@@ -86,6 +86,13 @@ width standards has had a change in capitalization:
 <li> WIFI_PHY_STANDARD_80211_10Mhz was changed to WIFI_PHY_STANDARD_80211_10MHZ
 <li> WIFI_PHY_STANDARD_80211_5Mhz was changed to WIFI_PHY_STANDARD_80211_5MHZ
 </ul>
+<li> In the SpectrumPhy base class, the methods to get/set the
+  MobilityModel and the NetDevice were previously working with
+  opaque Ptr&#60;Object&#62;. Now all these methods have been
+  changed so that they work with Ptr&#60;NetDevice&#62;
+  and Ptr&#60;MobilityModel&#62; as appropriate. See <A href="https://www.nsnam.org/bugzilla/show_bug.cgi?id=1271">Bug 1271</A> on
+  bugzilla for the motivation.
+</li>
 </ul>
 
 <h2>Changed behavior:</h2>

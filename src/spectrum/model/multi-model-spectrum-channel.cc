@@ -222,7 +222,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> orig
   NS_ASSERT (originalTxPowerSpectrum);
 
 
-  Ptr<MobilityModel> txMobility = txPhy->GetMobility ()->GetObject<MobilityModel> ();
+  Ptr<MobilityModel> txMobility = txPhy->GetMobility ();
   SpectrumModelUid_t txSpectrumModelUid = originalTxPowerSpectrum->GetSpectrumModelUid ();
   NS_LOG_LOGIC (" txSpectrumModelUid " << txSpectrumModelUid);
 
@@ -268,7 +268,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> orig
               Ptr <SpectrumValue> rxPowerSpectrum = convertedTxPowerSpectrum->Copy ();
               Time delay = MicroSeconds (0); 
 
-              Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ()->GetObject<MobilityModel> ();
+              Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ();
 
               if (txMobility && receiverMobility)
                 {
@@ -296,11 +296,11 @@ MultiModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> orig
                 }
 
               Ptr<PacketBurst> pktBurstCopy = p->Copy ();
-              Ptr<Object> netDevObj = (*rxPhyIterator)->GetDevice ();
-              if (netDevObj)
+              Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
+              if (netDev)
                 {
                   // the receiver has a NetDevice, so we expect that it is attached to a Node
-                  uint32_t dstNode =  netDevObj->GetObject<NetDevice> ()->GetNode ()->GetId ();
+                  uint32_t dstNode =  netDev->GetNode ()->GetId ();
                   Simulator::ScheduleWithContext (dstNode, delay, &MultiModelSpectrumChannel::StartRx, this,
                                                   pktBurstCopy, rxPowerSpectrum, st, duration, *rxPhyIterator);
                 }
@@ -337,7 +337,7 @@ MultiModelSpectrumChannel::GetNDevices (void) const
 Ptr<NetDevice>
 MultiModelSpectrumChannel::GetDevice (uint32_t i) const
 {
-  return m_phyVector.at (i)->GetDevice ()->GetObject<NetDevice> ();
+  return m_phyVector.at (i)->GetDevice ();
 }
 
 

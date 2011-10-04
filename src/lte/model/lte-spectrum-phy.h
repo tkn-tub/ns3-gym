@@ -65,10 +65,10 @@ public:
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
-  void SetMobility (Ptr<Object> m);
-  void SetDevice (Ptr<Object> d);
-  Ptr<Object> GetMobility ();
-  Ptr<Object> GetDevice ();
+  void SetMobility (Ptr<MobilityModel> m);
+  void SetDevice (Ptr<NetDevice> d);
+  Ptr<MobilityModel> GetMobility ();
+  Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
 
   /**
@@ -182,9 +182,9 @@ private:
 
   EventId m_endRxEventId;
 
-  Ptr<Object> m_mobility;
+  Ptr<MobilityModel> m_mobility;
 
-  Ptr<Object> m_device;
+  Ptr<NetDevice> m_device;
 
   Ptr<SpectrumChannel> m_channel;
 

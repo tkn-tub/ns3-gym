@@ -104,7 +104,7 @@ LteSpectrumPhy::GetTypeId (void)
 
 
 
-Ptr<Object>
+Ptr<NetDevice>
 LteSpectrumPhy::GetDevice ()
 {
   NS_LOG_FUNCTION (this);
@@ -112,7 +112,7 @@ LteSpectrumPhy::GetDevice ()
 }
 
 
-Ptr<Object>
+Ptr<MobilityModel>
 LteSpectrumPhy::GetMobility ()
 {
   NS_LOG_FUNCTION (this);
@@ -121,7 +121,7 @@ LteSpectrumPhy::GetMobility ()
 
 
 void
-LteSpectrumPhy::SetDevice (Ptr<Object> d)
+LteSpectrumPhy::SetDevice (Ptr<NetDevice> d)
 {
   NS_LOG_FUNCTION (this << d);
   m_device = d;
@@ -129,7 +129,7 @@ LteSpectrumPhy::SetDevice (Ptr<Object> d)
 
 
 void
-LteSpectrumPhy::SetMobility (Ptr<Object> m)
+LteSpectrumPhy::SetMobility (Ptr<MobilityModel> m)
 {
   NS_LOG_FUNCTION (this << m);
   m_mobility = m;

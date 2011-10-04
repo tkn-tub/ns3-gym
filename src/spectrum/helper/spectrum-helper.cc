@@ -215,7 +215,7 @@ SpectrumPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
   NS_ASSERT (m_channel);
   Ptr<SpectrumPhy> phy = (m_phy.Create ())->GetObject<SpectrumPhy> ();
   phy->SetChannel (m_channel);
-  phy->SetMobility (node);
+  phy->SetMobility (node->GetObject<MobilityModel> ());
   phy->SetDevice (device);
   return phy;
 }

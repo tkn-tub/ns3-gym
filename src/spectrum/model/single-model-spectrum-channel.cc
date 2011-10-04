@@ -116,7 +116,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
 
 
 
-  Ptr<MobilityModel> senderMobility = txPhy->GetMobility ()->GetObject<MobilityModel> ();
+  Ptr<MobilityModel> senderMobility = txPhy->GetMobility ();
 
   for (PhyList::const_iterator rxPhyIterator = m_phyList.begin ();
        rxPhyIterator != m_phyList.end ();
@@ -127,7 +127,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
           Ptr <SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
           Time delay  = MicroSeconds (0);
 
-          Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ()->GetObject<MobilityModel> ();
+          Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ();
 
           if (senderMobility && receiverMobility)
             {
@@ -155,11 +155,11 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
             }
 
           Ptr<PacketBurst> pktBurstCopy = p->Copy ();
-          Ptr<Object> netDevObj = (*rxPhyIterator)->GetDevice ();
-          if (netDevObj)
+          Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
+          if (netDev)
             {
               // the receiver has a NetDevice, so we expect that it is attached to a Node
-              uint32_t dstNode =  netDevObj->GetObject<NetDevice> ()->GetNode ()->GetId ();
+              uint32_t dstNode =  netDev->GetNode ()->GetId ();
               Simulator::ScheduleWithContext (dstNode, delay, &SingleModelSpectrumChannel::StartRx, this,
                                               pktBurstCopy, rxPsd, st, duration, *rxPhyIterator);
             }

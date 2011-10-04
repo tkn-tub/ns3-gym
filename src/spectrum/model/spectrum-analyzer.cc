@@ -89,14 +89,14 @@ SpectrumAnalyzer::GetTypeId (void)
 
 
 
-Ptr<Object>
+Ptr<NetDevice>
 SpectrumAnalyzer::GetDevice ()
 {
   return m_netDevice;
 }
 
 
-Ptr<Object>
+Ptr<MobilityModel>
 SpectrumAnalyzer::GetMobility ()
 {
   return m_mobility;
@@ -110,7 +110,7 @@ SpectrumAnalyzer::GetRxSpectrumModel () const
 }
 
 void
-SpectrumAnalyzer::SetDevice (Ptr<Object> d)
+SpectrumAnalyzer::SetDevice (Ptr<NetDevice> d)
 {
   NS_LOG_FUNCTION (this << d);
   m_netDevice = d;
@@ -118,7 +118,7 @@ SpectrumAnalyzer::SetDevice (Ptr<Object> d)
 
 
 void
-SpectrumAnalyzer::SetMobility (Ptr<Object> m)
+SpectrumAnalyzer::SetMobility (Ptr<MobilityModel> m)
 {
   NS_LOG_FUNCTION (this << m);
   m_mobility = m;
