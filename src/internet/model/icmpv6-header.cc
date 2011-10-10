@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2009 Strasbourg University
  *
@@ -1008,7 +1008,7 @@ void Icmpv6DestinationUnreachable::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6DestinationUnreachable::Deserialize (Buffer::Iterator start)
 {
   uint16_t length = start.GetSize () - 8;
-  uint8_t data[length];
+  uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
   SetType (i.ReadU8 ());
@@ -1018,6 +1018,7 @@ uint32_t Icmpv6DestinationUnreachable::Deserialize (Buffer::Iterator start)
   i.Read (data, length);
   m_packet = Create<Packet> (data, length);
 
+  delete[] data;
   return GetSerializedSize ();
 }
 
@@ -1106,7 +1107,7 @@ void Icmpv6TooBig::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6TooBig::Deserialize (Buffer::Iterator start) 
 {
   uint16_t length = start.GetSize () - 8;
-  uint8_t data[length];
+  uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
   SetType (i.ReadU8 ());
@@ -1116,6 +1117,7 @@ uint32_t Icmpv6TooBig::Deserialize (Buffer::Iterator start)
   i.Read (data, length);
   m_packet = Create<Packet> (data, length);
 
+  delete[] data;
   return GetSerializedSize ();
 }
 
@@ -1193,7 +1195,7 @@ void Icmpv6TimeExceeded::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6TimeExceeded::Deserialize (Buffer::Iterator start)
 {
   uint16_t length = start.GetSize () - 8;
-  uint8_t data[length];
+  uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
   SetType (i.ReadU8 ());
@@ -1203,6 +1205,7 @@ uint32_t Icmpv6TimeExceeded::Deserialize (Buffer::Iterator start)
   i.Read (data, length);
   m_packet = Create<Packet> (data, length);
 
+  delete[] data;
   return GetSerializedSize ();
 }
 
@@ -1291,7 +1294,7 @@ void Icmpv6ParameterError::Serialize (Buffer::Iterator start) const
 uint32_t Icmpv6ParameterError::Deserialize (Buffer::Iterator start) 
 {
   uint16_t length = start.GetSize () - 8;
-  uint8_t data[length];
+  uint8_t* data = new uint8_t[length];
   Buffer::Iterator i = start;
 
   SetType (i.ReadU8 ());
@@ -1300,6 +1303,7 @@ uint32_t Icmpv6ParameterError::Deserialize (Buffer::Iterator start)
   SetPtr (i.ReadNtohU32 ());
   i.Read (data, length);
   m_packet = Create<Packet> (data, length);
+  delete[] data;
 
   return GetSerializedSize ();
 }
@@ -1777,9 +1781,10 @@ uint32_t Icmpv6OptionRedirected::Deserialize (Buffer::Iterator start)
   i.ReadU32 ();
 
   uint32_t len2 = (GetLength () - 1) * 8;
-  uint8_t buff[len2];
+  uint8_t* buff = new uint8_t[len2];
   i.Read (buff, len2);
   m_packet = Create<Packet> (buff, len2);
+  delete[] buff;
 
   return GetSerializedSize ();
 }

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008 University of Washington
  *
@@ -92,7 +92,7 @@ private:
   uint16_t m_protocol;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* PPP_HEADER_H */

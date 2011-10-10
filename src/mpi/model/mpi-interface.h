@@ -28,8 +28,14 @@
 #include "ns3/nstime.h"
 #include "ns3/buffer.h"
 
+#if defined(NS3_OPENMPI)
 struct ompi_request_t;
 typedef struct ompi_request_t* MPI_Request;
+#elif defined(NS3_MPICH)
+typedef int MPI_Request;
+#else
+typedef void* MPI_Request;
+#endif
 
 namespace ns3 {
 

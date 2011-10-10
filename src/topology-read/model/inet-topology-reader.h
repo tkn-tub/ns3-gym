@@ -19,8 +19,8 @@
  * Author: Valerio Sartini (valesar@gmail.com)
  */
 
-#ifndef __INET_TOPOLOGY_READER_H__
-#define __INET_TOPOLOGY_READER_H__
+#ifndef INET_TOPOLOGY_READER_H
+#define INET_TOPOLOGY_READER_H
 
 #include "ns3/nstime.h"
 
@@ -76,4 +76,4 @@ private:
 };
 
 
-#endif // __INET_TOPOLOGY_READER_H__
+#endif /* INET_TOPOLOGY_READER_H */

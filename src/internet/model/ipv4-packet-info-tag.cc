@@ -136,5 +136,5 @@ Ipv4PacketInfoTag::Print (std::ostream &os) const
   os << ", TTL:" << (uint32_t) m_ttl;
   os << "] ";
 }
-} //namespace ns3
+} // namespace ns3
 

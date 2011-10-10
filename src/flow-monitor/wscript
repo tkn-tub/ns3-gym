@@ -17,7 +17,7 @@ def build(bld):
         'test/histogram-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'flow-monitor'
     headers.source = ["model/%s" % s for s in [
        'flow-monitor.h',

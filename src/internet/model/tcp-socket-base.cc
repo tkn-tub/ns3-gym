@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Adrian Sai-wah Tam
  *
@@ -219,6 +219,11 @@ TcpSocketBase::Bind (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_endPoint = m_tcp->Allocate ();
+  if (0 == m_endPoint)
+    {
+      m_errno = ERROR_ADDRNOTAVAIL;
+      return -1;
+    }
   return SetupCallback ();
 }
 
@@ -238,18 +243,38 @@ TcpSocketBase::Bind (const Address &address)
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate ();
+      if (0 == m_endPoint)
+        {
+	  m_errno = ERROR_ADDRNOTAVAIL;
+          return -1;
+	}
     }
   else if (ipv4 == Ipv4Address::GetAny () && port != 0)
     {
       m_endPoint = m_tcp->Allocate (port);
+      if (0 == m_endPoint)
+        {
+          m_errno = ERROR_ADDRINUSE;
+          return -1;
+        }
     }
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate (ipv4);
+      if (0 == m_endPoint)
+        {
+	  m_errno = ERROR_ADDRNOTAVAIL;
+	  return -1;
+        }
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {
       m_endPoint = m_tcp->Allocate (ipv4, port);
+      if (0 == m_endPoint)
+        {
+          m_errno = ERROR_ADDRINUSE;
+          return -1;
+        }
     }
   NS_LOG_LOGIC ("TcpSocketBase " << this << " got an endpoint: " << m_endPoint);
 

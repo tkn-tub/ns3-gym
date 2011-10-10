@@ -18,8 +18,8 @@
 // Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt> <gjcarneiro@gmail.com>
 //
 
-#ifndef __FLOW_CLASSIFIER_H__
-#define __FLOW_CLASSIFIER_H__
+#ifndef FLOW_CLASSIFIER_H
+#define FLOW_CLASSIFIER_H
 
 #include "ns3/simple-ref-count.h"
 #include <ostream>
@@ -62,5 +62,4 @@ protected:
 
 } // namespace ns3
 
-#endif
-
+#endif /* FLOW_CLASSIFIER_H */

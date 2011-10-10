@@ -101,7 +101,7 @@ private:
   SystemConditionPrivate * m_priv;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* SYSTEM_CONDITION_H */
 

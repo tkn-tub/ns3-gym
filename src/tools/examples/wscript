@@ -1,0 +1,10 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    if not bld.env['ENABLE_EXAMPLES']:
+        return;
+
+    obj = bld.create_ns3_program('gnuplot-example', ['tools'])
+    obj.source = 'gnuplot-example.cc'
+
+

@@ -28,6 +28,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    tracing
    realtime
    helpers
+   gnuplot
    python
    tests
    support

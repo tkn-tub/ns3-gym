@@ -37,6 +37,7 @@ class RngReq;
 class BurstProfileManager : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   BurstProfileManager (Ptr<WimaxNetDevice> device);
   ~BurstProfileManager (void);
   void DoDispose (void);

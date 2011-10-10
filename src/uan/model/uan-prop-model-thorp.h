@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANPROPMODELTHORP_H_
-#define UANPROPMODELTHORP_H_
+#ifndef UAN_PROP_MODEL_THORP_H
+#define UAN_PROP_MODEL_THORP_H
 
 #include "uan-prop-model.h"
 
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif /* UANPROPMODELTHORP_H_ */
+#endif /* UAN_PROP_MODEL_THORP_H */

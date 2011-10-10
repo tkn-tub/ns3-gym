@@ -11,7 +11,11 @@ IMAGES_EPS = \
 # rescale pdf figures as necessary
 $(FIGURES)/software-organization.pdf_width = 5in
 
-IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
+IMAGES_PNG = \
+	$(FIGURES)/plot-2d.png \
+	$(FIGURES)/plot-2d-with-error-bars.png \
+	$(FIGURES)/plot-3d.png \
+	${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)

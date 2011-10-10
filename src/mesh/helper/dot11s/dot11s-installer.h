@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -72,7 +72,7 @@ private:
   Mac48Address m_root;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif
 

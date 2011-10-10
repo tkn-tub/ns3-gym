@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -207,7 +207,7 @@ private:
   enum WifiPhyStandard m_standard;
   ///\}
 };
-} //namespace ns3
+} // namespace ns3
 
 #endif /* MESH_HELPER_H */
 

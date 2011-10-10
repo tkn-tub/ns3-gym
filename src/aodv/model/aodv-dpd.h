@@ -20,8 +20,8 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef DUPLICATEPACKETDETECTION_H_
-#define DUPLICATEPACKETDETECTION_H_
+#ifndef AODV_DPD_H
+#define AODV_DPD_H
 
 #include "aodv-id-cache.h"
 #include "ns3/nstime.h"
@@ -59,4 +59,4 @@ private:
 }
 }
 
-#endif
+#endif /* AODV_DPD_H */

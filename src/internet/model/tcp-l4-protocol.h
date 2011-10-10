@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
  *
@@ -130,6 +130,6 @@ private:
   Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* TCP_L4_PROTOCOL_H */

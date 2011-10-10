@@ -21,8 +21,8 @@
 // Georgia Tech Network Simulator - Data Descriptors
 // George F. Riley.  Georgia Tech, Spring 2002
 
-#ifndef __datapdu_h__
-#define __datapdu_h__
+#ifndef PENDING_DATA_H
+#define PENDING_DATA_H
 
 #include "ns3/packet.h"
 #include "pending-data.h"
@@ -114,5 +114,5 @@ public:
 };
 
 } //namepsace ns3
-#endif
 
+#endif /* PENDING_DATA_H */

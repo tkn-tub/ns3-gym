@@ -19,14 +19,15 @@
  *                              <amine.ismail@udcast.com>
  */
 
-#ifndef __UDP_TRACE_CLIENT__
-#define __UDP_TRACE_CLIENT__
+#ifndef UDP_TRACE_CLIENT_H
+#define UDP_TRACE_CLIENT_H
 
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include <vector>
+
 namespace ns3 {
 
 class Socket;
@@ -132,4 +133,4 @@ private:
 
 } // namespace ns3
 
-#endif // __UDP_TRACE_CLIENT__
+#endif /* UDP_TRACE_CLIENT_H */

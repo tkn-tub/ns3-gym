@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANCWEXAMPLE_H
-#define UANCWEXAMPLE_H
+#ifndef UAN_CW_EXAMPLE_H
+#define UAN_CW_EXAMPLE_H
 
 #include "ns3/network-module.h"
 #include "ns3/tools-module.h"
@@ -64,4 +64,4 @@ public:
   Experiment ();
 };
 
-#endif //UANCWEXAMPLE_H
+#endif /* UAN_CW_EXAMPLE_H */

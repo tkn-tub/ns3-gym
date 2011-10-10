@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -87,4 +87,4 @@ MsduStandardAggregator::CalculatePadding (Ptr<const Packet> packet)
   return (4 - (packet->GetSize () % 4 )) % 4;
 }
 
-}  //namespace ns3
+}  // namespace ns3

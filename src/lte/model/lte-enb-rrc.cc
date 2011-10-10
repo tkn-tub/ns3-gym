@@ -145,11 +145,6 @@ TypeId UeInfo::GetTypeId (void)
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&UeInfo::m_rbMap),
                    MakeObjectMapChecker<EnbRadioBearerInfo> ())
-/*    .AddAttribute("Imsi",
-                   "International Mobile Subscriber Identity assigned to this UE",
-                   UintegerValue (1),
-                   MakeUintegerAccessor (&UeInfo::m_imsi),
-                   MakeUintegerChecker<uint64_t> ())*/
   ;
   return tid;
 }
@@ -185,7 +180,15 @@ UeInfo::GetRadioBearer (uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcid);
   NS_ASSERT (0 != lcid);
-  return m_rbMap.find (lcid)->second;
+  std::map <uint8_t, Ptr<EnbRadioBearerInfo> >::iterator it = m_rbMap.find (lcid);
+  if (it != m_rbMap.end ())
+    {
+      return m_rbMap.find (lcid)->second;
+    }
+  else
+    {
+      return 0;
+    }
 }
 
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -180,6 +180,6 @@ private:
   uint32_t m_rcvBufSize;   // maximum receive socket buffer size
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NSC_TCP_SOCKET_IMPL_H */

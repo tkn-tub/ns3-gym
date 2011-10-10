@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    env = bld.env_of_name('default')
+    env = bld.env
     if env['ENABLE_TAP']:
         obj = bld.create_ns3_program('tap-csma', ['csma', 'tap-bridge', 'internet', 'wifi'])
         obj.source = 'tap-csma.cc'

@@ -367,4 +367,4 @@ ReceiveListErrorModel::DoReset (void)
 }
 
 
-} //namespace ns3
+} // namespace ns3

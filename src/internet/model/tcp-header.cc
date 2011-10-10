@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
  *
@@ -254,4 +254,4 @@ uint32_t TcpHeader::Deserialize (Buffer::Iterator start)
 }
 
 
-}; // namespace ns3
+} // namespace ns3

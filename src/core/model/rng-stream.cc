@@ -562,4 +562,4 @@ int32_t RngStream::RandInt (int32_t low, int32_t high)
   return low + static_cast<int32_t> ((high - low + 1) * RandU01 ());
 };
 
-} //namespace ns3
+} // namespace ns3

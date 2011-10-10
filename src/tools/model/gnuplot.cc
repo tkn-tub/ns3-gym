@@ -317,17 +317,16 @@ Gnuplot2dDataset::Add (double x, double y, double errorDelta)
 }
 
 void 
-Gnuplot2dDataset::Add (double x, double y, double minY, double maxY)
+Gnuplot2dDataset::Add (double x, double y, double xErrorDelta, double yErrorDelta)
 {
-  NS_ASSERT ( reinterpret_cast<Data2d*>(m_data)->m_errorBars == X ||
-              reinterpret_cast<Data2d*>(m_data)->m_errorBars == Y );
+  NS_ASSERT ( reinterpret_cast<Data2d*>(m_data)->m_errorBars == XY );
 
   struct Point data;
   data.empty = false;
   data.x = x;
   data.y = y;
-  data.dx = minY;
-  data.dy = maxY;
+  data.dx = xErrorDelta;
+  data.dy = yErrorDelta;
   reinterpret_cast<Data2d*>(m_data)->m_pointset.push_back (data);
 }
 

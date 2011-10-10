@@ -21,9 +21,9 @@
 #define TIMER_IMPL_H
 
 #include "simulator.h"
-#include "ns3/type-traits.h"
-#include "ns3/fatal-error.h"
-#include "ns3/int-to-type.h"
+#include "type-traits.h"
+#include "fatal-error.h"
+#include "int-to-type.h"
 
 namespace ns3 {
 

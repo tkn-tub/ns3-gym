@@ -1,5 +1,10 @@
 import gtk
-import ns3
+
+import ns.core
+import ns.network
+import ns.internet
+import ns.olsr
+
 from visualizer.base import InformationWindow
 
 class ShowOlsrRoutingTable(InformationWindow):
@@ -60,9 +65,9 @@ class ShowOlsrRoutingTable(InformationWindow):
         self.visualizer.remove_information_window(self)
     
     def update(self):
-        node = ns3.NodeList.GetNode(self.node_index)
-        olsr = node.GetObject(ns3.olsr.RoutingProtocol.GetTypeId())
-        ipv4 = node.GetObject(ns3.Ipv4.GetTypeId())
+        node = ns.network.NodeList.GetNode(self.node_index)
+        olsr = node.GetObject(ns.olsr.olsr.RoutingProtocol.GetTypeId())
+        ipv4 = node.GetObject(ns.internet.Ipv4.GetTypeId())
         if olsr is None:
             return
         self.table_model.clear()
@@ -72,7 +77,7 @@ class ShowOlsrRoutingTable(InformationWindow):
             if netdevice is None:
                 interface_name = 'lo'
             else:
-                interface_name = ns3.Names.FindName(netdevice)
+                interface_name = ns.core.Names.FindName(netdevice)
                 if not interface_name:
                     interface_name = "(interface %i)" % route.interface
             self.table_model.set(tree_iter,
@@ -83,8 +88,8 @@ class ShowOlsrRoutingTable(InformationWindow):
 
 
 def populate_node_menu(viz, node, menu):
-    ns3_node = ns3.NodeList.GetNode(node.node_index)
-    olsr = ns3_node.GetObject(ns3.olsr.RoutingProtocol.GetTypeId())
+    ns3_node = ns.network.NodeList.GetNode(node.node_index)
+    olsr = ns3_node.GetObject(ns.olsr.olsr.RoutingProtocol.GetTypeId())
     if olsr is None:
         print "No OLSR"
         return

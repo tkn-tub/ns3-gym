@@ -224,7 +224,7 @@ BuildingsPathlossTestCase::DoRun (void)
 //   LogComponentEnable ("LteEnbNetDevice", logLevel);
 
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  NS_LOG_INFO ("Testing " << GetName());
+  NS_LOG_INFO ("Testing ");
 
   Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();

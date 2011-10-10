@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -154,5 +154,5 @@ std::istream &operator >> (std::istream &is, IeMeshId &a)
 ATTRIBUTE_HELPER_CPP (IeMeshId);
 
 
-} //namespace dot11s
+} // namespace dot11s
 } // namespace ns3

@@ -41,6 +41,7 @@ class SSScheduler : public Object
 {
 
 public:
+  static TypeId GetTypeId (void);
   SSScheduler (Ptr<SubscriberStationNetDevice> ss);
   ~SSScheduler (void);
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 IITP RAS
  *
@@ -174,5 +174,5 @@ operator== (const MeshHeader & a, const MeshHeader & b)
           && (a.m_meshSeqno == b.m_meshSeqno) && (a.m_addr4 == b.m_addr4) && (a.m_addr5 == b.m_addr5)
           && (a.m_addr6 == b.m_addr6));
 }
-} //namespace dot11s
+} // namespace dot11s
 } // namespace ns3

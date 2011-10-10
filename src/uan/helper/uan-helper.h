@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Author: Leonard Tracy <lentracy@u.washington.edu>
- *
- *
  */
 
-#ifndef UANHELPER_H_
-#define UANHELPER_H_
+#ifndef UAN_HELPER_H
+#define UAN_HELPER_H
 
 #include <string>
 #include "ns3/attribute.h"
@@ -226,4 +224,4 @@ private:
 
 } // end namespace ns3
 
-#endif /* UANHELPER_H_ */
+#endif /* UAN_HELPER_H */

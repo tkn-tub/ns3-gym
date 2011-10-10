@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef __UDP_CLIENT_H__
-#define __UDP_CLIENT_H__
+#ifndef UDP_CLIENT_H
+#define UDP_CLIENT_H
 
 #include "ns3/application.h"
 #include "ns3/event-id.h"
@@ -82,4 +82,4 @@ private:
 
 } // namespace ns3
 
-#endif // __UDP_CLIENT_H__
+#endif /* UDP_CLIENT_H */

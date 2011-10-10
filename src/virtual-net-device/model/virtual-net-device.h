@@ -170,7 +170,7 @@ private:
   bool m_isPointToPoint;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif
 

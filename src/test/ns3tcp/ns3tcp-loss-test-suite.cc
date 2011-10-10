@@ -121,7 +121,7 @@ Ns3TcpLossTestCase::DoSetup (void)
   //
   std::ostringstream oss;
   oss << "/response-vectors/ns3tcp-loss-" << m_tcpModel << m_testCase << "-response-vectors.pcap";
-  m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
+    m_pcapFilename = CreateDataDirFilename(oss.str ());
 
   if (m_writeVectors)
     {
@@ -185,6 +185,8 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
       m_pcapFile.Read (expected, sizeof(expected), tsSec, tsUsec, inclLen, origLen, readLen);
 
+      NS_LOG_DEBUG ("read " << readLen);
+
       uint8_t *actual = new uint8_t[readLen];
       p->CopyData (actual, readLen);
 
@@ -195,7 +197,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       //
       // Avoid streams of errors -- only report the first.
       //
-      if (GetErrorStatus () == false)
+      if (IsStatusSuccess ())
         {
           NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
         }
@@ -442,6 +444,7 @@ public:
 Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   : TestSuite ("ns3-tcp-loss", SYSTEM)
 {
+  SetDataDir (NS_TEST_SOURCEDIR);
   Packet::EnablePrinting ();  // Enable packet metadata for all test cases
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 0));
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 1));

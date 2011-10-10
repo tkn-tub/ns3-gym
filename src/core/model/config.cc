@@ -21,8 +21,7 @@
 #include "singleton.h"
 #include "object.h"
 #include "global-value.h"
-#include "object-vector.h"
-#include "object-map.h"
+#include "object-ptr-container.h"
 #include "names.h"
 #include "pointer.h"
 #include "log.h"
@@ -227,8 +226,7 @@ public:
 private:
   void Canonicalize (void);
   void DoResolve (std::string path, Ptr<Object> root);
-  void DoArrayResolve (std::string path, const ObjectVectorValue &vector);
-  void DoMapResolve (std::string path, const ObjectMapValue &vector);
+  void DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector);
   void DoResolveOne (Ptr<Object> object);
   std::string GetResolvedPath (void) const;
   virtual void DoOne (Ptr<Object> object, std::string path) = 0;
@@ -379,7 +377,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
     {
       // this is a normal attribute.
       TypeId tid = root->GetInstanceTypeId ();
-      struct TypeId::AttributeInfo info;
+      struct TypeId::AttributeInformation info;
       if (!tid.LookupAttributeByName (item, &info))
         {
           NS_LOG_DEBUG ("Requested item="<<item<<" does not exist on path="<<GetResolvedPath ());
@@ -405,25 +403,14 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
           m_workStack.pop_back ();
         }
       // attempt to cast to an object vector.
-      const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (info.checker));
+      const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
       if (vectorChecker != 0)
         {
           NS_LOG_DEBUG ("GetAttribute(vector)="<<item<<" on path="<<GetResolvedPath ());
-          ObjectVectorValue vector;
+          ObjectPtrContainerValue vector;
           root->GetAttribute (item, vector);
           m_workStack.push_back (item);
           DoArrayResolve (pathLeft, vector);
-          m_workStack.pop_back ();
-        }
-      // attempt to cast to an object map.
-      const ObjectMapChecker *mapChecker = dynamic_cast<const ObjectMapChecker *> (PeekPointer (info.checker));
-      if (mapChecker != 0)
-        {
-          NS_LOG_DEBUG ("GetAttribute(map)="<<item<<" on path="<<GetResolvedPath ());
-          ObjectMapValue map;
-          root->GetAttribute (item, map);
-          m_workStack.push_back (item);
-          DoMapResolve (pathLeft, map);
           m_workStack.pop_back ();
         }
       // this could be anything else and we don't know what to do with it.
@@ -432,7 +419,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 }
 
 void 
-Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
+Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector)
 {
   NS_ASSERT (path != "");
   NS_ASSERT ((path.find ("/")) == 0);
@@ -453,35 +440,6 @@ Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
           oss << i;
           m_workStack.push_back (oss.str ());
           DoResolve (pathLeft, vector.Get (i));
-          m_workStack.pop_back ();
-        }
-    }
-}
-
-void
-Resolver::DoMapResolve (std::string path, const ObjectMapValue &map)
-{
-  NS_ASSERT (path != "");
-  std::string::size_type tmp;
-  tmp = path.find ("/");
-  NS_ASSERT (tmp == 0);
-  std::string::size_type next = path.find ("/", 1);
-  if (next == std::string::npos)
-    {
-      NS_FATAL_ERROR ("map path includes no index data on path=\""<<path<<"\"");
-    }
-  std::string item = path.substr (1, next-1);
-  std::string pathLeft = path.substr (next, path.size ()-next);
-
-  ArrayMatcher matcher = ArrayMatcher (item);
-  for (ObjectMapValue::Iterator it = map.Begin () ; it != map.End(); it++ )
-    {
-      if (matcher.Matches ((*it).first))
-        {
-          std::ostringstream oss;
-          oss << (*it).first;
-          m_workStack.push_back (oss.str ());
-          DoResolve (pathLeft, (*it).second);
           m_workStack.pop_back ();
         }
     }
@@ -625,17 +583,66 @@ ConfigImpl::GetRootNamespaceObject (uint32_t i) const
 
 namespace Config {
 
+void Reset (void)
+{
+  // First, let's reset the initial value of every attribute
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
+        {
+          struct TypeId::AttributeInformation info = tid.GetAttribute (j);
+          tid.SetAttributeInitialValue (j, info.originalInitialValue);
+        }
+    }
+  // now, let's reset the initial value of every global value.
+  for (GlobalValue::Iterator i = GlobalValue::Begin (); i != GlobalValue::End (); ++i)
+    {
+      (*i)->ResetInitialValue ();
+    }
+}
+
 void Set (std::string path, const AttributeValue &value)
 {
   Singleton<ConfigImpl>::Get ()->Set (path, value);
 }
 void SetDefault (std::string name, const AttributeValue &value)
 {
-  AttributeList::GetGlobal ()->Set (name, value);
+  if (!SetDefaultFailSafe(name, value))
+    {
+      NS_FATAL_ERROR ("Could not set default value for " << name);
+    }
 }
-bool SetDefaultFailSafe (std::string name, const AttributeValue &value)
+bool SetDefaultFailSafe (std::string fullName, const AttributeValue &value)
 {
-  return AttributeList::GetGlobal ()->SetFailSafe (name, value);
+  std::string::size_type pos = fullName.rfind ("::");
+  if (pos == std::string::npos)
+    {
+      return false;
+    }
+  std::string tidName = fullName.substr (0, pos);
+  std::string paramName = fullName.substr (pos+2, fullName.size () - (pos+2));
+  TypeId tid;
+  bool ok = TypeId::LookupByNameFailSafe (tidName, &tid);
+  if (!ok)
+    {
+      return false;
+    }
+  for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
+    {
+      struct TypeId::AttributeInformation tmp = tid.GetAttribute(j);
+      if (tmp.name == paramName)
+        {
+          Ptr<AttributeValue> v = tmp.checker->CreateValidValue (value);
+          if (v == 0)
+            {
+              return false;
+            }
+          tid.SetAttributeInitialValue (j, v);
+          return true;
+        }
+    }
+  return false;
 }
 void SetGlobal (std::string name, const AttributeValue &value)
 {

@@ -429,11 +429,13 @@ LenaHelper::EnableRlcTraces (void)
 uint64_t
 FindImsiFromEnbRlcPath (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
 
   // We retrieve the UeInfo associated to the C-RNTI and perform the IMSI lookup
   std::string ueMapPath = path.substr (0, path.find ("/RadioBearerMap"));
+  NS_LOG_LOGIC ("ueMapPath = " << ueMapPath);
   Config::MatchContainer match = Config::LookupMatches (ueMapPath);
 
   if (match.GetN () != 0)
@@ -450,6 +452,7 @@ FindImsiFromEnbRlcPath (std::string path)
 uint16_t
 FindCellIdFromEnbRlcPath (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
 
@@ -471,6 +474,7 @@ FindCellIdFromEnbRlcPath (std::string path)
 uint64_t
 FindImsiFromUeRlcPath (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RlcMap/#LCID/RxPDU
 
@@ -493,46 +497,53 @@ FindImsiFromUeRlcPath (std::string path)
 uint64_t
 FindImsiFromEnbMac (std::string path, uint16_t rnti)
 {
+  NS_LOG_FUNCTION (path << rnti);
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
+  NS_LOG_LOGIC ("p = " << p);
   oss << rnti;
-  p += "\\/LteEnbRrc/UeMap/" + oss.str ();
+  p += "/LteEnbRrc/UeMap/" + oss.str ();
+  NS_LOG_LOGIC ("p = " << p);
   return FindImsiFromEnbRlcPath (p);
 }
 
 uint16_t
 FindCellIdFromEnbMac (std::string path, uint16_t rnti)
 {
+  NS_LOG_FUNCTION (path << rnti);
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
   oss << rnti;
-  p += "\\/LteEnbRrc/UeMap/" + oss.str ();
+  p += "/LteEnbRrc/UeMap/" + oss.str ();
   return FindCellIdFromEnbRlcPath (p);
 }
 
 
 void
-DlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
   uint16_t cellId = FindCellIdFromEnbRlcPath (path);
-  m_rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
+  rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
 void
-DlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
   uint64_t imsi = FindImsiFromUeRlcPath (path);
-  m_rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
+  rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
 void
 LenaHelper::EnableDlRlcTraces (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback (&DlTxPduCallback, m_rlcStats));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
@@ -540,20 +551,22 @@ LenaHelper::EnableDlRlcTraces (void)
 }
 
 void
-UlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
   uint64_t imsi = FindImsiFromUeRlcPath (path);
-  m_rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
+  rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
-UlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
   uint64_t imsi = FindImsiFromEnbRlcPath (path);
   uint16_t cellId = FindCellIdFromEnbRlcPath (path);
-  m_rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
+  rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
 void
@@ -561,6 +574,7 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
                       uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                       uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
+  NS_LOG_FUNCTION (mac << path);
   uint64_t imsi = FindImsiFromEnbMac (path, rnti);
   uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
   mac->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
@@ -595,6 +609,7 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
                       uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                       uint8_t mcs, uint16_t size)
 {
+  NS_LOG_FUNCTION (mac << path);
   uint64_t imsi = FindImsiFromEnbMac (path, rnti);
   uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
   mac->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);

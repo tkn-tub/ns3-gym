@@ -19,9 +19,9 @@
  *                      <amine.ismail@udcast.com>
  *
  */
-#ifndef _PACKET_LOSS_COUNTER_H_
-#define _PACKET_LOSS_COUNTER_H_
 
+#ifndef PACKET_LOSS_COUNTER_H
+#define PACKET_LOSS_COUNTER_H
 
 #include "ns3/application.h"
 #include "ns3/event-id.h"
@@ -53,4 +53,4 @@ private:
 };
 }
 
-#endif /* PACKETLOSSCOUNTER_H_ */
+#endif /* PACKET_LOSS_COUNTER_H */

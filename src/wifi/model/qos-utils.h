@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -106,6 +106,6 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t end
  */
 bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* QOS_UTILS_H */

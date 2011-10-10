@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -26,6 +26,10 @@
 #include <ns3/assert.h>
 #include <math.h>
 #include <ns3/spectrum-value.h>
+
+#ifdef __FreeBSD__
+#define log2(x) (log(x)/M_LN2)
+#endif
 
 NS_LOG_COMPONENT_DEFINE ("LteAmc");
 

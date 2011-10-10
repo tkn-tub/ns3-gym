@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  *
@@ -95,7 +95,7 @@ private:
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 
 #endif /* ARP_L3_PROTOCOL_H */

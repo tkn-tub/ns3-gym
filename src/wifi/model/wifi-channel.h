@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006,2007 INRIA
  *
@@ -21,7 +21,6 @@
 #define WIFI_CHANNEL_H
 
 #include "ns3/channel.h"
-#include "ns3/attribute-list.h"
 
 namespace ns3 {
 

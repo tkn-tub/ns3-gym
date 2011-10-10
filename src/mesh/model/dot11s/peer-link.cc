@@ -702,5 +702,5 @@ PeerLink::Report (std::ostream & os) const
   "/>" << std::endl;
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 

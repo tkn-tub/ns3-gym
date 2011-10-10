@@ -23,6 +23,7 @@
 #include "type-id.h"
 #include "callback.h"
 #include <string>
+#include <list>
 
 /**
  * This macro should be invoked once for every class which
@@ -39,7 +40,7 @@
 
 namespace ns3 {
 
-class AttributeList;
+class AttributeConstructionList;
 
 /**
  * \ingroup object
@@ -150,7 +151,7 @@ protected:
    * you should make sure that you invoke this method from
    * your most-derived constructor.
    */
-  void ConstructSelf (const AttributeList &attributes);
+  void ConstructSelf (const AttributeConstructionList &attributes);
 
 private:
   bool DoSet (Ptr<const AttributeAccessor> spec,

@@ -297,19 +297,19 @@ The next line of the script is the following,
 We will use this statement as a convenient place to talk about our Doxygen
 documentation system.  If you look at the project web site, 
 `ns-3 project
-<http://www.nsnam.org>`_, you will find a link to "Doxygen 
-(ns-3-dev)" in the navigation bar.  If you select this link, you will be
-taken to our documentation page for the current development release.  There 
-is also a link to "Doxygen (stable)" that will take you to the documentation
+<http://www.nsnam.org>`_, you will find a link to "Documentation" in the navigation bar.  If you select this link, you will be
+taken to our documentation page. There 
+is a link to "Latest Release" that will take you to the documentation
 for the latest stable release of |ns3|.
+If you select the "API Documentation" link, you will be
+taken to the |ns3| API documentation page.
 
 Along the left side, you will find a graphical representation of the structure
 of the documentation.  A good place to start is the ``NS-3 Modules``
 "book" in the |ns3| navigation tree.  If you expand ``Modules`` 
 you will see a list of |ns3| module documentation.  The concept of 
-module here ties directly into the module include files discussed above.  It 
-turns out that the |ns3| logging subsystem is part of the ``core`` 
-module, so go ahead and expand that documentation node.  Now, expand the 
+module here ties directly into the module include files discussed above.  The |ns3| logging subsystem is discussed in the ``C++ Constructs Used by All Modules`` 
+section, so go ahead and expand that documentation node.  Now, expand the 
 ``Debugging`` book and then select the ``Logging`` page.
 
 You should now be looking at the Doxygen documentation for the Logging module.

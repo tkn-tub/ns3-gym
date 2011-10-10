@@ -19,10 +19,10 @@
  
 #include "attribute-default-iterator.h"
 #include "ns3/attribute.h"
-#include "ns3/object-vector.h"
 #include "ns3/pointer.h"
 #include "ns3/global-value.h"
 #include "ns3/string.h"
+#include "ns3/object-ptr-container.h"
 
 namespace ns3
 {
@@ -43,43 +43,40 @@ AttributeDefaultIterator::Iterate (void)
       bool calledStart = false;
       for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
         {
-          uint32_t flags = tid.GetAttributeFlags (j);
-          if (!(flags & TypeId::ATTR_CONSTRUCT))
+          struct TypeId::AttributeInformation info = tid.GetAttribute (j);
+          if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
               // we can't construct the attribute, so, there is no
               // initial value for the attribute
               continue;
             }
-          Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (j);
           //No accessor, go to next attribute
-          if (accessor == 0)
+          if (info.accessor == 0)
             {
               continue;
             }
-          if (!accessor->HasSetter ())
+          if (!info.accessor->HasSetter ())
             {
               //skip this attribute it doesn't have an setter
               continue;
             }
-          Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (j);
-          if (checker == 0)
+          if (info.checker == 0)
             {
               //skip, it doesn't have a checker
               continue;
             }
-          Ptr<const AttributeValue> value = tid.GetAttributeInitialValue (j);
-          if (value == 0)
+          if (info.initialValue == 0)
             {
               //No value, check next attribute
               continue;
             }
-          Ptr<const ObjectVectorValue> vector = DynamicCast<const ObjectVectorValue> (value);
+          Ptr<const ObjectPtrContainerValue> vector = DynamicCast<const ObjectPtrContainerValue> (info.initialValue);
           if (vector != 0)
             {
               //a vector value, won't take it
               continue;
             }
-          Ptr<const PointerValue> pointer = DynamicCast<const PointerValue> (value);
+          Ptr<const PointerValue> pointer = DynamicCast<const PointerValue> (info.initialValue);
           if (pointer != 0)
             {
               //pointer value, won't take it
@@ -90,7 +87,7 @@ AttributeDefaultIterator::Iterate (void)
             {
               StartVisitTypeId (tid.GetName ());
             }
-          VisitAttribute (tid, tid.GetAttributeName (j), value->SerializeToString (checker), j);
+          VisitAttribute (tid, info.name, info.initialValue->SerializeToString (info.checker), j);
           calledStart = true;
         }
       if (calledStart)

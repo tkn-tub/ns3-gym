@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>,
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef LENA_TEST_PF_FF_MAC_SCHEDULER_H
@@ -44,6 +45,7 @@ public:
   virtual ~LenaPfFfMacSchedulerTestCase1 ();
 
 private:
+  static std::string BuildNameString (uint16_t nUser, uint16_t dist);
   virtual void DoRun (void);
   uint16_t m_nUser;
   uint16_t m_nLc;
@@ -56,10 +58,11 @@ private:
 class LenaPfFfMacSchedulerTestCase2 : public TestCase
 {
 public:
-  LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl);
+  LenaPfFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl);
   virtual ~LenaPfFfMacSchedulerTestCase2 ();
 
 private:
+  static std::string BuildNameString (uint16_t nUser, std::vector<uint16_t> dist);
   virtual void DoRun (void);
   uint16_t m_nUser;
   std::vector<uint16_t> m_dist;

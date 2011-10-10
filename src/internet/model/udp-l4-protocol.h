@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006,2007 INRIA
  *
@@ -130,6 +130,6 @@ private:
   Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* UDP_L4_PROTOCOL_H */

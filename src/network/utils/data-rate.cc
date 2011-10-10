@@ -271,4 +271,4 @@ double operator* (const Time& lhs, const DataRate& rhs)
   return lhs.GetSeconds ()*rhs.GetBitRate ();
 }
 
-} //namespace ns3
+} // namespace ns3

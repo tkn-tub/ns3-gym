@@ -28,7 +28,14 @@
 NS_LOG_COMPONENT_DEFINE ("SSManager");
 
 namespace ns3 {
-NS_OBJECT_ENSURE_REGISTERED ( SSManager);
+NS_OBJECT_ENSURE_REGISTERED (SSManager);
+
+TypeId SSManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SSManager")
+    .SetParent<Object> ();
+  return tid;
+}
 
 SSManager::SSManager (void)
 {

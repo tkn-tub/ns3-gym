@@ -21,7 +21,7 @@
 #define EVENT_ID_H
 
 #include <stdint.h>
-#include "ns3/ptr.h"
+#include "ptr.h"
 #include "event-impl.h"
 
 namespace ns3 {
@@ -85,6 +85,6 @@ private:
 bool operator == (const EventId &a, const EventId &b);
 bool operator != (const EventId &a, const EventId &b);
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* EVENT_ID_H */

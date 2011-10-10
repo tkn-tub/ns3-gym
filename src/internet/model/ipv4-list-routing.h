@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -100,6 +100,6 @@ private:
 
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_LIST_ROUTING_H */

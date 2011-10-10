@@ -40,6 +40,10 @@
 #include <ns3/applications-module.h>
 #include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
 
+#ifdef __FreeBSD__
+#define log2(x) (log (x)/M_LN2)
+#endif
+
 NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
 
 using namespace ns3;
@@ -58,18 +62,82 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 }
 
 
+
+/**
+ * Store the last pathloss value for each TX-RX pair. This is an
+ * example of how the PathlossTrace (provided by some SpectrumChannel
+ * implementations) work. 
+ * 
+ */
+class GlobalPathlossDatabase
+{
+public:
+
+  /** 
+   * update the pathloss value
+   * 
+   * \param context 
+   * \param txPhy the transmitting PHY
+   * \param rxPhy the receiving PHY
+   * \param lossDb the loss in dB
+   */
+  void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
+
+  /** 
+   * print the stored pathloss values to standard output
+   * 
+   */
+  void Print ();
+
+private:
+  std::map<uint32_t, std::map<uint32_t, double> > m_pathlossMap;
+};
+
+void
+GlobalPathlossDatabase::UpdatePathloss (std::string context, 
+                                        Ptr<SpectrumPhy> txPhy, 
+                                        Ptr<SpectrumPhy> rxPhy, 
+                                        double lossDb)
+{
+  uint32_t txNodeId = txPhy->GetMobility ()->GetObject<Node> ()->GetId ();
+  uint32_t rxNodeId = rxPhy->GetMobility ()->GetObject<Node> ()->GetId ();
+  m_pathlossMap[txNodeId][rxNodeId] = lossDb;
+}
+
+void 
+GlobalPathlossDatabase::Print ()
+{
+  for (std::map<uint32_t, std::map<uint32_t, double> >::const_iterator txit = m_pathlossMap.begin ();
+       txit != m_pathlossMap.end ();
+       ++txit)
+    {
+      for (std::map<uint32_t, double>::const_iterator rxit = txit->second.begin ();
+           rxit != txit->second.end ();
+           ++rxit)
+        {
+          std::cout << txit->first << " --> " << rxit->first << " : " << rxit->second << " dB" << std::endl;
+        }
+    }
+}
+
+
+
 int main (int argc, char** argv)
 {
   CommandLine cmd;
-  double lossDb;
+  double lossDb = 150;
   double txPowerW = 0.1; 
   uint64_t phyRate = 500000;
   uint32_t pktSize = 1000;
+  double simDuration = 0.5;
+  std::string channelType ("ns3::SingleModelSpectrumChannel");
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
   cmd.AddValue ("lossDb", "link loss in dB", lossDb);
   cmd.AddValue ("txPowerW", "txPower in Watts", txPowerW);
   cmd.AddValue ("phyRate", "PHY rate in bps", phyRate);
   cmd.AddValue ("pktSize", "packet size in bytes", pktSize);
+  cmd.AddValue ("simDuration", "duration of the simulation in seconds", simDuration);
+  cmd.AddValue ("channelType", "which SpectrumChannel implementation to be used", channelType);
   cmd.Parse (argc, argv);
 
   NodeContainer c;
@@ -87,7 +155,7 @@ int main (int argc, char** argv)
 
 
   SpectrumChannelHelper channelHelper;
-  channelHelper.SetChannel ("ns3::MultiModelSpectrumChannel");
+  channelHelper.SetChannel (channelType);
   channelHelper.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();
   propLoss->SetLoss (c.Get (0)->GetObject<MobilityModel> (), c.Get (1)->GetObject<MobilityModel> (), lossDb, true);
@@ -130,20 +198,32 @@ int main (int argc, char** argv)
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
   apps.Start (Seconds (0.0));
-  apps.Stop (Seconds (10.0));
+  apps.Stop (Seconds (simDuration));
 
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxEndOk", MakeCallback (&PhyRxEndOkTrace));
 
-  g_rxBytes = 0;
-  Simulator::Stop (Seconds (10.0001));
-  Simulator::Run ();
-  double throughputBps = (g_rxBytes * 8.0) / 10.0;
+  GlobalPathlossDatabase globalPathlossDatabase;
+  Config::Connect ("/ChannelList/*/PropagationLoss",
+                   MakeCallback (&GlobalPathlossDatabase::UpdatePathloss, &globalPathlossDatabase));
 
-  std::cerr << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
-  std::cerr << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
-  double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
-  double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
-  std::cerr << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+  g_rxBytes = 0;
+  Simulator::Stop (Seconds (simDuration + 0.000001));
+  Simulator::Run ();
+
+  if (g_verbose)
+    {
+      globalPathlossDatabase.Print ();
+
+      double throughputBps = (g_rxBytes * 8.0) / simDuration;
+      std::cout << "throughput:       " << throughputBps << std::endl;
+      std::cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
+      std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
+      double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
+      double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
+      std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+
+    }
+
 
 
   Simulator::Destroy ();

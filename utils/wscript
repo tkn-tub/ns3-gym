@@ -10,15 +10,23 @@ def build(bld):
 
     # Set the libraries the testrunner depends on equal to the list of
     # enabled modules plus the list of enabled module test libraries.
-    test_runner.uselib_local = [mod+"--lib" for mod in (env['NS3_ENABLED_MODULES'] + env['NS3_ENABLED_MODULE_TEST_LIBRARIES'])]
+    test_runner.use = [mod for mod in (env['NS3_ENABLED_MODULES'] + env['NS3_ENABLED_MODULE_TEST_LIBRARIES'])]
     
     obj = bld.create_ns3_program('bench-simulator', ['core'])
     obj.source = 'bench-simulator.cc'
 
-    obj = bld.create_ns3_program('bench-packets', ['network'])
-    obj.source = 'bench-packets.cc'
+    # Because the list of enabled modules must be set before
+    # test-runner can be built, this diretory is parsed by the top
+    # level wscript file after all of the other program module
+    # dependencies have been handled.
+    #
+    # So, make sure that the network module is enabled before building
+    # these programs.
+    if 'ns3-network' in env['NS3_ENABLED_MODULES']:
+        obj = bld.create_ns3_program('bench-packets', ['network'])
+        obj.source = 'bench-packets.cc'
 
-    obj = bld.create_ns3_program('print-introspected-doxygen')
-    obj.source = 'print-introspected-doxygen.cc'
-    obj.uselib_local = [mod+"--lib" for mod in env['NS3_ENABLED_MODULES']]
+        obj = bld.create_ns3_program('print-introspected-doxygen', ['network'])
+        obj.source = 'print-introspected-doxygen.cc'
+        obj.use = [mod for mod in env['NS3_ENABLED_MODULES']]
 

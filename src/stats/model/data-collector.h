@@ -18,8 +18,8 @@
  * Author: Joe Kopena (tjkopena@cs.drexel.edu)
  */
 
-#ifndef __DATA_COLLECTOR_H__
-#define __DATA_COLLECTOR_H__
+#ifndef DATA_COLLECTOR_H
+#define DATA_COLLECTOR_H
 
 #include <list>
 #include <string>
@@ -89,4 +89,4 @@ private:
 // end namespace ns3
 };
 
-#endif // __DATA_COLLECTOR_H__
+#endif /* DATA_COLLECTOR_H */

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANADDRESS_H
-#define UANADDRESS_H
+#ifndef UAN_ADDRESS_H
+#define UAN_ADDRESS_H
 
 #include "ns3/address.h"
 #include <iostream>
@@ -126,4 +126,4 @@ std::istream& operator>> (std::istream& is, UanAddress & address);
 
 } // namespace ns3
 
-#endif // UANADDRESS_H
+#endif /* UAN_ADDRESS_H */

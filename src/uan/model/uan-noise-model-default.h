@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANNOISEMODELDEFAULT_H
-#define UANNOISEMODELDEFAULT_H
+#ifndef UAN_NOISE_MODEL_DEFAULT_H
+#define UAN_NOISE_MODEL_DEFAULT_H
 
 #include "ns3/uan-noise-model.h"
 #include "ns3/attribute.h"
@@ -63,4 +63,4 @@ private:
 
 }
 
-#endif // UANNOISEMODELDEFAULT_H
+#endif /* UAN_NOISE_MODEL_DEFAULT_H */

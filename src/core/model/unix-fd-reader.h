@@ -1,5 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
-
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 The Boeing Company
  *
@@ -24,9 +23,9 @@
 
 #include <stdint.h>
 
-#include "ns3/callback.h"
-#include "ns3/system-thread.h"
-#include "ns3/event-id.h"
+#include "callback.h"
+#include "system-thread.h"
+#include "event-id.h"
 
 namespace ns3 {
 
@@ -110,4 +109,4 @@ private:
 
 } // namespace ns3
 
-#endif  // UNIX_FD_READER_H
+#endif /* UNIX_FD_READER_H */

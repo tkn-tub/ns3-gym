@@ -18,9 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "int64x64-cairo.h"
-#include "ns3/test.h"
-#include "ns3/abort.h"
-#include "ns3/assert.h"
+#include "test.h"
+#include "abort.h"
+#include "assert.h"
 #include <math.h>
 #include <iostream>
 

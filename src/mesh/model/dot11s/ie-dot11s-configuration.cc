@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -224,5 +224,5 @@ operator << (std::ostream &os, const IeConfiguration &a)
   return os;
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 

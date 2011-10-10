@@ -19,7 +19,7 @@
  */
 
 #include "scheduler.h"
-#include "ns3/assert.h"
+#include "assert.h"
 
 namespace ns3 {
 

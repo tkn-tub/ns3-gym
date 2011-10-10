@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2009 Strasbourg University
  *
@@ -319,6 +319,22 @@ public:
      */
     Ptr<Packet> GetPacket () const;
 
+    /**
+     * \brief Get the packet parts so far received.
+     * \return the partial packet
+     */
+    Ptr<Packet> GetPartialPacket () const;
+
+    /**
+     * \brief Set the Timeout EventId.
+     */
+    void SetTimeoutEventId (EventId event);
+
+    /**
+     * \brief Cancel the timeout event
+     */
+    void CancelTimeout ();
+
 private:
     /**
      * \brief If other fragments will be sent.
@@ -339,7 +355,36 @@ private:
      * \brief Number of references.
      */
     mutable uint32_t m_refCount;
+
+    /**
+     * \brief Timeout handler event
+     */
+    EventId m_timeoutEventId;
   };
+
+  /**
+   * \brief Process the timeout for packet fragments
+   * \param key representing the packet fragments
+   * \param ipHeader the IP header of the original packet
+   * \param iif Input Interface
+   */
+  void HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> key, Ptr<Fragments> fragments, Ipv6Header & ipHeader);
+
+  /**
+   * \brief Get the packet parts so far received.
+   * \return the partial packet
+   */
+  Ptr<Packet> GetPartialPacket () const;
+
+  /**
+   * \brief Set the Timeout EventId.
+   */
+  void SetTimeoutEventId (EventId event);
+
+  /**
+   * \brief Cancel the timeout event
+   */
+  void CancelTimeout ();
 
   typedef std::map<std::pair<Ipv6Address, uint32_t>, Ptr<Fragments> > MapFragments_t;
 

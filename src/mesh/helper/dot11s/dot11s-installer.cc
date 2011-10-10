@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -122,4 +122,4 @@ Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
   NS_ASSERT (pmp != 0);
   pmp->ResetStats ();
 }
-} //namespace ns3
+} // namespace ns3

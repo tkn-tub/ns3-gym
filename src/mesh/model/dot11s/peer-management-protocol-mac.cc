@@ -317,5 +317,5 @@ PeerManagementProtocolMac::GetLinkMetric (Mac48Address peerAddress)
   return m_parent->GetLinkMetric (peerAddress);
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 

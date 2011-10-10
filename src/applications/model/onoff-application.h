@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 //
@@ -22,8 +22,8 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
-#ifndef __onoff_application_h__
-#define __onoff_application_h__
+#ifndef ONOFF_APPLICATION_H
+#define ONOFF_APPLICATION_H
 
 #include "ns3/address.h"
 #include "ns3/application.h"
@@ -158,5 +158,4 @@ private:
 
 } // namespace ns3
 
-#endif
-
+#endif /* ONOFF_APPLICATION_H */

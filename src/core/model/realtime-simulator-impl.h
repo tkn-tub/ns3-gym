@@ -25,10 +25,10 @@
 #include "synchronizer.h"
 #include "event-impl.h"
 
-#include "ns3/ptr.h"
-#include "ns3/assert.h"
-#include "ns3/log.h"
-#include "ns3/system-mutex.h"
+#include "ptr.h"
+#include "assert.h"
+#include "log.h"
+#include "system-mutex.h"
 
 #include <list>
 

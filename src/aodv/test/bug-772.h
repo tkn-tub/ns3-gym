@@ -18,8 +18,8 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef BUG702TEST_H_
-#define BUG702TEST_H_
+#ifndef BUG_772_H
+#define BUG_772_H
 
 #include "ns3/test.h"
 #include "ns3/nstime.h"
@@ -76,4 +76,5 @@ private:
 
 }
 }
-#endif /* BUG702TEST_H_ */
+
+#endif /* BUG_772_H */

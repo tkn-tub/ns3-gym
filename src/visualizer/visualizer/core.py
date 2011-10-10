@@ -20,7 +20,12 @@ else:
     SHELL_FONT = "Luxi Mono 10"
 
 
-import ns3
+import ns.core
+import ns.network
+import ns.visualizer
+import ns.internet
+import ns.mobility
+
 import math
 import os
 import sys
@@ -154,15 +159,15 @@ class Node(PyVizObject):
     def tooltip_query(self, tooltip):
         self.visualizer.simulation.lock.acquire()
         try:
-            ns3_node = ns3.NodeList.GetNode(self.node_index)
-            ipv4 = ns3_node.GetObject(ns3.Ipv4.GetTypeId())
-            ipv6 = ns3_node.GetObject(ns3.Ipv6.GetTypeId())
+            ns3_node = ns.network.NodeList.GetNode(self.node_index)
+            ipv4 = ns3_node.GetObject(ns.internet.Ipv4.GetTypeId())
+            ipv6 = ns3_node.GetObject(ns.internet.Ipv6.GetTypeId())
             lines = ['<b><u>Node %i</u></b>' % self.node_index]
             lines.append('')
 
             self.emit("query-extra-tooltip-info", lines)
 
-            mob = ns3_node.GetObject(ns3.MobilityModel.GetTypeId())
+            mob = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
             if mob is not None:
                 lines.append('  <b>Mobility Model</b>: %s' % mob.GetInstanceTypeId().GetName())
 
@@ -170,7 +175,7 @@ class Node(PyVizObject):
                 lines.append('')
                 lines.append('  <u>NetDevice %i:</u>' % devI)
                 dev = ns3_node.GetDevice(devI)
-                name = ns3.Names.FindName(dev)
+                name = ns.core.Names.FindName(dev)
                 if name:
                     lines.append('    <b>Name:</b> %s' % name)
                 devname = dev.GetInstanceTypeId().GetName()
@@ -296,8 +301,8 @@ class Node(PyVizObject):
     @property
     def has_mobility(self):
         if self._has_mobility is None:
-            node = ns3.NodeList.GetNode(self.node_index)
-            mobility = node.GetObject(ns3.MobilityModel.GetTypeId())
+            node = ns.network.NodeList.GetNode(self.node_index)
+            mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
             self._has_mobility = (mobility is not None)
         return self._has_mobility
 
@@ -352,7 +357,7 @@ class SimulationThread(threading.Thread):
         self.go.clear()
         self.target_time = 0 # in seconds
         self.quit = False
-        self.sim_helper = ns3.PyViz()
+        self.sim_helper = ns.visualizer.PyViz()
         self.pause_messages = []
 
     def set_nodes_of_interest(self, nodes):
@@ -374,13 +379,13 @@ class SimulationThread(threading.Thread):
             self.lock.acquire()
             try:
                 if 0:
-                    if ns3.Simulator.IsFinished():
+                    if ns3.core.Simulator.IsFinished():
                         self.viz.play_button.set_sensitive(False)
                         break
                 #print "sim: Current time is %f; Run until: %f" % (ns3.Simulator.Now ().GetSeconds (), self.target_time)
                 #if ns3.Simulator.Now ().GetSeconds () > self.target_time:
                 #    print "skipping, model is ahead of view!"
-                self.sim_helper.SimulatorRunUntil(ns3.Seconds(self.target_time))
+                self.sim_helper.SimulatorRunUntil(ns.core.Seconds(self.target_time))
                 #print "sim: Run until ended at current time: ", ns3.Simulator.Now ().GetSeconds ()
                 self.pause_messages.extend(self.sim_helper.GetPauseMessages())
                 gobject.idle_add(self.viz.update_model, priority=PRIORITY_UPDATE_MODEL)
@@ -462,7 +467,7 @@ class Visualizer(gobject.GObject):
         assert isinstance(mode, ShowTransmissionsMode)
         self._show_transmissions_mode = mode
         if self._show_transmissions_mode == ShowTransmissionsMode.ALL:
-            self.simulation.set_nodes_of_interest(range(ns3.NodeList.GetNNodes()))
+            self.simulation.set_nodes_of_interest(range(ns.network.NodeList.GetNNodes()))
         elif self._show_transmissions_mode == ShowTransmissionsMode.NONE:
             self.simulation.set_nodes_of_interest([])
         elif self._show_transmissions_mode == ShowTransmissionsMode.SELECTED:
@@ -738,19 +743,19 @@ class Visualizer(gobject.GObject):
         self.window.show()
 
     def scan_topology(self):
-        print "scanning topology: %i nodes..." % (ns3.NodeList.GetNNodes(),)
+        print "scanning topology: %i nodes..." % (ns.network.NodeList.GetNNodes(),)
         graph = pygraphviz.AGraph()
         seen_nodes = 0
-        for nodeI in range(ns3.NodeList.GetNNodes()):
+        for nodeI in range(ns.network.NodeList.GetNNodes()):
             seen_nodes += 1
             if seen_nodes == 100:
-                print "scan topology... %i nodes visited (%.1f%%)" % (nodeI, 100*nodeI/ns3.NodeList.GetNNodes())
+                print "scan topology... %i nodes visited (%.1f%%)" % (nodeI, 100*nodeI/ns.network.NodeList.GetNNodes())
                 seen_nodes = 0
-            node = ns3.NodeList.GetNode(nodeI)
+            node = ns.network.NodeList.GetNode(nodeI)
             node_name = "Node %i" % nodeI
             node_view = self.get_node(nodeI)
 
-            mobility = node.GetObject(ns3.MobilityModel.GetTypeId())
+            mobility = node.GetObject(ns.mobility.MobilityModel.GetTypeId())
             if mobility is not None:
                 node_view.set_color("red")
                 pos = mobility.GetPosition()
@@ -840,7 +845,7 @@ class Visualizer(gobject.GObject):
     def update_view(self):
         #print "update_view"
 
-        self.time_label.set_text("Time: %f s" % ns3.Simulator.Now().GetSeconds())
+        self.time_label.set_text("Time: %f s" % ns.core.Simulator.Now().GetSeconds())
         
         self._update_node_positions()
 
@@ -856,8 +861,8 @@ class Visualizer(gobject.GObject):
     def _update_node_positions(self):
         for node in self.nodes.itervalues():
             if node.has_mobility:
-                ns3_node = ns3.NodeList.GetNode(node.node_index)
-                mobility = ns3_node.GetObject(ns3.MobilityModel.GetTypeId())
+                ns3_node = ns.network.NodeList.GetNode(node.node_index)
+                mobility = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
                 if mobility is not None:
                     pos = mobility.GetPosition()
                     x, y = transform_point_simulation_to_canvas(pos.x, pos.y)
@@ -870,14 +875,14 @@ class Visualizer(gobject.GObject):
                         vadj.value = py - vadj.page_size/2
 
     def center_on_node(self, node):
-        if isinstance(node, ns3.Node):
+        if isinstance(node, ns.network.Node):
             node = self.nodes[node.GetId()]
         elif isinstance(node, (int, long)):
             node = self.nodes[node]
         elif isinstance(node, Node):
             pass
         else:
-            raise TypeError("expected int, viz.Node or ns3.Node, not %r" % node)
+            raise TypeError("expected int, viz.Node or ns.network.Node, not %r" % node)
         
         x, y = node.get_position()
         hadj = self._scrolled_window.get_hadjustment()
@@ -913,7 +918,7 @@ class Visualizer(gobject.GObject):
         bounds_x1, bounds_y1 = self.canvas.convert_from_pixels(hadj.value, vadj.value)
         bounds_x2, bounds_y2 = self.canvas.convert_from_pixels(hadj.value + hadj.page_size,
                                                                vadj.value + vadj.page_size)
-        pos1_x, pos1_y, pos2_x, pos2_y = ns3.PyViz.LineClipping(bounds_x1, bounds_y1,
+        pos1_x, pos1_y, pos2_x, pos2_y = ns.visualizer.PyViz.LineClipping(bounds_x1, bounds_y1,
                                                                 bounds_x2, bounds_y2,
                                                                 pos1_x, pos1_y,
                                                                 pos2_x, pos2_y)
@@ -1059,7 +1064,7 @@ class Visualizer(gobject.GObject):
         self.simulation.pause_messages = []
         try:
             self.update_view()
-            self.simulation.target_time = ns3.Simulator.Now ().GetSeconds () + self.sample_period
+            self.simulation.target_time = ns.core.Simulator.Now ().GetSeconds () + self.sample_period
             #print "view: target time set to %f" % self.simulation.target_time
         finally:
             self.simulation.lock.release()
@@ -1209,8 +1214,8 @@ class Visualizer(gobject.GObject):
     def begin_node_drag(self, node):
         self.simulation.lock.acquire()
         try:
-            ns3_node = ns3.NodeList.GetNode(node.node_index)
-            mob = ns3_node.GetObject(ns3.MobilityModel.GetTypeId())
+            ns3_node = ns.network.NodeList.GetNode(node.node_index)
+            mob = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
             if mob is None:
                 return
             if self.node_drag_state is not None:
@@ -1226,8 +1231,8 @@ class Visualizer(gobject.GObject):
     def node_drag_motion(self, item, targe_item, event, node):
         self.simulation.lock.acquire()
         try:
-            ns3_node = ns3.NodeList.GetNode(node.node_index)
-            mob = ns3_node.GetObject(ns3.MobilityModel.GetTypeId())
+            ns3_node = ns.network.NodeList.GetNode(node.node_index)
+            mob = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
             if mob is None:
                 return False
             if self.node_drag_state is None:
@@ -1271,14 +1276,14 @@ class Visualizer(gobject.GObject):
             else:
                 self.simulation.lock.acquire()
                 try:
-                    ns3_node = ns3.NodeList.GetNode(self.selected_node.node_index)
+                    ns3_node = ns.network.NodeList.GetNode(self.selected_node.node_index)
                 finally:
                     self.simulation.lock.release()
             __IPYTHON__.user_ns['selected_node'] = ns3_node
 
 
     def select_node(self, node):
-        if isinstance(node, ns3.Node):
+        if isinstance(node, ns.network.Node):
             node = self.nodes[node.GetId()]
         elif isinstance(node, (int, long)):
             node = self.nodes[node]
@@ -1287,7 +1292,7 @@ class Visualizer(gobject.GObject):
         elif node is None:
             pass
         else:
-            raise TypeError("expected None, int, viz.Node or ns3.Node, not %r" % node)
+            raise TypeError("expected None, int, viz.Node or ns.network.Node, not %r" % node)
 
         if node is self.selected_node:
             return
@@ -1414,7 +1419,7 @@ class Visualizer(gobject.GObject):
         surface.finish()
 
     def set_follow_node(self, node):
-        if isinstance(node, ns3.Node):
+        if isinstance(node, ns.network.Node):
             node = self.nodes[node.GetId()]
         self.follow_node = node
 
@@ -1473,11 +1478,11 @@ def start():
     if _import_error is not None:
         import sys
         print >> sys.stderr, "No visualization support (%s)." % (str(_import_error),)
-        ns3.Simulator.Run()
+        ns.core.Simulator.Run()
         return
     load_plugins()
     viz = Visualizer()
     for hook, args in initialization_hooks:
         gobject.idle_add(hook, viz, *args)
-    ns3.Packet.EnablePrinting()
+    ns.network.Packet.EnablePrinting()
     viz.start()

@@ -19,8 +19,8 @@
  * Author: Valerio Sartini (valesar@gmail.com)
  */
 
-#ifndef __ORBIS_TOPOLOGY_READER_H__
-#define __ORBIS_TOPOLOGY_READER_H__
+#ifndef ORBIS_TOPOLOGY_READER_H
+#define ORBIS_TOPOLOGY_READER_H
 
 #include "ns3/nstime.h"
 
@@ -71,6 +71,5 @@ private:
 };
 
 
-#endif // __ORBIS_TOPOLOGY_READER_H__
-
+#endif /* ORBIS_TOPOLOGY_READER_H */
 

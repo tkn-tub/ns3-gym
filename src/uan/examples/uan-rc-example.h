@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANRCEXAMPLE_H
-#define UANRCEXAMPLE_H
+#ifndef UAN_RC_EXAMPLE_H
+#define UAN_RC_EXAMPLE_H
 
 #include "ns3/network-module.h"
 #include "ns3/tools-module.h"
@@ -61,4 +61,4 @@ public:
 
 };
 
-#endif //UANRCEXAMPLE_H
+#endif /* UAN_RC_EXAMPLE_H */

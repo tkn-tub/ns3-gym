@@ -26,8 +26,8 @@
 #include "make-event.h"
 #include "nstime.h"
 
-#include "ns3/deprecated.h"
-#include "ns3/object-factory.h"
+#include "deprecated.h"
+#include "object-factory.h"
 
 #include <stdint.h>
 #include <string>
@@ -53,7 +53,7 @@ class Scheduler;
  * 
  * A simple example of how to use the Simulator class to schedule events
  * is shown below:
- * \include samples/main-simulator.cc
+ * \include src/core/examples/sample-simulator.cc
  */
 class Simulator 
 {

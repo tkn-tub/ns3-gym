@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -311,5 +311,5 @@ UdpL4Protocol::GetDownTarget (void) const
   return m_downTarget;
 }
 
-}; // namespace ns3
+} // namespace ns3
 

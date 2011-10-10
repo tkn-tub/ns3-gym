@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -19,8 +19,8 @@
 #ifndef OBJECT_NAMES_H
 #define OBJECT_NAMES_H
 
-#include "ns3/ptr.h"
-#include "ns3/object.h"
+#include "ptr.h"
+#include "object.h"
 
 namespace ns3 {
 
@@ -456,6 +456,6 @@ Names::Find (Ptr<Object> context, std::string name)
     }
 }
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* OBJECT_NAMES_H */

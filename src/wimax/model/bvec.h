@@ -18,11 +18,14 @@
  * Author: Mohamed Amine Ismail <amine.ismail@sophia.inria.fr>
  *                              <amine.ismail@udcast.com>
  */
-#ifndef BVEC_H_
-#define BVEC_H_
+
+#ifndef BVEC_H
+#define BVEC_H
+
 #include <vector>
 
 namespace ns3 {
 typedef std::vector<bool> bvec;
 }
-#endif /* BVEC_H_ */
+
+#endif /* BVEC_H */

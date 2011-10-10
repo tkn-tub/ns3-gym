@@ -2,34 +2,36 @@
 import sys
 import subprocess
 import Options
-
+from waflib.Errors import WafError
 
 def configure(conf):
-    env = conf.env
-    conf.find_program('mpic++', var='MPI')
-    if Options.options.enable_mpi and conf.env['MPI']:
-        p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("CXXFLAGS_MPI", flags)
-
-        p = subprocess.Popen([conf.env['MPI'], '-showme:link'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("LINKFLAGS_MPI", flags)
-
-        env.append_value('CXXDEFINES', 'NS3_MPI')
-        conf.report_optional_feature("mpi", "MPI Support", True, '')
-        conf.env['ENABLE_MPI'] = True
-    else:
-        if Options.options.enable_mpi:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
+    if Options.options.enable_mpi:
+        # try to detect openmpi installation
+        mpi = conf.check_cfg(path='mpic++', args='-showme',
+                             package='', uselib_store='MPI', mandatory=False)
+        if mpi:
+            conf.env.append_value('DEFINES_MPI', 'NS3_OPENMPI')
         else:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
+            # try the MPICH2 flags
+            mpi = conf.check_cfg(path='mpic++', args='-compile-info -link-info',
+                                 package='', uselib_store='MPI', mandatory=False)
+            if mpi:
+                conf.env.append_value('DEFINES_MPI', 'NS3_MPICH')
+        if mpi:
+            conf.env.append_value('DEFINES_MPI', 'NS3_MPI')
+            conf.env['ENABLE_MPI'] = True
+            for libpath in conf.env.LIBPATH_MPI:
+                if 'mpi' in libpath:
+                    conf.env.append_value('LINKFLAGS_MPI', '-Wl,-rpath='+libpath)
+            conf.report_optional_feature("mpi", "MPI Support", True, '')            
+        else:
+            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
+    else:
+        conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
 
 
 def build(bld):
-    env = bld.env_of_name('default')
+    env = bld.env
     sim = bld.create_ns3_module('mpi', ['core', 'network'])
     sim.source = [
         'model/distributed-simulator-impl.cc',
@@ -37,7 +39,7 @@ def build(bld):
         'model/mpi-receiver.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'mpi'
     headers.source = [
         'model/distributed-simulator-impl.h',
@@ -46,7 +48,7 @@ def build(bld):
         ]
 
     if env['ENABLE_MPI']:
-        sim.uselib = 'MPI'
+        sim.use.append('MPI')
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')

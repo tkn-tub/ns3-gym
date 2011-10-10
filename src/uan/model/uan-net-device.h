@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANNETDEVICE_H
-#define UANNETDEVICE_H
+#ifndef UAN_NET_DEVICE_H
+#define UAN_NET_DEVICE_H
 
 #include "ns3/net-device.h"
 #include "ns3/pointer.h"
@@ -101,6 +101,8 @@ public:
    */
   void Clear (void);
 
+  void SetSleepMode (bool sleep);
+
   // Purely virtual functions from base class
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
@@ -154,4 +156,4 @@ protected:
 
 } // namespace ns3
 
-#endif // UANNETDEVICE_H 
+#endif /* UAN_NET_DEVICE_H */

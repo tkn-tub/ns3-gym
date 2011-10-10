@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -239,5 +239,5 @@ HwmpRtable::LookupResult::IsValid () const
   return !(retransmitter == Mac48Address::GetBroadcast () && ifIndex == INTERFACE_ANY && metric == MAX_METRIC
            && seqnum == 0);
 }
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3

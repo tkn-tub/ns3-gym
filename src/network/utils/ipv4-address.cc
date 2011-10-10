@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -55,7 +55,7 @@ AsciiToIpv4Host (char const *address)
   return host;
 }
 
-} //namespace ns3
+} // namespace ns3
 
 namespace ns3 {
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -54,28 +54,28 @@ public:
    *
    * @param d the NetDevice instance
    */
-  virtual void SetDevice (Ptr<Object> d) = 0;
+  virtual void SetDevice (Ptr<NetDevice> d) = 0;
 
   /**
    * get the associated NetDevice instance
    *
    * @return a Ptr to the associated NetDevice instance
    */
-  virtual Ptr<Object> GetDevice () = 0;
+  virtual Ptr<NetDevice> GetDevice () = 0;
 
   /**
    * Set the mobility model associated with this device.
    *
    * @param m the mobility model
    */
-  virtual void SetMobility (Ptr<Object> m) = 0;
+  virtual void SetMobility (Ptr<MobilityModel> m) = 0;
 
   /**
    * get the associated MobilityModel instance
    *
    * @return a Ptr to the associated NetDevice instance
    */
-  virtual Ptr<Object> GetMobility () = 0;
+  virtual Ptr<MobilityModel> GetMobility () = 0;
 
 
   /**

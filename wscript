@@ -11,23 +11,20 @@ import shlex
 import textwrap
 
 # WAF modules
-import pproc as subprocess
+import subprocess
 import Options
 
 import Logs
 import TaskGen
-import Constants
-
-import ccroot
-ccroot.USE_TOP_LEVEL = True
 
 import Task
-Task.algotype = Constants.JOBCONTROL # so that Task.maxjobs=1 takes effect
 
 import Utils
 import Build
 import Configure
 import Scripting
+
+from waflib.Errors import WafError
 
 from utils import read_config_file
 
@@ -58,7 +55,11 @@ cflags.default_profile = 'debug'
 # local modules
 import wutils
 
-Configure.autoconfig = 1
+Configure.autoconfig = 0
+
+# until http://code.google.com/p/waf/issues/detail?id=1039 gets fixed...
+wutils.monkey_patch_Runner_start()
+
 
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION", "rt").read().strip()
@@ -67,14 +68,14 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
-if re.match(r"\d+\.\d+(\.\d+)?", VERSION) is not None:
+# note: here we disable the VNUM for OSX since it causes problems (bug #1251)
+wutils.VNUM = None
+if sys.platform != 'darwin' and re.match(r"^\d+\.\d+(\.\d+)?$", VERSION) is not None:
     wutils.VNUM = VERSION
-else:
-    wutils.VNUM = None
 
 # these variables are mandatory ('/' are converted automatically)
-srcdir = '.'
-blddir = 'build'
+top = '.'
+out = 'build'
 
 def load_env():
     bld_cls = getattr(Utils.g_module, 'build_context', Utils.Context)
@@ -124,11 +125,12 @@ def print_module_names(names):
     if i != 1:
         print
 
-def set_options(opt):
+def options(opt):
     # options provided by the modules
-    opt.tool_options('compiler_cc')
-    opt.tool_options('compiler_cxx')
-    opt.tool_options('cflags')
+    opt.load('compiler_c')
+    opt.load('compiler_cxx')
+    opt.load('cflags')
+    opt.load('gnu_dirs')
 
     opt.add_option('--cwd',
                    help=('Set the working directory for a program.'),
@@ -207,10 +209,6 @@ def set_options(opt):
                    help=('Compile NS-3 statically: works only on linux, without python'),
                    dest='enable_static', action='store_true',
                    default=False)
-    opt.add_option('--enable-shared-and-static',
-                   help=('Compile NS-3 both shared and static libraries at the same time: static works only on linux'),
-                   dest='enable_shared_and_static', action='store_true',
-                   default=False)
     opt.add_option('--enable-mpi',
                    help=('Compile NS-3 with MPI and distributed simulation support'),
                    dest='enable_mpi', action='store_true',
@@ -227,42 +225,77 @@ def set_options(opt):
     opt.sub_options('src/internet')
 
 
-def _check_compilation_flag(conf, flag, mode='cxx'):
+def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
     """
     Checks if the C++ compiler accepts a certain compilation flag or flags
     flag: can be a string or a list of strings
     """
+    l = []
+    if flag:
+        l.append(flag)
+    if isinstance(linkflags, list):
+        l.extend(linkflags)
+    else:
+        if linkflags:
+            l.append(linkflags)
+    if len(l) > 1:
+        flag_str = 'flags ' + ' '.join(l)
+    else:
+        flag_str = 'flag ' + ' '.join(l)
+    if flag_str > 28:
+        flag_str = flag_str[:28] + "..."
 
+    conf.start_msg('Checking for compilation %s support' % (flag_str,))
     env = conf.env.copy()
+
+    if mode == 'cc':
+        mode = 'c'
+
     if mode == 'cxx':
         fname = 'test.cc'
         env.append_value('CXXFLAGS', flag)
     else:
         fname = 'test.c'
-        env.append_value('CCFLAGS', flag)
+        env.append_value('CFLAGS', flag)
+
+    if linkflags is not None:
+        env.append_value("LINKFLAGS", linkflags)
+
     try:
         retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
                                  env=env, compile_filename=fname,
-                                 compile_mode=mode, type='cprogram', execute=False)
+                                 features=[mode, mode+'program'], execute=False)
     except Configure.ConfigurationError:
         ok = False
     else:
         ok = (retval == 0)
-    conf.check_message_custom(flag, 'support', (ok and 'yes' or 'no'))
+    conf.end_msg(ok)
     return ok
 
     
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
-    conf.env.append_value('NS3_OPTIONAL_FEATURES', (name, caption, was_enabled, reason_not_enabled))
+    conf.env.append_value('NS3_OPTIONAL_FEATURES', [(name, caption, was_enabled, reason_not_enabled)])
+
+
+# starting with waf 1.6, conf.check() becomes fatal by default if the
+# test fails, this alternative method makes the test non-fatal, as it
+# was in waf <= 1.5
+def _check_nonfatal(conf, *args, **kwargs):
+    try:
+        return conf.check(*args, **kwargs)
+    except conf.errors.ConfigurationError:
+        return None
 
 def configure(conf):
+    conf.check_tool("relocation", ["waf-tools"])
+
     # attach some extra methods
+    conf.check_nonfatal = types.MethodType(_check_nonfatal, conf)
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
-    conf.env['NS3_BUILDDIR'] = conf.blddir
-    conf.check_tool('compiler_cc')
+    conf.check_tool('compiler_c')
     conf.check_tool('compiler_cxx')
     conf.check_tool('cflags', ['waf-tools'])
     try:
@@ -270,29 +303,21 @@ def configure(conf):
     except Configure.ConfigurationError:
         pass
     conf.check_tool('command', ['waf-tools'])
+    conf.check_tool('gnu_dirs')
 
-    # create the second environment, set the variant and set its name
-    variant_env = conf.env.copy()
-    variant_name = Options.options.build_profile
+    env = conf.env
 
     if Options.options.enable_gcov:
-        variant_name += '-gcov'
-        variant_env.append_value('CCFLAGS', '-fprofile-arcs')
-        variant_env.append_value('CCFLAGS', '-ftest-coverage')
-        variant_env.append_value('CXXFLAGS', '-fprofile-arcs')
-        variant_env.append_value('CXXFLAGS', '-ftest-coverage')
-        variant_env.append_value('LINKFLAGS', '-fprofile-arcs')
-    
-    conf.env['NS3_ACTIVE_VARIANT'] = variant_name
-    variant_env['NS3_ACTIVE_VARIANT'] = variant_name
-    variant_env.set_variant(variant_name)
-    conf.set_env_name(variant_name, variant_env)
-    conf.setenv(variant_name)
-    env = variant_env
+        env['GCOV_ENABLED'] = True
+        env.append_value('CCFLAGS', '-fprofile-arcs')
+        env.append_value('CCFLAGS', '-ftest-coverage')
+        env.append_value('CXXFLAGS', '-fprofile-arcs')
+        env.append_value('CXXFLAGS', '-ftest-coverage')
+        env.append_value('LINKFLAGS', '-lgcov')
 
     if Options.options.build_profile == 'debug':
-        env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
-        env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
+        env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')
+        env.append_value('DEFINES', 'NS3_LOG_ENABLE')
 
     env['PLATFORM'] = sys.platform
 
@@ -320,43 +345,21 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     env['ENABLE_STATIC_NS3'] = False
-    if Options.options.enable_static or Options.options.enable_shared_and_static:
-        if env['PLATFORM'].startswith('linux') and \
-                env['CXX_NAME'] in ['gcc', 'icc']:
-            if re.match('i[3-6]86', os.uname()[4]):
+    if Options.options.enable_static:
+        if Options.platform == 'darwin':
+            if conf.check_compilation_flag(flag=[], linkflags=['-Wl,-all_load']):
                 conf.report_optional_feature("static", "Static build", True, '')
-                if Options.options.enable_static:
-                    env['ENABLE_STATIC_NS3'] = True
-                if Options.options.enable_shared_and_static:
-                    env['ENABLE_SHARED_AND_STATIC_NS3'] = True
-            elif os.uname()[4] == 'x86_64':
-                if env['ENABLE_PYTHON_BINDINGS'] and \
-                        not conf.check_compilation_flag('-mcmodel=large'):
-                    conf.report_optional_feature("static", "Static build", False,
-                                                 "Can't enable static builds because " + \
-                                                     "no -mcmodel=large compiler " \
-                                                     "option. Try --disable-python or upgrade your " \
-                                                     "compiler to at least gcc 4.3.x.")
-                else:
-                    conf.report_optional_feature("static", "Static build", True, '')
-                    if Options.options.enable_static:
-                        env['ENABLE_STATIC_NS3'] = True
-                    if Options.options.enable_shared_and_static:
-                        env['ENABLE_SHARED_AND_STATIC_NS3'] = True
-        elif env['CXX_NAME'] == 'gcc' and \
-                (env['PLATFORM'].startswith('darwin') or \
-                     env['PLATFORM'].startswith('cygwin')):
-                conf.report_optional_feature("static", "Static build", True, '')
-                if Options.options.enable_static:
-                    env['ENABLE_STATIC_NS3'] = True
-                if Options.options.enable_shared_and_static:
-                    env['ENABLE_SHARED_AND_STATIC_NS3'] = True
+                env['ENABLE_STATIC_NS3'] = True
+            else:
+                conf.report_optional_feature("static", "Static build", False,
+                                             "Link flag -Wl,-all_load does not work")
         else:
-            conf.report_optional_feature("static", "Static build", False,
-                                         "Unsupported platform")
-    else:
-        conf.report_optional_feature("static", "Static build", False,
-                                     "option --enable-static not selected")
+            if conf.check_compilation_flag(flag=[], linkflags=['-Wl,--whole-archive,-Bstatic', '-Wl,-Bdynamic,--no-whole-archive']):
+                conf.report_optional_feature("static", "Static build", True, '')
+                env['ENABLE_STATIC_NS3'] = True
+            else:
+                conf.report_optional_feature("static", "Static build", False,
+                                             "Link flag -Wl,--whole-archive,-Bstatic does not work")
 
     conf.env['MODULES_NOT_BUILT'] = []
 
@@ -390,14 +393,17 @@ def configure(conf):
         if not_built_name in conf.env['NS3_ENABLED_MODULES']:
             conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
-                raise Utils.WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
+                raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
 
     conf.sub_config('bindings/python')
 
     conf.sub_config('src/mpi')
 
     # for suid bits
-    conf.find_program('sudo', var='SUDO')
+    try:
+        conf.find_program('sudo', var='SUDO')
+    except WafError:
+        pass
 
     why_not_sudo = "because we like it"
     if Options.options.enable_sudo and conf.env['SUDO']:
@@ -461,7 +467,10 @@ def configure(conf):
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
-    conf.find_program('valgrind', var='VALGRIND')
+    try:
+        conf.find_program('valgrind', var='VALGRIND')
+    except WafError:
+        pass
 
     # These flags are used for the implicitly dependent modules.
     if env['ENABLE_STATIC_NS3']:
@@ -478,12 +487,10 @@ def configure(conf):
                                  conf.env['ENABLE_GSL'],
                                  "GSL not found")
     if have_gsl:
-        conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
-        conf.env.append_value('CCDEFINES', "ENABLE_GSL")
+        conf.env.append_value('DEFINES', "ENABLE_GSL")
 
     # for compiling C code, copy over the CXX* flags
     conf.env.append_value('CCFLAGS', conf.env['CXXFLAGS'])
-    conf.env.append_value('CCDEFINES', conf.env['CXXDEFINES'])
 
     def add_gcc_flag(flag):
         if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
@@ -497,7 +504,10 @@ def configure(conf):
     add_gcc_flag('-fstrict-aliasing')
     add_gcc_flag('-Wstrict-aliasing')
 
-    conf.find_program('doxygen', var='DOXYGEN')
+    try:
+        conf.find_program('doxygen', var='DOXYGEN')
+    except WafError:
+        pass
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
@@ -517,23 +527,20 @@ def configure(conf):
             status = 'not enabled (%s)' % reason_not_enabled
         print "%-30s: %s" % (caption, status)
 
-class SuidBuildTask(Task.TaskBase):
+
+class SuidBuild_task(Task.TaskBase):
     """task that makes a binary Suid
     """
-    after = 'cxx_link cc_link'
-    maxjobs = 1
-    def __init__(self, bld, program):
-        self.bld = bld
+    after = 'link'
+    def __init__(self, *args, **kwargs):
+        super(SuidBuild_task, self).__init__(*args, **kwargs)
         self.m_display = 'build-suid'
-        self.__program = program
-        self.__env = bld.env.copy ()
-        super(SuidBuildTask, self).__init__(generator=self)
         try:
-            program_obj = wutils.find_program(self.__program.target, self.__env)
+            program_obj = wutils.find_program(self.generator.target, self.generator.env)
         except ValueError, ex:
-            raise Utils.WafError(str(ex))
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        self.filename = program_node.abspath(self.__env)
+            raise WafError(str(ex))
+        program_node = program_obj.path.find_or_declare(program_obj.target)
+        self.filename = program_node.abspath()
 
 
     def run(self):
@@ -548,38 +555,49 @@ class SuidBuildTask(Task.TaskBase):
         "RUN_ME SKIP_ME or ASK_LATER"
         st = os.stat(self.filename)
         if st.st_uid == 0:
-            return Constants.SKIP_ME
+            return Task.SKIP_ME
         else:
-            return Constants.RUN_ME
-
+            return Task.RUN_ME
 
 def create_suid_program(bld, name):
-    program = bld.new_task_gen('cxx', 'program')
+    grp = bld.current_group
+    bld.add_group() # this to make sure no two sudo tasks run at the same time
+    program = bld.new_task_gen(features=['cxx', 'cxxprogram'])
     program.is_ns3_program = True
     program.module_deps = list()
     program.name = name
     program.target = name
 
     if bld.env['ENABLE_SUDO']:
-        SuidBuildTask(bld, program)
+        program.create_task("SuidBuild")
+
+    bld.set_group(grp)
 
     return program
 
 def create_ns3_program(bld, name, dependencies=('core',)):
-    program = bld.new_task_gen('cxx', 'program')
+    program = bld.new_task_gen(features=['cxx', 'cxxprogram'])
     program.is_ns3_program = True
     program.name = name
     program.target = program.name
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
+    program.includes = "# #/.."
+    program.use = program.ns3_module_dependencies
+    if program.env['ENABLE_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            program.env.STLIB_MARKER = '-Wl,-all_load'
+        else:
+            program.env.STLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
+            program.env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
     return program
 
 def register_ns3_script(bld, name, dependencies=('core',)):
     ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
-    bld.env.append_value('NS3_SCRIPT_DEPENDENCIES', (name, ns3_module_dependencies))
+    bld.env.append_value('NS3_SCRIPT_DEPENDENCIES', [(name, ns3_module_dependencies)])
 
 def add_examples_programs(bld):
-    env = bld.env_of_name('default')
+    env = bld.env
     if env['ENABLE_EXAMPLES']:
         for dir in os.listdir('examples'):
             if dir.startswith('.') or dir == 'CVS':
@@ -608,23 +626,30 @@ def add_scratch_programs(bld):
             obj.name = obj.target
 
 
-def _add_ns3_program_missing_deps(bld, program):
-    deps_found = program.ns3_module_dependencies
-    program.uselib_local = getattr(program, "uselib_local", []) + [dep + "--lib" for dep in deps_found]
-    if program.env['ENABLE_STATIC_NS3'] and not program.env['ENABLE_SHARED_AND_STATIC_NS3']:
-        if sys.platform == 'darwin':
-            program.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            for dep in deps_found:
-                program.env.append_value('LINKFLAGS', '-l' + dep)
-        else:
-            program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            for dep in deps_found:
-                program.env.append_value('LINKFLAGS', '-l' + dep)
-            program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
+def _get_all_task_gen(self):
+    for group in self.groups:
+        for taskgen in group:
+            yield taskgen
 
+
+# ok, so WAF does not provide an API to prevent an
+# arbitrary taskgen from running; we have to muck around with
+# WAF internal state, something that might stop working if
+# WAF is upgraded...
+def _exclude_taskgen(self, taskgen):
+    for group in self.groups:
+        for tg1 in group:
+            if tg1 is taskgen:
+                group.remove(tg1)
+                break
+        else:
+            continue
+        break
 
 
 def build(bld):
+    env = bld.env
+
     # If --enabled-modules option was given, then print a warning
     # message and exit this function.
     if Options.options.enable_modules:
@@ -648,16 +673,11 @@ def build(bld):
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
     bld.register_ns3_script = types.MethodType(register_ns3_script, bld)
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
-
-    # switch default variant to the one matching our debug level
-    variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
-    variant_env = bld.env_of_name(variant_name)
-    bld.all_envs['default'] = variant_env
+    bld.__class__.all_task_gen = property(_get_all_task_gen)
+    bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
 
     # process subfolders from here
     bld.add_subdirs('src')
-
-    env = bld.env
 
     # If modules have been enabled, then set lists of enabled modules
     # and enabled module test libraries.
@@ -670,11 +690,11 @@ def build(bld):
         while changed:
             changed = False
             for module in modules:
-                module_obj = bld.name_to_obj(module, env)
+                module_obj = bld.get_tgen_by_name(module)
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
                 # Each enabled module has its own library.
-                for dep in module_obj.uselib_local:
+                for dep in module_obj.use:
                     if not dep.startswith('ns3-'):
                         continue
                     if dep not in modules:
@@ -696,25 +716,11 @@ def build(bld):
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
 
-        def exclude_taskgen(bld, taskgen):
-            # ok, so WAF does not provide an API to prevent an
-            # arbitrary taskgen from running; we have to muck around with
-            # WAF internal state, something that might stop working if
-            # WAF is upgraded...
-            bld.all_task_gen.remove(taskgen)
-            for group in bld.task_manager.groups:
-                try:
-                    group.tasks_gen.remove(taskgen)
-                except ValueError:
-                    pass
-                else:
-                    break
-
         # Exclude the programs other misc task gens that depend on disabled modules
         for obj in list(bld.all_task_gen):
 
             # check for ns3moduleheader_taskgen
-            if type(obj).__name__ == 'ns3moduleheader_taskgen':
+            if 'ns3moduleheader' in getattr(obj, "features", []):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing
 
@@ -724,7 +730,7 @@ def build(bld):
                 program_built = True
                 for dep in obj.ns3_module_dependencies:
                     if dep not in modules: # prog. depends on a module that isn't enabled?
-                        exclude_taskgen(bld, obj)
+                        bld.exclude_taskgen(obj)
                         program_built = False
                         break
 
@@ -735,15 +741,15 @@ def build(bld):
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
-                exclude_taskgen(bld, obj) # kill the module
+                bld.exclude_taskgen(obj) # kill the module
 
             # disable the module test libraries
             if hasattr(obj, "is_ns3_module_test_library"):
                 if not env['ENABLE_TESTS'] or (obj.module_name not in modules):
-                    exclude_taskgen(bld, obj) # kill the module test library
+                    bld.exclude_taskgen(obj) # kill the module test library
 
             # disable the ns3header_taskgen
-            if type(obj).__name__ == 'ns3header_taskgen':
+            if 'ns3header' in getattr(obj, "features", []):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
@@ -765,34 +771,9 @@ def build(bld):
 
     bld.add_subdirs('bindings/python')
 
-    ## do a topological sort on the modules graph
-    dep_graph = []
-    for gen in bld.all_task_gen:
-        if type(gen).__name__ in ['ns3module_taskgen']:
-            for dep in gen.dependencies:
-                dep_graph.append(("ns3-"+dep, gen.name))
-    dep_graph.sort()
-    sys.path.insert(0, "bindings/python")
-    from topsort import topsort
-    sorted_ns3_modules = topsort(dep_graph)
-    #print sorted_ns3_modules
-
-    # we need to post() the ns3 modules, so they create libraries underneath, and programs can list them in uselib_local
-    for module in sorted_ns3_modules:
-        gen = bld.name_to_obj(module, bld.env)
-        if type(gen).__name__ in ['ns3module_taskgen']:
-            gen.post()
-            for lib in gen.libs:
-                lib.post()
-
     # Process this subfolder here after the lists of enabled modules
     # and module test libraries have been set.
     bld.add_subdirs('utils')
-
-    for gen in bld.all_task_gen:
-        if not getattr(gen, "is_ns3_program", False) or not hasattr(gen, "ns3_module_dependencies"):
-            continue
-        _add_ns3_program_missing_deps(bld, gen)
 
     if Options.options.run:
         # Check that the requested program name is valid
@@ -801,7 +782,7 @@ def build(bld):
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
-        Options.options.compile_targets += ',' + os.path.basename(program_name)
+        Options.options.targets += ',' + os.path.basename(program_name)
         for gen in bld.all_task_gen:
             if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
                 gen.post()
@@ -809,6 +790,8 @@ def build(bld):
     if Options.options.doxygen_no_build:
         _doxygen(bld)
         raise SystemExit(0)
+
+
 
 def shutdown(ctx):
     bld = wutils.bld
@@ -821,8 +804,9 @@ def shutdown(ctx):
     # clean.
     if ((not Options.options.run)
         and (not Options.options.pyrun) 
-        and ('clean' not in Options.arg_line)
-        and ('distclean' not in Options.arg_line)):
+        and ('clean' not in Options.commands)
+        and ('distclean' not in Options.commands)
+        and ('shell' not in Options.commands)):
 
         # Print the list of built modules.
         print
@@ -838,7 +822,7 @@ def shutdown(ctx):
             print
 
     # Write the build status file.
-    build_status_file = os.path.join (env['NS3_BUILDDIR'], env['NS3_ACTIVE_VARIANT'], 'build-status.py')
+    build_status_file = os.path.join(bld.out_dir, 'build-status.py')
     out = open(build_status_file, 'w')
     out.write('#! /usr/bin/env python\n')
     out.write('\n')
@@ -851,7 +835,7 @@ def shutdown(ctx):
     out.close()
 
     if Options.options.lcov_report:
-        lcov_report()
+        lcov_report(bld)
 
     if Options.options.run:
         wutils.run_program(Options.options.run, env, wutils.get_command_template(env),
@@ -864,22 +848,34 @@ def shutdown(ctx):
         raise SystemExit(0)
 
     if Options.options.shell:
-        raise Utils.WafError("Please run `./waf shell' now, instead of `./waf --shell'")
+        raise WafError("Please run `./waf shell' now, instead of `./waf --shell'")
 
     if Options.options.check:
-        raise Utils.WafError("Please run `./test.py' now, instead of `./waf --check'")
+        raise WafError("Please run `./test.py' now, instead of `./waf --check'")
 
     check_shell(bld)
 
-check_context = Build.BuildContext
 
-def check(bld):
+
+from waflib import Context, Build
+class CheckContext(Context.Context):
     """run the equivalent of the old ns-3 unit tests using test.py"""
-    env = wutils.bld.env
-    wutils.run_python_program("test.py -n -c core", env)
+    cmd = 'check'
+
+    def execute(self):
+
+        # first we execute the build
+	bld = Context.create_context("build")
+	bld.options = Options.options # provided for convenience
+	bld.cmd = "build"
+	bld.execute()
+
+        wutils.bld = bld
+        wutils.run_python_program("test.py -n -c core", bld.env)
+
 
 class print_introspected_doxygen_task(Task.TaskBase):
-    after = 'cc cxx cc_link cxx_link'
+    after = 'cc cxx link'
     color = 'BLUE'
 
     def __init__(self, bld):
@@ -904,13 +900,21 @@ class print_introspected_doxygen_task(Task.TaskBase):
             pass
         else:
             prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
-            out = open(os.path.join('..', 'doc', 'introspected-doxygen.h'), 'w')
-            if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
+
+            # Create a header file with the introspected information.
+            doxygen_out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
+            if subprocess.Popen([prog], stdout=doxygen_out, env=proc_env).wait():
                 raise SystemExit(1)
-            out.close()
+            doxygen_out.close()
+        
+            # Create a text file with the introspected information.
+            text_out = open(os.path.join('doc', 'ns3-object.txt'), 'w')
+            if subprocess.Popen([prog, '--output-text'], stdout=text_out, env=proc_env).wait():
+                raise SystemExit(1)
+            text_out.close()
 
 class run_python_unit_tests_task(Task.TaskBase):
-    after = 'cc cxx cc_link cxx_link'
+    after = 'cc cxx link'
     color = 'BLUE'
 
     def __init__(self, bld):
@@ -946,24 +950,34 @@ def check_shell(bld):
                "You should correct this situation before running any program.  Possible solutions:\n"
                "  1. Exit this shell, and start a new one\n"
                "  2. Run a new nested shell")
-        raise Utils.WafError(msg)
+        raise WafError(msg)
 
 
-shell_context = Build.BuildContext
-def shell(ctx):
+from waflib import Context, Build
+class Ns3ShellContext(Context.Context):
     """run a shell with an environment suitably modified to run locally built programs"""
+    cmd = 'shell'
 
-    #make sure we build first"
-    Scripting.build(ctx)
+    def execute(self):
 
-    if sys.platform == 'win32':
-        shell = os.environ.get("COMSPEC", "cmd.exe")
-    else:
-        shell = os.environ.get("SHELL", "/bin/sh")
+        # first we execute the build
+	bld = Context.create_context("build")
+	bld.options = Options.options # provided for convenience
+	bld.cmd = "build"
+	bld.execute()
 
-    env = wutils.bld.env
-    os_env = {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH']), 'NS3_EXECUTABLE_PATH': os.pathsep.join(env['NS3_EXECUTABLE_PATH'])}
-    wutils.run_argv([shell], env, os_env)
+        if sys.platform == 'win32':
+            shell = os.environ.get("COMSPEC", "cmd.exe")
+        else:
+            shell = os.environ.get("SHELL", "/bin/sh")
+
+        env = bld.env
+        os_env = {
+            'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH']),
+            'NS3_EXECUTABLE_PATH': os.pathsep.join(env['NS3_EXECUTABLE_PATH']),
+            }
+        wutils.run_argv([shell], env, os_env)
+
 
 def _doxygen(bld):
     env = wutils.bld.env
@@ -981,7 +995,7 @@ def _doxygen(bld):
         raise SystemExit(1)
         return
 
-    prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
+    prog = program_obj.path.find_or_declare(program_obj.target).abspath()
 
     if not os.path.exists(prog):
         Logs.error("print-introspected-doxygen has not been built yet."
@@ -989,43 +1003,57 @@ def _doxygen(bld):
                    "generating doxygen docs...")
         raise SystemExit(1)
 
-    out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
-
-    if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
+    # Create a header file with the introspected information.
+    doxygen_out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
+    if subprocess.Popen([prog], stdout=doxygen_out, env=proc_env).wait():
         raise SystemExit(1)
-    out.close()
+    doxygen_out.close()
+
+    # Create a text file with the introspected information.
+    text_out = open(os.path.join('doc', 'ns3-object.txt'), 'w')
+    if subprocess.Popen([prog, '--output-text'], stdout=text_out, env=proc_env).wait():
+        raise SystemExit(1)
+    text_out.close()
 
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
         raise SystemExit(1)
 
-def doxygen(bld):
+
+from waflib import Context, Build
+
+class Ns3DoxygenContext(Context.Context):
     """do a full build, generate the introspected doxygen and then the doxygen"""
-    Scripting.build(bld)
-    _doxygen(bld)
+    cmd = 'doxygen'
+    def execute(self):
+        # first we execute the build
+	bld = Context.create_context("build")
+	bld.options = Options.options # provided for convenience
+	bld.cmd = "build"
+	bld.execute()
+        _doxygen(bld)
 
-def lcov_report():
-    env = Build.bld.env
-    variant_name = env['NS3_ACTIVE_VARIANT']
 
-    if 'gcov' not in variant_name:
-        raise Utils.WafError("project not configured for code coverage;"
-                     " reconfigure with --enable-gcov")
+    
+def lcov_report(bld):
+    env = bld.env
 
-    os.chdir(blddir)
+    if not env['GCOV_ENABLED']:
+        raise WafError("project not configured for code coverage;"
+                       " reconfigure with --enable-gcov")
+
+    os.chdir(out)
     try:
-        lcov_report_dir = os.path.join(variant_name, 'lcov-report')
+        lcov_report_dir = 'lcov-report'
         create_dir_command = "rm -rf " + lcov_report_dir
         create_dir_command += " && mkdir " + lcov_report_dir + ";"
 
         if subprocess.Popen(create_dir_command, shell=True).wait():
             raise SystemExit(1)
 
-        info_file = os.path.join(lcov_report_dir, variant_name + '.info')
+        info_file = os.path.join(lcov_report_dir, 'report.info')
         lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
-        lcov_command += " --source-dirs=" + os.getcwd()
-        lcov_command += ":" + os.path.join(
-            os.getcwd(), variant_name, 'include')
+        lcov_command += " -b " + os.getcwd()
         if subprocess.Popen(lcov_command, shell=True).wait():
             raise SystemExit(1)
 
@@ -1035,117 +1063,4 @@ def lcov_report():
             raise SystemExit(1)
     finally:
         os.chdir("..")
-
-##
-## The default WAF DistDir implementation is rather slow, because it
-## first copies everything and only later removes unwanted files and
-## directories; this means that it needless copies the full build dir
-## and the .hg repository tree.  Here we provide a replacement DistDir
-## implementation that is more efficient.
-##
-import Scripting
-from Scripting import dist_exts, excludes, BLDDIR
-import Utils
-import os
-
-def _copytree(src, dst, symlinks=False, excludes=(), build_dir=None):
-    """Recursively copy a directory tree using copy2().
-
-    The destination directory must not already exist.
-    If exception(s) occur, an Error is raised with a list of reasons.
-
-    If the optional symlinks flag is true, symbolic links in the
-    source tree result in symbolic links in the destination tree; if
-    it is false, the contents of the files pointed to by symbolic
-    links are copied.
-
-    XXX Consider this example code rather than the ultimate tool.
-
-    Note: this is a modified version of shutil.copytree from python
-    2.5.2 library; modified for WAF purposes to exclude dot dirs and
-    another list of files.
-    """
-    names = os.listdir(src)
-    os.makedirs(dst)
-    errors = []
-    for name in names:
-        srcname = os.path.join(src, name)
-        dstname = os.path.join(dst, name)
-        try:
-            if symlinks and os.path.islink(srcname):
-                linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
-                if name in excludes:
-                    continue
-                elif name.startswith('.') or name.startswith(',,') or name.startswith('++') or name.startswith('CVS'):
-                    continue
-                elif name == build_dir:
-                    continue
-                else:
-                    ## build_dir is not passed into the recursive
-                    ## copytree, but that is intentional; it is a
-                    ## directory name valid only at the top level.
-                    copytree(srcname, dstname, symlinks, excludes)
-            else:
-                ends = name.endswith
-                to_remove = False
-                if name.startswith('.') or name.startswith('++'):
-                    to_remove = True
-                else:
-                    for x in dist_exts:
-                        if ends(x):
-                            to_remove = True
-                            break
-                if not to_remove:
-                    shutil.copy2(srcname, dstname)
-            # XXX What about devices, sockets etc.?
-        except (IOError, os.error), why:
-            errors.append((srcname, dstname, str(why)))
-        # catch the Error from the recursive copytree so that we can
-        # continue with other files
-        except shutil.Error, err:
-            errors.extend(err.args[0])
-    try:
-        shutil.copystat(src, dst)
-    except WindowsError:
-        # can't copy file access times on Windows
-        pass
-    except OSError, why:
-        errors.extend((src, dst, str(why)))
-    if errors:
-        raise shutil.Error, errors
-
-
-def DistDir(appname, version):
-    #"make a distribution directory with all the sources in it"
-    import shutil
-
-    # Our temporary folder where to put our files
-    TMPFOLDER=appname+'-'+version
-
-    # Remove an old package directory
-    if os.path.exists(TMPFOLDER): shutil.rmtree(TMPFOLDER)
-
-    global g_dist_exts, g_excludes
-
-    # Remove the Build dir
-    build_dir = getattr(Utils.g_module, BLDDIR, None)
-
-    # Copy everything into the new folder
-    _copytree('.', TMPFOLDER, excludes=excludes, build_dir=build_dir)
-
-    # TODO undocumented hook
-    dist_hook = getattr(Utils.g_module, 'dist_hook', None)
-    if dist_hook:
-        os.chdir(TMPFOLDER)
-        try:
-            dist_hook()
-        finally:
-            # go back to the root directory
-            os.chdir('..')
-    return TMPFOLDER
-
-Scripting.DistDir = DistDir
-
 

@@ -159,7 +159,6 @@ BuildingsShadowingTestCase::DoRun (void)
   //   LogComponentEnable ("LteEnbNetDevice", logLevel);
   
 //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  NS_LOG_INFO ("Testing " << GetName());
   
   std::vector<double> loss;
   double sum = 0.0;

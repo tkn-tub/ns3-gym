@@ -19,8 +19,8 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef MESHWIFIINTERFACEMAC_H_
-#define MESHWIFIINTERFACEMAC_H_
+#ifndef MESH_WIFI_INTERFACE_MAC_H
+#define MESH_WIFI_INTERFACE_MAC_H
 
 #include <stdint.h>
 #include <map>
@@ -34,6 +34,7 @@
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
 #include "qos-utils.h"
+
 namespace ns3 {
 
 class WifiMacHeader;
@@ -189,4 +190,4 @@ private:
 
 } // namespace ns3
 
-#endif /* MESHWIFIINTERFACEMAC_H_ */
+#endif /* MESH_WIFI_INTERFACE_MAC_H */

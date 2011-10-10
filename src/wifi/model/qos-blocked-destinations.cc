@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005, 2009 INRIA
  * Copyright (c) 2009 MIRKO BANCHI
@@ -65,4 +65,4 @@ QosBlockedDestinations::Unblock (Mac48Address dest, uint8_t tid)
     }
 }
 
-} //namespace ns3
+} // namespace ns3

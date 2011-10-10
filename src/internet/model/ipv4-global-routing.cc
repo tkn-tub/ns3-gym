@@ -1,4 +1,4 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2008 University of Washington
 //
@@ -597,4 +597,4 @@ Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 }
 
 
-} //namespace ns3
+} // namespace ns3

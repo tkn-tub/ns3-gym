@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2009 Strasbourg University
  *
@@ -102,7 +102,7 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
   m_length = i.ReadU8 ();
 
   uint32_t dataLength = GetLength () - 2;
-  uint8_t data[dataLength];
+  uint8_t* data = new uint8_t[dataLength];
   i.Read (data, dataLength);
 
   if (dataLength > m_data.GetSize ())
@@ -117,6 +117,7 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
   i = m_data.Begin ();
   i.Write (data, dataLength);
 
+  delete[] data;
   return GetSerializedSize ();
 }
 
@@ -152,11 +153,12 @@ void OptionField::Serialize (Buffer::Iterator start) const
 
 uint32_t OptionField::Deserialize (Buffer::Iterator start, uint32_t length)
 {
-  uint8_t buf[length];
+  uint8_t* buf = new uint8_t[length];
   start.Read (buf, length);
   m_optionData = Buffer ();
   m_optionData.AddAtEnd (length);
   m_optionData.Begin ().Write (buf, length);
+  delete[] buf;
   return length;
 }
 

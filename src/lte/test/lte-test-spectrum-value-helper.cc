@@ -96,7 +96,7 @@ void
 LteNoisePsdTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ (m_actual->GetSpectrumModelUid (), m_expected->GetSpectrumModelUid (), "SpectrumModel UID mismatch");
-  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL ((*m_actual), (*m_expected), 0.0000001, GetName ());
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL ((*m_actual), (*m_expected), 0.0000001, "SpectrumValue not equal");
 }
 
 
@@ -133,7 +133,7 @@ void
 LteTxPsdTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ (m_actual->GetSpectrumModelUid (), m_expected->GetSpectrumModelUid (), "SpectrumModel UID mismatch");
-  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL ((*m_actual), (*m_expected), 0.0000001, GetName ());
+  NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL ((*m_actual), (*m_expected), 0.0000001, "SpectrumValues not equal");
 }
 
 

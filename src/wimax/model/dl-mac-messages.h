@@ -64,8 +64,7 @@ private:
 
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* DCD_CHANNEL_ENCODINGS_H */
 
@@ -123,8 +122,7 @@ private:
   uint32_t m_frameNumber;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* OFDM_DCD_CHANNEL_ENCODINGS_H */
 
@@ -194,8 +192,7 @@ private:
   uint8_t m_fecCodeType;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* OFDM_DL_BURST_PROFILE_H */
 
@@ -248,8 +245,7 @@ private:
   uint8_t m_nrDlBurstProfiles;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* DCD_H */
 
@@ -297,8 +293,7 @@ private:
 
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* OFDM_DL_MAP_IE_H */
 
@@ -349,7 +344,6 @@ private:
   // m_paddingNibble; //fields to be implemented later on:
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* DL_MAP_H */

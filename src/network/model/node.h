@@ -174,6 +174,27 @@ public:
    */
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
+  /**
+   * A callback invoked whenever a device is added to a node.
+   */
+  typedef Callback<void,Ptr<NetDevice> > DeviceAdditionListener;
+  /**
+   * \param listener the listener to add
+   *
+   * Add a new listener to the list of listeners for the device-added
+   * event. When a new listener is added, it is notified of the existance
+   * of all already-added devices to make discovery of devices easier.
+   */
+  void RegisterDeviceAdditionListener (DeviceAdditionListener listener);
+  /**
+   * \param listener the listener to remove
+   *
+   * Remove an existing listener from the list of listeners for the 
+   * device-added event.
+   */
+  void UnregisterDeviceAdditionListener (DeviceAdditionListener listener);
+
+
 
   /**
    * \returns true if checksums are enabled, false otherwise.
@@ -190,13 +211,7 @@ protected:
   virtual void DoDispose (void);
   virtual void DoStart (void);
 private:
-
-  /**
-   * \param device the device added to this Node.
-   *
-   * This method is invoked whenever a user calls Node::AddDevice.
-   */
-  virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
+  void NotifyDeviceAdded (Ptr<NetDevice> device);
   bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol, const Address &from);
   bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol,
                                  const Address &from, const Address &to, NetDevice::PacketType packetType);
@@ -212,14 +227,16 @@ private:
     bool promiscuous;
   };
   typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
+  typedef std::vector<DeviceAdditionListener> DeviceAdditionListenerList;
+
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
   std::vector<Ptr<NetDevice> > m_devices;
   std::vector<Ptr<Application> > m_applications;
   ProtocolHandlerList m_handlers;
-
+  DeviceAdditionListenerList m_deviceAdditionListeners;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NODE_H */

@@ -98,5 +98,4 @@ private:
 
 } // namespace ns3
 
-#endif // BACKOFF_H
-
+#endif /* BACKOFF_H */

@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>,
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include <iostream>
@@ -54,7 +55,6 @@ using namespace ns3;
 LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   : TestSuite ("lte-pf-ff-mac-scheduler", SYSTEM)
 {
-  SetVerbose (true);
   NS_LOG_INFO ("creating LenaTestPfFfMacSchedulerSuite");
 
   //Test Case 1: AMC works in PF
@@ -169,7 +169,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   estThrPfUl.push_back (125000); // User 2 estimated TTI throughput from PF
   estThrPfUl.push_back (85000); // User 3 estimated TTI throughput from PF
   estThrPfUl.push_back (41000); // User 4 estimated TTI throughput from PF
-  AddTestCase (new LenaPfFfMacSchedulerTestCase2 (5,dist,estThrPfDl,estThrPfUl));
+  AddTestCase (new LenaPfFfMacSchedulerTestCase2 (dist, estThrPfDl, estThrPfUl));
 
 
 }
@@ -179,17 +179,23 @@ static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
 
 // --------------- T E S T - C A S E   # 1 ------------------------------
 
+
+std::string 
+LenaPfFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, uint16_t dist)
+{
+  std::ostringstream oss;
+  oss << nUser << " UEs, distance " << dist << " m";
+  return oss.str ();
+}
+
 LenaPfFfMacSchedulerTestCase1::LenaPfFfMacSchedulerTestCase1 (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl)
-  : TestCase (""),
+  : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
     m_nLc (nLc),
     m_dist (dist),
     m_thrRefDl (thrRefDl),
     m_thrRefUl (thrRefUl)
 {
-  std::ostringstream oss;
-  oss << nUser << " UEs, distance " << dist << " m" ;
-  SetName (oss.str ());
 }
 
 LenaPfFfMacSchedulerTestCase1::~LenaPfFfMacSchedulerTestCase1 ()
@@ -233,7 +239,6 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-  SetVerbose (true);
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
@@ -351,21 +356,27 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 // --------------- T E S T - C A S E   # 2 ------------------------------
 
 
-LenaPfFfMacSchedulerTestCase2::LenaPfFfMacSchedulerTestCase2 (uint16_t nUser, std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl)
-  : TestCase (""),
-    m_nUser (nUser),
-    m_dist (dist),
-    m_estThrPfDl (estThrPfDl),
-    m_estThrPfUl (estThrPfUl)
+std::string 
+LenaPfFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<uint16_t> dist)
 {
   std::ostringstream oss;
-  oss << nUser << " UEs, distances (m) = [ " ;
-  for (std::vector<uint16_t>::iterator it = m_dist.begin (); it != m_dist.end (); ++it)
+  oss << "distances (m) = [ " ;
+  for (std::vector<uint16_t>::iterator it = dist.begin (); it != dist.end (); ++it)
     {
       oss << *it << " ";
     }
   oss << "]";
-  SetName (oss.str ());
+  return oss.str ();
+}
+
+
+LenaPfFfMacSchedulerTestCase2::LenaPfFfMacSchedulerTestCase2 (std::vector<uint16_t> dist, std::vector<uint32_t> estThrPfDl, std::vector<uint32_t> estThrPfUl)
+  : TestCase (BuildNameString (dist.size (), dist)),
+    m_nUser (dist.size ()),
+    m_dist (dist),
+    m_estThrPfDl (estThrPfDl),
+    m_estThrPfUl (estThrPfUl)
+{
 }
 
 LenaPfFfMacSchedulerTestCase2::~LenaPfFfMacSchedulerTestCase2 ()
@@ -409,7 +420,6 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
   */
 
-  SetVerbose (true);
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006, 2009 INRIA
  * Copyright (c) 2009 MIRKO BANCHI
@@ -227,6 +227,6 @@ private:
   struct Bar m_currentBar;
 };
 
-}  //namespace ns3
+}  // namespace ns3
 
 #endif /* EDCA_TXOP_N_H */

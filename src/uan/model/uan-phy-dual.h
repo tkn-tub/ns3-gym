@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -19,8 +19,8 @@
  *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#ifndef UANPHYDUAL_H
-#define UANPHYDUAL_H
+#ifndef UAN_PHY_DUAL_H
+#define UAN_PHY_DUAL_H
 
 #include "ns3/uan-phy.h"
 
@@ -248,6 +248,11 @@ public:
    */
   void SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> calcSinr);
 
+  virtual void SetSleepMode (bool sleep)
+  {
+    //TODO This method has to be implemented
+  }
+
   /**
    * \returns Packet currently being received on Phy1 (Null Ptr if none)
    */
@@ -279,4 +284,4 @@ protected:
 
 }
 
-#endif // UANPHYDUAL_H
+#endif /* UAN_PHY_DUAL_H */

@@ -24,12 +24,12 @@
 #include "map-scheduler.h"
 #include "event-impl.h"
 
-#include "ns3/ptr.h"
-#include "ns3/string.h"
-#include "ns3/object-factory.h"
-#include "ns3/global-value.h"
-#include "ns3/assert.h"
-#include "ns3/log.h"
+#include "ptr.h"
+#include "string.h"
+#include "object-factory.h"
+#include "global-value.h"
+#include "assert.h"
+#include "log.h"
 
 #include <math.h>
 #include <fstream>

@@ -18,12 +18,20 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "object-factory.h"
+#include "log.h"
 #include <sstream>
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE("ObjectFactory");
+
 ObjectFactory::ObjectFactory ()
 {
+}
+
+ObjectFactory::ObjectFactory (std::string typeId)
+{
+  SetTypeId (typeId);
 }
 
 void
@@ -48,13 +56,20 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
     {
       return;
     }
-  m_parameters.SetWithTid (m_tid, name, value);
-}
-
-void 
-ObjectFactory::Set (const AttributeList &list)
-{
-  m_parameters = list;
+  
+  struct TypeId::AttributeInformation info;
+  if (!m_tid.LookupAttributeByName (name, &info))
+    {
+      NS_FATAL_ERROR ("Invalid attribute set (" << name << ") on " << m_tid.GetName ());
+      return;
+    }
+  Ptr<AttributeValue> v = info.checker->CreateValidValue (value);
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Invalid value for attribute set (" << name << ") on " << m_tid.GetName ());
+      return;
+    }
+  m_parameters.Add (name, info.checker, v);
 }
 
 TypeId 
@@ -77,7 +92,17 @@ ObjectFactory::Create (void) const
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 {
-  os << factory.m_tid.GetName () << "[" << factory.m_parameters.SerializeToString () << "]";
+  os << factory.m_tid.GetName () << "[";
+  bool first = true;
+  for (AttributeConstructionList::CIterator i = factory.m_parameters.Begin (); i != factory.m_parameters.End (); ++i)
+    {
+      os << i->name << "=" << i->value->SerializeToString (i->checker);
+      if (first)
+        {
+          os << "|";
+        }
+    }
+  os << "]";
   return os;
 }
 std::istream & operator >> (std::istream &is, ObjectFactory &factory)
@@ -92,7 +117,56 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
   std::string tid = v.substr (0, lbracket);
   std::string parameters = v.substr (lbracket+1,rbracket-(lbracket+1));
   factory.SetTypeId (tid);
-  factory.m_parameters.DeserializeFromString (parameters);
+  std::string::size_type cur;
+  cur = 0;
+  while (cur != parameters.size ())
+    {
+      std::string::size_type equal = parameters.find ("=", cur);
+      if (equal == std::string::npos)
+        {
+          is.setstate (std::ios_base::failbit);
+          NS_LOG_DEBUG ("Error while parsing serialized attribute: \"" << parameters << "\"");
+          break;
+        }
+      else
+        {
+          std::string name = parameters.substr (cur, equal-cur);
+          struct TypeId::AttributeInformation info;
+          if (!factory.m_tid.LookupAttributeByName (name, &info))
+            {
+              is.setstate (std::ios_base::failbit);
+              NS_LOG_DEBUG ("Error while parsing serialized attribute: name does not exist: \"" << name << "\"");
+              break;
+            }
+          else
+            {
+              std::string::size_type next = parameters.find ("|", cur);
+              std::string value;
+              if (next == std::string::npos)
+                {
+                  value = parameters.substr (equal+1, parameters.size () - (equal+1));
+                  cur = parameters.size ();
+                }
+              else
+                {
+                  value = parameters.substr (equal+1, next - (equal+1));
+                  cur = next + 1;
+                }
+              Ptr<AttributeValue> val = info.checker->Create ();
+              bool ok = val->DeserializeFromString (value, info.checker);
+              if (!ok)
+                {
+                  is.setstate (std::ios_base::failbit);
+                  NS_LOG_DEBUG ("Error while parsing serialized attribute: value invalid: \"" << value << "\"");
+                  break;
+                }
+              else
+                {
+                  factory.m_parameters.Add (name, info.checker, val);
+                }
+            }
+        }
+    }
   return is;
 }
 

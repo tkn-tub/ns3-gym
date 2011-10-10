@@ -7,7 +7,7 @@
 ^testpy-output
 ^doc/html
 ^doc/latex
-^\.lock-wscript
+^\.lock-wafbuild
 ^\.waf
 ^doc/introspected-doxygen\.h$
 .*\.py[co]$
@@ -26,6 +26,7 @@
 ^src/.*/doc/source/figures/.*.eps
 ^src/.*/doc/source/figures/.*.pdf
 ^src/.*/doc/source/figures/.*.png
+^bindings/python/pybindgen/
 ms_print.*
 massif.*
 \.patch$

@@ -76,6 +76,6 @@ private:
   class SystemWallClockMsPrivate *m_priv;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* SYSTEM_WALL_CLOCK_MS_H */
