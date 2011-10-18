@@ -460,7 +460,7 @@ void AnimationInterface::RecalcTopoBounds (Vector v)
     } 
 }
 
-int AnimationInterface::WriteN (int h, const char* data, uint32_t count)
+int AnimationInterface::WriteN (HANDLETYPE h, const char* data, uint32_t count)
 { 
   if (h < 0)
     {
