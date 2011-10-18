@@ -22,7 +22,6 @@
 
 // ns3 includes
 #include "ns3/animation-interface.h"
-#include "ns3/netanim-config.h"
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/node.h"
