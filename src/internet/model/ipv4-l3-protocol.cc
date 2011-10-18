@@ -1168,6 +1168,11 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
       fragmentHeader.SetFragmentOffset (offset);
       fragmentHeader.SetPayloadSize (currentFragmentablePartSize);
 
+      if (Node::ChecksumEnabled ())
+        {
+          fragmentHeader.EnableChecksum ();
+        }
+
       NS_LOG_LOGIC ("Fragment check - " << fragmentHeader.GetFragmentOffset ()  );
 
       NS_LOG_LOGIC ("New fragment Header " << fragmentHeader);
