@@ -399,10 +399,20 @@ For the uplink:
 Helpers
 +++++++
 
-Note: the role of the MME is taken by the EpcHelper, since we don't have an MME at the moment (the current code supports data plane only).
 
 .. seqdiag:: helpers.seqdiag
 
+A few notes on the above diagram:
+
+  * the role of the MME is taken by the EpcHelper, since we don't have
+    an MME at the moment (the current code supports data plane only);
+
+  * in a real LTE/EPC system, the setup of the RadioBearer comes after
+    the setup of the S1 bearer, but here due to the use of Helpers
+    instead of S1-AP messages we do it the other way around
+    (RadioBearers first, then S1 bearer) because of easier
+    implementation. This is fine to do since the current code focuses
+    on control plane only.
 
 
 
