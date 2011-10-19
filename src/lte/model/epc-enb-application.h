@@ -22,14 +22,16 @@
 #ifndef EPC_ENB_APPLICATION_H
 #define EPC_ENB_APPLICATION_H
 
-#include "ns3/address.h"
-#include "ns3/socket.h"
-#include "ns3/virtual-net-device.h"
-#include "ns3/epc-gtpu-l5-protocol.h"
-#include "ns3/traced-callback.h"
-#include "ns3/callback.h"
-#include "ns3/ptr.h"
-#include "ns3/object.h"
+#include <ns3/address.h>
+#include <ns3/socket.h>
+#include <ns3/virtual-net-device.h>
+#include <ns3/epc-gtpu-l5-protocol.h>
+#include <ns3/traced-callback.h>
+#include <ns3/callback.h>
+#include <ns3/ptr.h>
+#include <ns3/object.h>
+#include <ns3/lte-common.h>
+#include <ns3/application.h>
 #include <map>
 
 namespace ns3 {
@@ -37,35 +39,45 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * GTPv1-U endpoint for all the tunnels of a given node. It encapsulates all the tunnel logic for creating tunnels and encapsulating data through it
+ * This application is installed inside eNBs and provides the bridge functionality for user data plane packets between the radio interface and the S1-U interface.
  */
-class EpcEnbApplication : public Object
+class EpcEnbApplication : public Application
 {
 
 public:
+
+  // inherited from Object
   static TypeId GetTypeId (void);
   
 
   /** 
+   * Constructor
    * 
-   * 
-   * \param radioSocket the socket to be used to send/receive packets to/from the LTE radio interface
+   * \param lteSocket the socket to be used to send/receive packets to/from the LTE radio interface
    * \param s1uSocket the socket to be used to send/receive packets
    * to/from the S1-U interface connected with the SGW 
    * \param sgwAddress the IPv4 address at which this eNB will be able to reach its SGW
    * 
    */
-  EpcEnbApplication (Ptr<Socket> radioSocket, Ptr<Socket> s1uSocket, Address sgwAddress);
+  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress);
 
   /**
-   * destructor
+   * Destructor
    * 
    */
   virtual ~EpcEnbApplication (void);
 
 
 
-  void SetupS1Bearer ()
+  /** 
+   * This method is triggered after the eNB received
+   * a S1-AP message of type E-RAB Setup Request by the MME and the RadioBearer has already been created
+   * 
+   * \param teid the Tunnel Endpoint IDentifier of the S1-bearer to be setup.
+   * \param rnti the unique ID of the UE on this eNB
+   * \param lcid the Logical Channel ID identifying the Radio Bearer
+   */
+  void ErabSetupRequest (uint32_t teid, uint16_t rnti, uint8_t lcid);
 
   /** 
    * Method to be assigned to the recv callback of the LTE socket. It is called when the eNB receives a data packet from the radio interface that is to be forwarded to the SGW.
@@ -88,7 +100,7 @@ public:
    * \param packet t
    * \param rbid the Radio Bearer IDentifier
    */
-  void SendToLteSocket (Ptr<Packet> packet, uint32_t rbid);
+  void SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t lcid);
 
 
   /** 
@@ -104,42 +116,6 @@ private:
 
 
   /**
-   * Creates a GTPv1-U tunnel between the given destination and the enpoint
-   * using the specified TEID.
-   * \param destination IP address of the other end of the tunnel
-   * \param teid Tunnel Endpoint IDentifier to be assigned to the tunnel
-   */
-  void CreateGtpuTunnel (Ipv4Address destination, uint32_t teid);
-
-  /**
-   * Creates a GTPv1-U tunnel between the given destination and the enpoint. The
-   * TEID is automatically sellected.
-   * \param destination IP address of the other end of the tunnel
-   * \return the Tunnel Endpoint IDentifier (TEID) assigned to the tunnel
-   */
-  uint32_t CreateGtpuTunnel (Ipv4Address destination);
-
-
-  /** 
-   * this function implements the 1-to-1 mapping between S1 Bearers and Radio Bearers
-   * 
-   * \param teid the Tunnel Endpoint IDentifier (TEID) that identifies an S1-bearer on this eNB
-   * 
-   * \return the corresponding Radio Bearer Identifier
-   */
-  uint32_t GetRbid (uint32_t teid);
-
-
-  /** 
-   * this function implements the 1-to-1 mapping between Radio Bearers and S1 Bearers 
-   * 
-   * \param rbid the Radio Bearer Identifier
-   * 
-   * \return the corresponding the Tunnel Endpoint IDentifier (TEID) that identifies an S1-bearer on this eNB
-   */
-  uint32_t GetTeid (uint32_t rbid);
-
-  /**
    * raw packet socket to send and receive the packets to and from the LTE radio interface
    */
   Ptr<Socket> m_lteSocket;
@@ -147,25 +123,25 @@ private:
   /**
    * UDP socket to send and receive GTP-U the packets to and from the S1-U interface
    */
-  Ptr<Socket> m_epcSocket;
+  Ptr<Socket> m_s1uSocket;
 
   /**
-   * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152
-   */
-  uint16_t m_udpPort;
-
-  /**
-   * Map holding the GTP instances of the active tunnels on this endpoint
-   */
-  std::map<uint32_t, Ptr<GtpuL5Protocol> > m_gtpuMap;
-
-  /**
-   * address of the SGW which terminates all tunnels
+   * address of the SGW which terminates all S1-U tunnels
    */
   Ipv4Address m_sgwAddress;
 
-  static uint16_t m_teidCounter;
-  static uint32_t m_indexCounter;
+  /**
+   * map telling for each RadioBearer (RNTI,LCID) the corresponding  S1-U TEID
+   * 
+   */
+  std::map<LteFlowId_t, uint32_t> m_rbidTeidMap;  
+
+  /**
+   * map telling for each S1-U TEID the corresponding RadioBearer (RNTI,LCID) 
+   * 
+   */
+  std::map<uint32_t, LteFlowId_t> m_teidRbidMap;
+
 };
 
 } //namespace ns3

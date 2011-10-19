@@ -318,26 +318,31 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 }
 
 
+
 void
-LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer)
+LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft)
 {
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
-      ActivateEpsBearer (*i, bearer);
+      ActivateEpsBearer (*i, bearer, tft);
     }
 }
 
 
 void
-LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
+LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft)
 {
+  // setup RadioBearer first
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   uint16_t rnti = ueRrc->GetRnti ();
   uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer);
   ueRrc->SetupRadioBearer (rnti, bearer, lcid);
+
+  // then setup S1 Bearer  
 }
+
 
 
 void
@@ -380,7 +385,6 @@ LenaHelper::EnableRlcTraces (void)
 {
   EnableDlRlcTraces ();
   EnableUlRlcTraces ();
-
 }
 
 

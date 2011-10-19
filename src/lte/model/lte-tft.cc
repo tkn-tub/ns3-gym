@@ -135,6 +135,17 @@ LteTft::PacketFilter::Matches (Direction d,
   return false;      
 }
 
+
+Ptr<LteTft> 
+LteTft::Default ()
+{
+  Ptr<LteTft> tft = Create<LteTft> ();
+  LteTft::PacketFilter defaultPacketFilter;
+  tft->Add (defaultPacketFilter);
+  return tft;
+}
+
+
 LteTft::LteTft ()
   : m_numFilters (0)
 {

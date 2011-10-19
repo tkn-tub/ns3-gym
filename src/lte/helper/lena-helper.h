@@ -32,6 +32,7 @@
 #include <ns3/eps-bearer.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/rlc-stats-calculator.h>
+#include <ns3/lte-tft.h>
 
 namespace ns3 {
 
@@ -106,20 +107,22 @@ public:
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
   /**
-   * Activate an EPS bearer on a given set of UE devices
+   * Activate a dedicated EPS bearer on a given set of UE devices
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
+   * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer);
+  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft);
 
   /**
-   * Activate an EPS bearer on a given UE device
+   * Activate a dedicated EPS bearer on a given UE device
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
+   * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer);
+  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft);
 
   /** 
    * 

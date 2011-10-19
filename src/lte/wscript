@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'virtual-net-device'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'virtual-net-device','point-to-point','applications','internet','csma'])
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -80,6 +80,7 @@ def build(bld):
         'test/lte-test-rlc-um-transmitter.cc',
         'test/epc-test-gtpu.cc',
         'test/test-eps-tft-classifier.cc',
+        'test/epc-test-s1u-downlink.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')

@@ -144,9 +144,12 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
 	       << " tos=0x" << std::hex << tos);
 
   // now it is possible to classify the packet!
-  std::map <uint32_t, Ptr<LteTft> >::const_iterator it;
+  // we use a reverse iterator since filter priority is not implemented properly.
+  // This way, since the default bearer is expected to be added first, it will be evaluated last.
+  std::map <uint32_t, Ptr<LteTft> >::const_reverse_iterator it;
   NS_LOG_LOGIC ("TFT MAP size: " << m_tftMap.size ());
-  for (it = m_tftMap.begin (); it != m_tftMap.end (); ++it)
+
+  for (it = m_tftMap.rbegin (); it != m_tftMap.rend (); ++it)
     {
       NS_LOG_LOGIC ("TFT id: " << it->first );
       NS_LOG_LOGIC (" Ptr<LteTft>: " << it->second);

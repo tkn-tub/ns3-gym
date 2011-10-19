@@ -16,20 +16,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef EPC_HELPER_H
 #define EPC_HELPER_H
 
 #include <ns3/object.h>
-
-
+#include <ns3/ipv4-address-helper.h>
+#include <ns3/data-rate.h>
+#include <ns3/lte-tft.h>
 
 
 namespace ns3 {
 
 class Node;
 class NetDevice;
+class EpcSgwPgwApplication;
 
 /**
  * \brief Helper class to handle the creation of the EPC entities and protocols.
@@ -54,7 +57,7 @@ public:
   virtual ~EpcHelper ();
   
   // inherited from Object
-  TypeId GetTypeId (void);
+  static TypeId GetTypeId (void);
 
   
   /** 
@@ -70,8 +73,15 @@ public:
   /** 
    * Activate an EPS bearer, setting up the corresponding S1-U tunnel.
    * 
+   * 
+   * 
+   * \param ueLteDevice the Ipv4-enabled device of the UE, normally connected via the LTE radio interface
+   * \param enbLteDevice the non-Ipv4-enabled device of the eNB
+   * \param tft the Traffic Flow Template of the new bearer
+   * \param rnti the Radio Network Temporary Identifier that identifies the UE
+   * \param lcid the Logical Channel IDentifier of the corresponding RadioBearer
    */
-  void ActivateEpsBearer ();
+  void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<LteTft> tft, uint16_t rnti, uint8_t lcid);
 
 
   /** 
@@ -84,14 +94,34 @@ public:
    */
   Ptr<Node> GetPgwNode ();
 
+  /** 
+   * Assign IPv4 addresses to UE devices
+   * 
+   * \param ueDevices the set of UE devices
+   * 
+   * \return the interface container, \see Ipv4AddressHelper::Assign() which has similar semantics
+   */
+  Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
+
+
+
 private:
   
+  /** 
+   * helper to assign addresses to S1-U
+   * NetDevices 
+   */
+  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
 
-  Ipv4AddressHelper m_s1uIpv4AddressHelper; /**< helper to assign
-					       addresses to S1-U
-					       NetDevices */
+  /** 
+   * helper to assign addresses to UE devices as well as to the TUN device of the SGW/PGW
+   */
+  Ipv4AddressHelper m_ueAddressHelper; 
   
-  Ptr<Node> m_sgwPgw; /**< the SGW/PGW node */ 
+  
+  Ptr<Node> m_sgwPgw; 
+
+  Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
 
   DataRate m_s1uLinkDataRate;
   Time     m_s1uLinkDelay;

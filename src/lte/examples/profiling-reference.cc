@@ -117,7 +117,7 @@ int main (int argc, char *argv[])
       lena->Attach (ueDev, enbDevs.Get (i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
-      lena->ActivateEpsBearer (ueDev, bearer);
+      lena->ActivateEpsBearer (ueDev, bearer, LteTft::Default ());
 
 
     }

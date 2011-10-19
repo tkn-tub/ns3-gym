@@ -25,38 +25,48 @@
 #include "ns3/mac48-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/uinteger.h"
+#include "ns3/epc-gtpu-header.h"
+#include "ns3/lte-mac-tag.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcEnbApplication");
-
-uint16_t EpcEnbApplication::m_teidCounter = 0;
-uint32_t EpcEnbApplication::m_indexCounter = 0;
 
 
 TypeId
 EpcEnbApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcEnbApplication")
-    .SetParent<Object> ()
-     .AddAttribute("GtpuPort",
-                   "UDP Port to be used for GTP-U",
-                   UintegerValue (2152),
-                   MakeUintegerAccessor (&EpcEnbApplication::m_updPort),
-                   MakeUintegerChecker<uint16_t> ());
+    .SetParent<Object> ();
   return tid;
 }
 
-EpcEnbApplication::EpcEnbApplication (Address sgwAddress)
+EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress)
+  : m_lteSocket (lteSocket),
+    m_s1uSocket (s1uSocket),    
+    m_sgwAddress (sgwAddress)
 {
   NS_LOG_FUNCTION (this);
+  m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
+  m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
 }
 
 
 EpcEnbApplication::~EpcEnbApplication (void)
 {
+  NS_LOG_FUNCTION (this);
 }
  
+void 
+EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint16_t rnti, uint8_t lcid)
+{
+  NS_LOG_FUNCTION (this << teid << rnti << (uint16_t) lcid);
+  LteFlowId_t rbid (rnti, lcid);
+  // side effect: create entries if not exist
+  m_rbidTeidMap[rbid] = teid;
+  m_teidRbidMap[teid] = rbid;
+}
 
 void 
 EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
@@ -64,99 +74,61 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this);  
   NS_ASSERT (socket == m_lteSocket);
   Ptr<Packet> packet = socket->Recv ();
-  GtpuHeader gtpu;
-  // TODO: should determine the TEID based on the Radio Bearer ID
-  // which should be conveyed by means of a Packet Tag 
-  uint32_t teid = 0;
+  LteMacTag tag;
+  bool found = packet->RemovePacketTag (tag);
+  NS_ASSERT (found);
+  LteFlowId_t flowId;
+  flowId.m_rnti = tag.GetRnti ();
+  flowId.m_lcId = tag.GetLcid ();
+  std::map<LteFlowId_t, uint32_t>::iterator it = m_rbidTeidMap.find (flowId);
+  NS_ASSERT (it != m_rbidTeidMap.end ());
+  uint32_t teid = it->second;
   SendToS1uSocket (packet, teid);
 }
 
 void 
 EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this);  
+  NS_LOG_FUNCTION (this << socket);  
   NS_ASSERT (socket == m_s1uSocket);
   Ptr<Packet> packet = socket->Recv ();
   GtpuHeader gtpu;
   packet->RemoveHeader (gtpu);
   uint32_t teid = gtpu.GetTeid ();
-  uint32_t rbid = GetRbid (teid);
-  SendToLteSocket (packet, rbid);
+  std::map<uint32_t, LteFlowId_t>::iterator it = m_teidRbidMap.find (teid);
+  NS_ASSERT (it != m_teidRbidMap.end ());
+
+  // workaround for bug 231 https://www.nsnam.org/bugzilla/show_bug.cgi?id=231
+  SocketAddressTag tag;
+  packet->RemovePacketTag (tag);
+  
+  SendToLteSocket (packet, it->second.m_rnti, it->second.m_lcId);
 }
+
+void 
+EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t lcid)
+{
+  NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) lcid);  
+  LteMacTag tag (rnti, lcid);
+  packet->AddPacketTag (tag);
+  int sentBytes = m_lteSocket->Send (packet);
+  NS_ASSERT (sentBytes > 0);
+}
+
 
 void 
 EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
 {
+  NS_LOG_FUNCTION (this << packet << teid);  
+  GtpuHeader gtpu;
   gtpu.SetTeid (teid);
   // From 3GPP TS 29.281 v10.0.0 Section 5.1
   // Length of the payload + the non obligatory GTP-U header
-  gtpu.SetLength (p->GetSize () + h.GetSerializedSize () - 8);  
+  gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
   packet->AddHeader (gtpu);
   uint32_t flags = 0;
   m_s1uSocket->SendTo (packet, flags, m_sgwAddress);
 }
 
-
-uint32_t
-EpcEnbApplication::CreateGtpuTunnel (Ipv4Address destination)
-{
-  NS_LOG_FUNCTION (this);
-  if (m_teidCounter == 0xffffffff)
-    {
-      NS_FATAL_ERROR ("TEID space exhausted, please implement some TEID reuse mechanism"); 
-    }
-  CreateGtpuTunnel (destination, ++m_teidCounter);
-  return m_teidCounter;
-}
-
-void
-EpcEnbApplication::CreateGtpuTunnel (Ipv4Address destination, uint32_t teid)
-{
-  NS_LOG_FUNCTION (this);
-  m_gtpuMap[m_indexCounter] = CreateObject<GtpuL5Protocol> (teid);
-  m_dstAddrMap[m_indexCounter] = destination;
-}
-
-uint32_t 
-EpcEnbApplication::GetRbid (uint32_t teid)
-{
-  // since we don't have SRBs for now, we can just use the same identifiers
-  return teid;
-}
-
-uint32_t 
-EpcEnbApplication::GetTeid (uint32_t rbid)
-{
-  // since we don't have SRBs for now, we can just use the same identifiers
-  return rbid;
-}
-
-void
-EpcEnbApplication::GtpuRecv (Ptr<Socket> socket)
-{
-  NS_LOG_FUNCTION (this);  
-  Ptr<Packet> packet = socket->Recv ();
-  uint32_t index = 0;
-  m_gtpuMap[index]->RemoveHeader (packet);
-  m_tap->Receive (packet, 0x0800, m_tap->GetAddress (), m_tap->GetAddress (), NetDevice::PACKET_HOST);
-}
-
-bool
-EpcEnbApplication::GtpuSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
-{
-  NS_LOG_FUNCTION (this << source << dest << packet << packet->GetSize ());
-  // TODO: Instead of use always index 0 make use of the TFT classifier class, probably
-  // a mapping between the tunnel index (assigned during the tunnel creation) and the classifier
-  // index (assigned when the first packet is send through) should be maintained.
-  uint32_t index = 0;
-  packet = m_gtpuMap[index]->AddHeader (packet);
-  m_socket->SendTo (packet, 0, InetSocketAddress (m_dstAddrMap[index], m_udpPort));
-  return true;
-}
-
-EpcEnbApplication::~EpcEnbApplication ()
-{
-  NS_LOG_FUNCTION_NOARGS ();
-}
 
 }; // namespace ns3

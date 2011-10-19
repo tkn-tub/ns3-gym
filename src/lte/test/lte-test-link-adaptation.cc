@@ -188,10 +188,10 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Attach a UE to a eNB
   lena->Attach (ueDevs, enbDevs.Get (0));
 
-  // Activate an EPS bearer
-  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+  // Activate the default EPS bearer
+  enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

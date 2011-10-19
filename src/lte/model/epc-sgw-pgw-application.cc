@@ -25,76 +25,162 @@
 #include "ns3/mac48-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/epc-gtpu-header.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcSgwPgwApplication");
 
-uint16_t EpcSgwPgwAplication::m_teidCounter = 0;
-uint32_t EpcSgwPgwAplication::m_indexCounter = 0;
+
+/////////////////////////
+// EnbInfo
+/////////////////////////
+
+
+EpcSgwPgwApplication::EnbInfo::EnbInfo ()
+  :  m_teidCounter (0)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+uint32_t
+EpcSgwPgwApplication::EnbInfo::AddBearer (Ptr<LteTft> tft)
+{
+  NS_LOG_FUNCTION (this << tft);
+  return m_tftClassifier.Add (tft);
+}
+
+uint32_t
+EpcSgwPgwApplication::EnbInfo::Classify (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this << p);
+  // we hardcode DOWNLINK direction since the PGW is espected to
+  // classify only downlink packets (uplink packets will go to the
+  // internet without any classification). 
+  return m_tftClassifier.Classify (p, LteTft::DOWNLINK);
+}
+
+
+/////////////////////////
+// EpcSgwPgwApplication
+/////////////////////////
 
 
 TypeId
-EpcSgwPgwAplication::GetTypeId (void)
+EpcSgwPgwApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcSgwPgwApplication")
     .SetParent<Object> ();
   return tid;
 }
 
-EpcSgwPgwAplication::EpcSgwPgwAplication (const Ptr<VirtualNetDevice> tap, const Ptr<Socket> s)
-  : m_udpPort (2152)
+  
+
+EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> giTunDevice, const Ptr<Socket> s1uSocket)
+  : m_s1uSocket (s1uSocket),
+    m_giTunDevice (giTunDevice),
+    m_gtpuUdpPort (2152) // fixed by the standard
 {
-  NS_LOG_FUNCTION (this);
-  m_tap = tap;
-  m_tap->SetSendCallback (MakeCallback (&EpcSgwPgwAplication::GtpuSend, this));
-  m_socket = s;
-  m_socket->SetRecvCallback (MakeCallback (&EpcSgwPgwAplication::GtpuRecv, this));
+  NS_LOG_FUNCTION (this << giTunDevice << s1uSocket);
+  m_s1uSocket->SetRecvCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromS1uSocket, this));
 }
 
-uint32_t
-EpcSgwPgwAplication::CreateGtpuTunnel (Ipv4Address destination)
+  
+EpcSgwPgwApplication::~EpcSgwPgwApplication ()
 {
-  NS_LOG_FUNCTION (this);
-  CreateGtpuTunnel (destination, ++m_teidCounter);
-  return m_teidCounter;
-}
-
-void
-EpcSgwPgwAplication::CreateGtpuTunnel (Ipv4Address destination, uint32_t teid)
-{
-  NS_LOG_FUNCTION (this);
-  m_gtpuMap[m_indexCounter] = CreateObject<GtpuL5Protocol> (teid);
-  m_dstAddrMap[m_indexCounter] = destination;
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 
-void
-EpcSgwPgwAplication::GtpuRecv (Ptr<Socket> socket)
+uint32_t 
+EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<LteTft> tft)
 {
-  NS_LOG_FUNCTION (this);
-  Ptr<Packet> packet = socket->Recv (65535, 0);
-  uint32_t index = 0;
-  m_gtpuMap[index]->RemoveHeader (packet);
-  m_tap->Receive (packet, 0x0800, m_tap->GetAddress (), m_tap->GetAddress (), NetDevice::PACKET_HOST);
+  NS_LOG_FUNCTION (this << ueAddr << enbAddr << tft);
+  // side effect: add entry if not exists
+  m_ueAddrEnbAddrMap[ueAddr] = enbAddr;
+
+  // side effect: create new EnbInfo if it does not exist
+  uint32_t teid = m_enbInfoMap[enbAddr].AddBearer (tft);
+  return teid;
 }
 
 bool
-EpcSgwPgwAplication::GtpuSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+EpcSgwPgwApplication::RecvFromGiTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << source << dest << packet << packet->GetSize ());
-  // TODO: Instead of use always index 0 make use of the TFT classifier class, probably
-  // a mapping between the tunnel index (assigned during the tunnel creation) and the classifier
-  // index (assigned when the first packet is send through) should be maintained.
-  uint32_t index = 0;
-  packet = m_gtpuMap[index]->AddHeader (packet);
-  m_socket->SendTo (packet, 0, InetSocketAddress (m_dstAddrMap[index], m_udpPort));
-  return true;
+
+  // get IP address of UE
+  Ptr<Packet> pCopy = packet->Copy ();
+  Ipv4Header ipv4Header;
+  pCopy->RemoveHeader (ipv4Header);
+  Ipv4Address ueAddr =  ipv4Header.GetDestination ();
+  NS_LOG_LOGIC ("packet addressed to UE " << ueAddr);
+
+  // find corresponding eNB address
+  std::map<Ipv4Address, Ipv4Address>::iterator it1 = m_ueAddrEnbAddrMap.find (ueAddr);
+  if (it1 == m_ueAddrEnbAddrMap.end ())
+    {        
+      NS_LOG_WARN ("could not find corresponding eNB for UE address " << ueAddr) ;
+    }
+  else
+    {
+      Ipv4Address enbAddr = it1->second;
+      // lookup into TFT classifier for that eNB
+      std::map<Ipv4Address, EnbInfo>::iterator it2 = m_enbInfoMap.find (enbAddr);
+      NS_ASSERT (it2 != m_enbInfoMap.end ());
+      uint32_t teid = it2->second.Classify (packet);   
+      if (teid == 0)
+        {
+          NS_LOG_WARN ("no matching TEID for this packet");                   
+        }
+      else
+        {
+          SendToS1uSocket (packet, enbAddr, teid);
+        }
+    }
+  // there is no reason why we should notify the Gi TUN
+  // VirtualNetDevice that he failed to send the packet 
+  const bool succeeded = true;
+  return succeeded;
 }
 
-EpcSgwPgwAplication::~EpcSgwPgwAplication ()
+void 
+EpcSgwPgwApplication::RecvFromS1uSocket (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << socket);  
+  NS_ASSERT (socket == m_s1uSocket);
+  Ptr<Packet> packet = socket->Recv ();
+  GtpuHeader gtpu;
+  packet->RemoveHeader (gtpu);
+  uint32_t teid = gtpu.GetTeid ();
+
+  // workaround for bug 231 https://www.nsnam.org/bugzilla/show_bug.cgi?id=231
+  SocketAddressTag tag;
+  packet->RemovePacketTag (tag);
+
+  SendToGiTunDevice (packet, teid);
+}
+
+void 
+EpcSgwPgwApplication::SendToGiTunDevice (Ptr<Packet> packet, uint32_t teid)
+{
+  NS_LOG_FUNCTION (this << packet << teid);
+  m_giTunDevice->Receive (packet, 0x0800, m_giTunDevice->GetAddress (), m_giTunDevice->GetAddress (), NetDevice::PACKET_HOST);
+}
+
+void 
+EpcSgwPgwApplication::SendToS1uSocket (Ptr<Packet> packet, Ipv4Address enbAddr, uint32_t teid)
+{
+  NS_LOG_FUNCTION (this << packet << enbAddr << teid);
+
+  GtpuHeader gtpu;
+  gtpu.SetTeid (teid);
+  // From 3GPP TS 29.281 v10.0.0 Section 5.1
+  // Length of the payload + the non obligatory GTP-U header
+  gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
+  packet->AddHeader (gtpu);
+  uint32_t flags = 0;
+  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(enbAddr, m_gtpuUdpPort));
 }
 
 }; // namespace ns3

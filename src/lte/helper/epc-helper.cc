@@ -21,9 +21,17 @@
 
 #include <ns3/epc-helper.h>
 #include <ns3/log.h>
-#include "ns3/inet-socket-address.h"
-#include "ns3/mac48-address.h"
-#include "ns3/epc-gtpu-tunnel-endpoint.h"
+#include <ns3/inet-socket-address.h>
+#include <ns3/mac48-address.h>
+#include <ns3/epc-gtpu-tunnel-endpoint.h>
+#include <ns3/eps-bearer.h>
+#include <ns3/ipv4-address.h>
+#include <ns3/internet-stack-helper.h>
+#include <ns3/point-to-point-helper.h>
+#include <ns3/packet-socket-helper.h>
+#include <ns3/packet-socket-address.h>
+#include <ns3/epc-enb-application.h>
+#include <ns3/epc-sgw-pgw-application.h>
 
 
 namespace ns3 {
@@ -33,30 +41,49 @@ NS_LOG_COMPONENT_DEFINE ("EpcHelper");
 NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 
 EpcHelper::EpcHelper () 
+  : m_gtpuUdpPort (2152) // fixed by the standard
 {
   NS_LOG_FUNCTION (this);
 
   // since we use point-to-point links for all S1-U links, 
   // we use a /30 subnet which can hold exactly two addresses 
   // (remember that net broadcast and null address are not valid)
-  m_s1uIpv4AddressHelper.SetBase ("10.7.0.0", "255.255.255.252");
+  m_s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
+
+  // we use a /8 net for all UEs
+  m_ueAddressHelper.SetBase ("7.0.0.0", "255.0.0.0");
   
   // create SgwPgwNode
   m_sgwPgw = CreateObject<Node> ();
+  InternetStackHelper internet;
+  internet.Install (m_sgwPgw);
   
+  // create S1-U socket
   Ptr<Socket> sgwPgwS1uSocket = Socket::CreateSocket (m_sgwPgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  sgwPgwS1uSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_gtpuUdpPort));
+  int retval = sgwPgwS1uSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_gtpuUdpPort));
+  NS_ASSERT (retval == 0);
 
-  // create SgwPgwApplication
+  // create TUN device implementing tunneling of user data over GTP-U/UDP/IP 
+  Ptr<VirtualNetDevice> giTunDevice = CreateObject<VirtualNetDevice> ();
 
-  // create WAN NetDevice?
+  // yes we need this
+  giTunDevice->SetAddress (Mac48Address::Allocate ()); 
 
-  // create virtual net device
+  m_sgwPgw->AddDevice (giTunDevice);
+  NetDeviceContainer giTunDeviceContainer;
+  giTunDeviceContainer.Add (giTunDevice);
   
-  // interface SgwPgwApplication and virtual net device for tunneling
+  // the TUN device is on the same subnet as the UEs, so when a packet
+  // addressed to an UE arrives at the intenet to the WAN interface of
+  // the PGW it will be forwarded to the TUN device. 
+  Ipv4InterfaceContainer giTunDeviceIpv4IfContainer = m_ueAddressHelper.Assign (giTunDeviceContainer);  
 
-  // set up static routes appropriately
+  // create EpcSgwPgwApplication
+  m_sgwPgwApp = CreateObject<EpcSgwPgwApplication> (giTunDevice, sgwPgwS1uSocket);
+  m_sgwPgw->AddApplication (m_sgwPgwApp);
   
+  // connect SgwPgwApplication and virtual net device for tunneling
+  giTunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromGiTunDevice, m_sgwPgwApp));
 
 }
 
@@ -71,10 +98,6 @@ EpcHelper::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::EpcHelper")
     .SetParent<Object> ()
     .AddConstructor<EpcHelper> ()
-    .AddAttribute ("", "The IP address to assign to the tap device, when in ConfigureLocal mode.  "
-    Ipv4AddressValue ("255.255.255.255"),
-    MakeIpv4AddressAccessor (&TapBridge::m_tapIp),
-    MakeIpv4AddressChecker ())
     .AddAttribute ("S1uLinkDataRate", 
                    "The data rate to be used for the next S1-U link to be created",
                    DataRateValue (DataRate ("10Gb/s")),
@@ -83,31 +106,24 @@ EpcHelper::GetTypeId (void)
     .AddAttribute ("S1uLinkDelay", 
                    "The delay to be used for the next S1-U link to be created",
                    TimeValue (Seconds (0)),
-                   MakeTimeAccessor (&EpcHelper::m_m_s1uLinkDelay),
+                   MakeTimeAccessor (&EpcHelper::m_s1uLinkDelay),
                    MakeTimeChecker ())
-     .AddAttribute("GtpuPort",
-                   "UDP Port to be used for GTP-U",
-                   UintegerValue (2152),
-                   MakeUintegerAccessor (&EpcHelper::m_gtpuUdpPort),
-                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
-}
-
-void
-EpcHelper::CreateSgwPgw ()
-{
- 
 }
 
 
 void
 EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
 {
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice);
+
+  NS_ASSERT (enb == lteEnbNetDevice->GetNode ());
 
   // add an IPv4 stack to the previously created eNB
   InternetStackHelper internet;
   internet.Install (enb);
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after node creation: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());
 
   // create a point to point link between the new eNB and the SGW with
   // the corresponding new NetDevices on each side  
@@ -118,82 +134,104 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_s1uLinkDataRate));
   p2ph.SetChannelAttribute ("Delay", TimeValue (m_s1uLinkDelay));  
   NetDeviceContainer enbSgwDevices = p2ph.Install (enb, m_sgwPgw);
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after installing p2p dev: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());  
   Ptr<NetDevice> enbDev = enbSgwDevices.Get (0);
   Ptr<NetDevice> sgwDev = enbSgwDevices.Get (1);
   m_s1uIpv4AddressHelper.NewNetwork ();
-  Ipv4InterfaceContainer enbSgwIpIfaces  m_s1uIpv4AddressHelper.Assign (enbSgwDevices);
+  Ipv4InterfaceContainer enbSgwIpIfaces = m_s1uIpv4AddressHelper.Assign (enbSgwDevices);
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after assigning Ipv4 addr to S1 dev: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());
+  
   Ipv4Address enbAddress = enbSgwIpIfaces.GetAddress (0);
   Ipv4Address sgwAddress = enbSgwIpIfaces.GetAddress (1);
 
   // create S1-U socket for the ENB
   Ptr<Socket> enbS1uSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  enbS1uSocket->Bind (InetSocketAddress (enbAddress, m_gtpuUdpPort));
+  int retval = enbS1uSocket->Bind (InetSocketAddress (enbAddress, m_gtpuUdpPort));
+  NS_ASSERT (retval == 0);
+  
 
+  // give PacketSocket powers to the eNB
+  //PacketSocketHelper packetSocket;
+  //packetSocket.Install (enb); 
+  
   // create LTE socket for the ENB 
-  PacketSocketAddress enbLteSocketAddr;
-  enbLteSocketAddr.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
-  // do we need the following?
-  //enbLteSocketAddr.SetPhysicalAddress (devices.Get (1)->GetAddress ());
-  //enbLteSocketAddr.SetProtocol (1);
-
   Ptr<Socket> enbLteSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::PacketSocketFactory"));
-  enbLteSocket->Bind (enbLteSocketAddr);
+  PacketSocketAddress enbLteSocketBindAddress;
+  enbLteSocketBindAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
+  retval = enbLteSocket->Bind (enbLteSocketBindAddress);
+  NS_ASSERT (retval == 0);  
+  PacketSocketAddress enbLteSocketConnectAddress;
+  enbLteSocketConnectAddress.SetPhysicalAddress (Mac48Address::GetBroadcast ());
+  enbLteSocketConnectAddress.SetProtocol (Ipv4L3Protocol::PROT_NUMBER);
+  retval = enbLteSocket->Connect (enbLteSocketConnectAddress);
+  NS_ASSERT (retval == 0);  
+  
 
-  // create EpcEnbApplication
-  Ptr<EpcEnbApplication> = CreateObject<EpcEnbApplication> (enbLteSocket, enbS1uSocket, sgwAddress);
-
+  NS_LOG_INFO ("create EpcEnbApplication");
+  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbS1uSocket, sgwAddress);
+  enb->AddApplication (enbApp);
+  NS_ASSERT (enb->GetNApplications () == 1);
+  NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> () != 0, "cannot retrieve EpcEnbApplication");
+  NS_LOG_LOGIC ("enb: " << enb << ", enb->GetApplication (0): " << enb->GetApplication (0));
   
 }
 
 
 void
-EpcHelper::ActivateEpsBearer ()
+EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<LteTft> tft, uint16_t rnti, uint8_t lcid)
 {
-  // add tunnel at EpcSgwPgwApplication
-  // add tunnel at EpcEnbApplication
+  Ptr<Node> ueNode = ueLteDevice->GetNode (); 
+  Ptr<Ipv4> ueIpv4 = ueNode->GetObject<Ipv4> ();
+  int32_t interface =  ueIpv4->GetInterfaceForDevice (ueLteDevice);
+  NS_ASSERT (interface >= 0);
+  NS_ASSERT (ueIpv4->GetNAddresses (interface) == 1);
+  Ipv4Address ueAddr = ueIpv4->GetAddress (interface, 0).GetLocal ();
+  NS_LOG_LOGIC (" UE IP address: " << ueAddr);
+
+  // NOTE: unlike ueLteDevice, enbLteDevice is NOT an Ipv4 enabled
+  // device. In fact we are interested in the S1 device of the eNB.
+  // We find it by relying on the assumption that the S1 device is the
+  // only Ipv4 enabled device of the eNB besides the localhost interface.
+  Ptr<Node> enbNode = enbLteDevice->GetNode (); 
+  NS_ASSERT (enbNode != 0);
+  Ptr<Ipv4> enbIpv4 = enbNode->GetObject<Ipv4> ();
+  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB: " << enbIpv4->GetNInterfaces ());
+  // two ifaces total: loopback + the S1-U interface
+  NS_ASSERT (enbIpv4->GetNInterfaces () == 2); 
+  NS_ASSERT (ueIpv4->GetNAddresses (1) == 1);
+  // iface index 0 is loopback, index 1 is the S1-U interface
+  Ipv4Address enbAddr = enbIpv4->GetAddress (1, 0).GetLocal (); 
+  NS_LOG_LOGIC (" ENB IP address: " << enbAddr);
+
+  // setup S1 bearer at EpcSgwPgwApplication
+  uint32_t teid = m_sgwPgwApp->ActivateS1Bearer (ueAddr, enbAddr, tft);
+
+  // setup S1 bearer at EpcEnbApplication
+  NS_LOG_LOGIC ("enb: " << enbNode << ", enb->GetApplication (0): " << enbNode->GetApplication (0));
+  NS_ASSERT (enbNode->GetNApplications () == 1);
+  Ptr<Application> app =  enbNode->GetApplication (0);
+  NS_ASSERT (app != 0);
+  Ptr<EpcEnbApplication> epcEnbApp = app->GetObject<EpcEnbApplication> ();
+  NS_ASSERT (epcEnbApp != 0);
+  epcEnbApp->ErabSetupRequest (teid, rnti, lcid);
+  
+  
 }
 
 
 Ptr<Node>
-EpcHelper::GetSgwPgwNode ()
+EpcHelper::GetPgwNode ()
 {
   return m_sgwPgw;
 }
 
 
-void
-EpcHelper::InstallGtpu (Ptr<Node> n)
+Ipv4InterfaceContainer 
+EpcHelper::AssignUeIpv4Address (NetDeviceContainer ueDevices)
 {
-  InstallGtpu (n, m_ipv4.NewAddress ());
+  return m_ueAddressHelper.Assign (ueDevices);
 }
 
-void
-EpcHelper::InstallGtpu (Ptr<Node> n, Ipv4Address addr)
-{
-  NS_LOG_FUNCTION (this);
-  // UDP socket creation and configuration
-  Ptr<Socket> m_socket = Socket::CreateSocket (n, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  m_socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_udpPort));
-
-  // tap device creation and configuration
-  Ptr<VirtualNetDevice> m_tap = CreateObject<VirtualNetDevice> ();
-  m_tap->SetAddress (Mac48Address::Allocate ());
-
-  n->AddDevice (m_tap);
-  Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
-  uint32_t i = ipv4->AddInterface (m_tap);
-  ipv4->AddAddress (i, Ipv4InterfaceAddress (addr, m_mask));
-  ipv4->SetUp (i);
-  Ptr<GtpuTunnelEndpoint> tunnel = CreateObject<GtpuTunnelEndpoint> (m_tap, m_socket);
-  m_gtpuEndpoint[n] = tunnel;
-}
-
-void
-EpcHelper::CreateGtpuTunnel (Ptr<Node> n, Ipv4Address nAddr, Ptr<Node> m, Ipv4Address mAddr)
-{
-  uint32_t teid = m_gtpuEndpoint[n]->CreateGtpuTunnel (mAddr);
-  m_gtpuEndpoint[m]->CreateGtpuTunnel (nAddr, teid);
-}
 
 
 } // namespace ns3
