@@ -193,6 +193,16 @@ public:
    */
   void ResetAnimWriteCallback ();
 
+  /**
+   * \brief Helper function to set Constant Position for a given node
+   * \param n Ptr to the node
+   * \param x X co-ordinate of the node
+   * \param y Y co-ordinate of the node
+   * \param z Z co-ordinate of the node
+   *
+   */
+  void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+
 private:
 #ifndef WIN32
   int m_fHandle;  // File handle for output (-1 if none)

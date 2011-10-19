@@ -32,6 +32,7 @@
 #include "ns3/animation-interface-helper.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wimax-mac-header.h"
+#include "ns3/constant-position-mobility-model.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -58,6 +59,7 @@ AnimationInterface::AnimationInterface ()
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0),randomPosition (true),
     m_writeCallback (0)
 {
+  StartAnimation ();
 }
 
 AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
@@ -66,6 +68,7 @@ AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
     m_writeCallback (0)
 {
+  StartAnimation ();
 }
 
 AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
@@ -74,6 +77,7 @@ AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
     m_writeCallback (0)
 {
+  StartAnimation ();
 }
 
 AnimationInterface::~AnimationInterface ()
@@ -929,6 +933,21 @@ void AnimationInterface::OutputCsmaPacket (AnimPacketInfo &pktInfo, AnimRxInfo p
   oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
   oss << GetXMLClose ("packet");
   WriteN (m_fHandle, oss.str ());
+}
+
+void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, double z)
+{
+  NS_ASSERT (n);
+  Ptr<ConstantPositionMobilityModel> hubLoc =  n->GetObject<ConstantPositionMobilityModel> ();
+  if (hubLoc == 0)
+    {
+      hubLoc = CreateObject<ConstantPositionMobilityModel> ();
+      n->AggregateObject (hubLoc);
+    }
+  Vector hubVec (x, y, z);
+  hubLoc->SetPosition (hubVec);
+  NS_LOG_INFO ("Node:" << n->GetId () << " Position set to:(" << x << "," << y << "," << z << ")");
+
 }
 
 
