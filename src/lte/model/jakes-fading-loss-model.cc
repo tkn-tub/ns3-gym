@@ -26,28 +26,10 @@
 #include <ns3/simulator.h>
 #include <stdint.h>
 #include "stdlib.h"
-#include "lte-phy.h"
 #include <ns3/mobility-model.h>
-
-#include "JakesTraces/multipath_v0_M6.h"
-#include "JakesTraces/multipath_v0_M8.h"
-#include "JakesTraces/multipath_v0_M10.h"
-#include "JakesTraces/multipath_v0_M12.h"
-
-#include "JakesTraces/multipath_v3_M6.h"
-#include "JakesTraces/multipath_v3_M8.h"
-#include "JakesTraces/multipath_v3_M10.h"
-#include "JakesTraces/multipath_v3_M12.h"
-
-#include "JakesTraces/multipath_v30_M6.h"
-#include "JakesTraces/multipath_v30_M8.h"
-#include "JakesTraces/multipath_v30_M10.h"
-#include "JakesTraces/multipath_v30_M12.h"
-
-#include "JakesTraces/multipath_v120_M6.h"
-#include "JakesTraces/multipath_v120_M8.h"
-#include "JakesTraces/multipath_v120_M10.h"
-#include "JakesTraces/multipath_v120_M12.h"
+#include <ns3/string.h>
+#include <ns3/double.h>
+#include <fstream>
 
 
 NS_LOG_COMPONENT_DEFINE ("JakesFadingLossModel");
@@ -58,13 +40,13 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (JakesFadingLossModel);
 
 JakesFadingLossModel::JakesFadingLossModel ()
-  : m_nbOfPaths (1, 4),
-    m_startJakes (1, 2500),
-    m_phy (0),
-    m_subChannelsNum (100)
+  : m_traceLength (10.0),
+    m_samplesNum (10000),
+    m_windowSize (0.5),
+    //m_startJakes (1, (m_traceLength-m_windowSize)*1000),
+    m_rbNum (100)
 {
   NS_LOG_FUNCTION (this);
-  SetSamplingPeriod (0.5); // default value
 }
 
 
@@ -72,8 +54,28 @@ TypeId
 JakesFadingLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::JakesFadingLossModel")
-    .SetParent<DiscreteTimeLossModel> ()
+    .SetParent<Object> ()
     .AddConstructor<JakesFadingLossModel> ()
+    .AddAttribute ("TraceFilename",
+                   "Name of file to load a trace from. By default, uses /JakesTraces/fading_trace_EPA_3kmph.fad",
+                   StringValue ("/home/mmiozzo/ns3/lena/ns-3-lena-pem/src/lte/model/JakesTraces/fading_trace_EPA_3kmph.fad"),
+                   MakeStringAccessor (&JakesFadingLossModel::m_traceFile),
+                   MakeStringChecker ())
+    .AddAttribute ("TraceLength",
+                  "The total length of the fading trace (default value 10 s.)",
+                  TimeValue (Seconds (10.0)),
+                  MakeTimeAccessor (&JakesFadingLossModel::m_traceLength),
+                  MakeTimeChecker ())
+    .AddAttribute ("SamplesNum",
+                  "The number of samples the trace is made of (default 10000)",
+                  DoubleValue (10000),
+                  MakeDoubleAccessor (&JakesFadingLossModel::m_samplesNum),
+                  MakeDoubleChecker<double> ())
+    .AddAttribute ("WindowSize",
+                  "The size of the window for the fading trace (default value 0.5 s.)",
+                  TimeValue (Seconds (0.5)),
+                  MakeTimeAccessor (&JakesFadingLossModel::m_windowSize),
+                  MakeTimeChecker ())
   ;
   return tid;
 }
@@ -81,244 +83,73 @@ JakesFadingLossModel::GetTypeId (void)
 
 JakesFadingLossModel::~JakesFadingLossModel ()
 {
-  m_phy  = 0;
 }
-
 
 void
-JakesFadingLossModel::SetPhy (Ptr<LtePhy> phy)
+JakesFadingLossModel::LoadTrace (std::string filename)
 {
-  NS_LOG_FUNCTION (this);
-  m_phy = phy;
+  NS_LOG_FUNCTION (this << "Loading Fading Trace " << filename);
+  std::ifstream ifTraceFile;
+  ifTraceFile.open (filename.c_str (), std::ifstream::in);
+  m_fadingTrace.clear ();
+  if (!ifTraceFile.good ())
+    {
+      NS_LOG_ERROR (this << " Fading trace file not found");
+    }
 
-  //SetValue ();
+  NS_LOG_INFO (this << " length " << m_traceLength);
+  NS_LOG_INFO (this << " RB " << m_rbNum << " samples " << m_samplesNum);
+  for (uint32_t i = 0; i < m_rbNum; i++)
+    {
+      FadingTraceSample rbTimeFadingTrace;
+      for (uint32_t j = 0; j < m_samplesNum; j++)
+        {
+          double sample;
+          ifTraceFile >> sample;
+          rbTimeFadingTrace.push_back (sample);
+        }
+      m_fadingTrace.push_back (rbTimeFadingTrace);
+    }
+  ifTraceFile.close ();
+  m_startJakes = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
+  m_windowOffset = m_startJakes->GetValue ();
 }
 
 
-Ptr<LtePhy>
-JakesFadingLossModel::GetPhy (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_phy;
-}
-
-
-void
-JakesFadingLossModel::SetValue (double speed)
-{
-  NS_LOG_FUNCTION (this << speed);
-
-  m_multipath.clear ();
-
-//   int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
-
-  /*
-   * Several 3GPP standards propose a simulation scenario to use duirng the
-   * LTE performance evaluation. In particular they suggest to consider these
-   * user speeds: 0, 3, 30, 120 km/h. To this aim, we should map user speed
-   * into one of the suggested values.
-   */
-  if (speed < 3.)
-    {
-      speed = 0;
-    }
-  else if (speed < 30.)
-    {
-      speed = 3.;
-    }
-  else if (speed < 120.)
-    {
-      speed = 30.;
-    }
-  else
-    {
-      speed = 120;
-    }
-
-
-  /*
-   * Jackes Model.
-   * Jakes popularised a model for Rayleigh fading based on summing sinusoids
-   * William C. Jakes, Editor (February 1, 1975).
-   * Microwave Mobile Communications.
-   * New York: John Wiley & Sons Inc. ISBN 0-471-43720-4
-   */
-
-  // number of path = M
-  // x = 1 -> M=6, x = 2 -> M=8, x = 3 -> M=10, x = 4 -> M=12
-  int x = static_cast<int> (m_nbOfPaths.GetValue ());
-
-  for (int i = 0; i < m_subChannelsNum; i++)
-    {
-      // StartJakes allow us to select a window of 0.5ms into the Jakes realization lasting 3s.
-      int startJakes = static_cast<int> (m_startJakes.GetValue ());
-
-      MultipathForTimeDomain multipathForTimeDomain;
-
-      if (x == 1)
-        {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
-          if (speed == 0)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-//                   multipathForTimeDomain.push_back (multipath_M6_v_0 [j + startJakes]);
-                  multipathForTimeDomain.push_back (&multipath_M6_v_0 [j + startJakes]);
-                }
-            }
-          if (speed == 3)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M6_v_3 [j + startJakes]);
-                }
-            }
-          if (speed == 30)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M6_v_30 [j + startJakes]);
-                }
-            }
-          if (speed == 120)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M6_v_120 [j + startJakes]);
-                }
-            }
-        }
-
-      else if (x == 2)
-        {
-          // SELECTED 8 MULTIPLE PATH FOR JAKES MODEL
-          if (speed == 0)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M8_v_0 [j + startJakes]);
-                }
-            }
-          if (speed == 3)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M8_v_3 [j + startJakes]);
-                }
-            }
-          if (speed == 30)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M8_v_30 [j + startJakes]);
-                }
-            }
-          if (speed == 120)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M8_v_120 [j + startJakes]);
-                }
-            }
-        }
-
-      else if (x == 3)
-        {
-          // SELECTED 10 MULTIPLE PATH FOR JAKES MODEL
-          if (speed == 0)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M10_v_0 [j + startJakes]);
-                }
-            }
-          if (speed == 3)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M10_v_3 [j + startJakes]);
-                }
-            }
-          if (speed == 30)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M10_v_30 [j + startJakes]);
-                }
-            }
-          if (speed == 120)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M10_v_120 [j + startJakes]);
-                }
-            }
-        }
-
-      else if (x == 4)
-        {
-          // SELECTED 12 MULTIPLE PATH FOR JAKES MODEL
-          if (speed == 0)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M12_v_0 [j + startJakes]);
-                }
-            }
-          if (speed == 3)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M12_v_3 [j + startJakes]);
-                }
-            }
-          if (speed == 30)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M12_v_30 [j + startJakes]);
-                }
-            }
-          if (speed == 120)
-            {
-              for (int j = 0; j < 500; j++)
-                {
-                  multipathForTimeDomain.push_back (&multipath_M12_v_120 [j + startJakes]);
-                }
-            }
-        }
-      else
-        {
-          std::cout << " ERROR: Jaks's Model, incorrect M value" << std::endl;
-        }
-
-
-      m_multipath.push_back (multipathForTimeDomain);
-    }
-
-  SetLastUpdate ();
-}
 
 double
 JakesFadingLossModel::GetValue (int subChannel, double speed)
 {
   NS_LOG_FUNCTION (this << subChannel);
-  NS_LOG_INFO (this << Simulator::Now ().GetSeconds () << " " << GetLastUpdate ().GetSeconds () << " " << GetSamplingPeriod ());
-  if ((NeedForUpdate ())||(m_multipath.empty ()))
+  NS_LOG_INFO (this << Simulator::Now ().GetSeconds () << " " << m_lastWindowUpdate.GetSeconds () << " " << m_windowSize.GetSeconds ());
+  if (m_fadingTrace.empty ())
     {
-      NS_LOG_INFO ("Shadowing updated");
-      SetValue (speed);
-      SetLastUpdate ();
+      LoadTrace (m_traceFile);
+      //SetLastUpdate ();
+      m_lastWindowUpdate = Simulator::Now ();
+    }
+  //if (NeedForUpdate ())
+  if (Simulator::Now ().GetSeconds () >= m_lastWindowUpdate.GetSeconds () + m_windowSize.GetSeconds ())
+    {
+      NS_LOG_INFO ("Fading Window Updated");
+      //SetValue (speed);
+      m_windowOffset = m_startJakes->GetValue ();
+      //SetLastUpdate ();
+      m_lastWindowUpdate = Simulator::Now ();
     }
 
   int now_ms = static_cast<int> (Simulator::Now ().GetSeconds () * 1000);
-  int lastUpdate_ms = static_cast<int> (GetLastUpdate ().GetSeconds () * 1000);
-  int index = now_ms - lastUpdate_ms;
+  int lastUpdate_ms = static_cast<int> (m_lastWindowUpdate.GetSeconds () * 1000);
+  NS_LOG_INFO (this << " offset " << m_windowOffset << " now " << now_ms << " lastUpd " << lastUpdate_ms);
+  int index = m_windowOffset + now_ms - lastUpdate_ms;
+  NS_LOG_INFO (this << "subchannel " << subChannel << " index " << index);
 
+  //NS_LOG_FUNCTION (this << subChannel << now_ms
+  //                      << lastUpdate_ms << index << m_multipath.at (subChannel).at (index));
   NS_LOG_FUNCTION (this << subChannel << now_ms
-                        << lastUpdate_ms << index << m_multipath.at (subChannel).at (index));
-
-  return (*m_multipath.at (subChannel).at (index));
+                        << lastUpdate_ms << index << m_fadingTrace.at (subChannel).at (index));
+                        
+  return (m_fadingTrace.at (subChannel).at (index));
 }
 
 

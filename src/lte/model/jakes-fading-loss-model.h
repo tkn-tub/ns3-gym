@@ -24,7 +24,9 @@
 #define MULTIPATH_LOSS_MODEL_H
 
 
-#include "discrete-time-loss-model.h"
+//#include "discrete-time-loss-model.h"
+#include <ns3/object.h>
+#include <ns3/nstime.h>
 #include <list>
 #include <ns3/random-variable.h>
 
@@ -38,7 +40,7 @@ class LtePhy;
  * \brief JakesFadingLossModel class implements a loss model due to the fast fading.
  * In particular, the fast fading is modeled using a Jakes Model
  */
-class JakesFadingLossModel : public DiscreteTimeLossModel
+class JakesFadingLossModel : public Object
 {
 
 public:
@@ -47,17 +49,6 @@ public:
 
   static TypeId GetTypeId (void);
 
-  /**
-  * \brief Set the value of the considered loss model
-  * \param speed the relative speed of the two devices
-  */
-  void SetValue (double speed);
-  /**
-   * \brief Get the value for a particular sub channel
-   * \param subChannel the sub channel for which a value is requested
-   * \return the loss for a particular sub channel
-   */
-  double GetValue (int subChannel);
   
   /**
   * \brief Get the value for a particular sub channel and a given speed
@@ -67,47 +58,38 @@ public:
   */
   double GetValue (int subChannel, double speed);
 
-  /**
-   * \brief Set the physical layer
-   * \param phy the physical layer
-   */
-  void SetPhy (Ptr<LtePhy> phy);
-  /**
-   * \brief Get the physical layer
-   * \return the pointer to the physical layer
-   */
-  Ptr<LtePhy> GetPhy (void);
-
-
-  /*
-   * In order to avoid to execute every TTI the Jakes Model, the value
-   * of the multipath loss is stored into a matrix (MultipathForFrequencyDomain)
-   * frequency x time.
-   *
-   * A MultipathForFrequencyDomain element is build in a way that
-   * m_multipath.at(i).at(j) represents the loss at the frequency i and time j.
-   *
-   * The model is udated every samplingInterval (the default value is 0.5 ms)
-   */
-
-  /**
-   * brief a list of multipath values for the time domain
-   */
-  typedef std::vector<double*> MultipathForTimeDomain;
-  /**
-   * brief a list of multipath values for the frequency domain
-   */
-  typedef std::vector<MultipathForTimeDomain> MultipathForFrequencyDomain;
-
 private:
-  MultipathForFrequencyDomain m_multipath;
-
-  UniformVariable m_nbOfPaths;
-  UniformVariable m_startJakes;
-
-  Ptr<LtePhy> m_phy;
   
-  uint8_t m_subChannelsNum;
+  void LoadTrace (std::string filename);
+
+
+  
+  /**
+   * Vector with fading samples in time domain (for a fixed RB)
+   */
+  typedef std::vector<double> FadingTraceSample;
+  /**
+   * Vector collecting the time fading traces in the frequency domain (per RB)
+   */
+  typedef std::vector<FadingTraceSample> FadingTrace;
+
+
+  
+  std::string m_traceFile;
+  
+  FadingTrace m_fadingTrace;
+
+  
+  Time m_traceLength;
+  uint32_t m_samplesNum;
+  Time m_windowSize;
+  int m_windowOffset; 
+  
+  UniformVariable* m_startJakes;
+  
+  uint8_t m_rbNum;
+  Time m_lastWindowUpdate;
+
 };
 
 }
