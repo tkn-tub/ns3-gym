@@ -373,13 +373,16 @@ LteFadingTestCase::DoRun (void)
   //   LogComponentEnable ("LteUeNetDevice", logLevel);
   //   LogComponentEnable ("LteEnbNetDevice", logLevel);
   
-//   LogComponentEnable ("JakesFadingLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("TraceFadingLossModel", LOG_LEVEL_ALL);
 //   LogComponentEnable ("TraceFadingLossModel", LOG_LEVEL_ALL);
 //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   NS_LOG_INFO ("Testing " << GetName());
   
   
   m_fadingModule = CreateObject<TraceFadingLossModel> ();
+  
+  m_fadingModule->SetAttribute("TraceFilename", StringValue("../../../src/lte/model/JakesTraces/fading_trace_EPA_3kmph.fad"));
+  //m_fadingModule->SetAttribute("WindowSize", TimeValue(Seconds (0.003)));
   
   m_fadingModule->CreateFadingChannelRealization (m_node1, m_node2);
   
@@ -412,7 +415,7 @@ LteFadingTestCase::DoRun (void)
 //   NS_LOG_INFO ("A ver " << (*outPsd1)[0] << " " << (*outPsd1)[1]);
   double samplingInterval = 0.001;
   double time = 0.0;
-  while (time<1.)
+  while (time<0.010)
     {
       Time t = Seconds (time);
       Simulator::Schedule(t, &LteFadingTestCase::GetFadingSample, this);
