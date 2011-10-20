@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
+ * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Giuseppe Piro  <g.piro@poliba.it>
  * Author: Marco Miozzo <mmiozzo@cttc.es>
  */
 
@@ -27,13 +26,14 @@
 #include <ns3/object.h>
 #include <ns3/spectrum-propagation-loss-model.h>
 #include <map>
-//#include "channel-realization.h"
-#include <ns3/jakes-fading-loss-model.h>
+#include <ns3/random-variable.h>
+#include <ns3/nstime.h>
 
 namespace ns3 {
 
 
 class MobilityModel;
+
 
 /**
  * \ingroup lte
@@ -52,6 +52,7 @@ public:
    * \brief The couple of mobility mnode that form a fading channel realization
    */
   typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel> > ChannelRealizationId_t;
+  
 
   /**
    * \brief Create a fading channel realization among two device
@@ -59,14 +60,7 @@ public:
    * \param ueMobility mobility object of the ue
    */
   void CreateFadingChannelRealization (Ptr<const MobilityModel> enbMobility, Ptr<const MobilityModel> ueMobility);
-  /**
-   * \brief Get a fading channel realization among two device
-   * \param a the mobility object of the enb
-   * \param b the mobility object of the ue
-   * \return the pointer to the channel realization
-   */
-  Ptr<JakesFadingLossModel> GetFadingChannelRealization (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const;
-
+  
 private:
   /**
    * @param txPower set of values vs frequency representing the
@@ -81,12 +75,47 @@ private:
   Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                    Ptr<const MobilityModel> a,
                                                    Ptr<const MobilityModel> b) const;
+                                                   
+  /**
+  * \brief Get the value for a particular sub channel and a given speed
+  * \param subChannel the sub channel for which a value is requested
+  * \param speed the relative speed of the two devices
+  * \return the loss for a particular sub channel
+  */
+  double GetValue (int subChannel, double speed);
+  
+  void LoadTrace ();
 
-  std::map <ChannelRealizationId_t, Ptr<JakesFadingLossModel> > m_channelRealizationMap;
+
+   
+  mutable std::map <ChannelRealizationId_t, int > m_windowOffsetsMap;
+  
+  mutable std::map <ChannelRealizationId_t, UniformVariable* > m_startVariableMap;
+  
+  /**
+   * Vector with fading samples in time domain (for a fixed RB)
+   */
+  typedef std::vector<double> FadingTraceSample;
+  /**
+   * Vector collecting the time fading traces in the frequency domain (per RB)
+   */
+  typedef std::vector<FadingTraceSample> FadingTrace;
+
+
+  
+  std::string m_traceFile;
+  
+  FadingTrace m_fadingTrace;
+
+  
+  Time m_traceLength;
+  uint32_t m_samplesNum;
+  Time m_windowSize;
+  uint8_t m_rbNum;
+  mutable Time m_lastWindowUpdate;
+  uint8_t m_timeGranularity;
+  
 };
-
-
-
 
 
 
