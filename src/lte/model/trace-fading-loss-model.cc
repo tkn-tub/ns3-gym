@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Author: Giuseppe Piro  <g.piro@poliba.it>
  * Author: Marco Miozzo <mmiozzo@cttc.es>
  */
 
@@ -122,7 +123,6 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
 {
   NS_LOG_FUNCTION (this << *txPsd << a << b);
   
-  //Ptr<FadingTraceManager> c = GetFadingChannelRealization (a,b);
   std::map <ChannelRealizationId_t, int >::iterator itOff;
   ChannelRealizationId_t mobilityPair = std::make_pair (a,b);
   itOff = m_windowOffsetsMap.find (mobilityPair);
@@ -133,7 +133,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
 
      itVar = m_startVariableMap.find (mobilityPair);
      (*itOff).second = (*itVar).second->GetValue ();
-      //SetLastUpdate ();
+
       m_lastWindowUpdate = Simulator::Now ();
     }
 
@@ -198,7 +198,7 @@ TraceFadingLossModel::CreateFadingChannelRealization (Ptr<const MobilityModel> e
   UniformVariable* startV = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
   ChannelRealizationId_t mobilityPair = std::make_pair (enbMobility,ueMobility);
   m_startVariableMap.insert (std::pair<ChannelRealizationId_t,UniformVariable* > (mobilityPair, startV));
-  m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, 0));  
+  m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ()));  
 
 }
 
