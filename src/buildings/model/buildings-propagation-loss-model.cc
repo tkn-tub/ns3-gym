@@ -29,8 +29,8 @@
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
 
-#include <ns3/shadowing-loss-model.h>
-#include <ns3/jakes-fading-loss-model.h>
+//#include <ns3/shadowing-loss-model.h>
+//#include <ns3/jakes-fading-loss-model.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
