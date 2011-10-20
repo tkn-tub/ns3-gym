@@ -108,6 +108,11 @@ EpcHelper::GetTypeId (void)
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&EpcHelper::m_s1uLinkDelay),
                    MakeTimeChecker ())
+    .AddAttribute ("S1uLinkMtu", 
+                   "The MTU of the next S1-U link to be created. Note that, because of the additional GTP/UDP/IP tunneling overhead, you need a MTU larger than the end-to-end MTU that you want to support.",
+                   UintegerValue (2000),
+                   MakeUintegerAccessor (&EpcHelper::m_s1uLinkMtu),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -132,6 +137,7 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   enbSgwNodes.Add (enb);
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_s1uLinkDataRate));
+  p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_s1uLinkMtu));
   p2ph.SetChannelAttribute ("Delay", TimeValue (m_s1uLinkDelay));  
   NetDeviceContainer enbSgwDevices = p2ph.Install (enb, m_sgwPgw);
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after installing p2p dev: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());  
@@ -162,6 +168,7 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   NS_ASSERT (retval == 0);  
   PacketSocketAddress enbLteSocketConnectAddress;
   enbLteSocketConnectAddress.SetPhysicalAddress (Mac48Address::GetBroadcast ());
+  enbLteSocketConnectAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
   enbLteSocketConnectAddress.SetProtocol (Ipv4L3Protocol::PROT_NUMBER);
   retval = enbLteSocket->Connect (enbLteSocketConnectAddress);
   NS_ASSERT (retval == 0);  

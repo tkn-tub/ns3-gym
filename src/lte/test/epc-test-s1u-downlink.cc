@@ -31,10 +31,12 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
 #include "ns3/packet-sink.h"
 #include <ns3/ipv4-static-routing-helper.h>
 #include <ns3/ipv4-static-routing.h>
+#include "ns3/boolean.h"
+#include "ns3/uinteger.h"
+
 
 using namespace ns3;
 
@@ -155,6 +157,11 @@ EpcS1uTestCase::DoRun ()
           Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
 
           Ptr<Node> ue = ues.Get (u);
+
+          // disable IP Forwarding on the UE. This is because we use
+          // CSMA broadcast MAC addresses for this test. The problem
+          // won't happen with a LteUeNetDevice. 
+          ue->GetObject<Ipv4> ()->SetAttribute ("IpForward", BooleanValue (false));
           
           uint16_t port = 1234;
           PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
@@ -195,7 +202,7 @@ EpcS1uTestCase::DoRun ()
         }      
     }
   
-  
+  Simulator::Destroy ();
 }
 
 
@@ -214,13 +221,51 @@ public:
 
 EpcS1uTestSuite::EpcS1uTestSuite ()
   : TestSuite ("epc-s1u-downlink", SYSTEM)
-{
-  
+{  
   std::vector<EnbTestData> v1;  
   EnbTestData e1;
   UeTestData f1 (1, 100);
   e1.ues.push_back (f1);
   v1.push_back (e1);
   AddTestCase (new EpcS1uTestCase ("1 eNB, 1UE", v1));
+
+
+  std::vector<EnbTestData> v2;  
+  EnbTestData e2;
+  UeTestData f2_1 (1, 100);
+  e2.ues.push_back (f2_1);
+  UeTestData f2_2 (2, 200);
+  e2.ues.push_back (f2_2);
+  v2.push_back (e2);
+  AddTestCase (new EpcS1uTestCase ("1 eNB, 2UEs", v2));
+
+
+  std::vector<EnbTestData> v3;  
+  v3.push_back (e1);
+  v3.push_back (e2);
+  AddTestCase (new EpcS1uTestCase ("2 eNBs", v3));
+
+
+  EnbTestData e3;
+  UeTestData f3_1 (3, 50);
+  e3.ues.push_back (f3_1);
+  UeTestData f3_2 (5, 1472);
+  e3.ues.push_back (f3_2);
+  UeTestData f3_3 (1, 1);
+  e3.ues.push_back (f3_2);
+  std::vector<EnbTestData> v4;  
+  v4.push_back (e3);
+  v4.push_back (e1);
+  v4.push_back (e2);
+  AddTestCase (new EpcS1uTestCase ("3 eNBs", v4));
+
+  
+
+
+
+
+
+
+
 }
 

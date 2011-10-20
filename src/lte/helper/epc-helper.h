@@ -125,6 +125,7 @@ private:
 
   DataRate m_s1uLinkDataRate;
   Time     m_s1uLinkDelay;
+  uint16_t m_s1uLinkMtu;
 
 
   /**
