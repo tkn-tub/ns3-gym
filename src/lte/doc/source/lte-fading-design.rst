@@ -6,62 +6,84 @@
 ++++++++++++++++++++++++++++++++++++++
 
 
-GSoC Model
-++++++++++
+Jakes Fading Trace Model
+++++++++++++++++++++++++
 
-The fading model of GSoC [Piro2011] is based on the Jakes Simulator. In order to limit the computational complexity, the fading is evaluated run-time by query pre-calculated traces. In detail, the simulator includes a set of fading traces 3 seconds long sampled at 1 ms for different values of speeds (i.e., 0, 3, 30, 60, 120 Kmph) and different number of signaling paths (e.g., 6, 8, 10 and 12). The traces are internally managed by loading a window (with default value of 0.5 seconds) picked up with a start instant uniformly distributed in the whole duration of a trace. The trace to be used is selected according to users' relative speed and the number of path are uniformly picked up among the available ones each window update. This implies that the traces are generated according to a specific  speed and number of taps and then shared among users and RBs at the same time (by randomly select the beginning of the window).
-The Jakes Simulator used for generating the traces is a proprietary implementation of the algorithm proposed by Jakes done in Matlab which is not part of the official GSoC release.
+Fading Traces Model Description
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Pros.
+The fading model is based on the one developed during the GSoC 2010 [Piro2011]. The main characteristic of this model is the fact that the fading evaluation during simulation run-time is based on per-calculated traces. This is done for limiting the computational complexity of the simulator. On the other hand, it needs huge structures for storing the traces; therefore, a trade-off between the number of possible parameters and the memory occupancy has to be found. The most important ones are:
 
- * Reduce size of the traces (one trace shared among users and RBs)
- * Already included in LENA
+ * users' speed: relative speed between users (affects the Doppler frequency, which in turns affects the time-variance property of the fading)
+ * number of taps (and relative power): number of multiple paths considered, which affects the frequency property of the fading.
+ * time granularity of the trace: sampling time of the trace.
+ * frequency granularity of the trace: number of values in frequency to be evaluated.
+ * length of trace: ideally large as the simulation time, might be reduced by windowing mechanism.
+ * number of users: number of independent traces to be used (ideally one trace per user).
 
-Cons.
-
- * The frequency selectivity is modeled by randomly pick up the window in the traces (i.e., there is no correlation between adjacent RBs); this modelization does not have reference in literature
- * the total length of the trace might be low (3 seconds) for generating independent windows which might be potentially 100 RBs x (no. of users x no. of BSs)
- * the number of path used is randomly pick up each window actualization (0.5 seconds); therefore it changes during simulation run-time each window.
-
-
-Proposed Model
-++++++++++++++
-
-We suggest the implementation of a similar model relaxing some assumptions. In detail, we propose a new trace format and trace management procedure. Regarding the model of the channel, we suggest the one provided by the ``rayleighchan`` function of Matlab since it provides a well accepted channel modelization both in time and frequency domain with the parameters we are considering, more information following the link:
+Respect to the mathematical channel propagation model, we suggest the one provided by the ``rayleighchan`` function of Matlab since it provides a well accepted channel modelization both in time and frequency domain, more information following the link:
 
 http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36
 
-We note that, this solution allows the realization of a matlab simulation script for allowing users the generation of new traces based on specific scenario tailored needs.
+The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
+In detail, the channel object created with the rayleighchan function is used to filter a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model. For sake of clarity, the names of the trace and of the file created can be completed with user defined tag for distinguish them. The file produced is a standard c header file with the definition of the vector containing the trace. This file has to be included in the ``JakesFadingLossModel`` class implementation and the code has to be updated for managing the generated array with the fading trace according to the parameters combination defined by the user at the generation.
 
-Analyzing the possible channel parameters, we identified the following ones as representative for accurately simulating the channel in the simulator:
+Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see TS 36.104 Annex B.2):
 
- * granularity in frequency, three options are available
+ * users' speed: consider the most common typical value
 
-   * one value for each RB
-   * one value per group of RBs (size to be dimensioned)
-   * the same trace for all RBs but using a random offset in the trace (as done in GSoC module)
+   * 0 and 3 kmph for pedestrian scenarios
+   * 30 and 60 kmph for vehicular scenarios
+   * 0, 3, 30 and 60 for urban scenarios
 
- * length of the trace: ideally large as the simulation time, might be reduced by applying the window mechanism of GSoC
- * granularity in time: the sampling time (1 ms in GSoC) of the fading might be tuned according scenario characteristics (i.e., channel low or high variable in time)
- * speed values: speed affects the channel by varying the Doppler shift, a specific speed needs the generation of its correspondent traces
- * number of set of taps: number of different path of the signal (scenario dependent)
+ * number of taps: use the three models presented in Annex B.2 of TS 36.104.
+ * time granularity: 1 ms (as the simulator granularity in time).
+ * frequency granularity: per RB basis (which implies 100 RBs, as the simulator granularity in frequency).
+ * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.
+ * number of users: users share the same fading trace, but the windows are independent among users which randomly pick up their starting point.
 
-Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. The following formula express in detail the dimension:
+According to the parameters we considered, the following formula express in detail the dimension:
 
 .. math::
- T_{SIZE} = 8 \times RB_{NUM} \times \frac{T_{total}}{T_{sample}} \times DopplerShift_{NUM} \times |Taps_{NUM}|\mbox{ [bytes]}
+ T_{SIZE} = Sample_{size} \times RB_{NUM} \times \frac{T_{total}}{T_{sample}} \times Speed_{NUM} \times Scenarios_{NUM} \mbox{ [bytes]}
 
-where :math:`RB_{NUM}` is the number of RB or set of RBs to be considered, :math:`T_{total}` is the total length of the trace, :math:`T_{sample}` is the sampling period (1 ms for having a new sample each subframe), :math:`DopplerShift_{NUM}` is the number of Doppler frequencies to be used and :math:`Taps_{NUM}` is the number of taps.
-According to the formula we have that a typical single channel realization (i.e., independent RB traces at a given speed and given set of number of taps with one sample per ms/TTI) implies the usage of 8,000,000 bytes (7.6294 MB) considering the precision of double (:math:`1\times10^{-308}` to :math:`1\times10^{308}`). This size can be halved by considering float numbers instead of double, reducing the precision to :math:`1\times10^{-37}` to :math:`1\times10^{37}` (and possibly increasing the computational complexity due to the cast operation between float and double, which is what is used in the simulator; this is compilator dependent and can be evaluated after implementation).
-The number of taps seems to be limited to 7 in case of pedestrian scenario and 9 in case of vehicular and urban model, according to Annex B.2 of 3GPP TS 36.104. This implies, that we need at most 3 different taps configurations, which are static during the simulation.
+where :math:`Sample_{size}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`RB_{NUM}` is the number of RB or set of RBs to be considered, :math:`T_{total}` is the total length of the trace, :math:`T_{sample}` is the sampling period (1 ms for having a new sample each subframe), :math:`Speed_{NUM}` is the number of users relative speeds considered and :math:`Scenarios_{NUM}` is the number of scenarios (i.e., different taps configurations).
+According to the formula we have that a typical single channel realization (i.e., independent RB traces at a given speed and given set of number of taps with one sample per ms/TTI)) implies the usage of 8,000,000 bytes (7.6294 MB) considering the precision of double (:math:`1\times10^{-308}` to :math:`1\times10^{308}`). This size can be halved by considering float numbers instead of double, reducing the precision to :math:`1\times10^{-37}` to :math:`1\times10^{37}` (and possibly increasing the computational complexity due to the cast operation between float and double, which is what is used in the simulator; this is compilator dependent and can be evaluated after implementation ``TBD``).
 
 A typical set of traces for a simulation will result therefore in:
 
  * :math:`RB_{NUM}`: 100
  * :math:`T_{total}`: 10 secs
  * :math:`T_{sample}`: 0.001 secs (1 ms as a subframe)
- * :math:`DopplerShift_{NUM}`: 0, 10 and 50 Hz for modeling (static, pedestrian a slow vehicle)
- * :math:`Taps_{NUM}`: 3
+ * :math:`Speed_{NUM}`: 1 speed per scenarios (e.g. 3 kmph for pedestrian)
+ * :math:`Scenarios_{NUM}`: 1 (pedestrian)
 
-which results in 72,000,000 bytes (~6.86 MB) of traces with double precision.
-If instead of using a single trace for all UEs (with random offset UE) we want to have one independent channel trace for each UE, we need to multiply that size by the desired number of independent traces.
+which results in 8,000,000 bytes (~8 MB) of traces with double precision.
+
+Fading Traces Generation
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Thanks to the matlab script provided with the code (``/lte/model/JakesTraces/fading-trace-generator.m``) it is possible to generate traces according to specific simulation scenarios. The script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban); however users can introduce their specific configurations. The list of the configurable parameters is provided in the following:
+
+ * ``fc`` : the frequency in use (it affects the computation of the dopples speed).
+ * ``v_km_h`` : the speed of the users
+ * ``traceDuration`` : the duration in seconds of the total length of the trace.
+ * ``numRBs`` : the number of the resource block to be evaluated. 
+ * ``tag`` : the tag to be applied to the file generated.
+
+The file generated is formatted in a matrix fashion by putting each RBs temporal fading trace samples in different rows.
+
+Fading Traces Usage
+~~~~~~~~~~~~~~~~~~~
+
+The proper set of the trace parameters in the simulation is of paramount importance for the correct usage of the trace itself within the simulator.
+The list of the parameters to be configured are:
+
+ * ``TraceFilename`` : the name of the trace to be loaded (absolute path o relative one according to the execution point of script).
+ * ``TraceLength`` : the trace duration in seconds.
+ * ``SamplesNum`` : the number of samples.
+ * ``WindowSize`` : the size of the fading sampling window in seconds.
+
+It is important to highlight that the sampling interval of the fading trace has to me at most of 1 ms or greater and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module. 
+
+
