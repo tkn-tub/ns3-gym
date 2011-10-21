@@ -92,6 +92,12 @@ LenaHelper::DoStart (void)
     {
       NS_LOG_ERROR ("Unknown propagation model");
     }
+  if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+      m_fadingModule = CreateObject<TraceFadingLossModel> ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+    }
   m_macStats = CreateObject<MacStatsCalculator> ();
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
@@ -129,6 +135,11 @@ TypeId LenaHelper::GetTypeId (void)
                    StringValue ("ns3::BuildingsPropagationLossModel"),
                    MakeStringAccessor (&LenaHelper::SetPropagationModelType),
                    MakeStringChecker ())
+     .AddAttribute ("FadingModel",
+                   "The type of fading model to be used",
+                   StringValue ("ns3::FriisSpectrumPropagationLossModel"), // fake module -> no fading 
+                   MakeStringAccessor (&LenaHelper::SetFadingModel),
+                   MakeStringChecker ())
   ;
   return tid;
 }
@@ -165,6 +176,22 @@ LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v
   NS_LOG_FUNCTION (this << n);
   m_dlPropagationModelFactory.Set (n, v);
   m_ulPropagationModelFactory.Set (n, v);
+}
+
+
+void 
+LenaHelper::SetFadingModel (std::string type) 
+{
+  NS_LOG_FUNCTION (this << type);
+  m_fadingModelFactory = ObjectFactory ();
+  m_fadingModelFactory.SetTypeId (type);
+}
+
+void 
+LenaHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this << n);
+  m_fadingModelFactory.Set (n, v);
 }
 
 
@@ -346,6 +373,15 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
+  
+  if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+       Ptr<MobilityModel> mm_enb = enbDevice->GetObject<MobilityModel> ();
+       Ptr<MobilityModel> mm_ue = ueDevice->GetObject<MobilityModel> ();
+       m_fadingModule->CreateFadingChannelRealization (mm_enb, mm_ue); //downlink
+       m_fadingModule->CreateFadingChannelRealization (mm_ue, mm_enb); //uplink
+       
+    }
  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
   uePhy->SetRnti (rnti);
