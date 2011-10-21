@@ -86,4 +86,14 @@ The list of the parameters to be configured are:
 
 It is important to highlight that the sampling interval of the fading trace has to me at most of 1 ms or greater and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module. 
 
+In order to activate the fading module (by default disactivated) it has to be explicity specified in the simulation script::
+
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  lena->SetFadingModel("ns3::TraceFadingLossModel");
+
+While, for setting the parameters::
+
+  lena->SetFadingModelAttribute("Param", value);
+
+
 
