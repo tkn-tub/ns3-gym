@@ -26,6 +26,7 @@
 #include "ns3/ipv4.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/epc-gtpu-header.h"
+#include "ns3/abort.h"
 
 namespace ns3 {
 
@@ -33,25 +34,24 @@ NS_LOG_COMPONENT_DEFINE ("EpcSgwPgwApplication");
 
 
 /////////////////////////
-// EnbInfo
+// UeInfo
 /////////////////////////
 
 
-EpcSgwPgwApplication::EnbInfo::EnbInfo ()
-  :  m_teidCounter (0)
+EpcSgwPgwApplication::UeInfo::UeInfo ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t
-EpcSgwPgwApplication::EnbInfo::AddBearer (Ptr<LteTft> tft)
+void
+EpcSgwPgwApplication::UeInfo::AddBearer (Ptr<LteTft> tft, uint32_t teid)
 {
-  NS_LOG_FUNCTION (this << tft);
-  return m_tftClassifier.Add (tft);
+  NS_LOG_FUNCTION (this << tft << teid);
+  return m_tftClassifier.Add (tft, teid);
 }
 
 uint32_t
-EpcSgwPgwApplication::EnbInfo::Classify (Ptr<Packet> p)
+EpcSgwPgwApplication::UeInfo::Classify (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
   // we hardcode DOWNLINK direction since the PGW is espected to
@@ -60,6 +60,17 @@ EpcSgwPgwApplication::EnbInfo::Classify (Ptr<Packet> p)
   return m_tftClassifier.Classify (p, LteTft::DOWNLINK);
 }
 
+Ipv4Address 
+EpcSgwPgwApplication::UeInfo::GetEnbAddr ()
+{
+  return m_enbAddr;
+}
+
+void
+EpcSgwPgwApplication::UeInfo::SetEnbAddr (Ipv4Address enbAddr)
+{
+  m_enbAddr = enbAddr;
+}
 
 /////////////////////////
 // EpcSgwPgwApplication
@@ -79,7 +90,8 @@ EpcSgwPgwApplication::GetTypeId (void)
 EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevice, const Ptr<Socket> s1uSocket)
   : m_s1uSocket (s1uSocket),
     m_tunDevice (tunDevice),
-    m_gtpuUdpPort (2152) // fixed by the standard
+    m_gtpuUdpPort (2152), // fixed by the standard
+    m_teidCount (0)
 {
   NS_LOG_FUNCTION (this << tunDevice << s1uSocket);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromS1uSocket, this));
@@ -96,11 +108,24 @@ uint32_t
 EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<LteTft> tft)
 {
   NS_LOG_FUNCTION (this << ueAddr << enbAddr << tft);
-  // side effect: add entry if not exists
-  m_ueAddrEnbAddrMap[ueAddr] = enbAddr;
 
-  // side effect: create new EnbInfo if it does not exist
-  uint32_t teid = m_enbInfoMap[enbAddr].AddBearer (tft);
+  // simple sanity check. If you ever need more than 4M teids
+  // throughout your simulation, you'll need to implement a smarter teid
+  // management algorithm. 
+  NS_ABORT_IF (m_teidCount == 0xFFFFFFFF);
+  uint32_t teid = ++m_teidCount;  
+
+  std::map<Ipv4Address, UeInfo>::iterator it = m_ueInfoMap.find (ueAddr);
+  if (it == m_ueInfoMap.end ())
+    {
+      // UE unknown, creating new entry
+      std::pair<std::map<Ipv4Address, UeInfo>::iterator, bool> ret;
+      ret = m_ueInfoMap.insert (std::pair <Ipv4Address, UeInfo> (ueAddr, UeInfo ()));
+      it = ret.first;
+      it->second.SetEnbAddr (enbAddr);
+    }
+        
+  it->second.AddBearer (tft, teid);
   return teid;
 }
 
@@ -116,30 +141,28 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
   Ipv4Address ueAddr =  ipv4Header.GetDestination ();
   NS_LOG_LOGIC ("packet addressed to UE " << ueAddr);
 
-  // find corresponding eNB address
-  std::map<Ipv4Address, Ipv4Address>::iterator it1 = m_ueAddrEnbAddrMap.find (ueAddr);
-  if (it1 == m_ueAddrEnbAddrMap.end ())
+  // find corresponding UeInfo address
+  std::map<Ipv4Address, UeInfo>::iterator it = m_ueInfoMap.find (ueAddr);
+  if (it == m_ueInfoMap.end ())
     {        
-      NS_LOG_WARN ("could not find corresponding eNB for UE address " << ueAddr) ;
+      NS_LOG_WARN ("unknown UE address " << ueAddr) ;
     }
   else
     {
-      Ipv4Address enbAddr = it1->second;
-      // lookup into TFT classifier for that eNB
-      std::map<Ipv4Address, EnbInfo>::iterator it2 = m_enbInfoMap.find (enbAddr);
-      NS_ASSERT (it2 != m_enbInfoMap.end ());
-      uint32_t teid = it2->second.Classify (packet);   
+      Ipv4Address enbAddr = it->second.GetEnbAddr ();      
+      uint32_t teid = it->second.Classify (packet);   
       if (teid == 0)
         {
-          NS_LOG_WARN ("no matching TEID for this packet");                   
+          NS_LOG_WARN ("no matching bearer for this packet");                   
         }
       else
         {
           SendToS1uSocket (packet, enbAddr, teid);
         }
     }
-  // there is no reason why we should notify the Gi TUN
-  // VirtualNetDevice that he failed to send the packet 
+  // there is no reason why we should notify the TUN
+  // VirtualNetDevice that he failed to send the packet: if we receive
+  // any bogus packet, it will just be silently discarded.
   const bool succeeded = true;
   return succeeded;
 }

@@ -130,36 +130,47 @@ private:
 
 
   /**
-   * store info for each eNB connected to this SGW
-   * 
+   * store info for each UE connected to this SGW
    */
-  class EnbInfo
+  class UeInfo
   {
   public:
-    EnbInfo ();  
+    UeInfo ();  
 
     /** 
      * 
      * \param tft the Traffic Flow Template of the new bearer to be added
-     * 
-     * \return  the TEID of the newly added bearer
+     * \param teid  the TEID of the new bearer
      */
-    uint32_t AddBearer (Ptr<LteTft> tft);
-
+    void AddBearer (Ptr<LteTft> tft, uint32_t teid);
 
     /** 
      * 
      * 
      * \param p the IP packet from the internet to be classified
      * 
-     * \return the corresponding TEID > 0 if matched, or 0 if no match
+     * \return the corresponding bearer ID > 0 identifying the bearer
+     * among all the bearers of this UE;  returns 0 if no bearers
+     * matches with the previously declared TFTs
      */
     uint32_t Classify (Ptr<Packet> p);
 
+    /** 
+     * \return the address of the eNB to which the UE is connected
+     */
+    Ipv4Address GetEnbAddr ();
+
+    /** 
+     * set the address of the eNB to which the UE is connected
+     * 
+     * \param addr the address of the eNB
+     */
+    void SetEnbAddr (Ipv4Address addr);
+
 
   private:
-    uint32_t m_teidCounter;
     EpsTftClassifier m_tftClassifier;
+    Ipv4Address m_enbAddr;
   };
 
 
@@ -175,20 +186,16 @@ private:
   Ptr<VirtualNetDevice> m_tunDevice;
 
   /**
-   * Map telling for each UE address what is the corresponding eNB address
+   * Map telling for each UE address the corresponding UE info 
    */
-  std::map<Ipv4Address, Ipv4Address> m_ueAddrEnbAddrMap;
-
-  /**
-   * Map telling for each eNB address the corresponding eNB info (TFT
-   * classifier, etc.)
-   */
-  std::map<Ipv4Address, EnbInfo> m_enbInfoMap;
+  std::map<Ipv4Address, UeInfo> m_ueInfoMap;
 
   /**
    * UDP port to be used for GTP
    */
   uint16_t m_gtpuUdpPort;
+
+  uint32_t m_teidCount;
 
 };
 

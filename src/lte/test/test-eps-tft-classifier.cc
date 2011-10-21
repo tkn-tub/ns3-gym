@@ -159,7 +159,7 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   pf1_1_2.localMask.Set (0xFFFFFF00);
   tft1_1->Add (pf1_1_2);
 
-  c1->Add (tft1_1);
+  c1->Add (tft1_1, 1);
 
 
 
@@ -175,7 +175,7 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   pf1_2_2.localPortEnd   = 3489;
   tft1_2->Add (pf1_2_2);
 
-  c1->Add (tft1_2);
+  c1->Add (tft1_2, 2);
 
   // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
 
@@ -211,7 +211,7 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   ///////////////////////////
 
   Ptr<EpsTftClassifier> c2 = Create<EpsTftClassifier> ();
-  c2->Add (LteTft::Default ());
+  c2->Add (LteTft::Default (), 1);
 
   // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
 
@@ -247,9 +247,9 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   ///////////////////////////////////////////
 
   Ptr<EpsTftClassifier> c3 = Create<EpsTftClassifier> ();
-  c3->Add (LteTft::Default ());
-  c3->Add (tft1_1);
-  c3->Add (tft1_2);
+  c3->Add (LteTft::Default (), 1);
+  c3->Add (tft1_1, 2);
+  c3->Add (tft1_2, 3);
 
   // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
 

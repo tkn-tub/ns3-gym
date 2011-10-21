@@ -51,9 +51,8 @@ public:
    * 
    * \param tft the TFT to be added
    * 
-   * \return the unique identifier of the added TFT within this Classifier instance
    */
-  uint32_t Add (Ptr<LteTft> tft);
+  void Add (Ptr<LteTft> tft, uint32_t id);
 
   /** 
    * delete an existing TFT from the classifier
@@ -75,7 +74,6 @@ public:
 protected:
   
   std::map <uint32_t, Ptr<LteTft> > m_tftMap;
-  uint32_t m_tftCount;
   
 };
 

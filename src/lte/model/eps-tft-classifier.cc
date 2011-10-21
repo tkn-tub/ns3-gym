@@ -28,7 +28,6 @@
 
 #include "eps-tft-classifier.h"
 #include "lte-tft.h"
-#include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
@@ -42,20 +41,19 @@ NS_LOG_COMPONENT_DEFINE ("EpsTftClassifier");
 namespace ns3 {
 
 EpsTftClassifier::EpsTftClassifier ()
-  : m_tftCount (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t 
-EpsTftClassifier::Add (Ptr<LteTft> tft)
+void
+EpsTftClassifier::Add (Ptr<LteTft> tft, uint32_t id)
 {
   NS_LOG_FUNCTION (this << tft);
-  // simple sanity check. If you ever need more than 4M TFTs within a same classifiers, you'll need to implement a smarter id management algorithm.
-  NS_ABORT_IF (m_tftCount == 0xFFFFFFFF);
-  ++m_tftCount;  
-  m_tftMap[m_tftCount] = tft;
-  return m_tftCount;
+  
+  m_tftMap[id] = tft;  
+  
+  // simple sanity check: there shouldn't be more than 16 bearers (hence TFTs) per UE
+  NS_ASSERT (m_tftMap.size () <= 16);
 }
 
 void
