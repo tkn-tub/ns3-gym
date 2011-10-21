@@ -94,6 +94,7 @@ TraceFadingLossModel::LoadTrace ()
   m_fadingTrace.clear ();
   if (!ifTraceFile.good ())
     {
+      NS_LOG_INFO (this << " File: " << m_traceFile);
       NS_ASSERT_MSG(ifTraceFile.good (), " Fading trace file not found");
     }
 
