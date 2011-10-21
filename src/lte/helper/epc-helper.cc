@@ -64,26 +64,26 @@ EpcHelper::EpcHelper ()
   NS_ASSERT (retval == 0);
 
   // create TUN device implementing tunneling of user data over GTP-U/UDP/IP 
-  Ptr<VirtualNetDevice> giTunDevice = CreateObject<VirtualNetDevice> ();
+  Ptr<VirtualNetDevice> tunDevice = CreateObject<VirtualNetDevice> ();
 
   // yes we need this
-  giTunDevice->SetAddress (Mac48Address::Allocate ()); 
+  tunDevice->SetAddress (Mac48Address::Allocate ()); 
 
-  m_sgwPgw->AddDevice (giTunDevice);
-  NetDeviceContainer giTunDeviceContainer;
-  giTunDeviceContainer.Add (giTunDevice);
+  m_sgwPgw->AddDevice (tunDevice);
+  NetDeviceContainer tunDeviceContainer;
+  tunDeviceContainer.Add (tunDevice);
   
   // the TUN device is on the same subnet as the UEs, so when a packet
   // addressed to an UE arrives at the intenet to the WAN interface of
   // the PGW it will be forwarded to the TUN device. 
-  Ipv4InterfaceContainer giTunDeviceIpv4IfContainer = m_ueAddressHelper.Assign (giTunDeviceContainer);  
+  Ipv4InterfaceContainer tunDeviceIpv4IfContainer = m_ueAddressHelper.Assign (tunDeviceContainer);  
 
   // create EpcSgwPgwApplication
-  m_sgwPgwApp = CreateObject<EpcSgwPgwApplication> (giTunDevice, sgwPgwS1uSocket);
+  m_sgwPgwApp = CreateObject<EpcSgwPgwApplication> (tunDevice, sgwPgwS1uSocket);
   m_sgwPgw->AddApplication (m_sgwPgwApp);
   
   // connect SgwPgwApplication and virtual net device for tunneling
-  giTunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromGiTunDevice, m_sgwPgwApp));
+  tunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromTunDevice, m_sgwPgwApp));
 
 }
 
@@ -164,6 +164,7 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   Ptr<Socket> enbLteSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::PacketSocketFactory"));
   PacketSocketAddress enbLteSocketBindAddress;
   enbLteSocketBindAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
+  enbLteSocketBindAddress.SetProtocol (Ipv4L3Protocol::PROT_NUMBER);
   retval = enbLteSocket->Bind (enbLteSocketBindAddress);
   NS_ASSERT (retval == 0);  
   PacketSocketAddress enbLteSocketConnectAddress;
@@ -239,6 +240,14 @@ EpcHelper::AssignUeIpv4Address (NetDeviceContainer ueDevices)
   return m_ueAddressHelper.Assign (ueDevices);
 }
 
+
+
+Ipv4Address
+EpcHelper::GetUeDefaultGatewayAddress ()
+{
+  // return the address of the tun device
+  return m_sgwPgw->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
+}
 
 
 } // namespace ns3

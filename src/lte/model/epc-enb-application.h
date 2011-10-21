@@ -141,6 +141,11 @@ private:
    * 
    */
   std::map<uint32_t, LteFlowId_t> m_teidRbidMap;
+ 
+  /**
+   * UDP port to be used for GTP
+   */
+  uint16_t m_gtpuUdpPort;
 
 };
 

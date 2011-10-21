@@ -81,6 +81,7 @@ def build(bld):
         'test/epc-test-gtpu.cc',
         'test/test-eps-tft-classifier.cc',
         'test/epc-test-s1u-downlink.cc',
+        'test/epc-test-s1u-uplink.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')

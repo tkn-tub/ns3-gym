@@ -45,9 +45,10 @@ EpcEnbApplication::GetTypeId (void)
 EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address sgwAddress)
   : m_lteSocket (lteSocket),
     m_s1uSocket (s1uSocket),    
-    m_sgwAddress (sgwAddress)
+    m_sgwAddress (sgwAddress),
+    m_gtpuUdpPort (2152) // fixed by the standard
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwAddress);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
 }
@@ -74,12 +75,18 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this);  
   NS_ASSERT (socket == m_lteSocket);
   Ptr<Packet> packet = socket->Recv ();
+
+  // workaround for bug 231 https://www.nsnam.org/bugzilla/show_bug.cgi?id=231
+  SocketAddressTag satag;
+  packet->RemovePacketTag (satag);
+
   LteMacTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
   LteFlowId_t flowId;
   flowId.m_rnti = tag.GetRnti ();
   flowId.m_lcId = tag.GetLcid ();
+  NS_LOG_LOGIC ("received packet with RNTI=" << flowId.m_rnti << ", LCID=" << (uint16_t)  flowId.m_lcId);
   std::map<LteFlowId_t, uint32_t>::iterator it = m_rbidTeidMap.find (flowId);
   NS_ASSERT (it != m_rbidTeidMap.end ());
   uint32_t teid = it->second;
@@ -127,7 +134,7 @@ EpcEnbApplication::SendToS1uSocket (Ptr<Packet> packet, uint32_t teid)
   gtpu.SetLength (packet->GetSize () + gtpu.GetSerializedSize () - 8);  
   packet->AddHeader (gtpu);
   uint32_t flags = 0;
-  m_s1uSocket->SendTo (packet, flags, m_sgwAddress);
+  m_s1uSocket->SendTo (packet, flags, InetSocketAddress(m_sgwAddress, m_gtpuUdpPort));
 }
 
 

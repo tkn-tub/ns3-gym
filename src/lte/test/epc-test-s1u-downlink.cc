@@ -38,13 +38,17 @@
 #include "ns3/uinteger.h"
 
 
-using namespace ns3;
+
+namespace ns3 {
+
+
+NS_LOG_COMPONENT_DEFINE ("EpcTestS1uDownlink");
 
 
 
-struct UeTestData
+struct UeDlTestData
 {
-  UeTestData (uint32_t n, uint32_t s);
+  UeDlTestData (uint32_t n, uint32_t s);
 
   uint32_t numPkts;
   uint32_t pktSize;
@@ -53,42 +57,42 @@ struct UeTestData
   Ptr<Application> clientApp;
 };
 
-UeTestData::UeTestData (uint32_t n, uint32_t s)
+UeDlTestData::UeDlTestData (uint32_t n, uint32_t s)
   : numPkts (n),
     pktSize (s)
 {
 }
 
-struct EnbTestData
+struct EnbDlTestData
 {
-  std::vector<UeTestData> ues;
+  std::vector<UeDlTestData> ues;
 };
 
 
-class EpcS1uTestCase : public TestCase
+class EpcS1uDlTestCase : public TestCase
 {
 public:
-  EpcS1uTestCase (std::string name, std::vector<EnbTestData> v);
-  virtual ~EpcS1uTestCase ();
+  EpcS1uDlTestCase (std::string name, std::vector<EnbDlTestData> v);
+  virtual ~EpcS1uDlTestCase ();
 
 private:
   virtual void DoRun (void);
-  std::vector<EnbTestData> m_enbTestData;
+  std::vector<EnbDlTestData> m_enbDlTestData;
 };
 
 
-EpcS1uTestCase::EpcS1uTestCase (std::string name, std::vector<EnbTestData> v)
+EpcS1uDlTestCase::EpcS1uDlTestCase (std::string name, std::vector<EnbDlTestData> v)
   : TestCase (name),
-    m_enbTestData (v)
+    m_enbDlTestData (v)
 {
 }
 
-EpcS1uTestCase::~EpcS1uTestCase ()
+EpcS1uDlTestCase::~EpcS1uDlTestCase ()
 {
 }
 
 void 
-EpcS1uTestCase::DoRun ()
+EpcS1uDlTestCase::DoRun ()
 {
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
@@ -119,8 +123,8 @@ EpcS1uTestCase::DoRun ()
 
   NodeContainer enbs;
 
-  for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
-       enbit < m_enbTestData.end ();
+  for (std::vector<EnbDlTestData>::iterator enbit = m_enbDlTestData.begin ();
+       enbit < m_enbDlTestData.end ();
        ++enbit)
     {
       Ptr<Node> enb = CreateObject<Node> ();
@@ -190,11 +194,11 @@ EpcS1uTestCase::DoRun ()
   
   Simulator::Run ();
 
-  for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
-       enbit < m_enbTestData.end ();
+  for (std::vector<EnbDlTestData>::iterator enbit = m_enbDlTestData.begin ();
+       enbit < m_enbDlTestData.end ();
        ++enbit)
     {
-      for (std::vector<UeTestData>::iterator ueit = enbit->ues.begin ();
+      for (std::vector<UeDlTestData>::iterator ueit = enbit->ues.begin ();
            ueit < enbit->ues.end ();
            ++ueit)
         {
@@ -212,60 +216,57 @@ EpcS1uTestCase::DoRun ()
 /**
  * Test that the S1-U interface implementation works correctly
  */
-class EpcS1uTestSuite : public TestSuite
+class EpcS1uDlTestSuite : public TestSuite
 {
 public:
-  EpcS1uTestSuite ();
+  EpcS1uDlTestSuite ();
   
-} g_epcS1uTestSuiteInstance;
+} g_epcS1uDlTestSuiteInstance;
 
-EpcS1uTestSuite::EpcS1uTestSuite ()
+EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   : TestSuite ("epc-s1u-downlink", SYSTEM)
 {  
-  std::vector<EnbTestData> v1;  
-  EnbTestData e1;
-  UeTestData f1 (1, 100);
+  std::vector<EnbDlTestData> v1;  
+  EnbDlTestData e1;
+  UeDlTestData f1 (1, 100);
   e1.ues.push_back (f1);
   v1.push_back (e1);
-  AddTestCase (new EpcS1uTestCase ("1 eNB, 1UE", v1));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 1UE", v1));
 
 
-  std::vector<EnbTestData> v2;  
-  EnbTestData e2;
-  UeTestData f2_1 (1, 100);
+  std::vector<EnbDlTestData> v2;  
+  EnbDlTestData e2;
+  UeDlTestData f2_1 (1, 100);
   e2.ues.push_back (f2_1);
-  UeTestData f2_2 (2, 200);
+  UeDlTestData f2_2 (2, 200);
   e2.ues.push_back (f2_2);
   v2.push_back (e2);
-  AddTestCase (new EpcS1uTestCase ("1 eNB, 2UEs", v2));
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 2UEs", v2));
 
 
-  std::vector<EnbTestData> v3;  
+  std::vector<EnbDlTestData> v3;  
   v3.push_back (e1);
   v3.push_back (e2);
-  AddTestCase (new EpcS1uTestCase ("2 eNBs", v3));
+  AddTestCase (new EpcS1uDlTestCase ("2 eNBs", v3));
 
 
-  EnbTestData e3;
-  UeTestData f3_1 (3, 50);
+  EnbDlTestData e3;
+  UeDlTestData f3_1 (3, 50);
   e3.ues.push_back (f3_1);
-  UeTestData f3_2 (5, 1472);
+  UeDlTestData f3_2 (5, 1472);
   e3.ues.push_back (f3_2);
-  UeTestData f3_3 (1, 1);
+  UeDlTestData f3_3 (1, 1);
   e3.ues.push_back (f3_2);
-  std::vector<EnbTestData> v4;  
+  std::vector<EnbDlTestData> v4;  
   v4.push_back (e3);
   v4.push_back (e1);
   v4.push_back (e2);
-  AddTestCase (new EpcS1uTestCase ("3 eNBs", v4));
+  AddTestCase (new EpcS1uDlTestCase ("3 eNBs", v4));
 
   
-
-
-
-
-
-
-
 }
+
+
+
+}  // namespace ns3
 

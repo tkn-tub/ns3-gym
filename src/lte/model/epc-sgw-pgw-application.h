@@ -55,12 +55,12 @@ public:
   /**
    * Constructor that binds the tap device to the callback methods.
    *
-   * \param giTunDevice TUN VirtualNetDevice used to tunnel IP packets from
+   * \param tunDevice TUN VirtualNetDevice used to tunnel IP packets from
    * the Gi interface of the PGW/SGW over the
    * internet over GTP-U/UDP/IP on the S1-U interface
    * \param s1uSocket socket used to send GTP-U packets to the eNBs
    */
-  EpcSgwPgwApplication (const Ptr<VirtualNetDevice> giTunDevice, const Ptr<Socket> s1uSocket);
+  EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevice, const Ptr<Socket> s1uSocket);
 
   /** 
    * Destructor
@@ -95,7 +95,7 @@ public:
    * \param protocolNumber 
    * \return true always 
    */
-  bool RecvFromGiTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
+  bool RecvFromTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
 
 
   /** 
@@ -112,7 +112,7 @@ public:
    * 
    * \param packet 
    */
-  void SendToGiTunDevice (Ptr<Packet> packet, uint32_t teid);
+  void SendToTunDevice (Ptr<Packet> packet, uint32_t teid);
 
 
   /** 
@@ -172,7 +172,7 @@ private:
    * TUN VirtualNetDevice used for tunneling/detunneling IP packets
    * from/to the internet over GTP-U/UDP/IP on the S1 interface 
    */
-  Ptr<VirtualNetDevice> m_giTunDevice;
+  Ptr<VirtualNetDevice> m_tunDevice;
 
   /**
    * Map telling for each UE address what is the corresponding eNB address
@@ -185,6 +185,9 @@ private:
    */
   std::map<Ipv4Address, EnbInfo> m_enbInfoMap;
 
+  /**
+   * UDP port to be used for GTP
+   */
   uint16_t m_gtpuUdpPort;
 
 };

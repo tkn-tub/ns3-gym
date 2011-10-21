@@ -104,6 +104,13 @@ public:
   Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
 
 
+  /** 
+   * 
+   * \return the address of the Default Gateway to be used by UEs to reach the internet
+   */
+  Ipv4Address GetUeDefaultGatewayAddress ();
+
+
 
 private:
   
@@ -117,7 +124,6 @@ private:
    * helper to assign addresses to UE devices as well as to the TUN device of the SGW/PGW
    */
   Ipv4AddressHelper m_ueAddressHelper; 
-  
   
   Ptr<Node> m_sgwPgw; 
 

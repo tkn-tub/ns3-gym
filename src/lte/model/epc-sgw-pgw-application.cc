@@ -76,12 +76,12 @@ EpcSgwPgwApplication::GetTypeId (void)
 
   
 
-EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> giTunDevice, const Ptr<Socket> s1uSocket)
+EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevice, const Ptr<Socket> s1uSocket)
   : m_s1uSocket (s1uSocket),
-    m_giTunDevice (giTunDevice),
+    m_tunDevice (tunDevice),
     m_gtpuUdpPort (2152) // fixed by the standard
 {
-  NS_LOG_FUNCTION (this << giTunDevice << s1uSocket);
+  NS_LOG_FUNCTION (this << tunDevice << s1uSocket);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromS1uSocket, this));
 }
 
@@ -105,7 +105,7 @@ EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr,
 }
 
 bool
-EpcSgwPgwApplication::RecvFromGiTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
+EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << source << dest << packet << packet->GetSize ());
 
@@ -158,14 +158,14 @@ EpcSgwPgwApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   SocketAddressTag tag;
   packet->RemovePacketTag (tag);
 
-  SendToGiTunDevice (packet, teid);
+  SendToTunDevice (packet, teid);
 }
 
 void 
-EpcSgwPgwApplication::SendToGiTunDevice (Ptr<Packet> packet, uint32_t teid)
+EpcSgwPgwApplication::SendToTunDevice (Ptr<Packet> packet, uint32_t teid)
 {
   NS_LOG_FUNCTION (this << packet << teid);
-  m_giTunDevice->Receive (packet, 0x0800, m_giTunDevice->GetAddress (), m_giTunDevice->GetAddress (), NetDevice::PACKET_HOST);
+  m_tunDevice->Receive (packet, 0x0800, m_tunDevice->GetAddress (), m_tunDevice->GetAddress (), NetDevice::PACKET_HOST);
 }
 
 void 
