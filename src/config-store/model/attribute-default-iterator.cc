@@ -22,7 +22,8 @@
 #include "ns3/pointer.h"
 #include "ns3/global-value.h"
 #include "ns3/string.h"
-#include "ns3/object-ptr-container.h"
+#include "ns3/object-ptr-vector.h"
+#include "ns3/object-ptr-map.h"
 
 namespace ns3
 {
@@ -70,10 +71,16 @@ AttributeDefaultIterator::Iterate (void)
               //No value, check next attribute
               continue;
             }
-          Ptr<const ObjectPtrContainerValue> vector = DynamicCast<const ObjectPtrContainerValue> (info.initialValue);
+          Ptr<const ObjectPtrVectorValue> vector = DynamicCast<const ObjectPtrVectorValue> (info.initialValue);
           if (vector != 0)
             {
               //a vector value, won't take it
+              continue;
+            }
+          Ptr<const ObjectPtrMapValue> map = DynamicCast<const ObjectPtrMapValue> (info.initialValue);
+          if (map != 0)
+            {
+              //a map value, won't take it
               continue;
             }
           Ptr<const PointerValue> pointer = DynamicCast<const PointerValue> (info.initialValue);
@@ -82,7 +89,7 @@ AttributeDefaultIterator::Iterate (void)
               //pointer value, won't take it
               continue;
             }
-          //We take only values, no pointers or vectors
+          //We take only values, no pointers or vectors or maps
           if (!calledStart)
             {
               StartVisitTypeId (tid.GetName ());
