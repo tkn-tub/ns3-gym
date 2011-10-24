@@ -79,7 +79,7 @@ Fading Traces Usage
 The proper set of the trace parameters in the simulation is of paramount importance for the correct usage of the trace itself within the simulator.
 The list of the parameters to be configured are:
 
- * ``TraceFilename`` : the name of the trace to be loaded (absolute path o relative one according to the execution point of script).
+ * ``TraceFilename`` : the name of the trace to be loaded (absolute path o relative one according to the execution point of the script).
  * ``TraceLength`` : the trace duration in seconds.
  * ``SamplesNum`` : the number of samples.
  * ``WindowSize`` : the size of the fading sampling window in seconds.
@@ -93,7 +93,13 @@ In order to activate the fading module (by default disactivated) it has to be ex
 
 While, for setting the parameters::
 
-  lena->SetFadingModelAttribute("Param", value);
+  lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+  lena->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
+  lena->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
+  lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
+  lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
+
+Apart of ``TraceFilename``, the parameters have already a default value according to the standard format generated (i.e., the same values used in the example above).
 
 
 
