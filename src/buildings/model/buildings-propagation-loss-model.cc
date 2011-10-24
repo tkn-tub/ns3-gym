@@ -147,16 +147,16 @@ BuildingsPropagationLossModel::GetTypeId (void)
                      MakeEnumAccessor (&BuildingsPropagationLossModel::SetEnvironment,
                      &BuildingsPropagationLossModel::GetEnvironment),
                     MakeEnumChecker (BuildingsPropagationLossModel::Urban, "Urban",
-                                      BuildingsPropagationLossModel::SubUrban, "SubUrban",
-                                      BuildingsPropagationLossModel::OpenAreas, "OpenAreas"))
+                    BuildingsPropagationLossModel::SubUrban, "SubUrban",
+                    BuildingsPropagationLossModel::OpenAreas, "OpenAreas"))
 
       .AddAttribute ("CitySize", 
                       "Dimension of the city",
                       EnumValue (BuildingsPropagationLossModel::Large),
                      MakeEnumAccessor (&BuildingsPropagationLossModel::SetCitySize),
                       MakeEnumChecker (BuildingsPropagationLossModel::Small, "Small",
-                                      BuildingsPropagationLossModel::Medium, "Medium",
-                                      BuildingsPropagationLossModel::Large, "Large"));
+                     BuildingsPropagationLossModel::Medium, "Medium",
+                     BuildingsPropagationLossModel::Large, "Large"));
 
     
   return tid;

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
- * Author: Marco Miozzo <mmiozzo@cttc.es>
+ *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
 
@@ -26,6 +26,7 @@
 #include <ns3/log.h>
 #include <ns3/string.h>
 #include <ns3/double.h>
+#include "ns3/uinteger.h"
 #include <fstream>
 #include <ns3/simulator.h>
 
@@ -38,10 +39,6 @@ NS_OBJECT_ENSURE_REGISTERED (TraceFadingLossModel);
 
 
 TraceFadingLossModel::TraceFadingLossModel ()
-  : m_traceLength (10.0),
-    m_samplesNum (10000),
-    m_windowSize (0.5),
-    m_rbNum (100)
 {
   NS_LOG_FUNCTION (this);
   SetNext (NULL);
@@ -61,29 +58,47 @@ TraceFadingLossModel::GetTypeId (void)
     .SetParent<SpectrumPropagationLossModel> ()
     .AddConstructor<TraceFadingLossModel> ()
     .AddAttribute ("TraceFilename",
-                   "Name of file to load a trace from. By default, uses /JakesTraces/fading_trace_EPA_3kmph.fad",
+                   "Name of file to load a trace from.",
                    StringValue (""),
-                   MakeStringAccessor (&TraceFadingLossModel::m_traceFile),
+                   MakeStringAccessor (&TraceFadingLossModel::SetTraceFileName),
                    MakeStringChecker ())
     .AddAttribute ("TraceLength",
                   "The total length of the fading trace (default value 10 s.)",
                   TimeValue (Seconds (10.0)),
-                  MakeTimeAccessor (&TraceFadingLossModel::m_traceLength),
+                  MakeTimeAccessor (&TraceFadingLossModel::SetTraceLength),
                   MakeTimeChecker ())
     .AddAttribute ("SamplesNum",
                   "The number of samples the trace is made of (default 10000)",
-                  DoubleValue (10000),
-                  MakeDoubleAccessor (&TraceFadingLossModel::m_samplesNum),
-                  MakeDoubleChecker<double> ())
+                   UintegerValue (10000),
+                   MakeUintegerAccessor (&TraceFadingLossModel::m_samplesNum),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("WindowSize",
                   "The size of the window for the fading trace (default value 0.5 s.)",
                   TimeValue (Seconds (0.5)),
                   MakeTimeAccessor (&TraceFadingLossModel::m_windowSize),
                   MakeTimeChecker ())
+    .AddAttribute ("RbNum",
+                    "The number of RB the trace is made of (default 100)",
+                    UintegerValue (100),
+                   MakeUintegerAccessor (&TraceFadingLossModel::m_rbNum),
+                   MakeUintegerChecker<uint8_t> ())
   ;
   return tid;
 }
 
+void
+TraceFadingLossModel::SetTraceFileName (std::string fileName)
+{
+  NS_LOG_FUNCTION (this << "Set Fading Trace " << fileName);
+  
+  m_traceFile = fileName;
+}
+
+void 
+TraceFadingLossModel::SetTraceLength (Time t)
+{
+  m_traceLength = t;
+}
 
 void
 TraceFadingLossModel::LoadTrace ()
@@ -98,8 +113,8 @@ TraceFadingLossModel::LoadTrace ()
       NS_ASSERT_MSG(ifTraceFile.good (), " Fading trace file not found");
     }
 
-  NS_LOG_INFO (this << " length " << m_traceLength.GetSeconds ());
-  NS_LOG_INFO (this << " RB " << m_rbNum << " samples " << m_samplesNum);
+//   NS_LOG_INFO (this << " length " << m_traceLength.GetSeconds ());
+//   NS_LOG_INFO (this << " RB " << (uint32_t)m_rbNum << " samples " << m_samplesNum);
   for (uint32_t i = 0; i < m_rbNum; i++)
     {
       FadingTraceSample rbTimeFadingTrace;
@@ -111,7 +126,6 @@ TraceFadingLossModel::LoadTrace ()
         }
       m_fadingTrace.push_back (rbTimeFadingTrace);
     }
-  ifTraceFile.close ();
   m_timeGranularity = m_traceLength.GetMilliSeconds () / m_samplesNum;
 }
 
@@ -199,7 +213,7 @@ TraceFadingLossModel::CreateFadingChannelRealization (Ptr<const MobilityModel> e
   UniformVariable* startV = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
   ChannelRealizationId_t mobilityPair = std::make_pair (enbMobility,ueMobility);
   m_startVariableMap.insert (std::pair<ChannelRealizationId_t,UniformVariable* > (mobilityPair, startV));
-  m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ()));  
+  m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ()));
 
 }
 

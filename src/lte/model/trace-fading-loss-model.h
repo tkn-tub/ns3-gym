@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
- * Author: Marco Miozzo <mmiozzo@cttc.es>
+ *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
 
@@ -84,6 +84,9 @@ private:
   * \return the loss for a particular sub channel
   */
   double GetValue (int subChannel, double speed);
+  
+  void SetTraceFileName (std::string fileName);
+  void SetTraceLength (Time t);
   
   void LoadTrace ();
 

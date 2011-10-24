@@ -216,14 +216,13 @@ private:
   Ptr<PropagationLossModel> m_uplinkPropagationLossModel;
 
   ObjectFactory m_schedulerFactory;
-  ObjectFactory m_propagationModelFactory;
   
   ObjectFactory m_dlPropagationModelFactory;
   ObjectFactory m_ulPropagationModelFactory;
 
   ObjectFactory m_fadingModelFactory;
   
- Ptr<TraceFadingLossModel> m_fadingModule;
+  Ptr<TraceFadingLossModel> m_fadingModule;
   
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
