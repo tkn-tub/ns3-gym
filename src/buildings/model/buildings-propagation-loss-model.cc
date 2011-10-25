@@ -97,7 +97,7 @@ BuildingsPropagationLossModel::GetTypeId (void)
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.106 GHz).",
                    DoubleValue (2160e6),
-                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_frequency),
+                   MakeDoubleAccessor (&BuildingsPropagationLossModel::SetFrequency),
                    MakeDoubleChecker<double> ())
                    
      .AddAttribute ("ShadowSigmaOutdoor",
@@ -204,10 +204,23 @@ BuildingsPropagationLossModel::SetLambda (double lambda)
   m_frequency = 300000000 / lambda;
 }
 
+void
+BuildingsPropagationLossModel::SetFrequency (double freq)
+{
+  m_frequency = freq;
+  m_lambda = 300000000 * m_frequency;
+}
+
 double
 BuildingsPropagationLossModel::GetLambda (void) const
 {
   return m_lambda;
+}
+
+double
+BuildingsPropagationLossModel::GetFrequency (void) const
+{
+  return m_frequency;
 }
 
 void

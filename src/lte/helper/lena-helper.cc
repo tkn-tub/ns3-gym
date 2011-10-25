@@ -290,13 +290,11 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
     {
       double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
       m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
-      m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /dlFreq));
     }
   if (m_ulPropagationModelFactory.GetTypeId ().GetName ().compare ( "ns3::BuildingsPropagationLossModel") == 0)
     {
       double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
       m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
-      m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /ulFreq));
     }
   
   dev->Start ();
