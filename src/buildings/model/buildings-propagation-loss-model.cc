@@ -208,7 +208,7 @@ void
 BuildingsPropagationLossModel::SetFrequency (double freq)
 {
   m_frequency = freq;
-  m_lambda = 300000000 * m_frequency;
+  m_lambda = 300000000 / m_frequency;
 }
 
 double
