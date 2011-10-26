@@ -199,11 +199,12 @@ private:
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
   
-  Ptr<PropagationLossModel> m_downlinkPropagationLossModel;
-  Ptr<PropagationLossModel> m_uplinkPropagationLossModel;
+  Ptr<Object> m_downlinkPropagationModel;
+  Ptr<Object> m_uplinkPropagationModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
+  ObjectFactory m_enbNetDeviceFactory;
   
   ObjectFactory m_dlPropagationModelFactory;
   ObjectFactory m_ulPropagationModelFactory;

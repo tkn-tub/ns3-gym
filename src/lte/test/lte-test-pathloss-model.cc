@@ -79,12 +79,12 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   
   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   // 
-  //   LogComponentEnable ("LenaHelper", logLevel);
+  LogComponentEnable ("LenaHelper", logLevel);
   LogComponentEnable ("LtePathlossModelTest", logLevel);
   //   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
   //   LogComponentEnable ("LteInterference", logLevel);
   //   LogComponentEnable ("LteSpectrumValueHelper", logLevel);
-
+  LogComponentEnable ("LteEnbNetDevice", logLevel);
 
   struct SnrEfficiencyMcs
   {
@@ -209,11 +209,10 @@ LtePathlossModelSystemTestCase::DoRun (void)
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
   lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
-  // set frequency
-  // this should not be done, since it is charge the Helper of this task using the netdevice settings (earfc parameter)
-  double freq = 2.114e+09;
-  lena->SetPropagationModelAttribute ("Frequency", DoubleValue (freq));
-  lena->SetPropagationModelAttribute ("Lambda", DoubleValue (300000000.0 /freq));
+
+  // set frequency. This is important because it changes the behavior of the pathloss model
+  lena->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (200));
+
   
   // remove shadowing component
   lena->SetPropagationModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));

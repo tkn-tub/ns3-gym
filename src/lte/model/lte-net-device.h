@@ -27,7 +27,6 @@
 #include <ns3/mac48-address.h>
 #include <ns3/traced-callback.h>
 #include <ns3/nstime.h>
-#include <ns3/log.h>
 #include <ns3/lte-phy.h>
 #include <ns3/ideal-control-messages.h>
 
