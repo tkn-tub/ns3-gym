@@ -18,6 +18,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
+#include "ns3/log.h"
 #include "ns3/lte-test-ue-phy.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteTestUePhy");

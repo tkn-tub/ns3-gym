@@ -33,6 +33,7 @@
 #include "lte-amc.h"
 #include "ns3/ipv4-header.h"
 #include <ns3/lte-mac-tag.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
 

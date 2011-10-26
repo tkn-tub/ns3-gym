@@ -21,7 +21,6 @@
 #ifndef LENA_HELPER_H
 #define LENA_HELPER_H
 
-#include <ns3/log.h>
 #include <ns3/config.h>
 #include <ns3/simulator.h>
 #include <ns3/names.h>
