@@ -20,6 +20,10 @@ SOURCES = \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
+	$(SRC)/buildings/doc/source/buildings.rst \
+	$(SRC)/buildings/doc/source/buildings-design.rst \
+	$(SRC)/buildings/doc/source/buildings-user.rst \
+	$(SRC)/buildings/doc/source/buildings-testing.rst \
 	$(SRC)/click/doc/click.rst \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
