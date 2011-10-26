@@ -371,3 +371,51 @@ has been refined to comply with the scheduler interface specification [FFAPI]_. 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
 
+
+Propagation Models
+++++++++++++++++++
+
+The naming convention used in the following will be:
+
+ * User equipment:  UE
+ * Macro Base Station: MBS
+ * Small cell Base Station (e.g., pico/femtocell): SC
+
+
+The LTE module considers FDD only, and implements downlink and uplink propagation separately. As a consequence, the following pathloss computations are performed
+
+  * MBS <-> UE (indoor and outdoor)
+  * SC (indoor and outdoor) <-> UE (indoor and outdoor)
+ 
+The LTE model does not provide the following pathloss computations:
+
+  * UE <-> UE
+  * MBS <-> MBS
+  * MBS <-> SC
+  * SC <-> SC
+
+
+Supported models
+----------------
+
+The LTE module works with the channel objects provided by the Spectrum module, i.e., either SingleModelSpectrumChannel or MultiModelSpectrumChannel. Because of these, all the propagation models supported by these objecs can be used within the LTE module.
+
+Still, the recommended propagation model to be used with the LTE module is the one provided by the Buildings module, which was in fact designed specifically with LTE (though it can be used with other wireless technologies as well). Please refer to the documentation of the Buildings module for generic information on the propagation model it provides. 
+
+
+Use of the Buildings model with LTE
+-----------------------------------
+
+In this section we will highlight some considerations that specifically apply when the Buildings module is used together with the LTE module.
+
+The Buildings model does not know the actual type of the node; i.e., it is not aware of whether a transmitter node is a UE, a MBS, or a SC. Rather, the Buildings model only cares about the position of the node: whether it is indoor and outdoor, and what is its z-axis respect to the rooftop level. As a consequence, for an eNB node that is placed outdoor and at a z-coordinate above the rooftop level, the propagation models typical of MBS will be used by the Buildings module. Conversely, for an eNB that is placed outdoor but below the rooftop,  or indoor, the propagation models typical of pico and femtocells will be used. 
+
+For communications involving at least one indoor node, the corresponding wall penetration losses will be calculated by the Buildings model. This covers the following use cases:
+ 
+ * MBS <-> indoor UE
+ * outdoor SC <-> indoor UE
+ * indoor SC <-> indoor UE
+ * indoor SC <-> outdoor UE
+
+Please refer to the documentation of the Buildings module for details on the actual models used in each case.
+

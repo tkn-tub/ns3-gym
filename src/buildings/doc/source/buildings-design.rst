@@ -2,25 +2,24 @@
 
 
 ++++++++++++++++++++++++++++++++++++++
- Building Pathloss Model Documentation
+Design documentation
 ++++++++++++++++++++++++++++++++++++++
 
 
 Overview
 ++++++++
 
-The pathloss model included in the lte module is obtained through a combination of several well known pathloss models in order to mimic heterogeneous scenarios. In fact, we are interested in modeling different environmental scenarios such as urban, suburban and open areas. Moreover, indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. Finally, the frequency also represent an important parameter since it spans from 600 MHz up to 2600 MHz according to [TS36.101]_.
+The Buildings module provides:
+  
+ #. a new mobility model (BuildingsMobilityModel) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
+ #. a new propagation model (BuildingsPropagationLossModel) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
+
+Both models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi). 
+
+The pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. Finally, the frequency also represent an important parameter since it spans from 600 MHz up to 2600 MHz according to [TS36.101]_.
 
 Description of the Included Models
 ++++++++++++++++++++++++++++++++++
-
-The naming used in the following will be:
-
- * User equipment::  UE
- * small cell BS (e.g., pico, femto): SC
- * BS -> eNB
-
-Both UEs and SC might be either indoor and outdoor. The model does not care about the typology of the nodes in the link pathloss computation rather then in their relative position (i.e., indoor vs. outdoor and z-axis respect to the rooftop level).
 
 For discriminate indoor and outdoor users, the model includes a specific class called ``Building`` which contains a ns3 ``Box`` class for defining the dimension of the building. In order to implements the characteristics of the pathloss models included, the ``Building`` class provides support for:
 
@@ -45,18 +44,6 @@ By means of the number of rooms in x and y axis it is possible the definition of
 The ``Building`` class is included in ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel`` and it is in charge of managing the standard mobility functionalities plus the building ones (e.g., floor and room of the node).
 
 The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
-
-The model provides the following pathloss link computations:
-
-  * BS <-> UE (indoor and outdoor)
-  * SC (indoor and outdoor) <-> UE (indoor and outdoor)
- 
-The model will not include the following pathloss link computations:
-
-  * UE <-> UE
-  * BS <-> BS
-  * BS <-> SC
-  * SC <-> SC
 
 In the following we present the link pathloss models included.
 
@@ -388,6 +375,10 @@ In the following the pseudo-code of the model is presented::
         else
           L = I1411 + BEL
 
+
+Some considerations that apply when the Buildings model is used in an LTE FDD context:
+
+ * in the uplink, the txNode will be an UE, whereas the rxNode will be a 
 
 where ``txNode`` and ``rxNode`` can be one of the elements eNB, SC and UE.
 We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the transmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold also or SC transmissions (called ``m_itu1411DistanceThreshold``) for pruning the communications between SCs and UEs too far (the default values is fixed to 2 km).
