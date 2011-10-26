@@ -2,7 +2,7 @@
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- Buildings Propagation & Mobility Model  User Documentation
+  User Documentation
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
