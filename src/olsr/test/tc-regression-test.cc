@@ -25,6 +25,7 @@
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/string.h"
+#include "ns3/pcap-test.h"
 #include "ns3/pcap-file.h"
 #include "ns3/olsr-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -34,9 +35,6 @@
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
-
-/// Set to true to rewrite reference traces, leave false to run regression tests
-const bool WRITE_VECTORS = false;
 
 namespace ns3
 {
@@ -66,7 +64,7 @@ TcRegressionTest::DoRun ()
   Simulator::Run ();
   Simulator::Destroy ();
 
-  if (!WRITE_VECTORS) CheckResults ();
+  CheckResults ();
 }
 
 void
@@ -113,8 +111,7 @@ TcRegressionTest::CreateNodes ()
   ipv4.Assign (nd);
 
   // setup PCAP traces
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + PREFIX;
-  wifiPhy.EnablePcapAll (prefix);
+  wifiPhy.EnablePcapAll (CreateTempDirFilename(PREFIX));
 }
 
 void
@@ -122,15 +119,7 @@ TcRegressionTest::CheckResults ()
 {
   for (uint32_t i = 0; i < 3; ++i)
     {
-      std::ostringstream os1, os2;
-      // File naming conventions are hard-coded here.
-      os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
-      os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-
-      uint32_t sec (0), usec (0);
-      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec);
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
-                                                         << " differ starting from " << sec << " s " << usec << " us");
+      NS_PCAP_TEST_EXPECT_EQ (PREFIX << "-" << i << "-1.pcap");
     }
 }
 

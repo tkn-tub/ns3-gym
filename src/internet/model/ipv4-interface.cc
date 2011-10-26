@@ -340,5 +340,5 @@ Ipv4Interface::RemoveAddress (uint32_t index)
   return (addr);  // quiet compiler
 }
 
-}; // namespace ns3
+} // namespace ns3
 

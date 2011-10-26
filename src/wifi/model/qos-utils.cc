@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -91,4 +91,4 @@ QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
   return (distance >= 2048);
 }
 
-} //namespace ns3
+} // namespace ns3

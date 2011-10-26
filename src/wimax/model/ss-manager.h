@@ -37,6 +37,7 @@ namespace ns3 {
 class SSManager : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   SSManager (void);
   ~SSManager (void);
   SSRecord* CreateSSRecord (const Mac48Address &macAddress);

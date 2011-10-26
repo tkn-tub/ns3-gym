@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  *
@@ -166,10 +166,10 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211g:
       Configure80211g ();
       break;
-    case WIFI_PHY_STANDARD_80211_10Mhz:
+    case WIFI_PHY_STANDARD_80211_10MHZ:
       Configure80211_10Mhz ();
       break;
-    case WIFI_PHY_STANDARD_80211_5Mhz:
+    case WIFI_PHY_STANDARD_80211_5MHZ:
       Configure80211_5Mhz ();
       break;
     case WIFI_PHY_STANDARD_holland:

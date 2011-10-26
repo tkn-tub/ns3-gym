@@ -52,7 +52,6 @@ using namespace ns3;
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   : TestSuite ("lte-rr-ff-mac-scheduler", SYSTEM)
 {
-  SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
 
 
@@ -167,17 +166,22 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 
 static LenaTestRrFfMacSchedulerSuite lenaTestRrFfMacSchedulerSuite;
 
+std::string 
+LenaRrFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
+{
+  std::ostringstream oss;
+  oss << nUser << " UEs, distance " << dist << " m";
+  return oss.str ();
+}
+
 LenaRrFfMacSchedulerTestCase::LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl)
-  : TestCase (""),
+  : TestCase (BuildNameString (nUser, dist)),              
     m_nUser (nUser),
     m_nLc (nLc),
     m_dist (dist),
     m_thrRefDl (thrRefDl),
     m_thrRefUl (thrRefUl)
 {
-  std::ostringstream oss;
-  oss << nUser << " UEs, distance " << dist << " m" ;
-  SetName (oss.str ());
 }
 
 LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()
@@ -222,7 +226,6 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-  SetVerbose (true);
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   

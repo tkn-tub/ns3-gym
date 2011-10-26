@@ -14,7 +14,7 @@ def build(bld):
         'test/event-garbage-collector-test-suite.cc',
         ]
     
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'tools'
     headers.source = [
         'model/average.h',
@@ -22,5 +22,8 @@ def build(bld):
         'model/gnuplot.h',
         'model/delay-jitter-estimation.h',
         ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
 
     bld.ns3_python_bindings()

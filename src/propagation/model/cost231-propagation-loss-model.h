@@ -19,8 +19,8 @@
  *                              <amine.ismail@udcast.com>
  */
 
-#ifndef COST231_PROPAGATION_LOSS_MODEL_H_
-#define COST231_PROPAGATION_LOSS_MODEL_H_
+#ifndef COST231_PROPAGATION_LOSS_MODEL_H
+#define COST231_PROPAGATION_LOSS_MODEL_H
 
 #include "ns3/nstime.h"
 #include "ns3/propagation-loss-model.h"
@@ -92,4 +92,4 @@ private:
 
 }
 
-#endif /* COST231PROPAGATIONMODEL_H_ */
+#endif /* COST231PROPAGATIONMODEL_H */

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANPROPMODEL_H_
-#define UANPROPMODEL_H_
+#ifndef UAN_PROP_MODEL_H
+#define UAN_PROP_MODEL_H
 
 #include "ns3/object.h"
 #include "ns3/mobility-model.h"
@@ -216,6 +216,8 @@ std::istream &operator>> (std::ostream &is, UanPdp &pdp);
 class UanPropModel : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Computes pathloss between nodes a and b.
    * \returns Pathloss in dB re 1 uPa
@@ -251,4 +253,4 @@ public:
 
 }
 
-#endif /*UANPROPMODEL_H_*/
+#endif /* UAN_PROP_MODEL_H */

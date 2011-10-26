@@ -20,10 +20,12 @@
  *
  */
 
+#ifndef WIMAX_CS_PARAMETERS_H
+#define WIMAX_CS_PARAMETERS_H
+
 #include "ipcs-classifier-record.h"
 #include "wimax-tlv.h"
-#ifndef CSPARAMETERS_H_
-#define CSPARAMETERS_H_
+
 namespace ns3 {
 
 /**
@@ -76,4 +78,4 @@ private:
 };
 
 }
-#endif /* CSPARAMETERS_H_ */
+#endif /* WIMAX_CS_PARAMETERS_H */

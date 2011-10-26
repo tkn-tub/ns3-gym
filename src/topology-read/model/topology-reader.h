@@ -19,8 +19,8 @@
  * Author: Valerio Sartini (valesar@gmail.com)
  */
 
-#ifndef __TOPOLOGY_READER_H__
-#define __TOPOLOGY_READER_H__
+#ifndef TOPOLOGY_READER_H
+#define TOPOLOGY_READER_H
 
 #include <string>
 #include <map>
@@ -197,4 +197,4 @@ private:
 };
 
 
-#endif // __TOPOLOGY_READER_H__
+#endif /* TOPOLOGY_READER_H */

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -20,8 +20,8 @@
  */
 
 
-#ifndef UANPHY_H
-#define UANPHY_H
+#ifndef UAN_PHY_H
+#define UAN_PHY_H
 
 #include "ns3/object.h"
 #include "ns3/uan-mac.h"
@@ -44,6 +44,8 @@ class UanPhyCalcSinr : public Object
 {
 
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \param pkt Packet to calculate SINR for
    * \param arrTime Arrival time of pkt
@@ -97,6 +99,8 @@ public:
 class UanPhyPer : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Calculates the prob. of packet error based on
    * SINR at the receiver and a tx mode.
@@ -163,6 +167,8 @@ public:
 class UanPhy : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   // / Enum defining possible Phy states
   enum State
   {
@@ -374,8 +380,10 @@ public:
    * Clears all pointer references
    */
   virtual void Clear (void) = 0;
+
+  virtual void SetSleepMode (bool sleep) = 0;
 };
 
 }
 
-#endif // UANPHY_H
+#endif /* UAN_PHY_H */

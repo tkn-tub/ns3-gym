@@ -835,4 +835,4 @@ PacketMetadataTestSuite::PacketMetadataTestSuite ()
 }
 
 PacketMetadataTestSuite g_packetMetadataTest;
-} //namespace ns3
+} // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -77,6 +77,8 @@ private:
   uint16_t AllocateEphemeralPort (void);
 
   uint16_t m_ephemeral;
+  uint16_t m_portLast;
+  uint16_t m_portFirst;
   EndPoints m_endPoints;
 };
 

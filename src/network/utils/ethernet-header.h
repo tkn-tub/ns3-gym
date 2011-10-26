@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Emmanuelle Laprise
  *
@@ -124,7 +124,7 @@ private:
   Mac48Address m_destination;   /// Destination address
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* ETHERNET_HEADER_H */

@@ -16,7 +16,7 @@ def build(bld):
         'test/dsdv-testcase.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'dsdv'
     headers.source = [
         'model/dsdv-rtable.h',

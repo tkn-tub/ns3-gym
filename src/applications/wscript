@@ -32,7 +32,7 @@ def build(bld):
         'test/udp-client-server-test.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'applications'
     headers.source = [
         'model/bulk-send-application.h',

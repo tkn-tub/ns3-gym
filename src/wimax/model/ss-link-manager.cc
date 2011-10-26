@@ -35,6 +35,15 @@ NS_LOG_COMPONENT_DEFINE ("SSLinkManager");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (SSLinkManager);
+
+TypeId SSLinkManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SSLinkManager")
+    .SetParent<Object> ();
+  return tid;
+}
+
 SSLinkManager::SSLinkManager (Ptr<SubscriberStationNetDevice> ss)
   : m_ss (ss),
     m_rangingStatus (WimaxNetDevice::RANGING_STATUS_EXPIRED),

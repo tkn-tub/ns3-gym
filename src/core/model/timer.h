@@ -20,10 +20,10 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "ns3/fatal-error.h"
+#include "fatal-error.h"
 #include "nstime.h"
 #include "event-id.h"
-#include "ns3/int-to-type.h"
+#include "int-to-type.h"
 
 namespace ns3 {
 

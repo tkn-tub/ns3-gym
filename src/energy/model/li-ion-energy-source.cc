@@ -45,7 +45,7 @@ LiIonEnergySource::GetTypeId (void)
                    MakeDoubleAccessor (&LiIonEnergySource::SetInitialEnergy,
                                        &LiIonEnergySource::GetInitialEnergy),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("IntialCellVoltage",
+    .AddAttribute ("InitialCellVoltage",
                    "Initial (maximum) voltage of the cell (fully charged).",
                    DoubleValue (4.05), // in Volts
                    MakeDoubleAccessor (&LiIonEnergySource::SetInitialSupplyVoltage,

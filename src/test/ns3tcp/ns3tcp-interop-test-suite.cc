@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string>
+
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
@@ -110,7 +112,8 @@ Ns3TcpInteroperabilityTestCase::DoSetup (void)
   // We expect there to be a file called tcp-interop-response-vectors.pcap in
   // response-vectors/ of this directory
   //
-  m_pcapFilename = NS_TEST_SOURCEDIR + "/response-vectors/ns3tcp-interop-response-vectors.pcap";
+  m_pcapFilename = static_cast<std::string> (NS_TEST_SOURCEDIR) + 
+    static_cast<std::string> ("/response-vectors/ns3tcp-interop-response-vectors.pcap");
 
   if (m_writeVectors)
     {
@@ -184,7 +187,7 @@ Ns3TcpInteroperabilityTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet>
       //
       // Avoid streams of errors -- only report the first.
       //
-      if (GetErrorStatus () == false)
+      if (IsStatusSuccess ())
         {
           NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
         }

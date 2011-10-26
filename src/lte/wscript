@@ -63,11 +63,10 @@ def build(bld):
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
         'test/epc-test-gtpu-v1.cc',
-        'test/lte-test-fading.cc',
         'test/lte-test-pathloss-model.cc'
         ]
     
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'lte'
     headers.source = [
         'model/lte-common.h',
@@ -125,7 +124,6 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/epc-test-gtpu-v1.h',
-        'test/lte-test-fading.h',
         'test/lte-test-pathloss-model.h'
         ]
 

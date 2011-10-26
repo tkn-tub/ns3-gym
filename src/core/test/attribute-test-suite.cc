@@ -21,6 +21,7 @@
 #include "ns3/boolean.h"
 #include "ns3/integer.h"
 #include "ns3/uinteger.h"
+#include "ns3/config.h"
 #include "ns3/enum.h"
 #include "ns3/string.h"
 #include "ns3/random-variable.h"
@@ -280,31 +281,17 @@ AttributeTestCase<T>::CheckGetCodePaths (
 template <> void
 AttributeTestCase<BooleanValue>::DoRun (void)
 {
-  AttributeList attrs;
   Ptr<AttributeObjectTest> p;
   bool ok;
 
-  //
-  // Test setting a boolean via string representation using AttributeList.
-  //
-  ok = attrs.SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false"));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetFailSafe() \"ns3::AttributeObjectTest::TestBoolName\" into AttributeList");
-
-  //
-  // Create an object using that attribute list (which should therefore have the
-  // boolean from above set to false.
-  //
-  p = CreateObjectWithAttributes<AttributeObjectTest> (attrs);
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObjectWithAttributes");
-
-  ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly from CreateObjectWithAttributes");
+  p = CreateObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
   //
   // Set the default value of the BooleanValue and create an object.  The new
   // default value should stick.
   //
-  AttributeList::GetGlobal ()->SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("true"));
+  Config::SetDefault ("ns3::AttributeObjectTest::TestBoolName", StringValue ("true"));
   p = CreateObject<AttributeObjectTest> ();
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
@@ -315,7 +302,7 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   // Set the default value of the BooleanValue the other way and create an object.
   // The new default value should stick.
   //
-  AttributeList::GetGlobal ()->SetFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false"));
+  Config::SetDefaultFailSafe ("ns3::AttributeObjectTest::TestBoolName", StringValue ("false"));
 
   p = CreateObject<AttributeObjectTest> ();
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
@@ -342,22 +329,10 @@ AttributeTestCase<BooleanValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
-  // Create an object using individually provided StringValue Attribute.
+  // Create an object using
   //
-  p = CreateObjectWithAttributes<AttributeObjectTest> ("TestBoolName", StringValue ("true"));
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObjectWithAttributes");
-
-  ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by CreateObjectWithAttributes() with StringValue");
-
-  //
-  // Create an object using individually provided BooleanValue Attribute.
-  //
-  p = CreateObjectWithAttributes<AttributeObjectTest> ("TestBoolName", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObjectWithAttributes");
-
-  ok = CheckGetCodePaths (p, "TestBoolName", "false", BooleanValue (false));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by CreateObjectWithAttributes() with BooleanValue");
+  p = CreateObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
   //
   // The previous object-based tests checked access directly.  Now check through
@@ -1044,17 +1019,6 @@ PointerAttributeTestCase::DoRun (void)
   p->GetAttribute ("Pointer", ptr);
   Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
   NS_TEST_ASSERT_MSG_EQ (x, 0, "Unexpectedly retreived unrelated Ptr<type> from stored Ptr<Derived>");
-
-  //
-  // We should be able to create the object From a list of attributes.
-  //
-  p = CreateObjectWithAttributes<AttributeObjectTest> ("Pointer", PointerValue (Create<Derived> ()));
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Could not create Object with PointerValue Attribute in Attribute List");
-
-  derived = 0;
-  p->GetAttribute ("Pointer", ptr);
-  derived = ptr.Get<Derived> ();
-  NS_TEST_ASSERT_MSG_NE (p, 0, "Retrieved zero PointerValue Attribute after initializing to non-zero Ptr");
 }
 
 // ===========================================================================

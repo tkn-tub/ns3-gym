@@ -20,8 +20,8 @@
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef __TCP_SOCKET_H__
-#define __TCP_SOCKET_H__
+#ifndef TCP_SOCKET_H
+#define TCP_SOCKET_H
 
 #include "ns3/socket.h"
 #include "ns3/traced-callback.h"
@@ -95,7 +95,7 @@ private:
 
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* TCP_SOCKET_H */
 

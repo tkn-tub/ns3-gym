@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
                           scheduler);
   bsDevs = wimax.Install (bsNodes, WimaxHelper::DEVICE_TYPE_BASE_STATION, WimaxHelper::SIMPLE_PHY_TYPE_OFDM, scheduler);
 
-  Ptr<SubscriberStationNetDevice> ss[nbSS];
+  Ptr<SubscriberStationNetDevice>* ss = new Ptr<SubscriberStationNetDevice>[nbSS];
 
   for (int i = 0; i < nbSS; i++)
     {
@@ -141,10 +141,10 @@ int main (int argc, char *argv[])
       wimax.EnableLogComponents ();  // Turn on all wimax logging
     }
   /*------------------------------*/
-  UdpServerHelper udpServer[nbSS / 2];
-  ApplicationContainer serverApps[nbSS / 2];
-  UdpClientHelper udpClient[nbSS / 2];
-  ApplicationContainer clientApps[nbSS / 2];
+  UdpServerHelper* udpServer = new UdpServerHelper[nbSS / 2];
+  ApplicationContainer* serverApps = new ApplicationContainer[nbSS / 2];
+  UdpClientHelper* udpClient = new UdpClientHelper[nbSS / 2];
+  ApplicationContainer* clientApps = new ApplicationContainer[nbSS / 2];
 
   for (int i = 0; i < nbSS / 2; i++)
     {
@@ -204,10 +204,16 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Starting simulation.....");
   Simulator::Run ();
 
+  delete[] clientApps;
+  delete[] udpClient;
+  delete[] serverApps;
+  delete[] udpServer;
   for (int i = 0; i < nbSS; i++)
     {
       ss[i] = 0;
     }
+  delete[] ss;
+
   bs = 0;
 
   Simulator::Destroy ();

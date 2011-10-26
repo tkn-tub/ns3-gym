@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008 University of Washington
  *
@@ -189,6 +189,6 @@ private:
   uint32_t m_max;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_ADDRESS_HELPER_H */

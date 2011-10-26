@@ -64,8 +64,7 @@ private:
 
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* DL_FRAME_PREFIX_IE_H */
 
@@ -109,7 +108,6 @@ private:
   uint8_t m_hcs; // Header Check Sequence
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* OFDM_DOWNLINK_FRAME_PREFIX_H */

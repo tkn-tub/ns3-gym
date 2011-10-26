@@ -44,8 +44,34 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
-<h1>Changes from ns-3.11 to ns-3.12</h1>
+<h1>Changes from ns-3.12 to ns-3.13</h1>
+
+<h2>Changes to build system:</h2>
 <ul>
+<li> The underlying version of waf used by ns-3 was upgraded to 1.6.7.  
+This has a few changes for users and developers:
+<ul>
+<li> by default, "build" no longer has a subdirectory debug or optimized.  
+To get different build directories for different build types, you can use 
+the waf configure -o xxx option, e.g.:
+<pre>
+  ./waf configure -o shared
+  ./waf configure --enable-static -o static
+</pre>
+</li>
+<li> (for developers) the ns3headers taskgen needs to be created with a 
+features parameter name:
+<pre>
+  -  headers = bld.new_task_gen('ns3header')
+  +  headers = bld.new_task_gen(features=['ns3header'])
+</pre>
+<li> no longer need to edit src/wscript to add a module, just create your 
+module directory inside src and ns-3 will pick it up
+<li> In WAF 1.6, adding -Dxxx options is done via the DEFINES env. var.
+instead of CXXDEFINES
+<li> waf env values are always lists now, e.g. env['PYTHON'] returns
+['/usr/bin/python'], so you may need to add [0] to the value in some places
+</ul> 
 </ul>
 
 <h2>New API:</h2>
@@ -54,10 +80,53 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li> The WifiPhyStandard enumerators for specifying half- and quarter-channel 
+width standards has had a change in capitalization:
+<ul>
+<li> WIFI_PHY_STANDARD_80211_10Mhz was changed to WIFI_PHY_STANDARD_80211_10MHZ
+<li> WIFI_PHY_STANDARD_80211_5Mhz was changed to WIFI_PHY_STANDARD_80211_5MHZ
+</ul>
+<li> In the SpectrumPhy base class, the methods to get/set the
+  MobilityModel and the NetDevice were previously working with
+  opaque Ptr&#60;Object&#62;. Now all these methods have been
+  changed so that they work with Ptr&#60;NetDevice&#62;
+  and Ptr&#60;MobilityModel&#62; as appropriate. See <A href="https://www.nsnam.org/bugzilla/show_bug.cgi?id=1271">Bug 1271</A> on
+  bugzilla for the motivation.
+</li>
 </ul>
 
 <h2>Changed behavior:</h2>
 <ul>
+</ul>
+
+<hr>
+<h1>Changes from ns-3.11 to ns-3.12</h1>
+
+<h2>Changes to build system:</h2>
+<ul>
+</ul>
+
+<h2>New API:</h2>
+<ul>
+<li> New method, RegularWifiMac::SetPromisc (void), to set the interface
+to promiscuous mode.
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li> The spelling of the attribute 'IntialCellVoltage' from LiIonEnergySource 
+was corrected to 'InitialCellVoltage'; this will affect existing users who 
+were using the attribute with the misspelling.
+<li> Two trace sources in class WifiPhy have had their names changed:
+<ul> 
+<li> 'PromiscSnifferRx' is now 'MonitorSnifferRx'
+<li> 'PromiscSnifferTx' is now 'MonitorSnifferTx'
+</ul>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+<li> IPv4 fragmentation is now supported.
 </ul>
 
 <hr>

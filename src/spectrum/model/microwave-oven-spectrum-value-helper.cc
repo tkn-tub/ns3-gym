@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -162,4 +162,4 @@ MicrowaveOvenSpectrumValueHelper::CreatePowerSpectralDensityMwo2 ()
 
 
 
-} //namespace ns3
+} // namespace ns3

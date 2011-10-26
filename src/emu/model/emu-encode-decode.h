@@ -29,5 +29,5 @@ bool EmuStringToBuffer (std::string s, uint8_t *buffer, uint32_t *len);
 
 } // namespace ns3
 
-#endif // EMU_ENCODE_DECODE_H
+#endif /* EMU_ENCODE_DECODE_H */
 

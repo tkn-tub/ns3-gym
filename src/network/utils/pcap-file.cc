@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -534,4 +534,4 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
   return diff;
 }
 
-} //namespace ns3
+} // namespace ns3

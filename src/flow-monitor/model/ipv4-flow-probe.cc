@@ -307,6 +307,10 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
           myReason = DROP_ROUTE_ERROR;
           NS_LOG_DEBUG ("DROP_ROUTE_ERROR");
           break;
+        case Ipv4L3Protocol::DROP_FRAGMENT_TIMEOUT:
+          myReason = DROP_FRAGMENT_TIMEOUT;
+          NS_LOG_DEBUG ("DROP_FRAGMENT_TIMEOUT");
+          break;
 
         default:
           myReason = DROP_INVALID_REASON;

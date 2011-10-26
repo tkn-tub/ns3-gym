@@ -2,16 +2,7 @@
 #include "ns3/ref-count-base.h"
 
 
-namespace ns3 {
-
-void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeList &attributes)
-{
-  object->SetTypeId (typeId);
-  object->Object::Construct (attributes);
-}
-
-}
-
+namespace {
 
 
 class PythonEventImpl : public ns3::EventImpl
@@ -58,6 +49,8 @@ public:
       PyGILState_Release (__py_gil_state);
   }
 };
+
+} // closes: namespace {
 
 
 PyObject *

@@ -22,6 +22,7 @@
 
 #include "attribute.h"
 #include "attribute-accessor-helper.h"
+#include "trace-source-accessor.h"
 #include "attribute-helper.h"
 #include "callback.h"
 #include <string>
@@ -30,7 +31,6 @@
 namespace ns3 {
 
 class ObjectBase;
-class TraceSourceAccessor;
 
 /**
  * \brief a unique identifier for an interface.
@@ -52,6 +52,20 @@ public:
     ATTR_SET = 1<<1, /**< The attribute can be written */
     ATTR_CONSTRUCT = 1<<2, /**< The attribute can be written at construction-time */
     ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /**< The attribute can be read, and written at any time */
+  };
+  struct AttributeInformation {
+    std::string name;
+    std::string help;
+    uint32_t flags;
+    ns3::Ptr<const ns3::AttributeValue> originalInitialValue;
+    ns3::Ptr<const ns3::AttributeValue> initialValue;
+    ns3::Ptr<const ns3::AttributeAccessor> accessor;
+    ns3::Ptr<const ns3::AttributeChecker> checker;
+  };
+  struct TraceSourceInformation {
+    std::string name;
+    std::string help;
+    ns3::Ptr<const ns3::TraceSourceAccessor> accessor;
   };
 
   /**
@@ -134,44 +148,16 @@ public:
   uint32_t GetAttributeN (void) const;
   /**
    * \param i index into attribute array
-   * \returns the name associated to the attribute whose
+   * \returns the information associated to attribute whose 
    *          index is i.
    */
-  std::string GetAttributeName (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the help text associated to the attribute whose
-   *          index is i.
-   */
-  std::string GetAttributeHelp (uint32_t i) const;
+  struct TypeId::AttributeInformation GetAttribute(uint32_t i) const;
   /**
    * \param i index into attribute array
    * \returns the full name associated to the attribute whose
    *          index is i.
    */
   std::string GetAttributeFullName (uint32_t i) const;
-
-  /**
-   * \param i index into attribute array.
-   * \returns the value with which the associated attribute 
-   *          is initialized.
-   */
-  Ptr<const AttributeValue> GetAttributeInitialValue (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the flags associated to the requested attribute.
-   */
-  uint32_t GetAttributeFlags (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the checker associated to the requested attribute.
-   */
-  Ptr<const AttributeChecker> GetAttributeChecker (uint32_t i) const;
-  /**
-   * \param i index into attribute array.
-   * \returns the accessor associated to the requested attribute.
-   */
-  Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
 
   /**
    * \returns a callback which can be used to instanciate an object
@@ -192,21 +178,9 @@ public:
   uint32_t GetTraceSourceN (void) const;
   /**
    * \param i index into trace source array.
-   * \returns the name of the requested trace source.
+   * \returns detailed information about the requested trace source.
    */
-  std::string GetTraceSourceName (uint32_t i) const;
-  /**
-   * \param i index into trace source array.
-   * \returns the help text of the requested trace source.
-   */
-  std::string GetTraceSourceHelp (uint32_t i) const;
-  /**
-   * \param i index into trace source array.
-   * \returns the accessor used to get access to the requested
-   *          trace source.
-   */
-  Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
-
+  struct TypeId::TraceSourceInformation GetTraceSource(uint32_t i) const;
 
   /**
    * \param tid the TypeId of the base class.
@@ -262,6 +236,14 @@ public:
                        Ptr<const AttributeChecker> checker);
 
   /**
+   * \param i the attribute to manipulate
+   * \param initialValue the new initial value to use for this attribute.
+   * \returns true if the call was successfuly, false otherwise.
+   */
+  bool SetAttributeInitialValue(uint32_t i, 
+                                Ptr<const AttributeValue> initialValue);
+
+  /**
    * \param name the name of the new attribute
    * \param help some help text which describes the purpose of this
    *        attribute
@@ -295,25 +277,12 @@ public:
   TypeId HideFromDocumentation (void);
 
   /**
-   * \brief store together a set of attribute properties.
-   */
-  struct AttributeInfo {
-    // The accessor associated to the attribute.
-    Ptr<const AttributeAccessor> accessor;
-    // The initial value associated to the attribute.
-    Ptr<const AttributeValue> initialValue;
-    // The set of access control flags associated to the attribute.
-    uint32_t flags;
-    // The checker associated to the attribute.
-    Ptr<const AttributeChecker> checker;
-  };
-  /**
    * \param name the name of the requested attribute
-   * \param info a pointer to the TypeId::AttributeInfo data structure
+   * \param info a pointer to the TypeId::AttributeInformation data structure
    *        where the result value of this method will be stored.
    * \returns true if the requested attribute could be found, false otherwise.
    */
-  bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
+  bool LookupAttributeByName (std::string name, struct AttributeInformation *info) const;
   /**
    * \param name the name of the requested trace source
    * \returns the trace source accessor which can be used to connect and disconnect
@@ -322,15 +291,6 @@ public:
    * If no matching trace source is found, this method returns zero.
    */
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
-
-
-  /**
-   * \param fullName the full name of the requested attribute
-   * \param info a pointer to the TypeId::AttributeInfo data structure
-   *        where the result value of this method will be stored.
-   * \returns the Accessor associated to the requested attribute
-   */
-  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
 
   /**
    * \returns the internal integer which uniquely identifies this

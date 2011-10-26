@@ -19,8 +19,9 @@
  *
  */
 
-#ifndef IPCSCLASSIFIER_H_
-#define IPCSCLASSIFIER_H_
+#ifndef IPCS_CLASSIFIER_H
+#define IPCS_CLASSIFIER_H
+
 #include <stdint.h>
 #include <vector>
 #include "ss-service-flow-manager.h"
@@ -36,6 +37,7 @@ class SsServiceFlowManager;
 class IpcsClassifier : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   IpcsClassifier (void);
   ~IpcsClassifier (void);
   /**
@@ -47,7 +49,6 @@ public:
    */
   ServiceFlow * Classify (Ptr<const Packet> packet, Ptr<ServiceFlowManager> sfm, ServiceFlow::Direction dir);
 };
-}
-; // namespace ns3
+} // namespace ns3
 
-#endif /* IPCSCLASSIFIER_H_ */
+#endif /* IPCS_CLASSIFIER_H */

@@ -1,6 +1,6 @@
 #include "int64x64-128.h"
-#include "ns3/abort.h"
-#include "ns3/assert.h"
+#include "abort.h"
+#include "assert.h"
 
 namespace ns3 {
 

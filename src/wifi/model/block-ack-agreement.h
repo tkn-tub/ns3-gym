@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -63,6 +63,6 @@ protected:
   EventId m_inactivityEvent;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_AGREEMENT_H */

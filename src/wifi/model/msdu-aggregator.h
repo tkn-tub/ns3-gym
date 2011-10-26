@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -53,6 +53,6 @@ public:
   static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 };
 
-}  //namespace ns3
+}  // namespace ns3
 
 #endif /* MSDU_AGGREGATOR_H */

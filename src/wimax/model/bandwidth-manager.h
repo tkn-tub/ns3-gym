@@ -54,6 +54,7 @@ class UplinkScheduler;
 class BandwidthManager : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   BandwidthManager (Ptr<WimaxNetDevice> device);
   ~BandwidthManager (void);
   void DoDispose (void);

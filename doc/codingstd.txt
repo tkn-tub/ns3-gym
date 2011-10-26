@@ -1,2 +1,2 @@
 The project coding style document is maintained at:
-http://www.nsnam.org/codingstyle.html
+http://www.nsnam.org/developers/contributing-code/coding-style/

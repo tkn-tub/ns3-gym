@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -147,5 +147,5 @@ HwmpTag::DecrementTtl ()
 {
   m_ttl--;
 }
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3

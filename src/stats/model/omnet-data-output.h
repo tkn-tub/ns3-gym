@@ -18,8 +18,8 @@
  * Author: Joe Kopena (tjkopena@cs.drexel.edu)
  */
 
-#ifndef __OMNET_DATA_OUTPUT_H__
-#define __OMNET_DATA_OUTPUT_H__
+#ifndef OMNET_DATA_OUTPUT_H
+#define OMNET_DATA_OUTPUT_H
 
 #include "ns3/nstime.h"
 
@@ -85,4 +85,4 @@ private:
 };
 
 
-#endif // __OMNET_DATA_OUTPUT_H__
+#endif /* OMNET_DATA_OUTPUT_H */

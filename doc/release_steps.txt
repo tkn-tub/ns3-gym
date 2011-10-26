@@ -1,12 +1,19 @@
 Steps in doing an ns-3 release
 
+ns-3-dev preparation
+--------------------
+
 1. check out a clean ns-3-dev somewhere using ns-3-allinone (you will need it)
    - hg clone http://code.nsnam.org/ns-3-allinone
    - ./download.py
    - ./build.py --enable-examples --enable-tests
-   - confirm that the release builds cleanly.
+   - try building static, optimized, and debug versions
+   - try Python visualizer (not tested by buildbots)
+      -- ./waf --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
    - cd ns-3-dev
-   - ensure that tests pass (./test.py)
+   - ensure that tests pass (./test.py -g) and make sure that the buildbots
+     are reporting greens based on the tip of the repository
+
 2. prepare the source files
    - revise and check in AUTHORS, if needed
    - revise and check in RELEASE_NOTES.  Make sure to edit the Availability 
@@ -15,24 +22,61 @@ Steps in doing an ns-3 release
    - confirm that Doxygen builds cleanly (./waf doxygen), 
      and check in any necessary changes. Currently, doxygen does not build
      cleanly, we need to fix this over time.
-3. build an ns-3-allinone distribution
-   - you may want to check out a clean ns-3-allinone and ns-3-dev somewhere, 
-     otherwise the tarball will be huge
+
+At this point, the ns-3-dev should be ready, except for changing the
+name of this repo from "3-dev" to the numbered release.  That will come
+in subsequent steps.
+
+ns-allinone-3.X.tar.bz2 dry run
+-------------------------------
+
+This phase is optional to dry-run a tarball before tagging.  You may skip
+to the next phase if you are ready to just make the release or release 
+candidate.  
+
+1. check out a clean ns-3-allinone again
    - change into the allinone directory
-   - ./dist.py
-   - this will create an ns-allinone-dev.tar.bz2 tarball
-4. test dev tarball on release platforms 
-   - ./test.py 
-   - other scripts you can think of
-5. once you are happy with the tarball, tag ns-3-dev
+   - ./download.py
+   - cd ns-3-dev
+   - change VERSION to the appropriate string, either "3.X" (for a release) or
+     "3.X.RC1"  Do not commit this VERSION change to ns-3-dev.  It is used
+     by dist.py script to name the directory properly.
+   - cd into allinone directory and type "./dist.py"; you should see something
+     like this:
+
+NS-3 version: '3.12'
+Adding ns-3-dev as ns-allinone-3.12/ns-3.12
+Adding pybindgen as ns-allinone-3.12/pybindgen-0.15.0.795
+Adding nsc as ns-allinone-3.12/nsc-0.5.2
+Adding the build script files
+
+This will create an ns-allinone-3.X.tar.bz2 tarball
+
+2. test tarball on release platforms 
+   - optimized, debug, and static builds
+   - ./test.py -g
+   - make latexpdf in the doc/manual, doc/models, and doc/tutorial directories 
+   - ./waf --doxygen
+
+At this point, you are ready for final packaging and repository/site work
+
+tagging ns-3-dev and creating ns-3.X repositories
+-------------------------------------------------
+
+The steps here involve tagging ns-3-dev, copying over ns-3-dev to ns-3.X 
+on code.nsnam.org, cloning it locally, making changes from "3-dev" to "3.X" 
+in various places, and checking in those changes to the new ns-3.X repository.
+
+1. once you are happy with the tarball, tag ns-3-dev
    - cd into ns-3-dev
    - if release candidate
      -- hg tag "ns-3.x-RCy"
-     -- hg push ssh://code@code.nsnam.org//home/code/repos/ns-3.x-RCy
+     -- hg push ssh://code@code.nsnam.org//home/code/repos/ns-3-dev
    - else if final release
      -- hg tag "ns-3.x"
-     -- hg push ssh://code@code.nsnam.org//home/code/repos/ns-3.x
-6. clone the tagged ns-3-dev and place it on the repository
+     -- hg push ssh://code@code.nsnam.org//home/code/repos/ns-3-dev
+
+2. copy the tagged ns-3-dev and place it on the repository
    - ssh code.nsnam.org; sudo bash; su code;
    - if release candidate
      -- cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.x-RCy
@@ -52,12 +96,15 @@ Steps in doing an ns-3 release
        description = ns-3.x release
        name = ns-3.x
        contact = <ns-developers@isi.edu>
-7. If this is a final release (not RC)
-   - archive ns-3.x RCs in /home/code/archived-repos
-   - delete ns-3.x RCs from /home/code/repos
-8. check out a clean version of the new release (ns-3.x) or (ns-3.x-RCy) somewhere 
+
+3. If this is a final release (not RC)
+   - move (mv) ns-3.x RCs in /home/code/archived-repos
+
+4. check out a clean version of the new release (ns-3.x) or (ns-3.x-RCy) 
+   to your local machine 
    - hg clone http://code.nsnam.org/ns-3.x or (-RCy)
-9. Update the VERSION for this new release
+
+5. Update the VERSION for this new release
    - change the string 3-dev in the VERSION file to the real version 
      (e.g. 3.7 or 3.7-RC1)  This must agree with the version name you chose in the clone.
    - change the version and release string for the documentation in 
@@ -66,67 +113,87 @@ Steps in doing an ns-3 release
      VERSION file.
    - hg commit -m "update VERSION to ns-3.x" or (-RCy), you get the point
    - hg push ssh://code@code.nsnam.org//home/code/repos/ns-3.x
-10. Run the tests on the new release (debug and optimized) like a user would
-    You need to use ns-3-allinone since you will use that to make the distro
-    It is convenient to let buildbot do much of this work for you, the day of
-    the release
-   - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x-test
-   - cd !$
-   - ./download.py -n ns-3.x
-   - ./build.py
-   - cd ns-3.x
-   - ./test.py
-   - ./test.py -g
-   - ./waf -d optimized --enable-examples --enable-tests configure
-   - ./waf
-   - ./test.py
-   - ./test.py -g
-   - There should be no test errors at this time
-11. Create final tarballs
+
+creating the distribution tarball
+---------------------------------
+
+1. Create final tarballs
     You need to work with a clean ns-3-allinone-3.x directory
-   - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x
-   - cd !$
+   - hg clone http://code.nsnam.org/ns-3-allinone
+   - cd ns-3-allinone
    - ./download.py -n ns-3.x
-   - ./dist.py
-   - notice we did not build here
+   - ./dist.py (notice we did not build here)
    - this will create an ns-allinone-3.x.tar.bz2 tarball
-   - test this tarball out somewhere just to make sure everything went ok
-12. upload "ns-allinone-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
+   - sanity check this tarball just to make sure everything went ok
+
+2. upload "ns-allinone-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
    - scp ns-allinone-3.x.tar.bz2 www.nsnam.org:~
    - ssh www.nsnam.org
    - sudo cp ns-allinone-3.x.tar.bz2 /var/www/html/releases
    - cd !$
-13. give it 644 file permissions, and user/group = apache if it is not already
+
+3. give it 644 file permissions, and user/group = apache if it is not already
    - sudo chown apache:apache ns-allinone-3.x.tar.bz2
    - sudo chmod 644 ns-allinone-3.x.tar.bz2
-14. if this is a final release (not RC)
+
+4. if this is a final release (not RC)
    - delete RC releases from /var/www/html/releases
-15. if final release (not RC) build release documentation
+
+preparing the documentation
+----------------------------
+
+1. If final release, build release documentation
    - sudo bash; su nsnam; cd /home/nsnam/bin 
-   - edit ./update-manual-release, ./update-tutorial-release,
-     ./update-doxygen-release and make sure RELEASE variable is 
-     set correctly
-   - run ./update-manual-release, ./update-tutorial-release,
-     ./update-doxygen-release
-16. update web pages on www.nsnam.org (source is in the www/ module)
-   - clone the source repo (hg clone http://code.nsnam.org/www)
-   - update references to releases in html_src 
-     (consider "grep 'ns-3\.' *.html" for a new release)
-     (consider "grep 'RCx' *.html" for a new RC)
-     (consider looking at past commits to www for changes)
-   - update references to releases in scripts/
-   - commit and push changes
-   - update roadmap on wiki
-17. update the server
-   - build and update HTML directory on the server
-     -- ssh www.nsnam.org; sudo bash; su nsnam;
-     -- run ~/bin/update-html
-18. Final checks
+   ./update-doxygen-release ns-3.x
+   ./update-manual-release ns-3.x
+   ./update-tutorial-release ns-3.x
+
+2. Check if these new files are available on the website
+
+preparing the Wordpress-based main website
+------------------------------------------
+
+1. create a new ns-3.x page which should be visible from
+http://www.nsnam.org/ns-3.x
+- New Features
+- Download
+- Bugs Fixed
+- Documentation
+
+2. Repoint http://www.nsnam.org/releases/latest to the new page
+
+3. Update the Older Releases page to create an entry for the previous
+release (there are two such pages, one under Releases and one under
+Documentation)
+
+4. The main page http://www.nsnam.org should point to
+ns-3.x in the "Download" and "Documentation" boxes
+
+5. Create blog entry to announce release 
+
+ns-3 wiki edits
+---------------
+
+1. Create ns-3.(X+1) wiki page if not done already.
+
+2. edit front page and Roadmap
+
+Bugzilla
+--------
+
+1. Add a product version "ns-3.x" to the available versions.
+
+Announcing
+----------
+
+1. Final checks
    - check manual, tutorial, model, and doxygen documentation links
    - download tarball from web, build and run tests for as many
      targets as you can
    - download release from mercurial, build and run tests for as
      many targets as you can
    - test and verify until you're confident the release is solid.
-19. announce to ns-developers, with summary of release notes
+
+2. announce to ns-developers and ns-3-users, with summary of release notes
+

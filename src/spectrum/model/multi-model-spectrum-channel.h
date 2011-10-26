@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -188,6 +188,8 @@ private:
 
 
   double m_maxLossDb;
+
+  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_propagationLossTrace;
 };
 
 

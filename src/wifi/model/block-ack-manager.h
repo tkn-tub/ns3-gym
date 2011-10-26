@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
@@ -315,6 +315,6 @@ private:
   Callback<void, Mac48Address, uint8_t> m_unblockPackets;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_MANAGER_H */

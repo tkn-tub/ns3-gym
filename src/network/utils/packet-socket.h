@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Emmanuelle Laprise, INRIA
  *
@@ -140,7 +140,7 @@ private:
 
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PACKET_SOCKET_H */
 

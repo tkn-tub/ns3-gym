@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -32,4 +32,4 @@ TypeId Ipv4RoutingProtocol::GetTypeId (void)
   return tid;
 }
 
-} //namespace ns3
+} // namespace ns3

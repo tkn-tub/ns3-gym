@@ -156,4 +156,4 @@ MeshTestSuite::MeshTestSuite ()
 
 static MeshTestSuite g_meshTestSuite;
 
-} //namespace ns3
+} // namespace ns3

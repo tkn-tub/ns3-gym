@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 Georgia Tech Research Corporation
  *
@@ -115,6 +115,6 @@ void Application::StopApplication ()
 { // Provide null functionality in case subclass is not interested
 }
 
-} //namespace ns3
+} // namespace ns3
 
 

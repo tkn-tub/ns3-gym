@@ -1,4 +1,4 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 //
@@ -775,4 +775,4 @@ Ipv4StaticRouting::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address de
   return candidate;
 }
 
-} //namespace ns3
+} // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -17,8 +17,9 @@
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
-#ifndef UANTRANSDUCER_H_
-#define UANTRANSDUCER_H_
+
+#ifndef UAN_TRANSDUCER_H
+#define UAN_TRANSDUCER_H
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
@@ -26,6 +27,7 @@
 #include "ns3/uan-prop-model.h"
 
 #include <list>
+
 namespace ns3 {
 
 class UanPhy;
@@ -121,6 +123,8 @@ private:
 class UanTransducer : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \brief Transducer state (receiving or transmitting)
    */
@@ -195,4 +199,4 @@ public:
 
 } // namespace ns3
 
-#endif /*UANTRANSDUCER_H_*/
+#endif /* UAN_TRANSDUCER_H */

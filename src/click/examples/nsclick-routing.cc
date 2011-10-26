@@ -47,11 +47,6 @@ int
 main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
-//
-// Enable logging for UdpClient and
-//
-  LogComponentEnable ("NsclickRoutingClient", LOG_LEVEL_INFO);
-  LogComponentEnable ("NsclickRoutingServer", LOG_LEVEL_INFO);
 
 //
 // Explicitly create the nodes required by the topology (shown above).

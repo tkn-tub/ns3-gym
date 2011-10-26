@@ -76,8 +76,7 @@ private:
   uint8_t m_type;
 };
 
-}
-; // namespace ns3
+} // namespace ns3
 
 #endif /* MANAGEMENT_MESSAGE_TYPE_H */
 

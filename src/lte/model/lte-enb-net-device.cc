@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -38,7 +38,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/ff-mac-scheduler.h>
-
+#include <ns3/abort.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
@@ -108,21 +108,9 @@ TypeId LteEnbNetDevice::GetTypeId (void)
   return tid;
 }
 
-LteEnbNetDevice::LteEnbNetDevice (void)
+LteEnbNetDevice::LteEnbNetDevice ()
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("This constructor should not be called");
-}
-
-LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnbMac> mac, Ptr<FfMacScheduler> sched, Ptr<LteEnbRrc> rrc)
-{
-  NS_LOG_FUNCTION (this);
-  m_phy = phy;
-  m_mac = mac;
-  m_scheduler = sched;
-  m_rrc = rrc;
-  SetNode (node);
-  NS_ASSERT_MSG (m_cellIdCounter < 65535, "max num eNBs exceeded");
 }
 
 LteEnbNetDevice::~LteEnbNetDevice (void)
@@ -260,6 +248,7 @@ LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 void 
 LteEnbNetDevice::DoStart (void)
 {
+  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
   m_cellId = ++m_cellIdCounter;
   UpdateConfig ();
   m_phy->Start ();

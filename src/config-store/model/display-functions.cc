@@ -181,7 +181,7 @@ cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
           {
             for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
               {
-                if (tid.GetAttributeName (i) == node->name)
+                if (tid.GetAttribute (i).name == node->name)
                   {
                     attrIndex = i;
                     goto out;
@@ -190,13 +190,13 @@ cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
           }
 out: if (col == 0)
           {
-            std::string tip = tid.GetAttributeHelp (attrIndex);
+            std::string tip = tid.GetAttribute (attrIndex).help;
             gtk_tooltip_set_text (tooltip, tip.c_str ());
           }
         else
           {
-            Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (
-                attrIndex);
+            struct TypeId::AttributeInformation info = tid.GetAttribute (attrIndex);
+            Ptr<const AttributeChecker> checker = info.checker;
             std::string tip;
             tip = "This attribute is of type " + checker->GetValueTypeName ();
             if (checker->HasUnderlyingTypeInformation ())
@@ -455,12 +455,12 @@ cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
         uint32_t attrIndex = node->index;
         if (col == 0)
           {
-            std::string tip = node->tid.GetAttributeHelp (attrIndex);
+            std::string tip = node->tid.GetAttribute (attrIndex).help;
             gtk_tooltip_set_text (tooltip, tip.c_str ());
           }
         else
           {
-            Ptr<const AttributeChecker> checker = node->tid.GetAttributeChecker (attrIndex);
+            Ptr<const AttributeChecker> checker = node->tid.GetAttribute (attrIndex).checker;
             std::string tip;
             tip = "This attribute is of type " + checker->GetValueTypeName ();
             if (checker->HasUnderlyingTypeInformation ())

@@ -18,8 +18,8 @@
  * Author: Joe Kopena (tjkopena@cs.drexel.edu)
  */
 
-#ifndef __PACKET_DATA_CALCULATORS_H__
-#define __PACKET_DATA_CALCULATORS_H__
+#ifndef PACKET_DATA_CALCULATORS_H
+#define PACKET_DATA_CALCULATORS_H
 
 #include "ns3/packet.h"
 #include "ns3/mac48-address.h"
@@ -73,4 +73,4 @@ protected:
 };
 
 
-#endif // __PACKET_DATA_CALCULATORS_H__
+#endif /* PACKET_DATA_CALCULATORS_H */

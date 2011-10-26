@@ -18,8 +18,8 @@
  * Authors: Hajime Tazaki <tazaki@sfc.wide.ad.jp>
  */
 
-#ifndef __IPV4_PACKET_INFO_TAG_H__
-#define __IPV4_PACKET_INFO_TAG_H__
+#ifndef IPV4_PACKET_INFO_TAG_H
+#define IPV4_PACKET_INFO_TAG_H
 
 #include "ns3/tag.h"
 #include "ns3/ipv4-address.h"
@@ -84,7 +84,6 @@ private:
   // Uset for IP_RECVTTL, though not implemented yet.
   uint8_t m_ttl;
 };
-} //namespace ns3
+} // namespace ns3
 
-#endif /* __IPV4_PACKET_INFO_TAG_H__ */
-
+#endif /* IPV4_PACKET_INFO_TAG_H */

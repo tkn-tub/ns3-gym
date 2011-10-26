@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-#   Copyright (c) International Business Machines  Corp., 2002
+#   Copyright (c) International Business Machines  Corp., 2002,2010
 #
 #   This program is free software;  you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -56,38 +56,47 @@
 #                modprobe before insmod (needed for 2.6)
 #   2004-03-30 / Peter Oberparleiter: added --path option
 #   2004-08-09 / Peter Oberparleiter: added configuration file support
+#   2008-08-13 / Peter Oberparleiter: added function coverage support
 #
 
 use strict;
-use File::Basename; 
+use File::Basename;
+use File::Path;
+use File::Find;
+use File::Temp qw /tempdir/;
+use File::Spec::Functions qw /abs2rel canonpath catdir catfile catpath
+			      file_name_is_absolute rootdir splitdir splitpath/;
 use Getopt::Long;
+use Cwd qw /abs_path getcwd/;
 
 
 # Global constants
-our $lcov_version	= "LTP GCOV extension version 1.4";
+our $lcov_version	= 'LCOV version 1.9';
 our $lcov_url		= "http://ltp.sourceforge.net/coverage/lcov.php";
-
-# Names of the GCOV kernel module
-our @gcovmod = ("gcov-prof", "gcov-proc");
+our $tool_name		= basename($0);
 
 # Directory containing gcov kernel files
-our $gcov_dir = "/proc/gcov";
-
-# The location of the insmod tool
-our $insmod_tool	= "/sbin/insmod";
-
-# The location of the modprobe tool
-our $modprobe_tool	= "/sbin/modprobe";
-
-# The location of the rmmod tool
-our $rmmod_tool		= "/sbin/rmmod";
+our $gcov_dir;
 
 # Where to create temporary directories
-our $tmp_dir		= "/tmp";
+our $tmp_dir;
 
-# How to prefix a temporary directory name
-our $tmp_prefix		= "tmpdir";
+# Internal constants
+our $GKV_PROC = 0;	# gcov-kernel data in /proc via external patch
+our $GKV_SYS = 1;	# gcov-kernel data in /sys via vanilla 2.6.31+
+our @GKV_NAME = ( "external", "upstream" );
+our $pkg_gkv_file = ".gcov_kernel_version";
+our $pkg_build_file = ".build_directory";
 
+our $BR_BLOCK		= 0;
+our $BR_BRANCH		= 1;
+our $BR_TAKEN		= 2;
+our $BR_VEC_ENTRIES	= 3;
+our $BR_VEC_WIDTH	= 32;
+
+# Branch data combination types
+our $BR_SUB = 0;
+our $BR_ADD = 1;
 
 # Prototypes
 sub print_usage(*);
@@ -96,10 +105,12 @@ sub userspace_reset();
 sub userspace_capture();
 sub kernel_reset();
 sub kernel_capture();
+sub kernel_capture_initial();
+sub package_capture();
 sub add_traces();
 sub read_info_file($);
 sub get_info_entry($);
-sub set_info_entry($$$$$;$$);
+sub set_info_entry($$$$$$$$$;$$$$$$);
 sub add_counts($$);
 sub merge_checksums($$$);
 sub combine_info_entries($$$);
@@ -114,13 +125,20 @@ sub diff();
 sub system_no_output($@);
 sub read_config($);
 sub apply_config($);
-
 sub info(@);
-sub unload_module($);
-sub check_and_load_kernel_module();
 sub create_temp_dir();
 sub transform_pattern($);
-
+sub warn_handler($);
+sub die_handler($);
+sub abort_handler($);
+sub temp_cleanup();
+sub setup_gkv();
+sub get_overall_line($$$$);
+sub print_overall_rate($$$$$$$$$);
+sub lcov_geninfo(@);
+sub create_package($$$;$);
+sub get_func_found_and_hit($);
+sub br_ivec_get($$);
 
 # Global variables & initialization
 our @directory;		# Specifies where to get coverage data from
@@ -134,27 +152,59 @@ our $reset;		# If set, reset all coverage data to zero
 our $capture;		# If set, capture data
 our $output_filename;	# Name for file to write coverage data to
 our $test_name = "";	# Test case name
-our $source_dirs = "";
 our $quiet = "";	# If set, suppress information messages
 our $help;		# Help option flag
 our $version;		# Version option flag
-our $nochecksum ="";	# If set, don't calculate a checksum for each line
 our $convert_filenames;	# If set, convert filenames when applying diff
 our $strip;		# If set, strip leading directories when applying diff
-our $need_unload;	# If set, unload gcov kernel module
 our $temp_dir_name;	# Name of temporary directory
 our $cwd = `pwd`;	# Current working directory
 our $to_file;		# If set, indicates that output is written to a file
 our $follow;		# If set, indicates that find shall follow links
 our $diff_path = "";	# Path removed from tracefile when applying diff
+our $base_directory;	# Base directory (cwd of gcc during compilation)
+our $checksum;		# If set, calculate a checksum for each line
+our $no_checksum;	# If set, don't calculate a checksum for each line
+our $compat_libtool;	# If set, indicates that libtool mode is to be enabled
+our $no_compat_libtool;	# If set, indicates that libtool mode is to be disabled
+our $gcov_tool;
+our $ignore_errors;
+our $initial;
+our $no_recursion = 0;
+our $to_package;
+our $from_package;
+our $maxdepth;
+our $no_markers;
 our $config;		# Configuration file contents
 chomp($cwd);
 our $tool_dir = dirname($0);	# Directory where genhtml tool is installed
+our @temp_dirs;
+our $gcov_gkv;		# gcov kernel support version found on machine
+our $opt_derive_func_data;
+our $opt_debug;
+our $opt_list_full_path;
+our $opt_no_list_full_path;
+our $opt_list_width = 80;
+our $opt_list_truncate_max = 20;
+our $ln_overall_found;
+our $ln_overall_hit;
+our $fn_overall_found;
+our $fn_overall_hit;
+our $br_overall_found;
+our $br_overall_hit;
 
 
 #
 # Code entry point
 #
+
+$SIG{__WARN__} = \&warn_handler;
+$SIG{__DIE__} = \&die_handler;
+$SIG{'INT'} = \&abort_handler;
+$SIG{'QUIT'} = \&abort_handler;
+
+# Prettify version string
+$lcov_version =~ s/\$\s*Revision\s*:?\s*(\S+)\s*\$/$1/;
 
 # Add current working directory if $tool_dir is not already an absolute path
 if (! ($tool_dir =~ /^\/(.*)$/))
@@ -163,7 +213,7 @@ if (! ($tool_dir =~ /^\/(.*)$/))
 }
 
 # Read configuration file if available
-if (-r $ENV{"HOME"}."/.lcovrc")
+if (defined($ENV{"HOME"}) && (-r $ENV{"HOME"}."/.lcovrc"))
 {
 	$config = read_config($ENV{"HOME"}."/.lcovrc");
 }
@@ -177,37 +227,73 @@ if ($config)
 	# Copy configuration file values to variables
 	apply_config({
 		"lcov_gcov_dir"		=> \$gcov_dir,
-		"lcov_insmod_tool"	=> \$insmod_tool,
-		"lcov_modprobe_tool"	=> \$modprobe_tool,
-		"lcov_rmmod_tool"	=> \$rmmod_tool,
-		"lcov_tmp_dir"		=> \$tmp_dir});
+		"lcov_tmp_dir"		=> \$tmp_dir,
+		"lcov_list_full_path"	=> \$opt_list_full_path,
+		"lcov_list_width"	=> \$opt_list_width,
+		"lcov_list_truncate_max"=> \$opt_list_truncate_max,
+	});
 }
 
 # Parse command line options
 if (!GetOptions("directory|d|di=s" => \@directory,
-		"add-tracefile=s" => \@add_tracefile,
-		"list=s" => \$list,
-		"kernel-directory=s" => \@kernel_directory,
-		"extract=s" => \$extract,
-		"remove=s" => \$remove,
+		"add-tracefile|a=s" => \@add_tracefile,
+		"list|l=s" => \$list,
+		"kernel-directory|k=s" => \@kernel_directory,
+		"extract|e=s" => \$extract,
+		"remove|r=s" => \$remove,
 		"diff=s" => \$diff,
-		"no-checksum" => \$nochecksum,
 		"convert-filenames" => \$convert_filenames,
 		"strip=i" => \$strip,
 		"capture|c" => \$capture,
-		"output-file=s" => \$output_filename,
-		"test-name=s" => \$test_name,
-		"source-dirs=s" => \$source_dirs,
-		"zerocounters" => \$reset,
-		"quiet" => \$quiet,
-		"help" => \$help,
-		"version" => \$version,
-		"follow" => \$follow,
-		"path=s" => \$diff_path
+		"output-file|o=s" => \$output_filename,
+		"test-name|t=s" => \$test_name,
+		"zerocounters|z" => \$reset,
+		"quiet|q" => \$quiet,
+		"help|h|?" => \$help,
+		"version|v" => \$version,
+		"follow|f" => \$follow,
+		"path=s" => \$diff_path,
+		"base-directory|b=s" => \$base_directory,
+		"checksum" => \$checksum,
+		"no-checksum" => \$no_checksum,
+		"compat-libtool" => \$compat_libtool,
+		"no-compat-libtool" => \$no_compat_libtool,
+		"gcov-tool=s" => \$gcov_tool,
+		"ignore-errors=s" => \$ignore_errors,
+		"initial|i" => \$initial,
+		"no-recursion" => \$no_recursion,
+		"to-package=s" => \$to_package,
+		"from-package=s" => \$from_package,
+		"no-markers" => \$no_markers,
+		"derive-func-data" => \$opt_derive_func_data,
+		"debug" => \$opt_debug,
+		"list-full-path" => \$opt_list_full_path,
+		"no-list-full-path" => \$opt_no_list_full_path,
 		))
 {
-	print_usage(*STDERR);
+	print(STDERR "Use $tool_name --help to get usage information\n");
 	exit(1);
+}
+else
+{
+	# Merge options
+	if (defined($no_checksum))
+	{
+		$checksum = ($no_checksum ? 0 : 1);
+		$no_checksum = undef;
+	}
+
+	if (defined($no_compat_libtool))
+	{
+		$compat_libtool = ($no_compat_libtool ? 0 : 1);
+		$no_compat_libtool = undef;
+	}
+
+	if (defined($opt_no_list_full_path))
+	{
+		$opt_list_full_path = ($opt_no_list_full_path ? 0 : 1);
+		$opt_no_list_full_path = undef;
+	}
 }
 
 # Check for help option
@@ -220,12 +306,36 @@ if ($help)
 # Check for version option
 if ($version)
 {
-	print("$lcov_version\n");
+	print("$tool_name: $lcov_version\n");
 	exit(0);
+}
+
+# Check list width option
+if ($opt_list_width <= 40) {
+	die("ERROR: lcov_list_width parameter out of range (needs to be ".
+	    "larger than 40)\n");
 }
 
 # Normalize --path text
 $diff_path =~ s/\/$//;
+
+if ($follow)
+{
+	$follow = "-follow";
+}
+else
+{
+	$follow = "";
+}
+
+if ($no_recursion)
+{
+	$maxdepth = "-maxdepth 1";
+}
+else
+{
+	$maxdepth = "";
+}
 
 # Check for valid options
 check_options();
@@ -233,8 +343,8 @@ check_options();
 # Only --extract, --remove and --diff allow unnamed parameters
 if (@ARGV && !($extract || $remove || $diff))
 {
-	print_usage(*STDERR);
-	exit(1);
+	die("Extra parameter found: '".join(" ", @ARGV)."'\n".
+	    "Use $tool_name --help to get usage information\n");
 }
 
 # Check for output filename
@@ -247,6 +357,11 @@ if ($capture)
 		# Option that tells geninfo to write to stdout
 		$output_filename = "-";
 	}
+}
+
+# Determine kernel directory for gcov data
+if (!$from_package && !@directory && ($capture || $reset)) {
+	($gcov_gkv, $gcov_dir) = setup_gkv();
 }
 
 # Check for requested functionality
@@ -264,27 +379,40 @@ if ($reset)
 }
 elsif ($capture)
 {
-	# Differentiate between user space and kernel 
-	if (@directory)
-	{
+	# Capture source can be user space, kernel or package
+	if ($from_package) {
+		package_capture();
+	} elsif (@directory) {
 		userspace_capture();
-	}
-	else
-	{
-		kernel_capture();
+	} else {
+		if ($initial) {
+			if (defined($to_package)) {
+				die("ERROR: --initial cannot be used together ".
+				    "with --to-package\n");
+			}
+			kernel_capture_initial();
+		} else {
+			kernel_capture();
+		}
 	}
 }
 elsif (@add_tracefile)
 {
-	add_traces();
+	($ln_overall_found, $ln_overall_hit,
+	 $fn_overall_found, $fn_overall_hit,
+	 $br_overall_found, $br_overall_hit) = add_traces();
 }
 elsif ($remove)
 {
-	remove();
+	($ln_overall_found, $ln_overall_hit,
+	 $fn_overall_found, $fn_overall_hit,
+	 $br_overall_found, $br_overall_hit) = remove();
 }
 elsif ($extract)
 {
-	extract();
+	($ln_overall_found, $ln_overall_hit,
+	 $fn_overall_found, $fn_overall_hit,
+	 $br_overall_found, $br_overall_hit) = extract();
 }
 elsif ($list)
 {
@@ -294,19 +422,24 @@ elsif ($diff)
 {
 	if (scalar(@ARGV) != 1)
 	{
-		die("ERROR: option --diff requires one additional argument!\n");
+		die("ERROR: option --diff requires one additional argument!\n".
+		    "Use $tool_name --help to get usage information\n");
 	}
-	diff();
+	($ln_overall_found, $ln_overall_hit,
+	 $fn_overall_found, $fn_overall_hit,
+	 $br_overall_found, $br_overall_hit) = diff();
 }
 
-info("Done.\n");
+temp_cleanup();
+
+if (defined($ln_overall_found)) {
+	print_overall_rate(1, $ln_overall_found, $ln_overall_hit,
+			   1, $fn_overall_found, $fn_overall_hit,
+			   1, $br_overall_found, $br_overall_hit);
+} else {
+	info("Done.\n") if (!$list && !$capture);
+}
 exit(0);
-
-# Check for follow option
-if ($follow)
-{
-	$follow = "--follow";
-}
 
 #
 # print_usage(handle)
@@ -317,7 +450,6 @@ if ($follow)
 sub print_usage(*)
 {
 	local *HANDLE = $_[0];
-	my $tool_name = basename($0);
 
 	print(HANDLE <<END_OF_USAGE);
 Usage: $tool_name [OPTIONS]
@@ -326,27 +458,43 @@ Use lcov to collect coverage data from either the currently running Linux
 kernel or from a user space application. Specify the --directory option to
 get coverage data for a user space program.
 
+Misc:
   -h, --help                      Print this help, then exit
   -v, --version                   Print version number, then exit
   -q, --quiet                     Do not print progress messages
+
+Operation:
   -z, --zerocounters              Reset all execution counts to zero
   -c, --capture                   Capture coverage data
-  -t, --test-name NAME            Specify test name to be stored with data
-  -o, --output-file FILENAME      Write data to FILENAME instead of stdout
-  -d, --directory DIR             Use .da/.gcda files in DIR instead of kernel
-  -f, --follow                    Follow links when searching .da/.gcda files
-  -k, --kernel-directory KDIR     Capture kernel coverage data only from KDIR
   -a, --add-tracefile FILE        Add contents of tracefiles
   -e, --extract FILE PATTERN      Extract files matching PATTERN from FILE
   -r, --remove FILE PATTERN       Remove files matching PATTERN from FILE
   -l, --list FILE                 List contents of tracefile FILE
       --diff FILE DIFF            Transform tracefile FILE according to DIFF
-      --no-checksum               Do not calculate a checksum for each line
+
+Options:
+  -i, --initial                   Capture initial zero coverage data
+  -t, --test-name NAME            Specify test name to be stored with data
+  -o, --output-file FILENAME      Write data to FILENAME instead of stdout
+  -d, --directory DIR             Use .da files in DIR instead of kernel
+  -f, --follow                    Follow links when searching .da files
+  -k, --kernel-directory KDIR     Capture kernel coverage data only from KDIR
+  -b, --base-directory DIR        Use DIR as base directory for relative paths
       --convert-filenames         Convert filenames when applying diff
       --strip DEPTH               Strip initial DEPTH directory levels in diff
       --path PATH                 Strip PATH from tracefile when applying diff
+      --(no-)checksum             Enable (disable) line checksumming
+      --(no-)compat-libtool       Enable (disable) libtool compatibility mode
+      --gcov-tool TOOL            Specify gcov tool location
+      --ignore-errors ERRORS      Continue after ERRORS (gcov, source, graph)
+      --no-recursion              Exclude subdirectories from processing
+      --to-package FILENAME       Store unprocessed coverage data in FILENAME
+      --from-package FILENAME     Capture from unprocessed data in FILENAME
+      --no-markers                Ignore exclusion markers in source code
+      --derive-func-data          Generate function data from line data
+      --list-full-path            Print full path during a list operation
 
-See $lcov_url for more information about this tool.
+For more information see: $lcov_url
 END_OF_USAGE
 	;
 }
@@ -373,15 +521,15 @@ sub check_options()
 	
 	if ($i == 0)
 	{
-		print(STDERR "Need one of the options -z, -c, -e, -a, -r, -l ".
-			     "or --diff\n");
-		print_usage(*STDERR);
-		exit(2);
+		die("Need one of the options -z, -c, -a, -e, -r, -l or ".
+		    "--diff\n".
+		    "Use $tool_name --help to get usage information\n");
 	}
 	elsif ($i > 1)
 	{
-		die("ERROR: only one of -z, -c, -e, -a, -r, -l or ".
-		    "--diff allowed!\n");
+		die("ERROR: only one of -z, -c, -a, -e, -r, -l or ".
+		    "--diff allowed!\n".
+		    "Use $tool_name --help to get usage information\n");
 	}
 }
 
@@ -401,18 +549,9 @@ sub userspace_reset()
 
 	foreach $current_dir (@directory)
 	{
-		info("Deleting all .da and .gcda files in $current_dir and ".
-		     "subdirectories\n");
-		if ($follow)
-		{
-			@file_list =
-				`find $current_dir -follow \\( -name \\*.gcda -o -name \\*.da \\) -type f 2>/dev/null`;
-		}
-		else
-		{
-			@file_list =
-				`find $current_dir \\( -name \\*.gcda -o -name \\*.da \\) -type f 2>/dev/null`;
-		}
+		info("Deleting all .da files in $current_dir".
+		     ($no_recursion?"\n":" and subdirectories\n"));
+		@file_list = `find "$current_dir" $maxdepth $follow -name \\*\\.da -o -name \\*\\.gcda -type f 2>/dev/null`;
 		chomp(@file_list);
 		foreach (@file_list)
 		{
@@ -425,43 +564,31 @@ sub userspace_reset()
 #
 # userspace_capture()
 #
-# Capture coverage data found in DIRECTORY and write it to OUTPUT_FILENAME
-# if specified, otherwise to STDOUT.
+# Capture coverage data found in DIRECTORY and write it to a package (if
+# TO_PACKAGE specified) or to OUTPUT_FILENAME or STDOUT.
 #
 # Die on error.
 #
 
 sub userspace_capture()
 {
-	my @param;
-	my $file_list = join(" ", @directory);
+	my $dir;
+	my $build;
 
-	info("Capturing coverage data from $file_list\n");
-	@param = ("$tool_dir/geninfo", @directory);
-	if ($output_filename)
-	{
-		@param = (@param, "--output-filename", $output_filename);
+	if (!defined($to_package)) {
+		lcov_geninfo(@directory);
+		return;
 	}
-	if ($test_name)
-	{
-		@param = (@param, "--test-name", $test_name);
+	if (scalar(@directory) != 1) {
+		die("ERROR: -d may be specified only once with --to-package\n");
 	}
-	if ($follow)
-	{
-		@param = (@param, "--follow");
+	$dir = $directory[0];
+	if (defined($base_directory)) {
+		$build = $base_directory;
+	} else {
+		$build = $dir;
 	}
-	if ($quiet)
-	{
-		@param = (@param, "--quiet");
-	}
-	if ($nochecksum)
-	{
-		@param = (@param, "--no-checksum");
-	}
-	@param = (@param, "--source-dirs", $source_dirs);
-
-	system(@param);
-	exit($? >> 8);
+	create_package($to_package, $dir, $build);
 }
 
 
@@ -476,93 +603,158 @@ sub userspace_capture()
 sub kernel_reset()
 {
 	local *HANDLE;
-	check_and_load_kernel_module();
+	my $reset_file;
 
 	info("Resetting kernel execution counters\n");
-	open(HANDLE, ">$gcov_dir/vmlinux") or
-		die("ERROR: cannot write to $gcov_dir/vmlinux!\n");
+	if (-e "$gcov_dir/vmlinux") {
+		$reset_file = "$gcov_dir/vmlinux";
+	} elsif (-e "$gcov_dir/reset") {
+		$reset_file = "$gcov_dir/reset";
+	} else {
+		die("ERROR: no reset control found in $gcov_dir\n");
+	}
+	open(HANDLE, ">$reset_file") or
+		die("ERROR: cannot write to $reset_file!\n");
 	print(HANDLE "0");
 	close(HANDLE);
-
-	# Unload module if we loaded it in the first place
-	if ($need_unload)
-	{
-		unload_module($need_unload);
-	}
 }
 
 
 #
-# kernel_capture()
+# lcov_copy_single(from, to)
+# 
+# Copy single regular file FROM to TO without checking its size. This is
+# required to work with special files generated by the kernel
+# seq_file-interface.
 #
-# Capture kernel coverage data and write it to OUTPUT_FILENAME if specified,
-# otherwise stdout.
 #
-
-sub kernel_capture()
+sub lcov_copy_single($$)
 {
-	my @param;
+	my ($from, $to) = @_;
+	my $content;
+	local $/;
+	local *HANDLE;
 
-	check_and_load_kernel_module();
+	open(HANDLE, "<$from") or die("ERROR: cannot read $from: $!\n");
+	$content = <HANDLE>;
+	close(HANDLE);
+	open(HANDLE, ">$to") or die("ERROR: cannot write $from: $!\n");
+	if (defined($content)) {
+		print(HANDLE $content);
+	}
+	close(HANDLE);
+}
 
-	# Make sure the temporary directory is removed upon script termination
-	END
-	{
-		if ($temp_dir_name)
-		{
-			stat($temp_dir_name);
-			if (-r _)
-			{
-				info("Removing temporary directory ".
-				     "$temp_dir_name\n");
+#
+# lcov_find(dir, function, data[, extension, ...)])
+#
+# Search DIR for files and directories whose name matches PATTERN and run
+# FUNCTION for each match. If not pattern is specified, match all names.
+#
+# FUNCTION has the following prototype:
+#   function(dir, relative_name, data)
+#
+# Where:
+#   dir: the base directory for this search
+#   relative_name: the name relative to the base directory of this entry
+#   data: the DATA variable passed to lcov_find
+#
+sub lcov_find($$$;@)
+{
+	my ($dir, $fn, $data, @pattern) = @_;
+	my $result;
+	my $_fn = sub {
+		my $filename = $File::Find::name;
 
-				# Remove temporary directory
-				system("rm", "-rf", $temp_dir_name)
-					and warn("WARNING: cannot remove ".
-						 "temporary directory ".
-						 "$temp_dir_name!\n");
+		if (defined($result)) {
+			return;
+		}		
+		$filename = abs2rel($filename, $dir);
+		foreach (@pattern) {
+			if ($filename =~ /$_/) {
+				goto ok;
 			}
 		}
+		return;
+	ok:
+		$result = &$fn($dir, $filename, $data);
+	};
+	if (scalar(@pattern) == 0) {
+		@pattern = ".*";
 	}
+	find( { wanted => $_fn, no_chdir => 1 }, $dir);
 
-	# Get temporary directory
-	$temp_dir_name = create_temp_dir();
+	return $result;
+}
 
-	info("Copying kernel data to temporary directory $temp_dir_name\n");
+#
+# lcov_copy_fn(from, rel, to)
+#
+# Copy directories, files and links from/rel to to/rel.
+#
 
-	if (!@kernel_directory)
-	{
-		# Copy files from gcov kernel directory
-		system("cp", "-dr", $gcov_dir, $temp_dir_name)
-			and die("ERROR: cannot copy files from $gcov_dir!\n");
+sub lcov_copy_fn($$$)
+{
+	my ($from, $rel, $to) = @_;
+	my $absfrom = canonpath(catfile($from, $rel));
+	my $absto = canonpath(catfile($to, $rel));
+
+	if (-d) {
+		if (! -d $absto) {
+			mkpath($absto) or
+				die("ERROR: cannot create directory $absto\n");
+			chmod(0700, $absto);
+		}
+	} elsif (-l) {
+		# Copy symbolic link
+		my $link = readlink($absfrom);
+
+		if (!defined($link)) {
+			die("ERROR: cannot read link $absfrom: $!\n");
+		}
+		symlink($link, $absto) or
+			die("ERROR: cannot create link $absto: $!\n");
+	} else {
+		lcov_copy_single($absfrom, $absto);
+		chmod(0600, $absto);
 	}
-	else
-	{
-		# Prefix list of kernel sub-directories with the gcov kernel
-		# directory
-		my $file_list = join(" ", map {"$gcov_dir/$_";}
-				     @kernel_directory);
+	return undef;
+}
 
-		# Copy files from gcov kernel directory
-		system("cp", "-dr", $file_list, $temp_dir_name)
-			and die("ERROR: cannot copy files from $file_list!\n");
+#
+# lcov_copy(from, to, subdirs)
+# 
+# Copy all specified SUBDIRS and files from directory FROM to directory TO. For
+# regular files, copy file contents without checking its size. This is required
+# to work with seq_file-generated files.
+#
+
+sub lcov_copy($$;@)
+{
+	my ($from, $to, @subdirs) = @_;
+	my @pattern;
+
+	foreach (@subdirs) {
+		push(@pattern, "^$_");
 	}
+	lcov_find($from, \&lcov_copy_fn, $to, @pattern);
+}
 
-	# Make directories writable
-	system("find", $temp_dir_name, "-type", "d", "-exec", "chmod", "u+w",
-	       "{}", ";")
-		and die("ERROR: cannot modify access rights for ".
-			"$temp_dir_name!\n");
+#
+# lcov_geninfo(directory)
+#
+# Call geninfo for the specified directory and with the parameters specified
+# at the command line.
+#
 
-	# Make files writable
-	system("find", $temp_dir_name, "-type", "f", "-exec", "chmod", "u+w",
-	       "{}", ";")
-		and die("ERROR: cannot modify access rights for ".
-			"$temp_dir_name!\n");
+sub lcov_geninfo(@)
+{
+	my (@dir) = @_;
+	my @param;
 
 	# Capture data
-	info("Capturing coverage data from $temp_dir_name\n");
-	@param = ("$tool_dir/geninfo", $temp_dir_name);
+	info("Capturing coverage data from ".join(" ", @dir)."\n");
+	@param = ("$tool_dir/geninfo", @dir);
 	if ($output_filename)
 	{
 		@param = (@param, "--output-filename", $output_filename);
@@ -579,17 +771,478 @@ sub kernel_capture()
 	{
 		@param = (@param, "--quiet");
 	}
-	if ($nochecksum)
+	if (defined($checksum))
 	{
-		@param = (@param, "--no-checksum");
+		if ($checksum)
+		{
+			@param = (@param, "--checksum");
+		}
+		else
+		{
+			@param = (@param, "--no-checksum");
+		}
+	}
+	if ($base_directory)
+	{
+		@param = (@param, "--base-directory", $base_directory);
+	}
+	if ($no_compat_libtool)
+	{
+		@param = (@param, "--no-compat-libtool");
+	}
+	elsif ($compat_libtool)
+	{
+		@param = (@param, "--compat-libtool");
+	}
+	if ($gcov_tool)
+	{
+		@param = (@param, "--gcov-tool", $gcov_tool);
+	}
+	if ($ignore_errors)
+	{
+		@param = (@param, "--ignore-errors", $ignore_errors);
+	}
+	if ($initial)
+	{
+		@param = (@param, "--initial");
+	}
+	if ($no_markers)
+	{
+		@param = (@param, "--no-markers");
+	}
+	if ($opt_derive_func_data)
+	{
+		@param = (@param, "--derive-func-data");
+	}
+	if ($opt_debug)
+	{
+		@param = (@param, "--debug");
 	}
 	system(@param) and exit($? >> 8);
+}
 
+#
+# read_file(filename)
+#
+# Return the contents of the file defined by filename.
+#
 
-	# Unload module if we loaded it in the first place
-	if ($need_unload)
-	{
-		unload_module($need_unload);
+sub read_file($)
+{
+	my ($filename) = @_;
+	my $content;
+	local $\;
+	local *HANDLE;
+
+	open(HANDLE, "<$filename") || return undef;
+	$content = <HANDLE>;
+	close(HANDLE);
+
+	return $content;
+}
+
+#
+# get_package(package_file)
+#
+# Unpack unprocessed coverage data files from package_file to a temporary
+# directory and return directory name, build directory and gcov kernel version
+# as found in package.
+#
+
+sub get_package($)
+{
+	my ($file) = @_;
+	my $dir = create_temp_dir();
+	my $gkv;
+	my $build;
+	my $cwd = getcwd();
+	my $count;
+	local *HANDLE;
+
+	info("Reading package $file:\n");
+	info("  data directory .......: $dir\n");
+	$file = abs_path($file);
+	chdir($dir);
+	open(HANDLE, "tar xvfz $file 2>/dev/null|")
+		or die("ERROR: could not process package $file\n");
+	while (<HANDLE>) {
+		if (/\.da$/ || /\.gcda$/) {
+			$count++;
+		}
+	}
+	close(HANDLE);
+	$build = read_file("$dir/$pkg_build_file");
+	if (defined($build)) {
+		info("  build directory ......: $build\n");
+	}
+	$gkv = read_file("$dir/$pkg_gkv_file");
+	if (defined($gkv)) {
+		$gkv = int($gkv);
+		if ($gkv != $GKV_PROC && $gkv != $GKV_SYS) {
+			die("ERROR: unsupported gcov kernel version found ".
+			    "($gkv)\n");
+		}
+		info("  content type .........: kernel data\n");
+		info("  gcov kernel version ..: %s\n", $GKV_NAME[$gkv]);
+	} else {
+		info("  content type .........: application data\n");
+	}
+	info("  data files ...........: $count\n");
+	chdir($cwd);
+
+	return ($dir, $build, $gkv);
+}
+
+#
+# write_file(filename, $content)
+#
+# Create a file named filename and write the specified content to it.
+#
+
+sub write_file($$)
+{
+	my ($filename, $content) = @_;
+	local *HANDLE;
+
+	open(HANDLE, ">$filename") || return 0;
+	print(HANDLE $content);
+	close(HANDLE) || return 0;
+
+	return 1;
+}
+
+# count_package_data(filename)
+#
+# Count the number of coverage data files in the specified package file.
+#
+
+sub count_package_data($)
+{
+	my ($filename) = @_;
+	local *HANDLE;
+	my $count = 0;
+
+	open(HANDLE, "tar tfz $filename|") or return undef;
+	while (<HANDLE>) {
+		if (/\.da$/ || /\.gcda$/) {
+			$count++;
+		}
+	}
+	close(HANDLE);
+	return $count;
+}
+
+#
+# create_package(package_file, source_directory, build_directory[,
+# 		 kernel_gcov_version])
+#
+# Store unprocessed coverage data files from source_directory to package_file.
+#
+
+sub create_package($$$;$)
+{
+	my ($file, $dir, $build, $gkv) = @_;
+	my $cwd = getcwd();
+
+	# Print information about the package
+	info("Creating package $file:\n");
+	info("  data directory .......: $dir\n");
+
+	# Handle build directory
+	if (defined($build)) {
+		info("  build directory ......: $build\n");
+		write_file("$dir/$pkg_build_file", $build)
+			or die("ERROR: could not write to ".
+			       "$dir/$pkg_build_file\n");
+	}
+
+	# Handle gcov kernel version data
+	if (defined($gkv)) {
+		info("  content type .........: kernel data\n");
+		info("  gcov kernel version ..: %s\n", $GKV_NAME[$gkv]);
+		write_file("$dir/$pkg_gkv_file", $gkv)
+			or die("ERROR: could not write to ".
+			       "$dir/$pkg_gkv_file\n");
+	} else {
+		info("  content type .........: application data\n");
+	}
+
+	# Create package
+	$file = abs_path($file);
+	chdir($dir);
+	system("tar cfz $file .")
+		and die("ERROR: could not create package $file\n");
+
+	# Remove temporary files
+	unlink("$dir/$pkg_build_file");
+	unlink("$dir/$pkg_gkv_file");
+
+	# Show number of data files
+	if (!$quiet) {
+		my $count = count_package_data($file);
+
+		if (defined($count)) {
+			info("  data files ...........: $count\n");
+		}
+	}
+	chdir($cwd);
+}
+
+sub find_link_fn($$$)
+{
+	my ($from, $rel, $filename) = @_;
+	my $absfile = catfile($from, $rel, $filename);
+
+	if (-l $absfile) {
+		return $absfile;
+	}
+	return undef;
+}
+
+#
+# get_base(dir)
+#
+# Return (BASE, OBJ), where
+#  - BASE: is the path to the kernel base directory relative to dir
+#  - OBJ: is the absolute path to the kernel build directory
+#
+
+sub get_base($)
+{
+	my ($dir) = @_;
+	my $marker = "kernel/gcov/base.gcno";
+	my $markerfile;
+	my $sys;
+	my $obj;
+	my $link;
+
+	$markerfile = lcov_find($dir, \&find_link_fn, $marker);
+	if (!defined($markerfile)) {
+		return (undef, undef);
+	}
+
+	# sys base is parent of parent of markerfile.
+	$sys = abs2rel(dirname(dirname(dirname($markerfile))), $dir);
+
+	# obj base is parent of parent of markerfile link target.
+	$link = readlink($markerfile);
+	if (!defined($link)) {
+		die("ERROR: could not read $markerfile\n");
+	}
+	$obj = dirname(dirname(dirname($link)));
+
+	return ($sys, $obj);
+}
+
+#
+# apply_base_dir(data_dir, base_dir, build_dir, @directories)
+#
+# Make entries in @directories relative to data_dir.
+#
+
+sub apply_base_dir($$$@)
+{
+	my ($data, $base, $build, @dirs) = @_;
+	my $dir;
+	my @result;
+
+	foreach $dir (@dirs) {
+		# Is directory path relative to data directory?
+		if (-d catdir($data, $dir)) {
+			push(@result, $dir);
+			next;
+		}
+		# Relative to the auto-detected base-directory?
+		if (defined($base)) {
+			if (-d catdir($data, $base, $dir)) {
+				push(@result, catdir($base, $dir));
+				next;
+			}
+		}
+		# Relative to the specified base-directory?
+		if (defined($base_directory)) {
+			if (file_name_is_absolute($base_directory)) {
+				$base = abs2rel($base_directory, rootdir());
+			} else {
+				$base = $base_directory;
+			}
+			if (-d catdir($data, $base, $dir)) {
+				push(@result, catdir($base, $dir));
+				next;
+			}
+		}
+		# Relative to the build directory?
+		if (defined($build)) {
+			if (file_name_is_absolute($build)) {
+				$base = abs2rel($build, rootdir());
+			} else {
+				$base = $build;
+			}
+			if (-d catdir($data, $base, $dir)) {
+				push(@result, catdir($base, $dir));
+				next;
+			}
+		}
+		die("ERROR: subdirectory $dir not found\n".
+		    "Please use -b to specify the correct directory\n");
+	}
+	return @result;
+}
+
+#
+# copy_gcov_dir(dir, [@subdirectories])
+#
+# Create a temporary directory and copy all or, if specified, only some
+# subdirectories from dir to that directory. Return the name of the temporary
+# directory.
+#
+
+sub copy_gcov_dir($;@)
+{
+	my ($data, @dirs) = @_;
+	my $tempdir = create_temp_dir();
+
+	info("Copying data to temporary directory $tempdir\n");
+	lcov_copy($data, $tempdir, @dirs);
+
+	return $tempdir;
+}
+
+#
+# kernel_capture_initial
+#
+# Capture initial kernel coverage data, i.e. create a coverage data file from
+# static graph files which contains zero coverage data for all instrumented
+# lines.
+#
+
+sub kernel_capture_initial()
+{
+	my $build;
+	my $source;
+	my @params;
+
+	if (defined($base_directory)) {
+		$build = $base_directory;
+		$source = "specified";
+	} else {
+		(undef, $build) = get_base($gcov_dir);
+		if (!defined($build)) {
+			die("ERROR: could not auto-detect build directory.\n".
+			    "Please use -b to specify the build directory\n");
+		}
+		$source = "auto-detected";
+	}
+	info("Using $build as kernel build directory ($source)\n");
+	# Build directory needs to be passed to geninfo
+	$base_directory = $build;
+	if (@kernel_directory) {
+		foreach my $dir (@kernel_directory) {
+			push(@params, "$build/$dir");
+		}
+	} else {
+		push(@params, $build);
+	}
+	lcov_geninfo(@params);
+}
+
+#
+# kernel_capture_from_dir(directory, gcov_kernel_version, build)
+#
+# Perform the actual kernel coverage capturing from the specified directory
+# assuming that the data was copied from the specified gcov kernel version.
+#
+
+sub kernel_capture_from_dir($$$)
+{
+	my ($dir, $gkv, $build) = @_;
+
+	# Create package or coverage file
+	if (defined($to_package)) {
+		create_package($to_package, $dir, $build, $gkv);
+	} else {
+		# Build directory needs to be passed to geninfo
+		$base_directory = $build;
+		lcov_geninfo($dir);
+	}
+}
+
+#
+# adjust_kernel_dir(dir, build)
+#
+# Adjust directories specified with -k so that they point to the directory
+# relative to DIR. Return the build directory if specified or the auto-
+# detected build-directory.
+#
+
+sub adjust_kernel_dir($$)
+{
+	my ($dir, $build) = @_;
+	my ($sys_base, $build_auto) = get_base($dir);
+
+	if (!defined($build)) {
+		$build = $build_auto;
+	}
+	if (!defined($build)) {
+		die("ERROR: could not auto-detect build directory.\n".
+		    "Please use -b to specify the build directory\n");
+	}
+	# Make @kernel_directory relative to sysfs base
+	if (@kernel_directory) {
+		@kernel_directory = apply_base_dir($dir, $sys_base, $build,
+						   @kernel_directory);
+	}
+	return $build;
+}
+
+sub kernel_capture()
+{
+	my $data_dir;
+	my $build = $base_directory;
+
+	if ($gcov_gkv == $GKV_SYS) {
+		$build = adjust_kernel_dir($gcov_dir, $build);
+	}
+	$data_dir = copy_gcov_dir($gcov_dir, @kernel_directory);
+	kernel_capture_from_dir($data_dir, $gcov_gkv, $build);
+}
+
+#
+# package_capture()
+#
+# Capture coverage data from a package of unprocessed coverage data files
+# as generated by lcov --to-package.
+#
+
+sub package_capture()
+{
+	my $dir;
+	my $build;
+	my $gkv;
+
+	($dir, $build, $gkv) = get_package($from_package);
+
+	# Check for build directory
+	if (defined($base_directory)) {
+		if (defined($build)) {
+			info("Using build directory specified by -b.\n");
+		}
+		$build = $base_directory;
+	}
+
+	# Do the actual capture
+	if (defined($gkv)) {
+		if ($gkv == $GKV_SYS) {
+			$build = adjust_kernel_dir($dir, $build);
+		}
+		if (@kernel_directory) {
+			$dir = copy_gcov_dir($dir, @kernel_directory);	
+		}
+		kernel_capture_from_dir($dir, $gkv, $build);
+	} else {
+		# Build directory needs to be passed to geninfo
+		$base_directory = $build;
+		lcov_geninfo($dir);
 	}
 }
 
@@ -608,114 +1261,14 @@ sub info(@)
 		# Print info string
 		if ($to_file)
 		{
-			print(@_)
+			printf(@_)
 		}
 		else
 		{
-			# Don't interfer with the .info output to STDOUT
+			# Don't interfere with the .info output to STDOUT
 			printf(STDERR @_);
 		}
 	}
-}
-
-
-#
-# Check if the gcov kernel module is loaded. If it is, exit, if not, try
-# to load it.
-#
-# Die on error.
-#
-
-sub check_and_load_kernel_module()
-{
-	my $module_name;
-
-	# Is it loaded already?
-	stat("$gcov_dir");
-	if (-r _) { return(); }
-
-	info("Loading required gcov kernel module.\n");
-
-	# Do we have access to the insmod tool?
-	stat($insmod_tool);
-	if (!-x _)
-	{
-		die("ERROR: need insmod tool ($insmod_tool) to access kernel ".
-		    "coverage data!\n");
-	}
-	# Do we have access to the modprobe tool?
-	stat($modprobe_tool);
-	if (!-x _)
-	{
-		die("ERROR: need modprobe tool ($modprobe_tool) to access ".
-		    "kernel coverage data!\n");
-	}
-
-	# Try some possibilities of where the gcov kernel module may be found
-	foreach $module_name (@gcovmod)
-	{
-		# Try to load module from system wide module directory
-		# /lib/modules
-		if (system_no_output(3, $modprobe_tool, $module_name) == 0)
-		{
-			# Succeeded
-			$need_unload = $module_name;
-			return();
-		}
-
-		# Try to load linux 2.5/2.6 module from tool directory
-		if (system_no_output(3, $insmod_tool,
-				      "$tool_dir/$module_name.ko") == 0)
-		{
-			# Succeeded
-			$need_unload = $module_name;
-			return();
-		}
-
-		# Try to load linux 2.4 module from tool directory
-		if (system_no_output(3, $insmod_tool,
-				     "$tool_dir/$module_name.o") == 0)
-		{
-			# Succeeded
-			$need_unload = $module_name;
-			return();
-		}
-	}
-
-	# Hm, loading failed - maybe we aren't root?
-	if ($> != 0)
-	{
-		die("ERROR: need root access to load kernel module!\n");
-	}
-
-	die("ERROR: cannot load required gcov kernel module!\n");
-}
-
-
-#
-# unload_module()
-#
-# Unload the gcov kernel module.
-#
-
-sub unload_module($)
-{
-	my $module = $_[0];
-
-	info("Unloading kernel module $module\n");
-
-	# Do we have access to the rmmod tool?
-	stat($rmmod_tool);
-	if (!-x _)
-	{
-		warn("WARNING: cannot execute rmmod tool at $rmmod_tool - ".
-		     "gcov module still loaded!\n");
-	}
-
-	# Unload gcov kernel module
-	system_no_output(1, $rmmod_tool, $module)
-		and warn("WARNING: cannot unload gcov kernel module ".
-		         "$module!\n");
 }
 
 
@@ -729,24 +1282,200 @@ sub unload_module($)
 
 sub create_temp_dir()
 {
-	my $dirname;
-	my $number = sprintf("%d", rand(1000));
+	my $dir;
 
-	# Endless loops are evil
-	while ($number++ < 1000)
-	{
-		$dirname = "$tmp_dir/$tmp_prefix$number";
-		stat($dirname);
-		if (-e _) { next; }
+	if (defined($tmp_dir)) {
+		$dir = tempdir(DIR => $tmp_dir, CLEANUP => 1);
+	} else {
+		$dir = tempdir(CLEANUP => 1);
+	}
+	if (!defined($dir)) {
+		die("ERROR: cannot create temporary directory\n");
+	}
+	push(@temp_dirs, $dir);
 
-		mkdir($dirname)
-			or die("ERROR: cannot create temporary directory ".
-			       "$dirname!\n");
+	return $dir;
+}
 
-		return($dirname);
+
+#
+# br_taken_to_num(taken)
+#
+# Convert a branch taken value .info format to number format.
+#
+
+sub br_taken_to_num($)
+{
+	my ($taken) = @_;
+
+	return 0 if ($taken eq '-');
+	return $taken + 1;
+}
+
+
+#
+# br_num_to_taken(taken)
+#
+# Convert a branch taken value in number format to .info format.
+#
+
+sub br_num_to_taken($)
+{
+	my ($taken) = @_;
+
+	return '-' if ($taken == 0);
+	return $taken - 1;
+}
+
+
+#
+# br_taken_add(taken1, taken2)
+#
+# Return the result of taken1 + taken2 for 'branch taken' values.
+#
+
+sub br_taken_add($$)
+{
+	my ($t1, $t2) = @_;
+
+	return $t1 if (!defined($t2));
+	return $t2 if (!defined($t1));
+	return $t1 if ($t2 eq '-');
+	return $t2 if ($t1 eq '-');
+	return $t1 + $t2;
+}
+
+
+#
+# br_taken_sub(taken1, taken2)
+#
+# Return the result of taken1 - taken2 for 'branch taken' values. Return 0
+# if the result would become negative.
+#
+
+sub br_taken_sub($$)
+{
+	my ($t1, $t2) = @_;
+
+	return $t1 if (!defined($t2));
+	return undef if (!defined($t1));
+	return $t1 if ($t1 eq '-');
+	return $t1 if ($t2 eq '-');
+	return 0 if $t2 > $t1;
+	return $t1 - $t2;
+}
+
+
+#
+#
+# br_ivec_len(vector)
+#
+# Return the number of entries in the branch coverage vector.
+#
+
+sub br_ivec_len($)
+{
+	my ($vec) = @_;
+
+	return 0 if (!defined($vec));
+	return (length($vec) * 8 / $BR_VEC_WIDTH) / $BR_VEC_ENTRIES;
+}
+
+
+#
+# br_ivec_push(vector, block, branch, taken)
+#
+# Add an entry to the branch coverage vector. If an entry with the same
+# branch ID already exists, add the corresponding taken values.
+#
+
+sub br_ivec_push($$$$)
+{
+	my ($vec, $block, $branch, $taken) = @_;
+	my $offset;
+	my $num = br_ivec_len($vec);
+	my $i;
+
+	$vec = "" if (!defined($vec));
+
+	# Check if branch already exists in vector
+	for ($i = 0; $i < $num; $i++) {
+		my ($v_block, $v_branch, $v_taken) = br_ivec_get($vec, $i);
+
+		next if ($v_block != $block || $v_branch != $branch);
+
+		# Add taken counts
+		$taken = br_taken_add($taken, $v_taken);
+		last;
 	}
 
-	die("ERROR: cannot create temporary directory in $tmp_dir!\n");
+	$offset = $i * $BR_VEC_ENTRIES;
+	$taken = br_taken_to_num($taken);
+
+	# Add to vector
+	vec($vec, $offset + $BR_BLOCK, $BR_VEC_WIDTH) = $block;
+	vec($vec, $offset + $BR_BRANCH, $BR_VEC_WIDTH) = $branch;
+	vec($vec, $offset + $BR_TAKEN, $BR_VEC_WIDTH) = $taken;
+
+	return $vec;
+}
+
+
+#
+# br_ivec_get(vector, number)
+#
+# Return an entry from the branch coverage vector.
+#
+
+sub br_ivec_get($$)
+{
+	my ($vec, $num) = @_;
+	my $block;
+	my $branch;
+	my $taken;
+	my $offset = $num * $BR_VEC_ENTRIES;
+
+	# Retrieve data from vector
+	$block	= vec($vec, $offset + $BR_BLOCK, $BR_VEC_WIDTH);
+	$branch = vec($vec, $offset + $BR_BRANCH, $BR_VEC_WIDTH);
+	$taken	= vec($vec, $offset + $BR_TAKEN, $BR_VEC_WIDTH);
+
+	# Decode taken value from an integer
+	$taken = br_num_to_taken($taken);
+
+	return ($block, $branch, $taken);
+}
+
+
+#
+# get_br_found_and_hit(brcount)
+#
+# Return (br_found, br_hit) for brcount
+#
+
+sub get_br_found_and_hit($)
+{
+	my ($brcount) = @_;
+	my $line;
+	my $br_found = 0;
+	my $br_hit = 0;
+
+	foreach $line (keys(%{$brcount})) {
+		my $brdata = $brcount->{$line};
+		my $i;
+		my $num = br_ivec_len($brdata);
+
+		for ($i = 0; $i < $num; $i++) {
+			my $taken;
+
+			(undef, undef, $taken) = br_ivec_get($brdata, $i);
+
+			$br_found++;
+			$br_hit++ if ($taken ne "-" && $taken > 0);
+		}
+	}
+
+	return ($br_found, $br_hit);
 }
 
 
@@ -764,13 +1493,24 @@ sub create_temp_dir()
 #        "found" -> $lines_found (number of instrumented lines found in file)
 #	 "hit"   -> $lines_hit (number of executed lines in file)
 #        "check" -> \%checkdata
+#        "testfnc" -> \%testfncdata
+#        "sumfnc"  -> \%sumfnccount
+#        "testbr"  -> \%testbrdata
+#        "sumbr"   -> \%sumbrcount
 #
-# %testdata: name of test affecting this file -> \%testcount
+# %testdata   : name of test affecting this file -> \%testcount
+# %testfncdata: name of test affecting this file -> \%testfnccount
+# %testbrdata:  name of test affecting this file -> \%testbrcount
 #
-# %testcount: line number -> execution count for a single test
-# %sumcount : line number -> execution count for all tests
-# %funcdata : line number -> name of function beginning at that line
-# %checkdata: line number -> checksum of source code line
+# %testcount   : line number   -> execution count for a single test
+# %testfnccount: function name -> execution count for a single test
+# %testbrcount : line number   -> branch coverage data for a single test
+# %sumcount    : line number   -> execution count for all tests
+# %sumfnccount : function name -> execution count for all tests
+# %sumbrcount  : line number   -> branch coverage data for all tests
+# %funcdata    : function name -> line number
+# %checkdata   : line number   -> checksum of source code line
+# $brdata      : vector of items: block, branch, taken
 # 
 # Note that .info file sections referring to the same file and test name
 # will automatically be combined by adding all execution counts.
@@ -792,13 +1532,20 @@ sub read_info_file($)
 	my $sumcount;			#       "             "
 	my $funcdata;			#       "             "
 	my $checkdata;			#       "             "
+	my $testfncdata;
+	my $testfnccount;
+	my $sumfnccount;
+	my $testbrdata;
+	my $testbrcount;
+	my $sumbrcount;
 	my $line;			# Current line read from .info file
 	my $testname;			# Current test name
 	my $filename;			# Current filename
 	my $hitcount;			# Count for lines hit
 	my $count;			# Execution count of current line
 	my $negative;			# If set, warn about negative counts
-	my $checksum;			# Checksum of current line
+	my $changed_testname;		# If set, warn about changed testname
+	my $line_checksum;		# Checksum of current line
 	local *INFO_HANDLE;		# Filehandle for .info file
 
 	info("Reading tracefile $tracefile\n");
@@ -849,10 +1596,15 @@ sub read_info_file($)
 		# Switch statement
 		foreach ($line)
 		{
-			/^TN:(\w*(,\w+)?)/ && do
+			/^TN:([^,]*)(,diff)?/ && do
 			{
 				# Test name information found
 				$testname = defined($1) ? $1 : "";
+				if ($testname =~ s/\W/_/g)
+				{
+					$changed_testname = 1;
+				}
+				$testname .= $2 if (defined($2));
 				last;
 			};
 
@@ -863,17 +1615,22 @@ sub read_info_file($)
 				$filename = $1;
 
 				$data = $result{$filename};
-				($testdata, $sumcount, $funcdata, $checkdata) =
+				($testdata, $sumcount, $funcdata, $checkdata,
+				 $testfncdata, $sumfnccount, $testbrdata,
+				 $sumbrcount) =
 					get_info_entry($data);
 
 				if (defined($testname))
 				{
 					$testcount = $testdata->{$testname};
+					$testfnccount = $testfncdata->{$testname};
+					$testbrcount = $testbrdata->{$testname};
 				}
 				else
 				{
-					my %new_hash;
-					$testcount = \%new_hash;
+					$testcount = {};
+					$testfnccount = {};
+					$testbrcount = {};
 				}
 				last;
 			};
@@ -899,17 +1656,18 @@ sub read_info_file($)
 				# Store line checksum if available
 				if (defined($3))
 				{
-					$checksum = substr($3, 1);
+					$line_checksum = substr($3, 1);
 
 					# Does it match a previous definition
 					if (defined($checkdata->{$1}) &&
-					    ($checkdata->{$1} ne $checksum))
+					    ($checkdata->{$1} ne
+					     $line_checksum))
 					{
 						die("ERROR: checksum mismatch ".
 						    "at $filename:$1\n");
 					}
 
-					$checkdata->{$1} = $checksum;
+					$checkdata->{$1} = $line_checksum;
 				}
 				last;
 			};
@@ -917,7 +1675,52 @@ sub read_info_file($)
 			/^FN:(\d+),([^,]+)/ && do
 			{
 				# Function data found, add to structure
-				$funcdata->{$1} = $2;
+				$funcdata->{$2} = $1;
+
+				# Also initialize function call data
+				if (!defined($sumfnccount->{$2})) {
+					$sumfnccount->{$2} = 0;
+				}
+				if (defined($testname))
+				{
+					if (!defined($testfnccount->{$2})) {
+						$testfnccount->{$2} = 0;
+					}
+				}
+				last;
+			};
+
+			/^FNDA:(\d+),([^,]+)/ && do
+			{
+				# Function call count found, add to structure
+				# Add summary counts
+				$sumfnccount->{$2} += $1;
+
+				# Add test-specific counts
+				if (defined($testname))
+				{
+					$testfnccount->{$2} += $1;
+				}
+				last;
+			};
+
+			/^BRDA:(\d+),(\d+),(\d+),(\d+|-)/ && do {
+				# Branch coverage data found
+				my ($line, $block, $branch, $taken) =
+				   ($1, $2, $3, $4);
+
+				$sumbrcount->{$line} =
+					br_ivec_push($sumbrcount->{$line},
+						     $block, $branch, $taken);
+
+				# Add test-specific counts
+				if (defined($testname)) {
+					$testbrcount->{$line} =
+						br_ivec_push(
+							$testbrcount->{$line},
+							$block, $branch,
+							$taken);
+				}
 				last;
 			};
 
@@ -931,10 +1734,18 @@ sub read_info_file($)
 					{
 						$testdata->{$testname} =
 							$testcount;
+						$testfncdata->{$testname} =
+							$testfnccount;
+						$testbrdata->{$testname} =
+							$testbrcount;
 					}	
+
 					set_info_entry($data, $testdata,
 						       $sumcount, $funcdata,
-						       $checkdata);
+						       $checkdata, $testfncdata,
+						       $sumfnccount,
+						       $testbrdata,
+						       $sumbrcount);
 					$result{$filename} = $data;
 					last;
 				}
@@ -946,25 +1757,29 @@ sub read_info_file($)
 	}
 	close(INFO_HANDLE);
 
-	# Calculate lines_found and lines_hit for each file
+	# Calculate hit and found values for lines and functions of each file
 	foreach $filename (keys(%result))
 	{
 		$data = $result{$filename};
 
-		($testdata, $sumcount, $funcdata) = get_info_entry($data);
+		($testdata, $sumcount, undef, undef, $testfncdata,
+		 $sumfnccount, $testbrdata, $sumbrcount) =
+			get_info_entry($data);
 
-		# Filter out empty test cases
+		# Filter out empty files
 		if (scalar(keys(%{$sumcount})) == 0)
 		{
 			delete($result{$filename});
 			next;
 		}
+		# Filter out empty test cases
 		foreach $testname (keys(%{$testdata}))
 		{
 			if (!defined($testdata->{$testname}) ||
 			    scalar(keys(%{$testdata->{$testname}})) == 0)
 			{
 				delete($testdata->{$testname});
+				delete($testfncdata->{$testname});
 			}
 		}
 
@@ -978,7 +1793,24 @@ sub read_info_file($)
 
 		$data->{"hit"} = $hitcount;
 
-		$result{$filename} = $data;
+		# Get found/hit values for function call data
+		$data->{"f_found"} = scalar(keys(%{$sumfnccount}));
+		$hitcount = 0;
+
+		foreach (keys(%{$sumfnccount})) {
+			if ($sumfnccount->{$_} > 0) {
+				$hitcount++;
+			}
+		}
+		$data->{"f_hit"} = $hitcount;
+
+		# Get found/hit values for branch data
+		{
+			my ($br_found, $br_hit) = get_br_found_and_hit($sumbrcount);
+
+			$data->{"b_found"} = $br_found;
+			$data->{"b_hit"} = $br_hit;
+		}
 	}
 
 	if (scalar(keys(%result)) == 0)
@@ -989,6 +1821,11 @@ sub read_info_file($)
 	{
 		warn("WARNING: negative counts found in tracefile ".
 		     "$tracefile\n");
+	}
+	if ($changed_testname)
+	{
+		warn("WARNING: invalid characters removed from testname in ".
+		     "tracefile $tracefile\n");
 	}
 
 	return(\%result);
@@ -1001,7 +1838,9 @@ sub read_info_file($)
 # Retrieve data from an entry of the structure generated by read_info_file().
 # Return a list of references to hashes:
 # (test data hash ref, sum count hash ref, funcdata hash ref, checkdata hash
-#  ref, lines found, lines hit)
+#  ref, testfncdata hash ref, sumfnccount hash ref, testbrdata hash ref,
+#  sumbrcount hash ref, lines found, lines hit, functions found,
+#  functions hit, branches found, branches hit)
 #
 
 sub get_info_entry($)
@@ -1010,22 +1849,34 @@ sub get_info_entry($)
 	my $sumcount_ref = $_[0]->{"sum"};
 	my $funcdata_ref = $_[0]->{"func"};
 	my $checkdata_ref = $_[0]->{"check"};
+	my $testfncdata = $_[0]->{"testfnc"};
+	my $sumfnccount = $_[0]->{"sumfnc"};
+	my $testbrdata = $_[0]->{"testbr"};
+	my $sumbrcount = $_[0]->{"sumbr"};
 	my $lines_found = $_[0]->{"found"};
 	my $lines_hit = $_[0]->{"hit"};
+	my $f_found = $_[0]->{"f_found"};
+	my $f_hit = $_[0]->{"f_hit"};
+	my $br_found = $_[0]->{"b_found"};
+	my $br_hit = $_[0]->{"b_hit"};
 
 	return ($testdata_ref, $sumcount_ref, $funcdata_ref, $checkdata_ref,
-		$lines_found, $lines_hit);
+		$testfncdata, $sumfnccount, $testbrdata, $sumbrcount,
+		$lines_found, $lines_hit, $f_found, $f_hit,
+		$br_found, $br_hit);
 }
 
 
 #
 # set_info_entry(hash_ref, testdata_ref, sumcount_ref, funcdata_ref,
-#                checkdata_ref[,lines_found, lines_hit])
+#                checkdata_ref, testfncdata_ref, sumfcncount_ref,
+#                testbrdata_ref, sumbrcount_ref[,lines_found,
+#                lines_hit, f_found, f_hit, $b_found, $b_hit])
 #
 # Update the hash referenced by HASH_REF with the provided data references.
 #
 
-sub set_info_entry($$$$$;$$)
+sub set_info_entry($$$$$$$$$;$$$$$$)
 {
 	my $data_ref = $_[0];
 
@@ -1033,9 +1884,17 @@ sub set_info_entry($$$$$;$$)
 	$data_ref->{"sum"} = $_[2];
 	$data_ref->{"func"} = $_[3];
 	$data_ref->{"check"} = $_[4];
+	$data_ref->{"testfnc"} = $_[5];
+	$data_ref->{"sumfnc"} = $_[6];
+	$data_ref->{"testbr"} = $_[7];
+	$data_ref->{"sumbr"} = $_[8];
 
-	if (defined($_[5])) { $data_ref->{"found"} = $_[5]; }
-	if (defined($_[6])) { $data_ref->{"hit"} = $_[6]; }
+	if (defined($_[9])) { $data_ref->{"found"} = $_[9]; }
+	if (defined($_[10])) { $data_ref->{"hit"} = $_[10]; }
+	if (defined($_[11])) { $data_ref->{"f_found"} = $_[11]; }
+	if (defined($_[12])) { $data_ref->{"f_hit"} = $_[12]; }
+	if (defined($_[13])) { $data_ref->{"b_found"} = $_[13]; }
+	if (defined($_[14])) { $data_ref->{"b_hit"} = $_[14]; }
 }
 
 
@@ -1134,48 +1993,262 @@ sub merge_checksums($$$)
 
 
 #
-# merge_func_data(ref1, ref2, filename)
+# merge_func_data(funcdata1, funcdata2, filename)
 #
 
 sub merge_func_data($$$)
 {
-	my $ref1 = $_[0];
-	my $ref2 = $_[1];
-	my $filename = $_[2];
+	my ($funcdata1, $funcdata2, $filename) = @_;
 	my %result;
-	my %ignore;
-	my $line1;
-	my $line2;
+	my $func;
 
-	# Check for mismatch
-	foreach $line1 (keys(%{$ref1}))
-	{
-		foreach $line2 (keys(%{$ref2}))
-		{
-			if (($ref1->{$line1} eq $ref2->{$line2}) &&
-			    ($line1 != $line2))
-			{
-				warn("WARNING: function data mismatch at ".
-				     "$filename:$ref1->{$line1}\n");
-				$ignore{$line2} = 1;
+	if (defined($funcdata1)) {
+		%result = %{$funcdata1};
+	}
+
+	foreach $func (keys(%{$funcdata2})) {
+		my $line1 = $result{$func};
+		my $line2 = $funcdata2->{$func};
+
+		if (defined($line1) && ($line1 != $line2)) {
+			warn("WARNING: function data mismatch at ".
+			     "$filename:$line2\n");
+			next;
+		}
+		$result{$func} = $line2;
+	}
+
+	return \%result;
+}
+
+
+#
+# add_fnccount(fnccount1, fnccount2)
+#
+# Add function call count data. Return list (fnccount_added, f_found, f_hit)
+#
+
+sub add_fnccount($$)
+{
+	my ($fnccount1, $fnccount2) = @_;
+	my %result;
+	my $f_found;
+	my $f_hit;
+	my $function;
+
+	if (defined($fnccount1)) {
+		%result = %{$fnccount1};
+	}
+	foreach $function (keys(%{$fnccount2})) {
+		$result{$function} += $fnccount2->{$function};
+	}
+	$f_found = scalar(keys(%result));
+	$f_hit = 0;
+	foreach $function (keys(%result)) {
+		if ($result{$function} > 0) {
+			$f_hit++;
+		}
+	}
+
+	return (\%result, $f_found, $f_hit);
+}
+
+#
+# add_testfncdata(testfncdata1, testfncdata2)
+#
+# Add function call count data for several tests. Return reference to
+# added_testfncdata.
+#
+
+sub add_testfncdata($$)
+{
+	my ($testfncdata1, $testfncdata2) = @_;
+	my %result;
+	my $testname;
+
+	foreach $testname (keys(%{$testfncdata1})) {
+		if (defined($testfncdata2->{$testname})) {
+			my $fnccount;
+
+			# Function call count data for this testname exists
+			# in both data sets: merge
+			($fnccount) = add_fnccount(
+				$testfncdata1->{$testname},
+				$testfncdata2->{$testname});
+			$result{$testname} = $fnccount;
+			next;
+		}
+		# Function call count data for this testname is unique to
+		# data set 1: copy
+		$result{$testname} = $testfncdata1->{$testname};
+	}
+
+	# Add count data for testnames unique to data set 2
+	foreach $testname (keys(%{$testfncdata2})) {
+		if (!defined($result{$testname})) {
+			$result{$testname} = $testfncdata2->{$testname};
+		}
+	}
+	return \%result;
+}
+
+
+#
+# brcount_to_db(brcount)
+#
+# Convert brcount data to the following format:
+#
+# db:          line number    -> block hash
+# block hash:  block number   -> branch hash
+# branch hash: branch number  -> taken value
+#
+
+sub brcount_to_db($)
+{
+	my ($brcount) = @_;
+	my $line;
+	my $db;
+
+	# Add branches from first count to database
+	foreach $line (keys(%{$brcount})) {
+		my $brdata = $brcount->{$line};
+		my $i;
+		my $num = br_ivec_len($brdata);
+
+		for ($i = 0; $i < $num; $i++) {
+			my ($block, $branch, $taken) = br_ivec_get($brdata, $i);
+
+			$db->{$line}->{$block}->{$branch} = $taken;
+		}
+	}
+
+	return $db;
+}
+
+
+#
+# db_to_brcount(db)
+#
+# Convert branch coverage data back to brcount format.
+#
+
+sub db_to_brcount($)
+{
+	my ($db) = @_;
+	my $line;
+	my $brcount = {};
+	my $br_found = 0;
+	my $br_hit = 0;
+
+	# Convert database back to brcount format
+	foreach $line (sort({$a <=> $b} keys(%{$db}))) {
+		my $ldata = $db->{$line};
+		my $brdata;
+		my $block;
+
+		foreach $block (sort({$a <=> $b} keys(%{$ldata}))) {
+			my $bdata = $ldata->{$block};
+			my $branch;
+
+			foreach $branch (sort({$a <=> $b} keys(%{$bdata}))) {
+				my $taken = $bdata->{$branch};
+
+				$br_found++;
+				$br_hit++ if ($taken ne "-" && $taken > 0);
+				$brdata = br_ivec_push($brdata, $block,
+						       $branch, $taken);
 			}
 		}
+		$brcount->{$line} = $brdata;
 	}
 
-	# Merge
-	foreach (keys(%{$ref1}))
-	{
-		$result{$_} = $ref1->{$_};
-	}
+	return ($brcount, $br_found, $br_hit);
+}
 
-	foreach (keys(%{$ref2}))
-	{
-		if (!$ignore{$_})
-		{
-			$result{$_} = $ref2->{$_};
+
+# combine_brcount(brcount1, brcount2, type)
+#
+# If add is BR_ADD, add branch coverage data and return list (brcount_added,
+# br_found, br_hit). If add is BR_SUB, subtract the taken values of brcount2
+# from brcount1 and return (brcount_sub, br_found, br_hit).
+#
+
+sub combine_brcount($$$)
+{
+	my ($brcount1, $brcount2, $type) = @_;
+	my $line;
+	my $block;
+	my $branch;
+	my $taken;
+	my $db;
+	my $br_found = 0;
+	my $br_hit = 0;
+	my $result;
+
+	# Convert branches from first count to database
+	$db = brcount_to_db($brcount1);
+	# Combine values from database and second count
+	foreach $line (keys(%{$brcount2})) {
+		my $brdata = $brcount2->{$line};
+		my $num = br_ivec_len($brdata);
+		my $i;
+
+		for ($i = 0; $i < $num; $i++) {
+			($block, $branch, $taken) = br_ivec_get($brdata, $i);
+			my $new_taken = $db->{$line}->{$block}->{$branch};
+
+			if ($type == $BR_ADD) {
+				$new_taken = br_taken_add($new_taken, $taken);
+			} elsif ($type == $BR_SUB) {
+				$new_taken = br_taken_sub($new_taken, $taken);
+			}
+			$db->{$line}->{$block}->{$branch} = $new_taken
+				if (defined($new_taken));
 		}
 	}
+	# Convert database back to brcount format
+	($result, $br_found, $br_hit) = db_to_brcount($db);
 
+	return ($result, $br_found, $br_hit);
+}
+
+
+#
+# add_testbrdata(testbrdata1, testbrdata2)
+#
+# Add branch coverage data for several tests. Return reference to
+# added_testbrdata.
+#
+
+sub add_testbrdata($$)
+{
+	my ($testbrdata1, $testbrdata2) = @_;
+	my %result;
+	my $testname;
+
+	foreach $testname (keys(%{$testbrdata1})) {
+		if (defined($testbrdata2->{$testname})) {
+			my $brcount;
+
+			# Branch coverage data for this testname exists
+			# in both data sets: add
+			($brcount) = combine_brcount(
+				$testbrdata1->{$testname},
+				$testbrdata2->{$testname}, $BR_ADD);
+			$result{$testname} = $brcount;
+			next;
+		}
+		# Branch coverage data for this testname is unique to
+		# data set 1: copy
+		$result{$testname} = $testbrdata1->{$testname};
+	}
+
+	# Add count data for testnames unique to data set 2
+	foreach $testname (keys(%{$testbrdata2})) {
+		if (!defined($result{$testname})) {
+			$result{$testname} = $testbrdata2->{$testname};
+		}
+	}
 	return \%result;
 }
 
@@ -1194,35 +2267,61 @@ sub combine_info_entries($$$)
 	my $sumcount1;
 	my $funcdata1;
 	my $checkdata1;
+	my $testfncdata1;
+	my $sumfnccount1;
+	my $testbrdata1;
+	my $sumbrcount1;
 
 	my $entry2 = $_[1];	# Reference to hash containing second entry
 	my $testdata2;
 	my $sumcount2;
 	my $funcdata2;
 	my $checkdata2;
+	my $testfncdata2;
+	my $sumfnccount2;
+	my $testbrdata2;
+	my $sumbrcount2;
 
 	my %result;		# Hash containing combined entry
 	my %result_testdata;
 	my $result_sumcount = {};
 	my $result_funcdata;
+	my $result_testfncdata;
+	my $result_sumfnccount;
+	my $result_testbrdata;
+	my $result_sumbrcount;
 	my $lines_found;
 	my $lines_hit;
+	my $f_found;
+	my $f_hit;
+	my $br_found;
+	my $br_hit;
 
 	my $testname;
 	my $filename = $_[2];
 
 	# Retrieve data
-	($testdata1, $sumcount1, $funcdata1, $checkdata1) =
-		get_info_entry($entry1);
-	($testdata2, $sumcount2, $funcdata2, $checkdata2) =
-		get_info_entry($entry2);
+	($testdata1, $sumcount1, $funcdata1, $checkdata1, $testfncdata1,
+	 $sumfnccount1, $testbrdata1, $sumbrcount1) = get_info_entry($entry1);
+	($testdata2, $sumcount2, $funcdata2, $checkdata2, $testfncdata2,
+	 $sumfnccount2, $testbrdata2, $sumbrcount2) = get_info_entry($entry2);
 
 	# Merge checksums
 	$checkdata1 = merge_checksums($checkdata1, $checkdata2, $filename);
 
 	# Combine funcdata
 	$result_funcdata = merge_func_data($funcdata1, $funcdata2, $filename);
-	
+
+	# Combine function call count data
+	$result_testfncdata = add_testfncdata($testfncdata1, $testfncdata2);
+	($result_sumfnccount, $f_found, $f_hit) =
+		add_fnccount($sumfnccount1, $sumfnccount2);
+
+	# Combine branch coverage data
+	$result_testbrdata = add_testbrdata($testbrdata1, $testbrdata2);
+	($result_sumbrcount, $br_found, $br_hit) =
+		combine_brcount($sumbrcount1, $sumbrcount2, $BR_ADD);
+
 	# Combine testdata
 	foreach $testname (keys(%{$testdata1}))
 	{
@@ -1264,8 +2363,10 @@ sub combine_info_entries($$$)
 
 	# Store result
 	set_info_entry(\%result, \%result_testdata, $result_sumcount,
-		       $result_funcdata, $checkdata1, $lines_found,
-		       $lines_hit);
+		       $result_funcdata, $checkdata1, $result_testfncdata,
+		       $result_sumfnccount, $result_testbrdata,
+		       $result_sumbrcount, $lines_found, $lines_hit,
+		       $f_found, $f_hit, $br_found, $br_hit);
 
 	return(\%result);
 }
@@ -1315,6 +2416,7 @@ sub add_traces()
 	my $total_trace;
 	my $current_trace;
 	my $tracefile;
+	my @result;
 	local *INFO_HANDLE;
 
 	info("Combining tracefiles.\n");
@@ -1339,13 +2441,15 @@ sub add_traces()
 		info("Writing data to $output_filename\n");
 		open(INFO_HANDLE, ">$output_filename")
 			or die("ERROR: cannot write to $output_filename!\n");
-		write_info_file(*INFO_HANDLE, $total_trace);
+		@result = write_info_file(*INFO_HANDLE, $total_trace);
 		close(*INFO_HANDLE);
 	}
 	else
 	{
-		write_info_file(*STDOUT, $total_trace);
+		@result = write_info_file(*STDOUT, $total_trace);
 	}
+
+	return @result;
 }
 
 
@@ -1363,38 +2467,106 @@ sub write_info_file(*$)
 	my $sumcount;
 	my $funcdata;
 	my $checkdata;
+	my $testfncdata;
+	my $sumfnccount;
+	my $testbrdata;
+	my $sumbrcount;
 	my $testname;
 	my $line;
+	my $func;
 	my $testcount;
+	my $testfnccount;
+	my $testbrcount;
 	my $found;
 	my $hit;
+	my $f_found;
+	my $f_hit;
+	my $br_found;
+	my $br_hit;
+	my $ln_total_found = 0;
+	my $ln_total_hit = 0;
+	my $fn_total_found = 0;
+	my $fn_total_hit = 0;
+	my $br_total_found = 0;
+	my $br_total_hit = 0;
 
-	foreach $source_file (keys(%data))
+	foreach $source_file (sort(keys(%data)))
 	{
 		$entry = $data{$source_file};
-		($testdata, $sumcount, $funcdata, $checkdata) =
+		($testdata, $sumcount, $funcdata, $checkdata, $testfncdata,
+		 $sumfnccount, $testbrdata, $sumbrcount, $found, $hit,
+		 $f_found, $f_hit, $br_found, $br_hit) =
 			get_info_entry($entry);
-		foreach $testname (keys(%{$testdata}))
+
+		# Add to totals
+		$ln_total_found += $found;
+		$ln_total_hit += $hit;
+		$fn_total_found += $f_found;
+		$fn_total_hit += $f_hit;
+		$br_total_found += $br_found;
+		$br_total_hit += $br_hit;
+
+		foreach $testname (sort(keys(%{$testdata})))
 		{
 			$testcount = $testdata->{$testname};
+			$testfnccount = $testfncdata->{$testname};
+			$testbrcount = $testbrdata->{$testname};
 			$found = 0;
 			$hit   = 0;
 
 			print(INFO_HANDLE "TN:$testname\n");
 			print(INFO_HANDLE "SF:$source_file\n");
 
-			foreach $line (sort({$a <=> $b} keys(%{$funcdata})))
+			# Write function related data
+			foreach $func (
+				sort({$funcdata->{$a} <=> $funcdata->{$b}}
+				keys(%{$funcdata})))
 			{
-				print(INFO_HANDLE "FN:$line,".
-				      $funcdata->{$line}."\n");
+				print(INFO_HANDLE "FN:".$funcdata->{$func}.
+				      ",$func\n");
+			}
+			foreach $func (keys(%{$testfnccount})) {
+				print(INFO_HANDLE "FNDA:".
+				      $testfnccount->{$func}.
+				      ",$func\n");
+			}
+			($f_found, $f_hit) =
+				get_func_found_and_hit($testfnccount);
+			print(INFO_HANDLE "FNF:$f_found\n");
+			print(INFO_HANDLE "FNH:$f_hit\n");
+
+			# Write branch related data
+			$br_found = 0;
+			$br_hit = 0;
+			foreach $line (sort({$a <=> $b}
+					    keys(%{$testbrcount}))) {
+				my $brdata = $testbrcount->{$line};
+				my $num = br_ivec_len($brdata);
+				my $i;
+
+				for ($i = 0; $i < $num; $i++) {
+					my ($block, $branch, $taken) =
+						br_ivec_get($brdata, $i);
+
+					print(INFO_HANDLE "BRDA:$line,$block,".
+					      "$branch,$taken\n");
+					$br_found++;
+					$br_hit++ if ($taken ne '-' &&
+						      $taken > 0);
+				}
+			}
+			if ($br_found > 0) {
+				print(INFO_HANDLE "BRF:$br_found\n");
+				print(INFO_HANDLE "BRH:$br_hit\n");
 			}
 
+			# Write line related data
 			foreach $line (sort({$a <=> $b} keys(%{$testcount})))
 			{
 				print(INFO_HANDLE "DA:$line,".
 				      $testcount->{$line}.
 				      (defined($checkdata->{$line}) &&
-				       !$nochecksum ?
+				       $checksum ?
 				       ",".$checkdata->{$line} : "")."\n");
 				$found++;
 				if ($testcount->{$line} > 0)
@@ -1408,6 +2580,9 @@ sub write_info_file(*$)
 			print(INFO_HANDLE "end_of_record\n");
 		}
 	}
+
+	return ($ln_total_found, $ln_total_hit, $fn_total_found, $fn_total_hit,
+		$br_total_found, $br_total_hit);
 }
 
 
@@ -1461,6 +2636,7 @@ sub extract()
 	my $pattern;
 	my @pattern_list;
 	my $extracted = 0;
+	my @result;
 	local *INFO_HANDLE;
 
 	# Need perlreg expressions instead of shell pattern
@@ -1495,13 +2671,15 @@ sub extract()
 		info("Writing data to $output_filename\n");
 		open(INFO_HANDLE, ">$output_filename")
 			or die("ERROR: cannot write to $output_filename!\n");
-		write_info_file(*INFO_HANDLE, $data);
+		@result = write_info_file(*INFO_HANDLE, $data);
 		close(*INFO_HANDLE);
 	}
 	else
 	{
-		write_info_file(*STDOUT, $data);
+		@result = write_info_file(*STDOUT, $data);
 	}
+
+	return @result;
 }
 
 
@@ -1517,6 +2695,7 @@ sub remove()
 	my $pattern;
 	my @pattern_list;
 	my $removed = 0;
+	my @result;
 	local *INFO_HANDLE;
 
 	# Need perlreg expressions instead of shell pattern
@@ -1548,15 +2727,125 @@ sub remove()
 		info("Writing data to $output_filename\n");
 		open(INFO_HANDLE, ">$output_filename")
 			or die("ERROR: cannot write to $output_filename!\n");
-		write_info_file(*INFO_HANDLE, $data);
+		@result = write_info_file(*INFO_HANDLE, $data);
 		close(*INFO_HANDLE);
 	}
 	else
 	{
-		write_info_file(*STDOUT, $data);
+		@result = write_info_file(*STDOUT, $data);
 	}
+
+	return @result;
 }
 
+
+# get_prefix(max_width, max_percentage_too_long, path_list)
+#
+# Return a path prefix that satisfies the following requirements:
+# - is shared by more paths in path_list than any other prefix
+# - the percentage of paths which would exceed the given max_width length
+#   after applying the prefix does not exceed max_percentage_too_long
+#
+# If multiple prefixes satisfy all requirements, the longest prefix is
+# returned. Return an empty string if no prefix could be found.
+
+sub get_prefix($$@)
+{
+	my ($max_width, $max_long, @path_list) = @_;
+	my $path;
+	my $ENTRY_NUM = 0;
+	my $ENTRY_LONG = 1;
+	my %prefix;
+
+	# Build prefix hash
+	foreach $path (@path_list) {
+		my ($v, $d, $f) = splitpath($path);
+		my @dirs = splitdir($d);
+		my $p_len = length($path);
+		my $i;
+
+		# Remove trailing '/'
+		pop(@dirs) if ($dirs[scalar(@dirs) - 1] eq '');
+		for ($i = 0; $i < scalar(@dirs); $i++) {
+			my $subpath = catpath($v, catdir(@dirs[0..$i]), '');
+			my $entry = $prefix{$subpath};
+
+			$entry = [ 0, 0 ] if (!defined($entry));
+			$entry->[$ENTRY_NUM]++;
+			if (($p_len - length($subpath) - 1) > $max_width) {
+				$entry->[$ENTRY_LONG]++;
+			}
+			$prefix{$subpath} = $entry;
+		}
+	}
+	# Find suitable prefix (sort descending by two keys: 1. number of
+	# entries covered by a prefix, 2. length of prefix)
+	foreach $path (sort {($prefix{$a}->[$ENTRY_NUM] ==
+			      $prefix{$b}->[$ENTRY_NUM]) ?
+				length($b) <=> length($a) :
+				$prefix{$b}->[$ENTRY_NUM] <=>
+				$prefix{$a}->[$ENTRY_NUM]}
+				keys(%prefix)) {
+		my ($num, $long) = @{$prefix{$path}};
+
+		# Check for additional requirement: number of filenames
+		# that would be too long may not exceed a certain percentage
+		if ($long <= $num * $max_long / 100) {
+			return $path;
+		}
+	}
+
+	return "";
+}
+
+
+#
+# shorten_filename(filename, width)
+#
+# Truncate filename if it is longer than width characters.
+#
+
+sub shorten_filename($$)
+{
+	my ($filename, $width) = @_;
+	my $l = length($filename);
+	my $s;
+	my $e;
+
+	return $filename if ($l <= $width);
+	$e = int(($width - 3) / 2);
+	$s = $width - 3 - $e;
+
+	return substr($filename, 0, $s).'...'.substr($filename, $l - $e);
+}
+
+
+sub shorten_number($$)
+{
+	my ($number, $width) = @_;
+	my $result = sprintf("%*d", $width, $number);
+
+	return $result if (length($result) <= $width);
+	$number = $number / 1000;
+	return $result if (length($result) <= $width);
+	$result = sprintf("%*dk", $width - 1, $number);
+	return $result if (length($result) <= $width);
+	$number = $number / 1000;
+	$result = sprintf("%*dM", $width - 1, $number);
+	return $result if (length($result) <= $width);
+	return '#';
+}
+
+sub shorten_rate($$)
+{
+	my ($rate, $width) = @_;
+	my $result = sprintf("%*.1f%%", $width - 3, $rate);
+
+	return $result if (length($result) <= $width);
+	$result = sprintf("%*d%%", $width - 1, $rate);
+	return $result if (length($result) <= $width);
+	return "#";
+}
 
 #
 # list()
@@ -1569,17 +2858,278 @@ sub list()
 	my $found;
 	my $hit;
 	my $entry;
+	my $fn_found;
+	my $fn_hit;
+	my $br_found;
+	my $br_hit;
+	my $total_found = 0;
+	my $total_hit = 0;
+	my $fn_total_found = 0;
+	my $fn_total_hit = 0;
+	my $br_total_found = 0;
+	my $br_total_hit = 0;
+	my $prefix;
+	my $strlen = length("Filename");
+	my $format;
+	my $heading1;
+	my $heading2;
+	my @footer;
+	my $barlen;
+	my $rate;
+	my $fnrate;
+	my $brrate;
+	my $lastpath;
+	my $F_LN_NUM = 0;
+	my $F_LN_RATE = 1;
+	my $F_FN_NUM = 2;
+	my $F_FN_RATE = 3;
+	my $F_BR_NUM = 4;
+	my $F_BR_RATE = 5;
+	my @fwidth_narrow = (5, 5, 3, 5, 4, 5);
+	my @fwidth_wide = (6, 5, 5, 5, 6, 5);
+	my @fwidth = @fwidth_wide;
+	my $w;
+	my $max_width = $opt_list_width;
+	my $max_long = $opt_list_truncate_max;
+	my $fwidth_narrow_length;
+	my $fwidth_wide_length;
+	my $got_prefix = 0;
+	my $root_prefix = 0;
 
-	info("Listing contents of $list:\n");
+	# Calculate total width of narrow fields
+	$fwidth_narrow_length = 0;
+	foreach $w (@fwidth_narrow) {
+		$fwidth_narrow_length += $w + 1;
+	}
+	# Calculate total width of wide fields
+	$fwidth_wide_length = 0;
+	foreach $w (@fwidth_wide) {
+		$fwidth_wide_length += $w + 1;
+	}
+	# Get common file path prefix
+	$prefix = get_prefix($max_width - $fwidth_narrow_length, $max_long,
+			     keys(%{$data}));
+	$root_prefix = 1 if ($prefix eq rootdir());
+	$got_prefix = 1 if (length($prefix) > 0);
+	$prefix =~ s/\/$//;
+	# Get longest filename length
+	foreach $filename (keys(%{$data})) {
+		if (!$opt_list_full_path) {
+			if (!$got_prefix || !$root_prefix &&
+			    !($filename =~ s/^\Q$prefix\/\E//)) {
+				my ($v, $d, $f) = splitpath($filename);
 
-	# List all files
+				$filename = $f;
+			}
+		}
+		# Determine maximum length of entries
+		if (length($filename) > $strlen) {
+			$strlen = length($filename)
+		}
+	}
+	if (!$opt_list_full_path) {
+		my $blanks;
+
+		$w = $fwidth_wide_length;
+		# Check if all columns fit into max_width characters
+		if ($strlen + $fwidth_wide_length > $max_width) {
+			# Use narrow fields
+			@fwidth = @fwidth_narrow;
+			$w = $fwidth_narrow_length;
+			if (($strlen + $fwidth_narrow_length) > $max_width) {
+				# Truncate filenames at max width
+				$strlen = $max_width - $fwidth_narrow_length;
+			}
+		}
+		# Add some blanks between filename and fields if possible
+		$blanks = int($strlen * 0.5);
+		$blanks = 4 if ($blanks < 4);
+		$blanks = 8 if ($blanks > 8);
+		if (($strlen + $w + $blanks) < $max_width) {
+			$strlen += $blanks;
+		} else {
+			$strlen = $max_width - $w;
+		}
+	}
+	# Filename
+	$w = $strlen;
+	$format		= "%-${w}s|";
+	$heading1 	= sprintf("%*s|", $w, "");
+	$heading2 	= sprintf("%-*s|", $w, "Filename");
+	$barlen		= $w + 1;
+	# Line coverage rate
+	$w = $fwidth[$F_LN_RATE];
+	$format		.= "%${w}s ";
+	$heading1 	.= sprintf("%-*s |", $w + $fwidth[$F_LN_NUM],
+				   "Lines");
+	$heading2 	.= sprintf("%-*s ", $w, "Rate");
+	$barlen		+= $w + 1;
+	# Number of lines
+	$w = $fwidth[$F_LN_NUM];
+	$format		.= "%${w}s|";
+	$heading2	.= sprintf("%*s|", $w, "Num");
+	$barlen		+= $w + 1;
+	# Function coverage rate
+	$w = $fwidth[$F_FN_RATE];
+	$format		.= "%${w}s ";
+	$heading1 	.= sprintf("%-*s|", $w + $fwidth[$F_FN_NUM] + 1,
+				   "Functions");
+	$heading2 	.= sprintf("%-*s ", $w, "Rate");
+	$barlen		+= $w + 1;
+	# Number of functions
+	$w = $fwidth[$F_FN_NUM];
+	$format		.= "%${w}s|";
+	$heading2	.= sprintf("%*s|", $w, "Num");
+	$barlen		+= $w + 1;
+	# Branch coverage rate
+	$w = $fwidth[$F_BR_RATE];
+	$format		.= "%${w}s ";
+	$heading1 	.= sprintf("%-*s", $w + $fwidth[$F_BR_NUM] + 1,
+				   "Branches");
+	$heading2 	.= sprintf("%-*s ", $w, "Rate");
+	$barlen		+= $w + 1;
+	# Number of branches
+	$w = $fwidth[$F_BR_NUM];
+	$format		.= "%${w}s";
+	$heading2	.= sprintf("%*s", $w, "Num");
+	$barlen		+= $w;
+	# Line end
+	$format		.= "\n";
+	$heading1	.= "\n";
+	$heading2	.= "\n";
+
+	# Print heading
+	print($heading1);
+	print($heading2);
+	print(("="x$barlen)."\n");
+
+	# Print per file information
 	foreach $filename (sort(keys(%{$data})))
 	{
+		my @file_data;
+		my $print_filename = $filename;
+
 		$entry = $data->{$filename};
-		(undef, undef, undef, undef, $found, $hit) =
+		if (!$opt_list_full_path) {
+			my $p;
+
+			$print_filename = $filename;
+			if (!$got_prefix || !$root_prefix &&
+			    !($print_filename =~ s/^\Q$prefix\/\E//)) {
+				my ($v, $d, $f) = splitpath($filename);
+
+				$p = catpath($v, $d, "");
+				$p =~ s/\/$//;
+				$print_filename = $f;
+			} else {
+				$p = $prefix;
+			}
+
+			if (!defined($lastpath) || $lastpath ne $p) {
+				print("\n") if (defined($lastpath));
+				$lastpath = $p;
+				print("[$lastpath/]\n") if (!$root_prefix);
+			}
+			$print_filename = shorten_filename($print_filename,
+							   $strlen);
+		}
+
+		(undef, undef, undef, undef, undef, undef, undef, undef,
+		 $found, $hit, $fn_found, $fn_hit, $br_found, $br_hit) =
 			get_info_entry($entry);
-		printf("$filename: $hit of $found lines hit\n");
+
+		# Assume zero count if there is no function data for this file
+		if (!defined($fn_found) || !defined($fn_hit)) {
+			$fn_found = 0;
+			$fn_hit = 0;
+		}
+		# Assume zero count if there is no branch data for this file
+		if (!defined($br_found) || !defined($br_hit)) {
+			$br_found = 0;
+			$br_hit = 0;
+		}
+
+		# Add line coverage totals
+		$total_found += $found;
+		$total_hit += $hit;
+		# Add function coverage totals
+		$fn_total_found += $fn_found;
+		$fn_total_hit += $fn_hit;
+		# Add branch coverage totals
+		$br_total_found += $br_found;
+		$br_total_hit += $br_hit;
+
+		# Determine line coverage rate for this file
+		if ($found == 0) {
+			$rate = "-";
+		} else {
+			$rate = shorten_rate(100 * $hit / $found,
+					     $fwidth[$F_LN_RATE]);
+		}
+		# Determine function coverage rate for this file
+		if (!defined($fn_found) || $fn_found == 0) {
+			$fnrate = "-";
+		} else {
+			$fnrate = shorten_rate(100 * $fn_hit / $fn_found,
+					     $fwidth[$F_FN_RATE]);
+		}
+		# Determine branch coverage rate for this file
+		if (!defined($br_found) || $br_found == 0) {
+			$brrate = "-";
+		} else {
+			$brrate = shorten_rate(100 * $br_hit / $br_found,
+					     $fwidth[$F_BR_RATE]);
+		}
+
+		# Assemble line parameters
+		push(@file_data, $print_filename);
+		push(@file_data, $rate);
+		push(@file_data, shorten_number($found, $fwidth[$F_LN_NUM]));
+		push(@file_data, $fnrate);
+		push(@file_data, shorten_number($fn_found, $fwidth[$F_FN_NUM]));
+		push(@file_data, $brrate);
+		push(@file_data, shorten_number($br_found, $fwidth[$F_BR_NUM]));
+
+		# Print assembled line
+		printf($format, @file_data);
 	}
+
+	# Determine total line coverage rate
+	if ($total_found == 0) {
+		$rate = "-";
+	} else {
+		$rate = shorten_rate(100 * $total_hit / $total_found,
+				     $fwidth[$F_LN_RATE]);
+	}
+	# Determine total function coverage rate
+	if ($fn_total_found == 0) {
+		$fnrate = "-";
+	} else {
+		$fnrate = shorten_rate(100 * $fn_total_hit / $fn_total_found,
+				       $fwidth[$F_FN_RATE]);
+	}
+	# Determine total branch coverage rate
+	if ($br_total_found == 0) {
+		$brrate = "-";
+	} else {
+		$brrate = shorten_rate(100 * $br_total_hit / $br_total_found,
+				       $fwidth[$F_BR_RATE]);
+	}
+
+	# Print separator
+	print(("="x$barlen)."\n");
+
+	# Assemble line parameters
+	push(@footer, sprintf("%*s", $strlen, "Total:"));
+	push(@footer, $rate);
+	push(@footer, shorten_number($total_found, $fwidth[$F_LN_NUM]));
+	push(@footer, $fnrate);
+	push(@footer, shorten_number($fn_total_found, $fwidth[$F_FN_NUM]));
+	push(@footer, $brrate);
+	push(@footer, shorten_number($br_total_found, $fwidth[$F_BR_NUM]));
+
+	# Print assembled line
+	printf($format, @footer);
 }
 
 
@@ -1863,7 +3413,7 @@ sub apply_diff($$)
 	# Transform all other lines which come after the last diff entry
 	foreach (sort({$a <=> $b} keys(%{$count_data})))
 	{
-		if ($_ < $last_old)
+		if ($_ <= $last_old)
 		{
 			# Skip lines which were covered by line hash
 			next;
@@ -1877,9 +3427,91 @@ sub apply_diff($$)
 
 
 #
+# apply_diff_to_brcount(brcount, linedata)
+#
+# Adjust line numbers of branch coverage data according to linedata.
+#
+
+sub apply_diff_to_brcount($$)
+{
+	my ($brcount, $linedata) = @_;
+	my $db;
+
+	# Convert brcount to db format
+	$db = brcount_to_db($brcount);
+	# Apply diff to db format
+	$db = apply_diff($db, $linedata);
+	# Convert db format back to brcount format
+	($brcount) = db_to_brcount($db);
+
+	return $brcount;
+}
+
+
+#
+# get_hash_max(hash_ref)
+#
+# Return the highest integer key from hash.
+#
+
+sub get_hash_max($)
+{
+	my ($hash) = @_;
+	my $max;
+
+	foreach (keys(%{$hash})) {
+		if (!defined($max)) {
+			$max = $_;
+		} elsif ($hash->{$_} > $max) {
+			$max = $_;
+		}
+	}
+	return $max;
+}
+
+sub get_hash_reverse($)
+{
+	my ($hash) = @_;
+	my %result;
+
+	foreach (keys(%{$hash})) {
+		$result{$hash->{$_}} = $_;
+	}
+
+	return \%result;
+}
+
+#
+# apply_diff_to_funcdata(funcdata, line_hash)
+#
+
+sub apply_diff_to_funcdata($$)
+{
+	my ($funcdata, $linedata) = @_;
+	my $last_new = get_hash_max($linedata);
+	my $last_old = $linedata->{$last_new};
+	my $func;
+	my %result;
+	my $line_diff = get_hash_reverse($linedata);
+
+	foreach $func (keys(%{$funcdata})) {
+		my $line = $funcdata->{$func};
+
+		if (defined($line_diff->{$line})) {
+			$result{$func} = $line_diff->{$line};
+		} elsif ($line > $last_old) {
+			$result{$func} = $line + $last_new - $last_old;
+		}
+	}
+
+	return \%result;
+}
+
+
+#
 # get_line_hash($filename, $diff_data, $path_data)
 #
-# Find line hash in DIFF_DATA which matches FILENAME. On succes, return list
+# Find line hash in DIFF_DATA which matches FILENAME. On success, return list
 # line hash. or undef in case of no match. Die if more than one line hashes in
 # DIFF_DATA match.
 #
@@ -1897,10 +3529,16 @@ sub get_line_hash($$$)
 	my $old_depth;
 	my $new_depth;
 
+	# Remove trailing slash from diff path
+	$diff_path =~ s/\/$//;
 	foreach (keys(%{$diff_data}))
 	{
+		my $sep = "";
+
+		$sep = '/' if (!/^\//);
+
 		# Try to match diff filename with filename
-		if ($filename =~ /^\Q$diff_path\E\/$_$/)
+		if ($filename =~ /^\Q$diff_path$sep$_\E$/)
 		{
 			if ($diff_name)
 			{
@@ -2013,6 +3651,63 @@ sub convert_paths($$)
 	}
 }
 
+#
+# sub adjust_fncdata(funcdata, testfncdata, sumfnccount)
+#
+# Remove function call count data from testfncdata and sumfnccount which
+# is no longer present in funcdata.
+#
+
+sub adjust_fncdata($$$)
+{
+	my ($funcdata, $testfncdata, $sumfnccount) = @_;
+	my $testname;
+	my $func;
+	my $f_found;
+	my $f_hit;
+
+	# Remove count data in testfncdata for functions which are no longer
+	# in funcdata
+	foreach $testname (%{$testfncdata}) {
+		my $fnccount = $testfncdata->{$testname};
+
+		foreach $func (%{$fnccount}) {
+			if (!defined($funcdata->{$func})) {
+				delete($fnccount->{$func});
+			}
+		}
+	}
+	# Remove count data in sumfnccount for functions which are no longer
+	# in funcdata
+	foreach $func (%{$sumfnccount}) {
+		if (!defined($funcdata->{$func})) {
+			delete($sumfnccount->{$func});
+		}
+	}
+}
+
+#
+# get_func_found_and_hit(sumfnccount)
+#
+# Return (f_found, f_hit) for sumfnccount
+#
+
+sub get_func_found_and_hit($)
+{
+	my ($sumfnccount) = @_;
+	my $function;
+	my $f_found;
+	my $f_hit;
+
+	$f_found = scalar(keys(%{$sumfnccount}));
+	$f_hit = 0;
+	foreach $function (keys(%{$sumfnccount})) {
+		if ($sumfnccount->{$function} > 0) {
+			$f_hit++;
+		}
+	}
+	return ($f_found, $f_hit);
+}
 
 #
 # diff()
@@ -2035,10 +3730,19 @@ sub diff()
 	my $sumcount;
 	my $funcdata;
 	my $checkdata;
+	my $testfncdata;
+	my $sumfnccount;
+	my $testbrdata;
+	my $sumbrcount;
 	my $found;
 	my $hit;
+	my $f_found;
+	my $f_hit;
+	my $br_found;
+	my $br_hit;
 	my $converted = 0;
 	my $unchanged = 0;
+	my @result;
 	local *INFO_HANDLE;
 
 	($diff_data, $path_data) = read_diff($ARGV[0]);
@@ -2068,17 +3772,25 @@ sub diff()
 		}
 		info("Converting $filename\n");
 		$entry = $trace_data->{$filename};
-		($testdata, $sumcount, $funcdata, $checkdata) =
+		($testdata, $sumcount, $funcdata, $checkdata, $testfncdata,
+		 $sumfnccount, $testbrdata, $sumbrcount) =
 			get_info_entry($entry);
 		# Convert test data
 		foreach $testname (keys(%{$testdata}))
 		{
+			# Adjust line numbers of line coverage data
 			$testdata->{$testname} =
 				apply_diff($testdata->{$testname}, $line_hash);
+			# Adjust line numbers of branch coverage data
+			$testbrdata->{$testname} =
+				apply_diff_to_brcount($testbrdata->{$testname},
+						      $line_hash);
 			# Remove empty sets of test data
 			if (scalar(keys(%{$testdata->{$testname}})) == 0)
 			{
 				delete($testdata->{$testname});
+				delete($testfncdata->{$testname});
+				delete($testbrdata->{$testname});
 			}
 		}
 		# Rename test data to indicate conversion
@@ -2097,16 +3809,43 @@ sub diff()
 					$testdata->{$testname},
 					$testdata->{$testname.",diff"});
 				delete($testdata->{$testname.",diff"});
+				# Add function call counts
+				($testfncdata->{$testname}) = add_fnccount(
+					$testfncdata->{$testname},
+					$testfncdata->{$testname.",diff"});
+				delete($testfncdata->{$testname.",diff"});
+				# Add branch counts
+				($testbrdata->{$testname}) = combine_brcount(
+					$testbrdata->{$testname},
+					$testbrdata->{$testname.",diff"},
+					$BR_ADD);
+				delete($testbrdata->{$testname.",diff"});
 			}
+			# Move test data to new testname
 			$testdata->{$testname.",diff"} = $testdata->{$testname};
 			delete($testdata->{$testname});
+			# Move function call count data to new testname
+			$testfncdata->{$testname.",diff"} =
+				$testfncdata->{$testname};
+			delete($testfncdata->{$testname});
+			# Move branch count data to new testname
+			$testbrdata->{$testname.",diff"} =
+				$testbrdata->{$testname};
+			delete($testbrdata->{$testname});
 		}
 		# Convert summary of test data
 		$sumcount = apply_diff($sumcount, $line_hash);
 		# Convert function data
-		$funcdata = apply_diff($funcdata, $line_hash);
+		$funcdata = apply_diff_to_funcdata($funcdata, $line_hash);
+		# Convert branch coverage data
+		$sumbrcount = apply_diff_to_brcount($sumbrcount, $line_hash);
+		# Update found/hit numbers
 		# Convert checksum data
 		$checkdata = apply_diff($checkdata, $line_hash);
+		# Convert function call count data
+		adjust_fncdata($funcdata, $testfncdata, $sumfnccount);
+		($f_found, $f_hit) = get_func_found_and_hit($sumfnccount);
+		($br_found, $br_hit) = get_br_found_and_hit($sumbrcount);
 		# Update found/hit numbers
 		$found = 0;
 		$hit = 0;
@@ -2122,7 +3861,9 @@ sub diff()
 		{
 			# Store converted entry
 			set_info_entry($entry, $testdata, $sumcount, $funcdata,
-				       $checkdata, $found, $hit);
+				       $checkdata, $testfncdata, $sumfnccount,
+				       $testbrdata, $sumbrcount, $found, $hit,
+				       $f_found, $f_hit, $br_found, $br_hit);
 		}
 		else
 		{
@@ -2147,13 +3888,15 @@ sub diff()
 		info("Writing data to $output_filename\n");
 		open(INFO_HANDLE, ">$output_filename")
 			or die("ERROR: cannot write to $output_filename!\n");
-		write_info_file(*INFO_HANDLE, $trace_data);
+		@result = write_info_file(*INFO_HANDLE, $trace_data);
 		close(*INFO_HANDLE);
 	}
 	else
 	{
-		write_info_file(*STDOUT, $trace_data);
+		@result = write_info_file(*STDOUT, $trace_data);
 	}
+
+	return @result;
 }
 
 
@@ -2268,4 +4011,165 @@ sub apply_config($)
 			${$ref->{$_}} = $config->{$_};
 		}
 	}
+}
+
+sub warn_handler($)
+{
+	my ($msg) = @_;
+
+	temp_cleanup();
+	warn("$tool_name: $msg");
+}
+
+sub die_handler($)
+{
+	my ($msg) = @_;
+
+	temp_cleanup();
+	die("$tool_name: $msg");
+}
+
+sub abort_handler($)
+{
+	temp_cleanup();
+	exit(1);
+}
+
+sub temp_cleanup()
+{
+	if (@temp_dirs) {
+		info("Removing temporary directories.\n");
+		foreach (@temp_dirs) {
+			rmtree($_);
+		}
+		@temp_dirs = ();
+	}
+}
+
+sub setup_gkv_sys()
+{
+	system_no_output(3, "mount", "-t", "debugfs", "nodev",
+			 "/sys/kernel/debug");
+}
+
+sub setup_gkv_proc()
+{
+	if (system_no_output(3, "modprobe", "gcov_proc")) {
+		system_no_output(3, "modprobe", "gcov_prof");
+	}
+}
+
+sub check_gkv_sys($)
+{
+	my ($dir) = @_;
+
+	if (-e "$dir/reset") {
+		return 1;
+	}
+	return 0;
+}
+
+sub check_gkv_proc($)
+{
+	my ($dir) = @_;
+
+	if (-e "$dir/vmlinux") {
+		return 1;
+	}
+	return 0;
+}
+
+sub setup_gkv()
+{
+	my $dir;
+	my $sys_dir = "/sys/kernel/debug/gcov";
+	my $proc_dir = "/proc/gcov";
+	my @todo;
+
+	if (!defined($gcov_dir)) {
+		info("Auto-detecting gcov kernel support.\n");
+		@todo = ( "cs", "cp", "ss", "cs", "sp", "cp" );
+	} elsif ($gcov_dir =~ /proc/) {
+		info("Checking gcov kernel support at $gcov_dir ".
+		     "(user-specified).\n");
+		@todo = ( "cp", "sp", "cp", "cs", "ss", "cs");
+	} else {
+		info("Checking gcov kernel support at $gcov_dir ".
+		     "(user-specified).\n");
+		@todo = ( "cs", "ss", "cs", "cp", "sp", "cp", );
+	}
+	foreach (@todo) {
+		if ($_ eq "cs") {
+			# Check /sys
+			$dir = defined($gcov_dir) ? $gcov_dir : $sys_dir;
+			if (check_gkv_sys($dir)) {
+				info("Found ".$GKV_NAME[$GKV_SYS]." gcov ".
+				     "kernel support at $dir\n");
+				return ($GKV_SYS, $dir);
+			}
+		} elsif ($_ eq "cp") {
+			# Check /proc
+			$dir = defined($gcov_dir) ? $gcov_dir : $proc_dir;
+			if (check_gkv_proc($dir)) {
+				info("Found ".$GKV_NAME[$GKV_PROC]." gcov ".
+				     "kernel support at $dir\n");
+				return ($GKV_PROC, $dir);
+			}
+		} elsif ($_ eq "ss") {
+			# Setup /sys
+			setup_gkv_sys();
+		} elsif ($_ eq "sp") {
+			# Setup /proc
+			setup_gkv_proc();
+		}
+	}
+	if (defined($gcov_dir)) {
+		die("ERROR: could not find gcov kernel data at $gcov_dir\n");
+	} else {
+		die("ERROR: no gcov kernel data found\n");
+	}
+}
+
+
+#
+# get_overall_line(found, hit, name_singular, name_plural)
+#
+# Return a string containing overall information for the specified
+# found/hit data.
+#
+
+sub get_overall_line($$$$)
+{
+	my ($found, $hit, $name_sn, $name_pl) = @_;
+	my $name;
+
+	return "no data found" if (!defined($found) || $found == 0);
+	$name = ($found == 1) ? $name_sn : $name_pl;
+	return sprintf("%.1f%% (%d of %d %s)", $hit * 100 / $found, $hit,
+		       $found, $name);
+}
+
+
+#
+# print_overall_rate(ln_do, ln_found, ln_hit, fn_do, fn_found, fn_hit, br_do
+#                    br_found, br_hit)
+#
+# Print overall coverage rates for the specified coverage types.
+#
+
+sub print_overall_rate($$$$$$$$$)
+{
+	my ($ln_do, $ln_found, $ln_hit, $fn_do, $fn_found, $fn_hit,
+	    $br_do, $br_found, $br_hit) = @_;
+
+	info("Overall coverage rate:\n");
+	info("  lines......: %s\n",
+	     get_overall_line($ln_found, $ln_hit, "line", "lines"))
+		if ($ln_do);
+	info("  functions..: %s\n",
+	     get_overall_line($fn_found, $fn_hit, "function", "functions"))
+		if ($fn_do);
+	info("  branches...: %s\n",
+	     get_overall_line($br_found, $br_hit, "branch", "branches"))
+		if ($br_do);
 }

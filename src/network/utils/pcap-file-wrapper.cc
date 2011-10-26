@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -172,4 +172,4 @@ PcapFileWrapper::GetDataLinkType (void)
   return m_file.GetDataLinkType ();
 }
 
-} //namespace ns3
+} // namespace ns3

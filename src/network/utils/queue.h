@@ -162,6 +162,6 @@ private:
   uint32_t m_nTotalDroppedPackets;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* QUEUE_H */

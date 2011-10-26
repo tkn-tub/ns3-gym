@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -208,4 +208,4 @@ Ipv4StaticRoutingHelper::SetDefaultMulticastRoute (
   SetDefaultMulticastRoute (n, nd);
 }
 
-}; // namespace ns3
+} // namespace ns3

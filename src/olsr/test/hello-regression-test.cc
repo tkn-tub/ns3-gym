@@ -30,9 +30,7 @@
 #include "ns3/point-to-point-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/abort.h"
-
-/// Set to true to rewrite reference traces, leave false to run regression tests
-const bool WRITE_VECTORS = false;
+#include "ns3/pcap-test.h"
 
 namespace ns3
 {
@@ -61,7 +59,7 @@ HelloRegressionTest::DoRun ()
   Simulator::Run ();
   Simulator::Destroy ();
 
-  if (!WRITE_VECTORS) CheckResults ();
+  CheckResults ();
 }
 
 void
@@ -85,8 +83,7 @@ HelloRegressionTest::CreateNodes ()
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   ipv4.Assign (nd);
   // setup PCAP traces
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + PREFIX;
-  p2p.EnablePcapAll (prefix);
+  p2p.EnablePcapAll (CreateTempDirFilename (PREFIX));
 }
 
 void
@@ -94,15 +91,7 @@ HelloRegressionTest::CheckResults ()
 {
   for (uint32_t i = 0; i < 2; ++i)
     {
-      std::ostringstream os1, os2;
-      // File naming conventions are hard-coded here.
-      os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
-      os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-
-      uint32_t sec (0), usec (0);
-      bool diff = PcapFile::Diff (os1.str (), os2.str (), sec, usec);
-      NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str () << " and " << os2.str ()
-                                                         << " differ starting from " << sec << " s " << usec << " us");
+      NS_PCAP_TEST_EXPECT_EQ (PREFIX << "-" << i << "-1.pcap");
     }
 }
 

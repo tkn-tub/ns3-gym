@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 University of Washington
  *
@@ -88,6 +88,6 @@ private:
   bool m_destroyable;
 };
 
-} //namespace ns3
+} // namespace ns3
 
-#endif // OUTPUT_STREAM_WRAPPER_H
+#endif /* OUTPUT_STREAM_WRAPPER_H */

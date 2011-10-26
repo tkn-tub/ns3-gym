@@ -95,6 +95,8 @@ def AdvancePosition(node):
 
 
 def main(argv):
+    ns.core.CommandLine().Parse(argv)
+
     ns.network.Packet.EnablePrinting();
 
     # enable rts cts all the time.

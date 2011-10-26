@@ -68,6 +68,6 @@ private:
   void Shrink ();
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* EVENT_GARBAGE_COLLECTOR_H */

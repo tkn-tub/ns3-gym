@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 IITP RAS
  *
@@ -75,6 +75,6 @@ private:
   friend bool operator== (const FlameHeader & a, const FlameHeader & b);
 };
 bool operator== (const FlameHeader & a, const FlameHeader & b);
-} //namespace flame
-} //namespace ns3
+} // namespace flame
+} // namespace ns3
 #endif /* FLAME_HEADER_H */

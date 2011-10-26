@@ -1,5 +1,5 @@
-#ifndef NETWORK_SIMULATION_CRADLE_ERR_H_
-#define NETWORK_SIMULATION_CRADLE_ERR_H_
+#ifndef NSC_SIM_ERRNO_H
+#define NSC_SIM_ERRNO_H
 
 // list of network stack errors that may happen in a simulation,
 // and can be handled by the simulator in a sane way.
@@ -32,4 +32,4 @@ enum nsc_errno {
   NSC_ETIMEDOUT = -140,
 };
 
-#endif
+#endif /* NSC_SIM_ERRNO_H */

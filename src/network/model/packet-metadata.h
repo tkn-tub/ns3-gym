@@ -351,7 +351,7 @@ public:
   uint64_t m_packetUid;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 namespace ns3 {
 

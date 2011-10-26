@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -93,6 +93,6 @@ private:
   ObjectFactory m_mac;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* NQOS_WIFI_MAC_HELPER_H */

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
  *
@@ -20,8 +20,8 @@
 #ifndef NS3_VECTOR_H
 #define NS3_VECTOR_H
 
-#include "ns3/attribute.h"
-#include "ns3/attribute-helper.h"
+#include "attribute.h"
+#include "attribute-helper.h"
 
 namespace ns3 {
 

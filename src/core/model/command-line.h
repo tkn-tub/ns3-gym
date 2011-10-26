@@ -24,7 +24,7 @@
 #include <sstream>
 #include <list>
 
-#include "ns3/callback.h"
+#include "callback.h"
 
 namespace ns3 {
 
@@ -37,9 +37,9 @@ namespace ns3 {
  * CommandLine::AddValue but the most important functionality
  * provided by this class is that it can be used to set the
  * 'initial value' of every attribute in the system with the
- * --TypeIdName::AttributeName=value syntax and it can be used
+ * '\--TypeIdName::AttributeName=value' syntax and it can be used
  * to set the value of every GlobalValue in the system with
- * the --GlobalValueName=value syntax.
+ * the \--GlobalValueName=value syntax.
  */
 class CommandLine
 {

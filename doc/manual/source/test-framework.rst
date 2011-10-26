@@ -459,19 +459,16 @@ and determine if the tests have executed to completion in a reasonable time.
 Running Tests
 +++++++++++++
 
-Tests are typically run using the high level ``test.py`` program.  They
-can also be run manually using a low level test-runner executable directly
-from ``waf``.  
+Tests are typically run using the high level ``test.py`` program. To get a list of the available command-line options, run ``test.py --help``
+ 
 
-Running Tests Under the Test Runner Executable
-**********************************************
+Debugging Tests
+***************
 
-The test-runner is the bridge from generic Python code to |ns3| code.
-It is written in C++ and uses the automatic test discovery process in the 
+The debugging of the test programs is best performed running the low-level test-runner program. The test-runner is the bridge from generic Python code to |ns3| code. It is written in C++ and uses the automatic test discovery process in the 
 |ns3| code to find and allow execution of all of the various tests.
 
-Although it may not be used directly very often, it is good to understand how
-``test.py`` actually runs the various tests.
+The main reason why ``test.py`` is not suitable for debugging is that it is not allowed for logging to be turned on using the ``NS_LOG`` environmental variable when test.py runs.  This limitation does not apply to the test-runner executable. Hence, if you want to see logging output from your tests, you have to run them using the test-runner directly.
 
 In order to execute the test-runner, you run it like any other ns-3 executable
 -- using ``waf``.  To get a list of available options, you can type::

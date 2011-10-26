@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -19,8 +19,8 @@
  */
 
 
-#ifndef UANHEADERRC_H
-#define UANHEADERRC_H
+#ifndef UAN_HEADER_RC_H
+#define UAN_HEADER_RC_H
 
 #include "ns3/header.h"
 #include "ns3/nstime.h"
@@ -372,4 +372,4 @@ private:
 
 }
 
-#endif // UANHEADERRC_H
+#endif /* UAN_HEADER_RC_H */

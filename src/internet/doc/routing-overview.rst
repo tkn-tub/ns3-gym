@@ -156,6 +156,12 @@ of that interface to obtain a "link state advertisement (LSA)" for the router.
 Link State Advertisements are used in OSPF routing, and we follow their
 formatting.
 
+It is important to note that all of these computations are done before 
+packets are flowing in the network.  In particular, there are no
+overhead or control packets being exchanged when using this implementation.
+Instead, this global route manager just walks the list of nodes to
+build the necessary information and configure each node's routing table.
+
 The GlobalRouteManager populates a link state database with LSAs gathered from
 the entire topology. Then, for each router in the topology, the
 GlobalRouteManager executes the OSPF shortest path first (SPF) computation on
@@ -175,7 +181,12 @@ Therefore, we think that enabling these other link types will be more
 straightforward now that the underlying OSPF SPF framework is in place.
 
 Presently, we can handle IPv4 point-to-point, numbered links, as well as shared
-broadcast (CSMA) links, and we do not do equal-cost multipath.  
+broadcast (CSMA) links.  Equal-cost multipath is also supported.  Although
+wireless link types are supported by the implementation, note that due
+to the nature of this implementation, any channel effects will not be
+considered and the routing tables will assume that every node on the
+same shared channel is reachable from every other node (i.e. it will
+be treated like a broadcast CSMA link).
 
 The GlobalRouteManager first walks the list of nodes and aggregates
 a GlobalRouter interface to each one as follows:::

@@ -81,6 +81,6 @@ private:
   Mode     m_mode;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* DROPTAIL_H */
