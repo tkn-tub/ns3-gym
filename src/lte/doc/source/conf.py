@@ -179,10 +179,9 @@ html_theme = 'default'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
 #  ('lte-testing', 'lte-doc-testing.tex', u'LTE Simulator Testing Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
-#  ('lte-design', 'lte-doc-design.tex', u'LTE Simulator Design Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
-#  ('lte-user', 'lte-doc-user.tex', u'LTE Simulator User Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
+  ('lte-design', 'lte-doc-design.tex', u'LTE Simulator Design Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
+  ('lte-user', 'lte-doc-user.tex', u'LTE Simulator User Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
 #('lte', 'lte-sim-doc.tex', u'LTE Simulator Documentation', u'Centre Tecnològic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
-  ('lte-fading-design', 'lte-fading-desing.tex', u'LTE Simulator Fadign Design Documentation', u'Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

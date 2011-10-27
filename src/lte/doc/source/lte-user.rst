@@ -321,3 +321,58 @@ computational load.
    Memory usage of the reference program.
 
 
+Fading Trace Management
+***********************
+
+Fading Traces Generation
+------------------------
+
+Thanks to the matlab script provided with the code (``/lte/model/JakesTraces/fading-trace-generator.m``) it is possible to generate traces according to specific simulation scenarios. The script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can introduce their specific configurations. The list of the configurable parameters is provided in the following:
+
+ * ``fc`` : the frequency in use (it affects the computation of the dopples speed).
+ * ``v_km_h`` : the speed of the users
+ * ``traceDuration`` : the duration in seconds of the total length of the trace.
+ * ``numRBs`` : the number of the resource block to be evaluated. 
+ * ``tag`` : the tag to be applied to the file generated.
+
+The file generated is formatted in a matrix fashion by putting each RBs temporal fading trace samples in different rows.
+It has to be noted that, the model is able to manage external fading trace (e.g., generated with dedicated simulators or obtained in experimental way) which respect the format used by the model (i.e., ASCII file with temporal fading trace of each RB distributed in rows).
+
+Fading Traces Usage
+-------------------
+
+The proper set of the trace parameters in the simulation is of paramount importance for the correct interpretation of the trace itself within the simulator.
+The list of the parameters to be configured are:
+
+ * ``TraceFilename`` : the name of the trace to be loaded (absolute path o relative one according to the execution point of the script).
+ * ``TraceLength`` : the trace duration in seconds.
+ * ``SamplesNum`` : the number of samples.
+ * ``WindowSize`` : the size of the fading sampling window in seconds.
+
+It is important to highlight that the sampling interval of the fading trace has to me at most of 1 ms or greater and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module.
+The default configuration of the matlab script provides a trace 10 seconds long, made of 10,000 samples (i.e., 1 sample per TTI ~ 1ms) and used with a windows size of 0.5 seconds amplitude. These are also the default values of the parameters above used in the simulator; therefore their settage can be avoided in case the fading trace respects them.
+
+In order to activate the fading module (by default not active) it has to be explicitly specified in the simulation script::
+
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  lena->SetFadingModel("ns3::TraceFadingLossModel");
+
+While, for setting the parameters::
+
+  lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+  lena->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
+  lena->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
+  lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
+  lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
+
+It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set for using the fading module in the simulator. The simulator provide natively a fading trace generated according to the pedestrian behavior defined in in Annex B.2 of [TS36.104]_ (available at ``src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad``); a sample of such trace is reported in `fig-fadingPedestrianTrace`_.
+
+
+.. _fig-fadingPedestrianTrace:
+
+.. figure:: figures/fading_pedestrian.*                 
+   :align: center
+
+   Example of the fading trace included in the simulator.
+
+
