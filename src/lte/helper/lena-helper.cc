@@ -92,12 +92,19 @@ LenaHelper::DoStart (void)
       NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
       m_uplinkChannel->AddSpectrumPropagationLossModel (ulSplm);
     }
-  if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+    else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
       Ptr<PropagationLossModel> ulPlm = m_uplinkPropagationModel->GetObject<PropagationLossModel> ();            
       NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPropagationModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
+    }
+    
+  if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+      m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
 
   m_macStats = CreateObject<MacStatsCalculator> ();
