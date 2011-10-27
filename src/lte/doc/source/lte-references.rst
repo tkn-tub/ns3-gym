@@ -31,6 +31,8 @@
 
 .. [TS25.814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access"
 
+.. [TS36.104] 3GPP TS 36.104 "E-UTRA Base Station (BS) radio transmission and reception"
+
 
 .. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH" http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip 
 
