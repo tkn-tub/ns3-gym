@@ -21,7 +21,12 @@ GRAPHS_EPS = \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
 	$(FIGURES)/simulationTime.eps \
-	$(FIGURES)/memoryUsage.eps 
+	$(FIGURES)/memoryUsage.eps \
+	$(FIGURES)/lte-rlc-implementation-model.eps \
+	$(FIGURES)/lte-rlc-data-txon-dl.eps \
+	$(FIGURES)/lte-rlc-data-retx-dl.eps \
+	$(FIGURES)/lte-rlc-data-txon-ul.eps \
+	$(FIGURES)/lte-rlc-data-retx-ul.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in

@@ -25,6 +25,8 @@
    spectrum and related issues", March 2011 
 
 
+.. [TS36322] 3GPP TS 36.322 "E-UTRA Radio Link Control (RLC) protocol specification"
+
 .. [TS36.101] 3GPP TS 36.101 "E-UTRA User Equipment (UE) radio transmission and reception"
 
 .. [TS36.213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"
@@ -36,6 +38,6 @@
 
 .. [FFAPI] FemtoForum LTE MAC Scheduler Interface Specification v1.11 http://www.femtoforum.org/femto/technical.php
 
-.. [ns3tutorial] The ns-3 Tutorial http://www.nsnam.org/docs/tutorial/html/
+.. [ns3tutorial] The ns-3 Tutorial http://www.nsnam.org/docs/tutorial/singlehtml/index.html
 
-.. [ns3manual] The ns-3 Tutorial http://www.nsnam.org/docs/manual/html/
+.. [ns3manual] The ns-3 Manual http://www.nsnam.org/docs/manual/singlehtml/index.html
