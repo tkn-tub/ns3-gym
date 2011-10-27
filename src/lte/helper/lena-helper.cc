@@ -192,9 +192,8 @@ void
 LenaHelper::SetFadingModel (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
-  m_fadingModelType = type;
   m_fadingModelFactory = ObjectFactory ();
-  m_fadingModelFactory.SetTypeId (m_fadingModelType);
+  m_fadingModelFactory.SetTypeId (type);
 }
 
 void 
