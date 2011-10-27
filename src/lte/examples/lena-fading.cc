@@ -25,6 +25,7 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 #include <ns3/string.h>
+#include <fstream>
 //#include "ns3/gtk-config-store.h"
 using namespace ns3;
 
@@ -48,12 +49,26 @@ int main (int argc, char *argv[])
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
   //lena->EnableLogComponents ();
+  
 
   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("TraceFadingLossModel", LOG_LEVEL_ALL);
   
   lena->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
-  lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+  
+  std::ifstream ifTraceFile;
+  ifTraceFile.open ("../../src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad", std::ifstream::in);
+  if (ifTraceFile.good ())
+    {
+      // script launched by test.py
+      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("../../src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+    }
+  else
+    {
+      // script launched as an example
+      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+    }
+    
   // these parameters have to setted only in case of the trace format 
   // differs from the standard one, that is
   // - 10 seconds length trace
