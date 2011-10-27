@@ -83,6 +83,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase2.eps \
 	$(SRC)/lte/doc/source/figures/simulationTime.eps \
 	$(SRC)/lte/doc/source/figures/memoryUsage.eps \
+	$(SRC)/lte/doc/source/figures/fading_pedestrian.pdf \
+	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \

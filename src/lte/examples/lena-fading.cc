@@ -57,16 +57,16 @@ int main (int argc, char *argv[])
   lena->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
   
   std::ifstream ifTraceFile;
-  ifTraceFile.open ("../../src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad", std::ifstream::in);
+  ifTraceFile.open ("../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad", std::ifstream::in);
   if (ifTraceFile.good ())
     {
       // script launched by test.py
-      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("../../src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
     }
   else
     {
       // script launched as an example
-      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
     }
     
   // these parameters have to setted only in case of the trace format 

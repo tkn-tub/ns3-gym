@@ -22,7 +22,6 @@ fc = 1930e6;
 
 lambda = c/fc;
 v_km_h = 3.0;  % speed of mobile node
-%v_m_s = v_km_h * 3.600 ; % SURE?????
 v_m_s = v_km_h / 3.6;
 fd = v_m_s / lambda; % doppler shift
 

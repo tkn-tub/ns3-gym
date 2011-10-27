@@ -100,7 +100,7 @@ LenaHelper::DoStart (void)
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
     
-  if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
       m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
@@ -192,8 +192,9 @@ void
 LenaHelper::SetFadingModel (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
+  m_fadingModelType = type;
   m_fadingModelFactory = ObjectFactory ();
-  m_fadingModelFactory.SetTypeId (type);
+  m_fadingModelFactory.SetTypeId (m_fadingModelType);
 }
 
 void 
@@ -393,7 +394,7 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
   
-  if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
        Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
        Ptr<MobilityModel> mm_ue_ul = uePhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
