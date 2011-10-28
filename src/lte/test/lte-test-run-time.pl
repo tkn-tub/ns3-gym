@@ -2,6 +2,7 @@
 use strict;
 use IO::CaptureOutput qw(capture qxx qxy);
 use Statistics::Descriptive;
+use Cwd;
 
 my $nIterations = 1;
 
@@ -14,7 +15,8 @@ my @nFloors = ( 0, 1 );
 #$my @simTime = ( 1, 5, 10, 20 );
 my @simTime = ( 1 );
 
-my $traceDirectory = "/home/jnin/tmp/ns-3-lena-dev/";
+my $traceDirectory = ".";
+my $traceDirectory = getcwd() . "/"; 
 
 foreach my $time (@simTime)
 {
