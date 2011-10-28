@@ -105,10 +105,22 @@ RlcStatsCalculator::SetUlOutputFilename (std::string outputFilename)
   m_ulOutputFilename = outputFilename;
 }
 
+std::string
+RlcStatsCalculator::GetUlOutputFilename (void)
+{
+  return m_ulOutputFilename;
+}
+
 void
 RlcStatsCalculator::SetDlOutputFilename (std::string outputFilename)
 {
   m_dlOutputFilename = outputFilename;
+}
+
+std::string
+RlcStatsCalculator::GetDlOutputFilename (void)
+{
+  return m_dlOutputFilename;
 }
 
 void

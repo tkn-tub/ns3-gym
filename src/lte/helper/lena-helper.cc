@@ -421,10 +421,10 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
+//  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
+//  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
@@ -641,6 +641,15 @@ LenaHelper::EnableUlMacTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
+}
+
+void
+LenaHelper::SetTraceDirectory (std::string path)
+{
+  m_macStats->SetDlOutputFilename(path + m_macStats->GetDlOutputFilename());
+  m_macStats->SetUlOutputFilename(path + m_macStats->GetUlOutputFilename());
+  m_rlcStats->SetDlOutputFilename(path + m_rlcStats->GetDlOutputFilename());
+  m_rlcStats->SetUlOutputFilename(path + m_rlcStats->GetUlOutputFilename());
 }
 
 Ptr<RlcStatsCalculator>

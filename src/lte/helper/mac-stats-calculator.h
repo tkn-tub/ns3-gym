@@ -66,12 +66,16 @@ public:
    */
   void SetUlOutputFilename (std::string outputFilename);
 
+  std::string GetUlOutputFilename (void);
+
   /**
    * Set the name of the file where the downlink statistics will be stored.
    *
    * \param outputFilename string with the name of the file
    */
   void SetDlOutputFilename (std::string outputFilename);
+
+  std::string GetDlOutputFilename (void);
 
   /**
    * Notifies the stats calculator that an downlink scheduling has occurred.

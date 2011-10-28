@@ -183,6 +183,11 @@ public:
    */
   void EnableUlRlcTraces (void);
 
+  /**
+   * Set the output directory for the MAC/RLC trace
+   */
+  void SetTraceDirectory (std::string path);
+
   Ptr<RlcStatsCalculator> GetRlcStats (void);
 
 protected:

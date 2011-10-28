@@ -70,10 +70,22 @@ MacStatsCalculator::SetUlOutputFilename (std::string outputFilename)
   m_ulOutputFilename = outputFilename;
 }
 
+std::string
+MacStatsCalculator::GetUlOutputFilename (void)
+{
+  return m_ulOutputFilename;
+}
+
 void
 MacStatsCalculator::SetDlOutputFilename (std::string outputFilename)
 {
   m_dlOutputFilename = outputFilename;
+}
+
+std::string
+MacStatsCalculator::GetDlOutputFilename (void)
+{
+  return m_dlOutputFilename;
 }
 
 void
