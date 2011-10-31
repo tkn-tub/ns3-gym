@@ -222,6 +222,7 @@ private:
   ObjectFactory m_dlPropagationModelFactory;
   ObjectFactory m_ulPropagationModelFactory;
 
+  std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
   
   Ptr<TraceFadingLossModel> m_fadingModule;
