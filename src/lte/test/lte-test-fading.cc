@@ -381,7 +381,7 @@ LteFadingTestCase::DoRun (void)
   
   m_fadingModule = CreateObject<TraceFadingLossModel> ();
   
-  m_fadingModule->SetAttribute("TraceFilename", StringValue("../../../src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+  m_fadingModule->SetAttribute("TraceFilename", StringValue("../../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
   //m_fadingModule->SetAttribute("WindowSize", TimeValue(Seconds (0.003)));
   
   m_fadingModule->CreateFadingChannelRealization (m_node1, m_node2);

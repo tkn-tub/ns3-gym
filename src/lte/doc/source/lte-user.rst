@@ -327,7 +327,7 @@ Fading Trace Management
 Fading Traces Generation
 ------------------------
 
-Thanks to the matlab script provided with the code (``/lte/model/JakesTraces/fading-trace-generator.m``) it is possible to generate traces according to specific simulation scenarios. The script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can introduce their specific configurations. The list of the configurable parameters is provided in the following:
+Thanks to the matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``) it is possible to generate traces according to specific simulation scenarios. The script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
  * ``fc`` : the frequency in use (it affects the computation of the dopples speed).
  * ``v_km_h`` : the speed of the users
@@ -359,13 +359,13 @@ In order to activate the fading module (by default not active) it has to be expl
 
 While, for setting the parameters::
 
-  lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/FadingTraces/fading_trace_EPA_3kmph.fad"));
+  lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
   lena->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
   lena->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
   lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
   lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
 
-It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set for using the fading module in the simulator. The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_ (available in the folder ``src/lte/model/FadingTraces/``); examples of such traces are reported in `fig-fadingPedestrianTrace_`, `fig-fadingVehicularTrace_` and `fig-fadingUrbanTrace_`.
+It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set for using the fading module in the simulator. The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_ (available in the folder ``src/lte/model/fading-traces/``); examples of such traces are reported in `fig-fadingPedestrianTrace_`, `fig-fadingVehicularTrace_` and `fig-fadingUrbanTrace_`.
 
 
 .. _fig-fadingPedestrianTrace:
