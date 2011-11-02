@@ -398,7 +398,7 @@ Since the number of variable it is pretty high, generate traces considering all 
    * 30 and 60 kmph for vehicular scenarios
    * 0, 3, 30 and 60 for urban scenarios
 
- * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of TS 36.104.
+ * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36.104]_.
  * time granularity: we need one fading value per TTI, i.e., every 1 ms (as this is the granularity in time of the ns-3 LTE PHY model).
  * frequency granularity: we need one fading value per RB (which is the frequency granularity of the spectrum model used by the ns-3 LTE model).
  * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.  
@@ -409,13 +409,12 @@ According to the parameters we considered, the following formula express in deta
 .. math::
  S_{traces} = S_{sample} \times N_{RB} \times \frac{T_{trace}}{T_{sample}} \times N_{scenarios} \mbox{ [bytes]}
 
-where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 4 different scenarios:
+where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36.104]_:
 
- * describe scenario 1 (specifying speed and taps)
- * describe scenario 2 (specifying speed and taps)
- * describe scenario 3 (specifying speed and taps)
- * describe scenario 4 (specifying speed and taps)
+ * Pedestrian: with nodes' speed of 3 kmph.
+ * Vehicular: with nodes' speed of 60 kmph.
+ * Urban: with nodes' speed of 3 kmph.
 
-hence :math:`N_{scenarios} = 4`. All traces have :math:`T_{trace} = 10` s (CHECK) and :math:`RB_{NUM} = 100` (CHECK). This results in a total XXX (CHECK) bytes of traces.
+hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
 
 
