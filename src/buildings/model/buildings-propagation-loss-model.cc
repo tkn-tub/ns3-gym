@@ -44,7 +44,7 @@ NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
 class BuildingsPropagationLossModel::ShadowingLoss 
 {
   public:
-  ShadowingLoss (double mean, double sigma);
+  ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
   ~ShadowingLoss ();
   double GetLoss ();
   Ptr<MobilityModel> GetReceiver (void);
@@ -55,8 +55,9 @@ class BuildingsPropagationLossModel::ShadowingLoss
 };
 
 
-BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma) :
-m_randVariable (mean, sigma*sigma)  // NormalVariable class wants mean and variance (sigma is a standard deviation)
+BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver) :
+  m_receiver (receiver),
+  m_randVariable (mean, sigma*sigma)  // NormalVariable class wants mean and variance (sigma is a standard deviation)
 {
   m_shadowingValue = m_randVariable.GetValue ();
   NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
@@ -763,20 +764,16 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
       PairsSet *ps = *i;
       if (ps->sender == a) 
         {
-          m_shadowingPairs.erase (i);
-          m_shadowingPairs.push_back (ps);
           for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
             {
               ShadowingLoss *pc = *r;
               if (pc->GetReceiver () == b) 
                 {
-                  ps->receivers.erase (r);
-                  ps->receivers.push_back (pc);
                   return loss + pc->GetLoss ();
                 }
             }
             double sigma = EvaluateSigma (a1, b1);
-            ShadowingLoss *pc = new ShadowingLoss (0.0, sigma);
+            ShadowingLoss *pc = new ShadowingLoss (0.0, sigma,b);
           ps->receivers.push_back (pc);
           return loss + pc->GetLoss ();
         }
@@ -784,19 +781,10 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
   PairsSet *ps = new PairsSet;
   ps->sender = a;
   double sigma = EvaluateSigma (a1, b1);
-  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma);
+  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma, b);
   ps->receivers.push_back (pc);
   m_shadowingPairs.push_back (ps);
   return loss + pc->GetLoss ();
-  
-  
-  
-//   if (m_shadowingValue==0)
-//     {
-//       m_shadowingValue = new ShadowingLoss (m_shadowingMean, m_shadowingSigma);
-//     }
-//   
-//   return (loss + m_shadowingValue->GetLoss ());
 
 }
 
