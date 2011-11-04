@@ -30,6 +30,7 @@ def build(bld):
         'model/lte-pdcp.cc',
         'model/lte-pdcp-header.cc',
         'model/eps-bearer.cc',
+        'model/lte-radio-bearer-info.cc',
         'model/lte-net-device.cc',
         'model/lte-enb-net-device.cc',
         'model/lte-ue-net-device.cc',
@@ -82,6 +83,7 @@ def build(bld):
         'test/test-eps-tft-classifier.cc',
         'test/epc-test-s1u-downlink.cc',
         'test/epc-test-s1u-uplink.cc',
+        'test/test-lte-epc-e2e-data.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -113,6 +115,7 @@ def build(bld):
         'model/lte-pdcp.h',
         'model/lte-pdcp-header.h',
         'model/eps-bearer.h',
+        'model/lte-radio-bearer-info.h',
         'model/lte-net-device.h',
         'model/lte-enb-net-device.h',
         'model/lte-ue-net-device.h',

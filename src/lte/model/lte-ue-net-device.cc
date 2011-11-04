@@ -38,8 +38,8 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4.h"
 #include "lte-amc.h"
-// #include "ideal-control-messages.h"
 #include <ns3/lte-ue-phy.h>
+#include <ns3/ipv4-l3-protocol.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 
@@ -176,33 +176,13 @@ LteUeNetDevice::DoStart (void)
   m_rrc->Start ();
 }
 
-
 bool
-LteUeNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
-                        const Mac48Address& dest, uint16_t protocolNumber)
+LteUeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this);
-
-  NS_FATAL_ERROR ("IP connectivity not implemented yet");
-
-  return (true);
-}
-
-
-void
-LteUeNetDevice::DoReceive (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this << p);
-
-  NS_FATAL_ERROR ("IP connectivity not implemented yet");
-
-  Ptr<Packet> packet = p->Copy ();
-
-  LlcSnapHeader llcHdr;
-  packet->RemoveHeader (llcHdr);
-  NS_LOG_FUNCTION (this << llcHdr);
-
-  ForwardUp (packet);
+  NS_LOG_FUNCTION (this << dest << protocolNumber);
+  NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
+  
+  return m_rrc->Send (packet);
 }
 
 

@@ -38,7 +38,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/ff-mac-scheduler.h>
-
+#include <ns3/ipv4-l3-protocol.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
@@ -270,41 +270,14 @@ LteEnbNetDevice::DoStart (void)
 
 
 bool
-LteEnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
-                         const Mac48Address& dest, uint16_t protocolNumber)
+LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << source << dest << protocolNumber);
-
-  NS_FATAL_ERROR ("IP connectivity not implemented yet");
-
-  /*
-   * The classification of traffic in DL is done by the PGW (not
-   * by the eNB).
-   * Hovever, the core network is not implemented yet.
-   * For now the classification is managed by the eNB.
-   */
-
-  // if (protocolNumber == 2048)
-  //   {
-  //     // it is an IP packet
-  //   }
-
-  // if (protocolNumber != 2048 || bearer == 0)
-  //   {
-
-  //   }
-
-
-  return true;
+  NS_LOG_FUNCTION (this << packet   << dest << protocolNumber);
+  NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
+  return m_rrc->Send (packet);
 }
 
 
-void
-LteEnbNetDevice::DoReceive (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this << p);
-  ForwardUp (p->Copy ());
-}
 
 
 void

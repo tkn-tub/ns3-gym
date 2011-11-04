@@ -184,8 +184,11 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
     {
       m_rxSequenceNumber = 0;
     }
-
-  m_pdcpSapUser->ReceiveRrcPdu (p);
+  LtePdcpSapUser::ReceiveRrcPduParameters params;
+  params.rrcPdu = p;
+  params.rnti = m_rnti;
+  params.lcid = m_lcid;
+  m_pdcpSapUser->ReceiveRrcPdu (params);
 
 }
 

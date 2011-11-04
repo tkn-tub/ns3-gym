@@ -24,6 +24,7 @@
 
 #include <ns3/string.h>
 #include <ns3/log.h>
+#include <ns3/abort.h>
 
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/lte-ue-rrc.h>
@@ -42,6 +43,10 @@
 #include <ns3/lte-ue-net-device.h>
 
 #include <ns3/ff-mac-scheduler.h>
+#include <ns3/lte-rlc.h>
+#include <ns3/lte-rlc-um.h>
+
+#include <ns3/epc-helper.h>
 
 #include <iostream>
 
@@ -55,6 +60,7 @@ NS_OBJECT_ENSURE_REGISTERED (LenaHelper);
 LenaHelper::LenaHelper (void)
 {
   NS_LOG_FUNCTION (this);
+  m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
 }
 
 void 
@@ -77,16 +83,6 @@ LenaHelper::~LenaHelper (void)
   NS_LOG_FUNCTION (this);
 }
 
-
-void
-LenaHelper::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  m_downlinkChannel = 0;
-  m_uplinkChannel = 0;
-  Object::DoDispose ();
-}
-
 TypeId LenaHelper::GetTypeId (void)
 {
   static TypeId
@@ -104,10 +100,40 @@ TypeId LenaHelper::GetTypeId (void)
                    StringValue ("ns3::FriisSpectrumPropagationLossModel"),
                    MakeStringAccessor (&LenaHelper::SetPropagationModelType),
                    MakeStringChecker ())
+    .AddAttribute ("EpsBearerToRlcMapping", 
+                   "Specify which type of RLC will be used for each type of EPS bearer. ",
+                   EnumValue (RLC_SM_ALWAYS),
+                   MakeEnumAccessor (&LenaHelper::m_epsBearerToRlcMapping),
+                   MakeEnumChecker (RLC_SM_ALWAYS, "RlcSmAlways",
+                                    RLC_UM_ALWAYS, "RlcUmAlways",
+                                    RLC_AM_ALWAYS, "RlcAmAlways",
+                                    PER_BASED,     "PacketErrorRateBased"))
   ;
   return tid;
 }
 
+void
+LenaHelper::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_downlinkChannel = 0;
+  m_uplinkChannel = 0;
+  Object::DoDispose ();
+}
+
+
+void 
+LenaHelper::SetEpcHelper (Ptr<EpcHelper> h)
+{
+  NS_LOG_FUNCTION (this << h);
+  m_epcHelper = h;
+  // it does not make sense to use RLC/SM when also using the EPC
+  if (m_epsBearerToRlcMapping == RLC_SM_ALWAYS)
+    {
+      m_epsBearerToRlcMapping = RLC_UM_ALWAYS;
+    }
+}
+  
 void 
 LenaHelper::SetSchedulerType (std::string type) 
 {
@@ -139,6 +165,12 @@ LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v
   m_propagationModelFactory.Set (n, v);
 }
 
+void
+LenaHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbNetDeviceFactory.Set (n, v);
+}
 
 NetDeviceContainer
 LenaHelper::InstallEnbDevice (NodeContainer c)
@@ -168,22 +200,6 @@ LenaHelper::InstallUeDevice (NodeContainer c)
     }
   return devices;
 }
-
-
-void
-LenaHelper::SetEnbDeviceAttribute (std::string name, const AttributeValue &value)
-{
-  NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("not implemented yet");
-}
-
-void
-LenaHelper::SetUeDeviceAttribute (std::string name, const AttributeValue &value)
-{
-  NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("not implemented yet");
-}
-
 
 Ptr<NetDevice>
 LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
@@ -232,8 +248,16 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   n->AddDevice (dev);
   ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
-
+  rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
+  
   dev->Start ();
+
+  if (m_epcHelper != 0)
+    {
+      NS_LOG_INFO ("adding this eNB to the EPC");    
+      m_epcHelper->AddEnb (n, dev);
+    }
+
   return dev;
 }
 
@@ -265,6 +289,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   rrc->SetLteUeCmacSapProvider (mac->GetLteUeCmacSapProvider ());
   mac->SetLteUeCmacSapUser (rrc->GetLteUeCmacSapUser ());
   rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
+
   phy->SetLteUePhySapUser (mac->GetLteUePhySapUser ());
   mac->SetLteUePhySapProvider (phy->GetLteUePhySapProvider ());
 
@@ -275,6 +300,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   n->AddDevice (dev);
   dlPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
+  rrc->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
 
   return dev;
 }
@@ -332,18 +358,58 @@ LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, P
 void
 LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft)
 {
-  // setup RadioBearer first
+  NS_LOG_INFO (" setting up Radio Bearer");
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   uint16_t rnti = ueRrc->GetRnti ();
-  uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer);
-  ueRrc->SetupRadioBearer (rnti, bearer, lcid);
+  TypeId rlcTypeId = GetRlcType (bearer);
+  uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer, rlcTypeId);
+  ueRrc->SetupRadioBearer (rnti, bearer, rlcTypeId, lcid, tft);
 
-  // then setup S1 Bearer  
+  if (m_epcHelper != 0)
+    {
+      NS_LOG_INFO (" setting up S1 Bearer");    
+      m_epcHelper->ActivateEpsBearer (ueDevice, enbDevice, tft, rnti, lcid);
+      
+    }
 }
 
-
+TypeId
+LenaHelper::GetRlcType (EpsBearer bearer)
+{
+  switch (m_epsBearerToRlcMapping)
+    {
+    case RLC_SM_ALWAYS:
+      return LteRlcSm::GetTypeId ();
+      break;
+      
+    case  RLC_UM_ALWAYS:
+      return LteRlcUm::GetTypeId ();
+      break;
+      
+    case RLC_AM_ALWAYS:
+      NS_ABORT_MSG ("RLC/AM not supported yet");
+      //return LteRlcAm::GetTypeId ();
+      break;
+      
+    case PER_BASED:
+      if (bearer.GetPacketErrorLossRate () > 1.0e-5)
+        {
+          return LteRlcUm::GetTypeId ();
+        }
+      else
+        {
+          NS_ABORT_MSG ("RLC/AM not supported yet");
+          //return LteRlcAm::GetTypeId ();
+        }
+      break;
+      
+    default:
+      return LteRlcSm::GetTypeId ();
+      break;        
+    }
+}
 
 void
 LenaHelper::EnableLogComponents (void)

@@ -67,6 +67,9 @@ public:
   virtual ~LteEnbNetDevice (void);
   virtual void DoDispose (void);
 
+  // inherited from NetDevice
+  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+
   /**
    * \return a pointer to the MAC 
    */
@@ -134,12 +137,6 @@ protected:
 
 
 private:
-  bool DoSend (Ptr<Packet> packet,
-               const Mac48Address& source,
-               const Mac48Address& dest,
-               uint16_t protocolNumber);
-
-  void DoReceive (Ptr<Packet> p);
 
   /**
    * Several attributes (e.g., the bandwidth) are exported as

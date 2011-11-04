@@ -40,6 +40,7 @@ namespace ns3 {
 class LteUePhy;
 class LteEnbPhy;
 class SpectrumChannel;
+class EpcHelper;
 
 
 /**
@@ -55,22 +56,58 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
-  /**
-   * \todo to be implemented
+
+  /** 
+   * Set the EpcHelper to be used to setup the EPC network in
+   * conjunction with the setup of the LTE radio access network 
    *
-   * \param name
-   * \param value
+   * \note if no EpcHelper is ever set, then LenaHelper will default
+   * to creating an LTE-only simulation with no EPC, using LteRlcSm as
+   * the RLC model, and without supporting any IP networking. In other
+   * words, it will be a radio-level simulation involving only LTE PHY
+   * and MAC and the FF Scheduler, with a saturation traffic model for
+   * the RLC.
+   * 
+   * \param h a pointer to the EpcHelper to be used
    */
-  void SetEnbDeviceAttribute (std::string name, const AttributeValue &value);
+  void SetEpcHelper (Ptr<EpcHelper> h);
+
+  /** 
+   * 
+   * 
+   * \param type the type of propagation model to be used for the eNBs
+   */
+  void SetPropagationModelType (std::string type);
 
   /**
-   * \todo to be implemented
-   *
-   * \param name
-   * \param value
+   * set an attribute for the propagation model to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
    */
-  void SetUeDeviceAttribute (std::string name, const AttributeValue &value);
+  void SetPropagationModelAttribute (std::string n, const AttributeValue &v);
 
+  /** 
+   * 
+   * \param type the type of scheduler to be used for the eNBs
+   */
+  void SetSchedulerType (std::string type);
+
+  /**
+   * set an attribute for the scheduler to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetSchedulerAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * set an attribute for the LteEnbNetDevice to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
 
   /**
    * create a set of eNB devices
@@ -126,28 +163,11 @@ public:
 
   /** 
    * 
+   * \param bearer the specification of an EPS bearer
    * 
-   * \param type the type of scheduler to be used for the eNBs
+   * \return the type of RLC that is to be created for the given EPS bearer
    */
-  void SetSchedulerType (std::string type);
-
-  /**
-   * set an attribute for the scheduler to be created
-   */
-  void SetSchedulerAttribute (std::string n, const AttributeValue &v);
-
-  /** 
-   * 
-   * 
-   * \param type the type of propagation model to be used for the eNBs
-   */
-  void SetPropagationModelType (std::string type);
-
-  /**
-   * set an attribute for the propagation model to be created
-   */
-  void SetPropagationModelAttribute (std::string n, const AttributeValue &v);
-
+  TypeId GetRlcType (EpsBearer bearer);
 
   /**
    * Enables logging for all components of the LENA architecture
@@ -202,10 +222,19 @@ private:
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
+  ObjectFactory m_enbNetDeviceFactory;
+
 
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
 
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4} m_epsBearerToRlcMapping;
+
+  Ptr<EpcHelper> m_epcHelper;
+  
 };
 
 

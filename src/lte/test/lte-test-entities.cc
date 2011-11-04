@@ -90,9 +90,10 @@ LteTestRrc::GetDataReceived (void)
  */
 
 void
-LteTestRrc::DoReceiveRrcPdu (Ptr<Packet> p)
+LteTestRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
 {
   NS_LOG_FUNCTION (this);
+  Ptr<Packet> p = params.rrcPdu;
   NS_LOG_LOGIC ("PDU received = " << (*p));
 
   uint32_t dataLen = p->GetSize ();

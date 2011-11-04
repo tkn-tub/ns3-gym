@@ -50,7 +50,9 @@ public:
   /**
    * Send a RRC PDU to the RDCP for transmission
    * This method is to be called
-   * when upper RRC entity has a RRC PDU ready to send
+   * when upper RRC entity has a RRC PDU ready to send   
+   * 
+   * \param params 
    */
   virtual void TransmitRrcPdu (TransmitRrcPduParameters params) = 0;
 };
@@ -69,11 +71,21 @@ public:
   virtual ~LtePdcpSapUser ();
 
   /**
+   * Parameters for LtePdcpSapUser::ReceiveRrcPdu
+   */
+  struct ReceiveRrcPduParameters
+  {
+    Ptr<Packet> rrcPdu;  /**< the RRC PDU */
+    uint16_t    rnti; /**< the C-RNTI identifying the UE */
+    uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
+  };
+
+  /**
   * Called by the PDCP entity to notify the RRC entity of the reception of a new RRC PDU
   *
-  * \param p the RRC PDU
+  * \param params
   */
-  virtual void ReceiveRrcPdu (Ptr<Packet> p) = 0;
+  virtual void ReceiveRrcPdu (ReceiveRrcPduParameters params) = 0;
 };
 
 ///////////////////////////////////////
@@ -118,7 +130,7 @@ public:
   LtePdcpSpecificLtePdcpSapUser (C* rrc);
 
   // Interface implemented from LtePdcpSapUser
-  virtual void ReceiveRrcPdu (Ptr<Packet> p);
+  virtual void ReceiveRrcPdu (ReceiveRrcPduParameters params);
 
 private:
   LtePdcpSpecificLtePdcpSapUser ();
@@ -137,9 +149,9 @@ LtePdcpSpecificLtePdcpSapUser<C>::LtePdcpSpecificLtePdcpSapUser ()
 }
 
 template <class C>
-void LtePdcpSpecificLtePdcpSapUser<C>::ReceiveRrcPdu (Ptr<Packet> p)
+void LtePdcpSpecificLtePdcpSapUser<C>::ReceiveRrcPdu (ReceiveRrcPduParameters params)
 {
-  m_rrc->DoReceiveRrcPdu (p);
+  m_rrc->DoReceiveRrcPdu (params);
 }
 
 
