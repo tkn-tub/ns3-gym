@@ -33,6 +33,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup topology
+ *
  * \brief Interface for input file readers management.
  *
  * This interface perform the shared tasks among all possible input file readers.
@@ -52,8 +54,18 @@ public:
   class Link
   {
 public:
+  /**
+   * \brief Constant iterator to scan the map of link attributes.
+   */
     typedef std::map<std::string, std::string >::const_iterator ConstAttributesIterator;
 
+    /**
+     * \brief Constructor
+     * \param fromPtr Ptr to the node the link is orginating from
+     * \param fromName name of the node the link is orginating from
+     * \param toPtr Ptr to the node the link is directed to
+     * \param toName name of the node the link is directed to
+     */
     Link ( Ptr<Node> fromPtr, std::string fromName, Ptr<Node> toPtr, std::string toName );
 
     /**
