@@ -67,7 +67,7 @@ main (int argc, char *argv[])
   uint32_t nEnb;
 
   Ptr < LenaHelper > lena = CreateObject<LenaHelper> ();
-  lena->EnableLogComponents ();
+  //lena->EnableLogComponents ();
   if (nFloors == 0)
     {
       lena->SetAttribute("PropagationModel",

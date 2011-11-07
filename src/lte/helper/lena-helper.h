@@ -198,8 +198,6 @@ private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  //uint64_t FindImsiFromEnbRlcPath(std::string path);
-
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
   
@@ -215,7 +213,6 @@ private:
 
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
-
 };
 
 
