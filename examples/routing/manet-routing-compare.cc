@@ -103,13 +103,15 @@ private:
   int m_nSinks;
   std::string m_protocolName;
   double m_txp;
+  bool m_traceMobility;
 };
 
 RoutingExperiment::RoutingExperiment ()
   : port (9),
     bytesTotal (0),
     packetsReceived (0),
-    m_CSVfileName ("manet-routing.output.csv")
+    m_CSVfileName ("manet-routing.output.csv"),
+    m_traceMobility (false)
 {
 }
 
@@ -179,6 +181,7 @@ RoutingExperiment::CommandSetup (int argc, char **argv)
 {
   CommandLine cmd;
   cmd.AddValue ("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
+  cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
   cmd.Parse (argc, argv);
   return m_CSVfileName;
 }
@@ -221,7 +224,7 @@ RoutingExperiment::Run (int nSinks, int protocol, double txp, std::string CSVfil
   double TotalTime = 200.0;
   std::string rate ("2048bps");
   std::string phyMode ("DsssRate11Mbps");
-  std::string tr_name ("Brock");
+  std::string tr_name ("manet-routing-compare");
   int nodeSpeed = 20; //in m/s
   int nodePause = 0; //in s
   m_protocolName = "protocol";
@@ -345,9 +348,9 @@ RoutingExperiment::Run (int nSinks, int protocol, double txp, std::string CSVfil
   //AsciiTraceHelper ascii;
   //Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (tr_name + ".tr").c_str());
   //wifiPhy.EnableAsciiAll (osw);
-  //std::ofstream os;
-  //os.open ((tr_name + ".mob").c_str());
-  //MobilityHelper::EnableAsciiAll (os);
+  std::ofstream os;
+  os.open ((tr_name + ".mob").c_str());
+  MobilityHelper::EnableAsciiAll (os);
 
   //Ptr<FlowMonitor> flowmon;
   //FlowMonitorHelper flowmonHelper;
