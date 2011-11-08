@@ -24,6 +24,7 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 #include "ns3/gtk-config-store.h"
+#include <ns3/buildings-propagation-loss-model.h>
 
 #include <iomanip>
 #include <string>
@@ -54,6 +55,8 @@ main (int argc, char *argv[])
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults();
+  
+  //./waf --run "lena-runtime-profiler --simTime=1 --nUe=2 --nEnb=1 --nFloors=0 --traceDirectory=/tmp"
 
   // parse again so you can override default values from the command line
   cmd.Parse(argc, argv);
@@ -67,7 +70,8 @@ main (int argc, char *argv[])
   uint32_t nEnb;
 
   Ptr < LenaHelper > lena = CreateObject<LenaHelper> ();
-  //lena->EnableLogComponents ();
+  lena->EnableLogComponents ();
+  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   if (nFloors == 0)
     {
       lena->SetAttribute("PropagationModel",
@@ -96,6 +100,7 @@ main (int argc, char *argv[])
   MobilityHelper mobility;
   vector<Vector> enbPosition;
   Ptr < ListPositionAllocator > positionAlloc = CreateObject<ListPositionAllocator> ();
+  Ptr < Building > building;
 
   if (nFloors == 0)
     {
@@ -109,6 +114,7 @@ main (int argc, char *argv[])
               Vector v(roomLength * (column + 0.5), roomLength * (row + 0.5), nodeHeight);
               positionAlloc->Add(v);
               enbPosition.push_back(v);
+              mobility.Install(ueNodes[plantedEnb]);
             }
         }
       mobility.SetPositionAllocator(positionAlloc);
@@ -116,7 +122,7 @@ main (int argc, char *argv[])
     }
   else
     {
-      Ptr < Building > building = Create<Building> (0.0, nRooms * roomLength,
+      building = Create<Building> (0.0, nRooms * roomLength,
                                                     0.0, nRooms * roomLength,
                                                     0.0, nFloors* roomHeight);
       building->SetBuildingType(Building::Residential);
@@ -125,6 +131,7 @@ main (int argc, char *argv[])
       building->SetNumberRoomX(nRooms);
       building->SetNumberRoomY(nRooms);
       mobility.SetMobilityModel("ns3::BuildingsMobilityModel");
+      mobility.Install (enbNodes);
       for (uint32_t floor = 0; floor < nFloors; floor++)
         {
           uint32_t plantedEnb = 0;
@@ -137,31 +144,57 @@ main (int argc, char *argv[])
                             nodeHeight + roomHeight * floor);
                   positionAlloc->Add(v);
                   enbPosition.push_back(v);
+                  Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
+                  mmEnb->SetPosition (v);
+                  mmEnb->SetIndoor (building);
+                  mmEnb->SetFloorNumber (floor);
+                  mmEnb->SetRoomNumberX (row);
+                  mmEnb->SetRoomNumberY (column);
+                  
+                  // Positioning UEs attached to eNB
+                  mobility.Install(ueNodes[plantedEnb]);
+                  for (uint32_t ue = 0; ue < nUe; ue++)
+                    {
+//                       UniformVariable posX(v.x - roomLength * 0.5,
+//                                            v.x + roomLength * 0.5);
+//                       UniformVariable posY(v.y - roomLength * 0.5,
+//                                            v.y + roomLength * 0.5);
+                         
+                      Ptr<BuildingsMobilityModel> mmUe = ueNodes[plantedEnb].Get (ue)->GetObject<BuildingsMobilityModel> ();
+                      Vector vUe (v.x, v.y, v.z);
+                      mmUe->SetPosition (vUe);
+                      mmUe->SetIndoor (building);
+                      mmUe->SetFloorNumber (floor);
+                      mmUe->SetRoomNumberX (row);
+                      mmUe->SetRoomNumberY (column);
+                    }
                 }
             }
         }
-      mobility.SetPositionAllocator(positionAlloc);
-      mobility.Install (enbNodes);
+      //mobility.SetPositionAllocator(positionAlloc);
+      
+      //mobility.Install (enbNodes);
 
 
     }
 
   // Position of UEs attached to eNB
-  for (uint32_t i = 0; i < nEnb; i++)
-    {
-
-      UniformVariable posX(enbPosition[i].x - roomLength * 0.5,
-          enbPosition[i].x + roomLength * 0.5);
-      UniformVariable posY(enbPosition[i].y - roomLength * 0.5,
-          enbPosition[i].y + roomLength * 0.5);
-/*      for (uint32_t j = 0; j < nUe; j++)
-        {*/
-          positionAlloc->Add(
-              Vector(enbPosition[i].x, enbPosition[i].y, enbPosition[i].z));
-              //Vector(posX.GetValue(), posY.GetValue(), nodeHeight));
-        //}
-      mobility.Install(ueNodes[i]);
-    }
+//   for (uint32_t i = 0; i < nEnb; i++)
+//     {
+// 
+//       UniformVariable posX(enbPosition[i].x - roomLength * 0.5,
+//           enbPosition[i].x + roomLength * 0.5);
+//       UniformVariable posY(enbPosition[i].y - roomLength * 0.5,
+//           enbPosition[i].y + roomLength * 0.5);
+// /*      for (uint32_t j = 0; j < nUe; j++)
+//         {*/
+//           positionAlloc->Add(
+//               Vector(enbPosition[i].x, enbPosition[i].y, enbPosition[i].z));
+//               //Vector(posX.GetValue(), posY.GetValue(), nodeHeight));
+//         //}
+//       mobility.Install(ueNodes[i]);
+//       Ptr<BuildingsMobilityModel> mm = ueNodes[i].Get (0)->GetObject<BuildingsMobilityModel> ();
+//     }
 
 
   // Create Devices and install them in the Nodes (eNB and UE)
