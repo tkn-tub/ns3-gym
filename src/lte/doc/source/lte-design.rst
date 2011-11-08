@@ -373,48 +373,51 @@ has been refined to comply with the scheduler interface specification [FFAPI]_. 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
 
-Trace Fading Model
+
+Propagation Models
 ++++++++++++++++++
 
-The fading model is based on the one developed during the GSoC 2010 [Piro2011]_. The main characteristic of this model is the fact that the fading evaluation during simulation run-time is based on per-calculated traces. This is done for limiting the computational complexity of the simulator. On the other hand, it needs huge structures for storing the traces; therefore, a trade-off between the number of possible parameters and the memory occupancy has to be found. The most important ones are:
+The naming convention used in the following will be:
 
- * users' speed: relative speed between users (affects the Doppler frequency, which in turns affects the time-variance property of the fading)
- * number of taps (and relative power): number of multiple paths considered, which affects the frequency property of the fading.
- * time granularity of the trace: sampling time of the trace.
- * frequency granularity of the trace: number of values in frequency to be evaluated.
- * length of trace: ideally large as the simulation time, might be reduced by windowing mechanism.
- * number of users: number of independent traces to be used (ideally one trace per user).
+ * User equipment:  UE
+ * Macro Base Station: MBS
+ * Small cell Base Station (e.g., pico/femtocell): SC
 
-With respect to the mathematical channel propagation model, we suggest the one provided by the ``rayleighchan`` function of Matlab, since it provides a well accepted channel modelization both in time and frequency domain. For more information, the reader is referred to  [mathworks]_.
 
-The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
-In detail, the channel object created with the rayleighchan function is used for filtering a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model.
+The LTE module considers FDD only, and implements downlink and uplink propagation separately. As a consequence, the following pathloss computations are performed
 
-Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36.104]_):
+  * MBS <-> UE (indoor and outdoor)
+  * SC (indoor and outdoor) <-> UE (indoor and outdoor)
+ 
+The LTE model does not provide the following pathloss computations:
 
- * users' speed: typically only a few discrete values are considered, i.e.:
+  * UE <-> UE
+  * MBS <-> MBS
+  * MBS <-> SC
+  * SC <-> SC
 
-   * 0 and 3 kmph for pedestrian scenarios
-   * 30 and 60 kmph for vehicular scenarios
-   * 0, 3, 30 and 60 for urban scenarios
 
- * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36.104]_.
- * time granularity: we need one fading value per TTI, i.e., every 1 ms (as this is the granularity in time of the ns-3 LTE PHY model).
- * frequency granularity: we need one fading value per RB (which is the frequency granularity of the spectrum model used by the ns-3 LTE model).
- * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.  
- * per-user fading process: users share the same fading trace, but for each user a different starting point in the trace is randomly picked up. This choice was made to avoid the need to provide one fading trace per user.
+Supported models
+----------------
 
-According to the parameters we considered, the following formula express in detail the total size :math:`S_{traces}` of the fading traces:
+The LTE module works with the channel objects provided by the Spectrum module, i.e., either SingleModelSpectrumChannel or MultiModelSpectrumChannel. Because of these, all the propagation models supported by these objecs can be used within the LTE module.
 
-.. math::
- S_{traces} = S_{sample} \times N_{RB} \times \frac{T_{trace}}{T_{sample}} \times N_{scenarios} \mbox{ [bytes]}
+Still, the recommended propagation model to be used with the LTE module is the one provided by the Buildings module, which was in fact designed specifically with LTE (though it can be used with other wireless technologies as well). Please refer to the documentation of the Buildings module for generic information on the propagation model it provides. 
 
-where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36.104]_:
 
- * Pedestrian: with nodes' speed of 3 kmph.
- * Vehicular: with nodes' speed of 60 kmph.
- * Urban: with nodes' speed of 3 kmph.
+Use of the Buildings model with LTE
+-----------------------------------
 
-hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
+In this section we will highlight some considerations that specifically apply when the Buildings module is used together with the LTE module.
 
+The Buildings model does not know the actual type of the node; i.e., it is not aware of whether a transmitter node is a UE, a MBS, or a SC. Rather, the Buildings model only cares about the position of the node: whether it is indoor and outdoor, and what is its z-axis respect to the rooftop level. As a consequence, for an eNB node that is placed outdoor and at a z-coordinate above the rooftop level, the propagation models typical of MBS will be used by the Buildings module. Conversely, for an eNB that is placed outdoor but below the rooftop,  or indoor, the propagation models typical of pico and femtocells will be used. 
+
+For communications involving at least one indoor node, the corresponding wall penetration losses will be calculated by the Buildings model. This covers the following use cases:
+ 
+ * MBS <-> indoor UE
+ * outdoor SC <-> indoor UE
+ * indoor SC <-> indoor UE
+ * indoor SC <-> outdoor UE
+
+Please refer to the documentation of the Buildings module for details on the actual models used in each case.
 

@@ -717,7 +717,7 @@ PfFfMacScheduler::EstimateUlSinr (uint16_t rnti, uint16_t rb)
 void
 PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params)
 {
-  NS_LOG_FUNCTION (this << " Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+//   NS_LOG_FUNCTION (this << " Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
  
 
   std::map <uint16_t,uint8_t>::iterator it; 
@@ -775,23 +775,18 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
         }
-      // store info on allocation for managing ul-cqi interpretation
-      for (int i = 0; i < rbPerFlow; i++)
-        {
-          rbgAllocationMap.push_back ((*it).first);
-        }
+     
       UlDciListElement_s uldci;
       uldci.m_rnti = (*it).first;
       uldci.m_rbStart = rbAllocated;
       uldci.m_rbLen = rbPerFlow;
-      rbAllocated += rbPerFlow;
       std::map <uint16_t, std::vector <double> >::iterator itCqi = m_ueCqi.find ((*it).first);
       int cqi = 0;
       if (itCqi == m_ueCqi.end ())
         {
           // no cqi info about this UE
           uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-          //NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
+//           NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
         }
       else
         {
@@ -803,7 +798,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
             {
-              //NS_LOG_DEBUG (this << " UE " << (*it).first << " has CQI " << (*itCqi).second.at(i));
+//               NS_LOG_DEBUG (this << " UE " << (*it).first << " has SINR " << (*itCqi).second.at(i));
               double sinr = (*itCqi).second.at (i);
               if (sinr == NO_SINR)
                 {
@@ -831,11 +826,18 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
           uldci.m_mcs = LteAmc::GetMcsFromCqi (cqi);
-          //NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
+//           NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
 
         }
+      
+      rbAllocated += rbPerFlow;
+      // store info on allocation for managing ul-cqi interpretation
+      for (int i = 0; i < rbPerFlow; i++)
+        {
+          rbgAllocationMap.push_back ((*it).first);
+        }
       uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
-//             NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize);
+//       NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize << " RbAlloc " << rbAllocated);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
       uldci.m_aggrLevel = 1;
@@ -855,7 +857,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       if (itStats != m_flowStatsUl.end ())
         {
           (*itStats).second.lastTtiBytesTrasmitted =  uldci.m_tbSize;
-          //           NS_LOG_DEBUG (this << " UE bytes txed " << (*it).second.lastTtiBytesTrasmitted);
+//                     NS_LOG_DEBUG (this << " UE bytes txed " << (*it).second.lastTtiBytesTrasmitted);
 
 
         }
@@ -972,6 +974,7 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   for (uint32_t i = 0; i < (*itMap).second.size (); i++)
     {
       // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
+      NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
       double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
       //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
       itCqi = m_ueCqi.find ((*itMap).second.at (i));

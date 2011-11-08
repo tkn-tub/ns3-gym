@@ -21,9 +21,9 @@
 #ifndef MAC_STATS_CALCULATOR_H_
 #define MAC_STATS_CALCULATOR_H_
 
+#include "ns3/lte-stats-calculator.h"
 #include "ns3/nstime.h"
 #include "ns3/uinteger.h"
-#include "ns3/object.h"
 #include <string>
 #include <fstream>
 
@@ -41,7 +41,7 @@ namespace ns3 {
  *   - MCS for transport block 2 (0 if not used)
  *   - Size of transport block 2 (0 if not used)
  */
-class MacStatsCalculator : public Object
+class MacStatsCalculator : public LteStatsCalculator
 {
 public:
   /**
@@ -58,20 +58,6 @@ public:
    * Inherited from ns3::Object
    */
   static TypeId GetTypeId (void);
-
-  /**
-   * Set the name of the file where the uplink statistics will be stored.
-   *
-   * \param outputFilename string with the name of the file
-   */
-  void SetUlOutputFilename (std::string outputFilename);
-
-  /**
-   * Set the name of the file where the downlink statistics will be stored.
-   *
-   * \param outputFilename string with the name of the file
-   */
-  void SetDlOutputFilename (std::string outputFilename);
 
   /**
    * Notifies the stats calculator that an downlink scheduling has occurred.
@@ -103,10 +89,8 @@ public:
 
 
 private:
-  std::string m_dlOutputFilename;
-  bool m_dlFirstWrite;
 
-  std::string m_ulOutputFilename;
+  bool m_dlFirstWrite;
   bool m_ulFirstWrite;
 
 };

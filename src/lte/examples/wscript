@@ -9,10 +9,13 @@ def build(bld):
     obj.source = 'inter-cell-interference.cc'
     obj = bld.create_ns3_program('lena-rlc-calculator',
                                  ['lte'])
-    obj.source = 'lena-rlc-calculator.cc'  
+    obj.source = 'lena-rlc-calculator.cc'    
     obj = bld.create_ns3_program('lena-fading',
                                  ['lte'])
-    obj.source = 'lena-fading.cc'  
-    obj = bld.create_ns3_program('profiling-reference',
+    obj.source = 'lena-fading.cc'    
+    obj = bld.create_ns3_program('lena-runtime-profiler',
                                  ['lte'])
-    obj.source = 'profiling-reference.cc'
+    obj.source = 'lena-runtime-profiler.cc'
+    obj = bld.create_ns3_program('lena-extract-pathloss',
+                                 ['lte'])
+    obj.source = 'lena-extract-pathloss.cc'

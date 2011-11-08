@@ -21,7 +21,6 @@
 #ifndef LENA_HELPER_H
 #define LENA_HELPER_H
 
-#include <ns3/log.h>
 #include <ns3/config.h>
 #include <ns3/simulator.h>
 #include <ns3/names.h>
@@ -197,6 +196,11 @@ public:
    */
   void EnableUlRlcTraces (void);
 
+  /**
+   * Set the output directory for the MAC/RLC trace
+   */
+  void SetTraceDirectory (std::string path);
+
   Ptr<RlcStatsCalculator> GetRlcStats (void);
 
 protected:
@@ -206,8 +210,6 @@ protected:
 private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
-
-  //uint64_t FindImsiFromEnbRlcPath(std::string path);
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
@@ -229,7 +231,6 @@ private:
   
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
-
 };
 
 

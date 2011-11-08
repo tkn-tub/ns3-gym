@@ -30,9 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("MacStatsCalculator");
 NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator);
 
 MacStatsCalculator::MacStatsCalculator ()
-  : m_dlOutputFilename (""),
-    m_dlFirstWrite (true),
-    m_ulOutputFilename (""),
+  : m_dlFirstWrite (true),
     m_ulFirstWrite (true)
 {
   NS_LOG_FUNCTION (this);
@@ -48,32 +46,10 @@ TypeId
 MacStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MacStatsCalculator")
-    .SetParent<Object> ()
+    .SetParent<LteStatsCalculator> ()
     .AddConstructor<MacStatsCalculator> ()
-    .AddAttribute ("DlOutputFilename",
-                   "Name of the file where the downlink results will be saved.",
-                   StringValue ("DlMacStats.csv"),
-                   MakeStringAccessor (&MacStatsCalculator::SetDlOutputFilename),
-                   MakeStringChecker ())
-    .AddAttribute ("UlOutputFilename",
-                   "Name of the file where the uplink results will be saved.",
-                   StringValue ("UlMacStats.csv"),
-                   MakeStringAccessor (&MacStatsCalculator::SetUlOutputFilename),
-                   MakeStringChecker ())
   ;
   return tid;
-}
-
-void
-MacStatsCalculator::SetUlOutputFilename (std::string outputFilename)
-{
-  m_ulOutputFilename = outputFilename;
-}
-
-void
-MacStatsCalculator::SetDlOutputFilename (std::string outputFilename)
-{
-  m_dlOutputFilename = outputFilename;
 }
 
 void
@@ -81,15 +57,15 @@ MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
                                   uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO ("Write DL Mac Stats in " << m_dlOutputFilename.c_str ());
+  NS_LOG_INFO ("Write DL Mac Stats in " << GetDlOutputFilename ().c_str ());
 
   std::ofstream outFile;
   if ( m_dlFirstWrite == true )
     {
-      outFile.open (m_dlOutputFilename.c_str ());
+      outFile.open (GetDlOutputFilename ().c_str ());
       if (!outFile.is_open ())
         {
-          NS_LOG_ERROR ("Can't open file " << m_dlOutputFilename.c_str ());
+          NS_LOG_ERROR ("Can't open file " << GetDlOutputFilename ().c_str ());
           return;
         }
       m_dlFirstWrite = false;
@@ -98,10 +74,10 @@ MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
     }
   else
     {
-      outFile.open (m_dlOutputFilename.c_str (),  std::ios_base::app);
+      outFile.open (GetDlOutputFilename ().c_str (),  std::ios_base::app);
       if (!outFile.is_open ())
         {
-          NS_LOG_ERROR ("Can't open file " << m_dlOutputFilename.c_str ());
+          NS_LOG_ERROR ("Can't open file " << GetDlOutputFilename ().c_str ());
           return;
         }
     }
@@ -124,15 +100,15 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
                                   uint32_t subframeNo, uint16_t rnti,uint8_t mcs, uint16_t size)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO ("Write UL Mac Stats in " << m_ulOutputFilename.c_str ());
+  NS_LOG_INFO ("Write UL Mac Stats in " << GetUlOutputFilename ().c_str ());
 
   std::ofstream outFile;
   if ( m_ulFirstWrite == true )
     {
-      outFile.open (m_ulOutputFilename.c_str ());
+      outFile.open (GetUlOutputFilename ().c_str ());
       if (!outFile.is_open ())
         {
-          NS_LOG_ERROR ("Can't open file " << m_ulOutputFilename.c_str ());
+          NS_LOG_ERROR ("Can't open file " << GetUlOutputFilename ().c_str ());
           return;
         }
       m_ulFirstWrite = false;
@@ -141,10 +117,10 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
     }
   else
     {
-      outFile.open (m_ulOutputFilename.c_str (),  std::ios_base::app);
+      outFile.open (GetUlOutputFilename ().c_str (),  std::ios_base::app);
       if (!outFile.is_open ())
         {
-          NS_LOG_ERROR ("Can't open file " << m_ulOutputFilename.c_str ());
+          NS_LOG_ERROR ("Can't open file " << GetUlOutputFilename ().c_str ());
           return;
         }
     }
@@ -159,6 +135,5 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
   outFile << size << std::endl;
   outFile.close ();
 }
-
 
 } // namespace ns3

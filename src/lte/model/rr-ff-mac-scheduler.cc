@@ -644,16 +644,11 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
         }
-      // store info on allocation for managing ul-cqi interpretation
-      for (int i = 0; i < rbPerFlow; i++)
-        {
-          rbgAllocationMap.push_back ((*it).first);
-        }
+      
       UlDciListElement_s uldci;
       uldci.m_rnti = (*it).first;
       uldci.m_rbStart = rbAllocated;
       uldci.m_rbLen = rbPerFlow;
-      rbAllocated += rbPerFlow;
       std::map <uint16_t, std::vector <double> >::iterator itCqi = m_ueCqi.find ((*it).first);
       int cqi = 0;
       if (itCqi == m_ueCqi.end ())
@@ -695,6 +690,14 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           //NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
 
         }
+      
+      rbAllocated += rbPerFlow;
+      // store info on allocation for managing ul-cqi interpretation
+      for (int i = 0; i < rbPerFlow; i++)
+        {
+          rbgAllocationMap.push_back ((*it).first);
+        }
+        
       uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
 //       NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize);
       uldci.m_ndi = 1;

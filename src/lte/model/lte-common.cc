@@ -49,6 +49,29 @@ operator < (const LteFlowId_t& a, const LteFlowId_t& b)
   return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_lcId < b.m_lcId) ) );
 }
 
+ImsiLcidPair_t::ImsiLcidPair_t ()
+{
+}
+
+ImsiLcidPair_t::ImsiLcidPair_t (const uint64_t a, const uint8_t b)
+  : m_imsi (a),
+    m_lcId (b)
+{
+}
+
+bool
+operator == (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b)
+{
+  return ((a.m_imsi == b.m_imsi) && (a.m_lcId == b.m_lcId));
+}
+
+bool
+operator < (const ImsiLcidPair_t& a, const ImsiLcidPair_t& b)
+{
+  return ((a.m_imsi < b.m_imsi) || ((a.m_imsi == b.m_imsi) && (a.m_lcId
+                                                               < b.m_lcId)));
+}
+
 
 uint16_t
 LteFfConverter::double2fpS11dot3 (double val)

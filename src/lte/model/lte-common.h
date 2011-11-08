@@ -40,6 +40,19 @@ public:
   friend bool operator < (const LteFlowId_t &a, const LteFlowId_t &b);
 };
 
+struct ImsiLcidPair_t
+{
+  uint64_t  m_imsi;
+  uint8_t   m_lcId;
+
+public:
+  ImsiLcidPair_t ();
+  ImsiLcidPair_t (const uint64_t a, const uint8_t b);
+
+  friend bool operator == (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b);
+  friend bool operator < (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b);
+};
+
 class LteFfConverter
 {
 

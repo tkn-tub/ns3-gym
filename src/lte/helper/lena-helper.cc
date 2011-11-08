@@ -109,7 +109,11 @@ LenaHelper::DoStart (void)
     }
 
   m_macStats = CreateObject<MacStatsCalculator> ();
+  m_macStats->SetDlOutputFilename("DlMacStats.csv");
+  m_macStats->SetUlOutputFilename("UlMacStats.csv");
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
+  m_rlcStats->SetDlOutputFilename("DlRlcStats.csv");
+  m_rlcStats->SetUlOutputFilename("UlRlcStats.csv");
   Object::DoStart ();
 }
 
@@ -464,10 +468,10 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
+//  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
+//  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
@@ -475,6 +479,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 
   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
 }
 
 
@@ -484,7 +489,6 @@ LenaHelper::EnableRlcTraces (void)
 {
   EnableDlRlcTraces ();
   EnableUlRlcTraces ();
-
 }
 
 
@@ -590,8 +594,26 @@ DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
-  uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  uint16_t cellId = FindCellIdFromEnbRlcPath (path);
+  uint64_t imsi = 0;
+  if (rlcStats->ExistsImsiPath(path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromEnbRlcPath (path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
+  uint16_t cellId = 0;
+  if (rlcStats->ExistsCellIdPath(path) == true)
+    {
+      cellId = rlcStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbRlcPath (path);
+      rlcStats->SetCellIdPath (path, cellId);
+    }
   rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
@@ -600,7 +622,16 @@ DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
-  uint64_t imsi = FindImsiFromUeRlcPath (path);
+  uint64_t imsi = 0;
+  if (rlcStats->ExistsImsiPath(path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromUeRlcPath (path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
   rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
@@ -619,7 +650,16 @@ UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
-  uint64_t imsi = FindImsiFromUeRlcPath (path);
+  uint64_t imsi = 0;
+    if (rlcStats->ExistsImsiPath(path) == true)
+      {
+        imsi = rlcStats->GetImsiPath (path);
+      }
+    else
+      {
+        imsi = FindImsiFromUeRlcPath (path);
+        rlcStats->SetImsiPath (path, imsi);
+      }
   rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
@@ -628,20 +668,59 @@ UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
-  uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  uint16_t cellId = FindCellIdFromEnbRlcPath (path);
+  uint64_t imsi = 0;
+  if (rlcStats->ExistsImsiPath(path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromEnbRlcPath(path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
+  uint16_t cellId = 0;
+  if (rlcStats->ExistsCellIdPath(path) == true)
+    {
+      cellId = rlcStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbRlcPath (path);
+      rlcStats->SetCellIdPath (path, cellId);
+    }
   rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
 void
-DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
-                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
+                      std::string path, uint32_t frameNo, uint32_t subframeNo,
+                      uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1,
+                      uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  NS_LOG_FUNCTION (mac << path);
-  uint64_t imsi = FindImsiFromEnbMac (path, rnti);
-  uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
-  mac->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+  NS_LOG_FUNCTION (macStats << path);
+  uint64_t imsi = 0;
+  if (macStats->ExistsImsiPath(path) == true)
+    {
+      imsi = macStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (path, rnti);
+      macStats->SetImsiPath (path, imsi);
+    }
+
+  uint16_t cellId = 0;
+  if (macStats->ExistsCellIdPath(path) == true)
+    {
+      cellId = macStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbMac (path, rnti);
+      macStats->SetCellIdPath (path, cellId);
+    }
+
+  macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
 }
 
 void
@@ -669,14 +748,34 @@ LenaHelper::EnableDlMacTraces (void)
 }
 
 void
-UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
+UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
                       uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                       uint8_t mcs, uint16_t size)
 {
-  NS_LOG_FUNCTION (mac << path);
-  uint64_t imsi = FindImsiFromEnbMac (path, rnti);
-  uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
-  mac->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);
+  NS_LOG_FUNCTION (macStats << path);
+
+  uint64_t imsi = 0;
+  if (macStats->ExistsImsiPath(path) == true)
+    {
+      imsi = macStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (path, rnti);
+      macStats->SetImsiPath (path, imsi);
+    }
+  uint16_t cellId = 0;
+  if (macStats->ExistsCellIdPath(path) == true)
+    {
+      cellId = macStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbMac (path, rnti);
+      macStats->SetCellIdPath (path, cellId);
+    }
+
+  macStats->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);
 }
 
 void
@@ -684,6 +783,15 @@ LenaHelper::EnableUlMacTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
+}
+
+void
+LenaHelper::SetTraceDirectory (std::string path)
+{
+  m_macStats->SetDlOutputFilename(path + m_macStats->GetDlOutputFilename());
+  m_macStats->SetUlOutputFilename(path + m_macStats->GetUlOutputFilename());
+  m_rlcStats->SetDlOutputFilename(path + m_rlcStats->GetDlOutputFilename());
+  m_rlcStats->SetUlOutputFilename(path + m_rlcStats->GetUlOutputFilename());
 }
 
 Ptr<RlcStatsCalculator>
