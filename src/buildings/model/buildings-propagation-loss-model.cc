@@ -574,7 +574,7 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
   {
     NS_LOG_ERROR (this << " Unkwnon Wall Type");
   }
-  
+  NS_LOG_INFO (this << " Node " << a->GetPosition () << " <-> " << b->GetPosition ());
   double loss = 20*log10(m_frequency/1e6/*MHz*/) + N*log10(a->GetDistanceFrom (b)) + Lf - 28.0;
   
   return (loss);

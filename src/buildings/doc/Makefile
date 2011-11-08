@@ -16,15 +16,8 @@ GRAPHS_EPS =
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 
-IMAGES_PNG = ${IMAGES_EPS:.eps=.png} \
-	$(FIGURES)/fading_pedestrian.png \
-	$(FIGURES)/fading_vehicular.png \
-	$(FIGURES)/fading_urban_3kmph.png
-IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} \
-	$(FIGURES)/fading_pedestrian.pdf \
-	$(FIGURES)/fading_vehicular.pdf \
-	$(FIGURES)/fading_urban_3kmph.pdf
-
+IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
+IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
