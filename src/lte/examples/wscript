@@ -12,7 +12,10 @@ def build(bld):
     obj.source = 'lena-rlc-calculator.cc'    
     obj = bld.create_ns3_program('lena-fading',
                                  ['lte'])
-    obj.source = 'lena-fading.cc'    
+    obj.source = 'lena-fading.cc'
+    obj = bld.create_ns3_program('lena-cqi-threshold',
+                                 ['lte'])
+    obj.source = 'lena-cqi-threshold.cc'        
     obj = bld.create_ns3_program('lena-runtime-profiler',
                                  ['lte'])
     obj.source = 'lena-runtime-profiler.cc'
