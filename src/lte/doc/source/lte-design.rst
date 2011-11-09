@@ -421,3 +421,58 @@ For communications involving at least one indoor node, the corresponding wall pe
 
 Please refer to the documentation of the Buildings module for details on the actual models used in each case.
 
+
+Trace Fading Model
+++++++++++++++++++
+
+The fading model is based on the one developed during the GSoC 2010 [Piro2011]_. The main characteristic of this model is the fact that the fading evaluation during simulation run-time is based on per-calculated traces. This is done for limiting the computational complexity of the simulator. On the other hand, it needs huge structures for storing the traces; therefore, a trade-off between the number of possible parameters and the memory occupancy has to be found. The most important ones are:
+
+ * users' speed: relative speed between users (affects the Doppler frequency, which in turns affects the time-variance property of the fading)
+ * number of taps (and relative power): number of multiple paths considered, which affects the frequency property of the fading.
+ * time granularity of the trace: sampling time of the trace.
+ * frequency granularity of the trace: number of values in frequency to be evaluated.
+ * length of trace: ideally large as the simulation time, might be reduced by windowing mechanism.
+ * number of users: number of independent traces to be used (ideally one trace per user).
+
+Respect to the mathematical channel propagation model, we suggest the one provided by the ``rayleighchan`` function of Matlab since it provides a well accepted channel modelization both in time and frequency domain, more information following the link:
+
+http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36
+
+The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
+In detail, the channel object created with the rayleighchan function is used for filtering a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model.
+
+Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36.104]_):
+
+ * users' speed: consider the most common typical value
+
+   * 0 and 3 kmph for pedestrian scenarios
+   * 30 and 60 kmph for vehicular scenarios
+   * 0, 3, 30 and 60 for urban scenarios
+
+ * number of taps: use the three models presented in Annex B.2 of TS 36.104.
+ * time granularity: 1 ms (as the simulator granularity in time).
+ * frequency granularity: per RB basis (which implies 100 RBs, as the simulator granularity in frequency).
+ * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.
+ * number of users: users share the same fading trace, but the windows are independent among users which randomly pick up their starting point.
+
+According to the parameters we considered, the following formula express in detail the dimension:
+
+.. math::
+ T_{SIZE} = Sample_{size} \times RB_{NUM} \times \frac{T_{total}}{T_{sample}} \times Speed_{NUM} \times Scenarios_{NUM} \mbox{ [bytes]}
+
+where :math:`Sample_{size}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`RB_{NUM}` is the number of RB or set of RBs to be considered, :math:`T_{total}` is the total length of the trace, :math:`T_{sample}` is the sampling period (1 ms for having a new sample each subframe), :math:`Speed_{NUM}` is the number of users relative speeds considered and :math:`Scenarios_{NUM}` is the number of scenarios (i.e., different taps configurations).
+According to the formula we have that a typical single channel realization (i.e., independent RB traces at a given speed and given set of number of taps with one sample per ms/TTI)) implies the usage of 8,000,000 bytes (7.6294 MB) considering the precision of double (:math:`1\times10^{-308}` to :math:`1\times10^{308}`).
+
+A typical set of traces for a simulation will result therefore in:
+
+ * :math:`RB_{NUM}`: 100
+ * :math:`T_{total}`: 10 secs
+ * :math:`T_{sample}`: 0.001 secs (1 ms as a subframe)
+ * :math:`Speed_{NUM}`: 1 speed per scenarios (e.g. 3 kmph for pedestrian)
+ * :math:`Scenarios_{NUM}`: 1 (pedestrian)
+
+which results in 8,000,000 bytes (~8 MB) of traces with double precision.
+
+
+
+
