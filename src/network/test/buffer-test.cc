@@ -298,6 +298,26 @@ BufferTest::DoRun (void)
   i = other.Begin ();
   i.Write (buffer.Begin (), buffer.End ());
   ENSURE_WRITTEN_BYTES (other, 9, 0x1, 0x2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3, 0x4);
+
+  // BUG #1001
+  std::string ct ("This is the next content of the buffer.");
+  buffer = Buffer ();
+  buffer.AddAtStart (ct.size ());
+  i = buffer.Begin ();
+  i.Write ((const uint8_t*)ct.c_str (), ct.size ());
+  uint32_t sizeBuffer = buffer.GetSize ();
+  NS_TEST_ASSERT_MSG_EQ (sizeBuffer, ct.size(), "Buffer bad size");
+  uint8_t const* evilBuffer = buffer.PeekData ();
+  NS_TEST_ASSERT_MSG_NE( evilBuffer, 0, "Buffer PeekData failed");
+  uint8_t *cBuf = (uint8_t*) malloc ( sizeBuffer );
+  uint32_t copyLen = buffer.CopyData (cBuf, sizeBuffer);
+  NS_TEST_ASSERT_MSG_EQ (copyLen, sizeBuffer, "CopyData return bad size");
+  for (uint8_t i=0; i < sizeBuffer ; i++ )
+    {
+      NS_TEST_ASSERT_MSG_EQ ( cBuf [i], *(((const uint8_t*)ct.c_str ()) + i), "Bad buffer copied data");
+      NS_TEST_ASSERT_MSG_EQ ( evilBuffer [i], cBuf [i] , "Bad buffer peeked");
+    }
+
 }
 //-----------------------------------------------------------------------------
 class BufferTestSuite : public TestSuite
