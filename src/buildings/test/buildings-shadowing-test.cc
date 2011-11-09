@@ -64,7 +64,6 @@ BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
   double distance = 2000;
   double hm = 1;
   double hb = 30;
-  double freq = 869e6; // E_UTRA BAND #5 see table 5.5-1 of 36.101
   Ptr<BuildingsMobilityModel> mm1 = CreateObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, hb));
   
@@ -76,7 +75,6 @@ BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
   // Test #2 Indoor model
   
   distance = 30;
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   double henbHeight = 10.0;
   Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
@@ -93,7 +91,6 @@ BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
   // Test #3 Indoor -> Outdoor
   
   distance = 100;
-  freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   Ptr<BuildingsMobilityModel> mm9 = CreateObject<BuildingsMobilityModel> ();
   mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
   mm9->SetIndoor (building1);
