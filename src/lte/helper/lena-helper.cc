@@ -467,12 +467,16 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-//  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-//  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
+  std::string propModelStr = m_dlPropagationModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+ 
+  const char* propModel = m_dlPropagationModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+  LogComponentEnable (propModel, LOG_LEVEL_ALL);
+  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+      const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
+      LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
+    }
+  LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
