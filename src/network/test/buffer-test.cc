@@ -317,7 +317,7 @@ BufferTest::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ ( cBuf [i], *(((const uint8_t*)ct.c_str ()) + i), "Bad buffer copied data");
       NS_TEST_ASSERT_MSG_EQ ( evilBuffer [i], cBuf [i] , "Bad buffer peeked");
     }
-
+  free (cBuf);
 }
 //-----------------------------------------------------------------------------
 class BufferTestSuite : public TestSuite
