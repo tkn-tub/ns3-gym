@@ -434,45 +434,36 @@ The fading model is based on the one developed during the GSoC 2010 [Piro2011]_.
  * length of trace: ideally large as the simulation time, might be reduced by windowing mechanism.
  * number of users: number of independent traces to be used (ideally one trace per user).
 
-Respect to the mathematical channel propagation model, we suggest the one provided by the ``rayleighchan`` function of Matlab since it provides a well accepted channel modelization both in time and frequency domain, more information following the link:
-
-http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36
+With respect to the mathematical channel propagation model, we suggest the one provided by the ``rayleighchan`` function of Matlab, since it provides a well accepted channel modelization both in time and frequency domain. For more information, the reader is referred to  [mathworks]_.
 
 The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
 In detail, the channel object created with the rayleighchan function is used for filtering a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model.
 
 Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36.104]_):
 
- * users' speed: consider the most common typical value
+ * users' speed: typically only a few discrete values are considered, i.e.:
 
    * 0 and 3 kmph for pedestrian scenarios
    * 30 and 60 kmph for vehicular scenarios
    * 0, 3, 30 and 60 for urban scenarios
 
- * number of taps: use the three models presented in Annex B.2 of TS 36.104.
- * time granularity: 1 ms (as the simulator granularity in time).
- * frequency granularity: per RB basis (which implies 100 RBs, as the simulator granularity in frequency).
- * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.
- * number of users: users share the same fading trace, but the windows are independent among users which randomly pick up their starting point.
+ * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36.104]_.
+ * time granularity: we need one fading value per TTI, i.e., every 1 ms (as this is the granularity in time of the ns-3 LTE PHY model).
+ * frequency granularity: we need one fading value per RB (which is the frequency granularity of the spectrum model used by the ns-3 LTE model).
+ * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.  
+ * per-user fading process: users share the same fading trace, but for each user a different starting point in the trace is randomly picked up. This choice was made to avoid the need to provide one fading trace per user.
 
-According to the parameters we considered, the following formula express in detail the dimension:
+According to the parameters we considered, the following formula express in detail the total size :math:`S_{traces}` of the fading traces:
 
 .. math::
- T_{SIZE} = Sample_{size} \times RB_{NUM} \times \frac{T_{total}}{T_{sample}} \times Speed_{NUM} \times Scenarios_{NUM} \mbox{ [bytes]}
+ S_{traces} = S_{sample} \times N_{RB} \times \frac{T_{trace}}{T_{sample}} \times N_{scenarios} \mbox{ [bytes]}
 
-where :math:`Sample_{size}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`RB_{NUM}` is the number of RB or set of RBs to be considered, :math:`T_{total}` is the total length of the trace, :math:`T_{sample}` is the sampling period (1 ms for having a new sample each subframe), :math:`Speed_{NUM}` is the number of users relative speeds considered and :math:`Scenarios_{NUM}` is the number of scenarios (i.e., different taps configurations).
-According to the formula we have that a typical single channel realization (i.e., independent RB traces at a given speed and given set of number of taps with one sample per ms/TTI)) implies the usage of 8,000,000 bytes (7.6294 MB) considering the precision of double (:math:`1\times10^{-308}` to :math:`1\times10^{308}`).
+where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36.104]_:
 
-A typical set of traces for a simulation will result therefore in:
+ * Pedestrian: with nodes' speed of 3 kmph.
+ * Vehicular: with nodes' speed of 60 kmph.
+ * Urban: with nodes' speed of 3 kmph.
 
- * :math:`RB_{NUM}`: 100
- * :math:`T_{total}`: 10 secs
- * :math:`T_{sample}`: 0.001 secs (1 ms as a subframe)
- * :math:`Speed_{NUM}`: 1 speed per scenarios (e.g. 3 kmph for pedestrian)
- * :math:`Scenarios_{NUM}`: 1 (pedestrian)
-
-which results in 8,000,000 bytes (~8 MB) of traces with double precision.
-
-
+hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
 
 
