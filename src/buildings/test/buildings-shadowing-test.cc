@@ -22,20 +22,10 @@
 #include "ns3/log.h"
 #include "ns3/buildings-shadowing-test.h"
 #include <ns3/buildings-propagation-loss-model.h>
-#include <ns3/spectrum-model.h>
-#include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/building.h>
 #include <ns3/enum.h>
-// #include <ns3/net-device-container.h>
-// #include <ns3/lte-ue-net-device.h>
-// #include <ns3/lte-enb-net-device.h>
-// #include <ns3/lte-ue-rrc.h>
-// #include <ns3/lena-helper.h>
-// #include <ns3/lte-enb-phy.h>
-// #include <ns3/lte-ue-phy.h>
-// #include <ns3/lte-test-sinr-chunk-processor.h>
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
 
@@ -163,13 +153,8 @@ BuildingsShadowingTestCase::DoRun (void)
   int samples = 10000;
   for (int i = 0; i < samples; i++)
   {
-  Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<BuildingsPropagationLossModel> m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  Ptr<BuildingsPropagationLossModel>  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
-  m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
-  loss.push_back (m_downlinkPropagationLossModel->GetLoss (m_node1, m_node2) - m_lossRef);
+  Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  loss.push_back (propagationLossModel->GetLoss (m_node1, m_node2) - m_lossRef);
   sum += loss.at (loss.size()-1);
   sumSquared += (loss.at (loss.size()-1)*loss.at (loss.size()-1));
   }

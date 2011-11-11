@@ -23,8 +23,6 @@
 #include <ns3/log.h>
 
 #include <ns3/buildings-pathloss-test.h>
-#include <ns3/spectrum-model.h>
-#include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/building.h>
@@ -226,33 +224,18 @@ BuildingsPathlossTestCase::DoRun (void)
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   NS_LOG_INFO ("Testing ");
 
-  Ptr<SpectrumChannel> m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumChannel> m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<BuildingsPropagationLossModel> m_downlinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_downlinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
-  m_downlinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
-  m_downlinkPropagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
-  m_downlinkPropagationLossModel->SetAttribute ("CitySize", EnumValue (m_city));
-  // cancel shadowing effect
-  m_downlinkPropagationLossModel->SetAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
-  m_downlinkPropagationLossModel->SetAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
-  m_downlinkPropagationLossModel->SetAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
-  Ptr<BuildingsPropagationLossModel>  m_uplinkPropagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  m_uplinkPropagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
-  m_uplinkPropagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
-  // cancel shadowing effect
-  m_uplinkPropagationLossModel->SetAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
-  m_uplinkPropagationLossModel->SetAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
-  m_uplinkPropagationLossModel->SetAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
-  m_downlinkChannel->AddPropagationLossModel (m_downlinkPropagationLossModel);
-  m_uplinkChannel->AddPropagationLossModel (m_uplinkPropagationLossModel);
-  
 
+  Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  propagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
+  propagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 /m_freq));
+  propagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
+  propagationLossModel->SetAttribute ("CitySize", EnumValue (m_city));
+  // cancel shadowing effect
+  propagationLossModel->SetAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
+  propagationLossModel->SetAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
+  propagationLossModel->SetAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   
-  Simulator::Stop (Seconds (0.1));
-  Simulator::Run ();
-  Simulator::Destroy ();
-  double loss = m_downlinkPropagationLossModel->GetLoss (m_node1, m_node2);
+  double loss = propagationLossModel->GetLoss (m_node1, m_node2);
 
   NS_LOG_INFO ("Calculated loss: " << loss);
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
