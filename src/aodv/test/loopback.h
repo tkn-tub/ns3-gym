@@ -18,8 +18,8 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef LOOPBACK_H_
-#define LOOPBACK_H_
+#ifndef AODV_LOOPBACK_H
+#define AODV_LOOPBACK_H
 #include "ns3/test.h"
 #include <string>
 
@@ -42,4 +42,4 @@ struct LoopbackTestCase : public TestCase
 }
 }
 
-#endif /* LOOPBACK_H_ */
+#endif /* AODV_LOOPBACK_H */

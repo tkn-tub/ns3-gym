@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANTXMODE_H
-#define UANTXMODE_H
+#ifndef UAN_TX_MODE_H
+#define UAN_TX_MODE_H
 
 #include "ns3/object.h"
 #include <map>
@@ -205,4 +205,4 @@ ATTRIBUTE_HELPER_HEADER (UanModesList);
 
 } // namespace ns3
 
-#endif // UANTXMODE_H
+#endif /* UAN_TX_MODE_H */

@@ -227,4 +227,4 @@ private:
 
 } // namespace ns3
 
-#endif // ALOHA_NOACK_NET_DEVICE_H
+#endif /* ALOHA_NOACK_NET_DEVICE_H */

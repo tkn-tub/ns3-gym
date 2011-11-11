@@ -16,8 +16,9 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef BUG780_REGRESSIONTEST_H_
-#define BUG780_REGRESSIONTEST_H_
+#ifndef BUG780_TEST_H
+#define BUG780_TEST_H
+
 #include "ns3/test.h"
 #include "ns3/nstime.h"
 #include "ns3/node-container.h"
@@ -46,4 +47,5 @@ private:
 
 }
 }
-#endif
+
+#endif /* BUG780_TEST_H */

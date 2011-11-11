@@ -70,7 +70,7 @@ private: //static data
   static double nextSeed[6];
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif
  

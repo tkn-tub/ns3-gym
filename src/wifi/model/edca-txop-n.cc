@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006, 2009 INRIA
  * Copyright (c) 2009 MIRKO BANCHI
@@ -1111,4 +1111,4 @@ EdcaTxopN::DoStart ()
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   ns3::Dcf::DoStart ();
 }
-} //namespace ns3
+} // namespace ns3

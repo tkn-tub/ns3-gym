@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -21,11 +21,10 @@
 #ifndef SPECTRUM_TYPE_H
 #define SPECTRUM_TYPE_H
 
-#include <ns3/log.h>
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include <stdint.h>
 
 namespace ns3 {
 

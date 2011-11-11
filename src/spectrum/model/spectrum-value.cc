@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil;  -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 /*
  * Copyright (c) 2009 CTTC
@@ -23,6 +23,9 @@
 #include <math.h>
 #include <ns3/log.h>
 
+#ifdef __FreeBSD__
+#define log2(x) (log(x)/M_LN2)
+#endif
 
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumValue");
@@ -32,7 +35,6 @@ namespace ns3 {
 
 
 SpectrumValue::SpectrumValue ()
-  : m_values (0)
 {
 }
 
@@ -406,6 +408,7 @@ operator << (std::ostream& os, const SpectrumValue& pvf)
       os << *it1 << " ";
       ++it1;
     }
+  os << std::endl;
   return os;
 }
 

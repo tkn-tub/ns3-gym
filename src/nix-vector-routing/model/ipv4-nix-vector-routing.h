@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 The Georgia Institute of Technology 
  *
@@ -18,8 +18,8 @@
  * Authors: Josh Pelkey <jpelkey@gatech.edu>
  */
 
-#ifndef __IPV4_NIX_VECTOR_ROUTING_H__
-#define __IPV4_NIX_VECTOR_ROUTING_H__
+#ifndef IPV4_NIX_VECTOR_ROUTING_H
+#define IPV4_NIX_VECTOR_ROUTING_H
 
 #include <map>
 
@@ -167,4 +167,5 @@ private:
   uint32_t m_totalNeighbors;
 };
 } // namespace ns3
-#endif
+
+#endif /* IPV4_NIX_VECTOR_ROUTING_H */

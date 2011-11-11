@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -27,7 +27,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("Ipv4EndPointDemux");
 
 Ipv4EndPointDemux::Ipv4EndPointDemux ()
-  : m_ephemeral (49152)
+  : m_ephemeral (49152), m_portLast (65535), m_portFirst (49152)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -347,26 +347,28 @@ Ipv4EndPointDemux::SimpleLookup (Ipv4Address daddr,
     }
   return generic;
 }
-
 uint16_t
 Ipv4EndPointDemux::AllocateEphemeralPort (void)
 {
+  // Similar to counting up logic in netinet/in_pcb.c
   NS_LOG_FUNCTION_NOARGS ();
   uint16_t port = m_ephemeral;
+  int count = m_portLast - m_portFirst;
   do 
     {
-      port++;
-      if (port == 65535) 
+      if (count-- < 0)
         {
-          port = 49152;
+          return 0;
         }
-      if (!LookupPortLocal (port)) 
+      ++port;
+      if (port < m_portFirst || port > m_portLast)
         {
-          return port;
+          port = m_portFirst;
         }
-    } while (port != m_ephemeral);
-  return 0;
+    } while (LookupPortLocal (port));
+  m_ephemeral = port;
+  return port;
 }
 
-} //namespace ns3
+} // namespace ns3
 

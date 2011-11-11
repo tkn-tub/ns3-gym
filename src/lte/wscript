@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'virtual-net-device','point-to-point','applications','internet','csma'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats', 'buildings', 'virtual-net-device','point-to-point','applications','internet','csma'])
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
@@ -57,6 +57,7 @@ def build(bld):
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
         'model/epc-gtpu-header.cc',
+        'model/trace-fading-loss-model.cc',
         'model/epc-gtpu-l5-protocol.cc',
         'model/epc-gtpu-tunnel-endpoint.cc',
         'model/epc-enb-application.cc',
@@ -77,6 +78,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
+        'test/lte-test-pathloss-model.cc',
         'test/lte-test-entities.cc',
         'test/lte-test-rlc-um-transmitter.cc',
         'test/epc-test-gtpu.cc',
@@ -86,7 +88,7 @@ def build(bld):
         'test/test-lte-epc-e2e-data.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'lte'
     headers.source = [
         'model/lte-common.h',
@@ -142,6 +144,7 @@ def build(bld):
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
+        'model/trace-fading-loss-model.h',
         'model/epc-gtpu-header.h',
         'model/epc-gtpu-l5-protocol.h',
         'model/epc-gtpu-tunnel-endpoint.h',
@@ -157,6 +160,7 @@ def build(bld):
         'test/lte-test-pf-ff-mac-scheduler.h',
         'test/lte-test-entities.h',
         'test/lte-test-rlc-um-transmitter.h',
+        'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu.h',
         'model/lte-tft.h',
         'model/eps-tft-classifier.h',

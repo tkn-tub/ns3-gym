@@ -28,8 +28,9 @@
  * NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI),
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
-#ifndef __DSDV_RTABLE_H__
-#define __DSDV_RTABLE_H__
+
+#ifndef DSDV_RTABLE_H
+#define DSDV_RTABLE_H
 
 #include <cassert>
 #include <map>
@@ -345,4 +346,4 @@ private:
 };
 }
 }
-#endif /*__DSDV_RTABLE_H__ */
+#endif /* DSDV_RTABLE_H */

@@ -11,7 +11,8 @@ cpp_examples = [
     ("lena-first-sim", "True", "True"),
     ("inter-cell-interference", "True", "True"),
     ("lena-rlc-calculator", "True", "True"),
-    ("profiling-reference", "False", "False"),
+    ("lena-runtime-profiler", "True", "True"),
+    ("lena-extract-pathloss", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

@@ -20,8 +20,8 @@
  * Authors: Gustavo Carneiro <gjcarneiro@gmail.com>,
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef __REF_COUNT_BASE_H__
-#define __REF_COUNT_BASE_H__
+#ifndef REF_COUNT_BASE_H
+#define REF_COUNT_BASE_H
 
 #include "simple-ref-count.h"
 
@@ -45,4 +45,4 @@ public:
 
 } // namespace ns3
 
-#endif /* __REF_COUNT_BASE_H__*/
+#endif /* REF_COUNT_BASE_H */

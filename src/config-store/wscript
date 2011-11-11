@@ -18,6 +18,8 @@ def configure(conf):
 
 
 def build(bld):
+    bld.install_files('${PREFIX}/include/ns3', '../../ns3/config-store-config.h')
+
     module = bld.create_ns3_module('config-store', ['core', 'network'])
     module.source = [
         'model/attribute-iterator.cc',
@@ -27,7 +29,7 @@ def build(bld):
         'model/raw-text-config.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'config-store'
     headers.source = [
         'model/file-config.h',
@@ -41,13 +43,13 @@ def build(bld):
                                'model/model-typeid-creator.cc',
                                'model/display-functions.cc',
                                ])
-        module.uselib = 'GTK_CONFIG_STORE'
+        module.use.append('GTK_CONFIG_STORE')
 
     if bld.env['ENABLE_LIBXML2']:
         module.source.append ('model/xml-config.cc')
-        if bld.env['ENABLE_GTK_CONFIG_STORE']:
-            module.uselib = module.uselib + ' LIBXML2'
-        else:
-            module.uselib = 'LIBXML2'
+        module.use.append('LIBXML2')
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
 
     bld.ns3_python_bindings()

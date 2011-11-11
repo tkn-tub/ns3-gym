@@ -134,4 +134,4 @@ private:
 
 } // namespace ns3
 
-#endif // NON_COMMUNICATING_NET_DEVICE_H
+#endif /* NON_COMMUNICATING_NET_DEVICE_H */

@@ -36,6 +36,13 @@ NS_LOG_COMPONENT_DEFINE ("SSScheduler");
 namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (SSScheduler);
 
+TypeId SSScheduler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SSScheduler")
+    .SetParent<Object> ();
+  return tid;
+}
+
 SSScheduler::SSScheduler (Ptr<SubscriberStationNetDevice> ss)
   : m_ss (ss),
     m_pollMe (false)

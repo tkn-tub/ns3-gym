@@ -20,10 +20,10 @@
 #ifndef TIME_H
 #define TIME_H
 
-#include "ns3/assert.h"
-#include "ns3/attribute.h"
-#include "ns3/attribute-helper.h"
-#include "ns3/int64x64.h"
+#include "assert.h"
+#include "attribute.h"
+#include "attribute-helper.h"
+#include "int64x64.h"
 #include <stdint.h>
 #include <math.h>
 #include <ostream>
@@ -358,7 +358,6 @@ public:
     return Time (value);
   }
   /**
-   * \param time a Time object
    * \param timeUnit the unit of the value to return
    *
    * Convert the input time into an integer value according to the requested
@@ -390,7 +389,6 @@ public:
     return From (int64x64_t (value), timeUnit);
   }
   /**
-   * \param time a Time object
    * \param timeUnit the unit of the value to return
    *
    * Convert the input time into a floating point value according to the requested

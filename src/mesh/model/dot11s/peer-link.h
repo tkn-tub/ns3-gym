@@ -19,8 +19,8 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-#ifndef PEERLLINK_H_
-#define PEERLLINK_H_
+#ifndef PEER_LINK_H
+#define PEER_LINK_H
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
@@ -30,8 +30,10 @@
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/ie-dot11s-peer-management.h"
 #include "ns3/ie-dot11s-configuration.h"
+
 namespace ns3 {
 namespace dot11s {
+
 class PeerManagementProtocolMac;
 /**
  * \ingroup dot11s
@@ -257,5 +259,6 @@ private:
 };
 
 } // namespace dot11s
-} //namespace ns3
-#endif /* PEERLLINK_H_ */
+} // namespace ns3
+
+#endif /* PEER_LINK_H */

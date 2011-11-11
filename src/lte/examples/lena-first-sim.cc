@@ -51,8 +51,11 @@ int main (int argc, char *argv[])
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-
+//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+ 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
@@ -61,9 +64,9 @@ int main (int argc, char *argv[])
 
   // Install Mobility Model
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
   mobility.Install (ueNodes);
 
   // Create Devices and install them in the Nodes (eNB and UE)
@@ -83,7 +86,7 @@ int main (int argc, char *argv[])
   lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
 
 
-  Simulator::Stop (Seconds (0.010));
+  Simulator::Stop (Seconds (0.005));
 
   Simulator::Run ();
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -387,6 +387,12 @@ UanNetDevice::SetAddress (Address address)
 {
   NS_ASSERT_MSG (0, "Tried to set MAC address with no MAC");
   m_mac->SetAddress (UanAddress::ConvertFrom (address));
+}
+
+void
+UanNetDevice::SetSleepMode (bool sleep)
+{
+  m_phy->SetSleepMode (sleep);
 }
 
 } // namespace ns3

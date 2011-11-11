@@ -521,6 +521,6 @@ Ptr<T>::operator Tester * () const
 }
 
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* PTR_H */

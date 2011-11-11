@@ -503,4 +503,4 @@ SocketSetDontFragmentTag::Print (std::ostream &os) const
   os << (m_dontFragment ? "true" : "false");
 }
 
-} //namespace ns3
+} // namespace ns3

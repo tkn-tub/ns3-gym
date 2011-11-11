@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
  *
@@ -113,4 +113,4 @@ TcpSocket::~TcpSocket ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-}; // namespace ns3
+} // namespace ns3

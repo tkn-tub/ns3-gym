@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -89,14 +89,14 @@ WaveformGenerator::GetTypeId (void)
 
 
 
-Ptr<Object>
+Ptr<NetDevice>
 WaveformGenerator::GetDevice ()
 {
   return m_netDevice;
 }
 
 
-Ptr<Object>
+Ptr<MobilityModel>
 WaveformGenerator::GetMobility ()
 {
   return m_mobility;
@@ -111,14 +111,14 @@ WaveformGenerator::GetRxSpectrumModel () const
 }
 
 void
-WaveformGenerator::SetDevice (Ptr<Object> d)
+WaveformGenerator::SetDevice (Ptr<NetDevice> d)
 {
   m_netDevice = d;
 }
 
 
 void
-WaveformGenerator::SetMobility (Ptr<Object> m)
+WaveformGenerator::SetMobility (Ptr<MobilityModel> m)
 {
   m_mobility = m;
 }

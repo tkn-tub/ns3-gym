@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -80,6 +80,15 @@ SingleModelSpectrumChannel::GetTypeId (void)
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&SingleModelSpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
+    .AddTraceSource ("PropagationLoss",
+                     "If a PropagationLossModel is plugged on the channel, this trace is fired "
+                     "whenever a new path loss value is calculated. The first and second parameters "
+                     "to the trace are pointers respectively to the TX and RX SpectrumPhy instances, "
+                     "whereas the third parameters is the loss value in dB. Note that the loss value "
+                     "reported by this trace is the single-frequency loss value obtained by "
+                     "PropagationLossModel, and is not affected by whether an additional "
+                     "SpectrumPropagationLossModel is being used or not.",
+                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_propagationLossTrace))
   ;
   return tid;
 }
@@ -116,7 +125,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
 
 
 
-  Ptr<MobilityModel> senderMobility = txPhy->GetMobility ()->GetObject<MobilityModel> ();
+  Ptr<MobilityModel> senderMobility = txPhy->GetMobility ();
 
   for (PhyList::const_iterator rxPhyIterator = m_phyList.begin ();
        rxPhyIterator != m_phyList.end ();
@@ -127,13 +136,14 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
           Ptr <SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
           Time delay  = MicroSeconds (0);
 
-          Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ()->GetObject<MobilityModel> ();
+          Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ();
 
           if (senderMobility && receiverMobility)
             {
               if (m_propagationLoss)
                 {
                   double gainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
+                  m_propagationLossTrace (txPhy, *rxPhyIterator, -gainDb);
                   if ( (-gainDb) > m_maxLossDb)
                     {
                       // beyond range
@@ -155,11 +165,11 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
             }
 
           Ptr<PacketBurst> pktBurstCopy = p->Copy ();
-          Ptr<Object> netDevObj = (*rxPhyIterator)->GetDevice ();
-          if (netDevObj)
+          Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
+          if (netDev)
             {
               // the receiver has a NetDevice, so we expect that it is attached to a Node
-              uint32_t dstNode =  netDevObj->GetObject<NetDevice> ()->GetNode ()->GetId ();
+              uint32_t dstNode =  netDev->GetNode ()->GetId ();
               Simulator::ScheduleWithContext (dstNode, delay, &SingleModelSpectrumChannel::StartRx, this,
                                               pktBurstCopy, rxPsd, st, duration, *rxPhyIterator);
             }

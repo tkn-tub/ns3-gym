@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,12 +18,13 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANPROPMODELIDEAL_H_
-#define UANPROPMODELIDEAL_H_
+#ifndef UAN_PROP_MODEL_IDEAL_H
+#define UAN_PROP_MODEL_IDEAL_H
 
 #include "uan-prop-model.h"
 #include "ns3/mobility-model.h"
 #include "ns3/nstime.h"
+
 namespace ns3 {
 
 /**
@@ -47,4 +48,4 @@ public:
 
 }
 
-#endif /*UANPROPMODELIDEAL_H_*/
+#endif /* UAN_PROP_MODEL_IDEAL_H */

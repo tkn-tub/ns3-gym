@@ -368,6 +368,12 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p,
   Ipv4Address dst = header.GetDestination ();
   Ipv4Address origin = header.GetSource ();
 
+  // DSDV is not a multicast routing protocol
+  if (dst.IsMulticast ())
+    {
+      return false;
+    }
+
   // Deferred route request
   if (EnableBuffering == true && idev == m_lo)
     {
@@ -396,9 +402,18 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p,
         {
           if (dst == iface.GetBroadcast () || dst.IsBroadcast ())
             {
-              NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
               Ptr<Packet> packet = p->Copy ();
-              lcb (p,header,iif);
+              if (lcb.IsNull () == false)
+                {
+                  NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
+                  lcb (p, header, iif);
+                  // Fall through to additional processing
+                }
+              else
+                {
+                  NS_LOG_ERROR ("Unable to deliver packet locally due to null callback " << p->GetUid () << " from " << origin);
+                  ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+                }
               if (header.GetTtl () > 1)
                 {
                   NS_LOG_LOGIC ("Forward broadcast. TTL " << (uint16_t) header.GetTtl ());
@@ -420,8 +435,16 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p,
 
   if (m_ipv4->IsDestinationAddress (dst, iif))
     {
-      NS_LOG_LOGIC ("Unicast local delivery to " << dst);
-      lcb (p, header, iif);
+      if (lcb.IsNull () == false)
+        {
+          NS_LOG_LOGIC ("Unicast local delivery to " << dst);
+          lcb (p, header, iif);
+        }
+      else
+        {
+          NS_LOG_ERROR ("Unable to deliver packet locally due to null callback " << p->GetUid () << " from " << origin);
+          ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+        }
       return true;
     }
   RoutingTableEntry toDst;

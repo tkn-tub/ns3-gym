@@ -31,6 +31,8 @@
 #include "lte-pdcp-sap.h"
 #include "lte-radio-bearer-info.h"
 #include "lte-mac-tag.h"
+#include "ns3/object-map.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
 

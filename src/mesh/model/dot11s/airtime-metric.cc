@@ -102,5 +102,5 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
                                  ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
   return metric;
 }
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3

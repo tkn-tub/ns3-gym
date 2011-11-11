@@ -5,6 +5,8 @@ def build(bld):
     module.source = [
         'model/uan-channel.cc',
         'model/uan-phy-gen.cc',
+        'model/uan-mac.cc',
+        'model/uan-transducer.cc',
         'model/uan-transducer-hd.cc',
         'model/uan-address.cc',
         'model/uan-net-device.cc',
@@ -32,7 +34,7 @@ def build(bld):
         'test/uan-test.cc',
         'test/uan-energy-model-test.cc',
         ]
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'uan'
     headers.source = [
         'model/uan-channel.h',

@@ -10,9 +10,9 @@ def build(bld):
     obj = bld.create_ns3_program('lena-rlc-calculator',
                                  ['lte'])
     obj.source = 'lena-rlc-calculator.cc'    
-    obj = bld.create_ns3_program('profiling-reference',
+    obj = bld.create_ns3_program('lena-runtime-profiler',
                                  ['lte'])
-    obj.source = 'profiling-reference.cc'
-    obj = bld.create_ns3_program('epc-gtpu-tunnel-example',
-                                 ['virtual-net-device', 'csma', 'internet', 'applications', 'lte'])
-    obj.source = 'epc-gtpu-tunnel-example.cc'
+    obj.source = 'lena-runtime-profiler.cc'
+    obj = bld.create_ns3_program('lena-extract-pathloss',
+                                 ['lte'])
+    obj.source = 'lena-extract-pathloss.cc'

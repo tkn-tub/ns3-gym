@@ -18,8 +18,8 @@
  * Author: Hajime Tazaki (tazaki@sfc.wide.ad.jp)
  */
 
-#ifndef __ROCKETFUEL_TOPOLOGY_READER_H__
-#define __ROCKETFUEL_TOPOLOGY_READER_H__
+#ifndef ROCKETFUEL_TOPOLOGY_READER_H
+#define ROCKETFUEL_TOPOLOGY_READER_H
 
 #include "ns3/nstime.h"
 
@@ -84,6 +84,6 @@ private:
 };
 
 
-#endif // __ROCKETFUEL_TOPOLOGY_READER_H__
+#endif /* ROCKETFUEL_TOPOLOGY_READER_H */
 
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 The Georgia Institute of Technology 
  *
@@ -18,8 +18,8 @@
  * Authors: Josh Pelkey <jpelkey@gatech.edu>
  */
 
-#ifndef __NIX_VECTOR_H__
-#define __NIX_VECTOR_H__
+#ifndef NIX_VECTOR_H
+#define NIX_VECTOR_H
 
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
@@ -185,4 +185,4 @@ private:
 };
 } // namespace ns3
 
-#endif
+#endif /* NIX_VECTOR_H */

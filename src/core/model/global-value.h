@@ -85,6 +85,8 @@ public:
    */
   bool SetValue (const AttributeValue &value);
 
+  void ResetInitialValue (void);
+
   /**
    * \param name the name of the global value
    * \param value the value to set in the requested global value.
@@ -146,6 +148,7 @@ private:
   std::string m_name;
   std::string m_help;
   Ptr<AttributeValue> m_initialValue;
+  Ptr<AttributeValue> m_currentValue;
   Ptr<const AttributeChecker> m_checker;
 };
 

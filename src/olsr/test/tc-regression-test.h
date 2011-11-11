@@ -18,8 +18,9 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef TCREGRESSIONTEST_H_
-#define TCREGRESSIONTEST_H_
+#ifndef TC_REGRESSION_TEST_H
+#define TC_REGRESSION_TEST_H
+
 #include "ns3/test.h"
 #include "ns3/nstime.h"
 #include "ns3/node-container.h"
@@ -93,4 +94,5 @@ private:
 
 }
 }
-#endif /* TCREGRESSIONTEST_H_ */
+
+#endif /* TC_REGRESSION_TEST_H */

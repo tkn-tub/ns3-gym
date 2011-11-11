@@ -46,13 +46,6 @@ using namespace ns3;
 LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite ()
   : TestSuite ("lte-downlink-sinr", SYSTEM)
 {
-  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-
-  // LogComponentEnable ("LteTestUePhy", logLevel);
-  // LogComponentEnable ("LteDownlinkSinrTest", logLevel);
-
-  // NS_LOG_INFO ("Creating LteDownlinkSinrTestSuite");
-
   /**
    * Build Spectrum Model values for the TX signal
    */
@@ -124,34 +117,6 @@ LteDownlinkSinrTestCase::~LteDownlinkSinrTestCase ()
 void
 LteDownlinkSinrTestCase::DoRun (void)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-
-  LogComponentEnable ("LteEnbRrc", logLevel);
-  LogComponentEnable ("LteUeRrc", logLevel);
-  LogComponentEnable ("LteEnbMac", logLevel);
-  LogComponentEnable ("LteUeMac", logLevel);
-  LogComponentEnable ("LteRlc", logLevel);
-  LogComponentEnable ("RrPacketScheduler", logLevel);
-
-  LogComponentEnable ("LtePhy", logLevel);
-  LogComponentEnable ("LteEnbPhy", logLevel);
-  LogComponentEnable ("LteUePhy", logLevel);
-
-  LogComponentEnable ("LteSpectrumPhy", logLevel);
-  LogComponentEnable ("LteInterference", logLevel);
-  LogComponentEnable ("LteSinrChunkProcessor", logLevel);
-
-  LogComponentEnable ("LtePropagationLossModel", logLevel);
-  LogComponentEnable ("LossModel", logLevel);
-  LogComponentEnable ("ShadowingLossModel", logLevel);
-  LogComponentEnable ("PenetrationLossModel", logLevel);
-  LogComponentEnable ("MultipathLossModel", logLevel);
-  LogComponentEnable ("PathLossModel", logLevel);
-
-  LogComponentEnable ("LteNetDevice", logLevel);
-  LogComponentEnable ("LteUeNetDevice", logLevel);
-  LogComponentEnable ("LteEnbNetDevice", logLevel);
-
   /**
    * Instantiate a single receiving LteSpectrumPhy
    */

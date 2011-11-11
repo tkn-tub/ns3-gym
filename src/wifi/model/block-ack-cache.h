@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 MIRKO BANCHI
  *
@@ -52,6 +52,6 @@ private:
   uint16_t m_bitmap[4096];
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* BLOCK_ACK_CACHE_H */

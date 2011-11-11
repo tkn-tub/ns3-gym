@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 University of Washington
  *
@@ -57,4 +57,4 @@ OutputStreamWrapper::GetStream (void)
   return m_ostream;
 }
 
-} //namespace ns3
+} // namespace ns3

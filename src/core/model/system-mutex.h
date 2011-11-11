@@ -115,6 +115,6 @@ private:
   SystemMutex &m_mutex;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* SYSTEM_MUTEX_H */

@@ -17,6 +17,7 @@
  */
 
 #include <iomanip>
+#include <string>
 
 #include "ns3/log.h"
 #include "ns3/abort.h"
@@ -116,7 +117,7 @@ Ns3TcpStateTestCase::DoSetup (void)
   //
   std::ostringstream oss;
   oss << "/response-vectors/ns3tcp-state" << m_testCase << "-response-vectors.pcap";
-  m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
+  m_pcapFilename = static_cast<std::string> (NS_TEST_SOURCEDIR) + oss.str ();
 
   if (m_writeVectors)
     {
@@ -190,7 +191,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
       //
       // Avoid streams of errors -- only report the first.
       //
-      if (GetErrorStatus () == false)
+      if (IsStatusSuccess ())
         {
           NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
         }

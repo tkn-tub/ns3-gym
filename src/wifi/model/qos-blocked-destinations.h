@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005, 2009 INRIA
  * Copyright (c) 2009 MIRKO BANCHI
@@ -43,6 +43,6 @@ private:
   BlockedPackets m_blockedQosPackets;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* QOS_BLOCKED_DESTINATIONS_H */

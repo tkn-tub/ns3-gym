@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -111,5 +111,5 @@ private:
 bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
 std::ostream &operator << (std::ostream &os, const IeBeaconTiming &beaconTiming);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif

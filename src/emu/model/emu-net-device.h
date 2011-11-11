@@ -537,5 +537,4 @@ private:
 
 } // namespace ns3
 
-#endif // EMU_NET_DEVICE_H
-
+#endif /* EMU_NET_DEVICE_H */

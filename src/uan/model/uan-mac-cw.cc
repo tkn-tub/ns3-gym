@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -335,7 +335,7 @@ UanMacCw::PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode)
   UanHeaderCommon header;
   packet->RemoveHeader (header);
 
-  if (header.GetDest () == m_address)
+  if (header.GetDest () == m_address || header.GetDest () == UanAddress::GetBroadcast ())
     {
       m_forwardUpCb (packet, header.GetSrc ());
     }

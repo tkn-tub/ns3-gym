@@ -16,7 +16,7 @@ def build(bld):
         return
 
     ns3tcp = bld.create_ns3_module('ns3tcp', ['internet', 'point-to-point', 'csma', 'applications'])
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'ns3tcp'
     headers.source = [
         'ns3tcp.h',

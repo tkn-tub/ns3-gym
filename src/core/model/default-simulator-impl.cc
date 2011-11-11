@@ -23,10 +23,10 @@
 #include "scheduler.h"
 #include "event-impl.h"
 
-#include "ns3/ptr.h"
-#include "ns3/pointer.h"
-#include "ns3/assert.h"
-#include "ns3/log.h"
+#include "ptr.h"
+#include "pointer.h"
+#include "assert.h"
+#include "log.h"
 
 #include <math.h>
 

@@ -23,14 +23,14 @@
 #include "event-impl.h"
 #include "synchronizer.h"
 
-#include "ns3/ptr.h"
-#include "ns3/pointer.h"
-#include "ns3/assert.h"
-#include "ns3/fatal-error.h"
-#include "ns3/log.h"
-#include "ns3/system-mutex.h"
-#include "ns3/boolean.h"
-#include "ns3/enum.h"
+#include "ptr.h"
+#include "pointer.h"
+#include "assert.h"
+#include "fatal-error.h"
+#include "log.h"
+#include "system-mutex.h"
+#include "boolean.h"
+#include "enum.h"
 
 
 #include <math.h>
@@ -869,4 +869,4 @@ RealtimeSimulatorImpl::GetHardLimit (void) const
   return m_hardLimit;
 }
 
-}; // namespace ns3
+} // namespace ns3

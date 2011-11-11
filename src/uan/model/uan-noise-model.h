@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANNOISEMODEL_H
-#define UANNOISEMODEL_H
+#ifndef UAN_NOISE_MODEL_H
+#define UAN_NOISE_MODEL_H
 
 #include "ns3/object.h"
 
@@ -28,6 +28,8 @@ namespace ns3 {
 class UanNoiseModel : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \param fKhz Frequency in kHz
    * \returns Noise power in dB re 1uPa/Hz
@@ -44,4 +46,4 @@ public:
 
 } // namespace ns3
 
-#endif // UANNOISEMODEL_H
+#endif /* UAN_NOISE_MODEL_H */

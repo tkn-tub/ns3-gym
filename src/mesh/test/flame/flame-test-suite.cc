@@ -87,7 +87,7 @@ private:
 static FlameRtableTest g_FlameRtableTest;
 
 FlameRtableTest::FlameRtableTest () :
-  TestCase ("Mesh/Flame/FlameRtable"), 
+  TestCase ("FlameRtable"), 
   error (false), 
   dst ("01:00:00:01:00:01"), 
   hop ("01:00:00:01:00:03"),

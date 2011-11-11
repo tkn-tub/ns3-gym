@@ -98,20 +98,42 @@ To configure behavior of TCP, a number of parameters are exported through the
 :cpp:class:`TcpSocket`.  For example, the maximum segment size is a
 settable attribute.
 
+To set the default socket type before any internet stack-related objects are
+created, one may put the following statement at the top of the simulation
+program::: 
+
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpTahoe")); 
+
 For users who wish to have a pointer to the actual socket (so that
 socket operations like Bind(), setting socket options, etc. can be
 done on a per-socket basis), Tcp sockets can be created by using the 
-``Socket::CreateSocket()`` method and passing in the TypeId 
-corresponding to the type of socket desired; e.g.::: 
+``Socket::CreateSocket()`` method.  The TypeId passed to CreateSocket()
+must be of type :cpp:class:`ns3::SocketFactory`, so configuring the underlying 
+socket type must be done by twiddling the attribute associated with the
+underlying TcpL4Protocol object.  The easiest way to get at this would be 
+through the attribute configuration system.  In the below example,
+the Node container "n0n1" is accessed
+to get the zeroth element, and a socket is created on this node:::
 
-      // Create the socket if not already created
-      TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
-      Ptr<Socket> localSocket = Socket::CreateSocket (node, tid);
+  // Create and bind the socket...
+  TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
+  Config::Set ("/NodeList/*/$ns3::TcpL4Protocol/SocketType", TypeIdValue (tid));
+  Ptr<Socket> localSocket =
+    Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
 
-The parameter ``tid`` controls the TypeId of the actual TCP Socket
-implementation that is instantiated. This way, the application can be written
-generically and different socket implementations can be swapped out by
-specifying the TypeId.
+Above, the "*" wild card for node number is passed to the attribute
+configuration system, so that all future sockets on all nodes are set to 
+Tahoe, not just on node 'n0n1.Get (0)'.  If one wants to limit it to just 
+the specified node, one would have to do something like:::
+
+  // Create and bind the socket...
+  TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
+  std::stringstream nodeId;
+  nodeId << n0n1.Get (0)->GetId ();
+  std::string specificNode = "/NodeList/" + nodeId.str () + "/$ns3::TcpL4Protocol/SocketType";
+  Config::Set (specificNode, TypeIdValue (tid));
+  Ptr<Socket> localSocket =
+    Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ()); 
 
 Once a TCP socket is created, one will want to follow conventional socket logic
 and either connect() and send() (for a TCP client) or bind(), listen(), and

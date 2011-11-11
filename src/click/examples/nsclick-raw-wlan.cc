@@ -45,7 +45,6 @@ int main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
   double rss = -80;
-  Time interPacketInterval = Seconds (1.0);
 
   // Setup nodes
   NodeContainer wifiNodes;

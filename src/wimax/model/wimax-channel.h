@@ -39,6 +39,7 @@ class PacketBurst;
 class WimaxChannel : public Channel
 {
 public:
+  static TypeId GetTypeId (void);
   WimaxChannel (void);
   virtual ~WimaxChannel (void);
   /**

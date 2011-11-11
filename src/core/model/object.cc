@@ -125,7 +125,7 @@ Object::Object (const Object &o)
   m_aggregates->buffer[0] = this;
 }
 void
-Object::Construct (const AttributeList &attributes)
+Object::Construct (const AttributeConstructionList &attributes)
 {
   ConstructSelf (attributes);
 }

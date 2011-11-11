@@ -262,9 +262,9 @@ private:
 
   std::vector<bool> m_promiscDeviceList;
 
-#endif // NS3_CLICK
+#endif /* NS3_CLICK */
 };
 
 } // namespace ns3
 
-#endif // IPV4_L3_CLICK_ROUTING_H
+#endif /* IPV4_L3_CLICK_ROUTING_H */

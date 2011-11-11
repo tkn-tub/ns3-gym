@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Lalith Suresh
  *
@@ -97,6 +97,9 @@ ClickIfidFromNameTest::DoRun ()
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_IFID_FROM_NAME, "eth1");
   NS_TEST_EXPECT_MSG_EQ (ret, -1, "No eth1 on node");
+
+  // Cast ret to void to work around set-but-unused warnings from compilers
+  (void) ret;
 }
 
 class ClickIpMacAddressFromNameTest : public TestCase
@@ -149,6 +152,9 @@ ClickIpMacAddressFromNameTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:00"), 0, "tun0 has IP 127.0.0.1");
 
   delete [] buf;
+
+  // Cast ret to void to work around set-but-unused warnings from compilers
+  (void) ret;
 }
 
 class ClickTrivialTest : public TestCase
@@ -191,6 +197,9 @@ ClickTrivialTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (ret, 0, "eth1 does not exist, so return 0");
 
   delete [] buf;
+
+  // Cast ret to void to work around set-but-unused warnings from compilers
+  (void) ret;
 }
 
 class ClickIfidFromNameTestSuite : public TestSuite

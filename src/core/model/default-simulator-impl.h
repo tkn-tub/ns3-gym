@@ -25,7 +25,7 @@
 #include "scheduler.h"
 #include "event-impl.h"
 
-#include "ns3/ptr.h"
+#include "ptr.h"
 
 #include <list>
 

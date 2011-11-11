@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006,2007 INRIA
  *
@@ -47,6 +47,6 @@ private:
   Vector m_position;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CONSTANT_POSITION_MOBILITY_MODEL_H */

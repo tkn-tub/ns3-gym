@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -34,6 +34,7 @@
 #include "ns3/ipv4-header.h"
 #include <ns3/lte-mac-tag.h>
 #include <ns3/ipv4-l3-protocol.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
 

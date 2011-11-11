@@ -63,6 +63,64 @@ void Progress ()
   Simulator::Schedule (Seconds (0.1), Progress);
 }
 
+template <typename T>
+class Array2D
+{
+  public:
+    Array2D (const size_t x, const size_t y) : p (new T*[x]), m_xMax (x) 
+      {
+        for (size_t i = 0; i < m_xMax; i++)
+          p[i] = new T[y];
+      }
+
+    ~Array2D (void)
+      {
+        for (size_t i = 0; i < m_xMax; i++)
+          delete[] p[i];
+        delete p;
+        p = 0;
+      }
+
+    T* operator[] (const size_t i)
+      {
+         return p[i];
+      }
+  private:
+    T** p;
+    const size_t m_xMax;
+};
+
+template <typename T>
+class Array3D
+{
+  public:
+    Array3D (const size_t x, const size_t y, const size_t z)
+      : p (new Array2D<T>*[x]), m_xMax (x)
+      {
+        for (size_t i = 0; i < m_xMax; i++)
+          p[i] = new Array2D<T> (y, z);
+      }
+
+    ~Array3D (void)
+      {
+        for (size_t i = 0; i < m_xMax; i++)
+          {
+            delete p[i];
+            p[i] = 0;
+          }
+        delete[] p;
+        p = 0;
+      }
+
+    Array2D<T>& operator[] (const size_t i)
+      {
+        return *(p[i]);
+      }
+  private:
+    Array2D<T>** p;
+    const size_t m_xMax;
+};
+
 int
 main (int argc, char *argv[])
 {
@@ -89,14 +147,24 @@ main (int argc, char *argv[])
 
   cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << endl;
 
-  NodeContainer nodes_net0[nCN][3], nodes_net1[nCN][6], nodes_netLR[nCN],
-                nodes_net2[nCN][14], nodes_net2LAN[nCN][7][nLANClients],
-                nodes_net3[nCN][9], nodes_net3LAN[nCN][5][nLANClients];
+  Array2D<NodeContainer> nodes_net0(nCN, 3);
+  Array2D<NodeContainer> nodes_net1(nCN, 6);
+  NodeContainer* nodes_netLR = new NodeContainer[nCN];
+  Array2D<NodeContainer> nodes_net2(nCN, 14);
+  Array3D<NodeContainer> nodes_net2LAN(nCN, 7, nLANClients);
+  Array2D<NodeContainer> nodes_net3(nCN, 9);
+  Array3D<NodeContainer> nodes_net3LAN(nCN, 5, nLANClients);
+
   PointToPointHelper p2p_2gb200ms, p2p_1gb5ms, p2p_100mb1ms;
   InternetStackHelper stack;
-  Ipv4InterfaceContainer ifs, ifs0[nCN][3], ifs1[nCN][6], ifs2[nCN][14],
-                         ifs3[nCN][9], ifs2LAN[nCN][7][nLANClients],
-                         ifs3LAN[nCN][5][nLANClients];
+  Ipv4InterfaceContainer ifs;
+  Array2D<Ipv4InterfaceContainer> ifs0(nCN, 3);
+  Array2D<Ipv4InterfaceContainer> ifs1(nCN, 6);
+  Array2D<Ipv4InterfaceContainer> ifs2(nCN, 14);
+  Array2D<Ipv4InterfaceContainer> ifs3(nCN, 9);
+  Array3D<Ipv4InterfaceContainer> ifs2LAN(nCN, 7, nLANClients);
+  Array3D<Ipv4InterfaceContainer> ifs3LAN(nCN, 5, nLANClients);
+
   Ipv4AddressHelper address;
   std::ostringstream oss;
   p2p_1gb5ms.SetDeviceAttribute ("DataRate", StringValue ("1Gbps"));
@@ -195,7 +263,8 @@ main (int argc, char *argv[])
         {
           ndc2[i] = p2p_1gb5ms.Install (nodes_net2[z][i]);
         }
-      NetDeviceContainer ndc2LAN[7][nLANClients];
+///      NetDeviceContainer ndc2LAN[7][nLANClients];
+      Array2D<NetDeviceContainer> ndc2LAN(7, nLANClients);
       for (int i = 0; i < 7; ++i) 
         {
           oss.str ("");
@@ -231,7 +300,8 @@ main (int argc, char *argv[])
         {
           ndc3[i] = p2p_1gb5ms.Install (nodes_net3[z][i]);
         }
-      NetDeviceContainer ndc3LAN[5][nLANClients];
+///      NetDeviceContainer ndc3LAN[5][nLANClients];
+      Array2D<NetDeviceContainer> ndc3LAN(5, nLANClients);
       for (int i = 0; i < 5; ++i) 
         {
           oss.str ("");
@@ -340,7 +410,7 @@ main (int argc, char *argv[])
   if (nCN > 1) 
     {
       cout << "Forming Ring Topology..." << endl;
-      NodeContainer nodes_ring[nCN];
+      NodeContainer* nodes_ring = new NodeContainer[nCN];
       for (int z = 0; z < nCN-1; ++z) 
         {
           nodes_ring[z].Add (nodes_net0[z][0].Get (0));
@@ -348,7 +418,7 @@ main (int argc, char *argv[])
         }
       nodes_ring[nCN-1].Add (nodes_net0[nCN-1][0].Get (0));
       nodes_ring[nCN-1].Add (nodes_net0[0][0].Get (0));
-      NetDeviceContainer ndc_ring[nCN];
+      NetDeviceContainer* ndc_ring = new NetDeviceContainer[nCN];
       for (int z = 0; z < nCN; ++z) 
         {
           ndc_ring[z] = p2p_2gb200ms.Install (nodes_ring[z]);
@@ -357,6 +427,8 @@ main (int argc, char *argv[])
           address.SetBase (oss.str ().c_str (), "255.255.255.0");
           ifs = address.Assign (ndc_ring[z]);
         }
+      delete[] ndc_ring;
+      delete[] nodes_ring;
     }
 
   // Create Traffic Flows
@@ -463,5 +535,7 @@ main (int argc, char *argv[])
   cout << "Simulator init time: " << d1 << endl;
   cout << "Simulator run time: " << d2 << endl;
   cout << "Total elapsed time: " << d1+d2 << endl;
+
+  delete[] nodes_netLR;
   return 0;
 }

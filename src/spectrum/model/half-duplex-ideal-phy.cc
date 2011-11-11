@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -126,7 +126,7 @@ HalfDuplexIdealPhy::GetTypeId (void)
 
 
 
-Ptr<Object>
+Ptr<NetDevice>
 HalfDuplexIdealPhy::GetDevice ()
 {
   NS_LOG_FUNCTION (this);
@@ -134,7 +134,7 @@ HalfDuplexIdealPhy::GetDevice ()
 }
 
 
-Ptr<Object>
+Ptr<MobilityModel>
 HalfDuplexIdealPhy::GetMobility ()
 {
   NS_LOG_FUNCTION (this);
@@ -143,7 +143,7 @@ HalfDuplexIdealPhy::GetMobility ()
 
 
 void
-HalfDuplexIdealPhy::SetDevice (Ptr<Object> d)
+HalfDuplexIdealPhy::SetDevice (Ptr<NetDevice> d)
 {
   NS_LOG_FUNCTION (this << d);
   m_netDevice = d;
@@ -151,7 +151,7 @@ HalfDuplexIdealPhy::SetDevice (Ptr<Object> d)
 
 
 void
-HalfDuplexIdealPhy::SetMobility (Ptr<Object> m)
+HalfDuplexIdealPhy::SetMobility (Ptr<MobilityModel> m)
 {
   NS_LOG_FUNCTION (this << m);
   m_mobility = m;

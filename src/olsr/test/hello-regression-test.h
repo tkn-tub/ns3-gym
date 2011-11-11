@@ -18,8 +18,9 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef HELLOREGRESSIONTEST_H_
-#define HELLOREGRESSIONTEST_H_
+#ifndef HELLO_REGRESSION_TEST_H
+#define HELLO_REGRESSION_TEST_H
+
 #include "ns3/test.h"
 #include "ns3/nstime.h"
 #include "ns3/node-container.h"
@@ -66,4 +67,5 @@ private:
 
 }
 }
-#endif /* HELLOREGRESSIONTEST_H_ */
+
+#endif /* HELLO_REGRESSION_TEST_H */

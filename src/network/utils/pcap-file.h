@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -292,6 +292,6 @@ private:
   bool m_swapMode;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* PCAP_FILE_H */

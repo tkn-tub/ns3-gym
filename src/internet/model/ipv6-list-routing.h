@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -133,7 +133,7 @@ private:
   Ptr<Ipv6> m_ipv6;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV6_LIST_ROUTING_H */
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
  *
@@ -71,7 +71,7 @@ public:
   static uint32_t GetNNodes (void);
 };
 
-} //namespace ns3
+} // namespace ns3
 
 
 #endif /* NODE_LIST_H */

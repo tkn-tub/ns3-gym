@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -106,6 +106,6 @@ private:
   uint8_t m_tid;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* QOS_TAG_H */

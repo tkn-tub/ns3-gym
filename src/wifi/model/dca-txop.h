@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -170,7 +170,7 @@ private:
   uint8_t m_fragmentNumber;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 
 

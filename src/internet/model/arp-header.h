@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -67,6 +67,6 @@ public:
   Ipv4Address m_ipv4Dest;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* ARP_HEADER_H */

@@ -125,16 +125,16 @@ sending of more data until a function registered at the
 :cpp:func:`ns3::Socket::SetSendCallback` callback is invoked.  
 An application can also ask the socket how much space is available 
 by calling :cpp:func:`ns3::Socket::GetTxAvailable`.  A typical sequence 
-of events for sending data (ignoring connection setup) might be:
+of events for sending data (ignoring connection setup) might be:::
 
-* ``SetSendCallback (MakeCallback(&HandleSendCallback));``
-* ``Send ();``
-* ``Send ();``
-* ...
-* Send fails because buffer is full
-* wait until :cpp:func:`HandleSendCallback` is called
-* :cpp:func:`HandleSendCallback` is called by socket, since space now available
-* ``Send (); // Start sending again``
+    * ``SetSendCallback (MakeCallback(&HandleSendCallback));``
+    * ``Send ();``
+    * ``Send ();``
+    * ...
+    * Send fails because buffer is full
+    * wait until :cpp:func:`HandleSendCallback` is called
+    * :cpp:func:`HandleSendCallback` is called by socket, since space now available
+    * ``Send (); // Start sending again``
 
 Similarly, on the receive side, the socket user does not block on
 a call to ``recv()``.  Instead, the application sets a callback

@@ -21,7 +21,6 @@
 #ifndef LENA_HELPER_H
 #define LENA_HELPER_H
 
-#include <ns3/log.h>
 #include <ns3/config.h>
 #include <ns3/simulator.h>
 #include <ns3/names.h>
@@ -41,6 +40,7 @@ class LteUePhy;
 class LteEnbPhy;
 class SpectrumChannel;
 class EpcHelper;
+class PropagationLossModel;
 
 
 /**
@@ -144,7 +144,7 @@ public:
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
   /**
-   * Activate a dedicated EPS bearer on a given set of UE devices
+   * Activate an EPS bearer on a given set of UE devices
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
@@ -153,7 +153,7 @@ public:
   void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft);
 
   /**
-   * Activate a dedicated EPS bearer on a given UE device
+   * Activate an EPS bearer on a given UE device
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
@@ -205,6 +205,11 @@ public:
    */
   void EnableUlRlcTraces (void);
 
+  /**
+   * Set the output directory for the MAC/RLC trace
+   */
+  void SetTraceDirectory (std::string path);
+
   Ptr<RlcStatsCalculator> GetRlcStats (void);
 
 protected:
@@ -219,11 +224,16 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
+  
+  Ptr<Object> m_downlinkPropagationModel;
+  Ptr<Object> m_uplinkPropagationModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
 
+  ObjectFactory m_dlPropagationModelFactory;
+  ObjectFactory m_ulPropagationModelFactory;
 
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;

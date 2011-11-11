@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -83,6 +83,11 @@ LtePropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> 
 
   Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
   Values::iterator vit = rxPsd->ValuesBegin ();
+  
+  Vector aSpeedVector = a->GetVelocity ();
+  Vector bSpeedVector = b->GetVelocity ();
+  
+  double speed = sqrt (pow (aSpeedVector.x-bSpeedVector.x,2) +  pow (aSpeedVector.y-bSpeedVector.y,2));
 
   NS_LOG_FUNCTION (this << *rxPsd);
 
@@ -92,7 +97,7 @@ LtePropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> 
       NS_ASSERT (subChannel < 100);
       if (*vit != 0.)
         {
-          multipath = c->GetJakesFadingLossModel ()->GetValue (subChannel);
+          multipath = c->GetJakesFadingLossModel ()->GetValue (subChannel, speed);
 
           // computei PROPRAGATION LOSS:
           double loss = multipath - pathLoss - shadowind - penetration; // in dB

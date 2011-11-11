@@ -59,6 +59,14 @@ private:
   UdpHeader m_udpHeader;
   TcpHeader m_tcpHeader;
 
+  static std::string BuildNameString (Ptr<EpsTftClassifier> c,
+                                      LteTft::Direction d,
+                                      Ipv4Address sa, 
+                                      Ipv4Address da, 
+                                      uint16_t sp,
+                                      uint16_t dp,
+                                      uint8_t tos,
+                                      uint32_t tftId);
   virtual void DoRun (void);
 };
 
@@ -70,10 +78,34 @@ EpsTftClassifierTestCase::EpsTftClassifierTestCase (Ptr<EpsTftClassifier> c,
                                                     uint16_t dp,
                                                     uint8_t tos,
                                                     uint32_t tftId)
-  : TestCase (""),
+  : TestCase (BuildNameString (c, d, sa, da, sp, dp, tos, tftId)),
     m_c (c),
     m_d (d),    
     m_tftId (tftId)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_ipHeader.SetSource (sa);
+  m_ipHeader.SetDestination (da);
+  m_ipHeader.SetTos (tos);  
+
+  m_udpHeader.SetSourcePort (sp);
+  m_udpHeader.SetDestinationPort (dp);  
+}
+
+EpsTftClassifierTestCase::~EpsTftClassifierTestCase ()
+{
+}
+
+std::string
+EpsTftClassifierTestCase::BuildNameString (Ptr<EpsTftClassifier> c,
+                                           LteTft::Direction d,
+                                           Ipv4Address sa, 
+                                           Ipv4Address da, 
+                                           uint16_t sp,
+                                           uint16_t dp,
+                                           uint8_t tos,
+                                           uint32_t tftId)
 {
   std::ostringstream oss;
   oss << c
@@ -84,24 +116,7 @@ EpsTftClassifierTestCase::EpsTftClassifierTestCase (Ptr<EpsTftClassifier> c,
       << ", dp = " << dp
       << ", tos = 0x" << std::hex << tos
       << " --> tftId = " << tftId;  
-  SetName (oss.str ());
-
-  NS_LOG_FUNCTION (this << oss.str ());
-
-  
-  m_ipHeader.SetSource (sa);
-  m_ipHeader.SetDestination (da);
-  m_ipHeader.SetTos (tos);  
-
-
-  m_udpHeader.SetSourcePort (sp);
-  m_udpHeader.SetDestinationPort (dp);
-
-  
-}
-
-EpsTftClassifierTestCase::~EpsTftClassifierTestCase ()
-{
+  return oss.str ();
 }
 
 void 

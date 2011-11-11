@@ -43,6 +43,15 @@ NS_LOG_COMPONENT_DEFINE ("ServiceFlowManager");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (ServiceFlowManager);
+
+TypeId ServiceFlowManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ServiceFlowManager")
+    .SetParent<Object> ();
+  return tid;
+}
+
 ServiceFlowManager::ServiceFlowManager ()
 {
   m_serviceFlows = new std::vector<ServiceFlow*>;

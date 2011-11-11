@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Lalith Suresh
  *
@@ -18,8 +18,8 @@
  * Authors: Lalith Suresh <suresh.lalith@gmail.com>
  */
 
-#ifndef __IPV4_CLICK_ROUTING_H__
-#define __IPV4_CLICK_ROUTING_H__
+#ifndef IPV4_CLICK_ROUTING_H
+#define IPV4_CLICK_ROUTING_H
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
@@ -143,6 +143,13 @@ public:
   std::string GetIpAddressFromInterfaceId (int ifid);
 
   /**
+   * \brief Provides for SIMCLICK_IPPREFIX_FROM_NAME
+   * \param ifid The interface ID for which the IP Prefix is required
+   * \return The IP Prefix of the interface in string format
+   */
+  std::string GetIpPrefixFromInterfaceId (int ifid);
+
+  /**
    * \brief Provides for SIMCLICK_MACADDR_FROM_NAME
    * \param ifid The interface ID for which the MAC Address is required
    * \return The MAC Address of the interface in string format
@@ -243,9 +250,9 @@ private:
   bool m_nonDefaultName;
 
   Ptr<Ipv4> m_ipv4;
-#endif // NS3_CLICK
+#endif /* NS3_CLICK */
 };
 
 } // namespace ns3
 
-#endif // __IPV4_CLICK_ROUTING_H__
+#endif /* IPV4_CLICK_ROUTING_H */

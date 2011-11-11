@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -337,4 +337,4 @@ operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route)
   return os;
 }
 
-} //namespace ns3
+} // namespace ns3

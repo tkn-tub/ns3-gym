@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -682,4 +682,4 @@ Names::FindInternal (Ptr<Object> context, std::string name)
   return NamesPriv::Get ()->Find (context, name);
 }
 
-} //namespace ns3
+} // namespace ns3

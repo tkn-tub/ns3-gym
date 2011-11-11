@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -138,5 +138,5 @@ bool operator== (const IeConfiguration & a, const IeConfiguration & b);
 bool operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b);
 std::ostream &operator << (std::ostream &os, const IeConfiguration &config);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif

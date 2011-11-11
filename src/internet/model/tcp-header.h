@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
  *
@@ -169,6 +169,6 @@ private:
   bool m_goodChecksum;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* TCP_HEADER */

@@ -3,7 +3,7 @@ import sys
 
 import Options
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--int64x64-as-double',
                    help=('Whether to use a double floating point'
                          ' type for int64x64 values'
@@ -15,9 +15,8 @@ def set_options(opt):
 
 
 def configure(conf):
-    a = conf.check(type_name='uint128_t', define_name='HAVE_UINT128_T')
-    b = conf.check(type_name='__uint128_t', define_name='HAVE___UINT128_T')
-
+    a = conf.check_nonfatal(type_name='uint128_t', define_name='HAVE_UINT128_T')
+    b = conf.check_nonfatal(type_name='__uint128_t', define_name='HAVE___UINT128_T')
 
     if Options.options.int64x64_as_double:
         conf.define('INT64X64_USE_DOUBLE', 1)
@@ -32,18 +31,20 @@ def configure(conf):
         conf.env['INT64X64_USE_CAIRO'] = 1
         highprec = 'cairo 128-bit integer'
 
-    conf.check_message_custom('high precision time', 'implementation', highprec)
+    conf.msg('Checking high precision time implementation', highprec)
 
-    conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H')
-    conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
+    conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+    conf.check_nonfatal(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
+    conf.check_nonfatal(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
+    conf.check_nonfatal(header_name='sys/types.h', define_name='HAVE_SYS_TYPES_H')
+    conf.check_nonfatal(header_name='sys/stat.h', define_name='HAVE_SYS_STAT_H')
+    conf.check_nonfatal(header_name='dirent.h', define_name='HAVE_DIRENT_H')
 
-    conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
-
-    if conf.check(header_name='stdlib.h'):
+    if conf.check_nonfatal(header_name='stdlib.h'):
         conf.define('HAVE_STDLIB_H', 1)
         conf.define('HAVE_GETENV', 1)
 
-    conf.check(header_name='signal.h', define_name='HAVE_SIGNAL_H')
+    conf.check_nonfatal(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
     # Check for POSIX threads
     test_env = conf.env.copy()
@@ -60,10 +61,9 @@ int main ()
    return 0;
 }
 """
-    have_pthread = conf.check(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
-                              env=test_env, fragment=fragment,
-                              errmsg='Could not find pthread support (build/config.log for details)',
-                              mandatory=False)
+    have_pthread = conf.check_nonfatal(header_name='pthread.h', define_name='HAVE_PTHREAD_H',
+                                       env=test_env, fragment=fragment,
+                                       errmsg='Could not find pthread support (build/config.log for details)')
     if have_pthread:
         # darwin accepts -pthread but prints a warning saying it is ignored
         if Options.platform != 'darwin' and Options.platform != 'cygwin':
@@ -77,12 +77,12 @@ int main ()
                                  conf.env['ENABLE_THREADING'],
                                  "<pthread.h> include not detected")
 
-    conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H')
-    conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
+    conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+    conf.check_nonfatal(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
 
-    conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
+    conf.check_nonfatal(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
 
-    if not conf.check(lib='rt', uselib='RT', define_name='HAVE_RT'):
+    if not conf.check_nonfatal(lib='rt', uselib_store='RT', define_name='HAVE_RT'):
         conf.report_optional_feature("RealTime", "Real Time Simulator",
                                      False, "librt is not available")
     else:
@@ -117,7 +117,7 @@ def build(bld):
         'model/log.cc',
         'model/breakpoint.cc',
         'model/type-id.cc',
-        'model/attribute-list.cc',
+        'model/attribute-construction-list.cc',
         'model/object-base.cc',
         'model/ref-count-base.cc',
         'model/object.cc',
@@ -135,8 +135,8 @@ def build(bld):
         'model/int64x64.cc',
         'model/string.cc',
         'model/pointer.cc',
-        'model/object-vector.cc',
-        'model/object-map.cc',
+        'model/object-ptr-vector.cc',
+        'model/object-ptr-map.cc',
         'model/object-factory.cc',
         'model/global-value.cc',
         'model/trace-source-accessor.cc',
@@ -145,6 +145,7 @@ def build(bld):
         'model/names.cc',
         'model/vector.cc',
         'model/fatal-impl.cc',
+        'model/system-path.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -168,7 +169,7 @@ def build(bld):
         'test/watchdog-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'core'
     headers.source = [
         'model/nstime.h',
@@ -197,7 +198,7 @@ def build(bld):
         'model/ref-count-base.h',
         'model/simple-ref-count.h',
         'model/type-id.h',
-        'model/attribute-list.h',
+        'model/attribute-construction-list.h',
         'model/ptr.h',
         'model/object.h',
         'model/log.h',
@@ -229,6 +230,8 @@ def build(bld):
         'model/traced-value.h',
         'model/trace-source-accessor.h',
         'model/config.h',
+        'model/object-ptr-vector.h',
+        'model/object-ptr-map.h',
         'model/object-vector.h',
         'model/object-map.h',
         'model/deprecated.h',
@@ -237,6 +240,7 @@ def build(bld):
         'model/vector.h',
         'model/default-deleter.h',
         'model/fatal-impl.h',
+        'model/system-path.h'
         ]
 
     if sys.platform == 'win32':
@@ -249,7 +253,7 @@ def build(bld):
             ])
 
 
-    env = bld.env_of_name('default')
+    env = bld.env
     if env['INT64X64_USE_DOUBLE']:
         headers.source.extend(['model/int64x64-double.h'])
     elif env['INT64X64_USE_128']:
@@ -273,11 +277,8 @@ def build(bld):
                 'model/realtime-simulator-impl.cc',
                 'model/wall-clock-synchronizer.cc',
                 ])
-        core.uselib      = 'RT'
-        core_test.uselib = 'RT'
-    else:
-        core.uselib      = ''
-        core_test.uselib = ''
+        core.use.append('RT')
+        core_test.use.append('RT')
 
     if env['ENABLE_THREADING']:
         core.source.extend([
@@ -286,8 +287,8 @@ def build(bld):
             'model/unix-system-mutex.cc',
             'model/unix-system-condition.cc',
             ])
-        core.uselib      = core.uselib      + ' PTHREAD'
-        core_test.uselib = core_test.uselib + ' PTHREAD'
+        core.use.append('PTHREAD')
+        core_test.use.append('PTHREAD')
         headers.source.extend([
                 'model/unix-fd-reader.h',
                 'model/system-mutex.h',
@@ -296,8 +297,8 @@ def build(bld):
                 ])
 
     if env['ENABLE_GSL']:
-        core.uselib      = core.uselib      + ' GSL GSLCBLAS M'
-        core_test.uselib = core_test.uselib + ' GSL GSLCBLAS M'
+        core.use.extend(['GSL', 'GSLCBLAS', 'M'])
+        core_test.use.extend(['GSL', 'GSLCBLAS', 'M'])
         core_test.source.extend(['test/rng-test-suite.cc'])
 
     if (bld.env['ENABLE_EXAMPLES']):

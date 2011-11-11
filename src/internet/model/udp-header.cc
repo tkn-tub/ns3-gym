@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -177,4 +177,4 @@ UdpHeader::Deserialize (Buffer::Iterator start)
 }
 
 
-}; // namespace ns3
+} // namespace ns3

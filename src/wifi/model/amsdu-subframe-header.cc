@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 MIRKO BANCHI
  *
@@ -115,4 +115,4 @@ AmsduSubframeHeader::GetLength (void) const
   return m_length;
 }
 
-} //namespace ns3
+} // namespace ns3

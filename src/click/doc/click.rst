@@ -119,7 +119,7 @@ From any point within a Click graph, you may use the Print (http://read.cs.ucla.
    -> ToDump(out_arpquery,PER_NODE 1)
    -> ethout;
 
-...will print the contents of packets that flow out of the ArpQuerier, then generate a pcap trace file which will have a suffix 'out_arpquery', for each node using the Click file, before pushing packets onto 'ethout'.
+and ...will print the contents of packets that flow out of the ArpQuerier, then generate a pcap trace file which will have a suffix 'out_arpquery', for each node using the Click file, before pushing packets onto 'ethout'.
 
 Helper
 ======

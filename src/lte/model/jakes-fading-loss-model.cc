@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ *        remove dependencies from Phy and Mobility models
  */
 
 #include <cmath>
@@ -57,8 +59,9 @@ NS_OBJECT_ENSURE_REGISTERED (JakesFadingLossModel);
 
 JakesFadingLossModel::JakesFadingLossModel ()
   : m_nbOfPaths (1, 4),
-    m_startJakes (1, 2000),
-    m_phy (0)
+    m_startJakes (1, 2500),
+    m_phy (0),
+    m_subChannelsNum (100)
 {
   NS_LOG_FUNCTION (this);
   SetSamplingPeriod (0.5); // default value
@@ -88,7 +91,7 @@ JakesFadingLossModel::SetPhy (Ptr<LtePhy> phy)
   NS_LOG_FUNCTION (this);
   m_phy = phy;
 
-  SetValue ();
+  //SetValue ();
 }
 
 
@@ -101,23 +104,13 @@ JakesFadingLossModel::GetPhy (void)
 
 
 void
-JakesFadingLossModel::SetValue (void)
+JakesFadingLossModel::SetValue (double speed)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << speed);
 
   m_multipath.clear ();
 
-  int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
-
-  Ptr<MobilityModel> mobility = 0;
-  // this needs to be fixed, we cannot allow a propagation model to need pointers to all PHYs
-  // mobility = GetPhy ()->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-  Vector speedVector = mobility->GetVelocity ();
-
-  double speed = sqrt (pow (speedVector.x,2) +  pow (speedVector.y,2));
-
-  NS_LOG_FUNCTION (this << mobility << speedVector << speed);
-
+//   int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
 
   /*
    * Several 3GPP standards propose a simulation scenario to use duirng the
@@ -142,8 +135,6 @@ JakesFadingLossModel::SetValue (void)
       speed = 120;
     }
 
-  NS_LOG_FUNCTION (this << mobility << speedVector << speed);
-
 
   /*
    * Jackes Model.
@@ -157,7 +148,7 @@ JakesFadingLossModel::SetValue (void)
   // x = 1 -> M=6, x = 2 -> M=8, x = 3 -> M=10, x = 4 -> M=12
   int x = static_cast<int> (m_nbOfPaths.GetValue ());
 
-  for (int i = 0; i < downlinkSubChannels; i++)
+  for (int i = 0; i < m_subChannelsNum; i++)
     {
       // StartJakes allow us to select a window of 0.5ms into the Jakes realization lasting 3s.
       int startJakes = static_cast<int> (m_startJakes.GetValue ());
@@ -171,127 +162,128 @@ JakesFadingLossModel::SetValue (void)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_0 [j + startJakes]);
+//                   multipathForTimeDomain.push_back (multipath_M6_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M6_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M6_v_120 [j + startJakes]);
                 }
             }
         }
 
       else if (x == 2)
         {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
+          // SELECTED 8 MULTIPLE PATH FOR JAKES MODEL
           if (speed == 0)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M8_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M8_v_120 [j + startJakes]);
                 }
             }
         }
 
       else if (x == 3)
         {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
+          // SELECTED 10 MULTIPLE PATH FOR JAKES MODEL
           if (speed == 0)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M10_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M10_v_120 [j + startJakes]);
                 }
             }
         }
 
       else if (x == 4)
         {
-          // SELECTED 6 MULTIPLE PATH FOR JAKES MODEL
+          // SELECTED 12 MULTIPLE PATH FOR JAKES MODEL
           if (speed == 0)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_0 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_0 [j + startJakes]);
                 }
             }
           if (speed == 3)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_3 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_3 [j + startJakes]);
                 }
             }
           if (speed == 30)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_30 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_30 [j + startJakes]);
                 }
             }
           if (speed == 120)
             {
               for (int j = 0; j < 500; j++)
                 {
-                  multipathForTimeDomain.push_back (multipath_M12_v_120 [j + startJakes]);
+                  multipathForTimeDomain.push_back (&multipath_M12_v_120 [j + startJakes]);
                 }
             }
         }
@@ -308,12 +300,14 @@ JakesFadingLossModel::SetValue (void)
 }
 
 double
-JakesFadingLossModel::GetValue (int subChannel)
+JakesFadingLossModel::GetValue (int subChannel, double speed)
 {
-  NS_LOG_FUNCTION (this);
-  if (NeedForUpdate ())
+  NS_LOG_FUNCTION (this << subChannel);
+  NS_LOG_INFO (this << Simulator::Now ().GetSeconds () << " " << GetLastUpdate ().GetSeconds () << " " << GetSamplingPeriod ());
+  if ((NeedForUpdate ())||(m_multipath.empty ()))
     {
-      SetValue ();
+      NS_LOG_INFO ("Shadowing updated");
+      SetValue (speed);
       SetLastUpdate ();
     }
 
@@ -324,7 +318,7 @@ JakesFadingLossModel::GetValue (int subChannel)
   NS_LOG_FUNCTION (this << subChannel << now_ms
                         << lastUpdate_ms << index << m_multipath.at (subChannel).at (index));
 
-  return m_multipath.at (subChannel).at (index);
+  return (*m_multipath.at (subChannel).at (index));
 }
 
 

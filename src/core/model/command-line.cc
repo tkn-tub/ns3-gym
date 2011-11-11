@@ -157,10 +157,9 @@ CommandLine::PrintAttributes (std::string type) const
   for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
     {
       std::cout << "    --"<<tid.GetAttributeFullName (i)<<"=[";
-      Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
-      Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
-      std::cout << initial->SerializeToString (checker) << "]:  "
-                << tid.GetAttributeHelp (i) << std::endl;
+      struct TypeId::AttributeInformation info = tid.GetAttribute (i);
+      std::cout << info.initialValue->SerializeToString (info.checker) << "]:  "
+                << info.help << std::endl;
     }
 }
 

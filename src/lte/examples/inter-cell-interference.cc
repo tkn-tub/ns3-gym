@@ -64,6 +64,8 @@ int main (int argc, char *argv[])
        << "_rngRun"  << std::setw (3) << std::setfill ('0')  << runValue.Get () ;
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  
+  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

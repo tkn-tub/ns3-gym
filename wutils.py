@@ -1,18 +1,17 @@
 import os
 import os.path
 import sys
-import pproc as subprocess
+import subprocess
 import shlex
 
 # WAF modules
-import ccroot
 import Options
 import Utils
 import Logs
 import TaskGen
 import Build
 import re
-
+from waflib.Errors import WafError
 
 # these are set from the main wscript file
 APPNAME=None
@@ -48,10 +47,10 @@ else:
             return os.path.curdir
         return os.path.join(*rel_list)
 
-
+from waflib import Context
 def find_program(program_name, env):
-    launch_dir = os.path.abspath(Options.cwd_launch)
-    top_dir = os.path.abspath(Options.launch_dir)
+    launch_dir = os.path.abspath(Context.launch_dir)
+    #top_dir = os.path.abspath(Options.cwd_launch)
     found_programs = []
     for obj in bld.all_task_gen:
         if not getattr(obj, 'is_ns3_program', False):
@@ -63,7 +62,7 @@ def find_program(program_name, env):
             continue
         
         name1 = obj.target
-        name2 = os.path.join(relpath(obj.path.abspath(), top_dir), obj.target)
+        name2 = os.path.join(relpath(obj.path.abspath(), launch_dir), obj.target)
         names = [name1, name2]
         found_programs.extend(names)
         if program_name in names:
@@ -99,7 +98,7 @@ def get_proc_env(os_env=None):
         else:
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
-    pymoddir = bld.path.find_dir('bindings/python').abspath(env)
+    pymoddir = bld.path.find_dir('bindings/python').get_bld().abspath()
     pyvizdir = bld.path.find_dir('src/visualizer').abspath()
     if 'PYTHONPATH' in proc_env:
         proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir, pyvizdir] + [proc_env['PYTHONPATH']])
@@ -117,9 +116,9 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
     proc_env = get_proc_env(os_env)
     if Options.options.valgrind and not force_no_valgrind:
         if Options.options.command_template:
-            raise Utils.WafError("Options --command-template and --valgrind are conflicting")
+            raise WafError("Options --command-template and --valgrind are conflicting")
         if not env['VALGRIND']:
-            raise Utils.WafError("valgrind is not installed")
+            raise WafError("valgrind is not installed")
         argv = [env['VALGRIND'], "--leak-check=full", "--show-reachable=yes", "--error-exitcode=1"] + argv
         proc = subprocess.Popen(argv, env=proc_env, cwd=cwd, stderr=subprocess.PIPE)
         error = False
@@ -139,7 +138,7 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
             try:
                 retval = subprocess.Popen(argv, env=proc_env, cwd=cwd).wait()
             except WindowsError, ex:
-                raise Utils.WafError("Command %s raised exception %s" % (argv, ex))
+                raise WafError("Command %s raised exception %s" % (argv, ex))
     if retval:
         signame = None
         if retval < 0: # signal?
@@ -150,11 +149,11 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
                         signame = name
                         break
         if signame:
-            raise Utils.WafError("Command %s terminated with signal %s."
+            raise WafError("Command %s terminated with signal %s."
                                  " Run it under a debugger to get more information "
                                  "(./waf --run <program> --command-template=\"gdb --args %%s <args>\")." % (argv, signame))
         else:
-            raise Utils.WafError("Command %s exited with code %i" % (argv, retval))
+            raise WafError("Command %s exited with code %i" % (argv, retval))
     return retval
 
 def get_run_program(program_string, command_template=None):
@@ -173,15 +172,15 @@ def get_run_program(program_string, command_template=None):
         try:
             program_obj = find_program(program_name, env)
         except ValueError, ex:
-            raise Utils.WafError(str(ex))
+            raise WafError(str(ex))
 
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+        program_node = program_obj.path.find_or_declare(program_obj.target)
         #try:
         #    program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         #except AttributeError:
         #    raise Utils.WafError("%s does not appear to be a program" % (program_name,))
 
-        execvec = [program_node.abspath(env)] + argv[1:]
+        execvec = [program_node.abspath()] + argv[1:]
 
     else:
 
@@ -189,15 +188,15 @@ def get_run_program(program_string, command_template=None):
         try:
             program_obj = find_program(program_name, env)
         except ValueError, ex:
-            raise Utils.WafError(str(ex))
+            raise WafError(str(ex))
 
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+        program_node = program_obj.path.find_or_declare(program_obj.target)
         #try:
         #    program_node = program_obj.path.find_build(ccroot.get_target_name(program_obj))
         #except AttributeError:
         #    raise Utils.WafError("%s does not appear to be a program" % (program_name,))
 
-        tmpl = command_template % (program_node.abspath(env),)
+        tmpl = command_template % (program_node.abspath(),)
         execvec = shlex.split(tmpl.replace('\\', '\\\\'))
         #print "%r ==shlex.split==> %r" % (command_template % (program_node.abspath(env),), execvec)
     return program_name, execvec
@@ -230,5 +229,92 @@ def run_python_program(program_string, env, visualize=False):
         cwd = Options.cwd_launch
     if visualize:
         execvec.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
-    return run_argv([env['PYTHON']] + execvec, env, cwd=cwd)
+    return run_argv([env['PYTHON'][0]] + execvec, env, cwd=cwd)
 
+
+
+def monkey_patch_Runner_start():
+    """http://code.google.com/p/waf/issues/detail?id=1039"""
+    from waflib import Task
+    def start(self):
+        """
+        Give tasks to :py:class:`waflib.Runner.TaskConsumer` instances until the build finishes or the ``stop`` flag is set.
+        If only one job is used, then execute the tasks one by one, without consumers.
+        """
+
+        self.total = self.bld.total()
+
+        while not self.stop:
+
+            self.refill_task_list()
+
+            # consider the next task
+            tsk = self.get_next_task()
+            if not tsk:
+                if self.count:
+                    # tasks may add new ones after they are run
+                    continue
+                else:
+                    # no tasks to run, no tasks running, time to exit
+                    break
+
+            if tsk.hasrun:
+                # if the task is marked as "run", just skip it
+                self.processed += 1
+                continue
+
+            if self.stop: # stop immediately after a failure was detected
+                break
+
+            try:
+                st = tsk.runnable_status()
+            except Exception:
+                self.processed += 1
+                if not self.stop and self.bld.keep:
+                    tsk.hasrun = Task.SKIPPED
+                    if self.bld.keep == 1:
+                        # if -k stop at the first exception, if -kk try to go as far as possible
+                        self.stop = True
+                    continue
+                tsk.err_msg = Utils.ex_stack()
+                tsk.hasrun = Task.EXCEPTION
+                self.error_handler(tsk)
+                continue
+
+            if st == Task.ASK_LATER:
+                self.postpone(tsk)
+                # TODO optimize this
+                # if self.outstanding:
+                #   for x in tsk.run_after:
+                #       if x in self.outstanding:
+                #           self.outstanding.remove(x)
+                #           self.outstanding.insert(0, x)
+            elif st == Task.SKIP_ME:
+                self.processed += 1
+                tsk.hasrun = Task.SKIPPED
+                self.add_more_tasks(tsk)
+            else:
+                # run me: put the task in ready queue
+                tsk.position = (self.processed, self.total)
+                self.count += 1
+                tsk.master = self
+                self.processed += 1
+
+                if self.numjobs == 1:
+                    tsk.process()
+                else:
+                    self.add_task(tsk)
+
+        # self.count represents the tasks that have been made available to the consumer threads
+        # collect all the tasks after an error else the message may be incomplete
+        while self.error and self.count:
+            self.get_out()
+
+        #print loop
+        assert (self.count == 0 or self.stop)
+
+        # free the task pool, if any
+        self.free_task_pool()
+
+    from waflib.Runner import Parallel
+    Parallel.start = start

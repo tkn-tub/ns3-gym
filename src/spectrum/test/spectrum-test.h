@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  * Copyright (c) 2011 CTTC
@@ -56,7 +56,7 @@
               || (i->fc > j->fc + (tol)) || (i->fc < j->fc - (tol))        \
               || (i->fh > j->fh + (tol)) || (i->fh < j->fh - (tol)))       \
             {                                           \
-              if (gBreakOnFailure) { *(int *)0 = 0; }     \
+              ASSERT_ON_FAILURE;                        \
               std::ostringstream indexStream;           \
               indexStream << "[" << k << "]";           \
               std::ostringstream msgStream;     \
@@ -67,6 +67,7 @@
               expectedStream << j->fl << " <-- " << j->fc << " --> " << j->fh;          \
               ReportTestFailure (std::string (# actual) + indexStream.str () + " == " + std::string (# expected) + indexStream.str (),    \
                                  actualStream.str (), expectedStream.str (), msgStream.str (), (file), (line)); \
+              CONTINUE_ON_FAILURE;                                      \
             }                   \
           ++i;   \
           ++j;   \
@@ -117,7 +118,7 @@
         {                                                                      \
           if ((*i) > (*j) + (tol) || (*i) < (*j) - (tol))                      \
             {                                           \
-              if (gBreakOnFailure) { *(int *)0 = 0; }     \
+              ASSERT_ON_FAILURE;                        \
               std::ostringstream indexStream;           \
               indexStream << "[" << k << "]";           \
               std::ostringstream msgStream;     \
@@ -128,6 +129,7 @@
               expectedStream << expected;               \
               ReportTestFailure (std::string (# actual) + indexStream.str () + " == " + std::string (# expected) + indexStream.str (),    \
                                  actualStream.str (), expectedStream.str (), msgStream.str (), file, line);     \
+              CONTINUE_ON_FAILURE;                                      \
             }                   \
           ++i;   \
           ++j;   \

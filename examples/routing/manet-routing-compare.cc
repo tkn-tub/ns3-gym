@@ -342,10 +342,12 @@ RoutingExperiment::Run (int nSinks, int protocol, double txp, std::string CSVfil
   //NS_LOG_INFO ("Configure Tracing.");
   //tr_name = tr_name + "_" + m_protocolName +"_" + nodes + "nodes_" + sNodeSpeed + "speed_" + sNodePause + "pause_" + sRate + "rate";
 
-  //std::ofstream ascii;
-  //ascii.open ((tr_name+".tr").c_str());
-  //YansWifiPhyHelper::EnableAsciiAll (ascii);
-  //MobilityHelper::EnableAsciiAll (ascii);
+  //AsciiTraceHelper ascii;
+  //Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (tr_name + ".tr").c_str());
+  //wifiPhy.EnableAsciiAll (osw);
+  //std::ofstream os;
+  //os.open ((tr_name + ".mob").c_str());
+  //MobilityHelper::EnableAsciiAll (os);
 
   //Ptr<FlowMonitor> flowmon;
   //FlowMonitorHelper flowmonHelper;

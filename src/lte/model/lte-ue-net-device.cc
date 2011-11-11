@@ -40,6 +40,7 @@
 #include "lte-amc.h"
 #include <ns3/lte-ue-phy.h>
 #include <ns3/ipv4-l3-protocol.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 

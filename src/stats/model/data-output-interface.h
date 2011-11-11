@@ -18,8 +18,8 @@
  * Author: Joe Kopena (tjkopena@cs.drexel.edu)
  */
 
-#ifndef __DATA_OUTPUT_INTERFACE_H__
-#define __DATA_OUTPUT_INTERFACE_H__
+#ifndef DATA_OUTPUT_INTERFACE_H
+#define DATA_OUTPUT_INTERFACE_H
 
 #include "ns3/object.h"
 #include "ns3/nstime.h"
@@ -91,4 +91,4 @@ public:
 };
 
 
-#endif // __DATA_OUTPUT_INTERFACE_H__
+#endif /* DATA_OUTPUT_INTERFACE_H */
