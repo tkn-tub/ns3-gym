@@ -45,52 +45,17 @@ using namespace ns3;
 BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
 : TestSuite ("buildings-shadowing-test", SYSTEM)
 {
-  
-  
+    
   LogComponentEnable ("BuildingsShadowingTest", LOG_LEVEL_ALL);
   
-  // Test #1 Outdoor Model
-  
-  double distance = 2000;
-  double hm = 1;
-  double hb = 30;
-  Ptr<BuildingsMobilityModel> mm1 = CreateObject<BuildingsMobilityModel> ();
-  mm1->SetPosition (Vector (0.0, 0.0, hb));
-  
-  Ptr<BuildingsMobilityModel> mm2 = CreateObject<BuildingsMobilityModel> ();
-  mm2->SetPosition (Vector (distance, 0.0, hm));
-  
-  AddTestCase (new BuildingsShadowingTestCase (mm1, mm2, 148.86, 7.0, "Outdoor Shadowing"));
+  // Test #1 Outdoor Model   
+  AddTestCase (new BuildingsShadowingTestCase (1, 2, 148.86, 7.0, "Outdoor Shadowing"));
   
   // Test #2 Indoor model
-  
-  distance = 30;
-  double henbHeight = 10.0;
-  Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
-  mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
-  Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
-  building1->SetBuildingType (Building::Residential);
-  building1->SetExtWallsType (Building::ConcreteWithWindows);
-  mm5->SetIndoor (building1);
-  Ptr<BuildingsMobilityModel> mm6 = CreateObject<BuildingsMobilityModel> ();
-  mm6->SetPosition (Vector (distance, 0.0, hm));
-  mm6->SetIndoor (building1);
-  mm6->SetFloorNumber (2);
-  AddTestCase (new BuildingsShadowingTestCase (mm5, mm6, 88.5724, 8.0, "Indoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (5, 6, 88.5724, 8.0, "Indoor Shadowing"));
   
   // Test #3 Indoor -> Outdoor
-  
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm9 = CreateObject<BuildingsMobilityModel> ();
-  mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
-  mm9->SetIndoor (building1);
-  mm9->SetFloorNumber (2);
-  Ptr<BuildingsMobilityModel> mm10 = CreateObject<BuildingsMobilityModel> ();
-  mm10->SetPosition (Vector (distance, 0.0, hm));
-  // The loss is similar of test #4 plus the building penetration loss
-  // which for ConcreteWithWindows is equal to 7 dB and the height gain
-  // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
-  AddTestCase (new BuildingsShadowingTestCase (mm9, mm10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
+   AddTestCase (new BuildingsShadowingTestCase (9, 10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
 
 }
 
@@ -101,10 +66,10 @@ static BuildingsShadowingTestSuite buildingsShadowingTestSuite;
 * TestCase
 */
 
-BuildingsShadowingTestCase::BuildingsShadowingTestCase (Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, double refValue, double sigmaRef, std::string name)
+BuildingsShadowingTestCase::BuildingsShadowingTestCase ( uint16_t m1, uint16_t m2, double refValue, double sigmaRef, std::string name)
 : TestCase ("SHADOWING calculation: " + name),
-m_node1 (m1),
-m_node2 (m2),
+    m_mobilityModelIndex1 (m1),
+    m_mobilityModelIndex2 (m2),
 m_lossRef (refValue),
 m_sigmaRef (sigmaRef)
 {
@@ -146,6 +111,10 @@ BuildingsShadowingTestCase::DoRun (void)
   //   LogComponentEnable ("LteEnbNetDevice", logLevel);
   
 //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+
+
+  Ptr<MobilityModel> mma = CreateMobilityModel (m_mobilityModelIndex1);
+  Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
   
   std::vector<double> loss;
   double sum = 0.0;
@@ -154,7 +123,7 @@ BuildingsShadowingTestCase::DoRun (void)
   for (int i = 0; i < samples; i++)
   {
   Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  loss.push_back (propagationLossModel->GetLoss (m_node1, m_node2) - m_lossRef);
+  loss.push_back (propagationLossModel->GetLoss (mma, mmb) - m_lossRef);
   sum += loss.at (loss.size()-1);
   sumSquared += (loss.at (loss.size()-1)*loss.at (loss.size()-1));
   }
@@ -166,4 +135,85 @@ BuildingsShadowingTestCase::DoRun (void)
   NS_LOG_INFO ("Mean from simulation " << mean << ", sigma " << sigma << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
   
   NS_TEST_ASSERT_MSG_EQ_TOL(fabs(mean), 0.0, ci, "Wrong shadowing distribution !");
+}
+
+
+
+Ptr<MobilityModel>
+BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
+{
+  /*
+   * The purpose of this method is to defer the creation of the
+   * MobilityModel instances to when DoRun() is called. In a previous
+   * version, MobilityModel instances where created directly in the
+   * constructor of the test suite, which caused subtle bugs due to
+   * "static initialization order fiasco". An example of such a subtle
+   * bug is that logging via NS_LOG failed for some modules.
+   * 
+   */
+
+  double distance = 2000;
+  double hm = 1;
+  double hb = 30;
+  Ptr<BuildingsMobilityModel> mm1 = CreateObject<BuildingsMobilityModel> ();
+  mm1->SetPosition (Vector (0.0, 0.0, hb));
+  
+  Ptr<BuildingsMobilityModel> mm2 = CreateObject<BuildingsMobilityModel> ();
+  mm2->SetPosition (Vector (distance, 0.0, hm));
+
+    
+  distance = 30;
+  double henbHeight = 10.0;
+  Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
+  mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
+  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+  building1->SetBuildingType (Building::Residential);
+  building1->SetExtWallsType (Building::ConcreteWithWindows);
+  mm5->SetIndoor (building1);
+  Ptr<BuildingsMobilityModel> mm6 = CreateObject<BuildingsMobilityModel> ();
+  mm6->SetPosition (Vector (distance, 0.0, hm));
+  mm6->SetIndoor (building1);
+  mm6->SetFloorNumber (2);
+
+  
+  distance = 100;
+  Ptr<BuildingsMobilityModel> mm9 = CreateObject<BuildingsMobilityModel> ();
+  mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
+  mm9->SetIndoor (building1);
+  mm9->SetFloorNumber (2);
+  Ptr<BuildingsMobilityModel> mm10 = CreateObject<BuildingsMobilityModel> ();
+  mm10->SetPosition (Vector (distance, 0.0, hm));
+
+  switch (index)
+    {
+    case 1:
+      return mm1;
+      break;
+
+    case 2:
+      return mm2;
+      break;
+
+    case 5:
+      return mm5;
+      break;
+
+    case 6:
+      return mm6;
+      break;
+
+    case 9:
+      return mm9;
+      break;
+
+    case 10:
+      return mm10;
+      break;
+  
+    default:
+      return 0;
+      break;
+    }
+  return 0;
+
 }

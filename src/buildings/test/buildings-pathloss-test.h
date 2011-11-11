@@ -26,8 +26,7 @@
 #include <ns3/buildings-propagation-loss-model.h>
 
 
-using namespace ns3;
-
+namespace ns3 {
 
 /**
 * Test 1.1 pathloss calculation
@@ -42,15 +41,16 @@ public:
 class BuildingsPathlossTestCase : public TestCase
 {
 public:
-  BuildingsPathlossTestCase (double freq, Ptr<BuildingsMobilityModel> m1, Ptr<BuildingsMobilityModel> m2, BuildingsPropagationLossModel::Environment env, BuildingsPropagationLossModel::CitySize city, double refValue, std::string name);
+  BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, BuildingsPropagationLossModel::Environment env, BuildingsPropagationLossModel::CitySize city, double refValue, std::string name);
   virtual ~BuildingsPathlossTestCase ();
 
 private:
   virtual void DoRun (void);
+  Ptr<MobilityModel> CreateMobilityModel (uint16_t index);
 
   double m_freq;
-  Ptr<BuildingsMobilityModel> m_node1;
-  Ptr<BuildingsMobilityModel> m_node2;
+  uint16_t m_mobilityModelIndex1;
+  uint16_t m_mobilityModelIndex2;
   BuildingsPropagationLossModel::Environment m_env;
   BuildingsPropagationLossModel::CitySize m_city;
   double m_lossRef;
@@ -60,3 +60,5 @@ private:
 
 #endif /* BUILDING_PATHLOSS_TEST_H */
 
+
+} // namespace ns3
