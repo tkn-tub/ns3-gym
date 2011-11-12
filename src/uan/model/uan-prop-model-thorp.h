@@ -45,6 +45,7 @@ public:
 
 private:
   double GetAttenDbKyd (double freqKhz);
+  double GetAttenDbKm (double freqKhz);
 
   double m_SpreadCoef;
 };
