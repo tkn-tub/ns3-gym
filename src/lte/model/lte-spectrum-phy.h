@@ -30,7 +30,6 @@
 #include <ns3/net-device.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/data-rate.h>
 #include <ns3/generic-phy.h>
@@ -70,21 +69,13 @@ public:
   Ptr<MobilityModel> GetMobility ();
   Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /**
    * \brief Get the channel where the physical layer is attached
    * \return a pointer to the channel
    */
   Ptr<SpectrumChannel> GetChannel (void);
-
-
-  /**
-   * Get the SpectrumType used by this PHY
-   *
-   * @return
-   */
-  SpectrumType GetSpectrumType ();
-
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.
@@ -117,15 +108,6 @@ public:
    */
   bool StartTx (Ptr<PacketBurst> pb);
 
-  /**
-   * \brief Notify the SpectrumPhy instance of an incoming waveform
-   * \param pb the burst of packet associated with the incoming waveform
-   * \param rxPsd the Power Spectral Density of the incoming waveform. 
-   * The units of the SPD are the same specified for SpectrumChannel::StartTx().
-   * \param st the spectrum type
-   * \param duration the duration of the incoming waveform
-   */
-  void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
 
   /**
    * set the callback for the end of a TX, as part of the
@@ -170,7 +152,7 @@ public:
 
   /**
    * \brief Set the state of the phy layer
-   * \param newState the state 
+   * \param newState the state
    */
   void SetState (State newState);
 

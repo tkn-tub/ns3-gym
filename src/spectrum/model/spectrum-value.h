@@ -482,6 +482,15 @@ public:
 
   /**
    *
+   *
+   * @param arg the argument
+   *
+   * @return the value of the integral \f$\int_F g(f) df  \f$
+   */
+  friend double Integral (const SpectrumValue&  arg);
+
+  /**
+   *
    * @return a Ptr to a copy of this instance
    */
   Ptr<SpectrumValue> Copy () const;

@@ -28,6 +28,7 @@
 #include <ns3/trace-source-accessor.h>
 #include "ns3/spectrum-error-model.h"
 #include "lte-spectrum-phy.h"
+#include "lte-spectrum-signal-parameters.h"
 #include "lte-net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
@@ -165,15 +166,6 @@ LteSpectrumPhy::GetRxSpectrumModel () const
 }
 
 
-SpectrumType
-LteSpectrumPhy::GetSpectrumType ()
-{
-  NS_LOG_FUNCTION (this);
-  static SpectrumType st = SpectrumTypeFactory::Create ("IdealOfdm");
-  return st;
-}
-
-
 void
 LteSpectrumPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
 {
@@ -193,9 +185,9 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
   m_noise = noisePsd;
 }
 
-Ptr<const SpectrumValue> 
+Ptr<const SpectrumValue>
 LteSpectrumPhy::GetNoisePowerSpectralDensity (void)
-{ 
+{
   NS_LOG_FUNCTION (this);
   return m_noise;
 }
@@ -286,7 +278,12 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
       ChangeState (TX);
       NS_ASSERT (m_channel);
       double tti = 0.001;
-      m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), Seconds (tti), GetObject<SpectrumPhy> ());
+      Ptr<LteSpectrumSignalParameters> txParams = Create<LteSpectrumSignalParameters> ();
+      txParams->duration = Seconds (tti);
+      txParams->txPhy = GetObject<SpectrumPhy> ();
+      txParams->psd = m_txPsd;
+      txParams->packetBurst = pb;
+      m_channel->StartTx (txParams);
       Simulator::Schedule (Seconds (tti), &LteSpectrumPhy::EndTx, this);
       return false;
     }
@@ -329,18 +326,19 @@ LteSpectrumPhy::EndTx ()
 
 
 void
-LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration)
+LteSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
-  NS_LOG_FUNCTION (this << pb << rxPsd << st << duration);
+  NS_LOG_FUNCTION (this << spectrumRxParams);
   NS_LOG_LOGIC (this << "state: " << m_state);
 
 
   // interference will happen regardless of the state of the receiver
   // m_interference->AddSignal (rxPsd, duration);
 
+  Ptr<LteSpectrumSignalParameters> lteRxParams = DynamicCast<LteSpectrumSignalParameters> (spectrumRxParams);
   // the device might start RX only if the signal is of a type understood by this device
   // this corresponds in real device to preamble detection
-  if (st == GetSpectrumType ())
+  if (lteRxParams != 0)
     {
       switch (m_state)
         {
@@ -360,16 +358,17 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
           // preamble detection and synchronization is supposed to be always successful.
           NS_LOG_LOGIC (this << " receiving new packet");
 
-          for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-               != pb->End (); ++iter)
+          for (std::list<Ptr<Packet> >::const_iterator iter = lteRxParams->packetBurst->Begin (); iter
+               != lteRxParams->packetBurst->End (); ++iter)
             {
               Ptr<Packet> packet = (*iter)->Copy ();
               m_phyRxStartTrace (packet);
             }
 
 
-          m_rxPacket = pb;
-          m_rxPsd = rxPsd;
+          m_rxPacket = lteRxParams->packetBurst;
+          m_rxPsd = lteRxParams->psd;
+          Time duration = lteRxParams->duration;
 
           ChangeState (RX);
 
@@ -385,7 +384,7 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
 
           // XXX: modify SpectrumInterference in order to compute
           // the correct/erroneus reception of PacketBurst!!!
-          /* 
+          /*
           for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
                != pb->End (); ++iter)
             {

@@ -5,6 +5,7 @@ def build(bld):
     module = bld.create_ns3_module('lte', ['internet', 'spectrum', 'wimax'])
     module.source = [
         'model/lte-spectrum-phy.cc',
+        'model/lte-spectrum-signal-parameters.cc',
         'model/enb-lte-spectrum-phy.cc',
         'model/ue-lte-spectrum-phy.cc',
         'model/lte-phy.cc',
@@ -51,6 +52,7 @@ def build(bld):
     headers.module = 'lte'
     headers.source = [
         'model/lte-spectrum-phy.h',
+        'model/lte-spectrum-signal-parameters.h',
         'model/enb-lte-spectrum-phy.h',
         'model/ue-lte-spectrum-phy.h',
         'model/lte-phy.h',

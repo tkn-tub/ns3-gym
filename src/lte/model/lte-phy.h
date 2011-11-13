@@ -28,10 +28,10 @@
 #include <ns3/nstime.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
+#include <ns3/spectrum-signal-parameters.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/generic-phy.h>
-#include "lte-spectrum-phy.h"
+#include <ns3/lte-spectrum-phy.h>
 
 namespace ns3 {
 
@@ -54,12 +54,12 @@ public:
 
   static TypeId GetTypeId (void);
 
-  /** 
+  /**
    * \brief Set the device where the phy layer is attached
    * \param d the device
    */
   void SetDevice (Ptr<LteNetDevice> d);
-  /** 
+  /**
    * \brief Get the device where the phy layer is attached
    * \return the pointer to the device
    */
@@ -123,8 +123,8 @@ public:
   /**
    * \brief set a list of sub channel to use in the downlink.
    * A sub channel is composed by a couple of resource bloks (180KHz x 1 ms)
-   * \param mask a vector of intefer values. Each elements of this vector carries information about 
-   * the corresponding DL sub channel. If the i-th value of mask is equal to 1 (0) it means that the corresponding sub channel is used (not used) for the downlink. 
+   * \param mask a vector of intefer values. Each elements of this vector carries information about
+   * the corresponding DL sub channel. If the i-th value of mask is equal to 1 (0) it means that the corresponding sub channel is used (not used) for the downlink.
    */
   void SetDownlinkSubChannels (std::vector<int> mask );
   /**
@@ -135,8 +135,8 @@ public:
   /**
    * \brief set a list of sub channel to use in the uplink.
    * A sub channel is composed by a couple of resource bloks (180KHz x 1 ms)
-   * \param mask a vector of intefer values. Each elements of this vector carries information about 
-   * the corresponding UL sub channel. If the i-th value of mask is equal to 1 (0) it means that the corresponding sub channel is used (not used) for the uplink. 
+   * \param mask a vector of intefer values. Each elements of this vector carries information about
+   * the corresponding UL sub channel. If the i-th value of mask is equal to 1 (0) it means that the corresponding sub channel is used (not used) for the uplink.
    */
   void SetUplinkSubChannels (std::vector<int> mask);
   /**
@@ -157,7 +157,7 @@ public:
 
 
   /**
-   * \brief Compute the TX Power Spectral Density 
+   * \brief Compute the TX Power Spectral Density
    * \return a Ptr to a created SpectrumValue
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity () = 0;

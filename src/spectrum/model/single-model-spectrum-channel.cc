@@ -68,7 +68,7 @@ SingleModelSpectrumChannel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SingleModelSpectrumChannel")
     .SetParent<SpectrumChannel> ()
     .AddConstructor<SingleModelSpectrumChannel> ()
-    .AddAttribute ("MaxLossDb", 
+    .AddAttribute ("MaxLossDb",
                    "If a single-frequency PropagationLossModel is used, this value "
                    "represents the maximum loss in dB for which transmissions will be "
                    "passed to the receiving PHY. Signals for which the PropagationLossModel "
@@ -103,59 +103,59 @@ SingleModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
 
 
 void
-SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txPsd, SpectrumType st, Time duration, Ptr<SpectrumPhy> txPhy)
+SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 {
-  NS_LOG_FUNCTION (this << p << *txPsd << st << duration << txPhy);
-  NS_ASSERT_MSG (p, "NULL PacketBurst");
-  NS_ASSERT_MSG (txPsd, "NULL txPsd");
-  NS_ASSERT_MSG (txPhy, "NULL txPhy");
+  NS_LOG_FUNCTION (this << txParams->psd << txParams->duration << txParams->txPhy);
+  NS_ASSERT_MSG (txParams->psd, "NULL txPsd");
+  NS_ASSERT_MSG (txParams->txPhy, "NULL txPhy");
 
   // just a sanity check routine. We might want to remove it to save some computational load -- one "if" statement  ;-)
   if (m_spectrumModel == 0)
     {
       // first pak, record SpectrumModel
-      m_spectrumModel = txPsd->GetSpectrumModel ();
+      m_spectrumModel = txParams->psd->GetSpectrumModel ();
     }
   else
     {
       // all attached SpectrumPhy instances must use the same SpectrumModel
-      NS_ASSERT (*(txPsd->GetSpectrumModel ()) == *m_spectrumModel);
+      NS_ASSERT (*(txParams->psd->GetSpectrumModel ()) == *m_spectrumModel);
     }
 
 
 
 
-  Ptr<MobilityModel> senderMobility = txPhy->GetMobility ();
+  Ptr<MobilityModel> senderMobility = txParams->txPhy->GetMobility ();
 
   for (PhyList::const_iterator rxPhyIterator = m_phyList.begin ();
        rxPhyIterator != m_phyList.end ();
        ++rxPhyIterator)
     {
-      if ((*rxPhyIterator) != txPhy)
+      if ((*rxPhyIterator) != txParams->txPhy)
         {
-          Ptr <SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
           Time delay  = MicroSeconds (0);
 
           Ptr<MobilityModel> receiverMobility = (*rxPhyIterator)->GetMobility ();
+          NS_LOG_LOGIC ("copying signal parameters " << txParams);
+          Ptr<SpectrumSignalParameters> rxParams = txParams->Copy ();
 
           if (senderMobility && receiverMobility)
             {
               if (m_propagationLoss)
                 {
                   double gainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
-                  m_propagationLossTrace (txPhy, *rxPhyIterator, -gainDb);
+                  m_propagationLossTrace (txParams->txPhy, *rxPhyIterator, -gainDb);
                   if ( (-gainDb) > m_maxLossDb)
                     {
                       // beyond range
                       continue;
                     }
-                  double gainLinear = pow (10.0, gainDb/10.0);
-                  *rxPsd = (*rxPsd) * gainLinear;
+                  double gainLinear = pow (10.0, gainDb / 10.0);
+                  *(rxParams->psd) *= gainLinear;
                 }
 
               if (m_spectrumPropagationLoss)
                 {
-                  rxPsd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxPsd, senderMobility, receiverMobility);
+                  rxParams->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams->psd, senderMobility, receiverMobility);
                 }
 
               if (m_propagationDelay)
@@ -164,20 +164,19 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
                 }
             }
 
-          Ptr<PacketBurst> pktBurstCopy = p->Copy ();
+
           Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
           if (netDev)
             {
               // the receiver has a NetDevice, so we expect that it is attached to a Node
               uint32_t dstNode =  netDev->GetNode ()->GetId ();
-              Simulator::ScheduleWithContext (dstNode, delay, &SingleModelSpectrumChannel::StartRx, this,
-                                              pktBurstCopy, rxPsd, st, duration, *rxPhyIterator);
+              Simulator::ScheduleWithContext (dstNode, delay, &SingleModelSpectrumChannel::StartRx, this, rxParams, *rxPhyIterator);
             }
           else
             {
               // the receiver is not attached to a NetDevice, so we cannot assume that it is attached to a node
               Simulator::Schedule (delay, &SingleModelSpectrumChannel::StartRx, this,
-                                   pktBurstCopy, rxPsd, st, duration, *rxPhyIterator);
+                                   rxParams, *rxPhyIterator);
             }
         }
     }
@@ -185,10 +184,10 @@ SingleModelSpectrumChannel::StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txP
 }
 
 void
-SingleModelSpectrumChannel::StartRx (Ptr<PacketBurst> p, Ptr <SpectrumValue> rxPsd, SpectrumType st, Time duration, Ptr<SpectrumPhy> receiver)
+SingleModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver)
 {
-  NS_LOG_FUNCTION (this << p << *rxPsd << st << duration << receiver);
-  receiver->StartRx (p, rxPsd, st, duration);
+  NS_LOG_FUNCTION (this << params);
+  receiver->StartRx (params);
 }
 
 
