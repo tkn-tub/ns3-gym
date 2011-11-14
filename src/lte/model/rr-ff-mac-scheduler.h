@@ -119,13 +119,15 @@ private:
 
   int GetRbgSize (int dlbandwidth);
   
+  static bool SortRlcBufferReq (FfMacSchedSapProvider::SchedDlRlcBufferReqParameters i,FfMacSchedSapProvider::SchedDlRlcBufferReqParameters j);
+  
   void RefreshDlCqiMaps(void);
   void RefreshUlCqiMaps(void);
 
   /*
    * Vectors of UE's RLC info
   */
-  std::vector <FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
+  std::list <FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
 
   /*
   * Map of UE's DL CQI P01 received
