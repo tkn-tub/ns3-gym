@@ -523,6 +523,10 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_method('SetAnimWriteCallback', 
                    'void', 
                    [param('void ( * ) ( char const * ) *', 'cb')])
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetConstantPosition(ns3::Ptr<ns3::Node> n, double x, double y, double z=0) [member function]
+    cls.add_method('SetConstantPosition', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('double', 'x'), param('double', 'y'), param('double', 'z', default_value='0')])
     ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetMobilityPollInterval(ns3::Time t) [member function]
     cls.add_method('SetMobilityPollInterval', 
                    'void', 
