@@ -540,6 +540,7 @@ SpectrumValue Pow (double base, const SpectrumValue& exp);
 SpectrumValue Log10 (const SpectrumValue&  arg);
 SpectrumValue Log2 (const SpectrumValue&  arg);
 SpectrumValue Log (const SpectrumValue&  arg);
+double Integral (const SpectrumValue& x);
 
 
 } // namespace ns3
