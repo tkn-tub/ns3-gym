@@ -809,7 +809,7 @@ RrFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   NS_LOG_FUNCTION (this);
   //NS_LOG_DEBUG (this << " RX UL CQI at " << params.m_sfnSf);
   // correlate info on UL-CQIs with previous scheduling -> calculate m_sfnSf of transmission
-  uint32_t frameNo = (0xFF & params.m_sfnSf) >> 4;
+  uint32_t frameNo = (0x3FF & params.m_sfnSf) >> 4;
   uint32_t subframeNo = (0xF & params.m_sfnSf);
   //NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
   if (subframeNo - m_schedTtiDelay < 0)
@@ -818,7 +818,7 @@ RrFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
     }
   subframeNo = (subframeNo - m_schedTtiDelay) % 10;
   //NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo);
-  uint16_t sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  uint16_t sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;

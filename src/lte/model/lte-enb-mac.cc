@@ -383,7 +383,7 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   // --- DOWNLINK ---
   // Send Dl-CQI info to the scheduler
   FfMacSchedSapProvider::SchedDlCqiInfoReqParameters dlcqiInfoReq;
-  dlcqiInfoReq.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  dlcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
 
   int cqiNum = m_dlCqiReceived.size ();
   if (cqiNum > MAX_CQI_LIST)
@@ -397,14 +397,14 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // Get downlink transmission opportunities
   FfMacSchedSapProvider::SchedDlTriggerReqParameters params;  // to be filled
-  params.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  params.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
   m_schedSapProvider->SchedDlTriggerReq (params);
 
 
   // --- UPLINK ---
   // Send UL-CQI info to the scheduler
   FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqiInfoReq;
-  ulcqiInfoReq.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  ulcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
   cqiNum = m_ulCqiReceived.size ();
   if (cqiNum >= 1)
     {
@@ -422,7 +422,7 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // Send BSR reports to the scheduler
   FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters ulMacReq;
-  ulMacReq.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  ulMacReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
   ulMacReq.m_macCeList.insert (ulMacReq.m_macCeList.begin (), m_ulCeReceived.begin (), m_ulCeReceived.end ());
   m_ulCeReceived.erase (m_ulCeReceived.begin (), m_ulCeReceived.end ());
   m_schedSapProvider->SchedUlMacCtrlInfoReq (ulMacReq);
@@ -430,7 +430,7 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // Get uplink transmission opportunities
   FfMacSchedSapProvider::SchedUlTriggerReqParameters ulparams;
-  ulparams.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  ulparams.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
 
   std::map <uint16_t,UlInfoListElement_s>::iterator it;
   for (it = m_ulInfoListElements.begin (); it != m_ulInfoListElements.end (); it++)
