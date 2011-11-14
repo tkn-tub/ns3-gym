@@ -814,18 +814,22 @@ void
 RrFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  //NS_LOG_DEBUG (this << " RX UL CQI at " << params.m_sfnSf);
+//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // correlate info on UL-CQIs with previous scheduling -> calculate m_sfnSf of transmission
-  uint32_t frameNo = (0x3FF & params.m_sfnSf) >> 4;
+  uint32_t frameNo = (0x3FF & (params.m_sfnSf >> 4));
   uint32_t subframeNo = (0xF & params.m_sfnSf);
   //NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
-  if (subframeNo - m_schedTtiDelay < 0)
+  if (subframeNo <= m_schedTtiDelay)
     {
       frameNo--;
+      subframeNo = (10 + subframeNo - m_schedTtiDelay) % 11;
     }
-  subframeNo = (subframeNo - m_schedTtiDelay) % 10;
-  //NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo);
+  else
+    {
+      subframeNo = (subframeNo - m_schedTtiDelay) % 11;
+    }
   uint16_t sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+//     NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo << " sfnSf "  << sfnSf);
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;
@@ -874,7 +878,7 @@ RrFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
 
     }
   // remove obsolete info on allocation
-  m_allocationMaps.erase (m_allocationMaps.begin (), ++itMap);
+  m_allocationMaps.erase (itMap);
 
   return;
 }

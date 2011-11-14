@@ -971,25 +971,29 @@ void
 PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  //NS_LOG_DEBUG (this << " RX UL CQI at " << params.m_sfnSf);
+//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf << " delay " << (uint32_t)m_schedTtiDelay);
   // correlate info on UL-CQIs with previous scheduling -> calculate m_sfnSf of transmission
-  uint32_t frameNo = (0x3FF & params.m_sfnSf) >> 4;
+  uint32_t frameNo = (0x3FF & (params.m_sfnSf >> 4));
   uint32_t subframeNo = (0xF & params.m_sfnSf);
-  //NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
-  if (subframeNo - m_schedTtiDelay < 0)
+//   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
+  if (subframeNo <= m_schedTtiDelay)
     {
       frameNo--;
+      subframeNo = (10 + subframeNo - m_schedTtiDelay) % 11;
     }
-  subframeNo = (subframeNo - m_schedTtiDelay) % 10;
-  //NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo);
+  else
+    {
+      subframeNo = (subframeNo - m_schedTtiDelay) % 11;
+    }
   uint16_t sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+//   NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo << " sfnSf "  << sfnSf);
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;
   itMap = m_allocationMaps.find (sfnSf);
   if (itMap == m_allocationMaps.end ())
     {
-      NS_LOG_DEBUG (this << " Does not find info on allocation");
+      NS_LOG_DEBUG (this << " Does not find info on allocation, size : " << m_allocationMaps.size ());
       return;
     }
   for (uint32_t i = 0; i < (*itMap).second.size (); i++)
@@ -1033,7 +1037,7 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
 
     }
   // remove obsolete info on allocation
-  m_allocationMaps.erase (m_allocationMaps.begin (), ++itMap);
+  m_allocationMaps.erase (itMap);
 
   return;
 }
