@@ -32,6 +32,7 @@
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/rlc-stats-calculator.h>
 #include <ns3/lte-tft.h>
+#include <ns3/trace-fading-loss-model.h>
 
 namespace ns3 {
 
@@ -169,6 +170,18 @@ public:
    */
   TypeId GetRlcType (EpsBearer bearer);
 
+  /** 
+   * 
+   * 
+   * \param type the fading modul to be used
+   */
+  void SetFadingModel (std::string model);
+
+  /**
+   * set an attribute of the fading model
+   */
+  void SetFadingModelAttribute (std::string n, const AttributeValue &v);
+
   /**
    * Enables logging for all components of the LENA architecture
    *
@@ -220,8 +233,6 @@ private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  //uint64_t FindImsiFromEnbRlcPath(std::string path);
-
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
   
@@ -235,9 +246,13 @@ private:
   ObjectFactory m_dlPropagationModelFactory;
   ObjectFactory m_ulPropagationModelFactory;
 
+  std::string m_fadingModelType;
+  ObjectFactory m_fadingModelFactory;
+  
+  Ptr<TraceFadingLossModel> m_fadingModule;
+  
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
-
   enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
                                    RLC_UM_ALWAYS = 2,
                                    RLC_AM_ALWAYS = 3,

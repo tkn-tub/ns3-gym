@@ -29,8 +29,8 @@
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
 
-#include <ns3/shadowing-loss-model.h>
-#include <ns3/jakes-fading-loss-model.h>
+//#include <ns3/shadowing-loss-model.h>
+//#include <ns3/jakes-fading-loss-model.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
@@ -44,7 +44,7 @@ NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
 class BuildingsPropagationLossModel::ShadowingLoss 
 {
   public:
-  ShadowingLoss (double mean, double sigma);
+  ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
   ~ShadowingLoss ();
   double GetLoss ();
   Ptr<MobilityModel> GetReceiver (void);
@@ -55,8 +55,9 @@ class BuildingsPropagationLossModel::ShadowingLoss
 };
 
 
-BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma) :
-m_randVariable (mean, sigma*sigma)  // NormalVariable class wants mean and variance (sigma is a standard deviation)
+BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver) :
+  m_receiver (receiver),
+  m_randVariable (mean, sigma*sigma)  // NormalVariable class wants mean and variance (sigma is a standard deviation)
 {
   m_shadowingValue = m_randVariable.GetValue ();
   NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
@@ -97,7 +98,7 @@ BuildingsPropagationLossModel::GetTypeId (void)
     .AddAttribute ("Frequency",
                    "The Frequency  (default is 2.106 GHz).",
                    DoubleValue (2160e6),
-                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_frequency),
+                   MakeDoubleAccessor (&BuildingsPropagationLossModel::SetFrequency),
                    MakeDoubleChecker<double> ())
                    
      .AddAttribute ("ShadowSigmaOutdoor",
@@ -147,16 +148,16 @@ BuildingsPropagationLossModel::GetTypeId (void)
                      MakeEnumAccessor (&BuildingsPropagationLossModel::SetEnvironment,
                      &BuildingsPropagationLossModel::GetEnvironment),
                     MakeEnumChecker (BuildingsPropagationLossModel::Urban, "Urban",
-                                      BuildingsPropagationLossModel::SubUrban, "SubUrban",
-                                      BuildingsPropagationLossModel::OpenAreas, "OpenAreas"))
+                    BuildingsPropagationLossModel::SubUrban, "SubUrban",
+                    BuildingsPropagationLossModel::OpenAreas, "OpenAreas"))
 
       .AddAttribute ("CitySize", 
                       "Dimension of the city",
                       EnumValue (BuildingsPropagationLossModel::Large),
                      MakeEnumAccessor (&BuildingsPropagationLossModel::SetCitySize),
                       MakeEnumChecker (BuildingsPropagationLossModel::Small, "Small",
-                                      BuildingsPropagationLossModel::Medium, "Medium",
-                                      BuildingsPropagationLossModel::Large, "Large"));
+                     BuildingsPropagationLossModel::Medium, "Medium",
+                     BuildingsPropagationLossModel::Large, "Large"));
 
     
   return tid;
@@ -204,10 +205,23 @@ BuildingsPropagationLossModel::SetLambda (double lambda)
   m_frequency = 300000000 / lambda;
 }
 
+void
+BuildingsPropagationLossModel::SetFrequency (double freq)
+{
+  m_frequency = freq;
+  m_lambda = 300000000 / m_frequency;
+}
+
 double
 BuildingsPropagationLossModel::GetLambda (void) const
 {
   return m_lambda;
+}
+
+double
+BuildingsPropagationLossModel::GetFrequency (void) const
+{
+  return m_frequency;
 }
 
 void
@@ -560,7 +574,7 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
   {
     NS_LOG_ERROR (this << " Unkwnon Wall Type");
   }
-  
+  NS_LOG_INFO (this << " Node " << a->GetPosition () << " <-> " << b->GetPosition ());
   double loss = 20*log10(m_frequency/1e6/*MHz*/) + N*log10(a->GetDistanceFrom (b)) + Lf - 28.0;
   
   return (loss);
@@ -763,20 +777,16 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
       PairsSet *ps = *i;
       if (ps->sender == a) 
         {
-          m_shadowingPairs.erase (i);
-          m_shadowingPairs.push_back (ps);
           for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
             {
               ShadowingLoss *pc = *r;
               if (pc->GetReceiver () == b) 
                 {
-                  ps->receivers.erase (r);
-                  ps->receivers.push_back (pc);
                   return loss + pc->GetLoss ();
                 }
             }
             double sigma = EvaluateSigma (a1, b1);
-            ShadowingLoss *pc = new ShadowingLoss (0.0, sigma);
+            ShadowingLoss *pc = new ShadowingLoss (0.0, sigma,b);
           ps->receivers.push_back (pc);
           return loss + pc->GetLoss ();
         }
@@ -784,19 +794,10 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
   PairsSet *ps = new PairsSet;
   ps->sender = a;
   double sigma = EvaluateSigma (a1, b1);
-  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma);
+  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma, b);
   ps->receivers.push_back (pc);
   m_shadowingPairs.push_back (ps);
   return loss + pc->GetLoss ();
-  
-  
-  
-//   if (m_shadowingValue==0)
-//     {
-//       m_shadowingValue = new ShadowingLoss (m_shadowingMean, m_shadowingSigma);
-//     }
-//   
-//   return (loss + m_shadowingValue->GetLoss ());
 
 }
 

@@ -17,7 +17,7 @@ GRAPHS_EPS =
 $(FIGURES)/testbed.pdf_width = 5in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
-IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
+IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 

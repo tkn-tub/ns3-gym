@@ -93,12 +93,6 @@ Test #10 Indoor -> Outdoor with ITU1411 model
 This test validates the outdoor to indoor transmissions for short distances. In this case the eNB is placed in the second floor of a residential building with walls made of concrete with windows and distances 500 meters from the outdoor UE (i.e., NLoS communication). Therefore the height gain has to be included in the pathloss evaluation.
 
 
-System Test
-~~~~~~~~~~~
-
-The aim of the system test is to verify the integration of the BuildingPathlossModel with the ns3 simulator and in particular with the lte module. The test exploits a set of three pre calculated losses for generating the expected SINR at the receiver counting the transmission and the noise powers. These SINR values are compared with the results obtained from a lte simulation. The losses are calculated off-line with an Octave script (/test/reference/lte-pathloss.m).
-
-
 Shadowing Test
 ~~~~~~~~~~~~~~
 

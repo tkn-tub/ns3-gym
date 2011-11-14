@@ -325,3 +325,10 @@ more resources to the users that use a higher MCS index.
 
    Throughput ratio evaluation for the PF scheduler in a scenario
    where the UEs have MCS index :math:`28, 24, 16, 12, 6`
+
+
+
+Building Propagation Loss Model
+-------------------------------
+
+The aim of the system test is to verify the integration of the BuildingPathlossModel with the lte module. The test exploits a set of three pre calculated losses for generating the expected SINR at the receiver counting the transmission and the noise powers. These SINR values are compared with the results obtained from a lte simulation. The losses are calculated off-line with an Octave script (/test/reference/lte_pathloss.m).

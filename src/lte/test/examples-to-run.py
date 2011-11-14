@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 # A list of C++ examples to run in order to ensure that they remain
@@ -13,6 +14,7 @@ cpp_examples = [
     ("lena-rlc-calculator", "True", "True"),
     ("lena-runtime-profiler", "True", "True"),
     ("lena-extract-pathloss", "True", "True"),
+    ("lena-fading", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

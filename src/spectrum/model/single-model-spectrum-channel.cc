@@ -222,7 +222,7 @@ void
 SingleModelSpectrumChannel::AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss)
 {
   NS_LOG_FUNCTION (this << loss);
-  NS_ASSERT (m_propagationLoss == 0);
+  NS_ASSERT (m_spectrumPropagationLoss == 0);
   m_spectrumPropagationLoss = loss;
 }
 

@@ -352,6 +352,8 @@ example the spectrum licensing policies that are
 discussed in [Ofcom2.6GHz]_.
 
 
+
+
 .. [4] 3GPP R1-081483 (available on 
        http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip )
 
@@ -463,4 +465,50 @@ For communications involving at least one indoor node, the corresponding wall pe
  * indoor SC <-> outdoor UE
 
 Please refer to the documentation of the Buildings module for details on the actual models used in each case.
+
+
+Trace Fading Model
+++++++++++++++++++
+
+The fading model is based on the one developed during the GSoC 2010 [Piro2011]_. The main characteristic of this model is the fact that the fading evaluation during simulation run-time is based on per-calculated traces. This is done for limiting the computational complexity of the simulator. On the other hand, it needs huge structures for storing the traces; therefore, a trade-off between the number of possible parameters and the memory occupancy has to be found. The most important ones are:
+
+ * users' speed: relative speed between users (affects the Doppler frequency, which in turns affects the time-variance property of the fading)
+ * number of taps (and relative power): number of multiple paths considered, which affects the frequency property of the fading.
+ * time granularity of the trace: sampling time of the trace.
+ * frequency granularity of the trace: number of values in frequency to be evaluated.
+ * length of trace: ideally large as the simulation time, might be reduced by windowing mechanism.
+ * number of users: number of independent traces to be used (ideally one trace per user).
+
+With respect to the mathematical channel propagation model, we suggest the one provided by the ``rayleighchan`` function of Matlab, since it provides a well accepted channel modelization both in time and frequency domain. For more information, the reader is referred to  [mathworks]_.
+
+The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
+In detail, the channel object created with the rayleighchan function is used for filtering a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model.
+
+Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36.104]_):
+
+ * users' speed: typically only a few discrete values are considered, i.e.:
+
+   * 0 and 3 kmph for pedestrian scenarios
+   * 30 and 60 kmph for vehicular scenarios
+   * 0, 3, 30 and 60 for urban scenarios
+
+ * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36.104]_.
+ * time granularity: we need one fading value per TTI, i.e., every 1 ms (as this is the granularity in time of the ns-3 LTE PHY model).
+ * frequency granularity: we need one fading value per RB (which is the frequency granularity of the spectrum model used by the ns-3 LTE model).
+ * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.  
+ * per-user fading process: users share the same fading trace, but for each user a different starting point in the trace is randomly picked up. This choice was made to avoid the need to provide one fading trace per user.
+
+According to the parameters we considered, the following formula express in detail the total size :math:`S_{traces}` of the fading traces:
+
+.. math::
+ S_{traces} = S_{sample} \times N_{RB} \times \frac{T_{trace}}{T_{sample}} \times N_{scenarios} \mbox{ [bytes]}
+
+where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36.104]_:
+
+ * Pedestrian: with nodes' speed of 3 kmph.
+ * Vehicular: with nodes' speed of 60 kmph.
+ * Urban: with nodes' speed of 3 kmph.
+
+hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
+
 

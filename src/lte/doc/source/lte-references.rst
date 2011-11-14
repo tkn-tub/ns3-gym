@@ -33,6 +33,8 @@
 
 .. [TS25.814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access"
 
+.. [TS36.104] 3GPP TS 36.104 "E-UTRA Base Station (BS) radio transmission and reception"
+
 
 .. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH" http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip 
 
@@ -52,4 +54,7 @@
 
 .. [ikegami] F.Ikegami, T.Takeuchi, and S.Yoshida, "Theoretical prediction of mean field strength for Urban Mobile Radio", in IEEE Trans. Antennas Propagat., Vol.39, No.3, 1991
 
-.. [cost231] “Digital Mobile Radio: COST 231 View on the Evolution Towards 3rd Generation Systems”, Commission of the European Communities, L-2920, Luxembourg, 1989
+.. [cost231] "Digital Mobile Radio: COST 231 View on the Evolution Towards 3rd Generation Systems", Commission of the European Communities, L-2920, Luxembourg, 1989
+
+.. [mathworks] Matlab R2011b Documentation Communications System Toolbox, "Methodology for Simulating Multipath Fading Channels" http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36
+

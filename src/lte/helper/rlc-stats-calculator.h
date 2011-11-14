@@ -21,6 +21,8 @@
 #ifndef RLC_STATS_CALCULATOR_H_
 #define RLC_STATS_CALCULATOR_H_
 
+#include "ns3/lte-stats-calculator.h"
+#include "ns3/lte-common.h"
 #include "ns3/uinteger.h"
 #include "ns3/object.h"
 #include "ns3/basic-data-calculators.h"
@@ -32,25 +34,12 @@
 namespace ns3 {
 
 
-struct ImsiLcidPair
-{
-  uint64_t  m_imsi;
-  uint8_t   m_lcId;
-
-public:
-  ImsiLcidPair ();
-  ImsiLcidPair (const uint64_t a, const uint8_t b);
-
-  friend bool operator == (const ImsiLcidPair &a, const ImsiLcidPair &b);
-  friend bool operator < (const ImsiLcidPair &a, const ImsiLcidPair &b);
-};
-
-typedef std::map<ImsiLcidPair, uint32_t> Uint32Map;
-typedef std::map<ImsiLcidPair, uint64_t> Uint64Map;
-typedef std::map<ImsiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint32_t> > > Uint32StatsMap;
-typedef std::map<ImsiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > Uint64StatsMap;
-typedef std::map<ImsiLcidPair, double> DoubleMap;
-typedef std::map<ImsiLcidPair, LteFlowId_t> FlowIdMap;
+typedef std::map<ImsiLcidPair_t, uint32_t> Uint32Map;
+typedef std::map<ImsiLcidPair_t, uint64_t> Uint64Map;
+typedef std::map<ImsiLcidPair_t, Ptr<MinMaxAvgTotalCalculator<uint32_t> > > Uint32StatsMap;
+typedef std::map<ImsiLcidPair_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > Uint64StatsMap;
+typedef std::map<ImsiLcidPair_t, double> DoubleMap;
+typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
 
 
 
@@ -63,7 +52,7 @@ typedef std::map<ImsiLcidPair, LteFlowId_t> FlowIdMap;
  *   - Average, min, max and standard deviation of RLC to RLC delay
  *   - Average, min, max and standard deviation of RLC PDU size
  */
-class RlcStatsCalculator : public Object
+class RlcStatsCalculator : public LteStatsCalculator
 {
 public:
   /**
@@ -80,24 +69,6 @@ public:
    * Inherited from ns3::Object
    */
   static TypeId GetTypeId (void);
-
-  /**
-   * Set the name of the file where the uplink statistics will be stored.
-   *
-   * \param outputFilename string with the name of the file
-   */
-  void SetUlOutputFilename (std::string outputFilename);
-
-  std::string GetUlOutputFilename (void);
-
-  /**
-   * Set the name of the file where the downlink statistics will be stored.
-   *
-   * \param outputFilename string with the name of the file
-   */
-  void SetDlOutputFilename (std::string outputFilename);
-
-  std::string GetDlOutputFilename (void);
 
   /**
    * Notifies the stats calculator that an uplink transmission has occurred.
@@ -278,7 +249,6 @@ private:
 
   FlowIdMap m_flowId;
 
-  std::string m_dlOutputFilename;
   Uint32Map m_dlCellId;
   Uint32Map m_dlTxPackets;
   Uint32Map m_dlRxPackets;
@@ -287,7 +257,6 @@ private:
   Uint64StatsMap m_dlDelay;
   Uint32StatsMap m_dlPduSize;
 
-  std::string m_ulOutputFilename;
   Uint32Map m_ulCellId;
   Uint32Map m_ulTxPackets;
   Uint32Map m_ulRxPackets;
