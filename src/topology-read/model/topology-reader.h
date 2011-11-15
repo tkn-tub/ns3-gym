@@ -83,7 +83,7 @@ public:
      *
      * \return the value of the attribute
      */
-    std::string GetAttribute (std::string name);
+    std::string GetAttribute (std::string name) const;
     /**
      * \brief Returns the value of a link attribute.
      * \param name the name of the attribute
@@ -91,7 +91,7 @@ public:
      *
      * \return true if the attribute was defined, false otherwise.
      */
-    bool GetAttributeFailSafe (std::string name, std::string &value);
+    bool GetAttributeFailSafe (std::string name, std::string &value) const;
     /**
      * \brief Sets an arbitrary link attribute.
      * \param name the name of the attribute
