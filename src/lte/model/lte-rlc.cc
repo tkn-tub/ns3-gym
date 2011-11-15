@@ -188,12 +188,13 @@ LteRlcSm::GetTypeId (void)
 void
 LteRlcSm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p);
 }
 
 void
 LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 {
+  NS_LOG_FUNCTION (this << p);
   // RLC Performance evaluation
   RlcTag rlcTag;
   Time delay;
@@ -208,6 +209,7 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 void
 LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
 {
+  NS_LOG_FUNCTION (this << bytes);
   LteMacSapProvider::TransmitPduParameters params;
   params.pdu = Create<Packet> (bytes);
   params.rnti = m_rnti;

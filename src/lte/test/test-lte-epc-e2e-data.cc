@@ -248,7 +248,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   EnbTestData e3;
   UeTestData f3_1 (3, 50);
   e3.ues.push_back (f3_1);
-  UeTestData f3_2 (5, 1472);
+  UeTestData f3_2 (5, 1400);
   e3.ues.push_back (f3_2);
   UeTestData f3_3 (1, 1);
   e3.ues.push_back (f3_2);
