@@ -85,7 +85,7 @@ class RoutingExperiment
 {
 public:
   RoutingExperiment ();
-  void Run (int nSinks, int protocol, double txp, std::string CSVfileName);
+  void Run (int nSinks, double txp, std::string CSVfileName);
   //static void SetMACParam (ns3::NetDeviceContainer & devices,
   //                                 int slotDistance);
   std::string CommandSetup (int argc, char **argv);
@@ -104,6 +104,7 @@ private:
   std::string m_protocolName;
   double m_txp;
   bool m_traceMobility;
+  uint32_t m_protocol;
 };
 
 RoutingExperiment::RoutingExperiment ()
@@ -111,7 +112,8 @@ RoutingExperiment::RoutingExperiment ()
     bytesTotal (0),
     packetsReceived (0),
     m_CSVfileName ("manet-routing.output.csv"),
-    m_traceMobility (false)
+    m_traceMobility (false),
+    m_protocol (2) // AODV
 {
 }
 
@@ -182,6 +184,7 @@ RoutingExperiment::CommandSetup (int argc, char **argv)
   CommandLine cmd;
   cmd.AddValue ("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
+  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV", m_protocol);
   cmd.Parse (argc, argv);
   return m_CSVfileName;
 }
@@ -204,15 +207,13 @@ main (int argc, char *argv[])
   out.close ();
 
   int nSinks = 10;
-  int protocol = 2;
   double txp = 7.5;
 
-  experiment = RoutingExperiment ();
-  experiment.Run (nSinks, protocol, txp, CSVfileName);
+  experiment.Run (nSinks, txp, CSVfileName);
 }
 
 void
-RoutingExperiment::Run (int nSinks, int protocol, double txp, std::string CSVfileName)
+RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
 {
   Packet::EnablePrinting ();
   m_nSinks = nSinks;
@@ -265,7 +266,7 @@ RoutingExperiment::Run (int nSinks, int protocol, double txp, std::string CSVfil
   DsdvHelper dsdv;
   Ipv4ListRoutingHelper list;
 
-  switch (protocol)
+  switch (m_protocol)
     {
     case 1:
       list.Add (olsr, 100);
@@ -280,7 +281,7 @@ RoutingExperiment::Run (int nSinks, int protocol, double txp, std::string CSVfil
       m_protocolName = "DSDV";
       break;
     default:
-      NS_FATAL_ERROR ("No such protocol:" << protocol);
+      NS_FATAL_ERROR ("No such protocol:" << m_protocol);
     }
 
   InternetStackHelper internet;
