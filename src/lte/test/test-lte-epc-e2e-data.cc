@@ -186,7 +186,7 @@ LteEpcE2eDataTestCase::DoRun ()
             
     } 
 
-  Simulator::Stop (Seconds (3.0));  
+  Simulator::Stop (Seconds (5.0));  
   Simulator::Run ();
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
@@ -256,9 +256,23 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   v4.push_back (e3);
   v4.push_back (e1);
   v4.push_back (e2);
-  AddTestCase (new LteEpcE2eDataTestCase ("3 eNBs with big packet", v4));
+  AddTestCase (new LteEpcE2eDataTestCase ("3 eNBs", v4));
 
-  
+  EnbTestData e4;
+  UeTestData f4_1 (5, 1000);
+  e4.ues.push_back (f4_1);
+  std::vector<EnbTestData> v5;
+  v5.push_back (e4);
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1000 byte packets", v5));
+
+
+  EnbTestData e5;
+  UeTestData f5_1 (5, 1400);
+  e5.ues.push_back (f5_1);
+  std::vector<EnbTestData> v6;
+  v6.push_back (e5);
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1400 byte packets", v6));
+
 }
 
 
