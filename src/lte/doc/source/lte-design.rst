@@ -77,13 +77,10 @@ figures :ref:`fig-lte-enb-architecture` and :ref:`fig-lte-ue-architecture`, whic
 deal respectively with the eNB and the UE. A detailed description of the most
 important components are provided in the following sections.
 
-
-.. figure:: figures/lte-ue-architecture.*
-   :align: right
-
 .. _fig-lte-enb-architecture:
    
 .. figure:: figures/lte-enb-architecture.*
+   :align: center
 
    Architecture of the LTE eNB
 
@@ -92,6 +89,7 @@ important components are provided in the following sections.
 .. _fig-lte-ue-architecture:
 
 .. figure:: figures/lte-ue-architecture.*
+   :align: center
 
    Architecture of the LTE UE
 
@@ -104,7 +102,6 @@ The MAC Scheduler interface is **specified** or defined as **abstract classes**.
   * Provider Side is specified in the ``FfMacSchedSapProvider`` class
   * User Side is specified in the ``FfMacSchedSapUser`` class
   
-* CSCHED SAP API
 
 The FemtoForum MAC Scheduler Interface
 ++++++++++++++++++++++++++++++++++++++
@@ -144,6 +141,7 @@ between the blocks and the SAPs defined in our implementation of the MAC
 Scheduler Interface. 
 
 .. figure:: figures/ff-mac-saps.*
+   :align: center
 
 In addition to the above principles, the following design choices have been
 taken:
@@ -170,6 +168,7 @@ The figure below shows how the MAC Scheduler Interface is
 used within the eNB. 
 
 .. figure:: figures/ff-example.*
+   :align: center
 
 The User side of both the CSCHED SAP and the SCHED SAP are
 implemented within the eNB MAC, i.e., in the file ``lte-enb-mac.cc``.
@@ -359,8 +358,7 @@ discussed in [Ofcom2.6GHz]_.
 
 
 
-.. [4] 3GPP R1-081483 (available on 
-       http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip )
+.. [4] 3GPP R1-081483 (available `here <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_ )
 
 
 Physical layer

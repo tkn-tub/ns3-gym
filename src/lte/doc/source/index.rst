@@ -11,4 +11,5 @@ This is the stand-alone version of the ns-3 LTE module documentation.
    lte-design
    lte-user
    lte-testing
+   lte-references
    

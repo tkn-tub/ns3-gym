@@ -365,13 +365,14 @@ While, for setting the parameters::
   lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
   lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
 
-It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set for using the fading module in the simulator. The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_ (available in the folder ``src/lte/model/fading-traces/``); examples of such traces are reported in `fig-fadingPedestrianTrace_`, `fig-fadingVehicularTrace_` and `fig-fadingUrbanTrace_`.
+It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set for using the fading module in the simulator. The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_ (available in the folder ``src/lte/model/fading-traces/``); examples of such traces are reported in the following figures.
 
 
 .. _fig-fadingPedestrianTrace:
 
 .. figure:: figures/fading_pedestrian.*                 
    :align: center
+   :alt: Fading trace 3 kmph
 
    Example of the fading trace included in the simulator for a pedestrian scenario (speed of 3 kmph).
 
@@ -379,6 +380,7 @@ It has to be noted that, ``TraceFilename`` does not have a default value, theref
 
 .. figure:: figures/fading_vehicular.*                 
    :align: center
+   :alt: Fading trace 60 kmph
 
    Example of the fading trace included in the simulator for a vehicular  scenario (speed of 60 kmph).
 
@@ -386,6 +388,7 @@ It has to be noted that, ``TraceFilename`` does not have a default value, theref
 
 .. figure:: figures/fading_urban_3kmph.*                 
    :align: center
+   :alt: Fading trace 3 kmph
 
    Example of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
 
