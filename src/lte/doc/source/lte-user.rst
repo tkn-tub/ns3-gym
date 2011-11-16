@@ -7,7 +7,7 @@
 
 
 Background
-**********
+----------
 
 
 
@@ -17,7 +17,7 @@ we strongly recommend the reader to consult [ns3tutorial]_.
 
   
 Usage Overview
-**************
+--------------
 
 The ns-3 LTE model is a software library that allows the simulation of
 LTE networks.  The process of performing such simulations typically involves the following
@@ -259,18 +259,11 @@ the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
 
-Further Reading
----------------
-
-The directory ``src/lte/examples/`` contains some example simulation programs that
-show how to simulate different LTE scenarios. 
-
-
 Fading Trace Management
-***********************
+-----------------------
 
 Fading Traces Generation
-------------------------
+************************
 
 Thanks to the matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``) it is possible to generate traces according to specific simulation scenarios. The script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
@@ -284,7 +277,7 @@ The file generated is formatted in a matrix fashion by putting each RBs temporal
 It has to be noted that, the model is able to manage external fading trace (e.g., generated with dedicated simulators or obtained in experimental way) which respect the format used by the model (i.e., ASCII file with temporal fading trace of each RB distributed in rows).
 
 Fading Traces Usage
--------------------
+*******************
 
 The proper set of the trace parameters in the simulation is of paramount importance for the correct interpretation of the trace itself within the simulator.
 The list of the parameters to be configured are:
@@ -338,8 +331,8 @@ It has to be noted that, ``TraceFilename`` does not have a default value, theref
    Example of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
 
 
-Building Mobility Model
------------------------
+Buildings Mobility Model
+------------------------
 
 In what following, a few guidelines for the usage of the ``BuildingMobilityModel`` and the ``BuildingPropagationModel`` classes.
 
@@ -413,6 +406,12 @@ It is to be noted that any other configuration (i.e., with BuildingsPropagationL
 
 
 
+
+Further Reading
+---------------
+
+The directory ``src/lte/examples/`` contains some example simulation programs that
+show how to simulate different LTE scenarios. 
 
 
 
