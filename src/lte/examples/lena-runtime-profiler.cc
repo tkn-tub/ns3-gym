@@ -147,12 +147,13 @@ main (int argc, char *argv[])
       building->SetNumberRoomY(nRooms);
       mobility.SetMobilityModel("ns3::BuildingsMobilityModel");
       mobility.Install (enbNodes);
+      uint32_t plantedEnb = 0;
       for (uint32_t floor = 0; floor < nFloors; floor++)
         {
-          uint32_t plantedEnb = 0;
+          uint32_t plantedEnbPerFloor = 0;
           for (uint32_t row = 0; row < nRooms; row++)
             {
-              for (uint32_t column = 0; column < nRooms && plantedEnb < nEnbPerFloor; column++, plantedEnb++)
+              for (uint32_t column = 0; column < nRooms && plantedEnbPerFloor < nEnbPerFloor; column++, plantedEnb++, plantedEnbPerFloor++)
                 {
                   Vector v (roomLength * (column + 0.5),
                             roomLength * (row + 0.5),
