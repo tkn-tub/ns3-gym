@@ -259,13 +259,16 @@ the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and
 ``ns3::MacStatsCalculator::UlOutputFilename``.
 
 
-Fading Trace Management
------------------------
+Fading Trace Usage
+------------------
+
+In this section we will describe how to use fading traces within LTE simulations.
 
 Fading Traces Generation
 ************************
 
-Thanks to the matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``) it is possible to generate traces according to specific simulation scenarios. The script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can introduce their specific configurations. The list of the configurable parameters is provided in the following:
+
+It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
  * ``fc`` : the frequency in use (it affects the computation of the dopples speed).
  * ``v_km_h`` : the speed of the users
@@ -273,29 +276,31 @@ Thanks to the matlab script provided with the code (``/lte/model/fading-traces/f
  * ``numRBs`` : the number of the resource block to be evaluated. 
  * ``tag`` : the tag to be applied to the file generated.
 
-The file generated is formatted in a matrix fashion by putting each RBs temporal fading trace samples in different rows.
-It has to be noted that, the model is able to manage external fading trace (e.g., generated with dedicated simulators or obtained in experimental way) which respect the format used by the model (i.e., ASCII file with temporal fading trace of each RB distributed in rows).
+The file generated contains ASCII-formatted real values organized in a matrix fashion: every row corresponds to a different RB, and every column correspond to a different temporal fading trace sample.
+
+It has to be noted that the ns-3 LTE module is able to work with any fading trace file that complies with the above described ASCII format. Hence, other external tools can be used to generate custom fading traces, such as for example other simulators or experimental devices.
 
 Fading Traces Usage
 *******************
 
-The proper set of the trace parameters in the simulation is of paramount importance for the correct interpretation of the trace itself within the simulator.
-The list of the parameters to be configured are:
+When using a fading trace, it is of paramount importance to specify correctly the trace parameters in the simulation, so that the fading model can load and use it correcly.
+The parameters to be configured are:
 
- * ``TraceFilename`` : the name of the trace to be loaded (absolute path o relative one according to the execution point of the script).
- * ``TraceLength`` : the trace duration in seconds.
- * ``SamplesNum`` : the number of samples.
- * ``WindowSize`` : the size of the fading sampling window in seconds.
+ * ``TraceFilename`` : the name of the trace to be loaded (absolute path, or relative path w.r.t. the path from where the simulation program is executed);
+ * ``TraceLength`` : the trace duration in seconds;
+ * ``SamplesNum`` : the number of samples;
+ * ``WindowSize`` : the size of the fading sampling window in seconds;
 
 It is important to highlight that the sampling interval of the fading trace has to me at most of 1 ms or greater and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module.
-The default configuration of the matlab script provides a trace 10 seconds long, made of 10,000 samples (i.e., 1 sample per TTI ~ 1ms) and used with a windows size of 0.5 seconds amplitude. These are also the default values of the parameters above used in the simulator; therefore their settage can be avoided in case the fading trace respects them.
 
-In order to activate the fading module (by default not active) it has to be explicitly specified in the simulation script::
+The default configuration of the matlab script provides a trace 10 seconds long, made of 10,000 samples (i.e., 1 sample per TTI=1ms) and used with a windows size of 0.5 seconds amplitude. These are also the default values of the parameters above used in the simulator; therefore their settage can be avoided in case the fading trace respects them.
+
+In order to activate the fading module (which is not active by default) the following code should be included in the simulation program::
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   lena->SetFadingModel("ns3::TraceFadingLossModel");
 
-While, for setting the parameters::
+And for setting the parameters::
 
   lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
   lena->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
@@ -303,7 +308,9 @@ While, for setting the parameters::
   lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
   lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
 
-It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set for using the fading module in the simulator. The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_ (available in the folder ``src/lte/model/fading-traces/``); examples of such traces are reported in the following figures.
+It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set explicitly.
+
+The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
 
 
 .. _fig-fadingPedestrianTrace:
@@ -312,7 +319,7 @@ It has to be noted that, ``TraceFilename`` does not have a default value, theref
    :align: center
    :alt: Fading trace 3 kmph
 
-   Example of the fading trace included in the simulator for a pedestrian scenario (speed of 3 kmph).
+   Excerpt of the fading trace included in the simulator for a pedestrian scenario (speed of 3 kmph).
 
 .. _fig-fadingVehicularTrace:
 
@@ -320,7 +327,7 @@ It has to be noted that, ``TraceFilename`` does not have a default value, theref
    :align: center
    :alt: Fading trace 60 kmph
 
-   Example of the fading trace included in the simulator for a vehicular  scenario (speed of 60 kmph).
+   Excerpt of the fading trace included in the simulator for a vehicular  scenario (speed of 60 kmph).
 
 .. _fig-fadingUrbanTrace:
 
@@ -328,17 +335,18 @@ It has to be noted that, ``TraceFilename`` does not have a default value, theref
    :align: center
    :alt: Fading trace 3 kmph
 
-   Example of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
+   Excerpt of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
 
 
 Buildings Mobility Model
 ------------------------
 
-In what following, a few guidelines for the usage of the ``BuildingMobilityModel`` and the ``BuildingPropagationModel`` classes.
+We now explain by examples how to use the buildings model (in particular, the ``BuildingMobilityModel`` and the ``BuildingPropagationModel`` classes) in an ns-3 simulation program to setup an LTE simulation scenario that includes buildings and indoor nodes.
+
 
 .. highlight:: none
 
-#. Inheritance::
+#. Header files to be included::
 
     #include <ns3/buildings-mobility-model.h>
     #include <ns3/buildings-propagation-loss-model.h>
@@ -357,7 +365,7 @@ The selection of the working frequency of the propagation model has to be done w
    lena->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (100));
    lena->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (18100));
 
-It is to be noted that any other configuration (i.e., with BuildingsPropagationLossModel attributes) might generates conflicts in the frequencies definition in the modules during the simulation.
+It is to be noted that using other means to configure the frequency used by the propagation model (i.e., configuring the corresponding BuildingsPropagationLossModel attributes directly) might generates conflicts in the frequencies definition in the modules during the simulation, and is therefore not advised.
 
 #. Mobility model selection::
 
@@ -391,7 +399,7 @@ It is to be noted that any other configuration (i.e., with BuildingsPropagationL
     building->SetNumberRoomX (3);
     building->SetNumberRoomY (2);
 
-   This will instantiate a residential building with base of 10 x 20 meters and height of 10 meters with concrete with windows as external walls, three floors and a grid of rooms of 3 x 2.
+   This will instantiate a residential building with base of 10 x 20 meters and height of 10 meters whose external walls are of concrete with windows; the building has three floors and has an internal 3 x 2  grid of rooms of equal size.
 
 #. Building and nodes interactions::
 
@@ -400,8 +408,8 @@ It is to be noted that any other configuration (i.e., with BuildingsPropagationL
     mm->SetRoomNumberX (1);
     mm->SetRoomNumberY (1);
 
-   This informs node's mobility model the fact that the node is inside the building at the second floor in the corner room of the 3 x 2 grid. 
-   It has to be noted that the simulator does not check the consistence between the node's position and the building site, which is user's responsibility.
+   This informs the node's mobility model that the node is located inside the building on the second floor in the corner room of the 3 x 2 grid. 
+   It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size. The responsibility of this consistency is completely left to the user.
 
 
 
