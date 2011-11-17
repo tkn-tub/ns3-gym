@@ -69,7 +69,7 @@ main (int argc, char *argv[])
 
   Ptr < LenaHelper > lena = CreateObject<LenaHelper> ();
   //lena->EnableLogComponents ();
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  //LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   if (nFloors == 0)
     {
       lena->SetAttribute("PropagationModel",
