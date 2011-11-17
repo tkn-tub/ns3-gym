@@ -17,6 +17,7 @@
  *
  * Authors:
  *  Gary Pei <guangyu.pei@boeing.com>
+ *  Tom Henderson <thomas.r.henderson@boeing.com>
  */
 #ifndef LR_WPAN_HELPER_H
 #define LR_WPAN_HELPER_H
@@ -26,20 +27,24 @@
 #include "ns3/lr-wpan-phy.h"
 #include "ns3/lr-wpan-mac.h"
 #include "ns3/lr-wpan-csmaca.h"
-#include "ns3/lr-wpan-error-rate-model.h"
-#include "ns3/wpan-spectrum-propagation-loss-model.h"
+#include "ns3/trace-helper.h"
+#include "ns3/lr-wpan-error-model.h"
 #include "ns3/single-model-spectrum-channel.h"
 
 namespace ns3 {
 
 /**
- * \brief helps to manage and create ieee.15.4 NetDevice objects
+ * \ingroup lr-wpan
  *
- * This class can help to create a ieee.15.4 NetDevice objects
- * and to configure their attributes during creation.
+ * \brief helps to manage and create IEEE 802.15.4 NetDevice objects
+ *
+ * This class can help to create IEEE 802.15.4 NetDevice objects
+ * and to configure their attributes during creation.  It also contains
+ * additional helper functions used by client code.
  */
 
-class LrWpanHelper
+class LrWpanHelper : public PcapHelperForDevice,
+                     public AsciiTraceHelperForDevice
 {
 public:
   /**
@@ -53,11 +58,10 @@ public:
   * \param phy the physical device
   * \param m the mobility model
   */
-  void AddMobility (Ptr<LrWpanPhy> phy, Ptr<MobilityModel>m);
+  void AddMobility (Ptr<LrWpanPhy> phy, Ptr<MobilityModel> m);
 
   /**
    * \param c a set of nodes
-   * \param type device type to create
    */
   NetDeviceContainer Install (NodeContainer c);
 
@@ -65,6 +69,42 @@ public:
    * Helper to enable all LrWpan log components with one statement
    */
   void EnableLogComponents (void);
+
+  static std::string LrWpanPhyEnumerationPrinter (LrWpanPhyEnumeration);
+  static std::string LrWpanMacStatePrinter (LrWpanMacState e);
+
+private:
+  /**
+   * \internal
+   *
+   * \brief Enable pcap output on the indicated net device.
+   * \internal
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param nd Net device for which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
+   * \param explicitFilename Treat the prefix as an explicit filename if true
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename);
+
+  /**
+   * \brief Enable ascii trace output on the indicated net device.
+   * \internal
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param stream The output stream object to use when logging ascii traces.
+   * \param prefix Filename prefix to use for ascii trace files.
+   * \param nd Net device for which you want to enable tracing.
+   */
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
+                                    std::string prefix,
+                                    Ptr<NetDevice> nd,
+                                    bool explicitFilename);
 
 private:
   Ptr<SingleModelSpectrumChannel> m_channel;

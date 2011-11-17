@@ -51,7 +51,8 @@ public:
     DLT_RAW = 101,
     DLT_IEEE802_11 = 105,
     DLT_PRISM_HEADER = 119,
-    DLT_IEEE802_11_RADIO = 127
+    DLT_IEEE802_11_RADIO = 127,
+    DLT_IEEE802_15_4 = 195
   };
 
   /**

@@ -35,6 +35,8 @@ namespace ns3 {
 typedef Callback< void, LrWpanMacState> LrWpanMacStateCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * This class is a helper for the LrWpanMac to manage the Csma/CA
  * state machine.
  */
@@ -63,6 +65,11 @@ public:
 
   void setUnitBackoffPeriod (uint64_t unitBackoffPeriod);
   uint64_t getUnitBackoffPeriod (void) const;
+
+  /*
+   *  Amount of time from now to the beginning of the next slot
+   */
+  uint64_t getTimeToNextSlot (void) const;
 
   /*
    * Start CSMA-CA algorithm (step 1), initialize NB, BE for both slotted and unslotted
@@ -116,6 +123,7 @@ public:
   void SetLrWpanMacStateCallback (LrWpanMacStateCallback macState);
 
 private:
+  virtual void DoDispose ();
   LrWpanMacStateCallback m_lrWpanMacStateCallback;
   bool m_isSlotted;                     // beacon-enabled slotted or nonbeacon-enabled unslotted CSMA-CA
                                         // beacon order == 15 means nonbeacon-enabled
@@ -124,12 +132,13 @@ private:
   uint8_t m_NB;                         // number of backoffs for the current transmission
   uint8_t m_CW;                         // contention window length (used in slotted ver only)
   uint8_t m_BE;                         // backoff exponent
+  bool m_BLE;                           // Battery Life Extension
+
   uint8_t m_macMinBE;                   //0-macMaxBE default 3
   uint8_t m_macMaxBE;                   //3-8 default 5
   uint8_t m_macMaxCSMABackoffs;         //0-5 default 4
-  bool m_BLE;                           //Battery Life Extension
-
   uint64_t m_aUnitBackoffPeriod;        // 20 symbols in each backoff periods
+
 };
 
 }

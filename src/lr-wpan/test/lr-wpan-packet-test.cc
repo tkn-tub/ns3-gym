@@ -15,13 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Author:  Tom Henderson <thomas.r.henderson@boeing.com>
  */
 
 #include <ns3/test.h>
 #include <ns3/packet.h>
 #include <ns3/lr-wpan-mac-header.h>
 #include <ns3/lr-wpan-mac-trailer.h>
-#include <ns3/wpan-address.h>
+#include <ns3/mac16-address.h>
+#include <ns3/mac64-address.h>
 #include "ns3/log.h"
 
 
@@ -53,33 +55,16 @@ void
 LrWpanPacketTestCase::DoRun (void)
 {
 
-  //Packet::EnablePrinting();
-  //Packet::EnableChecking();
   LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_BEACON, 0);        //sequence number set to 0
   macHdr.SetSrcAddrMode (LrWpanMacHeader::SHORTADDR);                    // short addr
   macHdr.SetDstAddrMode (LrWpanMacHeader::NOADDR);
   macHdr.SetSecDisable ();
   macHdr.SetNoPanIdComp ();
-  //macHdr.SetSrcAddrMode(3);                                             // ext addr
   // ... other setters
-  //macHdr.SetDstAddrMode(3);                                             // ext addr
 
-  uint16_t shortAddr = 66;
-  //uint64_t extAddr = 77;
   uint16_t srcPanId = 100;
-  WpanAddress srcWpanAddr;
-  /*uint16_t dstPanId = 200;
-  WpanAddress dstWpanAddr;*/
-
-  srcWpanAddr.SetAddress (shortAddr);
-  //srcWpanAddr.SetAddress(extAddr);
-  macHdr.SetSrcAddrFields (srcPanId,srcWpanAddr );
-  /*dstWpanAddr.SetAddress(extAddr);
-  macHdr.SetDstAddrFields(dstPanId,dstWpanAddr );*/
-
-  macHdr.Print (std::cout);
-  std::cout << " <--Mac Header created " << std::endl;
-
+  Mac16Address srcWpanAddr ("00:11");
+  macHdr.SetSrcAddrFields (srcPanId, srcWpanAddr);
 
   LrWpanMacTrailer macTrailer;
 
@@ -93,11 +78,6 @@ LrWpanPacketTestCase::DoRun (void)
   p->AddTrailer (macTrailer);
   NS_TEST_ASSERT_MSG_EQ (p->GetSize (), 29, "Packet wrong size after macTrailer addition");
 
-
-  p->Print (std::cout);
-  std::cout << " <--Packet P" << std::endl;
-
-
   // Test serialization and deserialization
   uint32_t size = p->GetSerializedSize ();
   uint8_t buffer[size];
@@ -108,18 +88,13 @@ LrWpanPacketTestCase::DoRun (void)
   p2->Print (std::cout);
   std::cout << " <--Packet P2 " << std::endl;
 
-
   NS_TEST_ASSERT_MSG_EQ (p2->GetSize (), 29, "Packet wrong size after deserialization");
-
 
   LrWpanMacHeader receivedMacHdr;
   p2->RemoveHeader (receivedMacHdr);
 
   receivedMacHdr.Print (std::cout);
   std::cout << " <--P2 Mac Header " << std::endl;
-
-  NS_LOG_UNCOND ("Src Addr Mode" << receivedMacHdr.GetSrcAddrMode () );
-
 
   NS_TEST_ASSERT_MSG_EQ (p2->GetSize (), 22, "Packet wrong size after removing machdr");
 

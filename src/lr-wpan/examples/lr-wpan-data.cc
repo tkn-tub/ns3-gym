@@ -15,15 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Author:  Tom Henderson <thomas.r.henderson@boeing.com>
  */
 
 /*
  * Try to send data end-to-end through a LrWpanMac <-> LrWpanPhy <->
  * SpectrumChannel <-> LrWpanPhy <-> LrWpanMac chain
+ *
+ * Trace Phy state changes, and Mac DataIndication and DataConfirm events
+ * to stdout
  */
-
+#include "ns3/log.h"
 #include "ns3/core-module.h"
 #include "ns3/lr-wpan-module.h"
+#include "ns3/propagation-loss-model.h"
 #include "ns3/simulator.h"
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/constant-position-mobility-model.h>
@@ -32,100 +37,117 @@
 
 using namespace ns3;
 
-static void DataIndication (Ptr<Packet> p)
+static void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
 {
   NS_LOG_UNCOND ("Received packet of size " << p->GetSize ());
 }
 
-static void DataConfirm (LrWpanMcpsDataConfirmStatus status)
+static void DataConfirm (McpsDataConfirmParams params)
 {
-  NS_LOG_UNCOND ("LrWpanMcpsDataConfirmStatus = " << status);
+  NS_LOG_UNCOND ("LrWpanMcpsDataConfirmStatus = " << params.m_status);
+}
+
+static void StateChangeNotification (std::string context, Time now, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState)
+{
+  NS_LOG_UNCOND (context << " state change at " << now.GetSeconds ()
+                         << " from " << LrWpanHelper::LrWpanPhyEnumerationPrinter (oldState)
+                         << " to " << LrWpanHelper::LrWpanPhyEnumerationPrinter (newState));
 }
 
 int main (int argc, char *argv[])
 {
+  bool verbose = false;
+
+  CommandLine cmd;
+
+  cmd.AddValue ("verbose", "turn on all log components", verbose);
+
+  cmd.Parse (argc, argv);
+
   LrWpanHelper lrWpanHelper;
-  lrWpanHelper.EnableLogComponents ();
+  if (verbose)
+    {
+      lrWpanHelper.EnableLogComponents ();
+    }
 
-  Ptr<LrWpanMac> mac0 = CreateObject<LrWpanMac> ();
-  Ptr<LrWpanMac> mac1 = CreateObject<LrWpanMac> ();
-  Ptr<LrWpanPhy> phy0 = CreateObject<LrWpanPhy> ();
-  Ptr<LrWpanPhy> phy1 = CreateObject<LrWpanPhy> ();
+  // Create 2 nodes, and a NetDevice for each one
+  Ptr<Node> n0 = CreateObject <Node> ();
+  Ptr<Node> n1 = CreateObject <Node> ();
 
-  phy0->SetPdDataIndicationCallback (MakeCallback (&LrWpanMac::PdDataIndication, mac0));
-  phy0->SetPdDataConfirmCallback (MakeCallback (&LrWpanMac::PdDataConfirm, mac0));
-  phy0->SetPlmeEdConfirmCallback (MakeCallback (&LrWpanMac::PlmeEdConfirm, mac0));
-  phy0->SetPlmeGetAttributeConfirmCallback (MakeCallback (&LrWpanMac::PlmeGetAttributeConfirm, mac0));
-  phy0->SetPlmeSetTRXStateConfirmCallback (MakeCallback (&LrWpanMac::PlmeSetTRXStateConfirm, mac0));
-  phy0->SetPlmeSetAttributeConfirmCallback (MakeCallback (&LrWpanMac::PlmeSetAttributeConfirm, mac0));
+  Ptr<LrWpanNetDevice> dev0 = CreateObject<LrWpanNetDevice> ();
+  Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice> ();
 
-  phy1->SetPdDataIndicationCallback (MakeCallback (&LrWpanMac::PdDataIndication, mac1));
-  phy1->SetPdDataConfirmCallback (MakeCallback (&LrWpanMac::PdDataConfirm, mac1));
-  phy1->SetPlmeEdConfirmCallback (MakeCallback (&LrWpanMac::PlmeEdConfirm, mac1));
-  phy1->SetPlmeGetAttributeConfirmCallback (MakeCallback (&LrWpanMac::PlmeGetAttributeConfirm, mac1));
-  phy1->SetPlmeSetTRXStateConfirmCallback (MakeCallback (&LrWpanMac::PlmeSetTRXStateConfirm, mac1));
-  phy1->SetPlmeSetAttributeConfirmCallback (MakeCallback (&LrWpanMac::PlmeSetAttributeConfirm, mac1));
+  dev0->SetAddress (Mac16Address ("00:01"));
+  dev1->SetAddress (Mac16Address ("00:02"));
 
-  mac0->SetPhy (phy0);
-  mac1->SetPhy (phy1);
-
-  Ptr<LrWpanCsmaCa> csmaca0 = CreateObject<LrWpanCsmaCa> ();
-  mac0->SetCsmaCa (csmaca0);
-  csmaca0->SetMac (mac0);
-  Ptr<LrWpanCsmaCa> csmaca1 = CreateObject<LrWpanCsmaCa> ();
-  mac1->SetCsmaCa (csmaca1);
-  csmaca1->SetMac (mac1);
-
-  csmaca0->SetLrWpanMacStateCallback (MakeCallback (&LrWpanMac::SetLrWpanMacState, mac0));
-  csmaca1->SetLrWpanMacStateCallback (MakeCallback (&LrWpanMac::SetLrWpanMacState, mac1));
-
-  phy0->SetPlmeCcaConfirmCallback (MakeCallback (&LrWpanCsmaCa::PlmeCcaConfirm, csmaca0));
-  phy1->SetPlmeCcaConfirmCallback (MakeCallback (&LrWpanCsmaCa::PlmeCcaConfirm, csmaca1));
-
-  phy0->SetPdDataIndicationCallback (MakeCallback (&LrWpanMac::PdDataIndication, mac0));
-  phy1->SetPdDataIndicationCallback (MakeCallback (&LrWpanMac::PdDataIndication, mac1));
+  // Each device must be attached to the same channel
   Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
+  Ptr<LogDistancePropagationLossModel> propModel = CreateObject<LogDistancePropagationLossModel> ();
+  channel->AddPropagationLossModel (propModel);
 
-  phy0->SetChannel (channel);
-  phy1->SetChannel (channel);
-  channel->AddRx (phy0);
-  channel->AddRx (phy1);
+  dev0->SetChannel (channel);
+  dev1->SetChannel (channel);
 
-  // CONFIGURE MOBILITY
-  Ptr<ConstantPositionMobilityModel> senderMobility = CreateObject<ConstantPositionMobilityModel> ();
-  phy0->SetMobility (senderMobility);
-  Ptr<ConstantPositionMobilityModel> receiverMobility = CreateObject<ConstantPositionMobilityModel> ();
-  phy1->SetMobility (receiverMobility);
+  // To complete configuration, a LrWpanNetDevice must be added to a node
+  n0->AddDevice (dev0);
+  n1->AddDevice (dev1);
+
+  // Trace state changes in the phy
+  dev0->GetPhy ()->TraceConnect ("TrxState", std::string ("phy0"), MakeCallback (&StateChangeNotification));
+  dev1->GetPhy ()->TraceConnect ("TrxState", std::string ("phy1"), MakeCallback (&StateChangeNotification));
+
+  Ptr<ConstantPositionMobilityModel> sender0Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  sender0Mobility->SetPosition (Vector (0,0,0));
+  dev0->GetPhy ()->SetMobility (sender0Mobility);
+  Ptr<ConstantPositionMobilityModel> sender1Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  // Configure position 10 m distance
+  sender1Mobility->SetPosition (Vector (0,10,0));
+  dev1->GetPhy ()->SetMobility (sender1Mobility);
 
   McpsDataConfirmCallback cb0;
   cb0 = MakeCallback (&DataConfirm);
-  mac0->SetMcpsDataConfirmCallback (cb0);
+  dev0->GetMac ()->SetMcpsDataConfirmCallback (cb0);
 
   McpsDataIndicationCallback cb1;
   cb1 = MakeCallback (&DataIndication);
-  mac1->SetMcpsDataIndicationCallback (cb1);
+  dev0->GetMac ()->SetMcpsDataIndicationCallback (cb1);
 
-  Ptr<Packet> p = Create<Packet> (20);  // 20 bytes of dummy data
+  McpsDataConfirmCallback cb2;
+  cb2 = MakeCallback (&DataConfirm);
+  dev1->GetMac ()->SetMcpsDataConfirmCallback (cb2);
+
+  McpsDataIndicationCallback cb3;
+  cb3 = MakeCallback (&DataIndication);
+  dev1->GetMac ()->SetMcpsDataIndicationCallback (cb3);
+
+  // Tracing
+  lrWpanHelper.EnablePcapAll ("lr-wpan-data", false);
+  AsciiTraceHelper ascii;
+  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("lr-wpan-data.tr");
+  lrWpanHelper.EnableAsciiAll (stream);
 
   // The below should trigger two callbacks when end-to-end data is working
   // 1) DataConfirm callback is called
   // 2) DataIndication callback is called with value of 20
-  mac0->McpsDataRequest (p);
+  Ptr<Packet> p0 = Create<Packet> (50);  // 20 bytes of dummy data
+  McpsDataRequestParams params;
+  params.m_srcAddrMode = 2;
+  params.m_dstAddrMode = 2;
+  params.m_dstPanId = 0;
+  params.m_dstAddr = Mac16Address ("00:02");
+  params.m_msduHandle = 0;
+  params.m_txOptions = 0;
+  dev0->GetMac ()->McpsDataRequest (params, p0);
+
+  // Send a packet back at time 2 seconds
+  Ptr<Packet> p2 = Create<Packet> (60);  // 20 bytes of dummy data
+  params.m_dstAddr = Mac16Address ("00:01");
+  Simulator::Schedule (MilliSeconds (2.0),
+                       &LrWpanMac::McpsDataRequest,
+                       dev1->GetMac (), params, p2);
 
   Simulator::Run ();
 
-  // Break reference cycles
-  phy0->Dispose ();
-  phy1->Dispose ();
-  mac0->Dispose ();
-  mac1->Dispose ();
-  // Clean up allocated memory
-  senderMobility = receiverMobility = 0;
-  channel = 0;
-  csmaca0 = csmaca1 = 0;
-  phy0 = phy1 = 0;
-  mac0 = mac1 = 0;
   Simulator::Destroy ();
   return 0;
-
 }

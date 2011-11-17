@@ -15,35 +15,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *  Author: kwong yin <kwong-sang.yin@boeing.com>
+ * Author: Gary Pei <guangyu.pei@boeing.com>
  */
+#ifndef LR_WPAN_ERROR_MODEL_H
+#define LR_WPAN_ERROR_MODEL_H
 
-#ifndef LRWPANMACTRAILER_H_
-#define LRWPANMACTRAILER_H_
-
-#include "ns3/trailer.h"
 #include <stdint.h>
+#include <math.h>
+#include "ns3/object.h"
 
 namespace ns3 {
 
 /**
- * The length in octets of the IEEE 802.15.4 MAC FCS field
+ * \ingroup lr-wpan
+ *
+ * Model the error rate for IEEE 802.15.4 2.4 GHz AWGN channel for OQPSK
+ * the model description can be found in IEEE Std 802.15.4-2006, section
+ * E.4.1.7
  */
-
-static const uint16_t LRWPAN_MAC_FCS_LENGTH = 2;
-
-class LrWpanMacTrailer : public Trailer
+class LrWpanErrorModel : public Object
 {
 public:
-  LrWpanMacTrailer ();
-  ~LrWpanMacTrailer ();
-
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  LrWpanErrorModel ();
+
+  /**
+   * return chunk success rate for given SNR
+   * \return success rate (i.e. 1 - chunk error rate)
+   * \param snr SNR expressed as a power ratio (i.e. not in dB)
+   * \param nbits number of bits in the chunk
+   */
+  double GetChunkSuccessRate (double snr, uint32_t nbits) const;
+
+private:
+  uint64_t Factorial (uint32_t k) const;
+  uint32_t BinomialCoefficient (uint32_t k, uint32_t n) const;
 };
+
+
 } // namespace ns3
-#endif /* LRWPANMACTRAILER_H_ */
+
+#endif /* LR_WPAN_ERROR_MODEL_H */

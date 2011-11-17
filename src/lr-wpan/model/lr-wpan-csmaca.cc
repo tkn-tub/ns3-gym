@@ -20,6 +20,7 @@
 
 #include "ns3/simulator.h"
 #include "ns3/lr-wpan-csmaca.h"
+#include "ns3/lr-wpan-mac.h"
 #include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE ("LrWpanCsmaCa");
@@ -59,6 +60,13 @@ LrWpanCsmaCa::LrWpanCsmaCa ()
 
 LrWpanCsmaCa::~LrWpanCsmaCa ()
 {
+  m_mac = 0;
+}
+
+void
+LrWpanCsmaCa::DoDispose ()
+{
+  m_lrWpanMacStateCallback = MakeNullCallback< void, LrWpanMacState> ();
   m_mac = 0;
 }
 
@@ -158,12 +166,23 @@ LrWpanCsmaCa::getUnitBackoffPeriod (void) const
   return m_aUnitBackoffPeriod;
 }
 
+//TODO:
+uint64_t
+LrWpanCsmaCa::getTimeToNextSlot (void) const
+{
+  NS_LOG_FUNCTION (this);
+  uint64_t diffT = 0;
+
+
+  return(diffT);
+
+}
 void
 LrWpanCsmaCa::Start ()
 
 {
   NS_LOG_FUNCTION (this);
-  uint8_t backoffBoundary = 0;
+  uint64_t backoffBoundary = 0;
   m_NB = 0;
   if (isSlottedCsmaCa ())
     {
@@ -176,7 +195,8 @@ LrWpanCsmaCa::Start ()
         {
           m_BE = m_macMinBE;
         }
-      //TODO: for slotted, set backoffBoundary to next backoff period boundary
+      //TODO: for slotted, locate backoff period boundary. i.e. delay to the next slot boundary
+      backoffBoundary = getTimeToNextSlot ();
       Simulator::Schedule (Seconds (backoffBoundary),&LrWpanCsmaCa::RandomBackoffDelay,this);
     }
   else
@@ -209,6 +229,7 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 {
   NS_LOG_FUNCTION (this);
 
+  SeedManager::SetSeed (100);
   UniformVariable uniformVar;
   uint64_t upperBound = (uint64_t) pow (2, m_BE) - 1;
   uint64_t backoffPeriod;
@@ -240,7 +261,7 @@ void
 LrWpanCsmaCa::CanProceed ()
 {
   NS_LOG_FUNCTION (this);
-  uint8_t backoffBoundary = 0;
+  uint64_t backoffBoundary = 0;
   uint8_t nextCap = 0;
   bool canProceed = true;
 
@@ -253,7 +274,8 @@ LrWpanCsmaCa::CanProceed ()
 
   if (canProceed)
     {
-      // TODO: Perform CCA on the backoff boundary for the slotted CSCMA-CA
+      // TODO: For slotted, Perform CCA on backoff period boundary i.e. delay to next slot boundary
+      backoffBoundary = getTimeToNextSlot ();
       Simulator::Schedule (Seconds (backoffBoundary),&LrWpanCsmaCa::RequestCCA,this);
     }
   else
@@ -319,11 +341,16 @@ LrWpanCsmaCa::PlmeCcaConfirm (LrWpanPhyEnumeration status)
         {
           // no channel found so cannot send pkt
           NS_LOG_DEBUG ("Channel access failure");
-          m_mac->m_mcpsDataConfirmCallback (IEEE_802_15_4_CHANNEL_ACCESS_FAILURE);
+          if (!m_lrWpanMacStateCallback.IsNull ())
+            {
+              NS_LOG_LOGIC ("Notifying MAC of Channel access failure");
+              m_lrWpanMacStateCallback (CHANNEL_ACCESS_FAILURE);
+            }
+          return;
         }
       else
         {
-          NS_LOG_DEBUG ("Perform another backoff; m_NB = " << m_NB);
+          NS_LOG_DEBUG ("Perform another backoff; m_NB = " << static_cast<uint16_t> (m_NB));
           Simulator::ScheduleNow (&LrWpanCsmaCa::RandomBackoffDelay,this); //Perform another backoff (step 2)
         }
     }

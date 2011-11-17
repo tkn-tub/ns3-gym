@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <ns3/callback.h>
+#include <ns3/traced-callback.h>
 #include "ns3/object.h"
 #include <ns3/packet-burst.h>
 #include <ns3/spectrum-phy.h>
@@ -30,12 +31,14 @@
 #include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-value.h>
-#include <ns3/lr-wpan-spectrum-value-helper.h>
 #include <ns3/mobility-model.h>
 #include <ns3/packet.h>
 #include <ns3/nstime.h>
 #include <ns3/net-device.h>
 #include <ns3/event-id.h>
+#include <ns3/random-variable.h>
+#include "lr-wpan-spectrum-value-helper.h"
+#include "lr-wpan-error-model.h"
 
 namespace ns3 {
 
@@ -91,7 +94,7 @@ typedef enum
   IEEE_802_15_4_PHY_TRX_OFF = 0x08,
   IEEE_802_15_4_PHY_TX_ON = 0x09,
   IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE = 0xa,
-  IEEE_802_15_4_PHY_READ_OLNY = 0xb,
+  IEEE_802_15_4_PHY_READ_ONLY = 0xb,
   IEEE_802_15_4_PHY_UNSPECIFIED = 0xc // all cases not covered by ieee802.15.4
 } LrWpanPhyEnumeration;
 
@@ -181,6 +184,8 @@ typedef Callback< void, LrWpanPhyEnumeration,
                   LrWpanPibAttributeIdentifier > PlmeSetAttributeConfirmCallback;
 
 /**
+ * \ingroup lr-wpan
+ *
  * Make LrWpanPhy a SpectrumPhy so we can enable the eventual modeling of
  * device interference
  */
@@ -192,6 +197,9 @@ public:
   typedef std::pair<Ptr<Packet>, bool>  PacketAndStatus;
 
   static TypeId GetTypeId (void);
+
+  static const uint32_t aMaxPhyPacketSize; // Table 22 in section 6.4.1 of ieee802.15.4
+  static const uint32_t aTurnaroundTime;   // Table 22 in section 6.4.1 of ieee802.15.4
 
   LrWpanPhy ();
   virtual ~LrWpanPhy ();
@@ -291,17 +299,6 @@ public:
   void PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id, LrWpanPhyPIBAttributes* attribute);
 
   /**
-   * Start a transmission
-   *
-   *
-   * @param p the packet to be transmitted
-   *
-   * @return true if an error occurred and the transmission was not
-   * started, false otherwise.
-   */
-  bool StartTx (Ptr<Packet> p);
-
-  /**
    * set the callback for the end of a RX, as part of the
    * interconnections betweenthe PHY and the MAC. The callback
    * implements PD Indication SAP.
@@ -364,15 +361,28 @@ public:
    */
   double GetDataOrSymbolRate (bool isData);
 
+  /**
+   * set the error model to use
+   *
+   * @param e pointer to LrWpanErrorModel to use
+   */
+  void SetErrorModel (Ptr<LrWpanErrorModel> e);
+
+  /**
+   * get the error model in use
+   *
+   * @return pointer to LrWpanErrorModel in use
+   */
+  Ptr<LrWpanErrorModel> GetErrorModel (void) const;
+
 protected:
-  static const uint32_t aMaxPhyPacketSize; // Table 22 in section 6.4.1 of ieee802.15.4
-  static const uint32_t aTurnaroundTime;   // Table 22 in section 6.4.1 of ieee802.15.4
   static const LrWpanPhyDataAndSymbolRates dataSymbolRates[7];
   static const LrWpanPhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[7];
 
 private:
   virtual void DoDispose (void);
   void ChangeState (LrWpanPhyEnumeration newState);
+  void ChangeTrxState (LrWpanPhyEnumeration newState);
   void SetMyPhyOption (void);
   LrWpanPhyOption GetMyPhyOption (void);
   void EndTx ();
@@ -389,12 +399,63 @@ private:
   Ptr<SpectrumValue> m_txPsd;
   Ptr<const SpectrumValue> m_rxPsd;
   Ptr<const SpectrumValue> m_noise;
+  Ptr<LrWpanErrorModel> m_errorModel;
   LrWpanPhyPIBAttributes m_phyPIBAttributes;
-  LrWpanPhyEnumeration m_trxState;
-  LrWpanPhyEnumeration m_trxStateDeferSet;
-  LrWpanPhyEnumeration m_trxStateTurnaround;
-  LrWpanPhyEnumeration m_sensedChannelState;
-  LrWpanPhyEnumeration m_state;
+
+  // State variables
+  LrWpanPhyEnumeration m_trxState;  /// transceiver state
+  TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
+  LrWpanPhyEnumeration m_trxStatePending;  /// pending state change
+  bool PhyIsBusy (void) const;  /// helper function
+
+  // Trace sources
+  /**
+   * The trace source fired when a packet begins the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
+
+  /**
+   * The trace source fired when a packet ends the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet as it tries
+   * to transmit it.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
+
+  /**
+   * The trace source fired when a packet begins the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
+
+  /**
+   * The trace source fired when a packet ends the reception process from
+   * the medium.  Second quantity is received SINR.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet>, double > m_phyRxEndTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet it has received.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
+
   PdDataIndicationCallback m_pdDataIndicationCallback;
   PdDataConfirmCallback m_pdDataConfirmCallback;
   PlmeCcaConfirmCallback m_plmeCcaConfirmCallback;
@@ -413,6 +474,7 @@ private:
   EventId m_edRequest;
   EventId m_setTRXState;
   EventId m_pdDataRequest;
+  UniformVariable m_random;
 };
 
 

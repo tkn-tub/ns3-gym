@@ -28,8 +28,8 @@ show the scope of the model.
 
 The Spectrum NetDevice from Nicola Baldo is the basis for the implementation.
 
-The implementation also borrows from the ns-2 models developed by Zheng
-and Lee, and certain aspects of those models have been ported over.
+The implementation also plans to borrow from the ns-2 models developed by 
+Zheng and Lee in the future.
 
 APIs
 ####
@@ -89,7 +89,12 @@ This maps to ns-3 classes and methods such as:::
 MAC
 ###
 
-To be written.  Focuses on unslotted CSMA/CA.
+The MAC at present implements the unslotted CSMA/CA variant, without beaconing.
+The main API supported is the data transfer API 
+(McpsDataRequest/Indication/Confirm).  CSMA/CA according to Stc 802.15.4-2006,
+section 7.5.1.4 is supported.  Frame reception and rejection
+according to Std 802.15.4-2006, section 7.5.6.2 is supported.  Various
+trace sources are supported, and trace sources can be hooked to sinks.
 
 PHY
 ###
@@ -107,24 +112,28 @@ noise across the frequency bands. The loss model can fully utilize all
 existing simple (non-spectrum phy) loss models. The Phy model uses 
 the existing single spectrum channel model.
 
+NetDevice
+#########
+
+Although it is expected that other technology profiles (such as 
+6LoWPAN and ZigBee) will write their own NetDevice classes, a basic
+LrWpanNetDevice is provided, which encapsulates the common operations
+of creating a generic LrWpan device and hooking things together.
+
 Scope and Limitations
 =====================
 
 Future versions of this document will contain a PICS proforma similar to
 Appendix D of IEEE 802.15.4-2006.  The current emphasis is on the 
 unslotted mode of 802.15.4 operation for use in Zigbee, and the scope
-is extremely limited, to the point of just getting some basic end-to-end
-frames flowing.
+is limited to enabling a single mode (CSMA/CA) with basic data transfer
+capabilities.
 
 References
 ==========
 
-* Wireless Medium Access Control (MAC) and Physical Layer (PHY) 
-Specifications for Low-Rate Wireless Personal Area Networks (WPANs), 
-IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
-* J. Zheng and Myung J. Lee, "A comprehensive performance study of IEEE 
-802.15.4," Sensor Network Operations, IEEE Press, Wiley Interscience, 
-Chapter 4, pp. 218-237, 2006.
+* Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications for Low-Rate Wireless Personal Area Networks (WPANs), IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
+* J. Zheng and Myung J. Lee, "A comprehensive performance study of IEEE 802.15.4," Sensor Network Operations, IEEE Press, Wiley Interscience, Chapter 4, pp. 218-237, 2006.
 
 Usage
 *****
@@ -137,7 +146,14 @@ Add ``lr-wpan`` to the list of modules built with ns-3.
 Helper
 ======
 
-TBD, this is similar to other device helpers for ns-3.
+The helper is patterned after other device helpers.  In particular,
+tracing (ascii and pcap) is enabled similarly, and enabling of all
+lr-wpan log components is performed similarly.  Use of the helper
+is exemplified in ``examples/lr-wpan-data.cc``.  For ascii tracing,
+the transmit and receive traces are hooked at the Mac layer.
+
+The default propagation loss model added to the channel, when this helper
+is used, is the LogDistancePropagationLossModel.
 
 Examples
 ========
@@ -145,6 +161,8 @@ Examples
 The following examples have been written, which can be found in ``src/lr-wpan/examples/``:
 
 * ``lr-wpan-data.cc``:  A simple example showing end-to-end data transfer.
+* ``lr-wpan-error-model-plot.cc``:  An example to test the phy.
+* ``lr-wpan-error-distance-plot.cc``:  An example to plot variations of the packet success ratio as a function of distance.
 * ``lr-wpan-packet-print.cc``:  An example to print out the MAC header fields.
 * ``lr-wpan-phy-test.cc``:  An example to test the phy.
 
@@ -162,15 +180,45 @@ in a DataIndication on the peer node.
 
     Data example for simple LR-WPAN data transfer end-to-end
 
+The example ``lr-wpan-error-distance-plot.cc`` plots the packet success
+ratio (PSR) as a function of distance, using the default LogDistance
+propagation loss model and the 802.15.4 error model.  The channel (default 11),
+packet size (default 20 bytes) and transmit power (default 0 dBm) can be
+varied by command line arguments.  The program outputs a file named
+``802.15.4-psr-distance.plt``.  Loading this file into gnuplot yields
+a file ``802.15.4-psr-distance.eps``, which can be converted to pdf or
+other formats.  The default output is shown below. 
+
+.. _fig-802-15-4-psr-distance:
+
+.. figure:: figures/802-15-4-psr-distance.*
+
+    Default output of the program ``lr-wpan-error-distance-plot.cc``
+
 Tests
 =====
 
 The following tests have been written, which can be found in ``src/lr-wpan/tests/``:
 
+* ``lr-wpan-error-model-test.cc``:  Check that the error model gives predictable values.
 * ``lr-wpan-packet-test.cc``:  Test the 802.15.4 MAC header/trailer classes
 * ``lr-wpan-pd-plme-sap-test.cc``:  Test the PLME and PD SAP per IEEE 802.15.4
+* ``lr-wpan-spectrum-value-helper-test.cc``:  Test that the conversion between power (expressed as a scalar quantity) and spectral power, and back again, falls within a 25% tolerance across the range of possible channels and input powers.
 
 Validation
 **********
 
-This model has been tested as follows (*to be completed*).
+The model has not been validated against real hardware.  The error model
+has been validated against the data in IEEE Std 802.15.4-2006, 
+section E.4.1.7 (Figure E.2).   The MAC behavior (CSMA backoff) has been 
+validated by hand against expected behavior.  The below plot is an example 
+of the error model validation and can be reproduced by running
+``lr-wpan-error-model-plot.cc``:
+
+.. _fig-802-15-4-ber:
+
+.. figure:: figures/802-15-4-ber.*
+
+    Default output of the program ``lr-wpan-error-model-plot.cc`` 
+
+

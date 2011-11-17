@@ -15,24 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- *      Author: kwong yin <kwong-sang.yin@boeing.com>
+ * Author: kwong yin <kwong-sang.yin@boeing.com>
  */
 
-
 #include "ns3/lr-wpan-mac-header.h"
-#include "ns3/wpan-address.h"
-
-
-
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
+#include "ns3/address-utils.h"
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LrWpanMacHeader);
 
 // TODO: Test Compressed PAN Id, Security Enabled, different size Key
-
-
 
 LrWpanMacHeader::LrWpanMacHeader ()
 {
@@ -87,7 +82,7 @@ LrWpanMacHeader::GetType (void) const
       return LRWPAN_MAC_COMMAND;
       break;
     default:
-      return LRWPAN_MAC_ERROR;
+      return LRWPAN_MAC_RESERVED;
     }
 }
 
@@ -198,12 +193,16 @@ LrWpanMacHeader::GetDstPanId (void) const
 }
 
 
-WpanAddress
-LrWpanMacHeader::GetDstAddr (void) const
+Mac16Address
+LrWpanMacHeader::GetShortDstAddr (void) const
 {
-  return(m_addrDstAddr);
+  return(m_addrShortDstAddr);
 }
-
+Mac64Address
+LrWpanMacHeader::GetExtDstAddr (void) const
+{
+  return(m_addrExtDstAddr);
+}
 
 uint16_t
 LrWpanMacHeader::GetSrcPanId (void) const
@@ -212,11 +211,18 @@ LrWpanMacHeader::GetSrcPanId (void) const
 }
 
 
-WpanAddress
-LrWpanMacHeader::GetSrcAddr (void) const
+
+Mac16Address
+LrWpanMacHeader::GetShortSrcAddr (void) const
 {
-  return(m_addrSrcAddr);
+  return(m_addrShortSrcAddr);
 }
+Mac64Address
+LrWpanMacHeader::GetExtSrcAddr (void) const
+{
+  return(m_addrExtSrcAddr);
+}
+
 
 uint8_t
 LrWpanMacHeader::GetSecControl (void) const
@@ -415,25 +421,36 @@ LrWpanMacHeader::SetSeqNum (uint8_t seqNum)
   m_SeqNum = seqNum;
 }
 
+void
+LrWpanMacHeader::SetSrcAddrFields (uint16_t panId,
+                                   Mac16Address addr)
+{
+  m_addrSrcPanId = panId;
+  m_addrShortSrcAddr = addr;
+}
 
 void
 LrWpanMacHeader::SetSrcAddrFields (uint16_t panId,
-                                   WpanAddress addr)
+                                   Mac64Address addr)
 {
   m_addrSrcPanId = panId;
-  m_addrSrcAddr = addr;
+  m_addrExtSrcAddr = addr;
 }
-
 
 void
 LrWpanMacHeader::SetDstAddrFields (uint16_t panId,
-                                   WpanAddress addr)
+                                   Mac16Address addr)
 {
   m_addrDstPanId = panId;
-  m_addrDstAddr = addr;
+  m_addrShortDstAddr = addr;
 }
-
-
+void
+LrWpanMacHeader::SetDstAddrFields (uint16_t panId,
+                                   Mac64Address addr)
+{
+  m_addrDstPanId = panId;
+  m_addrExtDstAddr = addr;
+}
 void
 LrWpanMacHeader::SetSecControl (uint8_t secControl)
 {
@@ -525,21 +542,20 @@ LrWpanMacHeader::PrintFrameControl (std::ostream &os) const
 void
 LrWpanMacHeader::Print (std::ostream &os) const
 {
-
   PrintFrameControl (os);
-  os << ", Sequence Num = " << (uint32_t) m_SeqNum;
+  os << ", Sequence Num = " << static_cast<uint16_t> (m_SeqNum);
 
   switch (m_fctrlDstAddrMode)
     {
     case NOADDR:
       break;
     case SHORTADDR:
-      os << ", Dst Addr Pan ID = " << (uint32_t) m_addrDstPanId
-         << ", m_addrSrcAddr = " << (uint32_t) m_addrDstAddr.GetShortAddress ();
+      os << ", Dst Addr Pan ID = " << static_cast<uint16_t> (m_addrDstPanId)
+         << ", m_addrShortDstAddr = " << m_addrShortDstAddr;
       break;
     case EXTADDR:
-      os << ", Dst Addr Pan ID = " << (uint32_t) m_addrDstPanId
-         << ", m_addrDstAddr = " << (uint64_t) m_addrDstAddr.GetExtAddress ();
+      os << ", Dst Addr Pan ID = " << static_cast<uint16_t> (m_addrDstPanId)
+         << ", m_addrExtDstAddr = " << m_addrExtDstAddr;
       break;
     }
 
@@ -548,35 +564,35 @@ LrWpanMacHeader::Print (std::ostream &os) const
     case NOADDR:
       break;
     case SHORTADDR:
-      os << ", Src Addr Pan ID = " << (uint32_t) m_addrSrcPanId
-         << ", m_addrSrcAddr = " << (uint32_t) m_addrSrcAddr.GetShortAddress ();
+      os << ", Src Addr Pan ID = " << static_cast<uint16_t> (m_addrSrcPanId)
+         << ", m_addrShortSrcAddr = " << m_addrShortSrcAddr;
       break;
     case EXTADDR:
-      os << ", Src Addr Pan ID = " << (uint32_t) m_addrSrcPanId
-         << ", m_addrSrcAddr = " << (uint64_t) m_addrSrcAddr.GetExtAddress ();
+      os << ", Src Addr Pan ID = " << static_cast<uint32_t> (m_addrSrcPanId)
+         << ", m_addrExtSrcAddr = " << m_addrExtDstAddr;
       break;
     }
 
   if (IsSecEnable ())
     {
-      os << "  Security Level = " << (uint32_t) m_secctrlSecLevel
-         << ", Key Id Mode = " << (uint32_t) m_secctrlKeyIdMode
-         << ", Frame Counter = " << (uint32_t) m_auxFrmCntr;
+      os << "  Security Level = " << static_cast<uint32_t> (m_secctrlSecLevel)
+         << ", Key Id Mode = " << static_cast<uint32_t> (m_secctrlKeyIdMode)
+         << ", Frame Counter = " << static_cast<uint32_t> (m_auxFrmCntr);
 
       switch (m_secctrlKeyIdMode)
         {
         case IMPLICIT:
           break;
         case NOKEYSOURCE:
-          os << ", Key Id - Key Index = " << (uint32_t) m_auxKeyIdKeyIndex;
+          os << ", Key Id - Key Index = " << static_cast<uint32_t> (m_auxKeyIdKeyIndex);
           break;
         case SHORTKEYSOURCE:
-          os << ", Key Id - Key Source 32 =" << (uint32_t) m_auxKeyIdKeySrc32
-             << ", Key Id - Key Index = " << (uint32_t) m_auxKeyIdKeyIndex;
+          os << ", Key Id - Key Source 32 =" << static_cast<uint32_t> (m_auxKeyIdKeySrc32)
+             << ", Key Id - Key Index = " << static_cast<uint32_t> (m_auxKeyIdKeyIndex);
           break;
         case LONGKEYSOURCE:
-          os << ", Key Id - Key Source 64 =" << (uint64_t) m_auxKeyIdKeySrc64
-             << ", Key Id - Key Index = " << (uint32_t) m_auxKeyIdKeyIndex;
+          os << ", Key Id - Key Source 64 =" << static_cast<uint64_t> (m_auxKeyIdKeySrc64)
+             << ", Key Id - Key Index = " << static_cast<uint32_t> (m_auxKeyIdKeyIndex);
           break;
         }
     }
@@ -677,11 +693,11 @@ LrWpanMacHeader::Serialize (Buffer::Iterator start) const
       break;
     case SHORTADDR:
       i.WriteHtolsbU16 (GetDstPanId ());
-      i.WriteHtolsbU16 (m_addrDstAddr.GetShortAddress ());
+      WriteTo (i, m_addrShortDstAddr);
       break;
     case EXTADDR:
       i.WriteHtolsbU16 (GetDstPanId ());
-      i.WriteHtolsbU64 (m_addrDstAddr.GetExtAddress ());
+      WriteTo (i, m_addrExtDstAddr);
       break;
     }
 
@@ -694,14 +710,14 @@ LrWpanMacHeader::Serialize (Buffer::Iterator start) const
         {
           i.WriteHtolsbU16 (GetSrcPanId ());
         }
-      i.WriteHtolsbU16 (m_addrSrcAddr.GetShortAddress ());
+      WriteTo (i, m_addrShortSrcAddr);
       break;
     case EXTADDR:
       if (IsNoPanIdComp ())
         {
           i.WriteHtolsbU16 (GetSrcPanId ());
         }
-      i.WriteHtolsbU64 (m_addrSrcAddr.GetExtAddress ());
+      WriteTo (i, m_addrExtSrcAddr);
       break;
     }
 
@@ -733,8 +749,6 @@ LrWpanMacHeader::Serialize (Buffer::Iterator start) const
 uint32_t
 LrWpanMacHeader::Deserialize (Buffer::Iterator start)
 {
-  uint16_t addr16;
-  uint64_t addr64;
 
   Buffer::Iterator i = start;
   uint16_t frameControl = i.ReadLsbtohU16 ();
@@ -747,13 +761,11 @@ LrWpanMacHeader::Deserialize (Buffer::Iterator start)
       break;
     case SHORTADDR:
       m_addrDstPanId = i.ReadLsbtohU16 ();
-      addr16 = i.ReadLsbtohU16 ();
-      m_addrDstAddr.SetAddress (addr16);
+      ReadFrom (i, m_addrShortDstAddr);
       break;
     case EXTADDR:
       m_addrDstPanId = i.ReadLsbtohU16 ();
-      addr64 = i.ReadLsbtohU64 ();
-      m_addrDstAddr.SetAddress (addr64);
+      ReadFrom (i, m_addrExtDstAddr);
       break;
     }
 
@@ -773,8 +785,7 @@ LrWpanMacHeader::Deserialize (Buffer::Iterator start)
               m_addrSrcPanId = m_addrDstPanId;
             }
         }
-      addr16 = i.ReadLsbtohU16 ();
-      m_addrSrcAddr.SetAddress (addr16);
+      ReadFrom (i, m_addrShortSrcAddr);
       break;
     case EXTADDR:
       if (IsNoPanIdComp ())
@@ -788,8 +799,7 @@ LrWpanMacHeader::Deserialize (Buffer::Iterator start)
               m_addrSrcPanId = m_addrDstPanId;
             }
         }
-      addr64 = i.ReadLsbtohU64 ();
-      m_addrSrcAddr.SetAddress (addr64);
+      ReadFrom (i, m_addrExtSrcAddr);
       break;
     }
 

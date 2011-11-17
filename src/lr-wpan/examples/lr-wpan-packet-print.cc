@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Author:  Tom Henderson <thomas.r.henderson@boeing.com>
  */
 
 #include "ns3/core-module.h"
@@ -30,21 +31,13 @@ int main (int argc, char *argv[])
   Packet::EnableChecking ();
   LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_BEACON, 0);        //sequence number set to 0
   macHdr.SetSrcAddrMode (2);                                             // short addr
+  macHdr.SetDstAddrMode (0);                                             // no addr
   // ... other setters
 
-
-  uint16_t shortAddr = 66;
-  //uint64_t extAddr = 77;
   uint16_t srcPanId = 100;
-  WpanAddress srcWpanAddr;
-  /*uint16_t dstPanId = 200;
-  WpanAddress dstWpanAddr;*/
+  Mac16Address srcWpanAddr ("00:11");
 
-  srcWpanAddr.SetAddress (shortAddr);
-  //srcWpanAddr.SetAddress(extAddr);
   macHdr.SetSrcAddrFields (srcPanId,srcWpanAddr );
-  /*dstWpanAddr.SetAddress(extAddr);
-  macHdr.SetDstAddrFields(dstPanId,dstWpanAddr );*/
 
   LrWpanMacTrailer macTrailer;
 

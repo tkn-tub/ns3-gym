@@ -15,8 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- *      Author: kwong yin <kwong-sang.yin@boeing.com>
+ *  Author: kwong yin <kwong-sang.yin@boeing.com>
  */
 
 /**
@@ -42,14 +41,17 @@
 #include <stdint.h>
 #include "ns3/header.h"
 #include "ns3/nstime.h"
-#include "ns3/wpan-address.h"
+#include "ns3/mac16-address.h"
+#include "ns3/mac64-address.h"
 
 
 namespace ns3 {
 
 
-/* Represent the Mac Header with the Frame Control and Sequence Number fields */
-
+/* 
+ * \ingroup lr-wpan
+ * Represent the Mac Header with the Frame Control and Sequence Number fields 
+ */
 class LrWpanMacHeader : public Header
 {
 
@@ -60,7 +62,7 @@ public:
     LRWPAN_MAC_DATA = 1,
     LRWPAN_MAC_ACKNOWLEDGMENT = 2,
     LRWPAN_MAC_COMMAND = 3,
-    LRWPAN_MAC_ERROR
+    LRWPAN_MAC_RESERVED
   };
 
   enum AddrModeType
@@ -107,9 +109,11 @@ public:
   uint8_t GetSeqNum (void) const;
 
   uint16_t GetDstPanId (void) const;
-  WpanAddress GetDstAddr (void) const;
+  Mac16Address GetShortDstAddr (void) const;
+  Mac64Address GetExtDstAddr (void) const;
   uint16_t GetSrcPanId (void) const;
-  WpanAddress GetSrcAddr (void) const;
+  Mac16Address GetShortSrcAddr (void) const;
+  Mac64Address GetExtSrcAddr (void) const;
 
   uint8_t GetSecControl (void) const;
   uint32_t GetFrmCounter (void) const;
@@ -148,9 +152,13 @@ public:
 
   /* The Source/Destination Addressing fields are only set if SrcAddrMode/DstAddrMode are set */
   void SetSrcAddrFields (uint16_t panId,
-                         WpanAddress addr);
+                         Mac16Address addr);
+  void SetSrcAddrFields (uint16_t panId,
+                         Mac64Address addr);
   void SetDstAddrFields (uint16_t panId,
-                         WpanAddress addr);
+                         Mac16Address addr);
+  void SetDstAddrFields (uint16_t panId,
+                         Mac64Address addr);
 
   /* Auxiliary Security Header is only set if Sec Enable (SecU) field is set to 1 */
   void SetSecControl (uint8_t secLevel);
@@ -196,9 +204,11 @@ private:
 
   /* Addressing fields */
   uint16_t m_addrDstPanId;              // 0 or 2 Octet
-  WpanAddress m_addrDstAddr;            // 0, 2 or 8 Octet
+  Mac16Address m_addrShortDstAddr;      // 0 or 8 Octet
+  Mac64Address m_addrExtDstAddr;        // 0 or 8 Octet
   uint16_t m_addrSrcPanId;              // 0 or 2 Octet
-  WpanAddress m_addrSrcAddr;            // 0, 2 or 8 Octet
+  Mac16Address m_addrShortSrcAddr;      // 0 or 8 Octet
+  Mac64Address m_addrExtSrcAddr;        // 0 or 8 Octet
 
   /* Auxiliary Security Header          // 0, 5, 6, 10 or 14 Octets */
   uint8_t m_auxSecCtrl;                 // 1 Octet see below

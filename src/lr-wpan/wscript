@@ -1,32 +1,32 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('lr-wpan', ['core', 'network', 'spectrum'])
+    obj = bld.create_ns3_module('lr-wpan', ['core', 'network', 'mobility', 'spectrum', 'propagation'])
     obj.source = [
-        'model/lr-wpan-error-rate-model.cc',
+        'model/lr-wpan-error-model.cc',
         'model/lr-wpan-phy.cc',
         'model/lr-wpan-mac.cc',
         'model/lr-wpan-mac-header.cc',
         'model/lr-wpan-mac-trailer.cc',
         'model/lr-wpan-csmaca.cc',
-        'model/wpan-address.cc',
-        'model/wpan-spectrum-propagation-loss-model.cc',
+        'model/lr-wpan-net-device.cc',
         'model/lr-wpan-spectrum-value-helper.cc',
         'test/lr-wpan-pd-plme-sap-test.cc',
         'test/lr-wpan-packet-test.cc',
+        'test/lr-wpan-error-model-test.cc',
+        'test/lr-wpan-spectrum-value-helper-test.cc',
         'helper/lr-wpan-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'lr-wpan'
     headers.source = [
-        'model/lr-wpan-error-rate-model.h',
+        'model/lr-wpan-error-model.h',
         'model/lr-wpan-phy.h',
         'model/lr-wpan-mac.h',
         'model/lr-wpan-mac-header.h',
         'model/lr-wpan-mac-trailer.h',
         'model/lr-wpan-csmaca.h',
-        'model/wpan-address.h',
-        'model/wpan-spectrum-propagation-loss-model.h',
+        'model/lr-wpan-net-device.h',
         'model/lr-wpan-spectrum-value-helper.h',
         'helper/lr-wpan-helper.h',
         ]

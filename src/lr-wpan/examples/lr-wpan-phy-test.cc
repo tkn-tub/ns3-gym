@@ -36,8 +36,8 @@ void GetSetTRXStateConfirm (LrWpanPhyEnumeration status)
 
 void
 ReceivePdDataIndication (uint32_t psduLength,
-                          Ptr<Packet> p,
-                          uint32_t lqi)
+                         Ptr<Packet> p,
+                         uint32_t lqi)
 {
   NS_LOG_UNCOND ("At: " << Simulator::Now ()
                         << " Received frame size: " << psduLength << " LQI: " <<

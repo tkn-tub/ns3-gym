@@ -26,6 +26,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup lr-wpan
+ *
  * \brief This class defines all functions to create spectrum model for LrWpan
  */
 class LrWpanSpectrumValueHelper
@@ -49,8 +51,15 @@ public:
    */
   Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t channel);
 
+  /**
+   * \brief total average power of the signal is the integral of the PSD
+   * \param power spectral density
+   * \return total power (using composite trap. rule to numerally integrate
+   */
+  double TotalAvgPower (const SpectrumValue &psd);
+
 private:
-  double m_noiseFigure;
+  double m_noiseFactor;
 
 };
 
