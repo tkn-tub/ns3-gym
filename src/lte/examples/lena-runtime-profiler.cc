@@ -72,13 +72,13 @@ main (int argc, char *argv[])
   //LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   if (nFloors == 0)
     {
-      lena->SetAttribute("PropagationModel",
+      lena->SetAttribute("PathlossModel",
           StringValue("ns3::FriisPropagationLossModel"));
       nEnb = nEnbPerFloor;
     }
   else
     {
-      lena->SetAttribute("PropagationModel",
+      lena->SetAttribute("PathlossModel",
           StringValue("ns3::BuildingsPropagationLossModel"));
       nEnb = nFloors * nEnbPerFloor;
     }

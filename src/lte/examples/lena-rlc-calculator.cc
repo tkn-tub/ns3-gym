@@ -43,7 +43,7 @@ int main (int argc, char *argv[])
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   // Enable LTE log components
   //lena->EnableLogComponents ();
 

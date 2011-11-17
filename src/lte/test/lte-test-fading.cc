@@ -85,7 +85,7 @@ LteFadingTestSuite::LteFadingTestSuite ()
   
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
   
   // Create Nodes: eNodeB, home eNB, UE and home UE (UE attached to HeNB)
   NodeContainer enbNodes;

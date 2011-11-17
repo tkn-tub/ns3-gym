@@ -144,8 +144,8 @@ TypeId LenaHelper::GetTypeId (void)
                    StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LenaHelper::SetSchedulerType),
                    MakeStringChecker ())
-    .AddAttribute ("PropagationModel",
-                   "The type of propagation model to be used",
+    .AddAttribute ("PathlossModel",
+                   "The type of pathloss model to be used",
                    StringValue ("ns3::BuildingsPropagationLossModel"),
                    MakeStringAccessor (&LenaHelper::SetPropagationModelType),
                    MakeStringChecker ())
@@ -185,7 +185,7 @@ LenaHelper::SetPropagationModelType (std::string type)
 }
 
 void 
-LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v)
+LenaHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
   m_dlPropagationModelFactory.Set (n, v);

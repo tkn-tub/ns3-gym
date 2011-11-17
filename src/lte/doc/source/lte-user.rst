@@ -161,7 +161,7 @@ Now create a text file named (for example) ``input-defaults.txt``
 specifying the new default values that you want to use for some attributes::
 
    default ns3::LenaHelper::Scheduler "ns3::PfFfMacScheduler"
-   default ns3::LenaHelper::PropagationModel "ns3::FriisSpectrumPropagationLossModel"
+   default ns3::LenaHelper::PathlossModel "ns3::FriisSpectrumPropagationLossModel"
    default ns3::LteEnbNetDevice::UlBandwidth "25"
    default ns3::LteEnbNetDevice::DlBandwidth "25"
    default ns3::LteEnbNetDevice::DlEarfcn "100"
@@ -352,11 +352,11 @@ We now explain by examples how to use the buildings model (in particular, the ``
     #include <ns3/buildings-propagation-loss-model.h>
     #include <ns3/building.h>
 
-#. Propagation model selection::
+#. Pathloss model selection::
 
     Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
-    lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+    lena->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
 
 #. EUTRA Band Selection
    
