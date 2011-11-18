@@ -54,7 +54,7 @@ private:
   BuildingsPropagationLossModel::Environment m_env;
   BuildingsPropagationLossModel::CitySize m_city;
   double m_lossRef;
-  
+
 };
 
 
