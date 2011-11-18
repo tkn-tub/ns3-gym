@@ -36,6 +36,7 @@
 #include <ns3/ipv4-static-routing.h>
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
+#include "ns3/double.h"
 #include "ns3/abort.h"
 #include "ns3/mobility-helper.h"
 
@@ -104,6 +105,9 @@ LteEpcE2eDataTestCase::DoRun ()
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
+  lteHelper->SetAttribute("PropagationModel",
+                          StringValue("ns3::FriisPropagationLossModel"));
+
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
   
   // Create a single RemoteHost
@@ -128,25 +132,41 @@ LteEpcE2eDataTestCase::DoRun ()
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.255.255.0"), 1);
   
 
-
   NodeContainer enbs;
   enbs.Create (m_enbTestData.size ());
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (enbs);
+  MobilityHelper enbMobility;
+  enbMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  enbMobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (10000.0),
+                                 "DeltaY", DoubleValue (10000.0),
+                                 "GridWidth", UintegerValue (3),
+                                 "LayoutType", StringValue ("RowFirst"));
+  enbMobility.Install (enbs);
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbs);
   NetDeviceContainer::Iterator enbLteDevIt = enbLteDevs.Begin ();
+
+  Vector enbPosition; 
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
        enbit < m_enbTestData.end ();
        ++enbit, ++enbLteDevIt)
     {
       NS_ABORT_IF (enbLteDevIt ==  enbLteDevs.End ());
+      
+
 
       NodeContainer ues;
       ues.Create (enbit->ues.size ());
-      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-      mobility.Install (ues);
+      Vector enbPosition = (*enbLteDevIt)->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
+      MobilityHelper ueMobility;
+      ueMobility.SetPositionAllocator ("ns3::UniformDiscPositionAllocator",
+                                        "X", DoubleValue (enbPosition.x),
+                                        "Y", DoubleValue (enbPosition.y),
+                                        "rho", DoubleValue (100.0));
+      ueMobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+      ueMobility.Install (ues);
       NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ues);
       lteHelper->Attach (ueLteDevs, *enbLteDevIt);        
        
