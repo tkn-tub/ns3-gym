@@ -105,7 +105,7 @@ LteEpcE2eDataTestCase::DoRun ()
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
-  lteHelper->SetAttribute("PropagationModel",
+  lteHelper->SetAttribute("PathlossModel",
                           StringValue("ns3::FriisPropagationLossModel"));
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();

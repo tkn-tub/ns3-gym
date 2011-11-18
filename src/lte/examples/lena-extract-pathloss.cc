@@ -177,7 +177,7 @@ int main (int argc, char *argv[])
   // but it WON'T work if you ONLY use SpectrumPropagationLossModels such as:
   // ns3::FriisSpectrumPropagationLossModel
   // ns3::ConstantSpectrumPropagationLossModel
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::Cost231PropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::Cost231PropagationLossModel"));
   
 
   // Create Nodes: eNodeB and UE

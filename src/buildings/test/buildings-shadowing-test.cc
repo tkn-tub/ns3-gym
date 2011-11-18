@@ -43,19 +43,19 @@ using namespace ns3;
 
 
 BuildingsShadowingTestSuite::BuildingsShadowingTestSuite ()
-: TestSuite ("buildings-shadowing-test", SYSTEM)
+  : TestSuite ("buildings-shadowing-test", SYSTEM)
 {
-    
+
   LogComponentEnable ("BuildingsShadowingTest", LOG_LEVEL_ALL);
-  
-  // Test #1 Outdoor Model   
+
+  // Test #1 Outdoor Model
   AddTestCase (new BuildingsShadowingTestCase (1, 2, 148.86, 7.0, "Outdoor Shadowing"));
-  
+
   // Test #2 Indoor model
   AddTestCase (new BuildingsShadowingTestCase (5, 6, 88.5724, 8.0, "Indoor Shadowing"));
-  
+
   // Test #3 Indoor -> Outdoor
-   AddTestCase (new BuildingsShadowingTestCase (9, 10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
+  AddTestCase (new BuildingsShadowingTestCase (9, 10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"));
 
 }
 
@@ -67,11 +67,11 @@ static BuildingsShadowingTestSuite buildingsShadowingTestSuite;
 */
 
 BuildingsShadowingTestCase::BuildingsShadowingTestCase ( uint16_t m1, uint16_t m2, double refValue, double sigmaRef, std::string name)
-: TestCase ("SHADOWING calculation: " + name),
+  : TestCase ("SHADOWING calculation: " + name),
     m_mobilityModelIndex1 (m1),
     m_mobilityModelIndex2 (m2),
-m_lossRef (refValue),
-m_sigmaRef (sigmaRef)
+    m_lossRef (refValue),
+    m_sigmaRef (sigmaRef)
 {
 }
 
@@ -83,7 +83,7 @@ void
 BuildingsShadowingTestCase::DoRun (void)
 {
 //     LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  
+
   //   LogComponentEnable ("LteEnbRrc", logLevel);
   //   LogComponentEnable ("LteUeRrc", logLevel);
   //   LogComponentEnable ("LteEnbMac", logLevel);
@@ -102,39 +102,39 @@ BuildingsShadowingTestCase::DoRun (void)
   //   LogComponentEnable ("LtePropagationLossModel", logLevel);
   //   LogComponentEnable ("LossModel", logLevel);
 //     LogComponentEnable ("ShadowingLossModel", logLevel);
-  //   LogComponentEnable ("PenetrationLossModel", logLevel);
-  //   LogComponentEnable ("MultipathLossModel", logLevel);
-  //   LogComponentEnable ("PathLossModel", logLevel);
-  // 
-  //   LogComponentEnable ("LteNetDevice", logLevel);
-  //   LogComponentEnable ("LteUeNetDevice", logLevel);
-  //   LogComponentEnable ("LteEnbNetDevice", logLevel);
-  
+//   LogComponentEnable ("PenetrationLossModel", logLevel);
+//   LogComponentEnable ("MultipathLossModel", logLevel);
+//   LogComponentEnable ("PathLossModel", logLevel);
+//
+//   LogComponentEnable ("LteNetDevice", logLevel);
+//   LogComponentEnable ("LteUeNetDevice", logLevel);
+//   LogComponentEnable ("LteEnbNetDevice", logLevel);
+
 //   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
 
 
   Ptr<MobilityModel> mma = CreateMobilityModel (m_mobilityModelIndex1);
   Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
-  
+
   std::vector<double> loss;
   double sum = 0.0;
   double sumSquared = 0.0;
   int samples = 10000;
   for (int i = 0; i < samples; i++)
-  {
-  Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-  loss.push_back (propagationLossModel->GetLoss (mma, mmb) - m_lossRef);
-  sum += loss.at (loss.size()-1);
-  sumSquared += (loss.at (loss.size()-1)*loss.at (loss.size()-1));
-  }
-  double mean = sum/samples;
-  double sigma = sqrt(sumSquared/samples - (mean*mean));
+    {
+      Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+      loss.push_back (propagationLossModel->GetLoss (mma, mmb) - m_lossRef);
+      sum += loss.at (loss.size () - 1);
+      sumSquared += (loss.at (loss.size () - 1) * loss.at (loss.size () - 1));
+    }
+  double mean = sum / samples;
+  double sigma = sqrt (sumSquared / samples - (mean * mean));
   // test whether the distribution falls in the 99% confidence interval, as expected with a nornal distribution
   double ci = (2.575829303549 * sigma) / sqrt (samples);
-  
+
   NS_LOG_INFO ("Mean from simulation " << mean << ", sigma " << sigma << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
-  
-  NS_TEST_ASSERT_MSG_EQ_TOL(fabs(mean), 0.0, ci, "Wrong shadowing distribution !");
+
+  NS_TEST_ASSERT_MSG_EQ_TOL (fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
 }
 
 
@@ -157,16 +157,16 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   double hb = 30;
   Ptr<BuildingsMobilityModel> mm1 = CreateObject<BuildingsMobilityModel> ();
   mm1->SetPosition (Vector (0.0, 0.0, hb));
-  
+
   Ptr<BuildingsMobilityModel> mm2 = CreateObject<BuildingsMobilityModel> ();
   mm2->SetPosition (Vector (distance, 0.0, hm));
 
-    
+
   distance = 30;
   double henbHeight = 10.0;
   Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
-  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0/*, 1, 1, 1*/);
+  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);
@@ -175,7 +175,7 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   mm6->SetIndoor (building1);
   mm6->SetFloorNumber (2);
 
-  
+
   distance = 100;
   Ptr<BuildingsMobilityModel> mm9 = CreateObject<BuildingsMobilityModel> ();
   mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
@@ -209,7 +209,7 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
     case 10:
       return mm10;
       break;
-  
+
     default:
       return 0;
       break;

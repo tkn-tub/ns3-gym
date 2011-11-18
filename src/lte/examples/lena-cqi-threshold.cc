@@ -78,7 +78,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   //lena->EnableLogComponents ();
 
   //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);

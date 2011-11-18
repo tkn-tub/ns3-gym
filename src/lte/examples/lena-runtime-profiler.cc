@@ -23,7 +23,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-#include "ns3/gtk-config-store.h"
+//#include "ns3/gtk-config-store.h"
 #include <ns3/buildings-propagation-loss-model.h>
 
 #include <iomanip>
@@ -69,16 +69,16 @@ main (int argc, char *argv[])
 
   Ptr < LenaHelper > lena = CreateObject<LenaHelper> ();
   //lena->EnableLogComponents ();
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  //LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   if (nFloors == 0)
     {
-      lena->SetAttribute("PropagationModel",
+      lena->SetAttribute("PathlossModel",
           StringValue("ns3::FriisPropagationLossModel"));
       nEnb = nEnbPerFloor;
     }
   else
     {
-      lena->SetAttribute("PropagationModel",
+      lena->SetAttribute("PathlossModel",
           StringValue("ns3::BuildingsPropagationLossModel"));
       nEnb = nFloors * nEnbPerFloor;
     }
@@ -147,12 +147,13 @@ main (int argc, char *argv[])
       building->SetNumberRoomY(nRooms);
       mobility.SetMobilityModel("ns3::BuildingsMobilityModel");
       mobility.Install (enbNodes);
+      uint32_t plantedEnb = 0;
       for (uint32_t floor = 0; floor < nFloors; floor++)
         {
-          uint32_t plantedEnb = 0;
+          uint32_t plantedEnbPerFloor = 0;
           for (uint32_t row = 0; row < nRooms; row++)
             {
-              for (uint32_t column = 0; column < nRooms && plantedEnb < nEnbPerFloor; column++, plantedEnb++)
+              for (uint32_t column = 0; column < nRooms && plantedEnbPerFloor < nEnbPerFloor; column++, plantedEnb++, plantedEnbPerFloor++)
                 {
                   Vector v (roomLength * (column + 0.5),
                             roomLength * (row + 0.5),
@@ -209,7 +210,7 @@ main (int argc, char *argv[])
 
   Simulator::Run();
 
-/*  GtkConfigStore config;
+  /*GtkConfigStore config;
   config.ConfigureAttributes ();*/
 
   Simulator::Destroy();

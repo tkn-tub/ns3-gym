@@ -28,15 +28,15 @@ namespace ns3 {
 
 
 Building::Building (double _xMin, double _xMax,
-          double _yMin, double _yMax,
-          double _zMin, double _zMax/*,
-          uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY*/) :
-     m_floor (1),
-     m_roomX (1),
-     m_roomY (1),
-     m_buildingType (Residential),
-     m_externalWalls (ConcreteWithWindows)
-     
+                    double _yMin, double _yMax,
+                    double _zMin, double _zMax/*,
+          uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY*/)
+  : m_floor (1),
+    m_roomX (1),
+    m_roomY (1),
+    m_buildingType (Residential),
+    m_externalWalls (ConcreteWithWindows)
+
 {
   m_buldingBounds = Box (_xMin, _xMax, _yMin, _yMax, _zMin, _zMax);
 }

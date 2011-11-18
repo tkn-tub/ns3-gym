@@ -207,16 +207,16 @@ LtePathlossModelSystemTestCase::DoRun (void)
   //   lena->EnableLogComponents ();
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
 
   // set frequency. This is important because it changes the behavior of the pathloss model
   lena->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (200));
 
   
   // remove shadowing component
-  lena->SetPropagationModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
-  lena->SetPropagationModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
-  lena->SetPropagationModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
+  lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
+  lena->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
+  lena->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

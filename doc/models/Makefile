@@ -36,6 +36,7 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-user.rst \
 	$(SRC)/lte/doc/source/lte-design.rst \
 	$(SRC)/lte/doc/source/lte-testing.rst \
+	$(SRC)/lte/doc/source/lte-profiling.rst \
 	$(SRC)/lte/doc/source/lte-references.rst \
 	$(SRC)/propagation/doc/propagation.rst \
 	$(SRC)/network/doc/network-overview.rst \

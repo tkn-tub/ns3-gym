@@ -1,4 +1,9 @@
+.. include:: replace.txt
 
+
++++++++++++++++++++++++++++++++++
+ References
++++++++++++++++++++++++++++++++++
 
 
 .. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", 
@@ -36,13 +41,13 @@
 .. [TS36.104] 3GPP TS 36.104 "E-UTRA Base Station (BS) radio transmission and reception"
 
 
-.. [R1-081483] 3GPP R1-081483 "Conveying MCS and TB size via PDCCH" http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip 
+.. [R1-081483] 3GPP R1-081483 `Conveying MCS and TB size via PDCCH <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 
-.. [FFAPI] FemtoForum LTE MAC Scheduler Interface Specification v1.11 http://www.femtoforum.org/femto/technical.php
+.. [FFAPI] `FemtoForum LTE MAC Scheduler Interface Specification v1.11 <http://www.femtoforum.org/femto/technical.php>`_
 
-.. [ns3tutorial] The ns-3 Tutorial http://www.nsnam.org/docs/tutorial/singlehtml/index.html
+.. [ns3tutorial] `The ns-3 Tutorial <http://www.nsnam.org/docs/tutorial/singlehtml/index.html>`_
 
-.. [ns3manual] The ns-3 Manual http://www.nsnam.org/docs/manual/singlehtml/index.html
+.. [ns3manual] `The ns-3 Manual <http://www.nsnam.org/docs/manual/singlehtml/index.html>`_
 
 .. [pl26ghz] Sun Kun; Wang Ping; Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
    in Proc. of ISAPE 2008,  Kunming,  China, Nov 2008.
@@ -56,5 +61,5 @@
 
 .. [cost231] "Digital Mobile Radio: COST 231 View on the Evolution Towards 3rd Generation Systems", Commission of the European Communities, L-2920, Luxembourg, 1989
 
-.. [mathworks] Matlab R2011b Documentation Communications System Toolbox, "Methodology for Simulating Multipath Fading Channels" http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36
+.. [mathworks] Matlab R2011b Documentation Communications System Toolbox, `Methodology for Simulating Multipath Fading Channels <http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36>`_
 

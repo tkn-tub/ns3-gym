@@ -86,7 +86,7 @@ public:
    * \param n the name of the attribute
    * \param v the value of the attribute
    */
-  void SetPropagationModelAttribute (std::string n, const AttributeValue &v);
+  void SetPathlossModelAttribute (std::string n, const AttributeValue &v);
 
   /** 
    * 

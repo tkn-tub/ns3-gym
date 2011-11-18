@@ -34,7 +34,7 @@ namespace ns3 {
 
 class ShadowingLossModel;
 class JakesFadingLossModel;
-  
+
 /**
  * \ingroup propagation
  *
@@ -69,7 +69,7 @@ public:
   {
     Urban, SubUrban, OpenAreas
   };
-  
+
   enum CitySize
   {
     Small, Medium, Large
@@ -92,8 +92,8 @@ public:
   double GetLambda (void) const;
   double GetFrequency (void) const;
 //   void SetLambda (double frequency, double speed);
-  
-  
+
+
 private:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
@@ -103,9 +103,9 @@ private:
 //   double ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
   double ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
   double BEWPL (Ptr<BuildingsMobilityModel> a) const;
-  
+
   double HeightGain (Ptr<BuildingsMobilityModel> n) const;
-  
+
   double C;  // OH loss coefficient for the environment
   double N;  // ITU-R P.1238: power loss coefficient
   double m_lambda;
@@ -120,20 +120,21 @@ private:
   double m_streetsWidth; // in meters
   double m_buildingsExtend; // in meters
   double m_buildingSeparation; // in meters
-  
+
   // the shadowing tx/rx pairs management has been inspired by the
   // JakesFadingLossModel developed by Federico Maguolo (see jakes-propagation-model.h/cc)
   class ShadowingLoss;
   friend class ShadowingLoss;
   typedef std::vector<ShadowingLoss *> DestinationList;
-  struct PairsSet {
+  struct PairsSet
+  {
     Ptr<MobilityModel> sender;
     DestinationList receivers;
   };
   typedef std::vector<PairsSet *> PairsList;
   double EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  
-  
+
+
   double m_shadowingSigmaExtWalls;
   double m_shadowingSigmaOutdoor;
   double m_shadowingSigmaIndoor;
