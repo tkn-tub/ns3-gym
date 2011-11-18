@@ -119,6 +119,9 @@ LteEpcE2eDataTestCase::DoRun ()
 
   // Create the internet
   PointToPointHelper p2ph;
+  p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
+  p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
+  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));  
   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
@@ -206,7 +209,7 @@ LteEpcE2eDataTestCase::DoRun ()
             
     } 
 
-  Simulator::Stop (Seconds (5.0));  
+  Simulator::Stop (Seconds (1.0));  
   Simulator::Run ();
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
