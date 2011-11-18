@@ -12,8 +12,7 @@ print FILE "#sTime\tnFloors\tnEnb\tnUe\trTime\trTDev\n";
 my @nUe = ( 1, 5, 10, 15, 20, 25, 30 );
 my @nEnb = ( 1, 2, 4, 6, 8, 12, 14, 18, 22 );
 my @nFloors = ( 0, 1 );
-#$my @simTime = ( 1, 5, 10, 20 );
-my @simTime = ( 1 );
+my @simTime = ( 1, 5, 10, 20, 30, 40 );
 
 my $traceDirectory = ".";
 my $traceDirectory = getcwd() . "/"; 

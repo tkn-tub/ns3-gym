@@ -21,33 +21,25 @@
 
 
 #include "lena-helper.h"
-
 #include <ns3/string.h>
 #include <ns3/log.h>
 #include <ns3/pointer.h>
-
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-mac.h>
 #include <ns3/lte-enb-mac.h>
 #include <ns3/lte-enb-net-device.h>
-
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
 #include <ns3/lte-spectrum-phy.h>
 #include <ns3/lte-sinr-chunk-processor.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
-
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
-
 #include <ns3/ff-mac-scheduler.h>
-
 #include <iostream>
-
 #include <ns3/buildings-propagation-loss-model.h>
-
 #include <ns3/lte-spectrum-value-helper.h>
 
 
@@ -335,6 +327,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 Ptr<NetDevice>
 LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
@@ -451,6 +444,7 @@ LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 void
 LenaHelper::EnableLogComponents (void)
 {
+  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
@@ -507,12 +501,12 @@ FindImsiFromEnbRlcPath (std::string path)
 
   // We retrieve the UeInfo associated to the C-RNTI and perform the IMSI lookup
   std::string ueMapPath = path.substr (0, path.find ("/RadioBearerMap"));
-  NS_LOG_LOGIC ("ueMapPath = " << ueMapPath);
   Config::MatchContainer match = Config::LookupMatches (ueMapPath);
 
   if (match.GetN () != 0)
     {
       Ptr<Object> ueInfo = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromEnbRlcPath: " << path << ", " << ueInfo->GetObject<UeInfo> ()->GetImsi ());
       return ueInfo->GetObject<UeInfo> ()->GetImsi ();
     }
   else
@@ -535,6 +529,7 @@ FindCellIdFromEnbRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> enbNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindCellIdFromEnbRlcPath: " << path << ", " << enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
       return enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ();
     }
   else
@@ -557,6 +552,7 @@ FindImsiFromUeRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> ueNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromUeRlcPath: " << path << ", " << ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
       return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
     }
   else
@@ -573,11 +569,11 @@ FindImsiFromEnbMac (std::string path, uint16_t rnti)
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
-  NS_LOG_LOGIC ("p = " << p);
   oss << rnti;
   p += "/LteEnbRrc/UeMap/" + oss.str ();
-  NS_LOG_LOGIC ("p = " << p);
-  return FindImsiFromEnbRlcPath (p);
+  uint64_t imsi = FindImsiFromEnbRlcPath (p);
+  NS_LOG_LOGIC ("FindImsiFromEnbMac: " << path << ", " << rnti << ", " << imsi);
+  return imsi;
 }
 
 uint16_t
@@ -589,7 +585,9 @@ FindCellIdFromEnbMac (std::string path, uint16_t rnti)
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
   oss << rnti;
   p += "/LteEnbRrc/UeMap/" + oss.str ();
-  return FindCellIdFromEnbRlcPath (p);
+  uint16_t cellId = FindCellIdFromEnbRlcPath (p);
+  NS_LOG_LOGIC ("FindCellIdFromEnbMac: " << path << ", "<< rnti << ", " << cellId);
+  return cellId;
 }
 
 
@@ -703,25 +701,27 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
 {
   NS_LOG_FUNCTION (macStats << path);
   uint64_t imsi = 0;
-  if (macStats->ExistsImsiPath(path) == true)
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
     {
-      imsi = macStats->GetImsiPath (path);
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
       imsi = FindImsiFromEnbMac (path, rnti);
-      macStats->SetImsiPath (path, imsi);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
 
   uint16_t cellId = 0;
-  if (macStats->ExistsCellIdPath(path) == true)
+  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
     {
-      cellId = macStats->GetCellIdPath (path);
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
     }
   else
     {
       cellId = FindCellIdFromEnbMac (path, rnti);
-      macStats->SetCellIdPath (path, cellId);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
     }
 
   macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
@@ -759,24 +759,26 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
   NS_LOG_FUNCTION (macStats << path);
 
   uint64_t imsi = 0;
-  if (macStats->ExistsImsiPath(path) == true)
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
     {
-      imsi = macStats->GetImsiPath (path);
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
       imsi = FindImsiFromEnbMac (path, rnti);
-      macStats->SetImsiPath (path, imsi);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
   uint16_t cellId = 0;
-  if (macStats->ExistsCellIdPath(path) == true)
+  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
     {
-      cellId = macStats->GetCellIdPath (path);
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
     }
   else
     {
       cellId = FindCellIdFromEnbMac (path, rnti);
-      macStats->SetCellIdPath (path, cellId);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
     }
 
   macStats->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);

@@ -56,7 +56,7 @@ void
 MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frameNo, uint32_t subframeNo,
                                   uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << cellId << imsi << frameNo << subframeNo << rnti << mcsTb1 << sizeTb1 << mcsTb2 << sizeTb2);
   NS_LOG_INFO ("Write DL Mac Stats in " << GetDlOutputFilename ().c_str ());
 
   std::ofstream outFile;
@@ -99,7 +99,7 @@ void
 MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frameNo,
                                   uint32_t subframeNo, uint16_t rnti,uint8_t mcs, uint16_t size)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << cellId << imsi << frameNo << subframeNo << rnti << mcs << size);
   NS_LOG_INFO ("Write UL Mac Stats in " << GetUlOutputFilename ().c_str ());
 
   std::ofstream outFile;
