@@ -62,8 +62,8 @@ LenaHelper::DoStart (void)
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
 
-  m_downlinkPropagationModel = m_dlPropagationModelFactory.Create ();
-  Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPropagationModel->GetObject<SpectrumPropagationLossModel> ();
+  m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
   if (dlSplm != 0)
     {
       NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in DL");
@@ -72,13 +72,13 @@ LenaHelper::DoStart (void)
   else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
-      Ptr<PropagationLossModel> dlPlm = m_downlinkPropagationModel->GetObject<PropagationLossModel> ();            
-      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPropagationModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModel->GetObject<PropagationLossModel> ();            
+      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
       m_downlinkChannel->AddPropagationLossModel (dlPlm);
     }
 
-  m_uplinkPropagationModel = m_ulPropagationModelFactory.Create ();
-  Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPropagationModel->GetObject<SpectrumPropagationLossModel> ();
+  m_uplinkPathlossModel = m_ulPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
   if (ulSplm != 0)
     {
       NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
@@ -87,8 +87,8 @@ LenaHelper::DoStart (void)
     else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
-      Ptr<PropagationLossModel> ulPlm = m_uplinkPropagationModel->GetObject<PropagationLossModel> ();            
-      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPropagationModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModel->GetObject<PropagationLossModel> ();            
+      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
     
@@ -139,7 +139,7 @@ TypeId LenaHelper::GetTypeId (void)
     .AddAttribute ("PathlossModel",
                    "The type of pathloss model to be used",
                    StringValue ("ns3::BuildingsPropagationLossModel"),
-                   MakeStringAccessor (&LenaHelper::SetPropagationModelType),
+                   MakeStringAccessor (&LenaHelper::SetPathlossModelType),
                    MakeStringChecker ())
      .AddAttribute ("FadingModel",
                    "The type of fading model to be used",
@@ -167,21 +167,21 @@ LenaHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 
 
 void 
-LenaHelper::SetPropagationModelType (std::string type) 
+LenaHelper::SetPathlossModelType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
-  m_dlPropagationModelFactory = ObjectFactory ();
-  m_dlPropagationModelFactory.SetTypeId (type);
-  m_ulPropagationModelFactory = ObjectFactory ();
-  m_ulPropagationModelFactory.SetTypeId (type);
+  m_dlPathlossModelFactory = ObjectFactory ();
+  m_dlPathlossModelFactory.SetTypeId (type);
+  m_ulPathlossModelFactory = ObjectFactory ();
+  m_ulPathlossModelFactory.SetTypeId (type);
 }
 
 void 
 LenaHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
-  m_dlPropagationModelFactory.Set (n, v);
-  m_ulPropagationModelFactory.Set (n, v);
+  m_dlPathlossModelFactory.Set (n, v);
+  m_ulPathlossModelFactory.Set (n, v);
 }
 
 
@@ -303,21 +303,21 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
-  if (m_downlinkPropagationModel->GetObject<BuildingsPropagationLossModel> () != 0)
+  if (m_downlinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
     {
       double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
       NS_LOG_LOGIC ("DL freq: " << dlFreq);
-      m_downlinkPropagationModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
+      m_downlinkPathlossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
     }
   else
     {
-      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPropagationModel->GetTypeId ());
+      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPathlossModel->GetTypeId ());
     }
-  if (m_uplinkPropagationModel->GetObject<BuildingsPropagationLossModel> () != 0)
+  if (m_uplinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
     {
       double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
       NS_LOG_LOGIC ("UL freq: " << ulFreq);
-      m_uplinkPropagationModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
+      m_uplinkPathlossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
     }
   
   dev->Start ();
@@ -461,9 +461,9 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
-  std::string propModelStr = m_dlPropagationModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+  std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
  
-  const char* propModel = m_dlPropagationModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+  const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
   LogComponentEnable (propModel, LOG_LEVEL_ALL);
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
