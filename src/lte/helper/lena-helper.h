@@ -76,12 +76,12 @@ public:
   /** 
    * 
    * 
-   * \param type the type of propagation model to be used for the eNBs
+   * \param type the type of pathloss model to be used for the eNBs
    */
-  void SetPropagationModelType (std::string type);
+  void SetPathlossModelType (std::string type);
 
   /**
-   * set an attribute for the propagation model to be created
+   * set an attribute for the pathloss model to be created
    * 
    * \param n the name of the attribute
    * \param v the value of the attribute
@@ -173,7 +173,7 @@ public:
   /** 
    * 
    * 
-   * \param type the fading modul to be used
+   * \param type the fading model to be used
    */
   void SetFadingModel (std::string model);
 
@@ -236,15 +236,15 @@ private:
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
   
-  Ptr<Object> m_downlinkPropagationModel;
-  Ptr<Object> m_uplinkPropagationModel;
+  Ptr<Object> m_downlinkPathlossModel;
+  Ptr<Object> m_uplinkPathlossModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
 
-  ObjectFactory m_dlPropagationModelFactory;
-  ObjectFactory m_ulPropagationModelFactory;
+  ObjectFactory m_dlPathlossModelFactory;
+  ObjectFactory m_ulPathlossModelFactory;
 
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
