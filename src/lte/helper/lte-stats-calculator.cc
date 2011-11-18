@@ -6,9 +6,11 @@
  */
 
 #include "lte-stats-calculator.h"
+#include <ns3/log.h>
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("LteStatsCalculator");
 
 LteStatsCalculator::LteStatsCalculator ()
   : m_dlOutputFilename (""),
@@ -86,6 +88,7 @@ LteStatsCalculator::ExistsImsiPath (std::string path)
 void
 LteStatsCalculator::SetImsiPath (std::string path, uint64_t imsi)
 {
+  NS_LOG_FUNCTION(this << path << imsi);
   m_pathImsiMap[path] = imsi;
 }
 
@@ -111,6 +114,7 @@ LteStatsCalculator::ExistsCellIdPath (std::string path)
 void
 LteStatsCalculator::SetCellIdPath (std::string path, uint16_t cellId)
 {
+  NS_LOG_FUNCTION(this << path << cellId);
   m_pathCellIdMap[path] = cellId;
 }
 

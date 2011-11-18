@@ -210,8 +210,8 @@ main (int argc, char *argv[])
 
   Simulator::Run();
 
-/*  GtkConfigStore config;
-  config.ConfigureAttributes ();*/
+  GtkConfigStore config;
+  config.ConfigureAttributes ();
 
   Simulator::Destroy();
   return 0;
