@@ -58,8 +58,11 @@ struct UeTestData
   uint32_t pktSize;
   EpsBearer epsBearer;
  
-  Ptr<PacketSink> serverApp;
-  Ptr<Application> clientApp;
+  Ptr<PacketSink> dlServerApp;
+  Ptr<Application> dlClientApp;
+
+  Ptr<PacketSink> ulServerApp;
+  Ptr<Application> ulClientApp;
 };
 
 UeTestData::UeTestData (uint32_t n, uint32_t s)
@@ -125,7 +128,8 @@ LteEpcE2eDataTestCase::DoRun ()
   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
-  ipv4h.Assign (internetDevices);
+  Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
+  Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
   
   // setup default gateway for the remote hosts
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
@@ -149,8 +153,8 @@ LteEpcE2eDataTestCase::DoRun ()
   enbMobility.Install (enbs);
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbs);
   NetDeviceContainer::Iterator enbLteDevIt = enbLteDevs.Begin ();
-
-  Vector enbPosition; 
+  
+  uint16_t ulPort = 5678;
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
        enbit < m_enbTestData.end ();
@@ -181,27 +185,48 @@ LteEpcE2eDataTestCase::DoRun ()
       // assign IP address to UEs, and install applications
       for (uint32_t u = 0; u < ues.GetN (); ++u)
         {
+
+          Ptr<Node> ue = ues.Get (u);          
           Ptr<NetDevice> ueLteDevice = ueLteDevs.Get (u);
           Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
+          // set the default gateway for the UE
+          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());          
+          ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+  
 
-          Ptr<Node> ue = ues.Get (u);
+          { // Downlink
+            uint16_t dlPort = 1234;
+            PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+            ApplicationContainer apps = packetSinkHelper.Install (ue);
+            apps.Start (Seconds (0.01));
+            enbit->ues[u].dlServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
-          uint16_t port = 1234;
-          PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
-          ApplicationContainer apps = packetSinkHelper.Install (ue);
-          apps.Start (Seconds (0.1));
-          apps.Stop (Seconds (10.0));
-          enbit->ues[u].serverApp = apps.Get (0)->GetObject<PacketSink> ();
+            Time interPacketInterval = Seconds (0.01);
+            UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
+            client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
+            client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+            client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
+            apps = client.Install (remoteHost);
+            apps.Start (Seconds (0.01));
+            enbit->ues[u].dlClientApp = apps.Get (0);
+          }
+
+          { // Uplink
+            ++ulPort;
+            PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+            ApplicationContainer apps = packetSinkHelper.Install (remoteHost);
+            apps.Start (Seconds (0.5));
+            enbit->ues[u].ulServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
-          Time interPacketInterval = Seconds (0.01);
-          UdpClientHelper client (ueIpIface.GetAddress (0), port);
-          client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
-          client.SetAttribute ("Interval", TimeValue (interPacketInterval));
-          client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
-          apps = client.Install (remoteHost);
-          apps.Start (Seconds (0.1));
-          apps.Stop (Seconds (10.0));   
-          enbit->ues[u].clientApp = apps.Get (0);
+            Time interPacketInterval = Seconds (0.01);
+            UdpClientHelper client (remoteHostAddr, ulPort);
+            client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
+            client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+            client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
+            apps = client.Install (ue);
+            apps.Start (Seconds (0.5));
+            enbit->ues[u].ulClientApp = apps.Get (0);
+          }
           
           lteHelper->ActivateEpsBearer (ueLteDevice, enbit->ues[u].epsBearer, LteTft::Default ());
           
@@ -209,7 +234,7 @@ LteEpcE2eDataTestCase::DoRun ()
             
     } 
 
-  Simulator::Stop (Seconds (1.0));  
+  Simulator::Stop (Seconds (2.0));  
   Simulator::Run ();
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
@@ -220,7 +245,8 @@ LteEpcE2eDataTestCase::DoRun ()
            ueit < enbit->ues.end ();
            ++ueit)
         {
-          NS_TEST_ASSERT_MSG_EQ (ueit->serverApp->GetTotalRx (), (ueit->numPkts) * (ueit->pktSize), "wrong total received bytes");
+          NS_TEST_ASSERT_MSG_EQ (ueit->dlServerApp->GetTotalRx (), (ueit->numPkts) * (ueit->pktSize), "wrong total received bytes in downlink");
+          NS_TEST_ASSERT_MSG_EQ (ueit->ulServerApp->GetTotalRx (), (ueit->numPkts) * (ueit->pktSize), "wrong total received bytes in uplink");
         }      
     }
   
