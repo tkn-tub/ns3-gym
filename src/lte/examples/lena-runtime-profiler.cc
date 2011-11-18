@@ -23,7 +23,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-#include "ns3/gtk-config-store.h"
+//#include "ns3/gtk-config-store.h"
 #include <ns3/buildings-propagation-loss-model.h>
 
 #include <iomanip>
@@ -210,8 +210,8 @@ main (int argc, char *argv[])
 
   Simulator::Run();
 
-  GtkConfigStore config;
-  config.ConfigureAttributes ();
+  /*GtkConfigStore config;
+  config.ConfigureAttributes ();*/
 
   Simulator::Destroy();
   return 0;
