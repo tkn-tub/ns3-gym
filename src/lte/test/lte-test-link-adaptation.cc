@@ -162,9 +162,9 @@ LteLinkAdaptationTestCase::DoRun (void)
 //   lena->EnableLogComponents ();
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
   NS_LOG_INFO ("SNR = " << m_snrDb << "  LOSS = " << m_loss);
-  lena->SetPropagationModelAttribute ("Loss", DoubleValue (m_loss));
+  lena->SetPathlossModelAttribute ("Loss", DoubleValue (m_loss));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

@@ -145,7 +145,7 @@ public:
   /**
    * set an attribute for the propagation model to be created
    */
-  void SetPropagationModelAttribute (std::string n, const AttributeValue &v);
+  void SetPathlossModelAttribute (std::string n, const AttributeValue &v);
   
   /** 
    * 
