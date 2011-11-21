@@ -20,8 +20,9 @@ GRAPHS_EPS = \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
-	$(FIGURES)/simulationTime.eps \
-	$(FIGURES)/memoryUsage.eps 
+	$(FIGURES)/runningTime10s.eps \
+	$(FIGURES)/propagationModel.eps \
+	$(FIGURES)/simulationTime.eps 
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
