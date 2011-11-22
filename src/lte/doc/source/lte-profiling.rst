@@ -117,3 +117,13 @@ In this scenario, for a fixed set of UEs per eNodeB, different simulation times 
 Memory usage
 ~~~~~~~~~~~~
 
+Massif tool to profile memory consumption
+
+.. _fig-profilingMemory:
+
+.. figure:: figures/profiling-memory.*
+   :align: center
+   :width: 60%
+
+   Memory profile
+

@@ -22,7 +22,8 @@ GRAPHS_EPS = \
 	$(FIGURES)/lenaThrTestCase2.eps \
 	$(FIGURES)/runningTime10s.eps \
 	$(FIGURES)/propagationModel.eps \
-	$(FIGURES)/simulationTime.eps 
+	$(FIGURES)/simulationTime.eps \
+	$(FIGURES)/profiling-memory.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
