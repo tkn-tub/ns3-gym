@@ -114,5 +114,11 @@ Building::GetNumberRoomY ()
   return (m_roomY);
 }
 
+Box
+Building::GetBuildingBounds ()
+{
+  return (m_buldingBounds);
+}
+
 
 } // namespace ns3

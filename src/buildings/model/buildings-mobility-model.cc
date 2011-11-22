@@ -99,6 +99,22 @@ BuildingsMobilityModel::SetIndoor (Ptr<Building> building)
 }
 
 void
+BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy)
+{
+  m_indoor = true;
+  m_myBuilding = building;
+  m_nFloor = nfloor;
+  m_roomX = nroomx;
+  m_roomY = nroomy;
+  
+  if (!building->GetBuildingBounds ().IsInside (m_helper.GetCurrentPosition ()))
+    {
+      NS_FATAL_ERROR ("Position of the node is inconsistent with building bounds");
+    }
+}
+
+
+void
 BuildingsMobilityModel::SetOutdoor (void)
 {
   m_indoor = false;

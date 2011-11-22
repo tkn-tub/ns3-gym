@@ -56,6 +56,7 @@ public:
   bool IsOutdoor (void);
 
   void SetIndoor (Ptr<Building> building);
+  void SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);
   void SetOutdoor (void);
 
   void SetSurroudingBuilding (Ptr<Building> building);
