@@ -23,7 +23,7 @@ GRAPHS_EPS = \
 	$(FIGURES)/runningTime10s.eps \
 	$(FIGURES)/propagationModel.eps \
 	$(FIGURES)/simulationTime.eps \
-	$(FIGURES)/profiling-memory.eps
+	$(FIGURES)/profiling-memory.eps \
 	$(FIGURES)/lte-rlc-implementation-model.eps \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
