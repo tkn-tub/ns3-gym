@@ -371,6 +371,7 @@ void AnimationInterface::StartAnimation ()
 void AnimationInterface::StopAnimation ()
 {
   NS_LOG_INFO ("Stopping Animation");
+  ResetAnimWriteCallback ();
   if (m_fHandle > 0) 
     {
       if (m_xml)
