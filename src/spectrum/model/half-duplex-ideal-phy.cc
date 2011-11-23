@@ -380,6 +380,7 @@ HalfDuplexIdealPhy::AbortRx ()
   NS_LOG_LOGIC (this << "state: " << m_state);
 
   NS_ASSERT (m_state == RX);
+  m_interference.AbortRx ();
   m_phyRxAbortTrace (m_rxPacket);
   m_endRxEventId.Cancel ();
   m_rxPacket = 0;
