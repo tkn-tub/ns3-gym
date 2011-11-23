@@ -20,13 +20,14 @@ Usage Overview
 --------------
 
 The ns-3 LTE model is a software library that allows the simulation of
-LTE networks.  The process of performing such simulations typically involves the following
-steps:
+LTE networks, optionally including the Evolved Packet Core (EPC).  The
+process of performing such simulations typically involves the
+following steps:
 
  1. *Define the scenario* to be simulated
  2. *Write a simulation program* that recreates the desired scenario
     topology/architecture. This is done accessing the ns-3 LTE model
-    libraryusing the ``ns3::LenaHelper`` API defined in ``src/lte/helper/lena-helper.h``. 
+    library using the ``ns3::LenaHelper`` API defined in ``src/lte/helper/lena-helper.h``. 
  3. *Specify configuration parameters* of the objects that are being
     used for the simulation. This can be done using input files (via the
     ``ns3::ConfigStore``) or directly within the simulation program.
@@ -41,7 +42,7 @@ of practical examples.
 Basic simulation program
 ------------------------
 
-Here is the minimal simulation program that is needed to do an LTE simulation.
+Here is the minimal simulation program that is needed to do an LTE-only simulation (without EPC).
 
 .. highlight:: none
 
@@ -415,6 +416,137 @@ It is to be noted that using other means to configure the frequency used by the 
    This informs the node's mobility model that the node is located inside the building on the second floor in the corner room of the 3 x 2 grid.
    We suggest the usage of the first form since it performs a consistency check of the node position with the building bounds.
    It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size for outdoor nodes. The responsibility of this consistency is completely left to the user.
+
+
+Evolved Packet Core (EPC)
+-------------------------
+
+We now explain how to write a simulation program that allows to
+simulate the EPC in addition to the LTE radio access network. The use
+of EPC allows to use IPv4 networking with LTE devices. In other words,
+you will be able to use the regular ns-3 applications and sockets over
+IPv4 over LTE, and also to connect an LTE network to any other IPv4
+network you might have in your simulation.
+
+First of all, in your simulation program you need to create two
+helpers::
+
+  Ptr<LenaHelper> lteHelper = CreateObject<LenaHelper> ();
+  Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
+
+Then, you need to tell the LTE helper that the EPC will be used::
+
+  lteHelper->SetEpcHelper (epcHelper);
+
+the above step is necessary so that the LTE helper will trigger the
+appropriate EPC configuration in correspondance with some important
+configuration, such as when a new eNB or UE is added to the
+simulation, or an EPS bearer is created. The EPC helper will
+automatically take care of the necessary setup, such as S1 link
+creation and S1 bearer setup. All this will be done without the
+intervention of the user.
+
+It is to be noted that, upon construction, the EpcHelper will also
+create and configure the PGW node. Its configuration in particular
+is very complex, and hence is done automatically by the Helper. Still,
+it is allowed to access the PGW node in order to connect it to other
+IPv4 network (e.g., the internet). Here is a very simple example about
+how to connect a single remote host to the PGW via a point-to-point
+link::
+
+  Ptr<Node> pgw = epcHelper->GetPgwNode ();
+
+   // Create a single RemoteHost
+  NodeContainer remoteHostContainer;
+  remoteHostContainer.Create (1);
+  Ptr<Node> remoteHost = remoteHostContainer.Get (0);
+  InternetStackHelper internet;
+  internet.Install (remoteHostContainer);
+
+  // Create the internet
+  PointToPointHelper p2ph;
+  p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
+  p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
+  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));  
+  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
+  Ipv4AddressHelper ipv4h;
+  ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
+  Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
+  // interface 0 is localhost, 1 is the p2p device
+  Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
+  
+
+It's important to specify routes so that the remote host can reach LTE
+UEs. One way of doing this is by exploiting the fact that the
+EpcHelper will by default assign to LTE UEs an IP address in the
+7.0.0.0 network. With this in mind, it suffices to do::
+
+  Ipv4StaticRoutingHelper ipv4RoutingHelper;
+  Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
+  remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
+
+Now, you should go on and create LTE eNBs and UEs as explained in the
+previous sections. You can of course configure other LTE aspects such
+as pathloss and fading models. Right after you created the UEs, you
+should also configure them for IP networking. This is done as
+follows. We assume you have a container for UE nodes like this::
+
+      NodeContainer ues;
+
+to configure an LTE-only simulation, you would then normally do
+something like this::
+
+      NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ues);
+      lteHelper->Attach (ueLteDevs, *enbLteDevIt);        
+
+in order to configure the UEs for IP networking, you just need to
+additionally do like this::
+
+      // we install the IP stack on the UEs 
+      InternetStackHelper internet;
+      internet.Install (ues);
+
+      // assign IP address to UEs, and install applications
+      for (uint32_t u = 0; u < ues.GetN (); ++u)
+        {
+          Ptr<Node> ue = ues.Get (u);          
+          Ptr<NetDevice> ueLteDevice = ueLteDevs.Get (u);
+          Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
+          // set the default gateway for the UE
+          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());          
+          ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+        }
+
+The activation of bearers is done exactly in the same way as for an
+LTE-only simulation. Here is how to activate a default bearer::
+
+      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), LteTft::Defautl ());
+
+you can of course use custom EpsBearer and LteTft configurations,
+please refer to the doxygen documentation for how to do it.
+
+
+Finally, you can install applications on the LTE UE nodes that communicate
+with remote applications over the internet. This is done following the
+usual ns-3 procedures. Following our simple example with a single
+remoteHost, here is how to setup downlink communication, with an
+UdpClient application on the remote host, and a PacketSink on the LTE UE
+(using the same variable names of the previous code snippets) ::
+
+       uint16_t dlPort = 1234;
+       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+       ApplicationContainer serverApps = packetSinkHelper.Install (ue);
+       serverApps.Start (Seconds (0.01));
+       UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
+       ApplicationContainer clientApps = client.Install (remoteHost);
+       clientApps.Start (Seconds (0.01));
+
+That's all! You can now start your simulation as usual::
+
+  Simulator::Stop (Seconds (10.0));  
+  Simulator::Run ();
+
+
 
 
 
