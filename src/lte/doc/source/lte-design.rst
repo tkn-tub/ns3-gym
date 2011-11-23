@@ -379,8 +379,9 @@ In this section we provide some sequence diagram that illustrate some important 
 Physical Layer
 ++++++++++++++
 
-TODO: add diagram showing interference calculation
+The following diagram shows how interfering signals are processed to calculate the SINR, and how SINR is then used for the generation of CQI feedback.
 
+.. seqdiag:: phy.seqdiag
 
 RLC buffer status report
 ++++++++++++++++++++++++
