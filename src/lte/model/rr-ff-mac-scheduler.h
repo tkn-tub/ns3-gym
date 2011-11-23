@@ -120,6 +120,9 @@ private:
   int GetRbgSize (int dlbandwidth);
   
   static bool SortRlcBufferReq (FfMacSchedSapProvider::SchedDlRlcBufferReqParameters i,FfMacSchedSapProvider::SchedDlRlcBufferReqParameters j);
+  
+  void RefreshDlCqiMaps(void);
+  void RefreshUlCqiMaps(void);
 
   /*
    * Vectors of UE's RLC info
@@ -130,6 +133,10 @@ private:
   * Map of UE's DL CQI P01 received
   */
   std::map <uint16_t,uint8_t> m_p10CqiRxed;
+  /*
+  * Map of UE's timers on DL CQI P01 received
+  */
+  std::map <uint16_t,uint32_t> m_p10CqiTimers;
 
   /*
   * Map of previous allocated UE per RBG
@@ -141,6 +148,10 @@ private:
   * Map of UEs' UL-CQI per RBG
   */
   std::map <uint16_t, std::vector <double> > m_ueCqi;
+  /*
+  * Map of UEs' timers on UL-CQI per RBG
+  */
+  std::map <uint16_t, uint32_t> m_ueCqiTimers;
 
 
 
@@ -163,6 +174,9 @@ private:
 
   uint16_t m_nextRntiDl; // RNTI of the next user to be served next scheduling in DL
   uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
+  
+  uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid
+  
 
 };
 

@@ -168,14 +168,15 @@ def create_obj(bld, *args):
 
 
 def ns3_python_bindings(bld):
-    if Options.options.apiscan:
-        return
 
     # this method is called from a module wscript, so remember bld.path is not bindings/python!
     module_abs_src_path = bld.path.abspath()
     module = os.path.basename(module_abs_src_path)
     env = bld.env
     env.append_value("MODULAR_BINDINGS_MODULES", "ns3-"+module)
+
+    if Options.options.apiscan:
+        return
 
     if not env['ENABLE_PYTHON_BINDINGS']:
         return

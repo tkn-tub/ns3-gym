@@ -89,7 +89,7 @@ void Ipv6InterfaceAddress::SetAddress (Ipv6Address address)
       /* localhost address is always /128 prefix */
       m_prefix = Ipv6Prefix (128);
     }
-  if (address.IsLinkLocal ())
+  else if (address.IsLinkLocal ())
     {
       m_scope = LINKLOCAL;
       /* link-local address is always /64 prefix */

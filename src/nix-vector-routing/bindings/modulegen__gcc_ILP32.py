@@ -118,6 +118,10 @@ def register_types(module):
     module.add_class('Header', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
     ## ipv4-header.h (module 'internet'): ns3::Ipv4Header [class]
     module.add_class('Ipv4Header', import_from_module='ns.internet', parent=root_module['ns3::Header'])
+    ## ipv4-header.h (module 'internet'): ns3::Ipv4Header::DscpType [enumeration]
+    module.add_enum('DscpType', ['DscpDefault', 'CS1', 'AF11', 'AF12', 'AF13', 'CS2', 'AF21', 'AF22', 'AF23', 'CS3', 'AF31', 'AF32', 'AF33', 'CS4', 'AF41', 'AF42', 'AF43', 'CS5', 'EF', 'CS6', 'CS7'], outer_class=root_module['ns3::Ipv4Header'], import_from_module='ns.internet')
+    ## ipv4-header.h (module 'internet'): ns3::Ipv4Header::EcnType [enumeration]
+    module.add_enum('EcnType', ['NotECT', 'ECT1', 'ECT0', 'CE'], outer_class=root_module['ns3::Ipv4Header'], import_from_module='ns.internet')
     ## ipv4-nix-vector-helper.h (module 'nix-vector-routing'): ns3::Ipv4NixVectorHelper [class]
     module.add_class('Ipv4NixVectorHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## object.h (module 'core'): ns3::Object [class]
@@ -2298,6 +2302,16 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    ## ipv4-header.h (module 'internet'): std::string ns3::Ipv4Header::DscpTypeToString(ns3::Ipv4Header::DscpType dscp) const [member function]
+    cls.add_method('DscpTypeToString', 
+                   'std::string', 
+                   [param('ns3::Ipv4Header::DscpType', 'dscp')], 
+                   is_const=True)
+    ## ipv4-header.h (module 'internet'): std::string ns3::Ipv4Header::EcnTypeToString(ns3::Ipv4Header::EcnType ecn) const [member function]
+    cls.add_method('EcnTypeToString', 
+                   'std::string', 
+                   [param('ns3::Ipv4Header::EcnType', 'ecn')], 
+                   is_const=True)
     ## ipv4-header.h (module 'internet'): void ns3::Ipv4Header::EnableChecksum() [member function]
     cls.add_method('EnableChecksum', 
                    'void', 
@@ -2305,6 +2319,16 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
     ## ipv4-header.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4Header::GetDestination() const [member function]
     cls.add_method('GetDestination', 
                    'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## ipv4-header.h (module 'internet'): ns3::Ipv4Header::DscpType ns3::Ipv4Header::GetDscp() const [member function]
+    cls.add_method('GetDscp', 
+                   'ns3::Ipv4Header::DscpType', 
+                   [], 
+                   is_const=True)
+    ## ipv4-header.h (module 'internet'): ns3::Ipv4Header::EcnType ns3::Ipv4Header::GetEcn() const [member function]
+    cls.add_method('GetEcn', 
+                   'ns3::Ipv4Header::EcnType', 
                    [], 
                    is_const=True)
     ## ipv4-header.h (module 'internet'): uint16_t ns3::Ipv4Header::GetFragmentOffset() const [member function]
@@ -2390,6 +2414,14 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
     cls.add_method('SetDontFragment', 
                    'void', 
                    [])
+    ## ipv4-header.h (module 'internet'): void ns3::Ipv4Header::SetDscp(ns3::Ipv4Header::DscpType dscp) [member function]
+    cls.add_method('SetDscp', 
+                   'void', 
+                   [param('ns3::Ipv4Header::DscpType', 'dscp')])
+    ## ipv4-header.h (module 'internet'): void ns3::Ipv4Header::SetEcn(ns3::Ipv4Header::EcnType ecn) [member function]
+    cls.add_method('SetEcn', 
+                   'void', 
+                   [param('ns3::Ipv4Header::EcnType', 'ecn')])
     ## ipv4-header.h (module 'internet'): void ns3::Ipv4Header::SetFragmentOffset(uint16_t offsetBytes) [member function]
     cls.add_method('SetFragmentOffset', 
                    'void', 

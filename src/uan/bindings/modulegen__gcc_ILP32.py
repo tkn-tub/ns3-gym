@@ -3835,6 +3835,11 @@ def register_Ns3UanMac_methods(root_module, cls):
                    'ns3::Address', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## uan-mac.h (module 'uan'): static ns3::TypeId ns3::UanMac::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## uan-mac.h (module 'uan'): void ns3::UanMac::SetAddress(ns3::UanAddress addr) [member function]
     cls.add_method('SetAddress', 
                    'void', 
@@ -4125,6 +4130,11 @@ def register_Ns3UanNoiseModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'fKhz')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## uan-noise-model.h (module 'uan'): static ns3::TypeId ns3::UanNoiseModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3UanNoiseModelDefault_methods(root_module, cls):
@@ -4209,6 +4219,11 @@ def register_Ns3UanPhy_methods(root_module, cls):
                    'double', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhy::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## uan-phy.h (module 'uan'): bool ns3::UanPhy::IsStateBusy() [member function]
     cls.add_method('IsStateBusy', 
                    'bool', 
@@ -4351,6 +4366,11 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhyCalcSinr::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## uan-phy.h (module 'uan'): double ns3::UanPhyCalcSinr::KpToDb(double kp) const [member function]
     cls.add_method('KpToDb', 
                    'double', 
@@ -4960,6 +4980,11 @@ def register_Ns3UanPhyPer_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhyPer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3UanPhyPerGenDefault_methods(root_module, cls):
@@ -5026,6 +5051,11 @@ def register_Ns3UanPropModel_methods(root_module, cls):
                    'ns3::UanPdp', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('ns3::UanTxMode', 'mode')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-prop-model.h (module 'uan'): static ns3::TypeId ns3::UanPropModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3UanPropModelIdeal_methods(root_module, cls):
@@ -5117,6 +5147,11 @@ def register_Ns3UanTransducer_methods(root_module, cls):
                    'ns3::UanTransducer::State', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## uan-transducer.h (module 'uan'): static ns3::TypeId ns3::UanTransducer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## uan-transducer.h (module 'uan'): bool ns3::UanTransducer::IsRx() const [member function]
     cls.add_method('IsRx', 
                    'bool', 

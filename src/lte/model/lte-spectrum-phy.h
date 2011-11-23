@@ -30,7 +30,6 @@
 #include <ns3/net-device.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/data-rate.h>
 #include <ns3/generic-phy.h>
@@ -72,16 +71,7 @@ public:
   Ptr<MobilityModel> GetMobility ();
   Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
-
-
-  /**
-   * Get the SpectrumType used by this PHY
-   *
-   * @return
-   */
-  SpectrumType GetSpectrumType ();
-
+  void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.

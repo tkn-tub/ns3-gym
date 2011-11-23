@@ -111,9 +111,7 @@ public:
    * \returns the index of the Application within the Node's list
    *          of Application.
    *
-   * Associated this Application to this Node. This method is called
-   * automatically from Application::Application so the user
-   * has little reasons to call this method directly.
+   * Associated this Application to this Node. 
    */
   uint32_t AddApplication (Ptr<Application> application);
   /**

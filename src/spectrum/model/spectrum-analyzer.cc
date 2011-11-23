@@ -136,14 +136,11 @@ SpectrumAnalyzer::SetChannel (Ptr<SpectrumChannel> c)
 
 
 void
-SpectrumAnalyzer::StartRx (Ptr<PacketBurst> pb,
-                           Ptr <const SpectrumValue> rxPowerSpectralDensity,
-                           SpectrumType st,
-                           Time duration)
+SpectrumAnalyzer::StartRx (Ptr<SpectrumSignalParameters> params)
 {
-  NS_LOG_FUNCTION ( this << st << duration << *rxPowerSpectralDensity);
-  AddSignal (rxPowerSpectralDensity);
-  Simulator::Schedule (duration, &SpectrumAnalyzer::SubtractSignal, this, rxPowerSpectralDensity);
+  NS_LOG_FUNCTION ( this << params);
+  AddSignal (params->psd);
+  Simulator::Schedule (params->duration, &SpectrumAnalyzer::SubtractSignal, this, params->psd);
 }
 
 

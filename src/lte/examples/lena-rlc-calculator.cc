@@ -24,7 +24,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-#include "ns3/gtk-config-store.h"
+//#include "ns3/gtk-config-store.h"
 
 
 using namespace ns3;
@@ -43,7 +43,7 @@ int main (int argc, char *argv[])
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   // Enable LTE log components
   //lena->EnableLogComponents ();
 

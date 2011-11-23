@@ -22,7 +22,6 @@
 #define ROCKETFUEL_TOPOLOGY_READER_H
 
 #include "ns3/nstime.h"
-
 #include "topology-reader.h"
 
 namespace ns3 {
@@ -31,6 +30,8 @@ namespace ns3 {
 // ------------------------------------------------------------
 // --------------------------------------------
 /**
+ * \ingroup topology
+ *
  * \brief Topology file reader (Rocketfuel-format type).
  *
  * http://www.cs.washington.edu/research/networking/rocketfuel/

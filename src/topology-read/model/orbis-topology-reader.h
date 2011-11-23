@@ -23,7 +23,6 @@
 #define ORBIS_TOPOLOGY_READER_H
 
 #include "ns3/nstime.h"
-
 #include "topology-reader.h"
 
 namespace ns3 {
@@ -32,6 +31,8 @@ namespace ns3 {
 // ------------------------------------------------------------
 // --------------------------------------------
 /**
+ * \ingroup topology
+ *
  * \brief Topology file reader (Orbis-format type).
  *
  * This class takes an input file in Orbis format and extracts all

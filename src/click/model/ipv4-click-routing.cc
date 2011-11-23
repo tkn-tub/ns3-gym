@@ -261,6 +261,8 @@ Ipv4ClickRouting::RunClickEvent ()
 {
   m_simNode->curtime.tv_sec = Simulator::Now ().GetSeconds ();
   m_simNode->curtime.tv_usec = Simulator::Now ().GetMicroSeconds () % 1000000;
+  NS_LOG_DEBUG ("RunClickEvent at " << m_simNode->curtime.tv_sec << " " << 
+                                       m_simNode->curtime.tv_usec << " " << Simulator::Now ());
   simclick_click_run (m_simNode);
 }
 
@@ -269,10 +271,10 @@ Ipv4ClickRouting::HandleScheduleFromClick (const struct timeval *when)
 {
   NS_LOG_DEBUG ("HandleScheduleFromClick at " << when->tv_sec << " " << when->tv_usec << " " << Simulator::Now ());
 
-  double simtime = when->tv_sec + (when->tv_usec / 1.0e6);
-  double simdelay = simtime - Simulator::Now ().GetMicroSeconds () / 1.0e6;
+  Time simtime  = Time::FromInteger(when->tv_sec, Time::S) + Time::FromInteger(when->tv_usec, Time::US);
+  Time simdelay = simtime - Simulator::Now();
 
-  Simulator::Schedule (Seconds (simdelay), &Ipv4ClickRouting::RunClickEvent, this);
+  Simulator::Schedule (simdelay, &Ipv4ClickRouting::RunClickEvent, this);
 }
 
 void
@@ -640,7 +642,7 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         clickInstance->HandleScheduleFromClick (when);
 
         retval = 0;
-        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_SCHEDULE: " << when->tv_sec << "s and " << when->tv_usec << "usecs later.");
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_SCHEDULE at " << when->tv_sec << "s and " << when->tv_usec << "usecs.");
 
         break;
       }

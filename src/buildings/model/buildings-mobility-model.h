@@ -28,11 +28,8 @@
 #include <ns3/object.h>
 #include <ns3/box.h>
 #include <map>
-#include <ns3/constant-velocity-helper.h>
 #include <ns3/building.h>
-//#include "ns3/random-variable.h"
-//#include "ns3/nstime.h"
-//#include "ns3/event-id.h"
+#include <ns3/constant-velocity-helper.h>
 
 
 
@@ -51,47 +48,48 @@ namespace ns3 {
 
 class BuildingsMobilityModel : public MobilityModel
 {
-  public:
-    static TypeId GetTypeId (void);
-    BuildingsMobilityModel ();
-    
-    bool IsIndoor (void);
-    bool IsOutdoor (void);
-    
-    void SetIndoor (Ptr<Building> building);
-    void SetOutdoor (void);
-    
-    void SetSurroudingBuilding (Ptr<Building> building);
-    
-    void SetFloorNumber (uint8_t nfloor);
-    void SetRoomNumberX (uint8_t nroomx);
-    void SetRoomNumberY (uint8_t nroomy);
-    
-    uint8_t GetFloorNumber (void);
-    uint8_t GetRoomNumberX (void);
-    uint8_t GetRoomNumberY (void);
-    
-    Ptr<Building> GetBuilding ();
-    
-    
-    
-  private:
-    virtual void DoDispose (void);
-    virtual Vector DoGetPosition (void) const;
-    virtual void DoSetPosition (const Vector &position);
-    virtual Vector DoGetVelocity (void) const;
-    ConstantVelocityHelper m_helper;
-    Box m_bounds;   // bounds of the simulation field (if needed)
-    std::list < Ptr<Building> > m_surroudingBuildings;  // buildings blocks
-    Ptr<Building> m_myBuilding;
-    bool m_indoor;
-    /**
-    * floors numbering starts from 0 (basement)
-    */
-    uint8_t m_nFloor;
-    uint8_t m_roomX;
-    uint8_t m_roomY;
-    
+public:
+  static TypeId GetTypeId (void);
+  BuildingsMobilityModel ();
+
+  bool IsIndoor (void);
+  bool IsOutdoor (void);
+
+  void SetIndoor (Ptr<Building> building);
+  void SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);
+  void SetOutdoor (void);
+
+  void SetSurroudingBuilding (Ptr<Building> building);
+
+  void SetFloorNumber (uint8_t nfloor);
+  void SetRoomNumberX (uint8_t nroomx);
+  void SetRoomNumberY (uint8_t nroomy);
+
+  uint8_t GetFloorNumber (void);
+  uint8_t GetRoomNumberX (void);
+  uint8_t GetRoomNumberY (void);
+
+  Ptr<Building> GetBuilding ();
+
+
+
+private:
+  virtual void DoDispose (void);
+  virtual Vector DoGetPosition (void) const;
+  virtual void DoSetPosition (const Vector &position);
+  virtual Vector DoGetVelocity (void) const;
+  ConstantVelocityHelper m_helper;
+  Box m_bounds;     // bounds of the simulation field (if needed)
+  std::list < Ptr<Building> > m_surroudingBuildings;    // buildings blocks
+  Ptr<Building> m_myBuilding;
+  bool m_indoor;
+  /**
+  * floors numbering starts from 0 (basement)
+  */
+  uint8_t m_nFloor;
+  uint8_t m_roomX;
+  uint8_t m_roomY;
+
 };
 
 

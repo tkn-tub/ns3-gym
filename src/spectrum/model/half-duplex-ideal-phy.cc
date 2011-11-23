@@ -27,12 +27,13 @@
 #include <ns3/packet-burst.h>
 #include <ns3/callback.h>
 #include "half-duplex-ideal-phy.h"
+#include "half-duplex-ideal-phy-signal-parameters.h"
 #include "spectrum-error-model.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("HalfDuplexIdealPhy");
 
 namespace ns3 {
-
 
 NS_OBJECT_ENSURE_REGISTERED (HalfDuplexIdealPhy);
 
@@ -178,15 +179,6 @@ HalfDuplexIdealPhy::GetRxSpectrumModel () const
     }
 }
 
-
-SpectrumType
-HalfDuplexIdealPhy::GetSpectrumType ()
-{
-  NS_LOG_FUNCTION (this);
-  static SpectrumType st = SpectrumTypeFactory::Create ("IdealOfdm");
-  return st;
-}
-
 void
 HalfDuplexIdealPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
 {
@@ -274,10 +266,15 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
       {
         m_txPacket = p;
         ChangeState (TX);
+        Ptr<HalfDuplexIdealPhySignalParameters> txParams = Create<HalfDuplexIdealPhySignalParameters> ();
         double txTimeSeconds = m_rate.CalculateTxTime (p->GetSize ());
-        Ptr<PacketBurst> pb = Create<PacketBurst> ();
-        pb->AddPacket (p);
-        m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), Seconds (txTimeSeconds), GetObject<SpectrumPhy> ());
+        txParams->duration = Seconds (txTimeSeconds);
+        txParams->txPhy = GetObject<SpectrumPhy> ();
+        txParams->psd = m_txPsd;
+        txParams->data = m_txPacket;
+
+        NS_LOG_LOGIC (this << " tx power: " << 10 * log10 (Integral (*(txParams->psd))) + 30 << " dBm");
+        m_channel->StartTx (txParams);
         Simulator::Schedule (Seconds (txTimeSeconds), &HalfDuplexIdealPhy::EndTx, this);
       }
       break;
@@ -295,7 +292,7 @@ void
 HalfDuplexIdealPhy::EndTx ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == TX);
 
@@ -312,18 +309,21 @@ HalfDuplexIdealPhy::EndTx ()
 
 
 void
-HalfDuplexIdealPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration)
+HalfDuplexIdealPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumParams)
 {
-  NS_LOG_FUNCTION (this << pb << rxPsd << st << duration);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_FUNCTION (this << spectrumParams);
+  NS_LOG_LOGIC (this << " state: " << m_state);
+  NS_LOG_LOGIC (this << " rx power: " << 10 * log10 (Integral (*(spectrumParams->psd))) + 30 << " dBm");
 
   // interference will happen regardless of the state of the receiver
-  m_interference.AddSignal (rxPsd, duration);
+  m_interference.AddSignal (spectrumParams->psd, spectrumParams->duration);
 
   // the device might start RX only if the signal is of a type understood by this device
-  // this corresponds in real device to preamble detection
-  if (st == GetSpectrumType ())
+  // this corresponds in real devices to preamble detection
+  Ptr<HalfDuplexIdealPhySignalParameters> rxParams = DynamicCast<HalfDuplexIdealPhySignalParameters> (spectrumParams);
+  if (rxParams != 0)
     {
+      // signal is of known type
       switch (m_state)
         {
         case TX:
@@ -341,12 +341,11 @@ HalfDuplexIdealPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPs
 
         case IDLE:
           // preamble detection and synchronization is supposed to be always successful.
-          NS_LOG_LOGIC (this << " receiving " << pb->GetNPackets () << "  packet(s)" );
-          NS_ASSERT (pb->GetNPackets () == 1); // this PHY only supports a single packet per waveform
-          Ptr<Packet> p = pb->GetPackets ().front ();
+
+          Ptr<Packet> p = rxParams->data;
           m_phyRxStartTrace (p);
           m_rxPacket = p;
-          m_rxPsd = rxPsd;
+          m_rxPsd = rxParams->psd;
           ChangeState (RX);
           if (!m_phyMacRxStartCallback.IsNull ())
             {
@@ -357,16 +356,20 @@ HalfDuplexIdealPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPs
             {
               NS_LOG_LOGIC (this << " m_phyMacRxStartCallback is NULL");
             }
-          m_interference.StartRx (p, rxPsd);
-          NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
-          m_endRxEventId = Simulator::Schedule (duration, &HalfDuplexIdealPhy::EndRx, this);
+          m_interference.StartRx (p, rxParams->psd);
+          NS_LOG_LOGIC (this << " scheduling EndRx with delay " << rxParams->duration);
+          m_endRxEventId = Simulator::Schedule (rxParams->duration, &HalfDuplexIdealPhy::EndRx, this);
 
           break;
 
         }
     }
+  else // rxParams == 0
+    {
+      NS_LOG_LOGIC (this << " signal of unknown type");
+    }
 
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 }
 
 
@@ -388,7 +391,7 @@ void
 HalfDuplexIdealPhy::EndRx ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == RX);
 

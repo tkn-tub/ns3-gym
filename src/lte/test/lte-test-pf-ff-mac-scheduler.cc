@@ -241,7 +241,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -422,7 +422,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

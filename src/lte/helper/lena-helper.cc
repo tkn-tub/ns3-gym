@@ -21,33 +21,25 @@
 
 
 #include "lena-helper.h"
-
 #include <ns3/string.h>
 #include <ns3/log.h>
 #include <ns3/pointer.h>
-
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-mac.h>
 #include <ns3/lte-enb-mac.h>
 #include <ns3/lte-enb-net-device.h>
-
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
 #include <ns3/lte-spectrum-phy.h>
 #include <ns3/lte-sinr-chunk-processor.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
-
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
-
 #include <ns3/ff-mac-scheduler.h>
-
 #include <iostream>
-
 #include <ns3/buildings-propagation-loss-model.h>
-
 #include <ns3/lte-spectrum-value-helper.h>
 
 
@@ -70,8 +62,8 @@ LenaHelper::DoStart (void)
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
 
-  m_downlinkPropagationModel = m_dlPropagationModelFactory.Create ();
-  Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPropagationModel->GetObject<SpectrumPropagationLossModel> ();
+  m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
   if (dlSplm != 0)
     {
       NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in DL");
@@ -80,13 +72,13 @@ LenaHelper::DoStart (void)
   else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
-      Ptr<PropagationLossModel> dlPlm = m_downlinkPropagationModel->GetObject<PropagationLossModel> ();            
-      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPropagationModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModel->GetObject<PropagationLossModel> ();            
+      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
       m_downlinkChannel->AddPropagationLossModel (dlPlm);
     }
 
-  m_uplinkPropagationModel = m_ulPropagationModelFactory.Create ();
-  Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPropagationModel->GetObject<SpectrumPropagationLossModel> ();
+  m_uplinkPathlossModel = m_ulPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
   if (ulSplm != 0)
     {
       NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
@@ -95,8 +87,8 @@ LenaHelper::DoStart (void)
     else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
-      Ptr<PropagationLossModel> ulPlm = m_uplinkPropagationModel->GetObject<PropagationLossModel> ();            
-      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPropagationModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModel->GetObject<PropagationLossModel> ();            
+      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
     
@@ -144,10 +136,10 @@ TypeId LenaHelper::GetTypeId (void)
                    StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LenaHelper::SetSchedulerType),
                    MakeStringChecker ())
-    .AddAttribute ("PropagationModel",
-                   "The type of propagation model to be used",
+    .AddAttribute ("PathlossModel",
+                   "The type of pathloss model to be used",
                    StringValue ("ns3::BuildingsPropagationLossModel"),
-                   MakeStringAccessor (&LenaHelper::SetPropagationModelType),
+                   MakeStringAccessor (&LenaHelper::SetPathlossModelType),
                    MakeStringChecker ())
      .AddAttribute ("FadingModel",
                    "The type of fading model to be used",
@@ -175,21 +167,21 @@ LenaHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 
 
 void 
-LenaHelper::SetPropagationModelType (std::string type) 
+LenaHelper::SetPathlossModelType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
-  m_dlPropagationModelFactory = ObjectFactory ();
-  m_dlPropagationModelFactory.SetTypeId (type);
-  m_ulPropagationModelFactory = ObjectFactory ();
-  m_ulPropagationModelFactory.SetTypeId (type);
+  m_dlPathlossModelFactory = ObjectFactory ();
+  m_dlPathlossModelFactory.SetTypeId (type);
+  m_ulPathlossModelFactory = ObjectFactory ();
+  m_ulPathlossModelFactory.SetTypeId (type);
 }
 
 void 
-LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v)
+LenaHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
-  m_dlPropagationModelFactory.Set (n, v);
-  m_ulPropagationModelFactory.Set (n, v);
+  m_dlPathlossModelFactory.Set (n, v);
+  m_ulPathlossModelFactory.Set (n, v);
 }
 
 
@@ -311,21 +303,21 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
-  if (m_downlinkPropagationModel->GetObject<BuildingsPropagationLossModel> () != 0)
+  if (m_downlinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
     {
       double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
       NS_LOG_LOGIC ("DL freq: " << dlFreq);
-      m_downlinkPropagationModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
+      m_downlinkPathlossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
     }
   else
     {
-      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPropagationModel->GetTypeId ());
+      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPathlossModel->GetTypeId ());
     }
-  if (m_uplinkPropagationModel->GetObject<BuildingsPropagationLossModel> () != 0)
+  if (m_uplinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
     {
       double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
       NS_LOG_LOGIC ("UL freq: " << ulFreq);
-      m_uplinkPropagationModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
+      m_uplinkPathlossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
     }
   
   dev->Start ();
@@ -335,6 +327,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 Ptr<NetDevice>
 LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
@@ -451,6 +444,7 @@ LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 void
 LenaHelper::EnableLogComponents (void)
 {
+  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
@@ -467,12 +461,16 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-//  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-//  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
+  std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+ 
+  const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+  LogComponentEnable (propModel, LOG_LEVEL_ALL);
+  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+      const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
+      LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
+    }
+  LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
@@ -503,12 +501,12 @@ FindImsiFromEnbRlcPath (std::string path)
 
   // We retrieve the UeInfo associated to the C-RNTI and perform the IMSI lookup
   std::string ueMapPath = path.substr (0, path.find ("/RadioBearerMap"));
-  NS_LOG_LOGIC ("ueMapPath = " << ueMapPath);
   Config::MatchContainer match = Config::LookupMatches (ueMapPath);
 
   if (match.GetN () != 0)
     {
       Ptr<Object> ueInfo = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromEnbRlcPath: " << path << ", " << ueInfo->GetObject<UeInfo> ()->GetImsi ());
       return ueInfo->GetObject<UeInfo> ()->GetImsi ();
     }
   else
@@ -531,6 +529,7 @@ FindCellIdFromEnbRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> enbNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindCellIdFromEnbRlcPath: " << path << ", " << enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
       return enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ();
     }
   else
@@ -553,6 +552,7 @@ FindImsiFromUeRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> ueNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromUeRlcPath: " << path << ", " << ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
       return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
     }
   else
@@ -569,11 +569,11 @@ FindImsiFromEnbMac (std::string path, uint16_t rnti)
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
-  NS_LOG_LOGIC ("p = " << p);
   oss << rnti;
   p += "/LteEnbRrc/UeMap/" + oss.str ();
-  NS_LOG_LOGIC ("p = " << p);
-  return FindImsiFromEnbRlcPath (p);
+  uint64_t imsi = FindImsiFromEnbRlcPath (p);
+  NS_LOG_LOGIC ("FindImsiFromEnbMac: " << path << ", " << rnti << ", " << imsi);
+  return imsi;
 }
 
 uint16_t
@@ -585,7 +585,9 @@ FindCellIdFromEnbMac (std::string path, uint16_t rnti)
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
   oss << rnti;
   p += "/LteEnbRrc/UeMap/" + oss.str ();
-  return FindCellIdFromEnbRlcPath (p);
+  uint16_t cellId = FindCellIdFromEnbRlcPath (p);
+  NS_LOG_LOGIC ("FindCellIdFromEnbMac: " << path << ", "<< rnti << ", " << cellId);
+  return cellId;
 }
 
 
@@ -699,25 +701,27 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
 {
   NS_LOG_FUNCTION (macStats << path);
   uint64_t imsi = 0;
-  if (macStats->ExistsImsiPath(path) == true)
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
     {
-      imsi = macStats->GetImsiPath (path);
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
       imsi = FindImsiFromEnbMac (path, rnti);
-      macStats->SetImsiPath (path, imsi);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
 
   uint16_t cellId = 0;
-  if (macStats->ExistsCellIdPath(path) == true)
+  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
     {
-      cellId = macStats->GetCellIdPath (path);
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
     }
   else
     {
       cellId = FindCellIdFromEnbMac (path, rnti);
-      macStats->SetCellIdPath (path, cellId);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
     }
 
   macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
@@ -755,24 +759,26 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
   NS_LOG_FUNCTION (macStats << path);
 
   uint64_t imsi = 0;
-  if (macStats->ExistsImsiPath(path) == true)
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
     {
-      imsi = macStats->GetImsiPath (path);
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
   else
     {
       imsi = FindImsiFromEnbMac (path, rnti);
-      macStats->SetImsiPath (path, imsi);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
   uint16_t cellId = 0;
-  if (macStats->ExistsCellIdPath(path) == true)
+  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
     {
-      cellId = macStats->GetCellIdPath (path);
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
     }
   else
     {
       cellId = FindCellIdFromEnbMac (path, rnti);
-      macStats->SetCellIdPath (path, cellId);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
     }
 
   macStats->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);

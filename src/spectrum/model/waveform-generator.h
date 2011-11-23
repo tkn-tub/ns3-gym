@@ -29,7 +29,6 @@
 #include <ns3/net-device.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
 #include <ns3/trace-source-accessor.h>
 
 namespace ns3 {
@@ -61,7 +60,7 @@ public:
   Ptr<MobilityModel> GetMobility ();
   Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
+  void StartRx (Ptr<SpectrumSignalParameters> params);
 
 
   /**
@@ -70,16 +69,6 @@ public:
    * @param txs the Power Spectral Density
    */
   void SetTxPowerSpectralDensity (Ptr<SpectrumValue> txs);
-
-
-  /**
-   * Get the SpectrumType used by this PHY
-   *
-   * @return
-   */
-  SpectrumType GetSpectrumType ();
-
-
 
   /**
    * Set the period according to which the WaveformGenerator switches

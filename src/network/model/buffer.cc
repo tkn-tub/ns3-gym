@@ -758,9 +758,9 @@ Buffer::CopyData (uint8_t *buffer, uint32_t size) const
       uint32_t tmpsize = std::min (m_zeroAreaStart-m_start, size);
       memcpy (buffer, (const char*)(m_data->m_data + m_start), tmpsize);
       buffer += tmpsize;
-      if (size > tmpsize) 
+      size -= tmpsize;
+      if (size > 0) 
         { 
-          size -= m_zeroAreaStart-m_start;
           tmpsize = std::min (m_zeroAreaEnd - m_zeroAreaStart, size);
           uint32_t left = tmpsize;
           while (left > 0)
@@ -770,11 +770,12 @@ Buffer::CopyData (uint8_t *buffer, uint32_t size) const
               left -= toWrite;
               buffer += toWrite;
             }
-          if (size > tmpsize)
+          size -= tmpsize;
+          if (size > 0)
             {
-              size -= tmpsize;
               tmpsize = std::min (m_end - m_zeroAreaEnd, size);
               memcpy (buffer, (const char*)(m_data->m_data + m_zeroAreaStart), tmpsize);
+              size -= tmpsize;
             }
         }
     }

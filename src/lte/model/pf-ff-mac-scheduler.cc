@@ -237,7 +237,13 @@ PfFfMacScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PfFfMacScheduler")
     .SetParent<FfMacScheduler> ()
-    .AddConstructor<PfFfMacScheduler> ();
+    .AddConstructor<PfFfMacScheduler> ()
+    .AddAttribute ("CqiTimerThreshold",
+                   "The number of TTIs a CQI is valid (default 1000 - 1 sec.)",
+                   UintegerValue (1000),
+                   MakeUintegerAccessor (&PfFfMacScheduler::m_cqiTimersThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
   return tid;
 }
 
@@ -426,6 +432,9 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // evaluate the relative channel quality indicator for each UE per each RBG 
   // (since we are using allocation type 0 the small unit of allocation is RBG)
   // Resource allocation type 0 (see sec 7.1.6.1 of 36.213)
+  
+  RefreshDlCqiMaps ();
+  
   int rbgSize = GetRbgSize (m_cschedCellConfig.m_dlBandwidth);
   int rbgNum = m_cschedCellConfig.m_dlBandwidth / rbgSize;
   //std::vector <LteFlowId_t> rbgAllocationMap;
@@ -443,12 +452,13 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           uint8_t cqi = 0;
           if (itCqi == m_a30CqiRxed.end ())
             {
-              NS_LOG_DEBUG (this << " No DL-CQI for this UE " << (*it).first);
+//               NS_LOG_DEBUG (this << " No DL-CQI for this UE " << (*it).first);
               cqi = 1;  // start with lowest value
             }
           else
             {
               cqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi.at (0);
+//               NS_LOG_INFO (this << " CQI " << (uint32_t)cqi);
             }
           if (cqi > 0)  // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             {
@@ -527,7 +537,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             {
               if ((*itCqi).second.m_higherLayerSelected.size () > (*itMap).second.at (k))
                 {
-    //             NS_LOG_DEBUG (this << " RBG " << (*itMap).second.at (k) << " CQI " << (uint16_t)((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) );
+//                 NS_LOG_DEBUG (this << " RBG " << (*itMap).second.at (k) << " CQI " << (uint16_t)((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) );
                   if (((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) < worstCqi)
                     {
                       worstCqi = ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0));
@@ -649,11 +659,17 @@ PfFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
             {
               // create the new entry
               m_p10CqiRxed.insert ( std::pair<uint16_t, uint8_t > (rnti, params.m_cqiList.at (i).m_wbCqi.at (0)) ); // only codeword 0 at this stage (SISO)
+              // generate correspondent timer
+              m_p10CqiTimers.insert ( std::pair<uint16_t, uint32_t > (rnti, m_cqiTimersThreshold));
             }
           else
             {
-              // update the CQI value
+              // update the CQI value and refresh correspondent timer
               (*it).second = params.m_cqiList.at (i).m_wbCqi.at (0);
+              // update correspondent timer
+              std::map <uint16_t,uint32_t>::iterator itTimers;
+              itTimers = m_p10CqiTimers.find (rnti);
+              (*itTimers).second = m_cqiTimersThreshold;
             }
         }
       else if ( params.m_cqiList.at (i).m_cqiType == CqiListElement_s::A30 )
@@ -666,11 +682,15 @@ PfFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
             {
               // create the new entry
               m_a30CqiRxed.insert ( std::pair<uint16_t, SbMeasResult_s > (rnti, params.m_cqiList.at (i).m_sbMeasResult) );
+              m_a30CqiTimers.insert ( std::pair<uint16_t, uint32_t > (rnti, m_cqiTimersThreshold));
             }
           else
             {
-              // update the CQI value
+              // update the CQI value and refresh correspondent timer
               (*it).second = params.m_cqiList.at (i).m_sbMeasResult;
+              std::map <uint16_t,uint32_t>::iterator itTimers;
+              itTimers = m_a30CqiTimers.find (rnti);
+              (*itTimers).second = m_cqiTimersThreshold;
             }
         }
       else
@@ -719,6 +739,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
 {
 //   NS_LOG_FUNCTION (this << " Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
  
+  RefreshUlCqiMaps ();
 
   std::map <uint16_t,uint8_t>::iterator it; 
   int nflows = 0;
@@ -950,31 +971,35 @@ void
 PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  //NS_LOG_DEBUG (this << " RX UL CQI at " << params.m_sfnSf);
+//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf << " delay " << (uint32_t)m_schedTtiDelay);
   // correlate info on UL-CQIs with previous scheduling -> calculate m_sfnSf of transmission
-  uint32_t frameNo = (0xFF & params.m_sfnSf) >> 4;
+  uint32_t frameNo = (0x3FF & (params.m_sfnSf >> 4));
   uint32_t subframeNo = (0xF & params.m_sfnSf);
-  //NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
-  if (subframeNo - m_schedTtiDelay < 0)
+//   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
+  if (subframeNo <= m_schedTtiDelay)
     {
       frameNo--;
+      subframeNo = (10 + subframeNo - m_schedTtiDelay) % 11;
     }
-  subframeNo = (subframeNo - m_schedTtiDelay) % 10;
-  //NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo);
-  uint16_t sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  else
+    {
+      subframeNo = (subframeNo - m_schedTtiDelay) % 11;
+    }
+  uint16_t sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+//   NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo << " sfnSf "  << sfnSf);
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;
   itMap = m_allocationMaps.find (sfnSf);
   if (itMap == m_allocationMaps.end ())
     {
-      NS_LOG_DEBUG (this << " Does not find info on allocation");
+      NS_LOG_DEBUG (this << " Does not find info on allocation, size : " << m_allocationMaps.size ());
       return;
     }
   for (uint32_t i = 0; i < (*itMap).second.size (); i++)
     {
       // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
-      NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
+//       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
       double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
       //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
       itCqi = m_ueCqi.find ((*itMap).second.at (i));
@@ -996,18 +1021,103 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
 
             }
           m_ueCqi.insert (std::pair <uint16_t, std::vector <double> > ((*itMap).second.at (i), newCqi));
+          // generate correspondent timer
+          m_ueCqiTimers.insert (std::pair <uint16_t, uint32_t > ((*itMap).second.at (i), m_cqiTimersThreshold));
         }
       else
         {
           // update the value
           (*itCqi).second.at (i) = sinr;
+          // update correspondent timer
+          std::map <uint16_t, uint32_t>::iterator itTimers;
+          itTimers = m_ueCqiTimers.find ((*itMap).second.at (i));
+          (*itTimers).second = m_cqiTimersThreshold;
+          
         }
 
     }
   // remove obsolete info on allocation
-  m_allocationMaps.erase (m_allocationMaps.begin (), ++itMap);
+  m_allocationMaps.erase (itMap);
 
   return;
 }
+
+void
+PfFfMacScheduler::RefreshDlCqiMaps(void)
+{
+  // refresh DL CQI P01 Map
+  std::map <uint16_t,uint32_t>::iterator itP10 = m_p10CqiTimers.begin ();
+  while (itP10!=m_p10CqiTimers.end ())
+    {
+//       NS_LOG_INFO (this << " P10-CQI for user " << (*itP10).first << " is " << (uint32_t)(*itP10).second << " thr " << (uint32_t)m_cqiTimersThreshold);
+      if ((*itP10).second == 0)
+        {
+          // delete correspondent entries
+          std::map <uint16_t,uint8_t>::iterator itMap = m_p10CqiRxed.find ((*itP10).first);
+          NS_ASSERT_MSG (itMap != m_p10CqiRxed.end (), " Does not find CQI report for user " << (*itP10).first);
+          NS_LOG_INFO (this << " P10-CQI exired for user " << (*itP10).first);
+          m_p10CqiRxed.erase (itMap);
+          m_p10CqiTimers.erase (itP10);
+        }
+      else
+        {
+          (*itP10).second--;
+        }
+      itP10++;
+    }
+  
+  // refresh DL CQI A30 Map
+  std::map <uint16_t,uint32_t>::iterator itA30 = m_a30CqiTimers.begin ();
+  while (itA30!=m_a30CqiTimers.end ())
+    {
+//       NS_LOG_INFO (this << " A30-CQI for user " << (*itA30).first << " is " << (uint32_t)(*itA30).second << " thr " << (uint32_t)m_cqiTimersThreshold);
+      if ((*itA30).second == 0)
+        {
+          // delete correspondent entries
+          std::map <uint16_t,SbMeasResult_s>::iterator itMap = m_a30CqiRxed.find ((*itA30).first);
+          NS_ASSERT_MSG (itMap != m_a30CqiRxed.end (), " Does not find CQI report for user " << (*itA30).first);
+          NS_LOG_INFO (this << " A30-CQI exired for user " << (*itA30).first);
+          m_a30CqiRxed.erase (itMap);
+          m_a30CqiTimers.erase (itA30);
+        }
+      else
+        {
+          (*itA30).second--;
+        }
+      itA30++;
+    }
+    
+    return;
+}
+
+
+void
+PfFfMacScheduler::RefreshUlCqiMaps(void)
+{
+  // refresh UL CQI  Map
+  std::map <uint16_t,uint32_t>::iterator itUl = m_ueCqiTimers.begin ();
+  while (itUl!=m_ueCqiTimers.end ())
+    {
+//       NS_LOG_INFO (this << " UL-CQI for user " << (*itUl).first << " is " << (uint32_t)(*itUl).second << " thr " << (uint32_t)m_cqiTimersThreshold);
+      if ((*itUl).second == 0)
+        {
+          // delete correspondent entries
+          std::map <uint16_t, std::vector <double> >::iterator itMap = m_ueCqi.find ((*itUl).first);
+          NS_ASSERT_MSG (itMap != m_ueCqi.end (), " Does not find CQI report for user " << (*itUl).first);
+          NS_LOG_INFO (this << " UL-CQI exired for user " << (*itUl).first);
+          (*itMap).second.clear ();
+          m_ueCqi.erase (itMap);
+          m_ueCqiTimers.erase (itUl);
+        }
+      else
+        {
+          (*itUl).second--;
+        }
+      itUl++;
+    }
+    
+    return;
+}
+
 
 }

@@ -6,6 +6,7 @@ def build(bld):
     module.source = [
         'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
+        'model/lte-spectrum-signal-parameters.cc',
         'model/lte-phy.cc',
         'model/lte-enb-phy.cc',
         'model/lte-ue-phy.cc',
@@ -65,6 +66,7 @@ def build(bld):
     headers.source = [
         'model/lte-common.h',
         'model/lte-spectrum-phy.h',
+        'model/lte-spectrum-signal-parameters.h',
         'model/lte-phy.h',
         'model/lte-enb-phy.h',
         'model/lte-ue-phy.h',

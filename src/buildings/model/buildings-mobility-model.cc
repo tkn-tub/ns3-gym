@@ -26,25 +26,25 @@
 
 
 namespace ns3 {
-  
-  NS_OBJECT_ENSURE_REGISTERED (BuildingsMobilityModel);
-  
+
+NS_OBJECT_ENSURE_REGISTERED (BuildingsMobilityModel);
+
 TypeId
 BuildingsMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BuildingsMobilityModel")
-  .SetParent<MobilityModel> ()
-  .SetGroupName ("Mobility")
-  .AddConstructor<BuildingsMobilityModel> ()
-  .AddAttribute ("Bounds",
-                  "Bounds of the area to cruise.",
-                  BoxValue (Box (-100.0, 100.0, -100.0, 100.0, 0.0, 100.0)),
-                  MakeBoxAccessor (&BuildingsMobilityModel::m_bounds),
-                  MakeBoxChecker ());
-                                                                                                                                          
-                                                                                                                                           return tid;
+    .SetParent<MobilityModel> ()
+    .SetGroupName ("Mobility")
+    .AddConstructor<BuildingsMobilityModel> ()
+    .AddAttribute ("Bounds",
+                   "Bounds of the area to cruise.",
+                   BoxValue (Box (-100.0, 100.0, -100.0, 100.0, 0.0, 100.0)),
+                   MakeBoxAccessor (&BuildingsMobilityModel::m_bounds),
+                   MakeBoxChecker ());
+
+  return tid;
 }
-  
+
 
 BuildingsMobilityModel::BuildingsMobilityModel ()
 {
@@ -97,6 +97,22 @@ BuildingsMobilityModel::SetIndoor (Ptr<Building> building)
   m_indoor = true;
   m_myBuilding = building;
 }
+
+void
+BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy)
+{
+  m_indoor = true;
+  m_myBuilding = building;
+  m_nFloor = nfloor;
+  m_roomX = nroomx;
+  m_roomY = nroomy;
+  
+  if (!building->GetBuildingBounds ().IsInside (m_helper.GetCurrentPosition ()))
+    {
+      NS_FATAL_ERROR ("Position of the node is inconsistent with building bounds");
+    }
+}
+
 
 void
 BuildingsMobilityModel::SetOutdoor (void)

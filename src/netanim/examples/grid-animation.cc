@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 
   uint32_t xSize = 5;
   uint32_t ySize = 5;
-  std::string animFile;
+  std::string animFile = "grid-animation.xml";
 
   CommandLine cmd;
   cmd.AddValue ("xSize", "Number of rows of nodes", xSize);
@@ -83,13 +83,7 @@ int main (int argc, char *argv[])
   grid.BoundingBox (1, 1, 100, 100);
 
   // Create the animation object and configure for specified output
-  AnimationInterface anim;
-  if (!animFile.empty ())
-    {
-      anim.SetOutputFile (animFile);
-    }
-  anim.SetXMLOutput ();
-  anim.StartAnimation ();
+  AnimationInterface anim (animFile);
 
   // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();

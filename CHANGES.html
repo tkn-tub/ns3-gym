@@ -76,10 +76,14 @@ instead of CXXDEFINES
 
 <h2>New API:</h2>
 <ul>
+<li> In the mobility module, there is a new API MobilityModel::GetRelativeSpeed() returning the relative speed of two objects. Proposed by Jens Mittag.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li> In the spectrum module, the parameters to SpectrumChannel::StartTx () and SpectrumPhy::StartRx () methods are now passed using the new struct SpectrumSignalParameters. This new struct supports inheritance, hence it allows technology-specific PHY implementations to provide technology-specific parameters in SpectrumChannel::StartTx() and SpectrumPhy::StartRx(), while at the same time keeping a set of technology-independent parameters common across all spectrum-enabled PHY implementations (i.e., the duration and the power spectral density which are needed for interference calculation). Additionally, the SpectrumType class has been removed, since now the type of a spectrum signal can be inferred by doing a dynamic cast on SpectrumSignalParameters. See the <A href="http://mailman.isi.edu/pipermail/ns-developers/2011-October/009495.html" >Spectrum API change discussion on ns-developers</A> for the motivation behind this API change.
+</li>
+
 <li> The WifiPhyStandard enumerators for specifying half- and quarter-channel 
 width standards has had a change in capitalization:
 <ul>
