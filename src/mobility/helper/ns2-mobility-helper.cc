@@ -75,6 +75,29 @@ struct ParseResult
   vector<bool> has_dval; // points if a tokens has a double value
   vector<string> svals;  // string value for each token
 };
+/**
+ * \brief Keeps last movement schedule. If new movement occurs during
+ * a current one, node stopping must be cancels (stored in a proper
+ * event ID), actually reached point must be calculated and new
+ * velocity must be calculated in accordance with actually reached
+ * destination.
+ */
+struct DestinationPoint
+{
+  Vector m_startPosition;     // Start position of last movement
+  Vector m_speed;             // Speed of the last movement (needed to derive reached destination at next schedule = start + velocity * actuallyTravelled)
+  Vector m_finalPosition;     // Final destination to be reached before next schedule. Replaced with actually reached if needed.
+  EventId m_stopEvent;        // Event scheduling node's stop. May be canceled if needed.
+  double m_travelStartTime;   // Travel start time is needed to calculate actually traveled time
+  double m_targetArrivalTime; // When a station arrives to a destination
+  DestinationPoint () :
+    m_startPosition (Vector (0,0,0)),
+    m_speed (Vector (0,0,0)),
+    m_finalPosition (Vector (0,0,0)),
+    m_travelStartTime (0),
+    m_targetArrivalTime (0)
+  {};
+};
 
 
 // Parses a line of ns2 mobility
@@ -115,8 +138,8 @@ static bool IsSchedSetPos (ParseResult pr);
 static bool IsSchedMobilityPos (ParseResult pr);
 
 // Set waypoints and speed for movement.
-static Vector SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector lastPos, double at,
-                           double xFinalPosition, double yFinalPosition, double speed);
+static DestinationPoint SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector lastPos, double at,
+                                     double xFinalPosition, double yFinalPosition, double speed);
 
 // Set initial position for a node
 static Vector SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, string coord, double coordVal);
@@ -155,7 +178,7 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
 void
 Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
 {
-  map<int, Vector> last_pos;    // Vector containing lasts positions for each node
+  map<int, DestinationPoint> last_pos;    // Stores previous movement scheduled for each node
 
   std::ifstream file (m_filename.c_str (), std::ios::in);
   if (file.is_open ())
@@ -209,12 +232,14 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
            */
           if (IsSetInitialPos (pr))
             {
-              //                                            coord         coord value
-              last_pos[iNodeId] = SetInitialPosition (model, pr.tokens[2], pr.dvals[3]);
+              DestinationPoint point;
+              //                                                    coord         coord value
+              point.m_finalPosition = SetInitialPosition (model, pr.tokens[2], pr.dvals[3]);
+              last_pos[iNodeId] = point;
 
               // Log new position
               NS_LOG_DEBUG ("Positions after parse for node " << iNodeId << " " << nodeId <<
-                            " x=" << last_pos[iNodeId].x << " y=" << last_pos[iNodeId].y << " z=" << last_pos[iNodeId].z);
+                            " position = " << last_pos[iNodeId].m_finalPosition);
             }
 
           else // NOW EVENTS TO BE SCHEDULED
@@ -245,12 +270,24 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
                */
               if (IsSchedMobilityPos (pr))
                 {
+                  if (last_pos[iNodeId].m_targetArrivalTime > at)
+                    {
+                      NS_LOG_LOGIC ("Did not reach a destination! stoptime = " << last_pos[iNodeId].m_targetArrivalTime << ", at = "<<  at);
+                      double actuallytraveled = at - last_pos[iNodeId].m_travelStartTime;
+                      Vector reached = Vector (
+                          last_pos[iNodeId].m_startPosition.x + last_pos[iNodeId].m_speed.x * actuallytraveled,
+                          last_pos[iNodeId].m_startPosition.y + last_pos[iNodeId].m_speed.y * actuallytraveled,
+                          0
+                          );
+                      NS_LOG_LOGIC ("Final point = " << last_pos[iNodeId].m_finalPosition << ", actually reached = " << reached);
+                      last_pos[iNodeId].m_stopEvent.Cancel ();
+                      last_pos[iNodeId].m_finalPosition = reached;
+                    }
                   //                                     last position     time  X coord     Y coord      velocity
-                  last_pos[iNodeId] = SetMovement (model, last_pos[iNodeId], at, pr.dvals[5], pr.dvals[6], pr.dvals[7]);
+                  last_pos[iNodeId] = SetMovement (model, last_pos[iNodeId].m_finalPosition, at, pr.dvals[5], pr.dvals[6], pr.dvals[7]);
 
                   // Log new position
-                  NS_LOG_DEBUG ("Positions after parse for node " << iNodeId << " " << nodeId <<
-                                " x=" << last_pos[iNodeId].x << " y=" << last_pos[iNodeId].y << " z=" << last_pos[iNodeId].z);
+                  NS_LOG_DEBUG ("Positions after parse for node " << iNodeId << " " << nodeId << " position =" << last_pos[iNodeId].m_finalPosition);
                 }
 
 
@@ -261,11 +298,16 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
               else if (IsSchedSetPos (pr))
                 {
                   //                                         time  coordinate   coord value
-                  last_pos[iNodeId] = SetSchedPosition (model, at, pr.tokens[5], pr.dvals[6]);
-
+                  last_pos[iNodeId].m_finalPosition = SetSchedPosition (model, at, pr.tokens[5], pr.dvals[6]);
+                  if (last_pos[iNodeId].m_targetArrivalTime > at)
+                    {
+                      last_pos[iNodeId].m_stopEvent.Cancel ();
+                    }
+                  last_pos[iNodeId].m_targetArrivalTime = at;
+                  last_pos[iNodeId].m_travelStartTime = at;
                   // Log new position
                   NS_LOG_DEBUG ("Positions after parse for node " << iNodeId << " " << nodeId <<
-                                " x=" << last_pos[iNodeId].x << " y=" << last_pos[iNodeId].y << " z=" << last_pos[iNodeId].z);
+                                " position =" << last_pos[iNodeId].m_finalPosition);
                 }
               else
                 {
@@ -574,29 +616,32 @@ IsSchedMobilityPos (ParseResult pr)
 
 }
 
-Vector
+DestinationPoint
 SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double at,
              double xFinalPosition, double yFinalPosition, double speed)
 {
-  Vector position;
-  position.x = last_pos.x;
-  position.y = last_pos.y;
-  position.z = last_pos.z;
+  DestinationPoint retval;
+  retval.m_startPosition = last_pos;
+  retval.m_finalPosition = last_pos;
+  retval.m_travelStartTime = at;
+  retval.m_targetArrivalTime = at;
 
   if (speed == 0)
     {
       // We have to maintain last position, and stop the movement
-      Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model,
-                           Vector (0, 0, 0));
+      retval.m_stopEvent = Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model,
+                                                Vector (0, 0, 0));
+      return retval;
     }
-  else if (speed > 0)
+  if (speed > 0)
     {
       // first calculate the time; time = distance / speed
-      double time = sqrt (pow (xFinalPosition - position.x, 2) + pow (yFinalPosition - position.y, 2)) / speed;
+      double time = sqrt (pow (xFinalPosition - retval.m_finalPosition.x, 2) + pow (yFinalPosition - retval.m_finalPosition.y, 2)) / speed;
       NS_LOG_DEBUG ("at=" << at << " time=" << time);
       // now calculate the xSpeed = distance / time
-      double xSpeed = (xFinalPosition - position.x) / time;
-      double ySpeed = (yFinalPosition - position.y) / time; // & same with ySpeed
+      double xSpeed = (xFinalPosition - retval.m_finalPosition.x) / time;
+      double ySpeed = (yFinalPosition - retval.m_finalPosition.y) / time; // & same with ySpeed
+      retval.m_speed = Vector (xSpeed, ySpeed, 0);
 
       // quick and dirty set zSpeed = 0
       double zSpeed = 0;
@@ -604,21 +649,16 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
       NS_LOG_DEBUG ("Calculated Speed: X=" << xSpeed << " Y=" << ySpeed << " Z=" << zSpeed);
 
       // Set the Values
-      Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model,
-                           Vector (xSpeed, ySpeed, zSpeed));
-
       if (time >= 0)
         {
-          Simulator::Schedule (Seconds (at + time), &ConstantVelocityMobilityModel::SetVelocity,
-                               model, Vector (0, 0, 0));
+          Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (xSpeed, ySpeed, zSpeed));
         }
-
-      position.x = xFinalPosition;
-      position.y = yFinalPosition;
-      position.z = 0;
+      retval.m_stopEvent = Simulator::Schedule (Seconds (at + time), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (0, 0, 0));
+      retval.m_finalPosition.x += xSpeed * time;
+      retval.m_finalPosition.y += ySpeed * time;
+      retval.m_targetArrivalTime += time;
     }
-
-  return position;
+  return retval;
 }
 
 

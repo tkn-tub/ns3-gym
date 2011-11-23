@@ -201,19 +201,19 @@ private:
     NS_TEST_EXPECT_MSG_EQ (pos, ref.pos, "Position mismatch at time " << time.GetSeconds () << " s for node " << id);
     NS_TEST_EXPECT_MSG_EQ (vel, ref.vel, "Velocity mismatch at time " << time.GetSeconds () << " s for node " << id);
   }
-  
+
   void DoSetup ()
   {
     CreateNodes ();
   }
-  
+
   void DoTeardown ()
   {
     Names::Clear ();
     std::remove (m_traceFile.c_str ());
     Simulator::Destroy ();
   }
-  
+
   /// Go
   void DoRun ()
   {
@@ -419,6 +419,18 @@ public:
     t->AddReferencePoint ("0", 4, Vector (0, 100, 0), Vector (0, 0, 0));
     t->AddReferencePoint ("0", 4, Vector (0, 100, 0), Vector (0, -100, 0));
     t->AddReferencePoint ("0", 5, Vector (0, 0, 0), Vector (0,  0, 0));
+    AddTestCase (t);
+    t = new Ns2MobilityHelperTest ("Bug 1219 testcase", Seconds (16));
+    t->SetTrace ("$node_(0) set X_ 0.0\n"
+                 "$node_(0) set Y_ 0.0\n"
+                 "$ns_ at 1.0 \"$node_(0) setdest 0  10       1\"\n"
+                 "$ns_ at 6.0 \"$node_(0) setdest 0  -10       1\"\n"
+                 );
+    //                     id  t  position         velocity
+    t->AddReferencePoint ("0", 0, Vector (0, 0, 0), Vector (0,  0, 0));
+    t->AddReferencePoint ("0", 1, Vector (0, 0, 0), Vector (0,  1, 0));
+    t->AddReferencePoint ("0", 6, Vector (0, 5, 0), Vector (0,  -1, 0));
+    t->AddReferencePoint ("0", 16, Vector (0, -10, 0), Vector (0, 0, 0));
     AddTestCase (t);
 
   }
