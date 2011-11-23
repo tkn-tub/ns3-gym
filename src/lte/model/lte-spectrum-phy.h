@@ -35,8 +35,20 @@
 #include <ns3/generic-phy.h>
 #include <ns3/packet-burst.h>
 #include <ns3/lte-interference.h>
+#include <map>
 
 namespace ns3 {
+
+
+struct tbInfo_t
+{
+  uint16_t size;
+  uint8_t mcs;
+  std::vector<int> rbBitmap;
+  bool corrupt;
+};
+
+typedef std::map<uint16_t, tbInfo_t> expectedTbs_t;
 
 class LteNetDevice;
 
@@ -143,6 +155,16 @@ public:
    * \param p the new LteSinrChunkProcessor to be added to the processing chain
    */
   void AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  
+  /** 
+  * 
+  * 
+  * \param rnti the rnti of the source of the TB
+  * \param size the size of the TB
+  * \param mcs the MCS of the TB
+  * \param map the map of RB(s) used
+  */
+  void AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map);
 
 private:
   void ChangeState (State newState);
@@ -175,7 +197,9 @@ private:
 
   Ptr<LteInterference> m_interference;
 
-  uint16_t m_cellId; 
+  uint16_t m_cellId;
+  
+  expectedTbs_t m_expectedTbs;
 };
 
 

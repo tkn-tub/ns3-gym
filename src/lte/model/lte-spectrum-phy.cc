@@ -50,6 +50,7 @@ LteSpectrumPhy::LteSpectrumPhy ()
 LteSpectrumPhy::~LteSpectrumPhy ()
 {
   NS_LOG_FUNCTION (this);
+  m_expectedTbs.clear ();
 }
 
 void LteSpectrumPhy::DoDispose ()
@@ -221,6 +222,24 @@ LteSpectrumPhy::ChangeState (State newState)
 {
   NS_LOG_LOGIC (this << " state: " << m_state << " -> " << newState);
   m_state = newState;
+}
+
+void
+LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map)
+{
+  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << mcs);
+  expectedTbs_t::iterator it;
+  it = m_expectedTbs.find (rnti);
+  if (it == m_expectedTbs.end ())
+    {
+      // insert new entry
+      tbInfo_t tbInfo = {size, mcs, map, false};
+      m_expectedTbs.insert (std::pair<uint16_t, tbInfo_t> (rnti,tbInfo ));
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Expectd two TBs from the same UE");
+    }
 }
 
 
@@ -404,14 +423,22 @@ LteSpectrumPhy::EndRx ()
   // this will trigger CQI calculation and Error Model evaluation
   // as a side effect, the error model should update the error status of all TBs
   m_interference->EndRx ();
-
+  NS_LOG_INFO (this << " No. of burts " << m_rxPacketBurstList.size ());
+  NS_LOG_DEBUG (this << " Expected TBs " << m_expectedTbs.size ());
+  expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
+  while (itTb!=m_expectedTbs.end ())
+    {
+      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (*itTb).second.mcs);
+      itTb++;
+    }
+  m_expectedTbs.clear ();  // DEBUG
   for (std::list<Ptr<PacketBurst> >::const_iterator i = m_rxPacketBurstList.begin (); 
        i != m_rxPacketBurstList.end (); ++i)
     {
       // here we should determine whether this TB has been received
       // correctly or not
       bool tbRxOk = true;
-
+      NS_LOG_INFO (this << " Burst of " << (*i)->GetNPackets ());
       if (tbRxOk)
         {
           m_phyRxEndOkTrace (*i);

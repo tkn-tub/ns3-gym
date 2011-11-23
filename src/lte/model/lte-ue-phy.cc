@@ -433,6 +433,9 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
             }
           mask = (mask << 1);
         }
+      
+      // send TB info to LteSpectrumPhy
+      m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_tbsSize.at (0), dci.m_mcs.at (0), dlRb);  // SISO mode
 
       SetSubChannelsForReception (dlRb);
 

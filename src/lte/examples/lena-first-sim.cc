@@ -48,10 +48,11 @@ int main (int argc, char *argv[])
 
   //lena->EnableLogComponents ();
 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
@@ -60,7 +61,7 @@ int main (int argc, char *argv[])
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
-  ueNodes.Create (1);
+  ueNodes.Create (3);
 
   // Install Mobility Model
   MobilityHelper mobility;
@@ -72,8 +73,8 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  //lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
+  lena->SetSchedulerType ("ns3::RrFfMacScheduler");
+//   lena->SetSchedulerType ("ns3::PfFfMacScheduler");
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);
 
@@ -83,7 +84,11 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
+  EpsBearer bearer1 (q);
+  EpsBearer bearer2 (q);
   lena->ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer1);
+  lena->ActivateEpsBearer (ueDevs, bearer2);
 
 
   Simulator::Stop (Seconds (0.005));
@@ -96,3 +101,4 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
   return 0;
 }
+
