@@ -24,7 +24,6 @@
 
 #include <ns3/object.h>
 #include <ns3/nstime.h>
-#include <ns3/spectrum-type.h>
 
 namespace ns3 {
 
@@ -34,6 +33,7 @@ class MobilityModel;
 class SpectrumValue;
 class SpectrumModel;
 class NetDevice;
+struct SpectrumSignalParameters;
 
 /**
  * \ingroup spectrum
@@ -94,15 +94,11 @@ public:
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const = 0;
 
   /**
-   * Notify the SpectrumPhy instance of an incoming waveform
+   * Notify the SpectrumPhy instance of an incoming signal
    *
-   * @param p the PacketBurst associated with the incoming waveform
-   * @param rxPsd the Power Spectral Density of the incoming
-   * waveform. The units of the PSD are the same specified for SpectrumChannel::StartTx().
-   * @param st spectrum type
-   * @param duration the duration of the incoming waveform
+   * @param params the parameters of the signals being received
    */
-  virtual void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration) = 0;
+  virtual void StartRx (Ptr<SpectrumSignalParameters> params) = 0;
 
 
 };

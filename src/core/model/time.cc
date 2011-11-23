@@ -33,7 +33,7 @@ namespace ns3 {
 
 Time::Time (const std::string& s)
 {
-  std::string::size_type n = s.find_first_not_of ("0123456789.");
+  std::string::size_type n = s.find_first_not_of ("+-0123456789.");
   if (n != std::string::npos)
     { // Found non-numeric
       std::istringstream iss;

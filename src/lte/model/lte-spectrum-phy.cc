@@ -26,6 +26,7 @@
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
 #include "lte-spectrum-phy.h"
+#include "lte-spectrum-signal-parameters.h"
 #include "lte-net-device.h"
 #include "lte-mac-tag.h"
 #include "lte-sinr-chunk-processor.h"
@@ -165,15 +166,6 @@ LteSpectrumPhy::GetRxSpectrumModel () const
 }
 
 
-SpectrumType
-LteSpectrumPhy::GetSpectrumType ()
-{
-  NS_LOG_FUNCTION (this);
-  static SpectrumType st = SpectrumTypeFactory::Create ("Lte");
-  return st;
-}
-
-
 void
 LteSpectrumPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
 {
@@ -272,11 +264,15 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
         ChangeState (TX);
         NS_ASSERT (m_channel);
         double tti = 0.001;
-        m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), Seconds (tti), GetObject<SpectrumPhy> ());
-        NS_LOG_LOGIC (this << " scheduling EndTx ()");
+      Ptr<LteSpectrumSignalParameters> txParams = Create<LteSpectrumSignalParameters> ();
+      txParams->duration = Seconds (tti);
+      txParams->txPhy = GetObject<SpectrumPhy> ();
+      txParams->psd = m_txPsd;
+      txParams->packetBurst = pb;
+      m_channel->StartTx (txParams);
         Simulator::Schedule (Seconds (tti), &LteSpectrumPhy::EndTx, this);
       }
-      return true;
+      return false;
       break;
 
     default:
@@ -313,16 +309,21 @@ LteSpectrumPhy::EndTx ()
 
 
 void
-LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration)
+LteSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
-  NS_LOG_FUNCTION (this << pb << rxPsd << st << duration);
+  NS_LOG_FUNCTION (this << spectrumRxParams);
   NS_LOG_LOGIC (this << " state: " << m_state);
 
+  // interference will happen regardless of the type of the signal (could be 3G, GSM, whatever)
+  Ptr <const SpectrumValue> rxPsd = spectrumRxParams->psd;
+  Time duration = spectrumRxParams->duration;
+            
   m_interference->AddSignal (rxPsd, duration);
 
   // the device might start RX only if the signal is of a type
   // understood by this device - in this case, an LTE signal.
-  if (st == GetSpectrumType ())
+  Ptr<LteSpectrumSignalParameters> lteRxParams = DynamicCast<LteSpectrumSignalParameters> (spectrumRxParams);
+  if (lteRxParams != 0)
     {
       switch (m_state)
         {
@@ -338,9 +339,9 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
           {
             // To check if we're synchronized to this signal, we check
             // for the CellId which is reported in the LtePhyTag
-            NS_ASSERT (pb->Begin () != pb->End ());
+            NS_ASSERT (lteRxParams->packetBurst->Begin () != lteRxParams->packetBurst->End ());
             LtePhyTag tag;
-            Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
+            Ptr<Packet> firstPacketInBurst = *(lteRxParams->packetBurst->Begin ());
             firstPacketInBurst->RemovePacketTag (tag);
             if (tag.GetCellId () == m_cellId)
               {
@@ -369,9 +370,9 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                 ChangeState (RX);
                 m_interference->StartRx (rxPsd);
 
-                m_phyRxStartTrace (pb);
+                m_phyRxStartTrace (lteRxParams->packetBurst);
 
-                m_rxPacketBurstList.push_back (pb);
+                m_rxPacketBurstList.push_back (lteRxParams->packetBurst);
  
                 NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());
               }

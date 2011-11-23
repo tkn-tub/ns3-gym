@@ -40,6 +40,7 @@ namespace
   std::string listLineStart;
   std::string listLineStop;
   std::string reference;
+  std::string temporaryCharacter;
 
 } // anonymous namespace
 
@@ -232,8 +233,9 @@ StaticInformation::DoGather (TypeId tid)
       if (child.IsChildOf (tid))
         {
           //please take a look at the following note for an explanation 
-          std::string childName = "$%" + child.GetName ();
-          find_and_replace(childName,"::","::%");
+          std::string childName = "$" + temporaryCharacter + child.GetName ();
+          std::string replaceWith = "::" + temporaryCharacter;
+          find_and_replace(childName,"::",replaceWith);
           m_currentPath.push_back (childName);
           m_alreadyProcessed.push_back (tid);
           DoGather (child);
@@ -256,18 +258,20 @@ StaticInformation::DoGather (TypeId tid)
               other = tmp.first;
             }
           /**
-           * Note: we insert a % in the path below to ensure that doxygen does not
-           * attempt to resolve the typeid names included in the string.
-           * if the name contains ::, using the % sign will remove that sign
-           * resulting for instance in $ns3MobilityModel instead of $ns3::MobilityModel
-           * hence the output must be in the form $%ns3::%MobilityModel in order to
-           * show correctly $ns3::MobilityModel
-           * We add at the beginning of the name $% and we replace all the :: in the
-           * string by ::%.
+           * Note: for the Doxygen version only, we insert a % in the
+           * path below to ensure that doxygen does not attempt to
+           * resolve the typeid names included in the string.  if the
+           * name contains ::, using the % sign will remove that sign
+           * resulting for instance in $ns3MobilityModel instead of
+           * $ns3::MobilityModel hence the output must be in the form
+           * $%ns3::%MobilityModel in order to show correctly
+           * $ns3::MobilityModel We add at the beginning of the name
+           * $% and we replace all the :: in the string by ::%.
            */  
-          std::string name = "$%" + other.GetName ();
-          //finding and replacing :: by ::%
-          find_and_replace(name,"::","::%");
+          std::string name = "$" + temporaryCharacter + other.GetName ();
+          //finding and replacing :: by ::% (for Doxygen version only).
+          std::string replaceWith = "::" + temporaryCharacter;
+          find_and_replace(name,"::",replaceWith);
           m_currentPath.push_back (name);
           m_alreadyProcessed.push_back (tid);
           DoGather (other);
@@ -354,6 +358,7 @@ int main (int argc, char *argv[])
       listLineStart                = "    * ";
       listLineStop                 = "";
       reference                    = "";
+      temporaryCharacter           = "";
     }
   else
     {
@@ -381,6 +386,7 @@ int main (int argc, char *argv[])
       listLineStart                = "<li>";
       listLineStop                 = "</li>";
       reference                    = "\\ref ";
+      temporaryCharacter           = "%";
     }
 
   NodeContainer c; c.Create (1);

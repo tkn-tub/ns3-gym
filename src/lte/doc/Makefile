@@ -20,8 +20,10 @@ GRAPHS_EPS = \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
+	$(FIGURES)/runningTime10s.eps \
+	$(FIGURES)/propagationModel.eps \
 	$(FIGURES)/simulationTime.eps \
-	$(FIGURES)/memoryUsage.eps \
+	$(FIGURES)/profiling-memory.eps
 	$(FIGURES)/lte-rlc-implementation-model.eps \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \

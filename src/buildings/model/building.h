@@ -141,6 +141,12 @@ public:
   * Return the number of room in y-axis
   */
   uint8_t GetNumberRoomY ();
+  
+  /**
+  * \return the bounds of the building 
+  * Return the bounds of the building as Box class
+  */
+  Box GetBuildingBounds ();
 
 
 private:

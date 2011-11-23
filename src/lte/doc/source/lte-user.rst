@@ -403,13 +403,18 @@ It is to be noted that using other means to configure the frequency used by the 
 
 #. Building and nodes interactions::
 
+    mm->SetIndoor (building, 2, 1, 1);
+
+   which is equivalent to the form::
+
     mm->SetIndoor (building);
     mm->SetFloorNumber (2);
     mm->SetRoomNumberX (1);
     mm->SetRoomNumberY (1);
 
-   This informs the node's mobility model that the node is located inside the building on the second floor in the corner room of the 3 x 2 grid. 
-   It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size. The responsibility of this consistency is completely left to the user.
+   This informs the node's mobility model that the node is located inside the building on the second floor in the corner room of the 3 x 2 grid.
+   We suggest the usage of the first form since it performs a consistency check of the node position with the building bounds.
+   It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size for outdoor nodes. The responsibility of this consistency is completely left to the user.
 
 
 

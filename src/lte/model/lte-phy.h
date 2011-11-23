@@ -17,6 +17,7 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  *         Marco Miozzo <mmiozzo@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef LTE_PHY_H
@@ -29,10 +30,10 @@
 #include <ns3/nstime.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
+#include <ns3/spectrum-signal-parameters.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/generic-phy.h>
-#include "lte-spectrum-phy.h"
+#include <ns3/lte-spectrum-phy.h>
 
 namespace ns3 {
 

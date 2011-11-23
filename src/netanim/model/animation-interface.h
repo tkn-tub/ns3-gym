@@ -34,6 +34,21 @@
 #include "ns3/animation-interface-helper.h"
 #include "ns3/mac48-address.h"
 
+#ifdef WIN32
+#include <winsock2.h>
+#include <io.h>
+#define STDOUT_FILENO (SOCKET)GetStdHandle(STD_OUTPUT_HANDLE)
+#define close _close
+#define write _write
+#undef GetObject
+#undef min
+#undef max
+#define HANDLETYPE SOCKET
+#else
+#include "ns3/netanim-config.h"
+#define HANDLETYPE int
+#endif
+
 namespace ns3 {
 
 /**
@@ -178,10 +193,26 @@ public:
    */
   void ResetAnimWriteCallback ();
 
+  /**
+   * \brief Helper function to set Constant Position for a given node
+   * \param n Ptr to the node
+   * \param x X co-ordinate of the node
+   * \param y Y co-ordinate of the node
+   * \param z Z co-ordinate of the node
+   *
+   */
+  void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+
 private:
-  
-  int       m_fHandle;  // File handle for output (-1 if none)
-  bool      m_xml;      // True if xml format desired
+#ifndef WIN32
+  int m_fHandle;  // File handle for output (-1 if none)
+  // Write specified amount of data to the specified handle
+  int WriteN (int, const char*, uint32_t);
+#else
+  SOCKET m_fHandle;  // File handle for output (-1 if none)
+  int  WriteN (SOCKET, const char*, uint32_t);
+#endif
+  bool m_xml;      // True if xml format desired
   Time mobilitypollinterval;
   bool usingSockets;
   uint16_t mport;
@@ -223,9 +254,6 @@ private:
   void CsmaMacRxTrace (std::string context,
                        Ptr<const Packet> p);
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
-
-  // Write specified amount of data to the specified handle
-  int  WriteN (int, const char*, uint32_t);
 
   // Write a string to the specified handle;
   int  WriteN (int, const std::string&);

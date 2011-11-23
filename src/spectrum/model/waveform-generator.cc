@@ -134,17 +134,9 @@ WaveformGenerator::SetChannel (Ptr<SpectrumChannel> c)
 
 
 void
-WaveformGenerator::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPowerSpectrum, SpectrumType st, Time duration)
+WaveformGenerator::StartRx (Ptr<SpectrumSignalParameters> params)
 {
-  NS_LOG_FUNCTION (pb << rxPowerSpectrum << duration);
-}
-
-
-SpectrumType
-WaveformGenerator::GetSpectrumType ()
-{
-  static SpectrumType st = SpectrumTypeFactory::Create ("GenericWaveform");
-  return st;
+  NS_LOG_FUNCTION (this << params);
 }
 
 void
@@ -188,12 +180,14 @@ WaveformGenerator::GenerateWaveform ()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<PacketBurst> pb = Create<PacketBurst> ();
-  Time duration = Time (m_period * m_dutyCycle);
+  Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters> ();
+  txParams->duration = Time (m_period * m_dutyCycle);
+  txParams->psd = m_txPowerSpectralDensity;
+  txParams->txPhy = GetObject<SpectrumPhy> ();
 
   NS_LOG_LOGIC ("generating waveform : " << *m_txPowerSpectralDensity);
   m_phyTxStartTrace (0);
-  m_channel->StartTx (pb, m_txPowerSpectralDensity, GetSpectrumType (), duration, GetObject<SpectrumPhy> ());
+  m_channel->StartTx (txParams);
 
   if (m_active)
     {

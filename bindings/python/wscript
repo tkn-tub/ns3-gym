@@ -430,7 +430,7 @@ def build(bld):
 
     if Options.options.apiscan:
         if not env['ENABLE_PYTHON_SCANNING']:
-            raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
+            raise WafError("Cannot re-scan python bindings: (py)gccxml not available")
         scan_targets = []
         if sys.platform == 'cygwin':
             scan_targets.append(('gcc_cygwin', ''))
@@ -441,7 +441,7 @@ def build(bld):
             elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
                 scan_targets.append(('gcc_ILP32', ''))
             else:
-                raise Utils.WafError("Cannot scan python bindings for unsupported data model")
+                raise WafError("Cannot scan python bindings for unsupported data model")
 
         test_module_path = bld.path.find_dir("../../src/test")
         if Options.options.apiscan == 'all':

@@ -55,13 +55,13 @@ typedef Callback< void > GenericPhyRxStartCallback;
 
 /**
  * This method is used by the PHY to notify the MAC that a
- * previously started TX attempt has terminated without success.
+ * previously started RX attempt has terminated without success.
  */
 typedef Callback< void > GenericPhyRxEndErrorCallback;
 
 /**
  * This method is used by the PHY to notify the MAC that a
- * previously started TX attempt has been successfully completed.
+ * previously started RX attempt has been successfully completed.
  *
  * @param packet the received Packet
  */

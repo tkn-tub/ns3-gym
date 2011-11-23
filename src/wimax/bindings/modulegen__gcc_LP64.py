@@ -6130,6 +6130,11 @@ def register_Ns3SSManager_methods(root_module, cls):
                    'std::vector< ns3::SSRecord * > *', 
                    [], 
                    is_const=True)
+    ## ss-manager.h (module 'wimax'): static ns3::TypeId ns3::SSManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## ss-manager.h (module 'wimax'): bool ns3::SSManager::IsInRecord(ns3::Mac48Address const & macAddress) const [member function]
     cls.add_method('IsInRecord', 
                    'bool', 
@@ -6197,6 +6202,11 @@ def register_Ns3ServiceFlowManager_methods(root_module, cls):
                    'std::vector< ns3::ServiceFlow * >', 
                    [param('ns3::ServiceFlow::SchedulingType', 'schedulingType')], 
                    is_const=True)
+    ## service-flow-manager.h (module 'wimax'): static ns3::TypeId ns3::ServiceFlowManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3SfVectorTlvValue_methods(root_module, cls):
@@ -8547,6 +8557,11 @@ def register_Ns3ConnectionManager_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Cid::Type', 'type'), param('ns3::ServiceFlow::SchedulingType', 'schedulingType')], 
                    is_const=True)
+    ## connection-manager.h (module 'wimax'): static ns3::TypeId ns3::ConnectionManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## connection-manager.h (module 'wimax'): bool ns3::ConnectionManager::HasPackets() const [member function]
     cls.add_method('HasPackets', 
                    'bool', 
@@ -9300,6 +9315,11 @@ def register_Ns3IpcsClassifier_methods(root_module, cls):
     cls.add_method('Classify', 
                    'ns3::ServiceFlow *', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Ptr< ns3::ServiceFlowManager >', 'sfm'), param('ns3::ServiceFlow::Direction', 'dir')])
+    ## ipcs-classifier.h (module 'wimax'): static ns3::TypeId ns3::IpcsClassifier::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
@@ -10408,6 +10428,11 @@ def register_Ns3WimaxChannel_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## wimax-channel.h (module 'wimax'): static ns3::TypeId ns3::WimaxChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## wimax-channel.h (module 'wimax'): void ns3::WimaxChannel::DoAttach(ns3::Ptr<ns3::WimaxPhy> phy) [member function]
     cls.add_method('DoAttach', 
                    'void', 

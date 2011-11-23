@@ -82,7 +82,7 @@ int main ()
 
     conf.check_nonfatal(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
 
-    if not conf.check_nonfatal(lib='rt', uselib_store='RT', define_name='HAVE_RT'):
+    if not conf.check_nonfatal(lib='rt', uselib='RT, PTHREAD', define_name='HAVE_RT'):
         conf.report_optional_feature("RealTime", "Real Time Simulator",
                                      False, "librt is not available")
     else:

@@ -577,6 +577,7 @@ def create_suid_program(bld, name):
 
 def create_ns3_program(bld, name, dependencies=('core',)):
     program = bld.new_task_gen(features=['cxx', 'cxxprogram'])
+
     program.is_ns3_program = True
     program.name = name
     program.target = program.name
@@ -590,6 +591,12 @@ def create_ns3_program(bld, name, dependencies=('core',)):
         else:
             program.env.STLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
             program.env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
+    else:
+        if program.env.DEST_BINFMT == 'elf':
+            # All ELF platforms are impacted but only the gcc compiler has a flag to fix it.
+            if 'gcc' in (program.env.CXX_NAME, program.env.CC_NAME): 
+                program.env.append_value ('SHLIB_MARKER', '-Wl,--no-as-needed')
+
     return program
 
 def register_ns3_script(bld, name, dependencies=('core',)):

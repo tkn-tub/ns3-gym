@@ -134,13 +134,18 @@ It is to be noted that any other configuration (i.e., with BuildingsPropagationL
 
 #. Building and nodes interactions::
 
+    mm->SetIndoor (building, 2, 1, 1);
+
+which is equivalent to the form::
+
     mm->SetIndoor (building);
     mm->SetFloorNumber (2);
     mm->SetRoomNumberX (1);
     mm->SetRoomNumberY (1);
 
-   This informs node's mobility model the fact that the node is inside the building at the second floor in the corner room of the 3 x 2 grid. 
-   It has to be noted that the simulator does not check the consistence between the node's position and the building site, which is user's responsibility.
+This informs node's mobility model the fact that the node is inside the building at the second floor in the corner room of the 3 x 2 grid.
+We suggest the usage of the first form since it performs a consistency check of the node position with the building bounds.
+It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size for outdoor nodes. The responsibility of this consistency is completely left to the user.
 
 
 

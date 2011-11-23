@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   // Default number of nodes in the star.  Overridable by command line argument.
   //
   uint32_t nSpokes = 8;
-  std::string animFile;
+  std::string animFile = "star-animation.xml";
 
   CommandLine cmd;
   cmd.AddValue ("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
@@ -115,13 +115,7 @@ main (int argc, char *argv[])
   star.BoundingBox (1, 1, 100, 100);
 
   // Create the animation object and configure for specified output
-  AnimationInterface anim;
-  if (!animFile.empty ())
-    {
-      anim.SetOutputFile (animFile);
-    }
-  anim.SetXMLOutput ();
-  anim.StartAnimation ();
+  AnimationInterface anim (animFile);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
