@@ -60,7 +60,7 @@ public:
   virtual ~ObjectBase ();
 
   /**
-   * \returns the TypeId associated to the most-derived type
+   * \return the TypeId associated to the most-derived type
    *          of this instance.
    *
    * This method is typically implemented by ns3::Object::GetInstanceTypeId
@@ -80,14 +80,14 @@ public:
   /**
    * \param name the name of the attribute to set
    * \param value the name of the attribute to set
-   * \returns true if the requested attribute exists and could be set, 
+   * \return true if the requested attribute exists and could be set, 
    * false otherwise.
    */
   bool SetAttributeFailSafe (std::string name, const AttributeValue &value);
   /**
    * \param name the name of the attribute to read
    * \param value a reference to the value where the result should be stored.
-   * \returns the attribute read.
+   * \return the attribute read.
    *
    * If the input attribute name does not exist, this method crashes.
    */
@@ -95,9 +95,7 @@ public:
   /**
    * \param name the name of the attribute to read
    * \param attribute the attribute where the result value should be stored
-   * \returns true if the requested attribute was found, false otherwise.
-   *
-   * If the input attribute name does not exist, this method crashes.
+   * \return true if the requested attribute was found, false otherwise.
    */
   bool GetAttributeFailSafe (std::string name, AttributeValue &attribute) const;
 

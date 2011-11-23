@@ -78,6 +78,61 @@ TimeSimpleTestCase::DoTeardown (void)
   Time::SetResolution (m_originalResolution);
 }
 
+class TimesWithSignsTestCase : public TestCase
+{
+public:
+  TimesWithSignsTestCase ();
+private:
+  virtual void DoSetup (void);
+  virtual void DoRun (void);
+  virtual void DoTeardown (void);
+};
+
+TimesWithSignsTestCase::TimesWithSignsTestCase ()
+  : TestCase ("Checks times that have plus or minus signs")
+{
+}
+
+void
+TimesWithSignsTestCase::DoSetup (void)
+{
+}
+
+void
+TimesWithSignsTestCase::DoRun (void)
+{
+  Time timePositive          ("+1000.0");
+  Time timePositiveWithUnits ("+1000.0ms");
+
+  Time timeNegative          ("-1000.0");
+  Time timeNegativeWithUnits ("-1000.0ms");
+
+  NS_TEST_ASSERT_MSG_EQ_TOL (timePositive.GetSeconds (),
+                             +1000.0,
+                             1.0e-8,
+                             "Positive time not parsed correctly.");
+
+  NS_TEST_ASSERT_MSG_EQ_TOL (timePositiveWithUnits.GetSeconds (),
+                             +1.0,
+                             1.0e-8,
+                             "Positive time with units not parsed correctly.");
+
+  NS_TEST_ASSERT_MSG_EQ_TOL (timeNegative.GetSeconds (),
+                             -1000.0,
+                             1.0e-8,
+                             "Negative time not parsed correctly.");
+
+  NS_TEST_ASSERT_MSG_EQ_TOL (timeNegativeWithUnits.GetSeconds (),
+                             -1.0,
+                             1.0e-8,
+                             "Negative time with units not parsed correctly.");
+}
+
+void 
+TimesWithSignsTestCase::DoTeardown (void)
+{
+}
+
 static class TimeTestSuite : public TestSuite
 {
 public:
@@ -85,6 +140,7 @@ public:
     : TestSuite ("time", UNIT)
   {
     AddTestCase (new TimeSimpleTestCase (Time::US));
+    AddTestCase (new TimesWithSignsTestCase ());
   }
 } g_timeTestSuite;
 

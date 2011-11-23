@@ -20,8 +20,6 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
-    ## log.h (module 'core'): ns3::LogLevel [enumeration]
-    module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME', 'LOG_PREFIX_NODE'], import_from_module='ns.core')
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -66,8 +64,6 @@ def register_types(module):
     root_module['ns3::Ipv6Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix [class]
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
-    ## log.h (module 'core'): ns3::LogComponent [class]
-    module.add_class('LogComponent', import_from_module='ns.core')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
@@ -116,10 +112,6 @@ def register_types(module):
     module.add_class('SpectrumChannelHelper')
     ## spectrum-helper.h (module 'spectrum'): ns3::SpectrumPhyHelper [class]
     module.add_class('SpectrumPhyHelper')
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumType [class]
-    module.add_class('SpectrumType')
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumTypeFactory [class]
-    module.add_class('SpectrumTypeFactory')
     ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs [class]
     module.add_class('SystemWallClockMs', import_from_module='ns.core')
     ## tag.h (module 'network'): ns3::Tag [class]
@@ -218,6 +210,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::SpectrumConverter', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumConverter>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::SpectrumModel', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumModel>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::SpectrumSignalParameters', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumSignalParameters>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::SpectrumValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumValue>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
@@ -234,6 +228,8 @@ def register_types(module):
     module.add_class('SpectrumPhy', parent=root_module['ns3::Object'])
     ## spectrum-propagation-loss-model.h (module 'spectrum'): ns3::SpectrumPropagationLossModel [class]
     module.add_class('SpectrumPropagationLossModel', parent=root_module['ns3::Object'])
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters [struct]
+    module.add_class('SpectrumSignalParameters', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     ## spectrum-value.h (module 'spectrum'): ns3::SpectrumValue [class]
     module.add_class('SpectrumValue', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
     ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel [class]
@@ -288,6 +284,8 @@ def register_types(module):
     module.add_class('HalfDuplexIdealPhy', parent=root_module['ns3::SpectrumPhy'])
     ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::HalfDuplexIdealPhy::State [enumeration]
     module.add_enum('State', ['IDLE', 'TX', 'RX'], outer_class=root_module['ns3::HalfDuplexIdealPhy'])
+    ## half-duplex-ideal-phy-signal-parameters.h (module 'spectrum'): ns3::HalfDuplexIdealPhySignalParameters [struct]
+    module.add_class('HalfDuplexIdealPhySignalParameters', parent=root_module['ns3::SpectrumSignalParameters'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
     module.add_class('Ipv4AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue [class]
@@ -381,16 +379,10 @@ def register_types(module):
     typehandlers.add_type_alias('std::vector< ns3::BandInfo, std::allocator< ns3::BandInfo > >', 'ns3::Bands')
     typehandlers.add_type_alias('std::vector< ns3::BandInfo, std::allocator< ns3::BandInfo > >*', 'ns3::Bands*')
     typehandlers.add_type_alias('std::vector< ns3::BandInfo, std::allocator< ns3::BandInfo > >&', 'ns3::Bands&')
-    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogTimePrinter')
-    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogTimePrinter*')
-    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogTimePrinter&')
     typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
     typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
     typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
     module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
-    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
-    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
-    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
     typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
@@ -467,7 +459,6 @@ def register_methods(root_module):
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
-    register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
     register_Ns3MicrowaveOvenSpectrumValueHelper_methods(root_module, root_module['ns3::MicrowaveOvenSpectrumValueHelper'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
@@ -490,8 +481,6 @@ def register_methods(root_module):
     register_Ns3SpectrumAnalyzerHelper_methods(root_module, root_module['ns3::SpectrumAnalyzerHelper'])
     register_Ns3SpectrumChannelHelper_methods(root_module, root_module['ns3::SpectrumChannelHelper'])
     register_Ns3SpectrumPhyHelper_methods(root_module, root_module['ns3::SpectrumPhyHelper'])
-    register_Ns3SpectrumType_methods(root_module, root_module['ns3::SpectrumType'])
-    register_Ns3SpectrumTypeFactory_methods(root_module, root_module['ns3::SpectrumTypeFactory'])
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
@@ -540,6 +529,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumConverter_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumConverter__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumConverter, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumConverter> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumModel__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> >'])
+    register_Ns3SimpleRefCount__Ns3SpectrumSignalParameters_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumSignalParameters__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3SpectrumConverter_methods(root_module, root_module['ns3::SpectrumConverter'])
@@ -548,6 +538,7 @@ def register_methods(root_module):
     register_Ns3SpectrumModel_methods(root_module, root_module['ns3::SpectrumModel'])
     register_Ns3SpectrumPhy_methods(root_module, root_module['ns3::SpectrumPhy'])
     register_Ns3SpectrumPropagationLossModel_methods(root_module, root_module['ns3::SpectrumPropagationLossModel'])
+    register_Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::SpectrumSignalParameters'])
     register_Ns3SpectrumValue_methods(root_module, root_module['ns3::SpectrumValue'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
@@ -572,6 +563,7 @@ def register_methods(root_module):
     register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
     register_Ns3FriisSpectrumPropagationLossModel_methods(root_module, root_module['ns3::FriisSpectrumPropagationLossModel'])
     register_Ns3HalfDuplexIdealPhy_methods(root_module, root_module['ns3::HalfDuplexIdealPhy'])
+    register_Ns3HalfDuplexIdealPhySignalParameters_methods(root_module, root_module['ns3::HalfDuplexIdealPhySignalParameters'])
     register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
     register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
     register_Ns3Ipv4MaskChecker_methods(root_module, root_module['ns3::Ipv4MaskChecker'])
@@ -1606,40 +1598,6 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3LogComponent_methods(root_module, cls):
-    ## log.h (module 'core'): ns3::LogComponent::LogComponent(ns3::LogComponent const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LogComponent const &', 'arg0')])
-    ## log.h (module 'core'): ns3::LogComponent::LogComponent(char const * name) [constructor]
-    cls.add_constructor([param('char const *', 'name')])
-    ## log.h (module 'core'): void ns3::LogComponent::Disable(ns3::LogLevel level) [member function]
-    cls.add_method('Disable', 
-                   'void', 
-                   [param('ns3::LogLevel', 'level')])
-    ## log.h (module 'core'): void ns3::LogComponent::Enable(ns3::LogLevel level) [member function]
-    cls.add_method('Enable', 
-                   'void', 
-                   [param('ns3::LogLevel', 'level')])
-    ## log.h (module 'core'): void ns3::LogComponent::EnvVarCheck(char const * name) [member function]
-    cls.add_method('EnvVarCheck', 
-                   'void', 
-                   [param('char const *', 'name')])
-    ## log.h (module 'core'): bool ns3::LogComponent::IsEnabled(ns3::LogLevel level) const [member function]
-    cls.add_method('IsEnabled', 
-                   'bool', 
-                   [param('ns3::LogLevel', 'level')], 
-                   is_const=True)
-    ## log.h (module 'core'): bool ns3::LogComponent::IsNoneEnabled() const [member function]
-    cls.add_method('IsNoneEnabled', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## log.h (module 'core'): char const * ns3::LogComponent::Name() const [member function]
-    cls.add_method('Name', 
-                   'char const *', 
-                   [], 
-                   is_const=True)
-    return
-
 def register_Ns3Mac48Address_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('!=')
@@ -2329,41 +2287,6 @@ def register_Ns3SpectrumPhyHelper_methods(root_module, cls):
     cls.add_method('SetPhyAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')])
-    return
-
-def register_Ns3SpectrumType_methods(root_module, cls):
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumType::SpectrumType(ns3::SpectrumType const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SpectrumType const &', 'arg0')])
-    ## spectrum-type.h (module 'spectrum'): std::string ns3::SpectrumType::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## spectrum-type.h (module 'spectrum'): uint32_t ns3::SpectrumType::GetUid() const [member function]
-    cls.add_method('GetUid', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3SpectrumTypeFactory_methods(root_module, cls):
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumTypeFactory::SpectrumTypeFactory() [constructor]
-    cls.add_constructor([])
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumTypeFactory::SpectrumTypeFactory(ns3::SpectrumTypeFactory const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SpectrumTypeFactory const &', 'arg0')])
-    ## spectrum-type.h (module 'spectrum'): static ns3::SpectrumType ns3::SpectrumTypeFactory::Create(std::string name) [member function]
-    cls.add_method('Create', 
-                   'ns3::SpectrumType', 
-                   [param('std::string', 'name')], 
-                   is_static=True)
-    ## spectrum-type.h (module 'spectrum'): static std::string ns3::SpectrumTypeFactory::GetNameByUid(uint32_t uid) [member function]
-    cls.add_method('GetNameByUid', 
-                   'std::string', 
-                   [param('uint32_t', 'uid')], 
-                   is_static=True)
     return
 
 def register_Ns3SystemWallClockMs_methods(root_module, cls):
@@ -3495,6 +3418,18 @@ def register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt_
                    is_static=True)
     return
 
+def register_Ns3SimpleRefCount__Ns3SpectrumSignalParameters_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumSignalParameters__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >::SimpleRefCount(ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter< ns3::SpectrumSignalParameters > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
 def register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumValue__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -3622,14 +3557,14 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
     cls.add_constructor([])
     ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy::SpectrumPhy(ns3::SpectrumPhy const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SpectrumPhy const &', 'arg0')])
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumPhy::GetDevice() [member function]
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::SpectrumPhy::GetDevice() [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumPhy::GetMobility() [member function]
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::SpectrumPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumModel const> ns3::SpectrumPhy::GetRxSpectrumModel() const [member function]
@@ -3647,20 +3582,20 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetDevice(ns3::Ptr<ns3::Object> d) [member function]
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'd')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'm')], 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -3693,6 +3628,24 @@ def register_Ns3SpectrumPropagationLossModel_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3SpectrumSignalParameters_methods(root_module, cls):
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::SpectrumSignalParameters() [constructor]
+    cls.add_constructor([])
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::SpectrumSignalParameters(ns3::SpectrumSignalParameters const & p) [copy constructor]
+    cls.add_constructor([param('ns3::SpectrumSignalParameters const &', 'p')])
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumSignalParameters> ns3::SpectrumSignalParameters::Copy() [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::SpectrumSignalParameters >', 
+                   [], 
+                   is_virtual=True)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::duration [variable]
+    cls.add_instance_attribute('duration', 'ns3::Time', is_const=False)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::psd [variable]
+    cls.add_instance_attribute('psd', 'ns3::Ptr< ns3::SpectrumValue >', is_const=False)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::txPhy [variable]
+    cls.add_instance_attribute('txPhy', 'ns3::Ptr< ns3::SpectrumPhy >', is_const=False)
     return
 
 def register_Ns3SpectrumValue_methods(root_module, cls):
@@ -4051,9 +4004,9 @@ def register_Ns3WaveformGenerator_methods(root_module, cls):
     cls.add_constructor([param('ns3::WaveformGenerator const &', 'arg0')])
     ## waveform-generator.h (module 'spectrum'): ns3::WaveformGenerator::WaveformGenerator() [constructor]
     cls.add_constructor([])
-    ## waveform-generator.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::WaveformGenerator::GetDevice() [member function]
+    ## waveform-generator.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::WaveformGenerator::GetDevice() [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_virtual=True)
     ## waveform-generator.h (module 'spectrum'): double ns3::WaveformGenerator::GetDutyCycle() const [member function]
@@ -4061,9 +4014,9 @@ def register_Ns3WaveformGenerator_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## waveform-generator.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::WaveformGenerator::GetMobility() [member function]
+    ## waveform-generator.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::WaveformGenerator::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_virtual=True)
     ## waveform-generator.h (module 'spectrum'): ns3::Time ns3::WaveformGenerator::GetPeriod() const [member function]
@@ -4076,10 +4029,6 @@ def register_Ns3WaveformGenerator_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## waveform-generator.h (module 'spectrum'): ns3::SpectrumType ns3::WaveformGenerator::GetSpectrumType() [member function]
-    cls.add_method('GetSpectrumType', 
-                   'ns3::SpectrumType', 
-                   [])
     ## waveform-generator.h (module 'spectrum'): static ns3::TypeId ns3::WaveformGenerator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -4090,19 +4039,19 @@ def register_Ns3WaveformGenerator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_virtual=True)
-    ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::SetDevice(ns3::Ptr<ns3::Object> d) [member function]
+    ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'd')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_virtual=True)
     ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::SetDutyCycle(double value) [member function]
     cls.add_method('SetDutyCycle', 
                    'void', 
                    [param('double', 'value')])
-    ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
+    ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'm')], 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_virtual=True)
     ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::SetPeriod(ns3::Time period) [member function]
     cls.add_method('SetPeriod', 
@@ -4117,10 +4066,10 @@ def register_Ns3WaveformGenerator_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## waveform-generator.h (module 'spectrum'): void ns3::WaveformGenerator::Stop() [member function]
     cls.add_method('Stop', 
@@ -4563,14 +4512,14 @@ def register_Ns3HalfDuplexIdealPhy_methods(root_module, cls):
     cls.add_constructor([param('ns3::HalfDuplexIdealPhy const &', 'arg0')])
     ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::HalfDuplexIdealPhy::HalfDuplexIdealPhy() [constructor]
     cls.add_constructor([])
-    ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::HalfDuplexIdealPhy::GetDevice() [member function]
+    ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::HalfDuplexIdealPhy::GetDevice() [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_virtual=True)
-    ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::HalfDuplexIdealPhy::GetMobility() [member function]
+    ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::HalfDuplexIdealPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_virtual=True)
     ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::DataRate ns3::HalfDuplexIdealPhy::GetRate() const [member function]
@@ -4583,10 +4532,6 @@ def register_Ns3HalfDuplexIdealPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## half-duplex-ideal-phy.h (module 'spectrum'): ns3::SpectrumType ns3::HalfDuplexIdealPhy::GetSpectrumType() [member function]
-    cls.add_method('GetSpectrumType', 
-                   'ns3::SpectrumType', 
-                   [])
     ## half-duplex-ideal-phy.h (module 'spectrum'): static ns3::TypeId ns3::HalfDuplexIdealPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -4597,10 +4542,10 @@ def register_Ns3HalfDuplexIdealPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_virtual=True)
-    ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::SetDevice(ns3::Ptr<ns3::Object> d) [member function]
+    ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'd')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_virtual=True)
     ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::SetGenericPhyRxEndErrorCallback(ns3::GenericPhyRxEndErrorCallback c) [member function]
     cls.add_method('SetGenericPhyRxEndErrorCallback', 
@@ -4618,10 +4563,10 @@ def register_Ns3HalfDuplexIdealPhy_methods(root_module, cls):
     cls.add_method('SetGenericPhyTxEndCallback', 
                    'void', 
                    [param('ns3::GenericPhyTxEndCallback', 'c')])
-    ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
+    ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'm')], 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_virtual=True)
     ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::SetNoisePowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> noisePsd) [member function]
     cls.add_method('SetNoisePowerSpectralDensity', 
@@ -4635,10 +4580,10 @@ def register_Ns3HalfDuplexIdealPhy_methods(root_module, cls):
     cls.add_method('SetTxPowerSpectralDensity', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd')])
-    ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## half-duplex-ideal-phy.h (module 'spectrum'): void ns3::HalfDuplexIdealPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## half-duplex-ideal-phy.h (module 'spectrum'): bool ns3::HalfDuplexIdealPhy::StartTx(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('StartTx', 
@@ -4649,6 +4594,20 @@ def register_Ns3HalfDuplexIdealPhy_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3HalfDuplexIdealPhySignalParameters_methods(root_module, cls):
+    ## half-duplex-ideal-phy-signal-parameters.h (module 'spectrum'): ns3::HalfDuplexIdealPhySignalParameters::HalfDuplexIdealPhySignalParameters() [constructor]
+    cls.add_constructor([])
+    ## half-duplex-ideal-phy-signal-parameters.h (module 'spectrum'): ns3::HalfDuplexIdealPhySignalParameters::HalfDuplexIdealPhySignalParameters(ns3::HalfDuplexIdealPhySignalParameters const & p) [copy constructor]
+    cls.add_constructor([param('ns3::HalfDuplexIdealPhySignalParameters const &', 'p')])
+    ## half-duplex-ideal-phy-signal-parameters.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumSignalParameters> ns3::HalfDuplexIdealPhySignalParameters::Copy() [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::SpectrumSignalParameters >', 
+                   [], 
+                   is_virtual=True)
+    ## half-duplex-ideal-phy-signal-parameters.h (module 'spectrum'): ns3::HalfDuplexIdealPhySignalParameters::data [variable]
+    cls.add_instance_attribute('data', 'ns3::Ptr< ns3::Packet >', is_const=False)
     return
 
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
@@ -5670,14 +5629,14 @@ def register_Ns3SpectrumAnalyzer_methods(root_module, cls):
     cls.add_constructor([param('ns3::SpectrumAnalyzer const &', 'arg0')])
     ## spectrum-analyzer.h (module 'spectrum'): ns3::SpectrumAnalyzer::SpectrumAnalyzer() [constructor]
     cls.add_constructor([])
-    ## spectrum-analyzer.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumAnalyzer::GetDevice() [member function]
+    ## spectrum-analyzer.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::SpectrumAnalyzer::GetDevice() [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_virtual=True)
-    ## spectrum-analyzer.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumAnalyzer::GetMobility() [member function]
+    ## spectrum-analyzer.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::SpectrumAnalyzer::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_virtual=True)
     ## spectrum-analyzer.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumModel const> ns3::SpectrumAnalyzer::GetRxSpectrumModel() const [member function]
@@ -5695,15 +5654,15 @@ def register_Ns3SpectrumAnalyzer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_virtual=True)
-    ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::SetDevice(ns3::Ptr<ns3::Object> d) [member function]
+    ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'd')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_virtual=True)
-    ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
+    ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'm')], 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_virtual=True)
     ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::SetRxSpectrumModel(ns3::Ptr<ns3::SpectrumModel> m) [member function]
     cls.add_method('SetRxSpectrumModel', 
@@ -5714,10 +5673,10 @@ def register_Ns3SpectrumAnalyzer_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::StartRx(ns3::Ptr<ns3::PacketBurst> pb, ns3::Ptr<ns3::SpectrumValue const> rxPowerSpectralDensity, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPowerSpectralDensity'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## spectrum-analyzer.h (module 'spectrum'): void ns3::SpectrumAnalyzer::Stop() [member function]
     cls.add_method('Stop', 
@@ -5766,10 +5725,10 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationDelayModel >', 'delay')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> txPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
+    ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::StartTx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartTx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -6193,20 +6152,20 @@ def register_Ns3MultiModelSpectrumChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationDelayModel >', 'delay')], 
                    is_virtual=True)
-    ## multi-model-spectrum-channel.h (module 'spectrum'): void ns3::MultiModelSpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> txPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
+    ## multi-model-spectrum-channel.h (module 'spectrum'): void ns3::MultiModelSpectrumChannel::StartTx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartTx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## multi-model-spectrum-channel.h (module 'spectrum'): void ns3::MultiModelSpectrumChannel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## multi-model-spectrum-channel.h (module 'spectrum'): void ns3::MultiModelSpectrumChannel::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> rxPowerSpectrum, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> receiver) [member function]
+    ## multi-model-spectrum-channel.h (module 'spectrum'): void ns3::MultiModelSpectrumChannel::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params, ns3::Ptr<ns3::SpectrumPhy> receiver) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'rxPowerSpectrum'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'receiver')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params'), param('ns3::Ptr< ns3::SpectrumPhy >', 'receiver')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -6255,25 +6214,24 @@ def register_Ns3SingleModelSpectrumChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationDelayModel >', 'delay')], 
                    is_virtual=True)
-    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> txPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
+    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::StartTx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartTx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> rxPowerSpectrum, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> receiver) [member function]
-    cls.add_method('StartRx', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'rxPowerSpectrum'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'receiver')], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_functions(root_module):
     module = root_module
+    ## spectrum-value.h (module 'spectrum'): extern double ns3::Integral(ns3::SpectrumValue const & arg) [free function]
+    module.add_function('Integral', 
+                        'double', 
+                        [param('ns3::SpectrumValue const &', 'arg')])
     ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Log(ns3::SpectrumValue const & arg) [free function]
     module.add_function('Log', 
                         'ns3::SpectrumValue', 

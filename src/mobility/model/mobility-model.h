@@ -60,6 +60,12 @@ public:
    * \return the distance between the two objects. Unit is meters.
    */
   double GetDistanceFrom (Ptr<const MobilityModel> position) const;
+  /**
+   * \param other reference to another object's mobility model
+   * \return the relative speed between the two objects. Unit is meters/s.
+   */
+  double GetRelativeSpeed (Ptr<const MobilityModel> other) const;
+
 protected:
   /**
    * Must be invoked by subclasses when the course of the

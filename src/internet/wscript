@@ -193,6 +193,7 @@ def build(bld):
         'test/ipv4-list-routing-test-suite.cc',
         'test/ipv4-packet-info-tag-test-suite.cc',
         'test/ipv4-raw-test.cc',
+        'test/ipv4-header-test.cc',
         'test/ipv4-fragmentation-test.cc',
         'test/error-channel.cc',
         'test/error-net-device.cc',

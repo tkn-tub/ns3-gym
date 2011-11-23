@@ -24,7 +24,7 @@
 #include <ns3/log.h>
 
 #ifdef __FreeBSD__
-#define log2(x) (log(x)/M_LN2)
+#define log2(x) (log (x) / M_LN2)
 #endif
 
 
@@ -386,6 +386,24 @@ Prod (const SpectrumValue& x)
     }
   return s;
 }
+
+double
+Integral (const SpectrumValue& x)
+{
+  double i = 0;
+  Values::const_iterator vit = x.ConstValuesBegin ();
+  Bands::const_iterator bit = x.ConstBandsBegin ();
+  while (vit != x.ConstValuesEnd ())
+    {
+      NS_ASSERT (bit != x.ConstBandsEnd ());
+      i += (*vit) * (bit->fh - bit->fl);
+      ++vit;
+      ++bit;
+    }
+  NS_ASSERT (bit == x.ConstBandsEnd ());
+  return i;
+}
+
 
 
 Ptr<SpectrumValue>

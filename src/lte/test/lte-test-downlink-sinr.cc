@@ -27,6 +27,7 @@
 #include "ns3/lte-phy-tag.h"
 #include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-sinr-chunk-processor.h"
+#include "ns3/lte-spectrum-signal-parameters.h"
 
 #include "ns3/lte-test-downlink-sinr.h"
 
@@ -213,12 +214,41 @@ LteDownlinkSinrTestCase::DoRun (void)
    */
 
   // eNB sends data to 2 UEs through 2 subcarriers
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[0], m_sv, dlPhy->GetSpectrumType (), ds);
+  Ptr<LteSpectrumSignalParameters> sp1 = Create<LteSpectrumSignalParameters> ();
+  sp1->psd = m_sv;
+  sp1->txPhy = 0;
+  sp1->duration = ds;
+  sp1->packetBurst = packetBursts[0];
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, sp1);
 
-  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[1], i1, dlPhy->GetSpectrumType (), di1);
-  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[2], i2, dlPhy->GetSpectrumType (), di2);
-  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[3], i3, dlPhy->GetSpectrumType (), di3);
-  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[4], i4, dlPhy->GetSpectrumType (), di4);
+
+  Ptr<LteSpectrumSignalParameters> ip1 = Create<LteSpectrumSignalParameters> ();
+  ip1->psd = i1;
+  ip1->txPhy = 0;
+  ip1->duration = di1;
+  ip1->packetBurst = packetBursts[1];
+  Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, ip1);
+
+  Ptr<LteSpectrumSignalParameters> ip2 = Create<LteSpectrumSignalParameters> ();
+  ip2->psd = i2;
+  ip2->txPhy = 0;
+  ip2->duration = di2;
+  ip2->packetBurst = packetBursts[2];
+  Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, ip2);
+
+  Ptr<LteSpectrumSignalParameters> ip3 = Create<LteSpectrumSignalParameters> ();
+  ip3->psd = i3;
+  ip3->txPhy = 0;
+  ip3->duration = di3;
+  ip3->packetBurst = packetBursts[3];
+  Simulator::Schedule (ti3, &LteSpectrumPhy::StartRx, dlPhy, ip3);
+
+  Ptr<LteSpectrumSignalParameters> ip4 = Create<LteSpectrumSignalParameters> ();
+  ip4->psd = i4;
+  ip4->txPhy = 0;
+  ip4->duration = di4;
+  ip4->packetBurst = packetBursts[4];
+  Simulator::Schedule (ti4, &LteSpectrumPhy::StartRx, dlPhy, ip4);
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();

@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
   uint32_t    nLeftLeaf = 5;
   uint32_t    nRightLeaf = 5;
   uint32_t    nLeaf = 0; // If non-zero, number of both left and right
-  std::string animFile;  // Name of file for animation output
+  std::string animFile = "dumbbell-animation.xml" ;  // Name of file for animation output
 
   CommandLine cmd;
   cmd.AddValue ("nLeftLeaf", "Number of left side leaf nodes", nLeftLeaf);
@@ -95,15 +95,8 @@ int main (int argc, char *argv[])
   d.BoundingBox (1, 1, 100, 100);
 
   // Create the animation object and configure for specified output
-  AnimationInterface anim;
-  if (!animFile.empty ())
-    {
-      anim.SetOutputFile (animFile);
-    }
-
-  anim.SetXMLOutput ();
-  anim.StartAnimation ();
-
+  AnimationInterface anim (animFile);
+  
   // Set up the acutal simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

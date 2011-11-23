@@ -319,6 +319,12 @@ def register_types(module):
     register_types_ns3_FatalImpl(nested_module)
     
     
+    ## Register a nested module for the namespace SystemPath
+    
+    nested_module = module.add_cpp_namespace('SystemPath')
+    register_types_ns3_SystemPath(nested_module)
+    
+    
     ## Register a nested module for the namespace internal
     
     nested_module = module.add_cpp_namespace('internal')
@@ -336,6 +342,11 @@ def register_types_ns3_Config(module):
 def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
+
+def register_types_ns3_SystemPath(module):
+    root_module = module.get_root()
+    
+    module.add_container('std::list< std::string >', 'std::string', container_type='list')
 
 def register_types_ns3_internal(module):
     root_module = module.get_root()
@@ -4180,6 +4191,7 @@ def register_functions(root_module):
                         template_parameters=['unsigned char'])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    register_functions_ns3_SystemPath(module.get_submodule('SystemPath'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
 
@@ -4259,6 +4271,37 @@ def register_functions_ns3_FatalImpl(module, root_module):
     module.add_function('UnregisterStream', 
                         'void', 
                         [param('std::ostream *', 'stream')])
+    return
+
+def register_functions_ns3_SystemPath(module, root_module):
+    ## system-path.h (module 'core'): extern std::string ns3::SystemPath::Append(std::string left, std::string right) [free function]
+    module.add_function('Append', 
+                        'std::string', 
+                        [param('std::string', 'left'), param('std::string', 'right')])
+    ## system-path.h (module 'core'): extern std::string ns3::SystemPath::FindSelfDirectory() [free function]
+    module.add_function('FindSelfDirectory', 
+                        'std::string', 
+                        [])
+    ## system-path.h (module 'core'): extern std::string ns3::SystemPath::Join(std::_List_const_iterator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > begin, std::_List_const_iterator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > end) [free function]
+    module.add_function('Join', 
+                        'std::string', 
+                        [param('std::_List_const_iterator< std::basic_string< char, std::char_traits< char >, std::allocator< char > > >', 'begin'), param('std::_List_const_iterator< std::basic_string< char, std::char_traits< char >, std::allocator< char > > >', 'end')])
+    ## system-path.h (module 'core'): extern void ns3::SystemPath::MakeDirectories(std::string path) [free function]
+    module.add_function('MakeDirectories', 
+                        'void', 
+                        [param('std::string', 'path')])
+    ## system-path.h (module 'core'): extern std::string ns3::SystemPath::MakeTemporaryDirectoryName() [free function]
+    module.add_function('MakeTemporaryDirectoryName', 
+                        'std::string', 
+                        [])
+    ## system-path.h (module 'core'): extern std::list<std::string, std::allocator<std::string> > ns3::SystemPath::ReadFiles(std::string path) [free function]
+    module.add_function('ReadFiles', 
+                        'std::list< std::string >', 
+                        [param('std::string', 'path')])
+    ## system-path.h (module 'core'): extern std::list<std::string, std::allocator<std::string> > ns3::SystemPath::Split(std::string path) [free function]
+    module.add_function('Split', 
+                        'std::list< std::string >', 
+                        [param('std::string', 'path')])
     return
 
 def register_functions_ns3_internal(module, root_module):
