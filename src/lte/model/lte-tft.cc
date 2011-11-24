@@ -59,8 +59,8 @@ std::ostream& operator<< (std::ostream& os, LteTft::PacketFilter& f)
      << " remotePortEnd: "   << f.remotePortEnd 
      << " localPortStart: "   << f.localPortStart 
      << " localPortEnd: "   << f.localPortEnd 
-     << " typeOfService: 0x" << std::hex << (uint16_t) f.typeOfService 
-     << " typeOfServiceMask: 0x" << std::hex << (uint16_t) f.typeOfServiceMask;  
+     << " typeOfService: 0x" << std::hex << (uint16_t) f.typeOfService << std::dec
+     << " typeOfServiceMask: 0x" << std::hex << (uint16_t) f.typeOfServiceMask << std::dec;  
   return os;
 }
 
@@ -72,7 +72,8 @@ LteTft::PacketFilter::PacketFilter ()
     remotePortStart (0),
     remotePortEnd (65535), 
     localPortStart (0),
-    localPortEnd (65535),  
+    localPortEnd (65535),
+    typeOfService (0),  
     typeOfServiceMask (0)
 {
   NS_LOG_FUNCTION (this);
@@ -86,7 +87,7 @@ LteTft::PacketFilter::Matches (Direction d,
 			       uint16_t lp,
 			       uint8_t tos)
 {
-  NS_LOG_FUNCTION (this << d << ra << la << rp << lp << tos);
+  NS_LOG_FUNCTION (this << d << ra << la << rp << lp << (uint16_t) tos);
   if (d & direction)
     {
       NS_LOG_LOGIC ("d matches");
@@ -130,7 +131,7 @@ LteTft::PacketFilter::Matches (Direction d,
     }
   else
     {
-      NS_LOG_LOGIC ("d doesn't match: d=0x" << std::hex << d << " f.d=0x" << std::hex << direction);
+      NS_LOG_LOGIC ("d doesn't match: d=0x" << std::hex << d << " f.d=0x" << std::hex << direction << std::dec);
     }
   return false;      
 }
@@ -177,7 +178,7 @@ LteTft::Matches (Direction direction,
 		 uint16_t localPort,
 		 uint8_t typeOfService)
 {
-  NS_LOG_FUNCTION (this << direction << remoteAddress << localAddress << remotePort << localPort << typeOfService);
+  NS_LOG_FUNCTION (this << direction << remoteAddress << localAddress << std::dec << remotePort << localPort << (uint16_t) typeOfService);
   for (std::list<PacketFilter>::iterator it = m_filters.begin ();
        it != m_filters.end ();
        ++it)

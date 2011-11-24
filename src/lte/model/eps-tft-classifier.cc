@@ -67,7 +67,7 @@ EpsTftClassifier::Delete (uint32_t id)
 uint32_t 
 EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
 {
-  NS_LOG_FUNCTION (this << *p << direction);
+  NS_LOG_FUNCTION (this << p << direction);
 
   Ptr<Packet> pCopy = p->Copy ();
 
@@ -139,7 +139,7 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
 	       << " remoteAddr=" << remoteAddress 
 	       << " localPort="  << localPort 
 	       << " remotePort=" << remotePort 
-	       << " tos=0x" << std::hex << tos);
+	       << " tos=0x" << (uint16_t) tos );
 
   // now it is possible to classify the packet!
   // we use a reverse iterator since filter priority is not implemented properly.
