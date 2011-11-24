@@ -694,12 +694,12 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
               it = m_rlcAttached.find (flow);
               NS_ASSERT_MSG (it != m_rlcAttached.end (), "rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
               (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size);
-              // send the relative DCI
-              Ptr<DlDciIdealControlMessage> msg = Create<DlDciIdealControlMessage> ();
-              msg->SetDci (ind.m_buildDataList.at (i).m_dci);
-              m_enbPhySapProvider->SendIdealControlMessage (msg);
             }
         }
+      // send the relative DCI
+      Ptr<DlDciIdealControlMessage> msg = Create<DlDciIdealControlMessage> ();
+      msg->SetDci (ind.m_buildDataList.at (i).m_dci);
+      m_enbPhySapProvider->SendIdealControlMessage (msg);
     }
 
   // Fire the trace with the DL information
