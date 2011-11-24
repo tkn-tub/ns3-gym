@@ -394,10 +394,12 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   m_rlcBufferReq.sort (SortRlcBufferReq);
   int nflows = 0;
+  int nTbs = 0;
   std::map <uint16_t,uint8_t> lcActivesPerRnti;
   std::map <uint16_t,uint8_t>::iterator itLcRnti;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
+//       NS_LOG_INFO (this << " User " << (*it).m_rnti << " LC " << (uint16_t)(*it).m_logicalChannelIdentity);
       // remove old entries of this UE-LC
       if ( ((*it).m_rlcTransmissionQueueSize > 0)
            || ((*it).m_rlcRetransmissionQueueSize > 0)
@@ -425,12 +427,13 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               else
                 {
                   lcActivesPerRnti.insert (std::pair<uint16_t, uint8_t > ((*it).m_rnti, 1));
+                  nTbs++;
                 }
         
             }
         }
     }
-
+    
   if (nflows == 0)
     {
       return;
@@ -439,10 +442,10 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // Resource allocation type 0 (see sec 7.1.6.1 of 36.213)
   int rbgSize = GetRbgSize (m_cschedCellConfig.m_dlBandwidth);
   int rbgNum = m_cschedCellConfig.m_dlBandwidth / rbgSize;
-  int rbgPerFlow = rbgNum / nflows;
-  if (rbgPerFlow == 0)
+  int rbgPerTb = rbgNum / nTbs;
+  if (rbgPerTb == 0)
     {
-      rbgPerFlow = 1;                // at least 1 rbg per flow (till available resource)
+      rbgPerTb = 1;                // at least 1 rbg per TB (till available resource)
     }
   int rbgAllocated = 0;
 
@@ -504,15 +507,16 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
       // group the LCs of this RNTI
       std::vector <struct RlcPduListElement_s> newRlcPduLe;
-      int totRbg = lcNum * rbgPerFlow;
-      int tbSize = (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (0), totRbg * rbgSize) / 8);
-//       NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << totRbg * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0));
+//       int totRbg = lcNum * rbgPerFlow;
+//       totRbg = rbgNum / nTbs;
+      int tbSize = (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
+      NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << rbgPerTb * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0));
       uint16_t rlcPduSize = tbSize / lcNum;
       for (int i = 0; i < lcNum ; i++)
         {
           RlcPduListElement_s newRlcEl;
           newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
-          //NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize);
+          NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti);
           newRlcEl.m_size = rlcPduSize;
           newRlcPduLe.push_back (newRlcEl);
           it++;
@@ -523,7 +527,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
         }
       uint32_t rbgMask = 0;
-      for (int i = 0; i < totRbg; i++)
+      for (int i = 0; i < rbgPerTb; i++)
         {
           rbgMask = rbgMask + (0x1 << rbgAllocated);
           rbgAllocated++;
@@ -730,7 +734,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
         
       uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
-//       NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize);
+      NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
       uldci.m_aggrLevel = 1;
