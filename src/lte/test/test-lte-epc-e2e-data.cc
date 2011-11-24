@@ -235,11 +235,15 @@ LteEpcE2eDataTestCase::DoRun ()
     } 
 
   lteHelper->EnableRlcTraces ();
-  lteHelper->EnableMacTraces ();
   lteHelper->EnablePdcpTraces ();
+  Time simulationTime = Seconds (2.0);
+  lteHelper->GetPdcpStats ()->SetAttribute ("EpochDuration", TimeValue (simulationTime));
   
-  Simulator::Stop (Seconds (2.0));  
+  
+  Simulator::Stop (simulationTime);  
   Simulator::Run ();
+
+  static uint64_t imsiCounter = 0;
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
        enbit < m_enbTestData.end ();
@@ -248,9 +252,29 @@ LteEpcE2eDataTestCase::DoRun ()
       for (std::vector<UeTestData>::iterator ueit = enbit->ues.begin ();
            ueit < enbit->ues.end ();
            ++ueit)
-        {
-          NS_TEST_ASSERT_MSG_EQ (ueit->dlServerApp->GetTotalRx (), (ueit->numPkts) * (ueit->pktSize), "wrong total received bytes in downlink");
-          NS_TEST_ASSERT_MSG_EQ (ueit->ulServerApp->GetTotalRx (), (ueit->numPkts) * (ueit->pktSize), "wrong total received bytes in uplink");
+        {                    
+          uint64_t imsi = ++imsiCounter;
+          uint8_t lcid = 1;
+          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlTxPackets (imsi, lcid), 
+                                 ueit->numPkts, 
+                                 "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlRxPackets (imsi, lcid), 
+                                 ueit->numPkts, 
+                                 "wrong RX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetUlTxPackets (imsi, lcid), 
+                                 ueit->numPkts, 
+                                 "wrong TX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetUlRxPackets (imsi, lcid), 
+                                 ueit->numPkts, 
+                                 "wrong RX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);        
+
+          NS_TEST_ASSERT_MSG_EQ (ueit->dlServerApp->GetTotalRx (), 
+                                 (ueit->numPkts) * (ueit->pktSize), 
+                                 "wrong total received bytes in downlink");
+          NS_TEST_ASSERT_MSG_EQ (ueit->ulServerApp->GetTotalRx (), 
+                                 (ueit->numPkts) * (ueit->pktSize), 
+                                 "wrong total received bytes in uplink");
+
         }      
     }
   
