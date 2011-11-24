@@ -234,6 +234,10 @@ LteEpcE2eDataTestCase::DoRun ()
             
     } 
 
+  lteHelper->EnableRlcTraces ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnablePdcpTraces ();
+  
   Simulator::Stop (Seconds (2.0));  
   Simulator::Run ();
 

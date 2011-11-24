@@ -105,11 +105,13 @@ protected:
   uint8_t m_lcid;
 
   /**
-   * Used to inform of a PDU delivery to the RLC SAP provider
+   * Used to inform of a PDU delivery to the RLC SAP provider.
+   * The parameters are RNTI, LCID and bytes delivered
    */
   TracedCallback<uint16_t, uint8_t, uint32_t> m_txPdu;
   /**
-   * Used to inform of a PDU reception from the RLC SAP user
+   * Used to inform of a PDU reception from the RLC SAP user.
+   * The parameters are RNTI, LCID, bytes delivered and delivery delay in nanoseconds. 
    */
   TracedCallback<uint16_t, uint8_t, uint32_t, uint64_t> m_rxPdu;
 
