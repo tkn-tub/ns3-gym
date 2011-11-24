@@ -435,6 +435,7 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
         }
       
       // send TB info to LteSpectrumPhy
+      NS_LOG_DEBUG (this << " UE " << m_rnti << " DCI " << dci.m_rnti << " bimap "  << dci.m_rbBitmap);
       m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_tbsSize.at (0), dci.m_mcs.at (0), dlRb);  // SISO mode
 
       SetSubChannelsForReception (dlRb);

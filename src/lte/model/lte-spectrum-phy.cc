@@ -224,24 +224,6 @@ LteSpectrumPhy::ChangeState (State newState)
   m_state = newState;
 }
 
-void
-LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map)
-{
-  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << mcs);
-  expectedTbs_t::iterator it;
-  it = m_expectedTbs.find (rnti);
-  if (it == m_expectedTbs.end ())
-    {
-      // insert new entry
-      tbInfo_t tbInfo = {size, mcs, map, false};
-      m_expectedTbs.insert (std::pair<uint16_t, tbInfo_t> (rnti,tbInfo ));
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Expectd two TBs from the same UE");
-    }
-}
-
 
 bool
 LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
@@ -412,6 +394,26 @@ LteSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
     }
 }
 
+
+void
+LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map)
+{
+  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << mcs);
+  expectedTbs_t::iterator it;
+  it = m_expectedTbs.find (rnti);
+  if (it == m_expectedTbs.end ())
+  {
+    // insert new entry
+    tbInfo_t tbInfo = {size, mcs, map, false};
+    m_expectedTbs.insert (std::pair<uint16_t, tbInfo_t> (rnti,tbInfo ));
+  }
+  else
+  {
+    NS_FATAL_ERROR ("Expectd two TBs from the same UE");
+  }
+}
+
+
 void
 LteSpectrumPhy::EndRx ()
 {
@@ -428,7 +430,7 @@ LteSpectrumPhy::EndRx ()
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
   while (itTb!=m_expectedTbs.end ())
     {
-      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (*itTb).second.mcs);
+      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs);
       itTb++;
     }
   m_expectedTbs.clear ();  // DEBUG
