@@ -50,13 +50,12 @@ NS_LOG_COMPONENT_DEFINE ("LteEpcE2eData");
 
 
 
-struct UeTestData
+struct BearerTestData
 {
-  UeTestData (uint32_t n, uint32_t s);
+  BearerTestData (uint32_t n, uint32_t s);
 
   uint32_t numPkts;
   uint32_t pktSize;
-  EpsBearer epsBearer;
  
   Ptr<PacketSink> dlServerApp;
   Ptr<Application> dlClientApp;
@@ -65,12 +64,16 @@ struct UeTestData
   Ptr<Application> ulClientApp;
 };
 
-UeTestData::UeTestData (uint32_t n, uint32_t s)
+BearerTestData::BearerTestData (uint32_t n, uint32_t s)
   : numPkts (n),
-    pktSize (s),
-    epsBearer (EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT))
+    pktSize (s)
 {
 }
+
+struct UeTestData
+{
+  std::vector<BearerTestData> bearers;
+};
 
 struct EnbTestData
 {
@@ -154,7 +157,7 @@ LteEpcE2eDataTestCase::DoRun ()
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbs);
   NetDeviceContainer::Iterator enbLteDevIt = enbLteDevs.Begin ();
   
-  uint16_t ulPort = 5678;
+  uint16_t ulPort = 1000;
 
   for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin ();
        enbit < m_enbTestData.end ();
@@ -193,43 +196,59 @@ LteEpcE2eDataTestCase::DoRun ()
           Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());          
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
   
+          uint16_t dlPort = 2000;          
+          for (uint32_t b = 0; b < enbit->ues.at (u).bearers.size (); ++b)
+            {              
+              BearerTestData& bearerTestData = enbit->ues.at (u).bearers.at (b);
+              
+              { // Downlink
+                ++dlPort;
+                PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+                ApplicationContainer apps = packetSinkHelper.Install (ue);
+                apps.Start (Seconds (0.01));
+                bearerTestData.dlServerApp = apps.Get (0)->GetObject<PacketSink> ();
+          
+                Time interPacketInterval = Seconds (0.01);
+                UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
+                client.SetAttribute ("MaxPackets", UintegerValue (bearerTestData.numPkts));
+                client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+                client.SetAttribute ("PacketSize", UintegerValue (bearerTestData.pktSize));
+                apps = client.Install (remoteHost);
+                apps.Start (Seconds (0.01));
+                bearerTestData.dlClientApp = apps.Get (0);
+              }
 
-          { // Downlink
-            uint16_t dlPort = 1234;
-            PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-            ApplicationContainer apps = packetSinkHelper.Install (ue);
-            apps.Start (Seconds (0.01));
-            enbit->ues[u].dlServerApp = apps.Get (0)->GetObject<PacketSink> ();
+              { // Uplink
+                ++ulPort;
+                PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+                ApplicationContainer apps = packetSinkHelper.Install (remoteHost);
+                apps.Start (Seconds (0.5));
+                bearerTestData.ulServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
-            Time interPacketInterval = Seconds (0.01);
-            UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
-            client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
-            client.SetAttribute ("Interval", TimeValue (interPacketInterval));
-            client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
-            apps = client.Install (remoteHost);
-            apps.Start (Seconds (0.01));
-            enbit->ues[u].dlClientApp = apps.Get (0);
-          }
+                Time interPacketInterval = Seconds (0.01);
+                UdpClientHelper client (remoteHostAddr, ulPort);
+                client.SetAttribute ("MaxPackets", UintegerValue (bearerTestData.numPkts));
+                client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+                client.SetAttribute ("PacketSize", UintegerValue (bearerTestData.pktSize));
+                apps = client.Install (ue);
+                apps.Start (Seconds (0.5));
+                bearerTestData.ulClientApp = apps.Get (0);
+              }
 
-          { // Uplink
-            ++ulPort;
-            PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-            ApplicationContainer apps = packetSinkHelper.Install (remoteHost);
-            apps.Start (Seconds (0.5));
-            enbit->ues[u].ulServerApp = apps.Get (0)->GetObject<PacketSink> ();
-          
-            Time interPacketInterval = Seconds (0.01);
-            UdpClientHelper client (remoteHostAddr, ulPort);
-            client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
-            client.SetAttribute ("Interval", TimeValue (interPacketInterval));
-            client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
-            apps = client.Install (ue);
-            apps.Start (Seconds (0.5));
-            enbit->ues[u].ulClientApp = apps.Get (0);
-          }
-          
-          lteHelper->ActivateEpsBearer (ueLteDevice, enbit->ues[u].epsBearer, LteTft::Default ());
-          
+              EpsBearer epsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
+
+              Ptr<LteTft> tft = Create<LteTft> ();
+              LteTft::PacketFilter dlpf;
+              dlpf.localPortStart = dlPort;
+              dlpf.localPortEnd = dlPort;
+              tft->Add (dlpf);
+              LteTft::PacketFilter ulpf;
+              ulpf.remotePortStart = ulPort;
+              ulpf.remotePortEnd = ulPort;
+              tft->Add (ulpf);                            
+ 
+              lteHelper->ActivateEpsBearer (ueLteDevice, epsBearer, tft);
+            }
         } 
             
     } 
@@ -254,27 +273,29 @@ LteEpcE2eDataTestCase::DoRun ()
            ++ueit)
         {                    
           uint64_t imsi = ++imsiCounter;
-          uint8_t lcid = 1;
-          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlTxPackets (imsi, lcid), 
-                                 ueit->numPkts, 
-                                 "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
-          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlRxPackets (imsi, lcid), 
-                                 ueit->numPkts, 
-                                 "wrong RX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
-          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetUlTxPackets (imsi, lcid), 
-                                 ueit->numPkts, 
-                                 "wrong TX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
-          NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetUlRxPackets (imsi, lcid), 
-                                 ueit->numPkts, 
-                                 "wrong RX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);        
+          for (uint32_t b = 0; b < ueit->bearers.size (); ++b)
+            {
+              uint8_t lcid = b+1;
+              NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlTxPackets (imsi, lcid), 
+                                     ueit->bearers.at (b).numPkts, 
+                                     "wrong TX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+              NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetDlRxPackets (imsi, lcid), 
+                                     ueit->bearers.at (b).numPkts, 
+                                     "wrong RX PDCP packets in downlink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+              NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetUlTxPackets (imsi, lcid), 
+                                     ueit->bearers.at (b).numPkts, 
+                                     "wrong TX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);
+              NS_TEST_ASSERT_MSG_EQ (lteHelper->GetPdcpStats ()->GetUlRxPackets (imsi, lcid), 
+                                     ueit->bearers.at (b).numPkts, 
+                                     "wrong RX PDCP packets in uplink for IMSI=" << imsi << " LCID=" << (uint16_t) lcid);        
 
-          NS_TEST_ASSERT_MSG_EQ (ueit->dlServerApp->GetTotalRx (), 
-                                 (ueit->numPkts) * (ueit->pktSize), 
-                                 "wrong total received bytes in downlink");
-          NS_TEST_ASSERT_MSG_EQ (ueit->ulServerApp->GetTotalRx (), 
-                                 (ueit->numPkts) * (ueit->pktSize), 
-                                 "wrong total received bytes in uplink");
-
+              NS_TEST_ASSERT_MSG_EQ (ueit->bearers.at (b).dlServerApp->GetTotalRx (), 
+                                     (ueit->bearers.at (b).numPkts) * (ueit->bearers.at (b).pktSize), 
+                                     "wrong total received bytes in downlink");
+              NS_TEST_ASSERT_MSG_EQ (ueit->bearers.at (b).ulServerApp->GetTotalRx (), 
+                                     (ueit->bearers.at (b).numPkts) * (ueit->bearers.at (b).pktSize), 
+                                     "wrong total received bytes in uplink");
+            }
         }      
     }
   
@@ -300,55 +321,79 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 {  
   std::vector<EnbTestData> v1;  
   EnbTestData e1;
-  UeTestData f1 (1, 100);
-  e1.ues.push_back (f1);
+  UeTestData u1;
+  BearerTestData f1 (1, 100);
+  u1.bearers.push_back (f1);
+  e1.ues.push_back (u1);
   v1.push_back (e1);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE", v1));
 
-
   std::vector<EnbTestData> v2;  
   EnbTestData e2;
-  UeTestData f2_1 (1, 100);
-  e2.ues.push_back (f2_1);
-  UeTestData f2_2 (2, 200);
-  e2.ues.push_back (f2_2);
+  UeTestData u2_1;
+  BearerTestData f2_1 (1, 100);
+  u2_1.bearers.push_back (f2_1);
+  e2.ues.push_back (u2_1);
+  UeTestData u2_2;
+  BearerTestData f2_2 (2, 200);
+  u2_2.bearers.push_back (f2_2);
+  e2.ues.push_back (u2_2);
   v2.push_back (e2);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 2UEs", v2));
-
 
   std::vector<EnbTestData> v3;  
   v3.push_back (e1);
   v3.push_back (e2);
   AddTestCase (new LteEpcE2eDataTestCase ("2 eNBs", v3));
 
-
-  EnbTestData e3;
-  UeTestData f3_1 (3, 50);
-  e3.ues.push_back (f3_1);
-  UeTestData f3_2 (5, 1400);
-  e3.ues.push_back (f3_2);
-  UeTestData f3_3 (1, 1);
-  e3.ues.push_back (f3_2);
+  EnbTestData e4;
+  UeTestData u4_1;
+  BearerTestData f4_1 (3, 50);
+  u4_1.bearers.push_back (f4_1);
+  e4.ues.push_back (u4_1);
+  UeTestData u4_2;
+  BearerTestData f4_2 (5, 1400);
+  u4_2.bearers.push_back (f4_2);
+  e4.ues.push_back (u4_2);
+  UeTestData u4_3;
+  BearerTestData f4_3 (1, 12);
+  u4_3.bearers.push_back (f4_3);
+  e4.ues.push_back (u4_3);
   std::vector<EnbTestData> v4;  
-  v4.push_back (e3);
+  v4.push_back (e4);
   v4.push_back (e1);
   v4.push_back (e2);
   AddTestCase (new LteEpcE2eDataTestCase ("3 eNBs", v4));
 
-  EnbTestData e4;
-  UeTestData f4_1 (5, 1000);
-  e4.ues.push_back (f4_1);
+  EnbTestData e5;
+  UeTestData u5;
+  BearerTestData f5 (5, 1000);
+  u5.bearers.push_back (f5);
+  e5.ues.push_back (u5);
   std::vector<EnbTestData> v5;
-  v5.push_back (e4);
+  v5.push_back (e5);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1000 byte packets", v5));
 
 
-  EnbTestData e5;
-  UeTestData f5_1 (5, 1400);
-  e5.ues.push_back (f5_1);
+  EnbTestData e6;
+  UeTestData u6;
+  BearerTestData f6 (5, 1400);
+  u6.bearers.push_back (f6);
+  e6.ues.push_back (u6);
   std::vector<EnbTestData> v6;
-  v6.push_back (e5);
+  v6.push_back (e6);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 1400 byte packets", v6));
+
+  EnbTestData e7;
+  UeTestData u7;
+  BearerTestData f7_1 (1, 1400);
+  u7.bearers.push_back (f7_1);
+  BearerTestData f7_2 (1, 100);
+  u7.bearers.push_back (f7_2);
+  e7.ues.push_back (u7);
+  std::vector<EnbTestData> v7;
+  v7.push_back (e7);
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 2 bearers", v7));
 
 }
 
