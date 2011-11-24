@@ -259,6 +259,9 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   ulPhy->AddSinrChunkProcessor (p);
+  
+  Ptr<LtePemSinrChunkProcessor> pPem = Create<LtePemSinrChunkProcessor> (ulPhy);
+  ulPhy->AddSinrChunkProcessor (pPem);
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
@@ -335,6 +338,9 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   dlPhy->AddSinrChunkProcessor (p);
+  
+  Ptr<LtePemSinrChunkProcessor> pPem = Create<LtePemSinrChunkProcessor> (dlPhy);
+  dlPhy->AddSinrChunkProcessor (pPem);
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);

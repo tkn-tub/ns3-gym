@@ -165,6 +165,13 @@ public:
   * \param map the map of RB(s) used
   */
   void AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map);
+  
+  /** 
+  * 
+  * 
+  * \param sinr vector of sinr perceived per each RB
+  */
+  void UpdateSinrPerceived (const SpectrumValue& sinr);
 
 private:
   void ChangeState (State newState);
@@ -200,6 +207,7 @@ private:
   uint16_t m_cellId;
   
   expectedTbs_t m_expectedTbs;
+  SpectrumValue m_sinrPerceived;
 };
 
 

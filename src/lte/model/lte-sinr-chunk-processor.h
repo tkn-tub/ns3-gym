@@ -28,6 +28,7 @@
 #include <ns3/nstime.h>
 #include <ns3/object.h>
 #include <ns3/lte-phy.h>
+#include <ns3/lte-spectrum-phy.h>
 
 namespace ns3 {
 
@@ -67,6 +68,26 @@ private:
   Ptr<SpectrumValue> m_sumSinr;
   Time m_totDuration;
   Ptr<LtePhy> m_phy;
+};
+
+
+
+/** 
+* This SinrProcessor averages the calculated SINR over time for Phy error model
+* 
+*/
+class LtePemSinrChunkProcessor : public LteSinrChunkProcessor
+{
+  public:
+    virtual ~LtePemSinrChunkProcessor ();
+    LtePemSinrChunkProcessor (Ptr<LteSpectrumPhy> p);
+    virtual void Start ();
+    virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
+    virtual void End ();
+  private:
+    Ptr<SpectrumValue> m_sumSinr;
+    Time m_totDuration;
+    Ptr<LteSpectrumPhy> m_phy;
 };
 
 

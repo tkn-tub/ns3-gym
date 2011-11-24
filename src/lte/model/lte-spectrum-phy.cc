@@ -394,6 +394,13 @@ LteSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
     }
 }
 
+void
+LteSpectrumPhy::UpdateSinrPerceived (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this << sinr);
+  m_sinrPerceived = sinr;
+}
+
 
 void
 LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map)
@@ -430,7 +437,11 @@ LteSpectrumPhy::EndRx ()
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
   while (itTb!=m_expectedTbs.end ())
     {
-      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs);
+      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size ());
+      for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)
+        {
+          NS_LOG_DEBUG (this << " RB " << (*itTb).second.rbBitmap.at (i) << " SINR " << m_sinrPerceived[(*itTb).second.rbBitmap.at (i)]);
+        }
       itTb++;
     }
   m_expectedTbs.clear ();  // DEBUG
