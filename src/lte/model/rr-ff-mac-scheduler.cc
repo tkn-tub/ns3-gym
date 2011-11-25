@@ -328,7 +328,7 @@ RrFfMacScheduler::DoSchedDlRlcBufferReq (const struct FfMacSchedSapProvider::Sch
       // remove old entries of this UE-LC
       if (((*it).m_rnti == params.m_rnti)&&((*it).m_logicalChannelIdentity == params.m_logicalChannelIdentity))
         {
-          m_rlcBufferReq.erase (it);
+          it = m_rlcBufferReq.erase (it);
           newLc = false;
         }
     }
