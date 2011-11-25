@@ -111,6 +111,10 @@ LenaHelper::DoStart (void)
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
   m_rlcStats->SetDlOutputFilename("DlRlcStats.csv");
   m_rlcStats->SetUlOutputFilename("UlRlcStats.csv");
+  m_pdcpStats = CreateObject<RlcStatsCalculator> ();
+  m_pdcpStats->SetDlOutputFilename("DlPdcpStats.csv");
+  m_pdcpStats->SetUlOutputFilename("UlPdcpStats.csv");
+
   Object::DoStart ();
 }
 
@@ -764,6 +768,7 @@ UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
   rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
+
 void
 DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
                       std::string path, uint32_t frameNo, uint32_t subframeNo,
@@ -875,6 +880,38 @@ Ptr<RlcStatsCalculator>
 LenaHelper::GetRlcStats (void)
 {
   return m_rlcStats;
+}
+
+void
+LenaHelper::EnablePdcpTraces (void)
+{
+  EnableDlPdcpTraces ();
+  EnableUlPdcpTraces ();
+}
+
+void
+LenaHelper::EnableDlPdcpTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LtePdcp/TxPDU",
+                   MakeBoundCallback (&DlTxPduCallback, m_pdcpStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LtePdcp/RxPDU",
+                   MakeBoundCallback (&DlRxPduCallback, m_pdcpStats));
+}
+
+void
+LenaHelper::EnableUlPdcpTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LtePdcp/TxPDU",
+                   MakeBoundCallback (&UlTxPduCallback, m_pdcpStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LtePdcp/RxPDU",
+                   MakeBoundCallback (&UlRxPduCallback, m_pdcpStats));
+}
+
+Ptr<RlcStatsCalculator>
+LenaHelper::GetPdcpStats (void)
+{
+  return m_pdcpStats;
 }
 
 } // namespace ns3

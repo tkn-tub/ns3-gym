@@ -223,7 +223,32 @@ public:
    */
   void SetTraceDirectory (std::string path);
 
+  /** 
+   * 
+   * \return the RLC stats calculator object
+   */
   Ptr<RlcStatsCalculator> GetRlcStats (void);
+
+  /**
+   * Enable trace sinks for PDCP layer
+   */
+  void EnablePdcpTraces (void);
+
+  /**
+   * Enable trace sinks for DL PDCP layer
+   */
+  void EnableDlPdcpTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlPdcpTraces (void);
+
+  /** 
+   * 
+   * \return the PDCP stats calculator object
+   */
+  Ptr<RlcStatsCalculator> GetPdcpStats (void);
 
 protected:
   // inherited from Object
@@ -253,6 +278,8 @@ private:
   
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
+  Ptr<RlcStatsCalculator> m_pdcpStats;
+
   enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
                                    RLC_UM_ALWAYS = 2,
                                    RLC_AM_ALWAYS = 3,

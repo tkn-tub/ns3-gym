@@ -131,7 +131,7 @@ RlcStatsCalculator::UlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti,
       Uint64StatsMap::iterator it = m_ulDelay.find (p);
       if (it == m_ulDelay.end ())
         {
-          NS_LOG_DEBUG (this << " Creating UL stats calculators for IMSI " << p.m_imsi << " and LCI " << (uint32_t) p.m_lcId );
+          NS_LOG_DEBUG (this << " Creating UL stats calculators for IMSI " << p.m_imsi << " and LCID " << (uint32_t) p.m_lcId );
           m_ulDelay[p] = CreateObject<MinMaxAvgTotalCalculator<uint64_t> > ();
           m_ulPduSize[p] = CreateObject<MinMaxAvgTotalCalculator<uint32_t> > ();
         }
@@ -156,7 +156,7 @@ RlcStatsCalculator::DlRxPdu (uint64_t imsi, uint16_t rnti,
       Uint64StatsMap::iterator it = m_dlDelay.find (p);
       if (it == m_dlDelay.end ())
         {
-          NS_LOG_DEBUG (this << " Creating DL stats calculators for IMSI " << p.m_imsi << " and LCI " << (uint32_t) p.m_lcId );
+          NS_LOG_DEBUG (this << " Creating DL stats calculators for IMSI " << p.m_imsi << " and LCID " << (uint32_t) p.m_lcId );
           m_dlDelay[p] = CreateObject<MinMaxAvgTotalCalculator<uint64_t> > ();
           m_dlPduSize[p] = CreateObject<MinMaxAvgTotalCalculator<uint32_t> > ();
         }
@@ -229,6 +229,8 @@ RlcStatsCalculator::ShowResults (void)
 void
 RlcStatsCalculator::WriteUlResults (std::ofstream& outFile)
 {
+  NS_LOG_FUNCTION (this);
+
   // Get the unique IMSI / LCID list
 
   std::vector<ImsiLcidPair_t> pairVector;
@@ -276,6 +278,8 @@ RlcStatsCalculator::WriteUlResults (std::ofstream& outFile)
 void
 RlcStatsCalculator::WriteDlResults (std::ofstream& outFile)
 {
+  NS_LOG_FUNCTION (this);
+
   // Get the unique IMSI list
   std::vector<ImsiLcidPair_t> pairVector;
   for (Uint32Map::iterator it = m_dlTxPackets.begin (); it
@@ -322,6 +326,8 @@ RlcStatsCalculator::WriteDlResults (std::ofstream& outFile)
 void
 RlcStatsCalculator::ResetResults (void)
 {
+  NS_LOG_FUNCTION (this);
+
   m_ulTxPackets.erase (m_ulTxPackets.begin (), m_ulTxPackets.end ());
   m_ulRxPackets.erase (m_ulRxPackets.begin (), m_ulRxPackets.end ());
   m_ulRxData.erase (m_ulRxData.begin (), m_ulRxData.end ());
@@ -340,6 +346,8 @@ RlcStatsCalculator::ResetResults (void)
 void
 RlcStatsCalculator::CheckEpoch (bool forceEpoch)
 {
+  NS_LOG_FUNCTION (this);
+
   if (Simulator::Now () > m_startTime + m_epochDuration /*|| forceEpoch == true*/)
     {
       ShowResults ();
@@ -352,12 +360,14 @@ RlcStatsCalculator::CheckEpoch (bool forceEpoch)
 void
 RlcStatsCalculator::StartEpoch (void)
 {
+  NS_LOG_FUNCTION (this);
   m_startTime += m_epochDuration;
 }
 
 uint32_t
 RlcStatsCalculator::GetUlTxPackets (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_ulTxPackets[p];
 }
@@ -365,6 +375,7 @@ RlcStatsCalculator::GetUlTxPackets (uint64_t imsi, uint8_t lcid)
 uint32_t
 RlcStatsCalculator::GetUlRxPackets (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_ulRxPackets[p];
 }
@@ -372,6 +383,7 @@ RlcStatsCalculator::GetUlRxPackets (uint64_t imsi, uint8_t lcid)
 uint64_t
 RlcStatsCalculator::GetUlTxData (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_ulTxData[p];
 }
@@ -379,6 +391,7 @@ RlcStatsCalculator::GetUlTxData (uint64_t imsi, uint8_t lcid)
 uint64_t
 RlcStatsCalculator::GetUlRxData (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_ulRxData[p];
 }
@@ -386,11 +399,12 @@ RlcStatsCalculator::GetUlRxData (uint64_t imsi, uint8_t lcid)
 double
 RlcStatsCalculator::GetUlDelay (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   Uint64StatsMap::iterator it = m_ulDelay.find (p);
   if (it == m_ulDelay.end ())
     {
-      NS_LOG_ERROR ("UL delay for " << imsi << " - " << lcid << " not found");
+      NS_LOG_ERROR ("UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
       return 0;
 
     }
@@ -400,12 +414,13 @@ RlcStatsCalculator::GetUlDelay (uint64_t imsi, uint8_t lcid)
 std::vector<double>
 RlcStatsCalculator::GetUlDelayStats (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   std::vector<double> stats;
   Uint64StatsMap::iterator it = m_ulDelay.find (p);
   if (it == m_ulDelay.end ())
     {
-      NS_LOG_ERROR ("UL delay for " << imsi << " - " << lcid << " not found");
+      NS_LOG_ERROR ("UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
       return stats;
 
     }
@@ -419,12 +434,13 @@ RlcStatsCalculator::GetUlDelayStats (uint64_t imsi, uint8_t lcid)
 std::vector<double>
 RlcStatsCalculator::GetUlPduSizeStats (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   std::vector<double> stats;
   Uint32StatsMap::iterator it = m_ulPduSize.find (p);
   if (it == m_ulPduSize.end ())
     {
-      NS_LOG_ERROR ("UL PDU Size for " << imsi << " - " << lcid << " not found");
+      NS_LOG_ERROR ("UL PDU Size for " << imsi << " - " << (uint16_t) lcid << " not found");
       return stats;
 
     }
@@ -438,6 +454,7 @@ RlcStatsCalculator::GetUlPduSizeStats (uint64_t imsi, uint8_t lcid)
 uint32_t
 RlcStatsCalculator::GetDlTxPackets (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_dlTxPackets[p];
 }
@@ -445,6 +462,7 @@ RlcStatsCalculator::GetDlTxPackets (uint64_t imsi, uint8_t lcid)
 uint32_t
 RlcStatsCalculator::GetDlRxPackets (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_dlRxPackets[p];
 }
@@ -452,6 +470,7 @@ RlcStatsCalculator::GetDlRxPackets (uint64_t imsi, uint8_t lcid)
 uint64_t
 RlcStatsCalculator::GetDlTxData (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_dlTxData[p];
 }
@@ -459,6 +478,7 @@ RlcStatsCalculator::GetDlTxData (uint64_t imsi, uint8_t lcid)
 uint64_t
 RlcStatsCalculator::GetDlRxData (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_dlRxData[p];
 }
@@ -466,6 +486,7 @@ RlcStatsCalculator::GetDlRxData (uint64_t imsi, uint8_t lcid)
 uint32_t
 RlcStatsCalculator::GetUlCellId (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_ulCellId[p];
 }
@@ -473,6 +494,7 @@ RlcStatsCalculator::GetUlCellId (uint64_t imsi, uint8_t lcid)
 uint32_t
 RlcStatsCalculator::GetDlCellId (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   return m_dlCellId[p];
 }
@@ -480,6 +502,7 @@ RlcStatsCalculator::GetDlCellId (uint64_t imsi, uint8_t lcid)
 double
 RlcStatsCalculator::GetDlDelay (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   Uint64StatsMap::iterator it = m_dlDelay.find (p);
   if (it == m_dlDelay.end ())
@@ -493,6 +516,7 @@ RlcStatsCalculator::GetDlDelay (uint64_t imsi, uint8_t lcid)
 std::vector<double>
 RlcStatsCalculator::GetDlDelayStats (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   std::vector<double> stats;
   Uint64StatsMap::iterator it = m_dlDelay.find (p);
@@ -513,6 +537,7 @@ RlcStatsCalculator::GetDlDelayStats (uint64_t imsi, uint8_t lcid)
 std::vector<double>
 RlcStatsCalculator::GetDlPduSizeStats (uint64_t imsi, uint8_t lcid)
 {
+  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
   ImsiLcidPair_t p (imsi, lcid);
   std::vector<double> stats;
   Uint32StatsMap::iterator it = m_dlPduSize.find (p);
