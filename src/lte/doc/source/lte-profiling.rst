@@ -9,7 +9,7 @@
 Overview and objectives
 ***********************
 
-The main profiling objective is to assess the simulator performance on a broad set of situations. This evaluation provides reference values for simulation running times and memory consumption figures. Also, it helps identifying potential performance improvements or bottlenecks and checking that no scalability problems arise while increasing the number of eNodeB and the number of UEs attached to each eNodeB.
+The main profiling objective is to assess the simulator performance on a broad set of scenarios. This evaluation provides reference values for simulation running times and memory consumption figures. It also helps to identify potential performance improvements and to check for scalability problems when increasing the number of eNodeB and the number of UEs attached to each eNodeB.
 
 In the following sections, a detailed description of the general profiling framework employed to perform this profiling study is introduced. It also introduces the details of the main tests performed and its results are evaluated.
 
@@ -19,12 +19,11 @@ Framework description
 Simulation script
 ~~~~~~~~~~~~~~~~
 
-The simulation script used for all the results gathered in this documentation is located at ``src/lte/examples/lena-runtime-profiler.cc``. This script generated a squared grid topology, placing a eNodeB at the centre of the square. UEs attached to this node are scattered randomly across the square (using a random uniform distribution along X and Y axis). If *BuildingPropagationModel* is used
+The simulation script used for all the results gathered in this documentation is located at ``src/lte/examples/lena-runtime-profiler.cc``. This script generated a squared grid topology, placing a eNodeB at the centre of the square. UEs attached to this node are scattered randomly across the square (using a random uniform distribution along X and Y axis). If *BuildingPropagationModel* is used, the squares are replaced by rooms.
 
 .. TODO: Insert figure picturing the geometry of the simulation.
 
-RLC and MAC traces are enabled for all UEs and all eNodeBs and those traces are written to disk directly. The MAC scheduler used is *propotional fair* 
-
+RLC and MAC traces are enabled for all UEs and all eNodeBs and those traces are written to disk directly. The MAC scheduler used is *propotional fair*.
 
 Simulation input parameters
 ---------------------------
@@ -39,12 +38,12 @@ The *lena-runtime-profiler* simulation script accepts the following input parame
 Time measurement
 ~~~~~~~~~~~~~~~~
 
-Running time is measured using default Linux shell command **time**. This command counts the user time invested in the execution of a program.
+Running time is measured using default Linux shell command **time**. This command counts how much user time the execution of a program takes.
 
 Perl script
 ~~~~~~~~~~~
 
-To simplify the process of running the profiling script for a wide range of values and collecting its data, a simple Perl script to automate the whole process has been developed. It is placed in ``src/lte/test/lte-test-run-time.pl``. It simply runs a batch of simulations with a range of parameters and stores the timing results in a CSV file called *times.csv*.
+To simplify the process of running the profiling script for a wide range of values and collecting its timing data, a simple Perl script to automate the complete process is provided. It is placed in ``src/lte/test/lte-test-run-time.pl``. It simply runs a batch of simulations with a range of parameters and stores the timing results in a CSV file called *times.csv*. The range of values each parameter takes can be easily modified editing the script.
 
 Requirements
 ------------
@@ -72,7 +71,7 @@ The following results and figures had been obtained with LENA **changeset 1823cd
 Running time
 ~~~~~~~~~~~~
 
-This scenario, evaluates the running time in for a fixed simulation time (10s) increasing the number of UEs attached to each eNodeB and the number of planted eNodeBs in every scenario. Friis propagation model is used as a reference. 
+This scenario, evaluates the running time in for a fixed simulation time (10s) and Friis propagation mode increasing the number of UEs attached to each eNodeB and the number of planted eNodeBs in every scenario.
 
 .. _fig-runTime:
 
