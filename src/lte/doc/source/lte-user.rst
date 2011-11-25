@@ -431,12 +431,12 @@ network you might have in your simulation.
 First of all, in your simulation program you need to create two
 helpers::
 
-  Ptr<LenaHelper> lteHelper = CreateObject<LenaHelper> ();
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
 
 Then, you need to tell the LTE helper that the EPC will be used::
 
-  lteHelper->SetEpcHelper (epcHelper);
+  lena->SetEpcHelper (epcHelper);
 
 the above step is necessary so that the LTE helper will trigger the
 appropriate EPC configuration in correspondance with some important
@@ -489,27 +489,29 @@ Now, you should go on and create LTE eNBs and UEs as explained in the
 previous sections. You can of course configure other LTE aspects such
 as pathloss and fading models. Right after you created the UEs, you
 should also configure them for IP networking. This is done as
-follows. We assume you have a container for UE nodes like this::
+follows. We assume you have a container for UE and eNodeB nodes like this::
 
-      NodeContainer ues;
+      NodeContainer ueNodes;
+      NodeContainer enbNodes;
+      
 
 to configure an LTE-only simulation, you would then normally do
 something like this::
 
-      NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ues);
-      lteHelper->Attach (ueLteDevs, *enbLteDevIt);        
+      NetDeviceContainer ueLteDevs = lena->InstallUeDevice (ueNodes);
+      lena->Attach (ueLteDevs, enbLteDevs.Get (0));        
 
 in order to configure the UEs for IP networking, you just need to
 additionally do like this::
 
       // we install the IP stack on the UEs 
       InternetStackHelper internet;
-      internet.Install (ues);
+      internet.Install (ueNodes);
 
-      // assign IP address to UEs, and install applications
-      for (uint32_t u = 0; u < ues.GetN (); ++u)
+      // assign IP address to UEs
+      for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
         {
-          Ptr<Node> ue = ues.Get (u);          
+          Ptr<Node> ue = ueNodes.Get (u);          
           Ptr<NetDevice> ueLteDevice = ueLteDevs.Get (u);
           Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
           // set the default gateway for the UE
@@ -520,7 +522,7 @@ additionally do like this::
 The activation of bearers is done exactly in the same way as for an
 LTE-only simulation. Here is how to activate a default bearer::
 
-      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), LteTft::Defautl ());
+      lena->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), LteTft::Default ());
 
 you can of course use custom EpsBearer and LteTft configurations,
 please refer to the doxygen documentation for how to do it.
@@ -545,11 +547,6 @@ That's all! You can now start your simulation as usual::
 
   Simulator::Stop (Seconds (10.0));  
   Simulator::Run ();
-
-
-
-
-
 
 
 Further Reading

@@ -22,3 +22,6 @@ def build(bld):
     obj = bld.create_ns3_program('lena-extract-pathloss',
                                  ['lte'])
     obj.source = 'lena-extract-pathloss.cc'
+    obj = bld.create_ns3_program('lena-epc-first',
+                                 ['lte'])
+    obj.source = 'lena-epc-first.cc'

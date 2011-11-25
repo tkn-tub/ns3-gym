@@ -133,7 +133,7 @@ TypeId LenaHelper::GetTypeId (void)
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",
                    "The type of pathloss model to be used",
-                   StringValue ("ns3::BuildingsPropagationLossModel"),
+                   StringValue ("ns3::FriisPropagationLossModel"),
                    MakeStringAccessor (&LenaHelper::SetPathlossModelType),
                    MakeStringChecker ())
      .AddAttribute ("FadingModel",
