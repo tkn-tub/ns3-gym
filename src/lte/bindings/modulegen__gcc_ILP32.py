@@ -3989,6 +3989,10 @@ def register_Ns3SpectrumInterference_methods(root_module, cls):
     cls.add_constructor([param('ns3::SpectrumInterference const &', 'arg0')])
     ## spectrum-interference.h (module 'spectrum'): ns3::SpectrumInterference::SpectrumInterference() [constructor]
     cls.add_constructor([])
+    ## spectrum-interference.h (module 'spectrum'): void ns3::SpectrumInterference::AbortRx() [member function]
+    cls.add_method('AbortRx', 
+                   'void', 
+                   [])
     ## spectrum-interference.h (module 'spectrum'): void ns3::SpectrumInterference::AddSignal(ns3::Ptr<ns3::SpectrumValue const> spd, ns3::Time const duration) [member function]
     cls.add_method('AddSignal', 
                    'void', 
@@ -5660,6 +5664,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     cls.add_method('GetPosition', 
                    'ns3::Vector', 
                    [], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
+    cls.add_method('GetRelativeSpeed', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
                    is_const=True)
     ## mobility-model.h (module 'mobility'): static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 

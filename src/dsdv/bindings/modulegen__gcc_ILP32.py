@@ -5303,10 +5303,10 @@ def register_Ns3DsdvRoutingTable_methods(root_module, cls):
     cls.add_constructor([param('ns3::dsdv::RoutingTable const &', 'arg0')])
     ## dsdv-rtable.h (module 'dsdv'): ns3::dsdv::RoutingTable::RoutingTable() [constructor]
     cls.add_constructor([])
-    ## dsdv-rtable.h (module 'dsdv'): bool ns3::dsdv::RoutingTable::AddIpv4Event(ns3::Ipv4Address arg0, ns3::EventId arg1) [member function]
+    ## dsdv-rtable.h (module 'dsdv'): bool ns3::dsdv::RoutingTable::AddIpv4Event(ns3::Ipv4Address address, ns3::EventId id) [member function]
     cls.add_method('AddIpv4Event', 
                    'bool', 
-                   [param('ns3::Ipv4Address', 'arg0'), param('ns3::EventId', 'arg1')])
+                   [param('ns3::Ipv4Address', 'address'), param('ns3::EventId', 'id')])
     ## dsdv-rtable.h (module 'dsdv'): bool ns3::dsdv::RoutingTable::AddRoute(ns3::dsdv::RoutingTableEntry & r) [member function]
     cls.add_method('AddRoute', 
                    'bool', 
