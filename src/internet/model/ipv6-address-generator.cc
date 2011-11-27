@@ -224,7 +224,7 @@ Ipv6AddressGeneratorImpl::NextNetwork (
       m_netTable[index].addr[j] = interfaceIdBits[j];
     }
 
-  for (uint8_t j = 15; j >= 0; j--)
+  for (int32_t j = 15; j >= 0; j--)
     {
       if (m_netTable[index].network[j] < 0xff)
         {
@@ -338,7 +338,7 @@ Ipv6AddressGeneratorImpl::NextAddress (const Ipv6Prefix prefix)
     }
   Ipv6Address addr = Ipv6Address (ad);
 
-  for (uint8_t j = 15; j >= 0; j--)
+  for (int32_t j = 15; j >= 0; j--)
     {
       if (m_netTable[index].addr[j] < 0xff)
         {
