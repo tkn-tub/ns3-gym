@@ -56,7 +56,7 @@ enum RouteFlags
 class RoutingTableEntry
 {
 public:
-  // / c-tor
+  /// c-tor
   RoutingTableEntry (Ptr<NetDevice> dev = 0, Ipv4Address dst = Ipv4Address (), u_int32_t m_seqNo = 0,
                      Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), u_int32_t hops = 0, Ipv4Address nextHop = Ipv4Address (),
                      Time lifetime = Simulator::Now (), Time SettlingTime = Simulator::Now (), bool changedEntries = false);
@@ -180,11 +180,11 @@ public:
   Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
-  // /\name Fields
+  ///\name Fields
   // \{
-  // / Destination Sequence Number
+  /// Destination Sequence Number
   uint32_t m_seqNo;
-  // / Hop Count (number of hops needed to reach destination)
+  /// Hop Count (number of hops needed to reach destination)
   uint32_t m_hops;
   /**
    * \brief Expiration or deletion time of the route
@@ -200,16 +200,16 @@ private:
    *   - output device
    */
   Ptr<Ipv4Route> m_ipv4Route;
-  // / Output interface address
+  /// Output interface address
   Ipv4InterfaceAddress m_iface;
-  // / Routing flags: valid, invalid or in search
+  /// Routing flags: valid, invalid or in search
   RouteFlags m_flag;
-  // / Time for which the node retains an update with changed metric before broadcasting it.
-  // / A node does that in hope of receiving a better update.
+  /// Time for which the node retains an update with changed metric before broadcasting it.
+  /// A node does that in hope of receiving a better update.
   Time m_settlingTime;
-  // / Flag to show if any of the routing table entries were changed with the routing update.
+  /// Flag to show if any of the routing table entries were changed with the routing update.
   uint32_t m_entriesChanged;
-  // \}
+  //\}
 };
 
 /**
@@ -219,7 +219,7 @@ private:
 class RoutingTable
 {
 public:
-  // / c-tor
+  /// c-tor
   RoutingTable ();
   /**
    * Add routing table entry if it doesn't yet exist in routing table
@@ -247,14 +247,14 @@ public:
   LookupRoute (Ipv4Address id, RoutingTableEntry & rt, bool forRouteInput);
   /**
    * Updating the routing Table with routing table entry rt
-   * \param routing table entry rt
+   * \param rt routing table entry
    * \return true on success
    */
   bool
   Update (RoutingTableEntry & rt);
   /**
    * Lookup list of addresses for which nxtHp is the next Hop address
-   * \param nexthop's address for which we want the list of destinations
+   * \param nxtHp nexthop's address for which we want the list of destinations
    * \param dstList is the list that will hold all these destination addresses
    */
   void
@@ -265,35 +265,35 @@ public:
    */
   void
   GetListOfAllRoutes (std::map<Ipv4Address, RoutingTableEntry> & allRoutes);
-  // / Delete all route from interface with address iface
+  /// Delete all route from interface with address iface
   void
   DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface);
-  // / Delete all entries from routing table
+  /// Delete all entries from routing table
   void
   Clear ()
   {
     m_ipv4AddressEntry.clear ();
   }
-  // / Delete all outdated entries if Lifetime is expired
+  /// Delete all outdated entries if Lifetime is expired
   void
   Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses);
-  // / Print routing table
+  /// Print routing table
   void
   Print (Ptr<OutputStreamWrapper> stream) const;
-  // / Provides the number of routes present in that nodes routing table.
+  /// Provides the number of routes present in that nodes routing table.
   uint32_t
   RoutingTableSize ();
   /**
   * Add an event for a destination address so that the update to for that destination is sent
   * after the event is completed.
-  * \param destination address for which this event is running.
-  * \param unique eventid that was generated.
+  * \param address destination address for which this event is running.
+  * \param id unique eventid that was generated.
   */
   bool
-  AddIpv4Event (Ipv4Address, EventId);
+  AddIpv4Event (Ipv4Address address, EventId id);
   /**
   * Clear up the entry from the map after the event is completed
-  * \param destination address for which this event is running.
+  * \param address destination address for which this event is running.
   * \return true on success
   */
   bool
@@ -301,7 +301,7 @@ public:
   /**
   * Force delete an update waiting for settling time to complete as a better update to
   * same destination was received.
-  * \param destination address for which this event is running.
+  * \param address destination address for which this event is running.
   * \return true on success
   */
   bool
@@ -309,19 +309,19 @@ public:
   /**
   * Force delete an update waiting for settling time to complete as a better update to
   * same destination was received.
-  * \param destination address for which this event is running.
+  * \param address destination address for which this event is running.
   * \return true on finding out that an event is already running for that destination address.
   */
   bool
   ForceDeleteIpv4Event (Ipv4Address address);
   /**
     * Get the EcentId associated with that address.
-    * \param destination address for which this event is running.
+    * \param address destination address for which this event is running.
     * \return EventId on finding out an event is associated else return NULL.
     */
   EventId
   GetEventId (Ipv4Address address);
-  // /\name Handle life time of invalid route
+  ///\name Handle life time of invalid route
   // \{
   Time Getholddowntime () const
   {
@@ -334,13 +334,13 @@ public:
   // \}
 
 private:
-  // /\name Fields
+  ///\name Fields
   // \{
-  // / an entry in the routing table.
+  /// an entry in the routing table.
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
-  // / an entry in the event table.
+  /// an entry in the event table.
   std::map<Ipv4Address, EventId> m_ipv4Events;
-  // /
+  ///
   Time m_holddownTime;
   // \}
 };

@@ -136,7 +136,7 @@ NscTcpSocketImpl::~NscTcpSocketImpl ()
        * when DeAllocate is called, it will call into
        * Ipv4EndPointDemux::Deallocate which triggers
        * a delete of the associated endPoint which triggers
-       * in turn a call to the method ::Destroy below
+       * in turn a call to the method NscTcpSocketImpl::Destroy below
        * will will zero the m_endPoint field.
        */
       NS_ASSERT (m_endPoint != 0);

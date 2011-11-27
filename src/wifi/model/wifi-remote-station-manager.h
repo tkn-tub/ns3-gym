@@ -64,17 +64,17 @@ private:
    * because it resets time of last update.
    */
   double CalculateAveragingCoefficient ();
-  ///averaging coefficient depends on the memory time
+  /// averaging coefficient depends on the memory time
   Time m_memoryTime;
-  ///when last update has occured
+  /// when last update has occured
   Time m_lastUpdate;
   /// moving percentage of failed frames
   double m_failAvg;
 };
 
 /**
- * \brief hold a list of per-remote-station state.
  * \ingroup wifi
+ * \brief hold a list of per-remote-station state.
  *
  * \sa ns3::WifiRemoteStation.
  */

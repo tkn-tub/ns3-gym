@@ -188,8 +188,8 @@ public:
 
   NetDeviceContainer Install (NodeContainer c) const;
   /**
-   * \param channel a channel to use
    * \param c a set of nodes
+   * \param channel a channel to use
    *
    * For each of the input nodes, a new ns3::UanNetDevice is attached
    * to the shared input channel. Each ns3::UanNetDevice is also
@@ -202,6 +202,7 @@ public:
 
   /**
    * \param node a node where to install the uan components
+   * \param channel a channel to use
    *
    * Create a default uan stack with:
    * - default channel, ideal propagation and default noise model

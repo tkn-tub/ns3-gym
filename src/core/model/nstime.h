@@ -359,6 +359,7 @@ public:
   }
   /**
    * \param timeUnit the unit of the value to return
+   * \return int64_t time value
    *
    * Convert the input time into an integer value according to the requested
    * time unit.
@@ -390,6 +391,7 @@ public:
   }
   /**
    * \param timeUnit the unit of the value to return
+   * \return double time value
    *
    * Convert the input time into a floating point value according to the requested
    * time unit.

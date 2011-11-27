@@ -168,9 +168,10 @@ private:
  * were serialized in the byte buffer. The maintenance of metadata is
  * optional and disabled by default. To enable it, you must call
  * Packet::EnablePrinting and this will allow you to get non-empty
- * output from Packet::Print and Packet::Print. If you wish to only enable
+ * output from Packet::Print. If you wish to only enable
  * checking of metadata, and do not need any printing capability, you can
- * call Packet::EnableChecking: its runtime cost is lower than Packet::EnablePrinting.
+ * call Packet::EnableChecking: its runtime cost is lower than
+ * Packet::EnablePrinting.
  *
  * - The set of tags contain simulation-specific information which cannot
  * be stored in the packet byte buffer because the protocol headers or trailers
@@ -415,7 +416,7 @@ public:
   /**
    * By default, packets do not keep around enough metadata to
    * perform the operations requested by the Print methods. If you
-   * want to be able to invoke any of the two ::Print methods, 
+   * want to be able the Packet::Print method, 
    * you need to invoke this method at least once during the 
    * simulation setup and before any packet is created.
    */
