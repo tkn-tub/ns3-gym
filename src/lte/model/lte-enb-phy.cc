@@ -397,8 +397,6 @@ LteEnbPhy::StartSubFrame (void)
     }
 
   // trigger the MAC
-  Ptr<LteEnbMac> macEntity = GetDevice ()->GetObject<LteEnbNetDevice> ()->GetMac ();
-
   m_enbPhySapUser->SubframeIndication (m_nrFrames, m_nrSubFrames);
 
 
