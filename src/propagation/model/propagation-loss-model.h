@@ -27,7 +27,6 @@
 
 #include "ns3/object.h"
 #include "ns3/random-variable.h"
-#include "ns3/mobility-model.h"
 #include <map>
 
 namespace ns3 {
@@ -36,6 +35,8 @@ namespace ns3 {
  * \defgroup propagation Propagation Models
  *
  */
+
+class MobilityModel;
 
 /**
  * \ingroup propagation
