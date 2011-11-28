@@ -23,7 +23,7 @@
  * Brief description: Implementation of a ns2 movement trace file reader.
  *
  * This implementation is based on the ns2 movement documentation of ns2
- * as described in http://www.isi.edu/nsnam/ns/doc/node174.html
+ * as described in http://www.isi.edu/nsnam/ns/doc/node172.html
  *
  * Valid trace files use the following ns2 statements:
  *
