@@ -539,8 +539,24 @@ LenaHelper::EnableLogComponents (void)
   std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
  
   const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
-  LogComponentEnable (propModel, LOG_LEVEL_ALL);
-  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+  if (propModelStr.compare ("RandomPropagationLossModel") ||
+    propModelStr.compare ("FriisPropagationLossModel")||
+    propModelStr.compare ("TwoRayGroundPropagationLossModel")||
+    propModelStr.compare ("LogDistancePropagationLossModel")||
+    propModelStr.compare ("ThreeLogDistancePropagationLossModel")||
+    propModelStr.compare ("NakagamiPropagationLossModel")||
+    propModelStr.compare ("FixedRssLossModel")||
+    propModelStr.compare ("MatrixPropagationLossModel")||
+    propModelStr.compare ("RangePropagationLossModel"))
+    {
+      LogComponentEnable ("PropagationLossModel", LOG_LEVEL_ALL);
+    }
+  else
+    {
+      LogComponentEnable (propModel, LOG_LEVEL_ALL);
+    }
+    
+  if (m_fadingModelType.compare ("ns3::TraceFadingLossModel") == 0)
     {
       const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
       LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
