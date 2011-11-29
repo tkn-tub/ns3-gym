@@ -187,9 +187,7 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
   if (p->FindFirstMatchingByteTag (pdcpTag))
     {
       delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
-      NS_LOG_FUNCTION (this << delay.GetNanoSeconds () << Simulator::Now () << pdcpTag.GetSenderTimestamp ());
     }
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << Simulator::Now () << delay.GetNanoSeconds ());
   m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
 
   LtePdcpHeader pdcpHeader;
