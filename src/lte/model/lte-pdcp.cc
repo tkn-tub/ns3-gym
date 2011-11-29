@@ -163,15 +163,16 @@ LtePdcp::DoTransmitRrcPdu (Ptr<Packet> p)
   NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
   p->AddHeader (pdcpHeader);
 
+  // Sender timestamp
   PdcpTag pdcpTag (Simulator::Now ());
-  p->AddPacketTag (pdcpTag);
+  p->AddByteTag (pdcpTag);
+  m_txPdu (m_rnti, m_lcid, p->GetSize ());
 
   LteRlcSapProvider::TransmitPdcpPduParameters params;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.pdcpPdu = p;
 
-  m_txPdu (m_rnti, m_lcid, p->GetSize ());
   m_rlcSapProvider->TransmitPdcpPdu (params);
 }
 
@@ -180,33 +181,30 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
 
-  LtePdcpHeader pdcpHeader;
-  p->RemoveHeader (pdcpHeader);
-  NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
-
+  // Receiver timestamp
   PdcpTag pdcpTag;
   Time delay;
-  if (p->FindFirstMatchingByteTag(pdcpTag))
+  if (p->FindFirstMatchingByteTag (pdcpTag))
     {
       delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
     }
-  else
-    {
-      NS_LOG_WARN (this << " could not find PdcpTag");
-    }
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
+
+  LtePdcpHeader pdcpHeader;
+  p->RemoveHeader (pdcpHeader);
+  NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
 
   m_rxSequenceNumber = pdcpHeader.GetSequenceNumber () + 1;
   if (m_rxSequenceNumber > m_maxPdcpSn)
     {
       m_rxSequenceNumber = 0;
     }
-  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
+
   LtePdcpSapUser::ReceiveRrcPduParameters params;
   params.rrcPdu = p;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   m_pdcpSapUser->ReceiveRrcPdu (params);
-
 }
 
 void
