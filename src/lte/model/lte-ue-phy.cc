@@ -491,6 +491,9 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       m_uplinkSpectrumPhy->StartTx (pb);
     }
+    
+  // trigger the MAC
+  m_uePhySapUser->SubframeIndication (frameNo, subframeNo);
 
 }
 

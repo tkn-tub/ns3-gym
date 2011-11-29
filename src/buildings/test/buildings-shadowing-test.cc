@@ -135,6 +135,7 @@ BuildingsShadowingTestCase::DoRun (void)
   NS_LOG_INFO ("Mean from simulation " << mean << ", sigma " << sigma << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
 
   NS_TEST_ASSERT_MSG_EQ_TOL (fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
+  Simulator::Destroy ();
 }
 
 

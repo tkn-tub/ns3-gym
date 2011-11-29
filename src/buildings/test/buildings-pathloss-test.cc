@@ -203,6 +203,7 @@ BuildingsPathlossTestCase::DoRun (void)
   NS_LOG_INFO ("Theoretical loss: " << m_lossRef);
  
   NS_TEST_ASSERT_MSG_EQ_TOL (loss, m_lossRef, 0.1, "Wrong loss !");
+  Simulator::Destroy ();
 }
 
 Ptr<MobilityModel>

@@ -56,7 +56,7 @@ main (int argc, char *argv[])
   Ptr<LenaHelper> lteHelper = CreateObject<LenaHelper> ();
   Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
-  //lteHelper->SetSchedulerType("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerType("ns3::RrFfMacScheduler");
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults();
