@@ -292,7 +292,6 @@ LteUplinkSinrTestCase::DoRun (void)
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   /**
    * Check that the values passed to LteSinrChunkProcessor::EvaluateSinrChunk () correspond
@@ -304,4 +303,7 @@ LteUplinkSinrTestCase::DoRun (void)
   NS_LOG_INFO ("Calculated SINR: " << calculatedSinr);
   
   NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL (calculatedSinr, *m_sinr, 0.0000001, "Wrong SINR !");
+  ulPhy->Dispose ();
+  Simulator::Destroy ();
+  
 }
