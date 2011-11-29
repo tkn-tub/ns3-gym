@@ -156,6 +156,9 @@ public:
 
   void Start ();
 
+private:
+  void ReportBufferStatus ();
+
 };
 
 
