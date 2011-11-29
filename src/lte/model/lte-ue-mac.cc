@@ -407,7 +407,7 @@ void
 LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   NS_LOG_FUNCTION (this);
-  if (Simulator::Now () > m_bsrLast + m_bsrPeriodicity)
+  if (Simulator::Now () >= m_bsrLast + m_bsrPeriodicity)
     {
       SendReportBufferStatus ();
       m_bsrLast = Simulator::Now ();
