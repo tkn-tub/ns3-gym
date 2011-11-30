@@ -25,18 +25,15 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 //#include "ns3/gtk-config-store.h"
+
+
 using namespace ns3;
 
 int main (int argc, char *argv[])
-{	
+{
+  // Command line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
-	
-  // to save a template default attribute file run it like this:
-  // ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=RawText" --run src/lte/examples/lena-first-sim
-  //
-  // to load a previously created default attribute file
-  // ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Load --ns3::ConfigStore::FileFormat=RawText" --run src/lte/examples/lena-first-sim
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
@@ -46,34 +43,27 @@ int main (int argc, char *argv[])
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  // Enable LTE log components
   //lena->EnableLogComponents ();
+  lena->EnableRlcTraces();
 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
- 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
-  ueNodes.Create (1);
+  ueNodes.Create (3);
 
   // Install Mobility Model
   MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  //lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);
 
@@ -85,14 +75,28 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
 
+  Simulator::Stop (Seconds (2));
 
-  Simulator::Stop (Seconds (0.005));
+  lena->EnableMacTraces ();
+  lena->EnableRlcTraces ();
+
+
+  double distance_temp [] = { 10000,10000,10000};
+  std::vector<double> userDistance;
+  userDistance.assign (distance_temp, distance_temp + 3);
+  for (int i = 0; i < 3; i++)
+    {
+      Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get (i)->GetObject<ConstantPositionMobilityModel> ();
+      mm->SetPosition (Vector (userDistance[i], 0.0, 0.0));
+    } 
 
   Simulator::Run ();
 
-  //GtkConfigStore config;
-  //config.ConfigureAttributes ();
+  // Uncomment to show available paths
+  /*GtkConfigStore config;
+  config.ConfigureAttributes ();*/
 
   Simulator::Destroy ();
+
   return 0;
 }

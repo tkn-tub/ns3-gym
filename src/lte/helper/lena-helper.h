@@ -189,6 +189,11 @@ public:
   void EnableLogComponents (void);
 
   /**
+   * Enables trace sinks for MAC, RLC and PDCP
+   */
+  void EnableTraces (void);
+
+  /**
    * Enable trace sinks for MAC layer
    */
   void EnableMacTraces (void);

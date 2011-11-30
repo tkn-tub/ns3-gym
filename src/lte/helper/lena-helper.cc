@@ -525,6 +525,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcUm", LOG_LEVEL_ALL);
   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
@@ -537,7 +538,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
   std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
- 
+/*
   const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
   if (propModelStr.compare ("RandomPropagationLossModel") ||
     propModelStr.compare ("FriisPropagationLossModel")||
@@ -562,7 +563,7 @@ LenaHelper::EnableLogComponents (void)
       LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
     }
   LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
-
+*/
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
@@ -571,7 +572,13 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
 }
 
-
+void
+LenaHelper::EnableTraces (void)
+{
+  EnableMacTraces ();
+  EnableRlcTraces ();
+  EnablePdcpTraces ();
+}
 
 void
 LenaHelper::EnableRlcTraces (void)
@@ -579,9 +586,6 @@ LenaHelper::EnableRlcTraces (void)
   EnableDlRlcTraces ();
   EnableUlRlcTraces ();
 }
-
-
-
 
 uint64_t
 FindImsiFromEnbRlcPath (std::string path)
@@ -634,7 +638,7 @@ FindImsiFromUeRlcPath (std::string path)
 {
   NS_LOG_FUNCTION (path);
   // Sample path input:
-  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RlcMap/#LCID/RxPDU
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RadioBearer/#LCID/RxPDU
 
   // We retrieve the LteUeNetDevice path
   std::string lteUeNetDevicePath = path.substr (0, path.find ("/LteUeRrc"));
@@ -822,7 +826,7 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
 void
 LenaHelper::EnableUlRlcTraces (void)
 {
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback (&UlRxPduCallback, m_rlcStats));

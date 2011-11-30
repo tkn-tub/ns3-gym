@@ -31,21 +31,23 @@
 #include "ns3/config-store.h"
 //#include "ns3/gtk-config-store.h"
 
+using namespace ns3;
+
 /**
  * Sample simulation script for LTE+EPC. It instantiates several eNodeB,
  * attaches one UE per eNodeB starts a flow for each UE to  and from a remote host.
  * It also  starts yet another flow between each UE pair.
  */
-
-using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
 int
 main (int argc, char *argv[])
 {
 
   uint16_t numberOfNodes = 2;
-  uint32_t simTime = 4;
-  double distance = 10.0;
+  uint32_t simTime = 5;
+  double distance = 60.0;
+  // Inter packet interval in ms
+  double interPacketInterval = 1;
 
   // Command line arguments
   CommandLine cmd;
@@ -146,8 +148,14 @@ main (int argc, char *argv[])
       serverApps = ulPacketSinkHelper.Install (remoteHost);
       serverApps = packetSinkHelper.Install (ueNodes.Get(u));
       UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort);
+      dlClient.SetAttribute ("Interval", TimeValue (MilliSeconds(interPacketInterval)));
+      dlClient.SetAttribute ("MaxPackets", UintegerValue(1000000));
       UdpClientHelper ulClient (remoteHostAddr, ulPort);
+      ulClient.SetAttribute ("Interval", TimeValue (MilliSeconds(interPacketInterval)));
+      ulClient.SetAttribute ("MaxPackets", UintegerValue(1000000));
       UdpClientHelper client (ueIpIface.GetAddress (u), otherPort);
+      client.SetAttribute ("Interval", TimeValue (MilliSeconds(interPacketInterval)));
+      client.SetAttribute ("MaxPackets", UintegerValue(1000000));
       clientApps = dlClient.Install (remoteHost);
       clientApps = ulClient.Install (ueNodes.Get(u));
       if (u+1 < ueNodes.GetN ())
@@ -162,9 +170,9 @@ main (int argc, char *argv[])
     }
   serverApps.Start (Seconds (0.01));
   clientApps.Start (Seconds (0.01));
-
-  // Enable PCAP tracing
-  p2ph.EnablePcapAll("lena-epc-first");
+  lteHelper->EnableTraces ();
+  // Uncomment to enable PCAP tracing
+  //p2ph.EnablePcapAll("lena-epc-first");
 
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();
