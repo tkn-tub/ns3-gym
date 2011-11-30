@@ -6,9 +6,9 @@
 ++++++++++++++++++++++++++
 
 
-
+---------------
 Design Criteria
-~~~~~~~~~~~~~~~
+---------------
 
 
 The LTE module has been designed to support the evaluation of the following aspects of LTE systems:  
@@ -57,7 +57,7 @@ have been considered:
     simulator, we make it possible for LTE equipment vendors and
     operators to test in a simulative environment exactly the same
     algorithms that would be deployed in a real system.  
-#.  The LTE simulation module should contain its own implementation of
+ #. The LTE simulation module should contain its own implementation of
     the API defined in [FFAPI]_. Neither
     binary nor data structure compatibility with vendor-specific implementations
     of the same interface are expected; hence, a compatibility layer should be
@@ -68,7 +68,9 @@ have been considered:
     specification only, and its implementation (e.g., translation to some specific
     programming language) is left to the vendors. 
 
-
+----------------
+LTE Architecture
+----------------
 
 The overall architecture of the LTE module is represented in the following figures.
 
@@ -95,8 +97,61 @@ important components are provided in the following sections.
 
 
 
+.. _fig-lte-arch-data-rrc-pdcp-rlc:
+   
+.. figure:: figures/lte-arch-data-rrc-pdcp-rlc.*
+   :align: center
+
+   Architecture of the data plane showing the RRC, PDCP and RLC protocols
+
+
+----------------
+EPC Architecture
+----------------
+
+
+We focus on the simplified EPC model which is represented in the figure :ref:`fig-epc-topology`. The main modeling assumptions are:
+
+ * Only IPv4 is considered
+ * Only the EPC data plane is considered in detail. 
+ * The EPC control plane is not modeled explicitly. The control plane funcionality that is needed for the purpose of the simulation (e.g., UE attach and bearer setup procedures) are implemented by direct interaction among simulation objects performed via ns-3 helpers.
+
+
+.. _fig-epc-topology:
+   
+.. figure:: figures/epc-topology.*
+   :align: center
+
+   The simplified EPC network topology considered
+
+
+
+.. _fig-epc-data-flow-dl:
+   
+.. figure:: figures/epc-data-flow-dl.*
+   :align: center
+
+   Data flow in the dowlink between the internet and the UE
+
+
+.. _fig-epc-data-flow-ul:
+   
+.. figure:: figures/epc-data-flow-ul.*
+   :align: center
+
+   Data flow in the uplink between the UE and the internet
+
+
+
+-----------------------------
 Description of the components
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------
+
+
+
+~~~
+MAC 
+~~~
   
 
 The FemtoForum MAC Scheduler Interface
@@ -325,12 +380,53 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
    
 
 
+~~~
+RLC
+~~~
+
+..  .. include:: lte-rlc-design.rst
+
+
+
 
 RRC and RLC Models
-++++++++++++++++++++++++++++++
+++++++++++++++++++
 
-At the time of this writing, the RRC and the RLC models implemented in the simulator are not comprehensive of all the funcionalities defined
-by the 3GPP standard. The RRC mainly includes the procedures for managing the connection of the UEs to the eNBs, and to setup and release the Radio Bearers. The RLC model takes care of the generation of RLC PDUs in response to the notification of transmission opportunities, which are notified by the scheduler using the primitives specified in~\cite{ffapi}. The current RLC implementation simulates saturation conditions, i.e., it assumes that the RLC buffer is always full and can generate a new PDU whenever notified by the scheduler. We note that, although this is an unrealistic traffic model, it still allows for the correct simulation of scenarios with flow belonging to different QoS classes in order to test the QoS performance obtained by different schedulers. This can be done since it is the task of the Scheduler to assign transmission resources based on the characteristics of each Radio Bearer which are specified upon the creation of each Bearer at the start of the simulation.
+The RLC model takes care of the generation of RLC PDUs in response to the notification of transmission opportunities, which are notified by the scheduler using the primitives specified in~\cite{ffapi}. The current RLC implementation simulates saturation conditions, i.e., it assumes that the RLC buffer is always full and can generate a new PDU whenever notified by the scheduler. We note that, although this is an unrealistic traffic model, it still allows for the correct simulation of scenarios with flow belonging to different QoS classes in order to test the QoS performance obtained by different schedulers. This can be done since it is the task of the Scheduler to assign transmission resources based on the characteristics of each Radio Bearer which are specified upon the creation of each Bearer at the start of the simulation.
+
+~~~
+RRC
+~~~
+
+At the time of this writing, the RRC model implemented in the
+simulator is not comprehensive of all the funcionalities defined  
+by the 3GPP standard. The RRC mainly includes the procedures for
+managing the connection of the UEs to the eNBs, and to setup and
+release the Radio Bearers. The RRC entity also takes care of multiplexing
+data packets coming from the upper layers into the appropriate radio
+bearer. In the UE, this is performed in the uplink by using the
+Traffic Flow Template classifier (TftClassifier). In the eNB, this is
+done for downlink traffic, by leveraging on the one-to-one mapping
+between S1-U bearers and Radio Bearers, which is required by the 3GPP
+specifications. 
+
+
+~~~
+PHY
+~~~
+
+
+Overview
+++++++++
+
+The physical layer model provided in this LTE simulator is based on
+the one described in [Piro2011]_, with the following modifications.  The model now includes the 
+inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. Regarding CQIs in particular, their evaluation
+has been refined to comply with the scheduler interface specification [FFAPI]_. In detail, we considered the generation 
+of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
+in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
+
+
 
 LTE Spectrum Model
 ++++++++++++++++++
@@ -357,76 +453,31 @@ discussed in [Ofcom2.6GHz]_.
 .. [4] 3GPP R1-081483 (available `here <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_ )
 
 
-Physical layer
-++++++++++++++
-
-The physical layer model provided in this LTE simulator is based on
-the one described in [Piro2011]_, with the following modifications.  The model now includes the 
-inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. Regarding CQIs in particular, their evaluation
-has been refined to comply with the scheduler interface specification [FFAPI]_. In detail, we considered the generation 
-of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
-in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
 
 
+~~~~~~~
+Channel
+~~~~~~~
 
-Evolved Packet Core (EPC)
-+++++++++++++++++++++++++
 
-.. include:: epc-design.rst
+The LTE module works with the channel objects provided by the Spectrum module, i.e., either SingleModelSpectrumChannel or MultiModelSpectrumChannel. Because of these, all the propagation models supported by these objecs can be used within the LTE module.
 
 
 
+Use of the Buildings model with LTE
++++++++++++++++++++++++++++++++++++
 
-Sequence Diagrams
-~~~~~~~~~~~~~~~~~
+The recommended propagation model to be used with the LTE
+module is the one provided by the Buildings module, which was in fact
+designed specifically with LTE (though it can be used with other
+wireless technologies as well). Please refer to the documentation of
+the Buildings module for generic information on the propagation model
+it provides. 
 
-In this section we provide some sequence diagram that illustrate some important interactions among the components of the LTE module.
+In this section we will highlight some considerations that
+specifically apply when the Buildings module is used together with the
+LTE module.
 
-
-Physical Layer
-++++++++++++++
-
-TODO: add diagram showing interference calculation
-
-
-RLC buffer status report
-++++++++++++++++++++++++
-
-These sequence diagrams represent how the RLC buffer status is updated in the different cases of the downlink and the uplink.
-
-For the downlink:
-
-.. seqdiag:: rlc_buffer_status_report_downlink.seqdiag
-
-
-For the uplink:
-
-.. seqdiag:: rlc_buffer_status_report_uplink.seqdiag
-
-
-Helpers
-+++++++
-
-
-.. seqdiag:: helpers.seqdiag
-
-A few notes on the above diagram:
-
-  * the role of the MME is taken by the EpcHelper, since we don't have
-    an MME at the moment (the current code supports data plane only);
-
-  * in a real LTE/EPC system, the setup of the RadioBearer comes after
-    the setup of the S1 bearer, but here due to the use of Helpers
-    instead of S1-AP messages we do it the other way around
-    (RadioBearers first, then S1 bearer) because of easier
-    implementation. This is fine to do since the current code focuses
-    on control plane only.
-
-
-
-
-Propagation Models
-++++++++++++++++++
 
 The naming convention used in the following will be:
 
@@ -448,35 +499,34 @@ The LTE model does not provide the following pathloss computations:
   * SC <-> SC
 
 
-Supported models
-----------------
+The Buildings model does not know the actual type of the node; i.e.,
+it is not aware of whether a transmitter node is a UE, a MBS, or a
+SC. Rather, the Buildings model only cares about the position of the
+node: whether it is indoor and outdoor, and what is its z-axis respect
+to the rooftop level. As a consequence, for an eNB node that is placed
+outdoor and at a z-coordinate above the rooftop level, the propagation
+models typical of MBS will be used by the Buildings
+module. Conversely, for an eNB that is placed outdoor but below the
+rooftop,  or indoor, the propagation models typical of pico and
+femtocells will be used.  
 
-The LTE module works with the channel objects provided by the Spectrum module, i.e., either SingleModelSpectrumChannel or MultiModelSpectrumChannel. Because of these, all the propagation models supported by these objecs can be used within the LTE module.
-
-Still, the recommended propagation model to be used with the LTE module is the one provided by the Buildings module, which was in fact designed specifically with LTE (though it can be used with other wireless technologies as well). Please refer to the documentation of the Buildings module for generic information on the propagation model it provides. 
-
-
-Use of the Buildings model with LTE
------------------------------------
-
-In this section we will highlight some considerations that specifically apply when the Buildings module is used together with the LTE module.
-
-The Buildings model does not know the actual type of the node; i.e., it is not aware of whether a transmitter node is a UE, a MBS, or a SC. Rather, the Buildings model only cares about the position of the node: whether it is indoor and outdoor, and what is its z-axis respect to the rooftop level. As a consequence, for an eNB node that is placed outdoor and at a z-coordinate above the rooftop level, the propagation models typical of MBS will be used by the Buildings module. Conversely, for an eNB that is placed outdoor but below the rooftop,  or indoor, the propagation models typical of pico and femtocells will be used. 
-
-For communications involving at least one indoor node, the corresponding wall penetration losses will be calculated by the Buildings model. This covers the following use cases:
+For communications involving at least one indoor node, the
+corresponding wall penetration losses will be calculated by the
+Buildings model. This covers the following use cases: 
  
  * MBS <-> indoor UE
  * outdoor SC <-> indoor UE
  * indoor SC <-> indoor UE
  * indoor SC <-> outdoor UE
 
-Please refer to the documentation of the Buildings module for details on the actual models used in each case.
+Please refer to the documentation of the Buildings module for details
+on the actual models used in each case. 
 
 
-Trace Fading Model
-++++++++++++++++++
+Fading Model
+++++++++++++
 
-The fading model is based on the one developed during the GSoC 2010 [Piro2011]_. The main characteristic of this model is the fact that the fading evaluation during simulation run-time is based on per-calculated traces. This is done for limiting the computational complexity of the simulator. On the other hand, it needs huge structures for storing the traces; therefore, a trade-off between the number of possible parameters and the memory occupancy has to be found. The most important ones are:
+The LTE module includes a trace-based fading model derived from the one developed during the GSoC 2010 [Piro2011]_. The main characteristic of this model is the fact that the fading evaluation during simulation run-time is based on per-calculated traces. This is done to limit the computational complexity of the simulator. On the other hand, it needs huge structures for storing the traces; therefore, a trade-off between the number of possible parameters and the memory occupancy has to be found. The most important ones are:
 
  * users' speed: relative speed between users (affects the Doppler frequency, which in turns affects the time-variance property of the fading)
  * number of taps (and relative power): number of multiple paths considered, which affects the frequency property of the fading.
@@ -516,5 +566,79 @@ where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of 
  * Urban: with nodes' speed of 3 kmph.
 
 hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
+
+
+~~~~~~~
+Helpers
+~~~~~~~
+
+Two helper objects are use to setup simulations and configure the
+variosu components. These objects are:
+
+
+ * LenaHelper, which takes care of the configuration of the LTE radio
+   access network, as well as of coordinating the setup and release of
+   EPS bearers 
+ * EpcHelper, which takes care of the configuratio of the Evolved
+   Packet Core
+
+It is possible to create a simple LTE-only simulations by
+using LenaHelper alone, or to create complete LTE-EPC simulations by
+using both LenaHelper and EpcHelper. When both helpers are used, they
+interact in a master-slave fashion, with LenaHelper being the Master
+that interacts directly with the user program, and EpcHelper working
+"under the hood" to configure the EPC upon explicit methods called by
+LenaHelper. The exact interactions are displayed in the following diagram:
+
+.. seqdiag:: helpers.seqdiag
+
+A few notes on the above diagram:
+
+  * the role of the MME is taken by the EpcHelper, since we don't have
+    an MME at the moment (the current code supports data plane only);
+
+  * in a real LTE/EPC system, the setup of the RadioBearer comes after
+    the setup of the S1 bearer, but here due to the use of Helpers
+    instead of S1-AP messages we do it the other way around
+    (RadioBearers first, then S1 bearer) because of easier
+    implementation. This is fine to do since the current code focuses
+    on control plane only.
+
+
+
+
+~~~~~~~~~~~~~~~~~
+Sequence Diagrams
+~~~~~~~~~~~~~~~~~
+
+In this section we provide some sequence diagram that illustrate some important interactions among the components of the LTE module.
+
+
+Physical Layer
+++++++++++++++
+
+TODO: add diagram showing interference calculation
+
+
+RLC buffer status report
+++++++++++++++++++++++++
+
+These sequence diagrams represent how the RLC buffer status is updated in the different cases of the downlink and the uplink.
+
+For the downlink:
+
+.. seqdiag:: rlc_buffer_status_report_downlink.seqdiag
+
+
+For the uplink:
+
+.. seqdiag:: rlc_buffer_status_report_uplink.seqdiag
+
+
+
+
+Propagation Models
+++++++++++++++++++
+
 
 
