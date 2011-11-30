@@ -369,6 +369,13 @@ in use) and inband CQIs (i.e., a set of value representing the channel state for
 
 
 
+Evolved Packet Core (EPC)
++++++++++++++++++++++++++
+
+.. include:: epc-design.rst
+
+
+
 
 Sequence Diagrams
 ~~~~~~~~~~~~~~~~~

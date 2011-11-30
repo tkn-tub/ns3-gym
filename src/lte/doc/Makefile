@@ -28,7 +28,13 @@ GRAPHS_EPS = \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
-	$(FIGURES)/lte-rlc-data-retx-ul.eps
+	$(FIGURES)/lte-rlc-data-retx-ul.eps \
+	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-data-flow-dl.eps \
+	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps
+
+
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -47,7 +53,7 @@ $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 4in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
-	
+
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
 
 IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
