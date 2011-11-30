@@ -48,13 +48,10 @@ int main (int argc, char *argv[])
   //cmd.Parse (argc, argv);
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-
+  // Uncomment to enable logging
   //lena->EnableLogComponents ();
   
 
-  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("TraceFadingLossModel", LOG_LEVEL_ALL);
-  
   lena->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
   
   std::ifstream ifTraceFile;
@@ -97,8 +94,6 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  //lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);
 

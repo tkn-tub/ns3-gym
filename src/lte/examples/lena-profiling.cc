@@ -23,12 +23,11 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-//#include "ns3/gtk-config-store.h"
 #include <ns3/buildings-propagation-loss-model.h>
-
 #include <iomanip>
 #include <string>
 #include <vector>
+//#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 using std::vector;

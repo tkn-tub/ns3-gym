@@ -12,7 +12,7 @@ print FILE "#sTime\tnFloors\tnEnb\tnUe\trTime\trTDev\n";
 my @nUe = ( 1, 5, 10, 15, 20, 25, 30 );
 my @nEnb = ( 1, 2, 4, 6, 8, 12, 14, 18, 22 );
 my @nFloors = ( 0, 1 );
-my @simTime = ( 1, 5, 10, 20, 30, 40 );
+my @simTime = ( 1, 5);
 
 my $traceDirectory = ".";
 my $traceDirectory = getcwd() . "/"; 
@@ -28,7 +28,7 @@ foreach my $time (@simTime)
             my $timeStats = Statistics::Descriptive::Full->new();
             for ( my $iteration = 0 ; $iteration < $nIterations ; $iteration++ )
             {
-               my $launch = "time ./waf --run \'lena-runtime-profiler --simTime=$time --nUe=$ue --nEnb=$enb --nFloors=$floor --traceDirectory=$traceDirectory\'";
+               my $launch = "time ./waf --run \'lena-profiling --simTime=$time --nUe=$ue --nEnb=$enb --nFloors=$floor --traceDirectory=$traceDirectory\'";
                my $out, my $err;
                print "$launch\n";
                capture { system($launch ) } \$out, \$err;

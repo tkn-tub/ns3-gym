@@ -30,12 +30,107 @@
 #include <iomanip>
 #include <string>
 
+#include <ns3/log.h>
+
 using namespace ns3;
+
+
+NS_LOG_COMPONENT_DEFINE ("InterCellInterference");
+
+
+/**
+ * Store the last pathloss value for each TX-RX pair. This is an
+ * example of how the PathlossTrace (provided by some SpectrumChannel
+ * implementations) work. 
+ * 
+ */
+class GlobalPathlossDatabase
+{
+public:
+
+  /** 
+   * update the pathloss value
+   * 
+   * \param context 
+   * \param txPhy the transmitting PHY
+   * \param rxPhy the receiving PHY
+   * \param lossDb the loss in dB
+   */
+  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb) = 0;
+
+  /** 
+   * print the stored pathloss values to standard output
+   * 
+   */
+  void Print ();
+
+protected:
+
+  //        CELL ID            IMSI     PATHLOSS
+  std::map<uint16_t, std::map<uint64_t, double> > m_pathlossMap;
+};
+
+void 
+GlobalPathlossDatabase::Print ()
+{
+  NS_LOG_FUNCTION (this);
+  for (std::map<uint16_t, std::map<uint64_t, double> >::const_iterator cellIdIt = m_pathlossMap.begin ();
+       cellIdIt != m_pathlossMap.end ();
+       ++cellIdIt)
+    {
+      for (std::map<uint64_t, double>::const_iterator imsiIt = cellIdIt->second.begin ();
+           imsiIt != cellIdIt->second.end ();
+           ++imsiIt)
+        {
+          std::cout << "CellId: " << cellIdIt->first << " IMSI: " << imsiIt->first << " pathloss: " << imsiIt->second << " dB" << std::endl;
+        }
+    }
+}
+
+class DownlinkGlobalPathlossDatabase : public GlobalPathlossDatabase
+{
+public:
+  // inherited from GlobalPathlossDatabase
+  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
+};
+
+void
+DownlinkGlobalPathlossDatabase::UpdatePathloss (std::string context, 
+                                        Ptr<SpectrumPhy> txPhy, 
+                                        Ptr<SpectrumPhy> rxPhy, 
+                                        double lossDb)
+{
+  NS_LOG_FUNCTION (this << lossDb);
+  uint16_t cellId = txPhy->GetDevice ()->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  uint16_t imsi = rxPhy->GetDevice ()->GetObject<LteUeNetDevice> ()->GetImsi ();
+  m_pathlossMap[cellId][imsi] = lossDb;
+}
+
+
+class UplinkGlobalPathlossDatabase : public GlobalPathlossDatabase
+{
+public:
+  // inherited from GlobalPathlossDatabase
+  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
+};
+
+void
+UplinkGlobalPathlossDatabase::UpdatePathloss (std::string context, 
+                                        Ptr<SpectrumPhy> txPhy, 
+                                        Ptr<SpectrumPhy> rxPhy, 
+                                        double lossDb)
+{
+  NS_LOG_FUNCTION (this << lossDb);
+  uint16_t imsi = txPhy->GetDevice ()->GetObject<LteUeNetDevice> ()->GetImsi ();
+  uint16_t cellId = rxPhy->GetDevice ()->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  m_pathlossMap[cellId][imsi] = lossDb;
+}
+
 
 int main (int argc, char *argv[])
 {
-  double enbDist = 100.0;
-  double radius = 50.0;
+  double enbDist = 20.0;
+  double radius = 10.0;
   uint32_t numUes = 1;
 
 
@@ -64,8 +159,23 @@ int main (int argc, char *argv[])
        << "_rngRun"  << std::setw (3) << std::setfill ('0')  << runValue.Get () ;
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+
+
+  // NOTE: the PropagationLoss trace source of the SpectrumChannel
+  // works only for single-frequency path loss model.  
+  // e.g., it will work with the following models:
+  // ns3::FriisPropagationLossModel, 
+  // ns3::TwoRayGroundPropagationLossModel, 
+  // ns3::LogDistancePropagationLossModel,
+  // ns3::ThreeLogDistancePropagationLossModel, 
+  // ns3::NakagamiPropagationLossModel
+  // ns3::BuildingsPropagationLossModel
+  // etc.
+  // but it WON'T work if you ONLY use SpectrumPropagationLossModels such as:
+  // ns3::FriisSpectrumPropagationLossModel
+  // ns3::ConstantSpectrumPropagationLossModel
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::Cost231PropagationLossModel"));
   
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -101,8 +211,6 @@ int main (int argc, char *argv[])
   ue2mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   ue2mobility.Install (ueNodes2);
 
-
-
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs1;
@@ -121,7 +229,7 @@ int main (int argc, char *argv[])
   lena->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
   lena->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
 
-  Simulator::Stop (Seconds (10));
+  Simulator::Stop (Seconds (0.5));
 
   // Insert RLC Performance Calculator
   std::string dlOutFname = "DlRlcStats";
@@ -132,7 +240,28 @@ int main (int argc, char *argv[])
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
 
+
+
+  // keep track of all path loss values in a global object
+  DownlinkGlobalPathlossDatabase dlPathlossDb;
+  UplinkGlobalPathlossDatabase ulPathlossDb;
+  // we rely on the fact that LenaHelper creates the DL channel object first, then the UL channel object,
+  // hence the former will have index 0 and the latter 1
+  Config::Connect ("/ChannelList/0/PropagationLoss",
+                   MakeCallback (&DownlinkGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
+  Config::Connect ("/ChannelList/1/PropagationLoss",
+                    MakeCallback (&UplinkGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
+
   Simulator::Run ();
+
+
+  // print the pathloss values at the end of the simulation
+  std::cout << std::endl << "Downlink pathloss:" << std::endl;
+  dlPathlossDb.Print ();
+  std::cout << std::endl << "Uplink pathloss:" << std::endl;
+  ulPathlossDb.Print ();
+
+
   Simulator::Destroy ();
   return 0;
 }

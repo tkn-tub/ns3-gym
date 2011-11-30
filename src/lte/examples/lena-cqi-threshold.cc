@@ -25,10 +25,10 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 //#include "ns3/gtk-config-store.h"
+
 using namespace ns3;
 
 // position functions insipred by /examples/wireless/wifi-ap.cc
-
 static void
 SetPosition (Ptr<Node> node, Vector position)
 {
@@ -79,16 +79,9 @@ int main (int argc, char *argv[])
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  // Uncomment to enable logging
   //lena->EnableLogComponents ();
 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
- 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
