@@ -100,7 +100,7 @@ public:
 
   /**
    * \brief Check if AnimationInterface is initialized
-   * \returns true if AnimationInterface was already initiliazed
+   * \returns true if AnimationInterface was already initialized
    *
    */
   static bool IsInitialized (void);

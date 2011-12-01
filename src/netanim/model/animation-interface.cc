@@ -358,7 +358,7 @@ void AnimationInterface::StartAnimation ()
       std::ostringstream oss;
       oss << GetXMLOpen_anim (0);
       oss << GetPreamble ();
-      oss << GetXMLOpen_topology (topo_minX,topo_minY,topo_maxX,topo_maxY);
+      oss << GetXMLOpen_topology (topo_minX, topo_minY, topo_maxX, topo_maxY);
       WriteN (m_fHandle, oss.str ());
     }
   NS_LOG_INFO ("Setting topology for "<<NodeList::GetNNodes ()<<" Nodes");
@@ -370,7 +370,7 @@ void AnimationInterface::StartAnimation ()
       if (m_xml)
         {
           Vector v = GetPosition (n);
-          oss << GetXMLOpenClose_node (0,n->GetId (),v.x,v.y);
+          oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
 	  WriteN (m_fHandle, oss.str ());
         }
       else
@@ -951,8 +951,8 @@ void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mo
 bool AnimationInterface::NodeHasMoved (Ptr <Node> n, Vector newLocation)
 {
   Vector oldLocation = GetPosition (n);
-  if ((ceil(oldLocation.x) == ceil(newLocation.x)) &&
-    (ceil(oldLocation.y) == ceil(newLocation.y)))
+  if ((ceil (oldLocation.x) == ceil (newLocation.x)) &&
+    (ceil (oldLocation.y) == ceil (newLocation.y)))
     {
      
       return false;
@@ -967,13 +967,13 @@ void AnimationInterface::MobilityAutoCheck ()
 {
   std::vector <Ptr <Node> > MovedNodes = RecalcTopoBounds ();
   std::ostringstream oss;
-  oss << GetXMLOpen_topology (topo_minX,topo_minY,topo_maxX,topo_maxY);
+  oss << GetXMLOpen_topology (topo_minX, topo_minY, topo_maxX, topo_maxY);
   for (uint32_t i = 0; i < MovedNodes.size (); i++)
     {
       Ptr <Node> n = MovedNodes [i];
       NS_ASSERT (n);
       Vector v = GetPosition (n);
-      oss << GetXMLOpenClose_node (0,n->GetId (), v.x, v.y);
+      oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
     }
   oss << GetXMLClose ("topology");
   WriteN (m_fHandle, oss.str ());
