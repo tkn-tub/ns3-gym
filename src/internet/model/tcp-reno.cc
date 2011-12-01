@@ -40,6 +40,10 @@ TcpReno::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::TcpReno")
     .SetParent<TcpSocketBase> ()
     .AddConstructor<TcpReno> ()
+    .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
+                    UintegerValue (3),
+                    MakeUintegerAccessor (&TcpReno::m_retxThresh),
+                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpReno::m_cWnd))
@@ -141,7 +145,7 @@ void
 TcpReno::DupAck (const TcpHeader& t, uint32_t count)
 {
   NS_LOG_FUNCTION (this << "t " << count);
-  if (count == 3 && !m_inFastRec)
+  if (count == m_retxThresh && !m_inFastRec)
     { // triple duplicate ack triggers fast retransmit (RFC2581, sec.3.2)
       m_ssThresh = std::max (2 * m_segmentSize, BytesInFlight () / 2);
       m_cWnd = m_ssThresh + 3 * m_segmentSize;
@@ -166,8 +170,8 @@ void TcpReno::Retransmit (void)
 
   // If erroneous timeout in closed/timed-wait state, just return
   if (m_state == CLOSED || m_state == TIME_WAIT) return;
-  // If all data are received, just return
-  if (m_txBuffer.HeadSequence () >= m_nextTxSequence) return;
+  // If all data are received (non-closing socket and nothing to send), just return
+  if (m_state <= ESTABLISHED && m_txBuffer.HeadSequence () >= m_highTxMark) return;
 
   // According to RFC2581 sec.3.1, upon RTO, ssthresh is set to half of flight
   // size and cwnd is set to 1*MSS, then the lost packet is retransmitted and
