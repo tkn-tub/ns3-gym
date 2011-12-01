@@ -32,6 +32,7 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/ideal-control-messages.h>
 #include <ns3/simulator.h>
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUeMac");
@@ -53,7 +54,7 @@ int BufferSizeLevelBsr[64] = {
 };
 
 
-///////////////////////////////////////////////////////////
+//////////////////////////////////////////////BufferSizeLevelBsr/////////////
 // SAP forwarders
 ///////////////////////////////////////////////////////////
 
@@ -298,18 +299,7 @@ LteUeMac::SendReportBufferStatus (void)
   for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
     {
       int queue = (*it).second;
-      int index = 0;
-      if (BufferSizeLevelBsr[63] < queue)
-        {
-          index = 63;
-        }
-      else
-        {
-          while (BufferSizeLevelBsr[index] < queue)
-            {
-              index++;
-            }
-        }
+      int index = BufferSizeLevelBsr::BufferSize2BsrId (queue);
       bsr.m_macCeValue.m_bufferStatus.push_back (index);
     }
 
