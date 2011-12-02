@@ -51,7 +51,7 @@ TcpTahoe::GetTypeId (void)
   return tid;
 }
 
-TcpTahoe::TcpTahoe (void) : m_initialCWnd (0)
+TcpTahoe::TcpTahoe (void) : m_initialCWnd (1), m_retxThresh (3)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -60,7 +60,8 @@ TcpTahoe::TcpTahoe (const TcpTahoe& sock)
   : TcpSocketBase (sock),
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
-    m_initialCWnd (sock.m_initialCWnd)
+    m_initialCWnd (sock.m_initialCWnd),
+    m_retxThresh (sock.m_retxThresh)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");

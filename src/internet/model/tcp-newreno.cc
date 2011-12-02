@@ -55,7 +55,10 @@ TcpNewReno::GetTypeId (void)
   return tid;
 }
 
-TcpNewReno::TcpNewReno (void) : m_inFastRec (false)
+TcpNewReno::TcpNewReno (void)
+  : m_retxThresh (3), // mute valgrind, actual value set by the attribute system
+    m_inFastRec (false),
+    m_limitedTx (false) // mute valgrind, actual value set by the attribute system
 {
   NS_LOG_FUNCTION (this);
 }
@@ -65,7 +68,9 @@ TcpNewReno::TcpNewReno (const TcpNewReno& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
-    m_inFastRec (false)
+    m_retxThresh (sock.m_retxThresh),
+    m_inFastRec (false),
+    m_limitedTx (sock.m_limitedTx)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");

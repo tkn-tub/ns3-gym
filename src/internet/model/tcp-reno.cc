@@ -51,7 +51,7 @@ TcpReno::GetTypeId (void)
   return tid;
 }
 
-TcpReno::TcpReno (void) : m_inFastRec (false)
+TcpReno::TcpReno (void) : m_retxThresh (3), m_inFastRec (false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -61,6 +61,7 @@ TcpReno::TcpReno (const TcpReno& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
+    m_retxThresh (sock.m_retxThresh),
     m_inFastRec (false)
 {
   NS_LOG_FUNCTION (this);
