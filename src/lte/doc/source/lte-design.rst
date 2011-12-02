@@ -718,8 +718,6 @@ The following features are currently not supported:
 
 
 
-
-
 ---
 RRC
 ---
@@ -757,10 +755,24 @@ Overview
 
 The physical layer model provided in this LTE simulator is based on
 the one described in [Piro2011]_, with the following modifications.  The model now includes the 
-inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. Regarding CQIs in particular, their evaluation
-has been refined to comply with the scheduler interface specification [FFAPI]_. In detail, we considered the generation 
+inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
+
+CQI feedback
++++++++++++++
+
+The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
+
+Interference Model
+++++++++++++++++++
+
+The PHY model is based on the well-known Gaussian interference models, according to which the powers of interfering signals (in linear units) are summed up together to determine the overall interference power.
+
+The following diagram shows how interfering signals are processed to calculate the SINR, and how SINR is then used for the generation of CQI feedback.
+
+.. seqdiag:: phy.seqdiag
+
 
 
 
