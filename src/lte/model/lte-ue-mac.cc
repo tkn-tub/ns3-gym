@@ -32,6 +32,7 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/ideal-control-messages.h>
 #include <ns3/simulator.h>
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUeMac");
@@ -39,18 +40,6 @@ NS_LOG_COMPONENT_DEFINE ("LteUeMac");
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LteUeMac);
-
-
-
-int BufferSizeLevelBsr[64] = {
-
-  0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 107, 125, 146,
-  171, 200, 234, 274, 321, 376, 440, 515, 603, 706, 826, 967, 1132, 1326, 1552,
-  1817, 2127, 2490, 2915, 3413, 3995, 4677, 5476, 6411, 7505, 8787, 10287,
-  12043, 14099, 16507, 19325, 22624, 26487, 31009, 36304, 42502, 49759, 58255,
-  68201, 79846, 93749, 109439, 128125, 150000, 150000
-
-};
 
 
 ///////////////////////////////////////////////////////////
@@ -298,18 +287,7 @@ LteUeMac::SendReportBufferStatus (void)
   for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
     {
       int queue = (*it).second;
-      int index = 0;
-      if (BufferSizeLevelBsr[63] < queue)
-        {
-          index = 63;
-        }
-      else
-        {
-          while (BufferSizeLevelBsr[index] < queue)
-            {
-              index++;
-            }
-        }
+      int index = BufferSizeLevelBsr::BufferSize2BsrId (queue);
       bsr.m_macCeValue.m_bufferStatus.push_back (index);
     }
 

@@ -36,6 +36,8 @@ int Type0AllocationRbg[4] = {
 };  // see table 7.1.6.1-1 of 36.213
 
 
+
+
 NS_OBJECT_ENSURE_REGISTERED (RrFfMacScheduler);
 
 
@@ -522,6 +524,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
           NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti);
           newRlcEl.m_size = rlcPduSize;
+          UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
           newRlcPduLe.push_back (newRlcEl);
           it++;
           if (it == m_rlcBufferReq.end ())
@@ -629,7 +632,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
 
   RefreshUlCqiMaps ();
   
-  std::map <uint16_t,uint8_t>::iterator it; 
+  std::map <uint16_t,uint32_t>::iterator it; 
   int nflows = 0;
 
   for (it = m_ceBsrRxed.begin (); it != m_ceBsrRxed.end (); it++)
@@ -737,7 +740,8 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           rbgAllocationMap.push_back ((*it).first);
         }
         
-      uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
+      uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
+      UpdateUlRlcBufferInfo (uldci.m_rnti, uldci.m_tbSize);
       NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
@@ -792,7 +796,7 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
 {
   NS_LOG_FUNCTION (this);
 
-  std::map <uint16_t,uint8_t>::iterator it;
+  std::map <uint16_t,uint32_t>::iterator it;
 
   for (unsigned int i = 0; i < params.m_macCeList.size (); i++)
     {
@@ -804,13 +808,14 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
           if (it == m_ceBsrRxed.end ())
             {
               // create the new entry
-              uint8_t bsr = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0);
-              m_ceBsrRxed.insert ( std::pair<uint16_t, uint8_t > (rnti, bsr)); // only 1 buffer status is working now
+              uint8_t bsrId = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0);
+              int buffer = BufferSizeLevelBsr::BsrId2BufferSize (bsrId);
+              m_ceBsrRxed.insert ( std::pair<uint16_t, uint32_t > (rnti, buffer)); // only 1 buffer status is working now
             }
           else
             {
               // update the CQI value
-              (*it).second = params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0);
+              (*it).second = BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0));
             }
         }
     }
@@ -947,6 +952,72 @@ RrFfMacScheduler::RefreshUlCqiMaps(void)
     }
   
   return;
+}
+
+void
+RrFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size)
+{
+  std::list<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
+  for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
+    {
+      if (((*it).m_rnti == rnti) && ((*it).m_logicalChannelIdentity))
+        {
+//           NS_LOG_DEBUG (this << " UE " << rnti << " LC " << (uint16_t)lcid << " txqueue " << (*it).m_rlcTransmissionQueueSize << " retxqueue " << (*it).m_rlcRetransmissionQueueSize << " status " << (*it).m_rlcStatusPduSize << " decrease " << size);
+          // Update queues: RLC tx order Status, ReTx, Tx
+          // Update status queue
+          if ((*it).m_rlcStatusPduSize <= size)
+            {
+              size -= (*it).m_rlcStatusPduSize;
+              (*it).m_rlcStatusPduSize = 0;
+            }
+          else
+            {
+              (*it).m_rlcStatusPduSize -= size;
+              return;
+            }
+          // update retransmission queue  
+          if ((*it).m_rlcRetransmissionQueueSize <= size)
+            {
+              size -= (*it).m_rlcRetransmissionQueueSize;
+              (*it).m_rlcRetransmissionQueueSize = 0;
+            }
+          else
+            {
+              (*it).m_rlcRetransmissionQueueSize -= size;
+              return;
+            }
+          // update transmission queue
+          if ((*it).m_rlcTransmissionQueueSize <= size)
+            {
+              size -= (*it).m_rlcTransmissionQueueSize;
+              (*it).m_rlcTransmissionQueueSize = 0;
+            }
+          else
+            {
+              (*it).m_rlcTransmissionQueueSize -= size;
+              return;
+            }
+          return;
+        }
+    }
+}
+
+void
+RrFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
+{
+
+  
+  std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
+  if (it!=m_ceBsrRxed.end ())
+    {
+//       NS_LOG_DEBUG (this << " UE " << rnti << " szie " << size << " BSR " << (*it).second);      
+      (*it).second -= size;
+    }
+  else
+    {
+      NS_LOG_ERROR (this << " Does not find BSR report info of UE " << rnti);
+    }
+  
 }
 
 }
