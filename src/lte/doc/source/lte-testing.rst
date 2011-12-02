@@ -332,3 +332,104 @@ Building Propagation Loss Model
 -------------------------------
 
 The aim of the system test is to verify the integration of the BuildingPathlossModel with the lte module. The test exploits a set of three pre calculated losses for generating the expected SINR at the receiver counting the transmission and the noise powers. These SINR values are compared with the results obtained from a lte simulation. The losses are calculated off-line with an Octave script (/test/reference/lte_pathloss.m).
+
+
+
+
+RLC UM tests
+------------
+
+A suite of unit tests validate the RLC UM implementation in
+isolation. The following tests have been implemented:  
+ 
+ * With a single transmitter RLC/UM, a known SDU arrival pattern, and
+   a known Tx opportunity notification pattern passed to the RLC/UM by
+   the MAC, check that the RLC PDUs created by the RLC/UM are correct.
+ * With a single transmitter RLC/UM, a single receiver RLC/UM, and
+   error-free RLC PDU delivery, check that a set of known SDUs are
+   delivered correctly. 
+ * With a single transmitter RLC/UM, a single receiver RLC/UM, and
+   erroneous RLC PDU delivery with a given RLC PDU loss pattern, check
+   that all and only the RLC SDUs that should be delivered by the
+   receiving RLC/UM are in fact delivered. 
+
+RLC AM tests
+------------
+
+Another suite of unit tests validates the RLC AM implementation in
+isolation. The following tests have been implemented:
+
+ * With a single transmitter RLC/AM, a known SDU arrival pattern, and
+   a known Tx opportunity notification pattern passed to the RLC/AM by
+   the MAC, check that the RLC PDUs created by the RLC/AM are
+   correct. 
+ * With a single transmitter RLC/AM,  a single receiver RLC/AM, and
+   error-free RLC PDU delivery, check that a set of known SDUs are
+   delivered correctly 
+ * With a single transmitter RLC/AM,  a single receiver RLC/AM, and
+   erroneous RLC PDU delivery with a given RLC PDU loss pattern, check
+   that all and only the RLC SDUs that should be delivered by the
+   receiving RLC/AM are in fact delivered 
+
+
+
+GTP-U protocol
+--------------
+
+The unit test suite ``epc-gtpu`` checks that the encoding and decoding of the GTP-U
+header is done correctly. The test fills in a header with a set of
+known values, adds the header to a packet, and then removes the header
+from the packet. The test fails if, upon removing, any of the fields
+in the GTP-U header is not decoded correctly. This is detected by
+comparing the decoded value from the known value.
+
+
+S1-U interface
+--------------
+
+Two test suites (``epc-s1u-uplink`` and ``epc-s1u-downlink``) make
+sure that the S1-U interface implementation works correctly in
+isolation. This is achieved by creating a set of simulation scenarios
+where the EPC model alone is used, without the LTE model (i.e.,
+without the LTE radio protocol stack, which is replaced by simple CSMA
+devices). This checks that the
+interoperation between multiple EpcEnbApplication instances in
+multiple eNBs and the EpcSgwPgwApplication instance in the SGW/PGW
+node works correctly in a variety of scenarios, with varying numbers
+of end users (nodes with a CSMA device installed), eNBs, and different
+traffic patterns (packet sizes and number of total packets).
+Each test case works by injecting the chosen traffic pattern in the
+network (at the considered UE or at the remote host for in the uplink or the
+downlink test suite respectively) and checking that at the receiver
+(the remote host or each  considered UE, respectively) that exactly the same
+traffic patterns is received. If any mismatch in the transmitted and
+received traffic pattern is detected for any UE, the test fails.
+
+
+End-to-end LTE-EPC data plane functionality
+-------------------------------------------
+
+The test suite ``lte-epc-e2e-data`` ensures the correct end-to-end
+functionality of the LTE-EPC data plane. For each test case in this
+suite, a complete LTE-EPC simulation
+scenario is created with the following characteristics:
+
+ * a given number of eNBs
+ * for each eNB, a given number of UEs
+ * for each UE, a given number of active EPS bearers
+ * for each active EPS bearer, a given traffic pattern (number of UDP
+   packets to be transmitted and packet size)
+
+Each test is executed by transmitting the given traffic pattern both
+in the uplink and in the downlink, at subsequent time intervals. The
+test passes if all the following conditions are satisfied:
+
+ * for each active EPS bearer, the transmitted and received traffic
+   pattern (respectively  at the UE and the remote host for uplink,
+   and vice versa for downlink) is exactly the same
+ * for each active EPS bearer and each direction (uplink or downlink),
+   exactly the expected number of packet flows over the corresponding
+   RadioBearer instance  
+
+
+
