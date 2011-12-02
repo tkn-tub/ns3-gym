@@ -32,7 +32,8 @@ GRAPHS_EPS = \
 	$(FIGURES)/epc-topology.eps \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps
 
 
 
