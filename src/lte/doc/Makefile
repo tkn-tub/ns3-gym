@@ -1,6 +1,6 @@
 EPSTOPDF = epstopdf
 DIA = dia
-CONVERT = convert
+CONVERT = convert -density 250
 
 
 SOURCE = source
@@ -13,6 +13,8 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
 	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/epc-profiling-scenario.eps \
+	$(FIGURES)/eutran-profiling-scenario.eps \
 	$(FIGURES)/lte-interference-test-scenario.eps
 
 # specify figures for build process (all eps figures)
@@ -21,8 +23,11 @@ GRAPHS_EPS = \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
 	$(FIGURES)/runningTime10s.eps \
+	$(FIGURES)/epcRunningTime.eps \
 	$(FIGURES)/propagationModel.eps \
 	$(FIGURES)/simulationTime.eps \
+	$(FIGURES)/epcSimulationTime.eps \
+	$(FIGURES)/epcEutranRunningTime.eps \
 	$(FIGURES)/profiling-memory.eps \
 	$(FIGURES)/lte-rlc-implementation-model.eps \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
