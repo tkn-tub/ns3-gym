@@ -1,23 +1,18 @@
 .. include:: replace.txt
 
 
-****************
-RLC Layer Design
-****************
 
+Overview
+++++++++
 
-UM/AM RLC Entities
-==================
-
-The RLC entity is specified in the 3GPP technical specification [TS36322]_. We implement two of the
-three types of RLC entities: UM RLC entity and AM RLC entity.
+The RLC entity is specified in the 3GPP technical specification [TS36322]_, and comprises three different types of RLC: Transparent Mode (TM), Unacknowledge Mode (UM) and Acknowledged Mode (AM). We implement only the UM and the AM RLC entities.
 
 The RLC entities provide the RLC service interface to upper PDCP layer and the MAC service interface
 to lower MAC layer. The RLC entities use the PDCP service interface from upper PDCP layer and
 the MAC service interface from lower MAC layer.
 
-The following figure shows the implementation model of the RLC entities and its relationship
-with all the other entities and services in the protocol stack:
+Figure :ref:`lte-rlc-implementation-model` shows the implementation model of the RLC entities and its relationship
+with all the other entities and services in the protocol stack.
 
 .. figure:: figures/lte-rlc-implementation-model.*
 
@@ -25,15 +20,15 @@ with all the other entities and services in the protocol stack:
 
 
 Service Interfaces
-==================
+++++++++++++++++++
 
 PDCP Service Interface
 ----------------------
 
 The PDCP service interface is divided into two parts:
 
-    * ``PdcpSapProvider`` service part is provided by the PDCP layer and used by the upper layer and
-    * ``PdcpSapUser`` service part is provided by the upper layer and used by the PDCP layer.
+    * the ``PdcpSapProvider`` part is provided by the PDCP layer and used by the upper layer and
+    * the ``PdcpSapUser`` part is provided by the upper layer and used by the PDCP layer.
 
 PDCP Service Primitives
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -55,10 +50,10 @@ RLC Service Interface
 
 The RLC service interface is divided into two parts:
 
-    * ``RlcSapProvider`` service part is provided by the RLC layer and used by the upper PDCP layer and
-    * ``RlcSapUser`` service part is provided by the upper PDCP layer and used by the RLC layer.
+    * the ``RlcSapProvider`` part is provided by the RLC layer and used by the upper PDCP layer and
+    * the ``RlcSapUser`` part is provided by the upper PDCP layer and used by the RLC layer.
 
-The UM/AM RLC entities provide the same RLC service interface to the upper PDCP layer.
+Both the UM and the AM RLC entities provide the same RLC service interface to the upper PDCP layer.
 
 RLC Service Primitives
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -80,8 +75,8 @@ MAC Service Interface
 
 The MAC service interface is divided into two parts:
 
-  * ``MacSapProvider`` service part is provided by the MAC layer and used by the upper RLC layer and
-  * ``MacSapUser`` service part is provided by the upper RLC layer and used by the MAC layer.
+  * the ``MacSapProvider`` part is provided by the MAC layer and used by the upper RLC layer and
+  * the ``MacSapUser``  part is provided by the upper RLC layer and used by the MAC layer.
 
 MAC Service Primitives
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -109,7 +104,7 @@ The following list specifies which service primitives are provided by the MAC se
 
 
 Interactions between entities and services
-==========================================
+++++++++++++++++++++++++++++++++++++++++++
 
 Transmit operations in downlink
 -------------------------------
@@ -189,7 +184,7 @@ RLC and MAC) and the eNB (MAC) in uplink when data PDUs must be retransmitted by
 
 
 AM data transfer
-================
+++++++++++++++++
 
 The processing of the data transfer in the AM RLC entity is explained in section 5.1.3 of [TS36322]_.
 In this section we describe some details of the implementation of the RLC entity.
@@ -199,15 +194,15 @@ Management of buffers in transmit operations
 
 The AM RLC entity manages 3 buffers:
 
-    * Transmission Buffer, it is the RLC SDU queue. The AM RLC entity enqueues the SDU in the
+    * **Transmission Buffer**: it is the RLC SDU queue. The AM RLC entity enqueues the SDU in the
       Transmission Buffer, when it receives a SDU in the TransmitPdcpPdu service primitive from the
       upper PDCP entity.
 
-    * Transmitted PDUs Buffer, it is the queue of transmitted RLC PDUs for which an ACK/NACK has not
+    * **Transmitted PDUs Buffer**: it is the queue of transmitted RLC PDUs for which an ACK/NACK has not
       been received yet. The AM RLC entity also puts a copy of the transmitted PDU in the
       Transmitted PDUs Buffer, when it sends a PDU to the MAC entity.
 
-    * Retransmission Buffer, it is the queue of RLC PDUs which are considered for retransmission
+    * **Retransmission Buffer**: it is the queue of RLC PDUs which are considered for retransmission
       (i.e., they have been NACKed). The AM RLC entity moves this PDU to the Retransmission Buffer,
       when it retransmits a PDU from the Transmitted Buffer.
 

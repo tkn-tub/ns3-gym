@@ -32,6 +32,8 @@
 
 .. [TS36322] 3GPP TS 36.322 "E-UTRA Radio Link Control (RLC) protocol specification"
 
+.. [TS36323] 3GPP TS 36.323 "E-UTRA Packet Data Convergence Protocol (PDCP) specification"
+
 .. [TS36.101] 3GPP TS 36.101 "E-UTRA User Equipment (UE) radio transmission and reception"
 
 .. [TS36.213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"

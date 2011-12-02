@@ -11,7 +11,7 @@ Overall Architecture
 -----------------------
 
 The overall architecture of the LENA simulation model is depicted in
- the figure :ref:`fig-epc-topology`. There are two main conmponents:
+the figure :ref:`fig-epc-topology`. There are two main conmponents:
 
  * the LTE Model. This model includes the LTE Radio Protocol
    stack (RRC, PDCP, RLC, MAC, PHY). These entities reside entirely within the
@@ -33,7 +33,9 @@ the following subsections.
 .. figure:: figures/epc-topology.*
    :align: center
 
-    Overall architecture of the LTE-EPC simulation model
+   Overall architecture of the LTE-EPC simulation model
+
+
 
 
 
@@ -134,6 +136,7 @@ which deal respectively with the eNB and the UE.
 
    Lower LTE radio protocol stack architecture for the UE
 
+
 The LTE lower radio stack model includes in particular the PHY and the MAC layers;
 additionally, also the Scheduler is included (which is commonly
 associated with the MAC layer). The most important difference between
@@ -146,7 +149,7 @@ UE.
 
 
 The second part is the upper LTE radio stack, which is represented in
-the figure :ref:`lte-arch-data-rrc-pdcp-rlc`. 
+the figure :ref:`fig-lte-arch-data-rrc-pdcp-rlc`. 
 
 .. _fig-lte-arch-data-rrc-pdcp-rlc:
    
@@ -154,6 +157,7 @@ the figure :ref:`lte-arch-data-rrc-pdcp-rlc`.
    :align: center
 
    Architecture of the upper LTE radio stack 
+
 
 This part includes the RRC, PDCP and RLC protocols. The architecture
 in this case is very similar between the eNB and the UE: in fact, in
@@ -235,7 +239,7 @@ Architecture
 
 The focus of the EPC model is currently on the EPC data plane. To
 understand the architecture of this model, we first look at Figure
-:ref:`fig-epc-e2e-data-protocol-stack` representation of the
+:ref:`fig-lte-epc-e2e-data-protocol-stack` representation of the
 end-to-end LTE-EPC protocol stack, as it is 
 implemented in the simulator. From the figure, it is evident that the
 biggest simplification introduced in the EPC model for the data plane
@@ -370,11 +374,11 @@ following operations:
 
  #. it retrieves the RBID from the corresponding Tag in the packet;
  #. it determines the corresponding EPS Bearer instance and GTP-U TEID by
-  leveraging on the one-to-one mapping between S1-U bearers and Radio
-  Bearers;
+    leveraging on the one-to-one mapping between S1-U bearers and Radio
+    Bearers;
  #. it adds a GTP-U header on the packet, with the determined TEID;
  #. it sends the packet to the SGW/PGW node via the UDP socket
-  connected to the S1-U point-to-point net device.
+    connected to the S1-U point-to-point net device.
 
 At this point, the packet contains the S1-U IP, UDP and GTP headers in
 addition to the original end-to-end IP header. When the packet is
@@ -646,11 +650,11 @@ MAC headers specified by 3GPP.
 
 
 
----
-RLC
----
+------------
+RLC and PDCP
+------------
 
-..  .. include:: lte-rlc-design.rst
+.. include:: lte-rlc-design.rst
 
 
 
@@ -666,7 +670,7 @@ the notification of transmission opportunities notified by the MAC.
 In other words, RLC/SM simulates saturation conditions, i.e., it
 assumes that the RLC buffer is always full and can generate a new PDU
 whenever notified by the scheduler. In fact, the "SM" in the name of
-the model stands for "Saturation Mode"). 
+the model stands for "Saturation Mode". 
 
 RLC/SM is used for simplified simulation scenarios in which only the
 LTE Radio model is used, without the EPC and hence without any IP
@@ -680,8 +684,8 @@ resources based on the characteristics of each Radio Bearer which are
 specified upon the creation of each Bearer at the start of the
 simulation.
 
- As for schedulers designed to work with real-time QoS
-traffic with delay constraints, RLC/SM is probably not an appropriate choice.
+As for schedulers designed to work with real-time QoS
+traffic that has delay constraints, RLC/SM is probably not an appropriate choice.
 This is because the absence of actual RLC SDUs (replaced by the artificial
 generation of Buffer Status Reports) makes it not possible to provide
 the Scheduler with meaningful head-of-line-delay information, which is
@@ -689,6 +693,30 @@ normally the metric of choice for the implementation of scheduling
 policies for real-time traffic flows. For the simulation and testing
 of such schedulers, it is advisable to use one of the realistic RLC
 implementations (RLC/UM or RLC/AM).
+
+
+
+PDCP
+++++
+
+The reference document for the specification of the PDCP entity is
+[TS36323]_. With respect to this specification, the PDCP model
+implemented in the simulator supports only the following features:
+
+ * transfer of data (user plane or control plane);
+ * maintenance of PDCP SNs;
+
+The following features are currently not supported:
+
+ * header compression and decompression of IP data flows using the ROHC protocol;
+ * in-sequence delivery of upper layer PDUs at re-establishment of lower layers;
+ * duplicate elimination of lower layer SDUs at re-establishment of lower layers for radio bearers mapped on RLC AM;
+ * ciphering and deciphering of user plane data and control plane data;
+ * integrity protection and integrity verification of control plane data;
+ * timer based discard;
+ * duplicate discarding.
+
+
 
 
 
@@ -763,9 +791,9 @@ discussed in [Ofcom2.6GHz]_.
 
 
 
--------
-Channel
--------
+-----------------------
+Channel and Propagation
+-----------------------
 
 
 The LTE module works with the channel objects provided by the Spectrum module, i.e., either SingleModelSpectrumChannel or MultiModelSpectrumChannel. Because of these, all the propagation models supported by these objecs can be used within the LTE module.
@@ -876,9 +904,9 @@ where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of 
 hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
 
 
-~~~~~~~
+-------
 Helpers
-~~~~~~~
+-------
 
 Two helper objects are use to setup simulations and configure the
 variosu components. These objects are:
@@ -913,40 +941,6 @@ A few notes on the above diagram:
     on control plane only.
 
 
-
-
-~~~~~~~~~~~~~~~~~
-Sequence Diagrams
-~~~~~~~~~~~~~~~~~
-
-In this section we provide some sequence diagram that illustrate some important interactions among the components of the LTE module.
-
-
-Physical Layer
-++++++++++++++
-
-TODO: add diagram showing interference calculation
-
-
-RLC buffer status report
-++++++++++++++++++++++++
-
-These sequence diagrams represent how the RLC buffer status is updated in the different cases of the downlink and the uplink.
-
-For the downlink:
-
-.. seqdiag:: rlc_buffer_status_report_downlink.seqdiag
-
-
-For the uplink:
-
-.. seqdiag:: rlc_buffer_status_report_uplink.seqdiag
-
-
-
-
-Propagation Models
-++++++++++++++++++
 
 
 
