@@ -1719,7 +1719,10 @@ TcpSocketBase::DoRetransmit ()
     }
   // Retransmit a data packet: Call SendDataPacket
   NS_LOG_LOGIC ("TcpSocketBase " << this << " retxing seq " << m_txBuffer.HeadSequence ());
-  SendDataPacket (m_txBuffer.HeadSequence (), m_segmentSize, true);
+  uint32_t sz = SendDataPacket (m_txBuffer.HeadSequence (), m_segmentSize, true);
+  // In case of RTO, advance m_nextTxSequence
+  m_nextTxSequence = std::max (m_nextTxSequence.Get (), m_txBuffer.HeadSequence () + sz);
+
 }
 
 void
