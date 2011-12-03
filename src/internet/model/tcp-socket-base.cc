@@ -683,6 +683,11 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
                     ":" << tcpHeader.GetSequenceNumber () + packet->GetSize() <<
                     ") out of range [" << m_rxBuffer.NextRxSequence () << ":" <<
                     m_rxBuffer.MaxRxSequence () << ")");
+      // Acknowledgement should be sent for all unacceptable packets (RFC793, p.69)
+      if (m_state == ESTABLISHED && !(tcpHeader.GetFlags () & TcpHeader::RST))
+        {
+          SendEmptyPacket (TcpHeader::ACK);
+        }
       return;
     }
 
