@@ -30,7 +30,7 @@
 #include <ns3/node-container.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/mac-stats-calculator.h>
-#include <ns3/rlc-stats-calculator.h>
+#include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/lte-tft.h>
 #include <ns3/trace-fading-loss-model.h>
 
@@ -232,7 +232,7 @@ public:
    * 
    * \return the RLC stats calculator object
    */
-  Ptr<RlcStatsCalculator> GetRlcStats (void);
+  Ptr<RadioBearerStatsCalculator> GetRlcStats (void);
 
   /**
    * Enable trace sinks for PDCP layer
@@ -253,7 +253,7 @@ public:
    * 
    * \return the PDCP stats calculator object
    */
-  Ptr<RlcStatsCalculator> GetPdcpStats (void);
+  Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
 
 protected:
   // inherited from Object
@@ -282,8 +282,8 @@ private:
   Ptr<TraceFadingLossModel> m_fadingModule;
   
   Ptr<MacStatsCalculator> m_macStats;
-  Ptr<RlcStatsCalculator> m_rlcStats;
-  Ptr<RlcStatsCalculator> m_pdcpStats;
+  Ptr<RadioBearerStatsCalculator> m_rlcStats;
+  Ptr<RadioBearerStatsCalculator> m_pdcpStats;
 
   enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
                                    RLC_UM_ALWAYS = 2,

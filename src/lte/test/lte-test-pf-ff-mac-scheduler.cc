@@ -31,7 +31,7 @@
 #include <ns3/simulator.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
-#include "ns3/rlc-stats-calculator.h"
+#include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
 #include "ns3/lte-test-pf-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
@@ -233,7 +233,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+//     LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -293,7 +293,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
 
-  Ptr<RlcStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
 
   Simulator::Run ();
@@ -414,7 +414,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
 
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -474,7 +474,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
 
-  Ptr<RlcStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
 
   Simulator::Run ();

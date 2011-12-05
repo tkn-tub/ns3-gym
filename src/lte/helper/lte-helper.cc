@@ -109,10 +109,10 @@ LteHelper::DoStart (void)
   m_macStats = CreateObject<MacStatsCalculator> ();
   m_macStats->SetDlOutputFilename("DlMacStats.csv");
   m_macStats->SetUlOutputFilename("UlMacStats.csv");
-  m_rlcStats = CreateObject<RlcStatsCalculator> ();
+  m_rlcStats = CreateObject<RadioBearerStatsCalculator> ();
   m_rlcStats->SetDlOutputFilename("DlRlcStats.csv");
   m_rlcStats->SetUlOutputFilename("UlRlcStats.csv");
-  m_pdcpStats = CreateObject<RlcStatsCalculator> ();
+  m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ();
   m_pdcpStats->SetDlOutputFilename("DlPdcpStats.csv");
   m_pdcpStats->SetUlOutputFilename("UlPdcpStats.csv");
 
@@ -568,7 +568,7 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
 }
 
@@ -687,7 +687,7 @@ FindCellIdFromEnbMac (std::string path, uint16_t rnti)
 
 
 void
-DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+DlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
@@ -715,7 +715,7 @@ DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
 }
 
 void
-DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+DlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
@@ -743,7 +743,7 @@ LteHelper::EnableDlRlcTraces (void)
 }
 
 void
-UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+UlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
@@ -761,7 +761,7 @@ UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
 }
 
 void
-UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
+UlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
@@ -896,7 +896,7 @@ LteHelper::SetTraceDirectory (std::string path)
   m_rlcStats->SetUlOutputFilename(path + m_rlcStats->GetUlOutputFilename());
 }
 
-Ptr<RlcStatsCalculator>
+Ptr<RadioBearerStatsCalculator>
 LteHelper::GetRlcStats (void)
 {
   return m_rlcStats;
@@ -928,7 +928,7 @@ LteHelper::EnableUlPdcpTraces (void)
                    MakeBoundCallback (&UlRxPduCallback, m_pdcpStats));
 }
 
-Ptr<RlcStatsCalculator>
+Ptr<RadioBearerStatsCalculator>
 LteHelper::GetPdcpStats (void)
 {
   return m_pdcpStats;

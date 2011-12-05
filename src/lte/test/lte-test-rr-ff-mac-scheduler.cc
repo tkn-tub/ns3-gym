@@ -27,7 +27,7 @@
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 #include <iostream>
-#include "ns3/rlc-stats-calculator.h"
+#include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
 #include "ns3/lte-test-rr-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
@@ -219,7 +219,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 //   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);
-//   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+//   LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
 
 
   /**
@@ -281,7 +281,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
 
-  Ptr<RlcStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
 
 

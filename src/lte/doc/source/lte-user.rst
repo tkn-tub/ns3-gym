@@ -209,9 +209,9 @@ level Key Performance Indicators (KPIs). You can enable it in the following way:
 RLC KPIs are calculated over a time interval and stored on two ASCII
 files, one for uplink and one for downlink. The time interval duration
 and the name of the files can be controlled using the attributes
-``ns3::RlcStatsCalculator::EpochDuration``,
-``ns3::RlcStatsCalculator::DlOutputFilename`` and
-``ns3::RlcStatsCalculator::UlOutputFilename``.
+``ns3::RadioBearerStatsCalculator::EpochDuration``,
+``ns3::RadioBearerStatsCalculator::DlOutputFilename`` and
+``ns3::RadioBearerStatsCalculator::UlOutputFilename``.
 The content of the columns of these files is the following (the same
 for uplink and downlink):
  

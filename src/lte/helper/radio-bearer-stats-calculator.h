@@ -18,8 +18,8 @@
  * Author: Jaume Nin <jnin@cttc.es>
  */
 
-#ifndef RLC_STATS_CALCULATOR_H_
-#define RLC_STATS_CALCULATOR_H_
+#ifndef RADIO_BEARER_STATS_CALCULATOR_H_
+#define RADIO_BEARER_STATS_CALCULATOR_H_
 
 #include "ns3/lte-stats-calculator.h"
 #include "ns3/lte-common.h"
@@ -52,18 +52,18 @@ typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
  *   - Average, min, max and standard deviation of RLC to RLC delay
  *   - Average, min, max and standard deviation of RLC PDU size
  */
-class RlcStatsCalculator : public LteStatsCalculator
+class RadioBearerStatsCalculator : public LteStatsCalculator
 {
 public:
   /**
    * Class constructor
    */
-  RlcStatsCalculator ();
+  RadioBearerStatsCalculator ();
 
   /**
    * Class destructor
    */
-  virtual  ~RlcStatsCalculator ();
+  virtual  ~RadioBearerStatsCalculator ();
 
   /**
    * Inherited from ns3::Object
@@ -281,4 +281,4 @@ private:
 
 } // namespace ns3
 
-#endif /* RLC_STATS_CALCULATOR_H_ */
+#endif /* RADIO_BEARER_STATS_CALCULATOR_H_ */
