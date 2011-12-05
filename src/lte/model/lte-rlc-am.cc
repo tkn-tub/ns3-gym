@@ -130,7 +130,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
   if ( m_retxBufferSize )
     {
       m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
-      Time retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
+      retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
     }
 
   LteMacSapProvider::ReportBufferStatusParameters r;
@@ -150,12 +150,9 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
       r.statusPduSize = 0;
     }
 
-  NS_LOG_LOGIC ("Send ReportBufferStatus");
-  NS_LOG_LOGIC ("Txon queue size = " << r.txQueueSize);
-  NS_LOG_LOGIC ("HOL delay = " << r.txQueueHolDelay);
-  NS_LOG_LOGIC ("Retx queue size = " << r.retxQueueSize);
-  NS_LOG_LOGIC ("HOL delay = " << r.retxQueueHolDelay);
-  NS_LOG_LOGIC ("Status PDU size = " << r.statusPduSize);
+  NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
+                                           << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
+                                           << r.statusPduSize);
   m_macSapProvider->ReportBufferStatus (r);
 }
 
@@ -551,11 +548,11 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::SEGMENT )
         {
-          NS_LOG_LOGIC ("AMD PDU segment received");
+          NS_LOG_LOGIC ("AMD PDU segment received ( SN = " << seqNumber << " )");
         }
       else if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::PDU )
         {
-          NS_LOG_LOGIC ("AMD PDU received");
+          NS_LOG_LOGIC ("AMD PDU received ( SN = " << seqNumber << " )");
         }
       else
         {
@@ -588,7 +585,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               if ( m_retxBufferSize )
                 {
                   m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
-                  Time retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
+                  retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
                 }
 
               LteMacSapProvider::ReportBufferStatusParameters r;
@@ -608,12 +605,9 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                   r.statusPduSize = 0;
                 }
 
-              NS_LOG_LOGIC ("Send ReportBufferStatus");
-              NS_LOG_LOGIC ("Txon queue size = " << r.txQueueSize);
-              NS_LOG_LOGIC ("HOL delay = " << r.txQueueHolDelay);
-              NS_LOG_LOGIC ("Retx queue size = " << r.retxQueueSize);
-              NS_LOG_LOGIC ("HOL delay = " << r.retxQueueHolDelay);
-              NS_LOG_LOGIC ("Status PDU size = " << r.statusPduSize);
+              NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", "
+                                                      << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", "
+                                                      << r.statusPduSize );
               m_macSapProvider->ReportBufferStatus (r);
             }
         }
@@ -635,7 +629,6 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       NS_LOG_LOGIC ("VR(X)  = " << m_vrX);
       NS_LOG_LOGIC ("VR(MS) = " << m_vrMs);
       NS_LOG_LOGIC ("VR(H)  = " << m_vrH);
-      NS_LOG_LOGIC ("SN = " << seqNumber);
 
       // - if x falls outside of the receiving window; or
       // - if byte segment numbers y to z of the AMD PDU with SN = x have been received before:
@@ -646,7 +639,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
         }
       else
         {
-          NS_LOG_LOGIC ("Place AMD PDU in the reception buffer. SN = " << seqNumber);
+          NS_LOG_LOGIC ("Place AMD PDU in the reception buffer ( SN = " << seqNumber << " )");
           m_rxonBuffer[ seqNumber ].m_byteSegments.push_back (p);
           m_rxonBuffer[ seqNumber ].m_pduComplete = true;
 
@@ -699,7 +692,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               NS_LOG_LOGIC ("New VR(MR) = " << m_vrMr);
             }
 
-          NS_LOG_LOGIC ("Reassemble and Deliver. SN = " << seqNumber);
+          NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << seqNumber << " )");
           NS_ASSERT_MSG (m_rxonBuffer[ seqNumber ].m_byteSegments.size () == 1,
                          "Too many segments. PDU Reassembly process didn't work");
           ReassembleAndDeliver (m_rxonBuffer[ seqNumber ].m_byteSegments.front ());
@@ -843,8 +836,15 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       while (seqNumber < ackSn)
         {
-          m_txedBufferSize -= m_txedBuffer.at (seqNumber)->GetSize ();
-          m_txedBuffer.at (seqNumber) = 0;
+          NS_LOG_INFO ("seqNumber = " << seqNumber);
+          NS_LOG_INFO ("ackSn     = " << ackSn);
+          NS_LOG_INFO ("m_txedBuffer(seqNumber).size = " << m_txedBuffer.size ());
+          if (m_txedBuffer.at (seqNumber))
+            {
+              NS_LOG_INFO ("m_txedBuffer(seqNumber)->GetSize = " << m_txedBuffer.at (seqNumber)->GetSize ());
+              m_txedBufferSize -= m_txedBuffer.at (seqNumber)->GetSize ();
+              m_txedBuffer.at (seqNumber) = 0;
+            }
           seqNumber++;
         }
 
@@ -980,6 +980,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 
   // Received framing Info
   NS_LOG_LOGIC ("Framing Info = " << (uint16_t)framingInfo);
+  NS_LOG_LOGIC ("m_sdusBuffer = " << m_sdusBuffer.size ());
 
   // Reassemble the list of SDUs (when there is no losses)
   if (!expectedSnLost)
