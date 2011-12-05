@@ -41,6 +41,7 @@
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/lte-rlc.h>
 #include <ns3/lte-rlc-um.h>
+#include <ns3/lte-rlc-am.h>
 
 #include <ns3/epc-helper.h>
 #include <iostream>
@@ -488,16 +489,15 @@ LenaHelper::GetRlcType (EpsBearer bearer)
     case RLC_SM_ALWAYS:
       return LteRlcSm::GetTypeId ();
       break;
-      
+
     case  RLC_UM_ALWAYS:
       return LteRlcUm::GetTypeId ();
       break;
-      
+
     case RLC_AM_ALWAYS:
-      NS_ABORT_MSG ("RLC/AM not supported yet");
-      //return LteRlcAm::GetTypeId ();
+      return LteRlcAm::GetTypeId ();
       break;
-      
+
     case PER_BASED:
       if (bearer.GetPacketErrorLossRate () > 1.0e-5)
         {
@@ -505,14 +505,13 @@ LenaHelper::GetRlcType (EpsBearer bearer)
         }
       else
         {
-          NS_ABORT_MSG ("RLC/AM not supported yet");
-          //return LteRlcAm::GetTypeId ();
+          return LteRlcAm::GetTypeId ();
         }
       break;
-      
+
     default:
       return LteRlcSm::GetTypeId ();
-      break;        
+      break;
     }
 }
 
@@ -526,6 +525,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlcUm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcAm", LOG_LEVEL_ALL);
   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
