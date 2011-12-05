@@ -57,6 +57,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
     int main (int argc, char *argv[])
     {
+      // the rest of the simulation program follows
 
 
 #. Create a LenaHelper object::
