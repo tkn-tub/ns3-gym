@@ -176,6 +176,11 @@ class LteTestMac : public Object
     /**
      *
      */
+    void SetRlcAmHeaderPresent (bool present);
+
+    /**
+     *
+     */
     void SetTxOpportunityMode (uint8_t mode);
 
     typedef enum {
@@ -195,6 +200,7 @@ class LteTestMac : public Object
     std::string m_receivedData;
 
     bool m_pdcpHeaderPresent;
+    bool m_rlcAmHeaderPresent;
     bool m_txOpportunityMode;
 
 };

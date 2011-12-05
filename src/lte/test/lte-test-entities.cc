@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 
 #include "ns3/lte-rlc-header.h"
+#include "ns3/lte-rlc-am-header.h"
 #include "ns3/lte-pdcp-header.h"
 
 #include "ns3/lte-test-entities.h"
@@ -320,6 +321,13 @@ LteTestMac::SetPdcpHeaderPresent (bool present)
 }
 
 void
+LteTestMac::SetRlcAmHeaderPresent (bool present)
+{
+  NS_LOG_FUNCTION (this);
+  m_rlcAmHeaderPresent = present;
+}
+
+void
 LteTestMac::SetTxOpportunityMode (uint8_t mode)
 {
   NS_LOG_FUNCTION (this);
@@ -343,12 +351,22 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
     }
   else
     {
-      LteRlcHeader rlcHeader;
       LtePdcpHeader pdcpHeader;
 
-      // Remove RLC header
-      params.pdu->RemoveHeader (rlcHeader);
-      NS_LOG_LOGIC ("RLC header: " << rlcHeader);
+      if (m_rlcAmHeaderPresent)
+        {
+          // Remove AM RLC header
+          LteRlcAmHeader rlcAmHeader;
+          params.pdu->RemoveHeader (rlcAmHeader);
+          NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+        }
+      else
+        {
+          // Remove UM RLC header
+          LteRlcHeader rlcHeader;
+          params.pdu->RemoveHeader (rlcHeader);
+          NS_LOG_LOGIC ("UM RLC header: " << rlcHeader);
+        }
 
       // Remove PDCP header, if present
       if (m_pdcpHeaderPresent)
@@ -372,11 +390,27 @@ void
 LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("Queue size = " << params.txQueueSize);
+  NS_LOG_LOGIC ("TxonQueue size = " << params.txQueueSize);
+  NS_LOG_LOGIC ("RetxQueue size = " << params.retxQueueSize);
+  NS_LOG_LOGIC ("StatusPdu size = " << params.statusPduSize);
 
-  if ((m_txOpportunityMode == AUTOMATIC_MODE) && params.txQueueSize)
+  if (m_txOpportunityMode == AUTOMATIC_MODE)
     {
-      Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                           m_macSapUser, params.txQueueSize + 2); // TODO Including RLC header size??? Not clean
+      if (params.statusPduSize)
+        {
+          Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
+                               m_macSapUser, params.statusPduSize + 2);
+        }
+      else if (params.txQueueSize)
+        {
+          Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
+                               m_macSapUser, params.txQueueSize + 2);
+        }
+      else if (params.retxQueueSize)
+        {
+          Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
+                               m_macSapUser, params.retxQueueSize + 2);
+        }
     }
+
 }
