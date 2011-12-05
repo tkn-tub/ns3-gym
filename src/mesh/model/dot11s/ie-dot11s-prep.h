@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -82,6 +82,6 @@ private:
 bool operator== (const IePrep & a, const IePrep & b);
 std::ostream &operator << (std::ostream &os, const IePrep &prep);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif
 

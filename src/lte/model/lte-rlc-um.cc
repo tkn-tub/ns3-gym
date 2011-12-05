@@ -330,6 +330,11 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
   NS_LOG_LOGIC ("RLC header: " << rlcHeader);
   packet->AddHeader (rlcHeader);
 
+  // Sender timestamp
+  RlcTag rlcTag (Simulator::Now ());
+  packet->AddByteTag (rlcTag);
+  m_txPdu (m_rnti, m_lcid, packet->GetSize ());
+
   // Send RLC PDU to MAC layer
   LteMacSapProvider::TransmitPduParameters params;
   params.pdu = packet;
@@ -349,6 +354,15 @@ void
 LteRlcUm::DoReceivePdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
+
+  // Receiver timestamp
+  RlcTag rlcTag;
+  Time delay;
+  if (p->FindFirstMatchingByteTag (rlcTag))
+    {
+      delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
+    }
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
 
   // 5.1.2.2 Receive operations
 

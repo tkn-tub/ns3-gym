@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -22,13 +22,12 @@
 #ifndef LTE_ENB_NET_DEVICE_H
 #define LTE_ENB_NET_DEVICE_H
 
-#include "lte-net-device.h"
+#include "ns3/lte-net-device.h"
 #include "ns3/event-id.h"
 #include "ns3/mac48-address.h"
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
-#include "ns3/log.h"
-#include "lte-phy.h"
+#include "ns3/lte-phy.h"
 #include <vector>
 
 namespace ns3 {
@@ -53,19 +52,13 @@ class LteEnbNetDevice : public LteNetDevice
 public:
   static TypeId GetTypeId (void);
 
-  LteEnbNetDevice (void);
-  /**
-   * \brief Create eNB net device
-   * \param node the network node
-   * \param phy the physical object attached to it
-   * \param mac the mac layer object attached to it
-   * \param sched the scheduler object attached to it
-   * \param rrc the rrc entity object attached to it
-   */
-  LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnbMac> mac, Ptr<FfMacScheduler> sched, Ptr<LteEnbRrc> rrc);
+  LteEnbNetDevice ();
 
   virtual ~LteEnbNetDevice (void);
   virtual void DoDispose (void);
+
+  // inherited from NetDevice
+  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
 
   /**
    * \return a pointer to the MAC 
@@ -134,12 +127,6 @@ protected:
 
 
 private:
-  bool DoSend (Ptr<Packet> packet,
-               const Mac48Address& source,
-               const Mac48Address& dest,
-               uint16_t protocolNumber);
-
-  void DoReceive (Ptr<Packet> p);
 
   /**
    * Several attributes (e.g., the bandwidth) are exported as

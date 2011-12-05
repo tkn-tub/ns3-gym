@@ -123,11 +123,11 @@ V4Ping::Receive (Ptr<Socket> socket)
 
           if (i != m_sent.end () && echo.GetIdentifier () == 0)
             {
-              uint32_t buf[m_size / 4];
+              uint32_t * buf = new uint32_t [m_size];
               uint32_t dataSize = echo.GetDataSize ();
               uint32_t nodeId;
               uint32_t appId;
-              if (dataSize == sizeof(buf))
+              if (dataSize == m_size)
                 {
                   echo.GetData ((uint8_t *)buf);
                   Read32 ((const uint8_t *) &buf[0], nodeId);
@@ -154,6 +154,7 @@ V4Ping::Receive (Ptr<Socket> socket)
                         }
                     }
                 }
+              delete[] buf;
             }
         }
     }
@@ -193,7 +194,7 @@ V4Ping::Send ()
   // (where any difference would show up anyway) and borrow that code.  Don't
   // be too surprised when you see that this is a little endian convention.
   //
-  uint8_t data[m_size];
+  uint8_t* data = new uint8_t[m_size];
   for (uint32_t i = 0; i < m_size; ++i) data[i] = 0;
   NS_ASSERT (m_size >= 16);
 
@@ -203,7 +204,7 @@ V4Ping::Send ()
   tmp = GetApplicationId ();
   Write32 (&data[1 * sizeof(uint32_t)], tmp);
 
-  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) &data, m_size);
+  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) data, m_size);
   echo.SetData (dataPacket);
   p->AddHeader (echo);
   Icmpv4Header header;
@@ -217,6 +218,7 @@ V4Ping::Send ()
   m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now ()));
   m_socket->Send (p, 0);
   m_next = Simulator::Schedule (m_interval, &V4Ping::Send, this);
+  delete[] data;
 }
 
 void 

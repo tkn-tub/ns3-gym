@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2009 Strasbourg University
  *
@@ -19,6 +19,8 @@
  */
 
 #include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"

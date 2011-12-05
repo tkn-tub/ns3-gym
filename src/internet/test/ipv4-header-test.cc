@@ -1,0 +1,270 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010 Hajime Tazaki
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: John Abraham <john.abraham@gatech.edu>
+ * Adapted from: ipv4-raw-test.cc
+ */
+
+#include "ns3/test.h"
+#include "ns3/socket-factory.h"
+#include "ns3/ipv4-raw-socket-factory.h"
+#include "ns3/simulator.h"
+#include "ns3/simple-channel.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/drop-tail-queue.h"
+#include "ns3/socket.h"
+
+#include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/boolean.h"
+
+#include "ns3/arp-l3-protocol.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/ipv4-list-routing.h"
+#include "ns3/ipv4-static-routing.h"
+
+#include <string>
+#include <sstream>
+#include <limits>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+namespace ns3 {
+
+static void
+AddInternetStack (Ptr<Node> node)
+{
+  //ARP
+  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
+  node->AggregateObject (arp);
+  //IPV4
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  //Routing for Ipv4
+  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
+  ipv4->SetRoutingProtocol (ipv4Routing);
+  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
+  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
+  node->AggregateObject (ipv4);
+  //ICMP
+  Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
+  node->AggregateObject (icmp);
+  // //Ipv4Raw
+  // Ptr<Ipv4UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  // node->AggregateObject(udp); 
+}
+
+
+class Ipv4HeaderTest : public TestCase
+{
+  Ptr<Packet> m_receivedPacket;
+  Ipv4Header m_receivedHeader;
+  void DoSendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Header::DscpType dscp,Ipv4Header::EcnType);
+  void SendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Header::DscpType dscp, Ipv4Header::EcnType);
+
+public:
+  virtual void DoRun (void);
+  Ipv4HeaderTest ();
+
+  void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  void ReceivePkt (Ptr<Socket> socket);
+};
+
+
+Ipv4HeaderTest::Ipv4HeaderTest ()
+  : TestCase ("IPv4 Header Test") 
+{
+}
+
+void Ipv4HeaderTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+{
+  m_receivedPacket = packet;
+}
+
+
+void Ipv4HeaderTest::ReceivePkt (Ptr<Socket> socket)
+{
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
+  m_receivedPacket = socket->Recv (2, MSG_PEEK);
+  NS_ASSERT (m_receivedPacket->GetSize () == 2);
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
+  m_receivedPacket->PeekHeader (m_receivedHeader);
+}
+
+
+
+void
+Ipv4HeaderTest::DoSendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Header::DscpType dscp, Ipv4Header::EcnType ecn)
+{
+  Address realTo = InetSocketAddress (Ipv4Address (to.c_str ()), 0);
+  socket->SetAttribute ("IpHeaderInclude", BooleanValue (true));
+  Ptr<Packet> p = Create<Packet> (123);
+  Ipv4Header ipHeader;
+  ipHeader.SetSource (Ipv4Address ("10.0.0.2"));
+  ipHeader.SetDestination (Ipv4Address (to.c_str ()));
+  ipHeader.SetProtocol (0);
+  ipHeader.SetPayloadSize (p->GetSize ());
+  ipHeader.SetTtl (255);
+  ipHeader.SetDscp (dscp);
+  ipHeader.SetEcn (ecn);
+  p->AddHeader (ipHeader);
+
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (p, 0, realTo),
+                         143, to);
+  socket->SetAttribute ("IpHeaderInclude", BooleanValue (false));
+}
+
+void
+Ipv4HeaderTest::SendData_IpHdr_Dscp (Ptr<Socket> socket, std::string to, Ipv4Header::DscpType dscp, Ipv4Header::EcnType ecn)
+{
+  m_receivedPacket = Create<Packet> ();
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
+                                  &Ipv4HeaderTest::DoSendData_IpHdr_Dscp, this, socket, to, dscp, ecn);
+  Simulator::Run ();
+}
+
+void
+Ipv4HeaderTest::DoRun (void)
+{
+  // Create topology
+
+  // Receiver Node
+  Ptr<Node> rxNode = CreateObject<Node> ();
+  AddInternetStack (rxNode);
+  Ptr<SimpleNetDevice> rxDev1, rxDev2;
+  { // first interface
+    rxDev1 = CreateObject<SimpleNetDevice> ();
+    rxDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+    rxNode->AddDevice (rxDev1);
+    Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
+    uint32_t netdev_idx = ipv4->AddInterface (rxDev1);
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask (0xffff0000U));
+    ipv4->AddAddress (netdev_idx, ipv4Addr);
+    ipv4->SetUp (netdev_idx);
+  }
+
+
+  // Sender Node
+  Ptr<Node> txNode = CreateObject<Node> ();
+  AddInternetStack (txNode);
+  Ptr<SimpleNetDevice> txDev1;
+  {
+    txDev1 = CreateObject<SimpleNetDevice> ();
+    txDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+    txNode->AddDevice (txDev1);
+    Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
+    uint32_t netdev_idx = ipv4->AddInterface (txDev1);
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask (0xffff0000U));
+    ipv4->AddAddress (netdev_idx, ipv4Addr);
+    ipv4->SetUp (netdev_idx);
+  }
+
+  // link the two nodes
+  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
+  rxDev1->SetChannel (channel1);
+  txDev1->SetChannel (channel1);
+
+
+  // Create the IPv4 Raw sockets
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Ipv4RawSocketFactory> ();
+  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 0)), 0, "trivial");
+  rxSocket->SetRecvCallback (MakeCallback (&Ipv4HeaderTest::ReceivePkt, this));
+
+
+  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Ipv4RawSocketFactory> ();
+  Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
+
+  // ------ Now the tests ------------
+
+  // Dscp Tests
+  std::cout << "Dscp Test\n";
+
+  std::vector <Ipv4Header::DscpType> vDscpTypes;
+  vDscpTypes.push_back (Ipv4Header::DscpDefault);
+  vDscpTypes.push_back (Ipv4Header::CS1);
+  vDscpTypes.push_back (Ipv4Header::AF11);
+  vDscpTypes.push_back (Ipv4Header::AF12);
+  vDscpTypes.push_back (Ipv4Header::AF13);
+  vDscpTypes.push_back (Ipv4Header::CS2);
+  vDscpTypes.push_back (Ipv4Header::AF21);
+  vDscpTypes.push_back (Ipv4Header::AF22);
+  vDscpTypes.push_back (Ipv4Header::AF23);
+  vDscpTypes.push_back (Ipv4Header::CS3);
+  vDscpTypes.push_back (Ipv4Header::AF31);
+  vDscpTypes.push_back (Ipv4Header::AF32);
+  vDscpTypes.push_back (Ipv4Header::AF33);
+  vDscpTypes.push_back (Ipv4Header::CS4);
+  vDscpTypes.push_back (Ipv4Header::AF41);
+  vDscpTypes.push_back (Ipv4Header::AF42);
+  vDscpTypes.push_back (Ipv4Header::AF43);
+  vDscpTypes.push_back (Ipv4Header::CS5);
+  vDscpTypes.push_back (Ipv4Header::EF);
+  vDscpTypes.push_back (Ipv4Header::CS6);
+  vDscpTypes.push_back (Ipv4Header::CS7);
+
+  for (uint32_t i = 0; i < vDscpTypes.size (); i++)
+    {
+      SendData_IpHdr_Dscp (txSocket, "10.0.0.1", vDscpTypes [i], Ipv4Header::ECT1);
+      NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
+      NS_TEST_EXPECT_MSG_EQ (m_receivedHeader.GetDscp (), vDscpTypes [i], "recv(hdrincl): 10.0.0.1");
+      m_receivedHeader.Print (std::cout);
+      std::cout << std::endl;
+      m_receivedPacket->RemoveAllByteTags ();
+      m_receivedPacket = 0;
+    }
+ 
+  // Ecn tests
+  std::cout << "Ecn Test\n";
+  std::vector <Ipv4Header::EcnType> vEcnTypes;
+  vEcnTypes.push_back (Ipv4Header::NotECT);
+  vEcnTypes.push_back (Ipv4Header::ECT1);
+  vEcnTypes.push_back (Ipv4Header::ECT0);
+  vEcnTypes.push_back (Ipv4Header::CE);
+  
+  for (uint32_t i = 0; i < vEcnTypes.size (); i++)
+    {
+      SendData_IpHdr_Dscp (txSocket, "10.0.0.1", Ipv4Header::DscpDefault, vEcnTypes [i]);
+      NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
+      NS_TEST_EXPECT_MSG_EQ (m_receivedHeader.GetEcn (), vEcnTypes [i], "recv(hdrincl): 10.0.0.1");
+      m_receivedHeader.Print (std::cout);
+      std::cout << std::endl;
+      m_receivedPacket->RemoveAllByteTags ();
+      m_receivedPacket = 0;
+    }
+
+
+ 
+  Simulator::Destroy ();
+}
+//-----------------------------------------------------------------------------
+class Ipv4HeaderTestSuite : public TestSuite
+{
+public:
+  Ipv4HeaderTestSuite () : TestSuite ("ipv4-header", UNIT)
+  {
+    AddTestCase (new Ipv4HeaderTest);
+  }
+} g_ipv4HeaderTestSuite;
+
+} // namespace ns3

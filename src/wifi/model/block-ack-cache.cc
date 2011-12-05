@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 MIRKO BANCHI
  *
@@ -131,4 +131,4 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
     }
 }
 
-} //namespace ns3
+} // namespace ns3

@@ -92,6 +92,6 @@ private:
 
 };
 bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

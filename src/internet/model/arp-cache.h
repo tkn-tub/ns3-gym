@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  *
@@ -233,6 +233,6 @@ private:
 };
 
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* ARP_CACHE_H */

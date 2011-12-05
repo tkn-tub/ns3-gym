@@ -26,8 +26,10 @@ def register_types(module):
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
     module.add_enum('MaxSize_e', ['MAX_SIZE'], outer_class=root_module['ns3::Address'], import_from_module='ns.network')
-    ## attribute-list.h (module 'core'): ns3::AttributeList [class]
-    module.add_class('AttributeList', import_from_module='ns.core')
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList [class]
+    module.add_class('AttributeConstructionList', import_from_module='ns.core')
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
+    module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
     ## spectrum-model.h (module 'spectrum'): ns3::BandInfo [struct]
     module.add_class('BandInfo', import_from_module='ns.spectrum')
     ## buffer.h (module 'network'): ns3::Buffer [class]
@@ -110,10 +112,6 @@ def register_types(module):
     module.add_class('SequentialVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumType [class]
-    module.add_class('SpectrumType', import_from_module='ns.spectrum')
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumTypeFactory [class]
-    module.add_class('SpectrumTypeFactory', import_from_module='ns.spectrum')
     ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
@@ -128,8 +126,10 @@ def register_types(module):
     module.add_class('TypeId', import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
     module.add_enum('AttributeFlag', ['ATTR_GET', 'ATTR_SET', 'ATTR_CONSTRUCT', 'ATTR_SGC'], outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo [struct]
-    module.add_class('AttributeInfo', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation [struct]
+    module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
+    module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## wimax-tlv.h (module 'wimax'): ns3::U16TlvValue [class]
     module.add_class('U16TlvValue', import_from_module='ns.wimax', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::U32TlvValue [class]
@@ -138,8 +138,6 @@ def register_types(module):
     module.add_class('U8TlvValue', import_from_module='ns.wimax', parent=root_module['ns3::TlvValue'])
     ## random-variable.h (module 'core'): ns3::UniformVariable [class]
     module.add_class('UniformVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
-    ## attribute-list.h (module 'core'): ns3::UnsafeAttributeList [class]
-    module.add_class('UnsafeAttributeList', import_from_module='ns.core')
     ## vector.h (module 'core'): ns3::Vector2D [class]
     module.add_class('Vector2D', import_from_module='ns.core')
     ## vector.h (module 'core'): ns3::Vector3D [class]
@@ -206,8 +204,6 @@ def register_types(module):
     module.add_class('PortRangeTlvValue', import_from_module='ns.wimax', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::PortRangeTlvValue::PortRange [struct]
     module.add_class('PortRange', import_from_module='ns.wimax', outer_class=root_module['ns3::PortRangeTlvValue'])
-    ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel [class]
-    module.add_class('PropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## wimax-tlv.h (module 'wimax'): ns3::ProtocolTlvValue [class]
     module.add_class('ProtocolTlvValue', import_from_module='ns.wimax', parent=root_module['ns3::TlvValue'])
     ## radio-bearer-instance.h (module 'lte'): ns3::RadioBearerInstance [class]
@@ -216,8 +212,6 @@ def register_types(module):
     module.add_enum('BearerDirection', ['DIRECTION_TYPE_UL', 'DIRECTION_TYPE_DL'], outer_class=root_module['ns3::RadioBearerInstance'])
     ## radio-bearer-instance.h (module 'lte'): ns3::RadioBearerInstance::BearerType [enumeration]
     module.add_enum('BearerType', ['BEARER_TYPE_SRB1', 'BEARER_TYPE_SRB2', 'BEARER_TYPE_DRB'], outer_class=root_module['ns3::RadioBearerInstance'])
-    ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel [class]
-    module.add_class('RandomPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
     ## rlc-entity.h (module 'lte'): ns3::RlcEntity [class]
     module.add_class('RlcEntity', parent=root_module['ns3::Object'])
     ## rrc-entity.h (module 'lte'): ns3::RrcEntity [class]
@@ -246,8 +240,12 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::SpectrumModel', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumModel>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::SpectrumSignalParameters', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumSignalParameters>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::SpectrumValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumValue>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## spectrum-interference.h (module 'spectrum'): ns3::SpectrumInterference [class]
     module.add_class('SpectrumInterference', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
     ## spectrum-model.h (module 'spectrum'): ns3::SpectrumModel [class]
@@ -256,6 +254,8 @@ def register_types(module):
     module.add_class('SpectrumPhy', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
     ## spectrum-propagation-loss-model.h (module 'spectrum'): ns3::SpectrumPropagationLossModel [class]
     module.add_class('SpectrumPropagationLossModel', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters [struct]
+    module.add_class('SpectrumSignalParameters', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     ## spectrum-value.h (module 'spectrum'): ns3::SpectrumValue [class]
     module.add_class('SpectrumValue', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
     ## nstime.h (module 'core'): ns3::Time [class]
@@ -268,6 +268,8 @@ def register_types(module):
     module.add_class('Tlv', import_from_module='ns.wimax', parent=root_module['ns3::Header'])
     ## wimax-tlv.h (module 'wimax'): ns3::Tlv::CommonTypes [enumeration]
     module.add_enum('CommonTypes', ['HMAC_TUPLE', 'MAC_VERSION_ENCODING', 'CURRENT_TRANSMIT_POWER', 'DOWNLINK_SERVICE_FLOW', 'UPLINK_SERVICE_FLOW', 'VENDOR_ID_EMCODING', 'VENDOR_SPECIFIC_INFORMATION'], outer_class=root_module['ns3::Tlv'], import_from_module='ns.wimax')
+    ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
+    module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
     module.add_class('Trailer', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
     ## ue-manager.h (module 'lte'): ns3::UeManager [class]
@@ -298,8 +300,6 @@ def register_types(module):
     module.add_class('Channel', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## channel-realization.h (module 'lte'): ns3::ChannelRealization [class]
     module.add_class('ChannelRealization', parent=root_module['ns3::Object'])
-    ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel [class]
-    module.add_class('ConstantSpeedPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
     ## data-rate.h (module 'network'): ns3::DataRateChecker [class]
     module.add_class('DataRateChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## data-rate.h (module 'network'): ns3::DataRateValue [class]
@@ -342,6 +342,8 @@ def register_types(module):
     module.add_class('LteSpectrumPhy', parent=root_module['ns3::SpectrumPhy'])
     ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy::State [enumeration]
     module.add_enum('State', ['IDLE', 'TX', 'RX'], outer_class=root_module['ns3::LteSpectrumPhy'])
+    ## lte-spectrum-signal-parameters.h (module 'lte'): ns3::LteSpectrumSignalParameters [struct]
+    module.add_class('LteSpectrumSignalParameters', parent=root_module['ns3::SpectrumSignalParameters'])
     ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker [class]
     module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
@@ -515,7 +517,8 @@ def register_types_ns3_internal(module):
 
 def register_methods(root_module):
     register_Ns3Address_methods(root_module, root_module['ns3::Address'])
-    register_Ns3AttributeList_methods(root_module, root_module['ns3::AttributeList'])
+    register_Ns3AttributeConstructionList_methods(root_module, root_module['ns3::AttributeConstructionList'])
+    register_Ns3AttributeConstructionListItem_methods(root_module, root_module['ns3::AttributeConstructionList::Item'])
     register_Ns3BandInfo_methods(root_module, root_module['ns3::BandInfo'])
     register_Ns3Buffer_methods(root_module, root_module['ns3::Buffer'])
     register_Ns3BufferIterator_methods(root_module, root_module['ns3::Buffer::Iterator'])
@@ -552,20 +555,18 @@ def register_methods(root_module):
     register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
-    register_Ns3SpectrumType_methods(root_module, root_module['ns3::SpectrumType'])
-    register_Ns3SpectrumTypeFactory_methods(root_module, root_module['ns3::SpectrumTypeFactory'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TlvValue_methods(root_module, root_module['ns3::TlvValue'])
     register_Ns3TosTlvValue_methods(root_module, root_module['ns3::TosTlvValue'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
-    register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
+    register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
+    register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
     register_Ns3U16TlvValue_methods(root_module, root_module['ns3::U16TlvValue'])
     register_Ns3U32TlvValue_methods(root_module, root_module['ns3::U32TlvValue'])
     register_Ns3U8TlvValue_methods(root_module, root_module['ns3::U8TlvValue'])
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
-    register_Ns3UnsafeAttributeList_methods(root_module, root_module['ns3::UnsafeAttributeList'])
     register_Ns3Vector2D_methods(root_module, root_module['ns3::Vector2D'])
     register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
     register_Ns3VectorTlvValue_methods(root_module, root_module['ns3::VectorTlvValue'])
@@ -597,10 +598,8 @@ def register_methods(root_module):
     register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
     register_Ns3PortRangeTlvValue_methods(root_module, root_module['ns3::PortRangeTlvValue'])
     register_Ns3PortRangeTlvValuePortRange_methods(root_module, root_module['ns3::PortRangeTlvValue::PortRange'])
-    register_Ns3PropagationDelayModel_methods(root_module, root_module['ns3::PropagationDelayModel'])
     register_Ns3ProtocolTlvValue_methods(root_module, root_module['ns3::ProtocolTlvValue'])
     register_Ns3RadioBearerInstance_methods(root_module, root_module['ns3::RadioBearerInstance'])
-    register_Ns3RandomPropagationDelayModel_methods(root_module, root_module['ns3::RandomPropagationDelayModel'])
     register_Ns3RlcEntity_methods(root_module, root_module['ns3::RlcEntity'])
     register_Ns3RrcEntity_methods(root_module, root_module['ns3::RrcEntity'])
     register_Ns3SfVectorTlvValue_methods(root_module, root_module['ns3::SfVectorTlvValue'])
@@ -614,14 +613,18 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumModel__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> >'])
+    register_Ns3SimpleRefCount__Ns3SpectrumSignalParameters_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumSignalParameters__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
+    register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3SpectrumInterference_methods(root_module, root_module['ns3::SpectrumInterference'])
     register_Ns3SpectrumModel_methods(root_module, root_module['ns3::SpectrumModel'])
     register_Ns3SpectrumPhy_methods(root_module, root_module['ns3::SpectrumPhy'])
     register_Ns3SpectrumPropagationLossModel_methods(root_module, root_module['ns3::SpectrumPropagationLossModel'])
+    register_Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::SpectrumSignalParameters'])
     register_Ns3SpectrumValue_methods(root_module, root_module['ns3::SpectrumValue'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3Tlv_methods(root_module, root_module['ns3::Tlv'])
+    register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3UeManager_methods(root_module, root_module['ns3::UeManager'])
     register_Ns3UeRecord_methods(root_module, root_module['ns3::UeRecord'])
@@ -636,7 +639,6 @@ def register_methods(root_module):
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
     register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
     register_Ns3ChannelRealization_methods(root_module, root_module['ns3::ChannelRealization'])
-    register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3DiscreteTimeLossModel_methods(root_module, root_module['ns3::DiscreteTimeLossModel'])
@@ -656,6 +658,7 @@ def register_methods(root_module):
     register_Ns3LtePhy_methods(root_module, root_module['ns3::LtePhy'])
     register_Ns3LtePropagationLossModel_methods(root_module, root_module['ns3::LtePropagationLossModel'])
     register_Ns3LteSpectrumPhy_methods(root_module, root_module['ns3::LteSpectrumPhy'])
+    register_Ns3LteSpectrumSignalParameters_methods(root_module, root_module['ns3::LteSpectrumSignalParameters'])
     register_Ns3Mac48AddressChecker_methods(root_module, root_module['ns3::Mac48AddressChecker'])
     register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
     register_Ns3MacEntity_methods(root_module, root_module['ns3::MacEntity'])
@@ -769,41 +772,43 @@ def register_Ns3Address_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3AttributeList_methods(root_module, cls):
-    ## attribute-list.h (module 'core'): ns3::AttributeList::AttributeList() [constructor]
+def register_Ns3AttributeConstructionList_methods(root_module, cls):
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::AttributeConstructionList(ns3::AttributeConstructionList const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeConstructionList const &', 'arg0')])
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::AttributeConstructionList() [constructor]
     cls.add_constructor([])
-    ## attribute-list.h (module 'core'): ns3::AttributeList::AttributeList(ns3::AttributeList const & o) [copy constructor]
-    cls.add_constructor([param('ns3::AttributeList const &', 'o')])
-    ## attribute-list.h (module 'core'): bool ns3::AttributeList::DeserializeFromString(std::string value) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value')])
-    ## attribute-list.h (module 'core'): static ns3::AttributeList * ns3::AttributeList::GetGlobal() [member function]
-    cls.add_method('GetGlobal', 
-                   'ns3::AttributeList *', 
-                   [], 
-                   is_static=True)
-    ## attribute-list.h (module 'core'): void ns3::AttributeList::Reset() [member function]
-    cls.add_method('Reset', 
+    ## attribute-construction-list.h (module 'core'): void ns3::AttributeConstructionList::Add(std::string name, ns3::Ptr<ns3::AttributeChecker const> checker, ns3::Ptr<ns3::AttributeValue> value) [member function]
+    cls.add_method('Add', 
                    'void', 
-                   [])
-    ## attribute-list.h (module 'core'): std::string ns3::AttributeList::SerializeToString() const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
+                   [param('std::string', 'name'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::Ptr< ns3::AttributeValue >', 'value')])
+    ## attribute-construction-list.h (module 'core'): std::_List_const_iterator<ns3::AttributeConstructionList::Item> ns3::AttributeConstructionList::Begin() const [member function]
+    cls.add_method('Begin', 
+                   'std::_List_const_iterator< ns3::AttributeConstructionList::Item >', 
                    [], 
                    is_const=True)
-    ## attribute-list.h (module 'core'): void ns3::AttributeList::Set(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## attribute-list.h (module 'core'): bool ns3::AttributeList::SetFailSafe(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetFailSafe', 
-                   'bool', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## attribute-list.h (module 'core'): void ns3::AttributeList::SetWithTid(ns3::TypeId tid, std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetWithTid', 
-                   'void', 
-                   [param('ns3::TypeId', 'tid'), param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## attribute-construction-list.h (module 'core'): std::_List_const_iterator<ns3::AttributeConstructionList::Item> ns3::AttributeConstructionList::End() const [member function]
+    cls.add_method('End', 
+                   'std::_List_const_iterator< ns3::AttributeConstructionList::Item >', 
+                   [], 
+                   is_const=True)
+    ## attribute-construction-list.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeConstructionList::Find(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('Find', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True)
+    return
+
+def register_Ns3AttributeConstructionListItem_methods(root_module, cls):
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item::Item() [constructor]
+    cls.add_constructor([])
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item::Item(ns3::AttributeConstructionList::Item const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AttributeConstructionList::Item const &', 'arg0')])
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item::checker [variable]
+    cls.add_instance_attribute('checker', 'ns3::Ptr< ns3::AttributeChecker const >', is_const=False)
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item::name [variable]
+    cls.add_instance_attribute('name', 'std::string', is_const=False)
+    ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item::value [variable]
+    cls.add_instance_attribute('value', 'ns3::Ptr< ns3::AttributeValue >', is_const=False)
     return
 
 def register_Ns3BandInfo_methods(root_module, cls):
@@ -2026,10 +2031,10 @@ def register_Ns3ObjectBase_methods(root_module, cls):
     cls.add_method('TraceDisconnectWithoutContext', 
                    'bool', 
                    [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
-    ## object-base.h (module 'core'): void ns3::ObjectBase::ConstructSelf(ns3::AttributeList const & attributes) [member function]
+    ## object-base.h (module 'core'): void ns3::ObjectBase::ConstructSelf(ns3::AttributeConstructionList const & attributes) [member function]
     cls.add_method('ConstructSelf', 
                    'void', 
-                   [param('ns3::AttributeList const &', 'attributes')], 
+                   [param('ns3::AttributeConstructionList const &', 'attributes')], 
                    visibility='protected')
     ## object-base.h (module 'core'): void ns3::ObjectBase::NotifyConstructionCompleted() [member function]
     cls.add_method('NotifyConstructionCompleted', 
@@ -2056,6 +2061,8 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     cls.add_constructor([param('ns3::ObjectFactory const &', 'arg0')])
     ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory() [constructor]
     cls.add_constructor([])
+    ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory(std::string typeId) [constructor]
+    cls.add_constructor([param('std::string', 'typeId')])
     ## object-factory.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectFactory::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Object >', 
@@ -2070,10 +2077,6 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## object-factory.h (module 'core'): void ns3::ObjectFactory::Set(ns3::AttributeList const & list) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::AttributeList const &', 'list')])
     ## object-factory.h (module 'core'): void ns3::ObjectFactory::SetTypeId(ns3::TypeId tid) [member function]
     cls.add_method('SetTypeId', 
                    'void', 
@@ -2346,41 +2349,6 @@ def register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods
                    is_static=True)
     return
 
-def register_Ns3SpectrumType_methods(root_module, cls):
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumType::SpectrumType(ns3::SpectrumType const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SpectrumType const &', 'arg0')])
-    ## spectrum-type.h (module 'spectrum'): std::string ns3::SpectrumType::GetName() const [member function]
-    cls.add_method('GetName', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## spectrum-type.h (module 'spectrum'): uint32_t ns3::SpectrumType::GetUid() const [member function]
-    cls.add_method('GetUid', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3SpectrumTypeFactory_methods(root_module, cls):
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumTypeFactory::SpectrumTypeFactory() [constructor]
-    cls.add_constructor([])
-    ## spectrum-type.h (module 'spectrum'): ns3::SpectrumTypeFactory::SpectrumTypeFactory(ns3::SpectrumTypeFactory const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SpectrumTypeFactory const &', 'arg0')])
-    ## spectrum-type.h (module 'spectrum'): static ns3::SpectrumType ns3::SpectrumTypeFactory::Create(std::string name) [member function]
-    cls.add_method('Create', 
-                   'ns3::SpectrumType', 
-                   [param('std::string', 'name')], 
-                   is_static=True)
-    ## spectrum-type.h (module 'spectrum'): static std::string ns3::SpectrumTypeFactory::GetNameByUid(uint32_t uid) [member function]
-    cls.add_method('GetNameByUid', 
-                   'std::string', 
-                   [param('uint32_t', 'uid')], 
-                   is_static=True)
-    return
-
 def register_Ns3Tag_methods(root_module, cls):
     ## tag.h (module 'network'): ns3::Tag::Tag() [constructor]
     cls.add_constructor([])
@@ -2575,23 +2543,13 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
+    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<ns3::TraceSourceAccessor const> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
-    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeAccessor const> ns3::TypeId::GetAttributeAccessor(uint32_t i) const [member function]
-    cls.add_method('GetAttributeAccessor', 
-                   'ns3::Ptr< ns3::AttributeAccessor const >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeChecker const> ns3::TypeId::GetAttributeChecker(uint32_t i) const [member function]
-    cls.add_method('GetAttributeChecker', 
-                   'ns3::Ptr< ns3::AttributeChecker const >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetAttributeFlags(uint32_t i) const [member function]
-    cls.add_method('GetAttributeFlags', 
-                   'uint32_t', 
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
+    cls.add_method('GetAttribute', 
+                   'ns3::TypeId::AttributeInformation', 
                    [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeFullName(uint32_t i) const [member function]
@@ -2599,25 +2557,10 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'std::string', 
                    [param('uint32_t', 'i')], 
                    is_const=True)
-    ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeHelp(uint32_t i) const [member function]
-    cls.add_method('GetAttributeHelp', 
-                   'std::string', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## type-id.h (module 'core'): ns3::Ptr<ns3::AttributeValue const> ns3::TypeId::GetAttributeInitialValue(uint32_t i) const [member function]
-    cls.add_method('GetAttributeInitialValue', 
-                   'ns3::Ptr< ns3::AttributeValue const >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
     ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetAttributeN() const [member function]
     cls.add_method('GetAttributeN', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
-    ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeName(uint32_t i) const [member function]
-    cls.add_method('GetAttributeName', 
-                   'std::string', 
-                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): ns3::Callback<ns3::ObjectBase*,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::TypeId::GetConstructor() const [member function]
     cls.add_method('GetConstructor', 
@@ -2649,25 +2592,15 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_static=True)
-    ## type-id.h (module 'core'): ns3::Ptr<const ns3::TraceSourceAccessor> ns3::TypeId::GetTraceSourceAccessor(uint32_t i) const [member function]
-    cls.add_method('GetTraceSourceAccessor', 
-                   'ns3::Ptr< ns3::TraceSourceAccessor const >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## type-id.h (module 'core'): std::string ns3::TypeId::GetTraceSourceHelp(uint32_t i) const [member function]
-    cls.add_method('GetTraceSourceHelp', 
-                   'std::string', 
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation ns3::TypeId::GetTraceSource(uint32_t i) const [member function]
+    cls.add_method('GetTraceSource', 
+                   'ns3::TypeId::TraceSourceInformation', 
                    [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetTraceSourceN() const [member function]
     cls.add_method('GetTraceSourceN', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
-    ## type-id.h (module 'core'): std::string ns3::TypeId::GetTraceSourceName(uint32_t i) const [member function]
-    cls.add_method('GetTraceSourceName', 
-                   'std::string', 
-                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): uint16_t ns3::TypeId::GetUid() const [member function]
     cls.add_method('GetUid', 
@@ -2693,22 +2626,17 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [param('ns3::TypeId', 'other')], 
                    is_const=True)
-    ## type-id.h (module 'core'): static bool ns3::TypeId::LookupAttributeByFullName(std::string fullName, ns3::TypeId::AttributeInfo * info) [member function]
-    cls.add_method('LookupAttributeByFullName', 
-                   'bool', 
-                   [param('std::string', 'fullName'), param('ns3::TypeId::AttributeInfo *', 'info')], 
-                   is_static=True)
-    ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInfo * info) const [member function]
+    ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInfo *', 'info', transfer_ownership=False)], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
                    'ns3::TypeId', 
                    [param('std::string', 'name')], 
                    is_static=True)
-    ## type-id.h (module 'core'): ns3::Ptr<const ns3::TraceSourceAccessor> ns3::TypeId::LookupTraceSourceByName(std::string name) const [member function]
+    ## type-id.h (module 'core'): ns3::Ptr<ns3::TraceSourceAccessor const> ns3::TypeId::LookupTraceSourceByName(std::string name) const [member function]
     cls.add_method('LookupTraceSourceByName', 
                    'ns3::Ptr< ns3::TraceSourceAccessor const >', 
                    [param('std::string', 'name')], 
@@ -2718,6 +2646,10 @@ def register_Ns3TypeId_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## type-id.h (module 'core'): bool ns3::TypeId::SetAttributeInitialValue(uint32_t i, ns3::Ptr<ns3::AttributeValue const> initialValue) [member function]
+    cls.add_method('SetAttributeInitialValue', 
+                   'bool', 
+                   [param('uint32_t', 'i'), param('ns3::Ptr< ns3::AttributeValue const >', 'initialValue')])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetGroupName(std::string groupName) [member function]
     cls.add_method('SetGroupName', 
                    'ns3::TypeId', 
@@ -2732,19 +2664,38 @@ def register_Ns3TypeId_methods(root_module, cls):
                    [param('uint16_t', 'tid')])
     return
 
-def register_Ns3TypeIdAttributeInfo_methods(root_module, cls):
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::AttributeInfo() [constructor]
+def register_Ns3TypeIdAttributeInformation_methods(root_module, cls):
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::AttributeInformation() [constructor]
     cls.add_constructor([])
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::AttributeInfo(ns3::TypeId::AttributeInfo const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TypeId::AttributeInfo const &', 'arg0')])
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::accessor [variable]
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::AttributeInformation(ns3::TypeId::AttributeInformation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeId::AttributeInformation const &', 'arg0')])
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::accessor [variable]
     cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::AttributeAccessor const >', is_const=False)
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::checker [variable]
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::checker [variable]
     cls.add_instance_attribute('checker', 'ns3::Ptr< ns3::AttributeChecker const >', is_const=False)
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::flags [variable]
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::flags [variable]
     cls.add_instance_attribute('flags', 'uint32_t', is_const=False)
-    ## type-id.h (module 'core'): ns3::TypeId::AttributeInfo::initialValue [variable]
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::help [variable]
+    cls.add_instance_attribute('help', 'std::string', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::initialValue [variable]
     cls.add_instance_attribute('initialValue', 'ns3::Ptr< ns3::AttributeValue const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::name [variable]
+    cls.add_instance_attribute('name', 'std::string', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation::originalInitialValue [variable]
+    cls.add_instance_attribute('originalInitialValue', 'ns3::Ptr< ns3::AttributeValue const >', is_const=False)
+    return
+
+def register_Ns3TypeIdTraceSourceInformation_methods(root_module, cls):
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::TraceSourceInformation() [constructor]
+    cls.add_constructor([])
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::TraceSourceInformation(ns3::TypeId::TraceSourceInformation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TypeId::TraceSourceInformation const &', 'arg0')])
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::accessor [variable]
+    cls.add_instance_attribute('accessor', 'ns3::Ptr< ns3::TraceSourceAccessor const >', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::help [variable]
+    cls.add_instance_attribute('help', 'std::string', is_const=False)
+    ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation::name [variable]
+    cls.add_instance_attribute('name', 'std::string', is_const=False)
     return
 
 def register_Ns3U16TlvValue_methods(root_module, cls):
@@ -2881,22 +2832,6 @@ def register_Ns3UniformVariable_methods(root_module, cls):
     cls.add_method('GetValue', 
                    'double', 
                    [param('double', 's'), param('double', 'l')])
-    return
-
-def register_Ns3UnsafeAttributeList_methods(root_module, cls):
-    ## attribute-list.h (module 'core'): ns3::UnsafeAttributeList::UnsafeAttributeList() [constructor]
-    cls.add_constructor([])
-    ## attribute-list.h (module 'core'): ns3::UnsafeAttributeList::UnsafeAttributeList(ns3::UnsafeAttributeList const & o) [copy constructor]
-    cls.add_constructor([param('ns3::UnsafeAttributeList const &', 'o')])
-    ## attribute-list.h (module 'core'): ns3::AttributeList ns3::UnsafeAttributeList::GetSafe(std::string name) const [member function]
-    cls.add_method('GetSafe', 
-                   'ns3::AttributeList', 
-                   [param('std::string', 'name')], 
-                   is_const=True)
-    ## attribute-list.h (module 'core'): void ns3::UnsafeAttributeList::Set(std::string name, ns3::AttributeValue const & param) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'param')])
     return
 
 def register_Ns3Vector2D_methods(root_module, cls):
@@ -3646,23 +3581,6 @@ def register_Ns3PortRangeTlvValuePortRange_methods(root_module, cls):
     cls.add_instance_attribute('PortLow', 'uint16_t', is_const=False)
     return
 
-def register_Ns3PropagationDelayModel_methods(root_module, cls):
-    ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel::PropagationDelayModel() [constructor]
-    cls.add_constructor([])
-    ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel::PropagationDelayModel(ns3::PropagationDelayModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PropagationDelayModel const &', 'arg0')])
-    ## propagation-delay-model.h (module 'propagation'): ns3::Time ns3::PropagationDelayModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('GetDelay', 
-                   'ns3::Time', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::PropagationDelayModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    return
-
 def register_Ns3ProtocolTlvValue_methods(root_module, cls):
     ## wimax-tlv.h (module 'wimax'): ns3::ProtocolTlvValue::ProtocolTlvValue(ns3::ProtocolTlvValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ProtocolTlvValue const &', 'arg0')])
@@ -3783,23 +3701,6 @@ def register_Ns3RadioBearerInstance_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    return
-
-def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
-    ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel::RandomPropagationDelayModel(ns3::RandomPropagationDelayModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomPropagationDelayModel const &', 'arg0')])
-    ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel::RandomPropagationDelayModel() [constructor]
-    cls.add_constructor([])
-    ## propagation-delay-model.h (module 'propagation'): ns3::Time ns3::RandomPropagationDelayModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('GetDelay', 
-                   'ns3::Time', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True)
-    ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::RandomPropagationDelayModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     return
 
 def register_Ns3RlcEntity_methods(root_module, cls):
@@ -4047,12 +3948,36 @@ def register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt_
                    is_static=True)
     return
 
+def register_Ns3SimpleRefCount__Ns3SpectrumSignalParameters_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumSignalParameters__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >::SimpleRefCount(ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter< ns3::SpectrumSignalParameters > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
 def register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumValue__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >::SimpleRefCount(ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> > const & o) [copy constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter< ns3::SpectrumValue > > const &', 'o')])
     ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter< ns3::TraceSourceAccessor > > const &', 'o')])
+    ## simple-ref-count.h (module 'core'): static void ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::Cleanup() [member function]
     cls.add_method('Cleanup', 
                    'void', 
                    [], 
@@ -4126,14 +4051,14 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
     cls.add_constructor([])
     ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy::SpectrumPhy(ns3::SpectrumPhy const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SpectrumPhy const &', 'arg0')])
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumPhy::GetDevice() [member function]
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::SpectrumPhy::GetDevice() [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::Object> ns3::SpectrumPhy::GetMobility() [member function]
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::SpectrumPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumModel const> ns3::SpectrumPhy::GetRxSpectrumModel() const [member function]
@@ -4151,20 +4076,20 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetDevice(ns3::Ptr<ns3::Object> d) [member function]
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'd')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'm')], 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -4197,6 +4122,24 @@ def register_Ns3SpectrumPropagationLossModel_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3SpectrumSignalParameters_methods(root_module, cls):
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::SpectrumSignalParameters() [constructor]
+    cls.add_constructor([])
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::SpectrumSignalParameters(ns3::SpectrumSignalParameters const & p) [copy constructor]
+    cls.add_constructor([param('ns3::SpectrumSignalParameters const &', 'p')])
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumSignalParameters> ns3::SpectrumSignalParameters::Copy() [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::SpectrumSignalParameters >', 
+                   [], 
+                   is_virtual=True)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::duration [variable]
+    cls.add_instance_attribute('duration', 'ns3::Time', is_const=False)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::psd [variable]
+    cls.add_instance_attribute('psd', 'ns3::Ptr< ns3::SpectrumValue >', is_const=False)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::txPhy [variable]
+    cls.add_instance_attribute('txPhy', 'ns3::Ptr< ns3::SpectrumPhy >', is_const=False)
     return
 
 def register_Ns3SpectrumValue_methods(root_module, cls):
@@ -4488,6 +4431,33 @@ def register_Ns3Tlv_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
+def register_Ns3TraceSourceAccessor_methods(root_module, cls):
+    ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor::TraceSourceAccessor(ns3::TraceSourceAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TraceSourceAccessor const &', 'arg0')])
+    ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor::TraceSourceAccessor() [constructor]
+    cls.add_constructor([])
+    ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::Connect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('Connect', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::Disconnect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('Disconnect', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::DisconnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
 def register_Ns3Trailer_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## trailer.h (module 'network'): ns3::Trailer::Trailer() [constructor]
@@ -4690,6 +4660,11 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeChecker::CreateValidValue(ns3::AttributeValue const & value) const [member function]
+    cls.add_method('CreateValidValue', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [param('ns3::AttributeValue const &', 'value')], 
+                   is_const=True)
     ## attribute.h (module 'core'): std::string ns3::AttributeChecker::GetUnderlyingTypeInformation() const [member function]
     cls.add_method('GetUnderlyingTypeInformation', 
                    'std::string', 
@@ -4919,32 +4894,6 @@ def register_Ns3ChannelRealization_methods(root_module, cls):
     cls.add_method('SetShadowingLossModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::ShadowingLossModel >', 'l')])
-    return
-
-def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
-    ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel(ns3::ConstantSpeedPropagationDelayModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ConstantSpeedPropagationDelayModel const &', 'arg0')])
-    ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel() [constructor]
-    cls.add_constructor([])
-    ## propagation-delay-model.h (module 'propagation'): ns3::Time ns3::ConstantSpeedPropagationDelayModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('GetDelay', 
-                   'ns3::Time', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True)
-    ## propagation-delay-model.h (module 'propagation'): double ns3::ConstantSpeedPropagationDelayModel::GetSpeed() const [member function]
-    cls.add_method('GetSpeed', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::ConstantSpeedPropagationDelayModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## propagation-delay-model.h (module 'propagation'): void ns3::ConstantSpeedPropagationDelayModel::SetSpeed(double speed) [member function]
-    cls.add_method('SetSpeed', 
-                   'void', 
-                   [param('double', 'speed')])
     return
 
 def register_Ns3DataRateChecker_methods(root_module, cls):
@@ -5526,14 +5475,14 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::SpectrumChannel >', 
                    [])
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::Object> ns3::LteSpectrumPhy::GetDevice() [member function]
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::NetDevice> ns3::LteSpectrumPhy::GetDevice() [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::Object> ns3::LteSpectrumPhy::GetMobility() [member function]
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::MobilityModel> ns3::LteSpectrumPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::Object >', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumValue const> ns3::LteSpectrumPhy::GetNoisePowerSpectralDensity() [member function]
@@ -5545,10 +5494,6 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): ns3::SpectrumType ns3::LteSpectrumPhy::GetSpectrumType() [member function]
-    cls.add_method('GetSpectrumType', 
-                   'ns3::SpectrumType', 
-                   [])
     ## lte-spectrum-phy.h (module 'lte'): static ns3::TypeId ns3::LteSpectrumPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -5559,10 +5504,10 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetDevice(ns3::Ptr<ns3::Object> d) [member function]
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'd')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetGenericPhyRxEndErrorCallback(ns3::GenericPhyRxEndErrorCallback c) [member function]
     cls.add_method('SetGenericPhyRxEndErrorCallback', 
@@ -5580,10 +5525,10 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetGenericPhyTxEndCallback', 
                    'void', 
                    [param('ns3::GenericPhyTxEndCallback', 'c')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'm')], 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetNoisePowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> noisePsd) [member function]
     cls.add_method('SetNoisePowerSpectralDensity', 
@@ -5597,10 +5542,10 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetTxPowerSpectralDensity', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::StartRx(ns3::Ptr<ns3::PacketBurst> pb, ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTx(ns3::Ptr<ns3::PacketBurst> pb) [member function]
     cls.add_method('StartTx', 
@@ -5611,6 +5556,20 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3LteSpectrumSignalParameters_methods(root_module, cls):
+    ## lte-spectrum-signal-parameters.h (module 'lte'): ns3::LteSpectrumSignalParameters::LteSpectrumSignalParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-spectrum-signal-parameters.h (module 'lte'): ns3::LteSpectrumSignalParameters::LteSpectrumSignalParameters(ns3::LteSpectrumSignalParameters const & p) [copy constructor]
+    cls.add_constructor([param('ns3::LteSpectrumSignalParameters const &', 'p')])
+    ## lte-spectrum-signal-parameters.h (module 'lte'): ns3::Ptr<ns3::SpectrumSignalParameters> ns3::LteSpectrumSignalParameters::Copy() [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::SpectrumSignalParameters >', 
+                   [], 
+                   is_virtual=True)
+    ## lte-spectrum-signal-parameters.h (module 'lte'): ns3::LteSpectrumSignalParameters::packetBurst [variable]
+    cls.add_instance_attribute('packetBurst', 'ns3::Ptr< ns3::PacketBurst >', is_const=False)
     return
 
 def register_Ns3Mac48AddressChecker_methods(root_module, cls):
@@ -5969,10 +5928,18 @@ def register_Ns3Node_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## node.h (module 'network'): void ns3::Node::RegisterDeviceAdditionListener(ns3::Callback<void,ns3::Ptr<ns3::NetDevice>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> listener) [member function]
+    cls.add_method('RegisterDeviceAdditionListener', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'listener')])
     ## node.h (module 'network'): void ns3::Node::RegisterProtocolHandler(ns3::Callback<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> handler, uint16_t protocolType, ns3::Ptr<ns3::NetDevice> device, bool promiscuous=false) [member function]
     cls.add_method('RegisterProtocolHandler', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'promiscuous', default_value='false')])
+    ## node.h (module 'network'): void ns3::Node::UnregisterDeviceAdditionListener(ns3::Callback<void,ns3::Ptr<ns3::NetDevice>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> listener) [member function]
+    cls.add_method('UnregisterDeviceAdditionListener', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'listener')])
     ## node.h (module 'network'): void ns3::Node::UnregisterProtocolHandler(ns3::Callback<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> handler) [member function]
     cls.add_method('UnregisterProtocolHandler', 
                    'void', 
@@ -5987,11 +5954,6 @@ def register_Ns3Node_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## node.h (module 'network'): void ns3::Node::NotifyDeviceAdded(ns3::Ptr<ns3::NetDevice> device) [member function]
-    cls.add_method('NotifyDeviceAdded', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ObjectFactoryChecker_methods(root_module, cls):
@@ -6352,6 +6314,11 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
     cls.add_constructor([])
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel::SpectrumChannel(ns3::SpectrumChannel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SpectrumChannel const &', 'arg0')])
+    ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::AddPropagationLossModel(ns3::Ptr<ns3::PropagationLossModel> loss) [member function]
+    cls.add_method('AddPropagationLossModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PropagationLossModel >', 'loss')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::AddRx(ns3::Ptr<ns3::SpectrumPhy> phy) [member function]
     cls.add_method('AddRx', 
                    'void', 
@@ -6372,10 +6339,10 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationDelayModel >', 'delay')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> txPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
+    ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::StartTx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartTx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -7058,6 +7025,11 @@ def register_Ns3SingleModelSpectrumChannel_methods(root_module, cls):
     cls.add_constructor([param('ns3::SingleModelSpectrumChannel const &', 'arg0')])
     ## single-model-spectrum-channel.h (module 'spectrum'): ns3::SingleModelSpectrumChannel::SingleModelSpectrumChannel() [constructor]
     cls.add_constructor([])
+    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::AddPropagationLossModel(ns3::Ptr<ns3::PropagationLossModel> loss) [member function]
+    cls.add_method('AddPropagationLossModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PropagationLossModel >', 'loss')], 
+                   is_virtual=True)
     ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::AddRx(ns3::Ptr<ns3::SpectrumPhy> phy) [member function]
     cls.add_method('AddRx', 
                    'void', 
@@ -7093,20 +7065,15 @@ def register_Ns3SingleModelSpectrumChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationDelayModel >', 'delay')], 
                    is_virtual=True)
-    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> txPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
+    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::StartTx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartTx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
                    is_virtual=True)
     ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   visibility='private', is_virtual=True)
-    ## single-model-spectrum-channel.h (module 'spectrum'): void ns3::SingleModelSpectrumChannel::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> rxPowerSpectrum, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> receiver) [member function]
-    cls.add_method('StartRx', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'rxPowerSpectrum'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'receiver')], 
                    visibility='private', is_virtual=True)
     return
 

@@ -69,7 +69,7 @@ namespace ns3 {
 void BreakpointFallback (void);
 
 
-} //namespace ns3
+} // namespace ns3
 
 
 #endif /* BREAKPOINT_H */

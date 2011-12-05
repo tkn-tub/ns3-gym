@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <iostream>
 #include <sstream>
-#include "ns3/assert.h"
+#include "assert.h"
 
 namespace ns3 {
 

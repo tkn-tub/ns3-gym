@@ -118,16 +118,28 @@ private:
 
 
   int GetRbgSize (int dlbandwidth);
+  
+  static bool SortRlcBufferReq (FfMacSchedSapProvider::SchedDlRlcBufferReqParameters i,FfMacSchedSapProvider::SchedDlRlcBufferReqParameters j);
+  
+  void RefreshDlCqiMaps(void);
+  void RefreshUlCqiMaps(void);
+  
+  void UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size);
+  void UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size);
 
   /*
    * Vectors of UE's RLC info
   */
-  std::vector <FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
+  std::list <FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
 
   /*
   * Map of UE's DL CQI P01 received
   */
   std::map <uint16_t,uint8_t> m_p10CqiRxed;
+  /*
+  * Map of UE's timers on DL CQI P01 received
+  */
+  std::map <uint16_t,uint32_t> m_p10CqiTimers;
 
   /*
   * Map of previous allocated UE per RBG
@@ -139,13 +151,17 @@ private:
   * Map of UEs' UL-CQI per RBG
   */
   std::map <uint16_t, std::vector <double> > m_ueCqi;
+  /*
+  * Map of UEs' timers on UL-CQI per RBG
+  */
+  std::map <uint16_t, uint32_t> m_ueCqiTimers;
 
 
 
   /*
   * Map of UE's buffer status reports received
   */
-  std::map <uint16_t,uint8_t> m_ceBsrRxed;
+  std::map <uint16_t,uint32_t> m_ceBsrRxed;
 
   // MAC SAPs
   FfMacCschedSapUser* m_cschedSapUser;
@@ -161,6 +177,9 @@ private:
 
   uint16_t m_nextRntiDl; // RNTI of the next user to be served next scheduling in DL
   uint16_t m_nextRntiUl; // RNTI of the next user to be served next scheduling in UL
+  
+  uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid
+  
 
 };
 

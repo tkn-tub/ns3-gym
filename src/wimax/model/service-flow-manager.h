@@ -47,6 +47,8 @@ public:
     CONFIRMATION_CODE_SUCCESS, CONFIRMATION_CODE_REJECT
   };
 
+  static TypeId GetTypeId (void);
+
   ServiceFlowManager ();
   ~ServiceFlowManager (void);
   void DoDispose (void);

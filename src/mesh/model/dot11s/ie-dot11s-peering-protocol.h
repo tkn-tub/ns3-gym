@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -45,5 +45,5 @@ private:
   uint8_t m_protocol;
 };
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 #endif

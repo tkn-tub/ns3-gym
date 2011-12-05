@@ -11,7 +11,7 @@ import Task
 NSC_RELEASE_NAME = "nsc-0.5.2"
 
 
-def set_options(opt):
+def options(opt):
     opt.add_option('--with-nsc',
                    help=('Use Network Simulation Cradle, given by the indicated path,'
                          ' to allow the use of real-world network stacks'),
@@ -32,38 +32,38 @@ def configure(conf):
     # Check for the location of NSC
     if Options.options.with_nsc:
         if os.path.isdir(Options.options.with_nsc):
-            conf.check_message("NSC location", '', True, ("%s (given)" % Options.options.with_nsc))
+            conf.msg("Checking for NSC location", ("%s (given)" % Options.options.with_nsc))
             conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
     else:
         # ns-3-dev uses ../nsc, while ns-3 releases use ../NSC_RELEASE_NAME
         nsc_dir = os.path.join('..', "nsc")
         nsc_release_dir = os.path.join('..', NSC_RELEASE_NAME)
         if os.path.isdir(nsc_dir):
-            conf.check_message("NSC location", '', True, ("%s (guessed)" % nsc_dir))
+            conf.msg("Checking for NSC location",("%s (guessed)" % nsc_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
         elif os.path.isdir(nsc_release_dir):
-            conf.check_message("NSC location", '', True, ("%s (guessed)" % nsc_release_dir))
+            conf.msg("Checking for NSC location", ("%s (guessed)" % nsc_release_dir))
             conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
         del nsc_dir
         del nsc_release_dir
 
     if not conf.env['WITH_NSC']:
-        conf.check_message("NSC location", '', False)
+        conf.msg("Checking for NSC location", False)
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
                                      "NSC not found (see option --with-nsc)")
 	return
     
-    if sys.platform in ['linux2']:
+    if Options.platform in ['linux', 'freebsd']:
         arch = os.uname()[4]
     else:
         arch = None
     ok = False
-    if arch in ('x86_64', 'i686', 'i586', 'i486', 'i386'):
+    if arch in ('amd64', 'x86_64', 'i686', 'i586', 'i486', 'i386'):
         conf.env['NSC_ENABLED'] = True
         conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
-        conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib='DL')
+        conf.check_nonfatal(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
         ok = True
-    conf.check_message('NSC supported architecture', arch, ok)
+    conf.msg('Checking for NSC supported architecture ' + (arch or ''), ok)
     
     if not ok:
         conf.env['NSC_ENABLED'] = False
@@ -193,6 +193,10 @@ def build(bld):
         'test/ipv4-list-routing-test-suite.cc',
         'test/ipv4-packet-info-tag-test-suite.cc',
         'test/ipv4-raw-test.cc',
+        'test/ipv4-header-test.cc',
+        'test/ipv4-fragmentation-test.cc',
+        'test/error-channel.cc',
+        'test/error-net-device.cc',
         'test/ipv4-test.cc',
         'test/ipv6-extension-header-test-suite.cc',
         'test/ipv6-list-routing-test-suite.cc',
@@ -202,7 +206,7 @@ def build(bld):
         'test/udp-test.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'internet'
     headers.source = [
         'model/udp-header.h',
@@ -280,8 +284,8 @@ def build(bld):
         obj.source.append ('model/nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('model/nsc-sysctl.cc')
         headers.source.append('model/nsc-tcp-l4-protocol.h')
-        obj.uselib           = 'DL'
-        internet_test.uselib = 'DL'
+        obj.use.append('DL')
+        internet_test.use.append('DL')
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.add_subdirs('examples')

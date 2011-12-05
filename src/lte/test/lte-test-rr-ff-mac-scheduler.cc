@@ -52,10 +52,11 @@ using namespace ns3;
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
   : TestSuite ("lte-rr-ff-mac-scheduler", SYSTEM)
 {
-  SetVerbose (true);
   NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
 
 
+  AddTestCase (new LenaRrFfMacSchedulerTestCase (1,0,3000,1383000,1239000));
+  
   // DOWNLINK- DISTANCE 0 -> MCS 28 -> Itbs 26 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 26 -> 2196 -> 2196000 bytes/sec
   // 3 users -> 8 PRB at Itbs 26 -> 749 -> 749000 bytes/sec
@@ -165,17 +166,22 @@ LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
 
 static LenaTestRrFfMacSchedulerSuite lenaTestRrFfMacSchedulerSuite;
 
+std::string 
+LenaRrFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
+{
+  std::ostringstream oss;
+  oss << nUser << " UEs, distance " << dist << " m";
+  return oss.str ();
+}
+
 LenaRrFfMacSchedulerTestCase::LenaRrFfMacSchedulerTestCase (uint16_t nUser, uint16_t nLc, uint16_t dist, double thrRefDl, double thrRefUl)
-  : TestCase (""),
+  : TestCase (BuildNameString (nUser, dist)),              
     m_nUser (nUser),
     m_nLc (nLc),
     m_dist (dist),
     m_thrRefDl (thrRefDl),
     m_thrRefUl (thrRefUl)
 {
-  std::ostringstream oss;
-  oss << nUser << " UEs, distance " << dist << " m" ;
-  SetName (oss.str ());
 }
 
 LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()
@@ -211,8 +217,8 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 //   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 
 //   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
 //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 
 
@@ -220,9 +226,10 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-  SetVerbose (true);
 
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -250,9 +257,8 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
-
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
+  
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -293,7 +299,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
       // get the lcId
       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " lcid " << (uint16_t) lcId << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
       NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
     }
 
@@ -306,7 +312,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
       // get the lcId
       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " lcid " << (uint16_t) lcId << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
       NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
     }
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANMACCW_H
-#define UANMACCW_H
+#ifndef UAN_MAC_CW_H
+#define UAN_MAC_CW_H
 
 #include "ns3/uan-mac.h"
 #include "ns3/nstime.h"
@@ -126,4 +126,4 @@ protected:
 
 }
 
-#endif // UANMACCW_H
+#endif /* UAN_MAC_CW_H */

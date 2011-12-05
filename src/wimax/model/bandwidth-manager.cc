@@ -37,6 +37,15 @@ NS_LOG_COMPONENT_DEFINE ("BandwidthManager");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (BandwidthManager);
+
+TypeId BandwidthManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BandwidthManager")
+    .SetParent<Object> ();
+  return tid;
+}
+
 BandwidthManager::BandwidthManager (Ptr<WimaxNetDevice> device)
   : m_device (device),
     m_nrBwReqsSent (0)

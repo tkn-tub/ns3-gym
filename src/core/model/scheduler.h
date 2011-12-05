@@ -22,7 +22,7 @@
 #define SCHEDULER_H
 
 #include <stdint.h>
-#include "ns3/object.h"
+#include "object.h"
 
 namespace ns3 {
 
@@ -46,8 +46,8 @@ class EventImpl;
  * The lifetime of this pointer is assumed to always be longer than
  * the lifetime of the Scheduler class which means that the caller
  * is responsible for ensuring that this invariant holds through
- * calling EventImpl::Ref and EventImpl::Unref at the right time.
- * Typically, ::Ref is called before Insert and ::Unref is called
+ * calling EventId::Ref and SimpleRefCount::Unref at the right time.
+ * Typically, EventId::Ref is called before Insert and SimpleRefCount::Unref is called
  * after a call to one of the Remove methods.
  */
 class Scheduler : public Object

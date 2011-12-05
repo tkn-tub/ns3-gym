@@ -68,6 +68,12 @@ LteMacTag::SetRnti (uint16_t rnti)
   m_rnti = rnti;
 }
 
+void
+LteMacTag::SetLcid (uint8_t lcid)
+{
+  m_lcid = lcid;
+}
+
 uint32_t
 LteMacTag::GetSerializedSize (void) const
 {

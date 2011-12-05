@@ -188,12 +188,13 @@ LteRlcSm::GetTypeId (void)
 void
 LteRlcSm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p);
 }
 
 void
 LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 {
+  NS_LOG_FUNCTION (this << p);
   // RLC Performance evaluation
   RlcTag rlcTag;
   Time delay;
@@ -208,6 +209,7 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 void
 LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
 {
+  NS_LOG_FUNCTION (this << bytes);
   LteMacSapProvider::TransmitPduParameters params;
   params.pdu = Create<Packet> (bytes);
   params.rnti = m_rnti;
@@ -220,6 +222,7 @@ LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
   m_txPdu(m_rnti, m_lcid, bytes);
 
   m_macSapProvider->TransmitPdu (params);
+  ReportBufferStatus ();
 }
 
 void
@@ -232,15 +235,21 @@ void
 LteRlcSm::Start ()
 {
   NS_LOG_FUNCTION (this);
+  ReportBufferStatus ();
+}
+
+void
+LteRlcSm::ReportBufferStatus ()
+{
+  NS_LOG_FUNCTION (this);
   LteMacSapProvider::ReportBufferStatusParameters p;
   p.rnti = m_rnti;
   p.lcid = m_lcid;
-  p.txQueueSize = 1000000000;
-  p.txQueueHolDelay = 10000;
-  p.retxQueueSize = 1000000000;
-  p.retxQueueHolDelay = 10000;
-  p.statusPduSize = 1000;
-
+  p.txQueueSize = 80000;
+  p.txQueueHolDelay = 10;
+  p.retxQueueSize = 0;
+  p.retxQueueHolDelay = 0;
+  p.statusPduSize = 0;
   m_macSapProvider->ReportBufferStatus (p);
 }
 

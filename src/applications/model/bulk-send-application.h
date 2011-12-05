@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Georgia Institute of Technology
  *
@@ -18,8 +18,8 @@
  * Author: George F. Riley <riley@ece.gatech.edu>
  */
 
-#ifndef __bulksend_application_h__
-#define __bulksend_application_h__
+#ifndef BULK_SEND_APPLICATION_H
+#define BULK_SEND_APPLICATION_H
 
 #include "ns3/address.h"
 #include "ns3/application.h"
@@ -103,5 +103,4 @@ private:
 
 } // namespace ns3
 
-#endif
-
+#endif /* BULK_SEND_APPLICATION_H */

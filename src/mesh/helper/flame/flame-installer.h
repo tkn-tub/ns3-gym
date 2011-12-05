@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -18,8 +18,8 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-#ifndef FLAME_STACK_INSTALLER_H
-#define FLAME_STACK_INSTALLER_H
+#ifndef FLAME_INSTALLER_H
+#define FLAME_INSTALLER_H
 
 #include "ns3/mesh-stack-installer.h"
 
@@ -73,7 +73,7 @@ public:
   void ResetStats (const Ptr<MeshPointDevice> mp);
 };
 
-} //namespace ns3
+} // namespace ns3
 
-#endif // FLAME_STACK_INSTALLER_H
+#endif /* FLAME_INSTALLER_H */
 

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -192,5 +192,5 @@ TxDurationTestSuite::TxDurationTestSuite ()
 }
 
 static TxDurationTestSuite g_txDurationTestSuite;
-} //namespace ns3
+} // namespace ns3
 

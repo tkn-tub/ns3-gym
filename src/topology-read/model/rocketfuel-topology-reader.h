@@ -18,11 +18,10 @@
  * Author: Hajime Tazaki (tazaki@sfc.wide.ad.jp)
  */
 
-#ifndef __ROCKETFUEL_TOPOLOGY_READER_H__
-#define __ROCKETFUEL_TOPOLOGY_READER_H__
+#ifndef ROCKETFUEL_TOPOLOGY_READER_H
+#define ROCKETFUEL_TOPOLOGY_READER_H
 
 #include "ns3/nstime.h"
-
 #include "topology-reader.h"
 
 namespace ns3 {
@@ -31,6 +30,8 @@ namespace ns3 {
 // ------------------------------------------------------------
 // --------------------------------------------
 /**
+ * \ingroup topology
+ *
  * \brief Topology file reader (Rocketfuel-format type).
  *
  * http://www.cs.washington.edu/research/networking/rocketfuel/
@@ -84,6 +85,6 @@ private:
 };
 
 
-#endif // __ROCKETFUEL_TOPOLOGY_READER_H__
+#endif /* ROCKETFUEL_TOPOLOGY_READER_H */
 
 

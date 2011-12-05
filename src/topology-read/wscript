@@ -15,7 +15,7 @@ def build(bld):
         'test/rocketfuel-topology-reader-test-suite.cc',
         ]
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'topology-read'
     headers.source = [
        'model/topology-reader.h',

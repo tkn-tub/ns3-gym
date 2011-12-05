@@ -142,7 +142,7 @@ SpectrumAnalyzerHelper::Install (NodeContainer c) const
       dev->SetPhy (phy);
 
       NS_ASSERT (node);
-      phy->SetMobility (node);
+      phy->SetMobility (node->GetObject<MobilityModel> ());
 
       NS_ASSERT (dev);
       phy->SetDevice (dev);

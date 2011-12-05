@@ -18,8 +18,8 @@
 // Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt> <gjcarneiro@gmail.com>
 //
 
-#ifndef __NS3_SEQ_NUM_H__
-#define __NS3_SEQ_NUM_H__
+#ifndef NS3_SEQ_NUM_H
+#define NS3_SEQ_NUM_H
 
 #include <limits>
 #include <iostream>
@@ -293,6 +293,6 @@ typedef SequenceNumber<uint16_t, int16_t> SequenceNumber16;
 
 } // namespace ns3
 
-#endif
+#endif /* NS3_SEQ_NUM_H */
 
 

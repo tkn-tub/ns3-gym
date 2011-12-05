@@ -1590,17 +1590,20 @@ PbbMessageIpv4::GetAddressLength (void) const
 void
 PbbMessageIpv4::SerializeOriginatorAddress (Buffer::Iterator &start) const
 {
-  uint8_t buffer[GetAddressLength () + 1];
+  uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   Ipv4Address::ConvertFrom (GetOriginatorAddress ()).Serialize (buffer);
   start.Write (buffer, GetAddressLength () + 1);
+  delete[] buffer;
 }
 
 Address
 PbbMessageIpv4::DeserializeOriginatorAddress (Buffer::Iterator &start) const
 {
-  uint8_t buffer[GetAddressLength () + 1];
+  uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   start.Read (buffer, GetAddressLength () + 1);
-  return Ipv4Address::Deserialize (buffer);
+  Address result = Ipv4Address::Deserialize (buffer);
+  delete[] buffer;
+  return result;
 }
 
 void
@@ -1636,17 +1639,20 @@ PbbMessageIpv6::GetAddressLength (void) const
 void
 PbbMessageIpv6::SerializeOriginatorAddress (Buffer::Iterator &start) const
 {
-  uint8_t buffer[GetAddressLength () + 1];
+  uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   Ipv6Address::ConvertFrom (GetOriginatorAddress ()).Serialize (buffer);
   start.Write (buffer, GetAddressLength () + 1);
+  delete[] buffer;
 }
 
 Address
 PbbMessageIpv6::DeserializeOriginatorAddress (Buffer::Iterator &start) const
 {
-  uint8_t buffer[GetAddressLength () + 1];
+  uint8_t* buffer = new uint8_t[GetAddressLength () + 1];
   start.Read (buffer, GetAddressLength () + 1);
-  return Ipv6Address::Deserialize (buffer);
+  Address res = Ipv6Address::Deserialize (buffer);
+  delete[] buffer;
+  return res;
 }
 
 void
@@ -1980,9 +1986,9 @@ PbbAddressBlock::GetSerializedSize (void) const
     }
   else if (AddressSize () > 0)
     {
-      uint8_t head[GetAddressLength ()];
+      uint8_t* head = new uint8_t[GetAddressLength ()];
       uint8_t headlen = 0;
-      uint8_t tail[GetAddressLength ()];
+      uint8_t* tail = new uint8_t[GetAddressLength ()];
       uint8_t taillen = 0;
 
       GetHeadTail (head, headlen, tail, taillen);
@@ -2005,6 +2011,9 @@ PbbAddressBlock::GetSerializedSize (void) const
       size += (GetAddressLength () - headlen - taillen) * AddressSize ();
 
       size += PrefixSize ();
+
+      delete[] head;
+      delete[] tail;
     }
 
   size += m_addressTlvList.GetSerializedSize ();
@@ -2022,7 +2031,7 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
 
   if (AddressSize () == 1)
     {
-      uint8_t buf[GetAddressLength ()];
+      uint8_t* buf = new uint8_t[GetAddressLength ()];
       SerializeAddress (buf, AddressBegin ());
       start.Write (buf, GetAddressLength ());
 
@@ -2032,11 +2041,12 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
           flags |= AHAS_SINGLE_PRE_LEN;
         }
       bufref.WriteU8 (flags);
+      delete[] buf;
     }
   else if (AddressSize () > 0)
     {
-      uint8_t head[GetAddressLength ()];
-      uint8_t tail[GetAddressLength ()];
+      uint8_t* head = new uint8_t[GetAddressLength ()];
+      uint8_t* tail = new uint8_t[GetAddressLength ()];
       uint8_t headlen = 0;
       uint8_t taillen = 0;
 
@@ -2066,7 +2076,7 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
 
       if (headlen + taillen < GetAddressLength ())
         {
-          uint8_t mid[GetAddressLength ()];
+          uint8_t* mid = new uint8_t[GetAddressLength ()];
           for (PbbAddressBlock::ConstAddressIterator iter = AddressBegin ();
                iter != AddressEnd ();
                iter++)
@@ -2074,6 +2084,7 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
               SerializeAddress (mid, iter);
               start.Write (mid + headlen, GetAddressLength () - headlen - taillen);
             }
+          delete[] mid;
         }
 
       flags |= GetPrefixFlags ();
@@ -2085,6 +2096,9 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
         {
           start.WriteU8 (*iter);
         }
+
+      delete[] head;
+      delete[] tail;
     }
 
   m_addressTlvList.Serialize (start);
@@ -2100,7 +2114,7 @@ PbbAddressBlock::Deserialize (Buffer::Iterator &start)
     {
       uint8_t headlen = 0;
       uint8_t taillen = 0;
-      uint8_t addrtmp[GetAddressLength ()];
+      uint8_t* addrtmp = new uint8_t[GetAddressLength ()];
       memset (addrtmp, 0, GetAddressLength ());
 
       if (flags & AHAS_HEAD)
@@ -2136,6 +2150,8 @@ PbbAddressBlock::Deserialize (Buffer::Iterator &start)
               PrefixPushBack (start.ReadU8 ());
             }
         }
+
+      delete[] addrtmp;
     }
 
   m_addressTlvList.Deserialize (start);

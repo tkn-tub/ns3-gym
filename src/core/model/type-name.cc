@@ -23,4 +23,4 @@ DEF_TYPE (float);
 DEF_TYPE (double);
 
 
-} //namespace ns3
+} // namespace ns3

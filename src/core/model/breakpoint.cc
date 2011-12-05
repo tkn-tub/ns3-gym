@@ -54,4 +54,4 @@ BreakpointFallback (void)
 
 #endif // HAVE_SIGNAL_H
 
-} //namespace ns3
+} // namespace ns3

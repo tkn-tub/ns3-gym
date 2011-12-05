@@ -28,7 +28,6 @@
 
 #include "eps-tft-classifier.h"
 #include "lte-tft.h"
-#include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
@@ -42,20 +41,19 @@ NS_LOG_COMPONENT_DEFINE ("EpsTftClassifier");
 namespace ns3 {
 
 EpsTftClassifier::EpsTftClassifier ()
-  : m_tftCount (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-uint32_t 
-EpsTftClassifier::Add (Ptr<LteTft> tft)
+void
+EpsTftClassifier::Add (Ptr<LteTft> tft, uint32_t id)
 {
   NS_LOG_FUNCTION (this << tft);
-  // simple sanity check. If you ever need more than 4M TFTs within a same classifiers, you'll need to implement a smarter id management algorithm.
-  NS_ABORT_IF (m_tftCount == 0xFFFFFFFF);
-  ++m_tftCount;  
-  m_tftMap[m_tftCount] = tft;
-  return m_tftCount;
+  
+  m_tftMap[id] = tft;  
+  
+  // simple sanity check: there shouldn't be more than 16 bearers (hence TFTs) per UE
+  NS_ASSERT (m_tftMap.size () <= 16);
 }
 
 void
@@ -69,7 +67,7 @@ EpsTftClassifier::Delete (uint32_t id)
 uint32_t 
 EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
 {
-  NS_LOG_FUNCTION (this << *p << direction);
+  NS_LOG_FUNCTION (this << p << direction);
 
   Ptr<Packet> pCopy = p->Copy ();
 
@@ -141,12 +139,15 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
 	       << " remoteAddr=" << remoteAddress 
 	       << " localPort="  << localPort 
 	       << " remotePort=" << remotePort 
-	       << " tos=0x" << std::hex << tos);
+	       << " tos=0x" << (uint16_t) tos );
 
   // now it is possible to classify the packet!
-  std::map <uint32_t, Ptr<LteTft> >::const_iterator it;
+  // we use a reverse iterator since filter priority is not implemented properly.
+  // This way, since the default bearer is expected to be added first, it will be evaluated last.
+  std::map <uint32_t, Ptr<LteTft> >::const_reverse_iterator it;
   NS_LOG_LOGIC ("TFT MAP size: " << m_tftMap.size ());
-  for (it = m_tftMap.begin (); it != m_tftMap.end (); ++it)
+
+  for (it = m_tftMap.rbegin (); it != m_tftMap.rend (); ++it)
     {
       NS_LOG_LOGIC ("TFT id: " << it->first );
       NS_LOG_LOGIC (" Ptr<LteTft>: " << it->second);

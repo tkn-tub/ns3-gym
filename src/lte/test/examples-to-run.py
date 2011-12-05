@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 # A list of C++ examples to run in order to ensure that they remain
@@ -8,10 +9,12 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("lena-first-sim", "True", "True"),
-    ("inter-cell-interference", "True", "True"),
-    ("lena-rlc-calculator", "True", "True"),
-    ("profiling-reference", "False", "False"),
+    ("lena-simple", "True", "True"),
+    ("lena-intercell-interference", "True", "True"),
+    ("lena-rlc-traces", "True", "True"),
+    ("lena-profiling", "True", "True"),
+    ("lena-pathloss-traces", "True", "True"),
+    ("lena-fading", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

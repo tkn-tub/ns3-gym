@@ -1,4 +1,4 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 //
@@ -52,4 +52,4 @@ Ipv4L4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                              const uint8_t payload[8])
 {}
 
-} //namespace ns3
+} // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006,2007 INRIA
  *
@@ -81,6 +81,15 @@ MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
   Vector oPosition = other->DoGetPosition ();
   Vector position = DoGetPosition ();
   return CalculateDistance (position, oPosition);
+}
+
+double
+MobilityModel::GetRelativeSpeed (Ptr<const MobilityModel> other) const
+{
+  double x = GetVelocity().x - other->GetVelocity().x;
+  double y = GetVelocity().y - other->GetVelocity().y;
+  double z = GetVelocity().z - other->GetVelocity().z;
+  return sqrt( (x*x) + (y*y) + (z*z) );
 }
 
 void

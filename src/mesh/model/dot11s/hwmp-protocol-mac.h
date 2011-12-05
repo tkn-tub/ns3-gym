@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -135,6 +135,6 @@ private:
   /// Receive action management frame
   bool ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header);
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

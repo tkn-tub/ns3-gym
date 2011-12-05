@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -38,7 +38,7 @@ TypeId
 UanPropModelIdeal::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPropModelIdeal")
-    .SetParent<Object> ()
+    .SetParent<UanPropModel> ()
     .AddConstructor<UanPropModelIdeal> ()
   ;
   return tid;

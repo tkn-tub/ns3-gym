@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -173,7 +173,7 @@ public:
   virtual void SetIpv6 (Ptr<Ipv6> ipv6) = 0;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV6_ROUTING_PROTOCOL_H */
 

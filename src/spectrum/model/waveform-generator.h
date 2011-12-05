@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -29,7 +29,6 @@
 #include <ns3/net-device.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
 #include <ns3/trace-source-accessor.h>
 
 namespace ns3 {
@@ -56,12 +55,12 @@ public:
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
-  void SetMobility (Ptr<Object> m);
-  void SetDevice (Ptr<Object> d);
-  Ptr<Object> GetMobility ();
-  Ptr<Object> GetDevice ();
+  void SetMobility (Ptr<MobilityModel> m);
+  void SetDevice (Ptr<NetDevice> d);
+  Ptr<MobilityModel> GetMobility ();
+  Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
+  void StartRx (Ptr<SpectrumSignalParameters> params);
 
 
   /**
@@ -70,16 +69,6 @@ public:
    * @param txs the Power Spectral Density
    */
   void SetTxPowerSpectralDensity (Ptr<SpectrumValue> txs);
-
-
-  /**
-   * Get the SpectrumType used by this PHY
-   *
-   * @return
-   */
-  SpectrumType GetSpectrumType ();
-
-
 
   /**
    * Set the period according to which the WaveformGenerator switches
@@ -129,8 +118,8 @@ public:
 private:
   virtual void DoDispose (void);
 
-  Ptr<Object> m_mobility;
-  Ptr<Object> m_netDevice;
+  Ptr<MobilityModel> m_mobility;
+  Ptr<NetDevice> m_netDevice;
   Ptr<SpectrumChannel> m_channel;
 
   virtual void GenerateWaveform ();

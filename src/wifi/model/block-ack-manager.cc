@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
@@ -649,4 +649,4 @@ BlockAckManager::GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid
   return 4096;
 }
 
-} //namespace ns3
+} // namespace ns3

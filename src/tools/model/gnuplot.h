@@ -177,7 +177,7 @@ public:
   /**
    * \param x x coord to new data point
    * \param y y coord to new data point
-   * \param errorDelta data point error range.
+   * \param errorDelta x and y data point uncertainty
    *
    * Use this method with error bar style X or Y.
    */
@@ -186,12 +186,12 @@ public:
   /**
    * \param x x coord to new data point
    * \param y y coord to new data point
-   * \param minY minimum error data point
-   * \param maxY maximum error data point
+   * \param xErrorDelta x data point uncertainty 
+   * \param yErrorDelta y data point uncertainty 
    *
-   * Use this method with error bar style X or Y.
+   * Use this method with error bar style XY.
    */
-  void Add (double x, double y, double minY, double maxY);
+  void Add (double x, double y, double xErrorDelta, double yErrorDelta);
 
   /**
    * Add an empty line in the data output sequence. Empty lines in the plot

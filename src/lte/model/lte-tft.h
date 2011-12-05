@@ -41,6 +41,14 @@ class LteTft : public SimpleRefCount<LteTft>
 {
 
 public:
+
+
+  /** 
+   * creates a TFT matching any traffic
+   *
+   * \return a newly created TFT that will match any traffic
+   */
+  static Ptr<LteTft> Default ();
   
   /**
    * Indicates the direction of the traffic that is to be classified. 

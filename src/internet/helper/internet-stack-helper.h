@@ -46,11 +46,20 @@ class Ipv6RoutingHelper;
  * change, and also the user-visible methods will not reference devices and
  * therefore the number of trace enable methods is reduced.
  *
- * Normally we eschew multiple inheritance, however, the classes 
+ * Normally we avoid multiple inheritance in ns-3, however, the classes 
  * PcapUserHelperForIpv4 and AsciiTraceUserHelperForIpv4 are
  * treated as "mixins".  A mixin is a self-contained class that
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
+ *
+ * This class aggregates instances of these objects, by default, to each node:
+ *  - ns3::ArpL3Protocol
+ *  - ns3::Ipv4L3Protocol
+ *  - ns3::Icmpv4L4Protocol
+ *  - ns3::UdpL4Protocol
+ *  - a TCP based on the TCP factory provided
+ *  - a PacketSocketFactory
+ *  - Ipv4 routing (a list routing object and a static routing object)
  */
 class InternetStackHelper : public PcapHelperForIpv4, public PcapHelperForIpv6, 
                             public AsciiTraceHelperForIpv4, public AsciiTraceHelperForIpv6

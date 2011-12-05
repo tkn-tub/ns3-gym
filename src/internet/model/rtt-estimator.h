@@ -22,8 +22,8 @@
 // George F. Riley.  Georgia Tech, Spring 2002
 
 
-#ifndef __rtt_estimator_h__
-#define __rtt_estimator_h__
+#ifndef RTT_ESTIMATOR_H
+#define RTT_ESTIMATOR_H
 
 #include <deque>
 #include "ns3/sequence-number.h"
@@ -113,8 +113,6 @@ public:
   double       gain;       // Filter gain
   int64x64_t   variance;   // Current variance
 };
-} //namespace ns3
-#endif
+} // namespace ns3
 
-
-
+#endif /* RTT_ESTIMATOR_H */

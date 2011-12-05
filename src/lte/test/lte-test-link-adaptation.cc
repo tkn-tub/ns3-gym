@@ -162,9 +162,9 @@ LteLinkAdaptationTestCase::DoRun (void)
 //   lena->EnableLogComponents ();
   lena->EnableMacTraces ();
   lena->EnableRlcTraces ();
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
   NS_LOG_INFO ("SNR = " << m_snrDb << "  LOSS = " << m_loss);
-  lena->SetPropagationModelAttribute ("Loss", DoubleValue (m_loss));
+  lena->SetPathlossModelAttribute ("Loss", DoubleValue (m_loss));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -188,10 +188,10 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Attach a UE to a eNB
   lena->Attach (ueDevs, enbDevs.Get (0));
 
-  // Activate an EPS bearer
-  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+  // Activate the default EPS bearer
+  enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

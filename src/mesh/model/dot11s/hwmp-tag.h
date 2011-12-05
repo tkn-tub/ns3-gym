@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -72,6 +72,6 @@ private:
   uint32_t m_metric;
   uint32_t m_seqno;
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

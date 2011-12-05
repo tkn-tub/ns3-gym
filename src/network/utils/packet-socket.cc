@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Emmanuelle Laprise, INRIA
  *
@@ -356,7 +356,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
     }
   else
     {
-      return 0;
+      return p->GetSize ();
     }
 }
 
@@ -488,4 +488,4 @@ PacketSocket::GetAllowBroadcast () const
   return false;
 }
 
-} //namespace ns3
+} // namespace ns3

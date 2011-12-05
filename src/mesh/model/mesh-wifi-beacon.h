@@ -18,8 +18,8 @@
  * Author: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef MESHWIFIBEACON_H_
-#define MESHWIFIBEACON_H_
+#ifndef MESH_WIFI_BEACON_H
+#define MESH_WIFI_BEACON_H
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
@@ -72,5 +72,4 @@ private:
 
 }
 
-
-#endif /* MESHWIFIBEACON_H_ */
+#endif /* MESH_WIFI_BEACON_H */

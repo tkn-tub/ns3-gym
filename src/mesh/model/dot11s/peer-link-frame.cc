@@ -232,5 +232,5 @@ operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b)
           && (a.m_reasonCode == b.m_reasonCode));
 }
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 

@@ -20,6 +20,10 @@ SOURCES = \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
+	$(SRC)/buildings/doc/source/buildings.rst \
+	$(SRC)/buildings/doc/source/buildings-design.rst \
+	$(SRC)/buildings/doc/source/buildings-user.rst \
+	$(SRC)/buildings/doc/source/buildings-testing.rst \
 	$(SRC)/click/doc/click.rst \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
@@ -32,6 +36,7 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-user.rst \
 	$(SRC)/lte/doc/source/lte-design.rst \
 	$(SRC)/lte/doc/source/lte-testing.rst \
+	$(SRC)/lte/doc/source/lte-profiling.rst \
 	$(SRC)/lte/doc/source/lte-references.rst \
 	$(SRC)/propagation/doc/propagation.rst \
 	$(SRC)/network/doc/network-overview.rst \
@@ -83,6 +88,9 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase2.eps \
 	$(SRC)/lte/doc/source/figures/simulationTime.eps \
 	$(SRC)/lte/doc/source/figures/memoryUsage.eps \
+	$(SRC)/lte/doc/source/figures/fading_pedestrian.pdf \
+	$(SRC)/lte/doc/source/figures/fading_vehicular.pdf \
+	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.pdf \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \

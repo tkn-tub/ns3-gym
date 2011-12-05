@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -53,12 +53,12 @@ public:
 
 // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
-  void SetMobility (Ptr<Object> m);
-  void SetDevice (Ptr<Object> d);
-  Ptr<Object> GetMobility ();
-  Ptr<Object> GetDevice ();
+  void SetMobility (Ptr<MobilityModel> m);
+  void SetDevice (Ptr<NetDevice> d);
+  Ptr<MobilityModel> GetMobility ();
+  Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPowerSpectralDensity, SpectrumType st, Time duration);
+  void StartRx (Ptr<SpectrumSignalParameters> params);
 
 
   /**
@@ -86,8 +86,8 @@ protected:
   void DoDispose ();
 
 private:
-  Ptr<Object> m_mobility;
-  Ptr<Object> m_netDevice;
+  Ptr<MobilityModel> m_mobility;
+  Ptr<NetDevice> m_netDevice;
   Ptr<SpectrumChannel> m_channel;
 
   virtual void GenerateReport ();

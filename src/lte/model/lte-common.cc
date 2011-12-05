@@ -49,6 +49,29 @@ operator < (const LteFlowId_t& a, const LteFlowId_t& b)
   return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_lcId < b.m_lcId) ) );
 }
 
+ImsiLcidPair_t::ImsiLcidPair_t ()
+{
+}
+
+ImsiLcidPair_t::ImsiLcidPair_t (const uint64_t a, const uint8_t b)
+  : m_imsi (a),
+    m_lcId (b)
+{
+}
+
+bool
+operator == (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b)
+{
+  return ((a.m_imsi == b.m_imsi) && (a.m_lcId == b.m_lcId));
+}
+
+bool
+operator < (const ImsiLcidPair_t& a, const ImsiLcidPair_t& b)
+{
+  return ((a.m_imsi < b.m_imsi) || ((a.m_imsi == b.m_imsi) && (a.m_lcId
+                                                               < b.m_lcId)));
+}
+
 
 uint16_t
 LteFfConverter::double2fpS11dot3 (double val)
@@ -74,6 +97,42 @@ LteFfConverter::getMinFpS11dot3Value ()
 
 //static double g_lowestFpS11dot3Value = -4096; // 0x8001 (1000 0000 0000 0000)
 
+
+uint32_t BufferSizeLevelBsrTable[64] = {
+  
+  0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 
+  107, 125, 146, 171, 200, 234, 274, 321, 376, 440, 515, 603, 
+  706, 826, 967, 1132, 1326, 1552, 1817, 2127, 2490, 2915, 3413,
+  3995, 4677, 5476, 6411, 7505, 8787, 10287, 12043, 14099, 16507,
+  19325, 22624, 26487, 31009, 36304, 42502, 49759, 58255,
+  68201, 79846, 93749, 109439, 128125, 150000, 150000
+  
+};
+
+uint32_t
+BufferSizeLevelBsr::BsrId2BufferSize (uint8_t val)
+{
+  return BufferSizeLevelBsrTable[val];
+}
+
+uint8_t
+BufferSizeLevelBsr::BufferSize2BsrId (uint32_t val)
+{
+  int index = 0;
+  if (BufferSizeLevelBsrTable[63] < val)
+    {
+      index = 63;
+    }
+  else
+    {
+      while (BufferSizeLevelBsrTable[index] < val)
+        {
+          index++;
+        }
+    }
+    
+  return (index);
+}
 
 
 }; // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 Georgia Tech Research Corporation
  *
@@ -18,8 +18,8 @@
  * Author: George F. Riley<riley@ece.gatech.edu>
  */
 
-#ifndef __APPLICATION_H__
-#define __APPLICATION_H__
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
@@ -130,5 +130,6 @@ protected:
   EventId m_stopEvent;
 };
 
-} //namespace ns3
-#endif
+} // namespace ns3
+
+#endif /* APPLICATION_H */

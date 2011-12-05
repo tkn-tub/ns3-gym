@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2004 Francisco J. Ros
  * Copyright (c) 2007 INESC Porto
@@ -20,9 +20,8 @@
  *          Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
  */
 
-
-#ifndef __OLSR_AGENT_IMPL_H__
-#define __OLSR_AGENT_IMPL_H__
+#ifndef OLSR_AGENT_IMPL_H
+#define OLSR_AGENT_IMPL_H
 
 #include "olsr-header.h"
 #include "ns3/test.h"
@@ -306,4 +305,4 @@ private:
 }
 }  // namespace ns3
 
-#endif
+#endif /* OLSR_AGENT_IMPL_H */

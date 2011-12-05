@@ -21,7 +21,6 @@
 #ifndef LENA_HELPER_H
 #define LENA_HELPER_H
 
-#include <ns3/log.h>
 #include <ns3/config.h>
 #include <ns3/simulator.h>
 #include <ns3/names.h>
@@ -32,6 +31,8 @@
 #include <ns3/eps-bearer.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/rlc-stats-calculator.h>
+#include <ns3/lte-tft.h>
+#include <ns3/trace-fading-loss-model.h>
 
 namespace ns3 {
 
@@ -39,6 +40,8 @@ namespace ns3 {
 class LteUePhy;
 class LteEnbPhy;
 class SpectrumChannel;
+class EpcHelper;
+class PropagationLossModel;
 
 
 /**
@@ -54,22 +57,58 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
-  /**
-   * \todo to be implemented
+
+  /** 
+   * Set the EpcHelper to be used to setup the EPC network in
+   * conjunction with the setup of the LTE radio access network 
    *
-   * \param name
-   * \param value
+   * \note if no EpcHelper is ever set, then LenaHelper will default
+   * to creating an LTE-only simulation with no EPC, using LteRlcSm as
+   * the RLC model, and without supporting any IP networking. In other
+   * words, it will be a radio-level simulation involving only LTE PHY
+   * and MAC and the FF Scheduler, with a saturation traffic model for
+   * the RLC.
+   * 
+   * \param h a pointer to the EpcHelper to be used
    */
-  void SetEnbDeviceAttribute (std::string name, const AttributeValue &value);
+  void SetEpcHelper (Ptr<EpcHelper> h);
+
+  /** 
+   * 
+   * 
+   * \param type the type of pathloss model to be used for the eNBs
+   */
+  void SetPathlossModelType (std::string type);
 
   /**
-   * \todo to be implemented
-   *
-   * \param name
-   * \param value
+   * set an attribute for the pathloss model to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
    */
-  void SetUeDeviceAttribute (std::string name, const AttributeValue &value);
+  void SetPathlossModelAttribute (std::string n, const AttributeValue &v);
 
+  /** 
+   * 
+   * \param type the type of scheduler to be used for the eNBs
+   */
+  void SetSchedulerType (std::string type);
+
+  /**
+   * set an attribute for the scheduler to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetSchedulerAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * set an attribute for the LteEnbNetDevice to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
 
   /**
    * create a set of eNB devices
@@ -110,47 +149,49 @@ public:
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
+   * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer);
+  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft);
 
   /**
    * Activate an EPS bearer on a given UE device
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
+   * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer);
+  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft);
+
+  /** 
+   * 
+   * \param bearer the specification of an EPS bearer
+   * 
+   * \return the type of RLC that is to be created for the given EPS bearer
+   */
+  TypeId GetRlcType (EpsBearer bearer);
 
   /** 
    * 
    * 
-   * \param type the type of scheduler to be used for the eNBs
+   * \param type the fading model to be used
    */
-  void SetSchedulerType (std::string type);
+  void SetFadingModel (std::string model);
 
   /**
-   * set an attribute for the scheduler to be created
+   * set an attribute of the fading model
    */
-  void SetSchedulerAttribute (std::string n, const AttributeValue &v);
-
-  /** 
-   * 
-   * 
-   * \param type the type of propagation model to be used for the eNBs
-   */
-  void SetPropagationModelType (std::string type);
-
-  /**
-   * set an attribute for the propagation model to be created
-   */
-  void SetPropagationModelAttribute (std::string n, const AttributeValue &v);
-
+  void SetFadingModelAttribute (std::string n, const AttributeValue &v);
 
   /**
    * Enables logging for all components of the LENA architecture
    *
    */
   void EnableLogComponents (void);
+
+  /**
+   * Enables trace sinks for MAC, RLC and PDCP
+   */
+  void EnableTraces (void);
 
   /**
    * Enable trace sinks for MAC layer
@@ -182,7 +223,37 @@ public:
    */
   void EnableUlRlcTraces (void);
 
+  /**
+   * Set the output directory for the MAC/RLC trace
+   */
+  void SetTraceDirectory (std::string path);
+
+  /** 
+   * 
+   * \return the RLC stats calculator object
+   */
   Ptr<RlcStatsCalculator> GetRlcStats (void);
+
+  /**
+   * Enable trace sinks for PDCP layer
+   */
+  void EnablePdcpTraces (void);
+
+  /**
+   * Enable trace sinks for DL PDCP layer
+   */
+  void EnableDlPdcpTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlPdcpTraces (void);
+
+  /** 
+   * 
+   * \return the PDCP stats calculator object
+   */
+  Ptr<RlcStatsCalculator> GetPdcpStats (void);
 
 protected:
   // inherited from Object
@@ -192,17 +263,35 @@ private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  //uint64_t FindImsiFromEnbRlcPath(std::string path);
-
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
+  
+  Ptr<Object> m_downlinkPathlossModel;
+  Ptr<Object> m_uplinkPathlossModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
+  ObjectFactory m_enbNetDeviceFactory;
 
+  ObjectFactory m_dlPathlossModelFactory;
+  ObjectFactory m_ulPathlossModelFactory;
+
+  std::string m_fadingModelType;
+  ObjectFactory m_fadingModelFactory;
+  
+  Ptr<TraceFadingLossModel> m_fadingModule;
+  
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RlcStatsCalculator> m_rlcStats;
+  Ptr<RlcStatsCalculator> m_pdcpStats;
 
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4} m_epsBearerToRlcMapping;
+
+  Ptr<EpcHelper> m_epcHelper;
+  
 };
 
 

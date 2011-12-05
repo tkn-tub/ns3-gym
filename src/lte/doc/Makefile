@@ -1,6 +1,6 @@
 EPSTOPDF = epstopdf
 DIA = dia
-CONVERT = convert
+CONVERT = convert -density 250
 
 
 SOURCE = source
@@ -13,6 +13,8 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
 	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/epc-profiling-scenario.eps \
+	$(FIGURES)/eutran-profiling-scenario.eps \
 	$(FIGURES)/lte-interference-test-scenario.eps
 
 # specify figures for build process (all eps figures)
@@ -20,8 +22,25 @@ GRAPHS_EPS = \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
+	$(FIGURES)/runningTime10s.eps \
+	$(FIGURES)/epcRunningTime.eps \
+	$(FIGURES)/propagationModel.eps \
 	$(FIGURES)/simulationTime.eps \
-	$(FIGURES)/memoryUsage.eps 
+	$(FIGURES)/epcSimulationTime.eps \
+	$(FIGURES)/epcEutranRunningTime.eps \
+	$(FIGURES)/profiling-memory.eps \
+	$(FIGURES)/lte-rlc-implementation-model.eps \
+	$(FIGURES)/lte-rlc-data-txon-dl.eps \
+	$(FIGURES)/lte-rlc-data-retx-dl.eps \
+	$(FIGURES)/lte-rlc-data-txon-ul.eps \
+	$(FIGURES)/lte-rlc-data-retx-ul.eps \
+	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-data-flow-dl.eps \
+	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps
+
+
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -39,10 +58,18 @@ $(FIGURES)/lte-transmission.pdf_width = 3in
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 4in
 
-IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
-IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
+IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
 
-IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
+IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
+
+IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
+	$(FIGURES)/fading_vehicular.png \
+	$(FIGURES)/fading_urban_3kmph.png \
+	$(FIGURES)/fading_pedestrian.pdf \
+	$(FIGURES)/fading_vehicular.pdf \
+	$(FIGURES)/fading_urban_3kmph.pdf
+
+IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@

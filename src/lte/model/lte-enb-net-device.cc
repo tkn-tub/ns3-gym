@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -38,7 +38,9 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/ff-mac-scheduler.h>
-
+#include <ns3/ipv4-l3-protocol.h>
+#include <ns3/abort.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
@@ -108,21 +110,9 @@ TypeId LteEnbNetDevice::GetTypeId (void)
   return tid;
 }
 
-LteEnbNetDevice::LteEnbNetDevice (void)
+LteEnbNetDevice::LteEnbNetDevice ()
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("This constructor should not be called");
-}
-
-LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnbMac> mac, Ptr<FfMacScheduler> sched, Ptr<LteEnbRrc> rrc)
-{
-  NS_LOG_FUNCTION (this);
-  m_phy = phy;
-  m_mac = mac;
-  m_scheduler = sched;
-  m_rrc = rrc;
-  SetNode (node);
-  NS_ASSERT_MSG (m_cellIdCounter < 65535, "max num eNBs exceeded");
 }
 
 LteEnbNetDevice::~LteEnbNetDevice (void)
@@ -260,6 +250,7 @@ LteEnbNetDevice::SetUlEarfcn (uint16_t earfcn)
 void 
 LteEnbNetDevice::DoStart (void)
 {
+  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
   m_cellId = ++m_cellIdCounter;
   UpdateConfig ();
   m_phy->Start ();
@@ -270,41 +261,14 @@ LteEnbNetDevice::DoStart (void)
 
 
 bool
-LteEnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
-                         const Mac48Address& dest, uint16_t protocolNumber)
+LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << source << dest << protocolNumber);
-
-  NS_FATAL_ERROR ("IP connectivity not implemented yet");
-
-  /*
-   * The classification of traffic in DL is done by the PGW (not
-   * by the eNB).
-   * Hovever, the core network is not implemented yet.
-   * For now the classification is managed by the eNB.
-   */
-
-  // if (protocolNumber == 2048)
-  //   {
-  //     // it is an IP packet
-  //   }
-
-  // if (protocolNumber != 2048 || bearer == 0)
-  //   {
-
-  //   }
-
-
-  return true;
+  NS_LOG_FUNCTION (this << packet   << dest << protocolNumber);
+  NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4 is supported");
+  return m_rrc->Send (packet);
 }
 
 
-void
-LteEnbNetDevice::DoReceive (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this << p);
-  ForwardUp (p->Copy ());
-}
 
 
 void

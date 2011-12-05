@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -54,10 +54,10 @@ UanPropModelThorp::GetTypeId (void)
 double
 UanPropModelThorp::GetPathLossDb (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode)
 {
-  double distKyd = a->GetDistanceFrom (b) / 1.093613298; // Convert from dB/km to dB/kyd
+  double dist = a->GetDistanceFrom (b);
 
-  return m_SpreadCoef * 10.0 * log10 (distKyd)
-         + distKyd * GetAttenDbKyd (mode.GetCenterFreqHz () / 1000.0);
+  return m_SpreadCoef * 10.0 * log10 (dist)
+         + dist * GetAttenDbKm (mode.GetCenterFreqHz () / 1000.0);
 }
 
 UanPdp
@@ -76,10 +76,17 @@ double
 UanPropModelThorp::GetAttenDbKyd (double freqKhz)
 {
 
+  return GetAttenDbKm (freqKhz) / 1.093613298;
+}
+
+double
+UanPropModelThorp::GetAttenDbKm (double freqKhz)
+{
+
   double fsq = freqKhz * freqKhz;
   double atten;
 
-  if (freqKhz < 0.4)
+  if (freqKhz >= 0.4)
     {
       atten = 0.11 * fsq / (1 + fsq) + 44 * fsq / (4100 + freqKhz)
         + 2.75 * 0.0001 * fsq + 0.003;

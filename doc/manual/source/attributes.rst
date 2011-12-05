@@ -278,7 +278,7 @@ Default values and command-line arguments
 +++++++++++++++++++++++++++++++++++++++++
 
 Let's look at how a user script might access these values.  
-This is based on the script found at ``src/core/examples/main-attribute-value.cc``,
+This is based on the script found at ``src/point-to-point/examples/main-attribute-value.cc``,
 with some details stripped out.::
 
     //
@@ -640,38 +640,67 @@ instance of the new class.
 ConfigStore
 ***********
 
-**Feedback requested:**  This is an experimental feature of |ns3|.  It is found
-in ``src/config-store``.  If you like this feature and
-would like to provide feedback on it, please email us.
+The ConfigStore is a specialized database for attribute values and 
+default values.  Although it is a separately maintained module in
+``src/config-store/`` directory, we document it here because of its 
+sole dependency on |ns3| core module and attributes.
 
 Values for |ns3| attributes can be stored in an ASCII or XML text file
 and loaded into a future simulation.  This feature is known as the
-|ns3| ConfigStore.  The ConfigStore code is in ``src/config-store/model``.  
-It is still considered as unstable code, because we are seeking some
-user feedback and experience with this.
+|ns3| ConfigStore.  We can explore this system by using an example from
+``src/config-store/examples/config-store-save.cc``.
 
-We can explore this system by using an example. Copy the ``csma-bridge.cc``
-file to the scratch directory:::
-
-    cp examples/csma-bridge.cc scratch/
-    ./waf
-
-Let's edit it to add the ConfigStore feature. First, add an include statement to
-include the contrib module, and then add these lines:::
+First, all users must include the following statement:::
 
     #include "ns3/config-store-module.h"
-    ...
-    int main (...)
+
+Next, this program adds a sample object A to show how the system
+is extended:::
+
+    class A : public Object
     {
-      // setup topology
+    public:
+      static TypeId GetTypeId (void) {
+        static TypeId tid = TypeId ("ns3::A")
+          .SetParent<Object> ()
+          .AddAttribute ("TestInt16", "help text",
+                         IntegerValue (-2),
+                         MakeIntegerAccessor (&A::m_int16),
+                         MakeIntegerChecker<int16_t> ())
+          ;
+          return tid;
+        }
+      int16_t m_int16;
+    };
+    
+    NS_OBJECT_ENSURE_REGISTERED (A);
 
-      // Invoke just before entering Simulator::Run ()
-      ConfigStore config;
-      config.ConfigureDefaults ();
-      config.ConfigureAttributes ();
+Next, we use the Config subsystem to override the defaults in a couple of
+ways:::
+     
+      Config::SetDefault ("ns3::A::TestInt16", IntegerValue (-5));
+    
+      Ptr<A> a_obj = CreateObject<A> ();
+      NS_ABORT_MSG_UNLESS (a_obj->m_int16 == -5, "Cannot set A's integer attribute via Config::SetDefault");
+    
+      Ptr<A> a2_obj = CreateObject<A> ();
+      a2_obj->SetAttribute ("TestInt16", IntegerValue (-3));
+      IntegerValue iv;
+      a2_obj->GetAttribute ("TestInt16", iv);
+      NS_ABORT_MSG_UNLESS (iv.Get () == -3, "Cannot set A's integer attribute via SetAttribute");
+    
+The next statement is necessary to make sure that (one of) the objects
+created is rooted in the configuration namespace as an object instance.
+This normally happens when you aggregate objects to ns3::Node or ns3::Channel
+but here, since we are working at the core level, we need to create a
+new root namespace object:::
 
-      Simulator::Run ();
-    }
+      Config::RegisterRootNamespaceObject (a2_obj);
+
+Next, we want to output the configuration store.  The examples show how
+to do it in two formats, XML and raw text.  In practice, one should perform
+this step just before calling ``Simulator::Run ()``;  it will allow the
+configuration to be saved just before running the simulation.
 
 There are three attributes that govern the behavior of the ConfigStore: "Mode",
 "Filename", and "FileFormat".  The Mode (default "None") configures whether
@@ -681,28 +710,88 @@ There are three attributes that govern the behavior of the ConfigStore: "Mode",
 (default "RawText") governs whether the ConfigStore format is Xml or RawText
 format.
 
-So, using the above modified program, try executing the following waf command
-and ::
+The example shows:::
 
-    ./waf --command-template="%s --ns3::ConfigStore::Filename=csma-bridge-config.xml
-    --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=Xml" --run scratch/csma-bridge
+      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.xml"));
+      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
+      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+      ConfigStore outputConfig;
+      outputConfig.ConfigureDefaults ();
+      outputConfig.ConfigureAttributes ();
+    
+      // Output config store to txt format
+      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.txt"));
+      Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("RawText"));
+      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+      ConfigStore outputConfig2;
+      outputConfig2.ConfigureDefaults ();
+      outputConfig2.ConfigureAttributes ();
+    
+      Simulator::Run ();
+    
+      Simulator::Destroy ();
+    
+After running, you can open the output-attributes.txt file and see:::
 
-After running, you can open the csma-bridge-config.xml file and it will
-display the configuration that was applied to your simulation; e.g.::
+    default ns3::RealtimeSimulatorImpl::SynchronizationMode "BestEffort"
+    default ns3::RealtimeSimulatorImpl::HardLimit "+100000000.0ns"
+    default ns3::PcapFileWrapper::CaptureSize "65535"
+    default ns3::PacketSocket::RcvBufSize "131072"
+    default ns3::ErrorModel::IsEnabled "true"
+    default ns3::RateErrorModel::ErrorUnit "EU_BYTE"
+    default ns3::RateErrorModel::ErrorRate "0"
+    default ns3::RateErrorModel::RanVar "Uniform:0:1"
+    default ns3::DropTailQueue::Mode "Packets"
+    default ns3::DropTailQueue::MaxPackets "100"
+    default ns3::DropTailQueue::MaxBytes "6553500"
+    default ns3::Application::StartTime "+0.0ns"
+    default ns3::Application::StopTime "+0.0ns"
+    default ns3::ConfigStore::Mode "Save"
+    default ns3::ConfigStore::Filename "output-attributes.txt"
+    default ns3::ConfigStore::FileFormat "RawText"
+    default ns3::A::TestInt16 "-5"
+    global RngSeed "1"
+    global RngRun "1"
+    global SimulatorImplementationType "ns3::DefaultSimulatorImpl"
+    global SchedulerType "ns3::MapScheduler"
+    global ChecksumEnabled "false"
+    value /$ns3::A/TestInt16 "-3"
+
+In the above, all of the default values for attributes for the core 
+module are shown.  Then, all the values for the |ns3| global values
+are recorded.  Finally, the value of the instance of A that was rooted
+in the configuration namespace is shown.  In a real ns-3 program, many
+more models, attributes, and defaults would be shown.
+
+An XML version also exists in ``output-attributes.xml``:::
 
     <?xml version="1.0" encoding="UTF-8"?>
     <ns3>
-     <default name="ns3::V4Ping::Remote" value="102.102.102.102"/>
-     <default name="ns3::MsduStandardAggregator::MaxAmsduSize" value="7935"/>
-     <default name="ns3::EdcaTxopN::MinCw" value="31"/>
-     <default name="ns3::EdcaTxopN::MaxCw" value="1023"/>
-     <default name="ns3::EdcaTxopN::Aifsn" value="3"/>
-     <default name="ns3::StaWifiMac::ProbeRequestTimeout" value="50000000ns"/>
-     <default name="ns3::StaWifiMac::AssocRequestTimeout" value="500000000ns"/>
-     <default name="ns3::StaWifiMac::MaxMissedBeacons" value="10"/>
-     <default name="ns3::StaWifiMac::ActiveProbing" value="false"/>
-    ...
-
+     <default name="ns3::RealtimeSimulatorImpl::SynchronizationMode" value="BestEffort"/>
+     <default name="ns3::RealtimeSimulatorImpl::HardLimit" value="+100000000.0ns"/>
+     <default name="ns3::PcapFileWrapper::CaptureSize" value="65535"/>
+     <default name="ns3::PacketSocket::RcvBufSize" value="131072"/>
+     <default name="ns3::ErrorModel::IsEnabled" value="true"/>
+     <default name="ns3::RateErrorModel::ErrorUnit" value="EU_BYTE"/>
+     <default name="ns3::RateErrorModel::ErrorRate" value="0"/>
+     <default name="ns3::RateErrorModel::RanVar" value="Uniform:0:1"/>
+     <default name="ns3::DropTailQueue::Mode" value="Packets"/>
+     <default name="ns3::DropTailQueue::MaxPackets" value="100"/>
+     <default name="ns3::DropTailQueue::MaxBytes" value="6553500"/>
+     <default name="ns3::Application::StartTime" value="+0.0ns"/>
+     <default name="ns3::Application::StopTime" value="+0.0ns"/>
+     <default name="ns3::ConfigStore::Mode" value="Save"/>
+     <default name="ns3::ConfigStore::Filename" value="output-attributes.xml"/>
+     <default name="ns3::ConfigStore::FileFormat" value="Xml"/>
+     <default name="ns3::A::TestInt16" value="-5"/>
+     <global name="RngSeed" value="1"/>
+     <global name="RngRun" value="1"/>
+     <global name="SimulatorImplementationType" value="ns3::DefaultSimulatorImpl"/>
+     <global name="SchedulerType" value="ns3::MapScheduler"/>
+     <global name="ChecksumEnabled" value="false"/>
+     <value path="/$ns3::A/TestInt16" value="-3"/>
+    </ns3>
+    
 This file can be archived with your simulation script and output data.
 
 While it is possible to generate a sample config file and lightly edit it to
@@ -767,8 +856,8 @@ Ubuntu installation command is:::
 
     sudo apt-get install libgtk2.0-0 libgtk2.0-dev
 
-To check whether it is configured or not, check the output of the
-./waf configure --enable-examples --enable-tests step:::
+To check whether it is configured or not, check the output of the step:::
+./waf configure --enable-examples --enable-tests 
 
     ---- Summary of optional NS-3 features:
     Threading Primitives          : enabled
@@ -796,4 +885,3 @@ There are a couple of possible improvements:
 * save a unique version number with date and time at start of file
 * save rng initial seed somewhere.
 * make each RandomVariable serialize its own initial seed and re-read it later
-* add the default values

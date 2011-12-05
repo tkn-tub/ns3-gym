@@ -20,7 +20,7 @@
 #include "object-base.h"
 #include "log.h"
 #include "trace-source-accessor.h"
-#include "attribute-list.h"
+#include "attribute-construction-list.h"
 #include "string.h"
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
@@ -57,7 +57,7 @@ ObjectBase::NotifyConstructionCompleted (void)
 {}
 
 void
-ObjectBase::ConstructSelf (const AttributeList &attributes)
+ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
 {
   // loop over the inheritance tree back to the Object base class.
   TypeId tid = GetInstanceTypeId ();
@@ -66,51 +66,27 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
       NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
       for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
         {
-          Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
-          Ptr<const AttributeValue> initial = tid.GetAttributeInitialValue (i);
-          Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
+          struct TypeId::AttributeInformation info = tid.GetAttribute(i);
           NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
-                        tid.GetAttributeName (i)<<"\"");
-          if (!(tid.GetAttributeFlags (i) & TypeId::ATTR_CONSTRUCT))
+                        info.name <<"\"");
+          if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
               continue;
             }
           bool found = false;
-          // is this attribute stored in this AttributeList instance ?
-          for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
-               j != attributes.m_attributes.end (); j++)
+          // is this attribute stored in this AttributeConstructionList instance ?
+          Ptr<AttributeValue> value = attributes.Find(info.checker);
+          if (value != 0)
             {
-              if (j->checker == checker)
+              // We have a matching attribute value.
+              if (DoSet (info.accessor, info.checker, *value))
                 {
-                  // We have a matching attribute value.
-                  if (DoSet (accessor, checker, *j->value))
-                    {
-                      NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                    tid.GetAttributeName (i)<<"\"");
-                      found = true;
-                      break;
-                    }
+                  NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
+                                info.name<<"\"");
+                  found = true;
+                  continue;
                 }
-            }
-          if (!found)
-            {
-              // is this attribute stored in the global instance ?
-              for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
-                   j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
-                {
-                  if (j->checker == checker)
-                    {
-                      // We have a matching attribute value.
-                      if (DoSet (accessor, checker, *j->value))
-                        {
-                          NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                        tid.GetAttributeName (i)<<"\" from global");
-                          found = true;
-                          break;
-                        }
-                    }
-                }
-            }
+            }              
           if (!found)
             {
               // No matching attribute value so we try to look at the env var.
@@ -132,10 +108,10 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
                           std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
                           if (name == tid.GetAttributeFullName (i))
                             {
-                              if (DoSet (accessor, checker, StringValue (value)))
+                              if (DoSet (info.accessor, info.checker, StringValue (value)))
                                 {
                                   NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                                tid.GetAttributeName (i)<<"\" from env var");
+                                                info.name <<"\" from env var");
                                   found = true;
                                   break;
                                 }
@@ -149,9 +125,9 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
           if (!found)
             {
               // No matching attribute value so we try to set the default value.
-              DoSet (accessor, checker, *initial);
+              DoSet (info.accessor, info.checker, *info.initialValue);
               NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                            tid.GetAttributeName (i)<<"\" from initial value.");
+                            info.name <<"\" from initial value.");
             }
         }
       tid = tid.GetParent ();
@@ -160,41 +136,22 @@ ObjectBase::ConstructSelf (const AttributeList &attributes)
 }
 
 bool
-ObjectBase::DoSet (Ptr<const AttributeAccessor> spec, 
+ObjectBase::DoSet (Ptr<const AttributeAccessor> accessor, 
                    Ptr<const AttributeChecker> checker,
                    const AttributeValue &value)
 {
-  bool ok = checker->Check (value);
-  if (ok)
-    {
-      ok = spec->Set (this, value);
-      return ok;
-    }
-  // attempt to convert to string
-  const StringValue *str = dynamic_cast<const StringValue *> (&value);
-  if (str == 0)
+  Ptr<AttributeValue> v = checker->CreateValidValue (value);
+  if (v == 0)
     {
       return false;
     }
-  // attempt to convert back from string.
-  Ptr<AttributeValue> v = checker->Create ();
-  ok = v->DeserializeFromString (str->Get (), checker);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = checker->Check (*v);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = spec->Set (this, *v);
+  bool ok = accessor->Set (this, *v);
   return ok;
 }
 void
 ObjectBase::SetAttribute (std::string name, const AttributeValue &value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
@@ -213,7 +170,7 @@ ObjectBase::SetAttribute (std::string name, const AttributeValue &value)
 bool 
 ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
@@ -230,7 +187,7 @@ ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
 void
 ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
@@ -264,7 +221,7 @@ ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
 bool
 ObjectBase::GetAttributeFailSafe (std::string name, AttributeValue &value) const
 {
-  struct TypeId::AttributeInfo info;
+  struct TypeId::AttributeInformation info;
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {

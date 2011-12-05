@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -77,6 +77,106 @@ Ipv4Header::SetTos (uint8_t tos)
 {
   m_tos = tos;
 }
+
+void
+Ipv4Header::SetDscp (DscpType dscp)
+{
+  m_tos &= 0x3; // Clear out the DSCP part, retain 2 bits of ECN
+  m_tos |= dscp;
+}
+
+void
+Ipv4Header::SetEcn (EcnType ecn)
+{
+  m_tos &= 0xFC; // Clear out the ECN part, retain 6 bits of DSCP
+  m_tos |= ecn;
+}
+
+Ipv4Header::DscpType 
+Ipv4Header::GetDscp (void) const
+{
+  // Extract only first 6 bits of TOS byte, i.e 0xFC
+  return DscpType (m_tos & 0xFC);
+}
+
+std::string 
+Ipv4Header::DscpTypeToString (DscpType dscp) const
+{
+  switch (dscp)
+    {
+      case DscpDefault:
+        return "Default";
+      case CS1:
+        return "CS1";
+      case AF11:
+        return "AF11";
+      case AF12:
+        return "AF12";
+      case AF13:
+        return "AF13";
+      case CS2:
+        return "CS2";
+      case AF21:
+        return "AF21";
+      case AF22:
+        return "AF22";
+      case AF23:
+        return "AF23";
+      case CS3:
+        return "CS3";
+      case AF31:
+        return "AF31";
+      case AF32:
+        return "AF32";
+      case AF33:
+        return "AF33";
+      case CS4:
+        return "CS4";
+      case AF41:
+        return "AF41";
+      case AF42:
+        return "AF42";
+      case AF43:
+        return "AF43";
+      case CS5:
+        return "CS5";
+      case EF:
+        return "EF";
+      case CS6:
+        return "CS6";
+      case CS7:
+        return "CS7";
+      default:
+        return "Unrecognized DSCP";
+    };
+}
+
+
+Ipv4Header::EcnType 
+Ipv4Header::GetEcn (void) const
+{
+  // Extract only last 2 bits of TOS byte, i.e 0x3
+  return EcnType (m_tos & 0x3);
+}
+
+std::string 
+Ipv4Header::EcnTypeToString (EcnType ecn) const
+{
+  switch (ecn)
+    {
+      case NotECT:
+        return "Not-ECT";
+      case ECT1:
+        return "ECT (1)";
+      case ECT0:
+        return "ECT (0)";
+      case CE:
+        return "CE";      
+      default:
+        return "Unknown ECN";
+    };
+}
+
 uint8_t 
 Ipv4Header::GetTos (void) const
 {
@@ -224,6 +324,8 @@ Ipv4Header::Print (std::ostream &os) const
       flags = "XX";
     }
   os << "tos 0x" << std::hex << m_tos << std::dec << " "
+     << "DSCP " << DscpTypeToString (GetDscp ()) << " "
+     << "ECN " << EcnTypeToString (GetEcn ()) << " "
      << "ttl " << m_ttl << " "
      << "id " << m_identification << " "
      << "protocol " << m_protocol << " "
@@ -324,4 +426,4 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
-}; // namespace ns3
+} // namespace ns3

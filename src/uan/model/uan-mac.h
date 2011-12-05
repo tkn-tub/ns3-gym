@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -18,8 +18,8 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANMAC_H
-#define UANMAC_H
+#ifndef UAN_MAC_H
+#define UAN_MAC_H
 
 #include "ns3/address.h"
 #include "ns3/object.h"
@@ -47,6 +47,8 @@ class UanAddress;
 class UanMac : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \returns MAC Address
    */
@@ -93,4 +95,4 @@ public:
 
 }
 
-#endif // UANMAC_H
+#endif /* UAN_MAC_H */

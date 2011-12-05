@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -25,7 +25,7 @@
 #include <ns3/object.h>
 #include <ns3/nstime.h>
 #include <ns3/channel.h>
-#include <ns3/spectrum-type.h>
+#include <ns3/spectrum-signal-parameters.h>
 
 namespace ns3 {
 
@@ -53,7 +53,7 @@ public:
   /**
    * set the single-frequency propagation loss model to be used
    * \warning only models that do not depend on the TX power should be used.
-   * 
+   *
    * \param loss a pointer to the propagation loss model to be used.
    */
   virtual void AddPropagationLossModel (Ptr<PropagationLossModel> loss) = 0;
@@ -72,21 +72,11 @@ public:
 
 
   /**
-   * Used by attached PHY instances to transmit waveforms on the channel
+   * Used by attached PHY instances to transmit signals on the channel
    *
-   * @param p the PacketBurst associated with the waveform being transmitted
-   * @param txPsd the Power Spectral Density of the
-   * waveform, in linear units. The exact unit will depend on the
-   * type of transmission medium involved: W for radio communications, Pa for
-   * underwater acoustic communications. Other transmission media to be defined.
-   * @param st spectrum type
-   * @param duration duration of the packet transmission. It is
-   * assumed that the Power Spectral Density remains constant for the
-   * whole duration of the transmission. In other words, all waveform
-   * have a rect shape with respect to time.
-   * @param sender the SpectrumPhy instance making this function call
+   * @param params the parameters of the signals being transmitted
    */
-  virtual void StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txPsd, SpectrumType st, Time duration, Ptr<SpectrumPhy> sender) = 0;
+  virtual void StartTx (Ptr<SpectrumSignalParameters> params) = 0;
 
   /**
    * @brief add a SpectrumPhy to a channel, so it can receive packets

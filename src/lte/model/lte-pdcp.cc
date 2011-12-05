@@ -24,6 +24,7 @@
 #include "ns3/lte-pdcp.h"
 #include "ns3/lte-pdcp-header.h"
 #include "ns3/lte-pdcp-sap.h"
+#include "ns3/lte-pdcp-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("LtePdcp");
 
@@ -162,6 +163,11 @@ LtePdcp::DoTransmitRrcPdu (Ptr<Packet> p)
   NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
   p->AddHeader (pdcpHeader);
 
+  // Sender timestamp
+  PdcpTag pdcpTag (Simulator::Now ());
+  p->AddByteTag (pdcpTag);
+  m_txPdu (m_rnti, m_lcid, p->GetSize ());
+
   LteRlcSapProvider::TransmitPdcpPduParameters params;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
@@ -175,6 +181,15 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
 
+  // Receiver timestamp
+  PdcpTag pdcpTag;
+  Time delay;
+  if (p->FindFirstMatchingByteTag (pdcpTag))
+    {
+      delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
+    }
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
+
   LtePdcpHeader pdcpHeader;
   p->RemoveHeader (pdcpHeader);
   NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
@@ -185,8 +200,11 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
       m_rxSequenceNumber = 0;
     }
 
-  m_pdcpSapUser->ReceiveRrcPdu (p);
-
+  LtePdcpSapUser::ReceiveRrcPduParameters params;
+  params.rrcPdu = p;
+  params.rnti = m_rnti;
+  params.lcid = m_lcid;
+  m_pdcpSapUser->ReceiveRrcPdu (params);
 }
 
 void

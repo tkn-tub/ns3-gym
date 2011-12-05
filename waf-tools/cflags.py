@@ -144,7 +144,7 @@ profiles = {
 
 default_profile = 'default'
 
-def set_options(opt):
+def options(opt):
 	assert default_profile in profiles
 	opt.add_option('-d', '--build-profile',
 		       action='store',
@@ -157,7 +157,7 @@ def set_options(opt):
 		       choices=profiles.keys(),
 		       dest='build_profile')
 
-def detect(conf):
+def configure(conf):
 	cc = conf.env['COMPILER_CC'] or None
 	cxx = conf.env['COMPILER_CXX'] or None
 	if not (cc or cxx):

@@ -168,7 +168,7 @@ private:
   bool m_break;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* SYSTEM_THREAD_H */
 

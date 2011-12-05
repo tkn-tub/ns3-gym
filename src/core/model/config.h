@@ -37,6 +37,12 @@ class CallbackBase;
 namespace Config {
 
 /**
+ * Reset the initial value of every attribute as well as the value of every
+ * global to what they were before any call to SetDefault and SetGlobal.
+ */
+void Reset (void);
+
+/**
  * \param path a path to match attributes.
  * \param value the value to set in all matching attributes.
  *

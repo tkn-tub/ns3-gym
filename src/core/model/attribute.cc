@@ -20,6 +20,7 @@
 #include "attribute.h"
 #include "log.h"
 #include "fatal-error.h"
+#include "string.h"
 #include <sstream>
 
 NS_LOG_COMPONENT_DEFINE ("AttributeValue");
@@ -46,6 +47,34 @@ AttributeChecker::AttributeChecker ()
 }
 AttributeChecker::~AttributeChecker ()
 {
+}
+
+Ptr<AttributeValue> 
+AttributeChecker::CreateValidValue (const AttributeValue &value) const
+{
+  if (Check (value))
+    {
+      return value.Copy ();
+    }
+  // attempt to convert to string.
+  const StringValue *str = dynamic_cast<const StringValue *> (&value);
+  if (str == 0)
+    {
+      return 0;
+    }
+  // attempt to convert back to value.
+  Ptr<AttributeValue> v = Create ();
+  bool ok = v->DeserializeFromString (str->Get (), this);
+  if (!ok)
+    {
+      return 0;
+    }
+  ok = Check (*v);
+  if (!ok)
+    {
+      return 0;
+    }
+  return v;
 }
 
 EmptyAttributeValue::EmptyAttributeValue ()

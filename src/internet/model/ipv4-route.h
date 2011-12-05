@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -163,6 +163,6 @@ private:
   std::map<uint32_t, uint32_t> m_ttls;
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_ROUTE_H */

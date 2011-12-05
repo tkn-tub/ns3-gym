@@ -357,7 +357,7 @@ protected:
  *
  * Sample code which shows how to use this class template 
  * as well as the function templates \ref MakeCallback :
- * \include samples/main-callback.cc
+ * \include src/core/examples/main-callback.cc
  */
 
 template<typename R, 

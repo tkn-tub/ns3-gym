@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006, 2007 INRIA
  *
@@ -68,4 +68,4 @@ ConstantVelocityMobilityModel::DoGetVelocity (void) const
   return m_helper.GetVelocity ();
 }
 
-}; // namespace ns3
+} // namespace ns3

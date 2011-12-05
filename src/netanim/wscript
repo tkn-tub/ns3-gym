@@ -1,25 +1,28 @@
-## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+## -*-Mode : python; py-indent-offset : 4; indent-tabs-mode : nil; coding : utf-8; -*-
 
-def build(bld):
-    module = bld.create_ns3_module('netanim', ['internet', 'mobility'])
-    module.includes = '.'
-    module.source = [
-        'model/animation-interface.cc',
-        ]
+def build (bld) :
+        bld.install_files('${PREFIX}/include/ns3', '../../ns3/netanim-config.h')
+	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma'])
+	module.includes = '.'
+	module.source = [
+			  'model/animation-interface.cc',
+			  'helper/animation-interface-helper.cc',
+		        ]
 
-    headers = bld.new_task_gen('ns3header')
-    headers.module = 'netanim'
-    headers.source = [
-        'model/animation-interface.h',
-        ]
+	headers = bld.new_task_gen (features=['ns3header'])
+	headers.module = 'netanim'
+	headers.source = [
+			  'model/animation-interface.h',
+			  'helper/animation-interface-helper.h',
+  			 ]
 
-    if (bld.env['ENABLE_EXAMPLES']):
-        bld.add_subdirs('examples')
+	if (bld.env['ENABLE_EXAMPLES']) :
+		bld.add_subdirs ('examples')
 
-    bld.ns3_python_bindings()
+	bld.ns3_python_bindings ()
 
-
-def configure(conf):
-    conf.check(header_name='sys/socket.h', define_name='HAVE_SYS_SOCKET_H')
-    conf.check(header_name='netinet/in.h', define_name='HAVE_NETINET_IN_H')
+def configure (conf) :
+	conf.check (header_name='sys/socket.h', define_name='HAVE_SYS_SOCKET_H')
+	conf.check (header_name='netinet/in.h', define_name='HAVE_NETINET_IN_H')
+        conf.write_config_header ('ns3/netanim-config.h', top=True)
 

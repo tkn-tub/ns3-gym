@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -22,6 +22,15 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (UanPhyCalcSinr);
+
+TypeId UanPhyCalcSinr::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UanPhyCalcSinr")
+    .SetParent<Object> ();
+  return tid;
+}
+
 void
 UanPhyCalcSinr::Clear ()
 {
@@ -32,6 +41,15 @@ UanPhyCalcSinr::DoDispose ()
 {
   Clear ();
   Object::DoDispose ();
+}
+
+NS_OBJECT_ENSURE_REGISTERED (UanPhyPer);
+
+TypeId UanPhyPer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UanPhyPer")
+    .SetParent<Object> ();
+  return tid;
 }
 
 void
@@ -46,4 +64,13 @@ UanPhyPer::DoDispose ()
   Object::DoDispose ();
 }
 
-} //namespace ns3
+NS_OBJECT_ENSURE_REGISTERED (UanPhy);
+
+TypeId UanPhy::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UanPhy")
+    .SetParent<Object> ();
+  return tid;
+}
+
+} // namespace ns3

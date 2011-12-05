@@ -18,8 +18,8 @@
  * Author:  Tom Henderson (tomhend@u.washington.edu)
  */
 
-#ifndef __packet_sink_h__
-#define __packet_sink_h__
+#ifndef PACKET_SINK_H
+#define PACKET_SINK_H
 
 #include "ns3/application.h"
 #include "ns3/event-id.h"
@@ -114,5 +114,5 @@ private:
 
 } // namespace ns3
 
-#endif
+#endif /* PACKET_SINK_H */
 

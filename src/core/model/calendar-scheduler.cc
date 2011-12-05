@@ -23,8 +23,8 @@
 #include <utility>
 #include <string>
 #include <list>
-#include "ns3/assert.h"
-#include "ns3/log.h"
+#include "assert.h"
+#include "log.h"
 
 namespace ns3 {
 

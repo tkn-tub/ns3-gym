@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -522,6 +522,11 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
       NS_LOG_DEBUG ("PHY requested to TX while already Transmitting.  Dropping packet.");
       return;
     }
+  else if (m_state == SLEEP)
+    {
+      NS_LOG_DEBUG ("PHY requested to TX while sleeping.  Dropping packet.");
+      return;
+    }
 
   UanTxMode txMode = GetMode (modeNum);
 
@@ -544,6 +549,12 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 void
 UanPhyGen::TxEndEvent ()
 {
+  if (m_state == SLEEP || m_disabled == true)
+    {
+      NS_LOG_DEBUG ("Transmission ended but node sleeping or dead");
+      return;
+    }
+
   NS_ASSERT (m_state == TX);
   if (GetInterferenceDb ( (Ptr<Packet>) 0) > m_ccaThreshDb)
     {
@@ -626,7 +637,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
       }
       break;
     case SLEEP:
-      NS_FATAL_ERROR ("SLEEP state handling not yet implemented!");
+      NS_LOG_DEBUG ("Sleep mode. Dropping packet.");
       break;
     }
 
@@ -643,6 +654,13 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode)
 {
   if (pkt != m_pktRx)
     {
+      return;
+    }
+
+  if (m_disabled || m_state == SLEEP)
+    {
+      NS_LOG_DEBUG ("Sleep mode or dead. Dropping packet");
+      m_pktRx = 0;
       return;
     }
 
@@ -811,6 +829,26 @@ UanPhyGen::SetTransducer (Ptr<UanTransducer> trans)
   m_transducer->AddPhy (this);
 }
 
+void
+UanPhyGen::SetSleepMode (bool sleep)
+{
+  if (sleep)
+    {
+      m_state = SLEEP;
+      if (!m_energyCallback.IsNull ())
+        {
+          m_energyCallback (SLEEP);
+        }
+    }
+  else
+    {
+      m_state = IDLE;
+      if (!m_energyCallback.IsNull ())
+        {
+          m_energyCallback (IDLE);
+        }
+    }
+}
 
 void
 UanPhyGen::NotifyTransStartTx (Ptr<Packet> packet, double txPowerDb, UanTxMode txMode)

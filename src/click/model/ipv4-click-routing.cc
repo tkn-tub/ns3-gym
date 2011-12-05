@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Lalith Suresh
  *
@@ -224,6 +224,15 @@ Ipv4ClickRouting::GetIpAddressFromInterfaceId (int ifid)
 }
 
 std::string
+Ipv4ClickRouting::GetIpPrefixFromInterfaceId (int ifid)
+{
+  std::stringstream addr;
+  m_ipv4->GetAddress (ifid, 0).GetMask ().Print (addr);
+
+  return addr.str ();
+}
+
+std::string
 Ipv4ClickRouting::GetMacAddressFromInterfaceId (int ifid)
 {
   std::stringstream addr;
@@ -252,6 +261,8 @@ Ipv4ClickRouting::RunClickEvent ()
 {
   m_simNode->curtime.tv_sec = Simulator::Now ().GetSeconds ();
   m_simNode->curtime.tv_usec = Simulator::Now ().GetMicroSeconds () % 1000000;
+  NS_LOG_DEBUG ("RunClickEvent at " << m_simNode->curtime.tv_sec << " " << 
+                                       m_simNode->curtime.tv_usec << " " << Simulator::Now ());
   simclick_click_run (m_simNode);
 }
 
@@ -260,10 +271,10 @@ Ipv4ClickRouting::HandleScheduleFromClick (const struct timeval *when)
 {
   NS_LOG_DEBUG ("HandleScheduleFromClick at " << when->tv_sec << " " << when->tv_usec << " " << Simulator::Now ());
 
-  double simtime = when->tv_sec + (when->tv_usec / 1.0e6);
-  double simdelay = simtime - Simulator::Now ().GetMicroSeconds () / 1.0e6;
+  Time simtime  = Time::FromInteger(when->tv_sec, Time::S) + Time::FromInteger(when->tv_usec, Time::US);
+  Time simdelay = simtime - Simulator::Now();
 
-  Simulator::Schedule (Seconds (simdelay), &Ipv4ClickRouting::RunClickEvent, this);
+  Simulator::Schedule (simdelay, &Ipv4ClickRouting::RunClickEvent, this);
 }
 
 void
@@ -583,6 +594,27 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         break;
       }
 
+    case SIMCLICK_IPPREFIX_FROM_NAME:
+      {
+        const char *ifname = va_arg (val, const char *);
+        char *buf = va_arg (val, char *);
+        int len = va_arg (val, int);
+
+        int ifid = clickInstance->GetInterfaceId (ifname);
+
+        if (ifid >= 0)
+          {
+            retval = simstrlcpy (buf, len, clickInstance->GetIpPrefixFromInterfaceId (ifid));
+          }
+        else
+          {
+            retval = -1;
+          }
+
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IPPREFIX_FROM_NAME: " << ifname << " " << buf << " " << len);
+        break;
+      }
+
     case SIMCLICK_MACADDR_FROM_NAME:
       {
         const char *ifname = va_arg (val, const char *);
@@ -610,7 +642,7 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         clickInstance->HandleScheduleFromClick (when);
 
         retval = 0;
-        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_SCHEDULE: " << when->tv_sec << "s and " << when->tv_usec << "usecs later.");
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_SCHEDULE at " << when->tv_sec << "s and " << when->tv_usec << "usecs.");
 
         break;
       }

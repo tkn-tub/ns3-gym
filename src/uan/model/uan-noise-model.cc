@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -22,6 +22,15 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (UanNoiseModel);
+
+TypeId UanNoiseModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UanNoiseModel")
+    .SetParent<Object> ();
+  return tid;
+}
+
 void 
 UanNoiseModel::Clear (void)
 {
@@ -36,4 +45,4 @@ UanNoiseModel::DoDispose (void)
 
 
 
-} //namespace ns3
+} // namespace ns3

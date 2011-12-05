@@ -22,9 +22,14 @@
 #include <list>
 #include <utility>
 #include <iostream>
+#include <string.h>
 #include "assert.h"
 #include "ns3/core-config.h"
 #include "fatal-error.h"
+
+#ifdef HAVE_GETENV
+#include <string.h>
+#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -256,15 +261,23 @@ void
 LogComponentEnable (char const *name, enum LogLevel level)
 {
   ComponentList *components = GetComponentList ();
-  for (ComponentListI i = components->begin ();
-       i != components->end ();
+  ComponentListI i;
+  for (i = components->begin (); 
+       i != components->end (); 
        i++)
     {
       if (i->first.compare (name) == 0) 
         {
           i->second->Enable (level);
-          break;
+          return;
         }
+    }
+    if (i == components->end())
+      {
+	// nothing matched
+        LogComponentPrintList();
+        NS_FATAL_ERROR ("Logging component \"" << name <<
+                        "\" not found. See above for a list of available log components");
     }
 }
 
@@ -354,9 +367,117 @@ LogComponentPrintList (void)
     }
 }
 
+static bool ComponentExists(std::string componentName) 
+{
+  char const*name=componentName.c_str();
+  ComponentList *components = GetComponentList ();
+  ComponentListI i;
+  for (i = components->begin ();
+       i != components->end ();
+       i++)
+     {
+       if (i->first.compare (name) == 0) 
+ 	{
+	  return true;
+ 	}
+    }
+  NS_ASSERT (i == components->end());
+  // nothing matched 
+  return false;    
+}
+
+static void CheckEnvironmentVariables (void)
+{
+#ifdef HAVE_GETENV
+  char *envVar = getenv ("NS_LOG");
+  if (envVar == 0 || strlen(envVar) == 0)
+    {
+      return;
+    }
+  std::string env = envVar;
+
+  std::string::size_type cur = 0;
+  std::string::size_type next = 0;
+  
+  while (next != std::string::npos)
+    {
+      next = env.find_first_of (":", cur);
+      std::string tmp = std::string (env, cur, next-cur);
+      std::string::size_type equal = tmp.find ("=");
+      std::string component;
+      if (equal == std::string::npos)
+        {
+          // ie no '=' characters found 
+          component = tmp;
+          if (ComponentExists(component) || component == "*")
+            {
+              return;
+            }
+	  else 
+            {
+	      LogComponentPrintList();
+              NS_FATAL_ERROR("Invalid or unregistered component name \"" << component <<
+                             "\" in env variable NS_LOG, see above for a list of valid components");
+            }
+        }
+      else
+        {
+          component = tmp.substr (0, equal);
+          if (ComponentExists(component) || component == "*")
+            {
+              std::string::size_type cur_lev;
+              std::string::size_type next_lev = equal;
+              do
+                {
+                  cur_lev = next_lev + 1;
+                  next_lev = tmp.find ("|", cur_lev);
+                  std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
+                  if (lev == "error"
+                      || lev == "warn"
+                      || lev == "debug"
+                      || lev == "info"
+                      || lev == "function"
+                      || lev == "logic"
+                      || lev == "all"
+                      || lev == "prefix_func"
+                      || lev == "prefix_time"
+                      || lev == "prefix_node"
+                      || lev == "level_error"
+                      || lev == "level_warn"
+                      || lev == "level_debug"
+                      || lev == "level_info"
+                      || lev == "level_function"
+                      || lev == "level_logic"
+                      || lev == "level_all"
+                      || lev == "*"
+		     )
+                    {
+                      continue;
+                    }
+		  else
+                    {
+                      NS_FATAL_ERROR("Invalid log level \"" << lev <<
+                                     "\" in env variable NS_LOG for component name " << component);
+                    }
+                } while (next_lev != std::string::npos);
+            }
+          else 
+            {
+              LogComponentPrintList();
+              NS_FATAL_ERROR("Invalid or unregistered component name \"" << component <<
+                             "\" in env variable NS_LOG, see above for a list of valid components");
+            }
+        }
+      cur = next + 1;	// parse next component
+    }
+#endif
+}
 void LogSetTimePrinter (LogTimePrinter printer)
 {
   g_logTimePrinter = printer;
+  // This is the only place where we are more or less sure that all log variables
+  // are registered. See bug 1082 for details.
+  CheckEnvironmentVariables(); 
 }
 LogTimePrinter LogGetTimePrinter (void)
 {

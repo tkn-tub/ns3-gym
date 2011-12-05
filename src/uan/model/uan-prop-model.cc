@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -334,6 +334,15 @@ UanPdp::CreateImpulsePdp (void)
   pdp.SetResolution (Seconds (0));
   pdp.SetTap (1.0,0);
   return pdp;
+}
+
+NS_OBJECT_ENSURE_REGISTERED (UanPropModel);
+
+TypeId UanPropModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UanPropModel")
+    .SetParent<Object> ();
+  return tid;
 }
 
 void

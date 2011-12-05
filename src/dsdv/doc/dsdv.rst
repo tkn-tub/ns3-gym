@@ -7,6 +7,10 @@ Destination-Sequenced Distance Vector (DSDV) routing protocol is a pro-active, t
 for MANETs developed by Charles E. Perkins and Pravin Bhagwat in 1994. It uses the hop count as metric in route
 selection.
 
+This model was developed by 
+`the ResiliNets research group <http://www.ittc.ku.edu/resilinets>`_
+at the University of Kansas.  A paper on this model exists at
+`this URL <https://wiki.ittc.ku.edu/resilinets/ResiliNets_Publications#.E2.80.9CDestination-Sequenced_Distance_Vector_.28DSDV.29_Routing_Protocol_Implementation_in_ns-3.E2.80.9D>`_. 
 
 DSDV Routing Overview
 *********************

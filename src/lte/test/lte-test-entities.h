@@ -70,7 +70,7 @@ class LteTestRrc : public Object
 
   private:
     // Interface forwarded by LtePdcpSapUser
-    virtual void DoReceiveRrcPdu (Ptr<Packet> p);
+    virtual void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
 
     LtePdcpSapUser* m_pdcpSapUser;
     LtePdcpSapProvider* m_pdcpSapProvider;
@@ -119,7 +119,7 @@ class LteTestPdcp : public Object
 
   private:
     // Interface forwarded by LteRlcSapUser
-    virtual void DoReceivePdcpPdu (Ptr<Packet> p);
+  virtual void DoReceivePdcpPdu (Ptr<Packet> p);
 
     LteRlcSapUser* m_rlcSapUser;
     LteRlcSapProvider* m_rlcSapProvider;

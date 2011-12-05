@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -199,6 +199,6 @@ private:
   uint32_t m_snapLen;
 };
 
-} //namespace ns3
+} // namespace ns3
 
-#endif // PCAP_FILE_WRAPPER_H
+#endif /* PCAP_FILE_WRAPPER_H */

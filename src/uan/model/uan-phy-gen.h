@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -19,8 +19,8 @@
  *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
-#ifndef UANPHYGEN_H
-#define UANPHYGEN_H
+#ifndef UAN_PHY_GEN_H
+#define UAN_PHY_GEN_H
 
 
 #include "uan-phy.h"
@@ -203,6 +203,8 @@ public:
   virtual Ptr<Packet> GetPacketRx (void) const;
   virtual void Clear (void);
 
+  virtual void SetSleepMode (bool sleep);
+
 private:
   typedef std::list<UanPhyListener *> ListenerList;
 
@@ -261,4 +263,4 @@ protected:
 
 } // namespace ns3
 
-#endif // UANPHYGEN_H
+#endif /* UAN_PHY_GEN_H */

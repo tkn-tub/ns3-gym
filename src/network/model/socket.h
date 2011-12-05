@@ -20,8 +20,8 @@
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef __SOCKET_H__
-#define __SOCKET_H__
+#ifndef NS3_SOCKET_H
+#define NS3_SOCKET_H
 
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
@@ -82,6 +82,7 @@ public:
     ERROR_NOROUTETOHOST,
     ERROR_NODEV,
     ERROR_ADDRNOTAVAIL,
+    ERROR_ADDRINUSE,
     SOCKET_ERRNO_LAST
   };
 
@@ -94,12 +95,12 @@ public:
 
   /**
    * This method wraps the creation of sockets that is performed
-   * by a socket factory on a given node based on a TypeId.
+   * on a given node by a SocketFactory specified by TypeId.
    * 
    * \return A smart pointer to a newly created socket.
    * 
    * \param node The node on which to create the socket
-   * \param tid The TypeId of the socket to create
+   * \param tid The TypeId of a SocketFactory class to use
    */
   static Ptr<Socket> CreateSocket (Ptr<Node> node, TypeId tid);
   /**
@@ -686,8 +687,6 @@ private:
   bool m_dontFragment;
 };
 
-} //namespace ns3
+} // namespace ns3
 
-#endif /* SOCKET_H */
-
-
+#endif /* NS3_SOCKET_H */

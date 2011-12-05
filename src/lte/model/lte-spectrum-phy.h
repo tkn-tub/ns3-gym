@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
  *
@@ -30,7 +30,6 @@
 #include <ns3/net-device.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/data-rate.h>
 #include <ns3/generic-phy.h>
@@ -67,21 +66,12 @@ public:
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
-  void SetMobility (Ptr<Object> m);
-  void SetDevice (Ptr<Object> d);
-  Ptr<Object> GetMobility ();
-  Ptr<Object> GetDevice ();
+  void SetMobility (Ptr<MobilityModel> m);
+  void SetDevice (Ptr<NetDevice> d);
+  Ptr<MobilityModel> GetMobility ();
+  Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
-
-
-  /**
-   * Get the SpectrumType used by this PHY
-   *
-   * @return
-   */
-  SpectrumType GetSpectrumType ();
-
+  void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.
@@ -159,9 +149,9 @@ private:
   void EndTx ();
   void EndRx ();
 
-  Ptr<Object> m_mobility;
+  Ptr<MobilityModel> m_mobility;
 
-  Ptr<Object> m_device;
+  Ptr<NetDevice> m_device;
 
   Ptr<SpectrumChannel> m_channel;
 

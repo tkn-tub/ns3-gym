@@ -16,72 +16,134 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef EPC_HELPER_H_
-#define EPC_HELPER_H_
+#ifndef EPC_HELPER_H
+#define EPC_HELPER_H
 
-#include "ns3/object.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv4-address-helper.h"
-#include <map>
-
+#include <ns3/object.h>
+#include <ns3/ipv4-address-helper.h>
+#include <ns3/data-rate.h>
+#include <ns3/lte-tft.h>
 
 
 namespace ns3 {
 
 class Node;
-class GtpuTunnelEndpoint;
+class NetDevice;
+class EpcSgwPgwApplication;
+
 /**
- * Helper class to handle the creation of the EPC entities and protocols
+ * \brief Helper class to handle the creation of the EPC entities and protocols.
+ *
+ * This Helper will create an EPC network topology comprising of a
+ * single node that implements both the SGW and PGW functionality, and
+ * is connected to all the eNBs in the simulation by means of the S1-U
+ * interface. 
  */
 class EpcHelper : public Object
 {
 public:
-  /**
+  
+  /** 
    * Constructor
    */
   EpcHelper ();
 
-  /**
+  /** 
    * Destructor
-   */
+   */  
   virtual ~EpcHelper ();
-
-  /**
-   * Inherited from ns3::Object
-   */
+  
+  // inherited from Object
   static TypeId GetTypeId (void);
 
-  /**
-   * Creates and configure the necessary instances for the node to act as a
-   * GTP endpoint. The IP address of the new interfaces are within 100.0.0./24
-   * \param n node to install GTPv1-U
+  
+  /** 
+   * Add an eNB to the EPC
+   * 
+   * \param enbNode the previosuly created eNB node which is to be
+   * added to the EPC
+   * \param lteEnbNetDevice the LteEnbNetDevice of the eNB node
    */
-  void InstallGtpu (Ptr<Node> n);
-  /**
-   * Creates and configure the necessary instances for the node to act as a
-   * GTP endpoint.
-   */
-  void InstallGtpu (Ptr<Node> n, Ipv4Address addr);
+  void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice);
 
-  /**
-   * Creates a GTPv1-U tunnel between two nodes, both of them need to have GTPv1-U installed.
-   * \param n First tunnel endpoint node
-   * \param nAddr First tunnel endpoing address
-   * \param m Second tunnel endpoint node
-   * \param mAddr Second tunnel endpoing address
+
+  /** 
+   * Activate an EPS bearer, setting up the corresponding S1-U tunnel.
+   * 
+   * 
+   * 
+   * \param ueLteDevice the Ipv4-enabled device of the UE, normally connected via the LTE radio interface
+   * \param enbLteDevice the non-Ipv4-enabled device of the eNB
+   * \param tft the Traffic Flow Template of the new bearer
+   * \param rnti the Radio Network Temporary Identifier that identifies the UE
+   * \param lcid the Logical Channel IDentifier of the corresponding RadioBearer
    */
-  void CreateGtpuTunnel (Ptr<Node> n, Ipv4Address nAddr, Ptr<Node> m, Ipv4Address mAddr);
+  void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<LteTft> tft, uint16_t rnti, uint8_t lcid);
+
+
+  /** 
+   * 
+   * \return a pointer to the node implementing PGW
+   * functionality. Note that in this particular implementation this
+   * node will also hold the SGW functionality. The primary use
+   * intended for this method is to allow the user to configure the Gi
+   * interface of the PGW, i.e., to connect the PGW to the internet.
+   */
+  Ptr<Node> GetPgwNode ();
+
+  /** 
+   * Assign IPv4 addresses to UE devices
+   * 
+   * \param ueDevices the set of UE devices
+   * 
+   * \return the interface container, \see Ipv4AddressHelper::Assign() which has similar semantics
+   */
+  Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
+
+
+  /** 
+   * 
+   * \return the address of the Default Gateway to be used by UEs to reach the internet
+   */
+  Ipv4Address GetUeDefaultGatewayAddress ();
+
+
 
 private:
-  uint16_t m_udpPort;
-  Ipv4AddressHelper m_ipv4;
-  Ipv4Mask m_mask;
-  std::map <Ptr<Node>, Ptr<GtpuTunnelEndpoint> > m_gtpuEndpoint;
+  
+  /** 
+   * helper to assign addresses to S1-U
+   * NetDevices 
+   */
+  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
+
+  /** 
+   * helper to assign addresses to UE devices as well as to the TUN device of the SGW/PGW
+   */
+  Ipv4AddressHelper m_ueAddressHelper; 
+  
+  Ptr<Node> m_sgwPgw; 
+
+  Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
+
+  DataRate m_s1uLinkDataRate;
+  Time     m_s1uLinkDelay;
+  uint16_t m_s1uLinkMtu;
+
+
+  /**
+   * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152
+   */
+  uint16_t m_gtpuUdpPort;
 
 };
 
+
+
+
 } // namespace ns3
 
-#endif /* EPC_HELPER_H_ */
+#endif // EPC_HELPER_H

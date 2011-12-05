@@ -57,7 +57,7 @@ EventImpl * MakeEvent (void (*f)(U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5
  ********************************************************************/
 
 #include "event-impl.h"
-#include "ns3/type-traits.h"
+#include "type-traits.h"
 
 namespace ns3 {
 

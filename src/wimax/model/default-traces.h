@@ -33,8 +33,8 @@
 
 
 
-#ifndef DEFAULTTRACES_H_
-#define DEFAULTTRACES_H_
+#ifndef WIMAX_DEFAULT_TRACES_H
+#define WIMAX_DEFAULT_TRACES_H
 
 double modulation0[6][29] = {
 
@@ -831,4 +831,4 @@ double modulation6[6][626] = {
     0.01943 }
 };
 
-#endif /* DEFAULTTRACES_H_ */
+#endif /* WIMAX_DEFAULT_TRACES_H */

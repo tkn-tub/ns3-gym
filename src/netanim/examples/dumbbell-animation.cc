@@ -36,14 +36,12 @@ int main (int argc, char *argv[])
   uint32_t    nLeftLeaf = 5;
   uint32_t    nRightLeaf = 5;
   uint32_t    nLeaf = 0; // If non-zero, number of both left and right
-  uint16_t    port = 0;  // If non zero, port to bind to for anim connection
-  std::string animFile;  // Name of file for animation output
+  std::string animFile = "dumbbell-animation.xml" ;  // Name of file for animation output
 
   CommandLine cmd;
   cmd.AddValue ("nLeftLeaf", "Number of left side leaf nodes", nLeftLeaf);
   cmd.AddValue ("nRightLeaf","Number of right side leaf nodes", nRightLeaf);
   cmd.AddValue ("nLeaf",     "Number of left and right side leaf nodes", nLeaf);
-  cmd.AddValue ("port",      "Port Number for Remote Animation", port);
   cmd.AddValue ("animFile",  "File Name for Animation Output", animFile);
 
   cmd.Parse (argc,argv);
@@ -97,17 +95,8 @@ int main (int argc, char *argv[])
   d.BoundingBox (1, 1, 100, 100);
 
   // Create the animation object and configure for specified output
-  AnimationInterface anim;
-  if (port > 0)
-    {
-      anim.SetServerPort (port);
-    }
-  else if (!animFile.empty ())
-    {
-      anim.SetOutputFile (animFile);
-    }
-  anim.StartAnimation ();
-
+  AnimationInterface anim (animFile);
+  
   // Set up the acutal simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -115,7 +104,5 @@ int main (int argc, char *argv[])
   Simulator::Run ();
   std::cout << "Destroying the simulation" << std::endl;
   Simulator::Destroy ();
-  std::cout << "Stopping the animation" << std::endl;
-  anim.StopAnimation ();
   return 0;
 }

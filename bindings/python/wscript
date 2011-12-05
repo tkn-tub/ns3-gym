@@ -2,7 +2,7 @@
 import types
 import re
 import os
-import pproc as subprocess
+import subprocess
 import shutil
 import sys
 
@@ -14,28 +14,15 @@ import Logs
 import Build
 import Utils
 
+from waflib.Errors import WafError
+
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 785)
+REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 795)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
-
 from TaskGen import feature, after
-import Task, ccroot
-
-@feature('pch')
-@after('apply_link')
-def process_pch(self):
-    node = self.path.find_resource(self.pch)
-    assert node
-    tsk = self.create_task('gchx')
-    tsk.set_inputs(node)
-    tsk.set_outputs(node.parent.find_or_declare(node.name + '.gch'))
-
-comp_line = '${CXX} ${CXXFLAGS} ${CPPFLAGS} ${_CXXINCFLAGS} ${_CXXDEFFLAGS} ${SRC} -o ${TGT}'
-cls = Task.simple_task_type('gchx', comp_line, before='cc cxx')
-cls.scan = ccroot.scan
-
+import Task
 
 
 
@@ -50,25 +37,14 @@ def set_pybindgen_pythonpath(env):
         add_to_python_path(env['WITH_PYBINDGEN'])
 
 
-def set_options(opt):
-    opt.tool_options('python')
-    c = ("monolithic", "modular", "both")
-    opt.add_option('--bindings-type', type="choice",
-                   choices=c,
-                   help=("Type of Python bindings to build %r.  "
-                         "Warning: the modular bindings are still experimental." % (c,)),
-                   default="modular",
-                   dest='bindings_type')
+def options(opt):
+    opt.tool_options('python', ["waf-tools"])
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
                    dest='python_disable')
-    opt.add_option('--python-scan',
-                   help=("Rescan Python bindings.  Needs working GCCXML / pygccxml environment."),
-                   action="store_true", default=False,
-                   dest='python_scan')
     opt.add_option('--apiscan',
-                   help=("EXPERIMENTAL: Rescan the API for the indicated module(s), for Python bindings.  "
+                   help=("Rescan the API for the indicated module(s), for Python bindings.  "
                          "Needs working GCCXML / pygccxml environment.  "
                          "The metamodule 'all' expands to all available ns-3 modules."),
                    default=None, dest='apiscan', metavar="MODULE[,MODULE...]")
@@ -76,18 +52,22 @@ def set_options(opt):
                    help=('Path to an existing pybindgen source tree to use.'),
                    default=None,
                    dest='with_pybindgen', type="string")
-    opt.add_option('--enable-python-pch',
-                   help=("Enable precompiled headers when compiling python bindings, to speed up compilation."),
-                   action="store_true", default=False,
-                   dest='enable_python_pch')
+    opt.add_option('--with-python',
+                   help=('Path to the Python interpreter to use.'),
+                   default=None, dest='with_python', type="string")
 
 
 def configure(conf):
-    conf.env['ENABLE_PYTHON_PCH'] = Options.options.enable_python_pch
     conf.env['ENABLE_PYTHON_BINDINGS'] = False
     if Options.options.python_disable:
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "disabled by user request")
+        return
+    # Disable python in static builds (bug #1253)
+    if ((conf.env['ENABLE_STATIC_NS3']) or \
+      (conf.env['ENABLE_SHARED_AND_STATIC_NS3'])):
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "bindings incompatible with static build")
         return
 
     enabled_modules = list(conf.env['NS3_ENABLED_MODULES'])
@@ -96,7 +76,7 @@ def configure(conf):
     available_modules.sort()
     all_modules_enabled = (enabled_modules == available_modules)
 
-    conf.check_tool('misc')
+    conf.check_tool('misc', tooldir=['waf-tools'])
 
     if sys.platform == 'cygwin':
         conf.report_optional_feature("python", "Python Bindings", False,
@@ -104,14 +84,35 @@ def configure(conf):
         Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
         return
 
+
     ## Check for Python
+
+    if Options.options.with_python is not None:
+        conf.env.PYTHON = Options.options.with_python
+
     try:
-        conf.check_tool('python')
+        conf.check_tool('python', ["waf-tools"])
         conf.check_python_version((2,3))
         conf.check_python_headers()
     except Configure.ConfigurationError, ex:
         conf.report_optional_feature("python", "Python Bindings", False, str(ex))
         return
+
+    # stupid Mac OSX Python wants to build extensions as "universal
+    # binaries", i386, x86_64, and ppc, but this way the type
+    # __uint128_t is not available.  We need to disable the multiarch
+    # crap by removing the -arch parameters.
+    for flags_var in ["CFLAGS_PYEXT", "CFLAGS_PYEMBED", "CXXFLAGS_PYEMBED",
+                      "CXXFLAGS_PYEXT", "LINKFLAGS_PYEMBED", "LINKFLAGS_PYEXT"]:
+        flags = conf.env[flags_var]
+        i = 0
+        while i < len(flags):
+            if flags[i] == '-arch':
+                del flags[i]
+                del flags[i]
+                continue
+            i += 1
+        conf.env[flags_var] = flags
 
     # -fvisibility=hidden optimization
     if (conf.env['CXX_NAME'] == 'gcc' and [int(x) for x in conf.env['CC_VERSION']] >= [4,0,0]
@@ -122,7 +123,7 @@ def configure(conf):
     # Check for the location of pybindgen
     if Options.options.with_pybindgen is not None:
         if os.path.isdir(Options.options.with_pybindgen):
-            conf.check_message("pybindgen location", '', True, ("%s (given)" % Options.options.with_pybindgen))
+            conf.msg("Checking for pybindgen location", ("%s (given)" % Options.options.with_pybindgen))
             conf.env['WITH_PYBINDGEN'] = os.path.abspath(Options.options.with_pybindgen)
     else:
         # ns-3-dev uses ../pybindgen, while ns-3 releases use ../REQUIRED_PYBINDGEN_VERSION
@@ -130,15 +131,15 @@ def configure(conf):
         pybindgen_release_str = "pybindgen-" + '.'.join([str(x) for x in REQUIRED_PYBINDGEN_VERSION])
         pybindgen_release_dir = os.path.join('..', pybindgen_release_str)
         if os.path.isdir(pybindgen_dir):
-            conf.check_message("pybindgen location", '', True, ("%s (guessed)" % pybindgen_dir))
+            conf.msg("Checking for pybindgen location", ("%s (guessed)" % pybindgen_dir))
             conf.env['WITH_PYBINDGEN'] = os.path.abspath(pybindgen_dir)
         elif os.path.isdir(pybindgen_release_dir):
-            conf.check_message("pybindgen location", '', True, ("%s (guessed)" % pybindgen_release_dir))
+            conf.msg("Checking for pybindgen location", ("%s (guessed)" % pybindgen_release_dir))
             conf.env['WITH_PYBINDGEN'] = os.path.abspath(pybindgen_release_dir)
         del pybindgen_dir
         del pybindgen_release_dir
     if not conf.env['WITH_PYBINDGEN']:
-        conf.check_message("pybindgen location", '', False)
+        conf.msg("Checking for pybindgen location", False)
 
     # Check for pybindgen
 
@@ -152,15 +153,13 @@ def configure(conf):
                                      "PyBindGen missing")
         return
     else:
-        out = subprocess.Popen([conf.env['PYTHON'], "-c",
+        out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                                 "import pybindgen.version; "
                                 "print '.'.join([str(x) for x in pybindgen.version.__version__])"],
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version_str = out.strip()
         pybindgen_version = tuple([int(x) for x in pybindgen_version_str.split('.')])
-        conf.check_message('pybindgen', 'version',
-                           (pybindgen_version == REQUIRED_PYBINDGEN_VERSION),
-                           pybindgen_version_str)
+        conf.msg('Checking for pybindgen version', pybindgen_version_str)
         if not (pybindgen_version == REQUIRED_PYBINDGEN_VERSION):
             Logs.warn("pybindgen (found %s), (need %s)" %
                     (pybindgen_version_str,
@@ -185,10 +184,10 @@ int main ()
         try:
             ret = conf.run_c_code(code=test_program,
                                   env=conf.env.copy(), compile_filename='test.cc',
-                                  compile_mode='cxx',type='cprogram', execute=False)
+                                  features='cxx cprogram', execute=False)
         except Configure.ConfigurationError:
             ret = 1
-        conf.check_message_custom('types %s and %s' % (t1, t2), 'equivalency', (ret and 'no' or 'yes'))
+        conf.msg('Checking for types %s and %s equivalence' % (t1, t2), (ret and 'no' or 'yes'))
         return not ret
 
     uint64_is_long = test("uint64_t", "unsigned long")
@@ -205,7 +204,7 @@ int main ()
     else:
         msg = conf.env['PYTHON_BINDINGS_APIDEFS']
 
-    conf.check_message_custom('the apidefs that can be used for Python bindings', '', msg)
+    conf.msg('Checking for the apidefs that can be used for Python bindings', msg)
 
     if conf.env['PYTHON_BINDINGS_APIDEFS'] is None:
         conf.report_optional_feature("python", "Python Bindings", False,
@@ -213,24 +212,26 @@ int main ()
         return
 
 
-    conf.env['BINDINGS_TYPE'] = Options.options.bindings_type
-
-    if not all_modules_enabled:
-        if conf.env['BINDINGS_TYPE'] == 'both':
-            conf.env['BINDINGS_TYPE'] = 'modular'
-        elif conf.env['BINDINGS_TYPE'] == 'monolithic':
-            conf.report_optional_feature("python", "Python Bindings", False, "Monolithic python bindings need all ns-3 modules to be enabled")
-            return
-            
     ## If all has gone well, we finally enable the Python bindings
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
     conf.report_optional_feature("python", "Python Bindings", True, None)
 
-    if conf.env['BINDINGS_TYPE'] == 'both':
-        msg = "monolithic and modular"
-    else:
-        msg = conf.env['BINDINGS_TYPE']
-    conf.check_message_custom('type of bindings to build', '', msg)
+
+    # check cxxabi stuff (which Mac OS X Lion breaks)
+    fragment = r"""
+# include <cxxabi.h>
+int main ()
+{
+   const abi::__si_class_type_info *_typeinfo  __attribute__((unused)) = NULL;
+   return 0;
+}
+"""
+    gcc_rtti_abi = conf.check_nonfatal(fragment=fragment, msg="Checking for internal GCC cxxabi",
+                                       okmsg="complete", errmsg='incomplete',
+                                       mandatory=False)
+    conf.env["GCC_RTTI_ABI_COMPLETE"] = str(bool(gcc_rtti_abi))
+
+
 
     ## Check for pygccxml
     try:
@@ -240,14 +241,12 @@ int main ()
                                      "Missing 'pygccxml' Python module")
         return
 
-    out = subprocess.Popen([conf.env['PYTHON'], "-c",
+    out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
                             "import pygccxml; print pygccxml.__version__"],
                             stdout=subprocess.PIPE).communicate()[0]
     pygccxml_version_str = out.strip()
     pygccxml_version = tuple([int(x) for x in pygccxml_version_str.split('.')])
-    conf.check_message('pygccxml', 'version',
-                       (pygccxml_version >= REQUIRED_PYGCCXML_VERSION),
-                       pygccxml_version_str)
+    conf.msg('Checking for pygccxml version', pygccxml_version_str)
     if not (pygccxml_version >= REQUIRED_PYGCCXML_VERSION):
         Logs.warn("pygccxml (found %s) is too old (need %s) => "
                 "automatic scanning of API definitions will not be possible" %
@@ -259,7 +258,10 @@ int main ()
     
 
     ## Check gccxml version
-    gccxml = conf.find_program('gccxml', var='GCCXML')
+    try:
+        gccxml = conf.find_program('gccxml', var='GCCXML')
+    except WafError:
+        gccxml = None
     if not gccxml:
         Logs.warn("gccxml missing; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
@@ -270,7 +272,7 @@ int main ()
     m = re.match( "^GCC-XML version (\d\.\d(\.\d)?)$", gccxml_version_line)
     gccxml_version = m.group(1)
     gccxml_version_ok = ([int(s) for s in gccxml_version.split('.')] >= [0, 9])
-    conf.check_message('gccxml', 'version', True, gccxml_version)
+    conf.msg('Checking for gccxml version', gccxml_version)
     if not gccxml_version_ok:
         Logs.warn("gccxml too old, need version >= 0.9; automatic scanning of API definitions will not be possible")
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
@@ -281,27 +283,23 @@ int main ()
     conf.env['ENABLE_PYTHON_SCANNING'] = True
     conf.report_optional_feature("pygccxml", "Python API Scanning Support", True, None)
 
-    
-
-
 # ---------------------
 
 def get_headers_map(bld):
     headers_map = {} # header => module
     for ns3headers in bld.all_task_gen:
-        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+        if 'ns3header' in getattr(ns3headers, "features", []):
             if ns3headers.module.endswith('-test'):
                 continue
-            for h in ns3headers.to_list(ns3headers.source):
+            for h in ns3headers.to_list(ns3headers.headers):
                 headers_map[os.path.basename(h)] = ns3headers.module
     return headers_map
 
 def get_module_path(bld, module):
     for ns3headers in bld.all_task_gen:
-        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+        if 'ns3header' in getattr(ns3headers, "features", []):
             if ns3headers.module == module:
                 break
-
     else:
         raise ValueError("Module %r not found" % module)
     return ns3headers.path.abspath()
@@ -309,8 +307,8 @@ def get_module_path(bld, module):
 class apiscan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
-    after = 'gen_ns3_module_header_task ns3header_task'
-    before = 'cc cxx gchx'
+    after = 'gen_ns3_module_header ns3header'
+    before = 'cc cxx command'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
         self.bld = bld
@@ -325,7 +323,7 @@ class apiscan_task(Task.TaskBase):
         return 'api-scan-%s\n' % (self.target,)
 
     def run(self):
-        top_builddir = self.curdirnode.find_dir('../..').abspath(self.env)
+        top_builddir = self.bld.bldnode.abspath()
         module_path = get_module_path(self.bld, self.module)
         headers_map = get_headers_map(self.bld)
         scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % self.module)
@@ -335,7 +333,7 @@ class apiscan_task(Task.TaskBase):
             return 0
 
         argv = [
-            self.env['PYTHON'],
+            self.env['PYTHON'][0],
             os.path.join(self.curdirnode.abspath(), 'ns3modulescan-modular.py'), # scanning script
             top_builddir,
             self.module,
@@ -346,140 +344,6 @@ class apiscan_task(Task.TaskBase):
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
         retval = scan.wait()
         return retval
-
-
-
-# --------------
-prio_headers = {
-    -2: (
-        "string.h", # work around http://www.gccxml.org/Bug/view.php?id=6682
-        ),
-    -1: (
-        "propagation-delay-model.h",
-        "propagation-loss-model.h",
-        "net-device.h",
-        "ipv4-interface.h",
-        )
-     }
-
-def get_header_prio(header):
-    for prio, headers in prio_headers.iteritems():
-        if header in headers:
-            return prio
-    return 1
-
-
-def calc_header_include(path):
-    (head, tail) = os.path.split (path)
-    if tail == 'ns3':
-        return ''
-    else:
-        return os.path.join (calc_header_include (head), tail)
-
-
-class gen_everything_h_task(Task.Task):
-    before = 'cc cxx gchx'
-    after = 'ns3header_task'
-    color = 'BLUE'
-
-    def run(self):
-        assert len(self.outputs) == 1
-
-        header_files = [calc_header_include(node.abspath(self.env)) for node in self.inputs]
-        outfile = file(self.outputs[0].bldpath(self.env), "w")
-
-        def sort_func(h1, h2):
-            return cmp((get_header_prio(h1), h1), (get_header_prio(h1), h2))
-
-        header_files.sort(sort_func)
-
-        print >> outfile, """
-
-/* http://www.nsnam.org/bugzilla/show_bug.cgi?id=413 */
-#ifdef ECHO
-# undef ECHO
-#endif
-
-    """
-        for header in header_files:
-            print >> outfile, "#include \"ns3/%s\"" % (header,)
-
-        print >> outfile, """
-namespace ns3 {
-static inline Ptr<Object>
-__dummy_function_to_force_template_instantiation (Ptr<Object> obj, TypeId typeId)
-{
-   return obj->GetObject<Object> (typeId);
-}
-
-
-static inline void
-__dummy_function_to_force_template_instantiation_v2 ()
-{
-   Time t1, t2, t3;
-   t1 = t2 + t3;
-   t1 = t2 - t3;
-   t1 < t2;
-   t1 <= t2;
-   t1 == t2;
-   t1 != t2;
-   t1 >= t2;
-   t1 > t2;
-}
-
-
-}
-"""
-        outfile.close()
-        return 0
-
-
-
-class all_ns3_headers_taskgen(TaskGen.task_gen):
-    """Generates a 'everything.h' header file that includes some/all public ns3 headers.
-    This single header file is to be parsed only once by gccxml, for greater efficiency.
-    """
-    def __init__(self, *args, **kwargs):
-        super(all_ns3_headers_taskgen, self).__init__(*args, **kwargs)
-        self.install_path = None
-        #self.inst_dir = 'ns3'
-
-    def apply(self):
-        ## get all of the ns3 headers
-        ns3_dir_node = self.bld.path.find_dir("ns3")
-        all_headers_inputs = []
-
-        for filename in self.to_list(self.source):
-            src_node = ns3_dir_node.find_or_declare(filename)
-            if src_node is None:
-                raise Utils.WafError("source ns3 header file %s not found" % (filename,))
-            all_headers_inputs.append(src_node)
-
-        ## if self.source was empty, include all ns3 headers in enabled modules
-        if not all_headers_inputs:
-            for ns3headers in self.bld.all_task_gen:
-                if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
-                    ## skip headers not part of enabled modules
-                    if ns3headers.module.endswith('-test'):
-                        continue
-                    if self.env['NS3_ENABLED_MODULES']:
-                        if ("ns3-%s" % ns3headers.module) not in self.env['NS3_ENABLED_MODULES']:
-                            continue
-
-                    for source in ns3headers.to_list(ns3headers.source):
-                        #source = os.path.basename(source)
-                        node = ns3_dir_node.find_or_declare(os.path.basename(source))
-                        if node is None:
-                            raise Utils.WafError("missing header file %s" % (source,))
-                        all_headers_inputs.append(node)
-        assert all_headers_inputs
-        all_headers_outputs = [self.path.find_or_declare("everything.h")]
-        task = self.create_task('gen_everything_h', env=self.env)
-        task.set_inputs(all_headers_inputs)
-        task.set_outputs(all_headers_outputs)
-
-    def install(self):
-        pass
 
 
 def get_modules_and_headers(bld):
@@ -499,58 +363,22 @@ def get_modules_and_headers(bld):
         ## find the headers object for this module
         headers = []
         for ns3headers in bld.all_task_gen:
-            if type(ns3headers).__name__ != 'ns3header_taskgen': # XXX: find less hackish way to compare
+            if 'ns3header' not in getattr(ns3headers, "features", []):
                 continue
             if ns3headers.module != module_name:
                 continue
-            for source in ns3headers.to_list(ns3headers.source):
+            for source in ns3headers.to_list(ns3headers.headers):
                 headers.append(os.path.basename(source))
         retval[module_name] = (list(module.module_deps), headers)
     return retval
 
 
 
-class python_scan_task(Task.TaskBase):
-    """Uses gccxml to scan the file 'everything.h' and extract API definitions.
-    """
-    after = 'gen_everything_h_task'
-    before = 'cc cxx gchx'
-    color = "BLUE"
-    def __init__(self, curdirnode, env, bld, target, cflags):
-        self.bld = bld
-        super(python_scan_task, self).__init__(generator=self)
-        self.curdirnode = curdirnode
-        self.env = env
-        self.target = target
-        self.cflags = cflags
-
-    def display(self):
-        return 'python-scan-%s\n' % (self.target,)
-
-    def run(self):
-        defsdir = os.path.join(self.curdirnode.abspath(), 'apidefs', self.target)
-        try:
-            os.mkdir(defsdir)
-        except OSError:
-            pass
-        argv = [
-            self.env['PYTHON'],
-            os.path.join(self.curdirnode.abspath(), 'ns3modulescan.py'), # scanning script
-            self.curdirnode.find_dir('../..').abspath(self.env), # include path (where the ns3 include dir is)
-            self.curdirnode.find_or_declare('everything.h').abspath(self.env),
-            os.path.join(defsdir, 'ns3modulegen_generated.py'), # output file
-            self.cflags,
-            ]
-        scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
-        print >> scan.stdin, repr(get_modules_and_headers(self.bld))
-        scan.stdin.close()
-        retval = scan.wait()
-        return retval
 
 class python_scan_task_collector(Task.TaskBase):
     """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
     """
-    after = 'python_scan_task apiscan_task'
+    after = 'apiscan'
     before = 'cc cxx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld):
@@ -566,19 +394,20 @@ class python_scan_task_collector(Task.TaskBase):
         # signal stop (we generated files into the source dir and WAF
         # can't cope with it, so we have to force the user to restart
         # WAF)
-        self.bld.generator.stop = 1
+        self.bld.producer.stop = 1
+        self.bld.producer.free_task_pool()
         return 0
 
 
 
 class gen_ns3_compat_pymod_task(Task.Task):
     """Generates a 'ns3.py' compatibility module."""
-    before = 'cc cxx gchx'
+    before = 'cc cxx'
     color = 'BLUE'
     
     def run(self):
         assert len(self.outputs) == 1
-        outfile = file(self.outputs[0].abspath(self.env), "w")
+        outfile = file(self.outputs[0].abspath(), "w")
         print >> outfile, "import warnings"
         print >> outfile, 'warnings.warn("the ns3 module is a compatibility layer '\
             'and should not be used in newly written code", DeprecationWarning, stacklevel=2)'
@@ -599,36 +428,9 @@ def build(bld):
 
     set_pybindgen_pythonpath(env)
 
-    bld.new_task_gen(features='copy',
-                     source="ns__init__.py",
-                     target='ns/__init__.py')
-
-
-    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
-        obj = bld.new_task_gen('all_ns3_headers')
-
-    if Options.options.python_scan:
-        if not env['ENABLE_PYTHON_SCANNING']:
-            raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
-        scan_targets = []
-        if sys.platform == 'cygwin':
-            scan_targets.append(('gcc-cygwin', ''))
-        else:
-            import struct
-            if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
-                scan_targets.extend([('gcc-ILP32', '-m32'), ('gcc-LP64', '-m64')])
-            elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
-                scan_targets.append(('gcc-ILP32', ''))
-            else:
-                raise Utils.WafError("Cannot scan python bindings for unsupported data model")
-        for target, cflags in scan_targets:
-            python_scan_task(bld.path, env, bld, target, cflags)
-        python_scan_task_collector(bld.path, env, bld)
-        return
-
     if Options.options.apiscan:
         if not env['ENABLE_PYTHON_SCANNING']:
-            raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
+            raise WafError("Cannot re-scan python bindings: (py)gccxml not available")
         scan_targets = []
         if sys.platform == 'cygwin':
             scan_targets.append(('gcc_cygwin', ''))
@@ -639,7 +441,7 @@ def build(bld):
             elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
                 scan_targets.append(('gcc_ILP32', ''))
             else:
-                raise Utils.WafError("Cannot scan python bindings for unsupported data model")
+                raise WafError("Cannot scan python bindings for unsupported data model")
 
         test_module_path = bld.path.find_dir("../../src/test")
         if Options.options.apiscan == 'all':
@@ -659,110 +461,27 @@ def build(bld):
             scan_modules = Options.options.apiscan.split(',')
         print "Modules to scan: ", scan_modules
         for target, cflags in scan_targets:
+            group = bld.get_group(bld.current_group)
             for module in scan_modules:
-                apiscan_task(bld.path, env, bld, target, cflags, module)
-        python_scan_task_collector(bld.path, env, bld)
+                group.append(apiscan_task(bld.path, env, bld, target, cflags, module))
+        group.append(python_scan_task_collector(bld.path, env, bld))
         return
 
 
-    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
-        apidefs = env['PYTHON_BINDINGS_APIDEFS']
-
-        ## Get a list of scanned modules; the set of scanned modules
-        ## may be smaller than the set of all modules, in case a new
-        ## ns3 module is being developed which wasn't scanned yet.
-        scanned_modules = []
-        for filename in os.listdir(os.path.join(curdir, 'apidefs', apidefs)):
-            m = re.match(r"^ns3_module_(.+)\.py$", filename)
-            if m is None:
-                continue
-            name = m.group(1)
-            if name.endswith("__local"):
-                continue
-            scanned_modules.append(name)
-        print "scanned_modules:", scanned_modules
-        debug = ('PYBINDGEN_DEBUG' in os.environ)
-        source = [
-            'ns3modulegen.py',
-            'apidefs/%s/ns3modulegen_generated.py' % (apidefs,),
-            'ns3modulegen_core_customizations.py',
-            ]
-        target = [
-            'ns3module.cc',
-            'pch/ns3module.h',
-            ]
-        if not debug:
-            target.append('ns3modulegen.log')
-
-        argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}']
-        if debug:
-            argv.extend(["-m", "pdb"])
-        argv.extend(['${SRC[0]}', '${TGT[0]}', os.path.join(curdir, 'apidefs', apidefs)])
-        
-        argv.extend(get_modules_and_headers(bld).iterkeys())
-        for module in scanned_modules:
-            source.append("apidefs/%s/ns3_module_%s.py" % (apidefs, module))
-            local = "ns3_module_%s__local.py" % module
-            if os.path.exists(os.path.join(curdir, local)):
-                source.append(local)
-
-        if not debug:
-            argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
-
-        for module in scanned_modules:
-            target.append("ns3_module_%s.cc" % module)
-
-        features = []
-        for (name, caption, was_enabled, reason_not_enabled) in env['NS3_OPTIONAL_FEATURES']:
-            if was_enabled:
-                features.append(name)
-
-        bindgen = bld.new_task_gen('command', source=source, target=target, command=argv)
-        bindgen.env['FEATURES'] = ','.join(features)
-        bindgen.dep_vars = ['FEATURES']
-        bindgen.before = 'cxx gchx'
-        bindgen.after = 'gen_everything_h_task'
-        bindgen.name = "pybindgen-command"
- 
-        features = 'cxx cshlib pyext'
-        if env['ENABLE_PYTHON_PCH']:
-            features += ' pch'
-        pymod = bld.new_task_gen(features=features)
-        pymod.source = ['ns3module.cc', 'ns3module_helpers.cc']
-        pymod.includes = '. pch'
-        if env['ENABLE_PYTHON_PCH']:
-            pymod.pch = 'pch/ns3module.h'
-        for module in scanned_modules:
-            pymod.source.append("ns3_module_%s.cc" % module)
-        pymod.target = 'ns3/_ns3'
-        pymod.name = 'ns3module'
-        pymod.uselib_local = bld.env['NS3_ENABLED_MODULES']
-        if pymod.env['ENABLE_STATIC_NS3']:
-            if sys.platform == 'darwin':
-                pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
-                for mod in pymod.uselib_local:
-                    pymod.env.append_value('LINKFLAGS', '-l' + mod)
-            else:
-                pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-                for mod in pymod.uselib_local:
-                    pymod.env.append_value('LINKFLAGS', '-l' + mod)
-                pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
-
-        defines = list(pymod.env['CXXDEFINES'])
-        defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
-        if Options.platform == 'win32':
-            try:
-                defines.remove('_DEBUG') # causes undefined symbols on win32
-            except ValueError:
-                pass
-        pymod.env['CXXDEFINES'] = defines
-
-        bld.new_task_gen(features='copy',
-                         source="ns3__init__.py",
-                         target='ns3/__init__.py')
-
-    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('modular',):
-        task = gen_ns3_compat_pymod_task(env)
+    if env['ENABLE_PYTHON_BINDINGS']:
+        task = gen_ns3_compat_pymod_task(env=env.derive())
         task.set_outputs(bld.path.find_or_declare("ns3.py"))
         task.dep_vars = ['PYTHON_MODULES_BUILT']
+        task.bld = bld
+        grp = bld.get_group(bld.current_group)
+        grp.append(task)
+
+        bld.new_task_gen(features='copy',
+                         source="ns__init__.py",
+                         target='ns/__init__.py')
+        bld.install_as('${PYTHONDIR}/ns/__init__.py', 'ns__init__.py')
+
+
+    # note: the actual build commands for the python bindings are in
+    # src/wscript, not here.
 

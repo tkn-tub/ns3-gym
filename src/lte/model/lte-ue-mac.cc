@@ -31,6 +31,8 @@
 #include "lte-mac-tag.h"
 #include <ns3/ff-mac-common.h>
 #include <ns3/ideal-control-messages.h>
+#include <ns3/simulator.h>
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUeMac");
@@ -38,18 +40,6 @@ NS_LOG_COMPONENT_DEFINE ("LteUeMac");
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LteUeMac);
-
-
-
-int BufferSizeLevelBsr[64] = {
-
-  0, 10, 12, 14, 17, 19, 22, 26, 31, 36, 42, 49, 57, 67, 78, 91, 107, 125, 146,
-  171, 200, 234, 274, 321, 376, 440, 515, 603, 706, 826, 967, 1132, 1326, 1552,
-  1817, 2127, 2490, 2915, 3413, 3995, 4677, 5476, 6411, 7505, 8787, 10287,
-  12043, 14099, 16507, 19325, 22624, 26487, 31009, 36304, 42502, 49759, 58255,
-  68201, 79846, 93749, 109439, 128125, 150000, 150000
-
-};
 
 
 ///////////////////////////////////////////////////////////
@@ -161,7 +151,7 @@ UeMemberLteUePhySapUser::ReceivePhyPdu (Ptr<Packet> p)
 void
 UeMemberLteUePhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
-  NS_LOG_LOGIC (this << " UE-MAC does not yet support this primitive");
+  m_mac->DoSubframeIndication (frameNo, subframeNo);
 }
 
 void
@@ -189,6 +179,9 @@ LteUeMac::GetTypeId (void)
 
 
 LteUeMac::LteUeMac ()
+  :  m_bsrPeriodicity (MilliSeconds (1)), // ideal behavior
+  m_bsrLast (MilliSeconds (0))
+  
 {
   NS_LOG_FUNCTION (this);
   m_macSapProvider = new UeMemberLteMacSapProvider (this);
@@ -263,24 +256,40 @@ void
 LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
 {
   NS_LOG_FUNCTION (this);
-  MacCeListElement_s bsr;
-  bsr.m_rnti = m_rnti;
-  bsr.m_macCeType = MacCeListElement_s::BSR;
-  // short BSR
-  int queue = params.txQueueSize;
-  int index = 0;
-  if (BufferSizeLevelBsr[63] < queue)
+  
+  std::map <uint8_t, long uint>::iterator it;
+  
+  
+  it = m_ulBsrReceived.find (params.lcid);
+  if (it!=m_ulBsrReceived.end ())
     {
-      index = 63;
+      // update entry
+      (*it).second = params.txQueueSize + params.retxQueueSize + params.statusPduSize;
     }
   else
     {
-      while (BufferSizeLevelBsr[index] < queue)
-        {
-          index++;
-        }
+      m_ulBsrReceived.insert (std::pair<uint8_t, long uint> (params.lcid, params.txQueueSize + params.retxQueueSize + params.statusPduSize));
     }
-  bsr.m_macCeValue.m_bufferStatus.push_back (index);
+}
+
+
+void
+LteUeMac::SendReportBufferStatus (void)
+{
+  NS_LOG_FUNCTION (this);
+  MacCeListElement_s bsr;
+  bsr.m_rnti = m_rnti;
+  bsr.m_macCeType = MacCeListElement_s::BSR;
+  // BSR
+  std::map <uint8_t, long uint>::iterator it;
+  NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
+  
+  for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
+    {
+      int queue = (*it).second;
+      int index = BufferSizeLevelBsr::BufferSize2BsrId (queue);
+      bsr.m_macCeValue.m_bufferStatus.push_back (index);
+    }
 
   // create the feedback to eNB
   Ptr<BsrIdealControlMessage> msg = Create<BsrIdealControlMessage> ();
@@ -336,14 +345,50 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
     {
       Ptr<UlDciIdealControlMessage> msg2 = DynamicCast<UlDciIdealControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
-      std::map <uint8_t, LteMacSapUser*>::iterator it; 
-      it = m_macSapUserMap.begin ();  // use only the first LC --> UE-SCHEDULER??
-      (*it).second->NotifyTxOpportunity (dci.m_tbSize);
+      std::map <uint8_t, long uint>::iterator itBsr;
+      NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
+      int activeLcs = 0;
+      for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
+        {
+          if ((*itBsr).second > 0)
+            {
+              activeLcs++;
+            }
+        }
+      if (activeLcs <= 0)
+        {
+          NS_LOG_ERROR (this << " No active flows for this UL-DCI");
+          return;
+        }
+      std::map <uint8_t, LteMacSapUser*>::iterator it;
+      NS_LOG_FUNCTION (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize);
+      for (it = m_macSapUserMap.begin (); it!=m_macSapUserMap.end (); it++)
+        {
+          itBsr = m_ulBsrReceived.find ((*it).first);
+          if (itBsr!=m_ulBsrReceived.end ())
+            {
+              NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
+              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs);
+              (*itBsr).second -= dci.m_tbSize / activeLcs;
+            }
+        }
 
     }
   else
     {
       NS_LOG_FUNCTION (this << " IdealControlMessage not recognized");
+    }
+}
+
+
+void
+LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
+{
+  NS_LOG_FUNCTION (this);
+  if (Simulator::Now () >= m_bsrLast + m_bsrPeriodicity)
+    {
+      SendReportBufferStatus ();
+      m_bsrLast = Simulator::Now ();
     }
 }
 

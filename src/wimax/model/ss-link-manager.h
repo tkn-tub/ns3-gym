@@ -41,6 +41,7 @@ namespace ns3 {
 class SSLinkManager : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   SSLinkManager (Ptr<SubscriberStationNetDevice> ss);
   ~SSLinkManager (void);
   void DoDispose (void);

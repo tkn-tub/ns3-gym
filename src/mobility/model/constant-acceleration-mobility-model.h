@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -51,6 +51,6 @@ private:
   Vector m_acceleration;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* CONSTANT_ACCELERATION_MOBILITY_MODEL_H */

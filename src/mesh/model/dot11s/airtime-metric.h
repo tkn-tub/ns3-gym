@@ -59,6 +59,6 @@ private:
   Ptr<Packet> m_testFrame;
   WifiMacHeader m_testHeader;
 };
-} //namespace dot11s
-} //namespace ns3
+} // namespace dot11s
+} // namespace ns3
 #endif

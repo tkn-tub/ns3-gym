@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008,2009 IITP RAS
  *
@@ -73,6 +73,6 @@ private:
 bool operator== (const IeRann & a, const IeRann & b);
 std::ostream &operator << (std::ostream &os, const IeRann &rann);
 } // namespace dot11s
-} //namespace ns3
+} // namespace ns3
 
 #endif

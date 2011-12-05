@@ -59,6 +59,14 @@ private:
   UdpHeader m_udpHeader;
   TcpHeader m_tcpHeader;
 
+  static std::string BuildNameString (Ptr<EpsTftClassifier> c,
+                                      LteTft::Direction d,
+                                      Ipv4Address sa, 
+                                      Ipv4Address da, 
+                                      uint16_t sp,
+                                      uint16_t dp,
+                                      uint8_t tos,
+                                      uint32_t tftId);
   virtual void DoRun (void);
 };
 
@@ -70,10 +78,34 @@ EpsTftClassifierTestCase::EpsTftClassifierTestCase (Ptr<EpsTftClassifier> c,
                                                     uint16_t dp,
                                                     uint8_t tos,
                                                     uint32_t tftId)
-  : TestCase (""),
+  : TestCase (BuildNameString (c, d, sa, da, sp, dp, tos, tftId)),
     m_c (c),
     m_d (d),    
     m_tftId (tftId)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_ipHeader.SetSource (sa);
+  m_ipHeader.SetDestination (da);
+  m_ipHeader.SetTos (tos);  
+
+  m_udpHeader.SetSourcePort (sp);
+  m_udpHeader.SetDestinationPort (dp);  
+}
+
+EpsTftClassifierTestCase::~EpsTftClassifierTestCase ()
+{
+}
+
+std::string
+EpsTftClassifierTestCase::BuildNameString (Ptr<EpsTftClassifier> c,
+                                           LteTft::Direction d,
+                                           Ipv4Address sa, 
+                                           Ipv4Address da, 
+                                           uint16_t sp,
+                                           uint16_t dp,
+                                           uint8_t tos,
+                                           uint32_t tftId)
 {
   std::ostringstream oss;
   oss << c
@@ -84,24 +116,7 @@ EpsTftClassifierTestCase::EpsTftClassifierTestCase (Ptr<EpsTftClassifier> c,
       << ", dp = " << dp
       << ", tos = 0x" << std::hex << tos
       << " --> tftId = " << tftId;  
-  SetName (oss.str ());
-
-  NS_LOG_FUNCTION (this << oss.str ());
-
-  
-  m_ipHeader.SetSource (sa);
-  m_ipHeader.SetDestination (da);
-  m_ipHeader.SetTos (tos);  
-
-
-  m_udpHeader.SetSourcePort (sp);
-  m_udpHeader.SetDestinationPort (dp);
-
-  
-}
-
-EpsTftClassifierTestCase::~EpsTftClassifierTestCase ()
-{
+  return oss.str ();
 }
 
 void 
@@ -133,6 +148,12 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   : TestSuite ("eps-tft-classifier", UNIT)
 {
   NS_LOG_FUNCTION (this);
+
+
+  ///////////////////////////
+  // check some TFT matches
+  ///////////////////////////
+
   
   Ptr<EpsTftClassifier> c1 = Create<EpsTftClassifier> ();
   
@@ -153,7 +174,7 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   pf1_1_2.localMask.Set (0xFFFFFF00);
   tft1_1->Add (pf1_1_2);
 
-  c1->Add (tft1_1);
+  c1->Add (tft1_1, 1);
 
 
 
@@ -169,9 +190,20 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   pf1_2_2.localPortEnd   = 3489;
   tft1_2->Add (pf1_2_2);
 
-  c1->Add (tft1_2);
+
+  LteTft::PacketFilter pf1_2_3;
+  pf1_2_3.localPortStart = 7895;
+  pf1_2_3.localPortEnd   = 7895;
+  tft1_2->Add (pf1_2_3);
 
 
+  LteTft::PacketFilter pf1_2_4;
+  pf1_2_4.remotePortStart = 5897;
+  pf1_2_4.remotePortEnd   = 5897;
+  tft1_2->Add (pf1_2_4);
+
+
+  c1->Add (tft1_2, 2);
 
   // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
 
@@ -199,6 +231,103 @@ EpsTftClassifierTestSuite::EpsTftClassifierTestSuite ()
   AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3456,        6,     0,    2));
   AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3461,     3461,     0,    2));
   AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     3489,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     7895,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  7895,       10,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     5897,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c1, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  5897,       10,     0,    2));
+
+
+  ///////////////////////////
+  // check default TFT 
+  ///////////////////////////
+
+  Ptr<EpsTftClassifier> c2 = Create<EpsTftClassifier> ();
+  c2->Add (LteTft::Default (), 1);
+
+  // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
+
+  // test IP addresses
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.0.0.0"),     2,      123,     5,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("6.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("3.3.4.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.2.1"),     4,     1234,     0,    1));
+
+  // test remote port
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    1));
+
+  // test local port
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3456,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3457,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3489,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3456,        6,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3461,     3461,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c2, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     3489,     0,    1));
+
+  
+
+  ///////////////////////////////////////////
+  // check default TFT plus dedicated ones
+  ///////////////////////////////////////////
+
+  Ptr<EpsTftClassifier> c3 = Create<EpsTftClassifier> ();
+  c3->Add (LteTft::Default (), 1);
+  c3->Add (tft1_1, 2);
+  c3->Add (tft1_2, 3);
+
+  // ------------------------------------classifier---direction--------------src address---------------dst address---src port--dst port--ToS--TFT id
+
+  // test IP addresses
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("2.2.3.4"), Ipv4Address ("1.0.0.0"),     2,      123,     5,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("6.2.3.4"), Ipv4Address ("1.1.1.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("3.3.4.4"), Ipv4Address ("4.4.4.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("3.3.3.4"), Ipv4Address ("4.4.2.1"),     4,     1234,     0,    1));
+
+  // test remote port
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    3));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    3));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    3));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1234,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1024,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1025,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     1035,     0,    1));
+
+  // test local port
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3456,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3457,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     4,     3489,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3456,        6,     0,    3));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  3461,     3461,     0,    3));
+  AddTestCase (new EpsTftClassifierTestCase (c3, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     3489,     0,    3));
+
+
+
+  ///////////////////////////////////////////
+  // check two TFTs with different ports
+  ///////////////////////////////////////////
+
+  Ptr<EpsTftClassifier> c4 = Create<EpsTftClassifier> ();
+  Ptr<LteTft> tft4_1 = Create<LteTft> ();
+  tft4_1->Add (pf1_2_3);  
+  c4->Add (tft4_1, 1);
+  Ptr<LteTft> tft4_2 = Create<LteTft> ();
+  tft4_2->Add (pf1_2_4);
+  c4->Add (tft4_2, 2);
+  AddTestCase (new EpsTftClassifierTestCase (c4, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     3489,     0,    0));
+  AddTestCase (new EpsTftClassifierTestCase (c4, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     7895,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c4, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  7895,       10,     0,    1));
+  AddTestCase (new EpsTftClassifierTestCase (c4, LteTft::UPLINK,   Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),     9,     5897,     0,    2));
+  AddTestCase (new EpsTftClassifierTestCase (c4, LteTft::DOWNLINK, Ipv4Address ("9.1.1.1"), Ipv4Address ("8.1.1.1"),  5897,       10,     0,    2));
+
 }
 
 

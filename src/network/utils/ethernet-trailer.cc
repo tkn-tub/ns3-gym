@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  *
@@ -159,4 +159,4 @@ EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
   return ~crc;
 }
 
-}; // namespace ns3
+} // namespace ns3

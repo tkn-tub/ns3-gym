@@ -38,8 +38,8 @@ using namespace ns3;
 LteRlcUmTransmitterTestSuite::LteRlcUmTransmitterTestSuite ()
   : TestSuite ("lte-rlc-um-transmitter", SYSTEM)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlcUmTransmitterTest", logLevel);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogComponentEnable ("LteRlcUmTransmitterTest", logLevel);
 
   NS_LOG_INFO ("Creating LteRlcUmTransmitterTestSuite");
 
@@ -56,7 +56,7 @@ static LteRlcUmTransmitterTestSuite lteRlcUmTransmitterTestSuite;
 LteRlcUmTransmitterTestCase::LteRlcUmTransmitterTestCase (std::string name)
   : TestCase (name)
 {
-  NS_LOG_UNCOND ("Creating LteRlcUmTransmitterTestCase: " + name);
+  // NS_LOG_UNCOND ("Creating LteRlcUmTransmitterTestCase: " + name);
 }
 
 LteRlcUmTransmitterTestCase::~LteRlcUmTransmitterTestCase ()

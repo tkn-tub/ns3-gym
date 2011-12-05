@@ -18,8 +18,8 @@
 // Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt> <gjcarneiro@gmail.com>
 //
 
-#ifndef __FLOW_MONITOR_H__
-#define __FLOW_MONITOR_H__
+#ifndef FLOW_MONITOR_H
+#define FLOW_MONITOR_H
 
 #include <vector>
 #include <map>
@@ -243,5 +243,5 @@ private:
 
 } // namespace ns3
 
-#endif
+#endif /* FLOW_MONITOR_H */
 

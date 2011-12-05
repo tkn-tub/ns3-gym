@@ -1,4 +1,4 @@
-/* -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 University of Washington
  *
@@ -69,6 +69,6 @@ public:
   static uint32_t GetNChannels (void);
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif /* CHANNEL_LIST_H */

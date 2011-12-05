@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2008 Louis Pasteur University
  *
@@ -19,6 +19,7 @@
  */
 
 #include <iomanip>
+#include <memory.h>
 
 #include "ns3/log.h"
 #include "ns3/assert.h"

@@ -257,10 +257,10 @@ For example: ::
     // subsequently created objects
     factory.Set ("SystemLoss", DoubleValue (2.0));
     // Create one such object
-    Ptr<Object> object = m_factory.Create (); 
+    Ptr<Object> object = factory.Create (); 
     factory.Set ("SystemLoss", DoubleValue (3.0));
-    // Create another object
-    Ptr<Object> object = m_factory.Create (); 
+    // Create another object with a different SystemLoss
+    Ptr<Object> object = factory.Create (); 
 
 Downcasting
 ***********

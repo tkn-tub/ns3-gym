@@ -1,5 +1,4 @@
-#ifndef __SIM_INTERFACE_H__
-#define __SIM_INTERFACE_H__
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
   Network Simulation Cradle
   Copyright (C) 2003-2005 Sam Jansen
@@ -19,6 +18,9 @@
   Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 */
+
+#ifndef NSC_SIM_INTERFACE_H
+#define NSC_SIM_INTERFACE_H
 
 #define NSC_VERSION 0x000500
 
@@ -197,4 +199,4 @@ typedef INetStack *(*FCreateStack)(ISendCallback *, IInterruptCallback *,
 #define CREATE_STACK_FUNC(a,b,c) extern "C" INetStack *nsc_create_stack ( \
     ISendCallback *a, IInterruptCallback *b, FRandom c)
 
-#endif
+#endif /* NSC_SIM_INTERFACE_H */

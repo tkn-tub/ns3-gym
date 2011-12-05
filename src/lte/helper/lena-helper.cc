@@ -21,29 +21,31 @@
 
 
 #include "lena-helper.h"
-
 #include <ns3/string.h>
 #include <ns3/log.h>
-
+#include <ns3/abort.h>
+#include <ns3/pointer.h>
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-mac.h>
 #include <ns3/lte-enb-mac.h>
 #include <ns3/lte-enb-net-device.h>
-
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
 #include <ns3/lte-spectrum-phy.h>
 #include <ns3/lte-sinr-chunk-processor.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
-
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
-
 #include <ns3/ff-mac-scheduler.h>
+#include <ns3/lte-rlc.h>
+#include <ns3/lte-rlc-um.h>
 
+#include <ns3/epc-helper.h>
 #include <iostream>
+#include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/lte-spectrum-value-helper.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaHelper");
@@ -55,6 +57,7 @@ NS_OBJECT_ENSURE_REGISTERED (LenaHelper);
 LenaHelper::LenaHelper (void)
 {
   NS_LOG_FUNCTION (this);
+  m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
 }
 
 void 
@@ -63,28 +66,61 @@ LenaHelper::DoStart (void)
   NS_LOG_FUNCTION (this);
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
-  Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
-  m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
-  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
+
+  m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
+  if (dlSplm != 0)
+    {
+      NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in DL");
+      m_downlinkChannel->AddSpectrumPropagationLossModel (dlSplm);
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
+      Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModel->GetObject<PropagationLossModel> ();            
+      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      m_downlinkChannel->AddPropagationLossModel (dlPlm);
+    }
+
+  m_uplinkPathlossModel = m_ulPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
+  if (ulSplm != 0)
+    {
+      NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
+      m_uplinkChannel->AddSpectrumPropagationLossModel (ulSplm);
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
+      Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModel->GetObject<PropagationLossModel> ();            
+      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      m_uplinkChannel->AddPropagationLossModel (ulPlm);
+    }
+    
+  //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+      m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+    }
+
   m_macStats = CreateObject<MacStatsCalculator> ();
+  m_macStats->SetDlOutputFilename("DlMacStats.csv");
+  m_macStats->SetUlOutputFilename("UlMacStats.csv");
   m_rlcStats = CreateObject<RlcStatsCalculator> ();
+  m_rlcStats->SetDlOutputFilename("DlRlcStats.csv");
+  m_rlcStats->SetUlOutputFilename("UlRlcStats.csv");
+  m_pdcpStats = CreateObject<RlcStatsCalculator> ();
+  m_pdcpStats->SetDlOutputFilename("DlPdcpStats.csv");
+  m_pdcpStats->SetUlOutputFilename("UlPdcpStats.csv");
+
   Object::DoStart ();
 }
 
 LenaHelper::~LenaHelper (void)
 {
   NS_LOG_FUNCTION (this);
-}
-
-
-void
-LenaHelper::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  m_downlinkChannel = 0;
-  m_uplinkChannel = 0;
-  Object::DoDispose ();
 }
 
 TypeId LenaHelper::GetTypeId (void)
@@ -99,15 +135,50 @@ TypeId LenaHelper::GetTypeId (void)
                    StringValue ("ns3::PfFfMacScheduler"),
                    MakeStringAccessor (&LenaHelper::SetSchedulerType),
                    MakeStringChecker ())
-    .AddAttribute ("PropagationModel",
-                   "The type of propagation model to be used",
-                   StringValue ("ns3::FriisSpectrumPropagationLossModel"),
-                   MakeStringAccessor (&LenaHelper::SetPropagationModelType),
+    .AddAttribute ("PathlossModel",
+                   "The type of pathloss model to be used",
+                   StringValue ("ns3::FriisPropagationLossModel"),
+                   MakeStringAccessor (&LenaHelper::SetPathlossModelType),
                    MakeStringChecker ())
+     .AddAttribute ("FadingModel",
+                   "The type of fading model to be used",
+                   StringValue (""), // fake module -> no fading 
+                   MakeStringAccessor (&LenaHelper::SetFadingModel),
+                   MakeStringChecker ())
+    .AddAttribute ("EpsBearerToRlcMapping", 
+                   "Specify which type of RLC will be used for each type of EPS bearer. ",
+                   EnumValue (RLC_SM_ALWAYS),
+                   MakeEnumAccessor (&LenaHelper::m_epsBearerToRlcMapping),
+                   MakeEnumChecker (RLC_SM_ALWAYS, "RlcSmAlways",
+                                    RLC_UM_ALWAYS, "RlcUmAlways",
+                                    RLC_AM_ALWAYS, "RlcAmAlways",
+                                    PER_BASED,     "PacketErrorRateBased"))
   ;
   return tid;
 }
 
+void
+LenaHelper::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_downlinkChannel = 0;
+  m_uplinkChannel = 0;
+  Object::DoDispose ();
+}
+
+
+void 
+LenaHelper::SetEpcHelper (Ptr<EpcHelper> h)
+{
+  NS_LOG_FUNCTION (this << h);
+  m_epcHelper = h;
+  // it does not make sense to use RLC/SM when also using the EPC
+  if (m_epsBearerToRlcMapping == RLC_SM_ALWAYS)
+    {
+      m_epsBearerToRlcMapping = RLC_UM_ALWAYS;
+    }
+}
+  
 void 
 LenaHelper::SetSchedulerType (std::string type) 
 {
@@ -125,18 +196,46 @@ LenaHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 
 
 void 
-LenaHelper::SetPropagationModelType (std::string type) 
+LenaHelper::SetPathlossModelType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
-  m_propagationModelFactory = ObjectFactory ();
-  m_propagationModelFactory.SetTypeId (type);
+  m_dlPathlossModelFactory = ObjectFactory ();
+  m_dlPathlossModelFactory.SetTypeId (type);
+  m_ulPathlossModelFactory = ObjectFactory ();
+  m_ulPathlossModelFactory.SetTypeId (type);
 }
 
 void 
-LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v)
+LenaHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
-  m_propagationModelFactory.Set (n, v);
+  m_dlPathlossModelFactory.Set (n, v);
+  m_ulPathlossModelFactory.Set (n, v);
+}
+
+void
+LenaHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbNetDeviceFactory.Set (n, v);
+}
+
+void 
+LenaHelper::SetFadingModel (std::string type) 
+{
+  NS_LOG_FUNCTION (this << type);
+  m_fadingModelType = type;
+  if (!type.empty ())
+    {
+      m_fadingModelFactory = ObjectFactory ();
+      m_fadingModelFactory.SetTypeId (type);
+    }
+}
+
+void 
+LenaHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
+{
+  m_fadingModelFactory.Set (n, v);
 }
 
 
@@ -170,21 +269,6 @@ LenaHelper::InstallUeDevice (NodeContainer c)
 }
 
 
-void
-LenaHelper::SetEnbDeviceAttribute (std::string name, const AttributeValue &value)
-{
-  NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("not implemented yet");
-}
-
-void
-LenaHelper::SetUeDeviceAttribute (std::string name, const AttributeValue &value)
-{
-  NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("not implemented yet");
-}
-
-
 Ptr<NetDevice>
 LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
@@ -203,7 +287,6 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LenaHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
-
   m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
@@ -224,22 +307,55 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   phy->SetLteEnbPhySapUser (mac->GetLteEnbPhySapUser ());
   mac->SetLteEnbPhySapProvider (phy->GetLteEnbPhySapProvider ());
-
-  Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy, mac, sched, rrc);
+ 
+  Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
+  dev->SetNode (n);
+  dev->SetAttribute ("LteEnbPhy", PointerValue (phy));
+  dev->SetAttribute ("LteEnbMac", PointerValue (mac));
+  dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
+  dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
+  
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
   ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
-
+  rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
+  
+  NS_LOG_LOGIC ("set the propagation model frequencies");
+  if (m_downlinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
+    {
+      double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
+      NS_LOG_LOGIC ("DL freq: " << dlFreq);
+      m_downlinkPathlossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
+    }
+  else
+    {
+      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPathlossModel->GetTypeId ());
+    }
+  if (m_uplinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
+    {
+      double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
+      NS_LOG_LOGIC ("UL freq: " << ulFreq);
+      m_uplinkPathlossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
+    }
+  
   dev->Start ();
+
+  if (m_epcHelper != 0)
+    {
+      NS_LOG_INFO ("adding this eNB to the EPC");    
+      m_epcHelper->AddEnb (n, dev);
+    }
+
   return dev;
 }
 
 Ptr<NetDevice>
 LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
@@ -265,6 +381,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   rrc->SetLteUeCmacSapProvider (mac->GetLteUeCmacSapProvider ());
   mac->SetLteUeCmacSapUser (rrc->GetLteUeCmacSapUser ());
   rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
+
   phy->SetLteUePhySapUser (mac->GetLteUePhySapUser ());
   mac->SetLteUePhySapProvider (phy->GetLteUePhySapProvider ());
 
@@ -275,6 +392,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   n->AddDevice (dev);
   dlPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
+  rrc->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
 
   return dev;
 }
@@ -306,6 +424,19 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
+  
+  //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
+  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+    {
+       Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+       Ptr<MobilityModel> mm_ue_ul = uePhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+       Ptr<MobilityModel> mm_enb_ul = enbPhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+       Ptr<MobilityModel> mm_ue_dl = uePhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+ 
+       m_fadingModule->CreateFadingChannelRealization (mm_enb_dl, mm_ue_dl); //downlink eNB -> UE
+       m_fadingModule->CreateFadingChannelRealization (mm_ue_ul, mm_enb_ul); //uplink UE -> eNB
+       
+    }
  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
   uePhy->SetRnti (rnti);
@@ -318,36 +449,83 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 }
 
 
+
 void
-LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer)
+LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft)
 {
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
-      ActivateEpsBearer (*i, bearer);
+      ActivateEpsBearer (*i, bearer, tft);
     }
 }
 
 
 void
-LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
+LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft)
 {
+  NS_LOG_INFO (" setting up Radio Bearer");
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   uint16_t rnti = ueRrc->GetRnti ();
-  uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer);
-  ueRrc->SetupRadioBearer (rnti, bearer, lcid);
+  TypeId rlcTypeId = GetRlcType (bearer);
+  uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer, rlcTypeId);
+  ueRrc->SetupRadioBearer (rnti, bearer, rlcTypeId, lcid, tft);
+
+  if (m_epcHelper != 0)
+    {
+      NS_LOG_INFO (" setting up S1 Bearer");    
+      m_epcHelper->ActivateEpsBearer (ueDevice, enbDevice, tft, rnti, lcid);
+      
+    }
 }
 
+TypeId
+LenaHelper::GetRlcType (EpsBearer bearer)
+{
+  switch (m_epsBearerToRlcMapping)
+    {
+    case RLC_SM_ALWAYS:
+      return LteRlcSm::GetTypeId ();
+      break;
+      
+    case  RLC_UM_ALWAYS:
+      return LteRlcUm::GetTypeId ();
+      break;
+      
+    case RLC_AM_ALWAYS:
+      NS_ABORT_MSG ("RLC/AM not supported yet");
+      //return LteRlcAm::GetTypeId ();
+      break;
+      
+    case PER_BASED:
+      if (bearer.GetPacketErrorLossRate () > 1.0e-5)
+        {
+          return LteRlcUm::GetTypeId ();
+        }
+      else
+        {
+          NS_ABORT_MSG ("RLC/AM not supported yet");
+          //return LteRlcAm::GetTypeId ();
+        }
+      break;
+      
+    default:
+      return LteRlcSm::GetTypeId ();
+      break;        
+    }
+}
 
 void
 LenaHelper::EnableLogComponents (void)
 {
+  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcUm", LOG_LEVEL_ALL);
   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
@@ -359,36 +537,60 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-
+  std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+/*
+  const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+  if (propModelStr.compare ("RandomPropagationLossModel") ||
+    propModelStr.compare ("FriisPropagationLossModel")||
+    propModelStr.compare ("TwoRayGroundPropagationLossModel")||
+    propModelStr.compare ("LogDistancePropagationLossModel")||
+    propModelStr.compare ("ThreeLogDistancePropagationLossModel")||
+    propModelStr.compare ("NakagamiPropagationLossModel")||
+    propModelStr.compare ("FixedRssLossModel")||
+    propModelStr.compare ("MatrixPropagationLossModel")||
+    propModelStr.compare ("RangePropagationLossModel"))
+    {
+      LogComponentEnable ("PropagationLossModel", LOG_LEVEL_ALL);
+    }
+  else
+    {
+      LogComponentEnable (propModel, LOG_LEVEL_ALL);
+    }
+    
+  if (m_fadingModelType.compare ("ns3::TraceFadingLossModel") == 0)
+    {
+      const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
+      LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
+    }
+  LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
+*/
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 
   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
 }
 
-
+void
+LenaHelper::EnableTraces (void)
+{
+  EnableMacTraces ();
+  EnableRlcTraces ();
+  EnablePdcpTraces ();
+}
 
 void
 LenaHelper::EnableRlcTraces (void)
 {
   EnableDlRlcTraces ();
   EnableUlRlcTraces ();
-
 }
-
-
-
 
 uint64_t
 FindImsiFromEnbRlcPath (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
 
@@ -399,6 +601,7 @@ FindImsiFromEnbRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> ueInfo = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromEnbRlcPath: " << path << ", " << ueInfo->GetObject<UeInfo> ()->GetImsi ());
       return ueInfo->GetObject<UeInfo> ()->GetImsi ();
     }
   else
@@ -410,6 +613,7 @@ FindImsiFromEnbRlcPath (std::string path)
 uint16_t
 FindCellIdFromEnbRlcPath (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   // Sample path input:
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbRrc/UeMap/#C-RNTI/RadioBearerMap/#LCID/LteRlc/RxPDU
 
@@ -420,6 +624,7 @@ FindCellIdFromEnbRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> enbNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindCellIdFromEnbRlcPath: " << path << ", " << enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
       return enbNetDevice->GetObject<LteEnbNetDevice> ()->GetCellId ();
     }
   else
@@ -431,8 +636,9 @@ FindCellIdFromEnbRlcPath (std::string path)
 uint64_t
 FindImsiFromUeRlcPath (std::string path)
 {
+  NS_LOG_FUNCTION (path);
   // Sample path input:
-  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RlcMap/#LCID/RxPDU
+  // /NodeList/#NodeId/DeviceList/#DeviceId/LteUeRrc/RadioBearer/#LCID/RxPDU
 
   // We retrieve the LteUeNetDevice path
   std::string lteUeNetDevicePath = path.substr (0, path.find ("/LteUeRrc"));
@@ -441,6 +647,7 @@ FindImsiFromUeRlcPath (std::string path)
   if (match.GetN () != 0)
     {
       Ptr<Object> ueNetDevice = match.Get (0);
+      NS_LOG_LOGIC ("FindImsiFromUeRlcPath: " << path << ", " << ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
       return ueNetDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
     }
   else
@@ -453,83 +660,173 @@ FindImsiFromUeRlcPath (std::string path)
 uint64_t
 FindImsiFromEnbMac (std::string path, uint16_t rnti)
 {
+  NS_LOG_FUNCTION (path << rnti);
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
   oss << rnti;
-  p += "\\/LteEnbRrc/UeMap/" + oss.str ();
-  return FindImsiFromEnbRlcPath (p);
+  p += "/LteEnbRrc/UeMap/" + oss.str ();
+  uint64_t imsi = FindImsiFromEnbRlcPath (p);
+  NS_LOG_LOGIC ("FindImsiFromEnbMac: " << path << ", " << rnti << ", " << imsi);
+  return imsi;
 }
 
 uint16_t
 FindCellIdFromEnbMac (std::string path, uint16_t rnti)
 {
+  NS_LOG_FUNCTION (path << rnti);
   // /NodeList/#NodeId/DeviceList/#DeviceId/LteEnbMac/DlScheduling
   std::ostringstream oss;
   std::string p = path.substr (0, path.find ("/LteEnbMac"));
   oss << rnti;
-  p += "\\/LteEnbRrc/UeMap/" + oss.str ();
-  return FindCellIdFromEnbRlcPath (p);
+  p += "/LteEnbRrc/UeMap/" + oss.str ();
+  uint16_t cellId = FindCellIdFromEnbRlcPath (p);
+  NS_LOG_LOGIC ("FindCellIdFromEnbMac: " << path << ", "<< rnti << ", " << cellId);
+  return cellId;
 }
 
 
 void
-DlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+DlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  uint16_t cellId = FindCellIdFromEnbRlcPath (path);
-  m_rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
+  uint64_t imsi = 0;
+  if (rlcStats->ExistsImsiPath(path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromEnbRlcPath (path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
+  uint16_t cellId = 0;
+  if (rlcStats->ExistsCellIdPath(path) == true)
+    {
+      cellId = rlcStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbRlcPath (path);
+      rlcStats->SetCellIdPath (path, cellId);
+    }
+  rlcStats->DlTxPdu (cellId, imsi, rnti, lcid, packetSize);
 }
 
 void
-DlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  uint64_t imsi = FindImsiFromUeRlcPath (path);
-  m_rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
+  uint64_t imsi = 0;
+  if (rlcStats->ExistsImsiPath(path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromUeRlcPath (path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
+  rlcStats->DlRxPdu (imsi, rnti, lcid, packetSize, delay);
 }
 
 void
 LenaHelper::EnableDlRlcTraces (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback (&DlTxPduCallback, m_rlcStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback (&DlRxPduCallback, m_rlcStats));
 }
 
 void
-UlTxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+UlTxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  uint64_t imsi = FindImsiFromUeRlcPath (path);
-  m_rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
+  uint64_t imsi = 0;
+    if (rlcStats->ExistsImsiPath(path) == true)
+      {
+        imsi = rlcStats->GetImsiPath (path);
+      }
+    else
+      {
+        imsi = FindImsiFromUeRlcPath (path);
+        rlcStats->SetImsiPath (path, imsi);
+      }
+  rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
 void
-UlRxPduCallback (Ptr<RlcStatsCalculator> m_rlcStats, std::string path,
+UlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  uint64_t imsi = FindImsiFromEnbRlcPath (path);
-  uint16_t cellId = FindCellIdFromEnbRlcPath (path);
-  m_rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
+  uint64_t imsi = 0;
+  if (rlcStats->ExistsImsiPath(path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromEnbRlcPath(path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
+  uint16_t cellId = 0;
+  if (rlcStats->ExistsCellIdPath(path) == true)
+    {
+      cellId = rlcStats->GetCellIdPath (path);
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbRlcPath (path);
+      rlcStats->SetCellIdPath (path, cellId);
+    }
+  rlcStats->UlRxPdu (cellId, imsi, rnti, lcid, packetSize, delay);
 }
 
+
 void
-DlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
-                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                      uint8_t mcsTb1, uint16_t sizeTb1, uint8_t mcsTb2, uint16_t sizeTb2)
+DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
+                      std::string path, uint32_t frameNo, uint32_t subframeNo,
+                      uint16_t rnti, uint8_t mcsTb1, uint16_t sizeTb1,
+                      uint8_t mcsTb2, uint16_t sizeTb2)
 {
-  uint64_t imsi = FindImsiFromEnbMac (path, rnti);
-  uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
-  mac->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
+  NS_LOG_FUNCTION (macStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
+    {
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (path, rnti);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  uint16_t cellId = 0;
+  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
+    {
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbMac (path, rnti);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
+    }
+
+  macStats->DlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcsTb1, sizeTb1, mcsTb2, sizeTb2);
 }
 
 void
 LenaHelper::EnableUlRlcTraces (void)
 {
-  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback (&UlRxPduCallback, m_rlcStats));
@@ -551,13 +848,36 @@ LenaHelper::EnableDlMacTraces (void)
 }
 
 void
-UlSchedulingCallback (Ptr<MacStatsCalculator> mac, std::string path,
+UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
                       uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                       uint8_t mcs, uint16_t size)
 {
-  uint64_t imsi = FindImsiFromEnbMac (path, rnti);
-  uint16_t cellId = FindCellIdFromEnbMac (path, rnti);
-  mac->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);
+  NS_LOG_FUNCTION (macStats << path);
+
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << rnti;
+  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
+    {
+      imsi = macStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromEnbMac (path, rnti);
+      macStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+  uint16_t cellId = 0;
+  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
+    {
+      cellId = macStats->GetCellIdPath (pathAndRnti.str ());
+    }
+  else
+    {
+      cellId = FindCellIdFromEnbMac (path, rnti);
+      macStats->SetCellIdPath (pathAndRnti.str (), cellId);
+    }
+
+  macStats->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size);
 }
 
 void
@@ -567,10 +887,51 @@ LenaHelper::EnableUlMacTraces (void)
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
 }
 
+void
+LenaHelper::SetTraceDirectory (std::string path)
+{
+  m_macStats->SetDlOutputFilename(path + m_macStats->GetDlOutputFilename());
+  m_macStats->SetUlOutputFilename(path + m_macStats->GetUlOutputFilename());
+  m_rlcStats->SetDlOutputFilename(path + m_rlcStats->GetDlOutputFilename());
+  m_rlcStats->SetUlOutputFilename(path + m_rlcStats->GetUlOutputFilename());
+}
+
 Ptr<RlcStatsCalculator>
 LenaHelper::GetRlcStats (void)
 {
   return m_rlcStats;
+}
+
+void
+LenaHelper::EnablePdcpTraces (void)
+{
+  EnableDlPdcpTraces ();
+  EnableUlPdcpTraces ();
+}
+
+void
+LenaHelper::EnableDlPdcpTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LtePdcp/TxPDU",
+                   MakeBoundCallback (&DlTxPduCallback, m_pdcpStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LtePdcp/RxPDU",
+                   MakeBoundCallback (&DlRxPduCallback, m_pdcpStats));
+}
+
+void
+LenaHelper::EnableUlPdcpTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LtePdcp/TxPDU",
+                   MakeBoundCallback (&UlTxPduCallback, m_pdcpStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LtePdcp/RxPDU",
+                   MakeBoundCallback (&UlRxPduCallback, m_pdcpStats));
+}
+
+Ptr<RlcStatsCalculator>
+LenaHelper::GetPdcpStats (void)
+{
+  return m_pdcpStats;
 }
 
 } // namespace ns3

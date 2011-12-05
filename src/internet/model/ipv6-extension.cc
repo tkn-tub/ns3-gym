@@ -1,4 +1,4 @@
-/*  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2009 Strasbourg University
  *
@@ -343,6 +343,10 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
     {
       fragments = Create<Fragments> ();
       m_fragments.insert (std::make_pair (fragmentsId, fragments));
+      EventId timeout = Simulator::Schedule (Seconds(60),
+                                             &Ipv6ExtensionFragment::HandleFragmentsTimeout, this,
+                                             fragmentsId, fragments, ipv6Header);
+      fragments->SetTimeoutEventId (timeout);
     }
   else
     {
@@ -361,12 +365,13 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
   if (fragments->IsEntire ())
     {
       packet = fragments->GetPacket ();
+      fragments->CancelTimeout();
+      m_fragments.erase(fragmentsId);
       isDropped = false;
     }
   else 
     {
-      NS_LOG_LOGIC ("Fragment. Drop!");
-      m_dropTrace (packet);
+      // the fragment is not "dropped", but Ipv6L3Protocol::LocalDeliver must stop processing it.
       isDropped = true;
     }
 
@@ -539,6 +544,24 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
   unfragmentablePart.clear ();
 }
 
+
+void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> fragmentsId, Ptr<Fragments> fragments, Ipv6Header & ipHeader)
+{
+  Ptr<Packet> packet = fragments->GetPartialPacket ();
+
+  // if we have at least 8 bytes, we can send an ICMP.
+  if ( packet->GetSize () > 8 )
+    {
+
+      Ptr<Icmpv6L4Protocol> icmp = GetNode()->GetObject<Icmpv6L4Protocol> ();
+      icmp->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_FRAGTIME);
+    }
+  m_dropTrace (packet);
+
+  // clear the buffers
+  m_fragments.erase(fragmentsId);
+}
+
 Ipv6ExtensionFragment::Fragments::Fragments ()
   : m_moreFragment (0)
 {
@@ -606,6 +629,46 @@ Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPacket () const
     }
 
   return p;
+}
+
+Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPartialPacket () const
+{
+  Ptr<Packet> p;
+
+  if ( m_unfragmentable )
+    {
+      p = m_unfragmentable->Copy ();
+    }
+  else
+    {
+      return p;
+    }
+
+  uint16_t lastEndOffset = 0;
+
+  for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin (); it != m_fragments.end (); it++)
+    {
+      if (lastEndOffset != it->second)
+        {
+          break;
+        }
+      p->AddAtEnd (it->first);
+      lastEndOffset += it->first->GetSize ();
+    }
+
+  return p;
+}
+
+void Ipv6ExtensionFragment::Fragments::SetTimeoutEventId (EventId event)
+{
+    m_timeoutEventId = event;
+    return;
+}
+
+void Ipv6ExtensionFragment::Fragments::CancelTimeout()
+{
+    m_timeoutEventId.Cancel ();
+    return;
 }
 
 
