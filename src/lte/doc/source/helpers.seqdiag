@@ -2,17 +2,17 @@
 
 diagram {
 
-LenaHelper => EpcHelper [label="AddEnb"] {
+LteHelper => EpcHelper [label="AddEnb"] {
   EpcHelper  -> EpcHelper [label="create EpcEnbApplication"];
   EpcHelper  -> EpcHelper [label="Setup S1 link"];
   EpcHelper  => EpcSgwPgwApplication [label="AddEnb (enbIpv4Address)"];
 }
 
 
-LenaHelper => LteUeRrc [label="GetRnti", return="RNTI"]
-LenaHelper => LteEnbRrc [label="SetupRadioBearer", return="LCID"] 
+LteHelper => LteUeRrc [label="GetRnti", return="RNTI"]
+LteHelper => LteEnbRrc [label="SetupRadioBearer", return="LCID"] 
 
-LenaHelper => EpcHelper [label="ActivateEpsBearer(UE IP, eNB IP, TFT, RNTI, LCID)"] {
+LteHelper => EpcHelper [label="ActivateEpsBearer(UE IP, eNB IP, TFT, RNTI, LCID)"] {
   EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, TFT)", return="TEID"] {
     EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
     EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
