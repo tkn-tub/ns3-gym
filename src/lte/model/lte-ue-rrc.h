@@ -24,7 +24,7 @@
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/lte-ue-cmac-sap.h>
-#include <ns3/eps-tft-classifier.h>
+#include <ns3/epc-tft-classifier.h>
 #include <ns3/lte-pdcp-sap.h>
 
 #include <map>
@@ -182,7 +182,7 @@ private:
 
   std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;
   
-  EpsTftClassifier m_tftClassifier;
+  EpcTftClassifier m_tftClassifier;
   
 };
 

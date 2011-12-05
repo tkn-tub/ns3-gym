@@ -32,7 +32,7 @@
 #include <ns3/object.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/epc-tft.h>
-#include <ns3/eps-tft-classifier.h>
+#include <ns3/epc-tft-classifier.h>
 #include <ns3/lte-common.h>
 #include <ns3/application.h>
 #include <map>
@@ -169,7 +169,7 @@ private:
 
 
   private:
-    EpsTftClassifier m_tftClassifier;
+    EpcTftClassifier m_tftClassifier;
     Ipv4Address m_enbAddr;
   };
 

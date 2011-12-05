@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: 
- *   Nicola Baldo <nbaldo@cttc.es> (the EpsTftClassifier class)
- *   Giuseppe Piro <g.piro@poliba.it> (part of the code in EpsTftClassifier::Classify () 
+ *   Nicola Baldo <nbaldo@cttc.es> (the EpcTftClassifier class)
+ *   Giuseppe Piro <g.piro@poliba.it> (part of the code in EpcTftClassifier::Classify () 
  *       which comes from RrcEntity::Classify of the GSoC 2010 LTE module)
  *
  */
@@ -26,7 +26,7 @@
 
 
 
-#include "eps-tft-classifier.h"
+#include "epc-tft-classifier.h"
 #include "epc-tft.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
@@ -36,17 +36,17 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
-NS_LOG_COMPONENT_DEFINE ("EpsTftClassifier");
+NS_LOG_COMPONENT_DEFINE ("EpcTftClassifier");
 
 namespace ns3 {
 
-EpsTftClassifier::EpsTftClassifier ()
+EpcTftClassifier::EpcTftClassifier ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-EpsTftClassifier::Add (Ptr<EpcTft> tft, uint32_t id)
+EpcTftClassifier::Add (Ptr<EpcTft> tft, uint32_t id)
 {
   NS_LOG_FUNCTION (this << tft);
   
@@ -57,7 +57,7 @@ EpsTftClassifier::Add (Ptr<EpcTft> tft, uint32_t id)
 }
 
 void
-EpsTftClassifier::Delete (uint32_t id)
+EpcTftClassifier::Delete (uint32_t id)
 {
   NS_LOG_FUNCTION (this << id);
   m_tftMap.erase (id);
@@ -65,7 +65,7 @@ EpsTftClassifier::Delete (uint32_t id)
 
  
 uint32_t 
-EpsTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction)
+EpcTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction)
 {
   NS_LOG_FUNCTION (this << p << direction);
 

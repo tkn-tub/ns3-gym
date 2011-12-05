@@ -437,8 +437,8 @@ received traffic pattern is detected for any UE, the test fails.
 TFT classifier
 --------------
 
-The test suite ``eps-tft-classifier`` checks in isolation that the
-behavior of the EpsTftClassifier class is correct. This is performed
+The test suite ``epc-tft-classifier`` checks in isolation that the
+behavior of the EpcTftClassifier class is correct. This is performed
 by creating different classifier instances where different TFT
 instances are activated, and testing for each classifier that an
 heterogeneous set of packets (including IP and TCP/UDP headers) is

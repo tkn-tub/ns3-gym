@@ -61,7 +61,7 @@ def build(bld):
         'model/epc-enb-application.cc',
         'model/epc-sgw-pgw-application.cc',
         'model/epc-tft.cc',
-        'model/eps-tft-classifier.cc',
+        'model/epc-tft-classifier.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -81,7 +81,7 @@ def build(bld):
         'test/lte-test-rlc-um-transmitter.cc',
         'test/lte-test-rlc-am-transmitter.cc',
         'test/epc-test-gtpu.cc',
-        'test/test-eps-tft-classifier.cc',
+        'test/test-epc-tft-classifier.cc',
         'test/epc-test-s1u-downlink.cc',
         'test/epc-test-s1u-uplink.cc',
         'test/test-lte-epc-e2e-data.cc',
@@ -161,7 +161,7 @@ def build(bld):
         'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu.h',
         'model/epc-tft.h',
-        'model/eps-tft-classifier.h',
+        'model/epc-tft-classifier.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
