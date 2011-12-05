@@ -1,11 +1,6 @@
 .. include:: replace.txt
 
 
-+++++++++++++++++++++++++++++++++
- References
-+++++++++++++++++++++++++++++++++
-
-
 .. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", 
    Wiley, 2009
 
