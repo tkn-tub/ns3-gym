@@ -60,7 +60,7 @@ def build(bld):
         'model/epc-gtpu-tunnel-endpoint.cc',
         'model/epc-enb-application.cc',
         'model/epc-sgw-pgw-application.cc',
-        'model/lte-tft.cc',
+        'model/epc-tft.cc',
         'model/eps-tft-classifier.cc',
         ]
 
@@ -160,7 +160,7 @@ def build(bld):
         'test/lte-test-rlc-am-transmitter.h',
         'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu.h',
-        'model/lte-tft.h',
+        'model/epc-tft.h',
         'model/eps-tft-classifier.h',
         ]
 

@@ -160,8 +160,8 @@ LteInterferenceTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
-  lteHelper->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs1, bearer, EpcTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs2, bearer, EpcTft::Default ());
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

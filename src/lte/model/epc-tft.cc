@@ -21,23 +21,23 @@
 
 
 
-#include "lte-tft.h"
+#include "epc-tft.h"
 #include "ns3/abort.h"
 #include "ns3/log.h"
 
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("LteTft");
+NS_LOG_COMPONENT_DEFINE ("EpcTft");
 
-std::ostream& operator<< (std::ostream& os, LteTft::Direction& d)
+std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d)
 {
  switch (d)
     {
-    case LteTft::DOWNLINK:
+    case EpcTft::DOWNLINK:
       os << "DOWNLINK";
       break;
-    case LteTft::UPLINK:
+    case EpcTft::UPLINK:
       os << "UPLINK";
       break;
     default:
@@ -48,7 +48,7 @@ std::ostream& operator<< (std::ostream& os, LteTft::Direction& d)
 }
 
 
-std::ostream& operator<< (std::ostream& os, LteTft::PacketFilter& f)
+std::ostream& operator<< (std::ostream& os, EpcTft::PacketFilter& f)
 {
   os << " direction: " << f.direction
      << " remoteAddress: "  << f.remoteAddress 
@@ -64,7 +64,7 @@ std::ostream& operator<< (std::ostream& os, LteTft::PacketFilter& f)
   return os;
 }
 
-LteTft::PacketFilter::PacketFilter ()
+EpcTft::PacketFilter::PacketFilter ()
   : precedence (255),
     direction (BIDIRECTIONAL),
     remoteMask ("0.0.0.0"),
@@ -80,7 +80,7 @@ LteTft::PacketFilter::PacketFilter ()
 }
 
 bool 
-LteTft::PacketFilter::Matches (Direction d,
+EpcTft::PacketFilter::Matches (Direction d,
 			       Ipv4Address ra, 
 			       Ipv4Address la, 
 			       uint16_t rp,
@@ -137,24 +137,24 @@ LteTft::PacketFilter::Matches (Direction d,
 }
 
 
-Ptr<LteTft> 
-LteTft::Default ()
+Ptr<EpcTft> 
+EpcTft::Default ()
 {
-  Ptr<LteTft> tft = Create<LteTft> ();
-  LteTft::PacketFilter defaultPacketFilter;
+  Ptr<EpcTft> tft = Create<EpcTft> ();
+  EpcTft::PacketFilter defaultPacketFilter;
   tft->Add (defaultPacketFilter);
   return tft;
 }
 
 
-LteTft::LteTft ()
+EpcTft::EpcTft ()
   : m_numFilters (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint8_t 
-LteTft::Add (PacketFilter f)
+EpcTft::Add (PacketFilter f)
 {
   NS_LOG_FUNCTION (this << f);
   NS_ABORT_IF (m_numFilters >= 16);
@@ -171,7 +171,7 @@ LteTft::Add (PacketFilter f)
 }
     
 bool 
-LteTft::Matches (Direction direction,
+EpcTft::Matches (Direction direction,
 		 Ipv4Address remoteAddress, 
 		 Ipv4Address localAddress, 
 		 uint16_t remotePort,

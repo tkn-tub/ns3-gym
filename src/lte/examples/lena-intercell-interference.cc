@@ -123,8 +123,8 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer on all UEs
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
-  lteHelper->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs1, bearer, EpcTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs2, bearer, EpcTft::Default ());
 
   Simulator::Stop (Seconds (10));
 

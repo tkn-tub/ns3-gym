@@ -523,9 +523,9 @@ additionally do like this::
 The activation of bearers is done exactly in the same way as for an
 LTE-only simulation. Here is how to activate a default bearer::
 
-      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), LteTft::Default ());
+      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
 
-you can of course use custom EpsBearer and LteTft configurations,
+you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.
 
 

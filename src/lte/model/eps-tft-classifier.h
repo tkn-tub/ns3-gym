@@ -25,14 +25,14 @@
 
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
-#include "ns3/lte-tft.h"
+#include "ns3/epc-tft.h"
 
 #include <map>
 
 
 namespace ns3 {
 
-class LteTft;
+class EpcTft;
 class Packet;
 
 /**
@@ -52,7 +52,7 @@ public:
    * \param tft the TFT to be added
    * 
    */
-  void Add (Ptr<LteTft> tft, uint32_t id);
+  void Add (Ptr<EpcTft> tft, uint32_t id);
 
   /** 
    * delete an existing TFT from the classifier
@@ -69,11 +69,11 @@ public:
    * 
    * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT matched.
    */
-  uint32_t Classify (Ptr<Packet> p, LteTft::Direction direction);
+  uint32_t Classify (Ptr<Packet> p, EpcTft::Direction direction);
   
 protected:
   
-  std::map <uint32_t, Ptr<LteTft> > m_tftMap;
+  std::map <uint32_t, Ptr<EpcTft> > m_tftMap;
   
 };
 

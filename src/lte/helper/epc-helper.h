@@ -25,7 +25,7 @@
 #include <ns3/object.h>
 #include <ns3/ipv4-address-helper.h>
 #include <ns3/data-rate.h>
-#include <ns3/lte-tft.h>
+#include <ns3/epc-tft.h>
 
 
 namespace ns3 {
@@ -81,7 +81,7 @@ public:
    * \param rnti the Radio Network Temporary Identifier that identifies the UE
    * \param lcid the Logical Channel IDentifier of the corresponding RadioBearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<LteTft> tft, uint16_t rnti, uint8_t lcid);
+  void ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<EpcTft> tft, uint16_t rnti, uint8_t lcid);
 
 
   /** 

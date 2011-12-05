@@ -31,7 +31,7 @@
 #include <ns3/eps-bearer.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
-#include <ns3/lte-tft.h>
+#include <ns3/epc-tft.h>
 #include <ns3/trace-fading-loss-model.h>
 
 namespace ns3 {
@@ -151,7 +151,7 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft);
+  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /**
    * Activate an EPS bearer on a given UE device
@@ -160,7 +160,7 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft);
+  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /** 
    * 

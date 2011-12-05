@@ -112,7 +112,7 @@ public:
    * \param tft the Traffic Flow Template identifying this bearer
    *
    */
-  void SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid, Ptr<LteTft> tft);
+  void SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid, Ptr<EpcTft> tft);
 
 
   /**

@@ -411,7 +411,7 @@ EpcS1uUlTestCase::DoRun ()
 
           uint16_t rnti = u+1;
           uint16_t lcid = 1;
-          epcHelper->ActivateEpsBearer (ueLteDevice, lteEnbNetDevice, LteTft::Default (), rnti, lcid);
+          epcHelper->ActivateEpsBearer (ueLteDevice, lteEnbNetDevice, EpcTft::Default (), rnti, lcid);
           
           // need this since all sinks are installed in the same node
           ++udpSinkPort; 

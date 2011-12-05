@@ -27,7 +27,7 @@
 
 
 #include "eps-tft-classifier.h"
-#include "lte-tft.h"
+#include "epc-tft.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
@@ -46,7 +46,7 @@ EpsTftClassifier::EpsTftClassifier ()
 }
 
 void
-EpsTftClassifier::Add (Ptr<LteTft> tft, uint32_t id)
+EpsTftClassifier::Add (Ptr<EpcTft> tft, uint32_t id)
 {
   NS_LOG_FUNCTION (this << tft);
   
@@ -65,7 +65,7 @@ EpsTftClassifier::Delete (uint32_t id)
 
  
 uint32_t 
-EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
+EpsTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction)
 {
   NS_LOG_FUNCTION (this << p << direction);
 
@@ -78,14 +78,14 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
   Ipv4Address remoteAddress;
 
   
-  if (direction ==  LteTft::UPLINK)
+  if (direction ==  EpcTft::UPLINK)
     {
       localAddress = ipv4Header.GetSource ();
       remoteAddress = ipv4Header.GetDestination ();
     }
   else
     { 
-      NS_ASSERT (direction ==  LteTft::DOWNLINK);
+      NS_ASSERT (direction ==  EpcTft::DOWNLINK);
       remoteAddress = ipv4Header.GetSource ();
       localAddress = ipv4Header.GetDestination ();      
     }
@@ -102,7 +102,7 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
       UdpHeader udpHeader;
       pCopy->RemoveHeader (udpHeader);
 
-      if (direction ==  LteTft::UPLINK)
+      if (direction ==  EpcTft::UPLINK)
 	{
 	  localPort = udpHeader.GetSourcePort ();
 	  remotePort = udpHeader.GetDestinationPort ();
@@ -117,7 +117,7 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
     {
       TcpHeader tcpHeader;
       pCopy->RemoveHeader (tcpHeader);
-      if (direction ==  LteTft::UPLINK)
+      if (direction ==  EpcTft::UPLINK)
 	{
 	  localPort = tcpHeader.GetSourcePort ();
 	  remotePort = tcpHeader.GetDestinationPort ();
@@ -144,14 +144,14 @@ EpsTftClassifier::Classify (Ptr<Packet> p, LteTft::Direction direction)
   // now it is possible to classify the packet!
   // we use a reverse iterator since filter priority is not implemented properly.
   // This way, since the default bearer is expected to be added first, it will be evaluated last.
-  std::map <uint32_t, Ptr<LteTft> >::const_reverse_iterator it;
+  std::map <uint32_t, Ptr<EpcTft> >::const_reverse_iterator it;
   NS_LOG_LOGIC ("TFT MAP size: " << m_tftMap.size ());
 
   for (it = m_tftMap.rbegin (); it != m_tftMap.rend (); ++it)
     {
       NS_LOG_LOGIC ("TFT id: " << it->first );
-      NS_LOG_LOGIC (" Ptr<LteTft>: " << it->second);
-      Ptr<LteTft> tft = it->second;         
+      NS_LOG_LOGIC (" Ptr<EpcTft>: " << it->second);
+      Ptr<EpcTft> tft = it->second;         
       if (tft->Matches (direction, remoteAddress, localAddress, remotePort, localPort, tos))
         {
 	  NS_LOG_LOGIC ("matches with TFT ID = " << it->first);

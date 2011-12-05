@@ -237,12 +237,12 @@ LteEpcE2eDataTestCase::DoRun ()
 
               EpsBearer epsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
 
-              Ptr<LteTft> tft = Create<LteTft> ();
-              LteTft::PacketFilter dlpf;
+              Ptr<EpcTft> tft = Create<EpcTft> ();
+              EpcTft::PacketFilter dlpf;
               dlpf.localPortStart = dlPort;
               dlpf.localPortEnd = dlPort;
               tft->Add (dlpf);
-              LteTft::PacketFilter ulpf;
+              EpcTft::PacketFilter ulpf;
               ulpf.remotePortStart = ulPort;
               ulpf.remotePortEnd = ulPort;
               tft->Add (ulpf);                            
