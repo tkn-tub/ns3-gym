@@ -774,10 +774,15 @@ Interference Model
 
 The PHY model is based on the well-known Gaussian interference models, according to which the powers of interfering signals (in linear units) are summed up together to determine the overall interference power.
 
-The following diagram shows how interfering signals are processed to calculate the SINR, and how SINR is then used for the generation of CQI feedback.
+The sequence diagram of Figure :ref:`fig-phy` shows how interfering signals are processed to calculate the SINR, and how SINR is then used for the generation of CQI feedback.
 
-.. seqdiag:: phy.seqdiag
 
+.. _fig-phy:
+   
+.. figure:: figures/phy.*
+   :align: center
+
+   Sequence diagram of the PHY interference calculation procedure
 
 
 

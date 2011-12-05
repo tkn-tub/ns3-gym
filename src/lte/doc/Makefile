@@ -1,5 +1,6 @@
 EPSTOPDF = epstopdf
 DIA = dia
+SEQDIAG = seqdiag
 CONVERT = convert -density 250
 
 
@@ -38,8 +39,7 @@ GRAPHS_EPS = \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \
 	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps
-
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps 
 
 
 # rescale pdf figures as necessary
@@ -54,9 +54,18 @@ $(FIGURES)/internet-node-recv.pdf_width = 5in
 $(FIGURES)/routing.pdf_width = 6in
 $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
-$(FIGURES)/lte-transmission.pdf_width = 3in
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
-$(FIGURES)/lte-interference-test-scenario.pdf_width = 4in
+$(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
+$(FIGURES)/epc-topology.pdf_width = 4in
+$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
+$(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
+$(FIGURES)/ff-mac-saps.pdf_width = 2in
+$(FIGURES)/ff-example.pdf_width = 3in
+$(FIGURES)/lte-rlc-implementation-model.pdf_width = 12in
+$(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
+$(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
+$(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
+$(FIGURES)/phy.pdf_width = 12cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
 
@@ -67,13 +76,17 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_urban_3kmph.png \
 	$(FIGURES)/fading_pedestrian.pdf \
 	$(FIGURES)/fading_vehicular.pdf \
-	$(FIGURES)/fading_urban_3kmph.pdf
+	$(FIGURES)/fading_urban_3kmph.pdf \
+	$(FIGURES)/phy.png \
+	$(FIGURES)/phy.pdf
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.png : %.seqdiag; $(SEQDIAG) -Tpng -o $@ $< 
 %.png : %.eps; $(CONVERT) $< $@
+%.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
