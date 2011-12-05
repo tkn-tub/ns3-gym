@@ -17,6 +17,7 @@ with all the other entities and services in the protocol stack.
 .. _fig-lte-rlc-implementation-model:
 
 .. figure:: figures/lte-rlc-implementation-model.*
+   :width: 300pt
 
    Implementation Model of PDCP, RLC and MAC entities and SAPs
 
