@@ -28,7 +28,7 @@
 
 #include "lte-ue-mac.h"
 #include "lte-ue-net-device.h"
-#include "lte-mac-tag.h"
+#include "lte-radio-bearer-tag.h"
 #include <ns3/ff-mac-common.h>
 #include <ns3/ideal-control-messages.h>
 #include <ns3/simulator.h>
@@ -243,7 +243,7 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_rnti == params.rnti, "RNTI mismatch between RLC and MAC");
-  LteMacTag tag (params.rnti, params.lcid);
+  LteRadioBearerTag tag (params.rnti, params.lcid);
   params.pdu->AddPacketTag (tag);
 //   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
 //   pb->AddPacket (params.pdu);
@@ -325,7 +325,7 @@ LteUeMac::DoRemoveLc (uint8_t lcId)
 void
 LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
 {
-  LteMacTag tag;
+  LteRadioBearerTag tag;
   p->RemovePacketTag (tag);
   if (tag.GetRnti () == m_rnti)
     {

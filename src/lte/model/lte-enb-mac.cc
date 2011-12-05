@@ -30,7 +30,7 @@
 #include "lte-ue-net-device.h"
 
 #include <ns3/lte-enb-mac.h>
-#include <ns3/lte-mac-tag.h>
+#include <ns3/lte-radio-bearer-tag.h>
 #include <ns3/lte-ue-phy.h>
 
 #include "ns3/lte-mac-sap.h"
@@ -515,7 +515,7 @@ void
 LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
-  LteMacTag tag;
+  LteRadioBearerTag tag;
   p->RemovePacketTag (tag);
 
   // store info of the packet received
@@ -652,7 +652,7 @@ void
 LteEnbMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
   NS_LOG_FUNCTION (this);
-  LteMacTag tag (params.rnti, params.lcid);
+  LteRadioBearerTag tag (params.rnti, params.lcid);
   params.pdu->AddPacketTag (tag);
 //   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
 //   pb->AddPacket (params.pdu);

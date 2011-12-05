@@ -648,7 +648,7 @@ respect to the 3GPP specifications. In particular, a simulator-specific class (P
 MAC SDUs in order to achieve the simulator's equivalent of a TB,
 without the corresponding implementation complexity. 
 The multiplexing of different logical channels to and from the RLC
-layer is performed using a dedicated packet tag (LteMacTag), which
+layer is performed using a dedicated packet tag (LteRadioBearerTag), which
 performs a functionality which is partially equivalent to that of the
 MAC headers specified by 3GPP. 
 

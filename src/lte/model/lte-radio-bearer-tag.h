@@ -17,8 +17,8 @@
  *
  * Author: Author: Marco Miozzo  <marco.miozzo@cttc.es>
  */
-#ifndef LTE_MAC_TAG_H
-#define LTE_MAC_TAG_H
+#ifndef LTE_RADIO_BEARER_TAG_H
+#define LTE_RADIO_BEARER_TAG_H
 
 #include "ns3/packet.h"
 
@@ -31,21 +31,21 @@ class Tag;
  * Tag used to define the RNTI and LC id for each MAC packet trasmitted
  */
 
-class LteMacTag : public Tag
+class LteRadioBearerTag : public Tag
 {
 public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**
-   * Create an empty LteMacTag
+   * Create an empty LteRadioBearerTag
    */
-  LteMacTag ();
+  LteRadioBearerTag ();
 
   /**
-   * Create a LteMacTag with the given RNTI and LC id
+   * Create a LteRadioBearerTag with the given RNTI and LC id
    */
-  LteMacTag (uint16_t  rnti, uint8_t lcId);
+  LteRadioBearerTag (uint16_t  rnti, uint8_t lcId);
 
   /**
    * Set the RNTI to the given value.
@@ -80,4 +80,4 @@ private:
 
 } // namespace ns3
 
-#endif /* LTE_MAC_TAG_H */
+#endif /* LTE_RADIO_BEARER_TAG_H */

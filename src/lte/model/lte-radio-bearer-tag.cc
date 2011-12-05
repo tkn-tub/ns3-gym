@@ -19,95 +19,95 @@
  */
 
 
-#include "lte-mac-tag.h"
+#include "lte-radio-bearer-tag.h"
 #include "ns3/tag.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LteMacTag);
+NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerTag);
 
 TypeId
-LteMacTag::GetTypeId (void)
+LteRadioBearerTag::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::LteMacTag")
+  static TypeId tid = TypeId ("ns3::LteRadioBearerTag")
     .SetParent<Tag> ()
-    .AddConstructor<LteMacTag> ()
+    .AddConstructor<LteRadioBearerTag> ()
     .AddAttribute ("rnti", "The rnti that indicates the UE which packet belongs",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&LteMacTag::GetRnti),
+                   MakeUintegerAccessor (&LteRadioBearerTag::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("lcid", "The LC id that indicates the UE which packet belongs",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&LteMacTag::GetLcid),
+                   MakeUintegerAccessor (&LteRadioBearerTag::GetLcid),
                    MakeUintegerChecker<uint8_t> ())
   ;
   return tid;
 }
 
 TypeId
-LteMacTag::GetInstanceTypeId (void) const
+LteRadioBearerTag::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
-LteMacTag::LteMacTag ()
+LteRadioBearerTag::LteRadioBearerTag ()
   : m_rnti (0),
     m_lcid (0)
 {
 }
-LteMacTag::LteMacTag (uint16_t rnti, uint8_t lcid)
+LteRadioBearerTag::LteRadioBearerTag (uint16_t rnti, uint8_t lcid)
   : m_rnti (rnti),
     m_lcid (lcid)
 {
 }
 
 void
-LteMacTag::SetRnti (uint16_t rnti)
+LteRadioBearerTag::SetRnti (uint16_t rnti)
 {
   m_rnti = rnti;
 }
 
 void
-LteMacTag::SetLcid (uint8_t lcid)
+LteRadioBearerTag::SetLcid (uint8_t lcid)
 {
   m_lcid = lcid;
 }
 
 uint32_t
-LteMacTag::GetSerializedSize (void) const
+LteRadioBearerTag::GetSerializedSize (void) const
 {
   return 3;
 }
 
 void
-LteMacTag::Serialize (TagBuffer i) const
+LteRadioBearerTag::Serialize (TagBuffer i) const
 {
   i.WriteU16 (m_rnti);
   i.WriteU8 (m_lcid);
 }
 
 void
-LteMacTag::Deserialize (TagBuffer i)
+LteRadioBearerTag::Deserialize (TagBuffer i)
 {
   m_rnti = (uint16_t) i.ReadU16 ();
   m_lcid = (uint8_t) i.ReadU8 ();
 }
 
 uint16_t
-LteMacTag::GetRnti () const
+LteRadioBearerTag::GetRnti () const
 {
   return m_rnti;
 }
 
 uint8_t
-LteMacTag::GetLcid () const
+LteRadioBearerTag::GetLcid () const
 {
   return m_lcid;
 }
 
 void
-LteMacTag::Print (std::ostream &os) const
+LteRadioBearerTag::Print (std::ostream &os) const
 {
   os << "rnti=" << m_rnti << ", lcid=" << m_lcid;
 }

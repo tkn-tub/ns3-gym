@@ -27,7 +27,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/uinteger.h"
 #include "ns3/epc-gtpu-header.h"
-#include "ns3/lte-mac-tag.h"
+#include "ns3/lte-radio-bearer-tag.h"
 
 namespace ns3 {
 
@@ -80,7 +80,7 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
   SocketAddressTag satag;
   packet->RemovePacketTag (satag);
 
-  LteMacTag tag;
+  LteRadioBearerTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
   LteFlowId_t flowId;
@@ -116,7 +116,7 @@ void
 EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) lcid);  
-  LteMacTag tag (rnti, lcid);
+  LteRadioBearerTag tag (rnti, lcid);
   packet->AddPacketTag (tag);
   int sentBytes = m_lteSocket->Send (packet);
   NS_ASSERT (sentBytes > 0);

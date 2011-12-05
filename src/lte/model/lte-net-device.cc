@@ -32,7 +32,7 @@
 #include "ns3/enum.h"
 #include "lte-amc.h"
 #include "ns3/ipv4-header.h"
-#include <ns3/lte-mac-tag.h>
+#include <ns3/lte-radio-bearer-tag.h>
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/log.h>
 
