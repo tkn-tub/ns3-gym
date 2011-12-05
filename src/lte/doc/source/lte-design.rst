@@ -929,19 +929,19 @@ Two helper objects are use to setup simulations and configure the
 variosu components. These objects are:
 
 
- * LenaHelper, which takes care of the configuration of the LTE radio
+ * LteHelper, which takes care of the configuration of the LTE radio
    access network, as well as of coordinating the setup and release of
    EPS bearers 
  * EpcHelper, which takes care of the configuratio of the Evolved
    Packet Core
 
 It is possible to create a simple LTE-only simulations by
-using LenaHelper alone, or to create complete LTE-EPC simulations by
-using both LenaHelper and EpcHelper. When both helpers are used, they
-interact in a master-slave fashion, with LenaHelper being the Master
+using LteHelper alone, or to create complete LTE-EPC simulations by
+using both LteHelper and EpcHelper. When both helpers are used, they
+interact in a master-slave fashion, with LteHelper being the Master
 that interacts directly with the user program, and EpcHelper working
 "under the hood" to configure the EPC upon explicit methods called by
-LenaHelper. The exact interactions are displayed in the following diagram:
+LteHelper. The exact interactions are displayed in the following diagram:
 
 .. seqdiag:: helpers.seqdiag
 

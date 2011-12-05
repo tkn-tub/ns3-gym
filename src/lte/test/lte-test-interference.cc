@@ -25,7 +25,7 @@
 #include "ns3/double.h"
 
 #include "ns3/mobility-helper.h"
-#include "ns3/lena-helper.h"
+#include "ns3/lte-helper.h"
 
 #include "ns3/lte-enb-phy.h"
 #include "ns3/lte-enb-net-device.h"
@@ -112,11 +112,11 @@ LteInterferenceTestCase::~LteInterferenceTestCase ()
 void
 LteInterferenceTestCase::DoRun (void)
 {
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-//   lena->EnableLogComponents ();
-  lena->EnableMacTraces ();
-  lena->EnableRlcTraces ();
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+//   lteHelper->EnableLogComponents ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -149,19 +149,19 @@ LteInterferenceTestCase::DoRun (void)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs1;
   NetDeviceContainer ueDevs2;
-  lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs1 = lena->InstallUeDevice (ueNodes1);
-  ueDevs2 = lena->InstallUeDevice (ueNodes2);
+  lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
+  ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
 
-  lena->Attach (ueDevs1, enbDevs.Get (0));
-  lena->Attach (ueDevs2, enbDevs.Get (1));
+  lteHelper->Attach (ueDevs1, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs2, enbDevs.Get (1));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
-  lena->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

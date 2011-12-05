@@ -23,7 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/test.h"
-#include "ns3/lena-helper.h"
+#include "ns3/lte-helper.h"
 #include "ns3/epc-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/udp-client-server-helper.h"
@@ -107,7 +107,7 @@ void
 LteEpcE2eDataTestCase::DoRun ()
 {
 
-  Ptr<LenaHelper> lteHelper = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 

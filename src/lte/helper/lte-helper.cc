@@ -20,7 +20,7 @@
  */
 
 
-#include "lena-helper.h"
+#include "lte-helper.h"
 #include <ns3/string.h>
 #include <ns3/log.h>
 #include <ns3/abort.h>
@@ -49,20 +49,20 @@
 #include <ns3/lte-spectrum-value-helper.h>
 
 
-NS_LOG_COMPONENT_DEFINE ("LenaHelper");
+NS_LOG_COMPONENT_DEFINE ("LteHelper");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (LenaHelper);
+NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 
-LenaHelper::LenaHelper (void)
+LteHelper::LteHelper (void)
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
 }
 
 void 
-LenaHelper::DoStart (void)
+LteHelper::DoStart (void)
 {
   NS_LOG_FUNCTION (this);
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
@@ -119,37 +119,37 @@ LenaHelper::DoStart (void)
   Object::DoStart ();
 }
 
-LenaHelper::~LenaHelper (void)
+LteHelper::~LteHelper (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
-TypeId LenaHelper::GetTypeId (void)
+TypeId LteHelper::GetTypeId (void)
 {
   static TypeId
   tid =
-    TypeId ("ns3::LenaHelper")
+    TypeId ("ns3::LteHelper")
     .SetParent<Object> ()
-    .AddConstructor<LenaHelper> ()
+    .AddConstructor<LteHelper> ()
     .AddAttribute ("Scheduler",
                    "The type of scheduler to be used for eNBs",
                    StringValue ("ns3::PfFfMacScheduler"),
-                   MakeStringAccessor (&LenaHelper::SetSchedulerType),
+                   MakeStringAccessor (&LteHelper::SetSchedulerType),
                    MakeStringChecker ())
     .AddAttribute ("PathlossModel",
                    "The type of pathloss model to be used",
                    StringValue ("ns3::FriisPropagationLossModel"),
-                   MakeStringAccessor (&LenaHelper::SetPathlossModelType),
+                   MakeStringAccessor (&LteHelper::SetPathlossModelType),
                    MakeStringChecker ())
      .AddAttribute ("FadingModel",
                    "The type of fading model to be used",
                    StringValue (""), // fake module -> no fading 
-                   MakeStringAccessor (&LenaHelper::SetFadingModel),
+                   MakeStringAccessor (&LteHelper::SetFadingModel),
                    MakeStringChecker ())
     .AddAttribute ("EpsBearerToRlcMapping", 
                    "Specify which type of RLC will be used for each type of EPS bearer. ",
                    EnumValue (RLC_SM_ALWAYS),
-                   MakeEnumAccessor (&LenaHelper::m_epsBearerToRlcMapping),
+                   MakeEnumAccessor (&LteHelper::m_epsBearerToRlcMapping),
                    MakeEnumChecker (RLC_SM_ALWAYS, "RlcSmAlways",
                                     RLC_UM_ALWAYS, "RlcUmAlways",
                                     RLC_AM_ALWAYS, "RlcAmAlways",
@@ -159,7 +159,7 @@ TypeId LenaHelper::GetTypeId (void)
 }
 
 void
-LenaHelper::DoDispose ()
+LteHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_downlinkChannel = 0;
@@ -169,7 +169,7 @@ LenaHelper::DoDispose ()
 
 
 void 
-LenaHelper::SetEpcHelper (Ptr<EpcHelper> h)
+LteHelper::SetEpcHelper (Ptr<EpcHelper> h)
 {
   NS_LOG_FUNCTION (this << h);
   m_epcHelper = h;
@@ -181,7 +181,7 @@ LenaHelper::SetEpcHelper (Ptr<EpcHelper> h)
 }
   
 void 
-LenaHelper::SetSchedulerType (std::string type) 
+LteHelper::SetSchedulerType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
   m_schedulerFactory = ObjectFactory ();
@@ -189,7 +189,7 @@ LenaHelper::SetSchedulerType (std::string type)
 }
 
 void 
-LenaHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
+LteHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
   m_schedulerFactory.Set (n, v);
@@ -197,7 +197,7 @@ LenaHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 
 
 void 
-LenaHelper::SetPathlossModelType (std::string type) 
+LteHelper::SetPathlossModelType (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
   m_dlPathlossModelFactory = ObjectFactory ();
@@ -207,7 +207,7 @@ LenaHelper::SetPathlossModelType (std::string type)
 }
 
 void 
-LenaHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
+LteHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
   m_dlPathlossModelFactory.Set (n, v);
@@ -215,14 +215,14 @@ LenaHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 }
 
 void
-LenaHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
+LteHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.Set (n, v);
 }
 
 void 
-LenaHelper::SetFadingModel (std::string type) 
+LteHelper::SetFadingModel (std::string type) 
 {
   NS_LOG_FUNCTION (this << type);
   m_fadingModelType = type;
@@ -234,14 +234,14 @@ LenaHelper::SetFadingModel (std::string type)
 }
 
 void 
-LenaHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
+LteHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
 {
   m_fadingModelFactory.Set (n, v);
 }
 
 
 NetDeviceContainer
-LenaHelper::InstallEnbDevice (NodeContainer c)
+LteHelper::InstallEnbDevice (NodeContainer c)
 {
   NS_LOG_FUNCTION (this);
   Start ();  // will run DoStart () if necessary
@@ -256,7 +256,7 @@ LenaHelper::InstallEnbDevice (NodeContainer c)
 }
 
 NetDeviceContainer
-LenaHelper::InstallUeDevice (NodeContainer c)
+LteHelper::InstallUeDevice (NodeContainer c)
 {
   NS_LOG_FUNCTION (this);
   NetDeviceContainer devices;
@@ -271,7 +271,7 @@ LenaHelper::InstallUeDevice (NodeContainer c)
 
 
 Ptr<NetDevice>
-LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
+LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
@@ -285,7 +285,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetChannel (m_uplinkChannel);
 
   Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
-  NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LenaHelper::InstallUeDevice ()");
+  NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
   m_uplinkChannel->AddRx (ulPhy);
@@ -354,7 +354,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 }
 
 Ptr<NetDevice>
-LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
+LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
   NS_LOG_FUNCTION (this);
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
@@ -369,7 +369,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetChannel (m_uplinkChannel);
 
   Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
-  NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LenaHelper::InstallUeDevice ()");
+  NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
 
@@ -400,7 +400,7 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 
 
 void
-LenaHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
+LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 {
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
@@ -409,7 +409,7 @@ LenaHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 }
 
 void
-LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
+LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   // setup RRC connection
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
@@ -452,7 +452,7 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 
 
 void
-LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft)
+LteHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft)
 {
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
@@ -462,7 +462,7 @@ LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, P
 
 
 void
-LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft)
+LteHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft)
 {
   NS_LOG_INFO (" setting up Radio Bearer");
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
@@ -482,7 +482,7 @@ LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<Lt
 }
 
 TypeId
-LenaHelper::GetRlcType (EpsBearer bearer)
+LteHelper::GetRlcType (EpsBearer bearer)
 {
   switch (m_epsBearerToRlcMapping)
     {
@@ -516,9 +516,9 @@ LenaHelper::GetRlcType (EpsBearer bearer)
 }
 
 void
-LenaHelper::EnableLogComponents (void)
+LteHelper::EnableLogComponents (void)
 {
-  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
@@ -573,7 +573,7 @@ LenaHelper::EnableLogComponents (void)
 }
 
 void
-LenaHelper::EnableTraces (void)
+LteHelper::EnableTraces (void)
 {
   EnableMacTraces ();
   EnableRlcTraces ();
@@ -581,7 +581,7 @@ LenaHelper::EnableTraces (void)
 }
 
 void
-LenaHelper::EnableRlcTraces (void)
+LteHelper::EnableRlcTraces (void)
 {
   EnableDlRlcTraces ();
   EnableUlRlcTraces ();
@@ -733,7 +733,7 @@ DlRxPduCallback (Ptr<RlcStatsCalculator> rlcStats, std::string path,
 }
 
 void
-LenaHelper::EnableDlRlcTraces (void)
+LteHelper::EnableDlRlcTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
@@ -824,7 +824,7 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
 }
 
 void
-LenaHelper::EnableUlRlcTraces (void)
+LteHelper::EnableUlRlcTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback (&UlTxPduCallback, m_rlcStats));
@@ -833,7 +833,7 @@ LenaHelper::EnableUlRlcTraces (void)
 }
 
 void
-LenaHelper::EnableMacTraces (void)
+LteHelper::EnableMacTraces (void)
 {
   EnableDlMacTraces ();
   EnableUlMacTraces ();
@@ -841,7 +841,7 @@ LenaHelper::EnableMacTraces (void)
 
 
 void
-LenaHelper::EnableDlMacTraces (void)
+LteHelper::EnableDlMacTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&DlSchedulingCallback, m_macStats));
@@ -881,14 +881,14 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
 }
 
 void
-LenaHelper::EnableUlMacTraces (void)
+LteHelper::EnableUlMacTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
 }
 
 void
-LenaHelper::SetTraceDirectory (std::string path)
+LteHelper::SetTraceDirectory (std::string path)
 {
   m_macStats->SetDlOutputFilename(path + m_macStats->GetDlOutputFilename());
   m_macStats->SetUlOutputFilename(path + m_macStats->GetUlOutputFilename());
@@ -897,20 +897,20 @@ LenaHelper::SetTraceDirectory (std::string path)
 }
 
 Ptr<RlcStatsCalculator>
-LenaHelper::GetRlcStats (void)
+LteHelper::GetRlcStats (void)
 {
   return m_rlcStats;
 }
 
 void
-LenaHelper::EnablePdcpTraces (void)
+LteHelper::EnablePdcpTraces (void)
 {
   EnableDlPdcpTraces ();
   EnableUlPdcpTraces ();
 }
 
 void
-LenaHelper::EnableDlPdcpTraces (void)
+LteHelper::EnableDlPdcpTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LtePdcp/TxPDU",
@@ -920,7 +920,7 @@ LenaHelper::EnableDlPdcpTraces (void)
 }
 
 void
-LenaHelper::EnableUlPdcpTraces (void)
+LteHelper::EnableUlPdcpTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LtePdcp/TxPDU",
                    MakeBoundCallback (&UlTxPduCallback, m_pdcpStats));
@@ -929,7 +929,7 @@ LenaHelper::EnableUlPdcpTraces (void)
 }
 
 Ptr<RlcStatsCalculator>
-LenaHelper::GetPdcpStats (void)
+LteHelper::GetPdcpStats (void)
 {
   return m_pdcpStats;
 }

@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
        << "_numUes"  << std::setw (3) << std::setfill ('0')  << numUes
        << "_rngRun"  << std::setw (3) << std::setfill ('0')  << runValue.Get () ;
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
 
   // NOTE: the PropagationLoss trace source of the SpectrumChannel
@@ -174,7 +174,7 @@ int main (int argc, char *argv[])
   // but it WON'T work if you ONLY use SpectrumPropagationLossModels such as:
   // ns3::FriisSpectrumPropagationLossModel
   // ns3::ConstantSpectrumPropagationLossModel
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::Cost231PropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::Cost231PropagationLossModel"));
   
 
   // Create Nodes: eNodeB and UE
@@ -215,19 +215,19 @@ int main (int argc, char *argv[])
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs1;
   NetDeviceContainer ueDevs2;
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs1 = lena->InstallUeDevice (ueNodes1);
-  ueDevs2 = lena->InstallUeDevice (ueNodes2);
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
+  ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
 
   // Attach UEs to a eNB
-  lena->Attach (ueDevs1, enbDevs.Get (0));
-  lena->Attach (ueDevs2, enbDevs.Get (1));
+  lteHelper->Attach (ueDevs1, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs2, enbDevs.Get (1));
 
   // Activate an EPS bearer on all UEs
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
-  lena->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
 
   Simulator::Stop (Seconds (0.5));
 
@@ -237,15 +237,15 @@ int main (int argc, char *argv[])
   std::string ulOutFname = "UlRlcStats";
   ulOutFname.append (tag.str ());
 
-  lena->EnableMacTraces ();
-  lena->EnableRlcTraces ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
 
 
 
   // keep track of all path loss values in a global object
   DownlinkGlobalPathlossDatabase dlPathlossDb;
   UplinkGlobalPathlossDatabase ulPathlossDb;
-  // we rely on the fact that LenaHelper creates the DL channel object first, then the UL channel object,
+  // we rely on the fact that LteHelper creates the DL channel object first, then the UL channel object,
   // hence the former will have index 0 and the latter 1
   Config::Connect ("/ChannelList/0/PropagationLoss",
                    MakeCallback (&DownlinkGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));

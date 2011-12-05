@@ -32,7 +32,7 @@
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
-#include <ns3/lena-helper.h>
+#include <ns3/lte-helper.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
@@ -42,7 +42,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-rrc.h>
-#include <ns3/lena-helper.h>
+#include <ns3/lte-helper.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
 #include "lte-test-sinr-chunk-processor.h"
@@ -83,9 +83,9 @@ LteFadingTestSuite::LteFadingTestSuite ()
   
   // NS_LOG_INFO ("Creating LteDownlinkSinrTestSuite");
   
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
   
   // Create Nodes: eNodeB, home eNB, UE and home UE (UE attached to HeNB)
   NodeContainer enbNodes;
@@ -109,15 +109,15 @@ LteFadingTestSuite::LteFadingTestSuite ()
   NetDeviceContainer henbDevs;
   NetDeviceContainer ueDevs;
   NetDeviceContainer hueDevs;
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
-  henbDevs = lena->InstallEnbDevice (henbNodes);
-  hueDevs = lena->InstallUeDevice (hueNodes);
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
+  henbDevs = lteHelper->InstallEnbDevice (henbNodes);
+  hueDevs = lteHelper->InstallUeDevice (hueNodes);
   
   
   
-  lena->Attach (ueDevs, enbDevs.Get (0));
-  lena->Attach (hueDevs, henbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (hueDevs, henbDevs.Get (0));
   
   // Test #1 Okumura Hata Model (150 < freq < 1500 MHz) (Macro<->UE)
   
@@ -239,7 +239,7 @@ LteFadingTestSuite::LteFadingTestSuite ()
   
 /*  //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
   // 
-  //   LogComponentEnable ("LenaHelper", logLevel);
+  //   LogComponentEnable ("LteHelper", logLevel);
   LogComponentEnable ("LteShadowingTest", LOG_LEVEL_ALL);
   //   LogComponentEnable ("BuildingsPropagationLossModel", logLevel);
   //   LogComponentEnable ("LteInterference", logLevel);
@@ -524,11 +524,11 @@ LteShadowingSystemTestCase::DoRun (void)
   
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  lena->EnableLogComponents ();
-  lena->EnableMacTraces ();
-  lena->EnableRlcTraces ();
-  lena->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->EnableLogComponents ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
+  lteHelper->SetAttribute ("PropagationModel", StringValue ("ns3::BuildingsPropagationLossModel"));
   
   //Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -545,9 +545,9 @@ LteShadowingSystemTestCase::DoRun (void)
   //   Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
   
   Ptr<BuildingsMobilityModel> mm_enb = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
   mm_enb->SetPosition (Vector (0.0, 0.0, 30.0));
@@ -567,12 +567,12 @@ LteShadowingSystemTestCase::DoRun (void)
   uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
   
   //   Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
   
   //   Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lteHelper->ActivateEpsBearer (ueDevs, bearer);
   
   //   Use testing chunk processor in the PHY layer
   //   It will be used to test that the SNR is as intended

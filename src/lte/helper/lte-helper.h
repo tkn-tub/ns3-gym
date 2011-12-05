@@ -18,8 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef LENA_HELPER_H
-#define LENA_HELPER_H
+#ifndef LTE_HELPER_H
+#define LTE_HELPER_H
 
 #include <ns3/config.h>
 #include <ns3/simulator.h>
@@ -48,11 +48,11 @@ class PropagationLossModel;
  * Creation and configuration of LTE entities
  *
  */
-class LenaHelper : public Object
+class LteHelper : public Object
 {
 public:
-  LenaHelper (void);
-  virtual ~LenaHelper (void);
+  LteHelper (void);
+  virtual ~LteHelper (void);
 
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
@@ -62,7 +62,7 @@ public:
    * Set the EpcHelper to be used to setup the EPC network in
    * conjunction with the setup of the LTE radio access network 
    *
-   * \note if no EpcHelper is ever set, then LenaHelper will default
+   * \note if no EpcHelper is ever set, then LteHelper will default
    * to creating an LTE-only simulation with no EPC, using LteRlcSm as
    * the RLC model, and without supporting any IP networking. In other
    * words, it will be a radio-level simulation involving only LTE PHY
@@ -299,4 +299,4 @@ private:
 
 
 
-#endif // LENA_HELPER_H
+#endif // LTE_HELPER_H

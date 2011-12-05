@@ -77,10 +77,10 @@ int main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   // Uncomment to enable logging
-  //lena->EnableLogComponents ();
+  //lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -98,17 +98,17 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-//   lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
-  lena->SetSchedulerAttribute ("CqiTimerThreshold", UintegerValue (3));
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+//   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerType ("ns3::PfFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("CqiTimerThreshold", UintegerValue (3));
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
   
-  lena->EnableRlcTraces();
-  lena->EnableMacTraces();
+  lteHelper->EnableRlcTraces();
+  lteHelper->EnableMacTraces();
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
   
   Simulator::Schedule (Seconds (0.010), &ChangePosition, ueNodes.Get (0));
   Simulator::Schedule (Seconds (0.020), &ChangePosition, ueNodes.Get (0));
@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
 
 
   Simulator::Stop (Seconds (0.030));

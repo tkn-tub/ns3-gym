@@ -47,24 +47,24 @@ int main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   //cmd.Parse (argc, argv);
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   // Uncomment to enable logging
-  //lena->EnableLogComponents ();
+  //lteHelper->EnableLogComponents ();
   
 
-  lena->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
+  lteHelper->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
   
   std::ifstream ifTraceFile;
   ifTraceFile.open ("../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad", std::ifstream::in);
   if (ifTraceFile.good ())
     {
       // script launched by test.py
-      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
+      lteHelper->SetFadingModelAttribute ("TraceFilename", StringValue ("../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
     }
   else
     {
       // script launched as an example
-      lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
+      lteHelper->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
     }
     
   // these parameters have to setted only in case of the trace format 
@@ -73,10 +73,10 @@ int main (int argc, char *argv[])
   // - 10,000 samples
   // - 0.5 seconds for window size
   // - 100 RB
-  lena->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
-  lena->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
-  lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
-  lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
+  lteHelper->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
+  lteHelper->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
+  lteHelper->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
+  lteHelper->SetFadingModelAttribute ("RbNum", UintegerValue (100));
  
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -94,16 +94,16 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
 
 
   Simulator::Stop (Seconds (0.005));
