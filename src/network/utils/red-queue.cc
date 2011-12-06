@@ -190,7 +190,7 @@ void
 RedQueue::SetTh (double minTh, double maxTh)
 {
   NS_LOG_FUNCTION (this << minTh << maxTh);
-  NS_ASSERT(minTh <= maxTh);
+  NS_ASSERT (minTh <= maxTh);
   m_minTh = minTh;
   m_maxTh = maxTh;
 }
@@ -273,7 +273,7 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
            * above "minthresh" with a nonempty queue.
            */
           m_count = 1;
-          m_countBytes = p->GetSize();
+          m_countBytes = p->GetSize ();
           m_old = 1;
         }
       else if (DropEarly (p, nQueued))
@@ -336,6 +336,7 @@ RedQueue::InitializeParams (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  NS_ASSERT (m_minTh <= m_maxTh);
   m_stats.forcedDrop = 0;
   m_stats.unforcedDrop = 0;
   m_stats.qLimDrop = 0;
@@ -399,7 +400,13 @@ RedQueue::InitializeParams (void)
 
   // TODO: implement adaptive RED
 
-  NS_LOG_DEBUG ("\tm_delay " << m_linkDelay.GetSeconds () << "; m_isWait " << m_isWait << "; m_qW " << m_qW << "; m_ptc " << m_ptc << "; m_minTh " << m_minTh << "; m_maxTh " << m_maxTh << "; m_isGentle " << m_isGentle << "; th_diff " << th_diff << "; lInterm " << m_lInterm << "; va " << m_vA <<  "; cur_max_p " << m_curMaxP << "; v_b " << m_vB <<  "; m_vC " << m_vC << "; m_vD " <<  m_vD);
+  NS_LOG_DEBUG ("\tm_delay " << m_linkDelay.GetSeconds () << "; m_isWait " 
+                << m_isWait << "; m_qW " << m_qW << "; m_ptc " << m_ptc 
+                << "; m_minTh " << m_minTh << "; m_maxTh " << m_maxTh 
+                << "; m_isGentle " << m_isGentle << "; th_diff " << th_diff 
+                << "; lInterm " << m_lInterm << "; va " << m_vA <<  "; cur_max_p " 
+                << m_curMaxP << "; v_b " << m_vB <<  "; m_vC " 
+                << m_vC << "; m_vD " <<  m_vD);
 }
 
 // Compute the average queue size
@@ -427,8 +434,8 @@ uint32_t
 RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
 {
   NS_LOG_FUNCTION (this << p << qSize);
-  m_vProb1 = CalculatePNew(m_qAvg, m_maxTh, m_isGentle, m_vA, m_vB, m_vC, m_vD, m_curMaxP);
-  m_vProb = ModifyP(m_vProb1, m_count, m_countBytes, m_meanPktSize, m_isWait, p->GetSize ());
+  m_vProb1 = CalculatePNew (m_qAvg, m_maxTh, m_isGentle, m_vA, m_vB, m_vC, m_vD, m_curMaxP);
+  m_vProb = ModifyP (m_vProb1, m_count, m_countBytes, m_meanPktSize, m_isWait, p->GetSize ());
 
   // Drop probability is computed, pick random number and act
   if (m_cautious == 1)

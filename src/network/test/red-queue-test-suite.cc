@@ -25,6 +25,7 @@
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -265,6 +266,8 @@ RedQueueTestCase::DoRun (void)
 {
   RunRedTest (StringValue("Packets"));
   RunRedTest (StringValue("Bytes"));
+  Simulator::Destroy ();
+
 }
 
 static class RedQueueTestSuite : public TestSuite

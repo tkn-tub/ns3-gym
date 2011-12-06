@@ -21,7 +21,8 @@
 /**
  * These validation tests are detailed in http://icir.org/floyd/papers/redsims.ps
  *
- * In this code the tests 1, 3, 4 and 5 from the document above were written.
+ * In this code the tests 1, 3, 4 and 5 refer to the tests corresponding to
+ * Figure 1, 3, 4, and 5 respectively from the document mentioned above.
  */
 
 /** Network topology
@@ -42,12 +43,10 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/uinteger.h"
-#include "ns3/red-queue.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("RedExamples");
+NS_LOG_COMPONENT_DEFINE ("RedTests");
 
 uint32_t checkTimes;
 double avgQueueSize;
@@ -102,7 +101,7 @@ BuildAppsTest (uint32_t test)
     {
       // SINK is in the right side
       uint16_t port = 50000;
-      Address sinkLocalAddress(InetSocketAddress (Ipv4Address::GetAny (), port));
+      Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
       PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
       ApplicationContainer sinkApp = sinkHelper.Install (n3n4.Get(1));
       sinkApp.Start (Seconds (sink_start_time));
@@ -154,28 +153,28 @@ BuildAppsTest (uint32_t test)
       // SINKs
       // #1
       uint16_t port1 = 50001;
-      Address sinkLocalAddress1(InetSocketAddress (Ipv4Address::GetAny (), port1));
+      Address sinkLocalAddress1 (InetSocketAddress (Ipv4Address::GetAny (), port1));
       PacketSinkHelper sinkHelper1 ("ns3::TcpSocketFactory", sinkLocalAddress1);
       ApplicationContainer sinkApp1 = sinkHelper1.Install (n3n4.Get(1));
       sinkApp1.Start (Seconds (sink_start_time));
       sinkApp1.Stop (Seconds (sink_stop_time));
       // #2
       uint16_t port2 = 50002;
-      Address sinkLocalAddress2(InetSocketAddress (Ipv4Address::GetAny (), port2));
+      Address sinkLocalAddress2 (InetSocketAddress (Ipv4Address::GetAny (), port2));
       PacketSinkHelper sinkHelper2 ("ns3::TcpSocketFactory", sinkLocalAddress2);
       ApplicationContainer sinkApp2 = sinkHelper2.Install (n3n5.Get(1));
       sinkApp2.Start (Seconds (sink_start_time));
       sinkApp2.Stop (Seconds (sink_stop_time));
       // #3
       uint16_t port3 = 50003;
-      Address sinkLocalAddress3(InetSocketAddress (Ipv4Address::GetAny (), port3));
+      Address sinkLocalAddress3 (InetSocketAddress (Ipv4Address::GetAny (), port3));
       PacketSinkHelper sinkHelper3 ("ns3::TcpSocketFactory", sinkLocalAddress3);
       ApplicationContainer sinkApp3 = sinkHelper3.Install (n0n2.Get(0));
       sinkApp3.Start (Seconds (sink_start_time));
       sinkApp3.Stop (Seconds (sink_stop_time));
       // #4
       uint16_t port4 = 50004;
-      Address sinkLocalAddress4(InetSocketAddress (Ipv4Address::GetAny (), port4));
+      Address sinkLocalAddress4 (InetSocketAddress (Ipv4Address::GetAny (), port4));
       PacketSinkHelper sinkHelper4 ("ns3::TcpSocketFactory", sinkLocalAddress4);
       ApplicationContainer sinkApp4 = sinkHelper4.Install (n1n2.Get(0));
       sinkApp4.Start (Seconds (sink_start_time));
@@ -238,7 +237,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress3
         (InetSocketAddress (i0i2.GetAddress (0), port3));
       clientHelper3.SetAttribute ("Remote", remoteAddress3);
-      clientApps3.Add(clientHelper3.Install (n3n4.Get(1)));
+      clientApps3.Add (clientHelper3.Install (n3n4.Get(1)));
       clientApps3.Start (Seconds (3.5));
       clientApps3.Stop (Seconds (client_stop_time));
 
@@ -257,7 +256,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress4
         (InetSocketAddress (i1i2.GetAddress (0), port4));
       clientHelper4.SetAttribute ("Remote", remoteAddress4);
-      clientApps4.Add(clientHelper4.Install (n3n5.Get(1)));
+      clientApps4.Add (clientHelper4.Install (n3n5.Get(1)));
       clientApps4.Start (Seconds (1.0));
       clientApps4.Stop (Seconds (client_stop_time));
     }
@@ -292,7 +291,7 @@ main (int argc, char *argv[])
   // Configuration and command line parameter parsing
   redTest = 1;
   // Will only save in the directory if enable opts below
-  pathOut = "/tmp";
+  pathOut = "."; // Current directory
   CommandLine cmd;
   cmd.AddValue ("testNumber", "Run test 1, 3, 4 or 5", redTest);
   cmd.AddValue ("pathOut", "Path to save results from --writeForPlot/--writePcap/--writeFlowMonitor", pathOut);
@@ -339,8 +338,6 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::RedQueue::MinTh", DoubleValue (5));
   Config::SetDefault ("ns3::RedQueue::MaxTh", DoubleValue (15));
   Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (25));
-  Config::SetDefault ("ns3::RedQueue::LinkBandwidth", StringValue(redLinkDataRate));
-  Config::SetDefault ("ns3::RedQueue::LinkDelay", StringValue(redLinkDelay));
 
   if (redTest == 3) // test like 1, but with bad params
     {
@@ -349,16 +346,12 @@ main (int argc, char *argv[])
     }
   else if (redTest == 5) // test 5, same of test 4, but in byte mode
     {
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue("Bytes"));
+      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("Bytes"));
       Config::SetDefault ("ns3::RedQueue::Ns1Compat", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueue::MinTh", DoubleValue (5 * meanPktSize));
       Config::SetDefault ("ns3::RedQueue::MaxTh", DoubleValue (15 * meanPktSize));
       Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (25 * meanPktSize));
     }
-
-  // fix the TCP window size
-  //  uint16_t wnd = 15000;
-  //  GlobalValue::Bind ("GlobalFixedTcpWindowSize", IntegerValue (wnd));
 
   NS_LOG_INFO ("Install internet stack on all nodes.");
   InternetStackHelper internet;
@@ -377,7 +370,9 @@ main (int argc, char *argv[])
   p2p.SetChannelAttribute ("Delay", StringValue ("3ms"));
   NetDeviceContainer devn1n2 = p2p.Install (n1n2);
 
-  p2p.SetQueue("ns3::RedQueue"); // yeah, only backbone link have special queue
+  p2p.SetQueue ("ns3::RedQueue", // only backbone link has RED queue
+                "LinkBandwidth", StringValue (redLinkDataRate),
+                "LinkDelay", StringValue (redLinkDelay)); 
   p2p.SetDeviceAttribute ("DataRate", StringValue (redLinkDataRate));
   p2p.SetChannelAttribute ("Delay", StringValue (redLinkDelay));
   NetDeviceContainer devn2n3 = p2p.Install (n2n3);
@@ -413,7 +408,7 @@ main (int argc, char *argv[])
   // Set up the routing
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  if (redTest == 5) // byte mode
+  if (redTest == 5) 
     {
       // like in ns2 test, r2 -> r1, have a queue in packet mode
       Ptr<PointToPointNetDevice> nd = StaticCast<PointToPointNetDevice> (devn2n3.Get (1));
@@ -435,7 +430,6 @@ main (int argc, char *argv[])
     }
 
   Ptr<FlowMonitor> flowmon;
-
   if (flowMonitor)
     {
       FlowMonitorHelper flowmonHelper;
