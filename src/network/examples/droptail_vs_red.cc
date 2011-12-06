@@ -57,12 +57,16 @@ int main (int argc, char *argv[])
 
   cmd.AddValue ("redMinTh", "RED queue minimum threshold", minTh);
   cmd.AddValue ("redMaxTh", "RED queue maximum threshold", maxTh);
+  cmd.Parse (argc,argv);
 
+  if ((queueType != "RED") && (queueType != "DropTail"))
+    {
+      NS_ABORT_MSG ("Invalid queue type: Use --queueType=RED or --queueType=DropTail");
+    }
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (pktSize));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue (appDataRate));
 
-  cmd.Parse (argc,argv);
 
   if (!modeBytes)
     {

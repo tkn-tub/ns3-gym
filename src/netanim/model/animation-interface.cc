@@ -790,7 +790,6 @@ void AnimationInterface::WifiMacRxTrace (std::string context,
     {
       NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
       OutputWirelessPacket (pktInfo, pktrxInfo);
-      pktInfo.RemoveRxInfo (ndev);
     }
 
 }
@@ -917,7 +916,6 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
     {
       NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
       OutputCsmaPacket (pktInfo, pktrxInfo);
-      pktInfo.RemoveRxInfo (ndev);
     }
 }
 
