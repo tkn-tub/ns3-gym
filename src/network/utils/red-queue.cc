@@ -213,7 +213,7 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
       m_hasRedStarted = true;
     }
 
-  uint32_t nQueued;
+  uint32_t nQueued = 0;
 
   if (GetMode () == BYTES)
     {
