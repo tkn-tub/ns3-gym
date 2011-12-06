@@ -34,9 +34,9 @@ class RedQueueTestCase : public TestCase
 public:
   RedQueueTestCase ();
   virtual void DoRun (void);
-private:  
-  void Enqueue(Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt);
-  void RunRedTest(StringValue mode);
+private:
+  void Enqueue (Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt);
+  void RunRedTest (StringValue mode);
 };
 
 RedQueueTestCase::RedQueueTestCase ()
@@ -45,7 +45,7 @@ RedQueueTestCase::RedQueueTestCase ()
 }
 
 void
-RedQueueTestCase::RunRedTest(StringValue mode)
+RedQueueTestCase::RunRedTest (StringValue mode)
 {
   uint32_t pktSize = 0;
   // 1 for packets; pktSize for bytes
@@ -138,7 +138,7 @@ RedQueueTestCase::RunRedTest(StringValue mode)
                          "Verify that we can actually set the attribute MaxTh");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
                          "Verify that we can actually set the attribute QueueLimit");
-  Enqueue(queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300);
   RedQueue::Stats st = StaticCast<RedQueue> (queue)->GetStats ();
   NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should zero dropped packets due probability mark");
   NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should zero dropped packets due hardmark mark");
@@ -166,7 +166,7 @@ RedQueueTestCase::RunRedTest(StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
-  Enqueue(queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueue> (queue)->GetStats ();
   drop.test3 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_NE (drop.test3, 0, "There should be some dropped packets");
@@ -185,7 +185,7 @@ RedQueueTestCase::RunRedTest(StringValue mode)
                          "Verify that we can actually set the attribute QueueLimit");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.020)), true,
                          "Verify that we can actually set the attribute QW");
-  Enqueue(queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueue> (queue)->GetStats ();
   drop.test4 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test4, drop.test3, "Test 4 should have more drops than test 3");
@@ -206,7 +206,7 @@ RedQueueTestCase::RunRedTest(StringValue mode)
                          "Verify that we can actually set the attribute QW");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (5)), true,
                          "Verify that we can actually set the attribute LInterm");
-  Enqueue(queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueue> (queue)->GetStats ();
   drop.test5 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test5, drop.test3, "Test 5 should have more drops than test 3");
@@ -226,7 +226,7 @@ RedQueueTestCase::RunRedTest(StringValue mode)
                          "Verify that we can actually set the attribute QW");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (false)), true,
                          "Verify that we can actually set the attribute Gentle");
-  Enqueue(queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueue> (queue)->GetStats ();
   drop.test6 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test6, drop.test3, "Test 6 should have more drops than test 3");
@@ -246,14 +246,14 @@ RedQueueTestCase::RunRedTest(StringValue mode)
                          "Verify that we can actually set the attribute QW");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Wait", BooleanValue (false)), true,
                          "Verify that we can actually set the attribute Wait");
-  Enqueue(queue, pktSize, 300);
+  Enqueue (queue, pktSize, 300);
   st = StaticCast<RedQueue> (queue)->GetStats ();
   drop.test7 = st.unforcedDrop + st.forcedDrop + st.qLimDrop;
   NS_TEST_EXPECT_MSG_GT (drop.test7, drop.test3, "Test 7 should have more drops than test 3");
 }
 
 void 
-RedQueueTestCase::Enqueue(Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt)
+RedQueueTestCase::Enqueue (Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt)
 {
   for (uint32_t i = 0; i < nPkt; i++)
     {
@@ -264,8 +264,8 @@ RedQueueTestCase::Enqueue(Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt)
 void
 RedQueueTestCase::DoRun (void)
 {
-  RunRedTest (StringValue("Packets"));
-  RunRedTest (StringValue("Bytes"));
+  RunRedTest (StringValue ("Packets"));
+  RunRedTest (StringValue ("Bytes"));
   Simulator::Destroy ();
 
 }

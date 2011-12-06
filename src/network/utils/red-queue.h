@@ -107,11 +107,11 @@ public:
 
   // Drop types
   enum
-    {
-      DTYPE_NONE,      // Ok, no drop
-      DTYPE_FORCED,    // A "forced" drop
-      DTYPE_UNFORCED,  // An "unforced" (random) drop
-    };
+  {
+    DTYPE_NONE,        // Ok, no drop
+    DTYPE_FORCED,      // A "forced" drop
+    DTYPE_UNFORCED,    // An "unforced" (random) drop
+  };
 
   /*
    * Enumeration of the modes supported in the class.
@@ -150,7 +150,7 @@ public:
    *
    * \param lim The limit in bytes or packets.
    */
-  void SetQueueLimit(uint32_t lim);
+  void SetQueueLimit (uint32_t lim);
 
   /*
    * Set the thresh limits of RED.
@@ -158,14 +158,14 @@ public:
    * \param min Minimum thresh in bytes or packets.
    * \param max Maximum thresh in bytes or packets.
    */
-  void SetTh(double minTh, double maxTh);
+  void SetTh (double minTh, double maxTh);
 
   /*
    * Get the RED statistics after running.
    *
    * \returns The drop statistics.
    */
-  Stats GetStats();
+  Stats GetStats ();
 
 private:
   virtual bool DoEnqueue (Ptr<Packet> p);
@@ -182,8 +182,8 @@ private:
   double CalculatePNew (double qAvg, double maxTh, bool gentle, double vA,
                         double vB, double vC, double vD, double maxP);
   // Returns a probability using these function parameters for the DropEarly funtion
-  double ModifyP(double p, uint32_t count, uint32_t countBytes,
-                 uint32_t meanPktSize, bool wait, uint32_t size);
+  double ModifyP (double p, uint32_t count, uint32_t countBytes,
+                  uint32_t meanPktSize, bool wait, uint32_t size);
 
   std::list<Ptr<Packet> > m_packets;
 

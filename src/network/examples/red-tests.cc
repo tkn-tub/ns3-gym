@@ -87,11 +87,11 @@ CheckQueueSize (Ptr<Queue> queue)
 
   std::ofstream fPlotQueue (filePlotQueue.str ().c_str (), std::ios::out|std::ios::app);
   fPlotQueue << Simulator::Now ().GetSeconds () << " " << qSize << std::endl;
-  fPlotQueue.close();
+  fPlotQueue.close ();
 
   std::ofstream fPlotQueueAvg (filePlotQueueAvg.str ().c_str (), std::ios::out|std::ios::app);
   fPlotQueueAvg << Simulator::Now ().GetSeconds () << " " << avgQueueSize / checkTimes << std::endl;
-  fPlotQueueAvg.close();
+  fPlotQueueAvg.close ();
 }
 
 void
@@ -103,7 +103,7 @@ BuildAppsTest (uint32_t test)
       uint16_t port = 50000;
       Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
       PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
-      ApplicationContainer sinkApp = sinkHelper.Install (n3n4.Get(1));
+      ApplicationContainer sinkApp = sinkHelper.Install (n3n4.Get (1));
       sinkApp.Start (Seconds (sink_start_time));
       sinkApp.Stop (Seconds (sink_stop_time));
 
@@ -127,7 +127,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress
         (InetSocketAddress (i3i4.GetAddress (1), port));
       clientHelper1.SetAttribute ("Remote", remoteAddress);
-      clientApps1.Add(clientHelper1.Install (n0n2.Get(0)));
+      clientApps1.Add (clientHelper1.Install (n0n2.Get (0)));
       clientApps1.Start (Seconds (client_start_time));
       clientApps1.Stop (Seconds (client_stop_time));
 
@@ -144,7 +144,7 @@ BuildAppsTest (uint32_t test)
 
       ApplicationContainer clientApps2;
       clientHelper2.SetAttribute ("Remote", remoteAddress);
-      clientApps2.Add(clientHelper2.Install (n1n2.Get(0)));
+      clientApps2.Add (clientHelper2.Install (n1n2.Get (0)));
       clientApps2.Start (Seconds (3.0));
       clientApps2.Stop (Seconds (client_stop_time));
     }
@@ -155,28 +155,28 @@ BuildAppsTest (uint32_t test)
       uint16_t port1 = 50001;
       Address sinkLocalAddress1 (InetSocketAddress (Ipv4Address::GetAny (), port1));
       PacketSinkHelper sinkHelper1 ("ns3::TcpSocketFactory", sinkLocalAddress1);
-      ApplicationContainer sinkApp1 = sinkHelper1.Install (n3n4.Get(1));
+      ApplicationContainer sinkApp1 = sinkHelper1.Install (n3n4.Get (1));
       sinkApp1.Start (Seconds (sink_start_time));
       sinkApp1.Stop (Seconds (sink_stop_time));
       // #2
       uint16_t port2 = 50002;
       Address sinkLocalAddress2 (InetSocketAddress (Ipv4Address::GetAny (), port2));
       PacketSinkHelper sinkHelper2 ("ns3::TcpSocketFactory", sinkLocalAddress2);
-      ApplicationContainer sinkApp2 = sinkHelper2.Install (n3n5.Get(1));
+      ApplicationContainer sinkApp2 = sinkHelper2.Install (n3n5.Get (1));
       sinkApp2.Start (Seconds (sink_start_time));
       sinkApp2.Stop (Seconds (sink_stop_time));
       // #3
       uint16_t port3 = 50003;
       Address sinkLocalAddress3 (InetSocketAddress (Ipv4Address::GetAny (), port3));
       PacketSinkHelper sinkHelper3 ("ns3::TcpSocketFactory", sinkLocalAddress3);
-      ApplicationContainer sinkApp3 = sinkHelper3.Install (n0n2.Get(0));
+      ApplicationContainer sinkApp3 = sinkHelper3.Install (n0n2.Get (0));
       sinkApp3.Start (Seconds (sink_start_time));
       sinkApp3.Stop (Seconds (sink_stop_time));
       // #4
       uint16_t port4 = 50004;
       Address sinkLocalAddress4 (InetSocketAddress (Ipv4Address::GetAny (), port4));
       PacketSinkHelper sinkHelper4 ("ns3::TcpSocketFactory", sinkLocalAddress4);
-      ApplicationContainer sinkApp4 = sinkHelper4.Install (n1n2.Get(0));
+      ApplicationContainer sinkApp4 = sinkHelper4.Install (n1n2.Get (0));
       sinkApp4.Start (Seconds (sink_start_time));
       sinkApp4.Stop (Seconds (sink_stop_time));
 
@@ -199,7 +199,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress1
         (InetSocketAddress (i3i4.GetAddress (1), port1));
       clientHelper1.SetAttribute ("Remote", remoteAddress1);
-      clientApps1.Add(clientHelper1.Install (n0n2.Get(0)));
+      clientApps1.Add (clientHelper1.Install (n0n2.Get (0)));
       clientApps1.Start (Seconds (client_start_time));
       clientApps1.Stop (Seconds (client_stop_time));
 
@@ -218,7 +218,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress2
         (InetSocketAddress (i3i5.GetAddress (1), port2));
       clientHelper2.SetAttribute ("Remote", remoteAddress2);
-      clientApps2.Add(clientHelper2.Install (n1n2.Get(0)));
+      clientApps2.Add (clientHelper2.Install (n1n2.Get (0)));
       clientApps2.Start (Seconds (2.0));
       clientApps2.Stop (Seconds (client_stop_time));
 
@@ -237,7 +237,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress3
         (InetSocketAddress (i0i2.GetAddress (0), port3));
       clientHelper3.SetAttribute ("Remote", remoteAddress3);
-      clientApps3.Add (clientHelper3.Install (n3n4.Get(1)));
+      clientApps3.Add (clientHelper3.Install (n3n4.Get (1)));
       clientApps3.Start (Seconds (3.5));
       clientApps3.Stop (Seconds (client_stop_time));
 
@@ -256,7 +256,7 @@ BuildAppsTest (uint32_t test)
       AddressValue remoteAddress4
         (InetSocketAddress (i1i2.GetAddress (0), port4));
       clientHelper4.SetAttribute ("Remote", remoteAddress4);
-      clientApps4.Add (clientHelper4.Install (n3n5.Get(1)));
+      clientApps4.Add (clientHelper4.Install (n3n5.Get (1)));
       clientApps4.Start (Seconds (1.0));
       clientApps4.Stop (Seconds (client_stop_time));
     }
@@ -330,7 +330,7 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueue::Mode", StringValue("Packets"));
+  Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("Packets"));
   Config::SetDefault ("ns3::RedQueue::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::RedQueue::Wait", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueue::Gentle", BooleanValue (true));
@@ -419,7 +419,7 @@ main (int argc, char *argv[])
       StaticCast<RedQueue> (queue)->SetQueueLimit (25);
     }
 
-  BuildAppsTest(redTest);
+  BuildAppsTest (redTest);
 
   if (writePcap)
     {

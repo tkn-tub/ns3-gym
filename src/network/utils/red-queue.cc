@@ -206,7 +206,7 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
 
-  if (! m_hasRedStarted )
+  if (!m_hasRedStarted )
     {
       NS_LOG_INFO ("Initializing RED params.");
       InitializeParams ();
@@ -258,12 +258,12 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
   uint32_t dropType = DTYPE_NONE;
   if (m_qAvg >= m_minTh && nQueued > 1)
     {
-      if ((! m_isGentle && m_qAvg >= m_maxTh) ||
+      if ((!m_isGentle && m_qAvg >= m_maxTh) ||
           (m_isGentle && m_qAvg >= 2 * m_maxTh))
-          {
-            NS_LOG_DEBUG ("adding DROP FORCED MARK");
-            dropType = DTYPE_FORCED;
-          }
+        {
+          NS_LOG_DEBUG ("adding DROP FORCED MARK");
+          dropType = DTYPE_FORCED;
+        }
       else if (m_old == 0)
         {
           /* 
@@ -321,7 +321,7 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
-  
+
   return true;
 }
 
@@ -343,7 +343,7 @@ RedQueue::InitializeParams (void)
 
   m_cautious = 0;
   m_ptc = m_linkBandwidth.GetBitRate () / (8.0 * m_meanPktSize);
-  
+
   m_qAvg = 0.0;
   m_count = 0;
   m_countBytes = 0;
@@ -357,8 +357,8 @@ RedQueue::InitializeParams (void)
     }
   m_vA = 1.0 / th_diff;
   m_curMaxP = 1.0 / m_lInterm;
-  m_vB = - m_minTh / th_diff;
-  
+  m_vB = -m_minTh / th_diff;
+
   if (m_isGentle)
     {
       m_vC = (1.0 - m_curMaxP) / m_maxTh;
@@ -381,7 +381,7 @@ RedQueue::InitializeParams (void)
  */
   if (m_qW == 0.0)
     {
-      m_qW = 1.0 - exp(-1.0 / m_ptc);
+      m_qW = 1.0 - exp (-1.0 / m_ptc);
     }
   else if (m_qW == -1.0)
     {
@@ -391,22 +391,22 @@ RedQueue::InitializeParams (void)
         {
           rtt = 0.1;
         }
-      m_qW = 1.0 - exp(-1.0 / (10 * rtt * m_ptc));
+      m_qW = 1.0 - exp (-1.0 / (10 * rtt * m_ptc));
     }
   else if (m_qW == -2.0)
     {
-      m_qW = 1.0 - exp(-10.0 / m_ptc);
+      m_qW = 1.0 - exp (-10.0 / m_ptc);
     }
 
   // TODO: implement adaptive RED
 
   NS_LOG_DEBUG ("\tm_delay " << m_linkDelay.GetSeconds () << "; m_isWait " 
-                << m_isWait << "; m_qW " << m_qW << "; m_ptc " << m_ptc 
-                << "; m_minTh " << m_minTh << "; m_maxTh " << m_maxTh 
-                << "; m_isGentle " << m_isGentle << "; th_diff " << th_diff 
-                << "; lInterm " << m_lInterm << "; va " << m_vA <<  "; cur_max_p " 
-                << m_curMaxP << "; v_b " << m_vB <<  "; m_vC " 
-                << m_vC << "; m_vD " <<  m_vD);
+                             << m_isWait << "; m_qW " << m_qW << "; m_ptc " << m_ptc
+                             << "; m_minTh " << m_minTh << "; m_maxTh " << m_maxTh
+                             << "; m_isGentle " << m_isGentle << "; th_diff " << th_diff
+                             << "; lInterm " << m_lInterm << "; va " << m_vA <<  "; cur_max_p "
+                             << m_curMaxP << "; v_b " << m_vB <<  "; m_vC "
+                             << m_vC << "; m_vD " <<  m_vD);
 }
 
 // Compute the average queue size
@@ -535,7 +535,7 @@ RedQueue::CalculatePNew (double qAvg, double maxTh, bool isGentle, double vA,
 // Returns a probability using these function parameters for the DropEarly funtion
 double 
 RedQueue::ModifyP (double p, uint32_t count, uint32_t countBytes,
-                  uint32_t meanPktSize, bool isWait, uint32_t size)
+                   uint32_t meanPktSize, bool isWait, uint32_t size)
 {
   NS_LOG_FUNCTION (this << p << count << countBytes << meanPktSize << isWait << size);
   double count1 = (double) count;

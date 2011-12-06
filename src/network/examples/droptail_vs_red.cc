@@ -132,8 +132,8 @@ int main (int argc, char *argv[])
       clientHelper.SetAttribute ("Remote", remoteAddress);
       clientApps.Add (clientHelper.Install (d.GetRight (i)));
     }
-  clientApps.Start (Seconds (1.0));// Start 1 second after sink
-  clientApps.Stop (Seconds (15.0));// Stop before the sink
+  clientApps.Start (Seconds (1.0)); // Start 1 second after sink
+  clientApps.Stop (Seconds (15.0)); // Stop before the sink
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
