@@ -59,6 +59,8 @@
 
 /*
  * PORT NOTE: Almost all comments also been ported from NS-2
+ * This implementation aims to be close to the results cited in [0]
+ * [0] S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
  */
 
 #ifndef RED_QUEUE_H
@@ -93,8 +95,17 @@ public:
    */
   RedQueue ();
 
+  /*
+   * \brief Destructor
+   *
+   * Destructor
+   */ 
   virtual ~RedQueue ();
 
+  /*
+   * \brief Stats
+   *
+   */
   typedef struct
   {
     // Early probability drops
@@ -105,7 +116,10 @@ public:
     uint32_t qLimDrop;
   } Stats;
 
-  // Drop types
+  /* 
+   * \brief Drop types
+   *
+   */
   enum
   {
     DTYPE_NONE,        // Ok, no drop
@@ -114,7 +128,7 @@ public:
   };
 
   /*
-   * Enumeration of the modes supported in the class.
+   * \brief Enumeration of the modes supported in the class.
    *
    */
   enum Mode
@@ -125,35 +139,37 @@ public:
   };
 
   /*
-   * Set the operating mode of this device.
+   * \brief Set the operating mode of this queue.
+   *  Set operating mode
    *
-   * \param mode The operating mode of this device.
+   * \param mode The operating mode of this queue.
    */
   void SetMode (RedQueue::Mode mode);
 
   /*
-   * Get the encapsulation mode of this device.
+   * \brief Get the encapsulation mode of this queue.
+   * Get the encapsulation mode of this queue
    *
-   * \returns The encapsulation mode of this device.
+   * \returns The encapsulation mode of this queue.
    */
   RedQueue::Mode  GetMode (void);
 
   /*
-   * Get the current value of the queue in bytes or packets.
+   * \brief Get the current value of the queue in bytes or packets.
    *
    * \returns The queue size in bytes or packets.
    */
   uint32_t GetQueueSize (void);
 
   /*
-   * Set the limit of the queue.
+   * \brief Set the limit of the queue.
    *
    * \param lim The limit in bytes or packets.
    */
   void SetQueueLimit (uint32_t lim);
 
   /*
-   * Set the thresh limits of RED.
+   * \brief Set the thresh limits of RED.
    *
    * \param min Minimum thresh in bytes or packets.
    * \param max Maximum thresh in bytes or packets.
@@ -161,7 +177,7 @@ public:
   void SetTh (double minTh, double maxTh);
 
   /*
-   * Get the RED statistics after running.
+   * \brief Get the RED statistics after running.
    *
    * \returns The drop statistics.
    */
