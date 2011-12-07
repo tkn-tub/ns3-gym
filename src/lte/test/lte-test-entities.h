@@ -176,7 +176,12 @@ class LteTestMac : public Object
     /**
      *
      */
-    void SetRlcAmHeaderPresent (bool present);
+    void SetRlcHeaderType (uint8_t rlcHeaderType);
+
+    typedef enum {
+      UM_RLC_HEADER = 0,
+      AM_RLC_HEADER = 1,
+    } RlcHeaderType_t;
 
     /**
      *
@@ -199,8 +204,8 @@ class LteTestMac : public Object
 
     std::string m_receivedData;
 
+    uint8_t m_rlcHeaderType;
     bool m_pdcpHeaderPresent;
-    bool m_rlcAmHeaderPresent;
     bool m_txOpportunityMode;
 
 };

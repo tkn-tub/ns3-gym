@@ -255,6 +255,7 @@ LteTestMac::LteTestMac ()
   m_macSapUser = 0;
   m_macLoopback = 0;
   m_pdcpHeaderPresent = false;
+  m_rlcHeaderType = UM_RLC_HEADER;
   m_txOpportunityMode = MANUAL_MODE;
 //   m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
 //   m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
@@ -322,10 +323,10 @@ LteTestMac::SetPdcpHeaderPresent (bool present)
 }
 
 void
-LteTestMac::SetRlcAmHeaderPresent (bool present)
+LteTestMac::SetRlcHeaderType (uint8_t rlcHeaderType)
 {
   NS_LOG_FUNCTION (this);
-  m_rlcAmHeaderPresent = present;
+  m_rlcHeaderType = rlcHeaderType;
 }
 
 void
@@ -354,14 +355,14 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
     {
       LtePdcpHeader pdcpHeader;
 
-      if (m_rlcAmHeaderPresent)
+      if (m_rlcHeaderType == AM_RLC_HEADER)
         {
           // Remove AM RLC header
           LteRlcAmHeader rlcAmHeader;
           params.pdu->RemoveHeader (rlcAmHeader);
           NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
         }
-      else
+      else // if (m_rlcHeaderType == UM_RLC_HEADER)
         {
           // Remove UM RLC header
           LteRlcHeader rlcHeader;

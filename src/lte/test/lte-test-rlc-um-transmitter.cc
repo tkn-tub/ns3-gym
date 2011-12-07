@@ -90,6 +90,7 @@ LteRlcUmTransmitterTestCase::DoRun (void)
 
   // Create transmission MAC test entity
   txMac = CreateObject<LteTestMac> ();
+  txMac->SetRlcHeaderType (LteTestMac::UM_RLC_HEADER);
 
   // Connect SAPs: PDCP (TX) <-> RLC (Tx) <-> MAC (Tx)
   txPdcp->SetLteRlcSapProvider (txRlc->GetLteRlcSapProvider ());
