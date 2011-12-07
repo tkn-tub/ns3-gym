@@ -941,9 +941,14 @@ using both LteHelper and EpcHelper. When both helpers are used, they
 interact in a master-slave fashion, with LteHelper being the Master
 that interacts directly with the user program, and EpcHelper working
 "under the hood" to configure the EPC upon explicit methods called by
-LteHelper. The exact interactions are displayed in the following diagram:
+LteHelper. The exact interactions are displayed in the Figure :ref:`fig-helpers`.
 
-.. seqdiag:: helpers.seqdiag
+.. _fig-helpers:
+   
+.. figure:: figures/helpers.*
+   :align: center
+
+   Sequence diagram of the interaction between LteHelper and EpcHelper
 
 
 A few notes on the above diagram:

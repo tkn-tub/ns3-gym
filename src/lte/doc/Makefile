@@ -71,6 +71,12 @@ IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
 
+IMAGES_SEQDIAG = \
+	$(FIGURES)/lte-phy-interference.png \
+	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/helpers.png \
+	$(FIGURES)/helpers.pdf
+
 IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
 	$(FIGURES)/fading_urban_3kmph.png \
@@ -78,7 +84,10 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.pdf \
 	$(FIGURES)/fading_urban_3kmph.pdf \
 	$(FIGURES)/lte-phy-interference.png \
-	$(FIGURES)/lte-phy-interference.pdf
+	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/helpers.png \
+	$(FIGURES)/helpers.pdf \
+	$(IMAGES_SEQDIAG) 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
@@ -233,5 +242,3 @@ doctest:  $(IMAGES)
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
-
-
