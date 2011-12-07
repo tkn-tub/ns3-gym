@@ -45,10 +45,10 @@ int main (int argc, char *argv[])
   // Parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // Uncomment to enable logging
-  //lena->EnableLogComponents ();
+  //lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -67,18 +67,18 @@ int main (int argc, char *argv[])
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   // Default scheduler is PF, uncomment to use RR
-  //lena->SetSchedulerType ("ns3::RrFfMacScheduler");
+  //lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
 
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
 
   Simulator::Stop (Seconds (0.005));

@@ -24,7 +24,7 @@
 #include "ns3/double.h"
 
 #include "ns3/mobility-helper.h"
-#include "ns3/lena-helper.h"
+#include "ns3/lte-helper.h"
 
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-ue-net-device.h"
@@ -158,13 +158,13 @@ LteLinkAdaptationTestCase::DoRun (void)
     * Simulation Topology
     */
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-//   lena->EnableLogComponents ();
-  lena->EnableMacTraces ();
-  lena->EnableRlcTraces ();
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+//   lteHelper->EnableLogComponents ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
   NS_LOG_INFO ("SNR = " << m_snrDb << "  LOSS = " << m_loss);
-  lena->SetPathlossModelAttribute ("Loss", DoubleValue (m_loss));
+  lteHelper->SetPathlossModelAttribute ("Loss", DoubleValue (m_loss));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -181,17 +181,17 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate the default EPS bearer
   enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended

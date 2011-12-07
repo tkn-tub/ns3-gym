@@ -178,7 +178,7 @@ LteUeRrc::ConfigureUe (uint16_t rnti, uint16_t cellId)
 }
 
 void
-LteUeRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid, Ptr<LteTft> tft)
+LteUeRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this << (uint32_t)  rnti << (uint32_t) lcid);
 
@@ -229,7 +229,7 @@ bool
 LteUeRrc::Send (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
-  uint8_t lcid = m_tftClassifier.Classify (packet, LteTft::UPLINK);
+  uint8_t lcid = m_tftClassifier.Classify (packet, EpcTft::UPLINK);
   LtePdcpSapProvider::TransmitRrcPduParameters params;
   params.rrcPdu = packet;
   params.rnti = m_rnti;

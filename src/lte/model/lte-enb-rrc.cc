@@ -30,7 +30,7 @@
 #include "lte-pdcp.h"
 #include "lte-pdcp-sap.h"
 #include "lte-radio-bearer-info.h"
-#include "lte-mac-tag.h"
+#include "lte-radio-bearer-tag.h"
 #include "ns3/object-map.h"
 
 
@@ -386,7 +386,7 @@ LteEnbRrc::Send (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
 
-  LteMacTag tag;
+  LteRadioBearerTag tag;
   bool found = packet->RemovePacketTag (tag);
   NS_ASSERT (found);
   
@@ -412,7 +412,7 @@ LteEnbRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
 {
   NS_LOG_FUNCTION (this);
   // this tag is needed by the EpcEnbApplication to determine the S1 bearer that corresponds to this radio bearer
-  LteMacTag tag;
+  LteRadioBearerTag tag;
   tag.SetRnti (params.rnti);
   tag.SetLcid (params.lcid);
   params.rrcPdu->AddPacketTag (tag);

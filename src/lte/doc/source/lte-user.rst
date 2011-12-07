@@ -27,7 +27,7 @@ following steps:
  1. *Define the scenario* to be simulated
  2. *Write a simulation program* that recreates the desired scenario
     topology/architecture. This is done accessing the ns-3 LTE model
-    library using the ``ns3::LenaHelper`` API defined in ``src/lte/helper/lena-helper.h``. 
+    library using the ``ns3::LteHelper`` API defined in ``src/lte/helper/lte-helper.h``. 
  3. *Specify configuration parameters* of the objects that are being
     used for the simulation. This can be done using input files (via the
     ``ns3::ConfigStore``) or directly within the simulation program.
@@ -57,11 +57,12 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
     int main (int argc, char *argv[])
     {
+      // the rest of the simulation program follows
 
 
-#. Create a LenaHelper object::
+#. Create a LteHelper object::
 
-      Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+      Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
    This will instantiate some common
    objects (e.g., the Channel object) and provide the methods to add
@@ -92,24 +93,24 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 #. Install an LTE protocol stack on the eNB(s)::
 
       NetDeviceContainer enbDevs;
-      enbDevs = lena->InstallEnbDevice (enbNodes);
+      enbDevs = lteHelper->InstallEnbDevice (enbNodes);
 
 #. Install an LTE protocol stack on the UEs::
 
       NetDeviceContainer ueDevs;
-      ueDevs = lena->InstallUeDevice (ueNodes);
+      ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
 
 #. Attach the UEs to an eNB. This will configure each UE according to
    the eNB configuration, and create an RRC connection between them::
 
-      lena->Attach (ueDevs, enbDevs.Get (0));
+      lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
 #. Activate an EPS Bearer including the setup of the Radio Bearer between an eNB and its attached UE::
 
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
-      lena->ActivateEpsBearer (ueDevs, bearer);
+      lteHelper->ActivateEpsBearer (ueDevs, bearer);
 
    In the current version of the ns-3 LTE model, the activation of an
    EPS Bearer will also activate two saturation traffic generators for
@@ -161,8 +162,8 @@ for the above to work, make sure you also ``#include "ns3/config-store.h"``.
 Now create a text file named (for example) ``input-defaults.txt``
 specifying the new default values that you want to use for some attributes::
 
-   default ns3::LenaHelper::Scheduler "ns3::PfFfMacScheduler"
-   default ns3::LenaHelper::PathlossModel "ns3::FriisSpectrumPropagationLossModel"
+   default ns3::LteHelper::Scheduler "ns3::PfFfMacScheduler"
+   default ns3::LteHelper::PathlossModel "ns3::FriisSpectrumPropagationLossModel"
    default ns3::LteEnbNetDevice::UlBandwidth "25"
    default ns3::LteEnbNetDevice::DlBandwidth "25"
    default ns3::LteEnbNetDevice::DlEarfcn "100"
@@ -195,12 +196,12 @@ Simulation Output
 The ns-3 LTE model currently supports the output to file of both MAC and RLC
 level Key Performance Indicators (KPIs). You can enable it in the following way::
 
-      Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+      Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
       
       // configure all the simulation scenario here...
       
-      lena->EnableMacTraces ();
-      lena->EnableRlcTraces ();   
+      lteHelper->EnableMacTraces ();
+      lteHelper->EnableRlcTraces ();   
 
       Simulator::Run ();
 
@@ -208,9 +209,9 @@ level Key Performance Indicators (KPIs). You can enable it in the following way:
 RLC KPIs are calculated over a time interval and stored on two ASCII
 files, one for uplink and one for downlink. The time interval duration
 and the name of the files can be controlled using the attributes
-``ns3::RlcStatsCalculator::EpochDuration``,
-``ns3::RlcStatsCalculator::DlOutputFilename`` and
-``ns3::RlcStatsCalculator::UlOutputFilename``.
+``ns3::RadioBearerStatsCalculator::EpochDuration``,
+``ns3::RadioBearerStatsCalculator::DlOutputFilename`` and
+``ns3::RadioBearerStatsCalculator::UlOutputFilename``.
 The content of the columns of these files is the following (the same
 for uplink and downlink):
  
@@ -298,16 +299,16 @@ The default configuration of the matlab script provides a trace 10 seconds long,
 
 In order to activate the fading module (which is not active by default) the following code should be included in the simulation program::
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  lena->SetFadingModel("ns3::TraceFadingLossModel");
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetFadingModel("ns3::TraceFadingLossModel");
 
 And for setting the parameters::
 
-  lena->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
-  lena->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
-  lena->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
-  lena->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
-  lena->SetFadingModelAttribute ("RbNum", UintegerValue (100));
+  lteHelper->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
+  lteHelper->SetFadingModelAttribute ("TraceLength", TimeValue (Seconds (10.0)));
+  lteHelper->SetFadingModelAttribute ("SamplesNum", UintegerValue (10000));
+  lteHelper->SetFadingModelAttribute ("WindowSize", TimeValue (Seconds (0.5)));
+  lteHelper->SetFadingModelAttribute ("RbNum", UintegerValue (100));
 
 It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set explicitly.
 
@@ -355,16 +356,16 @@ We now explain by examples how to use the buildings model (in particular, the ``
 
 #. Pathloss model selection::
 
-    Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+    Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
-    lena->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+    lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
 
 #. EUTRA Band Selection
    
 The selection of the working frequency of the propagation model has to be done with the standard ns-3 attribute system as described in the correspond section ("Configuration of LTE model parameters") by means of the DlEarfcn and UlEarfcn parameters, for instance::
 
-   lena->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (100));
-   lena->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (18100));
+   lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (100));
+   lteHelper->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (18100));
 
 It is to be noted that using other means to configure the frequency used by the propagation model (i.e., configuring the corresponding BuildingsPropagationLossModel attributes directly) might generates conflicts in the frequencies definition in the modules during the simulation, and is therefore not advised.
 
@@ -378,7 +379,7 @@ It is to be noted that using other means to configure the frequency used by the 
     ueNodes.Create (1);
     mobility.Install (ueNodes);
     NetDeviceContainer ueDevs;
-    ueDevs = lena->InstallUeDevice (ueNodes);
+    ueDevs = lteHelper->InstallUeDevice (ueNodes);
     Ptr<BuildingsMobilityModel> mm = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
     double x_axis = 0.0;
     double y_axis = 0.0;
@@ -431,12 +432,12 @@ network you might have in your simulation.
 First of all, in your simulation program you need to create two
 helpers::
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
 
 Then, you need to tell the LTE helper that the EPC will be used::
 
-  lena->SetEpcHelper (epcHelper);
+  lteHelper->SetEpcHelper (epcHelper);
 
 the above step is necessary so that the LTE helper will trigger the
 appropriate EPC configuration in correspondance with some important
@@ -498,8 +499,8 @@ follows. We assume you have a container for UE and eNodeB nodes like this::
 to configure an LTE-only simulation, you would then normally do
 something like this::
 
-      NetDeviceContainer ueLteDevs = lena->InstallUeDevice (ueNodes);
-      lena->Attach (ueLteDevs, enbLteDevs.Get (0));        
+      NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ueNodes);
+      lteHelper->Attach (ueLteDevs, enbLteDevs.Get (0));        
 
 in order to configure the UEs for IP networking, you just need to
 additionally do like this::
@@ -522,9 +523,9 @@ additionally do like this::
 The activation of bearers is done exactly in the same way as for an
 LTE-only simulation. Here is how to activate a default bearer::
 
-      lena->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), LteTft::Default ());
+      lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
 
-you can of course use custom EpsBearer and LteTft configurations,
+you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.
 
 

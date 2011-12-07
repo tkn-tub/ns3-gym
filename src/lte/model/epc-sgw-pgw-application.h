@@ -31,8 +31,8 @@
 #include <ns3/ptr.h>
 #include <ns3/object.h>
 #include <ns3/eps-bearer.h>
-#include <ns3/lte-tft.h>
-#include <ns3/eps-tft-classifier.h>
+#include <ns3/epc-tft.h>
+#include <ns3/epc-tft-classifier.h>
 #include <ns3/lte-common.h>
 #include <ns3/application.h>
 #include <map>
@@ -80,7 +80,7 @@ public:
    * 
    * \return the TunnelEndpointIdentifier of this EPS bearer
    */
-  uint32_t ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<LteTft> tft);
+  uint32_t ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<EpcTft> tft);
 
   
   /** 
@@ -142,7 +142,7 @@ private:
      * \param tft the Traffic Flow Template of the new bearer to be added
      * \param teid  the TEID of the new bearer
      */
-    void AddBearer (Ptr<LteTft> tft, uint32_t teid);
+    void AddBearer (Ptr<EpcTft> tft, uint32_t teid);
 
     /** 
      * 
@@ -169,7 +169,7 @@ private:
 
 
   private:
-    EpsTftClassifier m_tftClassifier;
+    EpcTftClassifier m_tftClassifier;
     Ipv4Address m_enbAddr;
   };
 

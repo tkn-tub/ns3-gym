@@ -25,7 +25,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-#include "ns3/rlc-stats-calculator.h"
+#include "ns3/radio-bearer-stats-calculator.h"
 
 #include <iomanip>
 #include <string>
@@ -68,9 +68,9 @@ int main (int argc, char *argv[])
        << "_numUes"  << std::setw (3) << std::setfill ('0')  << numUes
        << "_rngRun"  << std::setw (3) << std::setfill ('0')  << runValue.Get () ;
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -112,19 +112,19 @@ int main (int argc, char *argv[])
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs1;
   NetDeviceContainer ueDevs2;
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs1 = lena->InstallUeDevice (ueNodes1);
-  ueDevs2 = lena->InstallUeDevice (ueNodes2);
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
+  ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
 
   // Attach UEs to a eNB
-  lena->Attach (ueDevs1, enbDevs.Get (0));
-  lena->Attach (ueDevs2, enbDevs.Get (1));
+  lteHelper->Attach (ueDevs1, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs2, enbDevs.Get (1));
 
   // Activate an EPS bearer on all UEs
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs1, bearer, LteTft::Default ());
-  lena->ActivateEpsBearer (ueDevs2, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs1, bearer, EpcTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs2, bearer, EpcTft::Default ());
 
   Simulator::Stop (Seconds (10));
 
@@ -134,8 +134,8 @@ int main (int argc, char *argv[])
   std::string ulOutFname = "UlRlcStats";
   ulOutFname.append (tag.str ());
 
-  lena->EnableMacTraces ();
-  lena->EnableRlcTraces ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
 
   Simulator::Run ();
   Simulator::Destroy ();

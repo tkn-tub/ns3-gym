@@ -41,12 +41,12 @@ int main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
   // Enable LTE log components
-  //lena->EnableLogComponents ();
-  lena->EnableRlcTraces();
+  //lteHelper->EnableLogComponents ();
+  lteHelper->EnableRlcTraces();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -64,21 +64,21 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer, LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
   Simulator::Stop (Seconds (2));
 
-  lena->EnableMacTraces ();
-  lena->EnableRlcTraces ();
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
 
 
   double distance_temp [] = { 10000,10000,10000};

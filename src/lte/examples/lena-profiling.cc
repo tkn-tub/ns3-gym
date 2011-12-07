@@ -66,18 +66,18 @@ main (int argc, char *argv[])
   uint32_t nRooms = ceil (sqrt (nEnbPerFloor));
   uint32_t nEnb;
 
-  Ptr < LenaHelper > lena = CreateObject<LenaHelper> ();
-  //lena->EnableLogComponents ();
+  Ptr < LteHelper > lteHelper = CreateObject<LteHelper> ();
+  //lteHelper->EnableLogComponents ();
   //LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   if (nFloors == 0)
     {
-      lena->SetAttribute("PathlossModel",
+      lteHelper->SetAttribute("PathlossModel",
           StringValue("ns3::FriisPropagationLossModel"));
       nEnb = nEnbPerFloor;
     }
   else
     {
-      lena->SetAttribute("PathlossModel",
+      lteHelper->SetAttribute("PathlossModel",
           StringValue("ns3::BuildingsPropagationLossModel"));
       nEnb = nFloors * nEnbPerFloor;
     }
@@ -191,21 +191,21 @@ main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   vector < NetDeviceContainer > ueDevs;
-  enbDevs = lena->InstallEnbDevice(enbNodes);
+  enbDevs = lteHelper->InstallEnbDevice(enbNodes);
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      NetDeviceContainer ueDev = lena->InstallUeDevice(ueNodes[i]);
+      NetDeviceContainer ueDev = lteHelper->InstallUeDevice(ueNodes[i]);
       ueDevs.push_back(ueDev);
-      lena->Attach(ueDev, enbDevs.Get(i));
+      lteHelper->Attach(ueDev, enbDevs.Get(i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer(q);
-      lena->ActivateEpsBearer(ueDev, bearer, LteTft::Default ());
+      lteHelper->ActivateEpsBearer(ueDev, bearer, EpcTft::Default ());
     }
 
   Simulator::Stop(Seconds(simTime));
-  lena->SetTraceDirectory(traceDirectory);
-  lena->EnableRlcTraces();
-  lena->EnableMacTraces();
+  lteHelper->SetTraceDirectory(traceDirectory);
+  lteHelper->EnableRlcTraces();
+  lteHelper->EnableMacTraces();
 
   Simulator::Run();
 

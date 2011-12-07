@@ -18,7 +18,7 @@
  * Author: Jaume Nin <jaume.nin@cttc.cat>
  */
 
-#include "ns3/lena-helper.h"
+#include "ns3/lte-helper.h"
 #include "ns3/epc-helper.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   cmd.AddValue("simTime", "Total duration of the simulation (in seconds)",simTime);
   cmd.Parse(argc, argv);
 
-  Ptr<LenaHelper> lteHelper = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper>  epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
   lteHelper->SetSchedulerType("ns3::RrFfMacScheduler");
@@ -130,7 +130,7 @@ main (int argc, char *argv[])
       Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
-  lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), LteTft::Default ());
+  lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
 
 
   // Install and start applications on UEs and remote host

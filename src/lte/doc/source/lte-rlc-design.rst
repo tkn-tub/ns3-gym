@@ -1,4 +1,3 @@
-.. include:: replace.txt
 
 
 
@@ -11,12 +10,17 @@ The RLC entities provide the RLC service interface to upper PDCP layer and the M
 to lower MAC layer. The RLC entities use the PDCP service interface from upper PDCP layer and
 the MAC service interface from lower MAC layer.
 
-Figure :ref:`lte-rlc-implementation-model` shows the implementation model of the RLC entities and its relationship
+Figure :ref:`fig-lte-rlc-implementation-model` shows the implementation model of the RLC entities and its relationship
 with all the other entities and services in the protocol stack.
 
+
+.. _fig-lte-rlc-implementation-model:
+
 .. figure:: figures/lte-rlc-implementation-model.*
+   :width: 300pt
 
    Implementation Model of PDCP, RLC and MAC entities and SAPs
+
 
 
 Service Interfaces

@@ -23,7 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/test.h"
-#include "ns3/lena-helper.h"
+#include "ns3/lte-helper.h"
 #include "ns3/epc-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/udp-client-server-helper.h"
@@ -107,7 +107,7 @@ void
 LteEpcE2eDataTestCase::DoRun ()
 {
 
-  Ptr<LenaHelper> lteHelper = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
@@ -237,12 +237,12 @@ LteEpcE2eDataTestCase::DoRun ()
 
               EpsBearer epsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
 
-              Ptr<LteTft> tft = Create<LteTft> ();
-              LteTft::PacketFilter dlpf;
+              Ptr<EpcTft> tft = Create<EpcTft> ();
+              EpcTft::PacketFilter dlpf;
               dlpf.localPortStart = dlPort;
               dlpf.localPortEnd = dlPort;
               tft->Add (dlpf);
-              LteTft::PacketFilter ulpf;
+              EpcTft::PacketFilter ulpf;
               ulpf.remotePortStart = ulPort;
               ulpf.remotePortEnd = ulPort;
               tft->Add (ulpf);                            

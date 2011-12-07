@@ -48,6 +48,15 @@ TraceFadingLossModel::TraceFadingLossModel ()
 TraceFadingLossModel::~TraceFadingLossModel ()
 {
   m_fadingTrace.clear ();
+  m_windowOffsetsMap.clear ();
+  std::map <ChannelRealizationId_t, UniformVariable* >::iterator itVar;
+  itVar = m_startVariableMap.begin ();
+  while (itVar!=m_startVariableMap.end ())
+    {
+      delete ((*itVar).second);
+      itVar++;
+    }
+  m_startVariableMap.clear ();
 }
 
 

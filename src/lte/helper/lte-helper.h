@@ -18,8 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef LENA_HELPER_H
-#define LENA_HELPER_H
+#ifndef LTE_HELPER_H
+#define LTE_HELPER_H
 
 #include <ns3/config.h>
 #include <ns3/simulator.h>
@@ -30,8 +30,8 @@
 #include <ns3/node-container.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/mac-stats-calculator.h>
-#include <ns3/rlc-stats-calculator.h>
-#include <ns3/lte-tft.h>
+#include <ns3/radio-bearer-stats-calculator.h>
+#include <ns3/epc-tft.h>
 #include <ns3/trace-fading-loss-model.h>
 
 namespace ns3 {
@@ -48,11 +48,11 @@ class PropagationLossModel;
  * Creation and configuration of LTE entities
  *
  */
-class LenaHelper : public Object
+class LteHelper : public Object
 {
 public:
-  LenaHelper (void);
-  virtual ~LenaHelper (void);
+  LteHelper (void);
+  virtual ~LteHelper (void);
 
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
@@ -62,7 +62,7 @@ public:
    * Set the EpcHelper to be used to setup the EPC network in
    * conjunction with the setup of the LTE radio access network 
    *
-   * \note if no EpcHelper is ever set, then LenaHelper will default
+   * \note if no EpcHelper is ever set, then LteHelper will default
    * to creating an LTE-only simulation with no EPC, using LteRlcSm as
    * the RLC model, and without supporting any IP networking. In other
    * words, it will be a radio-level simulation involving only LTE PHY
@@ -151,7 +151,7 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<LteTft> tft);
+  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /**
    * Activate an EPS bearer on a given UE device
@@ -160,7 +160,7 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<LteTft> tft);
+  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /** 
    * 
@@ -232,7 +232,7 @@ public:
    * 
    * \return the RLC stats calculator object
    */
-  Ptr<RlcStatsCalculator> GetRlcStats (void);
+  Ptr<RadioBearerStatsCalculator> GetRlcStats (void);
 
   /**
    * Enable trace sinks for PDCP layer
@@ -253,7 +253,7 @@ public:
    * 
    * \return the PDCP stats calculator object
    */
-  Ptr<RlcStatsCalculator> GetPdcpStats (void);
+  Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
 
 protected:
   // inherited from Object
@@ -282,8 +282,8 @@ private:
   Ptr<TraceFadingLossModel> m_fadingModule;
   
   Ptr<MacStatsCalculator> m_macStats;
-  Ptr<RlcStatsCalculator> m_rlcStats;
-  Ptr<RlcStatsCalculator> m_pdcpStats;
+  Ptr<RadioBearerStatsCalculator> m_rlcStats;
+  Ptr<RadioBearerStatsCalculator> m_pdcpStats;
 
   enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
                                    RLC_UM_ALWAYS = 2,
@@ -299,4 +299,4 @@ private:
 
 
 
-#endif // LENA_HELPER_H
+#endif // LTE_HELPER_H

@@ -28,7 +28,7 @@
 #include "lte-spectrum-phy.h"
 #include "lte-spectrum-signal-parameters.h"
 #include "lte-net-device.h"
-#include "lte-mac-tag.h"
+#include "lte-radio-bearer-tag.h"
 #include "lte-sinr-chunk-processor.h"
 #include "lte-phy-tag.h"
 

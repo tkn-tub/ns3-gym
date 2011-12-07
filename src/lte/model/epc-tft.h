@@ -19,8 +19,8 @@
  */
 
 
-#ifndef LTE_TFT_H
-#define LTE_TFT_H
+#ifndef EPC_TFT_H
+#define EPC_TFT_H
 
 
 #include <ns3/simple-ref-count.h>
@@ -37,7 +37,7 @@ namespace ns3 {
  * which is the set of all packet filters associated with an EPS bearer. 
  * 
  */
-class LteTft : public SimpleRefCount<LteTft>
+class EpcTft : public SimpleRefCount<EpcTft>
 {
 
 public:
@@ -48,7 +48,7 @@ public:
    *
    * \return a newly created TFT that will match any traffic
    */
-  static Ptr<LteTft> Default ();
+  static Ptr<EpcTft> Default ();
   
   /**
    * Indicates the direction of the traffic that is to be classified. 
@@ -118,7 +118,7 @@ public:
     uint8_t typeOfServiceMask; /**< type of service field mask */
   };
   
-  LteTft ();
+  EpcTft ();
   
 
   /** 
@@ -159,11 +159,11 @@ private:
 };
 
 
-std::ostream& operator<< (std::ostream& os, LteTft::Direction& d);
+std::ostream& operator<< (std::ostream& os, EpcTft::Direction& d);
 
 
 } // namespace ns3
   
-#endif /* LTE_TFT_H */ 
+#endif /* EPC_TFT_H */ 
 
 

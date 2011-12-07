@@ -44,7 +44,7 @@ EpcSgwPgwApplication::UeInfo::UeInfo ()
 }
 
 void
-EpcSgwPgwApplication::UeInfo::AddBearer (Ptr<LteTft> tft, uint32_t teid)
+EpcSgwPgwApplication::UeInfo::AddBearer (Ptr<EpcTft> tft, uint32_t teid)
 {
   NS_LOG_FUNCTION (this << tft << teid);
   return m_tftClassifier.Add (tft, teid);
@@ -57,7 +57,7 @@ EpcSgwPgwApplication::UeInfo::Classify (Ptr<Packet> p)
   // we hardcode DOWNLINK direction since the PGW is espected to
   // classify only downlink packets (uplink packets will go to the
   // internet without any classification). 
-  return m_tftClassifier.Classify (p, LteTft::DOWNLINK);
+  return m_tftClassifier.Classify (p, EpcTft::DOWNLINK);
 }
 
 Ipv4Address 
@@ -105,7 +105,7 @@ EpcSgwPgwApplication::~EpcSgwPgwApplication ()
 
 
 uint32_t 
-EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<LteTft> tft)
+EpcSgwPgwApplication::ActivateS1Bearer (Ipv4Address ueAddr, Ipv4Address enbAddr, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this << ueAddr << enbAddr << tft);
 
