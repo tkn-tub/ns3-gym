@@ -116,6 +116,8 @@ protected:
   virtual Time     GetDelAckTimeout (void) const;
   virtual void     SetDelAckMaxCount (uint32_t count);
   virtual uint32_t GetDelAckMaxCount (void) const;
+  virtual void     SetTcpNoDelay (bool noDelay);
+  virtual bool     GetTcpNoDelay (void) const;
   virtual void     SetPersistTimeout (Time timeout);
   virtual Time     GetPersistTimeout (void) const;
   virtual bool     SetAllowBroadcast (bool allowBroadcast);
@@ -189,6 +191,7 @@ protected:
   uint32_t          m_dupAckCount;     //< Dupack counter
   uint32_t          m_delAckCount;     //< Delayed ACK counter
   uint32_t          m_delAckMaxCount;  //< Number of packet to fire an ACK before delay timeout
+  bool              m_noDelay;         //< Set to true to disable Nagle's algorithm
   uint32_t          m_cnCount;         //< Count of remaining connection retries
   uint32_t          m_cnRetries;       //< Number of connection retries before giving up
   TracedValue<Time> m_rto;             //< Retransmit timeout

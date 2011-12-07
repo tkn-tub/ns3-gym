@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/nstime.h"
 #include "tcp-socket.h"
@@ -93,6 +94,11 @@ TcpSocket::GetTypeId (void)
                    MakeUintegerAccessor (&TcpSocket::GetDelAckMaxCount,
                                          &TcpSocket::SetDelAckMaxCount),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpNoDelay", "Set to true to disable Nagle's algorithm",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&TcpSocket::GetTcpNoDelay,
+                                        &TcpSocket::SetTcpNoDelay),
+                   MakeBooleanChecker ())
     .AddAttribute ("PersistTimeout",
                    "Persist timeout to probe for rx window",
                    TimeValue (Seconds (6)),

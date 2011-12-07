@@ -120,6 +120,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_dupAckCount (sock.m_dupAckCount),
     m_delAckCount (0),
     m_delAckMaxCount (sock.m_delAckMaxCount),
+    m_noDelay (sock.m_noDelay),
     m_cnRetries (sock.m_cnRetries),
     m_delAckTimeout (sock.m_delAckTimeout),
     m_persistTimeout (sock.m_persistTimeout),
@@ -1456,6 +1457,14 @@ TcpSocketBase::SendPendingData (bool withAck)
         {
           break; // No more
         }
+      // Nagle's algorithm (RFC896): Hold off sending if there is unacked data
+      // in the buffer and the amount of data to send is less than one segment
+      if (!m_noDelay && UnAckDataCount () > 0 &&
+          m_txBuffer.SizeFromSequence (m_nextTxSequence) < m_segmentSize)
+        {
+          NS_LOG_LOGIC ("Invoking Nagle's algorithm. Wait to send.");
+          break;
+        }
       uint32_t s = std::min (w, m_segmentSize);  // Send no more than window
       uint32_t sz = SendDataPacket (m_nextTxSequence, s, withAck);
       nPacketsSent++;                             // Count sent this loop
@@ -1833,6 +1842,18 @@ uint32_t
 TcpSocketBase::GetDelAckMaxCount (void) const
 {
   return m_delAckMaxCount;
+}
+
+void
+TcpSocketBase::SetTcpNoDelay (bool noDelay)
+{
+  m_noDelay = noDelay;
+}
+
+bool
+TcpSocketBase::GetTcpNoDelay (void) const
+{
+  return m_noDelay;
 }
 
 void

@@ -54,7 +54,7 @@ RttEstimator::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("MinRTO", 
                    "Minimum retransmit timeout value",
-                   TimeValue (Seconds (0.2)),
+                   TimeValue (Seconds (0.2)), // RFC2988 says min RTO=1 sec, but Linux uses 200ms. See http://www.postel.org/pipermail/end2end-interest/2004-November/004402.html
                    MakeTimeAccessor (&RttEstimator::SetMinRto,
                                      &RttEstimator::GetMinRto),
                    MakeTimeChecker ())

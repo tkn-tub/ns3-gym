@@ -85,6 +85,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
   : TcpSocket (sock), //copy the base class callbacks
     m_delAckMaxCount (sock.m_delAckMaxCount),
     m_delAckTimeout (sock.m_delAckTimeout),
+    m_noDelay (sock.m_noDelay),
     m_endPoint (0),
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
@@ -795,6 +796,18 @@ uint32_t
 NscTcpSocketImpl::GetDelAckMaxCount (void) const
 {
   return m_delAckMaxCount;
+}
+
+void
+NscTcpSocketImpl::SetTcpNoDelay (bool noDelay)
+{
+  m_noDelay = noDelay;
+}
+
+bool
+NscTcpSocketImpl::GetTcpNoDelay (void) const
+{
+  return m_noDelay;
 }
 
 void 
