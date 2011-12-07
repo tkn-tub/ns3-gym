@@ -77,8 +77,8 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_pedestrian.pdf \
 	$(FIGURES)/fading_vehicular.pdf \
 	$(FIGURES)/fading_urban_3kmph.pdf \
-	$(FIGURES)/phy.png \
-	$(FIGURES)/phy.pdf
+	$(FIGURES)/lte-phy-interference.png \
+	$(FIGURES)/lte-phy-interference.pdf
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
