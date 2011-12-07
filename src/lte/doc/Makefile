@@ -65,7 +65,7 @@ $(FIGURES)/lte-rlc-implementation-model.pdf_width = 12in
 $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
-$(FIGURES)/phy.pdf_width = 12cm
+$(FIGURES)/lte-phy-interference.pdf_width = 12cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
 
