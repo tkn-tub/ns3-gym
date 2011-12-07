@@ -65,11 +65,17 @@ $(FIGURES)/lte-rlc-implementation-model.pdf_width = 12in
 $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
-$(FIGURES)/phy.pdf_width = 12cm
+$(FIGURES)/lte-phy-interference.pdf_width = 12cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
 
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
+
+IMAGES_SEQDIAG = \
+	$(FIGURES)/lte-phy-interference.png \
+	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/helpers.png \
+	$(FIGURES)/helpers.pdf
 
 IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
@@ -77,8 +83,11 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_pedestrian.pdf \
 	$(FIGURES)/fading_vehicular.pdf \
 	$(FIGURES)/fading_urban_3kmph.pdf \
-	$(FIGURES)/phy.png \
-	$(FIGURES)/phy.pdf
+	$(FIGURES)/lte-phy-interference.png \
+	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/helpers.png \
+	$(FIGURES)/helpers.pdf \
+	$(IMAGES_SEQDIAG) 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
@@ -233,5 +242,3 @@ doctest:  $(IMAGES)
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
-
-
