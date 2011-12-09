@@ -11,7 +11,7 @@ Overall Architecture
 -----------------------
 
 The overall architecture of the LENA simulation model is depicted in
-the figure :ref:`fig-epc-topology`. There are two main conmponents:
+the figure :ref:`fig-epc-topology`. There are two main components:
 
  * the LTE Model. This model includes the LTE Radio Protocol
    stack (RRC, PDCP, RLC, MAC, PHY). These entities reside entirely within the
@@ -69,7 +69,7 @@ have been considered:
     a per-RB basis, an eNB might transmit on a subset only of all the available
     RBs, hence interfering with other eNBs only on those RBs where it is
     trasmitting.
-    Note that this requirement rules out the adoption of a system lever simulation
+    Note that this requirement rules out the adoption of a system level simulation
     approach, which evaluates resource allocation only at the granularity of
     call/bearer establishment.
  #. The simulator should scale up to tens of eNBs and hundreds of User
@@ -84,7 +84,7 @@ have been considered:
     so that they use different carrier frequencies and system bandwidths. The
     bandwidth used by different cells should be allowed to overlap, in order to
     support dynamic spectrum licensing solutions such as those described in
-    in~\cite{ofcom2.6GHz, RealWireless}. The calculation of interference should
+    in [Ofcom2.6GHz]_ and [RealWireless]_. The calculation of interference should
     handle appropriately this case.
  #. To be more representative of the LTE standard, as well as to be as
     close as possible to real-world implementations, the simulator
@@ -198,7 +198,7 @@ The following design choices have been made for the EPC model:
 
  #. the only Packet Data Network (PDN) type supported is IPv4
  #. the SGW and PGW functional entities are implemented within a single
-    node, hich is hence referred to as the SGW/PGW node
+    node, which is hence referred to as the SGW/PGW node
  #. scenarios with inter-SGW mobility are not of interests. Hence, a
     single SGW/PGW node will be present in all simulations scenarios 
  #. a clear use case for the EPC model is to accurately simulate the

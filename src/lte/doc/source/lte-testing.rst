@@ -369,7 +369,7 @@ RLC
 ---
 
 Two test suites ``lte-rlc-um-transmitter`` and
-``lte-rlc-am-transmitter`` check that the RLC/UM and the RLC/AM
+``lte-rlc-am-transmitter`` check that the UM RLC and the AM RLC
 implementation work correctly. Both these suites work by testing RLC
 instances connected to special test entities that play the role of the
 MAC and of the PDCP, implementing respectively the LteMacSapProvider
@@ -379,8 +379,9 @@ PDCP) are provided that check the behavior in the following cases:
 
  #. one SDU, one PDU: the MAC notifies a TX opportunity causes the creation of a PDU which exactly
     contains a whole SDU
- #. segmentation: the MAC notifies a TX opportunity that is smaller than the SDU
-    size, which is then to be fragmented;
+ #. segmentation: the MAC notifies multiple TX opportunities that are smaller than the SDU
+    size stored in the transmission buffer, which is then to be fragmented and hence
+    multiple PDUs are generated;
  #. concatenation: the MAC notifies a TX opportunity that is bigger than the SDU, hence
     multiple SDUs are concatenated in the same PDU
  #. buffer status report: a series of new SDUs notifications by the
@@ -390,8 +391,8 @@ PDCP) are provided that check the behavior in the following cases:
 
 In all these cases, an output test vector is determine manually from
 knowledge of the input test vector and knowledge of the expected
-behavior. These test vector are specialized for RLC/UM and
-RLC/AM due to their different behavior. Each test case passes if the
+behavior. These test vector are specialized for UM RLC and
+AM RLC due to their different behavior. Each test case passes if the
 sequence of primitives triggered by the RLC instance being tested is
 exacly equal to the output test vector. In particular, for each PDU
 transmitted by the RLC instance, both the size and the content of the
