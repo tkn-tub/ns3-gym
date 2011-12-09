@@ -26,7 +26,7 @@
 #include <ns3/vector.h>
 #include <ns3/box.h>
 #include <ns3/simple-ref-count.h>
-
+#include <ns3/object.h>
 
 namespace ns3 {
 
@@ -34,9 +34,11 @@ namespace ns3 {
  * \ingroup mobility
  * \brief a 3d building block
  */
-class Building : public SimpleRefCount<Building>
+class Building : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   enum BuildingType_t
   {
     Residential, Office, Commercial
@@ -68,7 +70,6 @@ public:
   * and with no floors and 1 room.
   */
   Building ();
-
 
   /**
   * \param t the type of building (i.e., Residential, Office, Commercial)
@@ -150,6 +151,9 @@ public:
 
 
 private:
+
+  void Construct ();
+
   Box m_buldingBounds;
   /**
   * number of floors must be greater then 0 and 1 means only one floor
@@ -159,7 +163,7 @@ private:
   uint8_t m_roomX;
   uint8_t m_roomY;
 
-  uint8_t m_buildingId;
+  uint32_t m_buildingId;
   BuildingType_t m_buildingType;
   ExtWallsType_t m_externalWalls;
 

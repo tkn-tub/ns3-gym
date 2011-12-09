@@ -21,11 +21,42 @@
 
 
 #include <ns3/building.h>
+#include <ns3/building-list.h>
 #include <ns3/enum.h>
-
+#include "ns3/uinteger.h"
 
 namespace ns3 {
 
+
+TypeId
+Building::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Building")
+    .SetParent<Object> ()
+    .AddConstructor<Building> ()
+    .AddAttribute ("roomX", "The number of rooms in the X axis.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (4),
+                   MakeUintegerAccessor (&Building::m_roomX),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("roomY", "The number of rooms in the Y axis.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&Building::m_roomY),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("nFloor", "The number of floors of this building.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&Building::m_floor),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Id", "The id (unique integer) of this Building.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Building::m_buildingId),
+                   MakeUintegerChecker<uint32_t> ())
+  ;
+  return tid;
+}
 
 Building::Building (double _xMin, double _xMax,
                     double _yMin, double _yMax,
@@ -39,6 +70,7 @@ Building::Building (double _xMin, double _xMax,
 
 {
   m_buldingBounds = Box (_xMin, _xMax, _yMin, _yMax, _zMin, _zMax);
+  Construct();
 }
 
 
@@ -50,8 +82,14 @@ Building::Building ()
     m_externalWalls (ConcreteWithWindows)
 {
   m_buldingBounds = Box ();
+  Construct();
 }
 
+void
+Building::Construct ()
+{
+  m_buildingId = BuildingList::Add(this);
+}
 
 void
 Building::SetBuildingType (Building::BuildingType_t t)
