@@ -193,8 +193,9 @@ simulator, including lots of non-LTE attributes.
 Simulation Output
 -----------------
 
-The ns-3 LTE model currently supports the output to file of both MAC and RLC
-level Key Performance Indicators (KPIs). You can enable it in the following way::
+The ns-3 LTE model currently supports the output to file of MAC, RLC
+and PDCP level Key Performance Indicators (KPIs). You can enable it in
+the following way::
 
       Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
       
@@ -202,17 +203,17 @@ level Key Performance Indicators (KPIs). You can enable it in the following way:
       
       lteHelper->EnableMacTraces ();
       lteHelper->EnableRlcTraces ();   
+      lteHelper->EnablePdcpTraces ();   
 
       Simulator::Run ();
 
 
-RLC KPIs are calculated over a time interval and stored on two ASCII
-files, one for uplink and one for downlink. The time interval duration
-and the name of the files can be controlled using the attributes
-``ns3::RadioBearerStatsCalculator::EpochDuration``,
-``ns3::RadioBearerStatsCalculator::DlOutputFilename`` and
-``ns3::RadioBearerStatsCalculator::UlOutputFilename``.
-The content of the columns of these files is the following (the same
+RLC and PDCP KPIs are calculated over a time interval and stored on ASCII
+files, two for RLC KPIs and two for PDCP KPIs, in each case one for
+uplink and one for downlink. The time interval duration can be controlled using the attribute
+``ns3::RadioBearerStatsCalculator::EpochDuration``.
+
+The columns of the RLC KPI files is the following (the same
 for uplink and downlink):
  
   1. start time of measurement interval in seconds since the start of simulation
@@ -221,18 +222,42 @@ for uplink and downlink):
   4. unique UE ID (IMSI)
   5. cell-specific UE ID (RNTI)
   6. Logical Channel ID
-  7. Number of transmitted PDUs
+  7. Number of transmitted RLC PDUs
   8. Total bytes transmitted.
-  9. Number of received PDUs
+  9. Number of received RLC PDUs
   10. Total bytes received
-  11. Average PDU delay in seconds
-  12. Standard deviation of the PDU delay
-  13. Minimum value of the PDU delay
-  14. Maximum value of the PDU delay
-  15. Average PDU size, in bytes
-  16. Standard deviation of the PDU size
-  17. Minimum PDU size
-  18. Maximum PDU size
+  11. Average RLC PDU delay in seconds
+  12. Standard deviation of the RLC PDU delay
+  13. Minimum value of the RLC PDU delay
+  14. Maximum value of the RLC PDU delay
+  15. Average RLC PDU size, in bytes
+  16. Standard deviation of the RLC PDU size
+  17. Minimum RLC PDU size
+  18. Maximum RLC PDU size
+
+Similarly, the columns of the PDCP KPI files is the following (again, the same
+for uplink and downlink):
+ 
+  1. start time of measurement interval in seconds since the start of simulation
+  2. end time of measurement interval in seconds since the start of simulation
+  3. Cell ID
+  4. unique UE ID (IMSI)
+  5. cell-specific UE ID (RNTI)
+  6. Logical Channel ID
+  7. Number of transmitted PDCP PDUs
+  8. Total bytes transmitted.
+  9. Number of received PDCP PDUs
+  10. Total bytes received
+  11. Average PDCP PDU delay in seconds
+  12. Standard deviation of the PDCP PDU delay
+  13. Minimum value of the PDCP PDU delay
+  14. Maximum value of the PDCP PDU delay
+  15. Average PDCP PDU size, in bytes
+  16. Standard deviation of the PDCP PDU size
+  17. Minimum PDCP PDU size
+  18. Maximum PDCP PDU size
+
+
 
 MAC KPIs are basically a trace of the resource allocation reported by
 the scheduler upon the start of every subframe. They are stored in
