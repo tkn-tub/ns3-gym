@@ -217,44 +217,48 @@ for uplink and downlink):
  
   1. start time of measurement interval in seconds since the start of simulation
   2. end time of measurement interval in seconds since the start of simulation
-  3. unique UE ID
-  4. RNTI
-  5. Logical Channel ID
-  6. Number of transmitted PDUs
-  7. Total bytes transmitted.
-  8. Number of received PDUs
-  9. Total bytes received
-  10. Average PDU delay in seconds
-  11. Standard deviation of the PDU delay
-  12. Minimum value of the PDU delay
-  13. Maximum value of the PDU delay
-  14. Average PDU size, in bytes
-  15. Standard deviation of the PDU size
-  16. Minimum PDU size
-  17. Maximum PDU size
+  3. Cell ID
+  4. unique UE ID (IMSI)
+  5. cell-specific UE ID (RNTI)
+  6. Logical Channel ID
+  7. Number of transmitted PDUs
+  8. Total bytes transmitted.
+  9. Number of received PDUs
+  10. Total bytes received
+  11. Average PDU delay in seconds
+  12. Standard deviation of the PDU delay
+  13. Minimum value of the PDU delay
+  14. Maximum value of the PDU delay
+  15. Average PDU size, in bytes
+  16. Standard deviation of the PDU size
+  17. Minimum PDU size
+  18. Maximum PDU size
 
 MAC KPIs are basically a trace of the resource allocation reported by
 the scheduler upon the start of every subframe. They are stored in
 ASCII files. For downlink MAC KPIs the format is the following:
 
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
-  2. Cell Identifier
-  3. Frame number
-  4. Subframe number
-  5. RNTI
-  6. MCS of TB 1
-  7. size of TB 1
-  8. MCS of TB 2 (0 if not present)
-  9. size of TB 2 (0 if not present)
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. Frame number
+  5. Subframe number
+  6. cell-specific UE ID (RNTI)
+  7. MCS of TB 1
+  8. size of TB 1
+  9. MCS of TB 2 (0 if not present)
+  10. size of TB 2 (0 if not present)
 
 while for uplink MAC KPIs the format is:
 
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
-  2. Frame number
-  3. Subframe number
-  4. RNTI
-  5. MCS of TB
-  6. size of TB
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. Frame number
+  5. Subframe number
+  6. cell-specific UE ID (RNTI)
+  7. MCS of TB
+  8. size of TB
 
 The names of the files used for MAC KPI output can be customized via
 the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 

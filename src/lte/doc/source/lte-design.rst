@@ -460,7 +460,7 @@ taken:
  *  The definition of the MAC Scheduler interface classes follows the naming
     conventions of the |ns3| Coding Style. In particular, we follow the
     CamelCase convention for the primitive names. For example, the primitive
-    ``CSCHED_CELL_CONFIG_REG`` is translated to ``CschedCellConfigReg``
+    ``CSCHED_CELL_CONFIG_REQ`` is translated to ``CschedCellConfigReq``
     in the |ns3| code.
  *  The same naming conventions are followed for the primitive parameters. As
     the primitive parameters are member variables of classes, they are also prefixed
