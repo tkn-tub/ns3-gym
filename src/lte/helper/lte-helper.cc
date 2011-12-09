@@ -690,7 +690,7 @@ void
 DlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize);
   uint64_t imsi = 0;
   if (rlcStats->ExistsImsiPath(path) == true)
     {
@@ -718,7 +718,7 @@ void
 DlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize << delay);
   uint64_t imsi = 0;
   if (rlcStats->ExistsImsiPath(path) == true)
     {
@@ -746,7 +746,7 @@ void
 UlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize);
   uint64_t imsi = 0;
     if (rlcStats->ExistsImsiPath(path) == true)
       {
@@ -764,7 +764,7 @@ void
 UlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
                  uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_FUNCTION (rlcStats << path << rnti << lcid << packetSize << delay);
+  NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize << delay);
   uint64_t imsi = 0;
   if (rlcStats->ExistsImsiPath(path) == true)
     {
