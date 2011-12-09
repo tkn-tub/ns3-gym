@@ -95,7 +95,7 @@ have been considered:
     simulator, we make it possible for LTE equipment vendors and
     operators to test in a simulative environment exactly the same
     algorithms that would be deployed in a real system.  
- #. The LTE simulation module should contain its own implementation of
+ #. The LTE simulation model should contain its own implementation of
     the API defined in [FFAPI]_. Neither
     binary nor data structure compatibility with vendor-specific implementations
     of the same interface are expected; hence, a compatibility layer should be
@@ -105,6 +105,13 @@ have been considered:
     interface specification. We note that [FFAPI]_ is a logical
     specification only, and its implementation (e.g., translation to some specific
     programming language) is left to the vendors. 
+ #. The model is to be used to simulate the transmission of IP packets
+    by the upper layers. With this respect, it shall be considered
+    that in LTE the Scheduling and Radio Resource Management do not
+    work with IP packets directly, but rather with RLC PDUs, which are
+    obtained by segmentation and concatenation of IP packets done by
+    the RLC entities. Hence, these functionalities of the RLC layer
+    should be modeled accurately.
 
 
 
@@ -160,12 +167,12 @@ the figure :ref:`fig-lte-arch-data-rrc-pdcp-rlc`.
 
 
 This part includes the RRC, PDCP and RLC protocols. The architecture
-in this case is very similar between the eNB and the UE: in fact, in
+is very similar between the eNB and the UE: in fact, in
 both cases there is a single MAC instance and a single RRC instance,
 that work together with pairs of RLC and PDCP instances (one RLC and
 one PDCP instance per radio bearer).
 
-We note that in the current version of the simulator only the data
+We note that in the current version of the simulator the data
 plane of the upper LTE radio protocol stack is modeled accurately; in
 particular, the RLC and PDCP protocol are implemented with actual
 protocol headers that match those specified by the 3GPP standard. 
@@ -196,37 +203,37 @@ Design Criteria
 
 The following design choices have been made for the EPC model:
 
- #. the only Packet Data Network (PDN) type supported is IPv4
- #. the SGW and PGW functional entities are implemented within a single
-    node, which is hence referred to as the SGW/PGW node
- #. scenarios with inter-SGW mobility are not of interests. Hence, a
+ #. The only Packet Data Network (PDN) type supported is IPv4.
+ #. The SGW and PGW functional entities are implemented within a single
+    node, which is hence referred to as the SGW/PGW node.
+ #. The scenarios with inter-SGW mobility are not of interests. Hence, a
     single SGW/PGW node will be present in all simulations scenarios 
- #. a clear use case for the EPC model is to accurately simulate the
+ #. A requirement for the EPC model is that it can be used to simulate the
     end-to-end performance of realistic applications. Hence, it should
     be possible to use with the EPC model any regular ns-3 application
-    working on top of TCP or UDP
- #. another clear use case is the simulation of network topologies
+    working on top of TCP or UDP.
+ #. Another requirement is the possibility of simulating network topologies
     with the presence of multiple eNBs, some of which might be
     equipped with a backhaul connection with limited capabilities. In
-    order to simulate such scenarios accurately, the user data plane
+    order to simulate such scenarios, the user data plane
     protocols being used between the eNBs and the SGW/PGW should be
     modeled accurately.
- #. it should be possible for a single UE to use different application
+ #. It should be possible for a single UE to use different applications
     with different QoS profiles. Hence, multiple EPS bearers should be
     supported for each UE. This includes the necessary classification
     of TCP/UDP traffic over IP done at the UE in the uplink and at the
     PGW in the downlink.
- #. the focus of the EPC model is mainly on the EPC data plane. The
+ #. The focus of the EPC model is mainly on the EPC data plane. The
     accurate modeling of the EPC control plane is, 
     for the time being, not a requirement; hence, the necessary control plane
     interactions can be modeled in a simplified way by leveraging on direct
     interaction among the different simulation objects via the
     provided helper objects.
- #. the focus of the model is on simulations of active users in ECM
+ #. The focus of the EPC model is on simulations of active users in ECM
     connected mode. Hence, all the functionality that is only relevant
     for ECM idle mode (in particular, tracking area update and paging)
     are not modeled at all.
- #. while handover support is not a current requirement, it is
+ #. While handover support is not a current requirement, it is
     planned to be considered in the near future. Hence, the management
     of EPS bearers by the eNBs and the SGW/PGW should be implemented in such
     a way that it can be re-used when handover support is eventually
@@ -239,8 +246,8 @@ Architecture
 
 The focus of the EPC model is currently on the EPC data plane. To
 understand the architecture of this model, we first look at Figure
-:ref:`fig-lte-epc-e2e-data-protocol-stack` representation of the
-end-to-end LTE-EPC protocol stack, as it is 
+:ref:`fig-lte-epc-e2e-data-protocol-stack`, where we represent the
+end-to-end LTE-EPC protocol stack as it is 
 implemented in the simulator. From the figure, it is evident that the
 biggest simplification introduced in the EPC model for the data plane
 is the inclusion of the SGW and PGW functionality within a single
@@ -258,7 +265,7 @@ are present.
    LTE-EPC data plane protocol stack
 
 
-From the figure, it is evident that there are two different layers of
+As shown in the figure,  there are two different layers of
 IP networking. The first one is the end-to-end layer, which provides end-to-end 
 connectivity to the users; this layers involves the UEs, the PGW and
 the remote host (including eventual internet routers and hosts in
@@ -267,20 +274,19 @@ network, and the PGW gets the address 7.0.0.1, which is used by all
 UEs as the gateway to reach the internet. 
 
 The second layer of IP networking is the EPC local area network. This
-involves all eNB nodes and the SGW/PGW node. This network is formed by
-a set of point-to-point links which connect each eNB with the SGW/PGW
-node; thus, the SGW/PGW has a separate point-to-point device which
-provides connectivity to a single eNB. By default, a 10.x.y.z/30
-subnet is assigned to each point-to-point link.
+involves all eNB nodes and the SGW/PGW node. This network is
+implemented as a set of point-to-point links which connect each eNB
+with the SGW/PGW node; thus, the SGW/PGW has a set of point-to-point
+devices, each providing connectivity to a different eNB. By default, a
+10.x.y.z/30 subnet is assigned to each point-to-point link (a /30
+subnet is the smallest subnet that allows for two distinct host
+addresses). 
 
 As specified by 3GPP, the end-to-end IP
 communications is tunneled over the local EPC IP network using
 GTP/UDP/IP. In the following, we explain how this tunneling is
 implemented in the EPC model. The explanation is done by discussing the
 end-to-end flow of data packets.  
-
-To begin with, we consider the case of the downlink, which is depicted
-in Figure :ref:`fig-epc-data-flow-dl`.   
 
 .. _fig-epc-data-flow-dl:
    
@@ -289,7 +295,8 @@ in Figure :ref:`fig-epc-data-flow-dl`.
 
    Data flow in the dowlink between the internet and the UE
 
-
+To begin with, we consider the case of the downlink, which is depicted
+in Figure :ref:`fig-epc-data-flow-dl`.   
 Downlink Ipv4 packets are generated from a generic remote host, and
 addressed to one of the UE device. Internet routing will take care of
 forwarding the packet to the generic NetDevice of the SGW/PGW node
@@ -327,15 +334,16 @@ the following operations:
  #. leveraging on the one-to-one mapping between S1-U bearers and
     Radio Bearers (which is a 3GPP requirement), it determines the Radio
     Bearer ID (RBID) to which the packet belongs;
- #. it records the RBID in a Tag, which is added to the packet;
+ #. it records the RBID in a dedicated tag called LteRadioBearerTag,
+    which is added to the packet; 
  #. it forwards the packet to the LteEnbNetDevice of the eNB node via
     a raw packet socket
 
-Note that at this point the outmost header of the packet is the
-end-to-end IP header (since the IP/UDP/GTP headers of the S1 protocol
-stack have been stripped upon reception by the eNB). Upon reception of
+Note that, at this point, the outmost header of the packet is the
+end-to-end IP header, since the IP/UDP/GTP headers of the S1 protocol
+stack have already been stripped. Upon reception of
 the packet from the EpcEnbApplication, the LteEnbNetDevice will
-retrieve the RBID from the corresponding Tag, and based on the RBID
+retrieve the RBID from the LteRadioBearerTag, and based on the RBID
 will determine the Radio Bearer instance (and the corresponding PDCP
 and RLC protocol instances) which are then used to forward the packet
 to the UE over the LTE radio interface. Finally, the LteUeNetDevice of
@@ -344,7 +352,6 @@ protocol stack, which will in turn delivery it to the application of
 the UE, which is the end point of the downlink communication.
 
 
-The case of the downlink is depicted in Figure :ref:`fig-epc-data-flow-dl`.
 
 .. _fig-epc-data-flow-ul:
    
@@ -354,33 +361,34 @@ The case of the downlink is depicted in Figure :ref:`fig-epc-data-flow-dl`.
    Data flow in the uplink between the UE and the internet
 
 
-Uplink IP packets are generated by a generic application inside the UE
-and forwarded the local TCP/IP stack to the LteUeNetDevice of the
+The case of the downlink is depicted in Figure :ref:`fig-epc-data-flow-dl`.
+Uplink IP packets are generated by a generic application inside the UE,
+and forwarded by the local TCP/IP stack to the LteUeNetDevice of the
 UE. The LteUeNetDevice then performs the following operations:
 
  #. it classifies the packet using TFTs and determines the
     Radio Bearer to which the packet belongs (and the corresponding
     RBID);
- #. it identifies the corresponding PDCP protocol instance which is
+ #. it identifies the corresponding PDCP protocol instance, which is
     the entry point of the LTE Radio Protocol stack for this packet;
  #. it sends the packet to the eNB over the LTE Radio Protocol stack.
-    so that it reaches the eNB. 
 
-The eNB receives the packet via its LteEnbNetDevice. Since there is a
+The eNB the receives the packet via its LteEnbNetDevice. Since there is a
 single PDCP and RLC protocol instance for each Radio Bearer, the
 LteEnbNetDevice is able to determine the RBID of the packet. This RBID
-is then recorded onto a specific Tag, which is added to the
+is then recorded onto an LteRadioBearerTag, which is added to the
 packet. The LteEnbNetDevice then forwards the packet to the
 EpcEnbApplication via a raw packet socket.
 
 Upon receiving the packet, the EpcEnbApplication performs the
 following operations:
 
- #. it retrieves the RBID from the corresponding Tag in the packet;
+ #. it retrieves the RBID from the LteRadioBearerTag in the packet;
  #. it determines the corresponding EPS Bearer instance and GTP-U TEID by
     leveraging on the one-to-one mapping between S1-U bearers and Radio
     Bearers;
- #. it adds a GTP-U header on the packet, with the determined TEID;
+ #. it adds a GTP-U header on the packet, including the TEID
+    determined previously;
  #. it sends the packet to the SGW/PGW node via the UDP socket
     connected to the S1-U point-to-point net device.
 
