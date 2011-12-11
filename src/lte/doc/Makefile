@@ -16,7 +16,13 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-ue-architecture.eps \
 	$(FIGURES)/epc-profiling-scenario.eps \
 	$(FIGURES)/eutran-profiling-scenario.eps \
-	$(FIGURES)/lte-interference-test-scenario.eps
+	$(FIGURES)/lte-interference-test-scenario.eps \
+	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-data-flow-dl.eps \
+	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps
+
 
 # specify figures for build process (all eps figures)
 GRAPHS_EPS = \
@@ -34,12 +40,7 @@ GRAPHS_EPS = \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
-	$(FIGURES)/lte-rlc-data-retx-ul.eps \
-	$(FIGURES)/epc-topology.eps \
-	$(FIGURES)/epc-data-flow-dl.eps \
-	$(FIGURES)/epc-data-flow-ul.eps \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps 
+	$(FIGURES)/lte-rlc-data-retx-ul.eps 
 
 
 # rescale pdf figures as necessary
@@ -54,7 +55,6 @@ $(FIGURES)/internet-node-recv.pdf_width = 5in
 $(FIGURES)/routing.pdf_width = 6in
 $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
-$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
 $(FIGURES)/epc-topology.pdf_width = 4in
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
@@ -66,6 +66,7 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
+$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
 
