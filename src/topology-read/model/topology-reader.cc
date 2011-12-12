@@ -133,7 +133,7 @@ TopologyReader::Link::GetToNodeName (void) const
 std::string
 TopologyReader::Link::GetAttribute (const std::string &name) const
 {
-  NS_ASSERT_MSG (m_linkAttr.find (name) == m_linkAttr.end (), "Requested topology link attribute not found");
+  NS_ASSERT_MSG (m_linkAttr.find (name) != m_linkAttr.end (), "Requested topology link attribute not found");
   return m_linkAttr.find (name)->second;
 }
 
