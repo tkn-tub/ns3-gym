@@ -379,7 +379,6 @@ MeshWifiInterfaceMac::SendBeacon ()
   NS_LOG_DEBUG (GetAddress () << " is sending beacon");
 
   NS_ASSERT (!m_beaconSendEvent.IsRunning ());
-  NS_ASSERT (Simulator::Now ().GetMicroSeconds () == GetTbtt ().GetMicroSeconds ()); // assert that beacon is just on time
 
   // Form & send beacon
   MeshWifiBeacon beacon (GetSsid (), GetSupportedRates (), m_beaconInterval.GetMicroSeconds ());

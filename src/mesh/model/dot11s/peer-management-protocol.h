@@ -194,13 +194,14 @@ private:
    */
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, PeerLink::PeerState ostate, PeerLink::PeerState nstate);
   ///\brief BCA
-  void DoShiftBeacon (uint32_t interface);
+  void CheckBeaconCollisions (uint32_t interface);
+  void ShiftOwnBeacon (uint32_t interface);
   /**
    * \name Time<-->TU converters:
    * \{
    */
-  Time TuToTime (uint32_t x);
-  uint32_t TimeToTu (Time x);
+  Time TuToTime (int x);
+  int TimeToTu (Time x);
   // \}
 
   /// Aux. method to register open links
