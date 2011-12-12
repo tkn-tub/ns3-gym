@@ -102,7 +102,7 @@ TcpRxBuffer::IncNextRxSequence ()
   m_nextRxSeq++;
 }
 
-// Return the highest sequence number that this TcpRxBuffer can accept
+// Return the lowest sequence number that this TcpRxBuffer cannot accept
 SequenceNumber32
 TcpRxBuffer::MaxRxSequence (void) const
 {

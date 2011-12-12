@@ -258,38 +258,23 @@ TcpSocketBase::Bind (const Address &address)
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate ();
-      if (0 == m_endPoint)
-        {
-          m_errno = ERROR_ADDRNOTAVAIL;
-          return -1;
-        }
     }
   else if (ipv4 == Ipv4Address::GetAny () && port != 0)
     {
       m_endPoint = m_tcp->Allocate (port);
-      if (0 == m_endPoint)
-        {
-          m_errno = ERROR_ADDRINUSE;
-          return -1;
-        }
     }
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate (ipv4);
-      if (0 == m_endPoint)
-        {
-          m_errno = ERROR_ADDRNOTAVAIL;
-          return -1;
-        }
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {
       m_endPoint = m_tcp->Allocate (ipv4, port);
-      if (0 == m_endPoint)
-        {
-          m_errno = ERROR_ADDRINUSE;
-          return -1;
-        }
+    }
+  if (0 == m_endPoint)
+    {
+      m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
+      return -1;
     }
   m_tcp->m_sockets.push_back (this);
   NS_LOG_LOGIC ("TcpSocketBase " << this << " got an endpoint: " << m_endPoint);
