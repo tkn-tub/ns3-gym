@@ -432,6 +432,13 @@ public:
     t->AddReferencePoint ("0", 6, Vector (0, 5, 0), Vector (0,  -1, 0));
     t->AddReferencePoint ("0", 16, Vector (0, -10, 0), Vector (0, 0, 0));
     AddTestCase (t);
+    t = new Ns2MobilityHelperTest ("Bug 1059 testcase", Seconds (16));
+    t->SetTrace ("$node_(0) set X_ 10.0\r\n"
+                 "$node_(0) set Y_ 0.0\r\n"
+                 );
+    //                     id  t  position         velocity
+    t->AddReferencePoint ("0", 0, Vector (10, 0, 0), Vector (0,  0, 0));
+    AddTestCase (t);
 
   }
 } g_ns2TransmobilityHelperTestSuite;

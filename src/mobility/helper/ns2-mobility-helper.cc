@@ -353,6 +353,10 @@ ParseNs2Line (const string& str)
     {
       string x;
       s >> x;
+      if (x.length () == 0)
+        {
+          continue;
+        }
       ret.tokens.push_back (x);
       int ii (0);
       double d (0);
