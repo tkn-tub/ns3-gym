@@ -642,6 +642,10 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
       // first calculate the time; time = distance / speed
       double time = sqrt (pow (xFinalPosition - retval.m_finalPosition.x, 2) + pow (yFinalPosition - retval.m_finalPosition.y, 2)) / speed;
       NS_LOG_DEBUG ("at=" << at << " time=" << time);
+      if (time == 0)
+        {
+          return retval;
+        }
       // now calculate the xSpeed = distance / time
       double xSpeed = (xFinalPosition - retval.m_finalPosition.x) / time;
       double ySpeed = (yFinalPosition - retval.m_finalPosition.y) / time; // & same with ySpeed
@@ -653,10 +657,7 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
       NS_LOG_DEBUG ("Calculated Speed: X=" << xSpeed << " Y=" << ySpeed << " Z=" << zSpeed);
 
       // Set the Values
-      if (time >= 0)
-        {
-          Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (xSpeed, ySpeed, zSpeed));
-        }
+      Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (xSpeed, ySpeed, zSpeed));
       retval.m_stopEvent = Simulator::Schedule (Seconds (at + time), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (0, 0, 0));
       retval.m_finalPosition.x += xSpeed * time;
       retval.m_finalPosition.y += ySpeed * time;
