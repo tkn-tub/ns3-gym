@@ -21,11 +21,12 @@
  */
 
 
-#include "lte-amc.h"
+#include <ns3/lte-amc.h>
 #include <ns3/log.h>
 #include <ns3/assert.h>
 #include <math.h>
 #include <ns3/spectrum-value.h>
+#include <ns3/double.h>
 
 #ifdef __FreeBSD__
 #define log2(x) (log(x)/M_LN2)
@@ -202,6 +203,32 @@ int TransportBlockSizeTable [110][27] = {
 
 };
 
+
+LteAmc::LteAmc ()
+  :m_ber (0.00005)
+{
+  
+}
+
+
+LteAmc::~LteAmc ()
+{
+  
+}
+
+TypeId
+LteAmc::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::LteAmc")
+  .SetParent<Object> ()
+  .AddConstructor<LteAmc> ()
+  .AddAttribute ("Ber",
+                 "The requester BER  (default is 0.00005).",
+                 DoubleValue (0.00005),
+                 MakeDoubleAccessor (&LteAmc::m_ber),
+                 MakeDoubleChecker<double> ());
+  return tid;
+}
 
 
 int
