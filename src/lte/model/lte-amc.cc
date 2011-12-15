@@ -307,7 +307,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
           */
 
           double s = log2 ( 1 + ( sinr_ /
-                                  ( (-log (5.0 * 0.00005 )) / 1.5) ));
+                                  ( (-log (5.0 * m_ber )) / 1.5) ));
 
           int cqi_ = GetCqiFromSpectralEfficiency (s);
 
