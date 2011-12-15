@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <ns3/lte-common.h>
+#include <ns3/lte-amc.h>
 
 
 namespace ns3 {
@@ -123,6 +124,8 @@ private:
   
   void RefreshDlCqiMaps(void);
   void RefreshUlCqiMaps(void);
+  
+  LteAmc* m_amc;
 
   /*
    * Vectors of UE's RLC info
