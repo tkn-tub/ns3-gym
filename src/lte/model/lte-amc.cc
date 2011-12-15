@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 namespace ns3 {
 
- 
+NS_OBJECT_ENSURE_REGISTERED (LteAmc);
 
 // from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
 // file TBS_support.xls
