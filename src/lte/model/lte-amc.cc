@@ -223,7 +223,7 @@ LteAmc::GetTypeId (void)
   .SetParent<Object> ()
   .AddConstructor<LteAmc> ()
   .AddAttribute ("Ber",
-                 "The requester BER  (default is 0.00005).",
+                 "The requested BER in assigning MCS (default is 0.00005).",
                  DoubleValue (0.00005),
                  MakeDoubleAccessor (&LteAmc::m_ber),
                  MakeDoubleChecker<double> ());
