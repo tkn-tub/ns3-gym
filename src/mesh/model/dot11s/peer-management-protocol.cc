@@ -164,7 +164,6 @@ PeerManagementProtocol::ReceiveBeacon (uint32_t interface, Mac48Address peerAddr
 {
   //PM STATE Machine
   //Check that a given beacon is not from our interface
-  Simulator::Schedule (beaconInterval - TuToTime (m_maxBeaconShift + 1), &PeerManagementProtocol::DoShiftBeacon, this, interface);
   for (PeerManagementProtocolMacMap::const_iterator i = m_plugins.begin (); i != m_plugins.end (); i++)
     {
       if (i->second->GetAddress () == peerAddress)
@@ -179,6 +178,10 @@ PeerManagementProtocol::ReceiveBeacon (uint32_t interface, Mac48Address peerAddr
         {
           peerLink = InitiateLink (interface, peerAddress, Mac48Address::GetBroadcast ());
           peerLink->MLMEActivePeerLinkOpen ();
+        }
+      else
+        {
+          return;
         }
     }
   peerLink->SetBeaconInformation (Simulator::Now (), beaconInterval);
@@ -371,81 +374,93 @@ PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerA
 }
 
 void
-PeerManagementProtocol::DoShiftBeacon (uint32_t interface)
+PeerManagementProtocol::CheckBeaconCollisions (uint32_t interface)
 {
   if (!GetBeaconCollisionAvoidance ())
     {
       return;
     }
-  // If beacon interval is equal to the neighbor's one and one o more beacons received
-  // by my neighbor coincide with my beacon - apply random uniformly distributed shift from
-  // [-m_maxBeaconShift, m_maxBeaconShift] except 0.
-  UniformVariable beaconShift (-m_maxBeaconShift, m_maxBeaconShift);
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end ());
-  PeerManagementProtocolMacMap::const_iterator plugin = m_plugins.find (interface);
-  NS_ASSERT (plugin != m_plugins.end ());
-  // cast plugin to void, to suppress 'plugin' set but not used, compiler warning
-  // in optimized builds
-  (void) plugin;
+  NS_ASSERT (m_plugins.find (interface) != m_plugins.end ());
+
   std::map<uint32_t, Time>::const_iterator lastBeacon = m_lastBeacon.find (interface);
   std::map<uint32_t, Time>::const_iterator beaconInterval = m_beaconInterval.find (interface);
   if ((lastBeacon == m_lastBeacon.end ()) || (beaconInterval == m_beaconInterval.end ()))
     {
       return;
     }
-  if (TuToTime (m_maxBeaconShift) > m_beaconInterval[interface])
+  //my last beacon in 256 us units
+  uint16_t lastBeaconInTimeElement = (uint16_t) ((lastBeacon->second.GetMicroSeconds () >> 8) & 0xffff);
+
+  NS_ASSERT_MSG (TuToTime (m_maxBeaconShift) <= m_beaconInterval[interface], "Wrong beacon shift parameters");
+
+  if (iface->second.size () == 0)
     {
-      NS_FATAL_ERROR ("Wrong beacon shift parameters");
+      //I have no peers - may be our beacons are in collision
+      ShiftOwnBeacon (interface);
       return;
     }
+  //check whether all my peers receive my beacon and I'am not in collision with other beacons
+
   for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end (); i++)
     {
-      IeBeaconTiming::NeighboursTimingUnitsList neighbours;
-      neighbours = (*i)->GetBeaconTimingElement ().GetNeighboursTimingElementsList ();
-      //Going through all my timing elements and detecting future beacon collisions
-      for (IeBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j
-           != neighbours.end (); j++)
+      bool myBeaconExists = false;
+      IeBeaconTiming::NeighboursTimingUnitsList neighbors = (*i)->GetBeaconTimingElement ().GetNeighboursTimingElementsList ();
+      for (IeBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbors.begin (); j != neighbors.end (); j++)
         {
           if ((*i)->GetPeerAid () == (*j)->GetAid ())
             {
-              // I am present at neighbour's list of neighbors
+              // I am presented at neighbour's list of neighbors
+              myBeaconExists = true;
               continue;
             }
-          //Beacon interval is stored in TU's
-          if (((*j)->GetBeaconInterval ()) != TimeToTu (beaconInterval->second))
+          if (
+            ((int16_t) ((*j)->GetLastBeacon () - lastBeaconInTimeElement) >= 0) &&
+            (((*j)->GetLastBeacon () - lastBeaconInTimeElement) % (4 * TimeToTu (beaconInterval->second)) == 0)
+            )
             {
-              continue;
+              ShiftOwnBeacon (interface);
+              return;
             }
-          //Timing element keeps beacon receiving times in 256us units, TU=1024us
-          if ((int)((int)(*j)->GetLastBeacon () / 4 - (int)TimeToTu (lastBeacon->second)) % TimeToTu (
-                beaconInterval->second)
-              != 0)
-            {
-              continue;
-            }
-          int shift = 0;
-          do
-            {
-              shift = (int) beaconShift.GetValue ();
-            }
-          while (shift == 0);
-          PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
-          NS_ASSERT (plugin != m_plugins.end ());
-          plugin->second->SetBeaconShift (TuToTime (shift));
+        }
+      if (!myBeaconExists)
+        {
+          // If I am not present in neighbor's beacon timing element, this may be caused by collisions with
+          ShiftOwnBeacon (interface);
           return;
         }
     }
 }
+
+void
+PeerManagementProtocol::ShiftOwnBeacon (uint32_t interface)
+{
+  // If beacon interval is equal to the neighbor's one and one o more beacons received
+  // by my neighbor coincide with my beacon - apply random uniformly distributed shift from
+  // [-m_maxBeaconShift, m_maxBeaconShift] except 0.
+  UniformVariable beaconShift (-m_maxBeaconShift, m_maxBeaconShift);
+  int shift = 0;
+  do
+    {
+      shift = (int) beaconShift.GetValue ();
+    }
+  while (shift == 0);
+  // Apply beacon shift parameters:
+  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
+  NS_ASSERT (plugin != m_plugins.end ());
+  plugin->second->SetBeaconShift (TuToTime (shift));
+}
+
 Time
-PeerManagementProtocol::TuToTime (uint32_t x)
+PeerManagementProtocol::TuToTime (int x)
 {
   return MicroSeconds (x * 1024);
 }
-uint32_t
+int
 PeerManagementProtocol::TimeToTu (Time x)
 {
-  return (uint32_t)(x.GetMicroSeconds () / 1024);
+  return (int)(x.GetMicroSeconds () / 1024);
 }
 
 void
@@ -522,6 +537,7 @@ void
 PeerManagementProtocol::NotifyBeaconSent (uint32_t interface, Time beaconInterval)
 {
   m_lastBeacon[interface] = Simulator::Now ();
+  Simulator::Schedule (beaconInterval - TuToTime (m_maxBeaconShift + 1), &PeerManagementProtocol::CheckBeaconCollisions,this, interface);
   m_beaconInterval[interface] = beaconInterval;
 }
 PeerManagementProtocol::Statistics::Statistics (uint16_t t) :

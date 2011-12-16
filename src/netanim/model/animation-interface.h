@@ -99,6 +99,13 @@ public:
   AnimationInterface (uint16_t port, bool usingXML = true);
 
   /**
+   * \brief Check if AnimationInterface is initialized
+   * \returns true if AnimationInterface was already initialized
+   *
+   */
+  static bool IsInitialized (void);
+
+  /**
    * \brief Specify that animation commands are to be written
    * to the specified output file.
    *
@@ -203,6 +210,13 @@ public:
    */
   void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
 
+  /**
+   * \brief Is AnimationInterface started
+   * \returns true if AnimationInterface was started
+   *
+   */
+  bool IsStarted (void);
+
 private:
 #ifndef WIN32
   int m_fHandle;  // File handle for output (-1 if none)
@@ -286,12 +300,19 @@ private:
   bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
   void AddMargin ();
 
+  void PurgePendingWifi ();
+  void PurgePendingWimax ();
+  void PurgePendingCsma ();
+
   // Recalculate topology bounds
   void RecalcTopoBounds (Vector v);
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
   bool randomPosition;
   AnimWriteCallback m_writeCallback;
+  void ConnectCallbacks ();
+
+  bool m_started;
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);

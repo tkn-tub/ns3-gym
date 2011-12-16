@@ -104,8 +104,8 @@ def build(bld):
         ]
 
     if bld.env['NSCLICK'] and bld.env['DL']:
-        module.use      = 'NSCLICK DL'
-        module_test.use = 'NSCLICK DL'
+        module.use.extend(['NSCLICK', 'DL'])
+        module_test.use.extend(['NSCLICK', 'DL'])
 
     headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'click'

@@ -18,12 +18,61 @@ This release is not yet available.
 
 Bugs fixed
 ----------
+ - bug 962 - list of paths to reach objects contains bogus entries
+ - bug 1001 - Buffer::CopyData() doesn't return the number of bytes copied
+ - bug 1010 - Uan model sleep patch
+ - bug 1020 - Wrong usage of the originator sequence number in HWMP PREP
+ - bug 1021 - Beacon collision avoidance in Mesh module works incorrectly
+ - bug 1039 - Nagle's algorithm in TCP 
+ - bug 1055 - Wrong UAN's Thorp absorption loss model formula
+ - bug 1059 - Unable to load trace files created from SUMO and TraNS Lite
+ - bug 1112 - Advance m_nextTxSequence upon retransmit after RTO 
+ - bug 1137 - mpi module is hard-coded for openmpi
+ - bug 1166 - IPV4 TCP failed to send a RST when connect arrives before listen
+ - bug 1186 - Ipv4Header lacks DSCP and ECN
+ - bug 1204 - Can't Parse Time +100000000.0ns
+ - bug 1219 - Coding style of ns2-mobility-helper-test-suite.cc is fixed
+ - bug 1257 - waf install __init__ Python files even with --disable-python
+ - bug 1263 - waf configure fails on FreeBSD 9.0-BETA2 amd64
+ - bug 1266 - gdb cannot be loaded
+ - bug 1227 - Spurious RTO due to low min RTO
+ - bug 1229 - Multiplication overflow in WaypointMobilityModel::EndMobility
+ - bug 1242 - m_lastRtt in tcp-socket-base.cc not implemented
+ - bug 1256 - TCP unnecessary snd.nxt advance
+ - bug 1265 - Make ns-3 directory "movable"
+ - bug 1269 - sqlite3 not found on FreeBSD
+ - bug 1270 - "Checking boost includes" weirdness
+ - bug 1278 - Ipv4ClickRouting::HandleScheduleFromClick bug
+ - bug 1281 - Checksum not calculated when doing IP fragmentation
+ - bug 1285 - IPv6 Localhost is marked as GLOBAL instead of HOST
+ - bug 1290 - buffer-test.cc gets a valgrind error
+ - bug 1295 - Missing const qualifiers in TopologyRead 
+ - bug 1299 - EnableAsciiIpv4All tracing doesn't show transmitted/recvd packets
+ - bug 1300 - HalfDuplexIdealPhy notify SpectrumInterference of AbortRx 
+ - bug 1301 - Ns2MobilityHelper causes Node GetPosition() to return NaN
+ - bug 1305 - do not list modules built upon exiting waf shell
+ - bug 1312: TopologyRead Assert condition fix
+ - IPv4 packets double fragmentation was broken 
+ - Fix wifi-clear-channel-cmu.cc example
+ - NetAnim: fix for bcast packet reuse
+ - Missing PropagationLossModel.CalcRxPower in Python bindings
+ - Corrected compilation behavior in Ubuntu 11.10 due to ldd behavior change
+ - Added required PTHREAD dependency to RT library check.
 
 Supported platforms
 -------------------
+ns-3.13 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
+
+- Ubuntu 11.04 (32/64 bit) with g++-4.5.2 
+- Ubuntu 10.04.3 LTS (64 bit) with g++-4.4.3, g++-3.4.6 
+- OS X Lion with g++-4.2.1
+- OS X Snow Leopard with g++-4.2.1 
+- Fedora Core 14 (64 bit) with g++-4.5.1
 
 New user-visible features
 -------------------------
+- IPv6 address generator
 
 Known issues
 ------------

@@ -40,6 +40,10 @@ TcpTahoe::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::TcpTahoe")
     .SetParent<TcpSocketBase> ()
     .AddConstructor<TcpTahoe> ()
+    .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
+                    UintegerValue (3),
+                    MakeUintegerAccessor (&TcpTahoe::m_retxThresh),
+                    MakeUintegerChecker<uint32_t> ())
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpTahoe::m_cWnd))
@@ -47,7 +51,7 @@ TcpTahoe::GetTypeId (void)
   return tid;
 }
 
-TcpTahoe::TcpTahoe (void) : m_initialCWnd (0)
+TcpTahoe::TcpTahoe (void) : m_initialCWnd (1), m_retxThresh (3)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -56,7 +60,8 @@ TcpTahoe::TcpTahoe (const TcpTahoe& sock)
   : TcpSocketBase (sock),
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
-    m_initialCWnd (sock.m_initialCWnd)
+    m_initialCWnd (sock.m_initialCWnd),
+    m_retxThresh (sock.m_retxThresh)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
@@ -127,7 +132,7 @@ void
 TcpTahoe::DupAck (const TcpHeader& t, uint32_t count)
 {
   NS_LOG_FUNCTION (this << "t " << count);
-  if (count == 3)
+  if (count == m_retxThresh)
     { // triple duplicate ack triggers fast retransmit (RFC2001, sec.3)
       NS_LOG_INFO ("Triple Dup Ack: old ssthresh " << m_ssThresh << " cwnd " << m_cWnd);
       // fast retransmit in Tahoe means triggering RTO earlier. Tx is restarted
@@ -149,8 +154,8 @@ void TcpTahoe::Retransmit (void)
   NS_LOG_LOGIC (this << " ReTxTimeout Expired at time " << Simulator::Now ().GetSeconds ());
   // If erroneous timeout in closed/timed-wait state, just return
   if (m_state == CLOSED || m_state == TIME_WAIT) return;
-  // If all data are received, just return
-  if (m_txBuffer.HeadSequence () >= m_nextTxSequence) return;
+  // If all data are received (non-closing socket and nothing to send), just return
+  if (m_state <= ESTABLISHED && m_txBuffer.HeadSequence () >= m_highTxMark) return;
 
   m_ssThresh = std::max (static_cast<unsigned> (m_cWnd / 2), m_segmentSize * 2);  // Half ssthresh
   m_cWnd = m_segmentSize;                   // Set cwnd to 1 segSize (RFC2001, sec.2)

@@ -46,7 +46,7 @@ public:
   WifiInformationElementVector ();
   ~WifiInformationElementVector ();
   ///\name Inherited from Header
-  //\{
+  // \{
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   virtual uint32_t GetSerializedSize () const;

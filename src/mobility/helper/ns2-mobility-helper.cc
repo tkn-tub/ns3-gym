@@ -23,7 +23,7 @@
  * Brief description: Implementation of a ns2 movement trace file reader.
  *
  * This implementation is based on the ns2 movement documentation of ns2
- * as described in http://www.isi.edu/nsnam/ns/doc/node174.html
+ * as described in http://www.isi.edu/nsnam/ns/doc/node172.html
  *
  * Valid trace files use the following ns2 statements:
  *
@@ -353,6 +353,10 @@ ParseNs2Line (const string& str)
     {
       string x;
       s >> x;
+      if (x.length () == 0)
+        {
+          continue;
+        }
       ret.tokens.push_back (x);
       int ii (0);
       double d (0);
@@ -638,6 +642,10 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
       // first calculate the time; time = distance / speed
       double time = sqrt (pow (xFinalPosition - retval.m_finalPosition.x, 2) + pow (yFinalPosition - retval.m_finalPosition.y, 2)) / speed;
       NS_LOG_DEBUG ("at=" << at << " time=" << time);
+      if (time == 0)
+        {
+          return retval;
+        }
       // now calculate the xSpeed = distance / time
       double xSpeed = (xFinalPosition - retval.m_finalPosition.x) / time;
       double ySpeed = (yFinalPosition - retval.m_finalPosition.y) / time; // & same with ySpeed
@@ -649,10 +657,7 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
       NS_LOG_DEBUG ("Calculated Speed: X=" << xSpeed << " Y=" << ySpeed << " Z=" << zSpeed);
 
       // Set the Values
-      if (time >= 0)
-        {
-          Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (xSpeed, ySpeed, zSpeed));
-        }
+      Simulator::Schedule (Seconds (at), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (xSpeed, ySpeed, zSpeed));
       retval.m_stopEvent = Simulator::Schedule (Seconds (at + time), &ConstantVelocityMobilityModel::SetVelocity, model, Vector (0, 0, 0));
       retval.m_finalPosition.x += xSpeed * time;
       retval.m_finalPosition.y += ySpeed * time;

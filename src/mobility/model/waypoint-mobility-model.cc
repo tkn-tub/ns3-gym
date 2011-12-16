@@ -203,7 +203,7 @@ void
 WaypointMobilityModel::EndMobility (void)
 {
   m_waypoints.clear ();
-  m_current.time = Seconds (std::numeric_limits<double>::infinity ());
+  m_current.time = Time(std::numeric_limits<uint64_t>::infinity());
   m_next.time = m_current.time;
   m_first = true;
 }

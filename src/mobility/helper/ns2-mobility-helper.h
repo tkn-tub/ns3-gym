@@ -37,7 +37,7 @@ class ConstantVelocityMobilityModel;
  * \brief Helper class which can read ns-2 movement files and configure nodes mobility.
  * 
  * This implementation is based on the ns2 movement documentation of ns2
- * as described in http://www.isi.edu/nsnam/ns/doc/node174.html
+ * as described in http://www.isi.edu/nsnam/ns/doc/node172.html
  *
  * Valid trace files use the following ns2 statements:
  \verbatim

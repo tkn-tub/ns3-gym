@@ -361,6 +361,10 @@ def configure(conf):
                 conf.report_optional_feature("static", "Static build", False,
                                              "Link flag -Wl,--whole-archive,-Bstatic does not work")
 
+    # Set this so that the lists won't be printed at the end of this
+    # configure command.
+    conf.env['PRINT_BUILT_MODULES_AT_END'] = False
+
     conf.env['MODULES_NOT_BUILT'] = []
 
     conf.sub_config('src')
@@ -782,6 +786,10 @@ def build(bld):
     # and module test libraries have been set.
     bld.add_subdirs('utils')
 
+    # Set this so that the lists will be printed at the end of this
+    # build command.
+    bld.env['PRINT_BUILT_MODULES_AT_END'] = True
+
     if Options.options.run:
         # Check that the requested program name is valid
         program_name, dummy_program_argv = wutils.get_run_program(Options.options.run, wutils.get_command_template(env))
@@ -806,14 +814,8 @@ def shutdown(ctx):
         return
     env = bld.env
 
-    # Don't print the lists if a program is being run, a Python
-    # program is being run, this a clean, or this is a distribution
-    # clean.
-    if ((not Options.options.run)
-        and (not Options.options.pyrun) 
-        and ('clean' not in Options.commands)
-        and ('distclean' not in Options.commands)
-        and ('shell' not in Options.commands)):
+    # Only print the lists if a build was done.
+    if (env['PRINT_BUILT_MODULES_AT_END']):
 
         # Print the list of built modules.
         print
@@ -827,6 +829,10 @@ def shutdown(ctx):
             print 'Modules not built:'
             print_module_names(env['MODULES_NOT_BUILT'])
             print
+
+        # Set this so that the lists won't be printed until the next
+        # build is done.
+        bld.env['PRINT_BUILT_MODULES_AT_END'] = False
 
     # Write the build status file.
     build_status_file = os.path.join(bld.out_dir, 'build-status.py')
@@ -972,6 +978,10 @@ class Ns3ShellContext(Context.Context):
 	bld.options = Options.options # provided for convenience
 	bld.cmd = "build"
 	bld.execute()
+
+        # Set this so that the lists won't be printed when the user
+        # exits the shell.
+        bld.env['PRINT_BUILT_MODULES_AT_END'] = False
 
         if sys.platform == 'win32':
             shell = os.environ.get("COMSPEC", "cmd.exe")

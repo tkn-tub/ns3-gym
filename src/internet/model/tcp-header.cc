@@ -197,6 +197,14 @@ void TcpHeader::Print (std::ostream &os)  const
         {
           os<<" URG ";
         }
+      if((m_flags & ECE) != 0)
+        {
+          os<<" ECE ";
+        }
+      if((m_flags & CWR) != 0)
+        {
+          os<<" CWR ";
+        }
       os<<"]";
     }
   os<<" Seq="<<m_sequenceNumber<<" Ack="<<m_ackNumber<<" Win="<<m_windowSize;

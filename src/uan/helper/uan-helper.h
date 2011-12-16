@@ -1,10 +1,9 @@
 /*
  * Copyright (c) 2008 University of Washington
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +11,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Leonard Tracy <lentracy@u.washington.edu>
  */
@@ -188,8 +188,8 @@ public:
 
   NetDeviceContainer Install (NodeContainer c) const;
   /**
-   * \param channel a channel to use
    * \param c a set of nodes
+   * \param channel a channel to use
    *
    * For each of the input nodes, a new ns3::UanNetDevice is attached
    * to the shared input channel. Each ns3::UanNetDevice is also
@@ -202,6 +202,7 @@ public:
 
   /**
    * \param node a node where to install the uan components
+   * \param channel a channel to use
    *
    * Create a default uan stack with:
    * - default channel, ideal propagation and default noise model

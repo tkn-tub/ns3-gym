@@ -432,6 +432,24 @@ public:
     t->AddReferencePoint ("0", 6, Vector (0, 5, 0), Vector (0,  -1, 0));
     t->AddReferencePoint ("0", 16, Vector (0, -10, 0), Vector (0, 0, 0));
     AddTestCase (t);
+    t = new Ns2MobilityHelperTest ("Bug 1059 testcase", Seconds (16));
+    t->SetTrace ("$node_(0) set X_ 10.0\r\n"
+                 "$node_(0) set Y_ 0.0\r\n"
+                 );
+    //                     id  t  position         velocity
+    t->AddReferencePoint ("0", 0, Vector (10, 0, 0), Vector (0,  0, 0));
+    AddTestCase (t);
+    t = new Ns2MobilityHelperTest ("Bug 1301 testcase", Seconds (16));
+    t->SetTrace ("$node_(0) set X_ 10.0\n"
+                 "$node_(0) set Y_ 0.0\n"
+                 "$ns_ at 1.0 \"$node_(0) setdest 10  0       1\"\n"
+                 );
+    //                     id  t  position         velocity
+    // Moving to the current position must change nothing. No NaN
+    // speed must be.
+    t->AddReferencePoint ("0", 0, Vector (10, 0, 0), Vector (0,  0, 0));
+    AddTestCase (t);
+
 
   }
 } g_ns2TransmobilityHelperTestSuite;

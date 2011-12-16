@@ -90,6 +90,8 @@ private:
   virtual Time GetDelAckTimeout (void) const = 0;
   virtual void SetDelAckMaxCount (uint32_t count) = 0;
   virtual uint32_t GetDelAckMaxCount (void) const = 0;
+  virtual void SetTcpNoDelay (bool noDelay) = 0;
+  virtual bool GetTcpNoDelay (void) const = 0;
   virtual void SetPersistTimeout (Time timeout) = 0;
   virtual Time GetPersistTimeout (void) const = 0;
 

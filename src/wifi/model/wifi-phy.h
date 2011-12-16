@@ -252,11 +252,9 @@ public:
    */
   static WifiMode GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamble);
 
-  /** 
-   * 
-   * 
+  /**
    * \param payloadMode the WifiMode use for the transmission of the payload
-   * \param preamble the type of preamble 
+   * \param preamble the type of preamble
    * 
    * \return the duration of the PLCP header in microseconds
    */
@@ -271,8 +269,8 @@ public:
   static uint32_t GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, WifiPreamble preamble);
 
   /** 
+   * \param size the number of bytes in the packet to send
    * \param payloadMode the WifiMode use for the transmission of the payload
-   * \param preamble the type of preamble 
    * 
    * \return the duration of the payload in microseconds
    */

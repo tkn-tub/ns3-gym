@@ -463,8 +463,8 @@ NamesPriv::Find (std::string path)
   NameNode *node = &m_root;
 
   //
-  // The string <remaining> is now composed entirely of path segments in the
-  // /Names name space and we have eaten the leading slash. e.g., 
+  // The string <remaining> is now composed entirely of path segments in
+  // the /Names name space and we have eaten the leading slash. e.g., 
   // remaining = "ClientNode/eth0"
   //
   // The start of the search is always at the root of the name space.
