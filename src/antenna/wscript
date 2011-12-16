@@ -1,0 +1,27 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    module = bld.create_ns3_module('antenna', ['core'])
+
+    module.source = [
+        'model/antenna-model.cc',
+        'model/isotropic-antenna-model.cc',	
+	 ]		
+	 
+    module_test = bld.create_ns3_module_test_library('antenna')
+    module_test.source = [	
+        'test/test-isotropic-antenna.cc',
+        ]
+    
+    headers = bld.new_task_gen(features=['ns3header'])
+    headers.module = 'antenna'
+    headers.source = [
+        'model/antenna-model.h',
+        'model/isotropic-antenna-model.h',		
+	]
+    
+
+
+
+
