@@ -76,7 +76,10 @@ instead of CXXDEFINES
 
 <h2>New API:</h2>
 <ul>
-<li> In the mobility module, there is a new API MobilityModel::GetRelativeSpeed() returning the relative speed of two objects. Proposed by Jens Mittag.</li>
+<li> In the mobility module, there is a new API MobilityModel::GetRelativeSpeed() returning the relative speed of two objects. </li>
+<li> A new Ipv6AddressGenerator class was added to generate sequential
+addresses from a provided base prefix and interfaceId.  It also will detect
+duplicate address assigments. </li> 
 </ul>
 
 <h2>Changes to existing API:</h2>
