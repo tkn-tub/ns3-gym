@@ -95,9 +95,6 @@ private:
   LteNetDevice (const LteNetDevice &);
   LteNetDevice & operator= (const LteNetDevice &);
 
-  static const uint16_t MAX_MSDU_SIZE = 1500;
-
-
   Ptr<Node> m_node;
 
   TracedCallback<> m_linkChangeCallbacks;
