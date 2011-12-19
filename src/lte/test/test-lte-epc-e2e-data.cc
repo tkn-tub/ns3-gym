@@ -27,6 +27,7 @@
 #include "ns3/epc-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/udp-echo-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
@@ -52,10 +53,11 @@ NS_LOG_COMPONENT_DEFINE ("LteEpcE2eData");
 
 struct BearerTestData
 {
-  BearerTestData (uint32_t n, uint32_t s);
+  BearerTestData (uint32_t n, uint32_t s, double i);
 
   uint32_t numPkts;
   uint32_t pktSize;
+  Time interPacketInterval;
  
   Ptr<PacketSink> dlServerApp;
   Ptr<Application> dlClientApp;
@@ -64,9 +66,10 @@ struct BearerTestData
   Ptr<Application> ulClientApp;
 };
 
-BearerTestData::BearerTestData (uint32_t n, uint32_t s)
+  BearerTestData::BearerTestData (uint32_t n, uint32_t s, double i)
   : numPkts (n),
-    pktSize (s)
+    pktSize (s),
+    interPacketInterval (Seconds (i))
 {
 }
 
@@ -211,10 +214,9 @@ LteEpcE2eDataTestCase::DoRun ()
                 apps.Start (Seconds (0.01));
                 bearerTestData.dlServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
-                Time interPacketInterval = Seconds (0.01);
-                UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
+                UdpEchoClientHelper client (ueIpIface.GetAddress (0), dlPort);
                 client.SetAttribute ("MaxPackets", UintegerValue (bearerTestData.numPkts));
-                client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+                client.SetAttribute ("Interval", TimeValue (bearerTestData.interPacketInterval));
                 client.SetAttribute ("PacketSize", UintegerValue (bearerTestData.pktSize));
                 apps = client.Install (remoteHost);
                 apps.Start (Seconds (0.01));
@@ -228,10 +230,9 @@ LteEpcE2eDataTestCase::DoRun ()
                 apps.Start (Seconds (0.5));
                 bearerTestData.ulServerApp = apps.Get (0)->GetObject<PacketSink> ();
           
-                Time interPacketInterval = Seconds (0.01);
-                UdpClientHelper client (remoteHostAddr, ulPort);
+                UdpEchoClientHelper client (remoteHostAddr, ulPort);
                 client.SetAttribute ("MaxPackets", UintegerValue (bearerTestData.numPkts));
-                client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+                client.SetAttribute ("Interval", TimeValue (bearerTestData.interPacketInterval));
                 client.SetAttribute ("PacketSize", UintegerValue (bearerTestData.pktSize));
                 apps = client.Install (ue);
                 apps.Start (Seconds (0.5));
@@ -325,7 +326,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   std::vector<EnbTestData> v1;  
   EnbTestData e1;
   UeTestData u1;
-  BearerTestData f1 (1, 100);
+  BearerTestData f1 (1, 100, 0.01);
   u1.bearers.push_back (f1);
   e1.ues.push_back (u1);
   v1.push_back (e1);
@@ -334,11 +335,11 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
   std::vector<EnbTestData> v2;  
   EnbTestData e2;
   UeTestData u2_1;
-  BearerTestData f2_1 (1, 100);
+  BearerTestData f2_1 (1, 100, 0.01);
   u2_1.bearers.push_back (f2_1);
   e2.ues.push_back (u2_1);
   UeTestData u2_2;
-  BearerTestData f2_2 (2, 200);
+  BearerTestData f2_2 (2, 200, 0.01);
   u2_2.bearers.push_back (f2_2);
   e2.ues.push_back (u2_2);
   v2.push_back (e2);
@@ -351,15 +352,15 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 
   EnbTestData e4;
   UeTestData u4_1;
-  BearerTestData f4_1 (3, 50);
+  BearerTestData f4_1 (3, 50, 0.01);
   u4_1.bearers.push_back (f4_1);
   e4.ues.push_back (u4_1);
   UeTestData u4_2;
-  BearerTestData f4_2 (5, 1400);
+  BearerTestData f4_2 (5, 1400, 0.01);
   u4_2.bearers.push_back (f4_2);
   e4.ues.push_back (u4_2);
   UeTestData u4_3;
-  BearerTestData f4_3 (1, 12);
+  BearerTestData f4_3 (1, 12, 0.01);
   u4_3.bearers.push_back (f4_3);
   e4.ues.push_back (u4_3);
   std::vector<EnbTestData> v4;  
@@ -370,7 +371,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 
   EnbTestData e5;
   UeTestData u5;
-  BearerTestData f5 (5, 1000);
+  BearerTestData f5 (5, 1000, 0.01);
   u5.bearers.push_back (f5);
   e5.ues.push_back (u5);
   std::vector<EnbTestData> v5;
@@ -380,7 +381,7 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 
   EnbTestData e6;
   UeTestData u6;
-  BearerTestData f6 (5, 1400);
+  BearerTestData f6 (5, 1400, 0.01);
   u6.bearers.push_back (f6);
   e6.ues.push_back (u6);
   std::vector<EnbTestData> v6;
@@ -389,14 +390,34 @@ LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite ()
 
   EnbTestData e7;
   UeTestData u7;
-  BearerTestData f7_1 (1, 1400);
+  BearerTestData f7_1 (1, 1400, 0.01);
   u7.bearers.push_back (f7_1);
-  BearerTestData f7_2 (1, 100);
+  BearerTestData f7_2 (1, 100, 0.01);
   u7.bearers.push_back (f7_2);
   e7.ues.push_back (u7);
   std::vector<EnbTestData> v7;
   v7.push_back (e7);
   AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with 2 bearers", v7));
+
+  EnbTestData e8;
+  UeTestData u8;
+  BearerTestData f8 (100, 15000, 0.001);
+  u8.bearers.push_back (f8);
+  e8.ues.push_back (u8);
+  std::vector<EnbTestData> v8;
+  v8.push_back (e8);
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with fragmentation", v8));
+
+
+  EnbTestData e9;
+  UeTestData u9;
+  BearerTestData f9 (1000, 20, 0.0001);
+  u9.bearers.push_back (f9);
+  e9.ues.push_back (u9);
+  std::vector<EnbTestData> v9;
+  v9.push_back (e9);
+  AddTestCase (new LteEpcE2eDataTestCase ("1 eNB, 1UE with aggregation", v9));
+
 
 }
 
