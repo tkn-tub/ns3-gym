@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 #include "ns3/epc-helper.h"
 #include "ns3/packet-sink-helper.h"
-#include "ns3/udp-client-server-helper.h"
+#include "ns3/udp-echo-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/csma-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -36,6 +36,7 @@
 #include <ns3/ipv4-static-routing.h>
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
+#include "ns3/config.h"
 
 
 
@@ -96,6 +97,11 @@ EpcS1uDlTestCase::DoRun ()
 {
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
+
+  // allow jumbo packets
+  Config::SetDefault ("ns3::CsmaNetDevice::Mtu", UintegerValue (30000));
+  Config::SetDefault ("ns3::PointToPointNetDevice::Mtu", UintegerValue (30000));
+  epcHelper->SetAttribute ("S1uLinkMtu", UintegerValue (30000));
   
   // Create a single RemoteHost
   NodeContainer remoteHostContainer;
@@ -106,6 +112,7 @@ EpcS1uDlTestCase::DoRun ()
 
   // Create the internet
   PointToPointHelper p2ph;
+  p2ph.SetDeviceAttribute ("DataRate",  DataRateValue (DataRate ("100Gb/s")));
   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
@@ -175,7 +182,7 @@ EpcS1uDlTestCase::DoRun ()
           enbit->ues[u].serverApp = apps.Get (0)->GetObject<PacketSink> ();
           
           Time interPacketInterval = Seconds (0.01);
-          UdpClientHelper client (ueIpIface.GetAddress (0), port);
+          UdpEchoClientHelper client (ueIpIface.GetAddress (0), port);
           client.SetAttribute ("MaxPackets", UintegerValue (enbit->ues[u].numPkts));
           client.SetAttribute ("Interval", TimeValue (interPacketInterval));
           client.SetAttribute ("PacketSize", UintegerValue (enbit->ues[u].pktSize));
@@ -263,7 +270,33 @@ EpcS1uDlTestSuite::EpcS1uDlTestSuite ()
   v4.push_back (e2);
   AddTestCase (new EpcS1uDlTestCase ("3 eNBs", v4));
 
+  std::vector<EnbDlTestData> v5;  
+  EnbDlTestData e5;
+  UeDlTestData f5 (10, 3000);
+  e5.ues.push_back (f5);
+  v5.push_back (e5);
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 3000 bytes each", v5));
+
+  std::vector<EnbDlTestData> v6;  
+  EnbDlTestData e6;
+  UeDlTestData f6 (50, 3000);
+  e6.ues.push_back (f6);
+  v6.push_back (e6);
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 50 pkts 3000 bytes each", v6));
   
+  std::vector<EnbDlTestData> v7;  
+  EnbDlTestData e7;
+  UeDlTestData f7 (10, 15000);
+  e7.ues.push_back (f7);
+  v7.push_back (e7);
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 10 pkts 15000 bytes each", v7));
+
+  std::vector<EnbDlTestData> v8;  
+  EnbDlTestData e8;
+  UeDlTestData f8 (100, 15000);
+  e8.ues.push_back (f8);
+  v8.push_back (e8);
+  AddTestCase (new EpcS1uDlTestCase ("1 eNB, 100 pkts 15000 bytes each", v8));
 }
 
 
