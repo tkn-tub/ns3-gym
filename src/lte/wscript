@@ -42,7 +42,8 @@ def build(bld):
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
         'model/epc-gtpu-v1.cc',
-        'model/trace-fading-loss-model.cc'
+        'model/trace-fading-loss-model.cc',
+        'model/lte-mi-error-model.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -58,7 +59,8 @@ def build(bld):
         'test/lte-test-earfcn.cc',
         'test/lte-test-spectrum-value-helper.cc',
         'test/epc-test-gtpu-v1.cc',
-        'test/lte-test-pathloss-model.cc'
+        'test/lte-test-pathloss-model.cc',
+        'test/lte-test-phy-error-model.cc'
         ]
     
     headers = bld.new_task_gen(features=['ns3header'])
@@ -112,9 +114,10 @@ def build(bld):
         'test/lte-test-ue-phy.h',
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
-        'test/lte-test-pf-ff-mac-scheduler.h',
+        'test/lte-test-phy-error-model.h',
         'test/epc-test-gtpu-v1.h',
-        'test/lte-test-pathloss-model.h'
+        'test/lte-test-pathloss-model.h',
+        'model/lte-mi-error-model.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

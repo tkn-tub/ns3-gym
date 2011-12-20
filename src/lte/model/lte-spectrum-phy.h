@@ -17,6 +17,7 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Giuseppe Piro  <g.piro@poliba.it>
+ * Modified by: Marco Miozzo <mmiozzo@cttc.es> (introduce physical error model)
  */
 
 #ifndef LTE_SPECTRUM_PHY_H
@@ -35,6 +36,7 @@
 #include <ns3/generic-phy.h>
 #include <ns3/packet-burst.h>
 #include <ns3/lte-interference.h>
+#include <ns3/random-variable.h>
 #include <map>
 
 namespace ns3 {
@@ -195,8 +197,8 @@ private:
   TracedCallback<Ptr<const PacketBurst> > m_phyTxStartTrace;
   TracedCallback<Ptr<const PacketBurst> > m_phyTxEndTrace;
   TracedCallback<Ptr<const PacketBurst> > m_phyRxStartTrace;
-  TracedCallback<Ptr<const PacketBurst> > m_phyRxEndOkTrace;
-  TracedCallback<Ptr<const PacketBurst> > m_phyRxEndErrorTrace;
+  TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
+  TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
   GenericPhyTxEndCallback        m_genericPhyTxEndCallback;
   GenericPhyRxEndErrorCallback   m_genericPhyRxEndErrorCallback;
@@ -208,6 +210,8 @@ private:
   
   expectedTbs_t m_expectedTbs;
   SpectrumValue m_sinrPerceived;
+  
+  UniformVariable m_random;
 };
 
 

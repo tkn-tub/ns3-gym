@@ -17,6 +17,7 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Giuseppe Piro  <g.piro@poliba.it>
+ *         Marco Miozzo <marco.miozzo@cttc.es> (add physical error model)
  */
 
 
@@ -31,6 +32,8 @@
 #include "lte-mac-tag.h"
 #include "lte-sinr-chunk-processor.h"
 #include "lte-phy-tag.h"
+#include <ns3/lte-mi-error-model.h>
+#include <ns3/lte-mac-tag.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
@@ -40,7 +43,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
-  : m_state (IDLE)
+  : m_state (IDLE),
+  m_random (0.0, 1.0)
 {
   NS_LOG_FUNCTION (this);
   m_interference = CreateObject<LteInterference> ();
@@ -405,19 +409,17 @@ LteSpectrumPhy::UpdateSinrPerceived (const SpectrumValue& sinr)
 void
 LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map)
 {
-  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << mcs);
+  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << (uint16_t)mcs);
   expectedTbs_t::iterator it;
   it = m_expectedTbs.find (rnti);
-  if (it == m_expectedTbs.end ())
+  if (it != m_expectedTbs.end ())
   {
-    // insert new entry
-    tbInfo_t tbInfo = {size, mcs, map, false};
-    m_expectedTbs.insert (std::pair<uint16_t, tbInfo_t> (rnti,tbInfo ));
+    // migth be a TB of an unreceived packet (due to high progpalosses)
+    m_expectedTbs.erase (it);
   }
-  else
-  {
-    NS_FATAL_ERROR ("Expectd two TBs from the same UE");
-  }
+  // insert new entry
+  tbInfo_t tbInfo = {size, mcs, map, false};
+  m_expectedTbs.insert (std::pair<uint16_t, tbInfo_t> (rnti,tbInfo ));
 }
 
 
@@ -437,46 +439,50 @@ LteSpectrumPhy::EndRx ()
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
   while (itTb!=m_expectedTbs.end ())
     {
-      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size ());
+      double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
+      (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
+      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
+      
       for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)
         {
           NS_LOG_DEBUG (this << " RB " << (*itTb).second.rbBitmap.at (i) << " SINR " << m_sinrPerceived[(*itTb).second.rbBitmap.at (i)]);
         }
       itTb++;
     }
-  m_expectedTbs.clear ();  // DEBUG
-  for (std::list<Ptr<PacketBurst> >::const_iterator i = m_rxPacketBurstList.begin (); 
-       i != m_rxPacketBurstList.end (); ++i)
-    {
-      // here we should determine whether this TB has been received
-      // correctly or not
-      bool tbRxOk = true;
-      NS_LOG_INFO (this << " Burst of " << (*i)->GetNPackets ());
-      if (tbRxOk)
-        {
-          m_phyRxEndOkTrace (*i);
-
-          // forward each PDU in the PacketBurst separately to the MAC 
-          // WILD HACK: we currently don't model properly the aggregation
-          // of PDUs into TBs. In reality, the PHY is concerned only with
-          // TBs, and it should be left to the MAC to decompose the TB into PDUs
-          for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); 
-               j != (*i)->End (); ++j)
-            {
-              if (!m_genericPhyRxEndOkCallback.IsNull ())
-                {
-                  m_genericPhyRxEndOkCallback (*j);
-                }
-            }
-        }
-      else
-        {
-          // TB received with errors
-          m_phyRxEndErrorTrace (*i);
-        }
-    }
+    
+    for (std::list<Ptr<PacketBurst> >::const_iterator i = m_rxPacketBurstList.begin (); 
+    i != m_rxPacketBurstList.end (); ++i)
+      {
+        for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); j != (*i)->End (); ++j)
+          {
+            // retrieve TB info of this packet 
+            LteMacTag tag;
+            (*j)->RemovePacketTag (tag);
+            itTb = m_expectedTbs.find (tag.GetRnti ());
+            (*j)->AddPacketTag (tag);
+            NS_LOG_INFO (this << " Packet of " << tag.GetRnti ());
+            if (itTb!=m_expectedTbs.end ())
+              {
+                if (!(*itTb).second.corrupt)
+                  {
+                    m_phyRxEndOkTrace (*j);
+                
+                    if (!m_genericPhyRxEndOkCallback.IsNull ())
+                      {
+                        m_genericPhyRxEndOkCallback (*j);
+                      }
+                  }
+                else
+                  {
+                    // TB received with errors
+                    m_phyRxEndErrorTrace (*j);
+                  }
+              }
+          }
+      }
   ChangeState (IDLE);
   m_rxPacketBurstList.clear ();
+  m_expectedTbs.clear ();
 }
 
 void 
