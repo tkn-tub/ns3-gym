@@ -29,6 +29,24 @@ namespace ns3 {
 
 
 /** 
+ * \brief converts degrees to radians
+ * 
+ * \param degrees the angle in degrees
+ * 
+ * \return the angle in radians
+ */
+double DegreesToRadians (double degrees);
+
+/** 
+ * \brief converts radians to degrees
+ * 
+ * \param radians the angle in radians
+ * 
+ * \return the angle in degrees
+ */
+double RadiansToDegrees (double radians);
+
+/** 
  * \ingroup antenna
  * 
  * \brief interface for antenna radiation pattern models
@@ -124,6 +142,17 @@ public:
   virtual double GetGainDb (Angles a) = 0;
 
 };
+
+
+/** 
+ * print a struct AntennaModel::Angles to output
+ * 
+ * \param os the output stream
+ * \param a the Angles struct
+ * 
+ * \return a reference to the output stream
+ */
+std::ostream& operator<< ( std::ostream& os, const AntennaModel::Angles& a);
 
 
 } // namespace ns3

@@ -20,7 +20,7 @@
 
 
 #include <ns3/log.h>
-
+#include <math.h>
 #include "antenna-model.h"
 
 
@@ -30,6 +30,24 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
 
+
+
+double DegreesToRadians (double degrees)
+{
+  return degrees * M_PI / 180.0;
+
+}
+
+double RadiansToDegrees (double radians)
+{
+  return radians * 180.0 / M_PI;
+}
+
+std::ostream& operator<< (std::ostream& os, const AntennaModel::Angles& a)
+{
+  os << "(" << a.phi << ", " << a.theta << ")";
+  return os;
+}
 
 AntennaModel::AntennaModel ()
 {

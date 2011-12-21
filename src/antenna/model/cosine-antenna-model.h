@@ -18,8 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef ISOTROPIC_ANTENNA_MODEL_H
-#define ISOTROPIC_ANTENNA_MODEL_H
+#ifndef COSINE_ANTENNA_MODEL_H
+#define COSINE_ANTENNA_MODEL_H
 
 
 #include <ns3/object.h>
@@ -28,11 +28,19 @@
 namespace ns3 {
 
 /**
- * \brief Isotropic antenna model
  * 
- * This is the simplest antenna model. The gain of this antenna is unitary (=0dB) in all directions.
+ * \brief Cosine Antenna Model 
+ *
+ * This class implements the cosine model as described in [1]
+ *
+ * Li Chunjian, "Efficient Antenna Patterns for Three-Sector WCDMA Systems"
+ *
+ * Note that only the element factor of the above model is
+ * considered. Also, an additional constant gain is added to model the
+ * radiation pattern on the vertical plane (to account for the fact
+ * that the elevation angle is not included in the model).
  */
-class IsotropicAntennaModel : public AntennaModel
+class CosineAntennaModel : public AntennaModel
 {
 public:
 
@@ -41,6 +49,27 @@ public:
 
   // inherited from AntennaModel
   virtual double GetGainDb (Angles a);
+
+
+  // attribute getters/setters
+  void SetBeamwidth (double beamwidthDegrees);
+  double GetBeamwidth () const;
+  void SetOrientation (double orientationDegrees);
+  double GetOrientation () const;
+
+private:
+
+  /**
+   * this is the variable "n" in [1]
+   * 
+   */
+  double m_exponent; 
+
+  double m_beamwidthRadians;
+
+  double m_orientationRadians;
+
+  double m_maxGain;
 };
 
 
@@ -48,4 +77,4 @@ public:
 } // namespace ns3
 
 
-#endif // ISOTROPIC_ANTENNA_MODEL_H
+#endif // COSINE_ANTENNA_MODEL_H
