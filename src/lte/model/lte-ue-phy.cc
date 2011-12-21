@@ -109,7 +109,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     // ideal behavior
     m_a30CqiLast (MilliSeconds (0))
 {
-  m_amc = new LteAmc ();
+  m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
 }
 
@@ -122,7 +122,6 @@ void
 LteUePhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_amc;
   delete m_uePhySapProvider;
   LtePhy::DoDispose ();
 }

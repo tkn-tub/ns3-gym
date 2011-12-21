@@ -191,7 +191,7 @@ private:
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
   
-  LteAmc* m_amc;
+  Ptr<LteAmc> m_amc;
 
   Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
   Time m_p10CqiLast;
