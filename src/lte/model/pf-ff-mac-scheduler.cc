@@ -215,7 +215,7 @@ PfFfMacScheduler::PfFfMacScheduler ()
     // WILD ACK: based on a m_macChTtiDelay = 1
     m_nextRntiUl (0)
 {
-  m_amc = new LteAmc ();
+  m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new PfSchedulerMemberCschedSapProvider (this);
   m_schedSapProvider = new PfSchedulerMemberSchedSapProvider (this);
 }
@@ -229,7 +229,6 @@ void
 PfFfMacScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_amc;
   delete m_cschedSapProvider;
   delete m_schedSapProvider;
 }

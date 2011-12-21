@@ -139,7 +139,7 @@ private:
   void RefreshDlCqiMaps(void);
   void RefreshUlCqiMaps(void);
   
-  LteAmc* m_amc;
+  Ptr<LteAmc> m_amc;
 
   /*
    * Vectors of UE's LC info
