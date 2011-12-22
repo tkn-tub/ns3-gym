@@ -300,7 +300,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
       cbIndex++;
     }
   cbIndex--;
-  NS_LOG_FUNCTION (" MCS " << (uint16_t)mcs << " TBS " << tbsIndex << " CB size " << cbSize);
+  NS_LOG_FUNCTION (" MCS " << (uint16_t)mcs << " TBS " << tbsIndex << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
 
   b = bEcrTable[cbIndex][tbsIndex];
   c = cEcrTable[cbIndex][tbsIndex];
@@ -407,15 +407,23 @@ LteMiErrorModel::GetTbError (SpectrumValue& sinr, std::vector<int> map, uint16_t
       Cplus = C - Cminus;
     }
   NS_LOG_INFO ("--------------------LteMiErrorModel: TB size of " << B << " needs of " << B1 << " bits reparted in " << C << " CBs as "<< Cplus << " block(s) of " << Kplus << " and " << Cminus << " of " << Kminus);
-    
-  double errorRate = 0.;
-  for (uint i = 0; i < Cplus; i++)
+  
+  double errorRate = 1.0;
+  if (C!=1)
     {
-      errorRate *= MappingMiBler (MI, mcs, Kplus);
+        for (uint i = 0; i < Cplus; i++)
+        {
+          errorRate *= (1.0 - MappingMiBler (MI, mcs, Kplus));
+        }
+      for (uint i = 0; i < Cminus; i++)
+        {
+          errorRate *= (1.0 - MappingMiBler (MI, mcs, Kminus));
+        }
+      errorRate = 1.0 - errorRate;
     }
-  for (uint i = 0; i < Cminus; i++)
+  else
     {
-      errorRate *= MappingMiBler (MI, mcs, Kminus);
+      errorRate = MappingMiBler (MI, mcs, Kplus);
     }
   
   NS_LOG_FUNCTION (" Error rate " << errorRate);
