@@ -417,13 +417,13 @@ Description of the components
 
 
 
-----
+
 MAC 
-----
++++
   
 
 The FemtoForum MAC Scheduler Interface
-++++++++++++++++++++++++++++++++++++++
+--------------------------------------
 
 This section describes the ns-3 specific version of the LTE MAC
 Scheduler Interface Specification published by the FemtoForum [FFAPI]_.
@@ -503,7 +503,7 @@ the following.
 
 
 Resource Allocation Model
-+++++++++++++++++++++++++
+-------------------------
 
 
 We now briefly describe how resource allocation is handled in LTE,
@@ -541,7 +541,7 @@ configuration.
 .. _sec-lte-amc:
 
 Adaptive Modulation and Coding
-++++++++++++++++++++++++++++++
+------------------------------
 
 The Adaptive Modulation and Coding (AMC) model that we provide in the
 simulator is a modified version of the model described in [Piro2011]_,
@@ -574,14 +574,14 @@ from the index reported in [R1-081483]_.
 
 
 Round Robin (RR) Scheduler
-++++++++++++++++++++++++++
+--------------------------
 
 The Round Robin (RR) scheduler is probably the simplest scheduler found in the literature. It works by dividing the
 available resources among the active flows, i.e., those logical channels which have a non-empty RLC queue. If the number of RBGs is greater than the number of active flows, all the flows can be allocated in the same subframe. Otherwise, if the number of active flows is greater than the number of RBGs, not all the flows can be scheduled in a given subframe; then, in the next subframe the allocation will start from the last flow that was not allocated.  The MCS to be adopted for each user is done according to the received wideband CQIs. 
 
 
 Proportional Fair (PF) Scheduler
-++++++++++++++++++++++++++++++++
+--------------------------------
 
 The Proportional Fair (PF) scheduler [Sesia2009]_ works by scheduling a user
 when its
@@ -649,7 +649,7 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
 
 
 Transport Blocks
-+++++++++++++++++++++
+----------------
 
 The implementation of the MAC Transport Blocks (TBs) is simplified with
 respect to the 3GPP specifications. In particular, a simulator-specific class (PacketBurst) is used to aggregate
@@ -663,15 +663,15 @@ MAC headers specified by 3GPP.
 
 
 
-------------
+
 RLC and PDCP
-------------
+++++++++++++
 
 
 
 
 Overview
-++++++++
+--------
 
 The RLC entity is specified in the 3GPP technical specification
 [TS36322]_, and comprises three different types of RLC: Transparent
@@ -697,10 +697,10 @@ with all the other entities and services in the protocol stack.
 
 
 Service Interfaces
-++++++++++++++++++
+------------------
 
 PDCP Service Interface
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 The PDCP service interface is divided into two parts:
 
@@ -708,7 +708,7 @@ The PDCP service interface is divided into two parts:
     * the ``PdcpSapUser`` part is provided by the upper layer and used by the PDCP layer.
 
 PDCP Service Primitives
-^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""
 
 The following list specifies which service primitives are provided by the PDCP service interfaces:
 
@@ -723,7 +723,7 @@ The following list specifies which service primitives are provided by the PDCP s
           in the receiver peer
 
 RLC Service Interface
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 The RLC service interface is divided into two parts:
 
@@ -733,7 +733,7 @@ The RLC service interface is divided into two parts:
 Both the UM and the AM RLC entities provide the same RLC service interface to the upper PDCP layer.
 
 RLC Service Primitives
-^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""
 
 The following list specifies which service primitives are provided by the RLC service interfaces:
 
@@ -748,7 +748,7 @@ The following list specifies which service primitives are provided by the RLC se
           in the receiver peer
 
 MAC Service Interface
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 The MAC service interface is divided into two parts:
 
@@ -756,7 +756,7 @@ The MAC service interface is divided into two parts:
   * the ``MacSapUser``  part is provided by the upper RLC layer and used by the MAC layer.
 
 MAC Service Primitives
-^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""
 
 The following list specifies which service primitives are provided by the MAC service interfaces:
 
@@ -781,10 +781,10 @@ The following list specifies which service primitives are provided by the MAC se
 
 
 Interactions between entities and services
-++++++++++++++++++++++++++++++++++++++++++
+------------------------------------------
 
 Transmit operations in downlink
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following sequence diagram shows the interactions between the
 different entities (RRC, PDCP, AM RLC, MAC and MAC scheduler) of the
@@ -837,7 +837,7 @@ does the following:
       PDU to the MAC entity. 
 
 Retransmission in downlink
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The sequence diagram of Figure :ref:`fig-lte-rlc-data-retx-dl` shows
 the interactions between the different entities (AM RLC, MAC and MAC
@@ -860,7 +860,7 @@ When a data PDUs is retransmitted from the Transmitted PDUs Buffer, it is also m
 Retransmission Buffer.
 
 Transmit operations in uplink
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The sequence diagram of Figure :ref:`fig-lte-rlc-data-txon-ul` shows
 the interactions between the different entities of the UE (RRC, PDCP,
@@ -881,7 +881,7 @@ to the MAC Scheduler in the eNB over the air using the control
 channel. 
 
 Retransmission in uplink
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The sequence diagram of Figure :ref:`fig-lte-rlc-data-retx-ul` shows
 the interactions between the different entities of the UE (AM RLC and
@@ -898,13 +898,13 @@ by the AM RLC entity.
 
 
 AM data transfer
-++++++++++++++++
+----------------
 
 The processing of the data transfer in the AM RLC entity is explained in section 5.1.3 of [TS36322]_.
 In this section we describe some details of the implementation of the RLC entity.
 
 Management of buffers in transmit operations
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The AM RLC entity manages 3 buffers:
 
@@ -924,7 +924,7 @@ The AM RLC entity manages 3 buffers:
 
 
 Calculation of the buffer size
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The Transmission Buffer contains RLC SDUs. A RLC PDU is one or more SDU segments plus an RLC header.
 The size of the RLC header of one RLC PDU depends on the number of SDU segments the PDU contains.
@@ -951,7 +951,7 @@ of unneeded fragmentation.
 
 
 Concatenation and Segmentation
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The AM RLC entity generates and sends exactly one RLC PDU for each transmission opportunity even
 if it is smaller than the size reported by the transmission opportunity. So for instance, if a
@@ -964,7 +964,7 @@ present in the AM RLC entity.
 It is noted that, according to the 3GPP specs, there is no concatenation for the Retransmission Buffer.
 
 Re-segmentation
----------------
+^^^^^^^^^^^^^^^
 
 The current model of the AM RLC entity does not support the
 re-segmentation of the retransmission buffer. Rather, the AM RLC
@@ -974,7 +974,7 @@ received.
 
 
 Unsupported features
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 We do not support the following procedures of [TS36322]_ :
 
@@ -992,7 +992,7 @@ We do not support any of the additional primitives of RLC SAP for AM RLC entity.
 
 
 RLC/SM
-++++++++++++++++++
+------
 
 In addition to the full-fledged RLC/UM and RLC/AM implementations,
 a simplified RLC model is provided, which is denoted RLC/SM. This RLC model does not accepts
@@ -1029,7 +1029,7 @@ implementations (RLC/UM or RLC/AM).
 
 
 PDCP
-++++
+----
 
 The reference document for the specification of the PDCP entity is
 [TS36323]_. With respect to this specification, the PDCP model
@@ -1050,9 +1050,9 @@ The following features are currently not supported:
 
 
 
----
+
 RRC
----
++++
 
 At the time of this writing, the RRC model implemented in the
 simulator is not comprehensive of all the funcionalities defined  
@@ -1077,27 +1077,27 @@ specifications.
 
 
 
----
+
 PHY
----
++++
 
 
 Overview
-++++++++
+--------
 
 The physical layer model provided in this LTE simulator is based on
 the one described in [Piro2011]_, with the following modifications.  The model now includes the 
 inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
 
 CQI feedback
-+++++++++++++
+^^^^^^^^^^^^
 
 The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
 
 Interference Model
-++++++++++++++++++
+^^^^^^^^^^^^^^^^^^
 
 The PHY model is based on the well-known Gaussian interference models, according to which the powers of interfering signals (in linear units) are summed up together to determine the overall interference power.
 
@@ -1114,7 +1114,7 @@ The sequence diagram of Figure :ref:`fig-lte-phy-interference` shows how interfe
 
 
 LTE Spectrum Model
-++++++++++++++++++
+^^^^^^^^^^^^^^^^^^
 
 The usage of the radio spectrum by eNBs and UEs in LTE is described in
 [TS36.101]_. In the simulator, radio spectrum usage is modeled as follows. 
