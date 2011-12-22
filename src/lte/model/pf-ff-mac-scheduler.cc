@@ -1181,7 +1181,14 @@ PfFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   if (it!=m_ceBsrRxed.end ())
     {
 //       NS_LOG_DEBUG (this << " UE " << rnti << " size " << size << " BSR " << (*it).second);      
-      (*it).second -= size;
+      if ((*it).second >= size)
+        {
+          (*it).second -= size;
+        }
+      else
+        {
+          (*it).second = 0;
+        }
     }
   else
     {

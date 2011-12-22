@@ -23,6 +23,7 @@
 
 #include "lte-amc.h"
 #include "rr-ff-mac-scheduler.h"
+#include <ns3/simulator.h>
 
 NS_LOG_COMPONENT_DEFINE ("RrFfMacScheduler");
 
@@ -816,6 +817,7 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
             {
               // update the CQI value
               (*it).second = BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0));
+//               NS_LOG_DEBUG (this << " Update BSR with " << BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0)) << " at " << Simulator::Now ());
             }
         }
     }
@@ -1010,8 +1012,15 @@ RrFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " szie " << size << " BSR " << (*it).second);      
-      (*it).second -= size;
+//       NS_LOG_DEBUG (this << " Update RLC BSR UE " << rnti << " size " << size << " BSR " << (*it).second);      
+      if ((*it).second >= size)
+        {
+          (*it).second -= size;
+        }
+      else
+        {
+          (*it).second = 0;
+        }
     }
   else
     {
