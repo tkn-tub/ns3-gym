@@ -39,10 +39,12 @@
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lena-helper.h>
-#include "ns3/string.h"
-#include "ns3/double.h"
+#include <ns3/string.h>
+#include <ns3/double.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
+#include <ns3/config.h>
+
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestPhyErrorModel");
@@ -55,8 +57,26 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
 {
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
 
-  // TB size of 72 bits
-  AddTestCase (new LenaPhyErrorModelTestCase (7,700,1383000,1239000));
+  // MCS 2 TB size of 72 bits BER 0.9 SINR -2.21
+//   AddTestCase (new LenaPhyErrorModelTestCase (7,898,1383000,1239000));
+  // MCS 2 TB size of 176 bits BER 0.19 SINR -2.21
+//   AddTestCase (new LenaPhyErrorModelTestCase (4,898,1383000,1239000));
+// MCS 2 TB size of 328 bits BER 0.09
+//   AddTestCase (new LenaPhyErrorModelTestCase (3,900,1383000,1239000));
+// MCS 2 TB size of 520 bits BER 0.123
+//   AddTestCase (new LenaPhyErrorModelTestCase (2,920,1383000,1239000));
+// MCS 2 TB size of 1080 bits BER 0.097
+//   AddTestCase (new LenaPhyErrorModelTestCase (1,930,1383000,1239000));
+  // MCS 12 TB size of 4776 bits  BER 0.017  SINR 4.19
+//   AddTestCase (new LenaPhyErrorModelTestCase (1,538,1383000,1239000));
+// MCS 12 TB size of 1608 bits  BER 0.23  SINR 4.19
+  AddTestCase (new LenaPhyErrorModelTestCase (3,538,1383000,1239000));
+  // MCS 12 TB size of 1608 bits  BER 0.23  SINR 4.19
+//   AddTestCase (new LenaPhyErrorModelTestCase (7,538,1383000,1239000));
+// MCS 14 TB size of 6248 bits (3136 x 2) BER 0.0.18 (0.096 x 2) SINR 5.53
+//   AddTestCase (new LenaPhyErrorModelTestCase (1,500,1383000,1239000));
+
+ 
 
 }
 
@@ -86,6 +106,11 @@ LenaPhyErrorModelTestCase::~LenaPhyErrorModelTestCase ()
 void
 LenaPhyErrorModelTestCase::DoRun (void)
 {
+  
+  //   double ber = 0.00005;
+   double ber = 0.01;
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
+  
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
@@ -134,7 +159,6 @@ LenaPhyErrorModelTestCase::DoRun (void)
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
   
   // Create Nodes: eNodeB and UE
@@ -154,10 +178,6 @@ LenaPhyErrorModelTestCase::DoRun (void)
   lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
-  
-  double ber = 0.00005;
-  ber = 0.1;
-  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
@@ -218,22 +238,23 @@ LenaPhyErrorModelTestCase::DoRun (void)
       // get the lcId
       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / simulationTime << " ref " << m_thrRefDl);
+      double txed = rlcStats->GetDlTxData (imsi, lcId);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << 1.0 - ((double)dlDataRxed.at (i)/txed));
 //       NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
     }
 
-  NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
-  std::vector <uint64_t> ulDataRxed;
-  for (int i = 0; i < m_nUser; i++)
-    {
-      // get the imsi
-      uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      // get the lcId
-      uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
-      ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
-//       NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
-    }
+//   NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
+//   std::vector <uint64_t> ulDataRxed;
+//   for (int i = 0; i < m_nUser; i++)
+//     {
+//       // get the imsi
+//       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
+//       // get the lcId
+//       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
+//       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
+//       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
+// //       NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
+//     }
 
   Simulator::Destroy ();
 }

@@ -205,15 +205,12 @@ int TransportBlockSizeTable [110][27] = {
 
 
 LteAmc::LteAmc ()
-  :m_ber (0.00005)
 {
-  
 }
 
 
 LteAmc::~LteAmc ()
-{
-  
+{ 
 }
 
 TypeId
@@ -315,7 +312,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
                                  << ", sinr = " << sinr_
                                  << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
                                  << ", spectral efficiency =" << s
-                                 << ", CQI = " << cqi_ );
+                                 << ", CQI = " << cqi_ << ", BER = " << m_ber);
 
           cqi.push_back (cqi_);
         }
