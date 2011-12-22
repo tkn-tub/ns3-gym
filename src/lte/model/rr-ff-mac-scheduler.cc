@@ -213,7 +213,7 @@ RrFfMacScheduler::RrFfMacScheduler ()
     m_nextRntiDl (0),
     m_nextRntiUl (0)
 {
-  m_amc = new LteAmc ();
+  m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new RrSchedulerMemberCschedSapProvider (this);
   m_schedSapProvider = new RrSchedulerMemberSchedSapProvider (this);
 }
@@ -227,7 +227,6 @@ void
 RrFfMacScheduler::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_amc;
   delete m_cschedSapProvider;
   delete m_schedSapProvider;
 }
