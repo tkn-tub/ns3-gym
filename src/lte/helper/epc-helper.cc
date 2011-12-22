@@ -65,6 +65,8 @@ EpcHelper::EpcHelper ()
 
   // create TUN device implementing tunneling of user data over GTP-U/UDP/IP 
   Ptr<VirtualNetDevice> tunDevice = CreateObject<VirtualNetDevice> ();
+  // allow jumbo packets
+  tunDevice->SetAttribute ("Mtu", UintegerValue (30000));
 
   // yes we need this
   tunDevice->SetAddress (Mac48Address::Allocate ()); 

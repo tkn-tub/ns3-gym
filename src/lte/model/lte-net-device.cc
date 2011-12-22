@@ -55,10 +55,10 @@ TypeId LteNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
 
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
-                   UintegerValue (1500),
+                   UintegerValue (30000),
                    MakeUintegerAccessor (&LteNetDevice::SetMtu,
                                          &LteNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> (0,MAX_MSDU_SIZE))
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -155,10 +155,6 @@ bool
 LteNetDevice::SetMtu (const uint16_t mtu)
 {
   NS_LOG_FUNCTION (this << mtu);
-  if (mtu > MAX_MSDU_SIZE)
-    {
-      return false;
-    }
   m_mtu = mtu;
   return true;
 }

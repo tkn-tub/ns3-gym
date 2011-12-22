@@ -29,7 +29,6 @@
 #include "ns3/test.h"
 #include "ns3/epc-helper.h"
 #include "ns3/packet-sink-helper.h"
-#include "ns3/udp-client-server-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/csma-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -45,7 +44,7 @@
 #include "ns3/arp-cache.h"
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
-
+#include "ns3/config.h"
 
 namespace ns3 {
 
@@ -137,7 +136,7 @@ LteRadioBearerTagUdpClient::GetTypeId (void)
                    "Size of packets generated. The minimum packet size is 12 bytes which is the size of the header carrying the sequence number and the time stamp.",
                    UintegerValue (1024),
                    MakeUintegerAccessor (&LteRadioBearerTagUdpClient::m_size),
-                   MakeUintegerChecker<uint32_t> (12,1500))
+                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -294,6 +293,11 @@ EpcS1uUlTestCase::DoRun ()
 {
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
+
+  // allow jumbo packets
+  Config::SetDefault ("ns3::CsmaNetDevice::Mtu", UintegerValue (30000));
+  Config::SetDefault ("ns3::PointToPointNetDevice::Mtu", UintegerValue (30000));
+  epcHelper->SetAttribute ("S1uLinkMtu", UintegerValue (30000));
   
   // Create a single RemoteHost
   NodeContainer remoteHostContainer;
@@ -304,6 +308,7 @@ EpcS1uUlTestCase::DoRun ()
 
   // Create the internet
   PointToPointHelper p2ph;
+  p2ph.SetDeviceAttribute ("DataRate",  DataRateValue (DataRate ("100Gb/s")));
   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
@@ -490,6 +495,34 @@ EpcS1uUlTestSuite::EpcS1uUlTestSuite ()
   v4.push_back (e2);
   AddTestCase (new EpcS1uUlTestCase ("3 eNBs", v4));
 
+  std::vector<EnbUlTestData> v5;  
+  EnbUlTestData e5;
+  UeUlTestData f5 (10, 3000, 1, 1);
+  e5.ues.push_back (f5);
+  v5.push_back (e5);
+  AddTestCase (new EpcS1uUlTestCase ("1 eNB, 10 pkts 3000 bytes each", v5));
+
+  std::vector<EnbUlTestData> v6;  
+  EnbUlTestData e6;
+  UeUlTestData f6 (50, 3000, 1, 1);
+  e6.ues.push_back (f6);
+  v6.push_back (e6);
+  AddTestCase (new EpcS1uUlTestCase ("1 eNB, 50 pkts 3000 bytes each", v6));
+
+  std::vector<EnbUlTestData> v7;  
+  EnbUlTestData e7;
+  UeUlTestData f7 (10, 15000, 1, 1);
+  e7.ues.push_back (f7);
+  v7.push_back (e7);
+  AddTestCase (new EpcS1uUlTestCase ("1 eNB, 10 pkts 15000 bytes each", v7));
+
+  std::vector<EnbUlTestData> v8;  
+  EnbUlTestData e8;
+  UeUlTestData f8 (100, 15000, 1, 1);
+  e8.ues.push_back (f8);
+  v8.push_back (e8);
+  AddTestCase (new EpcS1uUlTestCase ("1 eNB, 100 pkts 15000 bytes each", v8));
+  
 }
 
 

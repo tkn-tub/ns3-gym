@@ -112,7 +112,7 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
           return;
         }
       m_ulFirstWrite = false;
-      outFile << "# time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcs\tsize";
+      outFile << "% time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcs\tsize";
       outFile << std::endl;
     }
   else
