@@ -51,6 +51,8 @@ typedef std::map<ImsiLcidPair_t, LteFlowId_t> FlowIdMap;
  *   - Number of received bytes
  *   - Average, min, max and standard deviation of RLC to RLC delay
  *   - Average, min, max and standard deviation of RLC PDU size
+ *   TODO: Actual statistics calculation implies checking the time every time a packet is send or received so it is not very efficient. The epoch
+ *   implementation should be replaced by a timer to avoid this overhead.
  */
 class RadioBearerStatsCalculator : public LteStatsCalculator
 {
@@ -245,7 +247,7 @@ private:
   void ResetResults (void);
 
   void StartEpoch (void);
-  void CheckEpoch (bool forceEpoch = false);
+  void CheckEpoch (void);
 
   FlowIdMap m_flowId;
 

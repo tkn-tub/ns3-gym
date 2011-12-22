@@ -25,533 +25,519 @@
 #include <vector>
 #include <algorithm>
 
-namespace ns3 {
+namespace ns3
+{
 
 NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsCalculator");
 
-NS_OBJECT_ENSURE_REGISTERED (RadioBearerStatsCalculator);
+NS_OBJECT_ENSURE_REGISTERED ( RadioBearerStatsCalculator);
 
-RadioBearerStatsCalculator::RadioBearerStatsCalculator ()
-  : m_firstWrite (true)
+RadioBearerStatsCalculator::RadioBearerStatsCalculator () :
+  m_firstWrite(true)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION(this);
 
 }
 
 RadioBearerStatsCalculator::~RadioBearerStatsCalculator ()
 {
-  NS_LOG_FUNCTION (this);
-  ShowResults ();
+  NS_LOG_FUNCTION(this);
+  ShowResults();
 }
 
 TypeId
 RadioBearerStatsCalculator::GetTypeId (void)
 {
-  static TypeId tid =
-    TypeId ("ns3::RadioBearerStatsCalculator")
-    .SetParent<Object> ()
-    .AddConstructor<RadioBearerStatsCalculator> ()
-    .AddAttribute ("StartTime",
-                   "Start time of the on going epoch.", 
-                   TimeValue (Seconds (0.)),
-                   MakeTimeAccessor (&RadioBearerStatsCalculator::m_startTime),
-                   MakeTimeChecker ())
-    .AddAttribute ("EpochDuration",
-                   "Epoch duration.", 
-                   TimeValue (Seconds (0.25)), 
-                   MakeTimeAccessor (&RadioBearerStatsCalculator::m_epochDuration), 
-                   MakeTimeChecker ());
+  static TypeId tid = TypeId("ns3::RadioBearerStatsCalculator") .SetParent<
+      Object> () .AddConstructor<RadioBearerStatsCalculator> () .AddAttribute(
+      "StartTime", "Start time of the on going epoch.", TimeValue(Seconds(0.)),
+      MakeTimeAccessor(&RadioBearerStatsCalculator::m_startTime),
+      MakeTimeChecker()) .AddAttribute("EpochDuration", "Epoch duration.",
+      TimeValue(Seconds(0.25)),
+      MakeTimeAccessor(&RadioBearerStatsCalculator::m_epochDuration),
+      MakeTimeChecker());
   return tid;
 }
 
 void
 RadioBearerStatsCalculator::UlTxPdu (uint64_t imsi, uint16_t rnti,
-                             uint8_t lcid, uint32_t packetSize)
+    uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (this << "UlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
-  ImsiLcidPair_t p (imsi, lcid);
-  if (Simulator::Now () > m_startTime)
+  NS_LOG_FUNCTION(this << "UlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
+  CheckEpoch();
+  ImsiLcidPair_t p(imsi, lcid);
+  if (Simulator::Now() > m_startTime)
     {
-      m_flowId[p] = LteFlowId_t (rnti, lcid);
+      m_flowId[p] = LteFlowId_t(rnti, lcid);
       m_ulTxPackets[p]++;
       m_ulTxData[p] += packetSize;
     }
-  CheckEpoch ();
 }
 
 void
-RadioBearerStatsCalculator::DlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti,
-                             uint8_t lcid, uint32_t packetSize)
+RadioBearerStatsCalculator::DlTxPdu (uint16_t cellId, uint64_t imsi,
+    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (this << "DlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
-  ImsiLcidPair_t p (imsi, lcid);
-  bool forceEpoch = false;
-  if (Simulator::Now () > m_startTime)
+  NS_LOG_FUNCTION(this << "DlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
+  CheckEpoch();
+  ImsiLcidPair_t p(imsi, lcid);
+  if (Simulator::Now() > m_startTime)
     {
-
-      // If the UE hands off to another cell, restart the epoch automatically
-      if (m_dlCellId[p] != 0 && m_dlCellId[p] != cellId)
-        {
-          forceEpoch = true;
-        }
-      else
-        {
-          m_dlCellId[p] = cellId;
-        }
-      m_flowId[p] = LteFlowId_t (rnti, lcid);
+      m_dlCellId[p] = cellId;
+      m_flowId[p] = LteFlowId_t(rnti, lcid);
       m_dlTxPackets[p]++;
       m_dlTxData[p] += packetSize;
     }
-  CheckEpoch (forceEpoch);
 }
 
 void
-RadioBearerStatsCalculator::UlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rnti,
-                             uint8_t lcid, uint32_t packetSize, uint64_t delay)
+RadioBearerStatsCalculator::UlRxPdu (uint16_t cellId, uint64_t imsi,
+    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_FUNCTION (this << "UlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
-  ImsiLcidPair_t p (imsi, lcid);
-  bool forceEpoch = false;
+  NS_LOG_FUNCTION(this << "UlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
+  ImsiLcidPair_t p(imsi, lcid);
+  CheckEpoch();
 
-  if (Simulator::Now () > m_startTime)
+  if (Simulator::Now() > m_startTime)
     {
-      // If the UE hands off to another cell, restart the epoch automatically
-      if (m_ulCellId[p] != 0 && m_ulCellId[p] != cellId)
-        {
-          forceEpoch = true;
-        }
-      else
-        {
-          m_ulCellId[p] = cellId;
-        }
-
+      m_ulCellId[p] = cellId;
       m_ulRxPackets[p]++;
       m_ulRxData[p] += packetSize;
 
-      Uint64StatsMap::iterator it = m_ulDelay.find (p);
-      if (it == m_ulDelay.end ())
+      Uint64StatsMap::iterator it = m_ulDelay.find(p);
+      if (it == m_ulDelay.end())
         {
-          NS_LOG_DEBUG (this << " Creating UL stats calculators for IMSI " << p.m_imsi << " and LCID " << (uint32_t) p.m_lcId );
+          NS_LOG_DEBUG(
+              this << " Creating UL stats calculators for IMSI " << p.m_imsi
+                  << " and LCID " << (uint32_t) p.m_lcId);
           m_ulDelay[p] = CreateObject<MinMaxAvgTotalCalculator<uint64_t> > ();
           m_ulPduSize[p] = CreateObject<MinMaxAvgTotalCalculator<uint32_t> > ();
         }
-      m_ulDelay[p]->Update (delay);
-      m_ulPduSize[p]->Update (packetSize);
+      m_ulDelay[p]->Update(delay);
+      m_ulPduSize[p]->Update(packetSize);
     }
-
-  CheckEpoch (forceEpoch);
 }
 
 void
 RadioBearerStatsCalculator::DlRxPdu (uint64_t imsi, uint16_t rnti,
-                             uint8_t lcid, uint32_t packetSize, uint64_t delay)
+    uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_FUNCTION (this << "DlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
-  ImsiLcidPair_t p (imsi, lcid);
-  if (Simulator::Now () > m_startTime)
+  NS_LOG_FUNCTION(this << "DlRxPDU" << imsi << rnti << (uint32_t) lcid << packetSize << delay);
+  CheckEpoch();
+  ImsiLcidPair_t p(imsi, lcid);
+  if (Simulator::Now() > m_startTime)
     {
       m_dlRxPackets[p]++;
       m_dlRxData[p] += packetSize;
 
-      Uint64StatsMap::iterator it = m_dlDelay.find (p);
-      if (it == m_dlDelay.end ())
+      Uint64StatsMap::iterator it = m_dlDelay.find(p);
+      if (it == m_dlDelay.end())
         {
-          NS_LOG_DEBUG (this << " Creating DL stats calculators for IMSI " << p.m_imsi << " and LCID " << (uint32_t) p.m_lcId );
+          NS_LOG_DEBUG(
+              this << " Creating DL stats calculators for IMSI " << p.m_imsi
+                  << " and LCID " << (uint32_t) p.m_lcId);
           m_dlDelay[p] = CreateObject<MinMaxAvgTotalCalculator<uint64_t> > ();
           m_dlPduSize[p] = CreateObject<MinMaxAvgTotalCalculator<uint32_t> > ();
         }
-      m_dlDelay[p]->Update (delay);
-      m_dlPduSize[p]->Update (packetSize);
+      m_dlDelay[p]->Update(delay);
+      m_dlPduSize[p]->Update(packetSize);
     }
-  CheckEpoch ();
 }
 
 void
 RadioBearerStatsCalculator::ShowResults (void)
 {
 
-  NS_LOG_FUNCTION (this << GetUlOutputFilename ().c_str () << GetDlOutputFilename ().c_str () );
-  NS_LOG_INFO ("Write Rlc Stats in " << GetUlOutputFilename ().c_str () <<
-               " and in " << GetDlOutputFilename ().c_str ());
+  NS_LOG_FUNCTION(
+      this << GetUlOutputFilename().c_str() << GetDlOutputFilename().c_str());
+  NS_LOG_INFO(
+      "Write Rlc Stats in " << GetUlOutputFilename().c_str() << " and in "
+          << GetDlOutputFilename().c_str());
 
   std::ofstream ulOutFile;
   std::ofstream dlOutFile;
 
   if (m_firstWrite == true)
     {
-      ulOutFile.open (GetUlOutputFilename ().c_str ());
-      if (!ulOutFile.is_open ())
+      ulOutFile.open(GetUlOutputFilename().c_str());
+      if (!ulOutFile.is_open())
         {
-          NS_LOG_ERROR ("Can't open file " << GetUlOutputFilename ().c_str ());
+          NS_LOG_ERROR("Can't open file " << GetUlOutputFilename().c_str());
           return;
         }
 
-      dlOutFile.open (GetDlOutputFilename ().c_str ());
-      if (!dlOutFile.is_open ())
+      dlOutFile.open(GetDlOutputFilename().c_str());
+      if (!dlOutFile.is_open())
         {
-          NS_LOG_ERROR ("Can't open file " << GetDlOutputFilename ().c_str ());
+          NS_LOG_ERROR("Can't open file " << GetDlOutputFilename().c_str());
           return;
         }
       m_firstWrite = false;
       ulOutFile
-      << "% start\tend\tCellId\tIMSI\tRNTI\tLCID\tnTxPDUs\tTxBytes\tnRxPDUs\tRxBytes\t";
+          << "% start\tend\tCellId\tIMSI\tRNTI\tLCID\tnTxPDUs\tTxBytes\tnRxPDUs\tRxBytes\t";
       ulOutFile << "delay\tstdDev\tmin\tmax\t";
       ulOutFile << "PduSize\tstdDev\tmin\tmax";
       ulOutFile << std::endl;
       dlOutFile
-      << "% start\tend\tCellId\tIMSI\tRNTI\tLCID\tnTxPDUs\tTxBytes\tnRxPDUs\tRxBytes\t";
+          << "% start\tend\tCellId\tIMSI\tRNTI\tLCID\tnTxPDUs\tTxBytes\tnRxPDUs\tRxBytes\t";
       dlOutFile << "delay\tstdDev\tmin\tmax\t";
       dlOutFile << "PduSize\tstdDev\tmin\tmax";
       dlOutFile << std::endl;
     }
   else
     {
-      ulOutFile.open (GetUlOutputFilename ().c_str (), std::ios_base::app);
-      if (!ulOutFile.is_open ())
+      ulOutFile.open(GetUlOutputFilename().c_str(), std::ios_base::app);
+      if (!ulOutFile.is_open())
         {
-          NS_LOG_ERROR ("Can't open file " << GetUlOutputFilename ().c_str ());
+          NS_LOG_ERROR("Can't open file " << GetUlOutputFilename().c_str());
           return;
         }
 
-      dlOutFile.open (GetDlOutputFilename ().c_str (), std::ios_base::app);
-      if (!dlOutFile.is_open ())
+      dlOutFile.open(GetDlOutputFilename().c_str(), std::ios_base::app);
+      if (!dlOutFile.is_open())
         {
-          NS_LOG_ERROR ("Can't open file " << GetDlOutputFilename ().c_str ());
+          NS_LOG_ERROR("Can't open file " << GetDlOutputFilename().c_str());
           return;
         }
     }
 
-  WriteUlResults (ulOutFile);
-  WriteDlResults (dlOutFile);
+  WriteUlResults(ulOutFile);
+  WriteDlResults(dlOutFile);
 
 }
 
 void
 RadioBearerStatsCalculator::WriteUlResults (std::ofstream& outFile)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION(this);
 
   // Get the unique IMSI / LCID list
 
-  std::vector<ImsiLcidPair_t> pairVector;
-  for (Uint32Map::iterator it = m_ulTxPackets.begin (); it
-       != m_ulTxPackets.end (); ++it)
+  std::vector < ImsiLcidPair_t > pairVector;
+  for (Uint32Map::iterator it = m_ulTxPackets.begin(); it
+      != m_ulTxPackets.end(); ++it)
     {
-      if (find (pairVector.begin (), pairVector.end (), (*it).first)
-          == pairVector.end ())
+      if (find(pairVector.begin(), pairVector.end(), (*it).first)
+          == pairVector.end())
         {
-          pairVector.push_back ((*it).first);
+          pairVector.push_back((*it).first);
         }
     }
 
   Time endTime = m_startTime + m_epochDuration;
-  for (std::vector<ImsiLcidPair_t>::iterator it = pairVector.begin (); it
-       != pairVector.end (); ++it)
+  for (std::vector<ImsiLcidPair_t>::iterator it = pairVector.begin(); it
+      != pairVector.end(); ++it)
     {
       ImsiLcidPair_t p = *it;
-      outFile << m_startTime.GetNanoSeconds () / 1.0e9 << "\t";
-      outFile << endTime.GetNanoSeconds () / 1.0e9 << "\t";
-      outFile << GetUlCellId (p.m_imsi, p.m_lcId) << "\t";
+      outFile << m_startTime.GetNanoSeconds() / 1.0e9 << "\t";
+      outFile << endTime.GetNanoSeconds() / 1.0e9 << "\t";
+      outFile << GetUlCellId(p.m_imsi, p.m_lcId) << "\t";
       outFile << p.m_imsi << "\t";
       outFile << m_flowId[p].m_rnti << "\t";
       outFile << (uint32_t) m_flowId[p].m_lcId << "\t";
-      outFile << GetUlTxPackets (p.m_imsi, p.m_lcId) << "\t";
-      outFile << GetUlTxData (p.m_imsi, p.m_lcId) << "\t";
-      outFile << GetUlRxPackets (p.m_imsi, p.m_lcId) << "\t";
-      outFile << GetUlRxData (p.m_imsi, p.m_lcId) << "\t";
-      std::vector<double> stats = GetUlDelayStats (p.m_imsi, p.m_lcId);
-      for (std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it)
+      outFile << GetUlTxPackets(p.m_imsi, p.m_lcId) << "\t";
+      outFile << GetUlTxData(p.m_imsi, p.m_lcId) << "\t";
+      outFile << GetUlRxPackets(p.m_imsi, p.m_lcId) << "\t";
+      outFile << GetUlRxData(p.m_imsi, p.m_lcId) << "\t";
+      std::vector<double> stats = GetUlDelayStats(p.m_imsi, p.m_lcId);
+      for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
         {
           outFile << (*it) * 1e-9 << "\t";
         }
-      stats = GetUlPduSizeStats (p.m_imsi, p.m_lcId);
-      for (std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it)
+      stats = GetUlPduSizeStats(p.m_imsi, p.m_lcId);
+      for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
         {
           outFile << (*it) << "\t";
         }
       outFile << std::endl;
     }
 
-  outFile.close ();
+  outFile.close();
 }
 
 void
 RadioBearerStatsCalculator::WriteDlResults (std::ofstream& outFile)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION(this);
 
   // Get the unique IMSI list
-  std::vector<ImsiLcidPair_t> pairVector;
-  for (Uint32Map::iterator it = m_dlTxPackets.begin (); it
-       != m_dlTxPackets.end (); ++it)
+  std::vector < ImsiLcidPair_t > pairVector;
+  for (Uint32Map::iterator it = m_dlTxPackets.begin(); it
+      != m_dlTxPackets.end(); ++it)
     {
-      if (find (pairVector.begin (), pairVector.end (), (*it).first)
-          == pairVector.end ())
+      if (find(pairVector.begin(), pairVector.end(), (*it).first)
+          == pairVector.end())
         {
-          pairVector.push_back ((*it).first);
+          pairVector.push_back((*it).first);
         }
     }
 
   Time endTime = m_startTime + m_epochDuration;
-  for (std::vector<ImsiLcidPair_t>::iterator pair = pairVector.begin (); pair
-       != pairVector.end (); ++pair)
+  for (std::vector<ImsiLcidPair_t>::iterator pair = pairVector.begin(); pair
+      != pairVector.end(); ++pair)
     {
       ImsiLcidPair_t p = *pair;
-      outFile << m_startTime.GetNanoSeconds () / 1.0e9 << "\t";
-      outFile << endTime.GetNanoSeconds () / 1.0e9 << "\t";
-      outFile << GetDlCellId (p.m_imsi, p.m_lcId) << "\t";
+      outFile << m_startTime.GetNanoSeconds() / 1.0e9 << "\t";
+      outFile << endTime.GetNanoSeconds() / 1.0e9 << "\t";
+      outFile << GetDlCellId(p.m_imsi, p.m_lcId) << "\t";
       outFile << p.m_imsi << "\t";
       outFile << m_flowId[p].m_rnti << "\t";
       outFile << (uint32_t) m_flowId[p].m_lcId << "\t";
-      outFile << GetDlTxPackets (p.m_imsi, p.m_lcId) << "\t";
-      outFile << GetDlTxData (p.m_imsi, p.m_lcId) << "\t";
-      outFile << GetDlRxPackets (p.m_imsi, p.m_lcId) << "\t";
-      outFile << GetDlRxData (p.m_imsi, p.m_lcId) << "\t";
-      std::vector<double> stats = GetDlDelayStats (p.m_imsi, p.m_lcId);
-      for (std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it)
+      outFile << GetDlTxPackets(p.m_imsi, p.m_lcId) << "\t";
+      outFile << GetDlTxData(p.m_imsi, p.m_lcId) << "\t";
+      outFile << GetDlRxPackets(p.m_imsi, p.m_lcId) << "\t";
+      outFile << GetDlRxData(p.m_imsi, p.m_lcId) << "\t";
+      std::vector<double> stats = GetDlDelayStats(p.m_imsi, p.m_lcId);
+      for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
         {
           outFile << (*it) * 1e-9 << "\t";
         }
-      stats = GetDlPduSizeStats (p.m_imsi, p.m_lcId);
-      for (std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it)
+      stats = GetDlPduSizeStats(p.m_imsi, p.m_lcId);
+      for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
         {
           outFile << (*it) << "\t";
         }
       outFile << std::endl;
     }
 
-  outFile.close ();
+  outFile.close();
 }
 
 void
 RadioBearerStatsCalculator::ResetResults (void)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION(this);
 
-  m_ulTxPackets.erase (m_ulTxPackets.begin (), m_ulTxPackets.end ());
-  m_ulRxPackets.erase (m_ulRxPackets.begin (), m_ulRxPackets.end ());
-  m_ulRxData.erase (m_ulRxData.begin (), m_ulRxData.end ());
-  m_ulTxData.erase (m_ulTxData.begin (), m_ulTxData.end ());
-  m_ulDelay.erase (m_ulDelay.begin (), m_ulDelay.end ());
-  m_ulPduSize.erase (m_ulPduSize.begin (), m_ulPduSize.end ());
+  m_ulTxPackets.erase(m_ulTxPackets.begin(), m_ulTxPackets.end());
+  m_ulRxPackets.erase(m_ulRxPackets.begin(), m_ulRxPackets.end());
+  m_ulRxData.erase(m_ulRxData.begin(), m_ulRxData.end());
+  m_ulTxData.erase(m_ulTxData.begin(), m_ulTxData.end());
+  m_ulDelay.erase(m_ulDelay.begin(), m_ulDelay.end());
+  m_ulPduSize.erase(m_ulPduSize.begin(), m_ulPduSize.end());
 
-  m_dlTxPackets.erase (m_dlTxPackets.begin (), m_dlTxPackets.end ());
-  m_dlRxPackets.erase (m_dlRxPackets.begin (), m_dlRxPackets.end ());
-  m_dlRxData.erase (m_dlRxData.begin (), m_dlRxData.end ());
-  m_dlTxData.erase (m_dlTxData.begin (), m_dlTxData.end ());
-  m_dlDelay.erase (m_dlDelay.begin (), m_dlDelay.end ());
-  m_dlPduSize.erase (m_dlPduSize.begin (), m_dlPduSize.end ());
+  m_dlTxPackets.erase(m_dlTxPackets.begin(), m_dlTxPackets.end());
+  m_dlRxPackets.erase(m_dlRxPackets.begin(), m_dlRxPackets.end());
+  m_dlRxData.erase(m_dlRxData.begin(), m_dlRxData.end());
+  m_dlTxData.erase(m_dlTxData.begin(), m_dlTxData.end());
+  m_dlDelay.erase(m_dlDelay.begin(), m_dlDelay.end());
+  m_dlPduSize.erase(m_dlPduSize.begin(), m_dlPduSize.end());
 }
 
 void
-RadioBearerStatsCalculator::CheckEpoch (bool forceEpoch)
+RadioBearerStatsCalculator::CheckEpoch (void)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION(this);
 
-  if (Simulator::Now () > m_startTime + m_epochDuration /*|| forceEpoch == true*/)
+  if (Simulator::Now() > m_startTime + m_epochDuration)
     {
-      ShowResults ();
-      ResetResults ();
-      StartEpoch ();
+      ShowResults();
+      ResetResults();
+      StartEpoch();
     }
-
 }
 
 void
 RadioBearerStatsCalculator::StartEpoch (void)
 {
-  NS_LOG_FUNCTION (this);
-  m_startTime += m_epochDuration;
+  NS_LOG_FUNCTION(this);
+  while (Simulator::Now() > m_startTime + m_epochDuration)
+    {
+      m_startTime += m_epochDuration;
+    }
 }
 
 uint32_t
 RadioBearerStatsCalculator::GetUlTxPackets (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_ulTxPackets[p];
 }
 
 uint32_t
 RadioBearerStatsCalculator::GetUlRxPackets (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_ulRxPackets[p];
 }
 
 uint64_t
 RadioBearerStatsCalculator::GetUlTxData (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_ulTxData[p];
 }
 
 uint64_t
 RadioBearerStatsCalculator::GetUlRxData (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_ulRxData[p];
 }
 
 double
 RadioBearerStatsCalculator::GetUlDelay (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
-  Uint64StatsMap::iterator it = m_ulDelay.find (p);
-  if (it == m_ulDelay.end ())
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
+  Uint64StatsMap::iterator it = m_ulDelay.find(p);
+  if (it == m_ulDelay.end())
     {
-      NS_LOG_ERROR ("UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
+      NS_LOG_ERROR(
+          "UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
       return 0;
 
     }
-  return m_ulDelay[p]->getMean ();
+  return m_ulDelay[p]->getMean();
 }
 
 std::vector<double>
 RadioBearerStatsCalculator::GetUlDelayStats (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   std::vector<double> stats;
-  Uint64StatsMap::iterator it = m_ulDelay.find (p);
-  if (it == m_ulDelay.end ())
+  Uint64StatsMap::iterator it = m_ulDelay.find(p);
+  if (it == m_ulDelay.end())
     {
-      NS_LOG_ERROR ("UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
+      NS_LOG_ERROR(
+          "UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
       return stats;
 
     }
-  stats.push_back (m_ulDelay[p]->getMean ());
-  stats.push_back (m_ulDelay[p]->getStddev ());
-  stats.push_back (m_ulDelay[p]->getMin ());
-  stats.push_back (m_ulDelay[p]->getMax ());
+  stats.push_back(m_ulDelay[p]->getMean());
+  stats.push_back(m_ulDelay[p]->getStddev());
+  stats.push_back(m_ulDelay[p]->getMin());
+  stats.push_back(m_ulDelay[p]->getMax());
   return stats;
 }
 
 std::vector<double>
 RadioBearerStatsCalculator::GetUlPduSizeStats (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   std::vector<double> stats;
-  Uint32StatsMap::iterator it = m_ulPduSize.find (p);
-  if (it == m_ulPduSize.end ())
+  Uint32StatsMap::iterator it = m_ulPduSize.find(p);
+  if (it == m_ulPduSize.end())
     {
-      NS_LOG_ERROR ("UL PDU Size for " << imsi << " - " << (uint16_t) lcid << " not found");
+      NS_LOG_ERROR(
+          "UL PDU Size for " << imsi << " - " << (uint16_t) lcid
+              << " not found");
       return stats;
 
     }
-  stats.push_back (m_ulPduSize[p]->getMean ());
-  stats.push_back (m_ulPduSize[p]->getStddev ());
-  stats.push_back (m_ulPduSize[p]->getMin ());
-  stats.push_back (m_ulPduSize[p]->getMax ());
+  stats.push_back(m_ulPduSize[p]->getMean());
+  stats.push_back(m_ulPduSize[p]->getStddev());
+  stats.push_back(m_ulPduSize[p]->getMin());
+  stats.push_back(m_ulPduSize[p]->getMax());
   return stats;
 }
 
 uint32_t
 RadioBearerStatsCalculator::GetDlTxPackets (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_dlTxPackets[p];
 }
 
 uint32_t
 RadioBearerStatsCalculator::GetDlRxPackets (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_dlRxPackets[p];
 }
 
 uint64_t
 RadioBearerStatsCalculator::GetDlTxData (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_dlTxData[p];
 }
 
 uint64_t
 RadioBearerStatsCalculator::GetDlRxData (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_dlRxData[p];
 }
 
 uint32_t
 RadioBearerStatsCalculator::GetUlCellId (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_ulCellId[p];
 }
 
 uint32_t
 RadioBearerStatsCalculator::GetDlCellId (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   return m_dlCellId[p];
 }
 
 double
 RadioBearerStatsCalculator::GetDlDelay (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
-  Uint64StatsMap::iterator it = m_dlDelay.find (p);
-  if (it == m_dlDelay.end ())
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
+  Uint64StatsMap::iterator it = m_dlDelay.find(p);
+  if (it == m_dlDelay.end())
     {
-      NS_LOG_ERROR ("DL delay for " << imsi << " not found");
+      NS_LOG_ERROR("DL delay for " << imsi << " not found");
       return 0;
     }
-  return m_dlDelay[p]->getMean ();
+  return m_dlDelay[p]->getMean();
 }
 
 std::vector<double>
 RadioBearerStatsCalculator::GetDlDelayStats (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   std::vector<double> stats;
-  Uint64StatsMap::iterator it = m_dlDelay.find (p);
-  if (it == m_dlDelay.end ())
+  Uint64StatsMap::iterator it = m_dlDelay.find(p);
+  if (it == m_dlDelay.end())
     {
 
-      NS_LOG_ERROR ("DL delay for " << imsi << " not found");
+      NS_LOG_ERROR("DL delay for " << imsi << " not found");
       return stats;
 
     }
-  stats.push_back (m_dlDelay[p]->getMean ());
-  stats.push_back (m_dlDelay[p]->getStddev ());
-  stats.push_back (m_dlDelay[p]->getMin ());
-  stats.push_back (m_dlDelay[p]->getMax ());
+  stats.push_back(m_dlDelay[p]->getMean());
+  stats.push_back(m_dlDelay[p]->getStddev());
+  stats.push_back(m_dlDelay[p]->getMin());
+  stats.push_back(m_dlDelay[p]->getMax());
   return stats;
 }
 
 std::vector<double>
 RadioBearerStatsCalculator::GetDlPduSizeStats (uint64_t imsi, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this << imsi << (uint16_t) lcid);
-  ImsiLcidPair_t p (imsi, lcid);
+  NS_LOG_FUNCTION(this << imsi << (uint16_t) lcid);
+  ImsiLcidPair_t p(imsi, lcid);
   std::vector<double> stats;
-  Uint32StatsMap::iterator it = m_dlPduSize.find (p);
-  if (it == m_dlPduSize.end ())
+  Uint32StatsMap::iterator it = m_dlPduSize.find(p);
+  if (it == m_dlPduSize.end())
     {
 
-      NS_LOG_ERROR ("DL delay for " << imsi << " not found");
+      NS_LOG_ERROR("DL delay for " << imsi << " not found");
       return stats;
 
     }
-  stats.push_back (m_dlPduSize[p]->getMean ());
-  stats.push_back (m_dlPduSize[p]->getStddev ());
-  stats.push_back (m_dlPduSize[p]->getMin ());
-  stats.push_back (m_dlPduSize[p]->getMax ());
+  stats.push_back(m_dlPduSize[p]->getMean());
+  stats.push_back(m_dlPduSize[p]->getStddev());
+  stats.push_back(m_dlPduSize[p]->getMin());
+  stats.push_back(m_dlPduSize[p]->getMax());
   return stats;
 }
 
