@@ -69,6 +69,8 @@ available on all platforms; check the Installation page on the project wiki.
 - OS X Lion with g++-4.2.1
 - OS X Snow Leopard with g++-4.2.1 
 - Fedora Core 14 (64 bit) with g++-4.5.1
+- Fedora Core 16 (32/64 bit) with g++-4.6.2
+- FreeBSD 9.0-RC1 (AMD64)
 
 New user-visible features
 -------------------------
