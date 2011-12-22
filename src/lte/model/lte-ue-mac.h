@@ -103,6 +103,8 @@ private:
   
   Time m_bsrPeriodicity;
   Time m_bsrLast;
+  
+  bool m_freshUlBsr; // true when a BSR has been received in the last TTI
 
 
   uint16_t m_rnti;

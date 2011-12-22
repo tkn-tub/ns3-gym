@@ -180,7 +180,8 @@ LteUeMac::GetTypeId (void)
 
 LteUeMac::LteUeMac ()
   :  m_bsrPeriodicity (MilliSeconds (1)), // ideal behavior
-  m_bsrLast (MilliSeconds (0))
+  m_bsrLast (MilliSeconds (0)),
+  m_freshUlBsr (false)
   
 {
   NS_LOG_FUNCTION (this);
@@ -270,6 +271,7 @@ LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters 
     {
       m_ulBsrReceived.insert (std::pair<uint8_t, long uint> (params.lcid, params.txQueueSize + params.retxQueueSize + params.statusPduSize));
     }
+  m_freshUlBsr = true;
 }
 
 
@@ -277,6 +279,10 @@ void
 LteUeMac::SendReportBufferStatus (void)
 {
   NS_LOG_FUNCTION (this);
+  if (m_ulBsrReceived.size () == 0)
+    {
+      return;  // No BSR report to transmit
+    }
   MacCeListElement_s bsr;
   bsr.m_rnti = m_rnti;
   bsr.m_macCeType = MacCeListElement_s::BSR;
@@ -385,10 +391,11 @@ void
 LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   NS_LOG_FUNCTION (this);
-  if (Simulator::Now () >= m_bsrLast + m_bsrPeriodicity)
+  if ((Simulator::Now () >= m_bsrLast + m_bsrPeriodicity) && (m_freshUlBsr==true))
     {
       SendReportBufferStatus ();
       m_bsrLast = Simulator::Now ();
+      m_freshUlBsr = false;
     }
 }
 
