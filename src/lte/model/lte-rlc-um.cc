@@ -156,20 +156,30 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
 
   while ( firstSegment && (firstSegment->GetSize () > 0) && (nextSegmentSize > 0) )
     {
-      NS_LOG_LOGIC ("WHILE .. firstSegment && firstSegment->GetSize > 0 && nextSegmentSize > 0 ..");
-      NS_LOG_LOGIC ("    FirstSegment size = " << firstSegment->GetSize ());
-      NS_LOG_LOGIC ("    Next segment size = " << nextSegmentSize);
-      if ( firstSegment->GetSize () > nextSegmentSize )
+      NS_LOG_LOGIC ("WHILE ( firstSegment && firstSegment->GetSize > 0 && nextSegmentSize > 0 )");
+      NS_LOG_LOGIC ("    firstSegment size = " << firstSegment->GetSize ());
+      NS_LOG_LOGIC ("    nextSegmentSize   = " << nextSegmentSize);
+      if ( (firstSegment->GetSize () > nextSegmentSize) ||
+           // Segment larger than 2047 octets can only be mapped to the end of the Data field
+           (firstSegment->GetSize () > 2047)
+         )
         {
-          NS_LOG_LOGIC ("    IF firstSegment > NextSegmentSize");
+          // Take the minimum size, due to the 2047-bytes 3GPP exception
+          // This exception is due to the length of the LI field (just 11 bits)
+          uint32_t currSegmentSize = std::min (firstSegment->GetSize (), nextSegmentSize);
+
+          NS_LOG_LOGIC ("    IF ( firstSegment > nextSegmentSize ||");
+          NS_LOG_LOGIC ("         firstSegment > 2047 )");
+
           // Segment txBuffer.FirstBuffer and
           // Give back the remaining segment to the transmission buffer
-          Ptr<Packet> newSegment = firstSegment->CreateFragment (0, nextSegmentSize);
+          Ptr<Packet> newSegment = firstSegment->CreateFragment (0, currSegmentSize);
+          NS_LOG_LOGIC ("    newSegment size   = " << newSegment->GetSize ());
 
           // Status tag of the new and remaining segments
           // Note: This is the only place where a PDU is segmented and
           // therefore its status can change
-          LteRlcSduStatusTag oldTag, newTag;    // TODO CreateFragment copy the tag???
+          LteRlcSduStatusTag oldTag, newTag;
           firstSegment->RemovePacketTag (oldTag);
           newSegment->RemovePacketTag (newTag);
           if (oldTag.GetStatus () == LteRlcSduStatusTag::FULL_SDU)
@@ -182,25 +192,46 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
               newTag.SetStatus (LteRlcSduStatusTag::MIDDLE_SEGMENT);
               //oldTag.SetStatus (LteRlcSduStatusTag::LAST_SEGMENT);
             }
-          firstSegment->AddPacketTag (oldTag);
-          newSegment->AddPacketTag (newTag);  // TODO What happens if we add two tags???
 
           // Give back the remaining segment to the transmission buffer
-          firstSegment->RemoveAtStart (nextSegmentSize);
-          m_txBuffer.insert (m_txBuffer.begin (), firstSegment);
-          m_txBufferSize += (*(m_txBuffer.begin()))->GetSize ();
-          firstSegment = 0; // TODO how to put a null ptr to Packet?
+          firstSegment->RemoveAtStart (currSegmentSize);
+          NS_LOG_LOGIC ("    firstSegment size (after RemoveAtStart) = " << firstSegment->GetSize ());
+          if (firstSegment->GetSize () > 0)
+            {
+              firstSegment->AddPacketTag (oldTag);
 
-          NS_LOG_LOGIC ("    TX buffer: Give back the remaining segment");
-          NS_LOG_LOGIC ("    TX buffers = " << m_txBuffer.size ());
-          NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txBuffer.begin()))->GetSize ());
-          NS_LOG_LOGIC ("    txBufferSize = " << m_txBufferSize );
+              m_txBuffer.insert (m_txBuffer.begin (), firstSegment);
+              m_txBufferSize += (*(m_txBuffer.begin()))->GetSize ();
+
+              NS_LOG_LOGIC ("    TX buffer: Give back the remaining segment");
+              NS_LOG_LOGIC ("    TX buffers = " << m_txBuffer.size ());
+              NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("    txBufferSize = " << m_txBufferSize );
+            }
+          else
+            {
+              // Whole segment was taken, so adjust tag
+              if (newTag.GetStatus () == LteRlcSduStatusTag::FIRST_SEGMENT)
+                {
+                  newTag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
+                }
+              else if (newTag.GetStatus () == LteRlcSduStatusTag::MIDDLE_SEGMENT)
+                {
+                  newTag.SetStatus (LteRlcSduStatusTag::LAST_SEGMENT);
+                }
+            }
+          // Segment is completely taken or
+          // the remaining segment is given back to the transmission buffer
+          firstSegment = 0;
+
+          // Put status tag once it has been adjusted
+          newSegment->AddPacketTag (newTag);
 
           // Add Segment to Data field
           dataFieldAddedSize = newSegment->GetSize ();
           dataFieldTotalSize += dataFieldAddedSize;
           dataField.push_back (newSegment);
-          newSegment = 0; // TODO how to put a null ptr to Packet?
+          newSegment = 0;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcHeader.PushExtensionBit (LteRlcHeader::DATA_FIELD_FOLLOWS);
@@ -210,7 +241,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
           nextSegmentSize -= dataFieldAddedSize;
           nextSegmentId++;
 
-          // nextSegmentSize MUST be zero
+          // nextSegmentSize MUST be zero (only if segment is smaller or equal to 2047)
 
           // (NO more segments) → exit
           // break;
@@ -222,7 +253,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
           dataFieldAddedSize = firstSegment->GetSize ();
           dataFieldTotalSize += dataFieldAddedSize;
           dataField.push_back (firstSegment);
-          firstSegment = 0; // TODO how to put a null ptr to Packet?
+          firstSegment = 0;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcHeader.PushExtensionBit (LteRlcHeader::DATA_FIELD_FOLLOWS);
@@ -238,9 +269,9 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
               NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txBuffer.begin()));
               NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txBuffer.begin()))->GetSize ());
             }
-          NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize << " (should be 0)");
+          NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
 
-          // nextSegmentSize MUST be zero
+          // nextSegmentSize MUST be zero (only if txBuffer is not empty)
 
           // (NO more segments) → exit
           // break;
@@ -353,7 +384,7 @@ LteRlcUm::DoNotifyHarqDeliveryFailure ()
 void
 LteRlcUm::DoReceivePdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p->GetSize ());
 
   // Receiver timestamp
   RlcTag rlcTag;
@@ -369,6 +400,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
   // Get RLC header parameters
   LteRlcHeader rlcHeader;
   p->PeekHeader (rlcHeader);
+  NS_LOG_LOGIC ("RLC header: " << rlcHeader);
   uint16_t seqNumber = rlcHeader.GetSequenceNumber ();
 
   // 5.1.2.2.1 General
