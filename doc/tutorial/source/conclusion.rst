@@ -7,17 +7,8 @@ Conclusion
 Futures
 *******
 
-This document is a work in process.  We hope and expect it to grow over time
-to cover more and more of the nuts and bolts of |ns3|.  
-
-We hope to add the following chapters over the next few releases:
-
-* The Callback System
-* The Object System and Memory Management
-* The Routing System
-* Adding a New NetDevice and Channel
-* Adding a New Protocol
-* Working with Real Networks and Hosts
+This document is intended as a living document.  We hope and expect it to 
+grow over time to cover more and more of the nuts and bolts of |ns3|.  
 
 Writing manual and tutorial chapters is not something we all get excited about,
 but it is very important to the project.  If you are an expert in one of these
@@ -28,10 +19,13 @@ Closing
 *******
 
 |ns3| is a large and complicated system.  It is impossible to cover all 
-of the things you will need to know in one small tutorial.
+of the things you will need to know in one small tutorial.  Readers
+who want to learn more are encouraged to read the following additional
+documentation:
 
-We have really just scratched the surface of |ns3| in this tutorial, 
-but we hope to have covered enough to get you started doing useful networking 
-research using our favorite simulator.
+* The |ns3| manual
+* The |ns3| model library documentatio
+* The |ns3| Doxygen (API documentation)
+* The |ns3| wiki
 
 -- The |ns3| development team.
