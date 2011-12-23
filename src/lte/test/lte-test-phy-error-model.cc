@@ -58,23 +58,23 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
 
   // MCS 2 TB size of 72 bits BER 0.9 SINR -2.21
-//   AddTestCase (new LenaPhyErrorModelTestCase (7,898,1383000,1239000));
+   AddTestCase (new LenaPhyErrorModelTestCase (7, 898, 0.9));
   // MCS 2 TB size of 176 bits BER 0.19 SINR -2.21
-//   AddTestCase (new LenaPhyErrorModelTestCase (4,898,1383000,1239000));
-// MCS 2 TB size of 328 bits BER 0.09
-//   AddTestCase (new LenaPhyErrorModelTestCase (3,900,1383000,1239000));
-// MCS 2 TB size of 520 bits BER 0.123
-//   AddTestCase (new LenaPhyErrorModelTestCase (2,920,1383000,1239000));
-// MCS 2 TB size of 1080 bits BER 0.097
-//   AddTestCase (new LenaPhyErrorModelTestCase (1,930,1383000,1239000));
+   AddTestCase (new LenaPhyErrorModelTestCase (4, 898, 0.19));
+// MCS 2 TB size of 328 bits BER 0.09 SINR -2.25
+   AddTestCase (new LenaPhyErrorModelTestCase (3, 900, 0.09));
+// MCS 2 TB size of 520 bits BER 0.123 SINR -2.61
+   AddTestCase (new LenaPhyErrorModelTestCase (2, 920, 0.123));
+// MCS 2 TB size of 1080 bits BER 0.097 SINR -2.79
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 930, 0.097));
   // MCS 12 TB size of 4776 bits  BER 0.017  SINR 4.19
-//   AddTestCase (new LenaPhyErrorModelTestCase (1,538,1383000,1239000));
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 538, 0.017));
 // MCS 12 TB size of 1608 bits  BER 0.23  SINR 4.19
-  AddTestCase (new LenaPhyErrorModelTestCase (3,538,1383000,1239000));
-  // MCS 12 TB size of 1608 bits  BER 0.23  SINR 4.19
-//   AddTestCase (new LenaPhyErrorModelTestCase (7,538,1383000,1239000));
-// MCS 14 TB size of 6248 bits (3136 x 2) BER 0.0.18 (0.096 x 2) SINR 5.53
-//   AddTestCase (new LenaPhyErrorModelTestCase (1,500,1383000,1239000));
+  AddTestCase (new LenaPhyErrorModelTestCase (3, 538, 0.23));
+  // MCS 12 TB size of 376 bits  BER 0.72  SINR 4.19
+   AddTestCase (new LenaPhyErrorModelTestCase (7,538, 0.72));
+// MCS 14 TB size of 6248 bits (3136 x 2) BER 0.18 (0.096 x 2) SINR 5.53
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 500, 0.18));
 
  
 
@@ -90,12 +90,11 @@ LenaPhyErrorModelTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
   return oss.str ();
 }
 
-LenaPhyErrorModelTestCase::LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl)
+LenaPhyErrorModelTestCase::LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, double berRef)
   : TestCase (BuildNameString (nUser, dist)),              
     m_nUser (nUser),
     m_dist (dist),
-    m_thrRefDl (thrRefDl),
-    m_thrRefUl (thrRefUl)
+    m_berRef (berRef)
 {
 }
 
@@ -107,7 +106,6 @@ void
 LenaPhyErrorModelTestCase::DoRun (void)
 {
   
-  //   double ber = 0.00005;
    double ber = 0.01;
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   
@@ -141,17 +139,17 @@ LenaPhyErrorModelTestCase::DoRun (void)
 //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 
 
-  LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  
+//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+//   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
+//   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
+//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
+//   
+  LogComponentDisableAll (LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
 
 
@@ -216,8 +214,9 @@ LenaPhyErrorModelTestCase::DoRun (void)
     }
     
   lena->EnableRlcTraces ();
-  double simulationTime = 0.008;
-//   double tolerance = 0.1;
+  double simulationTime = 1.000;
+//   double simulationTime = 0.010;
+  double tolerance = 0.05;
   Simulator::Stop (Seconds (simulationTime));
 
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
@@ -229,7 +228,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
   /**
    * Check that the assignation is done in a RR fashion
    */
-  NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
+  NS_LOG_INFO ("Test with " << m_nUser << " user(s) at distance " << m_dist << " expected BER " << m_berRef);
   std::vector <uint64_t> dlDataRxed;
   for (int i = 0; i < m_nUser; i++)
     {
@@ -239,8 +238,9 @@ LenaPhyErrorModelTestCase::DoRun (void)
       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       double txed = rlcStats->GetDlTxData (imsi, lcId);
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << 1.0 - ((double)dlDataRxed.at (i)/txed));
-//       NS_TEST_ASSERT_MSG_EQ_TOL ((double)dlDataRxed.at (i) / simulationTime, m_thrRefDl, m_thrRefDl * tolerance, " Unfair Throughput!");
+      double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << ber << " Err " << fabs (m_berRef - ber));
+      NS_TEST_ASSERT_MSG_EQ_TOL (ber, m_berRef, tolerance, " Unexpected BER!");
     }
 
 //   NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
