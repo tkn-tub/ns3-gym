@@ -52,13 +52,8 @@ public:
   void Start ();
 
 private:
-  /**
-   * This method will schedule a timeout at WaitReplyTimeout interval
-   * in the future, unless a timer is already running for the cache,
-   * in which case this method does nothing.
-   */
-  void StartReorderingTimer (void);
   void ExpireReorderingTimer (void);
+  void ExpireRbsTimer (void);
 
   bool IsInsideReorderingWindow (uint16_t seqNumber);
 
@@ -66,6 +61,8 @@ private:
   void ReassembleSnLessThan (uint16_t seqNumber);
 
   void ReassembleAndDeliver (Ptr<Packet> packet);
+
+  void DoReportBufferStatus ();
 
 private:
   uint32_t m_txBufferSize;
@@ -93,6 +90,7 @@ private:
    * Timers. See section 7.3 in TS 36.322
    */
   EventId m_reorderingTimer;
+  EventId m_rbsTimer;
 
   /**
    * Reassembling state

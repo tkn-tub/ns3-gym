@@ -72,8 +72,7 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
   NS_LOG_FUNCTION (this);
 
   /** Store arrival time */
-  Time now = Simulator::Now ();
-  RlcTag timeTag (now);
+  RlcTag timeTag (Simulator::Now ());
   p->AddPacketTag (timeTag);
 
   /** Store PDCP PDU */
@@ -89,24 +88,8 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
   NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
 
   /** Report Buffer Status */
-
-  RlcTag holTimeTag;
-  m_txBuffer.front ()->PeekPacketTag (holTimeTag);
-  Time holDelay = now - holTimeTag.GetSenderTimestamp ();
-
-  LteMacSapProvider::ReportBufferStatusParameters r;
-  r.rnti = m_rnti;
-  r.lcid = m_lcid;
-  r.txQueueSize = m_txBufferSize + 2 * m_txBuffer.size (); // Data in tx queue + estimated headers size
-  r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
-  r.retxQueueSize = 0;
-  r.retxQueueHolDelay = 0;
-  r.statusPduSize = 0;
-
-  NS_LOG_LOGIC ("Send ReportBufferStatus");
-  NS_LOG_LOGIC ("Queue size = " << r.txQueueSize);
-  NS_LOG_LOGIC ("HOL delay = " << r.txQueueHolDelay);
-  m_macSapProvider->ReportBufferStatus (r);
+  DoReportBufferStatus ();
+  m_rbsTimer.Cancel ();
 }
 
 
@@ -373,6 +356,12 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
   params.lcid = m_lcid;
 
   m_macSapProvider->TransmitPdu (params);
+
+  if (! m_txBuffer.empty ())
+    {
+      m_rbsTimer.Cancel ();
+      m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcUm::ExpireRbsTimer, this);
+    }
 }
 
 void
@@ -538,16 +527,7 @@ LteRlcUm::Start ()
 {
   NS_LOG_FUNCTION (this);
 
-  LteMacSapProvider::ReportBufferStatusParameters p;
-  p.rnti = m_rnti;
-  p.lcid = m_lcid;
-  p.txQueueSize = 0;
-  p.txQueueHolDelay = 0;
-  p.retxQueueSize = 0;
-  p.retxQueueHolDelay = 0;
-  p.statusPduSize = 0;
-
-  m_macSapProvider->ReportBufferStatus (p);
+  DoReportBufferStatus ();
 }
 
 
@@ -1034,6 +1014,35 @@ LteRlcUm::ReassembleSnLessThan (uint16_t seqNumber)
 
 
 void
+LteRlcUm::DoReportBufferStatus (void)
+{
+  Time holDelay (0);
+  uint32_t queueSize = 0;
+
+  if (! m_txBuffer.empty ())
+    {
+      RlcTag holTimeTag;
+      m_txBuffer.front ()->PeekPacketTag (holTimeTag);
+      holDelay = Simulator::Now () - holTimeTag.GetSenderTimestamp ();
+
+      queueSize = m_txBufferSize + 2 * m_txBuffer.size (); // Data in tx queue + estimated headers size
+    }
+
+  LteMacSapProvider::ReportBufferStatusParameters r;
+  r.rnti = m_rnti;
+  r.lcid = m_lcid;
+  r.txQueueSize = queueSize;
+  r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
+  r.retxQueueSize = 0;
+  r.retxQueueHolDelay = 0;
+  r.statusPduSize = 0;
+
+  NS_LOG_LOGIC ("Send ReportBufferStatus = " << r.txQueueSize << ", " << r.txQueueHolDelay );
+  m_macSapProvider->ReportBufferStatus (r);
+}
+
+
+void
 LteRlcUm::ExpireReorderingTimer (void)
 {
   NS_LOG_LOGIC ("TODO: Reordering Timer has expired...");
@@ -1067,5 +1076,17 @@ LteRlcUm::ExpireReorderingTimer (void)
     }
 }
 
+
+void
+LteRlcUm::ExpireRbsTimer (void)
+{
+  NS_LOG_LOGIC ("RBS Timer expires");
+
+  if (! m_txBuffer.empty ())
+    {
+      DoReportBufferStatus ();
+      m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcUm::ExpireRbsTimer, this);
+    }
+}
 
 } // namespace ns3
