@@ -53,7 +53,7 @@ This has a few changes for users and developers:
 <ul>
 <li> by default, "build" no longer has a subdirectory debug or optimized.  
 To get different build directories for different build types, you can use 
-the waf configure -o xxx option, e.g.:
+the waf configure -o <argument> option, e.g.:
 <pre>
   ./waf configure -o shared
   ./waf configure --enable-static -o static
@@ -76,7 +76,7 @@ instead of CXXDEFINES
 
 <h2>New API:</h2>
 <ul>
-<li> In the mobility module, there is a new API MobilityModel::GetRelativeSpeed() returning the relative speed of two objects. </li>
+<li> In the mobility module, there is a new MobilityModel::GetRelativeSpeed() method returning the relative speed of two objects. </li>
 <li> A new Ipv6AddressGenerator class was added to generate sequential
 addresses from a provided base prefix and interfaceId.  It also will detect
 duplicate address assigments. </li> 
@@ -104,6 +104,28 @@ width standards has had a change in capitalization:
 
 <h2>Changed behavior:</h2>
 <ul>
+<li> TCP bug fixes
+<ul> 
+<li> Connection retries count is a separate variable with the retries limit, so cloned sockets can reset the count
+<li> Fix bug on RTO that may halt the data flow
+<li> Make TCP endpoints always holds the accurate address:port info
+<li> RST packet is sent on closed sockets
+<li> Fix congestion window sizing problem upon partial ACK in TcpNewReno
+<li> Acknowledgement is sent, rather than staying silent, upon arrival of unacceptable packets
+<li> Advance TcpSocketBase::m_nextTxSequence after RTO
+</ul>
+<li> TCP enhancements
+<ul>
+<li> Latest RTT value now stored in variable TcpSocketBase::m_lastRtt
+<li> The list variable TcpL4Protocol::m_sockets now always holds all the created, running TcpSocketBase objects
+<li> Maximum announced window size now an attribute, ns3::TcpSocketBase::MaxWindowSize
+<li> TcpHeader now recognizes ECE and CWR flags (c.f. RFC3168)
+<li> Added TCP option handling call in TcpSocketBase for future extension
+<li> Data out of range (i.e. outsize acceptable range of receive window) now computed on bytes, not packets
+<li> TCP moves from time-wait state to closed state after twice the time specified by attribute ns3:TcpSocketBase::MaxSegLifeTime
+<li> TcpNewReno supports limited transmit (RFC3042) if asserting boolean attribute ns3::TcpNewReno::LimitedTransmit
+<li> Nagle's algorithm supported. Default off, turn on by calling TcpSocket::SetTcpNoDelay(true)
+</ul>
 </ul>
 
 <hr>
