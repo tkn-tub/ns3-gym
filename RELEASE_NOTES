@@ -14,7 +14,8 @@ Release 3.13
 
 Availability
 ------------
-This release is not yet available.
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.13.tar.bz2
 
 Bugs fixed
 ----------
@@ -64,17 +65,19 @@ Supported platforms
 ns-3.13 has been tested on the following platforms.  Not all features are
 available on all platforms; check the Installation page on the project wiki.
 
+- Ubuntu 11.10 (32 bit) with g++-4.5.2
 - Ubuntu 11.04 (32/64 bit) with g++-4.5.2 
 - Ubuntu 10.04.3 LTS (64 bit) with g++-4.4.3, g++-3.4.6 
 - OS X Lion with g++-4.2.1
 - OS X Snow Leopard with g++-4.2.1 
-- Fedora Core 14 (64 bit) with g++-4.5.1
 - Fedora Core 16 (32/64 bit) with g++-4.6.2
-- FreeBSD 9.0-RC1 (AMD64)
+  --  however, g++-3.4.6 fails on Fedora 16 i686 
+- Fedora Core 14 (64 bit) with g++-4.5.1
+- FreeBSD 9.0-RC1 (AMD64) with g++-4.2.1
 
 New user-visible features
 -------------------------
-- IPv6 address generator
+- IPv6 address generator with support for duplicate address detection
 
 Known issues
 ------------
