@@ -1,5 +1,7 @@
 .. include:: replace.txt
 
+.. _Object-model:
+
 Object model
 ------------
 
@@ -66,6 +68,8 @@ system.
 
 In practice, class :cpp:class:`Object` is the variant of the three above that
 the |ns3| developer will most commonly encounter.
+
+.. _Memory-management-and-class-Ptr:
 
 Memory management and class Ptr
 *******************************

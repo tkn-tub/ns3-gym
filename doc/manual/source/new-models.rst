@@ -249,7 +249,7 @@ use of class Object?
 This is an important design step; whether to use class :cpp:class:`Object` as a
 base class for your new classes.
 
-As described in the chapter on the |ns3| :ref:`Object model`, classes that
+As described in the chapter on the |ns3| :ref:`Object-model`, classes that
 inherit from class :cpp:class:`Object` get special properties:
 
 * the |ns3| type and attribute system (see :ref:`Attributes`)
@@ -370,7 +370,7 @@ certain objects can be created via the object creation framework
 
 The macro ``NS_OBJECT_ENSURE_REGISTERED (classname)`` is needed also once for
 every class that defines a new GetTypeId method, and it does the actual
-registration of the class into the system.  The :ref:`Object model` chapter
+registration of the class into the system.  The :ref:`Object-model` chapter
 discusses this in more detail.
 
 how to include files from elsewhere
