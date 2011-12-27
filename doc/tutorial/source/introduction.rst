@@ -34,7 +34,7 @@ A few key points are worth noting at the onset:
 
  
 For |ns2| Users
-**************
+***************
 
 For those familiar with |ns2|, the most visible outward change when moving to 
 |ns3| is the choice of scripting language.  Programs in |ns2| are 
