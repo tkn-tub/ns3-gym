@@ -181,6 +181,11 @@ private:
   void AddSimNodeToClickMapping ();
 
   /**
+   * \brief Get current simulation time as a timeval
+   */
+  struct timeval GetTimevalFromNow () const;
+
+  /**
    * \brief This method has to be scheduled everytime Click calls SIMCLICK_SCHEDULE
    */
   void RunClickEvent ();
