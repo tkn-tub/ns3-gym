@@ -379,7 +379,7 @@ class ns3pcfile_task(Task.Task):
                 self._defines(dep) + self._includes(dep)
             if dep.startswith('ns3-'):
                 requires.append("lib"+dep)
-        print >> outfile, """
+        print >> outfile, """\
 prefix=%s
 libdir=%s
 includedir=%s
@@ -389,7 +389,7 @@ Description: ns-3 module %s
 Version: devel
 Libs: %s
 Cflags: %s
-Requires: %s
+Requires: %s\
 """ % (prefix, libdir, includedir,
        name, name, ' '.join(libs), ' '.join(cflags), ' '.join(requires))
         outfile.close()
