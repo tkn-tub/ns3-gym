@@ -26,16 +26,15 @@ namespace dot11s {
 /**
  * \ingroup dot11s
  *
- * \brief airtime link metric calculator
+ * \brief Airtime link metric calculator
  *
- * \details Airtime link metric is defined in 11B.10 of 802.11s Draft D3.0 as:
+ * Airtime link metric is defined in 11B.10 of 802.11s Draft D3.0 as:
  *
- * airtime = (O + Bt/r)* (1 + average retry counter), where
- *
- * o  -- the PHY dependent channel access which includes frame headers, training sequences,
+ * airtime = (O + Bt/r)* (1 + average retry counter), where:
+ * - o  -- the PHY dependent channel access which includes frame headers, training sequences,
  *       access protocol frames, etc.
- * bt -- the test packet length in bits (8192 by default),
- * r  -- the current bitrate of the packet,
+ * - bt -- the test packet length in bits (8192 by default),
+ * - r  -- the current bitrate of the packet,
  *
  * Final result is expressed in units of 0.01 Time Unit = 10.24 us (as required by 802.11s draft)
  */

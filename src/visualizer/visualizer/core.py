@@ -196,7 +196,7 @@ class Node(PyVizObject):
                         addresses = [
                             '%s/%s' % (ipv6.GetAddress(ipv6_idx, i).GetAddress(),
                                        ipv6.GetAddress(ipv6_idx, i).GetPrefix())
-                            for i in range(ipv6.GetNAddresses(ipv4_idx))]
+                            for i in range(ipv6.GetNAddresses(ipv6_idx))]
                         lines.append('    <b>IPv6 Addresses:</b> %s' % '; '.join(addresses))
                             
                 lines.append('    <b>MAC Address:</b> %s' % (dev.GetAddress(),))

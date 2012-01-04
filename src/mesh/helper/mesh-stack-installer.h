@@ -28,7 +28,8 @@ namespace ns3 {
  *
  * \brief Prototype for class, which helps to install MAC-layer
  * routing stack to ns3::MeshPointDevice
- * \details You need to create a  MeshPointDevice and attach all
+ *
+ * You need to create a MeshPointDevice and attach all
  * interfaces to it, than call Install method
  */
 class MeshStack : public Object

@@ -1,5 +1,7 @@
 .. include:: replace.txt
 
+.. _Sockets-APIs:
+
 Sockets APIs
 ------------
 

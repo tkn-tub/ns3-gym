@@ -1,5 +1,7 @@
 .. include:: replace.txt
 
+.. _Attributes:
+
 Attributes
 ----------
 
@@ -58,7 +60,7 @@ For most basic usage (syntax), treat a smart pointer like a regular pointer:::
 CreateObject
 ++++++++++++
 
-As we discussed above in :ref:`Memory management and class Ptr`, at the
+As we discussed above in :ref:`Memory-management-and-class-Ptr`, at the
 lowest-level API, objects of type :cpp:class:`ns3::Object` are not instantiated
 using ``operator new`` as usual but instead by a templated function called
 :cpp:func:`CreateObject()`.
@@ -412,7 +414,7 @@ determine the required concrete configuration namespaced path.::
 
     Config::Set ("/Names/server/eth0/TxQueue/MaxPackets", UintegerValue (25));
 
-:ref:`Object names` for a fuller treatment of the |ns3| configuration namespace.
+:ref:`Object-names` for a fuller treatment of the |ns3| configuration namespace.
 
 Setting through constructors helper classes
 +++++++++++++++++++++++++++++++++++++++++++

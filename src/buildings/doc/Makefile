@@ -2,6 +2,7 @@ EPSTOPDF = epstopdf
 DIA = dia
 CONVERT = convert
 
+	$(SRC)/topology-read/doc/topology.rst \
 
 SOURCE = source
 FIGURES = $(SOURCE)/figures

@@ -56,7 +56,7 @@ public:
 
   /**
    * \brief Enables a chain of loss models to act on the signal
-   * \param The next PropagationLossModel to add to the chain
+   * \param next The next PropagationLossModel to add to the chain
    *
    * This method of chaining propagation loss models only works commutatively
    * if the propagation loss of all models in the chain are independent
@@ -516,8 +516,8 @@ public:
    * \brief Set loss (in dB, positive) between pair of ns-3 objects
    * (typically, nodes).
    * 
-   * \param ma          Source mobility model
-   * \param mb          Destination mobility model
+   * \param a ma          Source mobility model
+   * \param b mb          Destination mobility model
    * \param loss        a -> b path loss, positive in dB
    * \param symmetric   If true (default), both a->b and b->a paths will be affected
    */ 

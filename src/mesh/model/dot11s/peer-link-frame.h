@@ -34,9 +34,9 @@ namespace dot11s
 /**
  * \ingroup dot11s
  *
- * \brief 802.11s Peer link management frame:
- * \details included the following (see chapters 7.4.12.1-7.4.12.3 of
- * 802.11s):
+ * \brief 802.11s Peer link management frame
+ * 
+ * Peer link management frame included the following (see chapters 7.4.12.1-7.4.12.3 of 802.11s):
  * - Subtype field
  * - Association ID field
  * - Supported rates

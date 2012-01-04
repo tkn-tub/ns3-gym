@@ -4,97 +4,45 @@ Animation
 ---------
 
 Animation is an important tool for network simulation. While |ns3| does not
-contain a default graphical animation tool, it does provide an animation
-interface for use with stand-alone animators. One such animator called NetAnim,
-presently supporting packet flow animation for point-to-point links, has been
-developed. Other animators and visualization tools are in development; they may
-make use of the existing animation interface or may develop new ones,   
+contain a default graphical animation tool, we currently have two ways to provide
+animation, namely using the PyViz method or the NetAnim method.
+The PyViz method is described in http://www.nsnam.org/wiki/index.php/PyViz.
+The NetAnim method is described in detail at http://www.nsnam.org/wiki/index.php/NetAnim.
+We will describe the NetAnim method briefly here.
 
-Animation interface
+AnimationInterface
 *******************
 
-The animation interface uses underlying |ns3| trace sources to construct a
-timestamped ASCII file that can be read by a standalone animator.  The animation
-interface in |ns3| currently only supports point-to-point links; however, we
-hope to support other link types such as CSMA and wireless in the near future.
-A snippet from a sample trace file is shown below.::
+The class "AnimationInterface" under "src/netanim" uses underlying |ns3| trace sources 
+to construct a timestamped ASCII file in XML format that can be read by a standalone animator 
+named "NetAnim". 
 
-    0.0 N 0 4 5.5
-    0.0 N 1 7 5.5
-    0.0 N 2 2.5 2.90192
+Generating XML trace files for use in NetAnim
++++++++++++++++++++++++++++++++++++++++++++++
+Apply the following statements before the "Simulator::Run ()" statement:::
 
-    ...
+  AnimationInterface anim ("animation.xml")
 
-    0.0 L 0 1
-    0.0 L 0 2
-    0.0 L 0 3
+where "animation.xml" is any arbitrary file name.
+It is important to ensure that your wscript includes the "netanim" module. 
+Example as in: src/netanim/examples/wscript. Also include the header 
+[#include "ns3/netanim-module.h"] in your test program
 
-    ...
+The examples under "src/netanim/examples" illustrate this. The sample wscript is at 
+"src/netanim/examples/wscript".
 
-    Running the simulation
-    0.668926 P 11 1 0.66936 0.669926 0.67036
-    0.67036 P 1 0 0.670794 0.67136 0.671794
-    0.671794 P 0 6 0.672227 0.672794 0.673227
+Lets take an example: "src/netanim/examples/star-animation.cc". To run the example:::
 
-    ...
+  ./waf --run "star-animation"
 
-The tracefile describes where nodes and links should be placed at the top of the
-file. Following this placement, the packet events are shown. The format for node
-placement, link placement and packet events is shown below.
+This will generate an xml file "star-animation.xml" in the same directory. This XML file 
+contains the information required by the standalone animator "NetAnim" to produce the required
+animation.
 
-* Node placement: <time of placement> <N for node> <node id> <x position> <y
-  position>
-* Link placement: <time of placement> <L for link> <node1 id> <node2 id>
-* Packet events:  <time of first bit tx> <P for packet> <source node>
-  <destination node> <time of last bit tx> <time of first bit rx> <time of last
-  bit rx>
 
-To get started using the animation interface, several example scripts have been
-provided to show proper use. These examples can be found in examples/animation.
-The example scripts use the animation interface as well as topology helpers in
-order to automatically place the nodes and generate the custom trace. It is
-important to note that if a topology helper is not used with its provided
-BoundingBox method, which automatically calculates the nodes' canvas positions,
-the nodes must be placed manually by aggregating a CanvasLocation to the node.
-An example use of CanvasLocation can be found in any of the topology helpers.
-Additionally, a simple example of placing a node is shown below:::
-
-  // assuming a node container m_hub exists and 
-  // contains at least one node.
-  // we grab this node and associate a 
-  // CanvasLocation to it, in order for the 
-  // animation interface to place the node
-  Ptr<Node> hub = m_hub.Get (0);
-  Ptr<CanvasLocation> hubLoc =  hub->GetObject<CanvasLocation> ();
-    if (hubLoc == 0)
-      {
-        hubLoc = CreateObject<CanvasLocation> ();
-        hub->AggregateObject (hubLoc);
-      }
-  Vector hubVec (5, 7);
-  hubLoc->SetLocation (hubVec);
-
-Finally, after the simulation has been set up and the nodes have been placed,
-the animation interface is used to start the animation, which writes the custom
-trace file. Below is an example of how to set up and start the animation
-interface.::
-
-  AnimationInterface anim;
-  // the animation interface can be set up to write 
-  // to a socket, if a port > 0 is specified
-  // see doxygen for more information
-  if (port > 0)
-    {
-      anim.SetServerPort (port);
-    }
-  else if (!animFile.empty ())
-    {
-      // if a file name is specified, 
-      // the trace is written to the file.
-      // otherwise, it is directed to stdout
-      anim.SetOutputFile (animFile);
-    }
-  anim.StartAnimation ();
+Parts of the XML
+++++++++++++++++
+This is described in detail at http://www.nsnam.org/wiki/index.php/NetAnim#Parts_of_the_XML
 
 NetAnim
 *******
@@ -118,64 +66,6 @@ which allows a user to skip to any moment in the simulation. The bottom slider
 changes the granularity of the time step for the animation. Finally, there is a
 quit button to stop the simulation and quit the animator.
 
-Prerequisites
-+++++++++++++
-
-The animator requires the Qt4 development packages. If you are using a Debian or
-Ubuntu Linux distribution, you can get the following package: qt4-dev-tools 
-
-This should install everything you need to compile and build NetAnim.  If you
-are using an Red Hat based distribution, look for similar qt4 packages (or
-libqt4*) and install these using yum. Mac users should install the binaries:
-`<http://qt.nokia.com/downloads>`_.
-
-Make sure to download the binary package; look for a link to something without
-the word "src" or "debug" in the download filename. These will be the library
-binaries you need.
-
-Downloading NetAnim
-+++++++++++++++++++
-
-The tarball of the source code for NetAnim is available here:
-`<http://www.nsnam.org/~jpelkey3/NetAnim.tar.gz>`_.  Download it, then untar
-it::: 
-
-    tar -xzvf NetAnim.tar.gz
-
-Building NetAnim
-++++++++++++++++
-
-NetAnim uses a Qt4 build tool called qmake; this is similar to the configure
-script from autotools in that it generates the Makefile, which make then uses to
-build the project. qmake is different on different versions of Qt, so we'll
-provide some additional information that is system dependent. You can check your
-default version of qmake:::
-
-    qmake --version
-    Qmake version: 1.07a (Qt 3.3.8b)
-    Qmake is free software from Trolltech ASA.
-
-If you see something like the above, where it says Qt 3.x.x, find the 
-qt4 version of qmake on your system and explicitly call it instead.
-
-In general,::
-
-    cd NetAnim
-    qmake
-    make
-
-On Mac OSX,::
-
-    cd NetAnim
-    /usr/local/Trolltech/Qt-4.x.y/bin/qmake
-    make
-
-Note that above, the x.y is the specific version of Qt4 you are running.  As of
-April 1st 2009, the latest version is 4.5.0, although you might have an older
-version already installed. 
-
-On Ubuntu/Debian with Qt3 AND Qt4,::
-
-    cd NetAnim
-    qmake-qt4
-    make
+For detailed instructions on installing "NetAnim" and loading the XML trace file 
+(mentioned earlier) using NetAnim please refer:
+http://www.nsnam.org/wiki/index.php/NetAnim

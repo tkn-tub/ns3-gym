@@ -937,7 +937,7 @@ class TestSuite : public TestCase
 {
 public:
   /**
-   * \enum TestType
+   * \enum Type
    * \brief Type of test.
    */
   enum Type {

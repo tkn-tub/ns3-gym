@@ -10,6 +10,7 @@
 cpp_examples = [
     ("main-packet-header", "True", "True"),
     ("main-packet-tag", "True", "True"),
+    ("red-tests", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

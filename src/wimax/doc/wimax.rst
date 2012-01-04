@@ -152,7 +152,7 @@ configured from a helper level:::
 Wimax Attributes
 ****************
 
-The WimaxNetDevice makes heavy use of the |ns3| :ref:`Attributes` subsystem for
+The WimaxNetDevice makes heavy use of the |ns3| attributes subsystem for
 configuration and default value management.  Presently, approximately 60 values
 are stored in this system.
 
@@ -213,6 +213,8 @@ models.
 .. _wimax-architecture:
 
 .. figure:: figures/WimaxArchitecture.*
+
+  WiMAX architecture
    
 Convergence Sublayer 
 ++++++++++++++++++++

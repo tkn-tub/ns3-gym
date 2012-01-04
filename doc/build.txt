@@ -23,28 +23,28 @@ To build ns-3 with waf type the commands from the top-level directory:
 
 To see valid configure options, type ./waf --help.  The most important
 option is -d <debug level>.  Valid debug levels (which are listed in
-waf --help) are: "debug" or "optimized".  It is
+waf --help) are: "debug" or "optimized", with debug being default.  It is
 also possible to change the flags used for compilation with (e.g.):
-CXXFLAGS="-O3" ./waf configure.
+CXXFLAGS="-O3" ./waf configure.  By default, ns-3 is built as debug code, 
+with examples and tests disabled, and with python bindings enabled.  
 
 [ Note:  Unlike some other build tools, to change the build target,
 the option must be supplied during the configure stage rather than
 the build stage (i.e., "./waf -d optimized" will not work; instead, do
 "./waf -d optimized configure; ./waf" ]
 
-The resulting binaries are placed in build/<debuglevel>/srcpath.
+The resulting executables and libraries are placed in build/.
 
 Other waf usages include:
 
  1. ./waf configure --enable-examples --enable-tests
     Turn on examples and tests.
 
- 2. ./waf --doxygen
-    Run doxygen to generate documentation
+ 2. ./waf configure --disable-python
+    Disable python bindings.
 
- 3. ./waf --lcov-report
-    Run code coverage analysis (assuming the project was configured
-with --enable-gcov)
+ 3. ./waf --doxygen
+    Run doxygen to generate documentation
 
  4. ./waf --run "program [args]"
     Run a ns3 program, given its target name, with the given
@@ -79,29 +79,29 @@ To add new modules:
   1. Create the module directory under src;
   2. Add the source files to it;
   3. Add a 'wscript' describing it;
-  4. Add the module subdirectory name to the all_modules list in src/wscript.
+
+A convenience program to auto-generate the template of a new module can
+be found in src/create-module.py.
 
 A module's wscript file is basically a regular Waf script.  A ns-3
 module is created as a cpp/shlib object, like this:
 
 def build(bld):
-    obj = bld.create_obj('cpp', 'shlib')
+    module = bld.create_ns3_module('ns3-mymodule', ['core'])
+    module.source = [
+        'model/ns3-mymodule.cc',
+        'helper/ns3-mymodule-helper.cc',
+        ]
 
-    ## set module name; by convention it starts with ns3-
-    obj.name = 'ns3-mymodule'
-    obj.target = obj.name 
-
-    ## list dependencies to other modules
-    obj.uselib_local = ['ns3-core'] 
-
-    ## list source files (private or public header files excluded)
-    obj.source = [
-        'mymodule.cc',
-    ]
-
-    ## list module public header files
-    headers = bld.create_obj('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
+    headers.module = 'ns3-mymodule'
     headers.source = [
-        'mymodule-header.h',
-    ]
+        'model/ns3-mymodule.h',
+        'helper/ns3-mymodule-helper.h',
+        ]
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.add_subdirs('examples')
+
+    # bld.ns3_python_bindings()
 

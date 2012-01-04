@@ -158,8 +158,8 @@ to get the defaults.  Note the distinction above in creating a helper object vs.
 an actual simulation object.  In |ns3|, helper objects (used at the helper API
 only) are created on the stack (they could also be created with operator new and
 later deleted).  However, the actual |ns3| objects typically inherit from 
-``class ns3::Object`` and are assigned to a smart pointer.  See the chapter on
-:ref:`Object model` for a discussion of the |ns3| object model, if you are not
+``class ns3::Object`` and are assigned to a smart pointer.  See the chapter in
+the |ns3| manual for a discussion of the |ns3| object model, if you are not
 familiar with it.
 
 *Todo: Add notes about how to configure attributes with this helper API*
@@ -243,7 +243,7 @@ on a set of nodes in a NodeContainer "c":::
 This creates the WifiNetDevice which includes also a WifiRemoteStationManager, a
 WifiMac, and a WifiPhy (connected to the matching WifiChannel).
 
-There are many |ns3| :ref:`Attributes` that can be set on the above helpers to
+There are many |ns3| attributes that can be set on the above helpers to
 deviate from the default behavior; the example scripts show how to do some of
 this reconfiguration.
 
@@ -268,7 +268,7 @@ The WifiChannel and WifiPhy models
 The WifiChannel subclass can be used to connect together a set of
 ``ns3::WifiNetDevice`` network interfaces. The class ``ns3::WifiPhy`` is the
 object within the WifiNetDevice that receives bits from the channel.  
-For the channel propagation modeling, the propagation module is used; see section :ref:`propagation` for details.
+For the channel propagation modeling, the propagation module is used; see section :ref:`Propagation` for details.
 
 
 This section summarizes the description of the BER calculations found in the

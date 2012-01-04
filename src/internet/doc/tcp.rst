@@ -93,7 +93,7 @@ helper API, the TCP that is aggregated to nodes with an Internet stack is the
 native |ns3| TCP.
 
 To configure behavior of TCP, a number of parameters are exported through the
-:ref:`Attributes <ns-3 attribute system>`. These are documented in the `Doxygen
+|ns3| attribute system. These are documented in the `Doxygen
 <http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>` for class
 :cpp:class:`TcpSocket`.  For example, the maximum segment size is a
 settable attribute.
@@ -137,7 +137,7 @@ the specified node, one would have to do something like:::
 
 Once a TCP socket is created, one will want to follow conventional socket logic
 and either connect() and send() (for a TCP client) or bind(), listen(), and
-accept() (for a TCP server). :ref:`Sockets API <Sockets APIs>` for a review of
+accept() (for a TCP server). See :ref:`Sockets-APIs` for a review of
 how sockets are used in |ns3|.
 
 Validation
@@ -255,7 +255,7 @@ sockets, as described above and documented in `Doxygen
 <http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>`_
 
 Additionally, NSC TCP exports a lot of configuration variables into the 
-|ns3| :ref:`Attributes` system, via a `sysctl <http://en.wikipedia.org/wiki/Sysctl>`_-like interface. In the ``examples/tcp/tcp-nsc-zoo`` example, you
+|ns3| attributes system, via a `sysctl <http://en.wikipedia.org/wiki/Sysctl>`_-like interface. In the ``examples/tcp/tcp-nsc-zoo`` example, you
 can see the following configuration:::
 
 

@@ -7,6 +7,7 @@
 ^testpy-output
 ^doc/html
 ^doc/latex
+^doc/ns3-object.txt
 ^\.lock-wafbuild
 ^\.waf
 ^doc/introspected-doxygen\.h$

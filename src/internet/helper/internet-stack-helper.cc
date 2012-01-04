@@ -623,6 +623,40 @@ Ipv4L3ProtocolDropSinkWithoutContext (
 }
 
 static void
+Ipv4L3ProtocolTxSinkWithoutContext (
+  Ptr<OutputStreamWrapper> stream,
+  Ptr<const Packet> packet,
+  Ptr<Ipv4> ipv4, 
+  uint32_t interface)
+{
+  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+}
+
+static void
+Ipv4L3ProtocolRxSinkWithoutContext (
+  Ptr<OutputStreamWrapper> stream,
+  Ptr<const Packet> packet,
+  Ptr<Ipv4> ipv4, 
+  uint32_t interface)
+{
+  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+}
+
+static void
 Ipv4L3ProtocolDropSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
@@ -652,6 +686,52 @@ Ipv4L3ProtocolDropSinkWithContext (
                         << *p << std::endl;
 #else
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " "  << *p << std::endl;
+#endif
+}
+
+static void
+Ipv4L3ProtocolTxSinkWithContext (
+  Ptr<OutputStreamWrapper> stream,
+  std::string context,
+  Ptr<const Packet> packet,
+  Ptr<Ipv4> ipv4, 
+  uint32_t interface)
+{
+  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+#ifdef INTERFACE_CONTEXT
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
+                        << *packet << std::endl;
+#else
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " "  << *packet << std::endl;
+#endif
+}
+
+static void
+Ipv4L3ProtocolRxSinkWithContext (
+  Ptr<OutputStreamWrapper> stream,
+  std::string context,
+  Ptr<const Packet> packet,
+  Ptr<Ipv4> ipv4, 
+  uint32_t interface)
+{
+  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
+  if (g_interfaceStreamMapIpv4.find (pair) == g_interfaceStreamMapIpv4.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+#ifdef INTERFACE_CONTEXT
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
+                        << *packet << std::endl;
+#else
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " "  << *packet << std::endl;
 #endif
 }
 
@@ -744,8 +824,16 @@ InternetStackHelper::EnableAsciiIpv4Internal (
           Ptr<Ipv4L3Protocol> ipv4L3Protocol = ipv4->GetObject<Ipv4L3Protocol> ();
           bool __attribute__ ((unused)) result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop", 
                                                                                              MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext, theStream));
-          NS_ASSERT_MSG (result == true, "InternetStackHelper::EanableAsciiIpv4Internal():  "
+          NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv4Internal():  "
                          "Unable to connect ipv4L3Protocol \"Drop\"");
+          result = ipv4L3Protocol->TraceConnectWithoutContext ("Tx", 
+                                                               MakeBoundCallback (&Ipv4L3ProtocolTxSinkWithoutContext, theStream));
+          NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv4Internal():  "
+                         "Unable to connect ipv4L3Protocol \"Tx\"");
+          result = ipv4L3Protocol->TraceConnectWithoutContext ("Rx", 
+                                                               MakeBoundCallback (&Ipv4L3ProtocolRxSinkWithoutContext, theStream));
+          NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv4Internal():  "
+                         "Unable to connect ipv4L3Protocol \"Rx\"");
         }
 
       g_interfaceStreamMapIpv4[std::make_pair (ipv4, interface)] = theStream;
@@ -785,6 +873,12 @@ InternetStackHelper::EnableAsciiIpv4Internal (
       oss.str ("");
       oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Drop";
       Config::Connect (oss.str (), MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithContext, stream));
+      oss.str ("");
+      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Tx";
+      Config::Connect (oss.str (), MakeBoundCallback (&Ipv4L3ProtocolTxSinkWithContext, stream));
+      oss.str ("");
+      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Rx";
+      Config::Connect (oss.str (), MakeBoundCallback (&Ipv4L3ProtocolRxSinkWithContext, stream));
     }
 
   g_interfaceStreamMapIpv4[std::make_pair (ipv4, interface)] = stream;
@@ -818,6 +912,40 @@ Ipv6L3ProtocolDropSinkWithoutContext (
 }
 
 static void
+Ipv6L3ProtocolTxSinkWithoutContext (
+  Ptr<OutputStreamWrapper> stream,
+  Ptr<const Packet> packet,
+  Ptr<Ipv6> ipv6, 
+  uint32_t interface)
+{
+  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+}
+
+static void
+Ipv6L3ProtocolRxSinkWithoutContext (
+  Ptr<OutputStreamWrapper> stream,
+  Ptr<const Packet> packet,
+  Ptr<Ipv6> ipv6, 
+  uint32_t interface)
+{
+  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+}
+
+static void
 Ipv6L3ProtocolDropSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
@@ -847,6 +975,52 @@ Ipv6L3ProtocolDropSinkWithContext (
                         << *p << std::endl;
 #else
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+#endif
+}
+
+static void
+Ipv6L3ProtocolTxSinkWithContext (
+  Ptr<OutputStreamWrapper> stream,
+  std::string context,
+  Ptr<const Packet> packet,
+  Ptr<Ipv6> ipv6, 
+  uint32_t interface)
+{
+  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+#ifdef INTERFACE_CONTEXT
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
+                        << *packet << std::endl;
+#else
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
+#endif
+}
+
+static void
+Ipv6L3ProtocolRxSinkWithContext (
+  Ptr<OutputStreamWrapper> stream,
+  std::string context,
+  Ptr<const Packet> packet,
+  Ptr<Ipv6> ipv6, 
+  uint32_t interface)
+{
+  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+  if (g_interfaceStreamMapIpv6.find (pair) == g_interfaceStreamMapIpv6.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+#ifdef INTERFACE_CONTEXT
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
+                        << *packet << std::endl;
+#else
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
 #endif
 }
 
@@ -933,6 +1107,14 @@ InternetStackHelper::EnableAsciiIpv6Internal (
                                                                                              MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithoutContext, theStream));
           NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv6Internal():  "
                          "Unable to connect ipv6L3Protocol \"Drop\"");
+          result = ipv6L3Protocol->TraceConnectWithoutContext ("Tx", 
+                                                               MakeBoundCallback (&Ipv6L3ProtocolTxSinkWithoutContext, theStream));
+          NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv6Internal():  "
+                         "Unable to connect ipv6L3Protocol \"Tx\"");
+          result = ipv6L3Protocol->TraceConnectWithoutContext ("Rx", 
+                                                               MakeBoundCallback (&Ipv6L3ProtocolRxSinkWithoutContext, theStream));
+          NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv6Internal():  "
+                         "Unable to connect ipv6L3Protocol \"Rx\"");
         }
 
       g_interfaceStreamMapIpv6[std::make_pair (ipv6, interface)] = theStream;
@@ -956,8 +1138,15 @@ InternetStackHelper::EnableAsciiIpv6Internal (
       Ptr<Node> node = ipv6->GetObject<Node> ();
       std::ostringstream oss;
 
+      oss.str ("");
       oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Drop";
       Config::Connect (oss.str (), MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithContext, stream));
+      oss.str ("");
+      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Tx";
+      Config::Connect (oss.str (), MakeBoundCallback (&Ipv6L3ProtocolTxSinkWithContext, stream));
+      oss.str ("");
+      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Rx";
+      Config::Connect (oss.str (), MakeBoundCallback (&Ipv6L3ProtocolRxSinkWithContext, stream));
     }
 
   g_interfaceStreamMapIpv6[std::make_pair (ipv6, interface)] = stream;

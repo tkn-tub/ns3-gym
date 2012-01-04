@@ -132,6 +132,8 @@ def register_types(module):
     module.add_class('Ipv6Address', import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
     root_module['ns3::Ipv6Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## ipv6-address-generator.h (module 'internet'): ns3::Ipv6AddressGenerator [class]
+    module.add_class('Ipv6AddressGenerator')
     ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6AddressHelper [class]
     module.add_class('Ipv6AddressHelper')
     ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6InterfaceAddress [class]
@@ -411,7 +413,7 @@ def register_types(module):
     ## tcp-header.h (module 'internet'): ns3::TcpHeader [class]
     module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h (module 'internet'): ns3::TcpHeader::Flags_t [enumeration]
-    module.add_enum('Flags_t', ['NONE', 'FIN', 'SYN', 'RST', 'PSH', 'ACK', 'URG'], outer_class=root_module['ns3::TcpHeader'])
+    module.add_enum('Flags_t', ['NONE', 'FIN', 'SYN', 'RST', 'PSH', 'ACK', 'URG', 'ECE', 'CWR'], outer_class=root_module['ns3::TcpHeader'])
     ## tcp-socket.h (module 'internet'): ns3::TcpSocket [class]
     module.add_class('TcpSocket', parent=root_module['ns3::Socket'])
     ## tcp-socket-factory.h (module 'internet'): ns3::TcpSocketFactory [class]
@@ -662,6 +664,7 @@ def register_methods(root_module):
     register_Ns3Ipv4RoutingTableEntry_methods(root_module, root_module['ns3::Ipv4RoutingTableEntry'])
     register_Ns3Ipv4StaticRoutingHelper_methods(root_module, root_module['ns3::Ipv4StaticRoutingHelper'])
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
+    register_Ns3Ipv6AddressGenerator_methods(root_module, root_module['ns3::Ipv6AddressGenerator'])
     register_Ns3Ipv6AddressHelper_methods(root_module, root_module['ns3::Ipv6AddressHelper'])
     register_Ns3Ipv6InterfaceAddress_methods(root_module, root_module['ns3::Ipv6InterfaceAddress'])
     register_Ns3Ipv6InterfaceContainer_methods(root_module, root_module['ns3::Ipv6InterfaceContainer'])
@@ -2746,6 +2749,58 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('uint8_t *', 'address')])
+    return
+
+def register_Ns3Ipv6AddressGenerator_methods(root_module, cls):
+    ## ipv6-address-generator.h (module 'internet'): ns3::Ipv6AddressGenerator::Ipv6AddressGenerator() [constructor]
+    cls.add_constructor([])
+    ## ipv6-address-generator.h (module 'internet'): ns3::Ipv6AddressGenerator::Ipv6AddressGenerator(ns3::Ipv6AddressGenerator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6AddressGenerator const &', 'arg0')])
+    ## ipv6-address-generator.h (module 'internet'): static bool ns3::Ipv6AddressGenerator::AddAllocated(ns3::Ipv6Address const addr) [member function]
+    cls.add_method('AddAllocated', 
+                   'bool', 
+                   [param('ns3::Ipv6Address const', 'addr')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static ns3::Ipv6Address ns3::Ipv6AddressGenerator::GetAddress(ns3::Ipv6Prefix const prefix) [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv6Prefix const', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static ns3::Ipv6Address ns3::Ipv6AddressGenerator::GetNetwork(ns3::Ipv6Prefix const prefix) [member function]
+    cls.add_method('GetNetwork', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv6Prefix const', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static void ns3::Ipv6AddressGenerator::Init(ns3::Ipv6Address const net, ns3::Ipv6Prefix const prefix, ns3::Ipv6Address const interfaceId="::1") [member function]
+    cls.add_method('Init', 
+                   'void', 
+                   [param('ns3::Ipv6Address const', 'net'), param('ns3::Ipv6Prefix const', 'prefix'), param('ns3::Ipv6Address const', 'interfaceId', default_value='"::1"')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static void ns3::Ipv6AddressGenerator::InitAddress(ns3::Ipv6Address const interfaceId, ns3::Ipv6Prefix const prefix) [member function]
+    cls.add_method('InitAddress', 
+                   'void', 
+                   [param('ns3::Ipv6Address const', 'interfaceId'), param('ns3::Ipv6Prefix const', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static ns3::Ipv6Address ns3::Ipv6AddressGenerator::NextAddress(ns3::Ipv6Prefix const prefix) [member function]
+    cls.add_method('NextAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv6Prefix const', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static ns3::Ipv6Address ns3::Ipv6AddressGenerator::NextNetwork(ns3::Ipv6Prefix const prefix) [member function]
+    cls.add_method('NextNetwork', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv6Prefix const', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static void ns3::Ipv6AddressGenerator::Reset() [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## ipv6-address-generator.h (module 'internet'): static void ns3::Ipv6AddressGenerator::TestMode() [member function]
+    cls.add_method('TestMode', 
+                   'void', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3Ipv6AddressHelper_methods(root_module, cls):
@@ -7814,6 +7869,11 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## tcp-socket.h (module 'internet'): bool ns3::TcpSocket::GetTcpNoDelay() const [member function]
+    cls.add_method('GetTcpNoDelay', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetConnCount(uint32_t count) [member function]
     cls.add_method('SetConnCount', 
                    'void', 
@@ -7863,6 +7923,11 @@ def register_Ns3TcpSocket_methods(root_module, cls):
     cls.add_method('SetSndBufSize', 
                    'void', 
                    [param('uint32_t', 'size')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## tcp-socket.h (module 'internet'): void ns3::TcpSocket::SetTcpNoDelay(bool noDelay) [member function]
+    cls.add_method('SetTcpNoDelay', 
+                   'void', 
+                   [param('bool', 'noDelay')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 

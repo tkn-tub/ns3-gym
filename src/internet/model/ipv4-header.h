@@ -111,7 +111,7 @@ public:
     }; 
   /**
    * \brief Set ECN Field
-   * \param ECN Type
+   * \param ecn ECN Type
    */
   void SetEcn (EcnType ecn);
   /**
