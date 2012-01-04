@@ -24,7 +24,7 @@ except NameError:
 
 all_modules = []
 for dirname in os.listdir('src'):
-    if dirname.startswith('.') or dir == 'CVS':
+    if dirname.startswith('.') or dirname == 'CVS':
         continue
     path = os.path.join('src', dirname)
     if not os.path.isdir(path):
