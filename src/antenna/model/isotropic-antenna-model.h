@@ -36,6 +36,7 @@ class IsotropicAntennaModel : public AntennaModel
 {
 public:
 
+  IsotropicAntennaModel ();
   // inherited from Object
   static TypeId GetTypeId ();
 

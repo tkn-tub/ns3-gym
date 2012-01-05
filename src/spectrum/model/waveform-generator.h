@@ -43,6 +43,10 @@ namespace ns3 {
  * duration (set with the SetResolution()) . The generator activates
  * and deactivates periodically with a given period and with a duty
  * cycle of 1/2.
+ *
+ * This PHY model supports a single antenna model instance which is
+ * used for both transmission and reception (though received signals
+ * are discarded by this PHY).
  */
 class WaveformGenerator : public SpectrumPhy
 {
@@ -60,6 +64,7 @@ public:
   Ptr<MobilityModel> GetMobility ();
   Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
 
@@ -99,8 +104,12 @@ public:
    */
   double GetDutyCycle () const;
 
-
-
+  /** 
+   * set the AntennaModel to be used
+   * 
+   * \param a the Antenna Model
+   */
+  void SetAntenna (Ptr<AntennaModel> a);
 
   /**
    * Start the waveform generator
@@ -119,6 +128,7 @@ private:
   virtual void DoDispose (void);
 
   Ptr<MobilityModel> m_mobility;
+  Ptr<AntennaModel> m_antenna;
   Ptr<NetDevice> m_netDevice;
   Ptr<SpectrumChannel> m_channel;
 

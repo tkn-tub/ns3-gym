@@ -18,12 +18,15 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include <ns3/spectrum-analyzer.h>
+
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
 #include <ns3/double.h>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
+#include <ns3/antenna-model.h>
+
+#include "spectrum-analyzer.h"
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumAnalyzer");
 
@@ -132,6 +135,19 @@ SpectrumAnalyzer::SetChannel (Ptr<SpectrumChannel> c)
   m_channel = c;
 }
 
+
+Ptr<AntennaModel>
+SpectrumAnalyzer::GetRxAntenna ()
+{
+  return m_antenna;
+}
+
+void
+SpectrumAnalyzer::SetAntenna (Ptr<AntennaModel> a)
+{
+  NS_LOG_FUNCTION (this << a);
+  m_antenna = a;
+}
 
 
 

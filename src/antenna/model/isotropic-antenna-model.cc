@@ -37,13 +37,20 @@ IsotropicAntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::IsotropicAntennaModel")
     .SetParent<AntennaModel> ()
+    .AddConstructor<IsotropicAntennaModel> ()
     ;
   return tid;
+}
+
+IsotropicAntennaModel::IsotropicAntennaModel ()
+{
+  NS_LOG_FUNCTION (this);
 }
 
 double 
 IsotropicAntennaModel::GetGainDb (Angles a)
 {
+  NS_LOG_FUNCTION (this << a);
   return 0.0;
 }
 

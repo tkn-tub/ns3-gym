@@ -18,7 +18,6 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include <ns3/waveform-generator.h>
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
 #include <math.h>
@@ -26,6 +25,8 @@
 #include <ns3/trace-source-accessor.h>
 #include <ns3/packet-burst.h>
 #include <ns3/callback.h>
+#include <ns3/antenna-model.h>
+
 #include "half-duplex-ideal-phy.h"
 #include "half-duplex-ideal-phy-signal-parameters.h"
 #include "spectrum-error-model.h"
@@ -241,6 +242,20 @@ HalfDuplexIdealPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
   m_phyMacRxEndOkCallback = c;
 }
 
+Ptr<AntennaModel>
+HalfDuplexIdealPhy::GetRxAntenna ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_antenna;
+}
+
+void
+HalfDuplexIdealPhy::SetAntenna (Ptr<AntennaModel> a)
+{
+  NS_LOG_FUNCTION (this << a);
+  m_antenna = a;
+}
+
 void
 HalfDuplexIdealPhy::ChangeState (State newState)
 {
@@ -270,6 +285,7 @@ HalfDuplexIdealPhy::StartTx (Ptr<Packet> p)
         double txTimeSeconds = m_rate.CalculateTxTime (p->GetSize ());
         txParams->duration = Seconds (txTimeSeconds);
         txParams->txPhy = GetObject<SpectrumPhy> ();
+        txParams->txAntenna = m_antenna;
         txParams->psd = m_txPsd;
         txParams->data = m_txPacket;
 

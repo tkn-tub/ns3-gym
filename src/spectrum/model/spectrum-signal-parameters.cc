@@ -23,6 +23,7 @@
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-value.h>
 #include <ns3/log.h>
+#include <ns3/antenna-model.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("SpectrumSignalParameters");
@@ -45,6 +46,7 @@ SpectrumSignalParameters::SpectrumSignalParameters (const SpectrumSignalParamete
   psd = p.psd->Copy ();
   duration = p.duration;
   txPhy = p.txPhy;
+  txAntenna = p.txAntenna;
 }
 
 Ptr<SpectrumSignalParameters>
