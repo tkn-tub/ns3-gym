@@ -73,7 +73,7 @@ public:
   /**
    * get the associated MobilityModel instance
    *
-   * @return a Ptr to the associated NetDevice instance
+   * @return a Ptr to the associated MobilityModel instance
    */
   virtual Ptr<MobilityModel> GetMobility () = 0;
 
