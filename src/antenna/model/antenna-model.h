@@ -23,28 +23,9 @@
 
 
 #include <ns3/object.h>
-#include <ns3/vector.h>
+#include <ns3/angles.h>
 
 namespace ns3 {
-
-
-/** 
- * \brief converts degrees to radians
- * 
- * \param degrees the angle in degrees
- * 
- * \return the angle in radians
- */
-double DegreesToRadians (double degrees);
-
-/** 
- * \brief converts radians to degrees
- * 
- * \param radians the angle in radians
- * 
- * \return the angle in degrees
- */
-double RadiansToDegrees (double radians);
 
 /** 
  * \ingroup antenna
@@ -53,7 +34,7 @@ double RadiansToDegrees (double radians);
  * 
  * This class provides an interface for the definition of antenna
  * radiation pattern models. This interface is based on the use of
- * spherical coordinates, in particolar of the azimuth and elevation
+ * spherical coordinates, in particolar of the azimuth and inclination
  * angles. This choice is the one proposed "Antenna Theory - Analysis
  * and Design", C.A. Balanis, Wiley, 2nd Ed., see in particular
  *  section 2.2 "Radiation pattern".
@@ -63,75 +44,6 @@ double RadiansToDegrees (double radians);
 class AntennaModel : public Object
 {
 public:
-
-
-  /** 
-   * 
-   * struct holding the azimuth and elevation angles of spherical
-   * coordinates. The notation is the one used in  "Antenna Theory - Analysis
-   * and Design", C.A. Balanis, Wiley, 2nd Ed., section 2.2 "Radiation pattern".
-   * 
-   *          ^
-   *        z | 
-   *          |_ theta
-   *          | \   
-   *          | /|  
-   *          |/ |   y
-   *          +-------->
-   *         /  \|
-   *        /___/
-   *     x /  phi
-   *      |/
-   *
-   */
-  struct Angles
-  {
-    /** 
-     * default constructor, will inizialize phi and theta to zero
-     * 
-     */
-    Angles ();
-
-    /** 
-     * this constructor allows to specify phi and  theta
-     * 
-     * \param phi the azimuth angle in radians
-     * \param theta the elevation angle in radians
-     * 
-     */
-    Angles (double phi, double theta);
-
-    /** 
-     * this constructor will initialize phi and theta by converting the
-     * given 3D vector from cartesian coordinates to spherical coordinates
-     * 
-     * \param v the 3D vector in cartesian coordinates
-     * 
-     */
-    Angles (Vector v);
-
-    /** 
-     * this constructor initializes an Angles instance with the angles
-     * of the spherical coordinates of point v respect to point o 
-     * 
-     * \param v the point (in cartesian coordinates) for which the angles are determined
-     * \param o the origin (in cartesian coordinates) of the spherical coordinate system
-     * 
-     */
-    Angles (Vector v, Vector o);
-
-    /**
-     * the azimuth angle in radians
-     * 
-     */
-    double phi;
-
-    /**
-     * the elevation angle in radians
-     * 
-     */
-    double theta;
-  };
 
 
   AntennaModel ();
@@ -153,16 +65,6 @@ public:
 
 };
 
-
-/** 
- * print a struct AntennaModel::Angles to output
- * 
- * \param os the output stream
- * \param a the Angles struct
- * 
- * \return a reference to the output stream
- */
-std::ostream& operator<< ( std::ostream& os, const AntennaModel::Angles& a);
 
 
 } // namespace ns3

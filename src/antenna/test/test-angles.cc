@@ -32,13 +32,13 @@ class OneVectorConstructorTestCase : public TestCase
 {
 public:
   static std::string BuildNameString (Vector v);
-  OneVectorConstructorTestCase (Vector v, AntennaModel::Angles a);
+  OneVectorConstructorTestCase (Vector v, Angles a);
 
 private:
   virtual void DoRun (void);
 
   Vector m_v;
-  AntennaModel::Angles m_a;
+  Angles m_a;
 };
 
 std::string OneVectorConstructorTestCase::BuildNameString (Vector v)
@@ -49,7 +49,7 @@ std::string OneVectorConstructorTestCase::BuildNameString (Vector v)
 }
 
 
-OneVectorConstructorTestCase::OneVectorConstructorTestCase (Vector v, AntennaModel::Angles a)
+OneVectorConstructorTestCase::OneVectorConstructorTestCase (Vector v, Angles a)
   : TestCase (BuildNameString (v)),
     m_v (v),
     m_a (a)
@@ -59,7 +59,7 @@ OneVectorConstructorTestCase::OneVectorConstructorTestCase (Vector v, AntennaMod
 void
 OneVectorConstructorTestCase::DoRun ()
 {
-  AntennaModel::Angles a (m_v);
+  Angles a (m_v);
   NS_TEST_EXPECT_MSG_EQ_TOL ( a.phi, m_a.phi, 1e-10, "incorrect phi");
   NS_TEST_EXPECT_MSG_EQ_TOL ( a.theta, m_a.theta, 1e-10, "incorrect theta");
 }
@@ -72,14 +72,14 @@ class TwoVectorsConstructorTestCase : public TestCase
 {
 public:
   static std::string BuildNameString (Vector v, Vector o);
-  TwoVectorsConstructorTestCase (Vector v, Vector o, AntennaModel::Angles a);
+  TwoVectorsConstructorTestCase (Vector v, Vector o, Angles a);
 
 private:
   virtual void DoRun (void);
 
   Vector m_v;
   Vector m_o;
-  AntennaModel::Angles m_a;
+  Angles m_a;
 };
 
 std::string TwoVectorsConstructorTestCase::BuildNameString (Vector v, Vector o)
@@ -90,7 +90,7 @@ std::string TwoVectorsConstructorTestCase::BuildNameString (Vector v, Vector o)
 }
 
 
-TwoVectorsConstructorTestCase::TwoVectorsConstructorTestCase (Vector v, Vector o, AntennaModel::Angles a)
+TwoVectorsConstructorTestCase::TwoVectorsConstructorTestCase (Vector v, Vector o, Angles a)
   : TestCase (BuildNameString (v, o)),
     m_v (v),
     m_o (o),
@@ -101,7 +101,7 @@ TwoVectorsConstructorTestCase::TwoVectorsConstructorTestCase (Vector v, Vector o
 void
 TwoVectorsConstructorTestCase::DoRun ()
 {
-  AntennaModel::Angles a (m_v, m_o);
+  Angles a (m_v, m_o);
   NS_TEST_EXPECT_MSG_EQ_TOL ( a.phi, m_a.phi, 1e-10, "incorrect phi");
   NS_TEST_EXPECT_MSG_EQ_TOL ( a.theta, m_a.theta, 1e-10, "incorrect theta");
 }
@@ -120,90 +120,90 @@ public:
 AnglesTestSuite::AnglesTestSuite ()
   : TestSuite ("angles", UNIT)
 {
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, 0),     AntennaModel::Angles (0, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 0, 0),    AntennaModel::Angles (M_PI, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 1, 0),     AntennaModel::Angles (M_PI_2, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, 0),    AntennaModel::Angles (-M_PI_2, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, 1),     AntennaModel::Angles (0, 0)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, -1),    AntennaModel::Angles (0, M_PI)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, 0),     Angles (0, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 0, 0),    Angles (M_PI, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 1, 0),     Angles (M_PI_2, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, 0),    Angles (-M_PI_2, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, 1),     Angles (0, 0)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, -1),    Angles (0, M_PI)));
 
-  AddTestCase (new OneVectorConstructorTestCase (Vector (2, 0, 0),     AntennaModel::Angles (0, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-2, 0, 0),    AntennaModel::Angles (M_PI, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 2, 0),     AntennaModel::Angles (M_PI_2, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -2, 0),    AntennaModel::Angles (-M_PI_2, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, 2),     AntennaModel::Angles (0, 0)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, -2),    AntennaModel::Angles (0, M_PI)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (2, 0, 0),     Angles (0, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-2, 0, 0),    Angles (M_PI, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 2, 0),     Angles (M_PI_2, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -2, 0),    Angles (-M_PI_2, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, 2),     Angles (0, 0)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, -2),    Angles (0, M_PI)));
   
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, 1),     AntennaModel::Angles (0, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, -1),    AntennaModel::Angles (0, 3*M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, 0),     AntennaModel::Angles (M_PI_4, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, -1, 0),    AntennaModel::Angles (-M_PI_4, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 0, 1),    AntennaModel::Angles (M_PI, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 0, -1),   AntennaModel::Angles (M_PI, 3*M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 1, 0),    AntennaModel::Angles (3*M_PI_4, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, -1, 0),   AntennaModel::Angles (-3*M_PI_4, M_PI_2)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 1, 1),     AntennaModel::Angles (M_PI_2, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 1, -1),    AntennaModel::Angles (M_PI_2, 3*M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, 1),    AntennaModel::Angles (-M_PI_2, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, -1),   AntennaModel::Angles (-M_PI_2, 3*M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, 1),     Angles (0, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, -1),    Angles (0, 3*M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, 0),     Angles (M_PI_4, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, -1, 0),    Angles (-M_PI_4, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 0, 1),    Angles (M_PI, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 0, -1),   Angles (M_PI, 3*M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 1, 0),    Angles (3*M_PI_4, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, -1, 0),   Angles (-3*M_PI_4, M_PI_2)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 1, 1),     Angles (M_PI_2, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, 1, -1),    Angles (M_PI_2, 3*M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, 1),    Angles (-M_PI_2, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, -1),   Angles (-M_PI_2, 3*M_PI_4)));
 
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, sqrt (2)),  AntennaModel::Angles (M_PI_4, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, -sqrt (2)), AntennaModel::Angles (M_PI_4, 3*M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, -1, sqrt (2)), AntennaModel::Angles (-M_PI_4, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 1, sqrt (2)), AntennaModel::Angles (3*M_PI_4, M_PI_4)));
-
-
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, sqrt (2)),  Angles (M_PI_4, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, -sqrt (2)), Angles (M_PI_4, 3*M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, -1, sqrt (2)), Angles (-M_PI_4, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 1, sqrt (2)), Angles (3*M_PI_4, M_PI_4)));
 
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, 0),     Vector (0, 0, 0), AntennaModel::Angles (0, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 0, 0),    Vector (0, 0, 0), AntennaModel::Angles (M_PI, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 1, 0),     Vector (0, 0, 0), AntennaModel::Angles (M_PI_2, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, 0),    Vector (0, 0, 0), AntennaModel::Angles (-M_PI_2, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, 1),     Vector (0, 0, 0), AntennaModel::Angles (0, 0)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, -1),    Vector (0, 0, 0), AntennaModel::Angles (0, M_PI)));
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 0, 0),     Vector (0, 0, 0), AntennaModel::Angles (0, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-2, 0, 0),    Vector (0, 0, 0), AntennaModel::Angles (M_PI, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 2, 0),     Vector (0, 0, 0), AntennaModel::Angles (M_PI_2, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, 0),    Vector (0, 0, 0), AntennaModel::Angles (-M_PI_2, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, 2),     Vector (0, 0, 0), AntennaModel::Angles (0, 0)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, -2),    Vector (0, 0, 0), AntennaModel::Angles (0, M_PI)));
+
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, 0),     Vector (0, 0, 0), Angles (0, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 0, 0),    Vector (0, 0, 0), Angles (M_PI, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 1, 0),     Vector (0, 0, 0), Angles (M_PI_2, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, 0),    Vector (0, 0, 0), Angles (-M_PI_2, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, 1),     Vector (0, 0, 0), Angles (0, 0)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, -1),    Vector (0, 0, 0), Angles (0, M_PI)));
+
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 0, 0),     Vector (0, 0, 0), Angles (0, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-2, 0, 0),    Vector (0, 0, 0), Angles (M_PI, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 2, 0),     Vector (0, 0, 0), Angles (M_PI_2, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, 0),    Vector (0, 0, 0), Angles (-M_PI_2, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, 2),     Vector (0, 0, 0), Angles (0, 0)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, -2),    Vector (0, 0, 0), Angles (0, M_PI)));
   
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, 1),     Vector (0, 0, 0), AntennaModel::Angles (0, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, -1),    Vector (0, 0, 0), AntennaModel::Angles (0, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, 0),     Vector (0, 0, 0), AntennaModel::Angles (M_PI_4, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, -1, 0),    Vector (0, 0, 0), AntennaModel::Angles (-M_PI_4, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 0, 1),    Vector (0, 0, 0), AntennaModel::Angles (M_PI, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 0, -1),   Vector (0, 0, 0), AntennaModel::Angles (M_PI, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 1, 0),    Vector (0, 0, 0), AntennaModel::Angles (3*M_PI_4, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, -1, 0),   Vector (0, 0, 0), AntennaModel::Angles (-3*M_PI_4, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 1, 1),     Vector (0, 0, 0), AntennaModel::Angles (M_PI_2, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 1, -1),    Vector (0, 0, 0), AntennaModel::Angles (M_PI_2, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, 1),    Vector (0, 0, 0), AntennaModel::Angles (-M_PI_2, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, -1),   Vector (0, 0, 0), AntennaModel::Angles (-M_PI_2, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, 1),     Vector (0, 0, 0), Angles (0, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, -1),    Vector (0, 0, 0), Angles (0, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, 0),     Vector (0, 0, 0), Angles (M_PI_4, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, -1, 0),    Vector (0, 0, 0), Angles (-M_PI_4, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 0, 1),    Vector (0, 0, 0), Angles (M_PI, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 0, -1),   Vector (0, 0, 0), Angles (M_PI, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 1, 0),    Vector (0, 0, 0), Angles (3*M_PI_4, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, -1, 0),   Vector (0, 0, 0), Angles (-3*M_PI_4, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 1, 1),     Vector (0, 0, 0), Angles (M_PI_2, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 1, -1),    Vector (0, 0, 0), Angles (M_PI_2, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, 1),    Vector (0, 0, 0), Angles (-M_PI_2, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, -1),   Vector (0, 0, 0), Angles (-M_PI_2, 3*M_PI_4)));
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, sqrt (2)),  Vector (0, 0, 0), AntennaModel::Angles (M_PI_4, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, -sqrt (2)), Vector (0, 0, 0), AntennaModel::Angles (M_PI_4, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, -1, sqrt (2)), Vector (0, 0, 0), AntennaModel::Angles (-M_PI_4, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 1, sqrt (2)), Vector (0, 0, 0), AntennaModel::Angles (3*M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, sqrt (2)),  Vector (0, 0, 0), Angles (M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, -sqrt (2)), Vector (0, 0, 0), Angles (M_PI_4, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, -1, sqrt (2)), Vector (0, 0, 0), Angles (-M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 1, sqrt (2)), Vector (0, 0, 0), Angles (3*M_PI_4, M_PI_4)));
 
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (3, 2, 2),     Vector (2, 2, 2), AntennaModel::Angles (0, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 2, 2),     Vector (2, 2, 2), AntennaModel::Angles (M_PI, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 3, 2),     Vector (2, 2, 2), AntennaModel::Angles (M_PI_2, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 2, 2),    Vector (-1, 3, 2), AntennaModel::Angles (-M_PI_2, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (4, -2, 7),    Vector (4, -2, 6), AntennaModel::Angles (0, 0)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -5, -1),   Vector (0, -5, 0), AntennaModel::Angles (0, M_PI)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (3, 2, 2),     Vector (2, 2, 2), Angles (0, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 2, 2),     Vector (2, 2, 2), Angles (M_PI, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 3, 2),     Vector (2, 2, 2), Angles (M_PI_2, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 2, 2),    Vector (-1, 3, 2), Angles (-M_PI_2, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (4, -2, 7),    Vector (4, -2, 6), Angles (0, 0)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -5, -1),   Vector (0, -5, 0), Angles (0, M_PI)));
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-2, 2, -1),     Vector (-4, 2, -1), AntennaModel::Angles (0, M_PI_2)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 2, 0),    Vector (4, 2, 0), AntennaModel::Angles (M_PI, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-2, 2, -1),     Vector (-4, 2, -1), Angles (0, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 2, 0),    Vector (4, 2, 0), Angles (M_PI, M_PI_2)));
   
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 4, 4),     Vector (-2, 4, 3), AntennaModel::Angles (0, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, -6),    Vector (-1, -2, -5), AntennaModel::Angles (0, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (77, 3, 43),    Vector (78, 2, 43), AntennaModel::Angles (3*M_PI_4, M_PI_2)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 4, 4),     Vector (-2, 4, 3), Angles (0, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, -6),    Vector (-1, -2, -5), Angles (0, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (77, 3, 43),    Vector (78, 2, 43), Angles (3*M_PI_4, M_PI_2)));
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (24, -2, -6 -sqrt (2)), Vector (23, -3, -6), AntennaModel::Angles (M_PI_4, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0.5, 11.45, sqrt (2)-1), Vector (-0.5, 12.45, -1), AntennaModel::Angles (-M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (24, -2, -6 -sqrt (2)), Vector (23, -3, -6), Angles (M_PI_4, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0.5, 11.45, sqrt (2)-1), Vector (-0.5, 12.45, -1), Angles (-M_PI_4, M_PI_4)));
 
 
 };

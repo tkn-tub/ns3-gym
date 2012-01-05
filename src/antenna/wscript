@@ -5,6 +5,7 @@ def build(bld):
     module = bld.create_ns3_module('antenna', ['core'])
 
     module.source = [
+        'model/angles.cc',
         'model/antenna-model.cc',
         'model/isotropic-antenna-model.cc',	
         'model/cosine-antenna-model.cc',
@@ -21,6 +22,7 @@ def build(bld):
     headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'antenna'
     headers.source = [
+        'model/angles.h',
         'model/antenna-model.h',
         'model/isotropic-antenna-model.h',		
         'model/cosine-antenna-model.h',

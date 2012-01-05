@@ -31,18 +31,18 @@ namespace ns3 {
 class IsotropicAntennaModelTestCase : public TestCase
 {
 public:
-  static std::string BuildNameString (AntennaModel::Angles a);
-  IsotropicAntennaModelTestCase (AntennaModel::Angles a, double expectedGainDb);
+  static std::string BuildNameString (Angles a);
+  IsotropicAntennaModelTestCase (Angles a, double expectedGainDb);
 
 
 private:
   virtual void DoRun (void);
 
-  AntennaModel::Angles m_a;
+  Angles m_a;
   double m_expectedGain;
 };
 
-std::string IsotropicAntennaModelTestCase::BuildNameString (AntennaModel::Angles a)
+std::string IsotropicAntennaModelTestCase::BuildNameString (Angles a)
 {
   std::ostringstream oss;
   oss <<  "theta=" << a.theta << " , phi=" << a.phi;
@@ -50,7 +50,7 @@ std::string IsotropicAntennaModelTestCase::BuildNameString (AntennaModel::Angles
 }
 
 
-IsotropicAntennaModelTestCase::IsotropicAntennaModelTestCase (AntennaModel::Angles a, double expectedGainDb)
+IsotropicAntennaModelTestCase::IsotropicAntennaModelTestCase (Angles a, double expectedGainDb)
   : TestCase (BuildNameString (a)),
     m_a (a),
     m_expectedGain (expectedGainDb)
@@ -77,15 +77,15 @@ public:
 IsotropicAntennaModelTestSuite::IsotropicAntennaModelTestSuite ()
   : TestSuite ("isotropic-antenna-model", UNIT)
 {
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (0, 0),           0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (0, M_PI),        0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (0, M_PI_2),      0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (M_PI, 0),        0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (M_PI, M_PI),     0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (M_PI, M_PI_2),   0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (M_PI_2, 0),      0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (M_PI_2, M_PI),   0.0));
-  AddTestCase (new IsotropicAntennaModelTestCase (AntennaModel::Angles (M_PI_2, M_PI_2), 0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (0, 0),           0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (0, M_PI),        0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (0, M_PI_2),      0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (M_PI, 0),        0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (M_PI, M_PI),     0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (M_PI, M_PI_2),   0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (M_PI_2, 0),      0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (M_PI_2, M_PI),   0.0));
+  AddTestCase (new IsotropicAntennaModelTestCase (Angles (M_PI_2, M_PI_2), 0.0));
 
 };
 

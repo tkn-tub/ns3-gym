@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 CTTC
+ * Copyright (c) 2011, 2012 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,34 +21,58 @@
 
 #include <ns3/log.h>
 #include <math.h>
-#include "antenna-model.h"
+#include "angles.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("AntennaModel");
+NS_LOG_COMPONENT_DEFINE ("Angles");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
 
+double DegreesToRadians (double degrees)
+{
+  return degrees * M_PI / 180.0;
 
-AntennaModel::AntennaModel ()
-{
-}
-  
-AntennaModel::~AntennaModel ()
-{
 }
 
-TypeId 
-AntennaModel::GetTypeId ()
+double RadiansToDegrees (double radians)
 {
-  static TypeId tid = TypeId ("ns3::AntennaModel")
-    .SetParent<Object> ()
-    ;
-  return tid;
+  return radians * 180.0 / M_PI;
+}
+
+std::ostream& operator<< (std::ostream& os, const Angles& a)
+{
+  os << "(" << a.phi << ", " << a.theta << ")";
+  return os;
 }
 
   
-  
+Angles::Angles ()
+  : phi (0),
+    theta (0)
+{
+}
+
+
+Angles::Angles (double p, double t)
+  : phi (p),
+    theta (t)
+{
+}
+
+
+Angles::Angles (Vector v)
+  : phi (atan2 (v.y, v.x)),
+    theta (acos (v.z / sqrt (v.x*v.x + v.y*v.y + v.z*v.z)))
+{
+}
+
+Angles::Angles (Vector v, Vector o)
+  : phi (atan2 (v.y - o.y, v.x - o.x)),
+    theta (acos ((v.z - o.z) / CalculateDistance (v, o)))
+{
+}
+
+
 }
 
