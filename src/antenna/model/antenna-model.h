@@ -105,10 +105,20 @@ public:
      * this constructor will initialize phi and theta by converting the
      * given 3D vector from cartesian coordinates to spherical coordinates
      * 
-     * \param c the 3D vector in cartesian coordinates
+     * \param v the 3D vector in cartesian coordinates
      * 
      */
-    Angles (Vector c);
+    Angles (Vector v);
+
+    /** 
+     * this constructor initializes an Angles instance with the angles
+     * of the spherical coordinates of point v respect to point o 
+     * 
+     * \param v the point (in cartesian coordinates) for which the angles are determined
+     * \param o the origin (in cartesian coordinates) of the spherical coordinate system
+     * 
+     */
+    Angles (Vector v, Vector o);
 
     /**
      * the azimuth angle in radians

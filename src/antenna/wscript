@@ -12,6 +12,7 @@ def build(bld):
 	 
     module_test = bld.create_ns3_module_test_library('antenna')
     module_test.source = [
+        'test/test-angles.cc',
         'test/test-degrees-radians.cc',
         'test/test-isotropic-antenna.cc',
         'test/test-cosine-antenna.cc',
