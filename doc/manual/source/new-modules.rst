@@ -39,59 +39,47 @@ Not all directories will be present in each module.
 Step 2 - Create your new module based on the template module
 ************************************************************
 
-The template module ::
+A python program is provided in the source directory that will create a skeleton for a new module ::
 
-  src/template
+  src/create-module.py
 
-is a skeleton module that shows how modules should be created.
+For the purposes of this discussion we will assume that your new module is called "new-module".  From the ``src`` directory, do the following to create the new module: ::
 
-For the purposes of this discussion we will assume that your new module is called "new-module".  From the top level |ns3| directory, do the following to copy the template module to a new directory with the same name as your new module: ::
+  ./create-module.py new-module
 
-  cp -r src/template src/new-module
+Next, cd into ``new-module``; you will find this directory layout: ::
 
-Now you will need to open the following file in your favorite text editor: ::
+  examples  helper  model  test  wscript
 
-  src/new-module/wscript
-
-and replace all of the occurrences of "template" in this wscript file with the name of your new module, i.e. "new-module" for our assumed module name.
-
-You will also need to specify the |ns3| modules your new module will
-depend on.  Let's assume that "new-module" depends on the internet,
+We next walk through how to customize this module.  All |ns3| modules
+depend on the 'core' module and usually on other modules.  This 
+dependency is specified in the wscript file.  
+Let's assume that 'new-module' depends on the internet,
 mobility, and aodv modules.  Then the call to the function that will
-create this module should look like this when you are done with this
-step: ::
+create this module should look like this before editing: ::
 
-    module = bld.create_ns3_module('new-module', ['internet', 'mobility', 'aodv'])
+  def build(bld):
+      module = bld.create_ns3_module('new-module', ['core'])
 
-As an example, the dependencies for the spectrum module are specified
-in ::
+and after editing: ::
 
-  src/spectrum/wscript
+  def build(bld):
+      module = bld.create_ns3_module('new-module', ['internet', 'mobility', 'aodv'])
 
-with the following function call: ::
+Your module will most likely have model source files.  Initial skeletons (which will compile successfully) are created in ``model/new-module.cc`` and ``model/new-module.h``.  
 
-    module = bld.create_ns3_module('spectrum', ['internet', 'propagation',
-        'applications'])
+If your module will have helper source files, then they will go into the helper/ directory; again, initial skeletons are created in that directory.
 
-If your module will have model source files, then create the following directory where they will go: :: 
+Finally, it is good practice to write tests.  A skeleton test suite and test case is created in the test/ directory.  The below constructor specifies that it will be a unit test named 'new-module':  ::
 
-  mkdir src/new-module/model
+  New-moduleTestSuite::New-moduleTestSuite ()
+    : TestSuite ("new-module", UNIT)
+  {
+    AddTestCase (new New-moduleTestCase1);
+  }
 
-Copy all of your module's model source files to the above directory.
-
-If your module will have helper source files, then create the following directory where they will go: :: 
-
-  mkdir src/new-module/helper
-
-Copy all of your module's helper source files to the above directory.
-
-If your module will have tests, then copy all of your module's test files to the following directory: :: 
-
-  mkdir src/new-module/test
-
-
-Step 3 - Specify your module's source files
-*******************************************
+Step 3 - Adding to your module's source files
+*********************************************
 
 If your new module has model and/or helper source files, then they
 must be specified in your  ::
@@ -139,7 +127,7 @@ with the following function call, module name, and list of header
 files.  Note that the argument for the function new_task_gen() tells
 waf to install this module's headers with the other |ns3| headers: ::
 
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
 
     headers.module = 'spectrum'
 
@@ -194,7 +182,7 @@ As an example, the examples for the core module are specified in ::
 
 The core module's C++ examples are specified using the following
 function calls and source file names.  Note that the second argument
-for the function create_ns3_program() is the list of modules that the
+for the function ``create_ns3_program()`` is the list of modules that the
 program being created depends on: ::
 
     obj = bld.create_ns3_program('main-callback', ['core'])
@@ -210,18 +198,16 @@ depends on: ::
 
     bld.register_ns3_script('sample-simulator.py', ['core'])
 
-Step 7 - Specify which of your module's examples should be run
-**************************************************************
+Step 7 - Specify which of your module's examples should be run as tests
+***********************************************************************
 
-If your new module has examples, then you must specify which of them
-should be run in your ::
+The test framework can also be instrumented to run example programs to
+try to catch regressions in the examples.  However, not all examples
+are suitable for regression tests.  A file called ``examples-to-run.py``
+that exists in each module's test directory can control the invocation
+of the examples when the test framework runs.
 
-  src/new-module/test/examples-to-run.py
-
-file by modifying it with your text editor.  These examples are run by
-test.py.
-
-As an example, the examples that are run by test.py for the core module are specified in  ::
+As an example, the examples that are run by ``test.py`` for the core module are specified in  ::
 
   src/core/test/examples-to-run.py
 
@@ -279,47 +265,15 @@ depend on waf configuration variables.  For example, ::
 
     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == False"),
 
+If your new module has examples, then you must specify which of them
+should be run in your ::
 
-Step 8 - Add your module to the list on |ns3| modules
-*****************************************************
+  src/new-module/test/examples-to-run.py
 
-Your new module must be added to the current list of |ns3| modules by modifying the following wscript file with your text editor: ::
+file by modifying it with your text editor.  These examples are run by
+test.py.
 
-  src/wscript
-
-In that file, you will find the following list of modules ::
-
-  all_modules = (
-      'core',
-      'network',
-      'config-store',
-      'internet',
-          .
-          .
-          .
-      'point-to-point-layout',
-      'csma-layout',
-      'template',
-      )
-
-Add your new module's name to the list like this ::
-
-  all_modules = (
-      'core',
-      'network',
-      'config-store',
-      'internet',
-          .
-          .
-          .
-      'point-to-point-layout',
-      'csma-layout',
-      'template',
-      'new-module',
-      )
-
-
-Step 9 - Build and test your new module
+Step 8 - Build and test your new module
 ***************************************
 
 You can now build and test your module as normal: ::
@@ -328,4 +282,4 @@ You can now build and test your module as normal: ::
   ./waf build
   ./test.py
 
-
+and look for your new module's test suite (and example programs, if enabled) in the test output.

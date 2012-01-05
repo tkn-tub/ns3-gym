@@ -10,7 +10,7 @@ There are several important resources of which any |ns3| user must be
 aware.  The main web site is located at http://www.nsnam.org and 
 provides access to basic information about the |ns3| system.  Detailed 
 documentation is available through the main web site at
-http://www.nsnam.org/documents.html.  You can also find documents 
+http://www.nsnam.org/documentation/.  You can also find documents 
 relating to the system architecture from this page.
 
 There is a Wiki that complements the main |ns3| web site which you will
@@ -61,9 +61,7 @@ using the Python language.
 
 The build system Waf is used on the |ns3| project.  It is one 
 of the new generation of Python-based build systems.  You will not need to 
-understand any Python to build the existing |ns3| system, and will 
-only have to understand a tiny and intuitively obvious subset of Python in 
-order to extend the system in most cases.
+understand any Python to build the existing |ns3| system.
 
 For those interested in the gory details of Waf, the main web site can be 
 found at http://code.google.com/p/waf/.
@@ -72,7 +70,7 @@ Development Environment
 ***********************
 
 As mentioned above, scripting in |ns3| is done in C++ or Python.
-As of ns-3.2, most of the |ns3| API is available in Python, but the 
+Most of the |ns3| API is available in Python, but the 
 models are written in C++ in either case.  A working 
 knowledge of C++ and object-oriented concepts is assumed in this document.
 We will take some time to review some of the more advanced concepts or 
@@ -98,26 +96,10 @@ neither make nor autotools.  We use Waf for these functions.
 Typically an |ns3| author will work in Linux or a Linux-like
 environment.  For those running under Windows, there do exist environments 
 which simulate the Linux environment to various degrees.  The |ns3| 
-project supports development in the Cygwin environment for 
+project has in the past (but not presently) supported development in the Cygwin environment for 
 these users.  See http://www.cygwin.com/ 
-for details on downloading (MinGW is presently not officially supported,
-although some of the project maintainers to work with it). Cygwin provides 
-many of the popular Linux system commands.  It can, however, sometimes be 
-problematic due to the way it actually does its emulation, and sometimes
-interactions with other Windows software can cause problems.
-
-If you do use Cygwin or MinGW; and use Logitech products, we will save you
-quite a bit of heartburn right off the bat and encourage you to take a look
-at the `MinGW FAQ
-<http://oldwiki.mingw.org/index.php/FAQ>`_.
-
-Search for "Logitech" and read the FAQ entry, "why does make often 
-crash creating a sh.exe.stackdump file when I try to compile my source code."
-Believe it or not, the ``Logitech Process Monitor`` insinuates itself into
-every DLL in the system when it is running.  It can cause your Cygwin or
-MinGW DLLs to die in mysterious ways and often prevents debuggers from 
-running.  Beware of Logitech software when using Cygwin.
-
+for details on downloading, and visit the |ns3| wiki for more information
+about Cygwin and |ns3|.  MinGW is presently not officially supported.
 Another alternative to Cygwin is to install a virtual machine environment
 such as VMware server and install a Linux virtual machine.
 

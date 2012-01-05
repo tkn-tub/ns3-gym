@@ -500,7 +500,7 @@ def sigint_hook(signal, frame):
 # and use that result.
 #
 def read_waf_config():
-    for line in open(".lock-wafbuild", "rt"):
+    for line in open(".lock-waf_" + sys.platform + "_build", "rt"):
         if line.startswith("out_dir ="):
             key, val = line.split('=')
             out_dir = eval(val.strip())

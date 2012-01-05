@@ -264,7 +264,7 @@ list, so "/NodeList/0" refers to the zeroth node in the list of nodes created by
 the simulation. This node is actually a ``Ptr<Node>`` and so is a subclass of
 an :cpp:class:`ns3::Object`.  
 
-As described in the :ref:`Object Model` section, |ns3| supports an object
+As described in the :ref:`Object-model` section, |ns3| supports an object
 aggregation model. The next path segment begins with the "$" character which
 indicates a ``GetObject`` call should be made looking for the type that follows.
 When a node is initialized by an ``InternetStackHelper`` a number of interfaces

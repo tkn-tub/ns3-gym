@@ -801,6 +801,7 @@ def build(bld):
         for gen in bld.all_task_gen:
             if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
                 gen.post()
+        bld.env['PRINT_BUILT_MODULES_AT_END'] = False 
 
     if Options.options.doxygen_no_build:
         _doxygen(bld)

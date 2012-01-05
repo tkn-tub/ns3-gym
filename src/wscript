@@ -24,7 +24,7 @@ except NameError:
 
 all_modules = []
 for dirname in os.listdir('src'):
-    if dirname.startswith('.') or dir == 'CVS':
+    if dirname.startswith('.') or dirname == 'CVS':
         continue
     path = os.path.join('src', dirname)
     if not os.path.isdir(path):
@@ -217,7 +217,7 @@ def ns3_python_bindings(bld):
             source=("bindings/%s.py" % (module_py_name,)),
             target=('%s/%s.py' % (module_target_dir, module_py_name)))
         extension_name = '_%s' % (module_py_name,)
-        bld.install_files('${PYTHONDIR}/ns', ["bindings/%s.py" % (module_py_name,)])
+        bld.install_files('${PYTHONARCHDIR}/ns', ["bindings/%s.py" % (module_py_name,)])
     else:
         extension_name = module_py_name
 
@@ -275,7 +275,7 @@ def ns3_python_bindings(bld):
             pass
     pymod.env['DEFINES'] = defines
     pymod.includes = '# bindings'
-    pymod.install_path = '${PYTHONDIR}/ns'
+    pymod.install_path = '${PYTHONARCHDIR}/ns'
     return pymod
 
 
@@ -379,7 +379,7 @@ class ns3pcfile_task(Task.Task):
                 self._defines(dep) + self._includes(dep)
             if dep.startswith('ns3-'):
                 requires.append("lib"+dep)
-        print >> outfile, """
+        print >> outfile, """\
 prefix=%s
 libdir=%s
 includedir=%s
@@ -389,7 +389,7 @@ Description: ns-3 module %s
 Version: devel
 Libs: %s
 Cflags: %s
-Requires: %s
+Requires: %s\
 """ % (prefix, libdir, includedir,
        name, name, ' '.join(libs), ' '.join(cflags), ' '.join(requires))
         outfile.close()
