@@ -301,7 +301,7 @@ Fading Traces Generation
 
 It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
- * ``fc`` : the frequency in use (it affects the computation of the dopples speed).
+ * ``fc`` : the frequency in use (it affects the computation of the doppler speed).
  * ``v_km_h`` : the speed of the users
  * ``traceDuration`` : the duration in seconds of the total length of the trace.
  * ``numRBs`` : the number of the resource block to be evaluated. 
@@ -322,7 +322,7 @@ The parameters to be configured are:
  * ``SamplesNum`` : the number of samples;
  * ``WindowSize`` : the size of the fading sampling window in seconds;
 
-It is important to highlight that the sampling interval of the fading trace has to me at most of 1 ms or greater and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module.
+It is important to highlight that the sampling interval of the fading trace has to be 1 ms or greater, and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module.
 
 The default configuration of the matlab script provides a trace 10 seconds long, made of 10,000 samples (i.e., 1 sample per TTI=1ms) and used with a windows size of 0.5 seconds amplitude. These are also the default values of the parameters above used in the simulator; therefore their settage can be avoided in case the fading trace respects them.
 
