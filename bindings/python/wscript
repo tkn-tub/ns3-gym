@@ -479,7 +479,7 @@ def build(bld):
         bld.new_task_gen(features='copy',
                          source="ns__init__.py",
                          target='ns/__init__.py')
-        bld.install_as('${PYTHONDIR}/ns/__init__.py', 'ns__init__.py')
+        bld.install_as('${PYTHONARCHDIR}/ns/__init__.py', 'ns__init__.py')
 
 
     # note: the actual build commands for the python bindings are in
