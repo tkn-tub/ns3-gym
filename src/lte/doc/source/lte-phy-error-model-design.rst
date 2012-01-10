@@ -40,7 +40,7 @@ For estimating the :math:`CBLER_i`, the MI evaluation has been implemented accor
 
   CBLER_i = \frac{1}{2}\left[1-erf\left(\frac{x-b_{ECR}}{\sqrt{2}c_{ECR}} \right) \right]
 
-where :math:`x` is the MI of the TB, :math:`b_{ECR}` represents the "transition center" and :math:`c_{ECR}` is related to the "transition width" of the Gaussian cumulative distribution for each Effective Code Rate (ECR) which is the actual transmission rate according to the channel coding and MCS. For limiting the computational complexity of the model we considered only a subset of the possible ECRs in fact we would have potentially 5076 possible ECRs (i.e., 27 MCSs and 188 CB sizes). On this respect, we will limit the CB sizes to some representative values (i.e., 40, 140, 256, 512, 1024, 2048, 4032, 6144), while for the others the worst one approximating the real one will be used (i.e., the smaller CB size value available respect to the real one). This choice is aligned to the typical performance of turbo codes, where the CB size is not strongly impacting on the BLER. However, it is to be notes that for CB sizes lower than 1000 bits the effect might be relevant (i.e., till 2 dB); therefore, we adopt this unbalanced sampling interval for having more precision where it is necessary. This behaviour is confirmed by the following figures, where the BLER is plotted as function of the SINR and the CB sizes (plotted with blue lines). We note that, the results depicted in these figures are a subset of the ones parametrized to the Gaussian cumulative function (plotted with dashed red lines).
+where :math:`x` is the MI of the TB, :math:`b_{ECR}` represents the "transition center" and :math:`c_{ECR}` is related to the "transition width" of the Gaussian cumulative distribution for each Effective Code Rate (ECR) which is the actual transmission rate according to the channel coding and MCS. For limiting the computational complexity of the model we considered only a subset of the possible ECRs in fact we would have potentially 5076 possible ECRs (i.e., 27 MCSs and 188 CB sizes). On this respect, we will limit the CB sizes to some representative values (i.e., 40, 140, 256, 512, 1024, 2048, 4032, 6144), while for the others the worst one approximating the real one will be used (i.e., the smaller CB size value available respect to the real one). This choice is aligned to the typical performance of turbo codes, where the CB size is not strongly impacting on the BLER. However, it is to be notes that for CB sizes lower than 1000 bits the effect might be relevant (i.e., till 2 dB); therefore, we adopt this unbalanced sampling interval for having more precision where it is necessary. This behaviour is confirmed by the following figures, where the BLER is plotted as function of the SINR and the CB sizes (plotted with blue lines).
 
 .. _fig-mcs-0:
 
@@ -80,7 +80,40 @@ The model implemented uses the curves for the LSM of the recently LTE PHY Error 
 Test Environment
 ----------------
 
-The test suite ``lte-phy-error-model`` generates different test cases with single eNB and a various number of UEs, all having the same Radio Bearer specification. Each test is designed for evaluating the error rate perceived by a specific TB size in order to verify that it corresponds to the expected values according to the BLER generated for CB size analog to the TB size. This means that, for instance, the test will check that the performance of a TB of :math:`N` bits is analogous to the one of a a CB size of :math:`N` bits by collecting the performance of a user which has been forced the generation of a such TB size according to the distance to eNB. In order to significantly test the BER at MAC level, we modified the Adaptive Modulation and Coding (AMC) module, the ``LteAmc`` class, for making it less robust to channel conditions by adding a configurable BER parameter (called ``Ber`` in the ns3 attribute system) which enable the selection of the desired BER at MAC level when choosing the MCS to be used (before was fixed to 0.00005).
+The test suite ``lte-phy-error-model`` generates nine test cases with single eNB and a various number of UEs, all having the same Radio Bearer specification. Each test is designed for evaluating the error rate perceived by a specific TB size in order to verify that it corresponds to the expected values according to the BLER generated for CB size analog to the TB size. This means that, for instance, the test will check that the performance of a TB of :math:`N` bits is analogous to the one of a a CB size of :math:`N` bits by collecting the performance of a user which has been forced the generation of a such TB size according to the distance to eNB. In order to significantly test the BER at MAC level, we modified the Adaptive Modulation and Coding (AMC) module, the ``LteAmc`` class, for making it less robust to channel conditions by adding a configurable BER parameter (called ``Ber`` in the ns3 attribute system) which enable the selection of the desired BER at MAC level when choosing the MCS to be used. In detail, the AMC module has been forced to select the AMC considering a BER of 0.01 (instead of the standard value equal to 0.00005). We note that, these values do not reflect actual BER since they come from an analytycal bound which do not consider all the tranmission chain aspects; therefore the resulted BER might be different. 
+
+The parameters of the nine test cases are reported in the following:
+
+ #. 4 UEs placed 898 meters far from the eNB, which implies the use of MCS 2 (SINR of -2.21 dB) and a TB of 176 bits, that in turns produce a BER of 0.19 (see point B in figure XX).
+ #. 3 UEs placed 900 meters far from the eNB, which implies the use of MCS 2 (SINR of -2.25 dB) and a TB of 328 bits, that in turns produce a BER of 0.09 (see point C in figure XX).
+ #. 2 UEs placed 920 meters far from the eNB, which implies the use of MCS 2 (SINR of -2.61 dB) and a TB of 72 bits, that in turns produce a BER of 0.123 (see point D in figure XX).
+ #. 1 UE placed 930 meters far from the eNB, which implies the use of MCS 2 (SINR of -2.79 dB) and a TB of 72 bits, that in turns produce a BER of 0.9 (see point D in figure XX).
+ #. 1 UE placed 538 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.19 dB) and a TB of 4776 bits, that in turns produce a BER of 0.017 (see point E in figure XX).
+ #. 3 UEs placed 538 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.19 dB) and a TB of 1608 bits, that in turns produce a BER of 0.23 (see point F in figure XX).
+ #. 7 UEs placed 538 meters far from the eNB, which implies the use of MCS 12 (SINR of 4.19 dB) and a TB of 376 bits, that in turns produce a BER of 0.72 (see point G in figure XX).
+ #. 1 UE placed 500 meters far from the eNB, which implies the use of MCS 14 (SINR of 5.53 dB) and a TB of 6248 bits (segmented in 2 CBs of 3136 bits each one), that in turns produce a BER of 0.18, since each CB has CBLER equal to 0.096 (see point H in figure XX).
+
+
+.. _fig-mcs-2-test:
+
+.. figure:: figures/MCS_2_test.*
+   :align: center
+
+   BLER for tests 1, 2, 3, 4.
+
+.. _fig-mcs-12-test:
+
+.. figure:: figures/MCS_12_test.*
+   :align: center
+
+   BLER for tests 5, 6, 7.
+
+.. _fig-mcs-14-test:
+
+.. figure:: figures/MCS_14_test.*
+   :align: center
+
+   BLER for test 8.
 
 
 .. [PaduaPEM] http://mailman.isi.edu/pipermail/ns-developers/2011-November/009559.html
