@@ -13,7 +13,10 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
 	$(FIGURES)/lte-ue-architecture.eps \
-	$(FIGURES)/lte-interference-test-scenario.eps
+	$(FIGURES)/lte-interference-test-scenario.eps \
+	$(FIGURES)/MCS_2_test.eps \
+	$(FIGURES)/MCS_12_test.eps \
+	$(FIGURES)/MCS_14_test.eps
 
 # specify figures for build process (all eps figures)
 GRAPHS_EPS = \
