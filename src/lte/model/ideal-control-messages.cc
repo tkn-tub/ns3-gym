@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Marco Miozzo <marco.miozzo@cttc.es>
  */
 
 #include "ideal-control-messages.h"
@@ -23,7 +24,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "lte-net-device.h"
-#include "ue-net-device.h"
+#include "lte-ue-net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("IdealControlMessage");
 
@@ -116,39 +117,122 @@ PdcchMapIdealControlMessage::GetMessage (void)
 }
 
 
+// ----------------------------------------------------------------------------------------------------------
+
+
+DlDciIdealControlMessage::DlDciIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::DL_DCI);
+}
+
+
+DlDciIdealControlMessage::~DlDciIdealControlMessage (void)
+{
+
+}
+
+void
+DlDciIdealControlMessage::SetDci (DlDciListElement_s dci)
+{
+  m_dci = dci;
+
+}
+
+
+DlDciListElement_s
+DlDciIdealControlMessage::GetDci (void)
+{
+  return m_dci;
+}
+
 
 // ----------------------------------------------------------------------------------------------------------
 
 
-CqiIdealControlMessage::CqiIdealControlMessage (void)
+UlDciIdealControlMessage::UlDciIdealControlMessage (void)
 {
-  m_cqiFeedbacks = new CqiFeedbacks ();
-  SetMessageType (IdealControlMessage::CQI_FEEDBACKS);
+  SetMessageType (IdealControlMessage::UL_DCI);
 }
 
 
-CqiIdealControlMessage::~CqiIdealControlMessage (void)
+UlDciIdealControlMessage::~UlDciIdealControlMessage (void)
 {
-  delete m_cqiFeedbacks;
+
 }
 
 void
-CqiIdealControlMessage::AddNewRecord (int subChannel, double cqi)
+UlDciIdealControlMessage::SetDci (UlDciListElement_s dci)
 {
-  CqiFeedback c;
-  c.m_idSubChannel = subChannel;
-  c.m_cqi = cqi;
-
-  m_cqiFeedbacks->push_back (c);
+  m_dci = dci;
 
 }
 
 
-CqiIdealControlMessage::CqiFeedbacks*
-CqiIdealControlMessage::GetMessage (void)
+UlDciListElement_s
+UlDciIdealControlMessage::GetDci (void)
 {
-  return m_cqiFeedbacks;
+  return m_dci;
+}
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+DlCqiIdealControlMessage::DlCqiIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::DL_CQI);
+}
+
+
+DlCqiIdealControlMessage::~DlCqiIdealControlMessage (void)
+{
+
+}
+
+void
+DlCqiIdealControlMessage::SetDlCqi (CqiListElement_s dlcqi)
+{
+  m_dlCqi = dlcqi;
+
+}
+
+
+CqiListElement_s
+DlCqiIdealControlMessage::GetDlCqi (void)
+{
+  return m_dlCqi;
+}
+
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+BsrIdealControlMessage::BsrIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::BSR);
+}
+
+
+BsrIdealControlMessage::~BsrIdealControlMessage (void)
+{
+
+}
+
+void
+BsrIdealControlMessage::SetBsr (MacCeListElement_s bsr)
+{
+  m_bsr = bsr;
+
+}
+
+
+MacCeListElement_s
+BsrIdealControlMessage::GetBsr (void)
+{
+  return m_bsr;
 }
 
 
 } // namespace ns3
+

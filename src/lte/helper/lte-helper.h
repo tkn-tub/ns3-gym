@@ -1,6 +1,6 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
+ * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,128 +15,288 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Giuseppe Piro <peppe.piro@gmail.com>, <g.piro@poliba.it>
+ * Author: Nicola Baldo <nbaldo@cttc.es>
  */
-
 
 #ifndef LTE_HELPER_H
 #define LTE_HELPER_H
 
-#include <string>
-#include "ns3/object-factory.h"
-#include "ns3/node-container.h"
-#include "ns3/net-device-container.h"
-#include "ns3/lte-net-device.h"
-#include "ns3/enb-net-device.h"
-#include "ns3/ue-net-device.h"
-#include "ns3/packet-scheduler.h"
-#include "ns3/single-model-spectrum-channel.h"
-#include "ns3/lte-phy.h"
-#include "ns3/ue-phy.h"
-#include "ns3/enb-phy.h"
-#include <ns3/mobility-model.h>
-
+#include <ns3/config.h>
+#include <ns3/simulator.h>
+#include <ns3/names.h>
+#include <ns3/net-device.h>
+#include <ns3/net-device-container.h>
+#include <ns3/node.h>
+#include <ns3/node-container.h>
+#include <ns3/eps-bearer.h>
+#include <ns3/mac-stats-calculator.h>
+#include <ns3/radio-bearer-stats-calculator.h>
+#include <ns3/epc-tft.h>
+#include <ns3/trace-fading-loss-model.h>
 
 namespace ns3 {
 
 
+class LteUePhy;
+class LteEnbPhy;
+class SpectrumChannel;
+class EpcHelper;
+class PropagationLossModel;
+
+
 /**
- * \ingroup lte
- * \brief helps to manage and create LteNetDevice objects
+ * Creation and configuration of LTE entities
  *
- * This class can help to create a LteNetDevice objects 
- * and to configure their attributes during creation.
  */
-class LteHelper 
+class LteHelper : public Object
 {
 public:
-  /**
-   * Net Device Type
-   * Distinguish a user equipment (UE) device from eNodeB (eNB) device
-   */
-  enum NetDeviceType
-  {
-    DEVICE_TYPE_USER_EQUIPMENT, /**< UE device */
-    DEVICE_TYPE_ENODEB          /**< eNB device */
-  };
-
-  /**
-   * \brief Create a Lte helper in an empty state.
-   */
   LteHelper (void);
-  ~LteHelper (void);
+  virtual ~LteHelper (void);
+
+  static TypeId GetTypeId (void);
+  virtual void DoDispose (void);
 
 
-  /**
-  * \brief Add mobility model to a physical device
-  * \param phy the physical device
-  * \param m the mobility model
-  */
-  void AddMobility (Ptr<LtePhy> phy, Ptr<MobilityModel>m);
-
-
-  /**
-   * \param c a set of nodes
-   * \param type device type to create
+  /** 
+   * Set the EpcHelper to be used to setup the EPC network in
+   * conjunction with the setup of the LTE radio access network 
+   *
+   * \note if no EpcHelper is ever set, then LteHelper will default
+   * to creating an LTE-only simulation with no EPC, using LteRlcSm as
+   * the RLC model, and without supporting any IP networking. In other
+   * words, it will be a radio-level simulation involving only LTE PHY
+   * and MAC and the FF Scheduler, with a saturation traffic model for
+   * the RLC.
+   * 
+   * \param h a pointer to the EpcHelper to be used
    */
-  NetDeviceContainer Install (NodeContainer c, NetDeviceType type);
+  void SetEpcHelper (Ptr<EpcHelper> h);
 
-
-  /**
-   * \brief register UEs to the target eNB
-   * \param ue the UE that will registered to the eNB
-   * \param enb the eNB where the UE will registered
+  /** 
+   * 
+   * 
+   * \param type the type of pathloss model to be used for the eNBs
    */
-  void RegisterUeToTheEnb (Ptr<UeNetDevice> ue, Ptr<EnbNetDevice> enb);
+  void SetPathlossModelType (std::string type);
 
   /**
-   * Helper to enable all LTE log components with one statement
+   * set an attribute for the pathloss model to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetPathlossModelAttribute (std::string n, const AttributeValue &v);
+
+  /** 
+   * 
+   * \param type the type of scheduler to be used for the eNBs
+   */
+  void SetSchedulerType (std::string type);
+
+  /**
+   * set an attribute for the scheduler to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetSchedulerAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * set an attribute for the LteEnbNetDevice to be created
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * create a set of eNB devices
+   *
+   * \param c the node container where the devices are to be installed
+   *
+   * \return the NetDeviceContainer with the newly created devices
+   */
+  NetDeviceContainer InstallEnbDevice (NodeContainer c);
+
+  /**
+   * create a set of UE devices
+   *
+   * \param c the node container where the devices are to be installed
+   *
+   * \return the NetDeviceContainer with the newly created devices
+   */
+  NetDeviceContainer InstallUeDevice (NodeContainer c);
+
+  /**
+   * Attach a set of UE devices to a single eNB device
+   *
+   * \param ueDevices
+   * \param enbDevice
+   */
+  void Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice);
+
+  /**
+   * Attach a UE device to an eNB device
+   *
+   * \param ueDevice
+   * \param enbDevice
+   */
+  void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+
+  /**
+   * Activate an EPS bearer on a given set of UE devices
+   *
+   * \param ueDevices the set of UE devices
+   * \param bearer the characteristics of the bearer to be activated
+   * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
+   */
+  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
+
+  /**
+   * Activate an EPS bearer on a given UE device
+   *
+   * \param ueDevices the set of UE devices
+   * \param bearer the characteristics of the bearer to be activated
+   * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
+   */
+  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
+
+  /** 
+   * 
+   * \param bearer the specification of an EPS bearer
+   * 
+   * \return the type of RLC that is to be created for the given EPS bearer
+   */
+  TypeId GetRlcType (EpsBearer bearer);
+
+  /** 
+   * 
+   * 
+   * \param type the fading model to be used
+   */
+  void SetFadingModel (std::string model);
+
+  /**
+   * set an attribute of the fading model
+   */
+  void SetFadingModelAttribute (std::string n, const AttributeValue &v);
+
+  /**
+   * Enables logging for all components of the LENA architecture
+   *
    */
   void EnableLogComponents (void);
 
   /**
-  * \brief Create a downlink channel realization between eNB and UE
-  * \param enbMobility the enb mobility model
-  * \param ueMobility the ue mobility model
-  * \param phy the physical layer of the UE
-  */
-  void AddDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, 
-                                      Ptr<MobilityModel> ueMobility,
-                                      Ptr<LtePhy> phy);
+   * Enables trace sinks for MAC, RLC and PDCP
+   */
+  void EnableTraces (void);
 
+  /**
+   * Enable trace sinks for MAC layer
+   */
+  void EnableMacTraces (void);
+
+  /**
+   * Enable trace sinks for DL MAC layer
+   */
+  void EnableDlMacTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlMacTraces (void);
+
+  /**
+   * Enable trace sinks for RLC layer
+   */
+  void EnableRlcTraces (void);
+
+  /**
+   * Enable trace sinks for DL RLC layer
+   */
+  void EnableDlRlcTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlRlcTraces (void);
+
+  /**
+   * Set the output directory for the MAC/RLC trace
+   */
+  void SetTraceDirectory (std::string path);
+
+  /** 
+   * 
+   * \return the RLC stats calculator object
+   */
+  Ptr<RadioBearerStatsCalculator> GetRlcStats (void);
+
+  /**
+   * Enable trace sinks for PDCP layer
+   */
+  void EnablePdcpTraces (void);
+
+  /**
+   * Enable trace sinks for DL PDCP layer
+   */
+  void EnableDlPdcpTraces (void);
+
+  /**
+   * Enable trace sinks for UL MAC layer
+   */
+  void EnableUlPdcpTraces (void);
+
+  /** 
+   * 
+   * \return the PDCP stats calculator object
+   */
+  Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
+
+protected:
+  // inherited from Object
+  virtual void DoStart (void);
 
 private:
-  /**
-   * \brief Create a PHY layer for a LTE device
-   * \param dlChannel the downlink channel
-   * \param ulChannel the uplink channel
-   * \return the pointer to the LTE physical layer
-   */
-  Ptr<LtePhy> CreatePhy (Ptr<SpectrumChannel> dlChannel, Ptr<SpectrumChannel> ulChannel, NetDeviceType t);
+  Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
+  Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  /**
-   * \brief Create a PHY layer for a LTE device
-   * \return the pointer to the LTE physical layer
-   */
-  Ptr<LtePhy> CreatePhy (NetDeviceType t);
+  Ptr<SpectrumChannel> m_downlinkChannel;
+  Ptr<SpectrumChannel> m_uplinkChannel;
+  
+  Ptr<Object> m_downlinkPathlossModel;
+  Ptr<Object> m_uplinkPathlossModel;
 
-  /**
-   * \brief Create a PHY layer for a UE LTE device
-   * \return the pointer to the UE LTE physical layer
-   */
-  Ptr<UeLtePhy> CreateUePhy (void);
+  ObjectFactory m_schedulerFactory;
+  ObjectFactory m_propagationModelFactory;
+  ObjectFactory m_enbNetDeviceFactory;
 
-  /**
-   * \brief Create a PHY layer for a eNB LTE device
-   * \return the pointer to the eNB LTE physical layer
-   */
-  Ptr<EnbLtePhy> CreateEnbPhy (void);
+  ObjectFactory m_dlPathlossModelFactory;
+  ObjectFactory m_ulPathlossModelFactory;
 
+  std::string m_fadingModelType;
+  ObjectFactory m_fadingModelFactory;
+  
+  Ptr<TraceFadingLossModel> m_fadingModule;
+  
+  Ptr<MacStatsCalculator> m_macStats;
+  Ptr<RadioBearerStatsCalculator> m_rlcStats;
+  Ptr<RadioBearerStatsCalculator> m_pdcpStats;
 
-  Ptr<SingleModelSpectrumChannel> m_downlinkChannel;
-  Ptr<SingleModelSpectrumChannel> m_uplinkChannel;
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4} m_epsBearerToRlcMapping;
+
+  Ptr<EpcHelper> m_epcHelper;
+  
 };
+
 
 } // namespace ns3
 
-#endif /* LTE_HELPER_H */
+
+
+#endif // LTE_HELPER_H

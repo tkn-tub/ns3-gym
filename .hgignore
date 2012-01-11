@@ -28,6 +28,10 @@
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
+^src/.*/doc/build
+^src/.*/doc/source/figures/.*.eps
+^src/.*/doc/source/figures/.*.pdf
+^src/.*/doc/source/figures/.*.png
 ^bindings/python/pybindgen/
 ms_print.*
 massif.*

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
 #include <ns3/waveform-generator.h>
@@ -34,15 +35,32 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LtePhy);
 
-uint32_t LtePhy::m_nrFrames = 0;
-uint32_t LtePhy::m_nrSubFrames = 0;
-
 LtePhy::LtePhy ()
-  : m_netDevice (0),
-    m_downlinkSpectrumPhy (0),
-    m_uplinkSpectrumPhy (0)
 {
-  SetTti (0.001);
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("This constructor should not be called");
+}
+
+LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
+  : m_downlinkSpectrumPhy (dlPhy),
+    m_uplinkSpectrumPhy (ulPhy),
+    m_tti (0.001),
+    m_ulBandwidth (0),
+    m_dlBandwidth (0),
+    m_rbgSize (0),
+    m_macChTtiDelay (1) // 1 TTI delay between MAC and CH
+{
+  NS_LOG_FUNCTION (this);
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+    }
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      std::list<Ptr<IdealControlMessage> > l;
+      m_controlMessagesQueue.push_back (l);
+    }
 }
 
 
@@ -58,15 +76,21 @@ LtePhy::GetTypeId (void)
 
 LtePhy::~LtePhy ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 LtePhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_packetBurstQueue.clear ();
+  m_controlMessagesQueue.clear ();
+  m_downlinkSpectrumPhy->Dispose ();
   m_downlinkSpectrumPhy = 0;
+  m_uplinkSpectrumPhy->Dispose ();
   m_uplinkSpectrumPhy = 0;
   m_netDevice = 0;
+  Object::DoDispose ();
 }
 
 void
@@ -84,35 +108,15 @@ LtePhy::GetDevice ()
   return m_netDevice;
 }
 
-
-void
-LtePhy::SetDownlinkSpectrumPhy (Ptr<LteSpectrumPhy> s)
-{
-  NS_LOG_FUNCTION (this << s);
-  m_downlinkSpectrumPhy = s;
-}
-
-
-void
-LtePhy::SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s)
-{
-  NS_LOG_FUNCTION (this << s);
-  m_uplinkSpectrumPhy = s;
-}
-
-
-Ptr<LteSpectrumPhy>
+Ptr<LteSpectrumPhy> 
 LtePhy::GetDownlinkSpectrumPhy ()
 {
-  NS_LOG_FUNCTION (this);
   return m_downlinkSpectrumPhy;
 }
 
-
-Ptr<LteSpectrumPhy>
+Ptr<LteSpectrumPhy> 
 LtePhy::GetUplinkSpectrumPhy ()
 {
-  NS_LOG_FUNCTION (this);
   return m_uplinkSpectrumPhy;
 }
 
@@ -124,30 +128,12 @@ LtePhy::SetDownlinkChannel (Ptr<SpectrumChannel> c)
   m_downlinkSpectrumPhy->SetChannel (c);
 }
 
-
-Ptr<SpectrumChannel>
-LtePhy::GetDownlinkChannel ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_downlinkSpectrumPhy->GetChannel ();
-}
-
-
 void
 LtePhy::SetUplinkChannel (Ptr<SpectrumChannel> c)
 {
   NS_LOG_FUNCTION (this << c);
   m_uplinkSpectrumPhy->SetChannel (c);
 }
-
-
-Ptr<SpectrumChannel>
-LtePhy::GetUplinkChannel ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_uplinkSpectrumPhy->GetChannel ();
-}
-
 
 void
 LtePhy::SetDownlinkSubChannels (std::vector<int> mask )
@@ -196,22 +182,6 @@ LtePhy::GetUplinkSubChannels (void)
   return m_listOfUplinkSubchannel;
 }
 
-
-void
-LtePhy::SetTxPower (double pw)
-{
-  NS_LOG_FUNCTION (this << pw);
-  m_txPower = pw;
-}
-
-
-double
-LtePhy::GetTxPower (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_txPower;
-}
-
 void
 LtePhy::SetTti (double tti)
 {
@@ -228,34 +198,121 @@ LtePhy::GetTti (void) const
 }
 
 void
-LtePhy::SetNrFrames (uint32_t nrFrames)
+LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
 {
-  NS_LOG_FUNCTION (this << nrFrames);
-  m_nrFrames = nrFrames;
+  m_ulBandwidth = ulBandwidth;
+  m_dlBandwidth = dlBandwidth;
+
+  int Type0AllocationRbg[4] = {
+    10,     // RGB size 1
+    26,     // RGB size 2
+    63,     // RGB size 3
+    110     // RGB size 4
+  };  // see table 7.1.6.1-1 of 36.213
+  for (int i = 0; i < 4; i++)
+    {
+      if (dlBandwidth < Type0AllocationRbg[i])
+        {
+          m_rbgSize = i + 1;
+          break;
+        }
+    }
 }
 
-
-uint32_t
-LtePhy::GetNrFrames (void) const
+void 
+LtePhy::DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn)
 {
-  NS_LOG_FUNCTION (this);
-  return m_nrFrames;
+  m_dlEarfcn = dlEarfcn;
+  m_ulEarfcn = ulEarfcn;
+}
+
+uint8_t
+LtePhy::GetRbgSize (void) const
+{
+  return m_rbgSize;
 }
 
 
 void
-LtePhy::SetNrSubFrames (uint32_t nrSubFrames)
+LtePhy::SetMacChDelay (uint8_t delay)
 {
-  NS_LOG_FUNCTION (this << nrSubFrames);
-  m_nrSubFrames = nrSubFrames;
+  int old_delay = m_macChTtiDelay;
+  m_macChTtiDelay = delay;
+  m_packetBurstQueue.resize (delay);
+  for (int i = old_delay - 1; i < delay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+    }
 }
 
 
-uint32_t
-LtePhy::GetNrSubFrames (void) const
+uint8_t
+LtePhy::GetMacChDelay (void)
 {
-  NS_LOG_FUNCTION (this);
-  return m_nrSubFrames;
+  return (m_macChTtiDelay);
 }
+
+void
+LtePhy::SetMacPdu (Ptr<Packet> p)
+{
+  m_packetBurstQueue.at (m_macChTtiDelay - 1)->AddPacket (p);
+}
+
+Ptr<PacketBurst>
+LtePhy::GetPacketBurst (void)
+{
+  if (m_packetBurstQueue.at (0)->GetSize () > 0)
+    {
+      Ptr<PacketBurst> ret = m_packetBurstQueue.at (0)->Copy ();
+      m_packetBurstQueue.erase (m_packetBurstQueue.begin ());
+      m_packetBurstQueue.push_back (CreateObject <PacketBurst> ());
+      return (ret);
+    }
+  else
+    {
+      m_packetBurstQueue.erase (m_packetBurstQueue.begin ());
+      m_packetBurstQueue.push_back (CreateObject <PacketBurst> ());
+      return (0);
+    }
+}
+
+
+void
+LtePhy::SetControlMessages (Ptr<IdealControlMessage> m)
+{
+  m_controlMessagesQueue.at (m_macChTtiDelay - 1).push_back (m);
+}
+
+std::list<Ptr<IdealControlMessage> >
+LtePhy::GetControlMessages (void)
+{
+  if (m_controlMessagesQueue.at (0).size () > 0)
+    {
+      std::list<Ptr<IdealControlMessage> > ret = m_controlMessagesQueue.at (0);
+      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
+      std::list<Ptr<IdealControlMessage> > newlist;
+      m_controlMessagesQueue.push_back (newlist);
+      return (ret);
+    }
+  else
+    {
+      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
+      std::list<Ptr<IdealControlMessage> > newlist;
+      m_controlMessagesQueue.push_back (newlist);
+      std::list<Ptr<IdealControlMessage> > emptylist;
+      return (emptylist);
+    }
+}
+
+
+void
+LtePhy::DoSetCellId (uint16_t cellId)
+{
+  m_cellId = cellId;
+  m_downlinkSpectrumPhy->SetCellId (cellId);
+  m_uplinkSpectrumPhy->SetCellId (cellId);
+}
+
 
 } // namespace ns3

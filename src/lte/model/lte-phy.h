@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Marco Miozzo <mmiozzo@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef LTE_PHY_H
@@ -49,7 +51,18 @@ class LtePhy : public Object
 {
 
 public:
+  /** 
+   * @warning the default constructor should not be used
+   */
   LtePhy ();
+
+  /** 
+   * 
+   * \param dlPhy the downlink LteSpectrumPhy instance
+   * \param ulPhy the uplink LteSpectrumPhy instance
+   */
+  LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
+
   virtual ~LtePhy ();
 
   static TypeId GetTypeId (void);
@@ -65,36 +78,24 @@ public:
    */
   Ptr<LteNetDevice> GetDevice ();
 
-  /**
-   * \brief Start a transmission. StartTx is called by the LTE device to start packet transmission.
-   * \param pb the packet of packets to be transmitted
-   * \return true if an error occurred and the transmission was not started, false otherwise.
-   */
-  virtual bool SendPacket (Ptr<PacketBurst> pb) = 0;
-
-  /**
-   * Set the LTE SpectrumPhy for the downlink
-   * \param s the LTE SpectrumPhy
-   */
-  void SetDownlinkSpectrumPhy (Ptr<LteSpectrumPhy> s);
-
-  /**
-   * Set the LTE SpectrumPhy for the uplink
-   * \param s the LTE SpectrumPhy
-   */
-  void SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s);
-
-  /**
-   * Get the LTE SpectrumPhy for the downlink
-   * \return a Ptr to the LTE SpectrumPhy for the downlink
+  /** 
+   * 
+   * \return a pointer to the LteSpectrumPhy instance that manages the downlink
    */
   Ptr<LteSpectrumPhy> GetDownlinkSpectrumPhy ();
 
-  /**
-   * Get the LTE SpectrumPhy for the uplink
-   * \return a Ptr to the LTE SpectrumPhy for the
+
+  /** 
+   * 
+   * \return a pointer to the LteSpectrumPhy instance that manages the uplink
    */
   Ptr<LteSpectrumPhy> GetUplinkSpectrumPhy ();
+
+  /**
+  * \brief Queue the MAC PDU to be sent (according to m_macChTtiDelay)
+  * \param p the MAC PDU to sent
+  */
+  virtual void DoSendMacPdu (Ptr<Packet> p) = 0;
 
   /**
    * Set the downlink channel
@@ -103,22 +104,10 @@ public:
   void SetDownlinkChannel (Ptr<SpectrumChannel> c);
 
   /**
-   * Get the downlink channel
-   * \return a Ptr to the downlink SpectrumChannel
-   */
-  Ptr<SpectrumChannel> GetDownlinkChannel ();
-
-  /**
    * Set the uplink channel
    * \param c the uplink channel
    */
   void SetUplinkChannel (Ptr<SpectrumChannel> c);
-
-  /**
-   * Get the uplink channel
-   * \return a Ptr to the uplink SpectrumChannel
-   */
-  Ptr<SpectrumChannel> GetUplinkChannel ();
 
   /**
    * \brief set a list of sub channel to use in the downlink.
@@ -158,29 +147,12 @@ public:
 
   /**
    * \brief Compute the TX Power Spectral Density
-   * \return a Ptr to a created SpectrumValue
+   * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity () = 0;
 
-  /**
-   * \brief Set the power transmisison, expressed in dBm
-   * \param pw the power transmission
-   */
-  void SetTxPower (double pw);
-  /**
-   * \brief Get the power transmission, expressed in dBm
-   * \return the power transmission
-   */
-  double GetTxPower (void);
-
   void DoDispose ();
 
-
-  /**
-   * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-   * \param msg the Ideal Control Message to send
-   */
-  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
   /**
    * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to receive
@@ -198,24 +170,70 @@ public:
   double GetTti (void) const;
 
   /**
-   * \param nrFrames the number of the current LTE frame.
-   */
-  void SetNrFrames (uint32_t nrFrames);
+  * \param ulBandwidth the UL bandwidth in RB
+  * \param dlBandwidth the DL bandwidth in RB
+  */
+  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+
   /**
-   * \returns the number of the current LTE frame.
+   *
+   * \param dlEarfcn the carrier frequency (EARFCN) in downlink
+   * \param ulEarfcn the carrier frequency (EARFCN) in downlink
    */
-  uint32_t GetNrFrames (void) const;
-  /**
-   * \param nrSubFrames the number of the current LTE sub-frame.
+  virtual void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+
+  /** 
+   * 
+   * \param cellId the Cell Identifier
    */
-  void SetNrSubFrames (uint32_t nrSubFrames);
-  /**
-   * \returns the number of the current LTE sub-frame.
-   */
-  uint32_t GetNrSubFrames (void) const;
+  void DoSetCellId (uint16_t cellId);
 
 
-private:
+  /**
+  * \returns the RB gruop size according to the bandwidth
+  */
+  uint8_t GetRbgSize (void) const;
+
+  /**
+  * \param delay the TTI delay between MAC and channel
+  */
+  void SetMacChDelay (uint8_t delay);
+  /**
+  * \returns the TTI delay between MAC and channel
+  */
+  uint8_t GetMacChDelay (void);
+
+  /**
+  * \param p queue MAC PDU to be sent
+  */
+  void SetMacPdu (Ptr<Packet> p);
+
+  /**
+  * \returns the packet burst to be sent
+  */
+  Ptr<PacketBurst> GetPacketBurst (void);
+
+  /**
+  * \param p queue control message to be sent
+  */
+  void SetControlMessages (Ptr<IdealControlMessage> m);
+
+  /**
+  * \returns the list of control messages to be sent
+  */
+  std::list<Ptr<IdealControlMessage> > GetControlMessages (void);
+
+
+  /** 
+   * generate CQI feedback based on the given SINR
+   * 
+   * \param sinr the SINR vs frequency measured by the device
+   */
+  virtual void  GenerateCqiFeedback (const SpectrumValue& sinr) = 0;
+
+
+
+protected:
   Ptr<LteNetDevice> m_netDevice;
 
   Ptr<LteSpectrumPhy> m_downlinkSpectrumPhy;
@@ -225,11 +243,22 @@ private:
   std::vector <int> m_listOfUplinkSubchannel;
 
   double m_txPower;
+  double m_noiseFigure;
 
-
-  static uint32_t m_nrFrames;
-  static uint32_t m_nrSubFrames;
   double m_tti;
+  uint8_t m_ulBandwidth;
+  uint8_t m_dlBandwidth;
+  uint8_t m_rbgSize;
+
+  uint16_t m_dlEarfcn;
+  uint16_t m_ulEarfcn;
+
+  std::vector< Ptr<PacketBurst> > m_packetBurstQueue;
+  std::vector< std::list<Ptr<IdealControlMessage> > > m_controlMessagesQueue;
+  uint8_t m_macChTtiDelay; // delay between MAC and channel layer in terms of TTIs
+
+  uint16_t m_cellId;
+
 };
 
 

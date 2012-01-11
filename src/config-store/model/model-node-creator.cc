@@ -16,9 +16,10 @@
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
- 
+
 #include "model-node-creator.h"
-namespace ns3 {
+namespace ns3
+{
 
 ModelCreator::ModelCreator ()
 {
@@ -28,103 +29,141 @@ void
 ModelCreator::Build (GtkTreeStore *treestore)
 {
   m_treestore = treestore;
-  m_iters.push_back (0);
+  m_iters.push_back(0);
   //this function will go through all the objects and call on them
   //DoStartVisitObject, DoIterate and DoEndVisitObject
-  Iterate ();
-  NS_ASSERT (m_iters.size () == 1);
+  Iterate();
+  NS_ASSERT(m_iters.size() == 1);
 }
-
 
 void
 ModelCreator::Add (ModelNode *node)
 {
-  GtkTreeIter *parent = m_iters.back ();
-  GtkTreeIter *current = g_new (GtkTreeIter, 1);
-  gtk_tree_store_append (m_treestore, current, parent);
-  gtk_tree_store_set (m_treestore, current,
-                      COL_NODE, node, -1);
-  m_iters.push_back (current);
+  GtkTreeIter *parent = m_iters.back();
+  GtkTreeIter *current = g_new(GtkTreeIter, 1);
+  gtk_tree_store_append(m_treestore, current, parent);
+  gtk_tree_store_set(m_treestore, current, COL_NODE, node, -1);
+  m_iters.push_back(current);
 }
 void
 ModelCreator::Remove (void)
 {
-  GtkTreeIter *iter = m_iters.back ();
-  g_free (iter);
-  m_iters.pop_back ();
+  GtkTreeIter *iter = m_iters.back();
+  g_free(iter);
+  m_iters.pop_back();
 }
 
-void 
+void
 ModelCreator::DoVisitAttribute (Ptr<Object> object, std::string name)
 {
-  ModelNode *node = new ModelNode ();
+  ModelNode *node = new ModelNode();
   node->type = ModelNode::NODE_ATTRIBUTE;
   node->object = object;
   node->name = name;
-  Add (node);
-  Remove ();
+  Add(node);
+  Remove();
 }
-void 
+void
 ModelCreator::DoStartVisitObject (Ptr<Object> object)
 {
-  ModelNode *node = new ModelNode ();
+  ModelNode *node = new ModelNode();
   node->type = ModelNode::NODE_OBJECT;
   node->object = object;
-  Add (node);
+  Add(node);
 }
-void 
+void
 ModelCreator::DoEndVisitObject (void)
 {
-  Remove ();
+  Remove();
 }
-void 
-ModelCreator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value)
+void
+ModelCreator::DoStartVisitPointerAttribute (Ptr<Object> object,
+    std::string name, Ptr<Object> value)
 {
-  ModelNode *node = new ModelNode ();
+  ModelNode *node = new ModelNode();
   node->type = ModelNode::NODE_POINTER;
   node->object = object;
   node->name = name;
-  Add (node);
+  Add(node);
 }
-void 
+void
 ModelCreator::DoEndVisitPointerAttribute (void)
 {
-  Remove ();
+  Remove();
 }
-void 
-ModelCreator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector)
+void
+ModelCreator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name,
+    const ObjectPtrVectorValue &vector)
 {
-  ModelNode *node = new ModelNode ();
+  ModelNode *node = new ModelNode();
   node->type = ModelNode::NODE_VECTOR;
   node->object = object;
   node->name = name;
-  Add (node);
+  Add(node);
 }
-void 
+void
 ModelCreator::DoEndVisitArrayAttribute (void)
 {
-  Remove ();
+  Remove();
 }
-void 
-ModelCreator::DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item)
+void
+ModelCreator::DoStartVisitArrayItem (const ObjectPtrVectorValue &vector,
+    uint32_t index, Ptr<Object> item)
 {
-  GtkTreeIter *parent = m_iters.back ();
-  GtkTreeIter *current = g_new (GtkTreeIter, 1);
-  ModelNode *node = new ModelNode ();
+  GtkTreeIter *parent = m_iters.back();
+  GtkTreeIter *current = g_new(GtkTreeIter, 1);
+  ModelNode *node = new ModelNode();
   node->type = ModelNode::NODE_VECTOR_ITEM;
   node->object = item;
   node->index = index;
-  gtk_tree_store_append (m_treestore, current, parent);
-  gtk_tree_store_set (m_treestore, current,
-                      COL_NODE, node,
-                      -1);
-  m_iters.push_back (current);
+  gtk_tree_store_append(m_treestore, current, parent);
+  gtk_tree_store_set(m_treestore, current, COL_NODE, node, -1);
+  m_iters.push_back(current);
 }
-void 
+void
 ModelCreator::DoEndVisitArrayItem (void)
 {
-  GtkTreeIter *iter = m_iters.back ();
-  g_free (iter);
-  m_iters.pop_back ();
+  GtkTreeIter *iter = m_iters.back();
+  g_free(iter);
+  m_iters.pop_back();
 }
+
+void
+ModelCreator::DoStartVisitMapAttribute (Ptr<Object> object, std::string name,
+    const ObjectPtrMapValue &map)
+{
+  ModelNode *node = new ModelNode();
+  node->type = ModelNode::NODE_VECTOR;
+  node->object = object;
+  node->name = name;
+  Add(node);
+}
+void
+ModelCreator::DoEndVisitMapAttribute (void)
+{
+  Remove();
+}
+void
+ModelCreator::DoStartVisitMapItem (const ObjectPtrMapValue &map, uint32_t index,
+    Ptr<Object> item)
+{
+  GtkTreeIter *parent = m_iters.back();
+  GtkTreeIter *current = g_new(GtkTreeIter, 1);
+  ModelNode *node = new ModelNode();
+  node->type = ModelNode::NODE_VECTOR_ITEM;
+  node->object = item;
+  node->index = index;
+  gtk_tree_store_append(m_treestore, current, parent);
+  gtk_tree_store_set(m_treestore, current, COL_NODE, node, -1);
+  m_iters.push_back(current);
+}
+
+void
+ModelCreator::DoEndVisitMapItem (void)
+{
+  GtkTreeIter *iter = m_iters.back();
+  g_free(iter);
+  m_iters.pop_back();
+}
+
 } //end namespace ns3

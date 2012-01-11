@@ -22,7 +22,7 @@
 #ifndef LTE_SPECTRUM_PHY_H
 #define LTE_SPECTRUM_PHY_H
 
-
+#include <ns3/event-id.h>
 #include <ns3/spectrum-value.h>
 #include <ns3/mobility-model.h>
 #include <ns3/packet.h>
@@ -34,7 +34,7 @@
 #include <ns3/data-rate.h>
 #include <ns3/generic-phy.h>
 #include <ns3/packet-burst.h>
-#include <ns3/event-id.h>
+#include <ns3/lte-interference.h>
 
 namespace ns3 {
 
@@ -63,7 +63,9 @@ public:
     IDLE, TX, RX
   };
 
+  // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
@@ -74,12 +76,6 @@ public:
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
-
-  /**
-   * \brief Get the channel where the physical layer is attached
-   * \return a pointer to the channel
-   */
-  Ptr<SpectrumChannel> GetChannel (void);
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.
@@ -94,14 +90,8 @@ public:
    * (Watt, Pascal...) per Hz.
    */
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
-
+ 
   /**
-   * \brief get the noise power spectral density
-   * @return the Noise Power Spectral Density
-   */
-  Ptr<const SpectrumValue> GetNoisePowerSpectralDensity (void);
-
-  /** 
    * set the AntennaModel to be used
    * 
    * \param a the Antenna Model
@@ -129,14 +119,6 @@ public:
   void SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c);
 
   /**
-   * set the callback for the start of RX, as part of the
-   * interconnections betweenthe PHY and the MAC
-   *
-   * @param c the callback
-   */
-  void SetGenericPhyRxStartCallback (GenericPhyRxStartCallback c);
-
-  /**
    * set the callback for the end of a RX in error, as part of the
    * interconnections betweenthe PHY and the MAC
    *
@@ -153,27 +135,30 @@ public:
   void SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c);
 
   /**
-   * \brief Calculate the SINR estimated during the reception of the
-   * packet.
-   * \param rxPsd the Power Spectral Density of the incoming waveform.
-   * \param noise the Power Spectral Density of the noise.
-   */
-  virtual void CalcSinrValues (Ptr <const SpectrumValue> rxPsd, Ptr <const SpectrumValue> noise) = 0;
-
-
-  /**
    * \brief Set the state of the phy layer
    * \param newState the state
    */
   void SetState (State newState);
 
+  /** 
+   * 
+   * 
+   * \param cellId the Cell Identifier
+   */
+  void SetCellId (uint16_t cellId);
+
+
+  /** 
+   * 
+   * 
+   * \param p the new LteSinrChunkProcessor to be added to the processing chain
+   */
+  void AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+
 private:
   void ChangeState (State newState);
   void EndTx ();
-  void AbortRx ();
-  virtual void EndRx ();
-
-  EventId m_endRxEventId;
+  void EndRx ();
 
   Ptr<MobilityModel> m_mobility;
   Ptr<AntennaModel> m_antenna;
@@ -182,26 +167,26 @@ private:
   Ptr<SpectrumChannel> m_channel;
 
   Ptr<SpectrumValue> m_txPsd;
-  Ptr<const SpectrumValue> m_rxPsd;
-  Ptr<PacketBurst> m_txPacket;
-  Ptr<PacketBurst> m_rxPacket;
+  Ptr<PacketBurst> m_txPacketBurst;
+  std::list<Ptr<PacketBurst> > m_rxPacketBurstList;
 
   State m_state;
+  Time m_firstRxStart;
+  Time m_firstRxDuration;
 
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxAbortTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyTxStartTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyTxEndTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyRxStartTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyRxEndOkTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyRxEndErrorTrace;
 
-  GenericPhyTxEndCallback        m_phyMacTxEndCallback;
-  GenericPhyRxStartCallback      m_phyMacRxStartCallback;
-  GenericPhyRxEndErrorCallback   m_phyMacRxEndErrorCallback;
-  GenericPhyRxEndOkCallback      m_phyMacRxEndOkCallback;
+  GenericPhyTxEndCallback        m_genericPhyTxEndCallback;
+  GenericPhyRxEndErrorCallback   m_genericPhyRxEndErrorCallback;
+  GenericPhyRxEndOkCallback      m_genericPhyRxEndOkCallback;
 
+  Ptr<LteInterference> m_interference;
 
-  Ptr<const SpectrumValue> m_noise;
+  uint16_t m_cellId; 
 };
 
 

@@ -1,0 +1,32 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    module = bld.create_ns3_module('buildings', ['mobility', 'propagation'])
+    module.source = [
+        'model/building.cc',
+        'model/buildings-mobility-model.cc',
+        'model/buildings-propagation-loss-model.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('buildings')
+    module_test.source = [
+        'test/buildings-pathloss-test.cc',
+        'test/buildings-shadowing-test.cc',
+        ]
+    
+    headers = bld.new_task_gen(features=['ns3header'])
+    headers.module = 'buildings'
+    headers.source = [
+        'model/building.h',
+        'model/buildings-mobility-model.h',
+        'model/buildings-propagation-loss-model.h',
+        'test/buildings-pathloss-test.h',
+        'test/buildings-shadowing-test.h',
+        ]
+
+#    if (bld.env['ENABLE_EXAMPLES']):
+#        bld.add_subdirs('examples')
+
+
+    bld.ns3_python_bindings()
