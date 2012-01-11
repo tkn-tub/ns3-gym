@@ -79,7 +79,8 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
         module = bld.new_task_gen(features=['cxx', 'cxxstlib', 'ns3module'])
     else:
         module = bld.new_task_gen(features=['cxx', 'cxxshlib', 'ns3module'])
-    module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(module.path), name)
+    module.target = '%s/ns%s-%s-%s' % (bld.srcnode.relpath_gen(module.path), wutils.VERSION,
+                                       name, bld.env['BUILD_PROFILE'])
     linkflags = []
     cxxflags = []
     ccflags = []
@@ -123,8 +124,8 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
 
     module.env.append_value("INCLUDES", '#')
 
-    pcfilegen = bld(features='ns3pcfile')
-    pcfilegen.module = module
+    module.pcfilegen = bld(features='ns3pcfile')
+    module.pcfilegen.module = module
     
     return module
 
@@ -372,7 +373,7 @@ class ns3pcfile_task(Task.Task):
     def _generate_pcfile(self, name, use, env, outfilename):
         outfile = open(outfilename, 'wt')
         prefix = env.PREFIX
-        includedir = env.INCLUDEDIR
+        includedir = Utils.subst_vars('${INCLUDEDIR}/%s%s' % (wutils.APPNAME, wutils.VERSION), env)
         libdir = env.LIBDIR
         libs = self._self_libs(env, name, '${libdir}')
         for dep in use:
@@ -385,7 +386,8 @@ class ns3pcfile_task(Task.Task):
             cflags = cflags + self._cflags(dep) + self._cxxflags(dep) + \
                 self._defines(dep) + self._includes(dep)
             if dep.startswith('ns3-'):
-                requires.append("lib"+dep)
+                dep_name = dep[4:]
+                requires.append("libns%s-%s-%s" % (wutils.VERSION, dep_name, env['BUILD_PROFILE']))
         print >> outfile, """\
 prefix=%s
 libdir=%s
@@ -411,7 +413,7 @@ Requires: %s\
 @TaskGen.feature('ns3pcfile')
 @TaskGen.after_method('process_rule')
 def apply(self):
-    output_filename = 'lib%s.pc' % self.module.name
+    output_filename = 'lib%s.pc' % os.path.basename(self.module.target)
     output_node = self.path.find_or_declare(output_filename)
     assert output_node is not None, str(self)
     task = self.create_task('ns3pcfile')
@@ -436,7 +438,7 @@ def apply_ns3header(self):
         task = self.create_task('ns3header')
         task.mode = getattr(self, 'mode', 'install')
         if task.mode == 'install':
-            self.bld.install_files('${PREFIX}/include/ns3', [src_node])
+            self.bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), [src_node])
             task.set_inputs([src_node])
             task.set_outputs([dst_node])
         else:
@@ -630,7 +632,7 @@ def apply_ns3moduleheader(self):
     task.mode = getattr(self, "mode", "install")
     if task.mode == 'install':
         assert module_obj is not None, self.module
-        self.bld.install_files('${PREFIX}/include/ns3', 
+        self.bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION),
                                ns3_dir_node.find_or_declare("%s-module.h" % self.module))
         task.set_inputs(all_headers_inputs)
         task.set_outputs(all_headers_outputs)

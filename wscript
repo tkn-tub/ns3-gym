@@ -320,6 +320,7 @@ def configure(conf):
         env.append_value('DEFINES', 'NS3_LOG_ENABLE')
 
     env['PLATFORM'] = sys.platform
+    env['BUILD_PROFILE'] = Options.options.build_profile
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if Options.options.build_profile == 'release': 
@@ -570,7 +571,7 @@ def create_suid_program(bld, name):
     program.is_ns3_program = True
     program.module_deps = list()
     program.name = name
-    program.target = name
+    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
 
     if bld.env['ENABLE_SUDO']:
         program.create_task("SuidBuild")
@@ -584,7 +585,7 @@ def create_ns3_program(bld, name, dependencies=('core',)):
 
     program.is_ns3_program = True
     program.name = name
-    program.target = program.name
+    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "# #/.."
@@ -628,6 +629,7 @@ def add_scratch_programs(bld):
             obj.find_sources_in_dirs('.')
             obj.target = filename
             obj.name = obj.target
+            obj.install_path = None
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
@@ -635,6 +637,7 @@ def add_scratch_programs(bld):
             obj.source = filename
             obj.target = name
             obj.name = obj.target
+            obj.install_path = None
 
 
 def _get_all_task_gen(self):

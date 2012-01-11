@@ -3,6 +3,8 @@ import sys
 
 import Options
 
+import wutils
+
 def options(opt):
     opt.add_option('--int64x64-as-double',
                    help=('Whether to use a double floating point'
@@ -94,7 +96,7 @@ int main ()
     conf.write_config_header('ns3/core-config.h', top=True)
 
 def build(bld):
-    bld.install_files('${PREFIX}/include/ns3', '../../ns3/core-config.h')
+    bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/core-config.h')
 
     core = bld.create_ns3_module('core')
     core.source = [
