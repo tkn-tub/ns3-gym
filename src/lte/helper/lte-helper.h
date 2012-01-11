@@ -110,6 +110,34 @@ public:
    */
   void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
 
+  /** 
+   * 
+   * \param type the type of AntennaModel to be used for the eNBs
+   */
+  void SetEnbAntennaModelType (std::string type);
+
+  /**
+   * set an attribute for the AntennaModel to be used for the eNBs
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v);
+
+  /** 
+   * 
+   * \param type the type of AntennaModel to be used for the UEs
+   */
+  void SetUeAntennaModelType (std::string type);
+
+  /**
+   * set an attribute for the AntennaModel to be used for the UEs
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetUeAntennaModelAttribute (std::string n, const AttributeValue &v);
+
   /**
    * create a set of eNB devices
    *
@@ -272,6 +300,8 @@ private:
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
+  ObjectFactory m_enbAntennaModelFactory;
+  ObjectFactory m_ueAntennaModelFactory;
 
   ObjectFactory m_dlPathlossModelFactory;
   ObjectFactory m_ulPathlossModelFactory;

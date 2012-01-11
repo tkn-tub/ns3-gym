@@ -280,6 +280,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
       Ptr<LteSpectrumSignalParameters> txParams = Create<LteSpectrumSignalParameters> ();
       txParams->duration = Seconds (tti);
       txParams->txPhy = GetObject<SpectrumPhy> ();
+      txParams->txAntenna = m_antenna;
       txParams->psd = m_txPsd;
       txParams->packetBurst = pb;
       m_channel->StartTx (txParams);

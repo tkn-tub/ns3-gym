@@ -36,6 +36,7 @@
 #include <ns3/lte-sinr-chunk-processor.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
+#include <ns3/isotropic-antenna-model.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/ff-mac-scheduler.h>
@@ -59,6 +60,8 @@ LteHelper::LteHelper (void)
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
+  m_enbAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
+  m_ueAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
 }
 
 void 
@@ -221,6 +224,35 @@ LteHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
   m_enbNetDeviceFactory.Set (n, v);
 }
 
+
+void 
+LteHelper::SetEnbAntennaModelType (std::string type)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbAntennaModelFactory.SetTypeId (type);
+}
+
+void 
+LteHelper::SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbAntennaModelFactory.Set (n, v);
+}
+
+void 
+LteHelper::SetUeAntennaModelType (std::string type)
+{
+  NS_LOG_FUNCTION (this);
+  m_ueAntennaModelFactory.SetTypeId (type);
+}
+
+void 
+LteHelper::SetUeAntennaModelAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this);
+  m_ueAntennaModelFactory.Set (n, v);
+}
+
 void 
 LteHelper::SetFadingModel (std::string type) 
 {
@@ -289,6 +321,11 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
   m_uplinkChannel->AddRx (ulPhy);
+
+  Ptr<AntennaModel> antenna = (m_enbAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
+  NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
+  dlPhy->SetAntenna (antenna);
+  ulPhy->SetAntenna (antenna);
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
@@ -374,6 +411,11 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetMobility (mm);
 
   m_downlinkChannel->AddRx (dlPhy);
+
+  Ptr<AntennaModel> antenna = (m_ueAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
+  NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
+  dlPhy->SetAntenna (antenna);
+  ulPhy->SetAntenna (antenna);
 
   Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();

@@ -393,6 +393,7 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
+      NS_LOG_LOGIC (this << " start TX");
       m_downlinkSpectrumPhy->StartTx (pb);
     }
 

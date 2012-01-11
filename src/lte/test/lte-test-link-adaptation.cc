@@ -205,7 +205,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   Simulator::Stop (Seconds (0.005));
   Simulator::Run ();
 
-  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()[0]);
+  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
   NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.0000001, "Wrong SINR !");
   Simulator::Destroy ();
 }

@@ -79,12 +79,12 @@ LteTestSinrChunkProcessor::End ()
     }
 }
 
-SpectrumValue
+Ptr<SpectrumValue>
 LteTestSinrChunkProcessor::GetSinr ()
 {
   NS_LOG_FUNCTION (this);
 
-  return *m_sinr;
+  return m_sinr;
 }
 
 } // namespace ns3

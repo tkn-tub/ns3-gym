@@ -85,6 +85,7 @@ def build(bld):
         'test/epc-test-s1u-downlink.cc',
         'test/epc-test-s1u-uplink.cc',
         'test/test-lte-epc-e2e-data.cc',
+        'test/test-lte-antenna.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
