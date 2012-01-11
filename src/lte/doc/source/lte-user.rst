@@ -448,6 +448,35 @@ It is to be noted that using other means to configure the frequency used by the 
    It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size for outdoor nodes. The responsibility of this consistency is completely left to the user.
 
 
+
+Use of AntennaModel
+-------------------
+
+We now show how associate a particular AntennaModel with an eNB device
+in order to model a sector of a macro eNB. For this purpose, it is
+convenient to use the ``CosineAntennaModel`` provided by the ns-3
+antenna module. The configuration of the eNB is to be done via the
+``LteHelper`` instance right before the creation of the
+``EnbNetDevice``, as shown in the following::
+  
+  lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
+  lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (60);
+  lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
+
+the above code will generate an antenna model with a 60 degrees
+beamwidth pointing along the X axis. The orientation is measured
+in degrees from the X axis, e.g., an orientation of 90 would point
+along the Y axis, and an orientation of -90 would point in the
+negative direction along the Y axis. The beamwidth is the -3 dB
+beamwidth, e.g, for a 60 degree beamwidth the antenna gain at an angle
+of :math:`\pm 30` degrees from the direction of orientation is -3 dB.
+
+To create a multi-sector site, you need to create different ns-3 nodes
+placed at the same position, and to configure separate ``EnbNetDevice``
+with different antenna orientations to be installed on each node.
+
+
 Evolved Packet Core (EPC)
 -------------------------
 

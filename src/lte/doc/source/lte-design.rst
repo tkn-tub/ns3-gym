@@ -1248,6 +1248,17 @@ where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of 
 hence :math:`N_{scenarios} = 3`. All traces have :math:`T_{trace} = 10` s and :math:`RB_{NUM} = 100`. This results in a total 24 MB bytes of traces.
 
 
+Antennas
+++++++++
+
+Being based on the SpectrumPhy, the LTE PHY model supports antenna
+modeling via the ns-3 AntennaModel class. Hence, any model based on
+this class can be associated with any eNB or UE instance. For
+instance, the use of the CosineAntennaModel associated with an eNB
+device allows to model one sector of a macro base station. By default,
+the IsotropicAntennaModel is used for both eNBs and UEs. 
+
+
 -------
 Helpers
 -------

@@ -364,6 +364,24 @@ within a tolerance of :math:`0.001` dB, which accouns for numerical
 errors in the calculations. 
 
 
+Antenna Model integration
+-------------------------
+
+The test suite `lte-antenna` checks that the AntennaModel integrated
+with the LTE model works correctly. This test suite recreates a
+simulation scenario with one eNB node at coordinates (0,0,0) and one
+UE node at coordinates (x,y,0). The eNB node is configured with an
+CosineAntennaModel having given orientation and beamwidth. The UE 
+instead uses the default IsotropicAntennaModel. The test
+checks that the received power both in uplink and downlink account for
+the correct value of the antenna gain, which is determined
+offline; this is implemented by comparing the uplink and downlink SINR
+and checking that both match with the reference value up to a
+tolerance of :math:`10^{-6}` which accounts for numerical errors.
+Different test cases are provided by varying the x and y coordinates
+of the UE,  and the beamwidth and the orientation of the antenna of
+the eNB.   
+
 
 RLC
 ---
