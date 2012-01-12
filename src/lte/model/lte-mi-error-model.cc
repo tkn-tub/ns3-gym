@@ -31,7 +31,7 @@
 #include <stdint.h>
 #include "stdlib.h"
 #include <ns3/lte-mi-error-model.h>
-#include <ns3/lte-amc.h> // for DEBUGing
+//#include <ns3/lte-amc.h> // for DEBUGing
 
 
 
@@ -303,7 +303,27 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
   NS_LOG_FUNCTION (" MCS " << (uint16_t)mcs << " TBS " << tbsIndex << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
 
   b = bEcrTable[cbIndex][tbsIndex];
+  if (b<0.0)
+    {
+      //take the lowest CB size including this CB for removing CB size
+      //quatization errors
+      int i = cbIndex;
+      while (b<0)
+        {
+          b = bEcrTable[i++][tbsIndex];
+        }
+    }
   c = cEcrTable[cbIndex][tbsIndex];
+  if (c<0.0)
+    {
+      //take the lowest CB size including this CB for removing CB size
+      //quatization errors
+      int i = cbIndex;
+      while (c<0)
+        {
+          c = cEcrTable[i++][tbsIndex];
+        }
+    }
   // see IEEE802.16m EMD formula 55 of section 4.3.2.1
   double bler = 0.5*( 1 - erf((mib-b)/(sqrt(2)*c)) );
   NS_LOG_FUNCTION ("MIB: " << mib << " BLER:" << bler);
