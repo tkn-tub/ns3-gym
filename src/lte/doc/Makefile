@@ -53,7 +53,21 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_urban_3kmph.png \
 	$(FIGURES)/fading_pedestrian.pdf \
 	$(FIGURES)/fading_vehicular.pdf \
-	$(FIGURES)/fading_urban_3kmph.pdf
+	$(FIGURES)/fading_urban_3kmph.pdf \
+	$(FIGURES)/MCS_1_4.pdf \
+	$(FIGURES)/MCS_1_4.png \
+	$(FIGURES)/MCS_5_8.pdf \
+	$(FIGURES)/MCS_5_8.png \
+	$(FIGURES)/MCS_9_12.pdf \
+	$(FIGURES)/MCS_9_12.png \
+	$(FIGURES)/MCS_13_16.pdf \
+	$(FIGURES)/MCS_13_16.png \
+	$(FIGURES)/MCS_17_20.pdf \
+	$(FIGURES)/MCS_17_20.png \
+	$(FIGURES)/MCS_21_24.pdf \
+	$(FIGURES)/MCS_21_24.png \
+	$(FIGURES)/MCS_25_27.pdf \
+	$(FIGURES)/MCS_25_27.png
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
