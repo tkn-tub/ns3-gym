@@ -212,6 +212,7 @@ private:
   SpectrumValue m_sinrPerceived;
   
   UniformVariable m_random;
+  bool m_pemEnabled; // when true (default) the phy error model is enabled
 };
 
 

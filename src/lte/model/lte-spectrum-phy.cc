@@ -34,6 +34,7 @@
 #include "lte-phy-tag.h"
 #include <ns3/lte-mi-error-model.h>
 #include <ns3/lte-mac-tag.h>
+#include <ns3/boolean.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
@@ -112,6 +113,11 @@ LteSpectrumPhy::GetTypeId (void)
     .AddTraceSource ("RxEndError",
                      "Trace fired when a previosuly started RX terminates with an error",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndErrorTrace))
+    .AddAttribute ("PemEnabled",
+                    "Activate/Deactivate the error model (by default is active).",
+                    BooleanValue (true),
+                    MakeBooleanAccessor (&LteSpectrumPhy::m_pemEnabled),
+                    MakeBooleanChecker ());
   ;
   return tid;
 }
@@ -439,14 +445,17 @@ LteSpectrumPhy::EndRx ()
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
   while (itTb!=m_expectedTbs.end ())
     {
-      double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
-      (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
-      NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
-      
-      for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)
+      if (m_pemEnabled)
         {
-          NS_LOG_DEBUG (this << " RB " << (*itTb).second.rbBitmap.at (i) << " SINR " << m_sinrPerceived[(*itTb).second.rbBitmap.at (i)]);
-        }
+          double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
+          (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
+          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
+       }
+      
+//       for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)
+//         {
+//           NS_LOG_DEBUG (this << " RB " << (*itTb).second.rbBitmap.at (i) << " SINR " << m_sinrPerceived[(*itTb).second.rbBitmap.at (i)]);
+//         }
       itTb++;
     }
     
