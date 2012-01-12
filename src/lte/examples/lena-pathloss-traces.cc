@@ -247,9 +247,9 @@ int main (int argc, char *argv[])
   UplinkGlobalPathlossDatabase ulPathlossDb;
   // we rely on the fact that LteHelper creates the DL channel object first, then the UL channel object,
   // hence the former will have index 0 and the latter 1
-  Config::Connect ("/ChannelList/0/PropagationLoss",
+  Config::Connect ("/ChannelList/0/PathLoss",
                    MakeCallback (&DownlinkGlobalPathlossDatabase::UpdatePathloss, &dlPathlossDb));
-  Config::Connect ("/ChannelList/1/PropagationLoss",
+  Config::Connect ("/ChannelList/1/PathLoss",
                     MakeCallback (&UplinkGlobalPathlossDatabase::UpdatePathloss, &ulPathlossDb)); 
 
   Simulator::Run ();
