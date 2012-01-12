@@ -5,6 +5,7 @@ def build(bld):
     module = bld.create_ns3_module('buildings', ['mobility', 'propagation'])
     module.source = [
         'model/building.cc',
+        'model/building-list.cc',
         'model/buildings-mobility-model.cc',
         'model/buildings-propagation-loss-model.cc',
         ]
@@ -19,6 +20,7 @@ def build(bld):
     headers.module = 'buildings'
     headers.source = [
         'model/building.h',
+        'model/building-list.h',
         'model/buildings-mobility-model.h',
         'model/buildings-propagation-loss-model.h',
         'test/buildings-pathloss-test.h',
