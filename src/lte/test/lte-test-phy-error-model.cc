@@ -57,22 +57,22 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
 {
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
 
-  // MCS 2 TB size of 176 bits BER 0.19 SINR -2.21
-   AddTestCase (new LenaPhyErrorModelTestCase (4, 898, 0.19));
+  // MCS 2 TB size of 256 bits BER 0.19 SINR -2.21
+   AddTestCase (new LenaPhyErrorModelTestCase (4, 898, 32, 0.19, 25));
 // MCS 2 TB size of 328 bits BER 0.09 SINR -2.25
-   AddTestCase (new LenaPhyErrorModelTestCase (3, 900, 0.09));
+   AddTestCase (new LenaPhyErrorModelTestCase (3, 900, 41, 0.09, 18));
 // MCS 2 TB size of 520 bits BER 0.123 SINR -2.61
-   AddTestCase (new LenaPhyErrorModelTestCase (2, 920, 0.123));
+   AddTestCase (new LenaPhyErrorModelTestCase (2, 920, 65, 0.123, 21));
 // MCS 2 TB size of 1080 bits BER 0.097 SINR -2.79
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 930, 0.097));
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 930, 135, 0.097, 19));
   // MCS 12 TB size of 4776 bits  BER 0.017  SINR 6.22
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 538, 0.017));
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 538, 597, 0.017, 8));
 // MCS 12 TB size of 1608 bits  BER 0.23  SINR 6.22
-  AddTestCase (new LenaPhyErrorModelTestCase (3, 538, 0.23));
+  AddTestCase (new LenaPhyErrorModelTestCase (3, 538, 201, 0.23, 26));
   // MCS 12 TB size of 376 bits  BER 0.72  SINR 6.22
-   AddTestCase (new LenaPhyErrorModelTestCase (7,538, 0.72));
+   AddTestCase (new LenaPhyErrorModelTestCase (7,538, 47, 0.72, 28));
 // MCS 14 TB size of 6248 bits (3136 x 2) BER 0.18 (0.096 x 2) SINR 5.53
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 500, 0.18));
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 500, 781, 0.18, 24));
 
  
 
@@ -88,11 +88,13 @@ LenaPhyErrorModelTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
   return oss.str ();
 }
 
-LenaPhyErrorModelTestCase::LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, double berRef)
+LenaPhyErrorModelTestCase::LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double berRef, uint16_t bernQuantile)
   : TestCase (BuildNameString (nUser, dist)),              
     m_nUser (nUser),
     m_dist (dist),
-    m_berRef (berRef)
+    m_tbSize (tbSize),
+    m_berRef (berRef),
+    m_bernQuantile (bernQuantile)
 {
 }
 
@@ -213,8 +215,6 @@ LenaPhyErrorModelTestCase::DoRun (void)
     
   lena->EnableRlcTraces ();
   double simulationTime = 1.000;
-//   double simulationTime = 0.010;
-  double tolerance = 0.05;
   Simulator::Stop (Seconds (simulationTime));
 
   Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
@@ -236,23 +236,17 @@ LenaPhyErrorModelTestCase::DoRun (void)
       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
       dlDataRxed.push_back (rlcStats->GetDlRxData (imsi, lcId));
       double txed = rlcStats->GetDlTxData (imsi, lcId);
-      double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << ber << " Err " << fabs (m_berRef - ber));
-      NS_TEST_ASSERT_MSG_EQ_TOL (ber, m_berRef, tolerance, " Unexpected BER!");
+      int n = txed / m_tbSize;
+      int lambda = (double)dlDataRxed.at (i) / m_tbSize;
+      double ber = 2.0 - ((double)dlDataRxed.at (i)/txed);
+      double np = n-n*m_berRef;
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+      // the quantiles are evaluated offline according to a Bernoulli 
+      // ditribution with n equal to the number of packet sent and p equal 
+      // to the BER (see /reference/bernuolliDistribution.m for details)
+      NS_TEST_ASSERT_MSG_EQ_TOL (lambda, np, m_bernQuantile, " Unexpected BER distribution!");
     }
 
-//   NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
-//   std::vector <uint64_t> ulDataRxed;
-//   for (int i = 0; i < m_nUser; i++)
-//     {
-//       // get the imsi
-//       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
-//       // get the lcId
-//       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
-//       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-//       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl);
-// //       NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
-//     }
 
   Simulator::Destroy ();
 }

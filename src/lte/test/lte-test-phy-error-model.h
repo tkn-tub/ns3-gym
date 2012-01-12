@@ -38,7 +38,7 @@ using namespace ns3;
 class LenaPhyErrorModelTestCase : public TestCase
 {
 public:
-  LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, double refBer);
+  LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBer, uint16_t bernQuantile);
   virtual ~LenaPhyErrorModelTestCase ();
 
 private:
@@ -46,7 +46,9 @@ private:
   static std::string BuildNameString (uint16_t nUser, uint16_t dist);
   uint16_t m_nUser;
   uint16_t m_dist;
+  uint16_t m_tbSize;
   double m_berRef;
+  uint16_t m_bernQuantile;
 
 };
 
