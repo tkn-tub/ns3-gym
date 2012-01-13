@@ -8,10 +8,12 @@ def build(bld):
         'model/building-list.cc',
         'model/buildings-mobility-model.cc',
         'model/buildings-propagation-loss-model.cc',
+        'helper/buildings-helper.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('buildings')
     module_test.source = [
+        'test/buildings-helper-test.cc',
         'test/buildings-pathloss-test.cc',
         'test/buildings-shadowing-test.cc',
         ]
@@ -23,6 +25,7 @@ def build(bld):
         'model/building-list.h',
         'model/buildings-mobility-model.h',
         'model/buildings-propagation-loss-model.h',
+        'helper/buildings-helper.h',
         'test/buildings-pathloss-test.h',
         'test/buildings-shadowing-test.h',
         ]

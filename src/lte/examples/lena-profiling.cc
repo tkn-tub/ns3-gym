@@ -141,9 +141,9 @@ main (int argc, char *argv[])
                                                     0.0, nFloors* roomHeight);
       building->SetBuildingType(Building::Residential);
       building->SetExtWallsType(Building::ConcreteWithWindows);
-      building->SetFloorsNumber(nFloors);
-      building->SetNumberRoomX(nRooms);
-      building->SetNumberRoomY(nRooms);
+      building->SetNFloors (nFloors);
+      building->SetNRoomsX (nRooms);
+      building->SetNRoomsY (nRooms);
       mobility.SetMobilityModel("ns3::BuildingsMobilityModel");
       mobility.Install (enbNodes);
       uint32_t plantedEnb = 0;

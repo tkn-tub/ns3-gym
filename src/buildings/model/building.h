@@ -37,7 +37,11 @@ namespace ns3 {
 class Building : public Object
 {
 public:
+
+  // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
+
 
   enum BuildingType_t
     {
@@ -49,6 +53,8 @@ public:
     };
   
   /**
+   * Construct a simple building with 1 room and 1 floor
+   * 
    * \param xMin x coordinates of left boundary.
    * \param xMax x coordinates of right boundary.
    * \param yMin y coordinates of bottom boundary.
@@ -56,7 +62,6 @@ public:
    * \param zMin z coordinates of down boundary.
    * \param zMax z coordinates of up boundary.
    *
-   * Create a building.
    */
   Building (double xMin, 
             double xMax,
@@ -70,6 +75,18 @@ public:
    * and with 1 floors and 1 room.
    */
   Building ();
+
+  /** 
+   * Destructor
+   * 
+   */
+  virtual ~Building ();
+
+  /**
+   * \return the unique id of this Building. This unique id happens to
+   * be also the index of the Building into the BuildingList. 
+   */
+  uint32_t GetId (void) const;
 
   /**
    * \param t the type of building (i.e., Residential, Office, Commercial)
@@ -93,68 +110,102 @@ public:
    * This method allows to set the number of floors in the building
    * (default is 1)
    */
-  void SetFloorsNumber (uint8_t nfloors);
+  void SetNFloors (uint16_t nfloors);
 
   /**
    * \param nroomx the number of rooms along the x axis
    *
    * This method allows to set the number of rooms along the x-axis
    */
-  void SetNumberRoomX (uint8_t nroomx);
+  void SetNRoomsX (uint16_t nroomx);
 
   /**
    * \param nroomy the number of floors in the building
    *
    * This method allows to set the number of rooms along the y-axis
    */
-  void SetNumberRoomY (uint8_t nroomy);
+  void SetNRoomsY (uint16_t nroomy);
 
 
   /**
    * \return the type of building
    * Return the type of building (i.e., Residential, Office, Commercial)
    */
-  BuildingType_t GetBuildingType ();
+  BuildingType_t GetBuildingType () const;
 
   /**
    * \return the type of external walls of the building
    */
-  ExtWallsType_t GetExtWallsType ();
+  ExtWallsType_t GetExtWallsType () const;
 
   /**
    * \return the number of floors of the building
    */
-  uint8_t GetNumberFloors ();
+  uint16_t GetNFloors () const;
 
   /**
    * \return the number of rooms along the x-axis of the building
    */
-  uint8_t GetNumberRoomX ();
+  uint16_t GetNRoomsX () const;
 
   /**
    * \return the number of rooms along the y-axis
    */
-  uint8_t GetNumberRoomY ();
+  uint16_t GetNRoomsY () const;
   
-  /**
-   * \return the bounds of the building as Box class
+  /** 
+   * 
+   * 
+   * \param position some position
+   * 
+   * \return true if the position fall inside the building, false otherwise
    */
-  Box GetBuildingBounds ();
-
+  bool IsInside (Vector position) const;
  
+  /** 
+   * 
+   * 
+   * \param position a position inside the building
+   * 
+   * \return the number of the room along the X axis where the
+   * position falls
+   */
+  uint16_t GetRoomX (Vector position) const;
+
+  /** 
+   * 
+   * 
+   * \param position a position inside the building
+   * 
+   * \return  the number of the room along the Y axis where the
+   * position falls
+   */
+  uint16_t GetRoomY (Vector position) const;
+
+  /** 
+   * 
+   * \param position a position inside the building 
+   * 
+   * \return  the floor where the position falls
+   */
+  uint16_t GetFloor (Vector position) const;
+
+
+
 
 private:
 
   void Construct ();
 
-  Box m_buldingBounds;
+  Box m_buildingBounds;
+
   /**
    * number of floors, must be greater than 0, and 1 means only one floor
    * (i.e., groundfloor)
    */
-  uint8_t m_floor;
-  uint8_t m_roomX;
-  uint8_t m_roomY;
+  uint16_t m_floors;
+  uint16_t m_roomsX;
+  uint16_t m_roomsY;
 
   uint32_t m_buildingId;
   BuildingType_t m_buildingType;
@@ -166,7 +217,7 @@ private:
 //std::istream &operator >> (std::istream &is, Box &box);
 
 
-ATTRIBUTE_HELPER_HEADER (Building);
+//ATTRIBUTE_HELPER_HEADER (Building);
 
 } // namespace ns3
 

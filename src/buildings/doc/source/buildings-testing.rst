@@ -30,6 +30,13 @@ For more details about ``test.py`` and the ns-3 testing framework, please refer 
 Description of the test suites
 ******************************
 
+
+BuildingsHelper test
+~~~~~~~~~~~~~~~~~~~~
+
+The test suite ``buildings-helper`` checks that the method ``BuildingsHelper::MakeAllInstancesConsistent ()`` works properly, i.e., that the BuildingsHelper is successful in locating if nodes are outdoor or indoor, and if indoor that they are located in the correct building, room and floor. Several test cases are provided with different buildings (having different size, position, rooms and floors) and different node positions. The test passes if each every node is located correctly.
+
+
 Pathloss tests
 ~~~~~~~~~~~~~~
 
