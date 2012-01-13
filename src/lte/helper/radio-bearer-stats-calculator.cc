@@ -33,10 +33,16 @@ NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsCalculator");
 NS_OBJECT_ENSURE_REGISTERED ( RadioBearerStatsCalculator);
 
 RadioBearerStatsCalculator::RadioBearerStatsCalculator () :
+  m_firstWrite (true), m_bearerType ("RLC")
+{
+  NS_LOG_FUNCTION (this);
+}
+
+RadioBearerStatsCalculator::RadioBearerStatsCalculator (std::string bearerType) :
   m_firstWrite (true)
 {
   NS_LOG_FUNCTION (this);
-
+  m_bearerType = bearerType;
 }
 
 RadioBearerStatsCalculator::~RadioBearerStatsCalculator ()
@@ -49,11 +55,31 @@ TypeId
 RadioBearerStatsCalculator::GetTypeId (void)
 {
   static TypeId tid =
-    TypeId ("ns3::RadioBearerStatsCalculator").SetParent<Object> ().AddConstructor<RadioBearerStatsCalculator> ().AddAttribute (
-      "StartTime", "Start time of the on going epoch.", TimeValue (Seconds (0.)),
-      MakeTimeAccessor (&RadioBearerStatsCalculator::m_startTime), MakeTimeChecker ()).AddAttribute ("EpochDuration",
-                                                                                                     "Epoch duration.", TimeValue (Seconds (0.25)), MakeTimeAccessor (&RadioBearerStatsCalculator::m_epochDuration),
-                                                                                                     MakeTimeChecker ());
+    TypeId ("ns3::RadioBearerStatsCalculator")
+    .SetParent<LteStatsCalculator> ().AddConstructor<RadioBearerStatsCalculator> ()
+    .AddAttribute ("StartTime", "Start time of the on going epoch.", TimeValue (Seconds (0.)),MakeTimeAccessor (&RadioBearerStatsCalculator::m_startTime), MakeTimeChecker ())
+    .AddAttribute ("EpochDuration", "Epoch duration.", TimeValue (Seconds (0.25)), MakeTimeAccessor (&RadioBearerStatsCalculator::m_epochDuration), MakeTimeChecker ())
+    .AddAttribute ("DlRlcOutputFilename",
+                   "Name of the file where the downlink results will be saved.",
+                   StringValue ("DlRlcStats.txt"),
+                   MakeStringAccessor (&LteStatsCalculator::SetDlOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("UlRlcOutputFilename",
+                   "Name of the file where the uplink results will be saved.",
+                   StringValue ("UlRlcStats.txt"),
+                   MakeStringAccessor (&LteStatsCalculator::SetUlOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("DlPdcpOutputFilename",
+                   "Name of the file where the downlink results will be saved.",
+                   StringValue ("DlPdcpStats.txt"),
+                   MakeStringAccessor (&RadioBearerStatsCalculator::SetDlPdcpOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("UlPdcpOutputFilename",
+                   "Name of the file where the uplink results will be saved.",
+                   StringValue ("UlPdcpStats.txt"),
+                   MakeStringAccessor (&RadioBearerStatsCalculator::SetUlPdcpOutputFilename),
+                   MakeStringChecker ())
+  ;
   return tid;
 }
 
@@ -515,6 +541,55 @@ RadioBearerStatsCalculator::GetDlPduSizeStats (uint64_t imsi, uint8_t lcid)
   stats.push_back (m_dlPduSize[p]->getMin ());
   stats.push_back (m_dlPduSize[p]->getMax ());
   return stats;
+}
+
+std::string
+RadioBearerStatsCalculator::GetUlOutputFilename (void)
+{
+  if (m_bearerType == "RLC")
+    {
+      return LteStatsCalculator::GetUlOutputFilename ();
+    }
+  else
+    {
+      return GetUlPdcpOutputFilename ();
+    }
+}
+
+std::string
+RadioBearerStatsCalculator::GetDlOutputFilename (void)
+{
+  if (m_bearerType == "RLC")
+    {
+      return LteStatsCalculator::GetDlOutputFilename ();
+    }
+  else
+    {
+      return GetDlPdcpOutputFilename ();
+    }
+}
+
+void
+RadioBearerStatsCalculator::SetUlPdcpOutputFilename (std::string outputFilename)
+{
+  m_ulPdcpOutputFilename = outputFilename;
+}
+
+std::string
+RadioBearerStatsCalculator::GetUlPdcpOutputFilename (void)
+{
+  return m_ulPdcpOutputFilename;
+}
+void
+RadioBearerStatsCalculator::SetDlPdcpOutputFilename (std::string outputFilename)
+{
+  m_dlPdcpOutputFilename = outputFilename;
+}
+
+std::string
+RadioBearerStatsCalculator::GetDlPdcpOutputFilename (void)
+{
+  return m_dlPdcpOutputFilename;
 }
 
 } // namespace ns3

@@ -87,7 +87,6 @@ public:
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
                      uint16_t rnti, uint8_t mcs, uint16_t sizeTb);
 
-
 private:
 
   bool m_dlFirstWrite;

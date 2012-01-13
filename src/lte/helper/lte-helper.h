@@ -251,11 +251,6 @@ public:
    */
   void EnableUlRlcTraces (void);
 
-  /**
-   * Set the output directory for the MAC/RLC trace
-   */
-  void SetTraceDirectory (std::string path);
-
   /** 
    * 
    * \return the RLC stats calculator object
@@ -293,7 +288,7 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
-  
+
   Ptr<Object> m_downlinkPathlossModel;
   Ptr<Object> m_uplinkPathlossModel;
 
@@ -308,9 +303,9 @@ private:
 
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
-  
+
   Ptr<TraceFadingLossModel> m_fadingModule;
-  
+
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
@@ -321,7 +316,7 @@ private:
                                    PER_BASED = 4} m_epsBearerToRlcMapping;
 
   Ptr<EpcHelper> m_epcHelper;
-  
+
 };
 
 
