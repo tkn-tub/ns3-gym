@@ -62,6 +62,7 @@ def build(bld):
         'model/epc-sgw-pgw-application.cc',
         'model/epc-tft.cc',
         'model/epc-tft-classifier.cc',
+        'model/lte-mi-error-model.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -86,6 +87,7 @@ def build(bld):
         'test/epc-test-s1u-uplink.cc',
         'test/test-lte-epc-e2e-data.cc',
         'test/test-lte-antenna.cc',
+        'test/lte-test-phy-error-model.cc'
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
@@ -156,13 +158,12 @@ def build(bld):
         'test/lte-test-ue-phy.h',
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
-        'test/lte-test-entities.h',
-        'test/lte-test-rlc-um-transmitter.h',
-        'test/lte-test-rlc-am-transmitter.h',
+        'test/lte-test-phy-error-model.h',
         'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu.h',
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
+        'model/lte-mi-error-model.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

@@ -658,7 +658,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
                     {
                       // out of bound
                       loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-0 (>2000): down rooftop -> ITUR1411 : " << loss);
+                      NS_LOG_INFO (this << " 0-0 (>2000): down rooftop -> Infinity (out of bound) : " << loss);
                     }
                 }
               else
