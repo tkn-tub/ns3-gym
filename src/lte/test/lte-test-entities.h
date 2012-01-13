@@ -148,7 +148,7 @@ class LteTestMac : public Object
     virtual ~LteTestMac (void);
     virtual void DoDispose (void);
 
-    void SendTxOpportunity (Time, uint32_t);
+    void SendTxOpportunity (Time time, uint32_t bytes);
     std::string GetDataReceived (void);
 
     /**

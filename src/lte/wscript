@@ -78,7 +78,7 @@ def build(bld):
         'test/lte-test-spectrum-value-helper.cc',
         'test/lte-test-pathloss-model.cc',
         'test/lte-test-entities.cc',
-#        'test/lte-test-rlc-um-transmitter.cc',
+        'test/lte-test-rlc-um-transmitter.cc',
         'test/lte-test-rlc-am-transmitter.cc',
         'test/epc-test-gtpu.cc',
         'test/test-epc-tft-classifier.cc',

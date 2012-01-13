@@ -93,7 +93,7 @@ LteTestRrc::GetDataReceived (void)
 void
 LteTestRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << params.rrcPdu->GetSize ());
   Ptr<Packet> p = params.rrcPdu;
   NS_LOG_LOGIC ("PDU received = " << (*p));
 
@@ -120,18 +120,14 @@ LteTestRrc::Start ()
 void
 LteTestRrc::SendData (Time at, std::string dataToSend)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << at << dataToSend.length () << dataToSend);
 
   LtePdcpSapProvider::TransmitRrcPduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
 
-  NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.rrcPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
-
-  NS_LOG_LOGIC ("Packet(" << p.rrcPdu->GetSize () << ")");
   Simulator::Schedule (at, &LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
-  Simulator::Run ();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -195,8 +191,8 @@ LteTestPdcp::GetDataReceived (void)
 void
 LteTestPdcp::DoReceivePdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("PDU received = " << (*p));
+  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_LOGIC ("Data = " << (*p));
 
   uint32_t dataLen = p->GetSize ();
   uint8_t *buf = new uint8_t[dataLen];
@@ -221,18 +217,14 @@ LteTestPdcp::Start ()
 void
 LteTestPdcp::SendData (Time time, std::string dataToSend)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << time << dataToSend.length () << dataToSend);
 
   LteRlcSapProvider::TransmitPdcpPduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
 
-  NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.pdcpPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
-
-  NS_LOG_LOGIC ("Packet(" << p.pdcpPdu->GetSize () << ")");
   Simulator::Schedule (time, &LteRlcSapProvider::TransmitPdcpPdu, m_rlcSapProvider, p);
-  Simulator::Run ();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -308,11 +300,9 @@ LteTestMac::GetDataReceived (void)
 void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("Bytes = " << bytes);
+  NS_LOG_FUNCTION (this << time << bytes);
 
   Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes);
-  Simulator::Run ();
 }
 
 void
@@ -344,7 +334,7 @@ LteTestMac::SetTxOpportunityMode (uint8_t mode)
 void
 LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << params.pdu->GetSize ());
 
   if (m_macLoopback)
     {
@@ -383,7 +373,7 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
       params.pdu->CopyData (buf, dataLen);
       m_receivedData = std::string ((char *)buf, dataLen);
 
-      NS_LOG_LOGIC ("Data (" << dataLen << ") = " << m_receivedData);
+      NS_LOG_LOGIC ("Data = " << m_receivedData);
       delete [] buf;
     }
 }
@@ -391,10 +381,7 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 void
 LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("TxonQueue size = " << params.txQueueSize);
-  NS_LOG_LOGIC ("RetxQueue size = " << params.retxQueueSize);
-  NS_LOG_LOGIC ("StatusPdu size = " << params.statusPduSize);
+  NS_LOG_FUNCTION (this << params.txQueueSize << params.retxQueueSize << params.statusPduSize);
 
   if (m_txOpportunityMode == AUTOMATIC_MODE)
     {
