@@ -21,8 +21,7 @@ IMAGES_EPS = \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \
 	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps
-
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/MCS_2_test.eps \
 	$(FIGURES)/MCS_12_test.eps \
 	$(FIGURES)/MCS_14_test.eps
@@ -100,7 +99,7 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/MCS_21_24.pdf \
 	$(FIGURES)/MCS_21_24.png \
 	$(FIGURES)/MCS_25_27.pdf \
-	$(FIGURES)/MCS_25_27.png
+	$(FIGURES)/MCS_25_27.png \
 	$(FIGURES)/lte-phy-interference.png \
 	$(FIGURES)/lte-phy-interference.pdf \
 	$(FIGURES)/helpers.png \
