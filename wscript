@@ -321,6 +321,8 @@ def configure(conf):
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile
+    env['APPNAME'] = wutils.APPNAME
+    env['VERSION'] = wutils.VERSION
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if Options.options.build_profile == 'release': 
@@ -751,7 +753,9 @@ def build(bld):
                 # Add this program to the list if all of its
                 # dependencies will be built.
                 if program_built:
-                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', obj.name)
+                    object_name = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, 
+                                                  obj.name, bld.env.BUILD_PROFILE)
+                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_name)
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
