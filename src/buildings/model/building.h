@@ -40,115 +40,108 @@ public:
   static TypeId GetTypeId (void);
 
   enum BuildingType_t
-  {
-    Residential, Office, Commercial
-  };
+    {
+      Residential, Office, Commercial
+    };
   enum ExtWallsType_t
-  {
-    Wood, ConcreteWithWindows, ConcreteWithoutWindows, StoneBlocks
-  };
+    {
+      Wood, ConcreteWithWindows, ConcreteWithoutWindows, StoneBlocks
+    };
+  
   /**
-  * \param _xMin x coordinates of left boundary.
-  * \param _xMax x coordinates of right boundary.
-  * \param _yMin y coordinates of bottom boundary.
-  * \param _yMax y coordinates of top boundary.
-  * \param _zMin z coordinates of down boundary.
-  * \param _zMax z coordinates of up boundary.
-  * \param _nFloors number of floors
-  * \param _nRoomX number of rooms in the x axis
-  * \param _nRoomY number of rooms in the y axis
-  *
-  * Create a building.
-  */
-  Building (double _xMin, double _xMax,
-            double _yMin, double _yMax,
-            double _zMin, double _zMax/*,
-            uint8_t _nFloors, uint8_t _nRoomX, uint8_t _nRoomY*/);
+   * \param xMin x coordinates of left boundary.
+   * \param xMax x coordinates of right boundary.
+   * \param yMin y coordinates of bottom boundary.
+   * \param yMax y coordinates of top boundary.
+   * \param zMin z coordinates of down boundary.
+   * \param zMax z coordinates of up boundary.
+   *
+   * Create a building.
+   */
+  Building (double xMin, 
+            double xMax,
+            double yMin, 
+            double yMax,
+            double zMin, 
+            double zMax);
 
   /**
-  * Create a zero-sized building located at coordinates (0.0,0.0,0.0)
-  * and with no floors and 1 room.
-  */
+   * Create a zero-sized building located at coordinates (0.0,0.0,0.0)
+   * and with 1 floors and 1 room.
+   */
   Building ();
 
   /**
-  * \param t the type of building (i.e., Residential, Office, Commercial)
-  *
-  * This method allows to set building type (default is Residential)
-  */
+   * \param t the type of building (i.e., Residential, Office, Commercial)
+   *
+   * This method allows to set building type (default is Residential)
+   */
   void SetBuildingType (Building::BuildingType_t t);
 
   /**
-  * \param t the type of external walls (i.e., Wood, ConcreteWithWindows,
-  * ConcreteWithoutWindows and StoneBlocks), used for evaluating the loss
-  * due to the penetration of external walls in outdoor <-> indoor comm.
-  *
-  * This method allows to set external walls type (default is Residential)
-  */
+   * \param t the type of external walls (i.e., Wood, ConcreteWithWindows,
+   * ConcreteWithoutWindows and StoneBlocks), used for evaluating the loss
+   * due to the penetration of external walls in outdoor <-> indoor comm.
+   *
+   * This method allows to set external walls type (default is Residential)
+   */
   void SetExtWallsType (Building::ExtWallsType_t t);
 
   /**
-  * \param nfloors the number of floors in the building
-  *
-  * This method allows to set the number of floors in the building
-  * (default is 1)
-  */
+   * \param nfloors the number of floors in the building
+   *
+   * This method allows to set the number of floors in the building
+   * (default is 1)
+   */
   void SetFloorsNumber (uint8_t nfloors);
 
   /**
-  * \param nroomx the number of rooms in the x axis
-  *
-  * This method allows to set the number of room in x-axis (default is 1)
-  * The rooms are disposed as a grid of nº of rooms in X per nº of rooms in Y
-  */
+   * \param nroomx the number of rooms along the x axis
+   *
+   * This method allows to set the number of rooms along the x-axis
+   */
   void SetNumberRoomX (uint8_t nroomx);
 
   /**
-  * \param nroomy the number of floors in the building
-  *
-  * This method allows to set the number of floors in the building
-  * (default is 1)
-  */
+   * \param nroomy the number of floors in the building
+   *
+   * This method allows to set the number of rooms along the y-axis
+   */
   void SetNumberRoomY (uint8_t nroomy);
 
 
   /**
-  * \return the type of building
-  * Return the type of building (i.e., Residential, Office, Commercial)
-  */
+   * \return the type of building
+   * Return the type of building (i.e., Residential, Office, Commercial)
+   */
   BuildingType_t GetBuildingType ();
 
   /**
-  * \return the type of external walls
-  * Return the type of external walls (i.e., Wood, ConcreteWithWindows,
-  * ConcreteWithoutWindows)
-  */
+   * \return the type of external walls of the building
+   */
   ExtWallsType_t GetExtWallsType ();
 
   /**
-  * \return the number of floors
-  * Return the number of floors
-  */
+   * \return the number of floors of the building
+   */
   uint8_t GetNumberFloors ();
 
   /**
-  * \return the number of room in x-axis
-  * Return the number of room in x-axis
-  */
+   * \return the number of rooms along the x-axis of the building
+   */
   uint8_t GetNumberRoomX ();
 
   /**
-  * \return the number of room in y-axis
-  * Return the number of room in y-axis
-  */
+   * \return the number of rooms along the y-axis
+   */
   uint8_t GetNumberRoomY ();
   
   /**
-  * \return the bounds of the building 
-  * Return the bounds of the building as Box class
-  */
+   * \return the bounds of the building as Box class
+   */
   Box GetBuildingBounds ();
 
+ 
 
 private:
 
@@ -156,9 +149,9 @@ private:
 
   Box m_buldingBounds;
   /**
-  * number of floors must be greater then 0 and 1 means only one floor
-  * (i.e., groundfloor)
-  */
+   * number of floors, must be greater than 0, and 1 means only one floor
+   * (i.e., groundfloor)
+   */
   uint8_t m_floor;
   uint8_t m_roomX;
   uint8_t m_roomY;
