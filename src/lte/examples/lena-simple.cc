@@ -46,6 +46,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->EnableTraces ();
 
   // Uncomment to enable logging
   //lteHelper->EnableLogComponents ();

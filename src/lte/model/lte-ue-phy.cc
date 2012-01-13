@@ -109,6 +109,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     // ideal behavior
     m_a30CqiLast (MilliSeconds (0))
 {
+  m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
 }
 
@@ -309,7 +310,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector<int> cqi = LteAmc::CreateCqiFeedbacks (sinr);
+  std::vector<int> cqi = m_amc->CreateCqiFeedbacks (sinr);
 
   // CREATE DlCqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
@@ -433,6 +434,10 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
             }
           mask = (mask << 1);
         }
+      
+      // send TB info to LteSpectrumPhy
+      NS_LOG_DEBUG (this << " UE " << m_rnti << " DCI " << dci.m_rnti << " bimap "  << dci.m_rbBitmap);
+      m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_tbsSize.at (0), dci.m_mcs.at (0), dlRb);  // SISO mode
 
       SetSubChannelsForReception (dlRb);
 

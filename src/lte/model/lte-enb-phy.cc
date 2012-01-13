@@ -381,6 +381,14 @@ LteEnbPhy::StartSubFrame (void)
               else
                 {
                   (*it2).second->ReceiveIdealControlMessage (msg);
+                  // send info of TB to LteSpectrumPhy 
+                  // translate to allocation map
+                  std::vector <int> rbMap;
+                  for (int i = dci->GetDci ().m_rbStart; i < dci->GetDci ().m_rbStart + dci->GetDci ().m_rbLen; i++)
+                    {
+                      rbMap.push_back (i);
+                    }
+                  m_uplinkSpectrumPhy->AddExpectedTb (dci->GetDci ().m_rnti, dci->GetDci ().m_tbSize, dci->GetDci ().m_mcs, rbMap);
                 }
             }
           ctrlMsg.pop_front ();

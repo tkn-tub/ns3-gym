@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <ns3/nstime.h>
+#include <ns3/lte-amc.h>
 
 
 // value for SINR outside the range defined by FF-API, used to indicate that there
@@ -140,6 +141,7 @@ private:
   
   void UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size);
   void UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size);
+  Ptr<LteAmc> m_amc;
 
   /*
    * Vectors of UE's LC info

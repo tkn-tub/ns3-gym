@@ -48,6 +48,16 @@ MacStatsCalculator::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MacStatsCalculator")
     .SetParent<LteStatsCalculator> ()
     .AddConstructor<MacStatsCalculator> ()
+    .AddAttribute ("DlOutputFilename",
+                   "Name of the file where the downlink results will be saved.",
+                   StringValue ("DlMacStats.txt"),
+                   MakeStringAccessor (&LteStatsCalculator::SetDlOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("UlOutputFilename",
+                   "Name of the file where the uplink results will be saved.",
+                   StringValue ("UlMacStats.txt"),
+                   MakeStringAccessor (&LteStatsCalculator::SetUlOutputFilename),
+                   MakeStringChecker ())
   ;
   return tid;
 }

@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <ns3/lte-common.h>
+#include <ns3/lte-amc.h>
 
 
 namespace ns3 {
@@ -126,6 +127,8 @@ private:
   
   void UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size);
   void UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size);
+  
+  Ptr<LteAmc> m_amc;
 
   /*
    * Vectors of UE's RLC info

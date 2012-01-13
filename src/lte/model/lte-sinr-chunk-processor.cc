@@ -83,4 +83,56 @@ LteCqiSinrChunkProcessor::End ()
 }
 
 
+
+
+LtePemSinrChunkProcessor::LtePemSinrChunkProcessor (Ptr<LteSpectrumPhy> p)
+: m_phy (p)
+{
+  NS_LOG_FUNCTION (this << p);
+  NS_ASSERT (m_phy);
+}
+
+
+LtePemSinrChunkProcessor::~LtePemSinrChunkProcessor ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void 
+LtePemSinrChunkProcessor::Start ()
+{
+  NS_LOG_FUNCTION (this);
+  m_sumSinr = 0;
+  m_totDuration = MicroSeconds (0);
+}
+
+
+void 
+LtePemSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
+{
+  NS_LOG_FUNCTION (this << sinr << duration);
+  if (m_sumSinr == 0)
+  {
+    m_sumSinr = Create<SpectrumValue> (sinr.GetSpectrumModel ());
+  }
+  (*m_sumSinr) += sinr * duration.GetSeconds ();
+  m_totDuration += duration;
+}
+
+void 
+LtePemSinrChunkProcessor::End ()
+{
+  NS_LOG_FUNCTION (this);
+  if (m_totDuration.GetSeconds () > 0)
+  {
+    m_phy->UpdateSinrPerceived ((*m_sumSinr) / m_totDuration.GetSeconds ());
+  }
+  else
+  {
+    NS_LOG_WARN ("m_numSinr == 0");
+  }
+}
+
+
 } // namespace ns3

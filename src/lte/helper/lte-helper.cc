@@ -81,8 +81,8 @@ LteHelper::DoStart (void)
   else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
-      Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModel->GetObject<PropagationLossModel> ();            
-      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModel->GetObject<PropagationLossModel> ();
+      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
       m_downlinkChannel->AddPropagationLossModel (dlPlm);
     }
 
@@ -96,11 +96,11 @@ LteHelper::DoStart (void)
   else
     {
       NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
-      Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModel->GetObject<PropagationLossModel> ();            
-      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");       
+      Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModel->GetObject<PropagationLossModel> ();
+      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
-    
+
   //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
@@ -108,18 +108,12 @@ LteHelper::DoStart (void)
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
       m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
-
   m_macStats = CreateObject<MacStatsCalculator> ();
-  m_macStats->SetDlOutputFilename("DlMacStats.csv");
-  m_macStats->SetUlOutputFilename("UlMacStats.csv");
-  m_rlcStats = CreateObject<RadioBearerStatsCalculator> ();
-  m_rlcStats->SetDlOutputFilename("DlRlcStats.csv");
-  m_rlcStats->SetUlOutputFilename("UlRlcStats.csv");
-  m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ();
-  m_pdcpStats->SetDlOutputFilename("DlPdcpStats.csv");
-  m_pdcpStats->SetUlOutputFilename("UlPdcpStats.csv");
+  m_rlcStats = CreateObject<RadioBearerStatsCalculator> ("RLC");
+  m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ("PDCP");
 
   Object::DoStart ();
+
 }
 
 LteHelper::~LteHelper (void)
@@ -130,7 +124,7 @@ LteHelper::~LteHelper (void)
 TypeId LteHelper::GetTypeId (void)
 {
   static TypeId
-  tid =
+    tid =
     TypeId ("ns3::LteHelper")
     .SetParent<Object> ()
     .AddConstructor<LteHelper> ()
@@ -144,7 +138,7 @@ TypeId LteHelper::GetTypeId (void)
                    StringValue ("ns3::FriisPropagationLossModel"),
                    MakeStringAccessor (&LteHelper::SetPathlossModelType),
                    MakeStringChecker ())
-     .AddAttribute ("FadingModel",
+    .AddAttribute ("FadingModel",
                    "The type of fading model to be used",
                    StringValue (""), // fake module -> no fading 
                    MakeStringAccessor (&LteHelper::SetFadingModel),
@@ -182,7 +176,7 @@ LteHelper::SetEpcHelper (Ptr<EpcHelper> h)
       m_epsBearerToRlcMapping = RLC_UM_ALWAYS;
     }
 }
-  
+
 void 
 LteHelper::SetSchedulerType (std::string type) 
 {
@@ -313,6 +307,9 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   ulPhy->AddSinrChunkProcessor (p);
 
+  Ptr<LtePemSinrChunkProcessor> pPem = Create<LtePemSinrChunkProcessor> (ulPhy);
+  ulPhy->AddSinrChunkProcessor (pPem);
+
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
 
@@ -352,7 +349,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("LteEnbMac", PointerValue (mac));
   dev->SetAttribute ("FfMacScheduler", PointerValue (sched));
   dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
-  
+
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
@@ -360,7 +357,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   n->AddDevice (dev);
   ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
   rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
-  
+
   NS_LOG_LOGIC ("set the propagation model frequencies");
   if (m_downlinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
     {
@@ -378,12 +375,12 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       NS_LOG_LOGIC ("UL freq: " << ulFreq);
       m_uplinkPathlossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
     }
-  
+
   dev->Start ();
 
   if (m_epcHelper != 0)
     {
-      NS_LOG_INFO ("adding this eNB to the EPC");    
+      NS_LOG_INFO ("adding this eNB to the EPC");
       m_epcHelper->AddEnb (n, dev);
     }
 
@@ -401,6 +398,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   dlPhy->AddSinrChunkProcessor (p);
+
+  Ptr<LtePemSinrChunkProcessor> pPem = Create<LtePemSinrChunkProcessor> (dlPhy);
+  dlPhy->AddSinrChunkProcessor (pPem);
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
@@ -467,18 +467,18 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
-  
+
   //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
-       Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-       Ptr<MobilityModel> mm_ue_ul = uePhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-       Ptr<MobilityModel> mm_enb_ul = enbPhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-       Ptr<MobilityModel> mm_ue_dl = uePhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+      Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+      Ptr<MobilityModel> mm_ue_ul = uePhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+      Ptr<MobilityModel> mm_enb_ul = enbPhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+      Ptr<MobilityModel> mm_ue_dl = uePhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
  
-       m_fadingModule->CreateFadingChannelRealization (mm_enb_dl, mm_ue_dl); //downlink eNB -> UE
-       m_fadingModule->CreateFadingChannelRealization (mm_ue_ul, mm_enb_ul); //uplink UE -> eNB
-       
+      m_fadingModule->CreateFadingChannelRealization (mm_enb_dl, mm_ue_dl);  //downlink eNB -> UE
+      m_fadingModule->CreateFadingChannelRealization (mm_ue_ul, mm_enb_ul);  //uplink UE -> eNB
+
     }
  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
@@ -517,9 +517,9 @@ LteHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<Epc
 
   if (m_epcHelper != 0)
     {
-      NS_LOG_INFO (" setting up S1 Bearer");    
+      NS_LOG_INFO (" setting up S1 Bearer");
       m_epcHelper->ActivateEpsBearer (ueDevice, enbDevice, tft, rnti, lcid);
-      
+
     }
 }
 
@@ -598,7 +598,7 @@ LteHelper::EnableLogComponents (void)
     {
       LogComponentEnable (propModel, LOG_LEVEL_ALL);
     }
-    
+
   if (m_fadingModelType.compare ("ns3::TraceFadingLossModel") == 0)
     {
       const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
@@ -734,7 +734,7 @@ DlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize);
   uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath(path) == true)
+  if (rlcStats->ExistsImsiPath (path) == true)
     {
       imsi = rlcStats->GetImsiPath (path);
     }
@@ -744,7 +744,7 @@ DlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
       rlcStats->SetImsiPath (path, imsi);
     }
   uint16_t cellId = 0;
-  if (rlcStats->ExistsCellIdPath(path) == true)
+  if (rlcStats->ExistsCellIdPath (path) == true)
     {
       cellId = rlcStats->GetCellIdPath (path);
     }
@@ -762,7 +762,7 @@ DlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize << delay);
   uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath(path) == true)
+  if (rlcStats->ExistsImsiPath (path) == true)
     {
       imsi = rlcStats->GetImsiPath (path);
     }
@@ -790,15 +790,15 @@ UlTxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize);
   uint64_t imsi = 0;
-    if (rlcStats->ExistsImsiPath(path) == true)
-      {
-        imsi = rlcStats->GetImsiPath (path);
-      }
-    else
-      {
-        imsi = FindImsiFromUeRlcPath (path);
-        rlcStats->SetImsiPath (path, imsi);
-      }
+  if (rlcStats->ExistsImsiPath (path) == true)
+    {
+      imsi = rlcStats->GetImsiPath (path);
+    }
+  else
+    {
+      imsi = FindImsiFromUeRlcPath (path);
+      rlcStats->SetImsiPath (path, imsi);
+    }
   rlcStats->UlTxPdu (imsi, rnti, lcid, packetSize);
 }
 
@@ -808,17 +808,17 @@ UlRxPduCallback (Ptr<RadioBearerStatsCalculator> rlcStats, std::string path,
 {
   NS_LOG_FUNCTION (rlcStats << path << rnti << (uint16_t)lcid << packetSize << delay);
   uint64_t imsi = 0;
-  if (rlcStats->ExistsImsiPath(path) == true)
+  if (rlcStats->ExistsImsiPath (path) == true)
     {
       imsi = rlcStats->GetImsiPath (path);
     }
   else
     {
-      imsi = FindImsiFromEnbRlcPath(path);
+      imsi = FindImsiFromEnbRlcPath (path);
       rlcStats->SetImsiPath (path, imsi);
     }
   uint16_t cellId = 0;
-  if (rlcStats->ExistsCellIdPath(path) == true)
+  if (rlcStats->ExistsCellIdPath (path) == true)
     {
       cellId = rlcStats->GetCellIdPath (path);
     }
@@ -841,7 +841,7 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
   pathAndRnti << path << "/" << rnti;
-  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
+  if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
@@ -852,7 +852,7 @@ DlSchedulingCallback (Ptr<MacStatsCalculator> macStats,
     }
 
   uint16_t cellId = 0;
-  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
+  if (macStats->ExistsCellIdPath (pathAndRnti.str ()) == true)
     {
       cellId = macStats->GetCellIdPath (pathAndRnti.str ());
     }
@@ -899,7 +899,7 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
   uint64_t imsi = 0;
   std::ostringstream pathAndRnti;
   pathAndRnti << path << "/" << rnti;
-  if (macStats->ExistsImsiPath(pathAndRnti.str ()) == true)
+  if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
     {
       imsi = macStats->GetImsiPath (pathAndRnti.str ());
     }
@@ -909,7 +909,7 @@ UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
       macStats->SetImsiPath (pathAndRnti.str (), imsi);
     }
   uint16_t cellId = 0;
-  if (macStats->ExistsCellIdPath(pathAndRnti.str ()) == true)
+  if (macStats->ExistsCellIdPath (pathAndRnti.str ()) == true)
     {
       cellId = macStats->GetCellIdPath (pathAndRnti.str ());
     }
@@ -927,15 +927,6 @@ LteHelper::EnableUlMacTraces (void)
 {
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&UlSchedulingCallback, m_macStats));
-}
-
-void
-LteHelper::SetTraceDirectory (std::string path)
-{
-  m_macStats->SetDlOutputFilename(path + m_macStats->GetDlOutputFilename());
-  m_macStats->SetUlOutputFilename(path + m_macStats->GetUlOutputFilename());
-  m_rlcStats->SetDlOutputFilename(path + m_rlcStats->GetDlOutputFilename());
-  m_rlcStats->SetUlOutputFilename(path + m_rlcStats->GetUlOutputFilename());
 }
 
 Ptr<RadioBearerStatsCalculator>

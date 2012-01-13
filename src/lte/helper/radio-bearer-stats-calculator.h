@@ -61,6 +61,11 @@ public:
   RadioBearerStatsCalculator ();
 
   /**
+    * Class constructor
+    */
+  RadioBearerStatsCalculator (std::string bearerType);
+
+  /**
    * Class destructor
    */
   virtual
@@ -71,6 +76,40 @@ public:
    */
   static TypeId
   GetTypeId (void);
+
+  /**
+   * Get the name of the file where the uplink statistics will be stored.
+   */
+  std::string GetUlOutputFilename (void);
+
+  /**
+   * Get the name of the file where the downlink statistics will be stored.
+   */
+  std::string GetDlOutputFilename (void);
+
+  /**
+   * Set the name of the file where the uplink PDCP statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetUlPdcpOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the uplink PDCP statistics will be stored.
+   */
+  std::string GetUlPdcpOutputFilename (void);
+
+  /**
+   * Set the name of the file where the downlink PDCP statistics will be stored.
+   *
+   * @param outputFilename string with the name of the file
+   */
+  void SetDlPdcpOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the downlink PDCP statistics will be stored.
+   */
+  std::string GetDlPdcpOutputFilename (void);
 
   /**
    * Notifies the stats calculator that an uplink transmission has occurred.
@@ -304,6 +343,10 @@ private:
   Time m_epochDuration;
 
   bool m_firstWrite;
+  std::string m_bearerType;
+
+  std::string m_dlPdcpOutputFilename;
+  std::string m_ulPdcpOutputFilename;
 
 };
 

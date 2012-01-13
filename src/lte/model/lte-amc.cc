@@ -21,11 +21,12 @@
  */
 
 
-#include "lte-amc.h"
+#include <ns3/lte-amc.h>
 #include <ns3/log.h>
 #include <ns3/assert.h>
 #include <math.h>
 #include <ns3/spectrum-value.h>
+#include <ns3/double.h>
 
 #ifdef __FreeBSD__
 #define log2(x) (log(x)/M_LN2)
@@ -35,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 namespace ns3 {
 
- 
+NS_OBJECT_ENSURE_REGISTERED (LteAmc);
 
 // from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH"
 // file TBS_support.xls
@@ -203,6 +204,29 @@ int TransportBlockSizeTable [110][27] = {
 };
 
 
+LteAmc::LteAmc ()
+{
+}
+
+
+LteAmc::~LteAmc ()
+{ 
+}
+
+TypeId
+LteAmc::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::LteAmc")
+  .SetParent<Object> ()
+  .AddConstructor<LteAmc> ()
+  .AddAttribute ("Ber",
+                 "The requested BER in assigning MCS (default is 0.00005).",
+                 DoubleValue (0.00005),
+                 MakeDoubleAccessor (&LteAmc::m_ber),
+                 MakeDoubleChecker<double> ());
+  return tid;
+}
+
 
 int
 LteAmc::GetCqiFromSpectralEfficiency (double s)
@@ -280,7 +304,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
           */
 
           double s = log2 ( 1 + ( sinr_ /
-                                  ( (-log (5.0 * 0.00005 )) / 1.5) ));
+                                  ( (-log (5.0 * m_ber )) / 1.5) ));
 
           int cqi_ = GetCqiFromSpectralEfficiency (s);
 
@@ -288,7 +312,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
                                  << ", sinr = " << sinr_
                                  << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
                                  << ", spectral efficiency =" << s
-                                 << ", CQI = " << cqi_ );
+                                 << ", CQI = " << cqi_ << ", BER = " << m_ber);
 
           cqi.push_back (cqi_);
         }
