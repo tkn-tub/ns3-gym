@@ -56,6 +56,7 @@ interesting_config_items = [
     "APPNAME",
     "BUILD_PROFILE",
     "VERSION",
+    "PYTHON",
 ]
 
 NSC_ENABLED = False
@@ -681,7 +682,7 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
-        path_cmd = "python " + os.path.join (base, shell_command)
+        path_cmd = PYTHON[0] + " " + os.path.join (base, shell_command)
     else:
         if len(build_path):
             path_cmd = os.path.join (build_path, shell_command)
