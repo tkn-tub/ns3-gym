@@ -469,6 +469,54 @@ placed at the same position, and to configure separate ``EnbNetDevice``
 with different antenna orientations to be installed on each node.
 
 
+Radio Environment Maps
+----------------------
+
+By using the class RadioEnvironmentMapHelper it is possible to output
+to a file a Radio Environment Map (REM), i.e., a uniform 2D grid of values
+that represent the Signal-to-noise ratio in the downlink with respect
+to the eNB that has the strongest signal at each point. 
+
+To do this, you just need to add the following code to your simulation
+program towards the end, right before the call to Simulator::Run ()::
+
+  Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
+  remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
+  remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
+  remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
+  remHelper->SetAttribute ("XMax", DoubleValue (400.0));
+  remHelper->SetAttribute ("XRes", UintegerValue (100));
+  remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
+  remHelper->SetAttribute ("YMax", DoubleValue (300.0));
+  remHelper->SetAttribute ("YRes", UintegerValue (75));
+  remHelper->SetAttribute ("Z", DoubleValue (0.0));
+  remHelper->Install ();
+
+By configuring the attributes of the RadioEnvironmentMapHelper object
+as shown above, you can tune the parameters of the REM to be
+generated. Note that each RadioEnvironmentMapHelper instance can
+generate only one REM; if you want to generate more REMs, you need to
+create one separate instance for each REM. 
+
+The REM is stored in an ASCII file in the following format:
+
+ * column 1 is the x coordinate
+ * column 2 is the y coordinate
+ * column 3 is the z coordinate
+ * column 4 is the SINR in linear units
+
+A minimal gnuplot script that allows you to plot the REM is given
+below::
+
+   set view map;
+   set xlabel "X"
+   set ylabel "Y"
+   set cblabel "SINR (dB)"
+   plot "rem.out" using ($1):($2):(10*log10($4)) with image
+  
+
+
+
 Evolved Packet Core (EPC)
 -------------------------
 
