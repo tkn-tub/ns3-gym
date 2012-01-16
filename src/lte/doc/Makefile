@@ -104,6 +104,8 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/lte-phy-interference.pdf \
 	$(FIGURES)/helpers.png \
 	$(FIGURES)/helpers.pdf \
+	$(FIGURES)/miesm_scheme.pdf \
+	$(FIGURES)/miesm_scheme.png \
 	$(IMAGES_SEQDIAG) 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
