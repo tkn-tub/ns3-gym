@@ -33,7 +33,7 @@ namespace ns3 {
 class BuildingsHelper
 {
 public:  
-  static void MakeAllInstancesConsistent ();
+  static void MakeMobilityModelConsistent ();
   
 };
 

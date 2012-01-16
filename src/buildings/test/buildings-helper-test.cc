@@ -148,7 +148,7 @@ BuildingsHelperOneTestCase::DoRun ()
   b->SetNRoomsX (m_bd.nrx);
   b->SetNRoomsY (m_bd.nry);
   
-  BuildingsHelper::MakeAllInstancesConsistent ();
+  BuildingsHelper::MakeMobilityModelConsistent ();
 
   
   NS_TEST_ASSERT_MSG_EQ (bmm->IsIndoor (), m_pib.indoor, "indoor/outdoor mismatch");

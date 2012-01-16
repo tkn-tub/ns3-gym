@@ -433,7 +433,7 @@ It is to be noted that using other means to configure the frequency used by the 
 
 This positions the node on the scenario. Note that, in this example, node 0 will be in the building, and node 1 will be out of the building. Note that this alone is not sufficient to setup the topology correctly. What is left to be done is to issue the following command after we have placed all nodes in the simulation::
 
-      BuildingsHelper::MakeAllInstancesConsistent ();
+      BuildingsHelper::MakeMobilityModelConsistent ();
 
 This command will go through the lists of all nodes and of all buildings, determine for each user if it is indoor or outdoor, and if indoor it will also determine the building in which the user is located and the corresponding floor and number inside the building.
 

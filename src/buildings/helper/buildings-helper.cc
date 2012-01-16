@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("BuildingsHelper");
 namespace ns3 {
 
 void
-BuildingsHelper::MakeAllInstancesConsistent ()
+BuildingsHelper::MakeMobilityModelConsistent ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (NodeList::Iterator nit = NodeList::Begin (); nit != NodeList::End (); ++nit)
