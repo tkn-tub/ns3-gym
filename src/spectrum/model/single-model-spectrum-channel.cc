@@ -106,6 +106,27 @@ SingleModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
 
 
 void
+SingleModelSpectrumChannel::RemoveRx (Ptr<SpectrumPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+  bool found = false;
+  for (std::vector<Ptr<SpectrumPhy> >::iterator it = m_phyList.begin (); it != m_phyList.end (); ++it)
+    {
+      if (*it == phy)
+        {
+          m_phyList.erase (it);
+          found = true;
+          break;
+        }
+    }
+  if (!found)
+    {
+      NS_LOG_WARN ("phy instance " << phy << " not found");
+    }
+}
+
+
+void
 SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 {
   NS_LOG_FUNCTION (this << txParams->psd << txParams->duration << txParams->txPhy);
