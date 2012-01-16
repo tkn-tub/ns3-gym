@@ -403,18 +403,6 @@ It is to be noted that using other means to configure the frequency used by the 
     MobilityHelper mobility;
     mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
 
-#. Node creation and positioning::
-
-    ueNodes.Create (1);
-    mobility.Install (ueNodes);
-    NetDeviceContainer ueDevs;
-    ueDevs = lteHelper->InstallUeDevice (ueNodes);
-    Ptr<BuildingsMobilityModel> mm = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
-    double x_axis = 0.0;
-    double y_axis = 0.0;
-    double z_axis = 0.0;
-    mm->SetPosition (Vector (x_axis, y_axis, z_axis));
-
 #. Building creation::
 
     double x_min = 0.0;
@@ -423,29 +411,33 @@ It is to be noted that using other means to configure the frequency used by the 
     double y_max = 20.0;
     double z_min = 0.0;
     double z_max = 10.0;
-    Ptr<Building> building = Create<Building> (x_min, x_max, y_min, y_max, z_min, z_max);
+    Ptr<Building> building = CreateObject <Building> (x_min, x_max, y_min, y_max, z_min, z_max);
     building->SetBuildingType (Building::Residential);
     building->SetExtWallsType (Building::ConcreteWithWindows);
-    building->SetFloorsNumber (3);
-    building->SetNumberRoomX (3);
-    building->SetNumberRoomY (2);
+    building->SetNFloors (3);
+    building->SetNRoomsX (3);
+    building->SetNRoomsY (2);
 
    This will instantiate a residential building with base of 10 x 20 meters and height of 10 meters whose external walls are of concrete with windows; the building has three floors and has an internal 3 x 2  grid of rooms of equal size.
 
-#. Building and nodes interactions::
+#. Node creation and positioning::
 
-    mm->SetIndoor (building, 2, 1, 1);
+    ueNodes.Create (2);
+    mobility.Install (ueNodes);
+    NetDeviceContainer ueDevs;
+    ueDevs = lteHelper->InstallUeDevice (ueNodes);
+    Ptr<BuildingsMobilityModel> mm0 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+    Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (1)->GetObject<BuildingsMobilityModel> ();   
+    mm0->SetPosition (Vector (5.0, 5.0, 1.5));
+    mm1->SetPosition (Vector (30.0, 40.0, 1.5));
 
-   which is equivalent to the form::
+This positions the node on the scenario. Note that, in this example, node 0 will be in the building, and node 1 will be out of the building. Note that this alone is not sufficient to setup the topology correctly. What is left to be done is to issue the following command after we have placed all nodes in the simulation::
 
-    mm->SetIndoor (building);
-    mm->SetFloorNumber (2);
-    mm->SetRoomNumberX (1);
-    mm->SetRoomNumberY (1);
+      BuildingsHelper::MakeAllInstancesConsistent ();
 
-   This informs the node's mobility model that the node is located inside the building on the second floor in the corner room of the 3 x 2 grid.
-   We suggest the usage of the first form since it performs a consistency check of the node position with the building bounds.
-   It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size for outdoor nodes. The responsibility of this consistency is completely left to the user.
+This command will go through the lists of all nodes and of all buildings, determine for each user if it is indoor or outdoor, and if indoor it will also determine the building in which the user is located and the corresponding floor and number inside the building.
+
+
 
 
 
@@ -475,6 +467,54 @@ of :math:`\pm 30` degrees from the direction of orientation is -3 dB.
 To create a multi-sector site, you need to create different ns-3 nodes
 placed at the same position, and to configure separate ``EnbNetDevice``
 with different antenna orientations to be installed on each node.
+
+
+Radio Environment Maps
+----------------------
+
+By using the class RadioEnvironmentMapHelper it is possible to output
+to a file a Radio Environment Map (REM), i.e., a uniform 2D grid of values
+that represent the Signal-to-noise ratio in the downlink with respect
+to the eNB that has the strongest signal at each point. 
+
+To do this, you just need to add the following code to your simulation
+program towards the end, right before the call to Simulator::Run ()::
+
+  Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
+  remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
+  remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
+  remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
+  remHelper->SetAttribute ("XMax", DoubleValue (400.0));
+  remHelper->SetAttribute ("XRes", UintegerValue (100));
+  remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
+  remHelper->SetAttribute ("YMax", DoubleValue (300.0));
+  remHelper->SetAttribute ("YRes", UintegerValue (75));
+  remHelper->SetAttribute ("Z", DoubleValue (0.0));
+  remHelper->Install ();
+
+By configuring the attributes of the RadioEnvironmentMapHelper object
+as shown above, you can tune the parameters of the REM to be
+generated. Note that each RadioEnvironmentMapHelper instance can
+generate only one REM; if you want to generate more REMs, you need to
+create one separate instance for each REM. 
+
+The REM is stored in an ASCII file in the following format:
+
+ * column 1 is the x coordinate
+ * column 2 is the y coordinate
+ * column 3 is the z coordinate
+ * column 4 is the SINR in linear units
+
+A minimal gnuplot script that allows you to plot the REM is given
+below::
+
+   set view map;
+   set xlabel "X"
+   set ylabel "Y"
+   set cblabel "SINR (dB)"
+   plot "rem.out" using ($1):($2):(10*log10($4)) with image
+  
+
 
 
 Evolved Packet Core (EPC)

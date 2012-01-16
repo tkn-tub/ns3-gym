@@ -29,9 +29,6 @@
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
 
-//#include <ns3/shadowing-loss-model.h>
-//#include <ns3/jakes-fading-loss-model.h>
-
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
 
@@ -624,7 +621,9 @@ BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) con
 double
 BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
+  NS_ASSERT_MSG ((a->GetPosition ().z > 0) && (b->GetPosition ().z > 0), "BuildingsPropagationLossModel does not support underground nodes (placed at z < 0)");
 
+  
   double distance = a->GetDistanceFrom (b);
   if (distance <= m_minDistance)
     {
@@ -634,6 +633,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
   // get the BuildingsMobilityModel pointers
   Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
   Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
+  NS_ASSERT_MSG ((a1 != 0) && (b1 != 0), "BuildingsPropagationLossModel only works with BuildingsMobilityModel");
 
   double loss = 0.0;
 
