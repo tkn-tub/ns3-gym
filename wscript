@@ -68,10 +68,8 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
-# note: here we disable the VNUM for OSX since it causes problems (bug #1251)
+# we don't use VNUM anymore (see bug #1327 for details)
 wutils.VNUM = None
-if sys.platform != 'darwin' and re.match(r"^\d+\.\d+(\.\d+)?$", VERSION) is not None:
-    wutils.VNUM = VERSION
 
 # these variables are mandatory ('/' are converted automatically)
 top = '.'

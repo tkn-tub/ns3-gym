@@ -375,7 +375,7 @@ class ns3pcfile_task(Task.Task):
         prefix = env.PREFIX
         includedir = Utils.subst_vars('${INCLUDEDIR}/%s%s' % (wutils.APPNAME, wutils.VERSION), env)
         libdir = env.LIBDIR
-        libs = self._self_libs(env, name, '${libdir}')
+        libs = self._self_libs(env, "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name[4:], env['BUILD_PROFILE']), '${libdir}')
         for dep in use:
             libs += self._lib(env, dep)
         for dep in env.LIBS:
@@ -395,12 +395,12 @@ includedir=%s
 
 Name: lib%s
 Description: ns-3 module %s
-Version: devel
+Version: %s
 Libs: %s
 Cflags: %s
 Requires: %s\
 """ % (prefix, libdir, includedir,
-       name, name, ' '.join(libs), ' '.join(cflags), ' '.join(requires))
+       name, name, wutils.VERSION, ' '.join(libs), ' '.join(cflags), ' '.join(requires))
         outfile.close()
 
     def run(self):
