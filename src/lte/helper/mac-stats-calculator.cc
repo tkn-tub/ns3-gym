@@ -51,15 +51,39 @@ MacStatsCalculator::GetTypeId (void)
     .AddAttribute ("DlOutputFilename",
                    "Name of the file where the downlink results will be saved.",
                    StringValue ("DlMacStats.txt"),
-                   MakeStringAccessor (&LteStatsCalculator::SetDlOutputFilename),
+                   MakeStringAccessor (&MacStatsCalculator::SetDlOutputFilename),
                    MakeStringChecker ())
     .AddAttribute ("UlOutputFilename",
                    "Name of the file where the uplink results will be saved.",
                    StringValue ("UlMacStats.txt"),
-                   MakeStringAccessor (&LteStatsCalculator::SetUlOutputFilename),
+                   MakeStringAccessor (&MacStatsCalculator::SetUlOutputFilename),
                    MakeStringChecker ())
   ;
   return tid;
+}
+
+void
+MacStatsCalculator::SetUlOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetUlOutputFilename (outputFilename);
+}
+
+std::string
+MacStatsCalculator::GetUlOutputFilename (void)
+{
+  return LteStatsCalculator::GetUlOutputFilename ();
+}
+
+void
+MacStatsCalculator::SetDlOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetDlOutputFilename (outputFilename);
+}
+
+std::string
+MacStatsCalculator::GetDlOutputFilename (void)
+{
+  return LteStatsCalculator::GetDlOutputFilename ();
 }
 
 void

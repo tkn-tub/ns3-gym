@@ -161,6 +161,9 @@ def build(bld):
         'test/lte-test-phy-error-model.h',
         'test/lte-test-pathloss-model.h',
         'test/epc-test-gtpu.h',
+        'test/lte-test-entities.h',
+        'test/lte-test-rlc-um-transmitter.h',
+        'test/lte-test-rlc-am-transmitter.h',
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h'
