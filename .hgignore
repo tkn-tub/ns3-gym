@@ -28,6 +28,7 @@
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
+^src/antenna/doc/build
 ^bindings/python/pybindgen/
 ms_print.*
 massif.*
