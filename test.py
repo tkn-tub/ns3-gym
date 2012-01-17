@@ -70,6 +70,7 @@ EXAMPLE_DIRECTORIES = []
 APPNAME = ""
 BUILD_PROFILE = ""
 VERSION = ""
+PYTHON = ""
 
 #
 # This will be given a prefix and a suffix when the waf config file is
