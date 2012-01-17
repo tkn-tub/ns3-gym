@@ -139,6 +139,8 @@ RadioEnvironmentMapHelper::Install ()
           RemPoint p;
           p.phy = CreateObject<RemSpectrumPhy> ();
           p.bmm = CreateObject<BuildingsMobilityModel> ();
+          p.node = CreateObject<Node> ();
+          p.node->AggregateObject (p.bmm);
           p.phy->SetMobility (p.bmm);
           p.bmm->SetPosition (Vector (x, y, m_z));
           m_rem.back ().push_back (p);

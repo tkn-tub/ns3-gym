@@ -89,7 +89,7 @@ main (int argc, char *argv[])
                                0.0, roomHeight);
   building->SetBuildingType (Building::Residential);
   building->SetExtWallsType (Building::ConcreteWithWindows);
-  building->SetNFloors (0);
+  building->SetNFloors (1);
   building->SetNRoomsX (nRooms);
   building->SetNRoomsY (nRooms);
   mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
@@ -232,8 +232,8 @@ main (int argc, char *argv[])
   BuildingsHelper::MakeMobilityModelConsistent ();
   Simulator::Run ();
 
-  GtkConfigStore config;
-  config.ConfigureAttributes ();
+  // GtkConfigStore config;
+  // config.ConfigureAttributes ();
 
   Simulator::Destroy ();
   return 0;
