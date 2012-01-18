@@ -69,7 +69,7 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
       NS_FATAL_ERROR ("Invalid value for attribute set (" << name << ") on " << m_tid.GetName ());
       return;
     }
-  m_parameters.Add (name, info.checker, v);
+  m_parameters.Add (name, info.checker, value.Copy ());
 }
 
 TypeId 
