@@ -497,12 +497,12 @@
   } while (false)
 
 /**
- * \brief Test that an actual and expected (limit) value are equal and report
- * and abort if not.
+ * \brief Test that an actual and expected (limit) value are not equal and 
+ * report and abort if not.
  *
  * Check to see if the expected (limit) value is not equal to the actual value
- * found in a test case.  If the two values are equal nothing happens, but if 
- * the comparison fails, an error is reported in a consistent way and the 
+ * found in a test case.  If the two values are not equal nothing happens, but 
+ * if the comparison fails, an error is reported in a consistent way and the 
  * execution of the current test case is aborted.
  *
  * The message is interpreted as a stream, for example:
@@ -515,7 +515,7 @@
  * is legal.
  * 
  * \param actual Expression for the actual value found during the test.
- * \param limit Expression for the expected value of the test.
+ * \param limit Expression for the value that actual is tested against.
  * \param msg Message that is output if the test does not pass.
  *
  * \warning Do not use this macro if you are comparing floating point numbers
@@ -547,8 +547,8 @@
   } while (false)
 
 /**
- * \brief Test that an actual and expected (limit) value are equal and report
- * and abort if not.
+ * \brief Test that an actual and expected (limit) value are not equal and 
+ * report and abort if not.
  *
  * Check to see if the expected (limit) value is not equal to the actual value
  * found in a test case.  If the two values are equal nothing happens, but if 
@@ -602,25 +602,25 @@
   } while (false)
 
 /**
- * \brief Test that an actual and expected (limit) value are equal and report
- * if not.
+ * \brief Test that an actual and expected (limit) value are not equal and 
+ * report if not.
  *
- * Check to see if the expected (limit) value is equal to the actual value 
- * found in a test case.  If the two values are equal nothing happens, but if 
- * the comparison fails, an error is reported in a consistent way.  EXPECT* 
+ * Check to see if the expected (limit) value is not equal to the actual value 
+ * found in a test case.  If the two values are not equal nothing happens, but 
+ * if the comparison fails, an error is reported in a consistent way.  EXPECT* 
  * macros do not return if an error is detected.
  *
  * The message is interpreted as a stream, for example:
  *
  * \code
- * NS_TEST_EXPECT_MSG_EQUAL (result, true, 
+ * NS_TEST_EXPECT_MSG_NE (result, false, 
  *      "cannot open file " << filename << " in test");
  * \endcode
  *
  * is legal.
  * 
  * \param actual Expression for the actual value found during the test.
- * \param limit Expression for the expected value of the test.
+ * \param limit Expression for the value that actual is tested against.
  * \param msg Message that is output if the test does not pass.
  *
  * \warning Do not use this macro if you are comparing floating point numbers

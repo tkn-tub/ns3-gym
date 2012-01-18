@@ -53,6 +53,10 @@ interesting_config_items = [
     "ENABLE_PYTHON_BINDINGS",
     "ENABLE_CLICK",
     "ENABLE_OPENFLOW",
+    "APPNAME",
+    "BUILD_PROFILE",
+    "VERSION",
+    "PYTHON",
 ]
 
 NSC_ENABLED = False
@@ -63,6 +67,16 @@ ENABLE_TESTS = True
 ENABLE_CLICK = False
 ENABLE_OPENFLOW = False
 EXAMPLE_DIRECTORIES = []
+APPNAME = ""
+BUILD_PROFILE = ""
+VERSION = ""
+PYTHON = ""
+
+#
+# This will be given a prefix and a suffix when the waf config file is
+# read.
+#
+test_runner_name = "test-runner"
 
 #
 # If the user has constrained us to run certain kinds of tests, we can tell waf
@@ -124,6 +138,9 @@ def parse_examples_to_run_file(
         #
         cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
         for example_name, do_run, do_valgrind_run in cpp_examples:
+            # Add the proper prefix and suffix to the example name to
+            # match what is done in the wscript file.
+            example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
             example_path = os.path.join(cpp_executable_dir, example_name)
             # Add all of the C++ examples that were built, i.e. found
             # in the directory, to the list of C++ examples to run.
@@ -598,7 +615,7 @@ def make_paths():
 # You should see in the verbose output something that looks like:
 #
 #   Synchronously execute valgrind --suppressions=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/testpy.supp
-#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/test-runner 
+#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug 
 #   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev 
 #   --tempdir=testpy-output/2010-01-12-22-47-50-CUT 
 #   --out=testpy-output/2010-01-12-22-47-50-CUT/devices-mesh-dot11s-regression.xml
@@ -607,7 +624,7 @@ def make_paths():
 # reproduce your error:
 #
 #   valgrind --suppressions=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/testpy.supp
-#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/test-runner 
+#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug 
 #   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev 
 #   --tempdir=testpy-output 
 #
@@ -619,7 +636,7 @@ def make_paths():
 # option to valgrind.  Use something like:
 #
 #   valgrind --gen-suppressions=yes --suppressions=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/testpy.supp
-#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/test-runner 
+#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug 
 #   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev 
 #   --tempdir=testpy-output 
 #
@@ -666,7 +683,7 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
-        path_cmd = "python " + os.path.join (base, shell_command)
+        path_cmd = PYTHON[0] + " " + os.path.join (base, shell_command)
     else:
         if len(build_path):
             path_cmd = os.path.join (build_path, shell_command)
@@ -763,7 +780,7 @@ class Job:
     #
     # This is the shell command that will be executed in the job.  For example,
     #
-    #  "utils/test-runner --test-name=some-test-suite"
+    #  "utils/ns3-dev-test-runner-debug --test-name=some-test-suite"
     #
     def set_shell_command(self, shell_command):
         self.shell_command = shell_command
@@ -917,10 +934,24 @@ class worker_thread(threading.Thread):
                 self.output_queue.put(job)
 
 #
-# This is the main function that does the work of interacting with the test-runner
-# itself.
+# This is the main function that does the work of interacting with the
+# test-runner itself.
 #
 def run_tests():
+    #
+    # Pull some interesting configuration information out of waf, primarily
+    # so we can know where executables can be found, but also to tell us what
+    # pieces of the system have been built.  This will tell us what examples 
+    # are runnable.
+    #
+    read_waf_config()
+
+    #
+    # Add the proper prefix and suffix to the test-runner name to
+    # match what is done in the wscript file.
+    #
+    test_runner_name = "%s%s-%s-%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE)
+
     #
     # Run waf to make sure that everything is built, configured and ready to go
     # unless we are explicitly told not to.  We want to be careful about causing
@@ -973,12 +1004,8 @@ def run_tests():
             return proc.returncode
 
     #
-    # Pull some interesting configuration information out of waf, primarily
-    # so we can know where executables can be found, but also to tell us what
-    # pieces of the system have been built.  This will tell us what examples 
-    # are runnable.
+    # Dynamically set up paths.
     #
-    read_waf_config()
     make_paths()
 
     # Get the information from the build status file.
@@ -1043,12 +1070,12 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        path_cmd = os.path.join("utils", "test-runner --print-test-type-list")
+        path_cmd = os.path.join("utils", test_runner_name + " --print-test-type-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print standard_out
 
     if options.list:
-        path_cmd = os.path.join("utils", "test-runner --print-test-name-list")
+        path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print standard_out
 
@@ -1119,7 +1146,7 @@ def run_tests():
     #
     if len(options.suite):
         # See if this is a valid test suite.
-        path_cmd = os.path.join("utils", "test-runner --print-test-name-list")
+        path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
         (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         if options.suite in suites:
             suites = options.suite + "\n"
@@ -1129,10 +1156,10 @@ def run_tests():
 
     elif len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain):
-            path_cmd = os.path.join("utils", "test-runner --print-test-name-list --test-type=%s" % options.constrain)
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % options.constrain)
             (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         else:
-            path_cmd = os.path.join("utils", "test-runner --print-test-name-list")
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
             (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
     else:
         suites = ""
@@ -1214,7 +1241,7 @@ def run_tests():
             else:
                 multiple = " --stop-on-failure"
 
-            path_cmd = os.path.join("utils", "test-runner --test-name=%s%s" % (test, multiple))
+            path_cmd = os.path.join("utils", test_runner_name + " --test-name=%s%s" % (test, multiple))
             job.set_shell_command(path_cmd)
 
             if options.valgrind and test in core_valgrind_skip_tests:
@@ -1289,7 +1316,7 @@ def run_tests():
                             job.set_basedir(os.getcwd())
                             job.set_tempdir(testpy_output_dir)
                             job.set_shell_command(test)
-                            job.set_build_path("")
+                            job.set_build_path(options.buildpath)
 
                             if options.valgrind and not eval(do_valgrind_run):
                                 job.set_is_skip (True)
@@ -1302,8 +1329,13 @@ def run_tests():
                             total_tests = total_tests + 1
 
     elif len(options.example):
+        # Add the proper prefix and suffix to the example name to
+        # match what is done in the wscript file.
+        (example_path_without_name, example_name) = os.path.split(options.example)
+        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
+        example_path = os.path.join(example_path_without_name, example_name)
+
         # Don't try to run this example if it isn't runnable.
-        example_name = os.path.basename(options.example)
         if example_name not in ns3_runnable_programs:
             print "Example %s is not runnable." % example_name
         else:
@@ -1314,16 +1346,16 @@ def run_tests():
             job = Job()
             job.set_is_example(True)
             job.set_is_pyexample(False)
-            job.set_display_name(options.example)
+            job.set_display_name(example_name)
             job.set_tmp_file_name("")
             job.set_cwd(testpy_output_dir)
             job.set_basedir(os.getcwd())
             job.set_tempdir(testpy_output_dir)
-            job.set_shell_command(options.example)
+            job.set_shell_command(example_path)
             job.set_build_path(options.buildpath)
 
             if options.verbose:
-                print "Queue %s" % options.example
+                print "Queue %s" % example_name
 
             input_queue.put(job)
             jobs = jobs + 1
