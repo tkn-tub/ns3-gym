@@ -32,6 +32,7 @@ namespace ns3 {
 
 class Node;
 class NetDevice;
+class VirtualNetDevice;
 class EpcSgwPgwApplication;
 
 /**
@@ -58,6 +59,7 @@ public:
   
   // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   
   /** 
@@ -126,8 +128,8 @@ private:
   Ipv4AddressHelper m_ueAddressHelper; 
   
   Ptr<Node> m_sgwPgw; 
-
   Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
+  Ptr<VirtualNetDevice> m_tunDevice;
 
   DataRate m_s1uLinkDataRate;
   Time     m_s1uLinkDelay;

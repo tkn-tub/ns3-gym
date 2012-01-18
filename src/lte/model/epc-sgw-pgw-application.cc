@@ -85,6 +85,13 @@ EpcSgwPgwApplication::GetTypeId (void)
   return tid;
 }
 
+void
+EpcSgwPgwApplication::DoDispose ()
+{
+  m_s1uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+  m_s1uSocket = 0;
+}
+
   
 
 EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevice, const Ptr<Socket> s1uSocket)

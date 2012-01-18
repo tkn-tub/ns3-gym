@@ -51,6 +51,7 @@ public:
 
   // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    * Constructor that binds the tap device to the callback methods.
