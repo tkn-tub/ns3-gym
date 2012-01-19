@@ -295,7 +295,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
     }
 
   // Build RLC header
-  rlcHeader.SetSequenceNumber ( (m_sequenceNumber++) % 1024 ); // TODO See SetIdentification in ipv4 header
+  rlcHeader.SetSequenceNumber (m_sequenceNumber++);
 
   // Build RLC PDU with DataField and Header
   std::vector< Ptr<Packet> >::iterator it;
@@ -390,11 +390,11 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
   LteRlcHeader rlcHeader;
   p->PeekHeader (rlcHeader);
   NS_LOG_LOGIC ("RLC header: " << rlcHeader);
-  uint16_t seqNumber = rlcHeader.GetSequenceNumber ();
+  SequenceNumber10 seqNumber = rlcHeader.GetSequenceNumber ();
 
   // 5.1.2.2.1 General
   // The receiving UM RLC entity shall maintain a reordering window according to state variable VR(UH) as follows:
-  // - a SN falls within the reordering window if (VR(UH)  UM_Window_Size) <= SN < VR(UH);
+  // - a SN falls within the reordering window if (VR(UH) - UM_Window_Size) <= SN < VR(UH);
   // - a SN falls outside of the reordering window otherwise.
   // When receiving an UMD PDU from lower layer, the receiving UM RLC entity shall:
   // - either discard the received UMD PDU or place it in the reception buffer (see sub clause 5.1.2.2.2);
@@ -416,7 +416,11 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
   NS_LOG_LOGIC ("VR(UH) = " << m_vrUh);
   NS_LOG_LOGIC ("SN = " << seqNumber);
 
-  if ( ( (m_vrUr < seqNumber) && (seqNumber < m_vrUh) && (m_rxBuffer.count (seqNumber) > 0) ) ||
+  m_vrUr.SetModulusBase (m_vrUh - m_windowSize);
+  m_vrUh.SetModulusBase (m_vrUh - m_windowSize);
+  seqNumber.SetModulusBase (m_vrUh - m_windowSize);
+
+  if ( ( (m_vrUr < seqNumber) && (seqNumber < m_vrUh) && (m_rxBuffer.count (seqNumber.GetValue ()) > 0) ) ||
        ( ((m_vrUh - m_windowSize) <= seqNumber) && (seqNumber < m_vrUr) )
      )
     {
@@ -427,7 +431,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
   else
     {
       NS_LOG_LOGIC ("Place UMD PDU in the reception buffer");
-      m_rxBuffer[seqNumber] = p;
+      m_rxBuffer[seqNumber.GetValue ()] = p;
     }
 
 
@@ -444,7 +448,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
 
   if ( ! IsInsideReorderingWindow (seqNumber))
     {
-      NS_LOG_LOGIC ("SN outside the reordering window");
+      NS_LOG_LOGIC ("SN is outside the reordering window");
 
       m_vrUh = seqNumber + 1;
       NS_LOG_LOGIC ("New VR(UH) = " << m_vrUh);
@@ -454,7 +458,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
       if ( ! IsInsideReorderingWindow (m_vrUr) )
         {
           m_vrUr = m_vrUh - m_windowSize;
-          NS_LOG_LOGIC ("VR(UR) outside the reordering window");
+          NS_LOG_LOGIC ("VR(UR) is outside the reordering window");
           NS_LOG_LOGIC ("New VR(UR) = " << m_vrUr);
         }
     }
@@ -465,14 +469,14 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
   //      so and deliver the reassembled RLC SDUs to upper layer in ascending order of the RLC SN if not delivered
   //      before;
 
-  if ( m_rxBuffer.count (m_vrUr) > 0 )
+  if ( m_rxBuffer.count (m_vrUr.GetValue ()) > 0 )
     {
       NS_LOG_LOGIC ("Reception buffer contains SN = " << m_vrUr);
 
       std::map <uint16_t, Ptr<Packet> >::iterator it;
       uint16_t newVrUr;
 
-      it = m_rxBuffer.find (m_vrUr);
+      it = m_rxBuffer.find (m_vrUr.GetValue ());
       newVrUr = (it->first) + 1;
       while ( m_rxBuffer.count (newVrUr) > 0 )
         {
@@ -532,14 +536,23 @@ LteRlcUm::Start ()
 
 
 bool
-LteRlcUm::IsInsideReorderingWindow (uint16_t seqNumber)
+LteRlcUm::IsInsideReorderingWindow (SequenceNumber10 seqNumber)
 {
+  NS_LOG_FUNCTION (this << seqNumber);
+  NS_LOG_LOGIC ("Reordering Window: " <<
+                m_vrUh << " - " << m_windowSize << " <= " << seqNumber << " < " << m_vrUh);
+
+  m_vrUh.SetModulusBase (m_vrUh - m_windowSize);
+  seqNumber.SetModulusBase (m_vrUh - m_windowSize);
+
   if ( ((m_vrUh - m_windowSize) <= seqNumber) && (seqNumber < m_vrUh))
     {
+      NS_LOG_LOGIC (seqNumber << "is INSIDE the reordering window");
       return true;
     }
   else
     {
+      NS_LOG_LOGIC (seqNumber << "is OUTSIDE the reordering window");
       return false;
     }
 }
@@ -551,7 +564,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
   LteRlcHeader rlcHeader;
   packet->RemoveHeader (rlcHeader);
   uint8_t framingInfo = rlcHeader.GetFramingInfo ();
-  uint16_t currSeqNumber = rlcHeader.GetSequenceNumber (); // TODO Needed if losses
+  SequenceNumber10 currSeqNumber = rlcHeader.GetSequenceNumber ();
   bool expectedSnLost;
 
   if ( currSeqNumber != m_expectedSeqNumber )
@@ -972,14 +985,16 @@ LteRlcUm::ReassembleOutsideWindow (void)
   std::map <uint16_t, Ptr<Packet> >::iterator it;
   it = m_rxBuffer.begin ();
 
-  while ( (it != m_rxBuffer.end ()) && ! IsInsideReorderingWindow (it->first) )
+  while ( (it != m_rxBuffer.end ()) && ! IsInsideReorderingWindow (SequenceNumber10 (it->first)) )
     {
       NS_LOG_LOGIC ("SN = " << it->first);
 
       // Reassemble RLC SDUs and deliver the PDCP PDU to upper layer
       ReassembleAndDeliver (it->second);
-      m_rxBuffer.erase (it);
-      it++;
+
+      std::map <uint16_t, Ptr<Packet> >::iterator it_tmp = it;
+      ++it;
+      m_rxBuffer.erase (it_tmp);
     }
 
   if (it != m_rxBuffer.end ())
@@ -989,26 +1004,28 @@ LteRlcUm::ReassembleOutsideWindow (void)
 }
 
 void
-LteRlcUm::ReassembleSnLessThan (uint16_t seqNumber)
+LteRlcUm::ReassembleSnLessThan (SequenceNumber10 seqNumber)
 {
   NS_LOG_LOGIC ("Reassemble SN < updated VR(UR)" );
 
   std::map <uint16_t, Ptr<Packet> >::iterator it;
   it = m_rxBuffer.begin ();
 
-  while ( (it != m_rxBuffer.end ()) && (it->first < seqNumber) )
+  while ( (it != m_rxBuffer.end ()) && (it->first < seqNumber.GetValue ()) )
     {
       NS_LOG_LOGIC ("SN = " << it->first);
 
       // Reassemble RLC SDUs and deliver the PDCP PDU to upper layer
       ReassembleAndDeliver (it->second);
-      m_rxBuffer.erase (it);
-      it++;
+
+      std::map <uint16_t, Ptr<Packet> >::iterator it_tmp = it;
+      ++it;
+      m_rxBuffer.erase (it_tmp);
     }
 
   if (it != m_rxBuffer.end ())
     {
-      NS_LOG_LOGIC ("(SN = " << it->first << ") >= " << m_vrUr);
+      NS_LOG_LOGIC ("(SN = " << it->first << ") >= " << m_vrUr.GetValue ());
     }
 }
 
@@ -1057,9 +1074,9 @@ LteRlcUm::ExpireReorderingTimer (void)
   //    - set VR(UX) to VR(UH).
 
   std::map <uint16_t, Ptr<Packet> >::iterator it;
-  uint16_t newVrUr = m_vrUx;
+  SequenceNumber10 newVrUr = m_vrUx;
 
-  while ( (it = m_rxBuffer.find (newVrUr)) != m_rxBuffer.end () )
+  while ( (it = m_rxBuffer.find (newVrUr.GetValue ())) != m_rxBuffer.end () )
     {
       newVrUr++;
     }

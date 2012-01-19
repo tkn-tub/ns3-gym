@@ -49,9 +49,9 @@ LteRlcHeader::SetFramingInfo (uint8_t framingInfo)
 }
 
 void
-LteRlcHeader::SetSequenceNumber (uint16_t sequenceNumber)
+LteRlcHeader::SetSequenceNumber (SequenceNumber10 sequenceNumber)
 {
-  m_sequenceNumber = sequenceNumber & 0x03FF;
+  m_sequenceNumber = sequenceNumber;
 }
 
 uint8_t
@@ -60,7 +60,7 @@ LteRlcHeader::GetFramingInfo () const
   return m_framingInfo;
 }
 
-uint16_t
+SequenceNumber10
 LteRlcHeader::GetSequenceNumber () const
 {
   return m_sequenceNumber;
@@ -173,8 +173,8 @@ void LteRlcHeader::Serialize (Buffer::Iterator start) const
 
   i.WriteU8 ( ((m_framingInfo << 3) & 0x18) |
               (((*it1) << 2) & 0x04) |
-              ((m_sequenceNumber >> 8) & 0x0003) );
-  i.WriteU8 ( m_sequenceNumber & 0x00FF );
+              ((m_sequenceNumber.GetValue () >> 8) & 0x0003) );
+  i.WriteU8 ( m_sequenceNumber.GetValue () & 0x00FF );
   it1++;
 
   while ( it1 != m_extensionBits.end () &&
