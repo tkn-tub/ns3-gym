@@ -45,15 +45,17 @@ Simulation input parameters
 ---------------------------
 
 The *lena-profiling* simulation script accepts the following input parameters: 
-* ``simTime``: time to simulate (in seconds)
-* ``nUe``: number of UEs attached to each eNodeB 
-* ``nEnb``: number of eNodeB composing the grid per floor
-* ``nFloors``: number of floors, 0 for *Friis propagation model* (no walls), 1 or greater for *Building propagation model* generating a nFloors-storey building.
-* ``traceDirectory``: destination directory where simulation traces will be stored
+
+ * ``simTime``: time to simulate (in seconds)
+ * ``nUe``: number of UEs attached to each eNodeB 
+ * ``nEnb``: number of eNodeB composing the grid per floor
+ * ``nFloors``: number of floors, 0 for *Friis propagation model* (no walls), 1 or greater for *Building propagation model* generating a nFloors-storey building.
+ * ``traceDirectory``: destination directory where simulation traces will be stored
 
 The *lena-simple-epc* script accepts those other parameters:
-* ``simTime``: time to simulate (in seconds)
-* ``numberOfNodes``: number of eNodeB + UE pairs created
+
+ * ``simTime``: time to simulate (in seconds)
+ * ``numberOfNodes``: number of eNodeB + UE pairs created
 
 Time measurement
 ~~~~~~~~~~~~~~~~
