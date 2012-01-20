@@ -278,6 +278,11 @@ public:
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
 
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4};
+
 protected:
   // inherited from Object
   virtual void DoStart (void);
@@ -310,10 +315,7 @@ private:
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
 
-  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
-                                   RLC_UM_ALWAYS = 2,
-                                   RLC_AM_ALWAYS = 3,
-                                   PER_BASED = 4} m_epsBearerToRlcMapping;
+  enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
 
   Ptr<EpcHelper> m_epcHelper;
 
