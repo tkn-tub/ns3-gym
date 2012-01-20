@@ -915,13 +915,15 @@ RrFfMacScheduler::RefreshDlCqiMaps(void)
           NS_ASSERT_MSG (itMap != m_p10CqiRxed.end (), " Does not find CQI report for user " << (*itP10).first);
           NS_LOG_INFO (this << " P10-CQI exired for user " << (*itP10).first);
           m_p10CqiRxed.erase (itMap);
-          m_p10CqiTimers.erase (itP10);
+          std::map <uint16_t,uint32_t>::iterator temp = itP10;
+          itP10++;
+          m_p10CqiTimers.erase (temp);
         }
       else
         {
           (*itP10).second--;
+          itP10++;
         }
-      itP10++;
     }
   
   return;
@@ -944,13 +946,15 @@ RrFfMacScheduler::RefreshUlCqiMaps(void)
           NS_LOG_INFO (this << " UL-CQI exired for user " << (*itUl).first);
           (*itMap).second.clear ();
           m_ueCqi.erase (itMap);
-          m_ueCqiTimers.erase (itUl);
+          std::map <uint16_t,uint32_t>::iterator temp = itUl;
+          itUl++;
+          m_ueCqiTimers.erase (temp);
         }
       else
         {
           (*itUl).second--;
+          itUl++;
         }
-      itUl++;
     }
   
   return;
