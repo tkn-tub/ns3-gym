@@ -417,8 +417,15 @@ Ipv4ClickRouting::Receive (Ptr<Packet> p, Mac48Address receiverAddr, Mac48Addres
 std::string
 Ipv4ClickRouting::ReadHandler (std::string elementName, std::string handlerName)
 {
-  std::string s = simclick_click_read_handler (m_simNode, elementName.c_str (), handlerName.c_str (), 0, 0);
-  return s;
+  char *handle = simclick_click_read_handler (m_simNode, elementName.c_str (), handlerName.c_str (), 0, 0);
+  std::string ret (handle);
+
+  // This is required because Click does not free
+  // the memory allocated to the return string
+  // from simclick_click_read_handler()
+  free(handle);
+
+  return ret;
 }
 
 int
