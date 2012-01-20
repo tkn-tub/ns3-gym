@@ -114,6 +114,7 @@ Ipv4ClickRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 Ipv4ClickRouting::DoDispose ()
 {
+  simclick_click_kill (m_simNode);
   m_ipv4 = 0;
   delete m_simNode;
   Ipv4RoutingProtocol::DoDispose ();
