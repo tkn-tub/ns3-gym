@@ -558,7 +558,10 @@ class SuidBuild_task(Task.TaskBase):
 
     def runnable_status(self):
         "RUN_ME SKIP_ME or ASK_LATER"
-        st = os.stat(self.filename)
+        try:
+            st = os.stat(self.filename)
+        except OSError:
+            return Task.ASK_LATER
         if st.st_uid == 0:
             return Task.SKIP_ME
         else:
