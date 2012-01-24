@@ -90,10 +90,10 @@ int main (int argc, char *argv[])
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
   remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
   remHelper->SetAttribute ("XMax", DoubleValue (400.0));
-  remHelper->SetAttribute ("XRes", UintegerValue (100));
+  remHelper->SetAttribute ("XRes", UintegerValue (40));
   remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
   remHelper->SetAttribute ("YMax", DoubleValue (300.0));
-  remHelper->SetAttribute ("YRes", UintegerValue (75));
+  remHelper->SetAttribute ("YRes", UintegerValue (30));
   remHelper->SetAttribute ("Z", DoubleValue (0.0));
   remHelper->Install ();
 

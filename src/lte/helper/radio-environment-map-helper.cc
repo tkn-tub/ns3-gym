@@ -26,6 +26,7 @@
 #include <ns3/double.h>
 #include <ns3/uinteger.h>
 #include <ns3/string.h>
+#include <ns3/boolean.h>
 #include <ns3/spectrum-channel.h>
 #include <ns3/config.h>
 #include <ns3/rem-spectrum-phy.h>
@@ -104,6 +105,10 @@ RadioEnvironmentMapHelper::GetTypeId (void)
 		   DoubleValue (0.0),
                    MakeDoubleAccessor (&RadioEnvironmentMapHelper::m_z),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("ExitWhenDone", "If true, Simulator::Stop () will be called as soon as the REM has been generated",
+		   BooleanValue (true),
+                   MakeBooleanAccessor (&RadioEnvironmentMapHelper::m_exitWhenDone),
+                   MakeBooleanChecker ())
 
   ;
   return tid;
@@ -147,7 +152,7 @@ RadioEnvironmentMapHelper::Install ()
         }      
     }
   Simulator::Schedule (Seconds (0.0055), &RadioEnvironmentMapHelper::Connect, this);
-  Simulator::Schedule (Seconds (0.0065), &RadioEnvironmentMapHelper::PrintAndDisconnect, this);  
+  Simulator::Schedule (Seconds (0.0065), &RadioEnvironmentMapHelper::PrintAndDeactivate, this);  
 
 }
 
@@ -170,7 +175,7 @@ RadioEnvironmentMapHelper::Connect ()
 }
 
 void 
-RadioEnvironmentMapHelper::PrintAndDisconnect ()
+RadioEnvironmentMapHelper::PrintAndDeactivate ()
 {
   NS_LOG_FUNCTION (this);
   std::ofstream outFile;
@@ -195,10 +200,16 @@ RadioEnvironmentMapHelper::PrintAndDisconnect ()
                   << pos.z << "\t" 
                   << it2->phy->GetSinr ()
                   << std::endl;
-          m_channel->RemoveRx (it2->phy);
+          it2->phy->Deactivate ();
         }
     }
   outFile.close ();
+  if (m_exitWhenDone)
+    {
+      Simulator::Stop ();
+      Simulator::Destroy ();
+      exit (0);
+    }
 }
 
 

@@ -39,7 +39,8 @@ RemSpectrumPhy::RemSpectrumPhy ()
     m_netDevice (0),
     m_channel (0),
     m_referenceSignalPower (0),
-    m_sumPower (0)
+    m_sumPower (0),
+    m_active (true)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -139,13 +140,16 @@ void
 RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
 {
   NS_LOG_FUNCTION ( this << params);
-  double power = Integral (*(params->psd));
-  NS_ASSERT_MSG (params->duration.GetMilliSeconds () == 1, 
-                 "RemSpectrumPhy works only for LTE signals with duration of 1 ms");
-  m_sumPower += power;
-  if (power > m_referenceSignalPower)
-    {
-      m_referenceSignalPower = power;
+  if (m_active)
+    {      
+      double power = Integral (*(params->psd));
+      NS_ASSERT_MSG (params->duration.GetMilliSeconds () == 1, 
+                     "RemSpectrumPhy works only for LTE signals with duration of 1 ms");
+      m_sumPower += power;
+      if (power > m_referenceSignalPower)
+        {
+          m_referenceSignalPower = power;
+        }
     }
 }
 
@@ -153,6 +157,12 @@ double
 RemSpectrumPhy::GetSinr ()
 {
   return m_referenceSignalPower / (m_sumPower + m_noisePower);
+}
+
+void
+RemSpectrumPhy::Deactivate ()
+{
+  m_active = false;
 }
 
 

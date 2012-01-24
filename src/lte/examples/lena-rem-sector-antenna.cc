@@ -215,17 +215,19 @@ main (int argc, char *argv[])
     }
 
   Simulator::Stop (Seconds (simTime));
-  lteHelper->EnableTraces ();
+
+  // better to leave traces disabled
+  //lteHelper->EnableTraces ();
 
   Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
   remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
   remHelper->SetAttribute ("XMin", DoubleValue (-200.0));
   remHelper->SetAttribute ("XMax", DoubleValue (1200.0));
-  remHelper->SetAttribute ("XRes", UintegerValue (100));
+  remHelper->SetAttribute ("XRes", UintegerValue (400));
   remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
   remHelper->SetAttribute ("YMax", DoubleValue (+3500.0));
-  remHelper->SetAttribute ("YRes", UintegerValue (100));
+  remHelper->SetAttribute ("YRes", UintegerValue (300));
   remHelper->SetAttribute ("Z", DoubleValue (1.5));
   remHelper->Install ();
   // Recall the buildings helper to place the REM nodes in its position

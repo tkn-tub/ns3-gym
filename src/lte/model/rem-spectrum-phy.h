@@ -67,6 +67,11 @@ public:
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
+
+  /** 
+   * set the SpectrumModel to be used for reception
+   * 
+   */
   void SetRxSpectrumModel (Ptr<SpectrumModel>); 
   
   /** 
@@ -75,6 +80,12 @@ public:
    * \return the Signal to Noise Ratio calculated 
    */
   double GetSinr ();
+
+  /** 
+   * make StartRx a no-op from now on
+   * 
+   */
+  void Deactivate ();
 
 protected:
   void DoDispose ();
@@ -88,6 +99,8 @@ private:
   double m_referenceSignalPower;
   double m_sumPower;
   double m_noisePower;  
+
+  bool m_active;
 
 };
 

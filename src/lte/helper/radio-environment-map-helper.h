@@ -56,7 +56,7 @@ public:
 private:
 
   void Connect ();
-  void PrintAndDisconnect ();
+  void PrintAndDeactivate ();
 
 
   struct RemPoint 
@@ -81,6 +81,8 @@ private:
 
   std::string m_channelPath;
   std::string m_outputFile;
+
+  bool m_exitWhenDone;
   
   Ptr<SpectrumChannel> m_channel;
 };
