@@ -121,24 +121,26 @@ private:
   double m_buildingsExtend; // in meters
   double m_buildingSeparation; // in meters
 
-  // the shadowing tx/rx pairs management has been inspired by the
-  // JakesFadingLossModel developed by Federico Maguolo (see jakes-propagation-model.h/cc)
-  class ShadowingLoss;
-  friend class ShadowingLoss;
-  typedef std::vector<ShadowingLoss *> DestinationList;
-  struct PairsSet
+  class ShadowingLoss
   {
-    Ptr<MobilityModel> sender;
-    DestinationList receivers;
+  public:
+    ShadowingLoss ();
+    ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
+    double GetLoss () const;
+    Ptr<MobilityModel> GetReceiver (void) const;
+  private:
+    Ptr<MobilityModel> m_receiver;
+    NormalVariable m_randVariable;
+    double m_shadowingValue;
   };
-  typedef std::vector<PairsSet *> PairsList;
+
+  mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
   double EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
 
 
   double m_shadowingSigmaExtWalls;
   double m_shadowingSigmaOutdoor;
   double m_shadowingSigmaIndoor;
-  mutable PairsList m_shadowingPairs;
 
 };
 

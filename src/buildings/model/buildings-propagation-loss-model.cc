@@ -37,19 +37,9 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
 
 
-
-class BuildingsPropagationLossModel::ShadowingLoss 
+BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss ()
 {
-public:
-  ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
-  ~ShadowingLoss ();
-  double GetLoss ();
-  Ptr<MobilityModel> GetReceiver (void);
-private:
-  Ptr<MobilityModel> m_receiver;
-  NormalVariable m_randVariable;
-  double m_shadowingValue;
-};
+}
 
 
 BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver)
@@ -60,19 +50,14 @@ BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double
   NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
 }
 
-BuildingsPropagationLossModel::ShadowingLoss::~ShadowingLoss ()
-{
-
-}
-
 double
-BuildingsPropagationLossModel::ShadowingLoss::GetLoss ()
+BuildingsPropagationLossModel::ShadowingLoss::GetLoss () const
 {
   return (m_shadowingValue);
 }
 
 Ptr<MobilityModel>
-BuildingsPropagationLossModel::ShadowingLoss::GetReceiver ()
+BuildingsPropagationLossModel::ShadowingLoss::GetReceiver () const
 {
   return m_receiver;
 }
@@ -173,19 +158,6 @@ BuildingsPropagationLossModel::BuildingsPropagationLossModel ()
 
 BuildingsPropagationLossModel::~BuildingsPropagationLossModel ()
 {
-  for (PairsList::reverse_iterator i = m_shadowingPairs.rbegin (); i != m_shadowingPairs.rend (); i++)
-    {
-      PairsSet *ps = *i;
-      for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++)
-        {
-          ShadowingLoss *pc = *r;
-          delete pc;
-        }
-      ps->sender = 0;
-      ps->receivers.clear ();
-      delete ps;
-    }
-  m_shadowingPairs.clear ();
 }
 
 // void
@@ -770,35 +742,30 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
     } // end a1->IsOutdoor ()
 
   // Evaluate the shadowing
-  PairsList::iterator i = m_shadowingPairs.end ();
-  while (i != m_shadowingPairs.begin ()) 
+  std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> >::iterator ait = m_shadowingLossMap.find (a);
+  if (ait != m_shadowingLossMap.end ())
     {
-      i--;
-      PairsSet *ps = *i;
-      if (ps->sender == a) 
+      std::map<Ptr<MobilityModel>, ShadowingLoss>::iterator bit = ait->second.find (b);
+      if (bit != ait->second.end ())
         {
-          for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
-            {
-              ShadowingLoss *pc = *r;
-              if (pc->GetReceiver () == b) 
-                {
-                  return loss + pc->GetLoss ();
-                }
-            }
+          return loss + bit->second.GetLoss ();
+        }
+      else
+        {
           double sigma = EvaluateSigma (a1, b1);
-          ShadowingLoss *pc = new ShadowingLoss (0.0, sigma,b);
-          ps->receivers.push_back (pc);
-          return loss + pc->GetLoss ();
+          // side effect: will create new entry          
+          ait->second[b] = ShadowingLoss (0.0, sigma, b);          
+          return loss + ait->second[b].GetLoss ();          
         }
     }
-  PairsSet *ps = new PairsSet;
-  ps->sender = a;
-  double sigma = EvaluateSigma (a1, b1);
-  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma, b);
-  ps->receivers.push_back (pc);
-  m_shadowingPairs.push_back (ps);
-  return loss + pc->GetLoss ();
-
+  else
+    {
+      double sigma = EvaluateSigma (a1, b1);
+      // side effect: will create new entries in both maps
+      m_shadowingLossMap[a][b] = ShadowingLoss (0.0, sigma, b);  
+      return loss + m_shadowingLossMap[a][b].GetLoss ();       
+    }
+  
 }
 
 double
