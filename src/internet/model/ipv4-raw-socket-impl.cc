@@ -29,7 +29,7 @@ Ipv4RawSocketImpl::GetTypeId (void)
                    MakeUintegerAccessor (&Ipv4RawSocketImpl::m_protocol),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("IcmpFilter", 
-                   "Any icmp header whose type field matches a bit in this filter is dropped.",
+                   "Any icmp header whose type field matches a bit in this filter is dropped. Type must be less than 32.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4RawSocketImpl::m_icmpFilter),
                    MakeUintegerChecker<uint32_t> ())
@@ -326,7 +326,7 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
           copy->PeekHeader (icmpHeader);
           uint8_t type = icmpHeader.GetType ();
           if (type < 32 &&
-              ((1 << type) & m_icmpFilter))
+              ((uint32_t(1) << type) & m_icmpFilter))
             {
               // filter out icmp packet.
               return false;
