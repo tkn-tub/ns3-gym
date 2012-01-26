@@ -229,9 +229,9 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
           // (NO more segments) → exit
           // break;
         }
-      else if ( (firstSegment->GetSize () == nextSegmentSize) || (m_txBuffer.size () == 0) )
+      else if ( (nextSegmentSize - firstSegment->GetSize () <= 2) || (m_txBuffer.size () == 0) )
         {
-          NS_LOG_LOGIC ("    IF firstSegment == NextSegmentSize || txBuffer.size == 0");
+          NS_LOG_LOGIC ("    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txBuffer.size == 0");
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
           dataFieldTotalSize += dataFieldAddedSize;
@@ -254,7 +254,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
 
-          // nextSegmentSize MUST be zero (only if txBuffer is not empty)
+          // nextSegmentSize <= 2 (only if txBuffer is not empty)
 
           // (NO more segments) → exit
           // break;
@@ -273,7 +273,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
           // LengthIndicator (Next_Segment)  = txBuffer.FirstBuffer.length()
           rlcHeader.PushLengthIndicator (firstSegment->GetSize ());
 
-          nextSegmentSize -= ((nextSegmentId % 2) ? (2) : (1)) + dataFieldAddedSize; // TODO???
+          nextSegmentSize -= ((nextSegmentId % 2) ? (2) : (1)) + dataFieldAddedSize;
           nextSegmentId++;
 
           NS_LOG_LOGIC ("        SDUs in TxBuffer  = " << m_txBuffer.size ());

@@ -247,6 +247,7 @@ int
 LteAmc::GetMcsFromCqi (int cqi)
 {
   NS_LOG_FUNCTION (cqi);
+  NS_ASSERT_MSG (cqi >= 0 && cqi <= 15, "CQI must be in [0..15] = " << cqi);
   double spectralEfficiency = SpectralEfficiencyForCqi[cqi];
   int mcs = 0;
   while ((mcs < 28) && (SpectralEfficiencyForMcs[mcs + 1] <= spectralEfficiency))
@@ -273,6 +274,7 @@ LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 double
 LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 {
+  NS_ASSERT_MSG (cqi >= 0 && cqi <= 15, "CQI must be in [0..15] = " << cqi);
   NS_LOG_FUNCTION (cqi << SpectralEfficiencyForCqi[cqi]);
   return SpectralEfficiencyForCqi[cqi];
 }
