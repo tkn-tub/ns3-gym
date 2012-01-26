@@ -151,7 +151,7 @@ BuildingListPriv::GetBuilding (uint32_t n)
 {
   NS_ASSERT_MSG (n < m_buildings.size (), "Building index " << n <<
                  " is out of range (only have " << m_buildings.size () << " buildings).");
-  return m_buildings[n];
+  return m_buildings.at (n);
 }
 
 }

@@ -23,7 +23,6 @@
 #include <ns3/log.h>
 #include <ns3/inet-socket-address.h>
 #include <ns3/mac48-address.h>
-#include <ns3/epc-gtpu-tunnel-endpoint.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/internet-stack-helper.h>

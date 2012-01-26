@@ -7,9 +7,6 @@ def build(bld):
     obj = bld.create_ns3_program('lena-fading',
                                  ['lte'])
     obj.source = 'lena-fading.cc'
-    obj = bld.create_ns3_program('lena-gtpu-tunnel',
-                                 ['lte'])
-    obj.source = 'lena-gtpu-tunnel.cc'
     obj = bld.create_ns3_program('lena-intercell-interference',
                                  ['lte'])
     obj.source = 'lena-intercell-interference.cc'
