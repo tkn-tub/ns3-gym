@@ -21,8 +21,9 @@
 
 #include "lte-common.h"
 #include <ns3/log.h>
+#include <ns3/abort.h>
 
-NS_LOG_COMPONENT_DEFINE ("LteFfConverter");
+NS_LOG_COMPONENT_DEFINE ("LteCommon");
 
 namespace ns3 {
 
@@ -112,6 +113,7 @@ uint32_t BufferSizeLevelBsrTable[64] = {
 uint32_t
 BufferSizeLevelBsr::BsrId2BufferSize (uint8_t val)
 {
+  NS_ABORT_MSG_UNLESS (val >= 0 && val < 64, "val = " << val << " is out of range");
   return BufferSizeLevelBsrTable[val];
 }
 
@@ -127,6 +129,7 @@ BufferSizeLevelBsr::BufferSize2BsrId (uint32_t val)
     {
       while (BufferSizeLevelBsrTable[index] < val)
         {
+          NS_ASSERT (index < 64);
           index++;
         }
     }
