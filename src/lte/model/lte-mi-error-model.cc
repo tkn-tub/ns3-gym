@@ -433,11 +433,13 @@ LteMiErrorModel::GetTbError (SpectrumValue& sinr, std::vector<int> map, uint16_t
     {
         for (uint i = 0; i < Cplus; i++)
         {
-          errorRate *= (1.0 - MappingMiBler (MI, mcs, Kplus));
+          double cbler = MappingMiBler (MI, mcs, Kplus);
+          errorRate *= (1.0 - cbler);
         }
       for (uint i = 0; i < Cminus; i++)
         {
-          errorRate *= (1.0 - MappingMiBler (MI, mcs, Kminus));
+          double cbler = MappingMiBler (MI, mcs, Kminus);
+          errorRate *= (1.0 - cbler);
         }
       errorRate = 1.0 - errorRate;
     }

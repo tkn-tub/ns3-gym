@@ -494,8 +494,12 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
+      NS_LOG_LOGIC (this << " start TX");
       m_uplinkSpectrumPhy->StartTx (pb);
     }
+    
+  // trigger the MAC
+  m_uePhySapUser->SubframeIndication (frameNo, subframeNo);
 
 }
 

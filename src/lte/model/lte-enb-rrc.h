@@ -25,6 +25,7 @@
 #include <ns3/packet.h>
 #include <ns3/lte-enb-cmac-sap.h>
 #include <ns3/ff-mac-common.h>
+#include <ns3/lte-pdcp-sap.h>
 
 #include <map>
 
@@ -32,7 +33,9 @@ namespace ns3 {
 
 class FfMacSchedSapProvider;
 class LteMacSapProvider;
-class EnbRadioBearerInfo;
+class LteRadioBearerInfo;
+class LtePdcpSapUser;
+class LtePdcpSapProvider;
 
 
 /**
@@ -46,20 +49,20 @@ public:
   /**
    *
    *
-   * \param EnbRadioBearerInfo
+   * \param radioBearerInfo
    *
    * \return the allocated logical channel id; 0 is returned if it is not possible to allocate a channel id (e.g., id space exausted).
    */
-  uint8_t AddRadioBearer (Ptr<EnbRadioBearerInfo> enbRadioBearerInfo);
+  uint8_t AddRadioBearer (Ptr<LteRadioBearerInfo> radioBearerInfo);
 
   /**
    *
    *
    * \param uint8_t the logical channel id
    *
-   * \return the EnbRadioBearerInfo of the selected radio bearer
+   * \return the LteRadioBearerInfo of the selected radio bearer
    */
-  Ptr<EnbRadioBearerInfo> GetRadioBearer (uint8_t lcid);
+  Ptr<LteRadioBearerInfo> GetRadioBearer (uint8_t lcid);
 
 
   /**
@@ -78,7 +81,7 @@ public:
   uint64_t GetImsi (void);
 
 private:
-  std::map <uint8_t, Ptr<EnbRadioBearerInfo> > m_rbMap;
+  std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;
   uint8_t m_lastAllocatedId;
   uint64_t m_imsi;
 };
@@ -92,6 +95,7 @@ class LteEnbRrc : public Object
 {
 
   friend class EnbRrcMemberLteEnbCmacSapUser;
+  friend class LtePdcpSpecificLtePdcpSapUser<LteEnbRrc>;
 
 public:
   /**
@@ -119,7 +123,7 @@ public:
   void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s);
 
   /** 
-   * Get the CMAC SAP this RRC should interact with
+   * Get the CMAC SAP offered by this RRC
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteEnbCmacSapUser* GetLteEnbCmacSapUser ();
@@ -143,6 +147,7 @@ public:
    * newly created RLC instances
    */
   void SetLteMacSapProvider (LteMacSapProvider* s);
+
 
 
   /**
@@ -179,10 +184,11 @@ public:
    *
    * \param rnti the RNTI of the user
    * \param bearer the characteristics of the bearer to be activated
+   * \param rlcTypeId the TypeId identifying the type of RLC to be used for this bearer.
    *
    * \return the logical channel identifier of the radio bearer for the considered user
    */
-  uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer);
+  uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId);
 
 
   /**
@@ -194,19 +200,45 @@ public:
    */
   void ReleaseRadioBearer (uint16_t rnti, uint8_t lcId);
 
+  
+  /** 
+   * Enqueue an IP packet on the proper bearer for downlink transmission
+   * 
+   * \param p the packet
+   * 
+   * \return true if successful, false if an error occurred
+   */
+  bool Send (Ptr<Packet> p);
+
+  /** 
+   * set the callback used to forward data packets up the stack
+   * 
+   * \param void 
+   * \param cb 
+   */
+  void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
+  
+  
 private:
+
+  void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
+
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
+  LtePdcpSapProvider* GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid);
 
   // management of multiple UE info instances
   uint16_t CreateUeInfo (uint64_t imsi);
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
 
+  Callback <void, Ptr<Packet> > m_forwardUpCallback;
+
   LteEnbCmacSapUser* m_cmacSapUser;
   LteEnbCmacSapProvider* m_cmacSapProvider;
 
   FfMacSchedSapProvider* m_ffMacSchedSapProvider;
   LteMacSapProvider* m_macSapProvider;
+  LtePdcpSapUser* m_pdcpSapUser;
 
   bool m_configured;
   uint16_t m_lastAllocatedRnti;

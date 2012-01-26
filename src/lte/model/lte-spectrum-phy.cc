@@ -26,14 +26,15 @@
 #include <math.h>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
+#include <ns3/antenna-model.h>
 #include "lte-spectrum-phy.h"
 #include "lte-spectrum-signal-parameters.h"
 #include "lte-net-device.h"
-#include "lte-mac-tag.h"
+#include "lte-radio-bearer-tag.h"
 #include "lte-sinr-chunk-processor.h"
 #include "lte-phy-tag.h"
 #include <ns3/lte-mi-error-model.h>
-#include <ns3/lte-mac-tag.h>
+#include <ns3/lte-radio-bearer-tag.h>
 #include <ns3/boolean.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
@@ -219,6 +220,18 @@ LteSpectrumPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
   m_genericPhyRxEndOkCallback = c;
 }
 
+Ptr<AntennaModel>
+LteSpectrumPhy::GetRxAntenna ()
+{
+  return m_antenna;
+}
+
+void
+LteSpectrumPhy::SetAntenna (Ptr<AntennaModel> a)
+{
+  NS_LOG_FUNCTION (this << a);
+  m_antenna = a;
+}
 
 void
 LteSpectrumPhy::SetState (State newState)
@@ -278,6 +291,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
       Ptr<LteSpectrumSignalParameters> txParams = Create<LteSpectrumSignalParameters> ();
       txParams->duration = Seconds (tti);
       txParams->txPhy = GetObject<SpectrumPhy> ();
+      txParams->txAntenna = m_antenna;
       txParams->psd = m_txPsd;
       txParams->packetBurst = pb;
       m_channel->StartTx (txParams);
@@ -465,10 +479,10 @@ LteSpectrumPhy::EndRx ()
         for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); j != (*i)->End (); ++j)
           {
             // retrieve TB info of this packet 
-            LteMacTag tag;
-            (*j)->RemovePacketTag (tag);
+            LteRadioBearerTag tag;
+            (*j)->PeekPacketTag (tag);
             itTb = m_expectedTbs.find (tag.GetRnti ());
-            (*j)->AddPacketTag (tag);
+            //(*j)->AddPacketTag (tag);
             NS_LOG_INFO (this << " Packet of " << tag.GetRnti ());
             if (itTb!=m_expectedTbs.end ())
               {

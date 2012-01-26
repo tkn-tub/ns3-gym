@@ -34,8 +34,6 @@ namespace ns3 {
 
 class Node;
 class Packet;
-class PacketBurst;
-
 
 /**
  * \defgroup lte LTE Models
@@ -79,65 +77,25 @@ public:
   virtual Address GetMulticast (Ipv4Address addr) const;
   virtual Address GetMulticast (Ipv6Address addr) const;
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb); 
-
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
   virtual bool SupportsSendFrom (void) const;
 
-  /**
-   * \brief Receive the packet from the phy layer
-   * \param p the received packet
+  /** 
+   * receive a packet from the lower layers in order to forward it to the upper layers
+   * 
+   * \param p the packet
    */
   void Receive (Ptr<Packet> p);
-  /**
-   * \brief Forward packet to the uppar layer.
-   * If is called by DoReceive method
-   * \param packet packet sent from Network Device to the upper layer
-   * \param source source mac address
-   * \param dest mac address of the destination
-   */
-  void ForwardUp (Ptr<Packet> packet, const Mac48Address &source, const Mac48Address &dest);
-  /**
-   * \brief Forward packet to the uppar layer.
-   * If is called by DoReceive method
-   * \param packet packet sent from Network Device to the upper layer
-   */
-  void ForwardUp (Ptr<Packet> packet);
-
-  /**
-   * \brief Set packets to send
-   * \param p the burst of packets to send
-   */
-  void SetPacketToSend (Ptr<PacketBurst> p);
-  /**
-   * \brief Get packets to send
-   * \return the pointer to the burst of packets to send
-   */
-  Ptr<PacketBurst> GetPacketToSend (void);
-
-
+  
+protected:
+  
+  NetDevice::ReceiveCallback m_rxCallback;
+  
 private:
   LteNetDevice (const LteNetDevice &);
   LteNetDevice & operator= (const LteNetDevice &);
 
-  static const uint16_t MAX_MSDU_SIZE = 1500;
-
-  virtual bool DoSend (Ptr<Packet> packet,
-                       const Mac48Address& source,
-                       const Mac48Address& dest,
-                       uint16_t protocolNumber) = 0;
-  virtual void DoReceive (Ptr<Packet> p) = 0;
-
-
   Ptr<Node> m_node;
-
-  TracedCallback<Ptr<const Packet> > m_macTxTrace;
-  TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
-  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
-  TracedCallback<Ptr<const Packet> > m_macRxTrace;
-
-  NetDevice::ReceiveCallback m_rxCallback;
-  NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
   TracedCallback<> m_linkChangeCallbacks;
 
@@ -146,8 +104,6 @@ private:
   mutable uint16_t m_mtu;
 
   Mac48Address m_address;
-
-  Ptr<PacketBurst> m_packetToSend;
 };
 
 

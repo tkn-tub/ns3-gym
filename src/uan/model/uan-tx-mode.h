@@ -200,7 +200,7 @@ std::ostream &operator << (std::ostream &os, const UanModesList &ml);
  */
 std::istream &operator >> (std::istream &is, UanModesList &ml);
 
-///UanModesList is attribute value
+/// UanModesList is attribute value
 ATTRIBUTE_HELPER_HEADER (UanModesList);
 
 } // namespace ns3

@@ -11,14 +11,22 @@ IMAGES_EPS = \
 # rescale pdf figures as necessary
 $(FIGURES)/software-organization.pdf_width = 5in
 
-IMAGES_PNG = \
+# Do not delete/clean these png images upon make clean
+IMAGES_PNG_SAVED = \
 	$(FIGURES)/plot-2d.png \
 	$(FIGURES)/plot-2d-with-error-bars.png \
 	$(FIGURES)/plot-3d.png \
+
+IMAGES_PNG_CONVERTED = \
 	${IMAGES_EPS:.eps=.png}
+
+IMAGES_PNG = $(IMAGES_PNG_SAVED) $(IMAGES_PNG_CONVERTED)
+
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
+
+IMAGES_TO_CLEAN = $(IMAGES_PNG_CONVERTED) $(IMAGES_PDF) $(IMAGES_EPS)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
@@ -60,7 +68,7 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)
-	-rm -rf $(IMAGES)
+	-rm -rf $(IMAGES_TO_CLEAN)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
@@ -161,3 +169,4 @@ doctest: $(IMAGES)
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
 
+test: $(IMAGES)

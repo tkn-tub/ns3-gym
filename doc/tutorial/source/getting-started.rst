@@ -53,7 +53,6 @@ that approach, you can get a copy of ``ns-3-allinone`` by typing the
 following into your Linux shell (assuming you have installed Mercurial):
 
 ::
-
   cd
   mkdir repos
   cd repos
@@ -69,11 +68,12 @@ following displayed,
   adding changesets
   adding manifests
   adding file changes
-  added 31 changesets with 45 changes to 7 files
+  added 47 changesets with 67 changes to 7 files
+  updating to branch default
   7 files updated, 0 files merged, 0 files removed, 0 files unresolved
 
 After the clone command completes, you should have a directory called 
-``ns-3-allinone`` under your ``~/repos`` directory, the contents of which should 
+``ns-3-allinone``, the contents of which should 
 look something like the following:
 
 ::
@@ -221,7 +221,7 @@ As mentioned above, one practice is to create a directory called ``repos``
 in one's home directory under which one can keep local Mercurial repositories.
 One could also keep a ``tarballs`` directory.  *Hint:  the tutorial
 will assume you downloaded into a ``repos`` directory, so remember the
-placekeeper.``*  If you adopt the ``tarballs`` directory approach, you can 
+placekeeper.*  If you adopt the ``tarballs`` directory approach, you can 
 get a copy of a release by typing the following into your Linux shell 
 (substitute the appropriate version numbers, of course):
 
@@ -230,15 +230,15 @@ get a copy of a release by typing the following into your Linux shell
   cd
   mkdir tarballs
   cd tarballs
-  wget http://www.nsnam.org/releases/ns-allinone-3.10.tar.bz2
-  tar xjf ns-allinone-3.10.tar.bz2
+  wget http://www.nsnam.org/releases/ns-allinone-3.13.tar.bz2
+  tar xjf ns-allinone-3.13.tar.bz2
 
-If you change into the directory ``ns-allinone-3.10`` you should see a
+If you change into the directory ``ns-allinone-3.13`` you should see a
 number of files:
 
 ::
 
-  build.py      ns-3.10/      pybindgen-0.15.0/    util.py
+  build.py      ns-3.13/      pybindgen-0.15.0.795/    util.py
   constants.py  nsc-0.5.2/    README  
 
 You are now ready to build the |ns3| distribution.
@@ -248,16 +248,20 @@ Building ns-3
 
 Building with build.py
 ++++++++++++++++++++++
-The first time you build the |ns3| project you should build using the
-``allinone`` environment.  This will get the project configured for you
-in the most commonly useful way.
+The first time you build the |ns3| project you can build using a 
+convenience program found in the
+``allinone`` directory.  This program is called ``build.py``.  This 
+program will get the project configured for you
+in the most commonly useful way.  However, please note that more advanced
+configuration and work with |ns3| will typically involve using the
+native |ns3| build system, Waf, to be introduced later in this tutorial.  
 
 Change into the directory you created in the download section above.  If you
 downloaded using Mercurial you should have a directory called 
 ``ns-3-allinone`` under your ``~/repos`` directory.  If you downloaded
 using a tarball you should have a directory called something like 
-``ns-allinone-3.10`` under your ``~/tarballs`` directory.  Take a deep
-breath and type the following:
+``ns-allinone-3.13`` under your ``~/tarballs`` directory.  
+Type the following:
 
 ::
 
@@ -265,8 +269,10 @@ breath and type the following:
 
 Because we are working with examples and tests in this tutorial, and
 because they are not built by default in |ns3|, the arguments for
-build.py tells it to build them for us.  In the future you can build
-|ns3| without examples and tests if you wish.
+build.py tells it to build them for us.  The program also defaults to
+building all available modules.  Later, you can build
+|ns3| without examples and tests, or eliminate the modules that
+are not necessary for your work, if you wish.
 
 You will see lots of typical compiler output messages displayed as the build
 script builds the various pieces you downloaded.  Eventually you should see the
@@ -274,7 +280,7 @@ following magic words:
 
 ::
 
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3.13/build'
   'build' finished successfully (2m30.586s)
   
   Modules built: 
@@ -292,12 +298,12 @@ following magic words:
   topology-read             uan                       virtual-net-device
   visualizer                wifi                      wimax
 
-Once the project has built you can say goodbye to your old friends, the 
+Once the project has built, you can stop working with the
 ``ns-3-allinone`` scripts.  You got what you needed from them and will now 
-interact directly with Waf and we do it in the ``ns-3-dev`` directory,
+interact directly with Waf and we do it in the |ns3| directory,
 not in the ``ns-3-allinone`` directory.  Go ahead and change into the 
-``ns-3-dev`` directory (or the directory for the appropriate release you
-downloaded.
+|ns3| directory (or the directory for the appropriate release  or
+development snapshot that you downloaded; e.g.  
 
 ::
 
@@ -305,7 +311,8 @@ downloaded.
 
 Building with Waf
 +++++++++++++++++
-We use Waf to configure and build the |ns3| project.  It's not 
+Most users directly use Waf to configure and build the |ns3| project.  
+It's not 
 strictly required at this point, but it will be valuable to take a slight
 detour and look at how to make changes to the configuration of the project.
 Probably the most useful configuration change you can make will be to 
@@ -313,14 +320,19 @@ build the optimized version of the code.  By default you have configured
 your project to build the debug version.  Let's tell the project to 
 make an optimized build.  To explain to Waf that it should do optimized
 builds that include the examples and tests, you will need to execute the 
-following command,
+following commands,
 
 ::
 
+  ./waf clean
   ./waf -d optimized --enable-examples --enable-tests configure
 
 This runs Waf out of the local directory (which is provided as a convenience
-for you).  As the build system checks for various dependencies you should see
+for you).  The first command to clean out the previous build is not 
+typically strictly necessary but is good practice; it will remove the
+previously built libraries and object files found in directory ``build/``. 
+When the project is reconfigured and the build system checks for various 
+dependencies, you should see
 output that looks similar to the following,
 
 ::
@@ -396,15 +408,20 @@ Now go ahead and switch back to the debug build that includes the examples and t
 
 ::
 
+  ./waf clean
   ./waf -d debug --enable-examples --enable-tests configure
 
 The build system is now configured and you can build the debug versions of 
-the |ns3| programs by simply typing,
+the |ns3| programs by simply typing
 
 ::
 
   ./waf
 
+Okay, sorry, I made you build the |ns3| part of the system twice,
+but now you know how to change the configuration and build optimized code.
+
+Here are a few more introductory tips about Waf.
 Some waf commands are meaningful during the build phase and some commands are valid
 in the configuration phase.  For example, if you wanted to use the emulation 
 features of |ns3|, you might want to enable setting the suid bit using
@@ -425,8 +442,17 @@ available in waf.  To explore these options, type:
 
 We'll use some of the testing-related commands in the next section.
 
-Okay, sorry, I made you build the |ns3| part of the system twice,
-but now you know how to change the configuration and build optimized code.
+Finally, as an aside, it is possible to specify that waf builds the 
+project in 
+a directory different than the default ``build/`` directory by passing
+the ``-o`` option to configure; e.g.
+
+::
+
+  ./waf -d debug -o build/debug --enable-examples --enable-tests configure
+
+This allows users to work with multiple builds rather than always
+overwriting the last build.
 
 Testing ns-3
 ************
@@ -443,7 +469,7 @@ see a report saying that,
 
 ::
 
-  47 of 47 tests passed (47 passed, 0 failed, 0 crashed, 0 valgrind errors)
+  92 of 92 tests passed (92 passed, 0 failed, 0 crashed, 0 valgrind errors)
 
 This is the important message.
 
@@ -486,9 +512,9 @@ You will also see output from the test runner and the output will actually look 
   PASS: TestSuite basic-random-number
   PASS: TestSuite object
   PASS: TestSuite random-number-generators
-  95 of 95 tests passed (95 passed, 0 failed, 0 crashed, 0 valgrind errors)
+  92 of 92 tests passed (92 passed, 0 failed, 0 crashed, 0 valgrind errors)
 
-This command is typically run by ``users`` to quickly verify that an 
+This command is typically run by users to quickly verify that an 
 |ns3| distribution has built correctly.  
 
 Running a Script

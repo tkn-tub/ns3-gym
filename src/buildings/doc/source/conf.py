@@ -25,7 +25,8 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.pngmath']
+extensions = ['sphinx.ext.pngmath', 
+              'sphinxcontrib.seqdiag']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -41,14 +42,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'LENA'
-copyright = u'2011, CTTC'
+copyright = u'2011-2012, CTTC'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.1'
+version = 'M2'
 # The full version, including alpha/beta/rc tags.
 release = 'M2'
 

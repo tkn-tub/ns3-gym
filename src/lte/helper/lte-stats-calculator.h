@@ -49,7 +49,7 @@ public:
   void SetDlOutputFilename (std::string outputFilename);
 
   /**
-   * Get the name of the file where the uplink statistics will be stored.
+   * Get the name of the file where the downlink statistics will be stored.
    */
   std::string GetDlOutputFilename (void);
 
@@ -95,6 +95,7 @@ private:
 
   std::map<std::string, uint64_t> m_pathImsiMap;
   std::map<std::string, uint16_t> m_pathCellIdMap;
+
   std::string m_dlOutputFilename;
   std::string m_ulOutputFilename;
 };

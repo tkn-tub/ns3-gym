@@ -6010,6 +6010,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True)
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
+    cls.add_method('GetRelativeSpeed', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
+                   is_const=True)
     ## mobility-model.h (module 'mobility'): static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

@@ -82,7 +82,7 @@ public:
    * \param beaconTiming beacon timing element (needed by BCA)
    */
   void ReceiveBeacon (uint32_t interface, Mac48Address peerAddress, Time beaconInterval, Ptr<IeBeaconTiming> beaconTiming);
-  //\}
+  // \}
   /**
    * \brief Methods that handle Peer link management frames
    * interaction:
@@ -125,9 +125,9 @@ public:
    * \brief Checks if there is established link
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
-  //\}
+  // \}
   ///\name Interface to other protocols (MLME)
-  //\{
+  // \{
   /// Set peer link status change callback
   void SetPeerLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
   /// Find active peer link by my interface and peer interface MAC
@@ -150,7 +150,8 @@ public:
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
-  /** \name Private structures
+  /**
+   * \name Private structures
    * \{
    */
   /// Keeps information about beacon of peer station: beacon interval, association ID, last time we have received a beacon
@@ -171,7 +172,7 @@ private:
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
   ///\brief this vector keeps pointers to MAC-plugins
   typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagementProtocolMacMap;
-  ///\}
+  // \}
 private:
   PeerManagementProtocol& operator= (const PeerManagementProtocol &);
   PeerManagementProtocol (const PeerManagementProtocol &);
@@ -193,14 +194,15 @@ private:
    */
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, PeerLink::PeerState ostate, PeerLink::PeerState nstate);
   ///\brief BCA
-  void DoShiftBeacon (uint32_t interface);
+  void CheckBeaconCollisions (uint32_t interface);
+  void ShiftOwnBeacon (uint32_t interface);
   /**
    * \name Time<-->TU converters:
    * \{
    */
-  Time TuToTime (uint32_t x);
-  uint32_t TimeToTu (Time x);
-  ///\}
+  Time TuToTime (int x);
+  int TimeToTu (Time x);
+  // \}
 
   /// Aux. method to register open links
   void NotifyLinkOpen (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
@@ -218,9 +220,9 @@ private:
   bool m_enableBca;
   /// Beacon can be shifted at [-m_maxBeaconShift; +m_maxBeaconShift] TUs
   uint16_t m_maxBeaconShift;
-  ///Last beacon at each interface
+  /// Last beacon at each interface
   std::map<uint32_t, Time> m_lastBeacon;
-  ///Beacon interval at each interface
+  /// Beacon interval at each interface
   std::map<uint32_t, Time> m_beaconInterval;
 
   /**
@@ -248,7 +250,7 @@ private:
   LinkEventCallback m_linkCloseTraceSrc;
 
   ///\name Statistics:
-  ///\{
+  // \{
   struct Statistics {
     uint16_t linksTotal;
     uint16_t linksOpened;
@@ -258,7 +260,7 @@ private:
     void Print (std::ostream & os) const;
   };
   struct Statistics m_stats;
-  ///\}
+  // \}
 };
 
 } // namespace dot11s

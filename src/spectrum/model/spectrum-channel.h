@@ -79,7 +79,8 @@ public:
   virtual void StartTx (Ptr<SpectrumSignalParameters> params) = 0;
 
   /**
-   * @brief add a SpectrumPhy to a channel, so it can receive packets
+   * @brief add a SpectrumPhy to a channel, so it can receive signals
+   * transmitted over the channel 
    *
    * This method is used to attach a SpectrumPhy instance to a
    * SpectrumChannel instance, so that the SpectrumPhy can receive
@@ -94,6 +95,15 @@ public:
    * a receiver.
    */
   virtual void AddRx (Ptr<SpectrumPhy> phy) = 0;
+
+  /**
+   * @brief remove a previously added SpectrumPhy from the channel, so
+   * that it will not receive any more signals transmitted on the channel
+   *
+   *
+   * @param phy the SpectrumPhy instance to be removed from the channel
+   */
+  virtual void RemoveRx (Ptr<SpectrumPhy> phy) = 0;
 
 };
 

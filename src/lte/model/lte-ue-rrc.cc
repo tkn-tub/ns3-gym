@@ -21,9 +21,13 @@
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
 #include "ns3/object-map.h"
+#include "ns3/object-factory.h"
 
 #include "lte-ue-rrc.h"
 #include "lte-rlc.h"
+#include "lte-pdcp.h"
+#include "lte-pdcp-sap.h"
+#include "lte-radio-bearer-info.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUeRrc");
@@ -59,7 +63,29 @@ UeMemberLteUeCmacSapUser::LcConfigCompleted ()
 }
 
 
+////////////////////////////////
+// PDCP SAP Forwarder
+////////////////////////////////
 
+// class UeRrcMemberLtePdcpSapUser : public LtePdcpSapUser
+// {
+// public:
+//   MemberLtePdcpSapUser (LteUeRrc* rrc);
+//   virtual void ReceiveRrcPdu (Ptr<Packet> p);
+// private:
+//   LteUeRrc* m_rrc;EnbRrc
+// };
+
+
+// UeRrcMemberLtePdcpSapUser::UeRrcMemberLtePdcpSapUser (LteUeRrc* rrc)
+//   : m_rrc (rrc)
+// {
+// }
+
+// void UeRrcMemberLtePdcpSapUser::ReceiveRrcPdu (Ptr<Packet> p)
+// {
+//   m_rrc->DoReceiveRrcPdu (p);
+// }
 
 
 
@@ -77,6 +103,7 @@ LteUeRrc::LteUeRrc ()
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new UeMemberLteUeCmacSapUser (this);
+  m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
 }
 
 
@@ -90,7 +117,8 @@ LteUeRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_cmacSapUser;
-  m_rlcMap.clear ();
+  delete m_pdcpSapUser;
+  m_rbMap.clear ();
 }
 
 TypeId
@@ -99,10 +127,10 @@ LteUeRrc::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteUeRrc")
     .SetParent<Object> ()
     .AddConstructor<LteUeRrc> ()
-    .AddAttribute ("RlcMap", "List of UE RadioBearerInfo by LCID.",
+    .AddAttribute ("RadioBearerMap", "List of UE RadioBearerInfo by LCID.",
                    ObjectMapValue (),
-                   MakeObjectMapAccessor (&LteUeRrc::m_rlcMap),
-                   MakeObjectMapChecker<LteRlc> ())
+                   MakeObjectMapAccessor (&LteUeRrc::m_rbMap),
+                   MakeObjectMapChecker<LteRadioBearerInfo> ())
     .AddAttribute ("CellId",
                    "Serving cell identifier",
                    UintegerValue (1),
@@ -150,21 +178,39 @@ LteUeRrc::ConfigureUe (uint16_t rnti, uint16_t cellId)
 }
 
 void
-LteUeRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint8_t lcid)
+LteUeRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this << (uint32_t)  rnti << (uint32_t) lcid);
-  // create RLC instance
-  // for now we support RLC SM only
 
-  Ptr<LteRlc> rlc = CreateObject<LteRlcSm> ();
+  ObjectFactory rlcObjectFactory;
+  rlcObjectFactory.SetTypeId (rlcTypeId);
+  Ptr<LteRlc> rlc = rlcObjectFactory.Create ()->GetObject<LteRlc> ();
   rlc->SetLteMacSapProvider (m_macSapProvider);
   rlc->SetRnti (rnti);
   rlc->SetLcId (lcid);
 
-  std::map<uint8_t, Ptr<LteRlc> >::iterator it =   m_rlcMap.find (lcid);
-  NS_ASSERT_MSG (it == m_rlcMap.end (), "bearer with same lcid already existing");
-  m_rlcMap.insert (std::pair<uint8_t, Ptr<LteRlc> > (lcid, rlc));
+  Ptr<LteRadioBearerInfo> rbInfo = CreateObject<LteRadioBearerInfo> ();
+  rbInfo->m_rlc = rlc;
 
+  // we need PDCP only for real RLC, i.e., RLC/UM or RLC/AM
+  // if we are using RLC/SM we don't care of anything above RLC
+  if (rlcTypeId != LteRlcSm::GetTypeId ())
+    {
+      Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
+      pdcp->SetRnti (rnti);
+      pdcp->SetLcId (lcid);
+      pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+      pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
+      rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
+      rbInfo->m_pdcp = pdcp;
+    }
+  
+  NS_ASSERT_MSG (m_rbMap.find (lcid) == m_rbMap.end (), "bearer with same lcid already existing");
+  m_rbMap.insert (std::pair<uint8_t, Ptr<LteRadioBearerInfo> > (lcid, rbInfo));
+
+
+  m_tftClassifier.Add (tft, lcid);
+  
   m_cmacSapProvider->AddLc (lcid, rlc->GetLteMacSapUser ());
 }
 
@@ -172,10 +218,53 @@ void
 LteUeRrc::ReleaseRadioBearer (uint16_t rnti, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t)  rnti << (uint32_t) lcid);
-  std::map<uint8_t, Ptr<LteRlc> >::iterator it =   m_rlcMap.find (lcid);
-  NS_ASSERT_MSG (it != m_rlcMap.end (), "could not find bearer with given lcid");
-  m_rlcMap.erase (it);
+  std::map<uint8_t, Ptr<LteRadioBearerInfo> >::iterator it =   m_rbMap.find (lcid);
+  NS_ASSERT_MSG (it != m_rbMap.end (), "could not find bearer with given lcid");
+  m_rbMap.erase (it);
+  NS_FATAL_ERROR ("need to remove entry from TFT classifier, but this is not implemented yet");
 }
+
+
+bool
+LteUeRrc::Send (Ptr<Packet> packet)
+{
+  NS_LOG_FUNCTION (this << packet);
+  uint8_t lcid = m_tftClassifier.Classify (packet, EpcTft::UPLINK);
+  LtePdcpSapProvider::TransmitRrcPduParameters params;
+  params.rrcPdu = packet;
+  params.rnti = m_rnti;
+  params.lcid = lcid;
+  std::map<uint8_t, Ptr<LteRadioBearerInfo> >::iterator it =   m_rbMap.find (lcid);
+  if (it == m_rbMap.end ())
+    {
+      NS_LOG_WARN ("could not find bearer with lcid == " << lcid);
+      return false;
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending " << packet << "on LCID " << (uint32_t) lcid << " (" << packet->GetSize () << " bytes)");
+      it->second->m_pdcp->GetLtePdcpSapProvider ()->TransmitRrcPdu (params);
+      return true;
+    }
+}
+
+
+void 
+LteUeRrc::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
+{
+  m_forwardUpCallback = cb;
+}
+
+
+void
+LteUeRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  m_forwardUpCallback (params.rrcPdu);
+}
+
+
+
 
 void
 LteUeRrc::DoLcConfigCompleted ()
@@ -202,7 +291,7 @@ std::vector<uint8_t>
 LteUeRrc::GetLcIdVector ()
 {
   std::vector<uint8_t> v;
-  for (std::map<uint8_t, Ptr<LteRlc> >::iterator it = m_rlcMap.begin (); it != m_rlcMap.end (); ++it)
+  for (std::map<uint8_t, Ptr<LteRadioBearerInfo> >::iterator it = m_rbMap.begin (); it != m_rbMap.end (); ++it)
     {
       v.push_back (it->first);
     }

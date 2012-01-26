@@ -25,10 +25,10 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 //#include "ns3/gtk-config-store.h"
+
 using namespace ns3;
 
 // position functions insipred by /examples/wireless/wifi-ap.cc
-
 static void
 SetPosition (Ptr<Node> node, Vector position)
 {
@@ -77,18 +77,11 @@ int main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-  //lena->EnableLogComponents ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  // Uncomment to enable logging
+  //lteHelper->EnableLogComponents ();
 
-  //   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
- 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
@@ -105,17 +98,17 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-//   lena->SetSchedulerType ("ns3::RrFfMacScheduler");
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
-  lena->SetSchedulerAttribute ("CqiTimerThreshold", UintegerValue (3));
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+//   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerType ("ns3::PfFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("CqiTimerThreshold", UintegerValue (3));
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
   
-  lena->EnableRlcTraces();
-  lena->EnableMacTraces();
+  lteHelper->EnableRlcTraces();
+  lteHelper->EnableMacTraces();
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
   
   Simulator::Schedule (Seconds (0.010), &ChangePosition, ueNodes.Get (0));
   Simulator::Schedule (Seconds (0.020), &ChangePosition, ueNodes.Get (0));
@@ -123,7 +116,7 @@ int main (int argc, char *argv[])
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
 
   Simulator::Stop (Seconds (0.030));

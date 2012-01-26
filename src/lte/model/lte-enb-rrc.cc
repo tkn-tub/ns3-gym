@@ -20,10 +20,17 @@
 
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
+#include <ns3/abort.h>
 #include "ns3/pointer.h"
+#include "ns3/object-map.h"
+#include "ns3/object-factory.h"
 
 #include "lte-enb-rrc.h"
 #include "lte-rlc.h"
+#include "lte-pdcp.h"
+#include "lte-pdcp-sap.h"
+#include "lte-radio-bearer-info.h"
+#include "lte-radio-bearer-tag.h"
 #include "ns3/object-map.h"
 
 
@@ -62,57 +69,38 @@ EnbRrcMemberLteEnbCmacSapUser::NotifyLcConfigResult (uint16_t rnti, uint8_t lcid
 }
 
 
+////////////////////////////////
+// PDCP SAP Forwarder
+////////////////////////////////
 
-// /////////////////////////////////////////
-// per-UE radio bearer info management
-// /////////////////////////////////////////
+// not needed any more if the template works
 
-class EnbRadioBearerInfo : public Object
-{
+// class EnbRrcMemberLtePdcpSapUser : public LtePdcpSapUser
+// {
+// public:
+//   MemberLtePdcpSapUser (LteEnbRrc* rrc);
+//   virtual void ReceiveRrcPdu (Ptr<Packet> p);
+// private:
+//   LteEnbRrc* m_rrc;
+// };
 
-public:
-  EnbRadioBearerInfo (void);
-  virtual ~EnbRadioBearerInfo (void);
-  static TypeId GetTypeId (void);
 
-  void SetRlc (Ptr<LteRlc> rlc);
+// EnbRrcMemberLtePdcpSapUser::EnbRrcMemberLtePdcpSapUser (LteEnbRrc* rrc)
+//   : m_rrc (rrc)
+// {
+// }
 
-private:
-  Ptr<LteRlc> m_rlc;
+// void EnbRrcMemberLtePdcpSapUser::ReceiveRrcPdu (Ptr<Packet> p)
+// {
+//   m_rrc->DoReceiveRrcPdu (p);
+// }
 
-};
 
-NS_OBJECT_ENSURE_REGISTERED (EnbRadioBearerInfo);
 
-EnbRadioBearerInfo::EnbRadioBearerInfo (void)
-{
-  // Nothing to do here
-}
 
-EnbRadioBearerInfo::~EnbRadioBearerInfo (void)
-{
-  // Nothing to do here
-}
-
-TypeId EnbRadioBearerInfo::GetTypeId (void)
-{
-  static TypeId
-  tid =
-    TypeId ("ns3::EnbRadioBearerInfo")
-    .SetParent<Object> ()
-    .AddConstructor<EnbRadioBearerInfo> ()
-    .AddAttribute ("LteRlc", "RLC instance of the radio bearer.",
-                   PointerValue (),
-                   MakePointerAccessor (&EnbRadioBearerInfo::m_rlc),
-                   MakePointerChecker<LteRlc> ())
-  ;
-  return tid;
-}
-
-void EnbRadioBearerInfo::SetRlc (Ptr<LteRlc> rlc)
-{
-  m_rlc = rlc;
-}
+///////////////////////////////////////////
+// UeInfo 
+///////////////////////////////////////////
 
 
 NS_OBJECT_ENSURE_REGISTERED (UeInfo);
@@ -144,7 +132,7 @@ TypeId UeInfo::GetTypeId (void)
     .AddAttribute ("RadioBearerMap", "List of UE RadioBearerInfo by LCID.",
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&UeInfo::m_rbMap),
-                   MakeObjectMapChecker<EnbRadioBearerInfo> ())
+                   MakeObjectMapChecker<LteRadioBearerInfo> ())
   ;
   return tid;
 }
@@ -156,7 +144,7 @@ UeInfo::GetImsi (void)
 }
 
 uint8_t
-UeInfo::AddRadioBearer (Ptr<EnbRadioBearerInfo> rbi)
+UeInfo::AddRadioBearer (Ptr<LteRadioBearerInfo> rbi)
 {
   NS_LOG_FUNCTION (this);
   for (uint8_t lcid = m_lastAllocatedId; lcid != m_lastAllocatedId - 1; ++lcid)
@@ -165,7 +153,7 @@ UeInfo::AddRadioBearer (Ptr<EnbRadioBearerInfo> rbi)
         {
           if (m_rbMap.find (lcid) == m_rbMap.end ())
             {
-              m_rbMap.insert (std::pair<uint8_t, Ptr<EnbRadioBearerInfo> > (lcid, rbi));
+              m_rbMap.insert (std::pair<uint8_t, Ptr<LteRadioBearerInfo> > (lcid, rbi));
               m_lastAllocatedId = lcid;
               return lcid;
             }
@@ -175,20 +163,14 @@ UeInfo::AddRadioBearer (Ptr<EnbRadioBearerInfo> rbi)
   return 0;
 }
 
-Ptr<EnbRadioBearerInfo>
+Ptr<LteRadioBearerInfo>
 UeInfo::GetRadioBearer (uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcid);
   NS_ASSERT (0 != lcid);
-  std::map <uint8_t, Ptr<EnbRadioBearerInfo> >::iterator it = m_rbMap.find (lcid);
-  if (it != m_rbMap.end ())
-    {
-      return m_rbMap.find (lcid)->second;
-    }
-  else
-    {
-      return 0;
-    }
+  std::map<uint8_t, Ptr<LteRadioBearerInfo> >::iterator it = m_rbMap.find (lcid);  
+  NS_ABORT_IF (it == m_rbMap.end ());
+  return it->second;
 }
 
 
@@ -196,7 +178,7 @@ void
 UeInfo::RemoveRadioBearer (uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcid);
-  std::map <uint8_t, Ptr<EnbRadioBearerInfo> >::iterator it = m_rbMap.find (lcid);
+  std::map <uint8_t, Ptr<LteRadioBearerInfo> >::iterator it = m_rbMap.find (lcid);
   NS_ASSERT_MSG (it != m_rbMap.end (), "request to remove radio bearer with unknown lcid " << lcid);
   m_rbMap.erase (it);
 }
@@ -220,6 +202,7 @@ LteEnbRrc::LteEnbRrc ()
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
+  m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteEnbRrc> (this);
 }
 
 
@@ -234,6 +217,7 @@ LteEnbRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_cmacSapUser;
+  delete m_pdcpSapUser;
 }
 
 TypeId
@@ -306,6 +290,11 @@ LteEnbRrc::SetLteMacSapProvider (LteMacSapProvider * s)
   m_macSapProvider = s;
 }
 
+LtePdcpSapProvider* 
+LteEnbRrc::GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid)
+{
+  return GetUeInfo (rnti)->GetRadioBearer (lcid)->m_pdcp->GetLtePdcpSapProvider ();
+}
 
 void
 LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth)
@@ -336,23 +325,37 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
 }
 
 uint8_t
-LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer)
+LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   Ptr<UeInfo> ueInfo = GetUeInfo (rnti);
 
   // create RLC instance
-  // for now we support RLC SM only
 
-  Ptr<LteRlc> rlc = CreateObject<LteRlcSm> ();
+  ObjectFactory rlcObjectFactory;
+  rlcObjectFactory.SetTypeId (rlcTypeId);
+  Ptr<LteRlc> rlc = rlcObjectFactory.Create ()->GetObject<LteRlc> ();
   rlc->SetLteMacSapProvider (m_macSapProvider);
   rlc->SetRnti (rnti);
 
-  Ptr<EnbRadioBearerInfo> rbInfo = CreateObject<EnbRadioBearerInfo> ();
-  rbInfo->SetRlc (rlc);
+  Ptr<LteRadioBearerInfo> rbInfo = CreateObject<LteRadioBearerInfo> ();
+  rbInfo->m_rlc = rlc;
   uint8_t lcid = ueInfo->AddRadioBearer (rbInfo);
   rlc->SetLcId (lcid);
 
+  // we need PDCP only for real RLC, i.e., RLC/UM or RLC/AM
+  // if we are using RLC/SM we don't care of anything above RLC
+  if (rlcTypeId != LteRlcSm::GetTypeId ())
+    {
+      Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
+      pdcp->SetRnti (rnti);
+      pdcp->SetLcId (lcid);
+      pdcp->SetLtePdcpSapUser (m_pdcpSapUser);
+      pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
+      rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
+      rbInfo->m_pdcp = pdcp;
+    }
+    
   LteEnbCmacSapProvider::LcInfo lcinfo;
   lcinfo.rnti = rnti;
   lcinfo.lcId = lcid;
@@ -375,6 +378,48 @@ LteEnbRrc::ReleaseRadioBearer (uint16_t rnti, uint8_t lcId)
   Ptr<UeInfo> ueInfo = GetUeInfo (rnti);
   ueInfo->RemoveRadioBearer (lcId);
 }
+
+
+
+bool
+LteEnbRrc::Send (Ptr<Packet> packet)
+{
+  NS_LOG_FUNCTION (this << packet);
+
+  LteRadioBearerTag tag;
+  bool found = packet->RemovePacketTag (tag);
+  NS_ASSERT (found);
+  
+  LtePdcpSapProvider::TransmitRrcPduParameters params;
+  params.rrcPdu = packet;
+  params.rnti = tag.GetRnti ();
+  params.lcid = tag.GetLcid ();
+  LtePdcpSapProvider* pdcpSapProvider = GetLtePdcpSapProvider (tag.GetRnti (), tag.GetLcid ());
+  pdcpSapProvider->TransmitRrcPdu (params);
+  
+  return true;
+}
+
+void 
+LteEnbRrc::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
+{
+  m_forwardUpCallback = cb;
+}
+
+
+void
+LteEnbRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  // this tag is needed by the EpcEnbApplication to determine the S1 bearer that corresponds to this radio bearer
+  LteRadioBearerTag tag;
+  tag.SetRnti (params.rnti);
+  tag.SetLcid (params.lcid);
+  params.rrcPdu->AddPacketTag (tag);
+  m_forwardUpCallback (params.rrcPdu);
+}
+
+
 
 void
 LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
@@ -414,7 +459,9 @@ LteEnbRrc::GetUeInfo (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   NS_ASSERT (0 != rnti);
-  return m_ueMap.find (rnti)->second;
+  std::map<uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (rnti);  
+  NS_ABORT_IF (it == m_ueMap.end ());
+  return it->second;
 }
 
 void

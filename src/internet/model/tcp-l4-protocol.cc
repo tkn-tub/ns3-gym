@@ -137,10 +137,6 @@ void
 TcpL4Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (std::vector<Ptr<TcpSocketBase> >::iterator i = m_sockets.begin (); i != m_sockets.end (); i++)
-    {
-      *i = 0;
-    }
   m_sockets.clear ();
 
   if (m_endPoints != 0)
@@ -167,7 +163,6 @@ TcpL4Protocol::CreateSocket (TypeId socketTypeId)
   socket->SetNode (m_node);
   socket->SetTcp (this);
   socket->SetRtt (rtt);
-  m_sockets.push_back (socket);
   return socket;
 }
 

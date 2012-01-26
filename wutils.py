@@ -61,8 +61,8 @@ def find_program(program_name, env):
                 or obj.path.abspath(env).startswith(launch_dir)):
             continue
         
-        name1 = obj.target
-        name2 = os.path.join(relpath(obj.path.abspath(), launch_dir), obj.target)
+        name1 = obj.name
+        name2 = os.path.join(relpath(obj.path.abspath(), launch_dir), obj.name)
         names = [name1, name2]
         found_programs.extend(names)
         if program_name in names:

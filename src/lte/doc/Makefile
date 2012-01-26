@@ -1,6 +1,7 @@
 EPSTOPDF = epstopdf
 DIA = dia
-CONVERT = convert
+SEQDIAG = seqdiag
+CONVERT = convert -density 250
 
 
 SOURCE = source
@@ -13,7 +14,14 @@ IMAGES_EPS = \
 	$(FIGURES)/ff-example.eps \
 	$(FIGURES)/lte-enb-architecture.eps \
 	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/epc-profiling-scenario.eps \
+	$(FIGURES)/eutran-profiling-scenario.eps \
 	$(FIGURES)/lte-interference-test-scenario.eps \
+	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-data-flow-dl.eps \
+	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/MCS_2_test.eps \
 	$(FIGURES)/MCS_12_test.eps \
 	$(FIGURES)/MCS_14_test.eps
@@ -24,9 +32,18 @@ GRAPHS_EPS = \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
 	$(FIGURES)/runningTime10s.eps \
+	$(FIGURES)/epcRunningTime.eps \
 	$(FIGURES)/propagationModel.eps \
 	$(FIGURES)/simulationTime.eps \
-	$(FIGURES)/profiling-memory.eps
+	$(FIGURES)/epcSimulationTime.eps \
+	$(FIGURES)/epcEutranRunningTime.eps \
+	$(FIGURES)/profiling-memory.eps \
+	$(FIGURES)/lte-rlc-implementation-model.eps \
+	$(FIGURES)/lte-rlc-data-txon-dl.eps \
+	$(FIGURES)/lte-rlc-data-retx-dl.eps \
+	$(FIGURES)/lte-rlc-data-txon-ul.eps \
+	$(FIGURES)/lte-rlc-data-retx-ul.eps 
+
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -40,13 +57,28 @@ $(FIGURES)/internet-node-recv.pdf_width = 5in
 $(FIGURES)/routing.pdf_width = 6in
 $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
-$(FIGURES)/lte-transmission.pdf_width = 3in
+$(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
+$(FIGURES)/epc-topology.pdf_width = 4in
+$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
+$(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
+$(FIGURES)/ff-mac-saps.pdf_width = 5in
+$(FIGURES)/ff-example.pdf_width = 5in
+$(FIGURES)/lte-rlc-implementation-model.pdf_width = 20in
+$(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
+$(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
+$(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
+$(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
-$(FIGURES)/lte-interference-test-scenario.pdf_width = 4in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
-	
+
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
+
+IMAGES_SEQDIAG = \
+	$(FIGURES)/lte-phy-interference.png \
+	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/helpers.png \
+	$(FIGURES)/helpers.pdf
 
 IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
@@ -67,13 +99,22 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/MCS_21_24.pdf \
 	$(FIGURES)/MCS_21_24.png \
 	$(FIGURES)/MCS_25_27.pdf \
-	$(FIGURES)/MCS_25_27.png
+	$(FIGURES)/MCS_25_27.png \
+	$(FIGURES)/lte-phy-interference.png \
+	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/helpers.png \
+	$(FIGURES)/helpers.pdf \
+	$(FIGURES)/miesm_scheme.pdf \
+	$(FIGURES)/miesm_scheme.png \
+	$(IMAGES_SEQDIAG) 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
+%.png : %.seqdiag; $(SEQDIAG) -Tpng -o $@ $< 
 %.png : %.eps; $(CONVERT) $< $@
+%.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
@@ -220,5 +261,3 @@ doctest:  $(IMAGES)
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
-
-

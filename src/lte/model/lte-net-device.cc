@@ -32,7 +32,8 @@
 #include "ns3/enum.h"
 #include "lte-amc.h"
 #include "ns3/ipv4-header.h"
-#include <ns3/lte-mac-tag.h>
+#include <ns3/lte-radio-bearer-tag.h>
+#include <ns3/ipv4-l3-protocol.h>
 #include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
@@ -41,6 +42,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteNetDevice);
 
+////////////////////////////////
+// LteNetDevice
+////////////////////////////////
 
 TypeId LteNetDevice::GetTypeId (void)
 {
@@ -51,10 +55,10 @@ TypeId LteNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
 
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
-                   UintegerValue (1500),
+                   UintegerValue (30000),
                    MakeUintegerAccessor (&LteNetDevice::SetMtu,
                                          &LteNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> (0,MAX_MSDU_SIZE))
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -130,49 +134,11 @@ LteNetDevice::SetReceiveCallback (ReceiveCallback cb)
 }
 
 
-void
-LteNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &source, const Mac48Address &dest)
-{
-
-}
-
-
-void
-LteNetDevice::ForwardUp (Ptr<Packet> packet)
-{
-  NS_LOG_FUNCTION (this << packet);
-
-  m_macRxTrace (packet);
-
-  LlcSnapHeader llc;
-  packet->RemoveHeader (llc);
-
-  m_rxCallback (this, packet, llc.GetType (), Address ());
-}
-
-
-
-bool
-LteNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
-{
-  NS_LOG_FUNCTION (packet << dest << protocolNumber);
-  return SendFrom (packet, m_address, dest, protocolNumber);
-}
-
-
 bool
 LteNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (packet << source << dest << protocolNumber);
-
-
-  LlcSnapHeader llcHdr;
-  llcHdr.SetType (protocolNumber);
-  packet->AddHeader (llcHdr);
-
-  NS_FATAL_ERROR ("IP connectivity not implemented yet");
-
-  return true;
+  NS_FATAL_ERROR ("SendFrom () not supported");
+  return false;
 }
 
 
@@ -184,24 +150,11 @@ LteNetDevice::SupportsSendFrom (void) const
 }
 
 
-void
-LteNetDevice::Receive (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this << p);
-  Ptr<Packet> packet = p->Copy ();
-  DoReceive (packet);
-}
-
-
 
 bool
 LteNetDevice::SetMtu (const uint16_t mtu)
 {
   NS_LOG_FUNCTION (this << mtu);
-  if (mtu > MAX_MSDU_SIZE)
-    {
-      return false;
-    }
   m_mtu = mtu;
   return true;
 }
@@ -271,7 +224,7 @@ bool
 LteNetDevice::NeedsArp (void) const
 {
   NS_LOG_FUNCTION (this);
-  return true;
+  return false;
 }
 
 
@@ -322,23 +275,17 @@ void
 LteNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
   NS_LOG_FUNCTION (this);
-  m_promiscRxCallback = cb;
+  NS_LOG_WARN ("Promisc mode not supported");
 }
+
 
 
 void
-LteNetDevice::SetPacketToSend (Ptr<PacketBurst> p)
+LteNetDevice::Receive (Ptr<Packet> p)
 {
-  m_packetToSend = p;
+  NS_LOG_FUNCTION (this << p);
+  m_rxCallback (this, p, Ipv4L3Protocol::PROT_NUMBER, Address ());
 }
-
-
-Ptr<PacketBurst>
-LteNetDevice::GetPacketToSend (void)
-{
-  return m_packetToSend;
-}
-
 
 
 }

@@ -10,7 +10,8 @@ Overview
 ++++++++
 
 The Buildings module provides:
-  
+
+ #. a new class (Building) that models the presence of a building in a simulation scenario;  
  #. a new mobility model (BuildingsMobilityModel) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
  #. a new propagation model (BuildingsPropagationLossModel) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
 
@@ -18,16 +19,17 @@ Both models have been designed with LTE in mind, though their implementation is 
 
 The pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. Finally, the frequency also represent an important parameter since it spans from 600 MHz up to 2600 MHz according to [TS36.101]_.
 
-Description of the Included Models
-++++++++++++++++++++++++++++++++++
+The Building class
+++++++++++++++++++
 
-For discriminate indoor and outdoor users, the model includes a specific class called ``Building`` which contains a ns3 ``Box`` class for defining the dimension of the building. In order to implements the characteristics of the pathloss models included, the ``Building`` class provides support for:
+The model includes a specific class called ``Building`` which contains a ns3 ``Box`` class for defining the dimension of the building. In order to implements the characteristics of the pathloss models included, the ``Building`` class supports the following attributes:
 
   * building type:
 
     * Residential (default value)
     * Office
     * Commercial
+
   * external walls type
 
     * Wood
@@ -37,7 +39,7 @@ For discriminate indoor and outdoor users, the model includes a specific class c
 
   * number of floors (default value 1, which means only ground-floor)
   * number of rooms in x-axis (default value 1)
-  * number of rooms in x-axis (default value 1)
+  * number of rooms in y-axis (default value 1)
 
 By means of the number of rooms in x and y axis it is possible the definition of buildings where rooms are organized in grids, typical reference scenario for femto-cells in 3GPP called dual-strip.
 
@@ -45,7 +47,10 @@ The ``Building`` class is included in ``BuildingsMobilityModel`` class, which in
 
 The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 
-In the following we present the link pathloss models included.
+Pathloss models used in BuildingsPropagationLossModel
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In the following we present the pathloss models that are included in the BuildingsPropagationLossModel
 
 Okumura Hata (OH)
 -----------------
@@ -133,7 +138,7 @@ Therefore, also in this case, the suburban and openareas environment scenarios a
 
 
 Short Range Communications ITU-R P.1411 (I1411)
----------------------------------------
+-----------------------------------------------
 
 This model is designed for short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tunable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, the over the roof-top model is taken in consideration for modeling both macro BS and SC. In case on NLoS several parameters scenario dependent have been included, such as average street width, orientation, etc. The values of such parameters have to be properly set according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used, apart for the height of the mobile and BS, which instead their integrity is tested directly in the code (i.e., they have to be greater then zero).  In the following we give the expressions of the components of the model.
 
@@ -328,11 +333,10 @@ The pathloss model characterizes the hybrid cases (i.e., when an outdoor node tr
 
 
 
-Pathloss Logic Model
-++++++++++++++++++++
+Pathloss Model Logic of BuildingsPropagationLossModel
++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-In the following the pseudo-code of the model is presented::
+The following pseudo-code illustrates how the different pathloss models described above are integrated in the BuildingsPropagationLossModel::
 
   if (txNode is outdoor)
     then
@@ -376,12 +380,7 @@ In the following the pseudo-code of the model is presented::
           L = I1411 + BEL
 
 
-Some considerations that apply when the Buildings model is used in an LTE FDD context:
-
- * in the uplink, the txNode will be an UE, whereas the rxNode will be a 
-
-where ``txNode`` and ``rxNode`` can be one of the elements eNB, SC and UE.
-We note that for SC nodes in case that the distance is greater then 1 km, we still consider the I1411 model since it better models the transmissions with antenna below the roof-top level and moreover due to the fact that OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold also or SC transmissions (called ``m_itu1411DistanceThreshold``) for pruning the communications between SCs and UEs too far (the default values is fixed to 2 km).
+We note that, for the case of communication between two nodes below rooftop level with distance is greater then 1 km, we still consider the I1411 model, since OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold called ``m_itu1411DistanceThreshold``) for pruning the communications between nodes below rooftop when the distance is too large (the default values is 2 km).
 
 
 Shadowing Model

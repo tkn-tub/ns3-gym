@@ -27,7 +27,7 @@
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 #include <iostream>
-#include "ns3/rlc-stats-calculator.h"
+#include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/buildings-propagation-loss-model.h>
 #include "ns3/lte-test-phy-error-model.h"
@@ -38,7 +38,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-rrc.h>
-#include <ns3/lena-helper.h>
+#include <ns3/lte-helper.h>
 #include <ns3/string.h>
 #include <ns3/double.h>
 #include <ns3/lte-enb-phy.h>
@@ -159,7 +159,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lena = CreateObject<LteHelper> ();
   
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -175,6 +175,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
   mobility.Install (ueNodes);
   
   // remove random shadowing component
+  lena->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
   lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
@@ -193,7 +194,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
   
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
@@ -219,7 +220,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
   double simulationTime = 1.000;
   Simulator::Stop (Seconds (simulationTime));
 
-  Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
 
 

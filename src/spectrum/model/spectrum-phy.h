@@ -30,6 +30,7 @@ namespace ns3 {
 class PacketBurst;
 class SpectrumChannel;
 class MobilityModel;
+class AntennaModel;
 class SpectrumValue;
 class SpectrumModel;
 class NetDevice;
@@ -73,10 +74,9 @@ public:
   /**
    * get the associated MobilityModel instance
    *
-   * @return a Ptr to the associated NetDevice instance
+   * @return a Ptr to the associated MobilityModel instance
    */
   virtual Ptr<MobilityModel> GetMobility () = 0;
-
 
   /**
    * Set the channel attached to this device.
@@ -92,6 +92,13 @@ public:
    * returned, it means that any model will be accepted.
    */
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const = 0;
+
+  /**
+   * get the AntennaModel used by the NetDevice for reception
+   *
+   * @return a Ptr to the AntennaModel used by the NetDevice for reception
+   */
+  virtual Ptr<AntennaModel> GetRxAntenna () = 0;
 
   /**
    * Notify the SpectrumPhy instance of an incoming signal

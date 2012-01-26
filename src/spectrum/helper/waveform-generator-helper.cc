@@ -24,6 +24,7 @@
 #include "ns3/config.h"
 #include "ns3/simulator.h"
 #include "ns3/names.h"
+#include "ns3/antenna-model.h"
 #include "ns3/spectrum-channel.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/non-communicating-net-device.h"
@@ -41,6 +42,7 @@ WaveformGeneratorHelper::WaveformGeneratorHelper ()
 {
   m_phy.SetTypeId ("ns3::WaveformGenerator");
   m_device.SetTypeId ("ns3::NonCommunicatingNetDevice");
+  m_antenna.SetTypeId ("ns3::IsotropicAntennaModel");
 }
 
 WaveformGeneratorHelper::~WaveformGeneratorHelper ()
@@ -81,6 +83,29 @@ WaveformGeneratorHelper::SetDeviceAttribute (std::string name, const AttributeVa
   m_device.Set (name, v);
 }
 
+void
+WaveformGeneratorHelper::SetAntenna (std::string type,
+                                           std::string n0, const AttributeValue &v0,
+                                           std::string n1, const AttributeValue &v1,
+                                           std::string n2, const AttributeValue &v2,
+                                           std::string n3, const AttributeValue &v3,
+                                           std::string n4, const AttributeValue &v4,
+                                           std::string n5, const AttributeValue &v5,
+                                           std::string n6, const AttributeValue &v6,
+                                           std::string n7, const AttributeValue &v7)
+{
+  ObjectFactory factory;
+  factory.SetTypeId (type);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  m_antenna = factory;
+}
 
 NetDeviceContainer
 WaveformGeneratorHelper::Install (NodeContainer c) const
@@ -110,6 +135,9 @@ WaveformGeneratorHelper::Install (NodeContainer c) const
       phy->SetChannel (m_channel);
       dev->SetChannel (m_channel);
 
+      Ptr<AntennaModel> antenna = (m_antenna.Create ())->GetObject<AntennaModel> ();
+      NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
+      phy->SetAntenna (antenna);
 
       node->AddDevice (dev);
       devices.Add (dev);

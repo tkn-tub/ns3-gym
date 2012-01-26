@@ -202,14 +202,14 @@ private:
   PeerLink& operator= (const PeerLink &);
   PeerLink (const PeerLink &);
 
-  ///The number of interface I am associated with
+  /// The number of interface I am associated with
   uint32_t m_interface;
   /// pointer to MAC plugin, which is responsible for peer management
   Ptr<PeerManagementProtocolMac> m_macPlugin;
   /// Peer address
   Mac48Address m_peerAddress;
   /// Mesh point address, equal to peer address in case of single
-  //interface mesh point
+  /// interface mesh point
   Mac48Address m_peerMeshPointAddress;
   /// My ID of this link
   uint16_t m_localLinkId;
@@ -253,7 +253,7 @@ private:
   EventId  m_beaconLossTimer;
   uint16_t m_maxBeaconLoss;
   uint16_t m_maxPacketFail;
-  //\}
+  // \}
   /// How to report my status change
   SignalStatusCallback m_linkStatusCallback;
 };

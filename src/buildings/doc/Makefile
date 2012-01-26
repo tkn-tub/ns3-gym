@@ -2,7 +2,6 @@ EPSTOPDF = epstopdf
 DIA = dia
 CONVERT = convert
 
-
 SOURCE = source
 FIGURES = $(SOURCE)/figures
 

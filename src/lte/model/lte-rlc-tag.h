@@ -56,7 +56,7 @@ public:
   /**
    * Get the instant when the RLC delivers the PDU to the MAC SAP provider
    */
-  Time  getSenderTimestamp (void) const
+  Time  GetSenderTimestamp (void) const
   {
     return m_senderTimestamp;
   }
@@ -65,7 +65,7 @@ public:
    * Set the sender timestamp
    * @param senderTimestamp time stamp of the instant when the RLC delivers the PDU to the MAC SAP provider
    */
-  void  setSenderTimestamp (Time senderTimestamp)
+  void  SetSenderTimestamp (Time senderTimestamp)
   {
     this->m_senderTimestamp = senderTimestamp;
   }

@@ -1,5 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
+import wutils
+
 def configure(conf):
     have_gtk = conf.pkg_check_modules('GTK_CONFIG_STORE', 'gtk+-2.0 >= 2.12', mandatory=False)
     conf.env['ENABLE_GTK_CONFIG_STORE'] = have_gtk
@@ -18,7 +20,7 @@ def configure(conf):
 
 
 def build(bld):
-    bld.install_files('${PREFIX}/include/ns3', '../../ns3/config-store-config.h')
+    bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/config-store-config.h')
 
     module = bld.create_ns3_module('config-store', ['core', 'network'])
     module.source = [

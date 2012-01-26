@@ -1,24 +1,37 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('lena-first-sim',
+    obj = bld.create_ns3_program('lena-cqi-threshold',
                                  ['lte'])
-    obj.source = 'lena-first-sim.cc'
-    obj = bld.create_ns3_program('inter-cell-interference',
-                                 ['lte'])
-    obj.source = 'inter-cell-interference.cc'
-    obj = bld.create_ns3_program('lena-rlc-calculator',
-                                 ['lte'])
-    obj.source = 'lena-rlc-calculator.cc'    
+    obj.source = 'lena-cqi-threshold.cc'
     obj = bld.create_ns3_program('lena-fading',
                                  ['lte'])
     obj.source = 'lena-fading.cc'
-    obj = bld.create_ns3_program('lena-cqi-threshold',
+    obj = bld.create_ns3_program('lena-gtpu-tunnel',
                                  ['lte'])
-    obj.source = 'lena-cqi-threshold.cc'        
-    obj = bld.create_ns3_program('lena-runtime-profiler',
+    obj.source = 'lena-gtpu-tunnel.cc'
+    obj = bld.create_ns3_program('lena-intercell-interference',
                                  ['lte'])
-    obj.source = 'lena-runtime-profiler.cc'
-    obj = bld.create_ns3_program('lena-extract-pathloss',
+    obj.source = 'lena-intercell-interference.cc'
+    obj = bld.create_ns3_program('lena-pathloss-traces',
                                  ['lte'])
-    obj.source = 'lena-extract-pathloss.cc'
+    obj.source = 'lena-pathloss-traces.cc'
+    obj = bld.create_ns3_program('lena-profiling',
+                                 ['lte'])
+    obj.source = 'lena-profiling.cc'
+    obj = bld.create_ns3_program('lena-rem',
+                                 ['lte'])
+    obj.source = 'lena-rem.cc'
+    obj = bld.create_ns3_program('lena-rem-sector-antenna',
+                                 ['lte'])
+    obj.source = 'lena-rem-sector-antenna.cc'
+    obj = bld.create_ns3_program('lena-rlc-traces',
+                                 ['lte'])
+    obj.source = 'lena-rlc-traces.cc'
+    obj = bld.create_ns3_program('lena-simple',
+                                 ['lte'])
+    obj.source = 'lena-simple.cc'
+    obj = bld.create_ns3_program('lena-simple-epc',
+                                 ['lte'])
+    obj.source = 'lena-simple-epc.cc'
+

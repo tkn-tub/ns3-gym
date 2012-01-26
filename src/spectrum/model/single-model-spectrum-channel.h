@@ -51,6 +51,7 @@ public:
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
   virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
+  virtual void RemoveRx (Ptr<SpectrumPhy> phy);
   virtual void StartTx (Ptr<SpectrumSignalParameters> params);
 
 
@@ -109,7 +110,7 @@ private:
 
   double m_maxLossDb;
 
-  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_propagationLossTrace;
+  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
 };
 
 

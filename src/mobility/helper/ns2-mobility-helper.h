@@ -37,7 +37,7 @@ class ConstantVelocityMobilityModel;
  * \brief Helper class which can read ns-2 movement files and configure nodes mobility.
  * 
  * This implementation is based on the ns2 movement documentation of ns2
- * as described in http://www.isi.edu/nsnam/ns/doc/node174.html
+ * as described in http://www.isi.edu/nsnam/ns/doc/node172.html
  *
  * Valid trace files use the following ns2 statements:
  \verbatim
@@ -50,12 +50,22 @@ class ConstantVelocityMobilityModel;
    $ns at $time $node set Z_ Z1
  \endverbatim
  *
- * Following tools are known to support this format:
+ * The following tools are known to support this format:
  *  - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/
  *  - SUMO http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page
  *  - TraNS http://trans.epfl.ch/ 
  *
  *  See usage example in examples/mobility/ns2-mobility-trace.cc
+ *
+ * \bug Traces that generate initial position statements at the end of the
+ * mobility file (e.g. SUMO TraceExporter) will not be read correctly.  The
+ * workaround is to relocate these three initial position statements to the
+ * beginning of the trace.  
+ * See https://www.nsnam.org/bugzilla/show_bug.cgi?id=1316
+ *
+ * \bug Rounding errors may cause movement to diverge from the mobility
+ * pattern in ns-2 (using the same trace).
+ * See https://www.nsnam.org/bugzilla/show_bug.cgi?id=1316
  */
 class Ns2MobilityHelper
 {

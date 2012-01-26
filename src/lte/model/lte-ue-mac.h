@@ -29,6 +29,7 @@
 #include <ns3/lte-mac-sap.h>
 #include <ns3/lte-ue-cmac-sap.h>
 #include <ns3/lte-ue-phy-sap.h>
+#include <ns3/nstime.h>
 
 
 namespace ns3 {
@@ -62,6 +63,14 @@ public:
   * \param s a pointer to the PHY SAP Provider
   */
   void SetLteUePhySapProvider (LteUePhySapProvider* s);
+  
+  /**
+  * \brief Forwarded from LteUePhySapUser: trigger the start from a new frame
+  *
+  * \param frameNo frame number
+  * \param subframeNo subframe number
+  */
+  void DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo);
 
 private:
   // forwarded from MAC SAP
@@ -76,6 +85,8 @@ private:
   // forwarded from PHY SAP
   void DoReceivePhyPdu (Ptr<Packet> p);
   void DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  
+  void SendReportBufferStatus (void);
 
 private:
   // end of temporary hack
@@ -87,6 +98,13 @@ private:
 
   LteUePhySapProvider* m_uePhySapProvider;
   LteUePhySapUser* m_uePhySapUser;
+  
+  std::map <uint8_t, long uint> m_ulBsrReceived; // BSR received from RLC (BSR up to now)
+  
+  Time m_bsrPeriodicity;
+  Time m_bsrLast;
+  
+  bool m_freshUlBsr; // true when a BSR has been received in the last TTI
 
 
   uint16_t m_rnti;

@@ -19,17 +19,19 @@
  */
 
 
-#include "lte-rlc.h"
-#include "lte-mac-sap.h"
-#include "ff-mac-sched-sap.h"
-#include "lte-rlc-tag.h"
+#include "ns3/log.h"
+#include "ns3/simulator.h"
 
-#include <ns3/log.h>
-#include <ns3/simulator.h>
+#include "ns3/lte-rlc.h"
+#include "ns3/lte-rlc-tag.h"
+// #include "lte-mac-sap.h"
+#include "ns3/lte-rlc-sap.h"
+// #include "ff-mac-sched-sap.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteRlc");
 
 namespace ns3 {
+
 
 
 ///////////////////////////////////////
@@ -39,7 +41,7 @@ class LteRlcSpecificLteMacSapUser : public LteMacSapUser
 public:
   LteRlcSpecificLteMacSapUser (LteRlc* rlc);
 
-  // inherited from LteMacSapUser
+  // Interface implemented from LteMacSapUser
   virtual void NotifyTxOpportunity (uint32_t bytes);
   virtual void NotifyHarqDeliveryFailure ();
   virtual void ReceivePdu (Ptr<Packet> p);
@@ -78,14 +80,17 @@ LteRlcSpecificLteMacSapUser::ReceivePdu (Ptr<Packet> p)
 
 
 ///////////////////////////////////////
+
 NS_OBJECT_ENSURE_REGISTERED (LteRlc);
 
 LteRlc::LteRlc ()
-  : m_macSapProvider (0),
+  : m_rlcSapUser (0),
+    m_macSapProvider (0),
     m_rnti (0),
     m_lcid (0)
 {
   NS_LOG_FUNCTION (this);
+  m_rlcSapProvider = new LteRlcSpecificLteRlcSapProvider<LteRlc> (this);
   m_macSapUser = new LteRlcSpecificLteMacSapUser (this);
 }
 
@@ -99,14 +104,14 @@ TypeId LteRlc::GetTypeId (void)
     .AddTraceSource ("RxPDU",
                      "PDU received.",
                      MakeTraceSourceAccessor (&LteRlc::m_rxPdu))
-  ;
+    ;
   return tid;
 }
 
 void
-LteRlc::SetRnti (uint8_t rnti)
+LteRlc::SetRnti (uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)  rnti);
+  NS_LOG_FUNCTION (this << (uint32_t) rnti);
   m_rnti = rnti;
 }
 
@@ -120,7 +125,22 @@ LteRlc::SetLcId (uint8_t lcId)
 LteRlc::~LteRlc ()
 {
   NS_LOG_FUNCTION (this);
+  delete (m_rlcSapProvider);
   delete (m_macSapUser);
+}
+
+void
+LteRlc::SetLteRlcSapUser (LteRlcSapUser * s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_rlcSapUser = s;
+}
+
+LteRlcSapProvider*
+LteRlc::GetLteRlcSapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_rlcSapProvider;
 }
 
 void
@@ -139,9 +159,7 @@ LteRlc::GetLteMacSapUser ()
 
 
 
-
-
-// //////////////////////////////////////
+////////////////////////////////////////
 
 NS_OBJECT_ENSURE_REGISTERED (LteRlcSm);
 
@@ -163,39 +181,48 @@ LteRlcSm::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()
     .AddConstructor<LteRlcSm> ()
-  ;
+    ;
   return tid;
+}
+
+void
+LteRlcSm::DoTransmitPdcpPdu (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this << p);
 }
 
 void
 LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 {
+  NS_LOG_FUNCTION (this << p);
   // RLC Performance evaluation
   RlcTag rlcTag;
   Time delay;
-  if (p->FindFirstMatchingByteTag (rlcTag))
+  if (p->FindFirstMatchingByteTag(rlcTag))
     {
-      delay = Simulator::Now () - rlcTag.getSenderTimestamp ();
+      delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
     }
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << delay.GetNanoSeconds ());
-  m_rxPdu (m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
 }
 
 void
 LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
 {
+  NS_LOG_FUNCTION (this << bytes);
   LteMacSapProvider::TransmitPduParameters params;
   params.pdu = Create<Packet> (bytes);
   params.rnti = m_rnti;
   params.lcid = m_lcid;
 
   // RLC Performance evaluation
-  RlcTag tag (Simulator::Now ());
+  RlcTag tag (Simulator::Now());
   params.pdu->AddByteTag (tag);
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
-  m_txPdu (m_rnti, m_lcid, bytes);
+  m_txPdu(m_rnti, m_lcid, bytes);
 
   m_macSapProvider->TransmitPdu (params);
+  ReportBufferStatus ();
 }
 
 void
@@ -208,15 +235,21 @@ void
 LteRlcSm::Start ()
 {
   NS_LOG_FUNCTION (this);
+  ReportBufferStatus ();
+}
+
+void
+LteRlcSm::ReportBufferStatus ()
+{
+  NS_LOG_FUNCTION (this);
   LteMacSapProvider::ReportBufferStatusParameters p;
   p.rnti = m_rnti;
   p.lcid = m_lcid;
-  p.txQueueSize = 1000000000;
-  p.txQueueHolDelay = 10000;
-  p.retxQueueSize = 1000000000;
-  p.retxQueueHolDelay = 10000;
-  p.statusPduSize = 1000;
-
+  p.txQueueSize = 80000;
+  p.txQueueHolDelay = 10;
+  p.retxQueueSize = 0;
+  p.retxQueueHolDelay = 0;
+  p.statusPduSize = 0;
   m_macSapProvider->ReportBufferStatus (p);
 }
 

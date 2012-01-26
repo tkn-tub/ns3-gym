@@ -3495,6 +3495,10 @@ def register_Ns3SpectrumInterference_methods(root_module, cls):
     cls.add_constructor([param('ns3::SpectrumInterference const &', 'arg0')])
     ## spectrum-interference.h (module 'spectrum'): ns3::SpectrumInterference::SpectrumInterference() [constructor]
     cls.add_constructor([])
+    ## spectrum-interference.h (module 'spectrum'): void ns3::SpectrumInterference::AbortRx() [member function]
+    cls.add_method('AbortRx', 
+                   'void', 
+                   [])
     ## spectrum-interference.h (module 'spectrum'): void ns3::SpectrumInterference::AddSignal(ns3::Ptr<ns3::SpectrumValue const> spd, ns3::Time const duration) [member function]
     cls.add_method('AddSignal', 
                    'void', 
@@ -4876,6 +4880,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True)
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
+    cls.add_method('GetRelativeSpeed', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
+                   is_const=True)
     ## mobility-model.h (module 'mobility'): static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -6248,14 +6257,14 @@ def register_functions(root_module):
     module.add_function('Norm', 
                         'double', 
                         [param('ns3::SpectrumValue const &', 'x')])
-    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(ns3::SpectrumValue const & base, double exp) [free function]
+    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(ns3::SpectrumValue const & lhs, double rhs) [free function]
     module.add_function('Pow', 
                         'ns3::SpectrumValue', 
-                        [param('ns3::SpectrumValue const &', 'base'), param('double', 'exp')])
-    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(double base, ns3::SpectrumValue const & exp) [free function]
+                        [param('ns3::SpectrumValue const &', 'lhs'), param('double', 'rhs')])
+    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(double lhs, ns3::SpectrumValue const & rhs) [free function]
     module.add_function('Pow', 
                         'ns3::SpectrumValue', 
-                        [param('double', 'base'), param('ns3::SpectrumValue const &', 'exp')])
+                        [param('double', 'lhs'), param('ns3::SpectrumValue const &', 'rhs')])
     ## spectrum-value.h (module 'spectrum'): extern double ns3::Prod(ns3::SpectrumValue const & x) [free function]
     module.add_function('Prod', 
                         'double', 

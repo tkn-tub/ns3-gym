@@ -1,11 +1,6 @@
 .. include:: replace.txt
 
 
-+++++++++++++++++++++++++++++++++
- References
-+++++++++++++++++++++++++++++++++
-
-
 .. [Sesia2009] S. Sesia, I. Toufik and M. Baker, "LTE - The UMTS Long Term Evolution - from theory to practice", 
    Wiley, 2009
 
@@ -30,6 +25,10 @@
    spectrum and related issues", March 2011 
 
 
+.. [TS36322] 3GPP TS 36.322 "E-UTRA Radio Link Control (RLC) protocol specification"
+
+.. [TS36323] 3GPP TS 36.323 "E-UTRA Packet Data Convergence Protocol (PDCP) specification"
+
 .. [TS36.101] 3GPP TS 36.101 "E-UTRA User Equipment (UE) radio transmission and reception"
 
 .. [TS36.213] 3GPP TS 36.213 "E-UTRA Physical layer procedures"
@@ -43,12 +42,24 @@
 
 .. [FFAPI] `FemtoForum LTE MAC Scheduler Interface Specification v1.11 <http://www.femtoforum.org/femto/technical.php>`_
 
-.. [ns3tutorial] `The ns-3 Tutorial <http://www.nsnam.org/docs/tutorial/html/>`_
+.. [ns3tutorial] `The ns-3 Tutorial <http://www.nsnam.org/docs/tutorial/singlehtml/index.html>`_
 
-.. [ns3manual] `The ns-3 Manual <http://www.nsnam.org/docs/manual/html/>`_
+.. [ns3manual] `The ns-3 Manual <http://www.nsnam.org/docs/manual/singlehtml/index.html>`_
 
 .. [pl26ghz] Sun Kun; Wang Ping; Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
    in Proc. of ISAPE 2008,  Kunming,  China, Nov 2008.
+
+
+.. [PaduaPEM] http://mailman.isi.edu/pipermail/ns-developers/2011-November/009559.html
+
+.. [Vienna] The Vienna LTE Simulators http://www.nt.tuwien.ac.at/about-us/staff/josep-colom-ikuno/lte-simulators/
+
+.. [LozanoCost] Joan Olmos, Silvia Ruiz, Mario García-Lozano and David Martín-Sacristán, "Link Abstraction Models Based on Mutual Information for LTE Downlink", COST 2100 TD(10)11052 Report
+
+.. [wimaxEmd] WiMAX Forum White Paper, WiMAX System Evaluation Methodology, July 2008.
+
+.. [TS36.212] 3GPP TS 36.212 "E-UTRA Multiplexing and channel coding"
+
 
 .. [turkmani] Turkmani A.M.D., J.D. Parson and D.G. Lewis, "Radio propagation into buildings at 441, 900 and 1400 MHz",
    in Proc. of 4th Int. Conference on Land Mobile Radio, 1987.

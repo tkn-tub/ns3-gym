@@ -209,12 +209,12 @@ private:
                                         bool explicitFilename);
 
   /**
-   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @brief Enable pcap output the indicated Ipv6 and interface pair.
    * @internal
    *
    * @param prefix Filename prefix to use for pcap files.
-   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
-   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   * @param ipv6 Ptr to the Ipv6 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv6 on which you want to enable tracing.
    */
   virtual void EnablePcapIpv6Internal (std::string prefix, 
                                        Ptr<Ipv6> ipv6, 
@@ -222,14 +222,14 @@ private:
                                        bool explicitFilename);
 
   /**
-   * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+   * @brief Enable ascii trace output on the indicated Ipv6 and interface pair.
    * @internal
    *
    * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param prefix Filename prefix to use for ascii trace files.
-   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
-   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   * @param ipv6 Ptr to the Ipv6 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv6 on which you want to enable tracing.
    */
   virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream, 
                                         std::string prefix, 

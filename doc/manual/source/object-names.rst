@@ -1,5 +1,7 @@
 .. include:: replace.txt
 
+.. _Object-names:
+
 Object names
 ------------
 

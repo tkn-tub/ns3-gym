@@ -66,6 +66,18 @@ public:
 
 };
 
+class BufferSizeLevelBsr
+{
+  
+  public:
+    static uint32_t BsrId2BufferSize (uint8_t val);
+    static uint8_t BufferSize2BsrId (uint32_t val);
+    
+    static int  m_bufferSizeLevelBsr[64];
+    
+    
+};
+
 
 }; // namespace ns3
 

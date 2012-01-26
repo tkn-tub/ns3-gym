@@ -401,12 +401,11 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
+      NS_LOG_LOGIC (this << " start TX");
       m_downlinkSpectrumPhy->StartTx (pb);
     }
 
   // trigger the MAC
-  Ptr<LteEnbMac> macEntity = GetDevice ()->GetObject<LteEnbNetDevice> ()->GetMac ();
-
   m_enbPhySapUser->SubframeIndication (m_nrFrames, m_nrSubFrames);
 
 

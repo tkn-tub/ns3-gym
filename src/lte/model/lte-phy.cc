@@ -236,14 +236,8 @@ LtePhy::GetRbgSize (void) const
 void
 LtePhy::SetMacChDelay (uint8_t delay)
 {
-  int old_delay = m_macChTtiDelay;
   m_macChTtiDelay = delay;
   m_packetBurstQueue.resize (delay);
-  for (int i = old_delay - 1; i < delay; i++)
-    {
-      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
-      m_packetBurstQueue.push_back (pb);
-    }
 }
 
 

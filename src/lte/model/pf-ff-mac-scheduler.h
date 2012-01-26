@@ -139,6 +139,8 @@ private:
   void RefreshDlCqiMaps(void);
   void RefreshUlCqiMaps(void);
   
+  void UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size);
+  void UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size);
   Ptr<LteAmc> m_amc;
 
   /*
@@ -194,7 +196,7 @@ private:
   /*
   * Map of UE's buffer status reports received
   */
-  std::map <uint16_t,uint8_t> m_ceBsrRxed;
+  std::map <uint16_t,uint32_t> m_ceBsrRxed;
 
   // MAC SAPs
   FfMacCschedSapUser* m_cschedSapUser;

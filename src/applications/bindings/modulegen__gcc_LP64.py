@@ -242,6 +242,14 @@ def register_types(module):
     module.add_enum('', ['FRAME_FLAG_NONE', 'FRAME_FLAG_CFP', 'FRAME_FLAG_SHORT_PREAMBLE', 'FRAME_FLAG_WEP', 'FRAME_FLAG_FRAGMENTED', 'FRAME_FLAG_FCS_INCLUDED', 'FRAME_FLAG_DATA_PADDING', 'FRAME_FLAG_BAD_FCS', 'FRAME_FLAG_SHORT_GUARD'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
     ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [enumeration]
     module.add_enum('', ['CHANNEL_FLAG_NONE', 'CHANNEL_FLAG_TURBO', 'CHANNEL_FLAG_CCK', 'CHANNEL_FLAG_OFDM', 'CHANNEL_FLAG_SPECTRUM_2GHZ', 'CHANNEL_FLAG_SPECTRUM_5GHZ', 'CHANNEL_FLAG_PASSIVE', 'CHANNEL_FLAG_DYNAMIC', 'CHANNEL_FLAG_GFSK'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
+    ## red-queue.h (module 'network'): ns3::RedQueue [class]
+    module.add_class('RedQueue', import_from_module='ns.network', parent=root_module['ns3::Queue'])
+    ## red-queue.h (module 'network'): ns3::RedQueue [enumeration]
+    module.add_enum('', ['DTYPE_NONE', 'DTYPE_FORCED', 'DTYPE_UNFORCED'], outer_class=root_module['ns3::RedQueue'], import_from_module='ns.network')
+    ## red-queue.h (module 'network'): ns3::RedQueue::Mode [enumeration]
+    module.add_enum('Mode', ['ILLEGAL', 'PACKETS', 'BYTES'], outer_class=root_module['ns3::RedQueue'], import_from_module='ns.network')
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats [struct]
+    module.add_class('Stats', import_from_module='ns.network', outer_class=root_module['ns3::RedQueue'])
     ## seq-ts-header.h (module 'applications'): ns3::SeqTsHeader [class]
     module.add_class('SeqTsHeader', parent=root_module['ns3::Header'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
@@ -306,6 +314,10 @@ def register_types(module):
     module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
     module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    ## boolean.h (module 'core'): ns3::BooleanChecker [class]
+    module.add_class('BooleanChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## boolean.h (module 'core'): ns3::BooleanValue [class]
+    module.add_class('BooleanValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## bulk-send-application.h (module 'applications'): ns3::BulkSendApplication [class]
     module.add_class('BulkSendApplication', parent=root_module['ns3::Application'])
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
@@ -585,6 +597,8 @@ def register_methods(root_module):
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
     register_Ns3RadiotapHeader_methods(root_module, root_module['ns3::RadiotapHeader'])
+    register_Ns3RedQueue_methods(root_module, root_module['ns3::RedQueue'])
+    register_Ns3RedQueueStats_methods(root_module, root_module['ns3::RedQueue::Stats'])
     register_Ns3SeqTsHeader_methods(root_module, root_module['ns3::SeqTsHeader'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
@@ -613,6 +627,8 @@ def register_methods(root_module):
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
+    register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
+    register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
     register_Ns3BulkSendApplication_methods(root_module, root_module['ns3::BulkSendApplication'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
@@ -4504,6 +4520,70 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
                    [param('uint64_t', 'tsft')])
     return
 
+def register_Ns3RedQueue_methods(root_module, cls):
+    ## red-queue.h (module 'network'): ns3::RedQueue::RedQueue(ns3::RedQueue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RedQueue const &', 'arg0')])
+    ## red-queue.h (module 'network'): ns3::RedQueue::RedQueue() [constructor]
+    cls.add_constructor([])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Mode ns3::RedQueue::GetMode() [member function]
+    cls.add_method('GetMode', 
+                   'ns3::RedQueue::Mode', 
+                   [])
+    ## red-queue.h (module 'network'): uint32_t ns3::RedQueue::GetQueueSize() [member function]
+    cls.add_method('GetQueueSize', 
+                   'uint32_t', 
+                   [])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats ns3::RedQueue::GetStats() [member function]
+    cls.add_method('GetStats', 
+                   'ns3::RedQueue::Stats', 
+                   [])
+    ## red-queue.h (module 'network'): static ns3::TypeId ns3::RedQueue::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetMode(ns3::RedQueue::Mode mode) [member function]
+    cls.add_method('SetMode', 
+                   'void', 
+                   [param('ns3::RedQueue::Mode', 'mode')])
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetQueueLimit(uint32_t lim) [member function]
+    cls.add_method('SetQueueLimit', 
+                   'void', 
+                   [param('uint32_t', 'lim')])
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetTh(double minTh, double maxTh) [member function]
+    cls.add_method('SetTh', 
+                   'void', 
+                   [param('double', 'minTh'), param('double', 'maxTh')])
+    ## red-queue.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::RedQueue::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## red-queue.h (module 'network'): bool ns3::RedQueue::DoEnqueue(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='private', is_virtual=True)
+    ## red-queue.h (module 'network'): ns3::Ptr<const ns3::Packet> ns3::RedQueue::DoPeek() const [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::Packet const >', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RedQueueStats_methods(root_module, cls):
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::Stats() [constructor]
+    cls.add_constructor([])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::Stats(ns3::RedQueue::Stats const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RedQueue::Stats const &', 'arg0')])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::forcedDrop [variable]
+    cls.add_instance_attribute('forcedDrop', 'uint32_t', is_const=False)
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::qLimDrop [variable]
+    cls.add_instance_attribute('qLimDrop', 'uint32_t', is_const=False)
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::unforcedDrop [variable]
+    cls.add_instance_attribute('unforcedDrop', 'uint32_t', is_const=False)
+    return
+
 def register_Ns3SeqTsHeader_methods(root_module, cls):
     ## seq-ts-header.h (module 'applications'): ns3::SeqTsHeader::SeqTsHeader(ns3::SeqTsHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SeqTsHeader const &', 'arg0')])
@@ -5470,6 +5550,47 @@ def register_Ns3AttributeValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3BooleanChecker_methods(root_module, cls):
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker(ns3::BooleanChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanChecker const &', 'arg0')])
+    return
+
+def register_Ns3BooleanValue_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(ns3::BooleanValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanValue const &', 'arg0')])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(bool value) [constructor]
+    cls.add_constructor([param('bool', 'value')])
+    ## boolean.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::BooleanValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## boolean.h (module 'core'): std::string ns3::BooleanValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): void ns3::BooleanValue::Set(bool value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('bool', 'value')])
     return
 
 def register_Ns3BulkSendApplication_methods(root_module, cls):

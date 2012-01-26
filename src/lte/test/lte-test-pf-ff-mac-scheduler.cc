@@ -31,7 +31,7 @@
 #include <ns3/simulator.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
-#include "ns3/rlc-stats-calculator.h"
+#include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
 #include "ns3/lte-test-pf-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
@@ -41,7 +41,7 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-rrc.h>
-#include <ns3/lena-helper.h>
+#include <ns3/lte-helper.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/lte-enb-phy.h>
@@ -236,15 +236,15 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//     LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+//     LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -262,17 +262,17 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  lteHelper->SetSchedulerType ("ns3::PfFfMacScheduler");
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -290,13 +290,13 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  lena->EnableRlcTraces ();
+  lteHelper->EnableRlcTraces ();
 
   double simulationTime = 1.0;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
 
-  Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
 
   Simulator::Run ();
@@ -417,15 +417,15 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
 //     LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("LenaTestPfFfMacCheduler", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  //   LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
 
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
   */
 
-  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
-  lena->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -443,17 +443,17 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
-  enbDevs = lena->InstallEnbDevice (enbNodes);
-  ueDevs = lena->InstallUeDevice (ueNodes);
+  lteHelper->SetSchedulerType ("ns3::PfFfMacScheduler");
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena->Attach (ueDevs, enbDevs.Get (0));
+  lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena->ActivateEpsBearer (ueDevs, bearer);
+  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
@@ -471,13 +471,13 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  lena->EnableRlcTraces ();
+  lteHelper->EnableRlcTraces ();
 
   double simulationTime = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (simulationTime));
 
-  Ptr<RlcStatsCalculator> rlcStats = lena->GetRlcStats ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
   rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (simulationTime)));
 
   Simulator::Run ();

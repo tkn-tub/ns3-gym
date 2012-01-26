@@ -48,6 +48,7 @@ class LteUeRrc;
  */
 class LteUeNetDevice : public LteNetDevice
 {
+
 public:
   static TypeId GetTypeId (void);
 
@@ -62,6 +63,10 @@ public:
   virtual ~LteUeNetDevice (void);
   virtual void DoDispose ();
 
+
+  // inherited from NetDevice
+  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  
 
   Ptr<LteUeMac> GetMac (void);
 
@@ -89,13 +94,15 @@ protected:
 
 
 private:
-  bool DoSend (Ptr<Packet> packet,
-               const Mac48Address& source,
-               const Mac48Address& dest,
-               uint16_t protocolNumber);
 
-  void DoReceive (Ptr<Packet> p);
-
+  /**
+   * Some attributes are exported as
+   * attributes of the LteUeNetDevice from a user perspective,  but
+   * are actually used also in other modules as well (the RRC, the
+   * PHY...). This methods takes care of updating the
+   * configuration of all modules so that their copy of the attribute
+   * values is in sync with the one in the LteUeNetDevice.
+   */
   void UpdateConfig (void);
 
   Ptr<LteEnbNetDevice> m_targetEnb;
@@ -107,7 +114,7 @@ private:
   uint64_t m_imsi;
   static uint64_t m_imsiCounter;
 
-
+  
 };
 
 } // namespace ns3
