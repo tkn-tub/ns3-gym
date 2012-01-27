@@ -238,7 +238,7 @@ LteAmc::GetCqiFromSpectralEfficiency (double s)
     {
       ++cqi;
     }
-  NS_LOG_FUNCTION (s << cqi);
+  NS_LOG_LOGIC ("cqi = " << cqi);
   return cqi;
 }
 
@@ -254,7 +254,7 @@ LteAmc::GetMcsFromCqi (int cqi)
     {
       ++mcs;
     }
-  NS_LOG_FUNCTION (cqi << mcs);
+  NS_LOG_LOGIC ("mcs = " << mcs);
   return mcs;
 }
 
@@ -274,8 +274,9 @@ LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 double
 LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 {
+  NS_LOG_FUNCTION (cqi);
   NS_ASSERT_MSG (cqi >= 0 && cqi <= 15, "CQI must be in [0..15] = " << cqi);
-  NS_LOG_FUNCTION (cqi << SpectralEfficiencyForCqi[cqi]);
+  NS_LOG_LOGIC ("Spectral efficiency = " << SpectralEfficiencyForCqi[cqi]);
   return SpectralEfficiencyForCqi[cqi];
 }
 
@@ -283,7 +284,7 @@ LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 std::vector<int>
 LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   std::vector<int> cqi;
   Values::const_iterator it;
