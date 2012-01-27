@@ -230,7 +230,7 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
       if (mcs <= 10) // QPSK
         {
           int tr = 0;
-          while (MI_map_qpsk_axis[tr] < sinr_db)
+          while ((tr<MI_MAP_QPSK_SIZE)&&(MI_map_qpsk_axis[tr] < sinr_db))
             {
               tr++;
             }
@@ -240,6 +240,7 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
             }
           else 
             {
+              NS_ASSERT_MSG (tr<MI_MAP_QPSK_SIZE, "MI map out of data");
               MI = MI_map_qpsk[tr];
             }
         }
@@ -248,7 +249,7 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
           if (mcs > 10 && mcs < 20 )	// 16-QAM
             {
               int tr = 0;
-              while (MI_map_16qam_axis[tr] < sinr_db)
+              while ((tr<MI_MAP_16QAM_SIZE)&&(MI_map_16qam_axis[tr] < sinr_db))
                 {
                   tr++;
                 }
@@ -258,13 +259,14 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
                 }
               else 
                 {
+                  NS_ASSERT_MSG (tr<MI_MAP_16QAM_SIZE, "MI map out of data");
                   MI = MI_map_16qam[tr];
                 }
             }
           else // 64-QAM
             {
               int tr = 0;
-              while (MI_map_64qam_axis[tr] < sinr_db)
+              while ((tr<MI_MAP_64QAM_SIZE)&&(MI_map_64qam_axis[tr] < sinr_db))
                 {
                   tr++;
                 }
@@ -274,6 +276,7 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
                 }
               else
                 {
+                  NS_ASSERT_MSG (tr<MI_MAP_64QAM_SIZE, "MI map out of data");
                   MI = MI_map_64qam[tr];
                 }
             }
@@ -293,9 +296,10 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
   //NS_LOG_FUNCTION (this);
   double b = 0;
   double c = 0;
+  NS_ASSERT_MSG (mcs>=0 && mcs < 32, "MCS out of range");
   int tbsIndex = TbsIndex[mcs];
   int cbIndex = 1;
-  while (cbMiSizeTable[cbIndex]< cbSize)
+  while ((cbIndex < 9)&&(cbMiSizeTable[cbIndex]< cbSize))
     {
       cbIndex++;
     }
@@ -308,7 +312,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
       //take the lowest CB size including this CB for removing CB size
       //quatization errors
       int i = cbIndex;
-      while (b<0)
+      while ((i<9)&&(b<0))
         {
           b = bEcrTable[i++][tbsIndex];
         }
@@ -319,7 +323,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
       //take the lowest CB size including this CB for removing CB size
       //quatization errors
       int i = cbIndex;
-      while (c<0)
+      while ((i<9)&&(c<0))
         {
           c = cEcrTable[i++][tbsIndex];
         }
