@@ -170,7 +170,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   
   //double speed = sqrt (pow (aSpeedVector.x-bSpeedVector.x,2) +  pow (aSpeedVector.y-bSpeedVector.y,2));
 
-  NS_LOG_FUNCTION (this << *rxPsd);
+  NS_LOG_LOGIC (this << *rxPsd);
 
   int now_ms = static_cast<int> (Simulator::Now ().GetMilliSeconds () * m_timeGranularity);
   int lastUpdate_ms = static_cast<int> (m_lastWindowUpdate.GetMilliSeconds () * m_timeGranularity);
@@ -186,11 +186,11 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
           double power = *vit; // in Watt/Hz
           power = 10 * log10 (180000 * power); // in dB
 
-          NS_LOG_FUNCTION (this << subChannel << *vit  << power << fading);
+          NS_LOG_LOGIC (this << subChannel << *vit  << power << fading);
 
           *vit = pow (10., ((power + fading) / 10)) / 180000; // in Watt
 
-          NS_LOG_FUNCTION (this << subChannel << *vit);
+          NS_LOG_LOGIC (this << subChannel << *vit);
 
         }
 
@@ -199,7 +199,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
 
     }
 
-  NS_LOG_FUNCTION (this << *rxPsd);
+  NS_LOG_LOGIC (this << *rxPsd);
   return rxPsd;
 }
 
@@ -215,10 +215,7 @@ TraceFadingLossModel::CreateFadingChannelRealization (Ptr<const MobilityModel> e
       m_lastWindowUpdate = Simulator::Now ();
     }
    
-
-  NS_LOG_FUNCTION (this <<
-                   "insert new channel realization, m_windowOffsetMap.size () = "
-                        << m_windowOffsetsMap.size ());
+  NS_LOG_LOGIC (this << "insert new channel realization, m_windowOffsetMap.size () = " << m_windowOffsetsMap.size ());
   UniformVariable* startV = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
   ChannelRealizationId_t mobilityPair = std::make_pair (enbMobility,ueMobility);
   m_startVariableMap.insert (std::pair<ChannelRealizationId_t,UniformVariable* > (mobilityPair, startV));
