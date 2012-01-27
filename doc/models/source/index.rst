@@ -26,6 +26,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    click
    csma
    dsdv
+   dsr
    emulation-overview
    energy
    flow-monitor

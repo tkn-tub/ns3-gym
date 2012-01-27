@@ -75,9 +75,11 @@
 #include "ns3/aodv-module.h"
 #include "ns3/olsr-module.h"
 #include "ns3/dsdv-module.h"
+#include "ns3/dsr-module.h"
 #include "ns3/applications-module.h"
 
 using namespace ns3;
+using namespace dsr;
 
 NS_LOG_COMPONENT_DEFINE ("manet-routing-compare");
 
@@ -190,7 +192,7 @@ RoutingExperiment::CommandSetup (int argc, char **argv)
   CommandLine cmd;
   cmd.AddValue ("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
-  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV", m_protocol);
+  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR", m_protocol);
   cmd.Parse (argc, argv);
   return m_CSVfileName;
 }
@@ -270,7 +272,10 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   AodvHelper aodv;
   OlsrHelper olsr;
   DsdvHelper dsdv;
+  DsrHelper dsr;
+  DsrMainHelper dsrMain;
   Ipv4ListRoutingHelper list;
+  InternetStackHelper internet;
 
   switch (m_protocol)
     {
@@ -286,13 +291,23 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
       list.Add (dsdv, 100);
       m_protocolName = "DSDV";
       break;
+    case 4:
+      m_protocolName = "DSR";
+      break;
     default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
     }
 
-  InternetStackHelper internet;
-  internet.SetRoutingHelper (list);
-  internet.Install (adhocNodes);
+  if (m_protocol < 4)
+    {
+      internet.SetRoutingHelper (list);
+      internet.Install (adhocNodes);
+    }
+  else if (m_protocol == 4)
+    {
+      internet.Install (adhocNodes);
+      dsrMain.Install (dsr, adhocNodes);
+    }
 
   NS_LOG_INFO ("assigning ip address");
 
@@ -356,7 +371,7 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   //Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (tr_name + ".tr").c_str());
   //wifiPhy.EnableAsciiAll (osw);
   std::ofstream os;
-  os.open ((tr_name + ".mob").c_str());
+  os.open ((tr_name + ".mob").c_str ());
   MobilityHelper::EnableAsciiAll (os);
 
   //Ptr<FlowMonitor> flowmon;
