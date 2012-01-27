@@ -181,43 +181,6 @@ MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
 
 }
 
-void
-MultiModelSpectrumChannel::RemoveRx (Ptr<SpectrumPhy> phy)
-{
-  NS_LOG_FUNCTION (this << phy);
-
-  bool found = false;
-  for (std::vector<Ptr<SpectrumPhy> >::iterator it = m_phyVector.begin (); it != m_phyVector.end (); ++it)
-    {
-      if (*it == phy)
-        {
-          m_phyVector.erase (it);
-          found = true;
-          break;
-        }
-    }
-  if (!found)
-    {
-      NS_LOG_WARN ("phy instance " << phy << " not found");
-    }
-  else
-    {
-
-      Ptr<const SpectrumModel> rxSpectrumModel = phy->GetRxSpectrumModel ();
-
-      NS_ASSERT_MSG ((0 != rxSpectrumModel), "phy->GetRxSpectrumModel () returned 0. Please check that the RxSpectrumModel is already set for the phy before calling MultiModelSpectrumChannel::AddRx (phy)");
-
-      SpectrumModelUid_t rxSpectrumModelUid = rxSpectrumModel->GetUid ();
-      RxSpectrumModelInfoMap_t::iterator rxInfoIterator = m_rxSpectrumModelInfoMap.find (rxSpectrumModelUid);
-      NS_ASSERT (rxInfoIterator != m_rxSpectrumModelInfoMap.end ());
-      rxInfoIterator->second.m_rxPhyList.remove (phy);
-      if (rxInfoIterator->second.m_rxPhyList.empty ())
-        {
-          // no more PHY instances with this spectrum model, so we can remove the converter
-          m_rxSpectrumModelInfoMap.erase (rxInfoIterator);
-        }
-    }   
-}
 
 TxSpectrumModelInfoMap_t::const_iterator
 MultiModelSpectrumChannel::FindAndEventuallyAddTxSpectrumModel (Ptr<const SpectrumModel> txSpectrumModel)
