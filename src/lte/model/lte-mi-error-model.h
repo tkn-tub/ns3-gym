@@ -50,10 +50,6 @@ class LteMiErrorModel
 
 public:
 
-  LteMiErrorModel (void);
-
-  ~LteMiErrorModel (void);
-
   /** 
    * \brief find the mmib (mean mutual information per bit) for different modulations of the specified TB
    * \param sinr the perceived sinrs in the whole bandwidth
@@ -61,7 +57,7 @@ public:
    * \param cms the MCS of the TB
    * \return the mmib
    */
-  static double Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs);
+  static double Mib (SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs);
   /** 
    * \brief map the mmib (mean mutual information per bit) for different MCS
    * \param mmib mean mutual information per bit of a code-block
@@ -76,7 +72,7 @@ public:
    * \param modulation the modulations (qpsk, 16-qam, 64-qam)
    * \param code block-size and code-rate
    */  
-  static double GetTbError (SpectrumValue& sinr, std::vector<int> map, uint16_t size, uint8_t mcs);
+  static double GetTbError (SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs);
 
 
 //private:

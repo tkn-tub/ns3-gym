@@ -202,22 +202,10 @@ double cEcrTable [9][27] = {
 };
 
 
-
-LteMiErrorModel::LteMiErrorModel (void)
-{
-  //NS_LOG_FUNCTION (this);
-}
-
-
-LteMiErrorModel::~LteMiErrorModel (void)
-{
-}
-
-
 double 
-LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
+LteMiErrorModel::Mib (SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (sinr << &map << (uint32_t) mcs);
   
   double MI;
   double MIsum = 0.0;
@@ -281,11 +269,11 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
                 }
             }
         }
-     NS_LOG_FUNCTION (" RB " << map.at (i) << "Minimum SNR = " << sinr_db << " dB, MCS = " << (uint16_t)mcs << ", MI = " << MI);
+     NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << sinr_db << " dB, MCS = " << (uint16_t)mcs << ", MI = " << MI);
       MIsum += MI;
     }
   MI = MIsum / map.size ();
-  NS_LOG_FUNCTION (" MI = " << MI);
+  NS_LOG_LOGIC (" MI = " << MI);
   return MI;
 }
 
@@ -293,7 +281,7 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs)
 double 
 LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
 {
-  //NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (mib << (uint32_t) mcs << (uint32_t) cbSize);
   double b = 0;
   double c = 0;
   NS_ASSERT_MSG (mcs>=0 && mcs < 32, "MCS out of range");
@@ -304,7 +292,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
       cbIndex++;
     }
   cbIndex--;
-  NS_LOG_FUNCTION (" MCS " << (uint16_t)mcs << " TBS " << tbsIndex << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
+  NS_LOG_LOGIC (" MCS " << (uint16_t)mcs << " TBS " << tbsIndex << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
 
   b = bEcrTable[cbIndex][tbsIndex];
   if (b<0.0)
@@ -330,15 +318,15 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
     }
   // see IEEE802.16m EMD formula 55 of section 4.3.2.1
   double bler = 0.5*( 1 - erf((mib-b)/(sqrt(2)*c)) );
-  NS_LOG_FUNCTION ("MIB: " << mib << " BLER:" << bler);
+  NS_LOG_LOGIC ("MIB: " << mib << " BLER:" << bler);
   return bler;
 }
 
 
 double
-LteMiErrorModel::GetTbError (SpectrumValue& sinr, std::vector<int> map, uint16_t size, uint8_t mcs)
+LteMiErrorModel::GetTbError (SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (sinr << &map << (uint32_t) size << (uint32_t) mcs);
   
   double MI = Mib(sinr, map, mcs);
   // estimate CB size (according to sec 5.1.2 of TS 36.212)
@@ -452,7 +440,7 @@ LteMiErrorModel::GetTbError (SpectrumValue& sinr, std::vector<int> map, uint16_t
       errorRate = MappingMiBler (MI, mcs, Kplus);
     }
   
-  NS_LOG_FUNCTION (" Error rate " << errorRate);
+  NS_LOG_LOGIC (" Error rate " << errorRate);
   
   return errorRate;
 }
