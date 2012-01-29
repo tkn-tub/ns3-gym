@@ -127,6 +127,16 @@ paired with an IPv4 representation of such device. In Linux, this class
 main purpose is to provide address-family specific information (addresses) about
 an interface.
 
+All the classes have appropriate traces in order to track sent, received and lost packets.
+The users is encouraged to use them so to find out if (and where) a packet is dropped. A
+common mistake is to forget the effects of local queues when sending packets, e.g., the ARP
+queue. This can be particularly puzzling when sending jumbo packets or packet bursts using UDP.
+The ARP cache pending queue is limited (3 datagrams) and IP packets might be fragmented, easily
+overfilling the ARP cache queue size. In those cases it is useful to increase the ARP cache
+pending size to a proper value, e.g.:::
+
+    Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (MAX_BURST_SIZE/L2MTU*3));
+
 The IPv6 implementation follows a similar architecture.
 
 Layer-4 protocols and sockets
