@@ -121,6 +121,7 @@ Architecture
 For the sake of an easier explanation, we further divide the LTE model
 in two separate parts, which are described in the following.
 
+The overall architecture of the LTE module is represented in the following figures.
 
 The first part is the lower LTE radio protocol stack, which is
 represented in the figures 
@@ -646,6 +647,7 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
 
    \widehat{T}_{j}(t) = \frac{S\left( \widehat{M}_j(t), \widehat{B}_j(t)
    \right)}{\tau}
+   
 
 
 Transport Blocks
@@ -1267,12 +1269,26 @@ The model can be disabled for working with a zero-losses channel by setting the 
 
 
 
+MIMO Model
+----------
+
+The use of multiple antennas both ar transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power _[CatreuxMIMO]. Recently, with the introduction of the MIMO techniques in most of the new radio technologies, the effort moved in evaluating its impact in the specific implementation from system level perspective, like has been done for LTE in _[ViennaPaper]. In this work, the authors propose to model the MIMO effect as a gain respect to the single-input and single-output (SISO) model evaluated modifying the standard SINR evaluation with the inclusion of the channel matrix of the different antenna streams. This procedure, despite of introducing computational complexity in the system, needs of an accurate calibration as function of the specific configuration adopted (i.e., antennas spacing, antennas orientation, channel model). Therefore, the usage of this model in a network simulator can reduce its flexibility in terms of scenario definition for two reasons: scalability of the model (due to the computational complexity) and flexibility (due to the high number of antenna and channel related variables involved).
+
+According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, _[CatreuxMIMO] presents the statistical gain of several MIMO solutions respect to the SISO one. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution is a normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximatively equal to the one of the SISO mode, in detail:
+
+ * SISO: :math:`\mu = 13.5` and :math:`\sigma = 20`.
+ * MIMO-Alamouti: :math:`\mu = 17.7` and :math:`\sigma = 11.1`.
+ * MIMO-MMSE: :math:`\mu = 10.7` and :math:`\sigma = 16.6`.
+ * MIMO-OSIC-MMSE: :math:`\mu = 12.6` and :math:`\sigma = 15.5`.
+ * MIMO-ZF: :math:`\mu = 10.3` and :math:`\sigma = 12.6`.
 
 
+Therefore the PHY layer implements the MIMO model as the gain in perceived by the receiver when using a MIMO scheme respect to the SISO one. This allows to reuse the SISO PHY error model and the fading tracing scheme and apply the MIMO model in a transparent way. Moreover, new MIMO schemes can be integrated by updating the gain considered according to their statistical behavior. On this matter, considering the MIMO model defined  in the standard (i.e., spatial multiplexing and transmit diversity _[TS36.211]), the gains included are:
 
+ * MIMO-Alamouti: +4.2 dB.
+ * MIMO-MMSE: -2.8 dB.
 
-
-
+where MIMO-Alamouti is a spatial multiplexity scheme, while MIMO-MMSE is an implementation of transmit diversity.
 
 -----------------------
 Channel and Propagation
