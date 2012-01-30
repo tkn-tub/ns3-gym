@@ -219,10 +219,47 @@ public:
   virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
 
+  /**
+   * \brief Clean the ICMPv6 filter structure
+   */
+  void Icmpv6FilterSetPassAll();
+
+  /**
+   * \brief Set the filter to block all the ICMPv6 types
+   */
+  void Icmpv6FilterSetBlockAll();
+
+  /**
+   * \brief Set the filter to pass one ICMPv6 type
+   * \param the ICMPv6 type to pass
+   */
+  void Icmpv6FilterSetPass(uint8_t type);
+
+  /**
+   * \brief Set the filter to block one ICMPv6 type
+   * \param the ICMPv6 type to block
+   */
+  void Icmpv6FilterSetBlock(uint8_t type);
+
+  /**
+   * \brief Ask the filter about the status of one ICMPv6 type
+   * \param the ICMPv6 type
+   * \return true if the ICMP type is passing through
+   */
+  bool Icmpv6FilterWillPass(uint8_t type);
+
+  /**
+   * \brief Ask the filter about the status of one ICMPv6 type
+   * \param the ICMPv6 type
+   * \return true if the ICMP type is being blocked
+   */
+  bool Icmpv6FilterWillBlock(uint8_t type);
+
+
 private:
   /**
    * \struct Data
-   * \brief IPv6 raw data and additionnal information.
+   * \brief IPv6 raw data and additional information.
    */
   struct Data
   {
@@ -277,9 +314,17 @@ private:
   bool m_shutdownRecv;
 
   /**
+   * \brief Struct to hold the ICMPv6 filter
+   */
+  typedef struct
+  {
+    uint32_t icmpv6Filt[8];
+  } icmpv6Filter;
+
+  /**
    * \brief ICMPv6 filter.
    */
-  uint32_t m_icmpFilter;
+  icmpv6Filter m_icmpFilter;
 };
 
 } /* namespace ns3 */

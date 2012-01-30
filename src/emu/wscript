@@ -43,11 +43,13 @@ def build(bld):
             'helper/emu-helper.h',
         ]
 
-    obj = bld.create_suid_program('emu-sock-creator')
-    obj.source = [
+    creator = bld.create_suid_program('emu-sock-creator')
+    creator.source = [
         'model/emu-sock-creator.cc',
         'model/emu-encode-decode.cc',
         ]
+
+    module.env.append_value("DEFINES", "EMU_SOCK_CREATOR=\"%s\"" % (creator.target,))
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')

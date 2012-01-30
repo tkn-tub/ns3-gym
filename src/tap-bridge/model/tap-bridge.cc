@@ -524,8 +524,8 @@ TapBridge::CreateTap (void)
       //
       // Execute the socket creation process image.
       //
-      status = ::execlp ("tap-creator", 
-                         "tap-creator",                       // argv[0] (filename)
+      status = ::execlp (TAP_CREATOR, 
+                         TAP_CREATOR,                       // argv[0] (filename)
                          ossDeviceName.str ().c_str (),       // argv[1] (-d<device name>)
                          ossGateway.str ().c_str (),          // argv[2] (-g<gateway>)
                          ossIp.str ().c_str (),               // argv[3] (-i<IP address>)
