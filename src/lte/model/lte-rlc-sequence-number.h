@@ -125,6 +125,11 @@ public:
     return (!this->operator> (other));
   }
 
+  bool operator >= (const SequenceNumber10 &other) const
+  {
+    return (this->operator> (other) || this->operator== (other));
+  }
+
   bool operator < (const SequenceNumber10 &other) const
   {
     return !this->operator> (other) && m_value != other.m_value;
