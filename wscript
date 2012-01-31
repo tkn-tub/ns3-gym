@@ -541,7 +541,7 @@ class SuidBuild_task(Task.TaskBase):
         super(SuidBuild_task, self).__init__(*args, **kwargs)
         self.m_display = 'build-suid'
         try:
-            program_obj = wutils.find_program(self.generator.target, self.generator.env)
+            program_obj = wutils.find_program(self.generator.name, self.generator.env)
         except ValueError, ex:
             raise WafError(str(ex))
         program_node = program_obj.path.find_or_declare(program_obj.target)
@@ -558,7 +558,10 @@ class SuidBuild_task(Task.TaskBase):
 
     def runnable_status(self):
         "RUN_ME SKIP_ME or ASK_LATER"
-        st = os.stat(self.filename)
+        try:
+            st = os.stat(self.filename)
+        except OSError:
+            return Task.ASK_LATER
         if st.st_uid == 0:
             return Task.SKIP_ME
         else:

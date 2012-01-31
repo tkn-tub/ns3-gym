@@ -51,10 +51,6 @@ TypeId Ipv6RawSocketImpl::GetTypeId ()
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv6RawSocketImpl::m_protocol),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("IcmpFilter", "Any ICMPv6 header whose type field matches a bit in this filter is dropped.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&Ipv6RawSocketImpl::m_icmpFilter),
-                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -69,6 +65,7 @@ Ipv6RawSocketImpl::Ipv6RawSocketImpl ()
   m_protocol = 0;
   m_shutdownSend = false;
   m_shutdownRecv = false;
+  Icmpv6FilterSetPassAll();
 }
 
 Ipv6RawSocketImpl::~Ipv6RawSocketImpl ()
@@ -328,7 +325,7 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
           copy->PeekHeader (icmpHeader);
           uint8_t type = icmpHeader.GetType ();
 
-          if ((1 << type) & m_icmpFilter)
+          if (Icmpv6FilterWillBlock(type))
             {
               /* packet filtered */
               return false;
@@ -370,6 +367,42 @@ bool
 Ipv6RawSocketImpl::GetAllowBroadcast () const
 {
   return true;
+}
+
+void
+Ipv6RawSocketImpl::Icmpv6FilterSetPassAll()
+{
+  memset(&m_icmpFilter, 0xff, sizeof(icmpv6Filter));
+}
+
+void
+Ipv6RawSocketImpl::Icmpv6FilterSetBlockAll()
+{
+  memset(&m_icmpFilter, 0x00, sizeof(icmpv6Filter));
+}
+
+void
+Ipv6RawSocketImpl::Icmpv6FilterSetPass(uint8_t type)
+{
+  (m_icmpFilter.icmpv6Filt[(type) >> 5]) |= (uint32_t(1) << ((type) & 31));
+}
+
+void
+Ipv6RawSocketImpl::Icmpv6FilterSetBlock(uint8_t type)
+{
+  (m_icmpFilter.icmpv6Filt[(type) >> 5]) &= ~(uint32_t(1) << ((type) & 31));
+}
+
+bool
+Ipv6RawSocketImpl::Icmpv6FilterWillPass(uint8_t type)
+{
+  return (((m_icmpFilter.icmpv6Filt[(type) >> 5]) & (uint32_t(1) << ((type) & 31))) != 0);
+}
+
+bool
+Ipv6RawSocketImpl::Icmpv6FilterWillBlock(uint8_t type)
+{
+  return (((m_icmpFilter.icmpv6Filt[(type) >> 5]) & (uint32_t(1) << ((type) & 31))) == 0);
 }
 
 } /* namespace ns3 */

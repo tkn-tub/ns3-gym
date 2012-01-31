@@ -480,7 +480,7 @@ LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
     }
   else
     {
-      NS_LOG_FUNCTION (this << " IdealControlMessage not recognized");
+      NS_LOG_LOGIC (this << " IdealControlMessage not recognized");
     }
 }
 
@@ -501,10 +501,9 @@ void
 LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
-  // NS_LOG_FUNCTION (this << msg->GetSourceDevice () << msg->GetDestinationDevice ());
 
   CqiListElement_s dlcqi = msg->GetDlCqi ();
-  NS_LOG_FUNCTION (this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
+  NS_LOG_LOGIC (this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
   m_dlCqiReceived.push_back (dlcqi);
 
 }
@@ -753,7 +752,6 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
 void
 LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind)
 {
-
   NS_LOG_FUNCTION (this);
 
   for (unsigned int i = 0; i < ind.m_dciList.size (); i++)

@@ -108,7 +108,7 @@ main (int argc, char *argv[])
               Vector v (roomLength * (column + 0.5), roomLength * (row + 0.5), nodeHeight);
               positionAlloc->Add (v);
               enbPosition.push_back (v);
-              mobility.Install (ueNodes[plantedEnb]);
+              mobility.Install (ueNodes.at(plantedEnb));
             }
         }
       mobility.SetPositionAllocator (positionAlloc);
@@ -117,17 +117,17 @@ main (int argc, char *argv[])
       // Position of UEs attached to eNB
       for (uint32_t i = 0; i < nEnb; i++)
         {
-          UniformVariable posX (enbPosition[i].x - roomLength * 0.5,
-                                enbPosition[i].x + roomLength * 0.5);
-          UniformVariable posY (enbPosition[i].y - roomLength * 0.5,
-                                enbPosition[i].y + roomLength * 0.5);
+          UniformVariable posX (enbPosition.at(i).x - roomLength * 0.5,
+                                enbPosition.at(i).x + roomLength * 0.5);
+          UniformVariable posY (enbPosition.at(i).y - roomLength * 0.5,
+                                enbPosition.at(i).y + roomLength * 0.5);
           positionAlloc = CreateObject<ListPositionAllocator> ();
           for (uint32_t j = 0; j < nUe; j++)
             {
               positionAlloc->Add (Vector (posX.GetValue (), posY.GetValue (), nodeHeight));
               mobility.SetPositionAllocator (positionAlloc);
             }
-          mobility.Install (ueNodes[i]);
+          mobility.Install (ueNodes.at(i));
         }
 
     }
@@ -164,10 +164,10 @@ main (int argc, char *argv[])
                   mmEnb->SetRoomNumberY (column);
 
                   // Positioning UEs attached to eNB
-                  mobility.Install (ueNodes[plantedEnb]);
+                  mobility.Install (ueNodes.at(plantedEnb));
                   for (uint32_t ue = 0; ue < nUe; ue++)
                     {
-                      Ptr<BuildingsMobilityModel> mmUe = ueNodes[plantedEnb].Get (ue)->GetObject<BuildingsMobilityModel> ();
+                      Ptr<BuildingsMobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
                       Vector vUe (v.x, v.y, v.z);
                       mmUe->SetPosition (vUe);
                       mmUe->SetIndoor (building);
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      NetDeviceContainer ueDev = lteHelper->InstallUeDevice (ueNodes[i]);
+      NetDeviceContainer ueDev = lteHelper->InstallUeDevice (ueNodes.at(i));
       ueDevs.push_back (ueDev);
       lteHelper->Attach (ueDev, enbDevs.Get (i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;

@@ -9,6 +9,29 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3-dev
+==============
+
+Availability
+------------
+This release is available from: 
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+ - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
+ - bug 1318 - Asserts for IPv6 malformed packets
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
 Release 3.13
 ==============
 

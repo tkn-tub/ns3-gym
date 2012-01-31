@@ -476,8 +476,8 @@ EmuNetDevice::CreateSocket (void)
       //
       // Execute the socket creation process image.
       //
-      status = ::execlp ("emu-sock-creator", 
-                         "emu-sock-creator",                            // argv[0] (filename)
+      status = ::execlp (EMU_SOCK_CREATOR,
+                         EMU_SOCK_CREATOR,                            // argv[0] (filename)
                          oss.str ().c_str (),                           // argv[1] (-p<path?
                          (char *)NULL);
 
