@@ -89,9 +89,9 @@ LteRlcAmHeader::SetFramingInfo (uint8_t framingInfo)
 }
 
 void
-LteRlcAmHeader::SetSequenceNumber (uint16_t sequenceNumber)
+LteRlcAmHeader::SetSequenceNumber (SequenceNumber10 sequenceNumber)
 {
-  m_sequenceNumber = sequenceNumber & 0x03FF;
+  m_sequenceNumber = sequenceNumber;
 }
 
 uint8_t
@@ -100,7 +100,7 @@ LteRlcAmHeader::GetFramingInfo () const
   return m_framingInfo;
 }
 
-uint16_t
+SequenceNumber10
 LteRlcAmHeader::GetSequenceNumber () const
 {
   return m_sequenceNumber;
@@ -209,12 +209,12 @@ LteRlcAmHeader::GetLastOffset (void) const
 
 
 void
-LteRlcAmHeader::SetAckSn (uint16_t ackSn)
+LteRlcAmHeader::SetAckSn (SequenceNumber10 ackSn)
 {
-  m_ackSn = ackSn & 0x03FF;
+  m_ackSn = ackSn;
 }
 
-uint16_t
+SequenceNumber10
 LteRlcAmHeader::GetAckSn (void) const
 {
   return m_ackSn;
@@ -303,8 +303,8 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
                   ((m_pollingBit << 5) & 0x20) |
                   ((m_framingInfo << 3) & 0x18) |
                   (((*it1) << 2) & 0x04) |
-                  ((m_sequenceNumber >> 8) & 0x0003) );
-      i.WriteU8 ( m_sequenceNumber & 0x00FF );
+                  ((m_sequenceNumber.GetValue () >> 8) & 0x0003) );
+      i.WriteU8 ( m_sequenceNumber.GetValue () & 0x00FF );
       i.WriteU8 ( ((m_lastSegmentFlag << 7) & 0x80) |
                   ((m_segmentOffset >> 8) & 0x007F) );
       i.WriteU8 ( m_segmentOffset & 0x00FF );
@@ -346,8 +346,8 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
     {
       i.WriteU8 ( ((CONTROL_PDU << 7) & 0x80) |
                   ((m_controlPduType << 4) & 0x70) |
-                  ((m_ackSn >> 6) & 0x0F) );
-      i.WriteU8 ( ((m_ackSn << 2) & 0xC0) );
+                  ((m_ackSn.GetValue () >> 6) & 0x0F) );
+      i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xC0) );
     }
 }
 
@@ -378,7 +378,7 @@ uint32_t LteRlcAmHeader::Deserialize (Buffer::Iterator start)
 
       m_lastSegmentFlag    = (byte_3 & 0x80) >> 7;
       m_segmentOffset      = (byte_3 & 0x7F) | byte_4;
-           
+
       extensionBit = (byte_1 & 0x04) >> 2;
       m_extensionBits.push_back (extensionBit);
 
