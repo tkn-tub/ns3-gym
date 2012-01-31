@@ -48,8 +48,14 @@ LteTestRrc::GetTypeId (void)
 LteTestRrc::LteTestRrc ()
 {
   NS_LOG_FUNCTION (this);
+
+  m_txPdus = 0;
+  m_txBytes = 0;
+  m_rxPdus = 0;
+  m_rxBytes = 0;
+
   m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteTestRrc> (this);
-  Simulator::ScheduleNow (&LteTestRrc::Start, this);
+//   Simulator::ScheduleNow (&LteTestRrc::Start, this);
 }
 
 LteTestRrc::~LteTestRrc ()
@@ -81,8 +87,51 @@ std::string
 LteTestRrc::GetDataReceived (void)
 {
   NS_LOG_FUNCTION (this);
-
   return m_receivedData;
+}
+
+// Stats
+uint32_t
+LteTestRrc::GetTxPdus (void)
+{
+  NS_LOG_FUNCTION (this << m_txPdus);
+  return m_txPdus;
+}
+
+uint32_t
+LteTestRrc::GetTxBytes (void)
+{
+  NS_LOG_FUNCTION (this << m_txBytes);
+  return m_txBytes;
+}
+
+uint32_t
+LteTestRrc::GetRxPdus (void)
+{
+  NS_LOG_FUNCTION (this << m_rxPdus);
+  return m_rxPdus;
+}
+
+uint32_t
+LteTestRrc::GetRxBytes (void)
+{
+  NS_LOG_FUNCTION (this << m_rxBytes);
+  return m_rxBytes;
+}
+
+
+void
+LteTestRrc::SetArrivalTime (Time arrivalTime)
+{
+  NS_LOG_FUNCTION (this << arrivalTime);
+  m_arrivalTime = arrivalTime;
+}
+
+void
+LteTestRrc::SetPduSize (uint32_t pduSize)
+{
+  NS_LOG_FUNCTION (this << pduSize);
+  m_pduSize = pduSize;
 }
 
 
@@ -95,14 +144,19 @@ LteTestRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
 {
   NS_LOG_FUNCTION (this << params.rrcPdu->GetSize ());
   Ptr<Packet> p = params.rrcPdu;
-  NS_LOG_LOGIC ("PDU received = " << (*p));
+//   NS_LOG_LOGIC ("PDU received = " << (*p));
 
   uint32_t dataLen = p->GetSize ();
   uint8_t *buf = new uint8_t[dataLen];
+
+  // Stats
+  m_rxPdus++;
+  m_rxBytes += dataLen;
+
   p->CopyData (buf, dataLen);
   m_receivedData = std::string ((char *)buf, dataLen);
 
-  NS_LOG_LOGIC (m_receivedData);
+//   NS_LOG_LOGIC (m_receivedData);
 
   delete [] buf;
 }
@@ -115,6 +169,26 @@ void
 LteTestRrc::Start ()
 {
   NS_LOG_FUNCTION (this);
+
+  // Stats
+  m_txPdus++;
+  m_txBytes += m_pduSize;
+
+  LtePdcpSapProvider::TransmitRrcPduParameters p;
+  p.rnti = 1111;
+  p.lcid = 222;
+  p.rrcPdu = Create<Packet> (m_pduSize);
+
+  Simulator::ScheduleNow (&LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
+  m_nextPdu = Simulator::Schedule (m_arrivalTime, &LteTestRrc::Start, this);
+//   Simulator::Run ();
+}
+
+void
+LteTestRrc::Stop ()
+{
+  NS_LOG_FUNCTION (this);
+  m_nextPdu.Cancel ();
 }
 
 void
@@ -122,11 +196,18 @@ LteTestRrc::SendData (Time at, std::string dataToSend)
 {
   NS_LOG_FUNCTION (this << at << dataToSend.length () << dataToSend);
 
+  // Stats
+  m_txPdus++;
+  m_txBytes += dataToSend.length ();
+
   LtePdcpSapProvider::TransmitRrcPduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
 
+  NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.rrcPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
+
+  NS_LOG_LOGIC ("Packet(" << p.rrcPdu->GetSize () << ")");
   Simulator::Schedule (at, &LtePdcpSapProvider::TransmitRrcPdu, m_pdcpSapProvider, p);
 }
 
@@ -223,7 +304,10 @@ LteTestPdcp::SendData (Time time, std::string dataToSend)
   p.rnti = 1111;
   p.lcid = 222;
 
+  NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.pdcpPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
+
+  NS_LOG_LOGIC ("Packet(" << p.pdcpPdu->GetSize () << ")");
   Simulator::Schedule (time, &LteRlcSapProvider::TransmitPdcpPdu, m_rlcSapProvider, p);
 }
 
@@ -243,12 +327,21 @@ LteTestMac::GetTypeId (void)
 LteTestMac::LteTestMac ()
 {
   NS_LOG_FUNCTION (this);
+  m_device = 0;
   m_macSapProvider = new EnbMacMemberLteMacSapProvider<LteTestMac> (this);
   m_macSapUser = 0;
   m_macLoopback = 0;
   m_pdcpHeaderPresent = false;
   m_rlcHeaderType = UM_RLC_HEADER;
   m_txOpportunityMode = MANUAL_MODE;
+  m_txOppTime = Seconds (0.001);
+  m_txOppSize = 0;
+
+  m_txPdus = 0;
+  m_txBytes = 0;
+  m_rxPdus = 0;
+  m_rxBytes = 0;
+
 //   m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
 //   m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
 //   m_cschedSapUser = new EnbMacMemberFfMacCschedSapUser (this);
@@ -258,6 +351,7 @@ LteTestMac::LteTestMac ()
 LteTestMac::~LteTestMac ()
 {
   NS_LOG_FUNCTION (this);
+  m_device = 0;
 }
 
 void
@@ -269,6 +363,12 @@ LteTestMac::DoDispose ()
 //   delete m_schedSapUser;
 //   delete m_cschedSapUser;
 //   delete m_enbPhySapUser;
+}
+
+void
+LteTestMac::SetDevice (Ptr<NetDevice> device)
+{
+  m_device = device;
 }
 
 void
@@ -293,37 +393,94 @@ std::string
 LteTestMac::GetDataReceived (void)
 {
   NS_LOG_FUNCTION (this);
-
   return m_receivedData;
 }
+
+// Stats
+uint32_t
+LteTestMac::GetTxPdus (void)
+{
+  NS_LOG_FUNCTION (this << m_txPdus);
+  return m_txPdus;
+}
+
+uint32_t
+LteTestMac::GetTxBytes (void)
+{
+  NS_LOG_FUNCTION (this << m_txBytes);
+  return m_txBytes;
+}
+
+uint32_t
+LteTestMac::GetRxPdus (void)
+{
+  NS_LOG_FUNCTION (this << m_rxPdus);
+  return m_rxPdus;
+}
+
+uint32_t
+LteTestMac::GetRxBytes (void)
+{
+  NS_LOG_FUNCTION (this << m_rxBytes);
+  return m_rxBytes;
+}
+
 
 void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this << time << bytes);
-
   Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes);
+  if (m_txOpportunityMode == RANDOM_MODE)
+    {
+      if (m_txOppTime != Seconds (0))
+        {
+          Simulator::Schedule (m_txOppTime, &LteTestMac::SendTxOpportunity, this, m_txOppTime, m_txOppSize);
+        }
+    }
 }
 
 void
 LteTestMac::SetPdcpHeaderPresent (bool present)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << present);
   m_pdcpHeaderPresent = present;
 }
 
 void
 LteTestMac::SetRlcHeaderType (uint8_t rlcHeaderType)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << rlcHeaderType);
   m_rlcHeaderType = rlcHeaderType;
 }
 
 void
 LteTestMac::SetTxOpportunityMode (uint8_t mode)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << (uint32_t)mode);
   m_txOpportunityMode = mode;
+
+  if (m_txOpportunityMode == RANDOM_MODE)
+    {
+      if (m_txOppTime != Seconds (0.0))
+        {
+          SendTxOpportunity (m_txOppTime, m_txOppSize);
+        }
+    }
+}
+
+void
+LteTestMac::SetTxOppTime (Time txOppTime)
+{
+  NS_LOG_FUNCTION (this << txOppTime);
+  m_txOppTime = txOppTime;
+}
+
+void
+LteTestMac::SetTxOppSize (uint32_t txOppSize)
+{
+  NS_LOG_FUNCTION (this << txOppSize);
+  m_txOppSize = txOppSize;
 }
 
 
@@ -336,46 +493,51 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
   NS_LOG_FUNCTION (this << params.pdu->GetSize ());
 
-  if (m_macLoopback)
-    {
-      Simulator::Schedule (Seconds (0.1), &LteMacSapUser::ReceivePdu,
-                           m_macLoopback->m_macSapUser, params.pdu);
-    }
-  else
-    {
-      LtePdcpHeader pdcpHeader;
+  m_txPdus++;
+  m_txBytes += params.pdu->GetSize ();
 
-      if (m_rlcHeaderType == AM_RLC_HEADER)
-        {
-          // Remove AM RLC header
-          LteRlcAmHeader rlcAmHeader;
-          params.pdu->RemoveHeader (rlcAmHeader);
-          NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
-        }
-      else // if (m_rlcHeaderType == UM_RLC_HEADER)
-        {
-          // Remove UM RLC header
-          LteRlcHeader rlcHeader;
-          params.pdu->RemoveHeader (rlcHeader);
-          NS_LOG_LOGIC ("UM RLC header: " << rlcHeader);
-        }
+  m_device->Send (params.pdu, m_device->GetBroadcast (), 0);
 
-      // Remove PDCP header, if present
-      if (m_pdcpHeaderPresent)
-        {
-          params.pdu->RemoveHeader (pdcpHeader);
-          NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
-        }
-
-      // Copy data to a string
-      uint32_t dataLen = params.pdu->GetSize ();
-      uint8_t *buf = new uint8_t[dataLen];
-      params.pdu->CopyData (buf, dataLen);
-      m_receivedData = std::string ((char *)buf, dataLen);
-
-      NS_LOG_LOGIC ("Data = " << m_receivedData);
-      delete [] buf;
-    }
+//   if (m_macLoopback)
+//     {
+//       Simulator::Schedule (Seconds (0.1), &LteMacSapUser::ReceivePdu,
+//                            m_macLoopback->m_macSapUser, params.pdu);
+//     }
+//   else
+//     {
+//       LtePdcpHeader pdcpHeader;
+// 
+//       if (m_rlcHeaderType == AM_RLC_HEADER)
+//         {
+//           // Remove AM RLC header
+//           LteRlcAmHeader rlcAmHeader;
+//           params.pdu->RemoveHeader (rlcAmHeader);
+//           NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+//         }
+//       else // if (m_rlcHeaderType == UM_RLC_HEADER)
+//         {
+//           // Remove UM RLC header
+//           LteRlcHeader rlcHeader;
+//           params.pdu->RemoveHeader (rlcHeader);
+//           NS_LOG_LOGIC ("UM RLC header: " << rlcHeader);
+//         }
+// 
+//       // Remove PDCP header, if present
+//       if (m_pdcpHeaderPresent)
+//         {
+//           params.pdu->RemoveHeader (pdcpHeader);
+//           NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+//         }
+// 
+//       // Copy data to a string
+//       uint32_t dataLen = params.pdu->GetSize ();
+//       uint8_t *buf = new uint8_t[dataLen];
+//       params.pdu->CopyData (buf, dataLen);
+//       m_receivedData = std::string ((char *)buf, dataLen);
+// 
+//       NS_LOG_LOGIC ("Data (" << dataLen << ") = " << m_receivedData);
+//       delete [] buf;
+//     }
 }
 
 void
@@ -401,5 +563,16 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
                                m_macSapUser, params.retxQueueSize + 2);
         }
     }
+}
 
+
+bool
+LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr)
+{
+  m_rxPdus++;
+  m_rxBytes += p->GetSize ();
+
+  Ptr<Packet> packet = p->Copy ();
+  m_macSapUser->ReceivePdu (packet);
+  return true;
 }
