@@ -69,7 +69,7 @@ LteRlcUm::GetTypeId (void)
 void
 LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p->GetSize ());
 
   /** Store arrival time */
   RlcTag timeTag (Simulator::Now ());
@@ -488,6 +488,12 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
       ReassembleSnLessThan (m_vrUr);
     }
 
+  // m_vrUh can change previously, set new modulus base
+  // for the t-Reordering timer-related comparisons
+  m_vrUr.SetModulusBase (m_vrUh - m_windowSize);
+  m_vrUx.SetModulusBase (m_vrUh - m_windowSize);
+  m_vrUh.SetModulusBase (m_vrUh - m_windowSize);
+
   // - if t-Reordering is running:
   //    - if VR(UX) <= VR(UR); or
   //    - if VR(UX) falls outside of the reordering window and VR(UX) is not equal to VR(UH)::
@@ -512,11 +518,11 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
     {
       NS_LOG_LOGIC ("Reordering timer is not running");
 
-      if ( m_vrUx > m_vrUr )
+      if ( m_vrUh > m_vrUr )
         {
-          NS_LOG_LOGIC ("VR(UX) > VR(UR). " << m_vrUx << " > " << m_vrUr);
+          NS_LOG_LOGIC ("VR(UH) > VR(UR)");
           NS_LOG_LOGIC ("Start reordering timer");
-          m_reorderingTimer = Simulator::Schedule (Time ("1.0s"),
+          m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
                                                    &LteRlcUm::ExpireReorderingTimer ,this);
           m_vrUx = m_vrUh;
           NS_LOG_LOGIC ("New VR(UX) = " << m_vrUx);
@@ -547,12 +553,12 @@ LteRlcUm::IsInsideReorderingWindow (SequenceNumber10 seqNumber)
 
   if ( ((m_vrUh - m_windowSize) <= seqNumber) && (seqNumber < m_vrUh))
     {
-      NS_LOG_LOGIC (seqNumber << "is INSIDE the reordering window");
+      NS_LOG_LOGIC (seqNumber << " is INSIDE the reordering window");
       return true;
     }
   else
     {
-      NS_LOG_LOGIC (seqNumber << "is OUTSIDE the reordering window");
+      NS_LOG_LOGIC (seqNumber << " is OUTSIDE the reordering window");
       return false;
     }
 }
@@ -1062,7 +1068,7 @@ LteRlcUm::DoReportBufferStatus (void)
 void
 LteRlcUm::ExpireReorderingTimer (void)
 {
-  NS_LOG_LOGIC ("TODO: Reordering Timer has expired...");
+  NS_LOG_LOGIC ("Reordering timer has expired");
 
   // 5.1.2.2.4 Actions when t-Reordering expires
   // When t-Reordering expires, the receiving UM RLC entity shall:
@@ -1081,15 +1087,17 @@ LteRlcUm::ExpireReorderingTimer (void)
       newVrUr++;
     }
   m_vrUr = newVrUr;
+  NS_LOG_LOGIC ("New VR(UR) = " << m_vrUr);
 
   ReassembleSnLessThan (m_vrUr);
 
   if ( m_vrUh > m_vrUr)
     {
       NS_LOG_LOGIC ("Start reordering timer");
-      m_reorderingTimer = Simulator::Schedule (Time ("1.0s"),
+      m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
                                                &LteRlcUm::ExpireReorderingTimer, this);
       m_vrUx = m_vrUh;
+      NS_LOG_LOGIC ("New VR(UX) = " << m_vrUx);
     }
 }
 
