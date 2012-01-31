@@ -26,6 +26,7 @@
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
 #include "ns3/spectrum-module.h"
+#include <ns3/buildings-helper.h>
 //#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
@@ -90,10 +91,8 @@ int main (int argc, char *argv[])
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
   remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
   remHelper->SetAttribute ("XMax", DoubleValue (400.0));
-  remHelper->SetAttribute ("XRes", UintegerValue (40));
   remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
   remHelper->SetAttribute ("YMax", DoubleValue (300.0));
-  remHelper->SetAttribute ("YRes", UintegerValue (30));
   remHelper->SetAttribute ("Z", DoubleValue (0.0));
   remHelper->Install ();
 
@@ -107,9 +106,10 @@ int main (int argc, char *argv[])
   // plot "rem.out" using ($1):($2):(10*log10($4)) with image
   
     
+  BuildingsHelper::MakeMobilityModelConsistent ();
 
-
-  Simulator::Stop (Seconds (0.020));
+ // by default, simulation will anyway stop right after the REM has been generated
+  Simulator::Stop (Seconds (0.0069));
 
   Simulator::Run ();
 

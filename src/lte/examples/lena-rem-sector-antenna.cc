@@ -37,8 +37,6 @@ using std::vector;
 int
 main (int argc, char *argv[])
 {
-  double simTime = 0.03;
-
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
@@ -214,27 +212,28 @@ main (int argc, char *argv[])
       lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());
     }
 
-  Simulator::Stop (Seconds (simTime));
-  lteHelper->EnableTraces ();
+  // by default, simulation will anyway stop right after the REM has been generated
+  Simulator::Stop (Seconds (0.0069));  
 
   Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
   remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
   remHelper->SetAttribute ("XMin", DoubleValue (-2000.0));
   remHelper->SetAttribute ("XMax", DoubleValue (+2000.0));
-  remHelper->SetAttribute ("XRes", UintegerValue (100));
   remHelper->SetAttribute ("YMin", DoubleValue (-500.0));
   remHelper->SetAttribute ("YMax", DoubleValue (+3500.0));
-  remHelper->SetAttribute ("YRes", UintegerValue (100));
   remHelper->SetAttribute ("Z", DoubleValue (1.5));
   remHelper->Install ();
-  // Recall the buildings helper to place the REM nodes in its position
+
+
+
   BuildingsHelper::MakeMobilityModelConsistent ();
   Simulator::Run ();
 
   // GtkConfigStore config;
   // config.ConfigureAttributes ();
 
+  lteHelper = 0;
   Simulator::Destroy ();
   return 0;
 }
