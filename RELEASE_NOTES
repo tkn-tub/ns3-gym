@@ -26,6 +26,7 @@ Bugs fixed
 ----------
  - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
  - bug 1318 - Asserts for IPv6 malformed packets
+ - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
 
 Known issues
 ------------
