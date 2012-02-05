@@ -207,8 +207,6 @@ RadioEnvironmentMapHelper::PrintAndDeactivate ()
   if (m_exitWhenDone)
     {
       Simulator::Stop ();
-      Simulator::Destroy ();
-      exit (0);
     }
 }
 
