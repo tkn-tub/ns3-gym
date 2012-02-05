@@ -969,7 +969,9 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
       if (ipv6Extension)
         {
           uint8_t nextHeaderStep = 0;
+#ifdef NS3_ASSERT_ENABLE
           uint8_t curHeader = nextHeader;
+#endif
           nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
           nextHeaderPosition += nextHeaderStep;
 
