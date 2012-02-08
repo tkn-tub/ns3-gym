@@ -169,6 +169,7 @@ void
 LteTestRrc::Start ()
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (m_arrivalTime != 0, "Arrival time must be different from 0");
 
   // Stats
   m_txPdus++;
@@ -351,7 +352,6 @@ LteTestMac::LteTestMac ()
 LteTestMac::~LteTestMac ()
 {
   NS_LOG_FUNCTION (this);
-  m_device = 0;
 }
 
 void
@@ -363,6 +363,8 @@ LteTestMac::DoDispose ()
 //   delete m_schedSapUser;
 //   delete m_cschedSapUser;
 //   delete m_enbPhySapUser;
+
+  m_device = 0;
 }
 
 void
@@ -569,6 +571,8 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
 bool
 LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr)
 {
+  NS_LOG_FUNCTION (this << addr << protocol << p->GetSize ());
+
   m_rxPdus++;
   m_rxBytes += p->GetSize ();
 
