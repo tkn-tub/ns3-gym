@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <limits>
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/type-id.h"
@@ -210,7 +211,7 @@ private:
                                   uint32_t maxSize);
   struct Data {
     /* number of references to this struct Data instance. */
-    uint16_t m_count;
+    uint32_t m_count;
     /* size (in bytes) of m_data buffer below */
     uint16_t m_size;
     /* max of the m_used field over all objects which 
@@ -376,6 +377,7 @@ PacketMetadata::PacketMetadata (PacketMetadata const &o)
     m_packetUid (o.m_packetUid)
 {
   NS_ASSERT (m_data != 0);
+  NS_ASSERT (m_data->m_count < std::numeric_limits<uint32_t>::max());
   m_data->m_count++;
 }
 PacketMetadata &

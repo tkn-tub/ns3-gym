@@ -498,6 +498,21 @@ generated. Note that each RadioEnvironmentMapHelper instance can
 generate only one REM; if you want to generate more REMs, you need to
 create one separate instance for each REM. 
 
+Note that the REM generation is very demanding, in particular:
+
+ * the run-time memory consumption is approximately 5KB per pixel. For example,
+   a REM with a resolution of 500x500 needs about 1.25 GB of memory, and
+   a resolution of 1000x1000 needs about 5 GB (too much for a
+   regular PC at the time of this writing).
+ * if you generate a REM at the beginning of a simulation, it will
+   slow down the execution of the rest of the simulation. If you want
+   to generate a REM for a program and also use the same program to
+   get simulation result, it is recommended to add a command-line
+   switch that allows to either generate the REM or run the complete
+   simulation. For this purpose, note that there is an attribute
+   ``RadioEnvironmentMapHelper::StopWhenDone`` (default: true) that
+   will force the simulation to stop right after the REM has been generated.
+
 The REM is stored in an ASCII file in the following format:
 
  * column 1 is the x coordinate
@@ -512,6 +527,7 @@ below::
    set xlabel "X"
    set ylabel "Y"
    set cblabel "SINR (dB)"
+   unset key
    plot "rem.out" using ($1):($2):(10*log10($4)) with image
   
 

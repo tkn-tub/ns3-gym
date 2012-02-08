@@ -62,29 +62,29 @@ private:
   struct RemPoint 
   {
     Ptr<RemSpectrumPhy> phy;
-    Ptr<Node> node;
-    Ptr<NetDevice> dev;
     Ptr<BuildingsMobilityModel> bmm;
   };
 
-  std::list<std::list<RemPoint> > m_rem;
+  std::list<RemPoint> m_rem;
 
   double m_xMin;
   double m_xMax;
-  uint32_t m_xRes;
+  uint16_t m_xRes;
 
   double m_yMin;
   double m_yMax;
-  uint32_t m_yRes;
+  uint16_t m_yRes;
   
   double m_z;
 
   std::string m_channelPath;
   std::string m_outputFile;
 
-  bool m_exitWhenDone;
+  bool m_stopWhenDone;
   
   Ptr<SpectrumChannel> m_channel;
+
+  double m_noisePower;
 };
 
 
