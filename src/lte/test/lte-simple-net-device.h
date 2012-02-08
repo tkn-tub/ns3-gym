@@ -42,7 +42,7 @@ public:
   static TypeId GetTypeId (void);
 
   LteSimpleNetDevice (void);
-  LteSimpleNetDevice (Ptr<Node> node, Ptr<LteRlc> rlc);
+  LteSimpleNetDevice (Ptr<Node> node);
 
   virtual ~LteSimpleNetDevice (void);
   virtual void DoDispose ();
@@ -55,11 +55,6 @@ public:
 protected:
   // inherited from Object
   virtual void DoStart (void);
-
-
-private:
-
-  Ptr<LteRlc> m_rlc;
 
 };
 

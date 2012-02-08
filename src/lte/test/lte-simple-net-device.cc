@@ -37,11 +37,7 @@ TypeId LteSimpleNetDevice::GetTypeId (void)
     tid =
     TypeId ("ns3::LteSimpleNetDevice")
     .SetParent<SimpleNetDevice> ()
-    .AddAttribute ("LteRlc",
-                   "The RLC instance",
-                   PointerValue (),
-                   MakePointerAccessor (&LteSimpleNetDevice::m_rlc),
-                   MakePointerChecker <LteRlc> ())
+    .AddConstructor<LteSimpleNetDevice> ()
   ;
 
   return tid;
@@ -51,14 +47,12 @@ TypeId LteSimpleNetDevice::GetTypeId (void)
 LteSimpleNetDevice::LteSimpleNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("This constructor should not be called");
 }
 
 
-LteSimpleNetDevice::LteSimpleNetDevice (Ptr<Node> node, Ptr<LteRlc> rlc)
+LteSimpleNetDevice::LteSimpleNetDevice (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this);
-  m_rlc = rlc;
   SetNode (node);
 }
 
@@ -71,8 +65,6 @@ void
 LteSimpleNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_rlc->Dispose ();
-  m_rlc = 0;
   SimpleNetDevice::DoDispose ();
 }
 
@@ -81,7 +73,6 @@ void
 LteSimpleNetDevice::DoStart (void)
 {
   NS_LOG_FUNCTION (this);
-  m_rlc->Start ();
 }
 
 bool
