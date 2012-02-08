@@ -187,10 +187,10 @@ LteRlcAmE2eTestCase::DoRun (void)
 
   // Start/Stop pseudo-application at RRC layer
   Simulator::Schedule (Seconds (0.100), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
-  Simulator::Schedule (Seconds (1.100), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
+  Simulator::Schedule (Seconds (10.100), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
 
 
-  Simulator::Stop (Seconds (15.000));
+  Simulator::Stop (Seconds (100.000));
   Simulator::Run ();
 
   uint32_t txEnbRrcPdus = lteSimpleHelper->m_enbRrc->GetTxPdus ();
