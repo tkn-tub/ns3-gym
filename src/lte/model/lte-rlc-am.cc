@@ -129,7 +129,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
   Time retxQueueHolDelay (0);
   if ( m_retxBufferSize )
     {
-      m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+//MRE      m_retxBuffer.front ().m_pdu->PeekPacketTag (retxQueueHolTimeTag);
       retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
     }
 
@@ -186,10 +186,25 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
       params.lcid = m_lcid;
 
       m_macSapProvider->TransmitPdu (params);
+      return;
     }
   else if ( m_retxBufferSize > 0 )
     {
       NS_LOG_LOGIC ("Sending data from Retransmission Buffer");
+
+      Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu;
+
+      if ( packet->GetSize () <= bytes )
+        {
+          // Send RLC PDU to MAC layer
+          LteMacSapProvider::TransmitPduParameters params;
+          params.pdu = packet;
+          params.rnti = m_rnti;
+          params.lcid = m_lcid;
+
+          m_macSapProvider->TransmitPdu (params);
+          return;
+        }
     }
   else if ( m_txonBufferSize > 0 )
     {
@@ -212,7 +227,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
   rlcAmHeader.SetDataPdu ();
 
   // Build Data field
-  uint32_t nextSegmentSize = bytes - 2;
+  uint32_t nextSegmentSize = bytes - 4;
   uint32_t nextSegmentId = 1;
   uint32_t dataFieldTotalSize = 0;
   uint32_t dataFieldAddedSize = 0;
@@ -442,7 +457,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
         {
           NS_LOG_LOGIC ("Start PollRetransmit timer");
 
-          m_pollRetransmitTimer = Simulator::Schedule (Time ("1.0s"),
+          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.1s"),
                                                        &LteRlcAm::ExpirePollRetransmitTimer, this);
         }
       else
@@ -450,7 +465,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
           NS_LOG_LOGIC ("Restart PollRetransmit timer");
 
           m_pollRetransmitTimer.Cancel ();
-          m_pollRetransmitTimer = Simulator::Schedule (Time ("1.0s"),
+          m_pollRetransmitTimer = Simulator::Schedule (Time ("0.1s"),
                                                        &LteRlcAm::ExpirePollRetransmitTimer, this);
         }
     }
@@ -684,6 +699,12 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
             {
               while ( m_rxonBuffer[ m_vrR.GetValue () ].m_pduComplete )
                 {
+                  NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << m_vrR << " )");
+                  NS_ASSERT_MSG (m_rxonBuffer[ m_vrR.GetValue () ].m_byteSegments.size () == 1,
+                                "Too many segments. PDU Reassembly process didn't work");
+                  ReassembleAndDeliver (m_rxonBuffer[ m_vrR.GetValue () ].m_byteSegments.front ());
+                  m_rxonBuffer.erase (m_vrR.GetValue ());
+
                   m_vrR++;
                 }
               NS_LOG_LOGIC ("New VR(R)  = " << m_vrR);
@@ -691,11 +712,11 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               NS_LOG_LOGIC ("New VR(MR) = " << m_vrMr);
             }
 
-          NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << seqNumber << " )");
-          NS_ASSERT_MSG (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.size () == 1,
-                         "Too many segments. PDU Reassembly process didn't work");
-          ReassembleAndDeliver (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.front ());
-          m_rxonBuffer.erase (seqNumber.GetValue ());
+//           NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << seqNumber << " )");
+//           NS_ASSERT_MSG (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.size () == 1,
+//                          "Too many segments. PDU Reassembly process didn't work");
+//           ReassembleAndDeliver (m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.front ());
+//           m_rxonBuffer.erase (seqNumber.GetValue ());
         }
 
       // - if t-Reordering is running:
@@ -727,7 +748,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
           if ( m_vrH > m_vrR )
             {
               NS_LOG_LOGIC ("Start reordering timer");
-              m_reorderingTimer = Simulator::Schedule (Time ("1.0s"),
+              m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
                                                        &LteRlcAm::ExpireReorderingTimer ,this);
               m_vrX = m_vrH;
               NS_LOG_LOGIC ("New VR(X) = " << m_vrX);
@@ -832,39 +853,60 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       NS_LOG_INFO ("Control AM RLC PDU");
 
       SequenceNumber10 ackSn = rlcAmHeader.GetAckSn ();
-      SequenceNumber10 seqNumber = m_vtA;
+//       SequenceNumber10 seqNumber = m_vtA;
 
-      while (seqNumber < ackSn)
+      NS_LOG_INFO ("ackSn     = " << ackSn);
+      NS_LOG_INFO ("VT(A)     = " << m_vtA);
+      NS_LOG_INFO ("VT(S)     = " << m_vtS);
+      while (m_vtA < ackSn && m_vtA < m_vtS)
         {
-          NS_LOG_INFO ("seqNumber = " << seqNumber);
-          NS_LOG_INFO ("ackSn     = " << ackSn);
-          NS_LOG_INFO ("m_txedBuffer(seqNumber).size = " << m_txedBuffer.size ());
-          if (m_txedBuffer.at (seqNumber.GetValue()))
+//           NS_LOG_INFO ("seqNumber = " << seqNumber);
+//           NS_LOG_INFO ("m_txedBuffer( VT(A) ).size = " << m_txedBuffer.size ());
+
+          uint16_t seqNumberValue = m_vtA.GetValue ();
+          if (m_txedBuffer.at (seqNumberValue))
             {
-              NS_LOG_INFO ("m_txedBuffer(seqNumber)->GetSize = " << m_txedBuffer.at (seqNumber.GetValue ())->GetSize ());
-              m_txedBufferSize -= m_txedBuffer.at (seqNumber.GetValue ())->GetSize ();
-              m_txedBuffer.at (seqNumber.GetValue ()) = 0;
+              NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from txedBuffer");
+//               NS_LOG_INFO ("m_txedBuffer( " << m_vtA << " )->GetSize = " << m_txedBuffer.at (m_vtA.GetValue ())->GetSize ());
+              m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
+              m_txedBuffer.at (seqNumberValue) = 0;
             }
-          seqNumber++;
+
+          if (m_retxBuffer.at (seqNumberValue).m_pdu)
+            {
+              NS_LOG_INFO ("ACKed SN = " << seqNumberValue << " from retxBuffer");
+              m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
+              m_retxBuffer.at (seqNumberValue).m_pdu = 0;
+              m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+            }
+
+          m_vtA++;
         }
 
+      NS_LOG_INFO ("New VT(A) = " << m_vtA);
+
+      SequenceNumber10 seqNumber = m_vtA;
+      uint16_t seqNumberValue;
       while (seqNumber < m_vtS)
         {
-          if (m_txedBuffer.at (seqNumber.GetValue ()))
+          seqNumberValue = seqNumber.GetValue ();
+          if (m_txedBuffer.at (seqNumberValue))
             {
-              m_retxBuffer.at (seqNumber.GetValue ()).m_pdu = m_txedBuffer.at (seqNumber.GetValue ());
-              m_retxBuffer.at (seqNumber.GetValue ()).m_retxCount = 0;
-              m_retxBufferSize += m_retxBuffer.at (seqNumber.GetValue ()).m_pdu->GetSize ();
+              NS_LOG_INFO ("Move SN = " << seqNumberValue << " to retxBuffer");
+              m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue);
+              m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+              m_retxBufferSize += m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
-              m_txedBufferSize -= m_txedBuffer.at (seqNumber.GetValue ())->GetSize ();
-              m_txedBuffer.at (seqNumber.GetValue ()) = 0;
+              m_txedBufferSize -= m_txedBuffer.at (seqNumberValue)->GetSize ();
+              m_txedBuffer.at (seqNumberValue) = 0;
             }
-          else if (m_retxBuffer.at (seqNumber.GetValue ()).m_pdu)
+          else if (m_retxBuffer.at (seqNumberValue).m_pdu)
             {
-              m_retxBuffer.at (seqNumber.GetValue ()).m_retxCount++;
-              if (m_retxBuffer.at (seqNumber.GetValue ()).m_retxCount >= m_maxRetxThreshold)
+              m_retxBuffer.at (seqNumberValue).m_retxCount++;
+              NS_LOG_INFO ("Incr RETX_COUNT for SN = " << seqNumberValue);
+              if (m_retxBuffer.at (seqNumberValue).m_retxCount >= m_maxRetxThreshold)
                 {
-                  NS_LOG_INFO ("Max RETX_COUNT for SN = " << seqNumber);
+                  NS_LOG_INFO ("Max RETX_COUNT for SN = " << seqNumberValue);
                 }
             }
 
@@ -903,14 +945,22 @@ LteRlcAm::Start ()
 bool
 LteRlcAm::IsInsideReceivingWindow (SequenceNumber10 seqNumber)
 {
-  if  ( ( ((m_vrR - m_vrR) % 1024) <= ((seqNumber - m_vrR) % 1024) ) &&
-        ( ((seqNumber - m_vrR) % 1024) < ((m_vrMr - m_vrR) % 1024) )
-      )
+  NS_LOG_FUNCTION (this << seqNumber);
+  NS_LOG_LOGIC ("Receiving Window: " <<
+                m_vrR << " <= " << seqNumber << " <= " << m_vrMr);
+
+  m_vrR.SetModulusBase (m_vrR);
+  m_vrMr.SetModulusBase (m_vrR);
+  seqNumber.SetModulusBase (m_vrR);
+
+  if ( (m_vrR <= seqNumber) && (seqNumber < m_vrMr ) )
     {
+      NS_LOG_LOGIC (seqNumber << " is INSIDE the receiving window");
       return true;
     }
   else
     {
+      NS_LOG_LOGIC (seqNumber << " is OUTSIDE the receiving window");
       return false;
     }
 }
@@ -1387,7 +1437,6 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 // }
 
 
-// TODO To check
 void
 LteRlcAm::ExpireReorderingTimer (void)
 {
@@ -1411,14 +1460,13 @@ LteRlcAm::ExpireReorderingTimer (void)
   if ( m_vrH > m_vrMs )
     {
       NS_LOG_LOGIC ("Start reordering timer");
-      m_reorderingTimer = Simulator::Schedule (Time ("1.0s"),
+      m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
                                               &LteRlcAm::ExpireReorderingTimer ,this);
       m_vrX = m_vrH;
       NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
     }
 }
 
-// TODO To check
 void
 LteRlcAm::ExpirePollRetransmitTimer (void)
 {
