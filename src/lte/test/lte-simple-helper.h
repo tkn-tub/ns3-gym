@@ -25,6 +25,7 @@
 #include "ns3/simple-channel.h"
 #include "ns3/node-container.h"
 #include "ns3/radio-bearer-stats-calculator.h"
+#include "ns3/lte-simple-net-device.h"
 
 #include "ns3/lte-test-entities.h"
 #include "ns3/lte-pdcp.h"
@@ -120,8 +121,7 @@ private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  Ptr<SimpleChannel> m_downlinkChannel;
-  Ptr<SimpleChannel> m_uplinkChannel;
+  Ptr<SimpleChannel> m_phyChannel;
 
 public:
 
@@ -139,8 +139,8 @@ private:
   Ptr<LtePdcp>    m_uePdcp;
   Ptr<LteRlc>     m_ueRlc;
 
-  Ptr<RadioBearerStatsCalculator> m_rlcStats;
-  Ptr<RadioBearerStatsCalculator> m_pdcpStats;
+  ObjectFactory   m_enbDeviceFactory;
+  ObjectFactory   m_ueDeviceFactory;
 
   enum LteRlcEntityType_t {RLC_UM = 1,
                            RLC_AM = 2 } m_lteRlcEntityType;

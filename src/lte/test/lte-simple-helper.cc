@@ -23,7 +23,6 @@
 #include "ns3/callback.h"
 #include "ns3/config.h"
 #include "ns3/simple-channel.h"
-#include "ns3/lte-simple-net-device.h"
 #include "ns3/error-model.h"
 
 
@@ -37,6 +36,8 @@ NS_OBJECT_ENSURE_REGISTERED (LteSimpleHelper);
 LteSimpleHelper::LteSimpleHelper (void)
 {
   NS_LOG_FUNCTION (this);
+  m_enbDeviceFactory.SetTypeId (LteSimpleNetDevice::GetTypeId ());
+  m_ueDeviceFactory.SetTypeId (LteSimpleNetDevice::GetTypeId ());
 }
 
 void
@@ -44,15 +45,7 @@ LteSimpleHelper::DoStart (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_downlinkChannel = CreateObject<SimpleChannel> ();
-  m_uplinkChannel = CreateObject<SimpleChannel> ();
-
-  m_rlcStats = CreateObject<RadioBearerStatsCalculator> ();
-  m_rlcStats->SetDlOutputFilename("DlRlcStats.csv");
-  m_rlcStats->SetUlOutputFilename("UlRlcStats.csv");
-  m_pdcpStats = CreateObject<RadioBearerStatsCalculator> ();
-  m_pdcpStats->SetDlOutputFilename("DlPdcpStats.csv");
-  m_pdcpStats->SetUlOutputFilename("UlPdcpStats.csv");
+  m_phyChannel = CreateObject<SimpleChannel> ();
 
   Object::DoStart ();
 }
@@ -83,8 +76,13 @@ void
 LteSimpleHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_downlinkChannel = 0;
-  m_uplinkChannel = 0;
+  m_phyChannel = 0;
+
+  m_enbMac->Dispose ();
+  m_enbMac = 0;
+  m_ueMac->Dispose ();
+  m_ueMac = 0;
+
   Object::DoDispose ();
 }
 
@@ -139,23 +137,16 @@ LteSimpleHelper::InstallSingleEnbDevice (Ptr<Node> n)
   m_enbRlc->SetRnti (11);
   m_enbRlc->SetLcId (12);
 
-  Ptr<LteSimpleNetDevice> dlPhy = CreateObject<LteSimpleNetDevice> (n, m_enbRlc) ;
-  Ptr<LteSimpleNetDevice> ulPhy = CreateObject<LteSimpleNetDevice> (n, m_enbRlc);
+  Ptr<LteSimpleNetDevice> enbDev = m_enbDeviceFactory.Create<LteSimpleNetDevice> ();
+  enbDev->SetAddress (Mac48Address::Allocate ());
+  enbDev->SetChannel (m_phyChannel);
 
-  dlPhy->SetNode (n);
-  dlPhy->SetAddress (Mac48Address::Allocate ());
-
-  n->AddDevice (dlPhy);
-  n->AddDevice (ulPhy);
-
-  dlPhy->SetChannel (m_downlinkChannel);
-  ulPhy->SetChannel (m_uplinkChannel);
+  n->AddDevice (enbDev);
 
   m_enbMac = CreateObject<LteTestMac> ();
-  m_enbMac->SetPdcpHeaderPresent (true);
-  m_enbMac->SetDevice (dlPhy);
+  m_enbMac->SetDevice (enbDev);
 
-  dlPhy->SetReceiveCallback (MakeCallback (&LteTestMac::Receive, m_enbMac));
+  enbDev->SetReceiveCallback (MakeCallback (&LteTestMac::Receive, m_enbMac));
 
   // Connect SAPs: RRC <-> PDCP <-> RLC <-> MAC
 
@@ -168,7 +159,7 @@ LteSimpleHelper::InstallSingleEnbDevice (Ptr<Node> n)
   m_enbRlc->SetLteMacSapProvider (m_enbMac->GetLteMacSapProvider ());
   m_enbMac->SetLteMacSapUser (m_enbRlc->GetLteMacSapUser ());
 
-  return dlPhy;
+  return enbDev;
 }
 
 Ptr<NetDevice>
@@ -191,23 +182,16 @@ LteSimpleHelper::InstallSingleUeDevice (Ptr<Node> n)
   m_ueRlc->SetRnti (21);
   m_ueRlc->SetLcId (22);
 
-  Ptr<LteSimpleNetDevice> dlPhy = CreateObject<LteSimpleNetDevice> (n, m_ueRlc);
-  Ptr<LteSimpleNetDevice> ulPhy = CreateObject<LteSimpleNetDevice> (n, m_ueRlc);
+  Ptr<LteSimpleNetDevice> ueDev = m_ueDeviceFactory.Create<LteSimpleNetDevice> ();
+  ueDev->SetAddress (Mac48Address::Allocate ());
+  ueDev->SetChannel (m_phyChannel);
 
-  dlPhy->SetNode (n);
-  dlPhy->SetAddress (Mac48Address::Allocate ());
-
-  n->AddDevice (dlPhy);
-  n->AddDevice (ulPhy);
-
-  dlPhy->SetChannel (m_downlinkChannel);
-  ulPhy->SetChannel (m_uplinkChannel);
+  n->AddDevice (ueDev);
 
   m_ueMac = CreateObject<LteTestMac> ();
-  m_ueMac->SetPdcpHeaderPresent (true);
-  m_ueMac->SetDevice (ulPhy);
+  m_ueMac->SetDevice (ueDev);
 
-  dlPhy->SetReceiveCallback (MakeCallback (&LteTestMac::Receive, m_ueMac));
+  ueDev->SetReceiveCallback (MakeCallback (&LteTestMac::Receive, m_ueMac));
 
   // Connect SAPs: RRC <-> PDCP <-> RLC <-> MAC
 
@@ -220,7 +204,7 @@ LteSimpleHelper::InstallSingleUeDevice (Ptr<Node> n)
   m_ueRlc->SetLteMacSapProvider (m_ueMac->GetLteMacSapProvider ());
   m_ueMac->SetLteMacSapUser (m_ueRlc->GetLteMacSapUser ());
 
-  return dlPhy;
+  return ueDev;
 }
 
 
@@ -239,8 +223,6 @@ LteSimpleHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSimpleNetDevice", level);
   LogComponentEnable ("SimpleNetDevice", level);
   LogComponentEnable ("SimpleChannel", level);
-  LogComponentEnable ("RadioBearerStatsCalculator", level);
-  LogComponentEnable ("MacStatsCalculator", level);
 }
 
 void
@@ -283,10 +265,10 @@ LteSimpleHelper::EnableDlRlcTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/TxPDU",
-                   MakeBoundCallback (&LteSimpleHelperDlTxPduCallback, m_rlcStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/RxPDU",
-                   MakeBoundCallback (&LteSimpleHelperDlRxPduCallback, m_rlcStats));
+                //   Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/TxPDU",
+                //                    MakeBoundCallback (&LteSimpleHelperDlTxPduCallback, m_rlcStats));
+                //   Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/RxPDU",
+                //                    MakeBoundCallback (&LteSimpleHelperDlRxPduCallback, m_rlcStats));
 }
 
 void
@@ -314,10 +296,10 @@ LteSimpleHelper::EnableUlRlcTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/TxPDU",
-                   MakeBoundCallback (&LteSimpleHelperUlTxPduCallback, m_rlcStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/RxPDU",
-                   MakeBoundCallback (&LteSimpleHelperUlRxPduCallback, m_rlcStats));
+                  //   Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/TxPDU",
+                  //                    MakeBoundCallback (&LteSimpleHelperUlTxPduCallback, m_rlcStats));
+                  //   Config::Connect ("/NodeList/*/DeviceList/*/LteRlc/RxPDU",
+                  //                    MakeBoundCallback (&LteSimpleHelperUlRxPduCallback, m_rlcStats));
 }
 
 
@@ -333,10 +315,10 @@ LteSimpleHelper::EnableDlPdcpTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/TxPDU",
-                   MakeBoundCallback (&LteSimpleHelperDlTxPduCallback, m_pdcpStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/RxPDU",
-                   MakeBoundCallback (&LteSimpleHelperDlRxPduCallback, m_pdcpStats));
+                  //   Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/TxPDU",
+                  //                    MakeBoundCallback (&LteSimpleHelperDlTxPduCallback, m_pdcpStats));
+                  //   Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/RxPDU",
+                  //                    MakeBoundCallback (&LteSimpleHelperDlRxPduCallback, m_pdcpStats));
 }
 
 void
@@ -344,10 +326,10 @@ LteSimpleHelper::EnableUlPdcpTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/TxPDU",
-                   MakeBoundCallback (&LteSimpleHelperUlTxPduCallback, m_pdcpStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/RxPDU",
-                   MakeBoundCallback (&LteSimpleHelperUlRxPduCallback, m_pdcpStats));
+                  //   Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/TxPDU",
+                  //                    MakeBoundCallback (&LteSimpleHelperUlTxPduCallback, m_pdcpStats));
+                  //   Config::Connect ("/NodeList/*/DeviceList/*/LtePdcp/RxPDU",
+                  //                    MakeBoundCallback (&LteSimpleHelperUlRxPduCallback, m_pdcpStats));
 }
 
 
