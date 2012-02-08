@@ -47,11 +47,11 @@ class LteRlcAmE2eTestCase : public TestCase
   private:
     virtual void DoRun (void);
 
-    void EnbDropEvent (Ptr<const Packet> p);
-    void UeDropEvent (Ptr<const Packet> p);
+    void DlDropEvent (Ptr<const Packet> p);
+    void UlDropEvent (Ptr<const Packet> p);
 
-    uint32_t m_enbDrops;
-    uint32_t m_ueDrops;
+    uint32_t m_dlDrops;
+    uint32_t m_ulDrops;
 
     uint32_t m_seed;
     double   m_losses;
