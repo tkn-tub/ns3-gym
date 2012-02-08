@@ -347,7 +347,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
       i.WriteU8 ( ((CONTROL_PDU << 7) & 0x80) |
                   ((m_controlPduType << 4) & 0x70) |
                   ((m_ackSn.GetValue () >> 6) & 0x0F) );
-      i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xC0) );
+      i.WriteU8 ( ((m_ackSn.GetValue () << 2) & 0xFC) );
     }
 }
 
