@@ -174,8 +174,6 @@ main (int argc, char *argv[])
         }
       mobility.Install (ueNodes.at(i));
     }
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
@@ -218,6 +216,9 @@ main (int argc, char *argv[])
       lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());
     }
 
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
+
   // by default, simulation will anyway stop right after the REM has been generated
   Simulator::Stop (Seconds (0.0069));  
 
@@ -231,9 +232,6 @@ main (int argc, char *argv[])
   remHelper->SetAttribute ("Z", DoubleValue (1.5));
   remHelper->Install ();
 
-
-
-  BuildingsHelper::MakeMobilityModelConsistent ();
   Simulator::Run ();
 
   // GtkConfigStore config;

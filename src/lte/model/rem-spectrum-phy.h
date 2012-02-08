@@ -55,9 +55,11 @@ public:
   RemSpectrumPhy ();
   virtual ~RemSpectrumPhy ();
 
+  // inherited from Object
+  void DoDispose ();
   static TypeId GetTypeId (void);
 
-// inherited from SpectrumPhy
+  // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
   void SetMobility (Ptr<MobilityModel> m);
   void SetDevice (Ptr<NetDevice> d);
@@ -67,19 +69,12 @@ public:
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
-
-  /** 
-   * set the SpectrumModel to be used for reception
-   * 
-   */
-  void SetRxSpectrumModel (Ptr<SpectrumModel>); 
-  
   /** 
    * 
    * 
    * \return the Signal to Noise Ratio calculated 
    */
-  double GetSinr ();
+  double GetSinr (double noisePower);
 
   /** 
    * make StartRx a no-op from now on
@@ -87,18 +82,12 @@ public:
    */
   void Deactivate ();
 
-protected:
-  void DoDispose ();
 
 private:
   Ptr<MobilityModel> m_mobility;
-  Ptr<NetDevice> m_netDevice;
-  Ptr<SpectrumChannel> m_channel;
-  Ptr<SpectrumModel> m_spectrumModel;
 
   double m_referenceSignalPower;
   double m_sumPower;
-  double m_noisePower;  
 
   bool m_active;
 

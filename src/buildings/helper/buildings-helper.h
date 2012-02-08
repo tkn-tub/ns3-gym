@@ -25,15 +25,18 @@
 #include <ns3/attribute.h>
 #include <ns3/object-factory.h>
 #include <ns3/node-container.h>
+#include <ns3/ptr.h>
 
 
 namespace ns3 {
 
+class BuildingsMobilityModel;
 
 class BuildingsHelper
 {
 public:  
   static void MakeMobilityModelConsistent ();
+  static void MakeConsistent (Ptr<BuildingsMobilityModel> bmm);
   
 };
 

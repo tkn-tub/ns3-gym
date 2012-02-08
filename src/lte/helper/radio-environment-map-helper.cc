@@ -33,9 +33,10 @@
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/simulator.h>
 #include <ns3/node.h>
+#include <ns3/buildings-helper.h>
 
 #include <fstream>
-
+#include <limits>
 
 NS_LOG_COMPONENT_DEFINE ("RadioEnvironmentMapHelper");
 
@@ -96,20 +97,24 @@ RadioEnvironmentMapHelper::GetTypeId (void)
    .AddAttribute ("XRes", "The resolution (number of points) of the map along the x axis.",
                    UintegerValue (100),
                    MakeUintegerAccessor (&RadioEnvironmentMapHelper::m_xRes),
-                   MakeUintegerChecker<uint32_t> ())
+                  MakeUintegerChecker<uint32_t> (2,std::numeric_limits<uint16_t>::max ()))
     .AddAttribute ("YRes", "The resolution (number of points) of the map along the y axis.",
                    UintegerValue (100),
                    MakeUintegerAccessor (&RadioEnvironmentMapHelper::m_yRes),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint32_t> (2,std::numeric_limits<uint16_t>::max ()))
     .AddAttribute ("Z", "The value of the z coordinate for which the map is to be generated",
 		   DoubleValue (0.0),
                    MakeDoubleAccessor (&RadioEnvironmentMapHelper::m_z),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("ExitWhenDone", "If true, Simulator::Stop () will be called as soon as the REM has been generated",
+    .AddAttribute ("StopWhenDone", "If true, Simulator::Stop () will be called as soon as the REM has been generated",
 		   BooleanValue (true),
-                   MakeBooleanAccessor (&RadioEnvironmentMapHelper::m_exitWhenDone),
+                   MakeBooleanAccessor (&RadioEnvironmentMapHelper::m_stopWhenDone),
                    MakeBooleanChecker ())
-
+    .AddAttribute ("NoisePower",
+                   "the power of the measuring instrument noise, in Watts. Default to a kT of -174 dBm with a noise figure of 9 dB and a bandwidth of 25 LTE Resource Blocks",
+                   DoubleValue (1.4230e-10),
+                   MakeDoubleAccessor (&RadioEnvironmentMapHelper::m_noisePower),
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -133,22 +138,21 @@ RadioEnvironmentMapHelper::Install ()
   m_channel = match.Get (0)->GetObject<SpectrumChannel> ();
   NS_ABORT_MSG_IF (m_channel == 0, "object at " << m_channelPath << "is not of type SpectrumChannel");
 
-  double xStep = (m_xMax - m_xMin)/m_xRes;
-  double yStep = (m_yMax - m_yMin)/m_yRes;
+  double xStep = (m_xMax - m_xMin)/(m_xRes-1);
+  double yStep = (m_yMax - m_yMin)/(m_yRes-1);
   
-  for (double x = m_xMin; x <= m_xMax ; x += xStep)
+  
+  for (double x = m_xMin; x < m_xMax + 0.5*xStep; x += xStep)
     {
-      m_rem.push_back (std::list<RemPoint> ());
-      for (double y = m_yMin; y <= m_yMax ; y += yStep)
+      for (double y = m_yMin; y < m_yMax + 0.5*yStep ; y += yStep)
         {
           RemPoint p;
           p.phy = CreateObject<RemSpectrumPhy> ();
           p.bmm = CreateObject<BuildingsMobilityModel> ();
-          p.node = CreateObject<Node> ();
-          p.node->AggregateObject (p.bmm);
           p.phy->SetMobility (p.bmm);
           p.bmm->SetPosition (Vector (x, y, m_z));
-          m_rem.back ().push_back (p);
+          BuildingsHelper::MakeConsistent (p.bmm);
+          m_rem.push_back (p);
         }      
     }
   Simulator::Schedule (Seconds (0.0055), &RadioEnvironmentMapHelper::Connect, this);
@@ -160,18 +164,13 @@ void
 RadioEnvironmentMapHelper::Connect ()
 {
   NS_LOG_FUNCTION (this);
-  for (std::list<std::list<RemPoint> >::iterator it1 = m_rem.begin ();
-       it1 != m_rem.end ();
-       ++it1)
+  for (std::list<RemPoint>::iterator it = m_rem.begin ();
+       it != m_rem.end ();
+       ++it)
     {
-      for (std::list<RemPoint>::iterator it2 = it1->begin ();
-           it2 != it1->end ();
-           ++it2)
-        {
-          NS_LOG_LOGIC ("adding phy " << it2->phy);
-          m_channel->AddRx (it2->phy);
-        }
-    }
+      NS_LOG_LOGIC ("adding phy " << it->phy);
+      m_channel->AddRx (it->phy);
+    }    
 }
 
 void 
@@ -186,25 +185,20 @@ RadioEnvironmentMapHelper::PrintAndDeactivate ()
       return;
     }
   
-  for (std::list<std::list<RemPoint> >::iterator it1 = m_rem.begin ();
-       it1 != m_rem.end ();
-       ++it1)
+  for (std::list<RemPoint>::iterator it = m_rem.begin ();
+       it != m_rem.end ();
+       ++it)
     {
-      for (std::list<RemPoint>::iterator it2 = it1->begin ();
-           it2 != it1->end ();
-           ++it2)
-        {
-          Vector pos = it2->bmm->GetPosition ();
-          outFile << pos.x << "\t" 
-                  << pos.y << "\t" 
-                  << pos.z << "\t" 
-                  << it2->phy->GetSinr ()
-                  << std::endl;
-          it2->phy->Deactivate ();
-        }
+      Vector pos = it->bmm->GetPosition ();
+      outFile << pos.x << "\t" 
+              << pos.y << "\t" 
+              << pos.z << "\t" 
+              << it->phy->GetSinr (m_noisePower)
+              << std::endl;
+      it->phy->Deactivate ();
     }
   outFile.close ();
-  if (m_exitWhenDone)
+  if (m_stopWhenDone)
     {
       Simulator::Stop ();
     }
