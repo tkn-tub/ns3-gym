@@ -83,8 +83,8 @@ LteRlcUmE2eTestCase::LteRlcUmE2eTestCase (std::string name, uint32_t seed, doubl
   m_seed = seed;
   m_losses = losses;
 
-  m_enbDrops = 0;
-  m_ueDrops = 0;
+  m_dlDrops = 0;
+  m_ulDrops = 0;
 }
 
 LteRlcUmE2eTestCase::~LteRlcUmE2eTestCase ()
@@ -93,17 +93,17 @@ LteRlcUmE2eTestCase::~LteRlcUmE2eTestCase ()
 
 
 void
-LteRlcUmE2eTestCase::EnbDropEvent (Ptr<const Packet> p)
+LteRlcUmE2eTestCase::DlDropEvent (Ptr<const Packet> p)
 {
   // NS_LOG_FUNCTION (this);
-  m_enbDrops++;
+  m_dlDrops++;
 }
 
 void
-LteRlcUmE2eTestCase::UeDropEvent (Ptr<const Packet> p)
+LteRlcUmE2eTestCase::UlDropEvent (Ptr<const Packet> p)
 {
   // NS_LOG_FUNCTION (this);
-  m_ueDrops++;
+  m_ulDrops++;
 }
 
 void
@@ -113,12 +113,11 @@ LteRlcUmE2eTestCase::DoRun (void)
 
   LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
   LogComponentEnable ("LteRlcUmE2eTest", level);
-  // LogComponentEnable ("Config", level);
-  // LogComponentEnable ("NodeList", level);
-  // LogComponentEnable ("ChannelList", level);
   // LogComponentEnable ("ErrorModel", level);
-  // LogComponentEnable ("SimpleChannel", level);
+  // LogComponentEnable ("LteSimpleHelper", level);
+  // LogComponentEnable ("LteSimpleNetDevice", level);
   // LogComponentEnable ("SimpleNetDevice", level);
+  // LogComponentEnable ("SimpleChannel", level);
   // LogComponentEnable ("LteTestEntities", level);
   // LogComponentEnable ("LtePdcp", level);
   // LogComponentEnable ("LteRlc", level);
@@ -153,22 +152,22 @@ LteRlcUmE2eTestCase::DoRun (void)
 
   // lteSimpleHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
 
-  // Error models
-  Ptr<RateErrorModel> enbEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
-  enbEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
-  enbEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+  // Error models: downlink and uplink
+  Ptr<RateErrorModel> dlEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
+  dlEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
+  dlEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
 
-  Ptr<RateErrorModel> ueEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
-  ueEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
-  ueEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+  Ptr<RateErrorModel> ulEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
+  ulEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
+  ulEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
 
   // The below hooks will cause drops to be counted at simple phy layer
-  enbLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (enbEm));
-  enbLteDevs.Get (0)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&LteRlcUmE2eTestCase::EnbDropEvent, this));
-  ueLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (ueEm));
-  ueLteDevs.Get (0)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&LteRlcUmE2eTestCase::UeDropEvent, this));
+  ueLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (dlEm));
+  ueLteDevs.Get (0)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&LteRlcUmE2eTestCase::DlDropEvent, this));
+  enbLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (ulEm));
+  enbLteDevs.Get (0)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&LteRlcUmE2eTestCase::UlDropEvent, this));
 
-  // Sending packets at RRC layer
+  // Sending packets from eNB RRC layer (eNB -> UE)
   lteSimpleHelper->m_enbRrc->SetArrivalTime (Seconds (0.010));
   lteSimpleHelper->m_enbRrc->SetPduSize (100);
 
@@ -177,39 +176,51 @@ LteRlcUmE2eTestCase::DoRun (void)
   lteSimpleHelper->m_enbMac->SetTxOppTime (Seconds (0.005));
   lteSimpleHelper->m_enbMac->SetTxOpportunityMode (LteTestMac::RANDOM_MODE);
 
-  // Start/Stop pseudo-application at RRC layer
+  // Sending packets from UE RRC layer (UE -> eNB)
+  lteSimpleHelper->m_ueRrc->SetArrivalTime (Seconds (0.010));
+  lteSimpleHelper->m_ueRrc->SetPduSize (100);
+
+  // MAC sends transmission opportunities (TxOpp)
+  lteSimpleHelper->m_ueMac->SetTxOppSize (150);
+  lteSimpleHelper->m_ueMac->SetTxOppTime (Seconds (0.005));
+  lteSimpleHelper->m_ueMac->SetTxOpportunityMode (LteTestMac::RANDOM_MODE);
+
+  // Start/Stop pseudo-application at eNB RRC
   Simulator::Schedule (Seconds (0.100), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
   Simulator::Schedule (Seconds (10.100), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
 
+  // Start/Stop pseudo-application at UE RRC
+  Simulator::Schedule (Seconds (20.100), &LteTestRrc::Start, lteSimpleHelper->m_ueRrc);
+  Simulator::Schedule (Seconds (30.100), &LteTestRrc::Stop, lteSimpleHelper->m_ueRrc);
 
-  Simulator::Stop (Seconds (11.000));
+
+  Simulator::Stop (Seconds (31.000));
   Simulator::Run ();
 
-  uint32_t txRrcPdus = lteSimpleHelper->m_enbRrc->GetTxPdus ();
-  // uint32_t txMacPdus = lteSimpleHelper->m_enbMac->GetTxPdus ();
-  // uint32_t txBytes = lteSimpleHelper->m_enbRrc->GetTxBytes ();
-  uint32_t rxRrcPdus = lteSimpleHelper->m_ueRrc->GetRxPdus ();
-  // uint32_t rxMacPdus = lteSimpleHelper->m_ueMac->GetRxPdus ();
-  // uint32_t rxBytes = lteSimpleHelper->m_ueRrc->GetRxBytes ();
+  uint32_t txEnbRrcPdus = lteSimpleHelper->m_enbRrc->GetTxPdus ();
+  uint32_t rxUeRrcPdus = lteSimpleHelper->m_ueRrc->GetRxPdus ();
 
+  uint32_t txUeRrcPdus = lteSimpleHelper->m_ueRrc->GetTxPdus ();
+  uint32_t rxEnbRrcPdus = lteSimpleHelper->m_enbRrc->GetRxPdus ();
 
   // NS_LOG_INFO ("Seed = " << m_seed);
   // NS_LOG_INFO ("Losses (%) = " << uint32_t (m_losses * 100));
 
-  // NS_LOG_INFO ("eNB dev drops = " << m_enbDrops);
-  // NS_LOG_INFO ("UE dev drops = " << m_ueDrops);
-  // NS_LOG_INFO ("eNB dev count = " << m_enbCount);
-  // NS_LOG_INFO ("UE dev count = " << m_ueCount);
+  // NS_LOG_INFO ("dl dev drops = " << m_dlDrops);
+  // NS_LOG_INFO ("ul dev drops = " << m_ulDrops);
 
-  // NS_LOG_INFO ("eNB tx RRC count = " << txRrcPdus);
-  // NS_LOG_INFO ("eNB tx MAC count = " << txMacPdus);
-  // NS_LOG_INFO ("UE rx RRC count = " << rxRrcPdus);
-  // NS_LOG_INFO ("UE rx MAC count = " << rxMacPdus);
+  // NS_LOG_INFO ("eNB tx RRC count = " << txEnbRrcPdus);
+  // NS_LOG_INFO ("eNB rx RRC count = " << rxEnbRrcPdus);
+  // NS_LOG_INFO ("UE tx RRC count = " << txUeRrcPdus);
+  // NS_LOG_INFO ("UE rx RRC count = " << rxUeRrcPdus);
 
-  NS_LOG_INFO (m_seed << "\t" << m_losses << "\t" << txRrcPdus << "\t" << rxRrcPdus << "\t" << m_ueDrops);
+  NS_LOG_INFO (m_seed << "\t" << m_losses << "\t" << txEnbRrcPdus << "\t" << rxUeRrcPdus << "\t" << m_dlDrops);
+  NS_LOG_INFO (m_seed << "\t" << m_losses << "\t" << txUeRrcPdus << "\t" << rxEnbRrcPdus << "\t" << m_ulDrops);
 
-  NS_TEST_ASSERT_MSG_EQ (txRrcPdus, rxRrcPdus + m_ueDrops,
-                         "TX PDUs (" << txRrcPdus << ") != RX PDUs (" << rxRrcPdus << ") + DROPS (" << m_ueDrops << ")");
+  NS_TEST_ASSERT_MSG_EQ (txEnbRrcPdus, rxUeRrcPdus + m_dlDrops,
+                         "Downlink: TX PDUs (" << txEnbRrcPdus << ") != RX PDUs (" << rxUeRrcPdus << ") + DROPS (" << m_dlDrops << ")");
+  NS_TEST_ASSERT_MSG_EQ (txUeRrcPdus, rxEnbRrcPdus + m_ulDrops,
+                         "Uplink: TX PDUs (" << txUeRrcPdus << ") != RX PDUs (" << rxEnbRrcPdus << ") + DROPS (" << m_ulDrops << ")");
 
   Simulator::Destroy ();
 }
