@@ -181,24 +181,30 @@ main (int argc, char *argv[])
   NetDeviceContainer enbDevs;
   vector < NetDeviceContainer > ueDevs;
 
+  // power setting in dBm for small cells
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (10.0));
   enbDevs = lteHelper->InstallEnbDevice (oneSectorNodes);
+
+
+  // power setting for three-sector macrocell
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30.0));
 
   // Beam width is made quite narrow so sectors can be noticed in the REM
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (20));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (0)));
 
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (360/3));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (20));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (1)));
 
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (2*360/3));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (20));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (2)));
 
