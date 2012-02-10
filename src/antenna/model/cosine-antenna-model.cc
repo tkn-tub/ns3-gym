@@ -108,26 +108,18 @@ CosineAntennaModel::GetGainDb (Angles a)
 
   NS_LOG_LOGIC ("phi = " << phi );
   
-  if ((phi >= M_PI_2) || (phi <= -M_PI_2))
-    { 
-      NS_LOG_LOGIC ("radiation in the back --> infinite attenuation");
-      return -INFINITY;
-    }
-  else
-    {
-      // element factor: amplitude gain of a single antenna element in linear units
-      double ef = pow (cos (phi / 2.0), m_exponent);
+  // element factor: amplitude gain of a single antenna element in linear units
+  double ef = pow (cos (phi / 2.0), m_exponent);
   
-      // the array factor is not considered. Note that if we did consider
-      // the array factor, the actual beawidth would change, and in
-      // particular it would be different from the one specified by the
-      // user. Hence it is not desirable to use the array factor, for the
-      // ease of use of this model.  
+  // the array factor is not considered. Note that if we did consider
+  // the array factor, the actual beawidth would change, and in
+  // particular it would be different from the one specified by the
+  // user. Hence it is not desirable to use the array factor, for the
+  // ease of use of this model.  
 
-      double gainDb = 20*log10 (ef);
-      NS_LOG_LOGIC ("gain = " << gainDb << " + " << m_maxGain << " dB");
-      return gainDb + m_maxGain;
-    }
+  double gainDb = 20*log10 (ef);
+  NS_LOG_LOGIC ("gain = " << gainDb << " + " << m_maxGain << " dB");
+  return gainDb + m_maxGain;
 }
 
 
