@@ -240,7 +240,8 @@ def build(bld):
         'model/vector.h',
         'model/default-deleter.h',
         'model/fatal-impl.h',
-        'model/system-path.h'
+        'model/system-path.h',
+        'model/unused.h',
         ]
 
     if sys.platform == 'win32':

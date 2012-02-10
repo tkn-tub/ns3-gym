@@ -20,7 +20,6 @@
 /**
  * This is the test code for ipv4-l3protocol.cc (only the fragmentation and reassembly part).
  */
-#define NS3_LOG_ENABLE 1
 
 #include "ns3/test.h"
 #include "ns3/config.h"

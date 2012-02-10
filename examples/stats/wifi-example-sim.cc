@@ -30,8 +30,6 @@
  * 
  */
 
-// #define NS3_LOG_ENABLE // Now defined by Makefile
-
 #include <ctime>
 
 #include <sstream>

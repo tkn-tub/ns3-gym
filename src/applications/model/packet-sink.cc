@@ -151,6 +151,17 @@ void PacketSink::StopApplication ()     // Called at time specified by Stop
     }
 }
 
+std::string PrintStats (Address& from, uint32_t packetSize, uint32_t totalRxSize)
+{
+  std::ostringstream oss;
+  InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+  oss << "Received " <<  packetSize << " bytes from "
+      << address.GetIpv4 () << " [" << address << "]"
+      << " total Rx " << totalRxSize;
+
+  return oss.str ();
+}
+
 void PacketSink::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -165,13 +176,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
       if (InetSocketAddress::IsMatchingType (from))
         {
           m_totalRx += packet->GetSize ();
-          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       address.GetIpv4 () << " [" << address << "]"
-                                   << " total Rx " << m_totalRx);
-          //cast address to void , to suppress 'address' set but not used 
-          //compiler warning in optimized builds
-          (void) address;
+          NS_LOG_INFO (PrintStats (from, packet->GetSize (), m_totalRx));
         }
       m_rxTrace (packet, from);
     }

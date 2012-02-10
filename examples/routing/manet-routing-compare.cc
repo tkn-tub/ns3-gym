@@ -117,6 +117,28 @@ RoutingExperiment::RoutingExperiment ()
 {
 }
 
+std::string
+PrintReceivedPacket (Ptr<Socket> socket, Ptr<Packet> packet)
+{
+  SocketAddressTag tag;
+  bool found;
+  found = packet->PeekPacketTag (tag);
+  std::ostringstream oss;
+
+  oss << Simulator::Now ().GetSeconds () << " " << socket->GetNode ()->GetId ();
+
+  if (found)
+    {
+      InetSocketAddress addr = InetSocketAddress::ConvertFrom (tag.GetAddress ());
+      oss << " received one packet from " << addr.GetIpv4 ();
+    }
+  else
+    {
+      oss << " received one packet!";
+    }
+  return oss.str ();
+}
+
 void
 RoutingExperiment::ReceivePacket (Ptr<Socket> socket)
 {
@@ -125,23 +147,7 @@ RoutingExperiment::ReceivePacket (Ptr<Socket> socket)
     {
       bytesTotal += packet->GetSize ();
       packetsReceived += 1;
-      SocketAddressTag tag;
-      bool found;
-      found = packet->PeekPacketTag (tag);
-      if (found)
-        {
-          InetSocketAddress addr = InetSocketAddress::ConvertFrom (tag.GetAddress ());
-          NS_LOG_UNCOND (Simulator::Now ().GetSeconds () <<  " " << socket->GetNode ()->GetId ()
-                                                         << " received one packet from " << addr.GetIpv4 ());
-          //cast addr to void, to suppress 'addr' set but not used
-          //compiler warning in optimized builds
-          (void) addr;
-        }
-      else
-        {
-          NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " " << socket->GetNode ()->GetId ()
-                                                         << " received one packet!");
-        }
+      NS_LOG_UNCOND (PrintReceivedPacket (socket, packet));
     }
 }
 

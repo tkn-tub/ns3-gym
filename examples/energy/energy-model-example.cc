@@ -35,6 +35,20 @@ NS_LOG_COMPONENT_DEFINE ("EnergyExample");
 
 using namespace ns3;
 
+std::string
+PrintReceivedPacket (Address& from)
+{
+  InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);
+
+  std::ostringstream oss;
+  oss << "--\nReceived one packet! Socket: " << iaddr.GetIpv4 ()
+      << " port: " << iaddr.GetPort ()
+      << " at time = " << Simulator::Now ().GetSeconds ()
+      << "\n--";
+
+  return oss.str ();
+}
+
 /**
  * \param socket Pointer to socket.
  *
@@ -49,13 +63,7 @@ ReceivePacket (Ptr<Socket> socket)
     {
       if (packet->GetSize () > 0)
         {
-          InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (from);
-          NS_LOG_UNCOND ("--\nReceived one packet! Socket: "<< iaddr.GetIpv4 ()
-                                                            << " port: " << iaddr.GetPort () << " at time = " <<
-                         Simulator::Now ().GetSeconds () << "\n--");
-          //cast iaddr to void, to suppress 'iaddr' set but not used compiler warning
-          //in optimized builds
-          (void) iaddr;
+          NS_LOG_UNCOND (PrintReceivedPacket (from));
         }
     }
 }

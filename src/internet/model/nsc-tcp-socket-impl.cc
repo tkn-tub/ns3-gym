@@ -449,9 +449,6 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       bool found;
       found = packet->PeekPacketTag (tag);
       NS_ASSERT (found);
-      // cast found to void, to suppress 'found' set but not used
-      // compiler warning in optimized builds
-      (void) found;
       fromAddress = tag.GetAddress ();
     }
   return packet;

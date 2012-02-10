@@ -314,9 +314,6 @@ Socket::BindToNetDevice (Ptr<NetDevice> netdevice)
             }
         }
       NS_ASSERT_MSG (found, "Socket cannot be bound to a NetDevice not existing on the Node");
-      //cast found to void, to suppress 'found' set but not used compiler warning
-      //in optimized builds
-      (void) found;
     }
   m_boundnetdevice = netdevice;
   return;
