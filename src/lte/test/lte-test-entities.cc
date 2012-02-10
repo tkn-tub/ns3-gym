@@ -53,6 +53,8 @@ LteTestRrc::LteTestRrc ()
   m_txBytes = 0;
   m_rxPdus = 0;
   m_rxBytes = 0;
+  m_txLastTime = Time (0);
+  m_rxLastTime = Time (0);;
 
   m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteTestRrc> (this);
 //   Simulator::ScheduleNow (&LteTestRrc::Start, this);
@@ -119,6 +121,20 @@ LteTestRrc::GetRxBytes (void)
   return m_rxBytes;
 }
 
+Time
+LteTestRrc::GetTxLastTime (void)
+{
+  NS_LOG_FUNCTION (this << m_txLastTime);
+  return m_txLastTime;
+}
+
+Time
+LteTestRrc::GetRxLastTime (void)
+{
+  NS_LOG_FUNCTION (this << m_rxLastTime);
+  return m_rxLastTime;
+}
+
 
 void
 LteTestRrc::SetArrivalTime (Time arrivalTime)
@@ -152,6 +168,7 @@ LteTestRrc::DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params)
   // Stats
   m_rxPdus++;
   m_rxBytes += dataLen;
+  m_rxLastTime = Simulator::Now ();
 
   p->CopyData (buf, dataLen);
   m_receivedData = std::string ((char *)buf, dataLen);
@@ -174,6 +191,7 @@ LteTestRrc::Start ()
   // Stats
   m_txPdus++;
   m_txBytes += m_pduSize;
+  m_txLastTime = Simulator::Now ();
 
   LtePdcpSapProvider::TransmitRrcPduParameters p;
   p.rnti = 1111;
@@ -498,48 +516,50 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   m_txPdus++;
   m_txBytes += params.pdu->GetSize ();
 
-  m_device->Send (params.pdu, m_device->GetBroadcast (), 0);
+  if (m_device)
+    {
+      m_device->Send (params.pdu, m_device->GetBroadcast (), 0);
+    }
+  else if (m_macLoopback)
+    {
+      Simulator::Schedule (Seconds (0.1), &LteMacSapUser::ReceivePdu,
+                           m_macLoopback->m_macSapUser, params.pdu);
+    }
+  else
+    {
+      LtePdcpHeader pdcpHeader;
 
-//   if (m_macLoopback)
-//     {
-//       Simulator::Schedule (Seconds (0.1), &LteMacSapUser::ReceivePdu,
-//                            m_macLoopback->m_macSapUser, params.pdu);
-//     }
-//   else
-//     {
-//       LtePdcpHeader pdcpHeader;
-// 
-//       if (m_rlcHeaderType == AM_RLC_HEADER)
-//         {
-//           // Remove AM RLC header
-//           LteRlcAmHeader rlcAmHeader;
-//           params.pdu->RemoveHeader (rlcAmHeader);
-//           NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
-//         }
-//       else // if (m_rlcHeaderType == UM_RLC_HEADER)
-//         {
-//           // Remove UM RLC header
-//           LteRlcHeader rlcHeader;
-//           params.pdu->RemoveHeader (rlcHeader);
-//           NS_LOG_LOGIC ("UM RLC header: " << rlcHeader);
-//         }
-// 
-//       // Remove PDCP header, if present
-//       if (m_pdcpHeaderPresent)
-//         {
-//           params.pdu->RemoveHeader (pdcpHeader);
-//           NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
-//         }
-// 
-//       // Copy data to a string
-//       uint32_t dataLen = params.pdu->GetSize ();
-//       uint8_t *buf = new uint8_t[dataLen];
-//       params.pdu->CopyData (buf, dataLen);
-//       m_receivedData = std::string ((char *)buf, dataLen);
-// 
-//       NS_LOG_LOGIC ("Data (" << dataLen << ") = " << m_receivedData);
-//       delete [] buf;
-//     }
+      if (m_rlcHeaderType == AM_RLC_HEADER)
+        {
+          // Remove AM RLC header
+          LteRlcAmHeader rlcAmHeader;
+          params.pdu->RemoveHeader (rlcAmHeader);
+          NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+        }
+      else // if (m_rlcHeaderType == UM_RLC_HEADER)
+        {
+          // Remove UM RLC header
+          LteRlcHeader rlcHeader;
+          params.pdu->RemoveHeader (rlcHeader);
+          NS_LOG_LOGIC ("UM RLC header: " << rlcHeader);
+        }
+
+      // Remove PDCP header, if present
+      if (m_pdcpHeaderPresent)
+        {
+          params.pdu->RemoveHeader (pdcpHeader);
+          NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+        }
+
+      // Copy data to a string
+      uint32_t dataLen = params.pdu->GetSize ();
+      uint8_t *buf = new uint8_t[dataLen];
+      params.pdu->CopyData (buf, dataLen);
+      m_receivedData = std::string ((char *)buf, dataLen);
+
+      NS_LOG_LOGIC ("Data (" << dataLen << ") = " << m_receivedData);
+      delete [] buf;
+    }
 }
 
 void

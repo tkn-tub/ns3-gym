@@ -77,6 +77,9 @@ class LteTestRrc : public Object
     uint32_t GetRxPdus (void);
     uint32_t GetRxBytes (void);
 
+    Time GetTxLastTime (void);
+    Time GetRxLastTime (void);
+
     void SetArrivalTime (Time arrivalTime);
     void SetPduSize (uint32_t pduSize);
 
@@ -93,6 +96,8 @@ class LteTestRrc : public Object
     uint32_t m_txBytes;
     uint32_t m_rxPdus;
     uint32_t m_rxBytes;
+    Time     m_txLastTime;
+    Time     m_rxLastTime;
 
     EventId m_nextPdu;
     Time m_arrivalTime;
