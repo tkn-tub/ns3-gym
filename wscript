@@ -768,6 +768,12 @@ def build(bld):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
+            # disable pcfile taskgens for disabled modules
+            if 'ns3pcfile' in getattr(obj, "features", []):
+                if obj.module.name not in bld.env.NS3_ENABLED_MODULES:
+                    bld.exclude_taskgen(obj)
+
+
     if env['NS3_ENABLED_MODULES']:
         env['NS3_ENABLED_MODULES'] = list(modules)
 
