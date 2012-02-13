@@ -57,10 +57,6 @@ import wutils
 
 Configure.autoconfig = 0
 
-# until http://code.google.com/p/waf/issues/detail?id=1039 gets fixed...
-wutils.monkey_patch_Runner_start()
-
-
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION", "rt").read().strip()
 APPNAME = 'ns'
