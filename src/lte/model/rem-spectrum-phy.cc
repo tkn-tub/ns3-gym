@@ -136,7 +136,7 @@ RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
 double
 RemSpectrumPhy::GetSinr (double noisePower)
 {
-  return m_referenceSignalPower / (m_sumPower + noisePower);
+  return m_referenceSignalPower / (m_sumPower - m_referenceSignalPower + noisePower);
 }
 
 void
