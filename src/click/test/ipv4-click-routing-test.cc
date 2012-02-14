@@ -122,30 +122,29 @@ ClickIpMacAddressFromNameTest::DoRun ()
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
   click->DoStart ();
 
-  int ret = 0;
   char *buf = NULL;
   buf = new char [255];
 
-  ret = simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth0", buf, 255);
+  simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth0", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "10.1.1.1"), 0, "eth0 has IP 10.1.1.1");
 
-  ret = simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "eth0", buf, 255);
+  simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "eth0", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:01"), 0, "eth0 has Mac Address 00:00:00:00:00:01");
 
-  ret = simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth1", buf, 255);
+  simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth1", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "10.1.1.2"), 0, "eth1 has IP 10.1.1.2");
 
-  ret = simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "eth1", buf, 255);
+  simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "eth1", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:02"), 0, "eth0 has Mac Address 00:00:00:00:00:02");
 
   // Not sure how to test the below case, because the Ipv4ClickRouting code is to ASSERT for such inputs
-  // ret = simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth2", buf, 255);
+  // simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth2", buf, 255);
   // NS_TEST_EXPECT_MSG_EQ (buf, NULL, "No eth2");
 
-  ret = simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "tap0", buf, 255);
+  simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "tap0", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "127.0.0.1"), 0, "tun0 has IP 127.0.0.1");
 
-  ret = simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "tap0", buf, 255);
+  simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "tap0", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:00"), 0, "tun0 has IP 127.0.0.1");
 
   delete [] buf;
