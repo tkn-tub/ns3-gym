@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('buildings', ['mobility', 'propagation'])
+    module = bld.create_ns3_module('buildings', ['mobility', 'propagation', 'config-store'])
     module.source = [
         'model/building.cc',
         'model/building-list.cc',
@@ -30,8 +30,8 @@ def build(bld):
         'test/buildings-shadowing-test.h',
         ]
 
-#    if (bld.env['ENABLE_EXAMPLES']):
-#        bld.add_subdirs('examples')
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
 
 
     bld.ns3_python_bindings()
