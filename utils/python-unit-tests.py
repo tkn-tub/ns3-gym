@@ -49,6 +49,21 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(self._args_received, "args")
         self.assertEqual(self._cb_time.GetSeconds(), 123.0)
 
+    def testScheduleWithContext(self):
+        def callback(context, args):
+            self._context_received = context
+            self._args_received = args
+            self._cb_time = Simulator.Now()
+        Simulator.Destroy()
+        self._args_received = None
+        self._cb_time = None
+        self._context_received = None
+        Simulator.ScheduleWithContext(54321, Seconds(123), callback, "args")
+        Simulator.Run()
+        self.assertEqual(self._context_received, 54321)
+        self.assertEqual(self._args_received, "args")
+        self.assertEqual(self._cb_time.GetSeconds(), 123.0)
+
     def testTimeComparison(self):
         self.assert_(Seconds(123) == Seconds(123))
         self.assert_(Seconds(123) >= Seconds(123))

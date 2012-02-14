@@ -10,14 +10,34 @@ class PythonEventImpl : public ns3::EventImpl
 private:
   PyObject *m_callback;
   PyObject *m_args;
+
 public:
-  PythonEventImpl (PyObject *callback, PyObject *args)
+
+  PythonEventImpl (PyObject *callback, PyObject *args, PyObject *py_context=NULL)
   {
     m_callback = callback;
     Py_INCREF (m_callback);
-    m_args = args;
-    Py_INCREF (m_args);
+    
+    if (py_context == NULL)
+      {
+        m_args = args;
+        Py_INCREF (m_args);
+      }
+    else 
+      {
+        Py_ssize_t arglen = PyTuple_GET_SIZE (args);
+        m_args = PyTuple_New (arglen + 1);
+        PyTuple_SET_ITEM (m_args, 0, py_context);
+        Py_INCREF (py_context);
+        for (Py_ssize_t i = 0; i < arglen; ++i) 
+          {
+            PyObject *arg = PyTuple_GET_ITEM (args, i);
+            Py_INCREF (arg);
+            PyTuple_SET_ITEM (m_args, 1 + i, arg);
+          }
+      }
   }
+
   virtual ~PythonEventImpl ()
   {
     PyGILState_STATE __py_gil_state;
@@ -124,7 +144,7 @@ _wrap_Simulator_ScheduleNow (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject 
   py_callback = PyTuple_GET_ITEM (args, 0);
 
   if (!PyCallable_Check (py_callback)) {
-      PyErr_SetString (PyExc_TypeError, "Parameter 2 should be callable");
+      PyErr_SetString (PyExc_TypeError, "Parameter 1 should be callable");
       goto error;
     }
   user_args = PyTuple_GetSlice (args, 1, PyTuple_GET_SIZE (args));
@@ -143,6 +163,60 @@ error:
   return NULL;
 }
 
+PyObject *
+_wrap_Simulator_ScheduleWithContext (PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
+                                     PyObject **return_exception)
+{
+    PyObject *exc_type, *traceback;
+    PyObject *py_obj_context;
+    uint32_t context;
+    PyObject *py_time;
+    PyObject *py_callback;
+    PyObject *user_args;
+    PythonEventImpl *py_event_impl;
+
+    if (kwargs && PyObject_Length(kwargs) > 0) {
+        PyErr_SetString(PyExc_TypeError, "keyword arguments not supported");
+        goto error;
+    }
+
+    if (PyTuple_GET_SIZE(args) < 3 ) {
+        PyErr_SetString(PyExc_TypeError, "ns3.Simulator.ScheduleWithContext needs at least 3 arguments");
+        goto error;
+    }
+
+    py_obj_context = PyTuple_GET_ITEM(args, 0);
+    py_time = PyTuple_GET_ITEM(args, 1);
+    py_callback = PyTuple_GET_ITEM(args, 2);
+
+    context = PyInt_AsUnsignedLongMask(py_obj_context);
+    if (PyErr_Occurred()) {
+        goto error;
+    }
+    if (!PyObject_IsInstance(py_time, (PyObject*) &PyNs3Time_Type)) {
+        PyErr_SetString(PyExc_TypeError, "Parameter 2 should be a ns3.Time instance");
+        goto error;
+    }
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "Parameter 3 should be callable");
+        goto error;
+    }
+
+    user_args = PyTuple_GetSlice(args, 3, PyTuple_GET_SIZE(args));
+    py_event_impl = new PythonEventImpl (py_callback, user_args, py_obj_context);
+    Py_DECREF(user_args);
+
+    ns3::Simulator::ScheduleWithContext(context, *((PyNs3Time *) py_time)->obj, py_event_impl);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+
+error:
+    PyErr_Fetch(&exc_type, return_exception, &traceback);
+    Py_XDECREF(exc_type);
+    Py_XDECREF(traceback);
+    return NULL;
+}
 
 PyObject *
 _wrap_Simulator_ScheduleDestroy (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
