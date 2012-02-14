@@ -5,6 +5,7 @@ import ns.network
 import ns.internet
 import ns.mobility
 import ns.csma
+import ns.applications
 
 
 class TestSimulator(unittest.TestCase):
