@@ -139,7 +139,12 @@ BuildingsPropagationLossModel::GetTypeId (void)
                    MakeEnumAccessor (&BuildingsPropagationLossModel::SetCitySize),
                    MakeEnumChecker (BuildingsPropagationLossModel::Small, "Small",
                                     BuildingsPropagationLossModel::Medium, "Medium",
-                                    BuildingsPropagationLossModel::Large, "Large"));
+                                    BuildingsPropagationLossModel::Large, "Large"))
+    .AddAttribute ("InternalWallLoss",
+                   "Additional loss for each internal wall [dB]",
+                   DoubleValue (5.0),
+                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_lossInternalWall),
+                   MakeDoubleChecker<double> ());
 
 
   return tid;
@@ -551,7 +556,7 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
 
 
 double
-BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
+BuildingsPropagationLossModel::ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const
 {
   double loss = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
@@ -571,14 +576,11 @@ BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
     {
       loss = 12;
     }
-
-
   return (loss);
 }
 
-
 double
-BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) const
+BuildingsPropagationLossModel::HeightLoss (Ptr<BuildingsMobilityModel> node) const
 {
   double loss = 0.0;
 
@@ -587,8 +589,14 @@ BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) con
   return (loss);
 }
 
-
-
+double
+BuildingsPropagationLossModel::InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel>b) const
+{
+  // approximate the number of internal walls with the Manhattan distance in "rooms" units
+  double dx = abs (a->GetRoomNumberX () - b->GetRoomNumberX ());
+  double dy = abs (a->GetRoomNumberY () - b->GetRoomNumberY ());    
+  return m_lossInternalWall * (dx+dy);
+}
 
 double
 BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
@@ -660,7 +668,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
                   if (distance < m_itu1411DistanceThreshold)
                     {
                       // short range communication
-                      loss = ItuR1411 (a1, b1) + BEWPL (b1) + HeightGain (a1);
+                      loss = ItuR1411 (a1, b1) + ExternalWallLoss (b1) + HeightLoss (a1);
                       NS_LOG_INFO (this << " 0-I (>1000): down rooftop -> ITUR1411 : " << loss);
                     }
                   else
@@ -673,13 +681,13 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
               else
                 {
                   // Over the rooftop tranmission -> Okumura Hata
-                  loss = OkumuraHata (a1, b1) + BEWPL (b1);
+                  loss = OkumuraHata (a1, b1) + ExternalWallLoss (b1);
                   NS_LOG_INFO (this << " O-I (>1000): Over the rooftop -> OH : " << loss);
                 }
             }
           else
             {
-              loss = ItuR1411 (a1, b1) + BEWPL (b1) + HeightGain (b1);
+              loss = ItuR1411 (a1, b1) + ExternalWallLoss (b1) + HeightLoss (b1);
               NS_LOG_INFO (this << " 0-I (<1000) ITUR1411 + BEL : " << loss);
             }
         } // end b1->isIndoor ()
@@ -692,14 +700,14 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
           if (a1->GetBuilding () == b1->GetBuilding ())
             {
               // nodes are in same building -> indoor communication ITU-R P.1238
-              loss = ItuR1238 (a1, b1);
-              NS_LOG_INFO (this << " I-I (same building) ITUR1238 : " << loss);
+              loss = ItuR1238 (a1, b1) + InternalWallsLoss (a1, b1);
+              NS_LOG_INFO (this << " I-I (same building) ITUR1238 + internal walls: " << loss);
 
             }
           else
             {
               // nodes are in different buildings
-              loss = ItuR1411 (a1, b1) + BEWPL (a1) + BEWPL (b1);
+              loss = ItuR1411 (a1, b1) + ExternalWallLoss (a1) + ExternalWallLoss (b1);
               NS_LOG_INFO (this << " I-I (different) ITUR1238 + 2*BEL : " << loss);
             }
         }
@@ -716,7 +724,7 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
                   if (distance < m_itu1411DistanceThreshold)
                     {
                       // short range communication
-                      loss = ItuR1411 (a1, b1) + BEWPL (a1) + HeightGain (a1);
+                      loss = ItuR1411 (a1, b1) + ExternalWallLoss (a1) + HeightLoss (a1);
                       NS_LOG_INFO (this << " I-O (>1000): down rooftop -> ITUR1411 : " << loss);
                     }
                   else
@@ -729,13 +737,13 @@ BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel>
               else
                 {
                   // above rooftop -> OH
-                  loss = OkumuraHata (a1, b1) + BEWPL (a1) + HeightGain (a1);
+                  loss = OkumuraHata (a1, b1) + ExternalWallLoss (a1) + HeightLoss (a1);
                   NS_LOG_INFO (this << " =I-O (>1000) over rooftop OH + BEL + HG: " << loss);
                 }
             }
           else
             {
-              loss = ItuR1411 (a1, b1) + BEWPL (a1)  + HeightGain (a1);
+              loss = ItuR1411 (a1, b1) + ExternalWallLoss (a1)  + HeightLoss (a1);
               NS_LOG_INFO (this << " I-O (<1000)  ITUR1411 + BEL + HG: " << loss);
             }
         } // end b1->IsIndoor ()

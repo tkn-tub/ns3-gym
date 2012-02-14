@@ -102,9 +102,10 @@ private:
   double ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
 //   double ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
   double ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double BEWPL (Ptr<BuildingsMobilityModel> a) const;
 
-  double HeightGain (Ptr<BuildingsMobilityModel> n) const;
+  double ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const;
+  double HeightLoss (Ptr<BuildingsMobilityModel> n) const;
+  double InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
 
   double C;  // OH loss coefficient for the environment
   double N;  // ITU-R P.1238: power loss coefficient
@@ -120,7 +121,9 @@ private:
   double m_streetsWidth; // in meters
   double m_buildingsExtend; // in meters
   double m_buildingSeparation; // in meters
+  double m_lossInternalWall; // in meters
 
+  
   class ShadowingLoss
   {
   public:
