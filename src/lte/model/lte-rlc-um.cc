@@ -671,7 +671,57 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                       break;
 
                       case (LteRlcHeader::NO_FIRST_BYTE | LteRlcHeader::LAST_BYTE):
+                              m_reassemblingState = WAITING_S0_FULL;
+
+                              /**
+                               * Discard SI or SN
+                               */
+                              m_sdusBuffer.pop_front ();
+
+                              /**
+                               * Deliver zero, one or multiple PDUs
+                               */
+                              while ( ! m_sdusBuffer.empty () )
+                                {
+                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                                  m_sdusBuffer.pop_front ();
+                                }
+                      break;
+
                       case (LteRlcHeader::NO_FIRST_BYTE | LteRlcHeader::NO_LAST_BYTE):
+                              if ( m_sdusBuffer.size () == 1 )
+                                {
+                                  m_reassemblingState = WAITING_S0_FULL;
+                                }
+                              else
+                                {
+                                  m_reassemblingState = WAITING_SI_SF;
+                                }
+
+                              /**
+                               * Discard SI or SN
+                               */
+                              m_sdusBuffer.pop_front ();
+
+                              if ( m_sdusBuffer.size () > 0 )
+                                {
+                                  /**
+                                   * Deliver zero, one or multiple PDUs
+                                   */
+                                  while ( m_sdusBuffer.size () > 1 )
+                                    {
+                                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                                      m_sdusBuffer.pop_front ();
+                                    }
+
+                                  /**
+                                   * Keep S0
+                                   */
+                                  m_keepS0 = m_sdusBuffer.front ();
+                                  m_sdusBuffer.pop_front ();
+                                }
+                      break;
+
                       default:
                               /**
                               * ERROR: Transition not possible
