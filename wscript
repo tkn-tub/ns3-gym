@@ -270,6 +270,11 @@ def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
     conf.env.append_value('NS3_OPTIONAL_FEATURES', [(name, caption, was_enabled, reason_not_enabled)])
 
+def check_optional_feature(conf, name):
+    for (name1, caption, was_enabled, reason_not_enabled) in conf.env.NS3_OPTIONAL_FEATURES:
+        if name1 == name:
+            return was_enabled
+    raise KeyError("Feature %r not declared yet" % (name,))
 
 # starting with waf 1.6, conf.check() becomes fatal by default if the
 # test fails, this alternative method makes the test non-fatal, as it
@@ -287,6 +292,7 @@ def configure(conf):
     conf.check_nonfatal = types.MethodType(_check_nonfatal, conf)
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
+    conf.check_optional_feature = types.MethodType(check_optional_feature, conf)
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.check_tool('compiler_c')
@@ -364,6 +370,8 @@ def configure(conf):
 
     conf.env['MODULES_NOT_BUILT'] = []
 
+    conf.sub_config('bindings/python')
+
     conf.sub_config('src')
 
     # Set the list of enabled modules.
@@ -395,8 +403,6 @@ def configure(conf):
             conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
                 raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
-
-    conf.sub_config('bindings/python')
 
     conf.sub_config('src/mpi')
 

@@ -1,24 +1,53 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import Options
 
+required_python_modules = [
+    'gtk',
+    'goocanvas',
+    'pygraphviz',
+    ]
+
 def configure(conf):
     # If Python was explicitly disabled, then add this module to the
     # list of modules that won't be built if they are enabled.
-    if Options.options.python_disable:
+    conf.env['ENABLE_PYVIZ'] = True
+    if not conf.check_optional_feature("python"):
+        conf.env['ENABLE_PYVIZ'] = False
+        conf.report_optional_feature("PyViz", "PyViz visualizer",
+                                     False,
+                                     "Python Bindings are needed but not enabled")
         conf.env['MODULES_NOT_BUILT'].append('visualizer')
-
-def build(bld):
-    # Don't do anything for this module if Python was explicitly
-    # disabled.
-    if 'visualizer' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    headers = bld.new_task_gen(features=['ns3header'])
-    headers.module = 'visualizer'
-    headers.source = [
-        ]
+    modules_missing = []
+    for pymod in required_python_modules:
+        try:
+            conf.check_python_module(pymod)
+        except conf.errors.ConfigurationError:
+            modules_missing.append(pymod)
+    if modules_missing:
+        conf.report_optional_feature("PyViz", "PyViz visualizer",
+                                     False, "Missing python modules: %s" % (', '.join(modules_missing),))
+        conf.env['ENABLE_PYVIZ'] = False
+        conf.env['MODULES_NOT_BUILT'].append('visualizer')
+        return
+
+    conf.report_optional_feature("PyViz", "PyViz visualizer", True, None)
+
+
+def build(bld):
 
     module = bld.create_ns3_module('visualizer', ['internet', 'wifi', 'point-to-point'])
+    headers = bld.new_task_gen(features=['ns3header'])
+    headers.module = 'visualizer'
+
+    # Don't do anything more for this module if Python was explicitly
+    # disabled.
+    if not bld.env['ENABLE_PYVIZ']:
+        return
+
+
+    headers.source = []
 
     # XXX This file was added so that static builds would work on
     # Darwin, which doesn't like modules with no source files.  It
@@ -31,9 +60,6 @@ def build(bld):
     module.source = [
         'model/dummy-file-for-static-builds.cc',
         ]
-
-    if not bld.env['ENABLE_PYTHON_BINDINGS']:
-        return
 
     module.features.append('pyembed')
     #module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
