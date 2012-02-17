@@ -178,6 +178,7 @@ BuildingsPathlossTestCase::DoRun (void)
 //   LogComponentEnable ("LteEnbNetDevice", logLevel);
 
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("HybridBuildingsPropagationLossModel", LOG_LEVEL_ALL);
 
   NS_LOG_FUNCTION (this);
 
@@ -187,7 +188,7 @@ BuildingsPathlossTestCase::DoRun (void)
 
 
 
-  Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   propagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
   propagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 / m_freq));
   propagationLossModel->SetAttribute ("Environment", EnumValue (m_env));

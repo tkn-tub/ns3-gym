@@ -21,7 +21,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/buildings-shadowing-test.h"
-#include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/hybrid-buildings-propagation-loss-model.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/building.h>
@@ -122,8 +122,8 @@ BuildingsShadowingTestCase::DoRun (void)
   int samples = 10000;
   for (int i = 0; i < samples; i++)
     {
-      Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-      loss.push_back (propagationLossModel->GetLoss (mma, mmb) - m_lossRef);
+      Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
+      loss.push_back (propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef);
       sum += loss.at (loss.size () - 1);
       sumSquared += (loss.at (loss.size () - 1) * loss.at (loss.size () - 1));
     }

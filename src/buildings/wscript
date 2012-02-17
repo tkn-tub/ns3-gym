@@ -8,6 +8,8 @@ def build(bld):
         'model/building-list.cc',
         'model/buildings-mobility-model.cc',
         'model/buildings-propagation-loss-model.cc',
+        'model/hybrid-buildings-propagation-loss-model.cc',
+        'model/oh-buildings-propagation-loss-model.cc',
         'helper/buildings-helper.cc',
         ]
 
@@ -25,6 +27,8 @@ def build(bld):
         'model/building-list.h',
         'model/buildings-mobility-model.h',
         'model/buildings-propagation-loss-model.h',
+        'model/hybrid-buildings-propagation-loss-model.h',
+        'model/oh-buildings-propagation-loss-model.h',
         'helper/buildings-helper.h',
         'test/buildings-pathloss-test.h',
         'test/buildings-shadowing-test.h',

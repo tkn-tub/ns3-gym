@@ -11,13 +11,18 @@ Overview
 
 The Buildings module provides:
 
- #. a new class (Building) that models the presence of a building in a simulation scenario;  
- #. a new mobility model (BuildingsMobilityModel) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
- #. a new propagation model (BuildingsPropagationLossModel) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
+ #. a new class (``Building``) that models the presence of a building in a simulation scenario;  
+ #. a new mobility model (``BuildingsMobilityModel``) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
+ #. a container class with the definition of the most useful pathloss models and the correspondent variables called ``BuildingsPropagationLossModel``.
+ #. a new propagation model (``HybridBuildingsPropagationLossModel``) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
+ #. a simplified model working only with Okumura Hata (``OhBuildingsPropagationLossModel``) considering the phenomenon of indoor/outdoor propagation in the presence of buildings.
 
-Both models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi). 
+The models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi). 
 
-The pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. Finally, the frequency also represent an important parameter since it spans from 600 MHz up to 2600 MHz according to [TS36.101]_.
+The ``HybridBuildingsPropagationLossModel`` pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. Finally, the frequency also represent an important parameter since it spans from 600 MHz up to 2600 MHz according to [TS36.101]_.
+
+The ``OhBuildingsPropagationLossModel`` pathloss model has been created for simplifying the previous one removing the thresholds for switching from one model to other. For doing this it has been used only one propagation model from the one available (i.e., the Okumura Hata). The presence of building is still considered in the model; therefore all the considerations of above regarding the building type are still valid. The same consideration can be done for what concern the environmental scenario and frequency since both of them are parameters of the model considered.
+
 
 The Building class
 ++++++++++++++++++
@@ -47,8 +52,8 @@ The ``Building`` class is included in ``BuildingsMobilityModel`` class, which in
 
 The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 
-Pathloss models used in BuildingsPropagationLossModel
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+Pathloss models available in BuildingsPropagationLossModel
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 In the following we present the pathloss models that are included in the BuildingsPropagationLossModel
 
@@ -333,10 +338,10 @@ The pathloss model characterizes the hybrid cases (i.e., when an outdoor node tr
 
 
 
-Pathloss Model Logic of BuildingsPropagationLossModel
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+Pathloss Model Logic of HybridBuildingsPropagationLossModel
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The following pseudo-code illustrates how the different pathloss models described above are integrated in the BuildingsPropagationLossModel::
+The following pseudo-code illustrates how the different pathloss models described above are integrated in the ``HybridBuildingsPropagationLossModel``::
 
   if (txNode is outdoor)
     then
@@ -381,6 +386,31 @@ The following pseudo-code illustrates how the different pathloss models describe
 
 
 We note that, for the case of communication between two nodes below rooftop level with distance is greater then 1 km, we still consider the I1411 model, since OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold called ``m_itu1411DistanceThreshold``) for pruning the communications between nodes below rooftop when the distance is too large (the default values is 2 km).
+
+Pathloss Model Logic of OhBuildingsPropagationLossModel
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The following pseudo-code illustrates how the different pathloss models described above are integrated in the ``OhBuildingsPropagationLossModel``::
+
+  if (txNode is outdoor)
+    then
+      if (rxNode is outdoor)
+        then
+          L = OH 
+        else (rxNode is indoor)
+          L = OH + BEL
+  else (txNode is indoor)
+    if (rxNode is indoor)
+      then
+       if (same building)
+          then
+            L = OH
+          else
+            L = OH + 2*BEL 
+     else (rxNode is outdoor)
+        L = OH + BEL
+      
+
 
 
 Shadowing Model

@@ -23,7 +23,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-#include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/hybrid-buildings-propagation-loss-model.h>
 
 #include <iomanip>
 #include <string>
@@ -73,7 +73,7 @@ main (int argc, char *argv[])
       mmEnb->SetIndoor (building1);
     }
   
-  Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   // cancel shadowing effect
   propagationLossModel->SetAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   propagationLossModel->SetAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
