@@ -202,19 +202,24 @@ public:
    */
   void SetRecvCallback (Callback<void, Ptr<Socket> >);
   /** 
+   * \brief Allocate a local endpoint for this socket.
    * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
    *
-   * Allocate a local endpoint for this socket.
    */
   virtual int Bind (const Address &address) = 0;
 
   /** 
-   * Allocate a local endpoint for this socket.
-   *
+   * \brief Allocate a local IPv4 endpoint for this socket.
    * \returns 0 on success, -1 on failure.
    */
   virtual int Bind () = 0;
+
+  /**
+   * \brief Allocate a local IPv6 endpoint for this socket.
+   * \returns 0 on success, -1 on failure.
+   */
+  virtual int Bind6 () = 0;
 
   /** 
    * \brief Close a socket.

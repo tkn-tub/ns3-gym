@@ -21,6 +21,7 @@
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -177,6 +178,17 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         {
           m_totalRx += packet->GetSize ();
           NS_LOG_INFO (PrintStats (from, packet->GetSize (), m_totalRx));
+        }
+      else if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          m_totalRx += packet->GetSize ();
+          Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
+          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
+                       address.GetIpv6 () << " [" << address << "]"
+                                   << " total Rx " << m_totalRx);
+          //cast address to void , to suppress 'address' set but not used 
+          //compiler warning in optimized builds
+          (void) address;
         }
       m_rxTrace (packet, from);
     }

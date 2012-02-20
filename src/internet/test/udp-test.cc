@@ -34,14 +34,19 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-static-routing.h"
+#include "ns3/ipv6-list-routing.h"
+#include "ns3/ipv6-static-routing.h"
 
 #include <string>
 #include <limits>
@@ -64,6 +69,31 @@ AddInternetStack (Ptr<Node> node)
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
   node->AggregateObject (icmp);
+  //UDP
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  node->AggregateObject (udp);
+  //TCP
+  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
+  node->AggregateObject (tcp);
+}
+
+static void
+AddInternetStack6 (Ptr<Node> node)
+{
+  //IPV6
+  Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
+  //Routing for Ipv6
+  Ptr<Ipv6ListRouting> ipv6Routing = CreateObject<Ipv6ListRouting> ();
+  ipv6->SetRoutingProtocol (ipv6Routing);
+  Ptr<Ipv6StaticRouting> ipv6staticRouting = CreateObject<Ipv6StaticRouting> ();
+  ipv6Routing->AddRoutingProtocol (ipv6staticRouting, 0);
+  node->AggregateObject (ipv6);
+  //ICMP
+  Ptr<Icmpv6L4Protocol> icmp = CreateObject<Icmpv6L4Protocol> ();
+  node->AggregateObject (icmp);
+  //Ipv6 Extensions
+  ipv6->RegisterExtensions ();
+  ipv6->RegisterOptions ();
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   node->AggregateObject (udp);
@@ -109,6 +139,50 @@ UdpSocketLoopbackTest::DoRun ()
 
   Ptr<Socket> txSocket = rxSocketFactory->CreateSocket ();
   txSocket->SendTo (Create<Packet> (246), 0, InetSocketAddress ("127.0.0.1", 80));
+  Simulator::Run ();
+  Simulator::Destroy ();
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
+}
+
+class Udp6SocketLoopbackTest : public TestCase
+{
+public:
+  Udp6SocketLoopbackTest ();
+  virtual void DoRun (void);
+
+  void ReceivePkt (Ptr<Socket> socket);
+  Ptr<Packet> m_receivedPacket;
+};
+
+Udp6SocketLoopbackTest::Udp6SocketLoopbackTest ()
+  : TestCase ("UDP6 loopback test") 
+{
+}
+
+void Udp6SocketLoopbackTest::ReceivePkt (Ptr<Socket> socket)
+{
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
+}
+
+void
+Udp6SocketLoopbackTest::DoRun ()
+{
+  Ptr<Node> rxNode = CreateObject<Node> ();
+  AddInternetStack6 (rxNode);
+
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
+  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
+  rxSocket->Bind (Inet6SocketAddress (Ipv6Address::GetAny (), 80));
+  rxSocket->SetRecvCallback (MakeCallback (&Udp6SocketLoopbackTest::ReceivePkt, this));
+
+  Ptr<Socket> txSocket = rxSocketFactory->CreateSocket ();
+  txSocket->SendTo (Create<Packet> (246), 0, Inet6SocketAddress ("::1", 80));
   Simulator::Run ();
   Simulator::Destroy ();
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
@@ -311,6 +385,190 @@ UdpSocketImplTest::DoRun (void)
 
 }
 
+class Udp6SocketImplTest : public TestCase
+{
+  Ptr<Packet> m_receivedPacket;
+  Ptr<Packet> m_receivedPacket2;
+  void DoSendData (Ptr<Socket> socket, std::string to);
+  void SendData (Ptr<Socket> socket, std::string to);
+
+public:
+  virtual void DoRun (void);
+  Udp6SocketImplTest ();
+
+  void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  void ReceivePkt (Ptr<Socket> socket);
+  void ReceivePkt2 (Ptr<Socket> socket);
+};
+
+Udp6SocketImplTest::Udp6SocketImplTest ()
+  : TestCase ("UDP6 socket implementation")
+{
+}
+
+void Udp6SocketImplTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+{
+  m_receivedPacket = packet;
+}
+
+void Udp6SocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+{
+  m_receivedPacket2 = packet;
+}
+
+void Udp6SocketImplTest::ReceivePkt (Ptr<Socket> socket)
+{
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
+}
+
+void Udp6SocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
+{
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
+  m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max (), 0);
+  NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
+  //cast availableData to void, to suppress 'availableData' set but not used
+  //compiler warning
+  (void) availableData;
+}
+
+void
+Udp6SocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
+{
+  Address realTo = Inet6SocketAddress (Ipv6Address (to.c_str ()), 1234);
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
+                         123, "XXX");
+}
+
+void
+Udp6SocketImplTest::SendData (Ptr<Socket> socket, std::string to)
+{
+  m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
+                                  &Udp6SocketImplTest::DoSendData, this, socket, to);
+  Simulator::Run ();
+}
+
+void
+Udp6SocketImplTest::DoRun (void)
+{
+  // Create topology
+
+  // Receiver Node
+  Ptr<Node> rxNode = CreateObject<Node> ();
+  AddInternetStack6 (rxNode);
+  Ptr<SimpleNetDevice> rxDev1, rxDev2;
+  { // first interface
+    rxDev1 = CreateObject<SimpleNetDevice> ();
+    rxDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+    rxNode->AddDevice (rxDev1);
+    Ptr<Ipv6> ipv6 = rxNode->GetObject<Ipv6> ();
+    uint32_t netdev_idx = ipv6->AddInterface (rxDev1);
+    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:0100::1"), Ipv6Prefix (64));
+    ipv6->AddAddress (netdev_idx, ipv6Addr);
+    ipv6->SetUp (netdev_idx);
+  }
+  { // second interface
+    rxDev2 = CreateObject<SimpleNetDevice> ();
+    rxDev2->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+    rxNode->AddDevice (rxDev2);
+    Ptr<Ipv6> ipv6 = rxNode->GetObject<Ipv6> ();
+    uint32_t netdev_idx = ipv6->AddInterface (rxDev2);
+    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:0100:1::1"), Ipv6Prefix (64));
+    ipv6->AddAddress (netdev_idx, ipv6Addr);
+    ipv6->SetUp (netdev_idx);
+  }
+
+  // Sender Node
+  Ptr<Node> txNode = CreateObject<Node> ();
+  AddInternetStack6 (txNode);
+  Ptr<SimpleNetDevice> txDev1;
+  {
+    txDev1 = CreateObject<SimpleNetDevice> ();
+    txDev1->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+    txNode->AddDevice (txDev1);
+    Ptr<Ipv6> ipv6 = txNode->GetObject<Ipv6> ();
+    uint32_t netdev_idx = ipv6->AddInterface (txDev1);
+    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:0100::2"), Ipv6Prefix (64));
+    ipv6->AddAddress (netdev_idx, ipv6Addr);
+    ipv6->SetUp (netdev_idx);
+  }
+  Ptr<SimpleNetDevice> txDev2;
+  {
+    txDev2 = CreateObject<SimpleNetDevice> ();
+    txDev2->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+    txNode->AddDevice (txDev2);
+    Ptr<Ipv6> ipv6 = txNode->GetObject<Ipv6> ();
+    uint32_t netdev_idx = ipv6->AddInterface (txDev2);
+    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:0100:1::2"), Ipv6Prefix (64));
+    ipv6->AddAddress (netdev_idx, ipv6Addr);
+    ipv6->SetUp (netdev_idx);
+  }
+
+  // link the two nodes
+  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
+  rxDev1->SetChannel (channel1);
+  txDev1->SetChannel (channel1);
+
+  Ptr<SimpleChannel> channel2 = CreateObject<SimpleChannel> ();
+  rxDev2->SetChannel (channel2);
+  txDev2->SetChannel (channel2);
+
+
+  // Create the UDP sockets
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
+  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (Inet6SocketAddress (Ipv6Address ("2001:0100::1"), 1234)), 0, "trivial");
+  rxSocket->SetRecvCallback (MakeCallback (&Udp6SocketImplTest::ReceivePkt, this));
+
+  Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
+  rxSocket2->SetRecvCallback (MakeCallback (&Udp6SocketImplTest::ReceivePkt2, this));
+  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (Inet6SocketAddress (Ipv6Address ("2001:0100:1::1"), 1234)), 0, "trivial");
+
+  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
+  Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
+  txSocket->SetAllowBroadcast (true);
+  // ------ Now the tests ------------
+
+  // Unicast test
+  SendData (txSocket, "2001:0100::1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should receive it");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+
+  // Simple Link-local multicast test
+
+  // When receiving broadcast packets, all sockets sockets bound to
+  // the address/port should receive a copy of the same packet -- if
+  // the socket address matches.
+  rxSocket2->Dispose ();
+  rxSocket2 = rxSocketFactory->CreateSocket ();
+  rxSocket2->SetRecvCallback (MakeCallback (&Udp6SocketImplTest::ReceivePkt2, this));
+  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (Inet6SocketAddress (Ipv6Address ("::"), 1234)), 0, "trivial");
+
+  txSocket->BindToNetDevice (txDev1);
+  SendData (txSocket, "ff02::1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the second interface's address");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "recv2: ff02::1");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+
+  Simulator::Destroy ();
+
+}
+
+
 //-----------------------------------------------------------------------------
 class UdpTestSuite : public TestSuite
 {
@@ -319,6 +577,8 @@ public:
   {
     AddTestCase (new UdpSocketImplTest);
     AddTestCase (new UdpSocketLoopbackTest);
+    AddTestCase (new Udp6SocketImplTest);
+    AddTestCase (new Udp6SocketLoopbackTest);
   }
 } g_udpTestSuite;
 

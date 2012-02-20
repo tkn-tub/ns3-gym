@@ -66,7 +66,7 @@ const double Icmpv6L4Protocol::MAX_RANDOM_FACTOR = 1.5;
 TypeId Icmpv6L4Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Icmpv6L4Protocol")
-    .SetParent<Ipv6L4Protocol> ()
+    .SetParent<IpL4Protocol> ()
     .AddConstructor<Icmpv6L4Protocol> ()
     .AddAttribute ("DAD", "Always do DAD check.",
                    BooleanValue (true),
@@ -97,9 +97,10 @@ void Icmpv6L4Protocol::DoDispose ()
       cache = 0;
     }
   m_cacheList.clear ();
+  m_downTarget.Nullify();
 
   m_node = 0;
-  Ipv6L4Protocol::DoDispose ();
+  IpL4Protocol::DoDispose ();
 }
 
 void Icmpv6L4Protocol::NotifyNewAggregate ()
@@ -117,6 +118,7 @@ void Icmpv6L4Protocol::NotifyNewAggregate ()
               ipv6->Insert (this);
               Ptr<Ipv6RawSocketFactoryImpl> rawFactory = CreateObject<Ipv6RawSocketFactoryImpl> ();
               ipv6->AggregateObject (rawFactory);
+              this->SetDownTarget6 (MakeCallback (&Ipv6L3Protocol::Send, ipv6));
             }
         }
     }
@@ -174,7 +176,13 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
   interface->Send (p, Ipv6Address::MakeSolicitedAddress (target));
 }
 
-enum Ipv6L4Protocol::RxStatus_e Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
+enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv4Header const &header,  Ptr<Ipv4Interface> interface)
+{
+  NS_LOG_FUNCTION (this << packet << header);
+  return IpL4Protocol::RX_ENDPOINT_UNREACH;
+}
+
+enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6Address &src, Ipv6Address &dst, Ptr<Ipv6Interface> interface)
 {
   NS_LOG_FUNCTION (this << packet << src << dst << interface);
   Ptr<Packet> p = packet->Copy ();
@@ -225,7 +233,7 @@ enum Ipv6L4Protocol::RxStatus_e Icmpv6L4Protocol::Receive (Ptr<Packet> packet, I
       break;
     }
 
-  return Ipv6L4Protocol::RX_OK;
+  return IpL4Protocol::RX_OK;
 }
 
 void Icmpv6L4Protocol::HandleEchoRequest (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -751,7 +759,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Add
 
   tag.SetTtl (ttl);
   packet->AddPacketTag (tag);
-  ipv6->Send (packet, src, dst, PROT_NUMBER, 0);
+  m_downTarget (packet, src, dst, PROT_NUMBER, 0);
 }
 
 void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6Header& icmpv6Hdr, uint8_t ttl)
@@ -777,7 +785,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
 
       icmpv6Hdr.CalculatePseudoHeaderChecksum (src, dst, packet->GetSize () + icmpv6Hdr.GetSerializedSize (), PROT_NUMBER);
       packet->AddHeader (icmpv6Hdr);
-      ipv6->Send (packet, src, dst, PROT_NUMBER, route);
+      m_downTarget (packet, src, dst, PROT_NUMBER, route);
     }
   else
     {
@@ -1242,6 +1250,29 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Int
           Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, PeekPointer (icmpv6), ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
         }
     }
+}
+
+void
+Icmpv6L4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
+{
+}
+
+void
+Icmpv6L4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
+{
+  m_downTarget = callback;
+}
+
+IpL4Protocol::DownTargetCallback
+Icmpv6L4Protocol::GetDownTarget (void) const
+{
+  return (IpL4Protocol::DownTargetCallback)NULL;
+}
+
+IpL4Protocol::DownTargetCallback6
+Icmpv6L4Protocol::GetDownTarget6 (void) const
+{
+  return m_downTarget;
 }
 
 } /* namespace ns3 */

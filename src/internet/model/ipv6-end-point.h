@@ -98,7 +98,7 @@ public:
    * \brief Set the reception callback.
    * \param callback callback function
    */
-  void SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Address, uint16_t> callback);
+  void SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Address, Ipv6Address, uint16_t> callback);
 
   /**
    * \brief Set the ICMP callback.
@@ -115,10 +115,11 @@ public:
   /**
    * \brief Forward the packet to the upper level.
    * \param p the packet
-   * \param addr source address
+   * \param srcAddr source address
+   * \param dstAddr source address
    * \param port source port
    */
-  void ForwardUp (Ptr<Packet> p, Ipv6Address addr, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv6Address srcAddr, Ipv6Address dstAddr, uint16_t port);
 
   /**
    * \brief Function called from an L4Protocol implementation
@@ -137,9 +138,10 @@ private:
    * \brief ForwardUp wrapper.
    * \param p packet
    * \param saddr source IPv6 address
+   * \param daddr dest IPv6 address
    * \param sport source port
    */
-  void DoForwardUp (Ptr<Packet> p, Ipv6Address saddr, uint16_t sport);
+  void DoForwardUp (Ptr<Packet> p, Ipv6Address saddr, Ipv6Address daddr, uint16_t sport);
 
   /**
    * \brief ForwardIcmp wrapper.
@@ -175,7 +177,7 @@ private:
   /**
    * \brief The RX callback.
    */
-  Callback<void, Ptr<Packet>, Ipv6Address, uint16_t> m_rxCallback;
+  Callback<void, Ptr<Packet>, Ipv6Address, Ipv6Address, uint16_t> m_rxCallback;
 
   /**
    * \brief The ICMPv6 callback.

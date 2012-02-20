@@ -81,7 +81,7 @@ void Ipv6EndPoint::SetPeer (Ipv6Address addr, uint16_t port)
   m_peerPort = port;
 }
 
-void Ipv6EndPoint::SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Address, uint16_t> callback)
+void Ipv6EndPoint::SetRxCallback (Callback<void, Ptr<Packet>, Ipv6Address, Ipv6Address, uint16_t> callback)
 {
   m_rxCallback = callback;
 }
@@ -96,11 +96,11 @@ void Ipv6EndPoint::SetDestroyCallback (Callback<void> callback)
   m_destroyCallback = callback;
 }
 
-void Ipv6EndPoint::ForwardUp (Ptr<Packet> p, Ipv6Address addr, uint16_t port)
+void Ipv6EndPoint::ForwardUp (Ptr<Packet> p, Ipv6Address srcAddr, Ipv6Address dstAddr, uint16_t port)
 {
   if (!m_rxCallback.IsNull ())
     {
-      m_rxCallback (p, addr, port);
+      m_rxCallback (p, srcAddr, dstAddr, port);
     }
 }
 
@@ -114,9 +114,9 @@ void Ipv6EndPoint::ForwardIcmp (Ipv6Address src, uint8_t ttl, uint8_t type,
     }
 }
 
-void Ipv6EndPoint::DoForwardUp (Ptr<Packet> p, Ipv6Address saddr, uint16_t sport)
+void Ipv6EndPoint::DoForwardUp (Ptr<Packet> p, Ipv6Address saddr, Ipv6Address daddr, uint16_t sport)
 {
-  m_rxCallback (p, saddr, sport);
+  m_rxCallback (p, saddr, daddr, sport);
 }
 
 void Ipv6EndPoint::DoForwardIcmp (Ipv6Address src, uint8_t ttl, uint8_t type, 

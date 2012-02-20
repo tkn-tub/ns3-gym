@@ -38,6 +38,7 @@
 namespace ns3 {
 
 class Ipv4EndPoint;
+class Ipv6EndPoint;
 class Node;
 class Packet;
 class TcpL4Protocol;
@@ -81,6 +82,7 @@ public:
   virtual enum SocketType GetSocketType (void) const; // returns socket type
   virtual Ptr<Node> GetNode (void) const;            // returns m_node
   virtual int Bind (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
+  virtual int Bind6 (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
   virtual int Bind (const Address &address);         // ... endpoint of specific addr or port
   virtual int Connect (const Address &address);      // Setup endpoint and call ProcessAction() to connect
   virtual int Listen (void);  // Verify the socket is in a correct state and call ProcessAction() to listen
@@ -128,11 +130,14 @@ protected:
   int DoConnect (void);            // Sending a SYN packet to make a connection if the state allows
   void ConnectionSucceeded (void); // Schedule-friendly wrapper for Socket::NotifyConnectionSucceeded()
   int SetupEndpoint (void);        // Configure m_endpoint for local addr for given remote addr
+  int SetupEndpoint6 (void);       // Configure m_endpoint6 for local addr for given remote addr
   void CompleteFork (Ptr<Packet>, const TcpHeader&, const Address& fromAddress, const Address& toAdress);
 
   // Helper functions: Transfer operation
   void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
+  void ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
+  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port); // Ipv6 version
   bool SendPendingData (bool withAck = false); // Send as much as the window allows
   uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck); // Send a data packet
   void SendEmptyPacket (uint8_t flags); // Send a empty packet that carries a flag, e.g. ACK
@@ -202,6 +207,7 @@ protected:
 
   // Connections to other layers of TCP/IP
   Ipv4EndPoint*       m_endPoint;
+  Ipv6EndPoint*       m_endPoint6;
   Ptr<Node>           m_node;
   Ptr<TcpL4Protocol>  m_tcp;
 

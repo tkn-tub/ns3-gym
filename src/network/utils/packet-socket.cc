@@ -113,6 +113,12 @@ PacketSocket::Bind (void)
 }
 
 int
+PacketSocket::Bind6 (void)
+{
+  return(Bind());
+}
+
+int
 PacketSocket::Bind (const Address &address)
 { 
   NS_LOG_FUNCTION (this << address);

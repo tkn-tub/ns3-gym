@@ -23,6 +23,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
@@ -121,6 +122,17 @@ UdpServer::StartApplication (void)
 
   m_socket->SetRecvCallback (MakeCallback (&UdpServer::HandleRead, this));
 
+  if (m_socket6 == 0)
+    {
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_socket6 = Socket::CreateSocket (GetNode (), tid);
+      Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (),
+                                                   m_port);
+      m_socket6->Bind (local);
+    }
+
+  m_socket6->SetRecvCallback (MakeCallback (&UdpServer::HandleRead, this));
+
 }
 
 void
@@ -147,13 +159,26 @@ UdpServer::HandleRead (Ptr<Socket> socket)
           SeqTsHeader seqTs;
           packet->RemoveHeader (seqTs);
           uint32_t currentSequenceNumber = seqTs.GetSeq ();
-          NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
-                       " bytes from "<< InetSocketAddress::ConvertFrom (from).GetIpv4 () <<
-                       " Sequence Number: " << currentSequenceNumber <<
-                       " Uid: " << packet->GetUid () <<
-                       " TXtime: " << seqTs.GetTs () <<
-                       " RXtime: " << Simulator::Now () <<
-                       " Delay: " << Simulator::Now () - seqTs.GetTs ());
+          if (InetSocketAddress::IsMatchingType (from))
+            {
+              NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
+                           " bytes from "<< InetSocketAddress::ConvertFrom (from).GetIpv4 () <<
+                           " Sequence Number: " << currentSequenceNumber <<
+                           " Uid: " << packet->GetUid () <<
+                           " TXtime: " << seqTs.GetTs () <<
+                           " RXtime: " << Simulator::Now () <<
+                           " Delay: " << Simulator::Now () - seqTs.GetTs ());
+            }
+          else if (Inet6SocketAddress::IsMatchingType (from))
+            {
+              NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
+                           " bytes from "<< Inet6SocketAddress::ConvertFrom (from).GetIpv6 () <<
+                           " Sequence Number: " << currentSequenceNumber <<
+                           " Uid: " << packet->GetUid () <<
+                           " TXtime: " << seqTs.GetTs () <<
+                           " RXtime: " << Simulator::Now () <<
+                           " Delay: " << Simulator::Now () - seqTs.GetTs ());
+            }
 
           m_lossCounter.NotifyReceived (currentSequenceNumber);
           m_received++;

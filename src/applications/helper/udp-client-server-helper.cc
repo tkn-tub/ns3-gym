@@ -68,10 +68,24 @@ UdpClientHelper::UdpClientHelper ()
 {
 }
 
+UdpClientHelper::UdpClientHelper (Address address, uint16_t port)
+{
+  m_factory.SetTypeId (UdpClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", AddressValue (address));
+  SetAttribute ("RemotePort", UintegerValue (port));
+}
+
 UdpClientHelper::UdpClientHelper (Ipv4Address address, uint16_t port)
 {
   m_factory.SetTypeId (UdpClient::GetTypeId ());
-  SetAttribute ("RemoteAddress", Ipv4AddressValue (address));
+  SetAttribute ("RemoteAddress", AddressValue (Address(address)));
+  SetAttribute ("RemotePort", UintegerValue (port));
+}
+
+UdpClientHelper::UdpClientHelper (Ipv6Address address, uint16_t port)
+{
+  m_factory.SetTypeId (UdpClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", AddressValue (Address(address)));
   SetAttribute ("RemotePort", UintegerValue (port));
 }
 
@@ -99,10 +113,26 @@ UdpTraceClientHelper::UdpTraceClientHelper ()
 {
 }
 
+UdpTraceClientHelper::UdpTraceClientHelper (Address address, uint16_t port, std::string filename)
+{
+  m_factory.SetTypeId (UdpTraceClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", AddressValue (address));
+  SetAttribute ("RemotePort", UintegerValue (port));
+  SetAttribute ("TraceFilename", StringValue (filename));
+}
+
 UdpTraceClientHelper::UdpTraceClientHelper (Ipv4Address address, uint16_t port, std::string filename)
 {
   m_factory.SetTypeId (UdpTraceClient::GetTypeId ());
-  SetAttribute ("RemoteAddress", Ipv4AddressValue (address));
+  SetAttribute ("RemoteAddress", AddressValue (Address (address)));
+  SetAttribute ("RemotePort", UintegerValue (port));
+  SetAttribute ("TraceFilename", StringValue (filename));
+}
+
+UdpTraceClientHelper::UdpTraceClientHelper (Ipv6Address address, uint16_t port, std::string filename)
+{
+  m_factory.SetTypeId (UdpTraceClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", AddressValue (Address (address)));
   SetAttribute ("RemotePort", UintegerValue (port));
   SetAttribute ("TraceFilename", StringValue (filename));
 }

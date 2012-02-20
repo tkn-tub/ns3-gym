@@ -25,11 +25,15 @@
 #include "ns3/abort.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/log.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv6.h"
 #include "ns3/ipv4-interface-address.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/ipv6-route.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv6-routing-protocol.h"
 #include "ns3/simulation-singleton.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
@@ -39,6 +43,8 @@
 #include "tcp-socket-base.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
+#include "ipv6-end-point.h"
+#include "ipv6-l3-protocol.h"
 #include "tcp-header.h"
 #include "rtt-estimator.h"
 
@@ -95,6 +101,7 @@ TcpSocketBase::TcpSocketBase (void)
   : m_dupAckCount (0),
     m_delAckCount (0),
     m_endPoint (0),
+    m_endPoint6 (0),
     m_node (0),
     m_tcp (0),
     m_rtt (0),
@@ -126,6 +133,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_persistTimeout (sock.m_persistTimeout),
     m_cnTimeout (sock.m_cnTimeout),
     m_endPoint (0),
+    m_endPoint6 (0),
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
     m_rtt (0),
@@ -180,6 +188,13 @@ TcpSocketBase::~TcpSocketBase (void)
       m_tcp->DeAllocate (m_endPoint);
       NS_ASSERT (m_endPoint == 0);
     }
+  if (m_endPoint6 != 0)
+    {
+      NS_ASSERT (m_tcp != 0);
+      NS_ASSERT (m_endPoint6 != 0);
+      m_tcp->DeAllocate (m_endPoint6);
+      NS_ASSERT (m_endPoint6 == 0);
+    }
   m_tcp = 0;
   CancelAllTimers ();
 }
@@ -233,7 +248,8 @@ TcpSocketBase::Bind (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_endPoint = m_tcp->Allocate ();
-  if (0 == m_endPoint)
+  m_endPoint6 = m_tcp->Allocate6 ();
+  if (0 == m_endPoint || 0 == m_endPoint6)
     {
       m_errno = ERROR_ADDRNOTAVAIL;
       return -1;
@@ -242,38 +258,74 @@ TcpSocketBase::Bind (void)
   return SetupCallback ();
 }
 
+int
+TcpSocketBase::Bind6 (void)
+{
+  return Bind ();
+}
+
 /** Inherit from Socket class: Bind socket (with specific address) to an end-point in TcpL4Protocol */
 int
 TcpSocketBase::Bind (const Address &address)
 {
   NS_LOG_FUNCTION (this << address);
-  if (!InetSocketAddress::IsMatchingType (address))
+  if (InetSocketAddress::IsMatchingType (address))
+    {
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      Ipv4Address ipv4 = transport.GetIpv4 ();
+      uint16_t port = transport.GetPort ();
+      if (ipv4 == Ipv4Address::GetAny () && port == 0)
+        {
+          m_endPoint = m_tcp->Allocate ();
+        }
+      else if (ipv4 == Ipv4Address::GetAny () && port != 0)
+        {
+          m_endPoint = m_tcp->Allocate (port);
+        }
+      else if (ipv4 != Ipv4Address::GetAny () && port == 0)
+        {
+          m_endPoint = m_tcp->Allocate (ipv4);
+        }
+      else if (ipv4 != Ipv4Address::GetAny () && port != 0)
+        {
+          m_endPoint = m_tcp->Allocate (ipv4, port);
+        }
+      if (0 == m_endPoint)
+        {
+          m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
+          return -1;
+        }
+    }
+  else if (Inet6SocketAddress::IsMatchingType (address))
+    {
+      Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
+      Ipv6Address ipv6 = transport.GetIpv6 ();
+      uint16_t port = transport.GetPort ();
+      if (ipv6 == Ipv6Address::GetAny () && port == 0)
+        {
+          m_endPoint6 = m_tcp->Allocate6 ();
+        }
+      else if (ipv6 == Ipv6Address::GetAny () && port != 0)
+        {
+          m_endPoint6 = m_tcp->Allocate6 (port);
+        }
+      else if (ipv6 != Ipv6Address::GetAny () && port == 0)
+        {
+          m_endPoint6 = m_tcp->Allocate6 (ipv6);
+        }
+      else if (ipv6 != Ipv6Address::GetAny () && port != 0)
+        {
+          m_endPoint6 = m_tcp->Allocate6 (ipv6, port);
+        }
+      if (0 == m_endPoint6)
+        {
+          m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
+          return -1;
+        }
+    }
+  else
     {
       m_errno = ERROR_INVAL;
-      return -1;
-    }
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  Ipv4Address ipv4 = transport.GetIpv4 ();
-  uint16_t port = transport.GetPort ();
-  if (ipv4 == Ipv4Address::GetAny () && port == 0)
-    {
-      m_endPoint = m_tcp->Allocate ();
-    }
-  else if (ipv4 == Ipv4Address::GetAny () && port != 0)
-    {
-      m_endPoint = m_tcp->Allocate (port);
-    }
-  else if (ipv4 != Ipv4Address::GetAny () && port == 0)
-    {
-      m_endPoint = m_tcp->Allocate (ipv4);
-    }
-  else if (ipv4 != Ipv4Address::GetAny () && port != 0)
-    {
-      m_endPoint = m_tcp->Allocate (ipv4, port);
-    }
-  if (0 == m_endPoint)
-    {
-      m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
       return -1;
     }
   m_tcp->m_sockets.push_back (this);
@@ -289,22 +341,60 @@ TcpSocketBase::Connect (const Address & address)
   NS_LOG_FUNCTION (this << address);
 
   // If haven't do so, Bind() this socket first
-  if (m_endPoint == 0)
+  if (InetSocketAddress::IsMatchingType (address))
     {
-      if (Bind () == -1)
+      if (m_endPoint == 0)
         {
-          NS_ASSERT (m_endPoint == 0);
-          return -1; // Bind() failed
+          if (Bind () == -1)
+            {
+              NS_ASSERT (m_endPoint == 0);
+              return -1; // Bind() failed
+            }
+          NS_ASSERT (m_endPoint != 0);
         }
-      NS_ASSERT (m_endPoint != 0);
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      m_endPoint->SetPeer (transport.GetIpv4 (), transport.GetPort ());
+      m_endPoint6 = 0;
+
+      // Get the appropriate local address and port number from the routing protocol and set up endpoint
+      if (SetupEndpoint () != 0)
+        { // Route to destination does not exist
+          return -1;
+        }
     }
+  else if (Inet6SocketAddress::IsMatchingType (address) )
+    {
+      // If we are operating on a v4-mapped address, translate the address to
+      // a v4 address and re-call this function
+      Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
+      Ipv6Address v6Addr = transport.GetIpv6 ();
+      if (v6Addr.IsIpv4MappedAddress () == true)
+        {
+          Ipv4Address v4Addr = v6Addr.GetIpv4MappedAddress ();
+          return Connect(InetSocketAddress(v4Addr, transport.GetPort ()));
+        }
 
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  m_endPoint->SetPeer (transport.GetIpv4 (), transport.GetPort ());
+      if (m_endPoint6 == 0)
+        {
+          if (Bind6 () == -1)
+            {
+              NS_ASSERT (m_endPoint6 == 0);
+              return -1; // Bind() failed
+            }
+          NS_ASSERT (m_endPoint6 != 0);
+        }
+      m_endPoint6->SetPeer (v6Addr, transport.GetPort ());
+      m_endPoint = 0;
 
-  // Get the appropriate local address and port number from the routing protocol and set up endpoint
-  if (SetupEndpoint () != 0)
-    { // Route to destination does not exist
+      // Get the appropriate local address and port number from the routing protocol and set up endpoint
+      if (SetupEndpoint6 () != 0)
+        { // Route to destination does not exist
+          return -1;
+        }
+    }
+  else
+    {
+      m_errno = ERROR_INVAL;
       return -1;
     }
 
@@ -427,7 +517,14 @@ TcpSocketBase::Recv (uint32_t maxSize, uint32_t flags)
   if (outPacket != 0 && outPacket->GetSize () != 0)
     {
       SocketAddressTag tag;
-      tag.SetAddress (InetSocketAddress (m_endPoint->GetPeerAddress (), m_endPoint->GetPeerPort ()));
+      if (m_endPoint != 0)
+        {
+          tag.SetAddress (InetSocketAddress (m_endPoint->GetPeerAddress (), m_endPoint->GetPeerPort ()));
+        }
+      else if (m_endPoint6 != 0)
+        {
+          tag.SetAddress (Inet6SocketAddress (m_endPoint6->GetPeerAddress (), m_endPoint6->GetPeerPort ()));
+        }
       outPacket->AddPacketTag (tag);
     }
   return outPacket;
@@ -445,6 +542,10 @@ TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
       if (m_endPoint != 0)
         {
           fromAddress = InetSocketAddress (m_endPoint->GetPeerAddress (), m_endPoint->GetPeerPort ());
+        }
+      else if (m_endPoint6 != 0)
+        {
+          fromAddress = Inet6SocketAddress (m_endPoint6->GetPeerAddress (), m_endPoint6->GetPeerPort ());
         }
       else
         {
@@ -479,9 +580,14 @@ TcpSocketBase::GetSockName (Address &address) const
     {
       address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort ());
     }
+  else if (m_endPoint6 != 0)
+    {
+      address = Inet6SocketAddress (m_endPoint6->GetLocalAddress (), m_endPoint6->GetLocalPort ());
+    }
   else
     { // It is possible to call this method on a socket without a name
       // in which case, behavior is unspecified
+      // Should this return an InetSocketAddress or an Inet6SocketAddress?
       address = InetSocketAddress (Ipv4Address::GetZero (), 0);
     }
   return 0;
@@ -493,16 +599,21 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (netdevice);
   Socket::BindToNetDevice (netdevice); // Includes sanity check
-  if (m_endPoint == 0)
+  if (m_endPoint == 0 && m_endPoint6 == 0)
     {
       if (Bind () == -1)
         {
-          NS_ASSERT (m_endPoint == 0);
+          NS_ASSERT ((m_endPoint == 0 && m_endPoint6 == 0));
           return;
         }
-      NS_ASSERT (m_endPoint != 0);
+      NS_ASSERT ((m_endPoint != 0 && m_endPoint6 != 0));
     }
-  m_endPoint->BindToNetDevice (netdevice);
+
+  if (m_endPoint != 0)
+    {
+      m_endPoint->BindToNetDevice (netdevice);
+    }
+  // No BindToNetDevice() for Ipv6EndPoint
   return;
 }
 
@@ -511,12 +622,22 @@ int
 TcpSocketBase::SetupCallback (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_endPoint == 0)
+
+  if (m_endPoint == 0 && m_endPoint6 == 0)
     {
       return -1;
     }
-  m_endPoint->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp, Ptr<TcpSocketBase> (this)));
-  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy, Ptr<TcpSocketBase> (this)));
+  if (m_endPoint != 0)
+    {
+      m_endPoint->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp, Ptr<TcpSocketBase> (this))); 
+      m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy, Ptr<TcpSocketBase> (this)));
+    }
+  if (m_endPoint6 != 0)
+    {
+      m_endPoint6->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp6, Ptr<TcpSocketBase> (this)));
+      m_endPoint6->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy, Ptr<TcpSocketBase> (this)));
+    }
+
   return 0;
 }
 
@@ -629,6 +750,12 @@ TcpSocketBase::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
   DoForwardUp (packet, header, port, incomingInterface);
 }
 
+void
+TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port)
+{
+  DoForwardUp (packet, saddr, daddr, port);
+}
+
 /** The real function to handle the incoming packet from lower layers. This is
     wrapped by ForwardUp() so that this function can be overloaded by daughter
     classes. */
@@ -704,6 +831,101 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port
           h.SetWindowSize (AdvertisedWindowSize ());
           AddOptions (h);
           m_tcp->SendPacket (Create<Packet> (), h, header.GetDestination (), header.GetSource (), m_boundnetdevice);
+        }
+      break;
+    case SYN_SENT:
+      ProcessSynSent (packet, tcpHeader);
+      break;
+    case SYN_RCVD:
+      ProcessSynRcvd (packet, tcpHeader, fromAddress, toAddress);
+      break;
+    case FIN_WAIT_1:
+    case FIN_WAIT_2:
+    case CLOSE_WAIT:
+      ProcessWait (packet, tcpHeader);
+      break;
+    case CLOSING:
+      ProcessClosing (packet, tcpHeader);
+      break;
+    case LAST_ACK:
+      ProcessLastAck (packet, tcpHeader);
+      break;
+    default: // mute compiler
+      break;
+    }
+}
+
+void
+TcpSocketBase::DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port)
+{
+  NS_LOG_LOGIC ("Socket " << this << " forward up " <<
+                m_endPoint6->GetPeerAddress () <<
+                ":" << m_endPoint6->GetPeerPort () <<
+                " to " << m_endPoint6->GetLocalAddress () <<
+                ":" << m_endPoint6->GetLocalPort ());
+  Address fromAddress = Inet6SocketAddress (saddr, port);
+  Address toAddress = Inet6SocketAddress (daddr, m_endPoint6->GetLocalPort ());
+
+  // Peel off TCP header and do validity checking
+  TcpHeader tcpHeader;
+  packet->RemoveHeader (tcpHeader);
+  if (tcpHeader.GetFlags () & TcpHeader::ACK)
+    {
+      EstimateRtt (tcpHeader);
+    }
+  ReadOptions (tcpHeader);
+
+  // Update Rx window size, i.e. the flow control window
+  if (m_rWnd.Get () == 0 && tcpHeader.GetWindowSize () != 0)
+    { // persist probes end
+      NS_LOG_LOGIC (this << " Leaving zerowindow persist state");
+      m_persistEvent.Cancel ();
+    }
+  m_rWnd = tcpHeader.GetWindowSize ();
+
+  // Discard fully out of range packets
+  if (packet->GetSize () &&
+      OutOfRange (tcpHeader.GetSequenceNumber (), tcpHeader.GetSequenceNumber () + packet->GetSize ()))
+    {
+      NS_LOG_LOGIC ("At state " << TcpStateName[m_state] <<
+                    " received packet of seq [" << tcpHeader.GetSequenceNumber () <<
+                    ":" << tcpHeader.GetSequenceNumber () + packet->GetSize() <<
+                    ") out of range [" << m_rxBuffer.NextRxSequence () << ":" <<
+                    m_rxBuffer.MaxRxSequence () << ")");
+      // Acknowledgement should be sent for all unacceptable packets (RFC793, p.69)
+      if (m_state == ESTABLISHED && !(tcpHeader.GetFlags () & TcpHeader::RST))
+        {
+          SendEmptyPacket (TcpHeader::ACK);
+        }
+      return;
+    }
+
+  // TCP state machine code in different process functions
+  // C.f.: tcp_rcv_state_process() in tcp_input.c in Linux kernel
+  switch (m_state)
+    {
+    case ESTABLISHED:
+      ProcessEstablished (packet, tcpHeader);
+      break;
+    case LISTEN:
+      ProcessListen (packet, tcpHeader, fromAddress, toAddress);
+      break;
+    case TIME_WAIT:
+      // Do nothing
+      break;
+    case CLOSED:
+      // Send RST if the incoming packet is not a RST
+      if ((tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG)) != TcpHeader::RST)
+        { // Since m_endPoint is not configured yet, we cannot use SendRST here
+          TcpHeader h;
+          h.SetFlags (TcpHeader::RST);
+          h.SetSequenceNumber (m_nextTxSequence);
+          h.SetAckNumber (m_rxBuffer.NextRxSequence ());
+          h.SetSourcePort (tcpHeader.GetDestinationPort ());
+          h.SetDestinationPort (tcpHeader.GetSourcePort ());
+          h.SetWindowSize (AdvertisedWindowSize ());
+          AddOptions (h);
+          m_tcp->SendPacket (Create<Packet> (), h, daddr, saddr, m_boundnetdevice);
         }
       break;
     case SYN_SENT:
@@ -915,8 +1137,16 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       m_retxEvent.Cancel ();
       m_highTxMark = ++m_nextTxSequence;
       m_txBuffer.SetHeadSequence (m_nextTxSequence);
-      m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
-                           InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+      if (m_endPoint)
+        {
+          m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
+                               InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+        }
+      else if (m_endPoint6)
+        {
+          m_endPoint6->SetPeer (Inet6SocketAddress::ConvertFrom (fromAddress).GetIpv6 (),
+                                Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
+        }
       // Always respond to first data packet to speed up the connection.
       // Remove to get the behaviour of old NS-3 code.
       m_delAckCount = m_delAckMaxCount;
@@ -941,8 +1171,16 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
           m_retxEvent.Cancel ();
           m_highTxMark = ++m_nextTxSequence;
           m_txBuffer.SetHeadSequence (m_nextTxSequence);
-          m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
-                               InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+          if (m_endPoint)
+            {
+              m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
+                                   InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+            }
+          else if (m_endPoint6)
+            {
+              m_endPoint6->SetPeer (Inet6SocketAddress::ConvertFrom (fromAddress).GetIpv6 (),
+                                    Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
+            }
           PeerClose (packet, tcpHeader);
         }
     }
@@ -951,8 +1189,16 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       if (tcpflags != TcpHeader::RST)
         { // When (1) rx of SYN+ACK; (2) rx of FIN; (3) rx of bad flags
           NS_LOG_LOGIC ("Illegal flag " << tcpflags << " received. Reset packet is sent.");
-          m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
-                               InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+          if (m_endPoint)
+            {
+              m_endPoint->SetPeer (InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
+                                   InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+            }
+          else if (m_endPoint6)
+            {
+              m_endPoint6->SetPeer (Inet6SocketAddress::ConvertFrom (fromAddress).GetIpv6 (),
+                                    Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
+            }
           SendRST ();
         }
       CloseAndNotify ();
@@ -1178,13 +1424,17 @@ TcpSocketBase::Destroy (void)
   NS_LOG_FUNCTION (this);
   m_node = 0;
   m_endPoint = 0;
-  std::vector<Ptr<TcpSocketBase> >::iterator it
-    = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
-  if (it != m_tcp->m_sockets.end ())
+  m_endPoint6 = 0;
+  if (m_tcp != 0)
     {
-      m_tcp->m_sockets.erase (it);
+      std::vector<Ptr<TcpSocketBase> >::iterator it
+        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
+      if (it != m_tcp->m_sockets.end ())
+        {
+          m_tcp->m_sockets.erase (it);
+        }
+      m_tcp = 0;
     }
-  m_tcp = 0;
   NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
                 (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
   CancelAllTimers ();
@@ -1199,7 +1449,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   TcpHeader header;
   SequenceNumber32 s = m_nextTxSequence;
 
-  if (m_endPoint == 0)
+  if (m_endPoint == 0 && m_endPoint6 == 0)
     {
       NS_LOG_WARN ("Failed to send empty packet due to null endpoint");
       return;
@@ -1216,8 +1466,16 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   header.SetFlags (flags);
   header.SetSequenceNumber (s);
   header.SetAckNumber (m_rxBuffer.NextRxSequence ());
-  header.SetSourcePort (m_endPoint->GetLocalPort ());
-  header.SetDestinationPort (m_endPoint->GetPeerPort ());
+  if (m_endPoint != 0)
+    {
+      header.SetSourcePort (m_endPoint->GetLocalPort ());
+      header.SetDestinationPort (m_endPoint->GetPeerPort ());
+    }
+  else
+    {
+      header.SetSourcePort (m_endPoint6->GetLocalPort ());
+      header.SetDestinationPort (m_endPoint6->GetPeerPort ());
+    }
   header.SetWindowSize (AdvertisedWindowSize ());
   AddOptions (header);
   m_rto = m_rtt->RetransmitTimeout ();
@@ -1239,7 +1497,16 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
           m_cnCount--;
         }
     }
-  m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (), m_endPoint->GetPeerAddress (), m_boundnetdevice);
+  if (m_endPoint != 0)
+    {
+      m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
+                         m_endPoint->GetPeerAddress (), m_boundnetdevice);
+    }
+  else
+    {
+      m_tcp->SendPacket (p, header, m_endPoint6->GetLocalAddress (),
+                         m_endPoint6->GetPeerAddress (), m_boundnetdevice);
+    }
   if (flags & TcpHeader::ACK)
     { // If sending an ACK, cancel the delay ACK as well
       m_delAckEvent.Cancel ();
@@ -1281,6 +1548,19 @@ TcpSocketBase::DeallocateEndPoint (void)
         }
       CancelAllTimers ();
     }
+  if (m_endPoint6 != 0)
+    {
+      m_endPoint6->SetDestroyCallback (MakeNullCallback<void> ());
+      m_tcp->DeAllocate (m_endPoint6);
+      m_endPoint6 = 0;
+      std::vector<Ptr<TcpSocketBase> >::iterator it
+        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
+      if (it != m_tcp->m_sockets.end ())
+        {
+          m_tcp->m_sockets.erase (it);
+        }
+      CancelAllTimers ();
+    }
 }
 
 /** Configure the endpoint to a local address. Called by Connect() if Bind() didn't specify one. */
@@ -1314,6 +1594,36 @@ TcpSocketBase::SetupEndpoint ()
   return 0;
 }
 
+int
+TcpSocketBase::SetupEndpoint6 ()
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
+  NS_ASSERT (ipv6 != 0);
+  if (ipv6->GetRoutingProtocol () == 0)
+    {
+      NS_FATAL_ERROR ("No Ipv6RoutingProtocol in the node");
+    }
+  // Create a dummy packet, then ask the routing function for the best output
+  // interface's address
+  Ipv6Header header;
+  header.SetDestinationAddress (m_endPoint6->GetPeerAddress ());
+  Socket::SocketErrno errno_;
+  Ptr<Ipv6Route> route;
+  Ptr<NetDevice> oif = m_boundnetdevice;
+  route = ipv6->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
+  if (route == 0)
+    {
+      NS_LOG_LOGIC ("Route to " << m_endPoint6->GetPeerAddress () << " does not exist");
+      NS_LOG_ERROR (errno_);
+      m_errno = errno_;
+      return -1;
+    }
+  NS_LOG_LOGIC ("Route exists");
+  m_endPoint6->SetLocalAddress (route->GetSource ());
+  return 0;
+}
+
 /** This function is called only if a SYN received in LISTEN state. After
    TcpSocketBase cloned, allocate a new end point to handle the incoming
    connection and send a SYN+ACK to complete the handshake. */
@@ -1322,10 +1632,22 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
                              const Address& fromAddress, const Address& toAddress)
 {
   // Get port and address from peer (connecting host)
-  m_endPoint = m_tcp->Allocate (InetSocketAddress::ConvertFrom (toAddress).GetIpv4 (),
-                                InetSocketAddress::ConvertFrom (toAddress).GetPort (),
-                                InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
-                                InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+  if (InetSocketAddress::IsMatchingType (toAddress))
+    {
+      m_endPoint = m_tcp->Allocate (InetSocketAddress::ConvertFrom (toAddress).GetIpv4 (),
+                                    InetSocketAddress::ConvertFrom (toAddress).GetPort (),
+                                    InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
+                                    InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
+      m_endPoint6 = 0;
+    }
+  else if (Inet6SocketAddress::IsMatchingType (toAddress))
+    {
+      m_endPoint6 = m_tcp->Allocate6 (Inet6SocketAddress::ConvertFrom (toAddress).GetIpv6 (),
+                                      Inet6SocketAddress::ConvertFrom (toAddress).GetPort (),
+                                      Inet6SocketAddress::ConvertFrom (fromAddress).GetIpv6 (),
+                                      Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
+      m_endPoint = 0;
+    }
   m_tcp->m_sockets.push_back (this);
 
   // Change the cloned socket from LISTEN state to SYN_RCVD
@@ -1381,8 +1703,16 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   header.SetFlags (flags);
   header.SetSequenceNumber (seq);
   header.SetAckNumber (m_rxBuffer.NextRxSequence ());
-  header.SetSourcePort (m_endPoint->GetLocalPort ());
-  header.SetDestinationPort (m_endPoint->GetPeerPort ());
+  if (m_endPoint)
+    {
+      header.SetSourcePort (m_endPoint->GetLocalPort ());
+      header.SetDestinationPort (m_endPoint->GetPeerPort ());
+    }
+  else
+    {
+      header.SetSourcePort (m_endPoint6->GetLocalPort ());
+      header.SetDestinationPort (m_endPoint6->GetPeerPort ());
+    }
   header.SetWindowSize (AdvertisedWindowSize ());
   AddOptions (header);
   if (m_retxEvent.IsExpired () )
@@ -1394,8 +1724,16 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       m_retxEvent = Simulator::Schedule (m_rto, &TcpSocketBase::ReTxTimeout, this);
     }
   NS_LOG_LOGIC ("Send packet via TcpL4Protocol with flags 0x" << std::hex << static_cast<uint32_t> (flags) << std::dec);
-  m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
-                     m_endPoint->GetPeerAddress (), m_boundnetdevice);
+  if (m_endPoint)
+    {
+      m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
+                         m_endPoint->GetPeerAddress (), m_boundnetdevice);
+    }
+  else
+    {
+      m_tcp->SendPacket (p, header, m_endPoint6->GetLocalAddress (),
+                         m_endPoint6->GetPeerAddress (), m_boundnetdevice);
+    }
   m_rtt->SentSeq (seq, sz);       // notify the RTT
   // Notify the application of the data being sent unless this is a retransmit
   if (seq == m_nextTxSequence)
@@ -1415,7 +1753,8 @@ TcpSocketBase::SendPendingData (bool withAck)
 {
   NS_LOG_FUNCTION (this << withAck);
   if (m_txBuffer.Size () == 0) return false;  // Nothing to send
-  if (m_endPoint == 0)
+
+  if (m_endPoint == 0 && m_endPoint6 == 0)
     {
       NS_LOG_INFO ("TcpSocketBase::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
       return false; // Is this the right way to handle this condition?
@@ -1438,7 +1777,7 @@ TcpSocketBase::SendPendingData (bool withAck)
           m_errno = ERROR_SHUTDOWN;
           return false;
         }
-      // Stop sending if we need to wait for a larger Tx window
+      // Stop sending if we need to wait for a larger Tx window (prevent silly window syndrome)
       if (w < m_segmentSize && m_txBuffer.SizeFromSequence (m_nextTxSequence) > w)
         {
           break; // No more
@@ -1664,13 +2003,29 @@ TcpSocketBase::PersistTimeout ()
   TcpHeader tcpHeader;
   tcpHeader.SetSequenceNumber (m_nextTxSequence);
   tcpHeader.SetAckNumber (m_rxBuffer.NextRxSequence ());
-  tcpHeader.SetSourcePort (m_endPoint->GetLocalPort ());
-  tcpHeader.SetDestinationPort (m_endPoint->GetPeerPort ());
   tcpHeader.SetWindowSize (AdvertisedWindowSize ());
+  if (m_endPoint != 0)
+    {
+      tcpHeader.SetSourcePort (m_endPoint->GetLocalPort ());
+      tcpHeader.SetDestinationPort (m_endPoint->GetPeerPort ());
+    }
+  else
+    {
+      tcpHeader.SetSourcePort (m_endPoint6->GetLocalPort ());
+      tcpHeader.SetDestinationPort (m_endPoint6->GetPeerPort ());
+    }
   AddOptions (tcpHeader);
 
-  m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
-                     m_endPoint->GetPeerAddress (), m_boundnetdevice);
+  if (m_endPoint != 0)
+    {
+      m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
+                         m_endPoint->GetPeerAddress (), m_boundnetdevice);
+    }
+  else
+    {
+      m_tcp->SendPacket (p, tcpHeader, m_endPoint6->GetLocalAddress (),
+                         m_endPoint6->GetPeerAddress (), m_boundnetdevice);
+    }
   NS_LOG_LOGIC ("Schedule persist timeout at time "
                 << Simulator::Now ().GetSeconds () << " to expire at time "
                 << (Simulator::Now () + m_persistTimeout).GetSeconds ());

@@ -89,6 +89,7 @@ public:
   virtual enum SocketType GetSocketType (void) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
+  virtual int Bind6 (void);
   virtual int Bind (const Address & address);
   virtual int Close (void);
   virtual int ShutdownSend (void);

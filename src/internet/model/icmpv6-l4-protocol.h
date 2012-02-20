@@ -27,7 +27,7 @@
 
 #include "ns3/ipv6-address.h"
 #include "icmpv6-header.h"
-#include "ipv6-l4-protocol.h"
+#include "ip-l4-protocol.h"
 
 namespace ns3
 {
@@ -42,7 +42,7 @@ class NdiscCache;
  * \class Icmpv6L4Protocol
  * \brief An implementation of the ICMPv6 protocol.
  */
-class Icmpv6L4Protocol : public Ipv6L4Protocol
+class Icmpv6L4Protocol : public IpL4Protocol
 {
 public:
   /**
@@ -329,7 +329,12 @@ public:
    * \param dst destination address
    * \param interface the interface from which the packet is coming
    */
-  virtual enum Ipv6L4Protocol::RxStatus_e Receive (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface);
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                               Ipv4Header const &header,
+                                               Ptr<Ipv4Interface> interface);
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                               Ipv6Address &src, Ipv6Address &dst,
+                                               Ptr<Ipv6Interface> interface);
 
   /**
    * \brief Function called when DAD timeout.
@@ -477,6 +482,16 @@ private:
    * \param device the device
    */
   Ptr<NdiscCache> FindCache (Ptr<NetDevice> device);
+
+  // From IpL4Protocol
+  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
+  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  // From IpL4Protocol
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+
+  IpL4Protocol::DownTargetCallback6 m_downTarget;
+
 };
 
 } /* namespace ns3 */

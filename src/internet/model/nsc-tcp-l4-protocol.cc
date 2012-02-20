@@ -96,7 +96,7 @@ TypeId
 NscTcpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NscTcpL4Protocol")
-    .SetParent<Ipv4L4Protocol> ()
+    .SetParent<IpL4Protocol> ()
     .AddConstructor<NscTcpL4Protocol>()
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),
@@ -242,7 +242,7 @@ NscTcpL4Protocol::DoDispose (void)
   delete m_nscInterface;
   m_nscInterface = 0;
   m_downTarget.Nullify ();
-  Ipv4L4Protocol::DoDispose ();
+  IpL4Protocol::DoDispose ();
 }
 
 Ptr<Socket>
@@ -301,7 +301,7 @@ NscTcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
   // NSC m_endPoints->DeAllocate (endPoint);
 }
 
-Ipv4L4Protocol::RxStatus
+IpL4Protocol::RxStatus
 NscTcpL4Protocol::Receive (Ptr<Packet> packet,
                            Ipv4Header const &header,
                            Ptr<Ipv4Interface> incomingInterface)
@@ -335,7 +335,13 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
   delete[] buf;
 
   wakeup ();
-  return Ipv4L4Protocol::RX_OK;
+  return IpL4Protocol::RX_OK;
+}
+
+IpL4Protocol::RxStatus
+NscTcpL4Protocol::Receive(Ptr<Packet>, Ipv6Address&, Ipv6Address&, Ptr<Ipv6Interface>)
+{
+  return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 
 void NscTcpL4Protocol::SoftInterrupt (void)
@@ -457,15 +463,26 @@ void NscTcpL4Protocol::AddInterface (void)
 }
 
 void
-NscTcpL4Protocol::SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback)
+NscTcpL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 {
   m_downTarget = callback;
 }
 
-Ipv4L4Protocol::DownTargetCallback
+void
+NscTcpL4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
+{
+}
+
+IpL4Protocol::DownTargetCallback
 NscTcpL4Protocol::GetDownTarget (void) const
 {
   return m_downTarget;
+}
+
+IpL4Protocol::DownTargetCallback6
+NscTcpL4Protocol::GetDownTarget6 (void) const
+{
+  return (IpL4Protocol::DownTargetCallback6)0;
 }
 
 } // namespace ns3

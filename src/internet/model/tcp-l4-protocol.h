@@ -25,9 +25,10 @@
 
 #include "ns3/packet.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
-#include "ipv4-l4-protocol.h"
+#include "ip-l4-protocol.h"
 #include "ns3/net-device.h"
 
 namespace ns3 {
@@ -36,9 +37,11 @@ class Node;
 class Socket;
 class TcpHeader;
 class Ipv4EndPointDemux;
+class Ipv6EndPointDemux;
 class Ipv4Interface;
 class TcpSocketBase;
 class Ipv4EndPoint;
+class Ipv6EndPoint;
 
 /**
  * \ingroup tcp
@@ -50,7 +53,7 @@ class Ipv4EndPoint;
  * packets from IP, and forwards them up to the endpoints.
 */
 
-class TcpL4Protocol : public Ipv4L4Protocol {
+class TcpL4Protocol : public IpL4Protocol {
 public:
   static TypeId GetTypeId (void);
   static const uint8_t PROT_NUMBER;
@@ -77,8 +80,15 @@ public:
   Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
   Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                           Ipv4Address peerAddress, uint16_t peerPort);
+  Ipv6EndPoint *Allocate6 (void);
+  Ipv6EndPoint *Allocate6 (Ipv6Address address);
+  Ipv6EndPoint *Allocate6 (uint16_t port);
+  Ipv6EndPoint *Allocate6 (Ipv6Address address, uint16_t port);
+  Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
+                           Ipv6Address peerAddress, uint16_t peerPort);
 
   void DeAllocate (Ipv4EndPoint *endPoint);
+  void DeAllocate (Ipv6EndPoint *endPoint);
 
   /**
    * \brief Send a packet via TCP
@@ -92,20 +102,29 @@ public:
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport, Ptr<NetDevice> oif = 0);
+  void Send (Ptr<Packet> packet,
+             Ipv6Address saddr, Ipv6Address daddr, 
+             uint16_t sport, uint16_t dport, Ptr<NetDevice> oif = 0);
   /**
    * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
    * \param header IPv4 Header information
    * \param incomingInterface The Ipv4Interface it was received on
    */
-  virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> incomingInterface);
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                                 Ipv6Address &src,
+                                                 Ipv6Address &dst,
+                                                 Ptr<Ipv6Interface> interface);
 
-  // From Ipv4L4Protocol
-  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
-  // From Ipv4L4Protocol
-  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+  // From IpL4Protocol
+  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
+  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  // From IpL4Protocol
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
 
 protected:
   virtual void DoDispose (void);
@@ -117,17 +136,21 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
+  Ipv6EndPointDemux *m_endPoints6;
   TypeId m_rttTypeId;
   TypeId m_socketTypeId;
 private:
   friend class TcpSocketBase;
   void SendPacket (Ptr<Packet>, const TcpHeader &,
                    Ipv4Address, Ipv4Address, Ptr<NetDevice> oif = 0);
+  void SendPacket (Ptr<Packet>, const TcpHeader &,
+                   Ipv6Address, Ipv6Address, Ptr<NetDevice> oif = 0);
   TcpL4Protocol (const TcpL4Protocol &o);
   TcpL4Protocol &operator = (const TcpL4Protocol &o);
 
   std::vector<Ptr<TcpSocketBase> > m_sockets;
-  Ipv4L4Protocol::DownTargetCallback m_downTarget;
+  IpL4Protocol::DownTargetCallback m_downTarget;
+  IpL4Protocol::DownTargetCallback6 m_downTarget6;
 };
 
 } // namespace ns3

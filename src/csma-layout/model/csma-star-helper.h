@@ -23,8 +23,11 @@
 
 #include "csma-helper.h"
 #include "ipv4-address-helper.h"
+#include "ipv6-address-helper.h"
 #include "internet-stack-helper.h"
 #include "ipv4-interface-container.h"
+#include "ipv6-interface-container.h"
+#include "ipv6-address-generator.h"
 
 namespace ns3 {
 
@@ -92,11 +95,25 @@ public:
   Ipv4Address GetHubIpv4Address (uint32_t i) const;
 
   /**
+   * \param i index into the hub interfaces
+   *
+   * \returns Ipv6Address according to indexed hub interface
+   */
+  Ipv6Address GetHubIpv6Address (uint32_t i) const;
+
+  /**
    * \param i index into the spoke interfaces
    *
    * \returns Ipv4Address according to indexed spoke interface
    */
   Ipv4Address GetSpokeIpv4Address (uint32_t i) const;
+
+  /**
+   * \param i index into the spoke interfaces
+   *
+   * \returns Ipv6Address according to indexed spoke interface
+   */
+  Ipv6Address GetSpokeIpv6Address (uint32_t i) const;
 
   /**
    * \returns the total number of spokes in the star
@@ -116,6 +133,13 @@ public:
    */
   void AssignIpv4Addresses (Ipv4AddressHelper address);
 
+  /**
+   * \param network an IPv6 Address representing the network portion
+   *                of the Ipv6 Address
+   * \param prefix the prefix length
+   */
+  void AssignIpv6Addresses (Ipv6Address network, Ipv6Prefix prefix);
+
 private:
   NodeContainer m_hub;
   NetDeviceContainer m_hubDevices;
@@ -123,6 +147,8 @@ private:
   NetDeviceContainer m_spokeDevices;
   Ipv4InterfaceContainer m_hubInterfaces;
   Ipv4InterfaceContainer m_spokeInterfaces;
+  Ipv6InterfaceContainer m_hubInterfaces6;
+  Ipv6InterfaceContainer m_spokeInterfaces6;
 };
 
 } // namespace ns3

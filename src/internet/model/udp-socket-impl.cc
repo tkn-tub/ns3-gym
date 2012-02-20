@@ -21,16 +21,21 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/ipv6-route.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv6.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv6-routing-protocol.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/ipv4-packet-info-tag.h"
 #include "udp-socket-impl.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
+#include "ipv6-end-point.h"
 #include <limits>
 
 NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
@@ -52,12 +57,17 @@ UdpSocketImpl::GetTypeId (void)
                    CallbackValue (),
                    MakeCallbackAccessor (&UdpSocketImpl::m_icmpCallback),
                    MakeCallbackChecker ())
+    .AddAttribute ("IcmpCallback6", "Callback invoked whenever an icmpv6 error is received on this socket.",
+                   CallbackValue (),
+                   MakeCallbackAccessor (&UdpSocketImpl::m_icmpCallback6),
+                   MakeCallbackChecker ())
   ;
   return tid;
 }
 
 UdpSocketImpl::UdpSocketImpl ()
   : m_endPoint (0),
+    m_endPoint6 (0),
     m_node (0),
     m_udp (0),
     m_errno (ERROR_NOTERROR),
@@ -142,14 +152,21 @@ int
 UdpSocketImpl::FinishBind (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_endPoint == 0)
+  if (m_endPoint != 0)
     {
-      return -1;
+      m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, Ptr<UdpSocketImpl> (this)));
+      m_endPoint->SetIcmpCallback (MakeCallback (&UdpSocketImpl::ForwardIcmp, Ptr<UdpSocketImpl> (this)));
+      m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
+      return 0;
     }
-  m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, Ptr<UdpSocketImpl> (this)));
-  m_endPoint->SetIcmpCallback (MakeCallback (&UdpSocketImpl::ForwardIcmp, Ptr<UdpSocketImpl> (this)));
-  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
-  return 0;
+  else if (m_endPoint6 != 0)
+    {
+      m_endPoint6->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp6, Ptr<UdpSocketImpl> (this)));
+      m_endPoint6->SetIcmpCallback (MakeCallback (&UdpSocketImpl::ForwardIcmp6, Ptr<UdpSocketImpl> (this)));
+      m_endPoint6->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
+      return 0;
+    }
+  return -1;
 }
 
 int
@@ -160,35 +177,68 @@ UdpSocketImpl::Bind (void)
   return FinishBind ();
 }
 
+int
+UdpSocketImpl::Bind6 (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_endPoint6 = m_udp->Allocate6 ();
+  return FinishBind ();
+}
+
 int 
 UdpSocketImpl::Bind (const Address &address)
 {
   NS_LOG_FUNCTION (this << address);
 
-  if (!InetSocketAddress::IsMatchingType (address))
+  if (InetSocketAddress::IsMatchingType (address))
+    {
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      Ipv4Address ipv4 = transport.GetIpv4 ();
+      uint16_t port = transport.GetPort ();
+      if (ipv4 == Ipv4Address::GetAny () && port == 0)
+        {
+          m_endPoint = m_udp->Allocate ();
+        }
+      else if (ipv4 == Ipv4Address::GetAny () && port != 0)
+        {
+          m_endPoint = m_udp->Allocate (port);
+        }
+      else if (ipv4 != Ipv4Address::GetAny () && port == 0)
+        {
+          m_endPoint = m_udp->Allocate (ipv4);
+        }
+      else if (ipv4 != Ipv4Address::GetAny () && port != 0)
+        {
+          m_endPoint = m_udp->Allocate (ipv4, port);
+        }
+    }
+  else if (Inet6SocketAddress::IsMatchingType (address))
+    {
+      Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
+      Ipv6Address ipv6 = transport.GetIpv6 ();
+      uint16_t port = transport.GetPort ();
+      if (ipv6 == Ipv6Address::GetAny () && port == 0)
+        {
+          m_endPoint6 = m_udp->Allocate6 ();
+        }
+      else if (ipv6 == Ipv6Address::GetAny () && port != 0)
+        {
+          m_endPoint6 = m_udp->Allocate6 (port);
+        }
+      else if (ipv6 != Ipv6Address::GetAny () && port == 0)
+        {
+          m_endPoint6 = m_udp->Allocate6 (ipv6);
+        }
+      else if (ipv6 != Ipv6Address::GetAny () && port != 0)
+        {
+          m_endPoint6 = m_udp->Allocate6 (ipv6, port);
+        }
+    }
+  else
     {
       NS_LOG_ERROR ("Not IsMatchingType");
       m_errno = ERROR_INVAL;
       return -1;
-    }
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  Ipv4Address ipv4 = transport.GetIpv4 ();
-  uint16_t port = transport.GetPort ();
-  if (ipv4 == Ipv4Address::GetAny () && port == 0)
-    {
-      m_endPoint = m_udp->Allocate ();
-    }
-  else if (ipv4 == Ipv4Address::GetAny () && port != 0)
-    {
-      m_endPoint = m_udp->Allocate (port);
-    }
-  else if (ipv4 != Ipv4Address::GetAny () && port == 0)
-    {
-      m_endPoint = m_udp->Allocate (ipv4);
-    }
-  else if (ipv4 != Ipv4Address::GetAny () && port != 0)
-    {
-      m_endPoint = m_udp->Allocate (ipv4, port);
     }
 
   return FinishBind ();
@@ -228,11 +278,26 @@ int
 UdpSocketImpl::Connect (const Address & address)
 {
   NS_LOG_FUNCTION (this << address);
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  m_defaultAddress = transport.GetIpv4 ();
-  m_defaultPort = transport.GetPort ();
-  m_connected = true;
-  NotifyConnectionSucceeded ();
+  if (InetSocketAddress::IsMatchingType(address) == true)
+    {
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      m_defaultAddress = Address(transport.GetIpv4 ());
+      m_defaultPort = transport.GetPort ();
+      m_connected = true;
+      NotifyConnectionSucceeded ();
+    }
+  else if (Inet6SocketAddress::IsMatchingType(address) == true)
+    {
+      Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
+      m_defaultAddress = Address(transport.GetIpv6 ());
+      m_defaultPort = transport.GetPort ();
+      m_connected = true;
+      NotifyConnectionSucceeded ();
+    }
+  else
+    {
+      return -1;
+    }
 
   return 0;
 }
@@ -261,7 +326,7 @@ int
 UdpSocketImpl::DoSend (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
-  if (m_endPoint == 0)
+  if ((m_endPoint == 0) && (InetSocketAddress::IsMatchingType(m_defaultAddress) == true))
     {
       if (Bind () == -1)
         {
@@ -270,13 +335,22 @@ UdpSocketImpl::DoSend (Ptr<Packet> p)
         }
       NS_ASSERT (m_endPoint != 0);
     }
+  else if ((m_endPoint6 == 0) && (Inet6SocketAddress::IsMatchingType(m_defaultAddress) == true))
+    {
+      if (Bind6 () == -1)
+        {
+          NS_ASSERT (m_endPoint6 == 0);
+          return -1;
+        }
+      NS_ASSERT (m_endPoint6 != 0);
+    }
   if (m_shutdownSend)
     {
       m_errno = ERROR_SHUTDOWN;
       return -1;
     } 
 
-  return DoSendTo (p, m_defaultAddress, m_defaultPort);
+  return DoSendTo (p, (const Address)m_defaultAddress);
 }
 
 int
@@ -287,17 +361,40 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, const Address &address)
   if (!m_connected)
     {
       NS_LOG_LOGIC ("Not connected");
-      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-      Ipv4Address ipv4 = transport.GetIpv4 ();
-      uint16_t port = transport.GetPort ();
-      return DoSendTo (p, ipv4, port);
+      if (InetSocketAddress::IsMatchingType(address) == true)
+        {
+          InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+          Ipv4Address ipv4 = transport.GetIpv4 ();
+          uint16_t port = transport.GetPort ();
+          return DoSendTo (p, ipv4, port);
+        }
+      else if (Inet6SocketAddress::IsMatchingType(address) == true)
+        {
+          Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
+          Ipv6Address ipv6 = transport.GetIpv6 ();
+          uint16_t port = transport.GetPort ();
+          return DoSendTo (p, ipv6, port);
+        }
+      else
+        {
+          return -1;
+        }
     }
   else
     {
       // connected UDP socket must use default addresses
       NS_LOG_LOGIC ("Connected");
-      return DoSendTo (p, m_defaultAddress, m_defaultPort);
+      if (Ipv4Address::IsMatchingType(m_defaultAddress))
+        {
+          return DoSendTo (p, Ipv4Address::ConvertFrom(m_defaultAddress), m_defaultPort);
+        }
+      else if (Ipv6Address::IsMatchingType(m_defaultAddress))
+        {
+          return DoSendTo (p, Ipv6Address::ConvertFrom(m_defaultAddress), m_defaultPort);
+        }
     }
+  m_errno = ERROR_AFNOSUPPORT;
+  return(-1);
 }
 
 int
@@ -483,6 +580,113 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   return 0;
 }
 
+int
+UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv6Address dest, uint16_t port)
+{
+  NS_LOG_FUNCTION (this << p << dest << port);
+
+  if (dest.IsIpv4MappedAddress ())
+    {
+        return (DoSendTo(p, dest.GetIpv4MappedAddress (), port));
+    }
+  if (m_boundnetdevice)
+    {
+      NS_LOG_LOGIC ("Bound interface number " << m_boundnetdevice->GetIfIndex ());
+    }
+  if (m_endPoint6 == 0)
+    {
+      if (Bind6 () == -1)
+        {
+          NS_ASSERT (m_endPoint6 == 0);
+          return -1;
+        }
+      NS_ASSERT (m_endPoint6 != 0);
+    }
+  if (m_shutdownSend)
+    {
+      m_errno = ERROR_SHUTDOWN;
+      return -1;
+    }
+
+  if (p->GetSize () > GetTxAvailable () )
+    {
+      m_errno = ERROR_MSGSIZE;
+      return -1;
+    }
+
+  Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
+
+  // Locally override the IP TTL for this socket
+  // We cannot directly modify the TTL at this stage, so we set a Packet tag
+  // The destination can be either multicast, unicast/anycast, or
+  // either all-hosts broadcast or limited (subnet-directed) broadcast.
+  // For the latter two broadcast types, the TTL will later be set to one
+  // irrespective of what is set in these socket options.  So, this tagging
+  // may end up setting the TTL of a limited broadcast packet to be
+  // the same as a unicast, but it will be fixed further down the stack
+  if (m_ipMulticastTtl != 0 && dest.IsMulticast ())
+    {
+      SocketIpTtlTag tag;
+      tag.SetTtl (m_ipMulticastTtl);
+      p->AddPacketTag (tag);
+    }
+  else if (m_ipTtl != 0 && !dest.IsMulticast ())
+    {
+      SocketIpTtlTag tag;
+      tag.SetTtl (m_ipTtl);
+      p->AddPacketTag (tag);
+    }
+  // There is no analgous to an IPv4 broadcast address in IPv6.
+  // Instead, we use a set of link-local, site-local, and global
+  // multicast addresses.  The Ipv6 routing layers should all
+  // provide an interface-specific route to these addresses such
+  // that we can treat these multicast addresses as "not broadcast"
+
+  if (m_endPoint6->GetLocalAddress () != Ipv6Address::GetAny ())
+    {
+      m_udp->Send (p->Copy (), m_endPoint6->GetLocalAddress (), dest,
+                   m_endPoint6->GetLocalPort (), port, 0);
+      NotifyDataSent (p->GetSize ());
+      NotifySend (GetTxAvailable ());
+      return p->GetSize ();
+    }
+  else if (ipv6->GetRoutingProtocol () != 0)
+    {
+      Ipv6Header header;
+      header.SetDestinationAddress (dest);
+      header.SetNextHeader (UdpL4Protocol::PROT_NUMBER);
+      Socket::SocketErrno errno_;
+      Ptr<Ipv6Route> route;
+      Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
+      // TBD-- we could cache the route and just check its validity
+      route = ipv6->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_); 
+      if (route != 0)
+        {
+          NS_LOG_LOGIC ("Route exists");
+          header.SetSourceAddress (route->GetSource ());
+          m_udp->Send (p->Copy (), header.GetSourceAddress (), header.GetDestinationAddress (),
+                       m_endPoint6->GetLocalPort (), port, route);
+          NotifyDataSent (p->GetSize ());
+          return p->GetSize ();
+        }
+      else 
+        {
+          NS_LOG_LOGIC ("No route to destination");
+          NS_LOG_ERROR (errno_);
+          m_errno = errno_;
+          return -1;
+        }
+    }
+  else
+    {
+      NS_LOG_ERROR ("ERROR_NOROUTETOHOST");
+      m_errno = ERROR_NOROUTETOHOST;
+      return -1;
+    }
+
+  return 0;
+}
+
 // XXX maximum message size for UDP broadcast is limited by MTU
 // size of underlying link; we are not checking that now.
 uint32_t
@@ -498,10 +702,21 @@ int
 UdpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
   NS_LOG_FUNCTION (this << p << flags << address);
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  Ipv4Address ipv4 = transport.GetIpv4 ();
-  uint16_t port = transport.GetPort ();
-  return DoSendTo (p, ipv4, port);
+  if (InetSocketAddress::IsMatchingType (address))
+    {
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      Ipv4Address ipv4 = transport.GetIpv4 ();
+      uint16_t port = transport.GetPort ();
+      return DoSendTo (p, ipv4, port);
+    }
+  else if (Inet6SocketAddress::IsMatchingType (address))
+    {
+      Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
+      Ipv6Address ipv6 = transport.GetIpv6 ();
+      uint16_t port = transport.GetPort ();
+      return DoSendTo (p, ipv6, port);
+    }
+  return -1;
 }
 
 uint32_t
@@ -657,6 +872,38 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     }
 }
 
+void 
+UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port)
+{
+  NS_LOG_FUNCTION (this << packet << saddr << port);
+
+  if (m_shutdownRecv)
+    {
+      return;
+    }
+
+  if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
+    {
+      Address address = Inet6SocketAddress (saddr, port);
+      SocketAddressTag tag;
+      tag.SetAddress (address);
+      packet->AddPacketTag (tag);
+      m_deliveryQueue.push (packet);
+      m_rxAvailable += packet->GetSize ();
+      NotifyDataRecv ();
+    }
+  else
+    {
+      // In general, this case should not occur unless the
+      // receiving application reads data from this socket slowly
+      // in comparison to the arrival rate
+      //
+      // drop and trace packet
+      NS_LOG_WARN ("No receive buffer space available.  Drop.");
+      m_dropTrace (packet);
+    }
+}
+
 void
 UdpSocketImpl::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
                             uint8_t icmpType, uint8_t icmpCode,
@@ -667,6 +914,19 @@ UdpSocketImpl::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
   if (!m_icmpCallback.IsNull ())
     {
       m_icmpCallback (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
+}
+
+void
+UdpSocketImpl::ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, 
+                            uint8_t icmpType, uint8_t icmpCode,
+                            uint32_t icmpInfo)
+{
+  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
+                   (uint32_t)icmpCode << icmpInfo);
+  if (!m_icmpCallback6.IsNull ())
+    {
+      m_icmpCallback6 (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
     }
 }
 

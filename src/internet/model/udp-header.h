@@ -25,6 +25,7 @@
 #include <string>
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 
 namespace ns3 {
 /**
@@ -79,8 +80,38 @@ public:
    * If you want to use udp checksums, you should call this
    * method prior to adding the header to a packet.
    */
+  void InitializeChecksum (Address source, 
+                           Address destination,
+                           uint8_t protocol);
+
+  /**
+   * \param source the ip source to use in the underlying
+   *        ip packet.
+   * \param destination the ip destination to use in the
+   *        underlying ip packet.
+   * \param protocol the protocol number to use in the underlying
+   *        ip packet.
+   *
+   * If you want to use udp checksums, you should call this
+   * method prior to adding the header to a packet.
+   */
   void InitializeChecksum (Ipv4Address source, 
                            Ipv4Address destination,
+                           uint8_t protocol);
+
+  /**
+   * \param source the ip source to use in the underlying
+   *        ip packet.
+   * \param destination the ip destination to use in the
+   *        underlying ip packet.
+   * \param protocol the protocol number to use in the underlying
+   *        ip packet.
+   *
+   * If you want to use udp checksums, you should call this
+   * method prior to adding the header to a packet.
+   */
+  void InitializeChecksum (Ipv6Address source, 
+                           Ipv6Address destination,
                            uint8_t protocol);
 
   static TypeId GetTypeId (void);
@@ -102,8 +133,8 @@ private:
   uint16_t m_destinationPort;
   uint16_t m_payloadSize;
 
-  Ipv4Address m_source;
-  Ipv4Address m_destination;
+  Address m_source;
+  Address m_destination;
   uint8_t m_protocol;
   bool m_calcChecksum;
   bool m_goodChecksum;
