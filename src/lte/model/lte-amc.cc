@@ -228,7 +228,7 @@ LteAmc::GetTypeId (void)
                  MakeDoubleChecker<double> ())
   .AddAttribute ("AmcModel",
                 "AMC model used to assign CQI",
-                 EnumValue (LteAmc::Vienna),
+                 EnumValue (LteAmc::Piro),
                  MakeEnumAccessor (&LteAmc::m_amcModel),
                  MakeEnumChecker (LteAmc::Vienna, "Vienna",
                                   LteAmc::Piro, "Piro"));
