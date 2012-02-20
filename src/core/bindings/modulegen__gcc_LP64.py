@@ -1429,7 +1429,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
