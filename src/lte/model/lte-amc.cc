@@ -27,6 +27,8 @@
 #include <math.h>
 #include <ns3/spectrum-value.h>
 #include <ns3/double.h>
+#include "ns3/enum.h"
+#include <ns3/lte-mi-error-model.h>
 
 #ifdef __FreeBSD__
 #define log2(x) (log(x)/M_LN2)
@@ -223,7 +225,13 @@ LteAmc::GetTypeId (void)
                  "The requested BER in assigning MCS (default is 0.00005).",
                  DoubleValue (0.00005),
                  MakeDoubleAccessor (&LteAmc::m_ber),
-                 MakeDoubleChecker<double> ());
+                 MakeDoubleChecker<double> ())
+  .AddAttribute ("AmcModel",
+                "AMC model used to assign CQI",
+                 EnumValue (LteAmc::Vienna),
+                 MakeEnumAccessor (&LteAmc::m_amcModel),
+                 MakeEnumChecker (LteAmc::Vienna, "Vienna",
+                                  LteAmc::Piro, "Piro"));
   return tid;
 }
 
@@ -282,43 +290,97 @@ LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 
 
 std::vector<int>
-LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
+LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
 {
   NS_LOG_FUNCTION (this);
 
   std::vector<int> cqi;
   Values::const_iterator it;
-
-  for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+  
+  if (m_amcModel == Piro)
     {
-      double sinr_ = (*it);
-      if (sinr_ == 0.0)
+
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
         {
-          cqi.push_back (-1); // SINR == 0 (linear units) means no signal in this RB
+          double sinr_ = (*it);
+          if (sinr_ == 0.0)
+            {
+              cqi.push_back (-1); // SINR == 0 (linear units) means no signal in this RB
+            }
+          else
+            {
+              /*
+              * Compute the spectral efficiency from the SINR
+              *                                        SINR
+              * spectralEfficiency = log2 (1 + -------------------- )
+              *                                    -ln(5*BER)/1.5
+              * NB: SINR must be expressed in linear units
+              */
+
+              double s = log2 ( 1 + ( sinr_ /
+                                      ( (-log (5.0 * m_ber )) / 1.5) ));
+
+              int cqi_ = GetCqiFromSpectralEfficiency (s);
+
+              NS_LOG_LOGIC (" PRB =" << cqi.size ()
+                                    << ", sinr = " << sinr_
+                                    << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
+                                    << ", spectral efficiency =" << s
+                                    << ", CQI = " << cqi_ << ", BER = " << m_ber);
+
+              cqi.push_back (cqi_);
+            }
         }
-      else
-        {
-          /*
-          * Compute the spectral efficiency from the SINR
-          *                                        SINR
-          * spectralEfficiency = log2 (1 + -------------------- )
-          *                                    -ln(5*BER)/1.5
-          * NB: SINR must be expressed in linear units
-          */
+    }
+  else if (m_amcModel == Vienna)
+    {
+      uint8_t rbgNum = 1;//ceil ((double)sinr.length () / (double)rbgSize);
 
-          double s = log2 ( 1 + ( sinr_ /
-                                  ( (-log (5.0 * m_ber )) / 1.5) ));
-
-          int cqi_ = GetCqiFromSpectralEfficiency (s);
-
-          NS_LOG_LOGIC (" PRB =" << cqi.size ()
-                                 << ", sinr = " << sinr_
-                                 << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
-                                 << ", spectral efficiency =" << s
-                                 << ", CQI = " << cqi_ << ", BER = " << m_ber);
-
-          cqi.push_back (cqi_);
-        }
+      for (uint8_t i = 0; i < rbgNum; i++)
+      {
+        std::vector <int> rbgMap;
+        for (uint8_t j = 0; j < rbgSize; j++)
+          {
+            rbgMap.push_back ((i * rbgSize) + j);
+            
+          }
+        uint8_t mcs = 0;
+        double ber = 0.0;
+        while (mcs < 28)
+          {
+//             ber = LteMiErrorModel::GetTbError (sinr, rbgMap, GetTbSizeFromMcs (mcs, rbgSize), mcs);
+            if (ber > 0.1)
+              break;
+            mcs++;
+            
+          }
+        int rbgCqi = 0;
+        if ((ber > 0.1)&&(mcs==0))
+          {
+            rbgCqi = 0; // any MCS can guarantee the 10 % of BER
+          }
+        else if (mcs == 28)
+          {
+            rbgCqi = 15; // best MCS
+          }
+        else
+          {
+            double s = SpectralEfficiencyForMcs[mcs];
+            rbgCqi = 0;
+            while ((rbgCqi < 15) && (SpectralEfficiencyForCqi[rbgCqi + 1] < s))
+            {
+              ++rbgCqi;
+            }
+          }
+        
+        // fill the cqi vector (per RB basis)
+        for (uint8_t j = 0; j < rbgSize; j++)
+          {
+            cqi.push_back (rbgCqi);
+          }
+        
+      }
+      
     }
 
   return cqi;

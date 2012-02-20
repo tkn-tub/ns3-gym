@@ -49,6 +49,12 @@ public:
   LteAmc ();
   virtual ~LteAmc();
   
+  enum AmcModel
+    {
+      Piro, // model based on GSoC code from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH")
+      Vienna // model based on 10% of BER according to LteMiErrorModel based on Lte Vienna link level simulator BLER curves
+    };
+  
   /**
    * \brief Get the Modulation anc Coding Scheme for
    * a CQI value
@@ -75,9 +81,11 @@ public:
 
   /**
    * \brief Create a message with CQI feedback
+   * \param sinr the SpectrumValue vector of SINR for evaluating the CQI
+   * \param rbgSize size of RB group (in RBs) for evaluating subband/wideband CQI
    *
    */
-  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr);
+  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize = 0);
 
   /**
    * \brief Get a proper CQI for the spectrale efficiency value.
@@ -91,6 +99,7 @@ public:
 private:
   
   double m_ber;
+  AmcModel m_amcModel;
 
 
 
