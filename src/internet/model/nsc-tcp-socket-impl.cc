@@ -217,7 +217,7 @@ NscTcpSocketImpl::Bind (void)
 int
 NscTcpSocketImpl::Bind6 ()
 {
-  NS_LOG_LOGIC ("NscTcpSocketImpl: ERROR_AFNOSUPPORT - Bind6 not supported".);
+  NS_LOG_LOGIC ("NscTcpSocketImpl: ERROR_AFNOSUPPORT - Bind6 not supported");
   m_errno = ERROR_AFNOSUPPORT;
   return (-1);
 }
