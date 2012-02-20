@@ -1852,6 +1852,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'void', 
                    [param('uint8_t *', 'buf')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv6Address::GetIpv4MappedAddress() const [member function]
+    cls.add_method('GetIpv4MappedAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetLoopback() [member function]
     cls.add_method('GetLoopback', 
                    'ns3::Ipv6Address', 
@@ -1892,8 +1897,17 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    cls.add_method('IsIpv4MappedAddress', 
+                   'bool', 
+                   [])
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocalMulticast() const [member function]
+    cls.add_method('IsLinkLocalMulticast', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -1926,6 +1940,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac48Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('MakeIpv4MappedAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv4Address', 'addr')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeSolicitedAddress(ns3::Ipv6Address addr) [member function]
     cls.add_method('MakeSolicitedAddress', 
@@ -3487,7 +3506,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
@@ -3563,6 +3582,10 @@ def register_Ns3UdpClientHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv6Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-client-server-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpClientHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -3576,8 +3599,12 @@ def register_Ns3UdpClientHelper_methods(root_module, cls):
 def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::UdpEchoClientHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UdpEchoClientHelper const &', 'arg0')])
+    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv6Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -3663,8 +3690,12 @@ def register_Ns3UdpTraceClientHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::UdpTraceClientHelper const &', 'arg0')])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper() [constructor]
     cls.add_constructor([])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Address ip, uint16_t port, std::string filename) [constructor]
+    cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv4Address ip, uint16_t port, std::string filename) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv6Address ip, uint16_t port, std::string filename) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
     ## udp-client-server-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpTraceClientHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -4827,6 +4858,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Bind() [member function]
     cls.add_method('Bind', 
+                   'int', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## socket.h (module 'network'): int ns3::Socket::Bind6() [member function]
+    cls.add_method('Bind6', 
                    'int', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -6832,6 +6868,11 @@ def register_Ns3PacketSocket_methods(root_module, cls):
                    'int', 
                    [param('ns3::Address const &', 'address')], 
                    is_virtual=True)
+    ## packet-socket.h (module 'network'): int ns3::PacketSocket::Bind6() [member function]
+    cls.add_method('Bind6', 
+                   'int', 
+                   [], 
+                   is_virtual=True)
     ## packet-socket.h (module 'network'): int ns3::PacketSocket::Close() [member function]
     cls.add_method('Close', 
                    'int', 
@@ -8678,6 +8719,14 @@ def register_Ns3UdpClient_methods(root_module, cls):
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-client.h (module 'applications'): void ns3::UdpClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8726,10 +8775,18 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
     cls.add_method('SetFill', 
                    'void', 
                    [param('uint8_t *', 'fill'), param('uint32_t', 'fillSize'), param('uint32_t', 'dataSize')])
+    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8840,10 +8897,18 @@ def register_Ns3UdpTraceClient_methods(root_module, cls):
     cls.add_method('SetMaxPacketSize', 
                    'void', 
                    [param('uint16_t', 'maxPacketSize')])
+    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetTraceFile(std::string filename) [member function]
     cls.add_method('SetTraceFile', 
                    'void', 
