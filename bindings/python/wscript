@@ -92,10 +92,21 @@ def configure(conf):
 
     try:
         conf.check_tool('python')
+    except Configure.ConfigurationError, ex:
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "The python interpreter was not found")
+        return
+    try:
         conf.check_python_version((2,3))
+    except Configure.ConfigurationError, ex:
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "The python found version is too low (2.3 required)")
+        return
+    try:
         conf.check_python_headers()
     except Configure.ConfigurationError, ex:
-        conf.report_optional_feature("python", "Python Bindings", False, str(ex))
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "Python library or headers missing")
         return
 
     # stupid Mac OSX Python wants to build extensions as "universal
