@@ -310,14 +310,13 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector<int> cqi = m_amc->CreateCqiFeedbacks (sinr, GetRbgSize ());
-
   // CREATE DlCqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
   CqiListElement_s dlcqi;
-
+  std::vector<int> cqi;
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
+      cqi = m_amc->CreateCqiFeedbacks (sinr, m_dlBandwidth);
 
       int nbSubChannels = cqi.size ();
       double cqiSum = 0.0;
@@ -350,7 +349,8 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
     }
   else if (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
     {
-      int nbSubChannels = cqi.size ();
+      cqi = m_amc->CreateCqiFeedbacks (sinr, GetRbgSize ());
+      int nbSubChannels = m_dlBandwidth;
       int rbgSize = GetRbgSize ();
       double cqiSum = 0.0;
       int cqiNum = 0;
