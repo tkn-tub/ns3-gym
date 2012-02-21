@@ -45,7 +45,7 @@
 #include <ns3/lte-ue-phy.h>
 #include <ns3/config.h>
 #include <ns3/boolean.h>
-
+#include <ns3/enum.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestPhyErrorModel");
@@ -109,6 +109,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
   
    double ber = 0.01;
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (true));
   
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);

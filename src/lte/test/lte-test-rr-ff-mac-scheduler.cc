@@ -43,6 +43,7 @@
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
 #include <ns3/boolean.h>
+#include <ns3/enum.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
@@ -191,6 +192,8 @@ void
 LenaRrFfMacSchedulerTestCase::DoRun (void)
 {
   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   LogComponentDisableAll (LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);

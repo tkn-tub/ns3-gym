@@ -310,7 +310,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector<int> cqi = m_amc->CreateCqiFeedbacks (sinr);
+  std::vector<int> cqi = m_amc->CreateCqiFeedbacks (sinr, GetRbgSize ());
 
   // CREATE DlCqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();

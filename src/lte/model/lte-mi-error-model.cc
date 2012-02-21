@@ -203,7 +203,7 @@ double cEcrTable [9][27] = {
 
 
 double 
-LteMiErrorModel::Mib (SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs)
+LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs)
 {
   NS_LOG_FUNCTION (sinr << &map << (uint32_t) mcs);
   
@@ -212,8 +212,8 @@ LteMiErrorModel::Mib (SpectrumValue& sinr, const std::vector<int>& map, uint8_t 
   
   for (uint i = 0; i < map.size (); i++)
     {
-//       int id = map.at (i);
-      double sinrLin = sinr[map.at (i)];
+      SpectrumValue sinrCopy = sinr;
+      double sinrLin = sinrCopy[map.at (i)];
       double sinr_db = 10*log10 (sinrLin);
       if (mcs <= 10) // QPSK
         {
@@ -324,7 +324,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
 
 
 double
-LteMiErrorModel::GetTbError (SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs)
+LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs)
 {
   NS_LOG_FUNCTION (sinr << &map << (uint32_t) size << (uint32_t) mcs);
   

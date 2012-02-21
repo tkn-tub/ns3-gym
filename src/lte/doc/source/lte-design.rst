@@ -543,8 +543,9 @@ configuration.
 Adaptive Modulation and Coding
 ------------------------------
 
-The Adaptive Modulation and Coding (AMC) model that we provide in the
-simulator is a modified version of the model described in [Piro2011]_,
+The simulator provides two Adaptive Modulation and Coding (AMC) models: one based on the GSoC model [Piro2011]_ and one based on the physical error model (described in the following sections).
+
+The former model is a modified version of the model described in [Piro2011]_,
 which in turn is inspired from [Seo2004]_. Our version is described in the
 following. Let :math:`i` denote the
 generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficiency
@@ -560,7 +561,7 @@ generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficien
 
 The procedure described in [R1-081483]_ is used to get
 the corresponding MCS scheme. The spectral efficiency is quantized based on the
-CQI (rounding to the lowest value) and is mapped to the corresponding MCS
+channel quality indicator (CQI), rounding to the lowest value, and is mapped to the corresponding MCS
 scheme. 
 
 Finally, we note that there are some discrepancies between the MCS index
@@ -571,6 +572,8 @@ MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
 index
 is 1. Hence to get the value as intended by the standard we need to subtract 1
 from the index reported in [R1-081483]_. 
+
+The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36.213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
 
 
 Round Robin (RR) Scheduler

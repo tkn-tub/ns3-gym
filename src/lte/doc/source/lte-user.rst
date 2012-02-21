@@ -532,6 +532,24 @@ below::
   
 
 
+AMC Model and CQI Calculation
+-----------------------------
+
+The simulator provides two possible schemes for what concerns the selection of the MCSs and correspondly the generation of the CQIs. The first one is based on the GSoC module [Piro2011]_ and works per RB basis. This model can be activated with the ns3 attribute system, as presented in the following::
+
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+
+While, the solution based on the physical error model can be controlled with:
+
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::MiErrorModel));
+
+Finally, the required BER can be setted for fine tuning of the AMC module thanks to the ``Ber`` attribute, for instance:
+
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
+
+We note that the model ``PiroEW2010`` is designed for working with a BER of 0.00005, while ``MiErrorModel`` with a BER of 0.1.
+
+
 
 Evolved Packet Core (EPC)
 -------------------------

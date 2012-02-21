@@ -25,6 +25,7 @@
 #include <ns3/log.h>
 #include <ns3/assert.h>
 #include <math.h>
+#include <vector>
 #include <ns3/spectrum-value.h>
 #include <ns3/double.h>
 #include "ns3/enum.h"
@@ -223,15 +224,15 @@ LteAmc::GetTypeId (void)
   .AddConstructor<LteAmc> ()
   .AddAttribute ("Ber",
                  "The requested BER in assigning MCS (default is 0.00005).",
-                 DoubleValue (0.00005),
+                 DoubleValue (0.1),
                  MakeDoubleAccessor (&LteAmc::m_ber),
                  MakeDoubleChecker<double> ())
   .AddAttribute ("AmcModel",
                 "AMC model used to assign CQI",
-                 EnumValue (LteAmc::Piro),
+                 EnumValue (LteAmc::MiErrorModel),
                  MakeEnumAccessor (&LteAmc::m_amcModel),
-                 MakeEnumChecker (LteAmc::Vienna, "Vienna",
-                                  LteAmc::Piro, "Piro"));
+                 MakeEnumChecker (LteAmc::MiErrorModel, "Vienna",
+                                  LteAmc::PiroEW2010, "PiroEW2010"));
   return tid;
 }
 
@@ -297,7 +298,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
   std::vector<int> cqi;
   Values::const_iterator it;
   
-  if (m_amcModel == Piro)
+  if (m_amcModel == PiroEW2010)
     {
 
       for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
@@ -332,52 +333,54 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
             }
         }
     }
-  else if (m_amcModel == Vienna)
+  else if (m_amcModel == MiErrorModel)
     {
-      uint8_t rbgNum = 1;//ceil ((double)sinr.length () / (double)rbgSize);
-
-      for (uint8_t i = 0; i < rbgNum; i++)
+      NS_LOG_DEBUG (this << " AMC-VIENNA RBG size " << (uint16_t)rbgSize);
+      NS_ASSERT_MSG (rbgSize > 0, " LteAmc-Vienna: RBG size must be greater than 0");
+      std::vector <int> rbgMap;
+      int rbId = 0;
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
       {
-        std::vector <int> rbgMap;
-        for (uint8_t j = 0; j < rbgSize; j++)
-          {
-            rbgMap.push_back ((i * rbgSize) + j);
-            
-          }
-        uint8_t mcs = 0;
-        double ber = 0.0;
-        while (mcs < 28)
-          {
-//             ber = LteMiErrorModel::GetTbError (sinr, rbgMap, GetTbSizeFromMcs (mcs, rbgSize), mcs);
-            if (ber > 0.1)
-              break;
-            mcs++;
-            
-          }
-        int rbgCqi = 0;
-        if ((ber > 0.1)&&(mcs==0))
-          {
-            rbgCqi = 0; // any MCS can guarantee the 10 % of BER
-          }
-        else if (mcs == 28)
-          {
-            rbgCqi = 15; // best MCS
-          }
-        else
-          {
-            double s = SpectralEfficiencyForMcs[mcs];
-            rbgCqi = 0;
-            while ((rbgCqi < 15) && (SpectralEfficiencyForCqi[rbgCqi + 1] < s))
-            {
-              ++rbgCqi;
-            }
-          }
-        
-        // fill the cqi vector (per RB basis)
-        for (uint8_t j = 0; j < rbgSize; j++)
-          {
-            cqi.push_back (rbgCqi);
-          }
+        rbgMap.push_back (rbId++);
+        if ((rbId % rbgSize == 0)||((it+1)==sinr.ConstValuesEnd ()))
+         {
+            uint8_t mcs = 0;
+            double ber = 0.0;
+            while (mcs < 28)
+              {
+                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize), mcs);
+                if (ber > m_ber)
+                  break;
+                mcs++;
+                
+              }
+            NS_LOG_DEBUG (this << "\t RBG " << rbId << " MCS " << (uint16_t)mcs << " BER " << ber);
+            int rbgCqi = 0;
+            if ((ber > 0.1)&&(mcs==0))
+              {
+                rbgCqi = 0; // any MCS can guarantee the 10 % of BER
+              }
+            else if (mcs == 28)
+              {
+                rbgCqi = 15; // all MCSs can guarantee the 10 % of BER
+              }
+            else
+              {
+                double s = SpectralEfficiencyForMcs[mcs];
+                rbgCqi = 0;
+                while ((rbgCqi < 15) && (SpectralEfficiencyForCqi[rbgCqi + 1] < s))
+                {
+                  ++rbgCqi;
+                }
+              }
+            NS_LOG_DEBUG (this << "\t CQI " << rbgCqi);
+            // fill the cqi vector (per RB basis)
+            for (uint8_t j = 0; j < rbgSize; j++)
+              {
+                cqi.push_back (rbgCqi);
+              }
+            rbgMap.clear ();
+         }
         
       }
       

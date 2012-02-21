@@ -51,8 +51,11 @@ public:
   
   enum AmcModel
     {
-      Piro, // model based on GSoC code from 3GPP R1-081483 "Conveying MCS and TB size via PDCCH")
-      Vienna // model based on 10% of BER according to LteMiErrorModel based on Lte Vienna link level simulator BLER curves
+      PiroEW2010, // BER should be set at 0.00005
+      // model based on Piro, G.; Grieco, L.A.; Boggia, G.; Camarda, P.;
+      //A two-level scheduling algorithm for QoS support in the downlink of 
+      //LTE cellular networks European Wireless Conference (EW), 2010
+      MiErrorModel // model based on 10% of BER according to LteMiErrorModel
     };
   
   /**
