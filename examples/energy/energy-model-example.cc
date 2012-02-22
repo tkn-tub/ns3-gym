@@ -59,7 +59,7 @@ ReceivePacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () > 0)
         {

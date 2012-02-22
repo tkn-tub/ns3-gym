@@ -143,7 +143,7 @@ void
 RoutingExperiment::ReceivePacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  while ((packet = socket->Recv ()))
     {
       bytesTotal += packet->GetSize ();
       packetsReceived += 1;
