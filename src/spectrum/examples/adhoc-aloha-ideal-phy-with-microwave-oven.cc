@@ -102,7 +102,7 @@ ReceivePacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   uint64_t bytes = 0;
-  while (packet = socket->Recv ())
+  while ((packet = socket->Recv ()))
     {
       bytes += packet->GetSize ();
     }
