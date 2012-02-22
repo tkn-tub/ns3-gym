@@ -224,7 +224,7 @@ LteAmc::GetTypeId (void)
   .AddConstructor<LteAmc> ()
   .AddAttribute ("Ber",
                  "The requested BER in assigning MCS (default is 0.00005).",
-                 DoubleValue (0.1),
+                 DoubleValue (0.00005),
                  MakeDoubleAccessor (&LteAmc::m_ber),
                  MakeDoubleChecker<double> ())
   .AddAttribute ("AmcModel",
@@ -349,7 +349,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
             while (mcs < 28)
               {
                 ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize), mcs);
-                if (ber > m_ber)
+                if (ber > 0.1)
                   break;
                 mcs++;
                 

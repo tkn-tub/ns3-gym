@@ -51,7 +51,7 @@ public:
   
   enum AmcModel
     {
-      PiroEW2010, // BER should be set at 0.00005
+      PiroEW2010,
       // model based on Piro, G.; Grieco, L.A.; Boggia, G.; Camarda, P.;
       //A two-level scheduling algorithm for QoS support in the downlink of 
       //LTE cellular networks European Wireless Conference (EW), 2010

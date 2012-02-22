@@ -539,15 +539,14 @@ The simulator provides two possible schemes for what concerns the selection of t
 
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
 
-While, the solution based on the physical error model can be controlled with:
+While, the solution based on the physical error model can be controlled with::
 
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::MiErrorModel));
 
-Finally, the required BER can be setted for fine tuning of the AMC module thanks to the ``Ber`` attribute, for instance:
+Finally, the required efficiency of the ``PiroEW2010`` AMC module can be tuned thanks to the ``Ber`` attribute (), for instance::
 
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
 
-We note that the model ``PiroEW2010`` is designed for working with a BER of 0.00005, while ``MiErrorModel`` with a BER of 0.1.
 
 
 
