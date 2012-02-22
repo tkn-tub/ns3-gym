@@ -157,7 +157,7 @@ Ipv4FragmentationTest::HandleReadServer (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
@@ -191,7 +191,7 @@ Ipv4FragmentationTest::HandleReadClient (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
