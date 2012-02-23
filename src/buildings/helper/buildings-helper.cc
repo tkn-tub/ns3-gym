@@ -39,9 +39,13 @@ BuildingsHelper::MakeMobilityModelConsistent ()
   NS_LOG_FUNCTION_NOARGS ();
   for (NodeList::Iterator nit = NodeList::Begin (); nit != NodeList::End (); ++nit)
     {
-      Ptr<BuildingsMobilityModel> bmm = (*nit)->GetObject<BuildingsMobilityModel> ();
-      NS_ABORT_MSG_UNLESS (0 != bmm, "node " << (*nit)->GetId () << " does not have a BuildingsMobilityModel");
-      MakeConsistent (bmm);
+      Ptr<MobilityModel> mm = (*nit)->GetObject<MobilityModel> ();
+      if (mm != 0)
+        {
+          Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+          NS_ABORT_MSG_UNLESS (0 != bmm, "node " << (*nit)->GetId () << " has a MobilityModel but it is not a BuildingsMobilityModel");
+          MakeConsistent (bmm);
+        }
     }
 }
 
