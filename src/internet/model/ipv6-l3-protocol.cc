@@ -433,7 +433,7 @@ void Ipv6L3Protocol::SetupLoopback ()
   /* see if we have already an loopback NetDevice */
   for (i = 0; i < m_node->GetNDevices (); i++)
     {
-      if (device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i)))
+      if ((device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i))))
         {
           break;
         }
