@@ -111,12 +111,6 @@ BuildingsPropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_itu1411NlosThreshold),
                    MakeDoubleChecker<double> ())
 
-    .AddAttribute ("ITU1411DistanceThr",
-                   " Threshold for ITU 1411 [m].",
-                   DoubleValue (2000.0),
-                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_itu1411DistanceThreshold),
-                   MakeDoubleChecker<double> ())
-
     .AddAttribute ("MinDistance",
                    "The distance under which the propagation model refuses to give results (m) ",
                    DoubleValue (0.5),
