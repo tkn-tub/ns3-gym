@@ -84,7 +84,6 @@ int64x64_t::Divu (uint128_t a, uint128_t b)
     }
   else
     {
-      rem = rem;
       div = b >> 64;
     }
   quo = rem / div;
