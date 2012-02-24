@@ -131,6 +131,9 @@ def configure(conf):
         conf.env.append_value('CXXFLAGS_PYEXT', '-fvisibility=hidden')
         conf.env.append_value('CCFLAGS_PYEXT', '-fvisibility=hidden')
 
+    if conf.check_compilation_flag('-Wno-array-bounds'):
+        conf.env.append_value('CXXFLAGS_PYEXT', '-Wno-array-bounds')
+
     # Check for the location of pybindgen
     if Options.options.with_pybindgen is not None:
         if os.path.isdir(Options.options.with_pybindgen):
