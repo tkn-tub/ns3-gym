@@ -45,7 +45,7 @@
   do {                                          \
     if (MustAssertOnFailure ())                 \
       {                                         \
-        *(int *)0 = 0;                          \
+        *(volatile int *)0 = 0;                 \
       }                                         \
   } while (false)
 
