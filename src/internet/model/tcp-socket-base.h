@@ -148,6 +148,7 @@ protected:
   int DoClose (void); // Close a socket by sending RST, FIN, or FIN+ACK, depend on the current state
   void CloseAndNotify (void); // To CLOSED state, notify upper layer, and deallocate end point
   void Destroy (void); // Kill this socket by zeroing its attributes
+  void Destroy6 (void); // Kill this socket by zeroing its attributes
   void DeallocateEndPoint (void); // Deallocate m_endPoint
   void PeerClose (Ptr<Packet>, const TcpHeader&); // Received a FIN from peer, notify rx buffer
   void DoPeerClose (void); // FIN is in sequence, notify app and respond with a FIN

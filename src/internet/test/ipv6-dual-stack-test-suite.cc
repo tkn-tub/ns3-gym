@@ -296,6 +296,7 @@ DualStackTestCase::DoRun (void)
 void
 DualStackTestCase::DoTeardown (void)
 {
+  Simulator::Destroy ();
 }
 
 

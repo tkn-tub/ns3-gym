@@ -43,6 +43,9 @@ Ipv6EndPoint::~Ipv6EndPoint ()
     {
       m_destroyCallback ();
     }
+  m_rxCallback.Nullify ();
+  m_icmpCallback.Nullify ();
+  m_destroyCallback.Nullify ();
 }
 
 Ipv6Address Ipv6EndPoint::GetLocalAddress ()

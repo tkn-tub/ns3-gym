@@ -86,6 +86,11 @@ UdpSocketImpl::~UdpSocketImpl ()
 
   // XXX todo:  leave any multicast groups that have been joined
   m_node = 0;
+  /**
+   * Note: actually this function is called AFTER
+   * UdpSocketImpl::Destroy or UdpSocketImpl::Destroy6
+   * so the code below is unnecessary in normal operations
+   */
   if (m_endPoint != 0)
     {
       NS_ASSERT (m_udp != 0);
@@ -100,6 +105,21 @@ UdpSocketImpl::~UdpSocketImpl ()
       NS_ASSERT (m_endPoint != 0);
       m_udp->DeAllocate (m_endPoint);
       NS_ASSERT (m_endPoint == 0);
+    }
+  if (m_endPoint6 != 0)
+    {
+      NS_ASSERT (m_udp != 0);
+      /**
+       * Note that this piece of code is a bit tricky:
+       * when DeAllocate is called, it will call into
+       * Ipv4EndPointDemux::Deallocate which triggers
+       * a delete of the associated endPoint which triggers
+       * in turn a call to the method UdpSocketImpl::Destroy below
+       * will will zero the m_endPoint field.
+       */
+      NS_ASSERT (m_endPoint6 != 0);
+      m_udp->DeAllocate (m_endPoint6);
+      NS_ASSERT (m_endPoint6 == 0);
     }
   m_udp = 0;
 }
@@ -143,27 +163,37 @@ void
 UdpSocketImpl::Destroy (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_node = 0;
   m_endPoint = 0;
-  m_udp = 0;
+}
+
+void
+UdpSocketImpl::Destroy6 (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_endPoint6 = 0;
 }
 
 int
 UdpSocketImpl::FinishBind (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  bool done = false;
   if (m_endPoint != 0)
     {
       m_endPoint->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp, Ptr<UdpSocketImpl> (this)));
       m_endPoint->SetIcmpCallback (MakeCallback (&UdpSocketImpl::ForwardIcmp, Ptr<UdpSocketImpl> (this)));
       m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
-      return 0;
+      done = true;
     }
-  else if (m_endPoint6 != 0)
+  if (m_endPoint6 != 0)
     {
       m_endPoint6->SetRxCallback (MakeCallback (&UdpSocketImpl::ForwardUp6, Ptr<UdpSocketImpl> (this)));
       m_endPoint6->SetIcmpCallback (MakeCallback (&UdpSocketImpl::ForwardIcmp6, Ptr<UdpSocketImpl> (this)));
-      m_endPoint6->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy, Ptr<UdpSocketImpl> (this)));
+      m_endPoint6->SetDestroyCallback (MakeCallback (&UdpSocketImpl::Destroy6, Ptr<UdpSocketImpl> (this)));
+      done = true;
+    }
+  if (done)
+    {
       return 0;
     }
   return -1;

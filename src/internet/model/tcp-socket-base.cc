@@ -635,7 +635,7 @@ TcpSocketBase::SetupCallback (void)
   if (m_endPoint6 != 0)
     {
       m_endPoint6->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp6, Ptr<TcpSocketBase> (this)));
-      m_endPoint6->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy, Ptr<TcpSocketBase> (this)));
+      m_endPoint6->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy6, Ptr<TcpSocketBase> (this)));
     }
 
   return 0;
@@ -1422,8 +1422,27 @@ void
 TcpSocketBase::Destroy (void)
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
   m_endPoint = 0;
+  if (m_tcp != 0)
+    {
+      std::vector<Ptr<TcpSocketBase> >::iterator it
+        = std::find (m_tcp->m_sockets.begin (), m_tcp->m_sockets.end (), this);
+      if (it != m_tcp->m_sockets.end ())
+        {
+          m_tcp->m_sockets.erase (it);
+        }
+    }
+  NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
+                (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
+  CancelAllTimers ();
+}
+
+/** Kill this socket. This is a callback function configured to m_endpoint in
+   SetupCallback(), invoked when the endpoint is destroyed. */
+void
+TcpSocketBase::Destroy6 (void)
+{
+  NS_LOG_FUNCTION (this);
   m_endPoint6 = 0;
   if (m_tcp != 0)
     {
@@ -1433,7 +1452,6 @@ TcpSocketBase::Destroy (void)
         {
           m_tcp->m_sockets.erase (it);
         }
-      m_tcp = 0;
     }
   NS_LOG_LOGIC (this << " Cancelled ReTxTimeout event which was set to expire at " <<
                 (Simulator::Now () + Simulator::GetDelayLeft (m_retxEvent)).GetSeconds ());
