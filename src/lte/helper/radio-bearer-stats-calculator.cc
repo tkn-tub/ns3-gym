@@ -408,7 +408,10 @@ RadioBearerStatsCalculator::GetUlDelayStats (uint64_t imsi, uint8_t lcid)
   Uint64StatsMap::iterator it = m_ulDelay.find (p);
   if (it == m_ulDelay.end ())
     {
-      NS_LOG_ERROR ("UL delay for " << imsi << " - " << (uint16_t) lcid << " not found");
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
       return stats;
 
     }
@@ -428,7 +431,10 @@ RadioBearerStatsCalculator::GetUlPduSizeStats (uint64_t imsi, uint8_t lcid)
   Uint32StatsMap::iterator it = m_ulPduSize.find (p);
   if (it == m_ulPduSize.end ())
     {
-      NS_LOG_ERROR ("UL PDU Size for " << imsi << " - " << (uint16_t) lcid << " not found");
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
       return stats;
 
     }
@@ -510,8 +516,10 @@ RadioBearerStatsCalculator::GetDlDelayStats (uint64_t imsi, uint8_t lcid)
   Uint64StatsMap::iterator it = m_dlDelay.find (p);
   if (it == m_dlDelay.end ())
     {
-
-      NS_LOG_ERROR ("DL delay for " << imsi << " not found");
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
       return stats;
 
     }
@@ -531,8 +539,10 @@ RadioBearerStatsCalculator::GetDlPduSizeStats (uint64_t imsi, uint8_t lcid)
   Uint32StatsMap::iterator it = m_dlPduSize.find (p);
   if (it == m_dlPduSize.end ())
     {
-
-      NS_LOG_ERROR ("DL delay for " << imsi << " not found");
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
+      stats.push_back (0.0);
       return stats;
 
     }
