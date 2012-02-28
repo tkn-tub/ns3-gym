@@ -612,11 +612,11 @@ struct PacketMetadata::Data *
 PacketMetadata::Allocate (uint32_t n)
 {
   uint32_t size = sizeof (struct Data);
-  if (n <= 10)
+  if (n <= PACKET_METADATA_DATA_M_DATA_SIZE)
     {
-      n = 10;
+      n = PACKET_METADATA_DATA_M_DATA_SIZE;
     }
-  size += n - 10;
+  size += n - PACKET_METADATA_DATA_M_DATA_SIZE;
   uint8_t *buf = new uint8_t [size];
   struct PacketMetadata::Data *data = (struct PacketMetadata::Data *)buf;
   data->m_size = n;
