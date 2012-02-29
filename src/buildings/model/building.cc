@@ -34,6 +34,8 @@ NS_LOG_COMPONENT_DEFINE ("Building");
 namespace ns3 {
 
 
+NS_OBJECT_ENSURE_REGISTERED (Building);
+
 TypeId
 Building::GetTypeId (void)
 {
@@ -41,25 +43,40 @@ Building::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<Building> ()
     .AddAttribute ("roomX", "The number of rooms in the X axis.",
-                   TypeId::ATTR_GET, // allow only getting it.
                    UintegerValue (4),
                    MakeUintegerAccessor (&Building::m_roomsX),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("roomY", "The number of rooms in the Y axis.",
-                   TypeId::ATTR_GET, // allow only getting it.
                    UintegerValue (1),
                    MakeUintegerAccessor (&Building::m_roomsY),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("nFloor", "The number of floors of this building.",
-                   TypeId::ATTR_GET, // allow only getting it.
                    UintegerValue (1),
                    MakeUintegerAccessor (&Building::m_floors),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Id", "The id (unique integer) of this Building.",
-                   TypeId::ATTR_GET, // allow only getting it.
                    UintegerValue (0),
                    MakeUintegerAccessor (&Building::m_buildingId),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Boundaries", "The boundaries of this Building as a value of type ns3::Box",
+                   BoxValue (),
+                   MakeBoxAccessor (&Building::m_buildingBounds),
+                   MakeBoxChecker ())
+    .AddAttribute ("Type",
+                   "The type of building",
+                   EnumValue (Building::Residential),
+                   MakeEnumAccessor (&Building::m_buildingType),
+                   MakeEnumChecker (Building::Residential, "Residential",
+                                    Building::Office, "Office",
+                                    Building::Commercial, "Commercial"))
+    .AddAttribute ("ExternalWallsType",
+                   "The type of material of which the external walls are made",
+                   EnumValue (Building::ConcreteWithWindows),
+                   MakeEnumAccessor (&Building::m_externalWalls),
+                   MakeEnumChecker (Building::Wood, "Wood",
+                                    Building::ConcreteWithWindows, "ConcreteWithWindows",
+                                    Building::ConcreteWithoutWindows, "ConcreteWithoutWindows",
+                                    Building::StoneBlocks, "StoneBlocks"))
   ;
   return tid;
 }
@@ -90,7 +107,6 @@ Building::Building ()
     m_externalWalls (ConcreteWithWindows)
 {
   NS_LOG_FUNCTION (this);
-  m_buildingBounds = Box ();
   Construct();
 }
 
