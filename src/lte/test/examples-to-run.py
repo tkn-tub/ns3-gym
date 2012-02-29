@@ -10,6 +10,7 @@
 # See test.py for more information.
 cpp_examples = [
     ("lena-cqi-threshold", "True", "True"),
+    ("lena-dual-stripe", "True", "True"),
     ("lena-fading", "True", "True"),
     ("lena-gtpu-tunnel", "True", "True"),
     ("lena-intercell-interference", "True", "True"),

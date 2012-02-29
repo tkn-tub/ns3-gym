@@ -104,10 +104,6 @@ main (int argc, char *argv[])
           enbPosition.push_back (v);
           Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
           mmEnb->SetPosition (v);
-          mmEnb->SetIndoor (building);
-          mmEnb->SetFloorNumber (0);
-          mmEnb->SetRoomNumberX (row);
-          mmEnb->SetRoomNumberY (column);
 
           // Positioning UEs attached to eNB
           mobility.Install (ueNodes.at(plantedEnb));
@@ -116,10 +112,6 @@ main (int argc, char *argv[])
               Ptr<BuildingsMobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
               Vector vUe (v.x, v.y, v.z);
               mmUe->SetPosition (vUe);
-              mmUe->SetIndoor (building);
-              mmUe->SetFloorNumber (0);
-              mmUe->SetRoomNumberX (row);
-              mmUe->SetRoomNumberY (column);
             }
         }
     }

@@ -444,6 +444,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 void
 LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this);
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
       Attach (*i, enbDevice);
@@ -453,6 +454,7 @@ LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 void
 LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this);
   // setup RRC connection
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   uint16_t rnti = enbRrc->AddUe (ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
@@ -491,11 +493,42 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   ueDevice->Start ();
 }
 
+void
+LteHelper::AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      AttachToClosestEnb (*i, enbDevices);
+    }
+}
 
+void
+LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (enbDevices.GetN () > 0, "empty enb device container");
+  Vector uepos = ueDevice->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
+  double minDistance = std::numeric_limits<double>::infinity ();
+  Ptr<NetDevice> closestEnbDevice;
+  for (NetDeviceContainer::Iterator i = enbDevices.Begin (); i != enbDevices.End (); ++i)
+    {
+      Vector enbpos = (*i)->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
+      double distance = CalculateDistance (uepos, enbpos);
+      if (distance < minDistance)
+        {
+          minDistance = distance;
+          closestEnbDevice = *i;
+        }      
+    }
+  NS_ASSERT (closestEnbDevice != 0);
+  Attach (ueDevice, closestEnbDevice);
+}
 
 void
 LteHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft)
 {
+  NS_LOG_FUNCTION (this);
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
       ActivateEpsBearer (*i, bearer, tft);
@@ -506,6 +539,7 @@ LteHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Pt
 void
 LteHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft)
 {
+  NS_LOG_FUNCTION (this);
   NS_LOG_INFO (" setting up Radio Bearer");
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
