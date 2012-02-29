@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Marco Miozzo  <marco.miozzo@cttc.es>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  * 
  */
 
@@ -89,25 +90,14 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
               if ((a1->GetPosition ().z < m_rooftopHeight)
                   && (b1->GetPosition ().z < m_rooftopHeight))
                 {
-                  // ITU limit in distance (i.e., < 2000 for small cells)
-                  if (distance < m_itu1411DistanceThreshold)
-                    {
-                      // short range communication
-                      loss = ItuR1411 (a1, b1);
-                      NS_LOG_INFO (this << " 0-0 (>1000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                  else
-                    {
-                      // out of bound
-                      loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-0 (>2000): down rooftop -> Infinity (out of bound) : " << loss);
-                    }
+                  loss = ItuR1411 (a1, b1);
+                  NS_LOG_INFO (this << " 0-0 (>1000): below rooftop -> ITUR1411 : " << loss);
                 }
               else
                 {
                   // Over the rooftop tranmission -> Okumura Hata
                   loss = OkumuraHata (a1, b1);
-                  NS_LOG_INFO (this << " O-O (>1000): Over the rooftop -> OH : " << loss);
+                  NS_LOG_INFO (this << " O-O (>1000): above rooftop -> OH : " << loss);
                 }
             }
           else
@@ -124,27 +114,14 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
             {
               if ((a1->GetPosition ().z < m_rooftopHeight)
                   && (b1->GetPosition ().z < m_rooftopHeight))
-                {
-
-                  // ITU limit in distance (i.e., < 2000 for small cells)
-                  if (distance < m_itu1411DistanceThreshold)
-                    {
-                      // short range communication
-                      loss = ItuR1411 (a1, b1) + ExternalWallLoss (b1) + HeightLoss (a1);
-                      NS_LOG_INFO (this << " 0-I (>1000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                  else
-                    {
-                      // out of bound
-                      loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-I (>2000): down rooftop -> ITUR1411 : " << loss);
-                    }
+                {                  
+                  loss = ItuR1411 (a1, b1) + ExternalWallLoss (b1) + HeightLoss (a1);
+                  NS_LOG_INFO (this << " 0-I (>1000): below rooftop -> ITUR1411 : " << loss);
                 }
               else
                 {
-                  // Over the rooftop tranmission -> Okumura Hata
                   loss = OkumuraHata (a1, b1) + ExternalWallLoss (b1);
-                  NS_LOG_INFO (this << " O-I (>1000): Over the rooftop -> OH : " << loss);
+                  NS_LOG_INFO (this << " O-I (>1000): above the rooftop -> OH : " << loss);
                 }
             }
           else
@@ -181,20 +158,8 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
               if ((a1->GetPosition ().z < m_rooftopHeight)
                   && (b1->GetPosition ().z < m_rooftopHeight))
                 {
-
-                  // ITU limit in distance (i.e., < 2000 for small cells)
-                  if (distance < m_itu1411DistanceThreshold)
-                    {
-                      // short range communication
-                      loss = ItuR1411 (a1, b1) + ExternalWallLoss (a1) + HeightLoss (a1);
-                      NS_LOG_INFO (this << " I-O (>1000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                  else
-                    {
-                      // out of bound
-                      loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " I-O (>2000): down rooftop -> ITUR1411 : " << loss);
-                    }
+                  loss = ItuR1411 (a1, b1) + ExternalWallLoss (a1) + HeightLoss (a1);
+                  NS_LOG_INFO (this << " I-O (>1000): down rooftop -> ITUR1411 : " << loss);
                 }
               else
                 {
