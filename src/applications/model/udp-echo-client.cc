@@ -236,6 +236,7 @@ UdpEchoClient::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
   if (fillSize >= dataSize)
     {
       memcpy (m_data, fill, dataSize);
+      m_size = dataSize;
       return;
     }
 
