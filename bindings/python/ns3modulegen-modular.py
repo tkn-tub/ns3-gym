@@ -6,16 +6,26 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 from pybindgen.module import MultiSectionFactory
 import ns3modulegen_core_customizations
 
-
-
-
 pybindgen.settings.wrapper_registry = pybindgen.settings.StdMapWrapperRegistry
 
+import traceback
+
 class ErrorHandler(pybindgen.settings.ErrorHandler):
+
+    def __init__(self, apidefs_file):
+        self.apidefs_file = apidefs_file
+
     def handle_error(self, wrapper, exception, traceback_):
-        warnings.warn("exception %r in wrapper %s" % (exception, wrapper))
+        stack = getattr(wrapper, 'stack_where_defined', [])
+        stack.reverse()
+        for l in stack:
+            if l[0] == self.apidefs_file:
+                warnings.warn_explicit("exception %r in wrapper %s" % (exception, wrapper),
+                                       Warning, l[0], l[1])
+                break
+        else:
+            warnings.warn("exception %r in wrapper %s" % (exception, wrapper))
         return True
-pybindgen.settings.error_handler = ErrorHandler()
 
 
 #print >> sys.stderr, ">>>>>>>>>>>>>>>>>>>>>>>>>>>> ", bool(eval(os.environ["GCC_RTTI_ABI_COMPLETE"]))
@@ -69,7 +79,11 @@ def main(argv):
 
     finally:
         sys.path.pop(0)
-    
+
+    apidefs_file, dummy = os.path.splitext(module_apidefs.__file__)
+    apidefs_file += '.py'
+    pybindgen.settings.error_handler = ErrorHandler(apidefs_file)
+
     root_module = module_apidefs.module_init()
     root_module.set_name(extension_name)
     root_module.add_include('"ns3/%s-module.h"' % module_name)

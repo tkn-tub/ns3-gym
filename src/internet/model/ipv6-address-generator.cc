@@ -497,7 +497,7 @@ Ipv6AddressGeneratorImpl::PrefixToIndex (Ipv6Prefix prefix) const
   uint8_t prefixBits[16];
   prefix.GetBytes (prefixBits);
 
-  for (uint32_t i = 15; i >= 0; --i)
+  for (int32_t i = 15; i >= 0; --i)
     {
       for (uint32_t j = 0; j < 8; ++j)
         {

@@ -223,7 +223,7 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
   m_result->failure.push_back (TestCaseFailure (cond, actual, limit,
                                                 message, file, line));
   // set childrenFailed flag on parents.
-  struct TestCase *current = m_parent;
+  TestCase *current = m_parent;
   while (current != 0)
     {
       current->m_result->childrenFailed = true;

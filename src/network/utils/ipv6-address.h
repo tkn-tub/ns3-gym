@@ -28,6 +28,7 @@
 
 #include "ns3/attribute-helper.h"
 #include "ns3/address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 { 
 
@@ -122,6 +123,19 @@ public:
   static Ipv6Address MakeSolicitedAddress (Ipv6Address addr);
 
   /**
+   * \brief Make the Ipv4-mapped IPv6 address.
+   * \param addr the IPv4 address
+   * \return Ipv4-mapped IPv6 address
+   */
+  static Ipv6Address MakeIpv4MappedAddress (Ipv4Address addr);
+
+  /**
+   * \brief Return the Ipv4 address.
+   * \return Ipv4 address
+   */
+  Ipv4Address GetIpv4MappedAddress () const;
+
+  /**
    * \brief Make the autoconfigured IPv6 address with Mac48Address.
    * \param addr the MAC address (48 bits).
    * \param prefix the IPv6 prefix
@@ -155,6 +169,12 @@ public:
    * \return true if multicast, false otherwise
    */
   bool IsMulticast () const;
+
+  /**
+   * \brief If the IPv6 address is link-local multicast (ff02::/16).
+   * \return true if link-local multicast, false otherwise
+   */
+  bool IsLinkLocalMulticast () const;
 
   /**
    * \brief If the IPv6 address is "all nodes multicast" (ff02::1/8).
@@ -206,6 +226,12 @@ public:
    * \return true if the type matches, false otherwise
    */
   static bool IsMatchingType (const Address& address);
+
+  /**
+   * \brief If the address is an IPv4-mapped address
+   * \return true if address is an IPv4-mapped address, otherwise false.
+   */
+  bool IsIpv4MappedAddress();
 
   /**
    * \brief Convert to Address object

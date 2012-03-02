@@ -840,9 +840,18 @@ UanPhyGen::SetSleepMode (bool sleep)
           m_energyCallback (SLEEP);
         }
     }
-  else
+  else if (m_state == SLEEP)
     {
-      m_state = IDLE;
+      if (GetInterferenceDb ((Ptr<Packet>) 0) > m_ccaThreshDb)
+        {
+          m_state = CCABUSY;
+          NotifyListenersCcaStart ();
+        }
+      else
+        {
+          m_state = IDLE;
+        }
+
       if (!m_energyCallback.IsNull ())
         {
           m_energyCallback (IDLE);

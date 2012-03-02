@@ -30,15 +30,20 @@
 #include "ns3/config.h"
 #include "ns3/ipv4-static-routing.h"
 #include "ns3/ipv4-list-routing.h"
+#include "ns3/ipv6-static-routing.h"
+#include "ns3/ipv6-list-routing.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 
 #include "ns3/ipv4-end-point.h"
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
 
@@ -55,14 +60,18 @@ public:
                uint32_t sourceWriteSize,
                uint32_t sourceReadSize,
                uint32_t serverWriteSize,
-               uint32_t serverReadSize);
+               uint32_t serverReadSize,
+               bool useIpv6);
 private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
   void SetupDefaultSim (void);
+  void SetupDefaultSim6 (void);
 
   Ptr<Node> CreateInternetNode (void);
+  Ptr<Node> CreateInternetNode6 (void);
   Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask);
+  Ptr<SimpleNetDevice> AddSimpleNetDevice6 (Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix prefix);
   void ServerHandleConnectionCreated (Ptr<Socket> s, const Address & addr);
   void ServerHandleRecv (Ptr<Socket> sock);
   void ServerHandleSend (Ptr<Socket> sock, uint32_t available);
@@ -81,18 +90,21 @@ private:
   uint8_t *m_sourceTxPayload;
   uint8_t *m_sourceRxPayload;
   uint8_t* m_serverRxPayload;
+
+  bool m_useIpv6;
 };
 
 static std::string Name (std::string str, uint32_t totalStreamSize,
                          uint32_t sourceWriteSize,
                          uint32_t serverReadSize,
                          uint32_t serverWriteSize,
-                         uint32_t sourceReadSize)
+                         uint32_t sourceReadSize,
+                         bool useIpv6)
 {
   std::ostringstream oss;
   oss << str << " total=" << totalStreamSize << " sourceWrite=" << sourceWriteSize 
       << " sourceRead=" << sourceReadSize << " serverRead=" << serverReadSize
-      << " serverWrite=" << serverWriteSize;
+      << " serverWrite=" << serverWriteSize << " useIpv6=" << useIpv6;
   return oss.str ();
 }
 
@@ -109,18 +121,21 @@ TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
                           uint32_t sourceWriteSize,
                           uint32_t sourceReadSize,
                           uint32_t serverWriteSize,
-                          uint32_t serverReadSize)
+                          uint32_t serverReadSize,
+                          bool useIpv6)
   : TestCase (Name ("Send string data from client to server and back", 
                     totalStreamSize, 
                     sourceWriteSize,
                     serverReadSize,
                     serverWriteSize,
-                    sourceReadSize)),
+                    sourceReadSize,
+                    useIpv6)),
     m_totalBytes (totalStreamSize),
     m_sourceWriteSize (sourceWriteSize),
     m_sourceReadSize (sourceReadSize),
     m_serverWriteSize (serverWriteSize),
-    m_serverReadSize (serverReadSize)
+    m_serverReadSize (serverReadSize),
+    m_useIpv6 (useIpv6)
 {
 }
 
@@ -142,7 +157,14 @@ TcpTestCase::DoRun (void)
   memset (m_sourceRxPayload, 0, m_totalBytes);
   memset (m_serverRxPayload, 0, m_totalBytes);
 
-  SetupDefaultSim ();
+  if (m_useIpv6 == true)
+    {
+      SetupDefaultSim6 ();
+    }
+  else
+    {
+      SetupDefaultSim ();
+    }
 
   Simulator::Run ();
 
@@ -326,6 +348,83 @@ TcpTestCase::SetupDefaultSim (void)
   source->Connect (serverremoteaddr);
 }
 
+void
+TcpTestCase::SetupDefaultSim6 (void)
+{
+  Ipv6Prefix prefix = Ipv6Prefix(64);
+  Ipv6Address ipaddr0 = Ipv6Address("2001:0100:f00d:cafe::1");
+  Ipv6Address ipaddr1 = Ipv6Address("2001:0100:f00d:cafe::2");
+  Ptr<Node> node0 = CreateInternetNode6 ();
+  Ptr<Node> node1 = CreateInternetNode6 ();
+  Ptr<SimpleNetDevice> dev0 = AddSimpleNetDevice6 (node0, ipaddr0, prefix);
+  Ptr<SimpleNetDevice> dev1 = AddSimpleNetDevice6 (node1, ipaddr1, prefix);
+
+  Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
+  dev0->SetChannel (channel);
+  dev1->SetChannel (channel);
+
+  Ptr<SocketFactory> sockFactory0 = node0->GetObject<TcpSocketFactory> ();
+  Ptr<SocketFactory> sockFactory1 = node1->GetObject<TcpSocketFactory> ();
+
+  Ptr<Socket> server = sockFactory0->CreateSocket ();
+  Ptr<Socket> source = sockFactory1->CreateSocket ();
+
+  uint16_t port = 50000;
+  Inet6SocketAddress serverlocaladdr (Ipv6Address::GetAny (), port);
+  Inet6SocketAddress serverremoteaddr (ipaddr0, port);
+
+  server->Bind (serverlocaladdr);
+  server->Listen ();
+  server->SetAcceptCallback (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
+                             MakeCallback (&TcpTestCase::ServerHandleConnectionCreated,this));
+
+  source->SetRecvCallback (MakeCallback (&TcpTestCase::SourceHandleRecv, this));
+  source->SetSendCallback (MakeCallback (&TcpTestCase::SourceHandleSend, this));
+
+  source->Connect (serverremoteaddr);
+}
+
+Ptr<Node>
+TcpTestCase::CreateInternetNode6 ()
+{
+  Ptr<Node> node = CreateObject<Node> ();
+  //IPV6
+  Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
+  //Routing for Ipv6
+  Ptr<Ipv6ListRouting> ipv6Routing = CreateObject<Ipv6ListRouting> ();
+  ipv6->SetRoutingProtocol (ipv6Routing);
+  Ptr<Ipv6StaticRouting> ipv6staticRouting = CreateObject<Ipv6StaticRouting> ();
+  ipv6Routing->AddRoutingProtocol (ipv6staticRouting, 0);
+  node->AggregateObject (ipv6);
+  //ICMP
+  Ptr<Icmpv6L4Protocol> icmp = CreateObject<Icmpv6L4Protocol> ();
+  node->AggregateObject (icmp);
+  //Ipv6 Extensions
+  ipv6->RegisterExtensions ();
+  ipv6->RegisterOptions ();
+  //UDP
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  node->AggregateObject (udp);
+  //TCP
+  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
+  node->AggregateObject (tcp);
+  return node;
+}
+
+Ptr<SimpleNetDevice>
+TcpTestCase::AddSimpleNetDevice6 (Ptr<Node> node, Ipv6Address ipaddr, Ipv6Prefix prefix)
+{
+  Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
+  dev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
+  node->AddDevice (dev);
+  Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+  uint32_t ndid = ipv6->AddInterface (dev);
+  Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (ipaddr, prefix);
+  ipv6->AddAddress (ndid, ipv6Addr);
+  ipv6->SetUp (ndid);
+  return dev;
+}
+
 static class TcpTestSuite : public TestSuite
 {
 public:
@@ -336,9 +435,13 @@ public:
     // 2) source write size, 3) source read size
     // 4) server write size, and 5) server read size
     // with units of bytes
-    AddTestCase (new TcpTestCase (13, 200, 200, 200, 200));
-    AddTestCase (new TcpTestCase (13, 1, 1, 1, 1));
-    AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20));
+    AddTestCase (new TcpTestCase (13, 200, 200, 200, 200, false));
+    AddTestCase (new TcpTestCase (13, 1, 1, 1, 1, false));
+    AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20, false));
+
+    AddTestCase (new TcpTestCase (13, 200, 200, 200, 200, true));
+    AddTestCase (new TcpTestCase (13, 1, 1, 1, 1, true));
+    AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20, true));
   }
 
 } g_tcpTestSuite;

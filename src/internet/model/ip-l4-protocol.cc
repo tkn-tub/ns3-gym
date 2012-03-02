@@ -1,4 +1,4 @@
-// -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 //
@@ -21,35 +21,41 @@
 // NS3 - Layer 4 Protocol base class
 // George F. Riley, Georgia Tech, Spring 2007
 
-#include "ipv4-l4-protocol.h"
+#include "ip-l4-protocol.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (Ipv4L4Protocol);
+NS_OBJECT_ENSURE_REGISTERED (IpL4Protocol);
 
 TypeId 
-Ipv4L4Protocol::GetTypeId (void)
+IpL4Protocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::Ipv4L4Protocol")
+  static TypeId tid = TypeId ("ns3::IpL4Protocol")
     .SetParent<Object> ()
-    .AddAttribute ("ProtocolNumber", "The Ipv4 protocol number.",
+    .AddAttribute ("ProtocolNumber", "The Ip protocol number.",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&Ipv4L4Protocol::GetProtocolNumber),
+                   MakeUintegerAccessor (&IpL4Protocol::GetProtocolNumber),
                    MakeUintegerChecker<int> ())
   ;
   return tid;
 }
 
-Ipv4L4Protocol::~Ipv4L4Protocol ()
+IpL4Protocol::~IpL4Protocol ()
 {
 }
 
 void
-Ipv4L4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
-                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
-                             Ipv4Address payloadSource,Ipv4Address payloadDestination,
-                             const uint8_t payload[8])
+IpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                           uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                           Ipv4Address payloadSource,Ipv4Address payloadDestination,
+                           const uint8_t payload[8])
+{}
+void
+IpL4Protocol::ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
+                           uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                           Ipv6Address payloadSource, Ipv6Address payloadDestination,
+                           const uint8_t payload[8])
 {}
 
-} // namespace ns3
+} //namespace ns3

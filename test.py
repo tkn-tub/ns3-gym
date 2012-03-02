@@ -518,9 +518,14 @@ def sigint_hook(signal, frame):
 #
 def read_waf_config():
     for line in open(".lock-waf_" + sys.platform + "_build", "rt"):
+        if line.startswith("top_dir ="):
+            key, val = line.split('=')
+            top_dir = eval(val.strip())
         if line.startswith("out_dir ="):
             key, val = line.split('=')
             out_dir = eval(val.strip())
+    global NS3_BASEDIR
+    NS3_BASEDIR = top_dir
     global NS3_BUILDDIR
     NS3_BUILDDIR = out_dir
     for line in open("%s/c4che/_cache.py" % out_dir).readlines():
@@ -679,11 +684,10 @@ def make_paths():
 VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
 
 def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
-    (base, build) = os.path.split (NS3_BUILDDIR)
-    suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
+    suppressions_path = os.path.join (NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
-        path_cmd = PYTHON[0] + " " + os.path.join (base, shell_command)
+        path_cmd = PYTHON[0] + " " + os.path.join (NS3_BASEDIR, shell_command)
     else:
         if len(build_path):
             path_cmd = os.path.join (build_path, shell_command)

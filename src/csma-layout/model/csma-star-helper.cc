@@ -83,6 +83,18 @@ CsmaStarHelper::GetSpokeIpv4Address (uint32_t i) const
   return m_spokeInterfaces.GetAddress (i);
 }
 
+Ipv6Address
+CsmaStarHelper::GetHubIpv6Address (uint32_t i) const
+{
+  return m_hubInterfaces6.GetAddress (i, 1);
+}
+
+Ipv6Address
+CsmaStarHelper::GetSpokeIpv6Address (uint32_t i) const
+{
+  return m_spokeInterfaces6.GetAddress (i, 1);
+}
+
 uint32_t
 CsmaStarHelper::SpokeCount () const
 {
@@ -104,6 +116,27 @@ CsmaStarHelper::AssignIpv4Addresses (Ipv4AddressHelper address)
       m_hubInterfaces.Add (address.Assign (m_hubDevices.Get (i)));
       m_spokeInterfaces.Add (address.Assign (m_spokeDevices.Get (i)));
       address.NewNetwork ();
+    }
+}
+
+void 
+CsmaStarHelper::AssignIpv6Addresses (Ipv6Address network, Ipv6Prefix prefix)
+{
+  Ipv6AddressGenerator::Init(network, prefix);
+  Ipv6Address v6network;
+  Ipv6AddressHelper addressHelper;
+
+  for (uint32_t i = 0; i < m_spokes.GetN (); ++i)
+    {
+      v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+      addressHelper.NewNetwork(v6network, prefix);
+
+      Ipv6InterfaceContainer ic = addressHelper.Assign (m_hubDevices.Get (i));
+      m_hubInterfaces6.Add (ic);
+      ic = addressHelper.Assign (m_spokeDevices.Get (i));
+      m_spokeInterfaces6.Add (ic);
+
+      Ipv6AddressGenerator::NextNetwork (prefix);
     }
 }
 

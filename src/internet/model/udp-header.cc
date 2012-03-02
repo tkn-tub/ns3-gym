@@ -70,9 +70,27 @@ UdpHeader::GetDestinationPort (void) const
 {
   return m_destinationPort;
 }
-void 
-UdpHeader::InitializeChecksum (Ipv4Address source, 
+void
+UdpHeader::InitializeChecksum (Address source,
+                               Address destination,
+                               uint8_t protocol)
+{
+  m_source = source;
+  m_destination = destination;
+  m_protocol = protocol;
+}
+void
+UdpHeader::InitializeChecksum (Ipv4Address source,
                                Ipv4Address destination,
+                               uint8_t protocol)
+{
+  m_source = source;
+  m_destination = destination;
+  m_protocol = protocol;
+}
+void 
+UdpHeader::InitializeChecksum (Ipv6Address source, 
+                               Ipv6Address destination,
                                uint8_t protocol)
 {
   m_source = source;
@@ -82,20 +100,35 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
 uint16_t
 UdpHeader::CalculateHeaderChecksum (uint16_t size) const
 {
-  Buffer buf = Buffer (12);
-  buf.AddAtStart (12);
+  Buffer buf = Buffer ((2 * Address::MAX_SIZE) + 8);
+  buf.AddAtStart ((2 * Address::MAX_SIZE) + 8);
   Buffer::Iterator it = buf.Begin ();
+  uint32_t hdrSize = 0;
 
   WriteTo (it, m_source);
   WriteTo (it, m_destination);
-  it.WriteU8 (0); /* protocol */
-  it.WriteU8 (m_protocol); /* protocol */
-  it.WriteU8 (size >> 8); /* length */
-  it.WriteU8 (size & 0xff); /* length */
+  if (Ipv4Address::IsMatchingType(m_source))
+    {
+      it.WriteU8 (0); /* protocol */
+      it.WriteU8 (m_protocol); /* protocol */
+      it.WriteU8 (size >> 8); /* length */
+      it.WriteU8 (size & 0xff); /* length */
+      hdrSize = 12;
+    }
+  else if (Ipv6Address::IsMatchingType(m_source))
+    {
+      it.WriteU16 (0);
+      it.WriteU8 (size >> 8); /* length */
+      it.WriteU8 (size & 0xff); /* length */
+      it.WriteU16 (0);
+      it.WriteU8 (0);
+      it.WriteU8 (m_protocol); /* protocol */
+      hdrSize = 40;
+    }
 
   it = buf.Begin ();
   /* we don't CompleteChecksum ( ~ ) now */
-  return ~(it.CalculateIpChecksum (12));
+  return ~(it.CalculateIpChecksum (hdrSize));
 }
 
 bool

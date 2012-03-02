@@ -297,7 +297,6 @@ ClickInternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> 
       result = ipv4L3Protocol->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv4L3ProtocolRxTxSink));
       NS_ASSERT_MSG (result == true, "ClickInternetStackHelper::EnablePcapIpv4Internal():  "
                      "Unable to connect ipv4L3Protocol \"Rx\"");
-      (void) result; //cast to void to suppress variable set but not used compiler warning in optimized builds
     }
 
   g_interfaceFileMapIpv4[std::make_pair (ipv4, interface)] = file;
@@ -450,9 +449,9 @@ ClickInternetStackHelper::EnableAsciiIpv4Internal (
           // be aggregated to the same node.
           //
           Ptr<Ipv4L3Protocol> ipv4L3Protocol = ipv4->GetObject<Ipv4L3Protocol> ();
-          bool __attribute__ ((unused)) result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop",
-                                                                                             MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext,
-                                                                                                                theStream));
+          bool result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop",
+                                                                    MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext,
+                                                                                       theStream));
           NS_ASSERT_MSG (result == true, "ClickInternetStackHelper::EanableAsciiIpv4Internal():  "
                          "Unable to connect ipv4L3Protocol \"Drop\"");
         }

@@ -374,7 +374,7 @@ TracedValue<T> operator * (const TracedValue<T> &lhs, const U &rhs) {
 template <typename T, typename U>
 TracedValue<T> operator * (const U &lhs, const TracedValue<T> &rhs) {
   TRACED_VALUE_DEBUG ("*x");
-  return TracedValue<T> (lhs - rhs.Get ());
+  return TracedValue<T> (lhs * rhs.Get ());
 }
 
 template <typename T, typename U>

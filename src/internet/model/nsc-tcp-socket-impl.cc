@@ -214,6 +214,13 @@ NscTcpSocketImpl::Bind (void)
   m_endPoint = m_tcp->Allocate ();
   return FinishBind ();
 }
+int
+NscTcpSocketImpl::Bind6 ()
+{
+  NS_LOG_LOGIC ("NscTcpSocketImpl: ERROR_AFNOSUPPORT - Bind6 not supported");
+  m_errno = ERROR_AFNOSUPPORT;
+  return (-1);
+}
 int 
 NscTcpSocketImpl::Bind (const Address &address)
 {
@@ -449,9 +456,6 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       bool found;
       found = packet->PeekPacketTag (tag);
       NS_ASSERT (found);
-      // cast found to void, to suppress 'found' set but not used
-      // compiler warning in optimized builds
-      (void) found;
       fromAddress = tag.GetAddress ();
     }
   return packet;

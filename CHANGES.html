@@ -51,6 +51,74 @@ us a note on ns-developers mailing list.  </p>
 <li> The Ipv6RawSocketImpl "IcmpFilter" attribute has been removed. Six 
 new member functions have been added to enable the same functionality.
 </li>
+<li> IPv6 support for TCP and UDP has been implemented.  Socket functions
+that take an address [e.g. Send (), Connect (), Bind ()] can accept an
+ns3::Ipv6Address or a ns3::Address in addition to taking an ns3::Ipv4Address.
+(Note that the ns3::Address must contain a ns3::Ipv6Address or a ns3::Ipv4Address,
+otherwise these functions will return an error).
+Internally, the socket now stores the remote address as a type "ns3::Address"
+instead of a type "ns3::Ipv4Address".  The IPv6 Routing Header extension is not
+currently supported in ns3 and will not be reflected in the TCP and UDP checksum
+calculations per RFC 2460.  Also note that UDP checksums for IPv6 packets are
+required per RFC, but remain optional and disabled by default in ns3 (in the
+interest of performance).
+</li>
+<li>
+When calling Bind () on a socket without an address, the behavior remains the
+same: it will bind to the IPv4 "any" address (0.0.0.0).  In order to Bind () to
+the IPv6 "any" address in a similar fashion, use "Bind6 ()".
+</li>
+<li>
+The prototype for the RxCallback function in the Ipv6EndPoint was changed.
+It now includes the destination IPv6 address of the end point which was
+needed for TCP.  This lead to a small change in the UDP and ICMPv6 L4
+protocols as well.
+</li>
+</ul>
+
+<h2>Changes to build system:</h2>
+<ul>
+<li> The following files are removed:
+<pre>
+  src/internet/model/ipv4-l4-protocol.cc
+  src/internet/model/ipv4-l4-protocol.h
+  src/internet/model/ipv6-l4-protocol.cc
+  src/internet/model/ipv6-l4-protocol.h
+</pre>
+and replaced with:
+<pre>
+  src/internet/model/ip-l4-protocol.cc
+  src/internet/model/ip-l4-protocol.h
+</pre>
+</li>
+</ul>
+<h2>Changed behavior:</h2>
+<ul>
+<li> Dual-stacked IPv6 sockets are implemented.  An IPv6 socket can accept
+an IPv4 connection, returning the senders address as an IPv4-mapped address
+(IPV6_V6ONLY socket option is not implemented).
+</li>
+<li>
+The following examples/application/helpers were modified to support IPv6:
+<pre>
+csma-layout/examples/csma-star [*]
+netanim/examples/star-animation [*]
+point-to-point-layout/model/point-to-point-star.cc
+point-to-point-layout/model/point-to-point-grid.cc
+point-to-point-layout/model/point-to-point-dumbbell.cc
+examples/udp/udp-echo [*]
+examples/udp-client-server/udp-client-server [*]
+examples/udp-client-server/udp-trace-client-server [*]
+applications/helper/udp-echo-helper
+applications/model/udp-client
+applications/model/udp-echo-client
+applications/model/udp-echo-server
+applications/model/udp-server
+applications/model/udp-trace-client
+
+[*]  Added '--useIpv6' flag to switch between IPv4 and IPv6
+</pre>
+</li>
 </ul>
 
 <hr>

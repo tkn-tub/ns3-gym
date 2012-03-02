@@ -59,22 +59,24 @@ UanNoiseModelDefault::GetTypeId (void)
 double
 UanNoiseModelDefault::GetNoiseDbHz (double fKhz) const
 {
-  double turb, win, ship, thermal, noise;
-  turb = 17.0 - 30.0 * log10 (fKhz);
-  turb = pow (10.0, turb * 0.1);
+  double turb, wind, ship, thermal;
+  double turbDb, windDb, shipDb, thermalDb, noiseDb;
 
-  ship = 40.0 + 20.0 * (m_shipping - 0.5) + 26.0 * log10 (fKhz) - 60.0 * log10 (fKhz + 0.03);
-  ship = pow (10.0, (ship * 0.1));
+  turbDb = 17.0 - 30.0 * log10 (fKhz);
+  turb = pow (10.0, turbDb * 0.1);
 
-  win = 50.0 + 7.5 * pow (m_wind, 0.5) + 20.0 * log10 (fKhz) - 40.0 * log10 (fKhz + 0.4);
-  win = pow (10.0, m_wind * 0.1);
+  shipDb = 40.0 + 20.0 * (m_shipping - 0.5) + 26.0 * log10 (fKhz) - 60.0 * log10 (fKhz + 0.03);
+  ship = pow (10.0, (shipDb * 0.1));
 
-  thermal = -15 + 20 * log10 (fKhz);
-  thermal = pow (10, thermal * 0.1);
+  windDb = 50.0 + 7.5 * pow (m_wind, 0.5) + 20.0 * log10 (fKhz) - 40.0 * log10 (fKhz + 0.4);
+  wind = pow (10.0, windDb * 0.1);
 
-  noise = 10 * log10 (turb + ship + win + thermal);
+  thermalDb = -15 + 20 * log10 (fKhz);
+  thermal = pow (10, thermalDb * 0.1);
 
-  return noise;
+  noiseDb = 10 * log10 (turb + ship + wind + thermal);
+
+  return noiseDb;
 }
 
 } // namespace ns3
