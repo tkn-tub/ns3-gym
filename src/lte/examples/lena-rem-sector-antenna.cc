@@ -82,9 +82,10 @@ main (int argc, char *argv[])
   vector<Vector> enbPosition;
   Ptr < ListPositionAllocator > positionAlloc = CreateObject<ListPositionAllocator> ();
   Ptr < Building > building;
-  building = Create<Building> (0.0, nRooms * roomLength,
-                               0.0, nRooms * roomLength,
-                               0.0, roomHeight);
+  building = Create<Building> ();
+  building->SetBoundaries (Box (0.0, nRooms * roomLength,
+                                0.0, nRooms * roomLength,
+                                0.0, roomHeight));
   building->SetBuildingType (Building::Residential);
   building->SetExtWallsType (Building::ConcreteWithWindows);
   building->SetNFloors (1);
