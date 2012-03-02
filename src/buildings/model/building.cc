@@ -42,37 +42,38 @@ Building::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::Building")
     .SetParent<Object> ()
     .AddConstructor<Building> ()
-    .AddAttribute ("roomX", "The number of rooms in the X axis.",
-                   UintegerValue (4),
-                   MakeUintegerAccessor (&Building::m_roomsX),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("roomY", "The number of rooms in the Y axis.",
+    .AddAttribute ("NRoomsX", "The number of rooms in the X axis.",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&Building::m_roomsY),
+                   MakeUintegerAccessor (&Building::GetNRoomsX, &Building::SetNRoomsX),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("nFloor", "The number of floors of this building.",
+    .AddAttribute ("NRoomsY", "The number of rooms in the Y axis.",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&Building::m_floors),
+                   MakeUintegerAccessor (&Building::GetNRoomsY, &Building::SetNRoomsY),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("NFloors", "The number of floors of this building.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&Building::GetNFloors, &Building::SetNFloors),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Id", "The id (unique integer) of this Building.",
+                   TypeId::ATTR_GET,
                    UintegerValue (0),
-                   MakeUintegerAccessor (&Building::m_buildingId),
+                   MakeUintegerAccessor (&Building::GetId),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Boundaries", "The boundaries of this Building as a value of type ns3::Box",
-                   BoxValue (),
-                   MakeBoxAccessor (&Building::m_buildingBounds),
+                   BoxValue (Box ()),
+                   MakeBoxAccessor (&Building::GetBoundaries, &Building::SetBoundaries),
                    MakeBoxChecker ())
     .AddAttribute ("Type",
                    "The type of building",
                    EnumValue (Building::Residential),
-                   MakeEnumAccessor (&Building::m_buildingType),
+                   MakeEnumAccessor (&Building::GetBuildingType, &Building::SetBuildingType),
                    MakeEnumChecker (Building::Residential, "Residential",
                                     Building::Office, "Office",
                                     Building::Commercial, "Commercial"))
     .AddAttribute ("ExternalWallsType",
                    "The type of material of which the external walls are made",
                    EnumValue (Building::ConcreteWithWindows),
-                   MakeEnumAccessor (&Building::m_externalWalls),
+                   MakeEnumAccessor (&Building::GetExtWallsType, &Building::SetExtWallsType),
                    MakeEnumChecker (Building::Wood, "Wood",
                                     Building::ConcreteWithWindows, "ConcreteWithWindows",
                                     Building::ConcreteWithoutWindows, "ConcreteWithoutWindows",
@@ -87,27 +88,34 @@ Building::Building (double xMin,
                     double yMax,
                     double zMin, 
                     double zMax)
-  : m_buildingBounds (xMin, xMax, yMin, yMax, zMin, zMax),
-    m_floors (1),
-    m_roomsX (1),
-    m_roomsY (1),
-    m_buildingType (Residential),
-    m_externalWalls (ConcreteWithWindows)
 {
-  NS_LOG_FUNCTION (this);
-  Construct();
+  NS_FATAL_ERROR (std::endl << "this function is not supported any more:" << std::endl
+                  << " Building::Building (double xMin, double xMax, double yMin, " << std::endl
+                  << "                     double yMax, double zMin, double zMax)\n" << std::endl
+                  << "so you can't do any more stuff like:" << std::endl
+                  << "Ptr<Building> b = CreateObject<building> (" 
+                  << xMin << ", "
+                  << xMax << ", "
+                  << yMin << ", "
+                  << yMax << ", "
+                  << zMin << ", "
+                  << zMax << ")\n" << std::endl
+                  << "Please use instead something like this:" << std::endl
+                  << " Ptr<Building> b = CreateObject<Building> ();" << std::endl
+                  << " b->SetBoundaries (Box ("
+                  << xMin << ", "
+                  << xMax << ", "
+                  << yMin << ", "
+                  << yMax << ", "
+                  << zMin << ", "
+                  << zMax << "));" << std::endl <<std::endl);
 }
 
 
 Building::Building () 
-  : m_floors (1), 
-    m_roomsX (1), 
-    m_roomsY (1),
-    m_buildingType (Residential),
-    m_externalWalls (ConcreteWithWindows)
 {
   NS_LOG_FUNCTION (this);
-  Construct();
+  m_buildingId = BuildingList::Add(this);
 }
 
 Building::~Building () 
@@ -121,18 +129,18 @@ Building::DoDispose ()
   NS_LOG_FUNCTION (this);
 }
 
-void
-Building::Construct ()
-{
-  NS_LOG_FUNCTION (this);
-  m_buildingId = BuildingList::Add(this);
-}
-
 uint32_t
 Building::GetId (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_buildingId;
+}
+
+void
+Building::SetBoundaries (Box boundaries)
+{
+  NS_LOG_FUNCTION (this << boundaries);
+  m_buildingBounds = boundaries;
 }
 
 void
@@ -170,6 +178,12 @@ Building::SetNRoomsY (uint16_t nroomy)
   m_roomsY = nroomy;
 }
 
+Box
+Building::GetBoundaries () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_buildingBounds;
+}
 
 Building::BuildingType_t 
 Building::GetBuildingType () const

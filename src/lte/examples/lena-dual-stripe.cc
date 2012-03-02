@@ -72,9 +72,9 @@ main (int argc, char *argv[])
   gridBuildingAllocator->SetAttribute ("DeltaX", DoubleValue (10));
   gridBuildingAllocator->SetAttribute ("DeltaY", DoubleValue (10));
   gridBuildingAllocator->SetAttribute ("Height", DoubleValue (heightPerFloor*nFloors));
-  gridBuildingAllocator->SetBuildingAttribute ("roomX", UintegerValue (nApartamentsX));
-  gridBuildingAllocator->SetBuildingAttribute ("roomY", UintegerValue (nApartamentsY));
-  gridBuildingAllocator->SetBuildingAttribute ("nFloor", UintegerValue (nFloors));
+  gridBuildingAllocator->SetBuildingAttribute ("NRoomsX", UintegerValue (nApartamentsX));
+  gridBuildingAllocator->SetBuildingAttribute ("NRoomsY", UintegerValue (nApartamentsY));
+  gridBuildingAllocator->SetBuildingAttribute ("NFloors", UintegerValue (nFloors));
   gridBuildingAllocator->SetBuildingAttribute ("ExternalWallsType", EnumValue (Building::StoneBlocks));
   gridBuildingAllocator->Create (nBlocks);
 
@@ -130,7 +130,6 @@ main (int argc, char *argv[])
   Ptr <LteHelper> lteHelper = CreateObject<LteHelper> ();
   // //lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisPropagationLossModel"));
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
-  lteHelper->SetPathlossModelAttribute ("ITU1411DistanceThr", DoubleValue (10000));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (1));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (1.5));
