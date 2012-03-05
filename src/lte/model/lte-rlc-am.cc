@@ -98,7 +98,7 @@ LteRlcAm::GetTypeId (void)
 void
 LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p->GetSize ());
 
   /** Store arrival time */
   Time now = Simulator::Now ();
@@ -191,11 +191,15 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
   else if ( m_retxBufferSize > 0 )
     {
       NS_LOG_LOGIC ("Sending data from Retransmission Buffer");
-
-      Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu;
+      
+      Ptr<Packet> packet = m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->Copy ();
 
       if ( packet->GetSize () <= bytes )
         {
+          LteRlcAmHeader rlcAmHeader;
+          packet->PeekHeader (rlcAmHeader);
+          NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+
           // Send RLC PDU to MAC layer
           LteMacSapProvider::TransmitPduParameters params;
           params.pdu = packet;
@@ -203,6 +207,12 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
           params.lcid = m_lcid;
 
           m_macSapProvider->TransmitPdu (params);
+          return;
+        }
+      else
+        {
+          NS_LOG_LOGIC ("Tx opportunity too small for retransmission of the packet (" << packet->GetSize () << " bytes)");
+          NS_LOG_LOGIC ("Waiting for bigger tx opportunity");
           return;
         }
     }
@@ -478,7 +488,12 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
   // Store new PDU into the Transmitted PDU Buffer
   NS_LOG_LOGIC ("Put transmitted PDU in the txedBuffer");
   m_txedBufferSize += packet->GetSize ();
-  m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ) = packet;
+  m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ) = packet->Copy ();
+  
+  // Sender timestamp
+  RlcTag rlcTag (Simulator::Now ());
+  packet->AddByteTag (rlcTag);
+  m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 
   // Send RLC PDU to MAC layer
   LteMacSapProvider::TransmitPduParameters params;
@@ -498,11 +513,21 @@ LteRlcAm::DoNotifyHarqDeliveryFailure ()
 void
 LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p->GetSize ());
+
+  // Receiver timestamp
+  RlcTag rlcTag;
+  Time delay;
+  if (p->FindFirstMatchingByteTag (rlcTag))
+    {
+      delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
+    }
+  m_rxPdu (m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
 
   // Get RLC header parameters
   LteRlcAmHeader rlcAmHeader;
   p->PeekHeader (rlcAmHeader);
+  NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
 
   if ( rlcAmHeader.IsDataPdu () )
     {
@@ -893,7 +918,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
           if (m_txedBuffer.at (seqNumberValue))
             {
               NS_LOG_INFO ("Move SN = " << seqNumberValue << " to retxBuffer");
-              m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue);
+              m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue)->Copy ();
               m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
               m_retxBufferSize += m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
