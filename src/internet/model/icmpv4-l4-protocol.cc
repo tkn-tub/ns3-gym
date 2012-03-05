@@ -22,7 +22,7 @@ TypeId
 Icmpv4L4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Icmpv4L4Protocol")
-    .SetParent<Ipv4L4Protocol> ()
+    .SetParent<IpL4Protocol> ()
     .AddConstructor<Icmpv4L4Protocol> ()
   ;
   return tid;
@@ -180,7 +180,7 @@ Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,
                            const uint8_t payload[8])
 {
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  Ptr<Ipv4L4Protocol> l4 = ipv4->GetProtocol (ipHeader.GetProtocol ());
+  Ptr<IpL4Protocol> l4 = ipv4->GetProtocol (ipHeader.GetProtocol ());
   if (l4 != 0)
     {
       l4->ReceiveIcmp (source, ipHeader.GetTtl (), icmp.GetType (), icmp.GetCode (),
@@ -219,7 +219,7 @@ Icmpv4L4Protocol::HandleTimeExceeded (Ptr<Packet> p,
   Forward (source, icmp, 0, ipHeader, payload);
 }
 
-enum Ipv4L4Protocol::RxStatus
+enum IpL4Protocol::RxStatus
 Icmpv4L4Protocol::Receive (Ptr<Packet> p,
                            Ipv4Header const &header,
                            Ptr<Ipv4Interface> incomingInterface)
@@ -242,7 +242,16 @@ Icmpv4L4Protocol::Receive (Ptr<Packet> p,
       NS_LOG_DEBUG (icmp << " " << *p);
       break;
     }
-  return Ipv4L4Protocol::RX_OK;
+  return IpL4Protocol::RX_OK;
+}
+enum IpL4Protocol::RxStatus
+Icmpv4L4Protocol::Receive (Ptr<Packet> p,
+                           Ipv6Address &src,
+                           Ipv6Address &dst,
+                           Ptr<Ipv6Interface> incomingInterface)
+{
+  NS_LOG_FUNCTION (this << p << src << dst << incomingInterface);
+  return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 void 
 Icmpv4L4Protocol::DoDispose (void)
@@ -250,19 +259,30 @@ Icmpv4L4Protocol::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_node = 0;
   m_downTarget.Nullify ();
-  Ipv4L4Protocol::DoDispose ();
+  IpL4Protocol::DoDispose ();
 }
 
 void
-Icmpv4L4Protocol::SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback)
+Icmpv4L4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 {
   m_downTarget = callback;
 }
 
-Ipv4L4Protocol::DownTargetCallback
+void
+Icmpv4L4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
+{
+}
+
+IpL4Protocol::DownTargetCallback
 Icmpv4L4Protocol::GetDownTarget (void) const
 {
   return m_downTarget;
+}
+
+IpL4Protocol::DownTargetCallback6
+Icmpv4L4Protocol::GetDownTarget6 (void) const
+{
+  return (IpL4Protocol::DownTargetCallback6)NULL;
 }
 
 } // namespace ns3

@@ -172,6 +172,22 @@ public:
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
+  /** 
+   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set
+   * 
+   * \param ueDevices the set of UEs
+   * \param enbDevices the set of eNBs
+   */
+  void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
+
+  /** 
+   * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
+   * 
+   * \param ueDevice the UE
+   * \param enbDevices the set of eNBs
+   */
+  void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
+
   /**
    * Activate an EPS bearer on a given set of UE devices
    *

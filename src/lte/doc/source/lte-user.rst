@@ -411,12 +411,13 @@ It is to be noted that using other means to configure the frequency used by the 
     double y_max = 20.0;
     double z_min = 0.0;
     double z_max = 10.0;
-    Ptr<Building> building = CreateObject <Building> (x_min, x_max, y_min, y_max, z_min, z_max);
-    building->SetBuildingType (Building::Residential);
-    building->SetExtWallsType (Building::ConcreteWithWindows);
-    building->SetNFloors (3);
-    building->SetNRoomsX (3);
-    building->SetNRoomsY (2);
+    Ptr<Building> b = CreateObject <Building> ();
+    b->SetBoundaries (Box (x_min, x_max, y_min, y_max, z_min, z_max));
+    b->SetBuildingType (Building::Residential);
+    b->SetExtWallsType (Building::ConcreteWithWindows);
+    b->SetNFloors (3);
+    b->SetNRoomsX (3);
+    b->SetNRoomsY (2);
 
    This will instantiate a residential building with base of 10 x 20 meters and height of 10 meters whose external walls are of concrete with windows; the building has three floors and has an internal 3 x 2  grid of rooms of equal size.
 
@@ -529,7 +530,17 @@ below::
    set cblabel "SINR (dB)"
    unset key
    plot "rem.out" using ($1):($2):(10*log10($4)) with image
-  
+
+As an example, here is the REM that can be obtained with the example program lena-dual-stripe, which shows a three-sector LTE macrocell in a co-channel deployment with some residential femtocells randomly deployed in two blocks of apartments.
+
+.. _fig-lena-dual-stripe:
+
+.. figure:: figures/lena-dual-stripe.*
+   :align: center
+
+   REM obtained from the lena-dual-stripe example
+
+
 
 
 AMC Model and CQI Calculation

@@ -55,9 +55,6 @@ WifiInformationElement::Deserialize (Buffer::Iterator i)
   // This IE was not optional, so confirm that we did actually
   // deserialise something.
   NS_ASSERT (i.GetDistanceFrom (start) != 0);
-  // cast start to void, to suppress ‘start’ set but not used
-  // compiler warning in optimized builds
-  (void) start;
   return i;
 }
 

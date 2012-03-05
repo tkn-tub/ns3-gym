@@ -143,7 +143,8 @@ BuildingsHelperOneTestCase::DoRun ()
   bmm->SetPosition (m_pib.pos);
 
   NS_LOG_LOGIC ("create building");
-  Ptr<Building> b = CreateObject<Building> (m_bd.xmin, m_bd.xmax, m_bd.ymin, m_bd.ymax, m_bd.zmin, m_bd.zmax);
+  Ptr<Building> b = CreateObject<Building> ();
+  b->SetBoundaries (Box (m_bd.xmin, m_bd.xmax, m_bd.ymin, m_bd.ymax, m_bd.zmin, m_bd.zmax));
   b->SetNFloors (m_bd.nf);
   b->SetNRoomsX (m_bd.nrx);
   b->SetNRoomsY (m_bd.nry);

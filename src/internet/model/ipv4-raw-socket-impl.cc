@@ -116,6 +116,11 @@ Ipv4RawSocketImpl::Bind (void)
   return 0;
 }
 int 
+Ipv4RawSocketImpl::Bind6 (void)
+{
+  return (-1);
+}
+int 
 Ipv4RawSocketImpl::GetSockName (Address &address) const
 {
   address = InetSocketAddress (m_src, 0);

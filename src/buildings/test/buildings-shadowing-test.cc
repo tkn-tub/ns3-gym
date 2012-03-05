@@ -167,7 +167,8 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   double henbHeight = 10.0;
   Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
-  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
+  static Ptr<Building> building1 = Create<Building> ();
+  building1->SetBoundaries (Box (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/));
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);

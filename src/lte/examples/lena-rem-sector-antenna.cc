@@ -82,9 +82,10 @@ main (int argc, char *argv[])
   vector<Vector> enbPosition;
   Ptr < ListPositionAllocator > positionAlloc = CreateObject<ListPositionAllocator> ();
   Ptr < Building > building;
-  building = Create<Building> (0.0, nRooms * roomLength,
-                               0.0, nRooms * roomLength,
-                               0.0, roomHeight);
+  building = Create<Building> ();
+  building->SetBoundaries (Box (0.0, nRooms * roomLength,
+                                0.0, nRooms * roomLength,
+                                0.0, roomHeight));
   building->SetBuildingType (Building::Residential);
   building->SetExtWallsType (Building::ConcreteWithWindows);
   building->SetNFloors (1);
@@ -104,10 +105,6 @@ main (int argc, char *argv[])
           enbPosition.push_back (v);
           Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
           mmEnb->SetPosition (v);
-          mmEnb->SetIndoor (building);
-          mmEnb->SetFloorNumber (0);
-          mmEnb->SetRoomNumberX (row);
-          mmEnb->SetRoomNumberY (column);
 
           // Positioning UEs attached to eNB
           mobility.Install (ueNodes.at(plantedEnb));
@@ -116,10 +113,6 @@ main (int argc, char *argv[])
               Ptr<BuildingsMobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
               Vector vUe (v.x, v.y, v.z);
               mmUe->SetPosition (vUe);
-              mmUe->SetIndoor (building);
-              mmUe->SetFloorNumber (0);
-              mmUe->SetRoomNumberX (row);
-              mmUe->SetRoomNumberY (column);
             }
         }
     }

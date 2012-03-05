@@ -49,7 +49,9 @@ public:
    * \param ip destination ipv4 address
    * \param port destination port
    */
+  void SetRemote (Address ip, uint16_t port);
   void SetRemote (Ipv4Address ip, uint16_t port);
+  void SetRemote (Ipv6Address ip, uint16_t port);
 
   /**
    * Set the data size of the packet (the number of bytes that are sent as data
@@ -142,7 +144,7 @@ private:
 
   uint32_t m_sent;
   Ptr<Socket> m_socket;
-  Ipv4Address m_peerAddress;
+  Address m_peerAddress;
   uint16_t m_peerPort;
   EventId m_sendEvent;
   /// Callbacks for tracing the packet Tx events

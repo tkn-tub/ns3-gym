@@ -303,11 +303,13 @@ def Simulator_customizations(module):
     Simulator.add_custom_method_wrapper("Schedule", "_wrap_Simulator_Schedule",
                                         flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
 
-
     ## Simulator::ScheduleNow(callback, ...user..args...)
     Simulator.add_custom_method_wrapper("ScheduleNow", "_wrap_Simulator_ScheduleNow",
                                         flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
 
+    ## Simulator::ScheduleWithContext(delay, callback, ...user..args...)
+    Simulator.add_custom_method_wrapper("ScheduleWithContext", "_wrap_Simulator_ScheduleWithContext",
+                                        flags=["METH_VARARGS", "METH_KEYWORDS", "METH_STATIC"])
 
     ## Simulator::ScheduleDestroy(callback, ...user..args...)
     Simulator.add_custom_method_wrapper("ScheduleDestroy", "_wrap_Simulator_ScheduleDestroy",

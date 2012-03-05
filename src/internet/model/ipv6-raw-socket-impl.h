@@ -116,6 +116,7 @@ public:
    * \return 0 if success, -1 otherwise
    */
   virtual int Bind ();
+  virtual int Bind6 ();
 
   /**
    * \brief Get socket address.

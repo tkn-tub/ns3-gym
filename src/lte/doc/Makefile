@@ -24,9 +24,10 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/MCS_2_test.eps \
 	$(FIGURES)/MCS_12_test.eps \
-	$(FIGURES)/MCS_14_test.eps
+	$(FIGURES)/MCS_14_test.eps \
+	$(FIGURES)/lena-dual-stripe.eps
 
-# specify figures for build process (all eps figures)
+# specify figures for build process (figures for which both a .pdf and a .png files are provided)
 GRAPHS_EPS = \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \

@@ -1,4 +1,4 @@
-.. include:: replace.txt
+cd .. include:: replace.txt
 
 
 ++++++++++++++++++++++++++++++++++++++
@@ -52,10 +52,10 @@ The ``Building`` class is included in ``BuildingsMobilityModel`` class, which in
 
 The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 
-Pathloss models available in BuildingsPropagationLossModel
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Pathloss model elements
++++++++++++++++++++++++
 
-In the following we present the pathloss models that are included in the BuildingsPropagationLossModel
+In the following we describe the pathloss model elements that are included in the BuildingsPropagationLossModel and available to implement different pathloss logics.
 
 Okumura Hata (OH)
 -----------------
@@ -313,15 +313,28 @@ where:
 
 
 
-External Walls Penetration Loss (BEL)
--------------------------------------
+External Wall Loss (EWL)
+-------------------------
 
 This component models the penetration loss through walls for indoor to outdoor communications and vice-versa. The values are taken from the [cost231]_ model.
 
   * Wood ~ 4 dB
-  * Concrete with windows (no metallised) ~ 7 dB
+  * Concrete with windows (not metallized) ~ 7 dB
   * Concrete without windows ~ 15 dB (spans between 10 and 20 in COST231)
   * Stone blocks ~ 12 dB
+
+
+Internal Walls Loss (IWL)
+-------------------------
+
+This component models the penetration loss occurring in indoor-to-indoor communications within the same building. The total loss is calculated assuming that each single internal wall has a constant penetration loss :math:`L_{siw}`, and approximating the number of walls that are penetrated with the manhattan distance (in number of rooms) between the transmitter and the receiver. In detail, let :math:`x_1`, :math:`y_1`, :math:`x_2`, :math:`y_2` denote the room number along the :math:`x` and :math:`y` axis respectively for user 1 and 2; the total loss :math:`L_{IWL}` is calculated as 
+
+.. math::
+
+  L_{IWL} = L_{siw} (|x_1 -x_2| + |y_1 - y_2|)
+
+  
+
 
 
 Height Gain Model (HG)
@@ -330,18 +343,39 @@ Height Gain Model (HG)
 This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and vice-versa.
 
 
+Shadowing Model
+---------------
 
-Hybrid Model Indoor<->Outdoor
------------------------------
+The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the connection characteristics. In the implementation we considered three main possible scenarios which correspond to three standard deviations (i.e., the mean is always 0), in detail:
 
-The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and vice-versa) by adding to the proper model, evaluated according to correspond distance, the external wall penetration loss due to the building (see Section BEL).
+ * outdoor (``m_shadowingSigmaOutdoor``, defaul value of 7 dB) :math:`\rightarrow X_\mathrm{O} \sim N(\mu_\mathrm{O}, \sigma_\mathrm{O}^2)`.
+ * indoor (``m_shadowingSigmaIndoor``, defaul value of 10 dB) :math:`\rightarrow X_\mathrm{I} \sim N(\mu_\mathrm{I}, \sigma_\mathrm{I}^2)`.
+ * external walls penetration (``m_shadowingSigmaExtWalls``, default value 5 dB) :math:`\rightarrow X_\mathrm{W} \sim N(\mu_\mathrm{W}, \sigma_\mathrm{W}^2)`
+
+The simulator generates a shadowing value per each active link according to nodes' position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and vice-versa, the standard deviation (:math:`\sigma_\mathrm{IO}`) has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that that the components producing the shadowing are independent of each other; therefore, the variance of a distribution resulting from the sum of two independent normal ones is the sum of the variances. 
+
+.. math::
+  
+  X \sim N(\mu,\sigma^2) \mbox{ and } Y \sim N(\nu,\tau^2)
+
+  Z = X + Y \sim Z (\mu + \nu, \sigma^2 + \tau^2) 
+
+  \Rightarrow \sigma_\mathrm{IO} = \sqrt{\sigma_\mathrm{O}^2 + \sigma_\mathrm{W}^2}
 
 
 
-Pathloss Model Logic of HybridBuildingsPropagationLossModel
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The following pseudo-code illustrates how the different pathloss models described above are integrated in the ``HybridBuildingsPropagationLossModel``::
+
+Pathloss logics
++++++++++++++++
+
+In the following we describe the different pathloss logic that are implemented by inheriting from BuildingsPropagationLossModel.
+
+
+HybridBuildingsPropagationLossModel
+-----------------------------------
+
+The following pseudo-code illustrates how the different pathloss model elements described above are integrated in the ``HybridBuildingsPropagationLossModel``::
 
   if (txNode is outdoor)
     then
@@ -360,37 +394,40 @@ The following pseudo-code illustrates how the different pathloss models describe
           if (distance > 1 km)
             then
               if (rxNode or txNode is below the rooftop)
-                L = I1411 + BEL + HG
+                L = I1411 + EWL + HG
               else
-                L = OH + BEL + HG
+                L = OH + EWL + HG
             else
-              L = I1411 + BEL + HG
+              L = I1411 + EWL + HG
   else (txNode is indoor)
     if (rxNode is indoor)
       then
        if (same building)
           then
-            L = I1238
+            L = I1238 + IWL
           else
-            L = I1411 + 2*BEL 
+            L = I1411 + 2*EWL 
      else (rxNode is outdoor)
       if (distance > 1 km)
         then 
           if (rxNode or txNode is below the rooftop)
                 then
-                  L = I1411 + BEL + HG
+                  L = I1411 + EWL + HG
                 else
-                  L = OH + BEL + HG
+                  L = OH + EWL + HG
         else
-          L = I1411 + BEL
+          L = I1411 + EWL
 
 
 We note that, for the case of communication between two nodes below rooftop level with distance is greater then 1 km, we still consider the I1411 model, since OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold called ``m_itu1411DistanceThreshold``) for pruning the communications between nodes below rooftop when the distance is too large (the default values is 2 km).
 
-Pathloss Model Logic of OhBuildingsPropagationLossModel
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+We also note that the use of different propagation models (OH, I1411, I1238 with their variants) in HybridBuildingsPropagationLossModel can result in discontinuities of the pathloss with respect to distance. A proper tuning of the attributes (especially the distance threshold attributes) can avoid these discontinuities. However, since the behavior of each model depends on several other parameters (frequency, node heigth, etc), there is no default value of these thresholds that can avoid the discontinuities in all possible configurations. Hence, an appropriate tuning of these parameters is left to the user.
 
-The following pseudo-code illustrates how the different pathloss models described above are integrated in the ``OhBuildingsPropagationLossModel``::
+
+OhBuildingsPropagationLossModel
+-------------------------------
+
+The following pseudo-code illustrates how the different pathloss model elements described above are integrated in the ``OhBuildingsPropagationLossModel``::
 
   if (txNode is outdoor)
     then
@@ -398,37 +435,17 @@ The following pseudo-code illustrates how the different pathloss models describe
         then
           L = OH 
         else (rxNode is indoor)
-          L = OH + BEL
+          L = OH + EWL
   else (txNode is indoor)
     if (rxNode is indoor)
       then
        if (same building)
           then
-            L = OH
+            L = OH + IWL
           else
-            L = OH + 2*BEL 
+            L = OH + 2*EWL 
      else (rxNode is outdoor)
-        L = OH + BEL
+        L = OH + EWL
       
-
-
-
-Shadowing Model
-+++++++++++++++
-
-The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the connection characteristics. In the implementation we considered three main possible scenarios which correspond to three standard deviations (i.e., the mean is always 0), in detail:
-
- * outdoor (``m_shadowingSigmaOutdoor``, defaul value of 7 dB) :math:`\rightarrow X_\mathrm{O} \sim N(\mu_\mathrm{O}, \sigma_\mathrm{O}^2)`.
- * indoor (``m_shadowingSigmaIndoor``, defaul value of 10 dB) :math:`\rightarrow X_\mathrm{I} \sim N(\mu_\mathrm{I}, \sigma_\mathrm{I}^2)`.
- * external walls penetration (``m_shadowingSigmaExtWalls``, default value 5 dB) :math:`\rightarrow X_\mathrm{W} \sim N(\mu_\mathrm{W}, \sigma_\mathrm{W}^2)`
-
-The simulator generates a shadowing value per each active link according to nodes' position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and vice-versa, the standard deviation (:math:`\sigma_\mathrm{IO}`) has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that that the components producing the shadowing are independent of each other; therefore, the variance of a distribution resulting from the sum of two independent normal ones is the sum of the variances. 
-
-.. math::
-  
-  X \sim N(\mu,\sigma^2) \mbox{ and } Y \sim N(\nu,\tau^2)
-
-  Z = X + Y \sim Z (\mu + \nu, \sigma^2 + \tau^2) 
-
-  \Rightarrow \sigma_\mathrm{IO} = \sqrt{\sigma_\mathrm{O}^2 + \sigma_\mathrm{W}^2}
+We note that OhBuildingsPropagationLossModel is a significant simplification with respect to HybridBuildingsPropagationLossModel, due to the fact that OH is used always. While this gives a less accurate model in some scenarios (especially below rooftop and indoor), it effectively avoids the issue of pathloss discontinuities that affects HybridBuildingsPropagationLossModel. 
 

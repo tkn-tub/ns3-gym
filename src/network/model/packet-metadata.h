@@ -209,6 +209,13 @@ private:
                                   const uint8_t* start,
                                   const uint8_t* current,
                                   uint32_t maxSize);
+
+  /**
+   * the size of PacketMetadata::Data::m_data such that the total size
+   * of PacketMetadata::Data is 16 bytes
+   */ 
+#define PACKET_METADATA_DATA_M_DATA_SIZE 8
+  
   struct Data {
     /* number of references to this struct Data instance. */
     uint32_t m_count;
@@ -218,7 +225,7 @@ private:
      * reference this struct Data instance */
     uint16_t m_dirtyEnd;
     /* variable-sized buffer of bytes */
-    uint8_t m_data[10];
+    uint8_t m_data[PACKET_METADATA_DATA_M_DATA_SIZE]; 
   };
   /* Note that since the next and prev fields are 16 bit integers
      and since the value 0xffff is reserved to identify the 

@@ -212,6 +212,9 @@ private:
   void TraceNetDevTxWimax (std::string context, Ptr<const Packet> packet, Mac48Address const &destination);
   void TraceNetDevRxWimax (std::string context, Ptr<const Packet> packet, Mac48Address const &source);
 
+  void TraceNetDevTxLte (std::string context, Ptr<const Packet> packet, Mac48Address const &destination);
+  void TraceNetDevRxLte (std::string context, Ptr<const Packet> packet, Mac48Address const &source);
+
   inline NetDeviceStatistics & FindNetDeviceStatistics (int node, int interface);
 
   void DoPause (std::string const &message);

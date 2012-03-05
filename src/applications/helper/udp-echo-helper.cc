@@ -73,10 +73,24 @@ UdpEchoServerHelper::InstallPriv (Ptr<Node> node) const
   return app;
 }
 
+UdpEchoClientHelper::UdpEchoClientHelper (Address address, uint16_t port)
+{
+  m_factory.SetTypeId (UdpEchoClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", AddressValue (address));
+  SetAttribute ("RemotePort", UintegerValue (port));
+}
+
 UdpEchoClientHelper::UdpEchoClientHelper (Ipv4Address address, uint16_t port)
 {
   m_factory.SetTypeId (UdpEchoClient::GetTypeId ());
-  SetAttribute ("RemoteAddress", Ipv4AddressValue (address));
+  SetAttribute ("RemoteAddress", AddressValue (Address(address)));
+  SetAttribute ("RemotePort", UintegerValue (port));
+}
+
+UdpEchoClientHelper::UdpEchoClientHelper (Ipv6Address address, uint16_t port)
+{
+  m_factory.SetTypeId (UdpEchoClient::GetTypeId ());
+  SetAttribute ("RemoteAddress", AddressValue (Address(address)));
   SetAttribute ("RemotePort", UintegerValue (port));
 }
 

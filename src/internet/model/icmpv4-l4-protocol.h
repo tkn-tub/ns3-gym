@@ -1,7 +1,7 @@
 #ifndef ICMPV4_L4_PROTOCOL_H
 #define ICMPV4_L4_PROTOCOL_H
 
-#include "ipv4-l4-protocol.h"
+#include "ip-l4-protocol.h"
 #include "icmpv4.h"
 #include "ns3/ipv4-address.h"
 
@@ -11,7 +11,7 @@ class Node;
 class Ipv4Interface;
 class Ipv4Route;
 
-class Icmpv4L4Protocol : public Ipv4L4Protocol
+class Icmpv4L4Protocol : public IpL4Protocol
 {
 public:
   static TypeId GetTypeId (void);
@@ -24,18 +24,24 @@ public:
 
   static uint16_t GetStaticProtocolNumber (void);
   virtual int GetProtocolNumber (void) const;
-  virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> incomingInterface);
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                                 Ipv6Address &src,
+                                                 Ipv6Address &dst,
+                                                 Ptr<Ipv6Interface> incomingInterface);
 
   void SendDestUnreachFragNeeded (Ipv4Header header, Ptr<const Packet> orgData, uint16_t nextHopMtu);
   void SendTimeExceededTtl (Ipv4Header header, Ptr<const Packet> orgData);
   void SendDestUnreachPort (Ipv4Header header, Ptr<const Packet> orgData);
 
-  // From Ipv4L4Protocol
-  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
-  // From Ipv4L4Protocol
-  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+  // From IpL4Protocol
+  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
+  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  // From IpL4Protocol
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
 protected:
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
@@ -66,7 +72,7 @@ private:
   virtual void DoDispose (void);
 
   Ptr<Node> m_node;
-  Ipv4L4Protocol::DownTargetCallback m_downTarget;
+  IpL4Protocol::DownTargetCallback m_downTarget;
 };
 
 } // namespace ns3

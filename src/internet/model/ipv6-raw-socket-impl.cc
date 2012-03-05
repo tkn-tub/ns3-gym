@@ -122,6 +122,11 @@ int Ipv6RawSocketImpl::Bind ()
   return 0;
 }
 
+int Ipv6RawSocketImpl::Bind6 ()
+{
+  return(Bind());
+}
+
 int Ipv6RawSocketImpl::GetSockName (Address& address) const
 {
   NS_LOG_FUNCTION_NOARGS ();

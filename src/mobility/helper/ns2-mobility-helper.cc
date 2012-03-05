@@ -42,6 +42,7 @@
 #include <sstream>
 #include <map>
 #include "ns3/log.h"
+#include "ns3/unused.h"
 #include "ns3/simulator.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
@@ -446,8 +447,7 @@ IsNumber (const string& s)
 {
   char *endp;
   double v = strtod (s.c_str (), &endp); // declared with warn_unused_result
-  //cast v to void, to suppress v set but not used compiler warning
-  (void) v;
+  NS_UNUSED (v); // suppress "set but not used" compiler warning
   return endp == s.c_str () + s.size ();
 }
 
