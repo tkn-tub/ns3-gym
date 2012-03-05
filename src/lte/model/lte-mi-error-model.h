@@ -15,11 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Original Authors: Marco Mezzavilla <mezzavil@dei.unipd.it>
- *                   Giovanni Tomasi <tomasigv@gmail.com>
- * Integration in LENA and extension done by: 
- *                            Marco Miozzo <marco.miozzo@cttc.es>
- */
+ *
+ * Original Work Authors:
+ *      Marco Mezzavilla <mezzavil@dei.unipd.it>
+ *      Giovanni Tomasi <tomasigv@gmail.com>
+ * Original Work Acknowldegments:
+ *      This work was supported by the MEDIEVAL (MultiMEDia transport
+ *      for mobIlE Video AppLications) project, which is a
+ *      medium-scale focused research project (STREP) of the 7th
+ *      Framework Programme (FP7)
+ *
+ * Subsequent integration in LENA and extension done by:
+ *      Marco Miozzo <marco.miozzo@cttc.es>
+ */ 
 
 #ifndef LTE_MI_ERROR_MODEL_H
 #define LTE_MI_ERROR_MODEL_H
