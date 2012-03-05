@@ -314,7 +314,7 @@ LteUeMac::DoConfigureUe (uint16_t rnti)
 void
 LteUeMac::DoAddLc (uint8_t lcId, LteMacSapUser* msu)
 {
-  NS_LOG_FUNCTION (this << " lcId" << lcId);
+  NS_LOG_FUNCTION (this << " lcId" << (uint16_t) lcId);
   NS_ASSERT_MSG (m_macSapUserMap.find (lcId) == m_macSapUserMap.end (), "cannot add channel because LCID " << lcId << " is already present");
   m_macSapUserMap[lcId] = msu;
 }
