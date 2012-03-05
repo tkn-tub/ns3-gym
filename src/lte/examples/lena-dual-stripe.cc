@@ -29,7 +29,9 @@
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <ns3/gtk-config-store.h>
+
+// uncomment this to use GtkConfigStore
+//#include <ns3/gtk-config-store.h>
 
 // The topology of this simulation program is inspired from 
 // 3GPP R4-092042, Section 4.2.1 Dual Stripe Model
