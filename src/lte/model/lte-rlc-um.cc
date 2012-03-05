@@ -382,7 +382,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
     {
       delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
     }
-  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
+  m_rxPdu (m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
 
   // 5.1.2.2 Receive operations
 
