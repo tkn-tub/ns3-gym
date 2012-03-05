@@ -74,7 +74,7 @@ LteCqiSinrChunkProcessor::End ()
   NS_LOG_FUNCTION (this);
   if (m_totDuration.GetSeconds () > 0)
     {
-      m_phy->GenerateCqiFeedback ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      m_phy->GenerateCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
     }
   else
     {

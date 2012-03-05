@@ -151,7 +151,7 @@ public:
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
   virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);

@@ -214,7 +214,7 @@ public:
   Ptr<PacketBurst> GetPacketBurst (void);
 
   /**
-  * \param p queue control message to be sent
+  * \param m the control message to be sent
   */
   void SetControlMessages (Ptr<IdealControlMessage> m);
 
@@ -225,11 +225,11 @@ public:
 
 
   /** 
-   * generate CQI feedback based on the given SINR
+   * generate a CQI report based on the given SINR
    * 
    * \param sinr the SINR vs frequency measured by the device
    */
-  virtual void  GenerateCqiFeedback (const SpectrumValue& sinr) = 0;
+  virtual void  GenerateCqiReport (const SpectrumValue& sinr) = 0;
 
 
 

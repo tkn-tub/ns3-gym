@@ -152,6 +152,11 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleAccessor (&LteUePhy::SetNoiseFigure, 
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("MacToChannelDelay",
+                   "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteUePhy::m_macChTtiDelay),
+                   MakeUintegerChecker<uint8_t> (1,255))
   ;
   return tid;
 }
@@ -282,7 +287,7 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteUePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteUePhy::GenerateCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
   // check periodic wideband CQI

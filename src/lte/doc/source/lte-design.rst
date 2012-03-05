@@ -1092,12 +1092,19 @@ The physical layer model provided in this LTE simulator is based on
 the one described in [Piro2011]_, with the following modifications.  The model now includes the 
 inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
 
+
+MAC to Channel delay
+^^^^^^^^^^^^^^^^^^^^
+
+To model the latency of real MAC and PHY implementations, the PHY model simulates a MAC-to-channel delay in multiples of TTIs (1ms). The transmission of both data and control packets are delayed by this amount.
+
+
 CQI feedback
 ^^^^^^^^^^^^
 
 The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
-in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
+in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
 Interference Model
 ^^^^^^^^^^^^^^^^^^
@@ -1174,8 +1181,8 @@ For estimating the :math:`CBLER_i`, the MI evaluation has been implemented accor
 where :math:`x` is the MI of the TB, :math:`b_{ECR}` represents the "transition center" and :math:`c_{ECR}` is related to the "transition width" of the Gaussian cumulative distribution for each Effective Code Rate (ECR) which is the actual transmission rate according to the channel coding and MCS. For limiting the computational complexity of the model we considered only a subset of the possible ECRs in fact we would have potentially 5076 possible ECRs (i.e., 27 MCSs and 188 CB sizes). On this respect, we will limit the CB sizes to some representative values (i.e., 40, 140, 160, 256, 512, 1024, 2048, 4032, 6144), while for the others the worst one approximating the real one will be used (i.e., the smaller CB size value available respect to the real one). This choice is aligned to the typical performance of turbo codes, where the CB size is not strongly impacting on the BLER. However, it is to be notes that for CB sizes lower than 1000 bits the effect might be relevant (i.e., till 2 dB); therefore, we adopt this unbalanced sampling interval for having more precision where it is necessary. This behaviour is confirmed by the figures presented in the Annes Section.
 
 
-Link Layer Performance
-^^^^^^^^^^^^^^^^^^^^^^
+BLER Curves
+^^^^^^^^^^^
 
 On this respect, we reused part of the curves obtained within [PaduaPEM]_. In detail, we introduced the CB size dependency to the CB BLER curves with the support of the developers of [PaduaPEM]_ and of the LTE Vienna Simulator. In fact, the module released provides the link layer performance only for what concerns the MCSs (i.e, with a given fixed ECR). In detail the new error rate curves for each has been evaluated with a simulation campaign with the link layer simulator for a single link with AWGN noise and for CB size of 104, 140, 256, 512, 1024, 2048, 4032 and 6144. These curves has been mapped with the Gaussian cumulative model formula presented above for obtaining the correspondents :math:`b_{ECR}` and :math:`c_{ECR}` parameters.
 
@@ -1259,8 +1266,8 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 
 
 
-Simulator Design
-^^^^^^^^^^^^^^^^
+Integration of the BLER curves in the ns-3 LTE module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINR two instances of ``LtePemSinrChunkProcessor`` (child of ``LteSinrChunkProcessor`` dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution respectively of PDSCH (UE side) and ULSCH (eNB side).
 

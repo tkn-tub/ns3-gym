@@ -165,7 +165,7 @@ public:
   void PhyPduReceived (Ptr<Packet> p);
 
   // inherited from LtePhy
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
 
 private:

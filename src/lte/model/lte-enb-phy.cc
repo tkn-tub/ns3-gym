@@ -140,6 +140,11 @@ LteEnbPhy::GetTypeId (void)
                    MakeDoubleAccessor (&LteEnbPhy::SetNoiseFigure, 
                                        &LteEnbPhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("MacToChannelDelay",
+                   "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbPhy::m_macChTtiDelay),
+                   MakeUintegerChecker<uint8_t> (1,255))
   ;
   return tid;
 }
@@ -447,14 +452,10 @@ LteEnbPhy::EndFrame (void)
 
 
 void 
-LteEnbPhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteEnbPhy::GenerateCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-  Ptr<LteEnbNetDevice> thisDevice = GetDevice ()->GetObject<LteEnbNetDevice> ();
-
   m_enbPhySapUser->UlCqiReport (CreateUlCqiReport (sinr));
-
-
 }
 
 
