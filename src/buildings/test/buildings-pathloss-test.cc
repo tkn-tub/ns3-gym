@@ -246,7 +246,8 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
 
   // this needs to be static otherwise it will look like a different building every time
-  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
+  static Ptr<Building> building1 = Create<Building> ();
+  building1->SetBoundaries (Box (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/));
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);
