@@ -216,7 +216,7 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
     }
   else
    {
-     NS_LOG_WARN ( "Node:" << n->GetId () << " Does not have a mobility model");
+     NS_LOG_UNCOND ( "WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
      Vector deterministicVector (100,100,0);
      Vector randomVector (UniformVariable (0, topo_maxX-topo_minX).GetValue (), UniformVariable (0, topo_maxY-topo_minY).GetValue (), 0);
      if (randomPosition)
