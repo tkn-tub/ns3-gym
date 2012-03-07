@@ -362,7 +362,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
     }
   else
     {
-      return 0;
+      return p->GetSize ();
     }
 }
 
