@@ -232,21 +232,6 @@ LtePhy::GetRbgSize (void) const
   return m_rbgSize;
 }
 
-
-void
-LtePhy::SetMacChDelay (uint8_t delay)
-{
-  m_macChTtiDelay = delay;
-  m_packetBurstQueue.resize (delay);
-}
-
-
-uint8_t
-LtePhy::GetMacChDelay (void)
-{
-  return (m_macChTtiDelay);
-}
-
 void
 LtePhy::SetMacPdu (Ptr<Packet> p)
 {

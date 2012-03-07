@@ -78,7 +78,7 @@ LteTestUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteTestUePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteTestUePhy::GenerateCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 

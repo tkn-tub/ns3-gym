@@ -289,7 +289,7 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
-* The Fempto forum downlink CqiIdealControlMessage defines an ideal list of
+* The downlink CqiIdealControlMessage defines an ideal list of
 * feedback about the channel quality sent by the UE to the eNodeB.
 */
 class DlCqiIdealControlMessage : public IdealControlMessage
@@ -332,7 +332,7 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
-* The Fempto forum uplink BsrIdealControlMessage defines the specific
+* The uplink BsrIdealControlMessage defines the specific
 * extension of the CE element for reporting the buffer status report
 */
 class BsrIdealControlMessage : public IdealControlMessage

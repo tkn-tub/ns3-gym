@@ -58,7 +58,7 @@ public:
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
 
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
 

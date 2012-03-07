@@ -102,6 +102,16 @@ public:
   double GetNoiseFigure () const;
 
   /**
+   * \param delay the TTI delay between MAC and channel
+   */
+  void SetMacChDelay (uint8_t delay);
+
+  /**
+   * \returns the TTI delay between MAC and channel
+   */
+  uint8_t GetMacChDelay (void) const;
+
+  /**
    * \brief Queue the MAC PDU to be sent
    * \param p the MAC PDU to sent
    */
@@ -151,7 +161,7 @@ public:
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
   virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
