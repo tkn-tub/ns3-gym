@@ -192,6 +192,11 @@ bool AnimationInterface::WimaxPacketIsPending (uint64_t AnimUid)
   return (pendingWimaxPackets.find (AnimUid) != pendingWimaxPackets.end ());
 }
 
+bool AnimationInterface::LtePacketIsPending (uint64_t AnimUid)
+{
+  return (pendingLtePackets.find (AnimUid) != pendingLtePackets.end ());
+}
+
 void AnimationInterface::SetMobilityPollInterval (Time t)
 {
   mobilitypollinterval = t;
@@ -295,6 +300,33 @@ void AnimationInterface::PurgePendingWimax ()
       pendingWimaxPackets.erase (*i);
     }
 
+}
+
+
+void AnimationInterface::PurgePendingLte ()
+{
+  if (pendingLtePackets.empty ())
+    return;
+  std::vector <uint64_t> purgeList;
+  for (std::map<uint64_t, AnimPacketInfo>::iterator i = pendingLtePackets.begin ();
+       i != pendingLtePackets.end ();
+       ++i)
+    {
+
+      AnimPacketInfo pktInfo = i->second;
+      double delta = (Simulator::Now ().GetSeconds () - pktInfo.m_fbTx);
+      if (delta > PURGE_INTERVAL)
+        {
+          purgeList.push_back (i->first);
+        }
+    }
+
+  for (std::vector <uint64_t>::iterator i = purgeList.begin ();
+       i != purgeList.end ();
+       ++i)
+    {
+      pendingLtePackets.erase (*i);
+    }
 }
 
 void AnimationInterface::PurgePendingCsma ()
@@ -459,6 +491,10 @@ void AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::WimaxTxTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
                    MakeCallback (&AnimationInterface::WimaxRxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
+                   MakeCallback (&AnimationInterface::LteTxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
+                   MakeCallback (&AnimationInterface::LteRxTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxBegin",
                    MakeCallback (&AnimationInterface::CsmaPhyTxBeginTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxEnd",
@@ -670,6 +706,11 @@ void AnimationInterface::AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo
   pendingWimaxPackets[AnimUid] = pktinfo;
 }
 
+void AnimationInterface::AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
+{
+  NS_ASSERT (pktinfo.m_txnd);
+  pendingLtePackets[AnimUid] = pktinfo;
+}
 
 void AnimationInterface::AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
 {
@@ -826,6 +867,7 @@ void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p,
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("WimaxRxTrace for packet:" << gAnimUid);
   NS_ASSERT (WimaxPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingWimaxPackets[AnimUid];
   pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
@@ -834,6 +876,49 @@ void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p,
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
   OutputWirelessPacket (pktInfo, pktrxInfo);
 }
+
+void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
+{
+  if (!m_started)
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+  gAnimUid++;
+  NS_LOG_INFO ("LteTxTrace for packet:" << gAnimUid);
+  AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now () + Seconds (0.001), UpdatePosition (n));
+  //TODO 0.0001 is used until Lte implements TxBegin and TxEnd traces
+  AnimByteTag tag;
+  tag.Set (gAnimUid);
+  p->AddByteTag (tag);
+  AddPendingLtePacket (gAnimUid, pktinfo);
+}
+
+
+void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
+{
+  if (!m_started)
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+  uint64_t AnimUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("LteRxTrace for packet:" << gAnimUid);
+  if (!LtePacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("LteRxTrace: unknown Uid");
+      return;
+    }
+  AnimPacketInfo& pktInfo = pendingLtePackets[AnimUid];
+  pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
+  pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
+  //TODO 0.001 is used until Lte implements RxBegin and RxEnd traces
+  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
+  OutputWirelessPacket (pktInfo, pktrxInfo);
+}
+
 
 void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> p)
 {
@@ -980,6 +1065,7 @@ void AnimationInterface::MobilityAutoCheck ()
     {
       PurgePendingWifi ();
       PurgePendingWimax ();
+      PurgePendingLte ();
       PurgePendingCsma ();
       Simulator::Schedule (mobilitypollinterval, &AnimationInterface::MobilityAutoCheck, this);
     }

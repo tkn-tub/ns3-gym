@@ -208,7 +208,7 @@ public:
    * \param z Z co-ordinate of the node
    *
    */
-  void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+  static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
 
   /**
    * \brief Is AnimationInterface started
@@ -267,6 +267,15 @@ private:
                           Ptr<const Packet> p);
   void CsmaMacRxTrace (std::string context,
                        Ptr<const Packet> p);
+
+  void LteTxTrace (std::string context,
+                      Ptr<const Packet> p,
+                      const Mac48Address &);
+
+  void LteRxTrace (std::string context,
+                      Ptr<const Packet> p,
+                      const Mac48Address &);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
@@ -286,6 +295,10 @@ private:
   void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WimaxPacketIsPending (uint64_t AnimUid); 
 
+  std::map<uint64_t, AnimPacketInfo> pendingLtePackets;
+  void AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool LtePacketIsPending (uint64_t AnimUid);
+
   std::map<uint64_t, AnimPacketInfo> pendingCsmaPackets;
   void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool CsmaPacketIsPending (uint64_t AnimUid);
@@ -302,6 +315,7 @@ private:
 
   void PurgePendingWifi ();
   void PurgePendingWimax ();
+  void PurgePendingLte ();
   void PurgePendingCsma ();
 
   // Recalculate topology bounds
