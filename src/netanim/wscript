@@ -4,7 +4,7 @@ import wutils
 
 def build (bld) :
         bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/netanim-config.h')
-	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma'])
+	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte'])
 	module.includes = '.'
 	module.source = [
 			  'model/animation-interface.cc',
