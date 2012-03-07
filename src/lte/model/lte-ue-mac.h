@@ -99,7 +99,7 @@ private:
   LteUePhySapProvider* m_uePhySapProvider;
   LteUePhySapUser* m_uePhySapUser;
   
-  std::map <uint8_t, long uint> m_ulBsrReceived; // BSR received from RLC (BSR up to now)
+  std::map <uint8_t, uint64_t> m_ulBsrReceived; // BSR received from RLC (BSR up to now)
   
   Time m_bsrPeriodicity;
   Time m_bsrLast;
