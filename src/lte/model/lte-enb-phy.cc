@@ -143,8 +143,9 @@ LteEnbPhy::GetTypeId (void)
     .AddAttribute ("MacToChannelDelay",
                    "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
                    UintegerValue (1),
-                   MakeUintegerAccessor (&LteEnbPhy::m_macChTtiDelay),
-                   MakeUintegerChecker<uint8_t> (1,255))
+                   MakeUintegerAccessor (&LteEnbPhy::SetMacChDelay, 
+                                         &LteEnbPhy::GetMacChDelay),
+                   MakeUintegerChecker<uint8_t> ())
   ;
   return tid;
 }
@@ -211,6 +212,19 @@ LteEnbPhy::GetNoiseFigure () const
 {
   NS_LOG_FUNCTION (this);
   return m_noiseFigure;
+}
+
+void
+LteEnbPhy::SetMacChDelay (uint8_t delay)
+{
+  m_macChTtiDelay = delay;
+  m_packetBurstQueue.resize (delay);
+}
+
+uint8_t
+LteEnbPhy::GetMacChDelay (void) const
+{
+  return (m_macChTtiDelay);
 }
 
 bool

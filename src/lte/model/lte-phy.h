@@ -194,14 +194,6 @@ public:
   */
   uint8_t GetRbgSize (void) const;
 
-  /**
-  * \param delay the TTI delay between MAC and channel
-  */
-  void SetMacChDelay (uint8_t delay);
-  /**
-  * \returns the TTI delay between MAC and channel
-  */
-  uint8_t GetMacChDelay (void);
 
   /**
   * \param p queue MAC PDU to be sent
