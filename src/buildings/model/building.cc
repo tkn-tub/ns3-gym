@@ -93,7 +93,7 @@ Building::Building (double xMin,
                   << " Building::Building (double xMin, double xMax, double yMin, " << std::endl
                   << "                     double yMax, double zMin, double zMax)\n" << std::endl
                   << "so you can't do any more stuff like:" << std::endl
-                  << "Ptr<Building> b = CreateObject<building> (" 
+                  << "Ptr<Building> b = CreateObject<Building> (" 
                   << xMin << ", "
                   << xMax << ", "
                   << yMin << ", "

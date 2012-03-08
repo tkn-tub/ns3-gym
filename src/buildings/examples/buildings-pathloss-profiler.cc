@@ -67,7 +67,7 @@ main (int argc, char *argv[])
   mmEnb->SetPosition (Vector (0.0, 0.0, hEnb));
   if (enbIndoor)
     {
-      static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
+      Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
       building1->SetBuildingType (Building::Residential);
       building1->SetExtWallsType (Building::ConcreteWithWindows);
       mmEnb->SetIndoor (building1);
