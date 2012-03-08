@@ -55,7 +55,6 @@ Building::GetTypeId (void)
                    MakeUintegerAccessor (&Building::GetNFloors, &Building::SetNFloors),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Id", "The id (unique integer) of this Building.",
-                   TypeId::ATTR_GET,
                    UintegerValue (0),
                    MakeUintegerAccessor (&Building::GetId),
                    MakeUintegerChecker<uint32_t> ())
