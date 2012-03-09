@@ -338,7 +338,7 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
         }
 
       // Should check via getsockopt ()..
-      if (this->m_recvpktinfo)
+      if (IsRecvPktInfo ())
         {
           Ipv6PacketInfoTag tag;
           copy->RemovePacketTag (tag);

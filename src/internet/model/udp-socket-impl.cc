@@ -872,7 +872,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     }
 
   // Should check via getsockopt ()..
-  if (this->m_recvpktinfo)
+  if (IsRecvPktInfo ())
     {
       Ipv4PacketInfoTag tag;
       packet->RemovePacketTag (tag);
