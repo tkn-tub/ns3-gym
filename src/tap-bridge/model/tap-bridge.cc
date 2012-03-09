@@ -42,6 +42,7 @@
 #include <errno.h>
 #include <limits>
 #include <stdlib.h>
+#include <unistd.h>
 
 //
 // Sometimes having a tap-creator is actually more trouble than solution.  In 

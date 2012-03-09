@@ -49,6 +49,7 @@
 #include <limits>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
 
