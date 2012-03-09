@@ -125,7 +125,7 @@ CalendarScheduler::PeekNext (void) const
   NS_ASSERT (!IsEmpty ());
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
-  Scheduler::Event minEvent = { 0, { ~0, ~0}};
+  Scheduler::Event minEvent = { static_cast<uint64_t>(0), { static_cast<uint32_t>(~0), static_cast<uint32_t>(~0)}};
   do
     {
       if (!m_buckets[i].empty ())
@@ -154,7 +154,7 @@ CalendarScheduler::DoRemoveNext (void)
 {
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
-  Scheduler::Event minEvent = { 0, { ~0, ~0}};
+  Scheduler::Event minEvent = { static_cast<uint64_t>(0), { static_cast<uint32_t>(~0), static_cast<uint32_t>(~0)}};
   do
     {
       if (!m_buckets[i].empty ())
