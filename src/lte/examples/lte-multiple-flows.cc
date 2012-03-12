@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
   Ptr<EnbNetDevice> enb;
   enb = enbDevs.Get (0)->GetObject<EnbNetDevice> ();
 
-  Ptr<UeNetDevice> ue[nbUE];
+  std::vector< Ptr<UeNetDevice> >ue (nbUE);
   for (int i = 0; i < nbUE; i++)
     {
       ue[i] = ueDevs.Get (i)->GetObject<UeNetDevice> ();

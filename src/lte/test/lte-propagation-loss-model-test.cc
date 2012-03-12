@@ -170,8 +170,8 @@ Ns3LtePropagationLossModelTestCase::DoRun (void)
   int nbOfValues = tx.size ();
   for (int i = 0; i < nbOfValues; i++)
     {
-      NS_TEST_ASSERT_MSG_EQ (tx.at (i) == 0 && rx.at (i) != 0, false, "Problem with elements of tx and rx.");
-      NS_TEST_ASSERT_MSG_EQ (tx.at (i) != 0 && (tx.at (i) <= rx.at (i)), false, "Problem with elements of tx and rx.");
+      NS_TEST_ASSERT_MSG_EQ ((tx.at (i) == 0 && rx.at (i) != 0), false, "Problem with elements of tx and rx.");
+      NS_TEST_ASSERT_MSG_EQ ((tx.at (i) != 0 && (tx.at (i) <= rx.at (i))), false, "Problem with elements of tx and rx.");
     }
 
 
