@@ -231,7 +231,7 @@ void Ping6::HandleRead (Ptr<Socket> socket)
 
   Ptr<Packet> packet=0;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (Inet6SocketAddress::IsMatchingType (from))
         {
