@@ -411,9 +411,9 @@ process in order to reach its destination UE.
 
 
 
------------------------------
-Description of the components
------------------------------
+-----------------------------------------
+Detailed description of protocol elements
+-----------------------------------------
 
 
 
