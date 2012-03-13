@@ -79,9 +79,15 @@ LteFfConverter::double2fpS11dot3 (double val)
 {
   // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
   // truncate val to notation limits
-  if (val > 4095.88) val = 4095.88;
-  if (val < -4096) val = -4096;
-  int16_t valFp = (int16_t)(val * pow (2, 3));
+  if (val > 4095.88)
+    {
+      val = 4095.88;
+    }
+  if (val < -4096)
+    {
+      val = -4096;
+    }
+  int16_t valFp = (int16_t)(val * 8);
   return (valFp);
 }
 
@@ -89,7 +95,7 @@ double
 LteFfConverter::fpS11dot3toDouble (uint16_t val)
 {
   // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
-  double valD = ((int16_t)val) / pow (2, 3);
+  double valD = ((int16_t)val) / 8.0;
   return (valD);
 }
 
