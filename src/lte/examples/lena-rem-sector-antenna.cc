@@ -29,7 +29,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
-//#include "ns3/gtk-config-store.h"
+#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 using std::vector;
@@ -105,15 +105,6 @@ main (int argc, char *argv[])
           enbPosition.push_back (v);
           Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
           mmEnb->SetPosition (v);
-
-          // Positioning UEs attached to eNB
-          mobility.Install (ueNodes.at(plantedEnb));
-          for (uint32_t ue = 0; ue < nUe; ue++)
-            {
-              Ptr<BuildingsMobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
-              Vector vUe (v.x, v.y, v.z);
-              mmUe->SetPosition (vUe);
-            }
         }
     }
 
@@ -227,8 +218,8 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
 
-  // GtkConfigStore config;
-  // config.ConfigureAttributes ();
+//  GtkConfigStore config;
+//  config.ConfigureAttributes ();
 
   lteHelper = 0;
   Simulator::Destroy ();

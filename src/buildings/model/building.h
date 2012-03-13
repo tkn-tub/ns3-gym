@@ -222,12 +222,6 @@ private:
 
 };
 
-//std::ostream &operator << (std::ostream &os, const Box &box);
-//std::istream &operator >> (std::istream &is, Box &box);
-
-
-//ATTRIBUTE_HELPER_HEADER (Building);
-
 } // namespace ns3
 
 #endif /* BUILDING_H */
