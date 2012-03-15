@@ -602,7 +602,7 @@ on resource block :math:`k` at subframe :math:`t` is defined as
    R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
 
 where :math:`\tau` is the TTI duration.
-At the start of each subframe :math:`t`, all the RBs are assigned to a certain user.
+At the start of each subframe :math:`t`, each RB is assigned to a certain user.
 In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
 :math:`t` is determined as
 
