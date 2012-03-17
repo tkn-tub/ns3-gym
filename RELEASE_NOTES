@@ -24,7 +24,10 @@ New user-visible features
 - Dual-stacked IPv6 sockets are implemented. An IPv6 socket can accept an IPv4 
   connection, returning the senders address as an IPv4-mapped address 
   (IPV6_V6ONLY socket option is not implemented).
-
+- Ipv6RoutingHelper is now in-line with Ipv4RoutingHelper concerning the RT 
+  print functions. Various minor changes made in Ipv6RoutingProtocol and derived 
+  classes to make this possible.
+   
 Bugs fixed
 ----------
  - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter

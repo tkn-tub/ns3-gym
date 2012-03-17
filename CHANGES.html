@@ -41,7 +41,7 @@ This file is a best-effort approach to solving this issue; we will do
 our best but can guarantee that there will be things that fall through
 the cracks, unfortunately.  If you, as a user, can suggest improvements
 to this file based on your experience, please contribute a patch or drop
-us a note on ns-developers mailing list.  </p>
+us a note on ns-developers mailing list.</p>
 
 <hr>
 <h1>Changes from ns-3.13 to ns-3-dev</h1>
@@ -73,6 +73,10 @@ The prototype for the RxCallback function in the Ipv6EndPoint was changed.
 It now includes the destination IPv6 address of the end point which was
 needed for TCP.  This lead to a small change in the UDP and ICMPv6 L4
 protocols as well.
+</li>
+<li>
+Ipv6RoutingHelper can now print the IPv6 Routing Tables at specific 
+intervals or time. Exactly like Ipv4RoutingHelper do.
 </li>
 </ul>
 

@@ -142,6 +142,11 @@ public:
    */
   virtual void SetIpv4 (Ptr<Ipv4> ipv4) = 0;
 
+  /**
+   * \brief Print the Routing Table entries
+   *
+   * \param stream the ostream the Routing table is printed to
+   */
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const = 0;
 };
 

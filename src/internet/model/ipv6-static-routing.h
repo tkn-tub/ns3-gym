@@ -132,7 +132,7 @@ public:
    * \brief Get the number or entries in the routing table.
    * \return number of entries
    */
-  uint32_t GetNRoutes ();
+  uint32_t GetNRoutes () const;
 
   /**
    * \brief Get the default route.
@@ -147,14 +147,14 @@ public:
    * \param i index
    * \return the route whose index is i
    */
-  Ipv6RoutingTableEntry GetRoute (uint32_t i);
+  Ipv6RoutingTableEntry GetRoute (uint32_t i) const;
 
   /**
    * \brief Get a metric for route from the static unicast routing table.
    * \param index The index (into the routing table) of the route to retrieve.
    * \return If route is set, the metric is returned. If not, an infinity metric (0xffffffff) is returned
    */
-  uint32_t GetMetric (uint32_t index);
+  uint32_t GetMetric (uint32_t index) const;
 
   /**
    * \brief Remove a route from the routing table.
@@ -235,6 +235,13 @@ public:
   virtual void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
   virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
   virtual void SetIpv6 (Ptr<Ipv6> ipv6);
+
+  /**
+   * \brief Print the Routing Table entries
+   *
+   * \param stream the ostream the Routing table is printed to
+   */
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 protected:
   /**

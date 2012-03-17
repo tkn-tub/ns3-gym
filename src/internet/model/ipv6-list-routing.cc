@@ -23,6 +23,7 @@
 #include "ns3/node.h"
 #include "ns3/ipv6-static-routing.h"
 #include "ipv6-list-routing.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
 
@@ -267,6 +268,23 @@ void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6A
     {
       (*rprotoIter).second->NotifyRemoveRoute (dst, mask, nextHop, interface, prefixToUse);
     }
+}
+
+void
+Ipv6ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  NS_LOG_FUNCTION (this);
+
+  *stream->GetStream () << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
+                        << " Time: " << Simulator::Now ().GetSeconds () << "s "
+                        << "Ipv6ListRouting table" << std::endl;
+  for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
+       i != m_routingProtocols.end (); i++)
+    {
+      *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
+      (*i).second->PrintRoutingTable (stream);
+    }
+  *stream->GetStream () << std::endl;
 }
 
 void

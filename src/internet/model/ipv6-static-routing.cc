@@ -18,8 +18,11 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
+#include <iomanip>
 #include "ns3/log.h"
+#include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/simulator.h"
 #include "ns3/ipv6-route.h"
 #include "ns3/net-device.h"
 
@@ -67,6 +70,26 @@ void Ipv6StaticRouting::SetIpv6 (Ptr<Ipv6> ipv6)
       else
         {
           NotifyInterfaceDown (i);
+        }
+    }
+}
+
+// Formatted like output of "route -n" command
+void
+Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  NS_LOG_FUNCTION (this);
+  std::ostream* os = stream->GetStream ();
+  if (GetNRoutes () > 0)
+    {
+      *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
+          << " Time: " << Simulator::Now ().GetSeconds () << "s "
+          << "Ipv6StaticRouting table" << std::endl;
+
+      for (uint32_t j = 0; j < GetNRoutes (); j++)
+        {
+          Ipv6RoutingTableEntry route = GetRoute (j);
+          *os << route << std::endl;
         }
     }
 }
@@ -369,7 +392,7 @@ Ptr<Ipv6MulticastRoute> Ipv6StaticRouting::LookupStatic (Ipv6Address origin, Ipv
   return mrtentry;
 }
 
-uint32_t Ipv6StaticRouting::GetNRoutes ()
+uint32_t Ipv6StaticRouting::GetNRoutes () const
 {
   return m_networkRoutes.size ();
 }
@@ -412,12 +435,12 @@ Ipv6RoutingTableEntry Ipv6StaticRouting::GetDefaultRoute ()
     }
 }
 
-Ipv6RoutingTableEntry Ipv6StaticRouting::GetRoute (uint32_t index)
+Ipv6RoutingTableEntry Ipv6StaticRouting::GetRoute (uint32_t index) const
 {
   NS_LOG_FUNCTION (this << index);
   uint32_t tmp = 0;
 
-  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); it++)
+  for (NetworkRoutesCI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); it++)
     {
       if (tmp == index)
         {
@@ -430,12 +453,12 @@ Ipv6RoutingTableEntry Ipv6StaticRouting::GetRoute (uint32_t index)
   return 0;
 }
 
-uint32_t Ipv6StaticRouting::GetMetric (uint32_t index)
+uint32_t Ipv6StaticRouting::GetMetric (uint32_t index) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   uint32_t tmp = 0;
 
-  for (NetworkRoutesI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); it++)
+  for (NetworkRoutesCI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); it++)
     {
       if (tmp == index)
         {
