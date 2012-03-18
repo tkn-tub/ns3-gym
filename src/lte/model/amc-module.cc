@@ -120,7 +120,7 @@ AmcModule::GetCqiFromSpectralEfficiency (double s)
 {
   NS_LOG_FUNCTION (this << s);
   int cqi = 1; // == CqiIndex[0]
-  while (SpectralEfficiencyForCqiIndex[cqi] < s && cqi <= 14)
+  while (cqi < 15 && SpectralEfficiencyForCqiIndex[cqi] < s)
     {
       cqi++;
     }
