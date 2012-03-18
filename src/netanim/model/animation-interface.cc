@@ -478,14 +478,8 @@ void AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::DevTxTrace, this));
   Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxBegin",
                    MakeCallback (&AnimationInterface::WifiPhyTxBeginTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxEnd",
-                   MakeCallback (&AnimationInterface::WifiPhyTxEndTrace, this));
   Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxBegin",
                    MakeCallback (&AnimationInterface::WifiPhyRxBeginTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxEnd",
-                   MakeCallback (&AnimationInterface::WifiPhyRxEndTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
-                   MakeCallback (&AnimationInterface::WifiMacRxTrace, this));
   Config::ConnectWithoutContext ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                    MakeCallback (&AnimationInterface::MobilityCourseChangeTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
@@ -778,6 +772,8 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
   NS_LOG_INFO ("RxBeginTrace for packet:" << AnimUid);
   if (!WifiPacketIsPending (AnimUid))
@@ -787,6 +783,8 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
     }
   // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
   pendingWifiPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
+  pendingWifiPackets[AnimUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
+  OutputWirelessPacket (pendingWifiPackets[AnimUid], pendingWifiPackets[AnimUid].GetRxInfo (ndev));
 }
 
 
