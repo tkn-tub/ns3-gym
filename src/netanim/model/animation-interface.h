@@ -217,6 +217,14 @@ public:
    */
   bool IsStarted (void);
 
+  /**
+   * \brief Show all 802.11 frames. Default: show only frames accepted by mac layer
+   * \param showAll if true shows all 802.11 frames including beacons, association
+   *  request and acks (very chatty). if false only frames accepted by mac layer
+   *
+   */
+  void ShowAll802_11 (bool showAll); 
+
 private:
 #ifndef WIN32
   int m_fHandle;  // File handle for output (-1 if none)
@@ -327,6 +335,7 @@ private:
   void ConnectCallbacks ();
 
   bool m_started;
+  bool m_enforceWifiMacRx;
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);

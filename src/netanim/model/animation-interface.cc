@@ -61,7 +61,7 @@ AnimationInterface::AnimationInterface ()
   : m_fHandle (STDOUT_FILENO), m_xml (false), mobilitypollinterval (Seconds(0.25)),
     usingSockets (false), mport (0), outputfilename (""),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0),randomPosition (true),
-    m_writeCallback (0), m_started (false)
+    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true)
 {
   initialized = true;
   StartAnimation ();
@@ -71,7 +71,7 @@ AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (false), mport (0), outputfilename (fn),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
-    m_writeCallback (0), m_started (false)
+    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true)
 {
   initialized = true;
   StartAnimation ();
@@ -81,7 +81,7 @@ AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (true), mport (port), outputfilename (""),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
-    m_writeCallback (0), m_started (false)
+    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true)
 {
   initialized = true;
   StartAnimation ();
@@ -480,6 +480,10 @@ void AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::WifiPhyTxBeginTrace, this));
   Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxBegin",
                    MakeCallback (&AnimationInterface::WifiPhyRxBeginTrace, this));
+  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxEnd",
+  		   MakeCallback (&AnimationInterface::WifiPhyRxEndTrace, this));
+  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
+                   MakeCallback (&AnimationInterface::WifiMacRxTrace, this));
   Config::ConnectWithoutContext ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                    MakeCallback (&AnimationInterface::MobilityCourseChangeTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
@@ -536,6 +540,10 @@ int AnimationInterface::WriteN (int h, const std::string& st)
   return WriteN (h, st.c_str (), st.length ());
 }
 
+void AnimationInterface::ShowAll802_11 (bool showAll)
+{
+  m_enforceWifiMacRx = !showAll;
+}
 
 // Private methods
 void AnimationInterface::AddMargin ()
@@ -783,6 +791,8 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
     }
   // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
   pendingWifiPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
+  if (m_enforceWifiMacRx)
+    return;
   pendingWifiPackets[AnimUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
   OutputWirelessPacket (pendingWifiPackets[AnimUid], pendingWifiPackets[AnimUid].GetRxInfo (ndev));
 }
@@ -811,6 +821,8 @@ void AnimationInterface::WifiPhyRxEndTrace (std::string context,
 void AnimationInterface::WifiMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
+  if (!m_enforceWifiMacRx)
+    return;
   if (!m_started)
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
