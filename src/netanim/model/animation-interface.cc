@@ -61,7 +61,8 @@ AnimationInterface::AnimationInterface ()
   : m_fHandle (STDOUT_FILENO), m_xml (false), mobilitypollinterval (Seconds(0.25)),
     usingSockets (false), mport (0), outputfilename (""),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0),randomPosition (true),
-    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true)
+    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true),
+    m_enablePacketMetadata (false)
 {
   initialized = true;
   StartAnimation ();
@@ -71,7 +72,8 @@ AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (false), mport (0), outputfilename (fn),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
-    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true)
+    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true),
+    m_enablePacketMetadata (false)
 {
   initialized = true;
   StartAnimation ();
@@ -81,7 +83,8 @@ AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
   : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
     usingSockets (true), mport (port), outputfilename (""),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
-    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true)
+    m_writeCallback (0), m_started (false), m_enforceWifiMacRx (true),
+    m_enablePacketMetadata (false)
 {
   initialized = true;
   StartAnimation ();
@@ -121,6 +124,13 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
   outputfilename = fn;
   OutputFileSet = true;
   return true;
+}
+
+void AnimationInterface::EnablePacketMetadata (bool enable)
+{
+   m_enablePacketMetadata = enable;
+   if (enable)
+     Packet::EnablePrinting ();
 }
 
 bool AnimationInterface::IsInitialized ()
@@ -642,8 +652,8 @@ void AnimationInterface::WriteDummyPacket ()
   double lbRx = now.GetSeconds ();
   if (m_xml)
     {
-      oss << GetXMLOpen_packet (0,0,fbTx,lbTx,"DummyPktIgnoreThis");
-      oss << GetXMLOpenClose_rx (0,0,fbRx,lbRx);
+      oss << GetXMLOpen_packet (0, 0, fbTx, lbTx, "DummyPktIgnoreThis");
+      oss << GetXMLOpenClose_rx (0, 0, fbRx, lbRx);
       oss << GetXMLClose ("packet");
     }
   WriteN (m_fHandle, oss.str ());
@@ -666,8 +676,10 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
   double lbRx = (now + rxTime).GetSeconds ();
   if (m_xml)
     {
-      oss << GetXMLOpen_packet (0,tx->GetNode ()->GetId (),fbTx,lbTx);
-      oss << GetXMLOpenClose_rx (0,rx->GetNode ()->GetId (),fbRx,lbRx); 
+      oss << GetXMLOpen_packet (0, tx->GetNode ()->GetId (), fbTx, lbTx);
+      oss << GetXMLOpenClose_rx (0, rx->GetNode ()->GetId (), fbRx, lbRx); 
+      if (m_enablePacketMetadata)
+        oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
       oss << GetXMLClose ("packet");
     }
   else
@@ -794,7 +806,7 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
   if (m_enforceWifiMacRx)
     return;
   pendingWifiPackets[AnimUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
-  OutputWirelessPacket (pendingWifiPackets[AnimUid], pendingWifiPackets[AnimUid].GetRxInfo (ndev));
+  OutputWirelessPacket (p, pendingWifiPackets[AnimUid], pendingWifiPackets[AnimUid].GetRxInfo (ndev));
 }
 
 
@@ -841,7 +853,7 @@ void AnimationInterface::WifiMacRxTrace (std::string context,
   if (pktrxInfo.IsPhyRxComplete ())
     {
       NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
-      OutputWirelessPacket (pktInfo, pktrxInfo);
+      OutputWirelessPacket (p, pktInfo, pktrxInfo);
     }
 
 }
@@ -885,7 +897,7 @@ void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p,
   pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
   //TODO 0.001 is used until Wimax implements RxBegin and RxEnd traces
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  OutputWirelessPacket (pktInfo, pktrxInfo);
+  OutputWirelessPacket (p, pktInfo, pktrxInfo);
 }
 
 void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
@@ -927,7 +939,7 @@ void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, c
   pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
   //TODO 0.001 is used until Lte implements RxBegin and RxEnd traces
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  OutputWirelessPacket (pktInfo, pktrxInfo);
+  OutputWirelessPacket (p, pktInfo, pktrxInfo);
 }
 
 
@@ -1011,7 +1023,7 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
   if (pktrxInfo.IsPhyRxComplete ())
     {
       NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
-      OutputCsmaPacket (pktInfo, pktrxInfo);
+      OutputCsmaPacket (p, pktInfo, pktrxInfo);
     }
 }
 
@@ -1082,6 +1094,12 @@ void AnimationInterface::MobilityAutoCheck ()
     }
 }
 
+std::string AnimationInterface::GetPacketMetadata (Ptr<const Packet> p)
+{
+  std::ostringstream oss;
+  p->Print (oss);
+  return oss.str ();
+}
 
 // Helper to output a wireless packet.
 // For now, only the XML interface is supported
@@ -1134,7 +1152,7 @@ std::string AnimationInterface::GetPreamble ()
 return s;
 }
 
-void AnimationInterface::OutputWirelessPacket (AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
+void AnimationInterface::OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
 {
   NS_ASSERT (m_xml);
   std::ostringstream oss;
@@ -1146,12 +1164,14 @@ void AnimationInterface::OutputWirelessPacket (AnimPacketInfo &pktInfo, AnimRxIn
 
   uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
   oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
+  if (m_enablePacketMetadata)
+    oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
 
   oss << GetXMLClose ("wpacket");
   WriteN (m_fHandle, oss.str ());
 }
 
-void AnimationInterface::OutputCsmaPacket (AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
+void AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
 {
   NS_ASSERT (m_xml);
   std::ostringstream oss;
@@ -1161,6 +1181,8 @@ void AnimationInterface::OutputCsmaPacket (AnimPacketInfo &pktInfo, AnimRxInfo p
   oss << GetXMLOpen_packet (0, nodeId, pktInfo.m_fbTx, pktInfo.m_lbTx);
   uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
   oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
+  if (m_enablePacketMetadata)
+    oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
   oss << GetXMLClose ("packet");
   WriteN (m_fHandle, oss.str ());
 }
@@ -1249,6 +1271,14 @@ std::string AnimationInterface::GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId
       << "\" lbRx=\"" << lbRx
       << "\"/>" << std::endl;
   return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenClose_meta (std::string metaInfo)
+{
+  std::ostringstream oss;
+  oss << "<meta info=\""
+      << metaInfo << " />" << std::endl;
+  return oss.str ();      
 }
 
 std::vector<std::string> AnimationInterface::GetElementsFromContext (std::string context)
