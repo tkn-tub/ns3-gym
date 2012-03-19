@@ -1277,7 +1277,7 @@ std::string AnimationInterface::GetXMLOpenClose_meta (std::string metaInfo)
 {
   std::ostringstream oss;
   oss << "<meta info=\""
-      << metaInfo << " />" << std::endl;
+      << metaInfo << "\" />" << std::endl;
   return oss.str ();      
 }
 
