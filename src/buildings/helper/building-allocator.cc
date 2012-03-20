@@ -190,7 +190,9 @@ GridBuildingAllocator::Create (uint32_t n) const
       }
       double bxmax = bxmin + m_lengthX;
       double bymax = bymin + m_lengthY;
-      BoxValue boxValue (Box (bxmin, bxmax, bymin, bymax, 0, m_height));
+      Box box (bxmin, bxmax, bymin, bymax, 0, m_height);
+      NS_LOG_LOGIC ("new building : " <<  box);
+      BoxValue boxValue (box);
       m_buildingFactory.Set ("Boundaries", boxValue);
       Ptr<Building> b  = m_buildingFactory.Create<Building> ();
       //b->SetAttribute ("Boundaries", boxValue);

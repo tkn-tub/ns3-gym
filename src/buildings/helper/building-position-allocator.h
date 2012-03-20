@@ -22,6 +22,7 @@
 
 #include <ns3/ptr.h>
 #include <ns3/position-allocator.h>
+#include <ns3/node-container.h>
 
 namespace ns3 {
 
@@ -81,6 +82,29 @@ private:
   mutable std::vector<RoomInfo> m_roomListWithoutReplacement;
 };
 
+
+/**
+ * Walks a given NodeContainer sequentially, and for each node allocate a new
+ * position randomly in the same room of that node
+ * 
+ */
+class SameRoomPositionAllocator : public PositionAllocator
+{
+public:
+  SameRoomPositionAllocator ();
+  SameRoomPositionAllocator (NodeContainer c);
+
+  // inherited from Object
+  static TypeId GetTypeId (void);
+
+  // inherited from PositionAllocator
+  virtual Vector GetNext (void) const;
+
+private:
+
+  NodeContainer m_nodes;
+  mutable NodeContainer::Iterator m_nodeIt;
+};
 
 
 } // namespace ns3
