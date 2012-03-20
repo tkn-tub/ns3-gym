@@ -24,7 +24,7 @@
 
 
 #include <ns3/object.h>
-
+#include <fstream>
 
 
 namespace ns3 {
@@ -44,19 +44,24 @@ class RadioEnvironmentMapHelper : public Object
 public:  
 
   RadioEnvironmentMapHelper ();
-
   virtual ~RadioEnvironmentMapHelper ();
   
   // inherited from Object
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
 
+  /** 
+   * Deploy the RemSpectrumPhy objects that generate the map according to the specified settings.
+   * 
+   */
   void Install ();
 
 private:
 
-  void Connect ();
-  void PrintAndDeactivate ();
+  void DelayedInstall ();
+  void RunOneIteration (double xMin, double xMax, double yMin, double yMax);
+  void PrintAndReset ();
+  void Finalize ();
 
 
   struct RemPoint 
@@ -70,10 +75,14 @@ private:
   double m_xMin;
   double m_xMax;
   uint16_t m_xRes;
+  double m_xStep;
 
   double m_yMin;
   double m_yMax;
   uint16_t m_yRes;
+  double m_yStep;
+
+  uint32_t m_maxPointsPerIteration;
   
   double m_z;
 
@@ -85,6 +94,9 @@ private:
   Ptr<SpectrumChannel> m_channel;
 
   double m_noisePower;
+
+  std::ofstream m_outFile;
+
 };
 
 

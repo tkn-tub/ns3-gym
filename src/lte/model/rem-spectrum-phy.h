@@ -77,11 +77,22 @@ public:
   double GetSinr (double noisePower);
 
   /** 
-   * make StartRx a no-op from now on
+   * make StartRx a no-op from now on, and mark instance as inactive
    * 
    */
   void Deactivate ();
 
+  /** 
+   * 
+   * \return true if active
+   */
+  bool IsActive ();
+
+  /** 
+   * Reset the SINR calculator
+   * 
+   */
+  void Reset ();
 
 private:
   Ptr<MobilityModel> m_mobility;

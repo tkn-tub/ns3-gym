@@ -145,5 +145,18 @@ RemSpectrumPhy::Deactivate ()
   m_active = false;
 }
 
+bool
+RemSpectrumPhy::IsActive ()
+{
+  return m_active;
+}
+
+void
+RemSpectrumPhy::Reset ()
+{
+  m_referenceSignalPower = 0;
+  m_sumPower = 0;
+}
+
 
 } // namespace ns3
