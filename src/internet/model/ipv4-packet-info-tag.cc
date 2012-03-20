@@ -121,9 +121,9 @@ Ipv4PacketInfoTag::Deserialize (TagBuffer i)
 { 
   uint8_t buf[4];
   i.Read (buf, 4);
-  m_addr.Deserialize (buf);
+  m_addr = Ipv4Address::Deserialize (buf);
   i.Read (buf, 4);
-  m_spec_dst.Deserialize (buf);
+  m_spec_dst = Ipv4Address::Deserialize (buf);
   m_ifindex = i.ReadU32 ();
   m_ttl = i.ReadU8 ();
 }

@@ -454,7 +454,7 @@ void NscTcpL4Protocol::AddInterface (void)
           // All we need is another address on the same network as the interface. This
           // will force the stack to output the packet out of the network interface.
           addrBytes[3]++;
-          addr.Deserialize (addrBytes);
+          addr = Ipv4Address::Deserialize (addrBytes);
           addrOss.str ("");
           addr.Print (addrOss);
           m_nscStack->add_default_gateway (addrOss.str ().c_str ());
