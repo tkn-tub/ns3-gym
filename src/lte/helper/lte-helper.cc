@@ -101,7 +101,6 @@ LteHelper::DoStart (void)
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
 
-  //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
       m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
@@ -470,7 +469,6 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
 
-  //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
       Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
@@ -614,32 +612,6 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
   std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
-/*
-  const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
-  if (propModelStr.compare ("RandomPropagationLossModel") ||
-    propModelStr.compare ("FriisPropagationLossModel")||
-    propModelStr.compare ("TwoRayGroundPropagationLossModel")||
-    propModelStr.compare ("LogDistancePropagationLossModel")||
-    propModelStr.compare ("ThreeLogDistancePropagationLossModel")||
-    propModelStr.compare ("NakagamiPropagationLossModel")||
-    propModelStr.compare ("FixedRssLossModel")||
-    propModelStr.compare ("MatrixPropagationLossModel")||
-    propModelStr.compare ("RangePropagationLossModel"))
-    {
-      LogComponentEnable ("PropagationLossModel", LOG_LEVEL_ALL);
-    }
-  else
-    {
-      LogComponentEnable (propModel, LOG_LEVEL_ALL);
-    }
-
-  if (m_fadingModelType.compare ("ns3::TraceFadingLossModel") == 0)
-    {
-      const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
-      LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
-    }
-  LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
-*/
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
