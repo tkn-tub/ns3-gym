@@ -36,7 +36,7 @@ class SpectrumChannel;
 class BuildingsMobilityModel;
 
 /** 
- * Generates a 2D map of the SINR from the strongest transmitter. 
+ * Generates a 2D map of the SINR from the strongest transmitter in the downlink of an LTE FDD system.
  * 
  */
 class RadioEnvironmentMapHelper : public Object
@@ -49,6 +49,17 @@ public:
   // inherited from Object
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
+
+  /** 
+   * \return the bandwidth (in num of RBs) over which SINR is calculated
+   */
+  uint8_t GetBandwidth () const;
+
+  /** 
+   *
+   * \param bw  the bandwidth (in num of RBs) over which SINR is calculated
+   */
+  void SetBandwidth (uint8_t bw);
 
   /** 
    * Deploy the RemSpectrumPhy objects that generate the map according to the specified settings.
@@ -83,7 +94,10 @@ private:
   double m_yStep;
 
   uint32_t m_maxPointsPerIteration;
-  
+
+  uint16_t m_earfcn;
+  uint16_t m_bandwidth;
+ 
   double m_z;
 
   std::string m_channelPath;

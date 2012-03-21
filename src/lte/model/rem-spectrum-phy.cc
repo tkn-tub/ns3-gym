@@ -105,8 +105,7 @@ RemSpectrumPhy::GetDevice ()
 Ptr<const SpectrumModel>
 RemSpectrumPhy::GetRxSpectrumModel () const
 {
-  // supports any SpectrumModel
-  return 0;
+  return m_rxSpectrumModel;
 }
 
 Ptr<AntennaModel>
@@ -131,6 +130,13 @@ RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
           m_referenceSignalPower = power;
         }
     }
+}
+
+void
+RemSpectrumPhy::SetRxSpectrumModel (Ptr<const SpectrumModel> m)
+{
+  NS_LOG_FUNCTION (this << m);
+  m_rxSpectrumModel = m;
 }
 
 double

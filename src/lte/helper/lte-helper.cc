@@ -62,14 +62,15 @@ LteHelper::LteHelper (void)
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
   m_enbAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
   m_ueAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
+  m_channelFactory.SetTypeId (SingleModelSpectrumChannel::GetTypeId ());
 }
 
 void 
 LteHelper::DoStart (void)
 {
   NS_LOG_FUNCTION (this);
-  m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
+  m_downlinkChannel = m_channelFactory.Create<SpectrumChannel> ();
+  m_uplinkChannel = m_channelFactory.Create<SpectrumChannel> ();
 
   m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
   Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
@@ -264,6 +265,19 @@ LteHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
   m_fadingModelFactory.Set (n, v);
 }
 
+void 
+LteHelper::SetSpectrumChannelType (std::string type) 
+{
+  NS_LOG_FUNCTION (this << type);
+  m_channelFactory.SetTypeId (type);
+}
+
+void 
+LteHelper::SetSpectrumChannelAttribute (std::string n, const AttributeValue &v)
+{
+  m_channelFactory.Set (n, v);
+}
+
 
 NetDeviceContainer
 LteHelper::InstallEnbDevice (NodeContainer c)
@@ -316,7 +330,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
-  m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<AntennaModel> antenna = (m_enbAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
   NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
@@ -377,6 +390,8 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   dev->Start ();
 
+  m_uplinkChannel->AddRx (ulPhy);
+
   if (m_epcHelper != 0)
     {
       NS_LOG_INFO ("adding this eNB to the EPC");
@@ -409,7 +424,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
 
-  m_downlinkChannel->AddRx (dlPhy);
 
   Ptr<AntennaModel> antenna = (m_ueAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
   NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
@@ -489,6 +503,8 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
                       enbDevice->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
 
   ueDevice->Start ();
+  
+  m_downlinkChannel->AddRx (uePhy->GetDownlinkSpectrumPhy ());
 }
 
 void

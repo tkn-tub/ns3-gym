@@ -197,6 +197,7 @@ private:
 
   Ptr<SpectrumChannel> m_channel;
 
+  Ptr<const SpectrumModel> m_rxSpectrumModel;
   Ptr<SpectrumValue> m_txPsd;
   Ptr<PacketBurst> m_txPacketBurst;
   std::list<Ptr<PacketBurst> > m_rxPacketBurstList;

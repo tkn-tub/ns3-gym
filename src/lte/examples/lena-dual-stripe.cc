@@ -141,19 +141,23 @@ int
 main (int argc, char *argv[])
 {
   // scenario parameters
-  uint32_t nBlocks = 1;
+  uint32_t nBlocks = 10;
   uint32_t nApartmentsX = 10;
   uint32_t nFloors = 1;
-  double homeEnbDeploymentRatio = 0.2;
-  double homeEnbActivationRatio = 0.5;
-  double macroUeDensity = 0.0001;
   uint32_t nMacroEnbSites = 3;
   uint32_t nMacroEnbSitesX = 1;
   double interSiteDistance = 500;
-  double homeUesHomeEnbRatio = 1;
-  double homeEnbTxPowerDbm = 20.0;
-  double macroEnbTxPowerDbm = 46.0;
   double areaMarginFactor = 0.5; 
+  double macroUeDensity = 0.0001;
+  double homeEnbDeploymentRatio = 0.2;
+  double homeEnbActivationRatio = 0.5;
+  double homeUesHomeEnbRatio = 1;
+  double macroEnbTxPowerDbm = 46.0;
+  double homeEnbTxPowerDbm = 20.0;
+  uint16_t macroEnbDlEarfcn = 100;
+  uint16_t homeEnbDlEarfcn = 100;
+  uint8_t macroEnbBandwidth = 25;
+  uint8_t homeEnbBandwidth = 25;
   double simTime = 0.01;
   bool generateRem = false;
   
@@ -161,18 +165,29 @@ main (int argc, char *argv[])
   cmd.AddValue ("nBlocks", "Number of femtocell blocks", nBlocks);
   cmd.AddValue ("nApartmentsX", "Number of apartments along the X axis in a femtocell block", nApartmentsX);
   cmd.AddValue ("nFloors", "Number of floors", nFloors);
-  cmd.AddValue ("macroUeDensity", "How many macrocell UEs there are per square meter", macroUeDensity);
   cmd.AddValue ("nMacroEnbSites", "How many macro sites there are", nMacroEnbSites);
-  cmd.AddValue ("nMacroEnbSitesX", "(minimum) number of sites along the X-axis of the hex grid", nMacroEnbSitesX);
-  cmd.AddValue ("homeEnbDeploymentRatio", "The HeNB deployment ratio as per 3GPP R4-092042", homeEnbDeploymentRatio);
-  cmd.AddValue ("homeEnbActivationRatio", "The HeNB activation ratio as per 3GPP R4-092042", homeEnbActivationRatio);
-  cmd.AddValue ("homeUesHomeEnbRatio", "How many (on average) home UEs per HeNB there are in the simulation", homeUesHomeEnbRatio);
-  cmd.AddValue ("homeEnbTxPowerDbm", "TX power [dBm] used by HeNBs", homeEnbTxPowerDbm);
-  cmd.AddValue ("macroEnbTxPowerDbm", "TX power [dBm] used by macro eNBs", macroEnbTxPowerDbm);
+  cmd.AddValue ("nMacroEnbSitesX", 
+                "(minimum) number of sites along the X-axis of the hex grid", nMacroEnbSitesX);
+  cmd.AddValue ("interSiteDistance", "min distance between two nearby macro cell sites", interSiteDistance);
   cmd.AddValue ("areaMarginFactor", "how much the UE area extends outside the macrocell grid, "
                 "expressed as fraction of the interSiteDistance", areaMarginFactor);
+  cmd.AddValue ("macroUeDensity", "How many macrocell UEs there are per square meter", macroUeDensity);
+  cmd.AddValue ("homeEnbDeploymentRatio", 
+                "The HeNB deployment ratio as per 3GPP R4-092042", homeEnbDeploymentRatio);
+  cmd.AddValue ("homeEnbActivationRatio", 
+                "The HeNB activation ratio as per 3GPP R4-092042", homeEnbActivationRatio);
+  cmd.AddValue ("homeUesHomeEnbRatio", 
+                "How many (on average) home UEs per HeNB there are in the simulation", 
+                homeUesHomeEnbRatio);
+  cmd.AddValue ("macroEnbTxPowerDbm", "TX power [dBm] used by macro eNBs", macroEnbTxPowerDbm);
+  cmd.AddValue ("homeEnbTxPowerDbm", "TX power [dBm] used by HeNBs", homeEnbTxPowerDbm);
+  cmd.AddValue ("macroEnbDlEarfcn", "DL EARFCN used by macro eNBs", macroEnbDlEarfcn);
+  cmd.AddValue ("homeEnbDlEarfcn", "DL EARFCN used by HeNBs", homeEnbDlEarfcn);
+  cmd.AddValue ("macroEnbBandwidth", "bandwdith [num RBs] used by macro eNBs", macroEnbBandwidth);
+  cmd.AddValue ("homeEnbBandwidth", "bandwdith [num RBs] used by HeNBs", homeEnbBandwidth);
   cmd.AddValue ("simTime", "Total duration of the simulation [s]", simTime);
-  cmd.AddValue ("generateRem", "if true, will generate a REM and then abort the simulation; if false, will run the simulation normally (without generating any REM)", generateRem);
+  cmd.AddValue ("generateRem", "if true, will generate a REM and then abort the simulation;"
+                "if false, will run the simulation normally (without generating any REM)", generateRem);
 
   cmd.Parse (argc, argv);
 
@@ -230,6 +245,7 @@ main (int argc, char *argv[])
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (1.5));
   // use always LOS model
   lteHelper->SetPathlossModelAttribute ("Los2NlosThr", DoubleValue (1e6));
+  lteHelper->SetSpectrumChannelType ("ns3::MultiModelSpectrumChannel");
 
 
 
@@ -245,6 +261,10 @@ main (int argc, char *argv[])
   lteHelper->SetEnbAntennaModelType ("ns3::ParabolicAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (70));
   lteHelper->SetEnbAntennaModelAttribute ("MaxAttenuation",     DoubleValue (20.0));
+  lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (macroEnbDlEarfcn));
+  lteHelper->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (macroEnbDlEarfcn + 18000));
+  lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (macroEnbBandwidth));
+  lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (macroEnbBandwidth));
   NetDeviceContainer macroEnbDevs = lteHexGridEnbTopologyHelper->SetPositionAndInstallEnbDevice (macroEnbs);
 
   
@@ -254,6 +274,11 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeEnbs);
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (homeEnbTxPowerDbm));
+  lteHelper->SetEnbAntennaModelType ("ns3::IsotropicAntennaModel");
+  lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (homeEnbDlEarfcn));
+  lteHelper->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (homeEnbDlEarfcn + 18000));
+  lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (homeEnbBandwidth));
+  lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (homeEnbBandwidth));
   NetDeviceContainer homeEnbDevs  = lteHelper->InstallEnbDevice (homeEnbs);
   
 

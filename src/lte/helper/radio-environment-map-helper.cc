@@ -34,6 +34,7 @@
 #include <ns3/simulator.h>
 #include <ns3/node.h>
 #include <ns3/buildings-helper.h>
+#include <ns3/lte-spectrum-value-helper.h>
 
 #include <fstream>
 #include <limits>
@@ -119,10 +120,48 @@ RadioEnvironmentMapHelper::GetTypeId (void)
                    UintegerValue (20000),
                    MakeUintegerAccessor (&RadioEnvironmentMapHelper::m_maxPointsPerIteration),
                    MakeUintegerChecker<uint32_t> (1,std::numeric_limits<uint32_t>::max ()))
+    .AddAttribute ("Earfcn",
+                   "E-UTRA Absolute Radio Frequency Channel Number (EARFCN) "
+                   "as per 3GPP 36.101 Section 5.7.3. ",
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&RadioEnvironmentMapHelper::m_earfcn),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("Bandwidth",
+                   "Transmission Bandwidth Configuration (in number of RBs) over which the SINR will be calculated",
+                   UintegerValue (25),
+                   MakeUintegerAccessor (&RadioEnvironmentMapHelper::SetBandwidth, 
+                                         &RadioEnvironmentMapHelper::GetBandwidth),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
 
+
+uint8_t 
+RadioEnvironmentMapHelper::GetBandwidth () const
+{
+  return m_bandwidth;
+}
+
+void 
+RadioEnvironmentMapHelper::SetBandwidth (uint8_t bw)
+{
+  switch (bw)
+    { 
+    case 6:
+    case 15:
+    case 25:
+    case 50:
+    case 75:
+    case 100:
+      m_bandwidth = bw;
+      break;
+
+    default:
+      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
+      break;
+    }
+}
 
 
 
@@ -172,6 +211,7 @@ RadioEnvironmentMapHelper::DelayedInstall ()
       RemPoint p;
       p.phy = CreateObject<RemSpectrumPhy> ();
       p.bmm = CreateObject<BuildingsMobilityModel> ();
+      p.phy->SetRxSpectrumModel (LteSpectrumValueHelper::GetSpectrumModel (m_earfcn, m_bandwidth));
       p.phy->SetMobility (p.bmm); 
       m_channel->AddRx (p.phy);
       m_rem.push_back (p);

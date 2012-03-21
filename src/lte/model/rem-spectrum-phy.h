@@ -70,7 +70,13 @@ public:
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /** 
+   * set the RX spectrum model to be used
    * 
+   * \param m 
+   */
+  void SetRxSpectrumModel (Ptr<const SpectrumModel> m);
+
+  /** 
    * 
    * \return the Signal to Noise Ratio calculated 
    */
@@ -96,6 +102,7 @@ public:
 
 private:
   Ptr<MobilityModel> m_mobility;
+  Ptr<const SpectrumModel> m_rxSpectrumModel;
 
   double m_referenceSignalPower;
   double m_sumPower;
