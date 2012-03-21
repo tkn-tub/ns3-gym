@@ -26,8 +26,7 @@
 #include "ns3/ipv6-address.h"
 #include "ipv6-interface.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class Ipv6EndPoint;
 
@@ -91,21 +90,21 @@ public:
    * \brief Allocate a Ipv6EndPoint.
    * \return an empty Ipv6EndPoint instance
    */
-  Ipv6EndPoint *Allocate (void);
+  Ipv6EndPoint * Allocate (void);
 
   /**
    * \brief Allocate a Ipv6EndPoint.
    * \param address IPv6 address
    * \return an Ipv6EndPoint instance
    */
-  Ipv6EndPoint *Allocate (Ipv6Address address);
+  Ipv6EndPoint * Allocate (Ipv6Address address);
 
   /**
    * \brief Allocate a Ipv6EndPoint.
    * \param port local port
    * \return an Ipv6EndPoint instance
    */
-  Ipv6EndPoint *Allocate (uint16_t port);
+  Ipv6EndPoint * Allocate (uint16_t port);
 
   /**
    * \brief Allocate a Ipv6EndPoint.
@@ -113,7 +112,7 @@ public:
    * \param port local port
    * \return an Ipv6EndPoint instance
    */
-  Ipv6EndPoint *Allocate (Ipv6Address address, uint16_t port);
+  Ipv6EndPoint * Allocate (Ipv6Address address, uint16_t port);
 
   /**
    * \brief Allocate a Ipv6EndPoint.
@@ -123,7 +122,7 @@ public:
    * \param peerPort peer port
    * \return an Ipv6EndPoint instance
    */
-  Ipv6EndPoint *Allocate (Ipv6Address localAddress, uint16_t localPort, Ipv6Address peerAddress, uint16_t peerPort);
+  Ipv6EndPoint * Allocate (Ipv6Address localAddress, uint16_t localPort, Ipv6Address peerAddress, uint16_t peerPort);
 
   /**
    * \brief Remove a end point.
@@ -148,6 +147,16 @@ private:
    * \brief The ephemeral port.
    */
   uint16_t m_ephemeral;
+
+  /**
+   * \brief The first ephemeral port.
+   */
+  uint16_t m_portFirst;
+
+  /**
+   * \brief The last ephemeral port.
+   */
+  uint16_t m_portLast;
 
   /**
    * \brief A list of IPv6 end points.

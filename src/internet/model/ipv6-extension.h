@@ -35,8 +35,7 @@
 #include "ns3/traced-callback.h"
 
 
-namespace ns3
-{
+namespace ns3 {
 
 /**
  * \class Ipv6Extension
@@ -309,7 +308,7 @@ public:
 
     /**
      * \brief If all fragments have been added.
-     * \returns true if the packet is entire 
+     * \returns true if the packet is entire
      */
     bool IsEntire () const;
 

@@ -43,8 +43,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6Extension");
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6Extension);
 
@@ -338,14 +337,17 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
   std::pair<Ipv6Address, uint32_t> fragmentsId = std::make_pair<Ipv6Address, uint32_t> (src, identification);
   Ptr<Fragments> fragments;
 
+  Ipv6Header ipHeader = ipv6Header;
+  ipHeader.SetNextHeader (fragmentHeader.GetNextHeader ());
+
   MapFragments_t::iterator it = m_fragments.find (fragmentsId);
   if (it == m_fragments.end ())
     {
       fragments = Create<Fragments> ();
       m_fragments.insert (std::make_pair (fragmentsId, fragments));
-      EventId timeout = Simulator::Schedule (Seconds(60),
+      EventId timeout = Simulator::Schedule (Seconds (60),
                                              &Ipv6ExtensionFragment::HandleFragmentsTimeout, this,
-                                             fragmentsId, fragments, ipv6Header);
+                                             fragmentsId, fragments, ipHeader);
       fragments->SetTimeoutEventId (timeout);
     }
   else
@@ -365,11 +367,11 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
   if (fragments->IsEntire ())
     {
       packet = fragments->GetPacket ();
-      fragments->CancelTimeout();
-      m_fragments.erase(fragmentsId);
+      fragments->CancelTimeout ();
+      m_fragments.erase (fragmentsId);
       isDropped = false;
     }
-  else 
+  else
     {
       // the fragment is not "dropped", but Ipv6L3Protocol::LocalDeliver must stop processing it.
       isDropped = true;
@@ -406,9 +408,9 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
   Ptr<Ipv6Extension> extension = extensionDemux->GetExtension (nextHeader);
   uint8_t extensionHeaderLength;
 
-  while (moreHeader) 
+  while (moreHeader)
     {
-      if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP) 
+      if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
         {
           Ipv6ExtensionHopByHopHeader *hopbyhopHeader = new Ipv6ExtensionHopByHopHeader ();
           p->RemoveHeader (*hopbyhopHeader);
@@ -429,7 +431,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           unfragmentablePart.push_back (std::make_pair<Ipv6ExtensionHeader *, uint8_t> (hopbyhopHeader, Ipv6Header::IPV6_EXT_HOP_BY_HOP));
           unfragmentablePartSize += extensionHeaderLength;
         }
-      else if (nextHeader == Ipv6Header::IPV6_EXT_ROUTING) 
+      else if (nextHeader == Ipv6Header::IPV6_EXT_ROUTING)
         {
           uint8_t buf[2];
           p->CopyData (buf, sizeof(buf));
@@ -453,7 +455,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           unfragmentablePart.push_back (std::make_pair<Ipv6ExtensionHeader *, uint8_t> (routingHeader, Ipv6Header::IPV6_EXT_ROUTING));
           unfragmentablePartSize += extensionHeaderLength;
         }
-      else if (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION) 
+      else if (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION)
         {
           Ipv6ExtensionDestinationHeader *destinationHeader = new Ipv6ExtensionDestinationHeader ();
           p->RemoveHeader (*destinationHeader);
@@ -463,7 +465,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
 
           uint8_t type;
           p->CopyData (&type, sizeof(type));
-          if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING 
+          if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING
                 || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
             {
               moreHeader = false;
@@ -486,14 +488,14 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
   uint32_t identification = (uint32_t) uvar.GetValue (0, (uint32_t)-1);
   uint16_t offset = 0;
 
-  do 
+  do
     {
       if (p->GetSize () > offset + maxFragmentablePartSize)
         {
           moreFragment = true;
           currentFragmentablePartSize = maxFragmentablePartSize;
         }
-      else 
+      else
         {
           moreFragment = false;
           currentFragmentablePartSize = p->GetSize () - offset;
@@ -516,15 +518,15 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
         {
           if (it->second == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
             {
-              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionHopByHopHeader *>(it->first));
+              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionHopByHopHeader *> (it->first));
             }
           else if (it->second == Ipv6Header::IPV6_EXT_ROUTING)
             {
-              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionLooseRoutingHeader *>(it->first));
+              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionLooseRoutingHeader *> (it->first));
             }
           else if (it->second == Ipv6Header::IPV6_EXT_DESTINATION)
             {
-              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionDestinationHeader *>(it->first));
+              fragment->AddHeader (*dynamic_cast<Ipv6ExtensionDestinationHeader *> (it->first));
             }
         }
 
@@ -534,7 +536,8 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
       std::ostringstream oss;
       fragment->Print (oss);
       listFragments.push_back (fragment);
-    } while (moreFragment);
+    }
+  while (moreFragment);
 
   for (std::list<std::pair<Ipv6ExtensionHeader *, uint8_t> >::iterator it = unfragmentablePart.begin (); it != unfragmentablePart.end (); it++)
     {
@@ -549,17 +552,19 @@ void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint3
 {
   Ptr<Packet> packet = fragments->GetPartialPacket ();
 
+  packet->AddHeader (ipHeader);
+
   // if we have at least 8 bytes, we can send an ICMP.
   if ( packet->GetSize () > 8 )
     {
 
-      Ptr<Icmpv6L4Protocol> icmp = GetNode()->GetObject<Icmpv6L4Protocol> ();
+      Ptr<Icmpv6L4Protocol> icmp = GetNode ()->GetObject<Icmpv6L4Protocol> ();
       icmp->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_FRAGTIME);
     }
   m_dropTrace (packet);
 
   // clear the buffers
-  m_fragments.erase(fragmentsId);
+  m_fragments.erase (fragmentsId);
 }
 
 Ipv6ExtensionFragment::Fragments::Fragments ()
@@ -591,7 +596,7 @@ void Ipv6ExtensionFragment::Fragments::AddFragment (Ptr<Packet> fragment, uint16
   m_fragments.insert (it, std::make_pair<Ptr<Packet>, uint16_t> (fragment, fragmentOffset));
 }
 
-void Ipv6ExtensionFragment::Fragments::SetUnfragmentablePart (Ptr<Packet> unfragmentablePart) 
+void Ipv6ExtensionFragment::Fragments::SetUnfragmentablePart (Ptr<Packet> unfragmentablePart)
 {
   m_unfragmentable = unfragmentablePart;
 }
@@ -661,14 +666,14 @@ Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPartialPacket () const
 
 void Ipv6ExtensionFragment::Fragments::SetTimeoutEventId (EventId event)
 {
-    m_timeoutEventId = event;
-    return;
+  m_timeoutEventId = event;
+  return;
 }
 
-void Ipv6ExtensionFragment::Fragments::CancelTimeout()
+void Ipv6ExtensionFragment::Fragments::CancelTimeout ()
 {
-    m_timeoutEventId.Cancel ();
-    return;
+  m_timeoutEventId.Cancel ();
+  return;
 }
 
 
@@ -727,7 +732,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
 
   if (nextHeader)
     {
-      *nextHeader = routingNextHeader; 
+      *nextHeader = routingNextHeader;
     }
 
   Ptr<Icmpv6L4Protocol> icmpv6 = GetNode ()->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
@@ -918,7 +923,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   nextAddressIndex = nbAddress - segmentsLeft;
   nextAddress = routingHeader.GetRouterAddress (nextAddressIndex);
 
-  if (nextAddress.IsMulticast () || destAddress.IsMulticast ()) 
+  if (nextAddress.IsMulticast () || destAddress.IsMulticast ())
     {
       m_dropTrace (packet);
       isDropped = true;
@@ -941,10 +946,10 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   ipv6header.SetHopLimit (hopLimit - 1);
   p->AddHeader (routingHeader);
 
-  /* short-circuiting routing stuff 
-   * 
+  /* short-circuiting routing stuff
+   *
    * If we process this option,
-   * the packet was for us so we resend it to 
+   * the packet was for us so we resend it to
    * the new destination (modified in the header above).
    */
 
@@ -966,7 +971,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
     }
 
   /* as we directly send packet, mark it as dropped */
-  isDropped = true; 
+  isDropped = true;
 
   return routingHeader.GetSerializedSize ();
 }

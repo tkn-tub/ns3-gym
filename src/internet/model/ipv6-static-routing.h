@@ -31,8 +31,7 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-routing-protocol.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class Packet;
 class NetDevice;
@@ -241,7 +240,7 @@ protected:
   /**
    * \brief Dispose this object.
    */
-  void DoDispose ();
+  virtual void DoDispose ();
 
 private:
   typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> > NetworkRoutes;
