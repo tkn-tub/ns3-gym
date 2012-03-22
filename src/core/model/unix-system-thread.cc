@@ -20,7 +20,6 @@
 
 #include <pthread.h>
 #include <string.h>
-#include <signal.h>
 #include "fatal-error.h"
 #include "system-thread.h"
 #include "log.h"
@@ -50,28 +49,18 @@ public:
 
   void Start (void);
   void Join (void);
-  void Shutdown (void);
-  bool Break (void);
 
 private:
   static void *DoRun (void *arg);
   Callback<void> m_callback;
   pthread_t m_thread;
-  bool m_break;
   void *    m_ret;
 };
 
 SystemThreadImpl::SystemThreadImpl (Callback<void> callback)
-  : m_callback (callback), m_break (false)
+  : m_callback (callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  // Make sure we have a SIGALRM handler which does not terminate
-  // our process.
-  struct sigaction act;
-  act.sa_flags = 0;
-  sigemptyset (&act.sa_mask);
-  act.sa_handler = SIG_IGN;
-  sigaction (SIGALRM, &act, 0);
 }
 
 void
@@ -103,25 +92,6 @@ SystemThreadImpl::Join (void)
     }
 }
 
-void
-SystemThreadImpl::Shutdown (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-
-  m_break = true;
-
-  // send a SIGALRM signal on the target thread to make sure that it
-  // will unblock.
-  pthread_kill (m_thread, SIGALRM);
-}
-
-bool
-SystemThreadImpl::Break (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-
-  return m_break;
-}
 
 void *
 SystemThreadImpl::DoRun (void *arg)
@@ -141,7 +111,7 @@ SystemThreadImpl::DoRun (void *arg)
 // class above.
 //
 SystemThread::SystemThread (Callback<void> callback) 
-  : m_impl (new SystemThreadImpl (callback)), m_break (false)
+  : m_impl (new SystemThreadImpl (callback))
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -164,20 +134,6 @@ SystemThread::Join (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_impl->Join ();
-}
-
-void
-SystemThread::Shutdown (void) 
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_impl->Shutdown ();
-}
-
-bool
-SystemThread::Break (void) 
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_impl->Break ();
 }
 
 } // namespace ns3
