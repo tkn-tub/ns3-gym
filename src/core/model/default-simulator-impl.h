@@ -24,6 +24,8 @@
 #include "simulator-impl.h"
 #include "scheduler.h"
 #include "event-impl.h"
+#include "system-thread.h"
+#include "ns3/system-mutex.h"
 
 #include "ptr.h"
 
@@ -64,11 +66,23 @@ private:
   virtual void DoDispose (void);
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
-  typedef std::list<EventId> DestroyEvents;
+  void ProcessEventsWithContext (void);
+ 
+  struct EventWithContext {
+    uint32_t context;
+    uint64_t timestamp;
+    EventImpl *event;
+  };
+  typedef std::list<struct EventWithContext> EventsWithContext;
+  EventsWithContext m_eventsWithContext;
+  bool m_eventsWithContextEmpty;
+  SystemMutex m_eventsWithContextMutex;
 
+  typedef std::list<EventId> DestroyEvents;
   DestroyEvents m_destroyEvents;
   bool m_stop;
   Ptr<Scheduler> m_events;
+
   uint32_t m_uid;
   uint32_t m_currentUid;
   uint64_t m_currentTs;
@@ -76,6 +90,8 @@ private:
   // number of events that have been inserted but not yet scheduled,
   // not counting the "destroy" events; this is used for validation
   int m_unscheduledEvents;
+
+  SystemThread::ThreadId m_main;
 };
 
 } // namespace ns3

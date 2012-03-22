@@ -80,6 +80,8 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
   m_currentContext = 0xffffffff;
   m_unscheduledEvents = 0;
 
+  m_main = SystemThread::Self();
+
   // Be very careful not to do anything that would cause a change or assignment
   // of the underlying reference counts of m_synchronizer or you will be sorry.
   m_synchronizer = CreateObject<WallClockSynchronizer> ();
@@ -424,6 +426,9 @@ RealtimeSimulatorImpl::Run (void)
   NS_ASSERT_MSG (m_running == false, 
                  "RealtimeSimulatorImpl::Run(): Simulator already running");
 
+  // Set the current threadId as the main threadId
+  m_main = SystemThread::Self();
+
   m_stop = false;
   m_running = true;
   m_synchronizer->SetOrigin (m_currentTs);
@@ -510,6 +515,9 @@ RealtimeSimulatorImpl::RunOneEvent (void)
   //
   {
     CriticalSection cs (m_mutex);
+   
+    // Set the current threadId as the main threadId
+    m_main = SystemThread::Self();
 
     Scheduler::Event next = m_events->RemoveNext ();
 
@@ -581,7 +589,20 @@ RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, 
     CriticalSection cs (m_mutex);
     uint64_t ts;
 
-    ts = m_currentTs + time.GetTimeStep ();
+    if (SystemThread::Equals (m_main))
+      {
+        ts = m_currentTs + time.GetTimeStep ();
+      }
+    else
+      {
+        //
+        // If the simulator is running, we're pacing and have a meaningful 
+        // realtime clock.  If we're not, then m_currentTs is where we stopped.
+        // 
+        ts = m_running ? m_synchronizer->GetCurrentRealtime () : m_currentTs;
+        ts += time.GetTimeStep ();
+      }
+
     NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealtime(): schedule for time < m_currentTs");
     Scheduler::Event ev;
     ev.impl = impl;

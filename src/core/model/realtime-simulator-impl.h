@@ -20,6 +20,7 @@
 #define REALTIME_SIMULATOR_IMPL_H
 
 #include "simulator-impl.h"
+#include "system-thread.h"
 
 #include "scheduler.h"
 #include "synchronizer.h"
@@ -118,6 +119,8 @@ private:
    * The maximum allowable drift from real-time in SYNC_HARD_LIMIT mode.
    */
   Time m_hardLimit;
+
+  SystemThread::ThreadId m_main;
 };
 
 } // namespace ns3
