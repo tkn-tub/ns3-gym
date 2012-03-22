@@ -11,6 +11,7 @@ Buildings Module
     buildings-design
     buildings-user
     buildings-testing
+    buildings-references
 
 
 
