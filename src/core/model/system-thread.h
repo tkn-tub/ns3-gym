@@ -21,11 +21,13 @@
 #ifndef SYSTEM_THREAD_H
 #define SYSTEM_THREAD_H
 
+#include "ns3/core-config.h"
 #include "callback.h"
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#endif /* HAVE_PTHREAD_H */
 
 namespace ns3 { 
-
-class SystemThreadImpl;
 
 /**
  * @brief A class which provides a relatively platform-independent thread
@@ -123,7 +125,13 @@ public:
   void Join (void);
 
 private:
-  SystemThreadImpl * m_impl;
+#ifdef HAVE_PTHREAD_H
+  static void *DoRun (void *arg);
+
+  Callback<void> m_callback;
+  pthread_t m_thread;
+  void *    m_ret;
+#endif 
 };
 
 } // namespace ns3

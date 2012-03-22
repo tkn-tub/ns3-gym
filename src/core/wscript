@@ -283,8 +283,8 @@ def build(bld):
 
     if env['ENABLE_THREADING']:
         core.source.extend([
+            'model/system-thread.cc',
             'model/unix-fd-reader.cc',
-            'model/unix-system-thread.cc',
             'model/unix-system-mutex.cc',
             'model/unix-system-condition.cc',
             ])
