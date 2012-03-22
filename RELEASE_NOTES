@@ -31,6 +31,7 @@ Bugs fixed
  - bug 1318 - Asserts for IPv6 malformed packets
  - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
  - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
+ - bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
 
 Known issues
 ------------

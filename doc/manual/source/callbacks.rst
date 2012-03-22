@@ -239,7 +239,7 @@ Here is an example of the usage::
   class A
   {
   public:
-  A (int ao) : a (a0) {}
+  A (int a0) : a (a0) {}
   int Hello (int b0)
   {
     std::cout << "Hello from A, a = " << a << " b0 = " << b0 << std::endl;
