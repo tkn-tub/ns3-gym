@@ -47,6 +47,11 @@ namespace ns3 {
 class SystemThread : public SimpleRefCount<SystemThread>
 {
 public:
+
+#ifdef HAVE_PTHREAD_H
+  typedef pthread_t ThreadId;
+#endif
+
   /**
    * @brief Create a SystemThread object.
    *
@@ -123,6 +128,19 @@ public:
    * provided callback, finishes.
    */
   void Join (void);
+  /**
+   * @brief Returns the current thread Id.
+   *
+   * @returns current thread Id. 
+   */
+  static ThreadId Self(void);
+
+  /**
+   * @brief Compares an TharedId with the current ThreadId .
+   *
+   * @returns true if Id matches the current ThreadId.
+   */
+  static bool Equals(ThreadId id);
 
 private:
 #ifdef HAVE_PTHREAD_H

@@ -79,6 +79,17 @@ SystemThread::DoRun (void *arg)
 
   return 0;
 }
+SystemThread::ThreadId 
+SystemThread::Self (void)
+{
+  return pthread_self ();
+}
+
+bool 
+SystemThread::Equals (SystemThread::ThreadId id)
+{
+  return (pthread_equal (pthread_self (), id) != 0);
+}
 
 #endif /* HAVE_PTHREAD_H */
 
