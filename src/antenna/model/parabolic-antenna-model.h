@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 CTTC
+ * Copyright (c) 2012 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,8 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef COSINE_ANTENNA_MODEL_H
-#define COSINE_ANTENNA_MODEL_H
+#ifndef PARABOLIC_ANTENNA_MODEL_H
+#define PARABOLIC_ANTENNA_MODEL_H
 
 
 #include <ns3/object.h>
@@ -29,18 +29,20 @@ namespace ns3 {
 
 /**
  * 
- * \brief Cosine Antenna Model 
+ * \brief  Antenna model based on a parabolic approximation of the main lobe radiation pattern.
  *
- * This class implements the cosine model as described in:
+ * This class implements the parabolic model as described in some 3GPP document, e.g., R4-092042
  *
- * Li Chunjian, "Efficient Antenna Patterns for Three-Sector WCDMA Systems"
+ * A similar model appears in 
  *
- * Note that only the element factor of the above model is
- * considered. Also, an additional constant gain is added to model the
- * radiation pattern on the vertical plane (to account for the fact
- * that the elevation angle is not included in the model).
+ * George Calcev and Matt Dillon, "Antenna Tilt Control in CDMA Networks"
+ * in Proc. of the 2nd Annual International Wireless Internet Conference (WICON), 2006
+ *
+ * though the latter addresses also the elevation plane, which the present model doesn't.
+ *
+ *
  */
-class CosineAntennaModel : public AntennaModel
+class ParabolicAntennaModel : public AntennaModel
 {
 public:
 
@@ -59,17 +61,11 @@ public:
 
 private:
 
-  /**
-   * this is the variable "n" in the paper by Chunjian
-   * 
-   */
-  double m_exponent; 
-
   double m_beamwidthRadians;
 
   double m_orientationRadians;
 
-  double m_maxGain;
+  double m_maxAttenuation;
 };
 
 
@@ -77,4 +73,4 @@ private:
 } // namespace ns3
 
 
-#endif // COSINE_ANTENNA_MODEL_H
+#endif // PARABOLIC_ANTENNA_MODEL_H

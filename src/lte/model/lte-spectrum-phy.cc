@@ -167,14 +167,7 @@ LteSpectrumPhy::SetChannel (Ptr<SpectrumChannel> c)
 Ptr<const SpectrumModel>
 LteSpectrumPhy::GetRxSpectrumModel () const
 {
-  if (m_txPsd)
-    {
-      return m_txPsd->GetSpectrumModel ();
-    }
-  else
-    {
-      return 0;
-    }
+  return m_rxSpectrumModel;
 }
 
 
@@ -192,6 +185,7 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 {
   NS_LOG_FUNCTION (this << noisePsd);
   NS_ASSERT (noisePsd);
+  m_rxSpectrumModel = noisePsd->GetSpectrumModel ();
   m_interference->SetNoisePowerSpectralDensity (noisePsd);
 }
 
