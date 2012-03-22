@@ -21,9 +21,10 @@
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 
-#include "lte-amc.h"
-#include "rr-ff-mac-scheduler.h"
+#include <ns3/lte-amc.h>
+#include <ns3/rr-ff-mac-scheduler.h>
 #include <ns3/simulator.h>
+#include <ns3/lte-common.h>
 
 NS_LOG_COMPONENT_DEFINE ("RrFfMacScheduler");
 
@@ -290,8 +291,16 @@ RrFfMacScheduler::DoCschedCellConfigReq (const struct FfMacCschedSapProvider::Cs
 void
 RrFfMacScheduler::DoCschedUeConfigReq (const struct FfMacCschedSapProvider::CschedUeConfigReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // Not used at this stage
+  NS_LOG_FUNCTION (this << " RNTI " << params.m_rnti << " txMode " << (uint16_t)params.m_transmissionMode);
+  std::map <uint16_t,uint8_t>::iterator it = m_uesTxMode.find (params.m_rnti);
+  if (it==m_uesTxMode.end ())
+    {
+      m_uesTxMode.insert (std::pair <uint16_t, double> (params.m_rnti, params.m_transmissionMode));
+    }
+  else
+    {
+      (*it).second = params.m_transmissionMode;
+    }
   return;
 }
 
@@ -481,6 +490,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       it = m_rlcBufferReq.begin ();
       m_nextRntiDl = (*it).m_rnti;
     }
+  std::map <uint16_t,uint8_t>::iterator itTxMode;
   do
     {
       itLcRnti = lcActivesPerRnti.find ((*it).m_rnti);
@@ -495,6 +505,12 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           continue;
         }
+      itTxMode = m_uesTxMode.find ((*it).m_rnti);
+      if (itTxMode == m_uesTxMode.end())
+        {
+          NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).m_rnti);
+        }
+      int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
       int lcNum = (*itLcRnti).second;
       // create new BuildDataListElement_s for this RNTI
       BuildDataListElement_s newEl;
@@ -505,29 +521,35 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newDci.m_resAlloc = 0;
       newDci.m_rbBitmap = 0;
       std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find (newEl.m_rnti);
-      if (itCqi == m_p10CqiRxed.end ())
+      for (uint8_t i = 0; i < nLayer; i++) 
         {
-          newDci.m_mcs.push_back (0); // no info on this user -> lowest MCS
-        }
-      else
-        {
-          newDci.m_mcs.push_back ( m_amc->GetMcsFromCqi ((*itCqi).second) );
+          if (itCqi == m_p10CqiRxed.end ())
+            {
+              newDci.m_mcs.push_back (0); // no info on this user -> lowest MCS
+            }
+          else
+            {
+              newDci.m_mcs.push_back ( m_amc->GetMcsFromCqi ((*itCqi).second) );
+            }
         }
       // group the LCs of this RNTI
       std::vector <struct RlcPduListElement_s> newRlcPduLe;
 //       int totRbg = lcNum * rbgPerFlow;
 //       totRbg = rbgNum / nTbs;
-int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
-      NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << rbgPerTb * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0));
+      int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
+      NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << rbgPerTb * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0) << " layers " << nLayer);
       uint16_t rlcPduSize = tbSize / lcNum;
       for (int i = 0; i < lcNum ; i++)
         {
-          RlcPduListElement_s newRlcEl;
-          newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
-          NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti);
-          newRlcEl.m_size = rlcPduSize;
-          UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
-          newRlcPduLe.push_back (newRlcEl);
+          for (uint8_t j = 0; j < nLayer; j++)
+            {
+              RlcPduListElement_s newRlcEl;
+              newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
+              NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize << " ID " << (*it).m_rnti << " layer " << (uint16_t)j);
+              newRlcEl.m_size = rlcPduSize;
+              UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
+              newRlcPduLe.push_back (newRlcEl);
+            }
           it++;
           if (it == m_rlcBufferReq.end ())
             {
@@ -543,8 +565,7 @@ int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) 
         }
       newDci.m_rbBitmap = rbgMask; // (32 bit bitmap see 7.1.6 of 36.213)
 
-      int nbOfTbsInNewDci = 1;  // SISO -> only one TB
-      for (int i = 0; i < nbOfTbsInNewDci; i++)
+      for (int i = 0; i < nLayer; i++)
         {
           newDci.m_tbsSize.push_back (tbSize);
           newDci.m_ndi.push_back (1); // TBD (new data indicator)
@@ -1032,5 +1053,18 @@ RrFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
     }
   
 }
+
+
+void
+RrFfMacScheduler::TransmissionModeConfigurationUpdate (uint16_t rnti, uint8_t txMode)
+{
+  NS_LOG_FUNCTION (this << " RNTI " << rnti << " txMode " << (uint16_t)txMode);
+  FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params;
+  params.m_rnti = rnti;
+  params.m_transmissionMode = txMode;
+  m_cschedSapUser->CschedUeConfigUpdateInd (params);
+}
+
+
 
 }

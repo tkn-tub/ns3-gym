@@ -36,20 +36,48 @@
 #include <ns3/lte-mi-error-model.h>
 #include <ns3/lte-radio-bearer-tag.h>
 #include <ns3/boolean.h>
+#include <ns3/double.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
 namespace ns3 {
+  
+  
+tbId_t::tbId_t ()
+{
+}
 
+tbId_t::tbId_t (const uint16_t a, const uint8_t b)
+: m_rnti (a),
+  m_layer (b)
+{
+}
+
+bool
+operator == (const tbId_t &a, const tbId_t &b)
+{
+  return ( (a.m_rnti == b.m_rnti) && (a.m_layer == b.m_layer) );
+}
+
+bool
+operator < (const tbId_t& a, const tbId_t& b)
+{
+  return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_layer < b.m_layer) ) );
+}
 
 NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),
-  m_random (0.0, 1.0)
+  m_random (0.0, 1.0),
+  m_transmissionMode (0)
 {
   NS_LOG_FUNCTION (this);
   m_interference = CreateObject<LteInterference> ();
+  for (uint8_t i = 0; i < 7; i++)
+    {
+      m_txModeGain.push_back (0.0);
+    }
 }
 
 
@@ -57,6 +85,7 @@ LteSpectrumPhy::~LteSpectrumPhy ()
 {
   NS_LOG_FUNCTION (this);
   m_expectedTbs.clear ();
+  m_txModeGain.clear ();
 }
 
 void LteSpectrumPhy::DoDispose ()
@@ -118,7 +147,7 @@ LteSpectrumPhy::GetTypeId (void)
                     "Activate/Deactivate the error model (by default is active).",
                     BooleanValue (true),
                     MakeBooleanAccessor (&LteSpectrumPhy::m_pemEnabled),
-                    MakeBooleanChecker ());
+                    MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -427,11 +456,14 @@ LteSpectrumPhy::UpdateSinrPerceived (const SpectrumValue& sinr)
 
 
 void
-LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map)
+LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer)
 {
-  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << (uint16_t)mcs);
+  NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << (uint16_t)mcs << " layer " << (uint8_t)layer);
+  tbId_t tbId;
+  tbId.m_rnti = rnti;
+  tbId.m_layer = layer;
   expectedTbs_t::iterator it;
-  it = m_expectedTbs.find (rnti);
+  it = m_expectedTbs.find (tbId);
   if (it != m_expectedTbs.end ())
   {
     // migth be a TB of an unreceived packet (due to high progpalosses)
@@ -439,7 +471,7 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::
   }
   // insert new entry
   tbInfo_t tbInfo = {size, mcs, map, false};
-  m_expectedTbs.insert (std::pair<uint16_t, tbInfo_t> (rnti,tbInfo ));
+  m_expectedTbs.insert (std::pair<tbId_t, tbInfo_t> (tbId,tbInfo ));
 }
 
 
@@ -454,16 +486,22 @@ LteSpectrumPhy::EndRx ()
   // this will trigger CQI calculation and Error Model evaluation
   // as a side effect, the error model should update the error status of all TBs
   m_interference->EndRx ();
-  NS_LOG_INFO (this << " No. of burts " << m_rxPacketBurstList.size ());
+  NS_LOG_DEBUG (this << " No. of burts " << m_rxPacketBurstList.size ());
   NS_LOG_DEBUG (this << " Expected TBs " << m_expectedTbs.size ());
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
+  
+  // apply transmission mode gain
+  NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_txModeGain.size ());
+  NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
+  m_sinrPerceived *= m_txModeGain.at (m_transmissionMode);
+  
   while (itTb!=m_expectedTbs.end ())
     {
       if (m_pemEnabled)
         {
           double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
           (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
-          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
+          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint8_t)(*itTb).first.m_layer << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
        }
       
 //       for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)
@@ -481,9 +519,11 @@ LteSpectrumPhy::EndRx ()
             // retrieve TB info of this packet 
             LteRadioBearerTag tag;
             (*j)->PeekPacketTag (tag);
-            itTb = m_expectedTbs.find (tag.GetRnti ());
-            //(*j)->AddPacketTag (tag);
-            NS_LOG_INFO (this << " Packet of " << tag.GetRnti ());
+            tbId_t tbId;
+            tbId.m_rnti = tag.GetRnti ();
+            tbId.m_layer = tag.GetLayer ();
+            itTb = m_expectedTbs.find (tbId);
+            NS_LOG_INFO (this << " Packet of " << tbId.m_rnti << " layer " <<  (uint8_t) tbId.m_layer);
             if (itTb!=m_expectedTbs.end ())
               {
                 if (!(*itTb).second.corrupt)
@@ -519,6 +559,199 @@ LteSpectrumPhy::AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 {
   m_interference->AddSinrChunkProcessor (p);
 }
+
+void 
+LteSpectrumPhy::SetTransmissionMode (uint8_t txMode)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) txMode);
+  NS_ASSERT_MSG (txMode < m_txModeGain.size (), "TransmissionMode not available: 1.." << m_txModeGain.size ());
+  m_transmissionMode = txMode;
+}
+
+void 
+LteSpectrumPhy::SetTxMode1Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 1)
+    {
+      m_txModeGain.resize (1);
+    }
+
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==0)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+  
+}
+
+void 
+LteSpectrumPhy::SetTxMode2Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 2)
+    {
+      m_txModeGain.resize (2);
+    }
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==1)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+}
+
+void 
+LteSpectrumPhy::SetTxMode3Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 3)
+    {
+      m_txModeGain.resize (3);
+    }
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==2)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+}
+
+void 
+LteSpectrumPhy::SetTxMode4Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 4)
+    {
+      m_txModeGain.resize (4);
+    }
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==3)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+}
+
+void 
+LteSpectrumPhy::SetTxMode5Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 5)
+    {
+      m_txModeGain.resize (5);
+    }
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==4)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+}
+
+void 
+LteSpectrumPhy::SetTxMode6Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 6)
+    {
+      m_txModeGain.resize (6);
+    }
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==5)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+}
+
+void 
+LteSpectrumPhy::SetTxMode7Gain (double gain)
+{
+  NS_LOG_FUNCTION (this << gain);
+  // convert to linear
+  gain = pow (10.0, (gain / 10.0));
+  if (m_txModeGain.size () < 7)
+    {
+      m_txModeGain.resize (7);
+    }
+  std::vector <double> temp;
+  temp = m_txModeGain;
+  m_txModeGain.clear ();
+  for (uint8_t i = 0; i < temp.size (); i++)
+    {
+      if (i==6)
+        {
+          m_txModeGain.push_back (gain);
+        }
+      else
+        {
+          m_txModeGain.push_back (temp.at (i));
+        }
+    }
+}
+
 
 
 } // namespace ns3

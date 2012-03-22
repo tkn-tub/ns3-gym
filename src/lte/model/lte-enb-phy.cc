@@ -56,6 +56,8 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetCellId (uint16_t cellId);
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
 
 private:
   LteEnbPhy* m_phy;
@@ -89,6 +91,12 @@ void
 EnbMemberLteEnbPhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_phy->DoSendIdealControlMessage (msg);
+}
+
+void
+EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
+{
+  m_phy->DoSetTransmissionMode (rnti, txMode);
 }
 
 
@@ -388,7 +396,7 @@ LteEnbPhy::StartSubFrame (void)
                     {
                       rbMap.push_back (i);
                     }
-                  m_uplinkSpectrumPhy->AddExpectedTb (dci->GetDci ().m_rnti, dci->GetDci ().m_tbSize, dci->GetDci ().m_mcs, rbMap);
+                  m_uplinkSpectrumPhy->AddExpectedTb (dci->GetDci ().m_rnti, dci->GetDci ().m_tbSize, dci->GetDci ().m_mcs, rbMap, 0 /* always SISO*/);
                 }
             }
           ctrlMsg.pop_front ();
@@ -477,5 +485,13 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
   return (ulcqi);
 	
 }
+
+void
+LteEnbPhy::DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode)
+{
+  NS_LOG_FUNCTION (this << rnti << (uint16_t)txMode);
+  // UL supports only SISO MODE
+}
+
 
 };

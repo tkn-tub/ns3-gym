@@ -34,6 +34,7 @@
 #include <ns3/lte-ue-phy.h>
 
 #include "ns3/lte-mac-sap.h"
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
@@ -61,6 +62,7 @@ public:
   virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
+  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params);
 
 private:
   LteEnbMac* m_mac;
@@ -100,6 +102,12 @@ void
 EnbMacMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
 {
   m_mac->DoReleaseLc (rnti, lcid);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+{
+  m_mac->DoRrcUpdateConfigurationReq (params);
 }
 
 
@@ -710,7 +718,8 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                                 ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_logicalChannelIdentity);
               it = m_rlcAttached.find (flow);
               NS_ASSERT_MSG (it != m_rlcAttached.end (), "rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
-              (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size);
+              NS_LOG_DEBUG (this << " rnti= " << flow.m_rnti << " lcid= " << (uint32_t) flow.m_lcId << " layer= " << k);
+              (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size, k);
             }
         }
       // send the relative DCI
@@ -819,6 +828,24 @@ void
 LteEnbMac::DoCschedUeConfigUpdateInd (FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params)
 {
   NS_LOG_FUNCTION (this);
+  // propagates to RRC
+  LteUeConfig_t ueConfigUpdate;
+  ueConfigUpdate.m_rnti = params.m_rnti;
+  ueConfigUpdate.m_transmissionMode = params.m_transmissionMode;
+  m_cmacSapUser->RrcConfigurationUpdateInd (ueConfigUpdate);
+}
+
+void
+LteEnbMac::DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  // propagates to PHY layer
+  m_enbPhySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  req.m_rnti = params.m_rnti;
+  req.m_transmissionMode = params.m_transmissionMode;
+  m_cschedSapProvider->CschedUeConfigReq (req);
 }
 
 void

@@ -85,6 +85,8 @@ public:
 
   friend class PfSchedulerMemberCschedSapProvider;
   friend class PfSchedulerMemberSchedSapProvider;
+  
+  void TransmissionModeConfigurationUpdate (uint16_t rnti, uint8_t txMode);
 
 private:
   //
@@ -216,6 +218,7 @@ private:
   
   uint32_t m_cqiTimersThreshold; // # of TTIs for which a CQI canbe considered valid
 
+  std::map <uint16_t,uint8_t> m_uesTxMode; // txMode of the UEs
 };
 
 } // namespace ns3

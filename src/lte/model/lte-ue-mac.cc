@@ -56,6 +56,7 @@ public:
   virtual void ConfigureUe (uint16_t rnti);
   virtual void AddLc (uint8_t lcId, LteMacSapUser* msu);
   virtual void RemoveLc (uint8_t lcId);
+  virtual void RrcUpdateConfigurationReq (LteUeConfig_t params);
 
 private:
   LteUeMac* m_mac;
@@ -85,6 +86,11 @@ UeMemberLteUeCmacSapProvider::RemoveLc (uint8_t lcid)
   m_mac->DoRemoveLc (lcid);
 }
 
+void
+UeMemberLteUeCmacSapProvider::RrcUpdateConfigurationReq (LteUeConfig_t params)
+{
+  m_mac->DoRrcUpdateConfigurationReq (params);
+}
 
 
 class UeMemberLteMacSapProvider : public LteMacSapProvider
@@ -244,7 +250,7 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_rnti == params.rnti, "RNTI mismatch between RLC and MAC");
-  LteRadioBearerTag tag (params.rnti, params.lcid);
+  LteRadioBearerTag tag (params.rnti, params.lcid, 0 /* UE works in SISO mode*/);
   params.pdu->AddPacketTag (tag);
 //   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
 //   pb->AddPacket (params.pdu);
@@ -327,6 +333,14 @@ LteUeMac::DoRemoveLc (uint8_t lcId)
   m_macSapUserMap.erase (lcId);
 }
 
+void
+LteUeMac::DoRrcUpdateConfigurationReq (LteUeConfig_t params)
+{
+  NS_LOG_FUNCTION (this << " txMode " << (uint8_t) params.m_transmissionMode);
+  // forward info to PHY layer
+  m_uePhySapProvider->SetTransmissionMode (params.m_transmissionMode);
+}
+
 
 void
 LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
@@ -374,7 +388,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
           if (itBsr!=m_ulBsrReceived.end ())
             {
               NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
-              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs);
+              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0); // UE works only in SISO mode
               (*itBsr).second -= dci.m_tbSize / activeLcs;
             }
         }

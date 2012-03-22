@@ -53,6 +53,19 @@ public:
   friend bool operator < (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b);
 };
 
+struct LteUeConfig_t
+{
+  uint16_t  m_rnti;
+  uint8_t   m_transmissionMode;
+  
+  public:
+    LteUeConfig_t ();
+    
+    friend bool operator == (const LteUeConfig_t &a, const LteUeConfig_t &b);
+    friend bool operator < (const LteUeConfig_t &a, const LteUeConfig_t &b);
+};
+
+
 class LteFfConverter
 {
 
@@ -76,6 +89,12 @@ class BufferSizeLevelBsr
     static int  m_bufferSizeLevelBsr[64];
     
     
+};
+
+class TransmissionModesLayers
+{
+  public:
+  static uint8_t TxMode2LayerNum (uint8_t txMode);
 };
 
 

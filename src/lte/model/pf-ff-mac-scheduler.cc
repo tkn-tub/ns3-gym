@@ -289,8 +289,17 @@ PfFfMacScheduler::DoCschedCellConfigReq (const struct FfMacCschedSapProvider::Cs
 void
 PfFfMacScheduler::DoCschedUeConfigReq (const struct FfMacCschedSapProvider::CschedUeConfigReqParameters& params)
 {
-  NS_LOG_FUNCTION (this);
-  // Not used at this stage
+  NS_LOG_FUNCTION (this << " RNTI " << params.m_rnti << " txMode " << (uint16_t)params.m_transmissionMode);
+  std::map <uint16_t,uint8_t>::iterator it = m_uesTxMode.find (params.m_rnti);
+  if (it==m_uesTxMode.end ())
+  {
+    m_uesTxMode.insert (std::pair <uint16_t, double> (params.m_rnti, params.m_transmissionMode));
+  }
+  else
+  {
+    (*it).second = params.m_transmissionMode;
+  }
+  return;
   return;
 }
 
@@ -450,25 +459,51 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
           itCqi = m_a30CqiRxed.find ((*it).first);
-          uint8_t cqi = 0;
+          std::map <uint16_t,uint8_t>::iterator itTxMode;
+          itTxMode = m_uesTxMode.find ((*it).first);
+          if (itTxMode == m_uesTxMode.end())
+            {
+              NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).first);
+            }
+          int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+          //uint8_t cqi = 0;
+          std::vector <uint8_t> sbCqi;
           if (itCqi == m_a30CqiRxed.end ())
             {
 //               NS_LOG_DEBUG (this << " No DL-CQI for this UE " << (*it).first);
-              cqi = 1;  // start with lowest value
+              //cqi = 1;  // start with lowest value
+              for (uint8_t k = 0; k < nLayer; k++)
+                {
+                  sbCqi.push_back (1);  // start with lowest value
+                }
             }
           else
             {
-              cqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi.at (0);
+              sbCqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi;
 //               NS_LOG_INFO (this << " CQI " << (uint32_t)cqi);
             }
-          if (cqi > 0)  // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
+            if ((sbCqi.at(0) > 0)||(sbCqi.at(1) > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             {
 //               NS_LOG_DEBUG (this << " LC active " << LcActivePerFlow ((*it).first));
               if (LcActivePerFlow ((*it).first) > 0)
                 {
                   // this UE has data to transmit
-                  uint8_t mcs = m_amc->GetMcsFromCqi (cqi);
-                  double achievableRate = ((m_amc->GetTbSizeFromMcs (mcs, 1) / 8) / 0.001); // = TB size / TTI
+                  double achievableRate = 0.0;
+                  for (uint8_t k = 0; k < nLayer; k++) 
+                    {
+                      uint8_t mcs = 0; 
+                      if (sbCqi.size () > k)
+                        {                       
+                          mcs = m_amc->GetMcsFromCqi (sbCqi.at (k));
+                        }
+                      else
+                        {
+                          // no info on this subband -> worst MCS
+                          mcs = 0;
+                        }
+                      achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, 1) / 8) / 0.001); // = TB size / TTI
+                    }
+                  
                   double rcqi = achievableRate / (*it).second.lastAveragedThroughput;
 //                   NS_LOG_DEBUG (this << " RNTI " << (*it).first << " MCS " << (uint32_t)mcs << " achievableRate " << achievableRate << " avgThr " << (*it).second.lastAveragedThroughput << " RCQI " << rcqi);
 
@@ -531,7 +566,15 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uint16_t RgbPerRnti = (*itMap).second.size ();
       std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
       itCqi = m_a30CqiRxed.find ((*itMap).first);
-      uint8_t worstCqi = 15;
+      std::map <uint16_t,uint8_t>::iterator itTxMode;
+      itTxMode = m_uesTxMode.find ((*itMap).first);
+      if (itTxMode == m_uesTxMode.end())
+        {
+          NS_FATAL_ERROR ("No Transmission Mode info on user " << (*itMap).first);
+        }
+      int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
+      //uint8_t worstCqi = 15;
+      std::vector <uint8_t> worstCqi (2, 15);
       if (itCqi != m_a30CqiRxed.end ())
         {
           for (uint16_t k = 0; k < (*itMap).second.size (); k++)
@@ -539,25 +582,48 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               if ((*itCqi).second.m_higherLayerSelected.size () > (*itMap).second.at (k))
                 {
 //                 NS_LOG_DEBUG (this << " RBG " << (*itMap).second.at (k) << " CQI " << (uint16_t)((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) );
-                  if (((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0)) < worstCqi)
+                  for (uint8_t j = 0; j < nLayer; j++) 
                     {
-                      worstCqi = ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (0));
+                      if ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.size ()> j)
+                        {
+                          if (((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (j)) < worstCqi.at (j))
+                            {
+                              worstCqi.at (j) = ((*itCqi).second.m_higherLayerSelected.at ((*itMap).second.at (k)).m_sbCqi.at (j));
+                            }
+                        }
+                      else
+                        {
+                          // no CQI for this layer of this suband -> worst one
+                          worstCqi.at (j) = 1;
+                        }
                     }
                 }
               else
                 {
-                  worstCqi = 1; // try with lowest MCS in RBG with no info on channel
+                  for (uint8_t j = 0; j < nLayer; j++)
+                    {
+                      worstCqi.at (j) = 1; // try with lowest MCS in RBG with no info on channel
+                    }
                 }
             }
         }
       else
         {
-          worstCqi = 1; // try with lowest MCS in RBG with no info on channel
+          for (uint8_t j = 0; j < nLayer; j++)
+            {
+              worstCqi.at (j) = 1; // try with lowest MCS in RBG with no info on channel
+            }
         }
 //       NS_LOG_DEBUG (this << " CQI " << (uint16_t)worstCqi);
-      newDci.m_mcs.push_back (m_amc->GetMcsFromCqi (worstCqi));
-      int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), RgbPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
-      newDci.m_tbsSize.push_back (tbSize);
+      uint32_t bytesTxed = 0;
+      for (uint8_t j = 0; j < nLayer; j++)
+        {
+          newDci.m_mcs.push_back (m_amc->GetMcsFromCqi (worstCqi.at (j)));
+          int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (j), RgbPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
+          newDci.m_tbsSize.push_back (tbSize);
+          NS_LOG_DEBUG (this << " MCS " << m_amc->GetMcsFromCqi (worstCqi.at (j)));
+          bytesTxed += tbSize;
+        }
 
       newDci.m_resAlloc = 0;  // only allocation type 0 at this stage
       newDci.m_rbBitmap = 0; // TBD (32 bit bitmap see 7.1.6 of 36.213)
@@ -570,20 +636,24 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newDci.m_rbBitmap = rbgMask; // (32 bit bitmap see 7.1.6 of 36.213)
 
       // create the rlc PDUs -> equally divide resources among actives LCs
-      int rlcPduSize = tbSize / lcActives;
+//       int rlcPduSize = tbSize / lcActives;
       std::map <LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator itBufReq;
       for (itBufReq = m_rlcBufferReq.begin (); itBufReq != m_rlcBufferReq.end (); itBufReq++)
         {
-          if (((*itBufReq).first.m_rnti == (*itMap).first) && (((*itBufReq).second.m_rlcTransmissionQueueSize > 0)
-                                                               || ((*itBufReq).second.m_rlcRetransmissionQueueSize > 0)
-                                                               || ((*itBufReq).second.m_rlcStatusPduSize > 0) ))
+          if (((*itBufReq).first.m_rnti == (*itMap).first) &&
+            (((*itBufReq).second.m_rlcTransmissionQueueSize > 0)
+              || ((*itBufReq).second.m_rlcRetransmissionQueueSize > 0)
+              || ((*itBufReq).second.m_rlcStatusPduSize > 0) ))
             {
-              RlcPduListElement_s newRlcEl;
-              newRlcEl.m_logicalChannelIdentity = (*itBufReq).first.m_lcId;
-//               NS_LOG_DEBUG (this << " LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize);
-              newRlcEl.m_size = rlcPduSize;
-              newRlcPduLe.push_back (newRlcEl);
-              UpdateDlRlcBufferInfo (newDci.m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
+              for (uint8_t j = 0; j < nLayer; j++)
+                {
+                  RlcPduListElement_s newRlcEl;
+                  newRlcEl.m_logicalChannelIdentity = (*itBufReq).first.m_lcId;
+                  newRlcEl.m_size = newDci.m_tbsSize.at (j) / lcActives;
+                  NS_LOG_DEBUG (this << " LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << newRlcEl.m_size << " layer " << (uint16_t)j);
+                  newRlcPduLe.push_back (newRlcEl);
+                  UpdateDlRlcBufferInfo (newDci.m_rnti, newRlcEl.m_logicalChannelIdentity, newRlcEl.m_size);
+                }
             }
           if ((*itBufReq).first.m_rnti > (*itMap).first)
             {
@@ -604,7 +674,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       it = m_flowStatsDl.find ((*itMap).first);
       if (it != m_flowStatsDl.end ())
         {
-          (*it).second.lastTtiBytesTrasmitted = tbSize;
+          (*it).second.lastTtiBytesTrasmitted = bytesTxed;
 //           NS_LOG_DEBUG (this << " UE bytes txed " << (*it).second.lastTtiBytesTrasmitted);
 
 
@@ -1201,6 +1271,16 @@ PfFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
       NS_LOG_ERROR (this << " Does not find BSR report info of UE " << rnti);
     }
   
+}
+
+void
+PfFfMacScheduler::TransmissionModeConfigurationUpdate (uint16_t rnti, uint8_t txMode)
+{
+  NS_LOG_FUNCTION (this << " RNTI " << rnti << " txMode " << (uint16_t)txMode);
+  FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params;
+  params.m_rnti = rnti;
+  params.m_transmissionMode = txMode;
+  m_cschedSapUser->CschedUeConfigUpdateInd (params);
 }
 
 

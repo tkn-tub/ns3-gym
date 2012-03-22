@@ -98,7 +98,7 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
  */
 
 void
-LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
+LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
 {
   NS_LOG_FUNCTION (this << bytes);
 
@@ -354,6 +354,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
   params.pdu = packet;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
+  params.layer = layer;
 
   m_macSapProvider->TransmitPdu (params);
 

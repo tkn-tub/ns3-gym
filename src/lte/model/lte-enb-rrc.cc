@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
 #include <ns3/fatal-error.h>
@@ -32,6 +33,13 @@
 #include "lte-radio-bearer-info.h"
 #include "lte-radio-bearer-tag.h"
 #include "ns3/object-map.h"
+#include <ns3/ff-mac-csched-sap.h>
+
+// WILD ACK for UE-RRC direct communications
+#include <ns3/node-list.h>
+#include <ns3/node.h>
+#include <ns3/lte-ue-net-device.h>
+#include <ns3/lte-ue-rrc.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
@@ -52,6 +60,7 @@ public:
   EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc);
 
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
+  virtual void RrcConfigurationUpdateInd (LteUeConfig_t params);
 
 private:
   LteEnbRrc* m_rrc;
@@ -66,6 +75,12 @@ void
 EnbRrcMemberLteEnbCmacSapUser::NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 {
   m_rrc->DoNotifyLcConfigResult (rnti, lcid, success);
+}
+
+void
+EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (LteUeConfig_t params)
+{
+  m_rrc->DoRrcConfigurationUpdateInd (params);
 }
 
 
@@ -231,6 +246,12 @@ LteEnbRrc::GetTypeId (void)
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&LteEnbRrc::m_ueMap),
                    MakeObjectMapChecker<UeInfo> ())
+    .AddAttribute ("DefaultTransmissionMode",
+                  "The default UEs' transmission mode (0: SISO)",
+                  UintegerValue (0),  // default tx-mode
+                  MakeUintegerAccessor (&LteEnbRrc::m_defaultTransmissionMode),
+                  MakeUintegerChecker<uint8_t> ())
+             
   ;
   return tid;
 }
@@ -367,6 +388,12 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId)
   lcinfo.gbrUl = bearer.gbrQosInfo.gbrUl;
   lcinfo.gbrDl = bearer.gbrQosInfo.gbrDl;
   m_cmacSapProvider->AddLc (lcinfo, rlc->GetLteMacSapUser ());
+  
+  // Transmission mode settings
+  LteUeConfig_t ueConfig;
+  ueConfig.m_rnti = rnti;
+  ueConfig.m_transmissionMode = m_defaultTransmissionMode;
+  DoRrcConfigurationUpdateInd (ueConfig);
 
   return lcid;
 }
@@ -473,6 +500,49 @@ LteEnbRrc::RemoveUeInfo (uint16_t rnti)
   m_ueMap.erase (it);
 }
 
+
+void
+LteEnbRrc::DoRrcConfigurationUpdateInd (LteUeConfig_t params)
+{
+  NS_LOG_FUNCTION (this);
+  // up tp now only for TxMode change
+  // update the peer UE-RRC on the change
+  NodeList::Iterator listEnd = NodeList::End ();
+  bool done = false;
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      int nDevs = node->GetNDevices ();
+      for (int j = 0; j < nDevs; j++)
+        {
+          Ptr<LteUeNetDevice> uedev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
+          if (!uedev)
+            {
+              continue;
+            }
+          else
+            {
+              Ptr<LteUeRrc> ueRrc = uedev->GetRrc ();
+              if (ueRrc->GetRnti () == params.m_rnti)
+                {
+                  ueRrc->DoRrcConfigurationUpdateInd (params);
+                  done = true;
+                }
+              else
+                {
+                  continue;
+                }
+            }
+        }
+    }
+  NS_ASSERT_MSG (done , " Unable to find peer UE-RRC, RNTI " << params.m_rnti);
+  // answer to MAC (and scheduler)
+  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  req.m_rnti = params.m_rnti;
+  req.m_transmissionMode = params.m_transmissionMode;
+  m_cmacSapProvider->RrcUpdateConfigurationReq (req);
+  
+}
 
 
 
