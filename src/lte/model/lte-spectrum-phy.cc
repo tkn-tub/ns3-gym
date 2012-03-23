@@ -491,7 +491,7 @@ LteSpectrumPhy::EndRx ()
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
   
   // apply transmission mode gain
-  NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_txModeGain.size ());
+  NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_txModeGain.size () << " gain " << m_txModeGain.at (m_transmissionMode));
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
   m_sinrPerceived *= m_txModeGain.at (m_transmissionMode);
   

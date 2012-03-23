@@ -598,7 +598,7 @@ LteUePhy::SetTxMode1Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 1)
   {
     m_txModeGain.resize (1);
@@ -611,7 +611,7 @@ LteUePhy::SetTxMode1Gain (double gain)
   {
     if (i==0)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
@@ -628,7 +628,7 @@ LteUePhy::SetTxMode2Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 2)
   {
     m_txModeGain.resize (2);
@@ -640,7 +640,7 @@ LteUePhy::SetTxMode2Gain (double gain)
   {
     if (i==1)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
@@ -656,7 +656,7 @@ LteUePhy::SetTxMode3Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 3)
   {
     m_txModeGain.resize (3);
@@ -668,7 +668,7 @@ LteUePhy::SetTxMode3Gain (double gain)
   {
     if (i==2)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
@@ -684,7 +684,7 @@ LteUePhy::SetTxMode4Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 4)
   {
     m_txModeGain.resize (4);
@@ -696,7 +696,7 @@ LteUePhy::SetTxMode4Gain (double gain)
   {
     if (i==3)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
@@ -712,7 +712,7 @@ LteUePhy::SetTxMode5Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 5)
   {
     m_txModeGain.resize (5);
@@ -724,7 +724,7 @@ LteUePhy::SetTxMode5Gain (double gain)
   {
     if (i==4)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
@@ -740,7 +740,7 @@ LteUePhy::SetTxMode6Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 6)
   {
     m_txModeGain.resize (6);
@@ -752,7 +752,7 @@ LteUePhy::SetTxMode6Gain (double gain)
   {
     if (i==5)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
@@ -768,7 +768,7 @@ LteUePhy::SetTxMode7Gain (double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  double gainLin = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < 7)
   {
     m_txModeGain.resize (7);
@@ -780,7 +780,7 @@ LteUePhy::SetTxMode7Gain (double gain)
   {
     if (i==6)
     {
-      m_txModeGain.push_back (gain);
+      m_txModeGain.push_back (gainLin);
     }
     else
     {
