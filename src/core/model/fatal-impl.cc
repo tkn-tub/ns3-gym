@@ -107,7 +107,7 @@ void
 FlushStreams (void)
 {
   std::list<std::ostream*> **pl = PeekStreamList ();
-  if (pl == 0)
+  if (*pl == 0)
     {
       return;
     }
