@@ -242,6 +242,7 @@ UnderRootNamespaceConfigTestCase::DoRun (void)
   a->GetAttribute ("A", iv);
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), 1, "Object Attribute \"A\" not set correctly");
 
+
   //
   // We should find the default values of "B" too.
   //
@@ -292,6 +293,16 @@ UnderRootNamespaceConfigTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), 4, "Object Attribute \"A\" not set as expected");
   b->GetAttribute ("B", iv);
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), -4, "Object Attribute \"B\" not set as expected");
+
+
+  //
+  // Try '*' for attributes
+  //
+  Config::Set ("/*/A", IntegerValue (2));
+  a->GetAttribute ("A", iv);
+  NS_TEST_ASSERT_MSG_EQ (iv.Get (), 2, "Object Attribute \"A\" not set correctly");
+  b->GetAttribute ("A", iv);
+  NS_TEST_ASSERT_MSG_EQ (iv.Get (), 4, "Object Attribute \"A\" not set correctly");
 }
 
 // ===========================================================================
