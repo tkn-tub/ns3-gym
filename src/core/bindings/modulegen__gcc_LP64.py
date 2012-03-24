@@ -2284,20 +2284,22 @@ def register_Ns3Synchronizer_methods(root_module, cls):
 def register_Ns3SystemThread_methods(root_module, cls):
     ## system-thread.h (module 'core'): ns3::SystemThread::SystemThread(ns3::SystemThread const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SystemThread const &', 'arg0')])
-    ## system-thread.h (module 'core'): ns3::SystemThread::SystemThread(ns3::Callback<void,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> callback) [constructor]
+    ## system-thread.h (module 'core'): ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
     cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## system-thread.h (module 'core'): bool ns3::SystemThread::Break() [member function]
-    cls.add_method('Break', 
+    ## system-thread.h (module 'core'): static bool ns3::SystemThread::Equals(pthread_t id) [member function]
+    cls.add_method('Equals', 
                    'bool', 
-                   [])
+                   [param('pthread_t', 'id')], 
+                   is_static=True)
     ## system-thread.h (module 'core'): void ns3::SystemThread::Join() [member function]
     cls.add_method('Join', 
                    'void', 
                    [])
-    ## system-thread.h (module 'core'): void ns3::SystemThread::Shutdown() [member function]
-    cls.add_method('Shutdown', 
-                   'void', 
-                   [])
+    ## system-thread.h (module 'core'): static pthread_t ns3::SystemThread::Self() [member function]
+    cls.add_method('Self', 
+                   'pthread_t', 
+                   [], 
+                   is_static=True)
     ## system-thread.h (module 'core'): void ns3::SystemThread::Start() [member function]
     cls.add_method('Start', 
                    'void', 
