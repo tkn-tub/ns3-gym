@@ -36,7 +36,8 @@ Bugs fixed
  - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
  - bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
  - bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor fixes to ICMPv6)
-
+ - bug 1395 - AODV DeferredRouteOutputTag missing constructor
+ 
 Known issues
 ------------
 In general, known issues are tracked on the project tracker available
