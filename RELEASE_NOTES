@@ -27,6 +27,9 @@ New user-visible features
 - Ipv6RoutingHelper is now in-line with Ipv4RoutingHelper concerning the RT 
   print functions. Various minor changes made in Ipv6RoutingProtocol and derived 
   classes to make this possible.
+- New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
+  Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects",
+  i.e., enable/disable the ICMPv6 Redirect sending.
    
 Bugs fixed
 ----------

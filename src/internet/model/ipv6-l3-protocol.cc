@@ -22,6 +22,7 @@
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
 #include "ns3/vector.h"
+#include "ns3/boolean.h"
 #include "ns3/callback.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
@@ -62,6 +63,11 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
                    MakeObjectVectorChecker<Ipv6Interface> ())
+    .AddAttribute ("SendIcmpv6Redirect", "Send the ICMPv6 Redirect when appropriate.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&Ipv6L3Protocol::SetSendIcmpv6Redirect,
+                                        &Ipv6L3Protocol::GetSendIcmpv6Redirect),
+                   MakeBooleanChecker ())
     .AddTraceSource ("Tx", "Send IPv6 packet to outgoing interface.",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive IPv6 packet from incoming interface.",
@@ -492,6 +498,18 @@ bool Ipv6L3Protocol::GetIpForward () const
   return m_ipForward;
 }
 
+void Ipv6L3Protocol::SetSendIcmpv6Redirect (bool sendIcmpv6Redirect)
+{
+  NS_LOG_FUNCTION (this << sendIcmpv6Redirect);
+  m_sendIcmpv6Redirect = sendIcmpv6Redirect;
+}
+
+bool Ipv6L3Protocol::GetSendIcmpv6Redirect () const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_sendIcmpv6Redirect;
+}
+
 void Ipv6L3Protocol::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -878,8 +896,10 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
    * we send him an ICMPv6 redirect message to notify him that a short route
    * exists.
    */
-  if ((!rtentry->GetGateway ().IsAny () && rtentry->GetGateway ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))
-      || (rtentry->GetDestination ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64))))
+
+  if (m_sendIcmpv6Redirect &&
+      ((!rtentry->GetGateway ().IsAny () && rtentry->GetGateway ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))
+      || (rtentry->GetDestination ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))))
     {
       NS_LOG_LOGIC ("ICMPv6 redirect!");
       Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();

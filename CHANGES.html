@@ -78,6 +78,11 @@ protocols as well.
 Ipv6RoutingHelper can now print the IPv6 Routing Tables at specific 
 intervals or time. Exactly like Ipv4RoutingHelper do.
 </li>
+<li>
+New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
+Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects", 
+i.e., enable/disable the ICMPv6 Redirect sending.
+</li>
 </ul>
 
 <h2>Changes to build system:</h2>
