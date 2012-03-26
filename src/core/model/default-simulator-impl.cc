@@ -140,20 +140,6 @@ DefaultSimulatorImpl::IsFinished (void) const
   return m_events->IsEmpty () || m_stop;
 }
 
-uint64_t
-DefaultSimulatorImpl::NextTs (void) const
-{
-  NS_ASSERT (!m_events->IsEmpty ());
-  Scheduler::Event ev = m_events->PeekNext ();
-  return ev.key.m_ts;
-}
-
-Time
-DefaultSimulatorImpl::Next (void) const
-{
-  return TimeStep (NextTs ());
-}
-
 void
 DefaultSimulatorImpl::ProcessEventsWithContext (void)
 {
@@ -200,15 +186,6 @@ DefaultSimulatorImpl::Run (void)
   // If the simulator stopped naturally by lack of events, make a
   // consistency test to check that we didn't lose any events along the way.
   NS_ASSERT (!m_events->IsEmpty () || m_unscheduledEvents == 0);
-}
-
-void
-DefaultSimulatorImpl::RunOneEvent (void)
-{
-  // Set the current threadId as the main threadId
-  m_main = SystemThread::Self();
-  ProcessEventsWithContext ();
-  ProcessOneEvent ();
 }
 
 void 

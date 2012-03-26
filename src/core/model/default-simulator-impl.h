@@ -43,7 +43,6 @@ public:
 
   virtual void Destroy ();
   virtual bool IsFinished (void) const;
-  virtual Time Next (void) const;
   virtual void Stop (void);
   virtual void Stop (Time const &time);
   virtual EventId Schedule (Time const &time, EventImpl *event);
@@ -54,7 +53,6 @@ public:
   virtual void Cancel (const EventId &ev);
   virtual bool IsExpired (const EventId &ev) const;
   virtual void Run (void);
-  virtual void RunOneEvent (void);
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
@@ -65,7 +63,6 @@ public:
 private:
   virtual void DoDispose (void);
   void ProcessOneEvent (void);
-  uint64_t NextTs (void) const;
   void ProcessEventsWithContext (void);
  
   struct EventWithContext {

@@ -253,20 +253,6 @@ DistributedSimulatorImpl::IsFinished (void) const
   return m_events->IsEmpty () || m_stop;
 }
 
-uint64_t
-DistributedSimulatorImpl::NextTs (void) const
-{
-  NS_ASSERT (!m_events->IsEmpty ());
-  Scheduler::Event ev = m_events->PeekNext ();
-  return ev.key.m_ts;
-}
-
-Time
-DistributedSimulatorImpl::Next (void) const
-{
-  return TimeStep (NextTs ());
-}
-
 void
 DistributedSimulatorImpl::Run (void)
 {
@@ -328,12 +314,6 @@ DistributedSimulatorImpl::Run (void)
 uint32_t DistributedSimulatorImpl::GetSystemId () const
 {
   return m_myId;
-}
-
-void
-DistributedSimulatorImpl::RunOneEvent (void)
-{
-  ProcessOneEvent ();
 }
 
 void

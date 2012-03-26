@@ -101,12 +101,6 @@ public:
    * return true. Return false otherwise.
    */
   static bool IsFinished (void);
-  /**
-   * If Simulator::IsFinished returns true, the behavior of this
-   * method is undefined. Otherwise, it returns the microsecond-based
-   * time of the next event expected to be scheduled.
-   */
-  static Time Next (void) NS_DEPRECATED;
 
   /**
    * Run the simulation until one of:
@@ -117,11 +111,6 @@ public:
    *     is greater than or equal to the stop time.
    */
   static void Run (void);
-
-  /**
-   * Process only the next simulation event, then return immediately.
-   */
-  static void RunOneEvent (void) NS_DEPRECATED;
 
   /**
    * If an event invokes this method, it will be the last
