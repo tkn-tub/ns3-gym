@@ -433,27 +433,34 @@ RealtimeSimulatorImpl::Run (void)
   m_running = true;
   m_synchronizer->SetOrigin (m_currentTs);
 
-  for (;;) 
+  // Sleep until signalled
+  uint64_t tsNow;
+  uint64_t tsDelay = 1000000000; // wait time of 1 second (in nanoseconds)
+ 
+  while (!m_stop) 
     {
-      bool done = false;
-
+      bool process = false;
       {
         CriticalSection cs (m_mutex);
-        //
-        // In all cases we stop when the event list is empty.  If you are doing a 
-        // realtime simulation and you want it to extend out for some time, you must
-        // call StopAt.  In the realtime case, this will stick a placeholder event out
-        // at the end of time.
-        //
-        if (m_stop || m_events->IsEmpty ())
+
+        if (!m_events->IsEmpty ())
           {
-            done = true;
+            process = true;
+          }
+        else
+          {
+            // Get current timestamp while holding the critical section
+            tsNow = m_synchronizer->GetCurrentRealtime ();
           }
       }
-
-      if (done)
+ 
+      if (!process)
         {
-          break;
+          // Sleep until signalled
+          tsNow = m_synchronizer->Synchronize (tsNow, tsDelay);
+
+          // Re-check event queue
+          continue;
         }
 
       ProcessOneEvent ();
