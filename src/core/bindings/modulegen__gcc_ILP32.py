@@ -1113,11 +1113,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Now() [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -1128,11 +1123,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 
@@ -2122,11 +2112,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::Next() const [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -2139,11 +2124,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Run() [member function]
     cls.add_method('Run', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -2853,11 +2833,6 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## default-simulator-impl.h (module 'core'): ns3::Time ns3::DefaultSimulatorImpl::Next() const [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## default-simulator-impl.h (module 'core'): ns3::Time ns3::DefaultSimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -2870,11 +2845,6 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    is_virtual=True)
     ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::Run() [member function]
     cls.add_method('Run', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -3554,11 +3524,6 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## realtime-simulator-impl.h (module 'core'): ns3::Time ns3::RealtimeSimulatorImpl::Next() const [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): ns3::Time ns3::RealtimeSimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -3576,11 +3541,6 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::Run() [member function]
     cls.add_method('Run', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
                    is_virtual=True)
