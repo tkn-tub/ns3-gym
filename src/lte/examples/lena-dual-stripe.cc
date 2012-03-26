@@ -156,8 +156,8 @@ main (int argc, char *argv[])
   double homeEnbTxPowerDbm = 20.0;
   uint16_t macroEnbDlEarfcn = 100;
   uint16_t homeEnbDlEarfcn = 100;
-  uint8_t macroEnbBandwidth = 25;
-  uint8_t homeEnbBandwidth = 25;
+  uint16_t macroEnbBandwidth = 25;
+  uint16_t homeEnbBandwidth = 25;
   double simTime = 0.01;
   bool generateRem = false;
   
@@ -332,6 +332,9 @@ main (int argc, char *argv[])
     {
       Simulator::Stop (Seconds (simTime));  
     }
+
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
 
   Simulator::Run ();
 
