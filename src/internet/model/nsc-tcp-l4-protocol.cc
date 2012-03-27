@@ -440,23 +440,17 @@ void NscTcpL4Protocol::AddInterface (void)
 
       if (i == 1)
         {
-          // We need to come up with a default gateway here. Can't guarantee this to be
-          // correct really...
-
-          uint8_t addrBytes[4];
-          addr.Serialize (addrBytes);
-
-          // XXX: this is all a bit of a horrible hack
+          // The NSC stack requires a default gateway and only supports
+          // single-interface nodes.  The below is a hack, but
+          // it turns out that we can pass the interface address to nsc as
+          // a default gateway.  Bug 1398 has been opened to track this
+          // issue (NSC's limitation to single-interface nodes)
           //
-          // Just increment the last octet, this gives a decent chance of this being
-          // 'enough'.
-          //
-          // All we need is another address on the same network as the interface. This
-          // will force the stack to output the packet out of the network interface.
-          addrBytes[3]++;
-          addr = Ipv4Address::Deserialize (addrBytes);
-          addrOss.str ("");
-          addr.Print (addrOss);
+          // Previous versions of this code tried to assign the "next"
+          // IP address of the subnet but this was found to fail for
+          // some use cases in /30 subnets.
+
+          // XXX
           m_nscStack->add_default_gateway (addrOss.str ().c_str ());
         }
     }
