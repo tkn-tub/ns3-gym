@@ -144,7 +144,7 @@ public:
    * \param txLoc Transmitter Location
    *
    */
-  AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time& fbTx, const Time& lbTx,Vector txLoc);
+  AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time& fbTx, const Time& lbTx,Vector txLoc, uint32_t txNodeId = 0);
   
   /**
    * \brief Ptr to NetDevice that is transmitting
@@ -152,6 +152,13 @@ public:
    *
    */ 
   Ptr <const NetDevice> m_txnd;
+
+  /**
+   * \brief Tx Node Id if NetDevice is unknown
+   * \param m_txNodeId Tx Node Id if NetDevice is unknown
+   *
+   */
+  uint32_t m_txNodeId;
 
   /** 
    * \brief First bit transmission time

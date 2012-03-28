@@ -343,8 +343,9 @@ private:
   void ConnectCallbacks ();
 
   bool m_started;
-  bool m_enforceWifiMacRx;
   bool m_enablePacketMetadata; 
+  
+  std::map <std::string, uint32_t> m_macToNodeIdMap;
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);

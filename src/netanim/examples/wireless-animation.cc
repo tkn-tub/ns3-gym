@@ -138,7 +138,7 @@ main (int argc, char *argv[])
   // Install applications
 
   UdpEchoServerHelper echoServer (9);
-  ApplicationContainer serverApps = echoServer.Install (wifiApNode.Get (0));
+  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (1));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (15.0));
   UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (1), 9);
