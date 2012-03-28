@@ -121,6 +121,8 @@ private:
   void CalculateLookAhead (void);
 
   void ProcessOneEvent (void);
+  uint64_t NextTs (void) const;
+  Time Next (void) const;
   typedef std::list<EventId> DestroyEvents;
 
   DestroyEvents m_destroyEvents;
