@@ -11,13 +11,19 @@ def build(bld):
         'model/lr-wpan-csmaca.cc',
         'model/lr-wpan-net-device.cc',
         'model/lr-wpan-spectrum-value-helper.cc',
+        'model/lr-wpan-spectrum-signal-parameters.cc',
+        'helper/lr-wpan-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('lr-wpan')
+    module_test.source = [
         'test/lr-wpan-pd-plme-sap-test.cc',
         'test/lr-wpan-packet-test.cc',
         'test/lr-wpan-error-model-test.cc',
         'test/lr-wpan-spectrum-value-helper-test.cc',
-        'helper/lr-wpan-helper.cc',
         ]
-    headers = bld.new_task_gen('ns3header')
+     
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'lr-wpan'
     headers.source = [
         'model/lr-wpan-error-model.h',
@@ -28,8 +34,10 @@ def build(bld):
         'model/lr-wpan-csmaca.h',
         'model/lr-wpan-net-device.h',
         'model/lr-wpan-spectrum-value-helper.h',
+        'model/lr-wpan-spectrum-signal-parameters.h',
         'helper/lr-wpan-helper.h',
         ]
+
     if (bld.env['ENABLE_EXAMPLES']):
         bld.add_subdirs('examples')
 

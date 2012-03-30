@@ -149,7 +149,7 @@ LrWpanPhy::DoDispose ()
   SpectrumPhy::DoDispose ();
 }
 
-Ptr<Object>
+Ptr<NetDevice>
 LrWpanPhy::GetDevice ()
 {
   NS_LOG_FUNCTION (this);
@@ -157,7 +157,7 @@ LrWpanPhy::GetDevice ()
 }
 
 
-Ptr<Object>
+Ptr<MobilityModel>
 LrWpanPhy::GetMobility ()
 {
   NS_LOG_FUNCTION (this);
@@ -166,7 +166,7 @@ LrWpanPhy::GetMobility ()
 
 
 void
-LrWpanPhy::SetDevice (Ptr<Object> d)
+LrWpanPhy::SetDevice (Ptr<NetDevice> d)
 {
   NS_LOG_FUNCTION (this << d);
   m_device = d;
@@ -174,7 +174,7 @@ LrWpanPhy::SetDevice (Ptr<Object> d)
 
 
 void
-LrWpanPhy::SetMobility (Ptr<Object> m)
+LrWpanPhy::SetMobility (Ptr<MobilityModel> m)
 {
   NS_LOG_FUNCTION (this << m);
   m_mobility = m;
@@ -210,22 +210,28 @@ LrWpanPhy::GetRxSpectrumModel () const
 }
 
 void
-LrWpanPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration)
+LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
-  NS_LOG_FUNCTION (this << pb << *rxPsd << st << duration);
+  NS_LOG_FUNCTION (this << spectrumRxParams);
   LrWpanSpectrumValueHelper psdHelper;
 
-  // The specification doesn't seem to refer to BUSY_RX, but vendor
-  // data sheets suggest that this is a substate of the RX_ON state
-  // that is entered after preamble detection when the digital receiver
-  // is enabled.  Here, for now, we use BUSY_RX to mark the period between
-  // StartRx() and EndRx() states.
-  ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
-  if (st == GetSpectrumType ())
+
+  Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams = DynamicCast<LrWpanSpectrumSignalParameters> (spectrumRxParams);
+
+  if (lrWpanRxParams != 0)
     {
-      Ptr<Packet> p = (pb->GetPackets ()).front ();
+      // The specification doesn't seem to refer to BUSY_RX, but vendor
+      // data sheets suggest that this is a substate of the RX_ON state
+      // that is entered after preamble detection when the digital receiver
+      // is enabled.  Here, for now, we use BUSY_RX to mark the period between
+      // StartRx() and EndRx() states.
+      ChangeTrxState (IEEE_802_15_4_PHY_BUSY_RX);
+
+      Time duration = lrWpanRxParams->duration;
+
+      Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets ()).front ();
       m_currentRxPacket = std::make_pair (p, false);
-      m_rxPsd = rxPsd;
+      m_rxPsd = lrWpanRxParams->psd;
       m_rxTotalPower = psdHelper.TotalAvgPower (*m_rxPsd);
       Simulator::Schedule (duration, &LrWpanPhy::EndRx, this);
       m_phyRxBeginTrace (p);
@@ -319,11 +325,16 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
     {
       //send down
       NS_ASSERT (m_channel);
-      Time txTime = CalculateTxTime (p);
+
+      Ptr<LrWpanSpectrumSignalParameters> txParams = Create<LrWpanSpectrumSignalParameters> ();
+      txParams->duration = CalculateTxTime (p);
+      txParams->txPhy = GetObject<SpectrumPhy> ();
+      txParams->psd = m_txPsd;
       Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
       pb->AddPacket (p);
-      m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), txTime, GetObject<SpectrumPhy> ());
-      m_pdDataRequest = Simulator::Schedule (txTime, &LrWpanPhy::EndTx, this);
+      txParams->packetBurst = pb;
+      m_channel->StartTx (txParams);
+      m_pdDataRequest = Simulator::Schedule (txParams->duration, &LrWpanPhy::EndTx, this);
       ChangeTrxState (IEEE_802_15_4_PHY_BUSY_TX);
       m_phyTxBeginTrace (p);
       m_currentTxPacket.first = p;
@@ -879,14 +890,6 @@ LrWpanPhy::CalculateTxTime (Ptr<const Packet> packet)
                     + packet->GetSize () * 8.0 / GetDataOrSymbolRate (isData));
 
   return txTime;
-}
-
-SpectrumType
-LrWpanPhy::GetSpectrumType ()
-{
-  NS_LOG_FUNCTION (this);
-  static SpectrumType st = SpectrumTypeFactory::Create ("Ieee802.15.4");
-  return st;
 }
 
 double

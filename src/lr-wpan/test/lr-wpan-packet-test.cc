@@ -43,7 +43,7 @@ private:
 };
 
 LrWpanPacketTestCase::LrWpanPacketTestCase ()
-  : TestCase ("Test the 802.15.4 MAC header/trailer classes")
+  : TestCase ("Test the 802.15.4 MAC header and trailer classes")
 {
 }
 

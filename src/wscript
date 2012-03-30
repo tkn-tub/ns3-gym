@@ -16,6 +16,7 @@ except NameError:
     from sets import Set as set # Python 2.3 fallback
 
 
+
 all_modules = []
 for dirname in os.listdir('src'):
     if dirname.startswith('.') or dirname == 'CVS':

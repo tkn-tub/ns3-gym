@@ -28,7 +28,6 @@
 #include <ns3/packet-burst.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-value.h>
 #include <ns3/mobility-model.h>
@@ -39,6 +38,7 @@
 #include <ns3/random-variable.h>
 #include "lr-wpan-spectrum-value-helper.h"
 #include "lr-wpan-error-model.h"
+#include "lr-wpan-spectrum-signal-parameters.h"
 
 namespace ns3 {
 
@@ -205,19 +205,13 @@ public:
   virtual ~LrWpanPhy ();
 
   // inherited from SpectrumPhy
-  void SetMobility (Ptr<Object> m);
-  Ptr<Object> GetMobility ();
+  void SetMobility (Ptr<MobilityModel> m);
+  Ptr<MobilityModel> GetMobility ();
   void SetChannel (Ptr<SpectrumChannel> c);
   Ptr<SpectrumChannel> GetChannel (void);
-  void SetDevice (Ptr<Object> d);
-  Ptr<Object> GetDevice ();
+  void SetDevice (Ptr<NetDevice> d);
+  Ptr<NetDevice> GetDevice ();
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  /**
-   * Get the SpectrumType used by this PHY
-   *
-   * @return
-   */
-  SpectrumType GetSpectrumType ();
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.
@@ -242,13 +236,9 @@ public:
   /**
     * Notify the SpectrumPhy instance of an incoming waveform
     *
-    * @param p the PacketBurst associated with the incoming waveform
-    * @param rxPsd the Power Spectral Density of the incoming
-    * waveform. The units of the PSD are the same specified for SpectrumChannel::StartTx().
-    * @param st spectrum type
-    * @param duration the duration of the incoming waveform
+    * @param params the SpectrumSignalParameters associated with the incoming waveform
     */
-  virtual void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
+  virtual void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /**
    *  IEEE 802.15.4-2006 section 6.2.1.1
@@ -393,8 +383,8 @@ private:
   Time CalculateTxTime (Ptr<const Packet> packet);
   double GetPpduHeaderTxTime (void);
   bool ChannelSupported (uint8_t);
-  Ptr<Object> m_mobility;
-  Ptr<Object> m_device;
+  Ptr<MobilityModel> m_mobility;
+  Ptr<NetDevice> m_device;
   Ptr<SpectrumChannel> m_channel;
   Ptr<SpectrumValue> m_txPsd;
   Ptr<const SpectrumValue> m_rxPsd;

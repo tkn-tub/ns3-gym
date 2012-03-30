@@ -21,6 +21,7 @@
 #include "ns3/abort.h"
 #include "ns3/node.h"
 #include "lr-wpan-net-device.h"
+#include "ns3/log.h"
 #include "ns3/lr-wpan-mac.h"
 #include "ns3/lr-wpan-phy.h"
 #include "ns3/lr-wpan-csmaca.h"
@@ -115,7 +116,7 @@ LrWpanNetDevice::CompleteConfig (void)
   m_mac->SetCsmaCa (m_csmaca);
   m_csmaca->SetMac (m_mac);
 
-  m_phy->SetMobility (m_node);
+  m_phy->SetMobility (m_node->GetObject<MobilityModel> ());
   Ptr<LrWpanErrorModel> model = CreateObject<LrWpanErrorModel> ();
   m_phy->SetErrorModel (model);
 
