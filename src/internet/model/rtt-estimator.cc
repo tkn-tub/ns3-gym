@@ -32,6 +32,9 @@
 #include "ns3/double.h"
 #include "ns3/integer.h"
 #include "ns3/uinteger.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("RttEstimator");
 
 namespace ns3 {
 
@@ -65,6 +68,7 @@ RttEstimator::GetTypeId (void)
 void 
 RttEstimator::SetMinRto (Time minRto)
 {
+  NS_LOG_FUNCTION (this << minRto);
   m_minRto = minRto;
 }
 Time 
@@ -75,6 +79,7 @@ RttEstimator::GetMinRto (void) const
 void 
 RttEstimator::SetCurrentEstimate (Time estimate)
 {
+  NS_LOG_FUNCTION (this << estimate);
   m_currentEstimatedRtt = estimate;
 }
 Time 
@@ -88,11 +93,13 @@ RttEstimator::GetCurrentEstimate (void) const
 RttHistory::RttHistory (SequenceNumber32 s, uint32_t c, Time t)
   : seq (s), count (c), time (t), retx (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 RttHistory::RttHistory (const RttHistory& h)
   : seq (h.seq), count (h.count), time (h.time), retx (h.retx)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 // Base class methods
@@ -102,12 +109,14 @@ RttEstimator::RttEstimator ()
     m_nSamples (0),
     m_multiplier (1)
 { 
+  NS_LOG_FUNCTION (this);
   //note next=1 everywhere since first segment will have sequence 1
   
   // We need attributes initialized here, not later, so use the 
   // ConstructSelf() technique documented in the manual
   ObjectBase::ConstructSelf (AttributeConstructionList ());
   m_currentEstimatedRtt = m_initialEstimatedRtt;
+  NS_LOG_DEBUG ("Initialize m_currentEstimatedRtt to " << m_currentEstimatedRtt.GetSeconds () << " sec.");
 }
 
 RttEstimator::RttEstimator (const RttEstimator& c)
@@ -117,14 +126,18 @@ RttEstimator::RttEstimator (const RttEstimator& c)
     m_currentEstimatedRtt (c.m_currentEstimatedRtt), m_minRto (c.m_minRto),
     m_nSamples (c.m_nSamples), m_multiplier (c.m_multiplier)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 RttEstimator::~RttEstimator ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void RttEstimator::SentSeq (SequenceNumber32 seq, uint32_t size)
-{ // Note that a particular sequence has been sent
+{ 
+  NS_LOG_FUNCTION (this << seq << size);
+  // Note that a particular sequence has been sent
   if (seq == m_next)
     { // This is the next expected one, just log at end
       m_history.push_back (RttHistory (seq, size, Simulator::Now () ));
@@ -150,7 +163,9 @@ void RttEstimator::SentSeq (SequenceNumber32 seq, uint32_t size)
 }
 
 Time RttEstimator::AckSeq (SequenceNumber32 ackSeq)
-{ // An ack has been received, calculate rtt and log this measurement
+{ 
+  NS_LOG_FUNCTION (this << ackSeq);
+  // An ack has been received, calculate rtt and log this measurement
   // Note we use a linear search (O(n)) for this since for the common
   // case the ack'ed packet will be at the head of the list
   Time m = Seconds (0.0);
@@ -173,23 +188,30 @@ Time RttEstimator::AckSeq (SequenceNumber32 ackSeq)
 }
 
 void RttEstimator::ClearSent ()
-{ // Clear all history entries
+{ 
+  NS_LOG_FUNCTION (this);
+  // Clear all history entries
   m_next = 1;
   m_history.clear ();
 }
 
 void RttEstimator::IncreaseMultiplier ()
 {
+  NS_LOG_FUNCTION (this);
   m_multiplier = (m_multiplier*2 < m_maxMultiplier) ? m_multiplier*2 : m_maxMultiplier;
+  NS_LOG_DEBUG ("Multiplier increased to " << m_multiplier);
 }
 
 void RttEstimator::ResetMultiplier ()
 {
+  NS_LOG_FUNCTION (this);
   m_multiplier = 1;
 }
 
 void RttEstimator::Reset ()
-{ // Reset to initial state
+{ 
+  NS_LOG_FUNCTION (this);
+  // Reset to initial state
   m_next = 1;
   m_currentEstimatedRtt = m_initialEstimatedRtt;
   m_history.clear ();         // Remove all info from the history
@@ -223,21 +245,25 @@ RttMeanDeviation::GetTypeId (void)
 RttMeanDeviation::RttMeanDeviation() :
   m_variance (0) 
 { 
+  NS_LOG_FUNCTION (this);
 }
 
 RttMeanDeviation::RttMeanDeviation (const RttMeanDeviation& c)
   : RttEstimator (c), m_gain (c.m_gain), m_variance (c.m_variance)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void RttMeanDeviation::Measurement (Time m)
 {
+  NS_LOG_FUNCTION (this << m);
   if (m_nSamples)
     { // Not first
       Time err (m - m_currentEstimatedRtt);
       double gErr = err.ToDouble (Time::S) * m_gain;
       m_currentEstimatedRtt += Time::FromDouble (gErr, Time::S);
       Time difference = Abs (err) - m_variance;
+      NS_LOG_DEBUG ("m_variance += " << Time::FromDouble (difference.ToDouble (Time::S) * m_gain, Time::S));
       m_variance += Time::FromDouble (difference.ToDouble (Time::S) * m_gain, Time::S);
     }
   else
@@ -245,16 +271,19 @@ void RttMeanDeviation::Measurement (Time m)
       m_currentEstimatedRtt = m;             // Set estimate to current
       //variance = sample / 2;               // And variance to current / 2
       m_variance = m; // try this
+      NS_LOG_DEBUG ("(first sample) m_variance += " << m);
     }
   m_nSamples++;
 }
 
 Time RttMeanDeviation::RetransmitTimeout ()
 {
+  NS_LOG_FUNCTION (this);
   // If not enough samples, just return 2 times estimate
   //if (nSamples < 2) return est * 2;
   Time retval (Seconds (0));
   double var = m_variance.ToDouble (Time::S);
+  NS_LOG_DEBUG ("RetransmitTimeout:  var " << var << " est " << m_currentEstimatedRtt.ToDouble (Time::S) << " multiplier " << m_multiplier);
   if (var < (m_currentEstimatedRtt.ToDouble (Time::S) / 4.0) )
     {
       for (uint16_t i = 0; i < 2* m_multiplier; i++)
@@ -267,21 +296,26 @@ Time RttMeanDeviation::RetransmitTimeout ()
       int64_t temp = m_currentEstimatedRtt.ToInteger (Time::S) + 4 * m_variance.ToInteger (Time::S);
       retval = Time::FromInteger (temp, Time::S);
     }
+  NS_LOG_DEBUG ("RetransmitTimeout:  return " << (retval > m_minRto ? retval.GetSeconds () : m_minRto.GetSeconds ()));
   return (retval > m_minRto ? retval : m_minRto);  // return maximum
 }
 
 Ptr<RttEstimator> RttMeanDeviation::Copy () const
 {
+  NS_LOG_FUNCTION (this);
   return CopyObject<RttMeanDeviation> (this);
 }
 
 void RttMeanDeviation::Reset ()
-{ // Reset to initial state
+{ 
+  NS_LOG_FUNCTION (this);
+  // Reset to initial state
   m_variance = Seconds (0);
   RttEstimator::Reset ();
 }
 void RttMeanDeviation::Gain (double g)
 {
+  NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG( (g > 0) && (g < 1), "RttMeanDeviation: Gain must be less than 1 and greater than 0" );
   m_gain = g;
 }
