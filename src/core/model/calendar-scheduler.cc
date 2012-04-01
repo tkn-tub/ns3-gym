@@ -154,7 +154,12 @@ CalendarScheduler::DoRemoveNext (void)
 {
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
-  Scheduler::Event minEvent = { static_cast<uint64_t>(0), { static_cast<uint32_t>(~0), static_cast<uint32_t>(~0)}};
+  int32_t minBucket = -1;
+  Scheduler::EventKey minKey;
+  NS_ASSERT(!IsEmpty());
+  minKey.m_ts = uint64_t(-int64_t(1));
+  minKey.m_uid = 0;
+  minKey.m_context = 0xffffffff;
   do
     {
       if (!m_buckets[i].empty ())
@@ -168,9 +173,10 @@ CalendarScheduler::DoRemoveNext (void)
               m_buckets[i].pop_front ();
               return next;
             }
-          if (next.key < minEvent.key)
+          if (next.key < minKey)
             {
-              minEvent = next;
+              minKey = next.key;
+              minBucket = i;
             }
         }
       i++;
@@ -179,12 +185,13 @@ CalendarScheduler::DoRemoveNext (void)
     }
   while (i != m_lastBucket);
 
-  m_lastPrio = minEvent.key.m_ts;
-  m_lastBucket = Hash (minEvent.key.m_ts);
-  m_bucketTop = (minEvent.key.m_ts / m_width + 1) * m_width;
-  m_buckets[m_lastBucket].pop_front ();
+  m_lastPrio = minKey.m_ts;
+  m_lastBucket = Hash (minKey.m_ts);
+  m_bucketTop = (minKey.m_ts / m_width + 1) * m_width;
+  Scheduler::Event next = m_buckets[minBucket].front();
+  m_buckets[minBucket].pop_front ();
 
-  return minEvent;
+  return next;
 }
 
 Scheduler::Event
