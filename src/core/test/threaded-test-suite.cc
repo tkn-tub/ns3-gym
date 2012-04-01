@@ -91,10 +91,9 @@ ThreadedSimulatorEventsTestCase::SchedulingThread (std::pair<ThreadedSimulatorEv
   while (!me->m_stop)
     {
       me->m_threadWaiting[threadno] = true;
-      Simulator::ScheduleWithContext (
-        uint32_t (-1), 
-        MicroSeconds (1),
-        MakeEvent (&ThreadedSimulatorEventsTestCase::DoNothing, me, threadno));
+      Simulator::ScheduleWithContext (uint32_t (-1), 
+                                      MicroSeconds (1),
+                                      &ThreadedSimulatorEventsTestCase::DoNothing, me, threadno);
       while (!me->m_stop && me->m_threadWaiting[threadno])
         {
           struct timespec ts;
@@ -122,9 +121,8 @@ ThreadedSimulatorEventsTestCase::A (int a)
       Simulator::Stop();
     };
   ++m_a;
-  Simulator::Schedule (
-    MicroSeconds (10),
-    MakeEvent (&ThreadedSimulatorEventsTestCase::B, this, a+1));
+  Simulator::Schedule (MicroSeconds (10),
+                       &ThreadedSimulatorEventsTestCase::B, this, a+1);
 }
 
 void
@@ -136,9 +134,8 @@ ThreadedSimulatorEventsTestCase::B (int b)
       Simulator::Stop();
     };
   ++m_b;
-  Simulator::Schedule (
-    MicroSeconds (10),
-    MakeEvent (&ThreadedSimulatorEventsTestCase::C, this, b+1));
+  Simulator::Schedule (MicroSeconds (10),
+                       &ThreadedSimulatorEventsTestCase::C, this, b+1);
 }
 
 void
@@ -150,9 +147,8 @@ ThreadedSimulatorEventsTestCase::C (int c)
       Simulator::Stop();
     };
   ++m_c;
-  Simulator::Schedule (
-    MicroSeconds (10),
-    MakeEvent (&ThreadedSimulatorEventsTestCase::D, this, c+1));
+  Simulator::Schedule (MicroSeconds (10),
+                       &ThreadedSimulatorEventsTestCase::D, this, c+1);
 }
 
 void
@@ -170,9 +166,8 @@ ThreadedSimulatorEventsTestCase::D (int d)
     }
   else
     {
-      Simulator::Schedule (
-        MicroSeconds (10),
-        MakeEvent (&ThreadedSimulatorEventsTestCase::A, this, d+1));
+      Simulator::Schedule (MicroSeconds (10),
+                           &ThreadedSimulatorEventsTestCase::A, this, d+1);
     }
 }
 
@@ -196,7 +191,7 @@ ThreadedSimulatorEventsTestCase::DoSetup (void)
       m_threadlist.push_back(
         Create<SystemThread> (MakeBoundCallback (
             &ThreadedSimulatorEventsTestCase::SchedulingThread, 
-                std::pair<ThreadedSimulatorEventsTestCase *, unsigned int>(this,1) )) );
+                std::pair<ThreadedSimulatorEventsTestCase *, unsigned int>(this,i) )) );
     }
 }
 void 
@@ -209,6 +204,7 @@ ThreadedSimulatorEventsTestCase::DoTeardown (void)
 void 
 ThreadedSimulatorEventsTestCase::DoRun (void)
 {
+  m_stop = false;
   Simulator::SetScheduler (m_schedulerFactory);
 
   Simulator::Schedule (MicroSeconds (10), &ThreadedSimulatorEventsTestCase::A, this, 1);
@@ -223,8 +219,6 @@ ThreadedSimulatorEventsTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  m_stop = true;
-
   NS_TEST_EXPECT_MSG_EQ (m_error.empty(), true, m_error.c_str());
   NS_TEST_EXPECT_MSG_EQ (m_a, m_b, "Bad scheduling");
   NS_TEST_EXPECT_MSG_EQ (m_a, m_c, "Bad scheduling");
@@ -238,26 +232,33 @@ public:
     : TestSuite ("threaded-simulator")
   {
     std::string simulatorTypes[] = {
-      "",
-      "ns3::RealtimeSimulatorImpl"
+      "ns3::RealtimeSimulatorImpl",
+      "ns3::DefaultSimulatorImpl"
     };
-    
-    unsigned int threadcounts[] = {2, 10, 20};
-    
+    std::string schedulerTypes[] = {
+      "ns3::ListScheduler",
+      "ns3::HeapScheduler",
+      "ns3::MapScheduler",
+      "ns3::CalendarScheduler",
+      "ns3::Ns2CalendarScheduler"
+    };
+    unsigned int threadcounts[] = {
+      0,
+      2,
+      10, 
+      20
+    };
     ObjectFactory factory;
     
     for (unsigned int i=0; i < (sizeof(simulatorTypes) / sizeof(simulatorTypes[0])); ++i) 
       {
         for (unsigned int j=0; j < (sizeof(threadcounts) / sizeof(threadcounts[0])); ++j)
           {
-            factory.SetTypeId (ListScheduler::GetTypeId ());
-            AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]));
-            factory.SetTypeId (MapScheduler::GetTypeId ());
-            AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]));
-            factory.SetTypeId (HeapScheduler::GetTypeId ());
-            AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]));
-            factory.SetTypeId (CalendarScheduler::GetTypeId ());
-            AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]));
+            for (unsigned int k=0; k < (sizeof(schedulerTypes) / sizeof(schedulerTypes[0])); ++k) 
+              {
+                factory.SetTypeId(schedulerTypes[k]);
+                AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]));
+              }
           }
       }
   }
