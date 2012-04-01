@@ -95,7 +95,7 @@ void
 RealtimeSimulatorImpl::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  while (m_events->IsEmpty () == false)
+  while (!m_events->IsEmpty ())
     {
       Scheduler::Event next = m_events->RemoveNext ();
       next.impl->Unref ();
