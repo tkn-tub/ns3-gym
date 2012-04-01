@@ -306,15 +306,15 @@ UdpEchoClient::Send (void)
 
   ++m_sent;
 
-  if (InetSocketAddress::IsMatchingType (m_peerAddress))
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
-      NS_LOG_INFO ("Sent " << m_size << " bytes to " <<
-                   InetSocketAddress::ConvertFrom (m_peerAddress));
+      NS_LOG_INFO ("Client sent " << m_size << " bytes to " <<
+                   Ipv4Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
     }
-  else if (Inet6SocketAddress::IsMatchingType (m_peerAddress))
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
-      NS_LOG_INFO ("Sent " << m_size << " bytes to " <<
-                   Inet6SocketAddress::ConvertFrom (m_peerAddress));
+      NS_LOG_INFO ("Client sent " << m_size << " bytes to " <<
+                   Ipv6Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
     }
 
   if (m_sent < m_count) 
@@ -333,13 +333,15 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       InetSocketAddress::ConvertFrom (from).GetIpv4 ());
+          NS_LOG_INFO ("Client received " << packet->GetSize () << " bytes from " <<
+                       InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
+                       InetSocketAddress::ConvertFrom (from).GetPort ());
         }
       else if (Inet6SocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       Inet6SocketAddress::ConvertFrom (from).GetIpv6 ());
+          NS_LOG_INFO ("Client received " << packet->GetSize () << " bytes from " <<
+                       Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
+                       Inet6SocketAddress::ConvertFrom (from).GetPort ());
         }
     }
 }
