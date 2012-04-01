@@ -152,6 +152,7 @@ main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop (Seconds (15.0));
   AnimationInterface anim ("wireless-animation.xml");
+  anim.EnablePacketMetadata (true);
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

@@ -128,6 +128,24 @@ public:
   void SetXMLOutput ();
 
   /**
+   * \brief Specify the time at which capture should start
+   * 
+   * \param t The time at which AnimationInterface should begin capture of traffic info
+   *
+   * \returns none
+   */
+  void SetStartTime (Time t);
+
+  /**
+   * \brief Specify the time at which capture should stop
+   * 
+   * \param t The time at which AnimationInterface should stop capture of traffic info
+   *
+   * \returns none
+   */
+  void SetStopTime (Time t);
+
+  /**
    * \brief (Deprecated) Specify that animation commands are to be written to
    * a socket.
    *
@@ -249,6 +267,7 @@ private:
   std::string outputfilename;
   bool OutputFileSet;
   bool ServerPortSet;
+
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
                    Ptr<NetDevice> tx,
@@ -344,8 +363,11 @@ private:
 
   bool m_started;
   bool m_enablePacketMetadata; 
+  Time m_startTime;
+  Time m_stopTime;
   
   std::map <std::string, uint32_t> m_macToNodeIdMap;
+  bool IsInTimeWindow ();
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);
