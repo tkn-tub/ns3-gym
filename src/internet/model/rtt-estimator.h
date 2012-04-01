@@ -60,6 +60,8 @@ public:
   static TypeId GetTypeId (void);
 
   RttEstimator();
+  RttEstimator (const RttEstimator&); 
+
   virtual ~RttEstimator();
 
   /**
@@ -137,14 +139,14 @@ public:
 private:
   SequenceNumber32 m_next;    // Next expected sequence to be sent
   RttHistory_t m_history;     // List of sent packet
-  u_int16_t m_maxMultiplier;
+  uint16_t m_maxMultiplier;
   Time m_initialEstimatedRtt;
 
 protected:
-  int64x64_t   m_currentEstimatedRtt;     // Current estimate
-  int64x64_t   m_minRto;                  // minimum value of the timeout
+  Time         m_currentEstimatedRtt;     // Current estimate
+  Time         m_minRto;                  // minimum value of the timeout
   uint32_t     m_nSamples;                // Number of samples
-  u_int16_t    m_multiplier;              // RTO Multiplier
+  uint16_t     m_multiplier;              // RTO Multiplier
 };
 
 /**
@@ -192,7 +194,7 @@ public:
 
 private:
   double       m_gain;       // Filter gain
-  int64x64_t   m_variance;   // Current variance
+  Time         m_variance;   // Current variance
 };
 } // namespace ns3
 
