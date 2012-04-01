@@ -748,7 +748,19 @@ void AnimationInterface::AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo 
 uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
 {
   AnimByteTag tag;
-  if (p->FindFirstMatchingByteTag (tag))
+  TypeId tid = tag.GetInstanceTypeId ();
+  ByteTagIterator i = p->GetByteTagIterator ();
+  bool found = false;
+  while (i.HasNext ())
+    {
+      ByteTagIterator::Item item = i.Next ();
+      if (tid == item.GetTypeId ())
+        {
+          item.GetTag (tag);
+          found = true;
+        }
+    }
+  if (found)
     {
       return tag.Get ();
     }
@@ -927,7 +939,7 @@ void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p,
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
-  NS_LOG_INFO ("WimaxRxTrace for packet:" << gAnimUid);
+  NS_LOG_INFO ("WimaxRxTrace for packet:" << AnimUid);
   NS_ASSERT (WimaxPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingWimaxPackets[AnimUid];
   pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
