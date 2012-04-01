@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
   std::string tr_name ("n-node-ppp.tr");
   std::string pcap_name ("n-node-ppp");
   std::string flow_name ("n-node-ppp.xml");
-  std::string anim_name ("n-node-ppp.anim");
+  std::string anim_name ("n-node-ppp.anim.xml");
 
   std::string adj_mat_file_name ("examples/matrix-topology/adjacency_matrix.txt");
   std::string node_coordinates_file_name ("examples/matrix-topology/node_coordinates.txt");
@@ -275,24 +275,12 @@ int main (int argc, char *argv[])
 
   // Configure animator with default settings
 
-  bool animEnabled = false;
-  AnimationInterface anim;
-  if (anim.SetServerPort (9) && anim.SetOutputFile (anim_name.c_str ()))
-    {
-      NS_LOG_INFO ("Animation Interface Enabled.");
-      animEnabled = true;
-      anim.StartAnimation ();
-    }
-
+  AnimationInterface anim (anim_name.c_str ());
   NS_LOG_INFO ("Run Simulation.");
 
   Simulator::Stop (Seconds (SimTime));
   Simulator::Run ();
   // flowmon->SerializeToXmlFile (flow_name.c_str(), true, true);
-  if (animEnabled)
-    {
-      anim.StopAnimation ();
-    }
   Simulator::Destroy ();
 
   // ---------- End of Simulation Monitoring ---------------------------------

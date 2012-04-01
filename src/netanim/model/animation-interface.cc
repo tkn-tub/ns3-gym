@@ -64,7 +64,7 @@ AnimationInterface::AnimationInterface ()
     usingSockets (false), mport (0), outputfilename (""),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0),randomPosition (true),
     m_writeCallback (0), m_started (false), 
-    m_enablePacketMetadata (false)
+    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000))
 {
   initialized = true;
   StartAnimation ();
@@ -75,7 +75,7 @@ AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
     usingSockets (false), mport (0), outputfilename (fn),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
     m_writeCallback (0), m_started (false), 
-    m_enablePacketMetadata (false)
+    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000))
 {
   initialized = true;
   StartAnimation ();
@@ -86,7 +86,7 @@ AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
     usingSockets (true), mport (port), outputfilename (""),
     OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
     m_writeCallback (0), m_started (false), 
-    m_enablePacketMetadata (false)
+    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000))
 {
   initialized = true;
   StartAnimation ();
@@ -101,6 +101,17 @@ void AnimationInterface::SetXMLOutput ()
 {
   NS_LOG_INFO ("XML output set");
   m_xml = true;
+}
+
+
+void AnimationInterface::SetStartTime (Time t)
+{
+  m_startTime = t;
+}
+
+void AnimationInterface::SetStopTime (Time t)
+{
+  m_stopTime = t;
 }
 
 bool AnimationInterface::SetOutputFile (const std::string& fn)
@@ -154,6 +165,15 @@ void AnimationInterface::SetAnimWriteCallback (AnimWriteCallback cb)
 void AnimationInterface::ResetAnimWriteCallback ()
 {
   m_writeCallback = 0;
+}
+
+bool AnimationInterface::IsInTimeWindow ()
+{
+  if ((Simulator::Now () >= m_startTime) && 
+      (Simulator::Now () <= m_stopTime))
+    return true;
+  else
+    return false;
 }
 
 bool AnimationInterface::SetServerPort (uint16_t port)
@@ -741,7 +761,7 @@ uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
 void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
                                           Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context); 
   NS_ASSERT (ndev);
@@ -771,7 +791,7 @@ void AnimationInterface::WifiPhyTxEndTrace (std::string context,
 void AnimationInterface::WifiPhyTxDropTrace (std::string context,
                                              Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -786,7 +806,7 @@ void AnimationInterface::WifiPhyTxDropTrace (std::string context,
 void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
                                               Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -825,7 +845,7 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
 void AnimationInterface::WifiPhyRxEndTrace (std::string context,
                                             Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -852,7 +872,7 @@ void AnimationInterface::WifiPhyRxEndTrace (std::string context,
 void AnimationInterface::WifiMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -881,7 +901,7 @@ void AnimationInterface::WifiPhyRxDropTrace (std::string context,
 
 void AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -900,7 +920,7 @@ void AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p,
 
 void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -919,7 +939,7 @@ void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p,
 
 void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -938,7 +958,7 @@ void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, c
 
 void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -962,7 +982,7 @@ void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, c
 
 void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -980,7 +1000,7 @@ void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Pac
 
 void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1001,7 +1021,7 @@ void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packe
 
 void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -1024,7 +1044,7 @@ void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packe
 void AnimationInterface::CsmaMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   NS_LOG_FUNCTION (this);
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
@@ -1051,7 +1071,7 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
 void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mobility)
 
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <Node> n = mobility->GetObject <Node> ();
   NS_ASSERT (n);
@@ -1091,6 +1111,8 @@ bool AnimationInterface::NodeHasMoved (Ptr <Node> n, Vector newLocation)
 
 void AnimationInterface::MobilityAutoCheck ()
 {
+  if (!m_started || !IsInTimeWindow ())
+    return;
   std::vector <Ptr <Node> > MovedNodes = RecalcTopoBounds ();
   std::ostringstream oss;
   oss << GetXMLOpen_topology (topo_minX, topo_minY, topo_maxX, topo_maxY);
@@ -1132,39 +1154,31 @@ std::string AnimationInterface::GetPreamble ()
     Description of attributes:\n\
     =========================\n\
     anim\n\
-    * lp = Logical Processor Id\n\
     topology\n\
     * minX = minimum X coordinate of the canvas\n\
     * minY = minimum Y coordinate of the canvas\n\
     * maxX = maximum X coordinate of the canvas\n\
     * maxY = maximum Y coordinate of the canvas\n\
     node\n\
-    * lp = Logical Processor Id\n\
     * id = Node Id\n\
     * locX = X coordinate\n\
     * locY = Y coordinate\n\
     link\n\
-    * fromLp = From logical processor Id\n\
     * fromId = From Node Id\n\
-    * toLp   = To logical processor Id\n\
     * toId   = To Node Id\n\
     packet\n\
-    * fromLp = From logical processor Id\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
     rx\n\
-    * toLp = To logical processor Id\n\
     * toId = To Node Id\n\
     * fbRx = First bit Rx Time\n\
     * lbRx = Last bit Rx\n\
     wpacket\n\
-    * fromLp = From logical processor Id\n\
     * fromId = From Node Id\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
     * range = Reception range\n\
     rx\n\
-    * toLp = To logical processor Id\n\
     * toId = To Node Id\n\
     * fbRx = First bit Rx time\n\
     * lbRx = Last bit Rx time-->\n\
@@ -1254,7 +1268,7 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,do
 std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId)
 {
   std::ostringstream oss;
-  oss << "<link fromLp=\"0\" fromId=\"" << fromId
+  oss << "<link fromId=\"" << fromId
       << "\" toLp=\"0\" toId=\"" << toId
       << "\"/>" << std::endl;
   return oss.str ();
@@ -1265,7 +1279,7 @@ std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp,uint32_t from
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<packet fromLp=\"" << fromLp << "\" fromId=\"" << fromId
+  oss << "<packet fromId=\"" << fromId
       << "\" fbTx=\"" << fbTx
       << "\" lbTx=\"" << lbTx
       << (auxInfo.empty()?"":"\" aux=\"") << auxInfo.c_str ()
@@ -1277,10 +1291,10 @@ std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fro
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<wpacket fromLp = \"" << fromLp << "\" fromId = \"" << fromId
-      << "\" fbTx = \"" << fbTx
-      << "\" lbTx = \"" << lbTx
-      << "\" range = \"" << range << "\">" << std::endl;
+  oss << "<wpacket fromId=\"" << fromId
+      << "\" fbTx=\"" << fbTx
+      << "\" lbTx=\"" << lbTx
+      << "\" range= \"" << range << "\">" << std::endl;
   return oss.str ();
 
 }
@@ -1289,7 +1303,7 @@ std::string AnimationInterface::GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<rx toLp=\"" << toLp <<"\" toId=\"" << toId
+  oss << "<rx toId=\"" << toId
       << "\" fbRx=\"" << fbRx
       << "\" lbRx=\"" << lbRx
       << "\"/>" << std::endl;
