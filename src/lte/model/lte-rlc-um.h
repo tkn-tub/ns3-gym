@@ -21,6 +21,8 @@
 #ifndef LTE_RLC_UM_H
 #define LTE_RLC_UM_H
 
+#include "ns3/lte-rlc-sequence-number.h"
+
 #include "ns3/lte-rlc.h"
 
 #include <map>
@@ -52,20 +54,17 @@ public:
   void Start ();
 
 private:
-  /**
-   * This method will schedule a timeout at WaitReplyTimeout interval
-   * in the future, unless a timer is already running for the cache,
-   * in which case this method does nothing.
-   */
-  void StartReorderingTimer (void);
   void ExpireReorderingTimer (void);
+  void ExpireRbsTimer (void);
 
-  bool IsInsideReorderingWindow (uint16_t seqNumber);
+  bool IsInsideReorderingWindow (SequenceNumber10 seqNumber);
 
   void ReassembleOutsideWindow (void);
-  void ReassembleSnLessThan (uint16_t seqNumber);
+  void ReassembleSnLessThan (SequenceNumber10 seqNumber);
 
   void ReassembleAndDeliver (Ptr<Packet> packet);
+
+  void DoReportBufferStatus ();
 
 private:
   uint32_t m_txBufferSize;
@@ -78,11 +77,11 @@ private:
   /**
    * State variables. See section 7.1 in TS 36.322
    */
-  uint16_t m_sequenceNumber;      // VT(US)
+  SequenceNumber10 m_sequenceNumber; // VT(US)
 
-  uint16_t m_vrUr;                // VR(UR)
-  uint16_t m_vrUx;                // VR(UX)
-  uint16_t m_vrUh;                // VR(UH)
+  SequenceNumber10 m_vrUr;           // VR(UR)
+  SequenceNumber10 m_vrUx;           // VR(UX)
+  SequenceNumber10 m_vrUh;           // VR(UH)
 
   /**
    * Constants. See section 7.2 in TS 36.322
@@ -93,6 +92,7 @@ private:
    * Timers. See section 7.3 in TS 36.322
    */
   EventId m_reorderingTimer;
+  EventId m_rbsTimer;
 
   /**
    * Reassembling state
@@ -106,7 +106,7 @@ private:
   /**
    * Expected Sequence Number
    */
-  uint16_t m_expectedSeqNumber;
+  SequenceNumber10 m_expectedSeqNumber;
 
 };
 

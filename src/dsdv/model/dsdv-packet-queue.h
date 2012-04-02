@@ -47,7 +47,7 @@ class QueueEntry
 public:
   typedef Ipv4RoutingProtocol::UnicastForwardCallback UnicastForwardCallback;
   typedef Ipv4RoutingProtocol::ErrorCallback ErrorCallback;
-  // / c-tor
+  /// c-tor
   QueueEntry (Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header (),
               UnicastForwardCallback ucb = UnicastForwardCallback (),
               ErrorCallback ecb = ErrorCallback ())
@@ -67,7 +67,7 @@ public:
   {
     return ((m_packet == o.m_packet) && (m_header.GetDestination () == o.m_header.GetDestination ()) && (m_expire == o.m_expire));
   }
-  // /\name Fields
+  ///\name Fields
   // \{
   UnicastForwardCallback GetUnicastForwardCallback () const
   {
@@ -111,15 +111,15 @@ public:
   }
   // \}
 private:
-  // / Data packet
+  /// Data packet
   Ptr<const Packet> m_packet;
-  // / IP header
+  /// IP header
   Ipv4Header m_header;
-  // / Unicast forward callback
+  /// Unicast forward callback
   UnicastForwardCallback m_ucb;
-  // / Error callback
+  /// Error callback
   ErrorCallback m_ecb;
-  // / Expire time for queue entry
+  /// Expire time for queue entry
   Time m_expire;
 };
 /**
@@ -133,24 +133,24 @@ private:
 class PacketQueue
 {
 public:
-  // / Default c-tor
+  /// Default c-tor
   PacketQueue ()
   {
   }
-  // / Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
   bool Enqueue (QueueEntry & entry);
-  // / Return first found (the earliest) entry for given destination
+  /// Return first found (the earliest) entry for given destination
   bool Dequeue (Ipv4Address dst, QueueEntry & entry);
-  // / Remove all packets with destination IP address dst
+  /// Remove all packets with destination IP address dst
   void DropPacketWithDst (Ipv4Address dst);
-  // / Finds whether a packet with destination dst exists in the queue
+  /// Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address dst);
-  // / Get count of packets with destination dst in the queue
+  /// Get count of packets with destination dst in the queue
   uint32_t
   GetCountForPacketsWithDst (Ipv4Address dst);
-  // / Number of entries
+  /// Number of entries
   uint32_t GetSize ();
-  // /\name Fields
+  ///\name Fields
   // \{
   uint32_t GetMaxQueueLen () const
   {
@@ -180,15 +180,15 @@ public:
 
 private:
   std::vector<QueueEntry> m_queue;
-  // / Remove all expired entries
+  /// Remove all expired entries
   void Purge ();
-  // / Notify that packet is dropped from queue by timeout
+  /// Notify that packet is dropped from queue by timeout
   void Drop (QueueEntry en, std::string reason);
-  // / The maximum number of packets that we allow a routing protocol to buffer.
+  /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
-  // / The maximum number of packets that we allow per destination to buffer.
+  /// The maximum number of packets that we allow per destination to buffer.
   uint32_t m_maxLenPerDst;
-  // / The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
+  /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
   static bool IsEqual (QueueEntry en, const Ipv4Address dst)
   {

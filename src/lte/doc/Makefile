@@ -16,10 +16,16 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-ue-architecture.eps \
 	$(FIGURES)/epc-profiling-scenario.eps \
 	$(FIGURES)/eutran-profiling-scenario.eps \
-	$(FIGURES)/lte-interference-test-scenario.eps
-
-# specify figures for build process (all eps figures)
-GRAPHS_EPS = \
+	$(FIGURES)/lte-interference-test-scenario.eps \
+	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-data-flow-dl.eps \
+	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
+	$(FIGURES)/MCS_2_test.eps \
+	$(FIGURES)/MCS_12_test.eps \
+	$(FIGURES)/MCS_14_test.eps \
+	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
@@ -34,12 +40,7 @@ GRAPHS_EPS = \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
-	$(FIGURES)/lte-rlc-data-retx-ul.eps \
-	$(FIGURES)/epc-topology.eps \
-	$(FIGURES)/epc-data-flow-dl.eps \
-	$(FIGURES)/epc-data-flow-ul.eps \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps 
+	$(FIGURES)/lte-rlc-data-retx-ul.eps 
 
 
 # rescale pdf figures as necessary
@@ -54,18 +55,18 @@ $(FIGURES)/internet-node-recv.pdf_width = 5in
 $(FIGURES)/routing.pdf_width = 6in
 $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
-$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
 $(FIGURES)/epc-topology.pdf_width = 4in
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
 $(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
-$(FIGURES)/ff-mac-saps.pdf_width = 2in
-$(FIGURES)/ff-example.pdf_width = 3in
-$(FIGURES)/lte-rlc-implementation-model.pdf_width = 12in
+$(FIGURES)/ff-mac-saps.pdf_width = 5in
+$(FIGURES)/ff-example.pdf_width = 5in
+$(FIGURES)/lte-rlc-implementation-model.pdf_width = 20in
 $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
+$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
 
@@ -83,10 +84,26 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_pedestrian.pdf \
 	$(FIGURES)/fading_vehicular.pdf \
 	$(FIGURES)/fading_urban_3kmph.pdf \
+	$(FIGURES)/MCS_1_4.pdf \
+	$(FIGURES)/MCS_1_4.png \
+	$(FIGURES)/MCS_5_8.pdf \
+	$(FIGURES)/MCS_5_8.png \
+	$(FIGURES)/MCS_9_12.pdf \
+	$(FIGURES)/MCS_9_12.png \
+	$(FIGURES)/MCS_13_16.pdf \
+	$(FIGURES)/MCS_13_16.png \
+	$(FIGURES)/MCS_17_20.pdf \
+	$(FIGURES)/MCS_17_20.png \
+	$(FIGURES)/MCS_21_24.pdf \
+	$(FIGURES)/MCS_21_24.png \
+	$(FIGURES)/MCS_25_27.pdf \
+	$(FIGURES)/MCS_25_27.png \
 	$(FIGURES)/lte-phy-interference.png \
 	$(FIGURES)/lte-phy-interference.pdf \
 	$(FIGURES)/helpers.png \
 	$(FIGURES)/helpers.pdf \
+	$(FIGURES)/miesm_scheme.pdf \
+	$(FIGURES)/miesm_scheme.png \
 	$(IMAGES_SEQDIAG) 
 
 IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
@@ -98,10 +115,6 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 %.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
-GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
-GRAPHS_PDF = ${GRAPHS_EPS:.eps=.pdf}
-
-GRAPHS = $(GRAPHS_EPS) $(GRAPHS_PNG) $(GRAPHS_PDF)
 
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
@@ -142,15 +155,13 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 	-rm -f $(IMAGES_PNG)
 	-rm -f $(IMAGES_PDF)
-	-rm -f $(GRAPHS_PNG)
-	-rm -f $(GRAPHS_PDF)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
 	pushd $(BUILDDIR)/frag && ../../pickle-to-xml.py ../pickle/index.fpickle  > navigation.xml && popd
 	cp -r $(BUILDDIR)/pickle/_images $(BUILDDIR)/frag
 
-html:  $(IMAGES) ${GRAPHS}
+html:  $(IMAGES) 
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
@@ -204,14 +215,14 @@ epub:  $(IMAGES)
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-latex:  $(IMAGES) ${GRAPHS}
+latex:  $(IMAGES)
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf:  $(IMAGES) ${GRAPHS}
+latexpdf:  $(IMAGES)
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(BUILDDIR)/latex all-pdf

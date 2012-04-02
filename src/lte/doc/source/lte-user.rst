@@ -193,8 +193,9 @@ simulator, including lots of non-LTE attributes.
 Simulation Output
 -----------------
 
-The ns-3 LTE model currently supports the output to file of both MAC and RLC
-level Key Performance Indicators (KPIs). You can enable it in the following way::
+The ns-3 LTE model currently supports the output to file of MAC, RLC
+and PDCP level Key Performance Indicators (KPIs). You can enable it in
+the following way::
 
       Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
       
@@ -202,59 +203,87 @@ level Key Performance Indicators (KPIs). You can enable it in the following way:
       
       lteHelper->EnableMacTraces ();
       lteHelper->EnableRlcTraces ();   
+      lteHelper->EnablePdcpTraces ();   
 
       Simulator::Run ();
 
 
-RLC KPIs are calculated over a time interval and stored on two ASCII
-files, one for uplink and one for downlink. The time interval duration
-and the name of the files can be controlled using the attributes
-``ns3::RadioBearerStatsCalculator::EpochDuration``,
-``ns3::RadioBearerStatsCalculator::DlOutputFilename`` and
-``ns3::RadioBearerStatsCalculator::UlOutputFilename``.
-The content of the columns of these files is the following (the same
+RLC and PDCP KPIs are calculated over a time interval and stored on ASCII
+files, two for RLC KPIs and two for PDCP KPIs, in each case one for
+uplink and one for downlink. The time interval duration can be controlled using the attribute
+``ns3::RadioBearerStatsCalculator::EpochDuration``.
+
+The columns of the RLC KPI files is the following (the same
 for uplink and downlink):
  
   1. start time of measurement interval in seconds since the start of simulation
   2. end time of measurement interval in seconds since the start of simulation
-  3. unique UE ID
-  4. RNTI
-  5. Logical Channel ID
-  6. Number of transmitted PDUs
-  7. Total bytes transmitted.
-  8. Number of received PDUs
-  9. Total bytes received
-  10. Average PDU delay in seconds
-  11. Standard deviation of the PDU delay
-  12. Minimum value of the PDU delay
-  13. Maximum value of the PDU delay
-  14. Average PDU size, in bytes
-  15. Standard deviation of the PDU size
-  16. Minimum PDU size
-  17. Maximum PDU size
+  3. Cell ID
+  4. unique UE ID (IMSI)
+  5. cell-specific UE ID (RNTI)
+  6. Logical Channel ID
+  7. Number of transmitted RLC PDUs
+  8. Total bytes transmitted.
+  9. Number of received RLC PDUs
+  10. Total bytes received
+  11. Average RLC PDU delay in seconds
+  12. Standard deviation of the RLC PDU delay
+  13. Minimum value of the RLC PDU delay
+  14. Maximum value of the RLC PDU delay
+  15. Average RLC PDU size, in bytes
+  16. Standard deviation of the RLC PDU size
+  17. Minimum RLC PDU size
+  18. Maximum RLC PDU size
+
+Similarly, the columns of the PDCP KPI files is the following (again, the same
+for uplink and downlink):
+ 
+  1. start time of measurement interval in seconds since the start of simulation
+  2. end time of measurement interval in seconds since the start of simulation
+  3. Cell ID
+  4. unique UE ID (IMSI)
+  5. cell-specific UE ID (RNTI)
+  6. Logical Channel ID
+  7. Number of transmitted PDCP PDUs
+  8. Total bytes transmitted.
+  9. Number of received PDCP PDUs
+  10. Total bytes received
+  11. Average PDCP PDU delay in seconds
+  12. Standard deviation of the PDCP PDU delay
+  13. Minimum value of the PDCP PDU delay
+  14. Maximum value of the PDCP PDU delay
+  15. Average PDCP PDU size, in bytes
+  16. Standard deviation of the PDCP PDU size
+  17. Minimum PDCP PDU size
+  18. Maximum PDCP PDU size
+
+
 
 MAC KPIs are basically a trace of the resource allocation reported by
 the scheduler upon the start of every subframe. They are stored in
 ASCII files. For downlink MAC KPIs the format is the following:
 
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
-  2. Cell Identifier
-  3. Frame number
-  4. Subframe number
-  5. RNTI
-  6. MCS of TB 1
-  7. size of TB 1
-  8. MCS of TB 2 (0 if not present)
-  9. size of TB 2 (0 if not present)
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. Frame number
+  5. Subframe number
+  6. cell-specific UE ID (RNTI)
+  7. MCS of TB 1
+  8. size of TB 1
+  9. MCS of TB 2 (0 if not present)
+  10. size of TB 2 (0 if not present)
 
 while for uplink MAC KPIs the format is:
 
   1. Simulation time in seconds at which the allocation is indicated by the scheduler
-  2. Frame number
-  3. Subframe number
-  4. RNTI
-  5. MCS of TB
-  6. size of TB
+  2. Cell ID
+  3. unique UE ID (IMSI)
+  4. Frame number
+  5. Subframe number
+  6. cell-specific UE ID (RNTI)
+  7. MCS of TB
+  8. size of TB
 
 The names of the files used for MAC KPI output can be customized via
 the ns-3 attributes ``ns3::MacStatsCalculator::DlOutputFilename`` and 
@@ -272,7 +301,7 @@ Fading Traces Generation
 
 It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
- * ``fc`` : the frequency in use (it affects the computation of the dopples speed).
+ * ``fc`` : the frequency in use (it affects the computation of the doppler speed).
  * ``v_km_h`` : the speed of the users
  * ``traceDuration`` : the duration in seconds of the total length of the trace.
  * ``numRBs`` : the number of the resource block to be evaluated. 
@@ -293,7 +322,7 @@ The parameters to be configured are:
  * ``SamplesNum`` : the number of samples;
  * ``WindowSize`` : the size of the fading sampling window in seconds;
 
-It is important to highlight that the sampling interval of the fading trace has to me at most of 1 ms or greater and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module.
+It is important to highlight that the sampling interval of the fading trace has to be 1 ms or greater, and in the latter case it has to be an integer multiple of 1 ms in order to be correctly processed by the fading module.
 
 The default configuration of the matlab script provides a trace 10 seconds long, made of 10,000 samples (i.e., 1 sample per TTI=1ms) and used with a windows size of 0.5 seconds amplitude. These are also the default values of the parameters above used in the simulator; therefore their settage can be avoided in case the fading trace respects them.
 
@@ -374,18 +403,6 @@ It is to be noted that using other means to configure the frequency used by the 
     MobilityHelper mobility;
     mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
 
-#. Node creation and positioning::
-
-    ueNodes.Create (1);
-    mobility.Install (ueNodes);
-    NetDeviceContainer ueDevs;
-    ueDevs = lteHelper->InstallUeDevice (ueNodes);
-    Ptr<BuildingsMobilityModel> mm = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
-    double x_axis = 0.0;
-    double y_axis = 0.0;
-    double z_axis = 0.0;
-    mm->SetPosition (Vector (x_axis, y_axis, z_axis));
-
 #. Building creation::
 
     double x_min = 0.0;
@@ -394,29 +411,154 @@ It is to be noted that using other means to configure the frequency used by the 
     double y_max = 20.0;
     double z_min = 0.0;
     double z_max = 10.0;
-    Ptr<Building> building = Create<Building> (x_min, x_max, y_min, y_max, z_min, z_max);
-    building->SetBuildingType (Building::Residential);
-    building->SetExtWallsType (Building::ConcreteWithWindows);
-    building->SetFloorsNumber (3);
-    building->SetNumberRoomX (3);
-    building->SetNumberRoomY (2);
+    Ptr<Building> b = CreateObject <Building> ();
+    b->SetBoundaries (Box (x_min, x_max, y_min, y_max, z_min, z_max));
+    b->SetBuildingType (Building::Residential);
+    b->SetExtWallsType (Building::ConcreteWithWindows);
+    b->SetNFloors (3);
+    b->SetNRoomsX (3);
+    b->SetNRoomsY (2);
 
    This will instantiate a residential building with base of 10 x 20 meters and height of 10 meters whose external walls are of concrete with windows; the building has three floors and has an internal 3 x 2  grid of rooms of equal size.
 
-#. Building and nodes interactions::
+#. Node creation and positioning::
 
-    mm->SetIndoor (building, 2, 1, 1);
+    ueNodes.Create (2);
+    mobility.Install (ueNodes);
+    NetDeviceContainer ueDevs;
+    ueDevs = lteHelper->InstallUeDevice (ueNodes);
+    Ptr<BuildingsMobilityModel> mm0 = enbNodes.Get (0)->GetObject<BuildingsMobilityModel> ();
+    Ptr<BuildingsMobilityModel> mm1 = enbNodes.Get (1)->GetObject<BuildingsMobilityModel> ();   
+    mm0->SetPosition (Vector (5.0, 5.0, 1.5));
+    mm1->SetPosition (Vector (30.0, 40.0, 1.5));
 
-   which is equivalent to the form::
+This positions the node on the scenario. Note that, in this example, node 0 will be in the building, and node 1 will be out of the building. Note that this alone is not sufficient to setup the topology correctly. What is left to be done is to issue the following command after we have placed all nodes in the simulation::
 
-    mm->SetIndoor (building);
-    mm->SetFloorNumber (2);
-    mm->SetRoomNumberX (1);
-    mm->SetRoomNumberY (1);
+      BuildingsHelper::MakeMobilityModelConsistent ();
 
-   This informs the node's mobility model that the node is located inside the building on the second floor in the corner room of the 3 x 2 grid.
-   We suggest the usage of the first form since it performs a consistency check of the node position with the building bounds.
-   It has to be noted that the simulator does not check the consistence between the node's position (x,y,z coordinates) and the building position and size for outdoor nodes. The responsibility of this consistency is completely left to the user.
+This command will go through the lists of all nodes and of all buildings, determine for each user if it is indoor or outdoor, and if indoor it will also determine the building in which the user is located and the corresponding floor and number inside the building.
+
+
+
+
+
+Use of AntennaModel
+-------------------
+
+We now show how associate a particular AntennaModel with an eNB device
+in order to model a sector of a macro eNB. For this purpose, it is
+convenient to use the ``CosineAntennaModel`` provided by the ns-3
+antenna module. The configuration of the eNB is to be done via the
+``LteHelper`` instance right before the creation of the
+``EnbNetDevice``, as shown in the following::
+  
+  lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
+  lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (60);
+  lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
+
+the above code will generate an antenna model with a 60 degrees
+beamwidth pointing along the X axis. The orientation is measured
+in degrees from the X axis, e.g., an orientation of 90 would point
+along the Y axis, and an orientation of -90 would point in the
+negative direction along the Y axis. The beamwidth is the -3 dB
+beamwidth, e.g, for a 60 degree beamwidth the antenna gain at an angle
+of :math:`\pm 30` degrees from the direction of orientation is -3 dB.
+
+To create a multi-sector site, you need to create different ns-3 nodes
+placed at the same position, and to configure separate ``EnbNetDevice``
+with different antenna orientations to be installed on each node.
+
+
+Radio Environment Maps
+----------------------
+
+By using the class RadioEnvironmentMapHelper it is possible to output
+to a file a Radio Environment Map (REM), i.e., a uniform 2D grid of values
+that represent the Signal-to-noise ratio in the downlink with respect
+to the eNB that has the strongest signal at each point. 
+
+To do this, you just need to add the following code to your simulation
+program towards the end, right before the call to Simulator::Run ()::
+
+  Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
+  remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
+  remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
+  remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
+  remHelper->SetAttribute ("XMax", DoubleValue (400.0));
+  remHelper->SetAttribute ("XRes", UintegerValue (100));
+  remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
+  remHelper->SetAttribute ("YMax", DoubleValue (300.0));
+  remHelper->SetAttribute ("YRes", UintegerValue (75));
+  remHelper->SetAttribute ("Z", DoubleValue (0.0));
+  remHelper->Install ();
+
+By configuring the attributes of the RadioEnvironmentMapHelper object
+as shown above, you can tune the parameters of the REM to be
+generated. Note that each RadioEnvironmentMapHelper instance can
+generate only one REM; if you want to generate more REMs, you need to
+create one separate instance for each REM. 
+
+Note that the REM generation is very demanding, in particular:
+
+ * the run-time memory consumption is approximately 5KB per pixel. For example,
+   a REM with a resolution of 500x500 needs about 1.25 GB of memory, and
+   a resolution of 1000x1000 needs about 5 GB (too much for a
+   regular PC at the time of this writing).
+ * if you generate a REM at the beginning of a simulation, it will
+   slow down the execution of the rest of the simulation. If you want
+   to generate a REM for a program and also use the same program to
+   get simulation result, it is recommended to add a command-line
+   switch that allows to either generate the REM or run the complete
+   simulation. For this purpose, note that there is an attribute
+   ``RadioEnvironmentMapHelper::StopWhenDone`` (default: true) that
+   will force the simulation to stop right after the REM has been generated.
+
+The REM is stored in an ASCII file in the following format:
+
+ * column 1 is the x coordinate
+ * column 2 is the y coordinate
+ * column 3 is the z coordinate
+ * column 4 is the SINR in linear units
+
+A minimal gnuplot script that allows you to plot the REM is given
+below::
+
+   set view map;
+   set xlabel "X"
+   set ylabel "Y"
+   set cblabel "SINR (dB)"
+   unset key
+   plot "rem.out" using ($1):($2):(10*log10($4)) with image
+
+As an example, here is the REM that can be obtained with the example program lena-dual-stripe, which shows a three-sector LTE macrocell in a co-channel deployment with some residential femtocells randomly deployed in two blocks of apartments.
+
+.. _fig-lena-dual-stripe:
+
+.. figure:: figures/lena-dual-stripe.*
+   :align: center
+
+   REM obtained from the lena-dual-stripe example
+
+
+
+
+AMC Model and CQI Calculation
+-----------------------------
+
+The simulator provides two possible schemes for what concerns the selection of the MCSs and correspondly the generation of the CQIs. The first one is based on the GSoC module [Piro2011]_ and works per RB basis. This model can be activated with the ns3 attribute system, as presented in the following::
+
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+
+While, the solution based on the physical error model can be controlled with::
+
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::MiErrorModel));
+
+Finally, the required efficiency of the ``PiroEW2010`` AMC module can be tuned thanks to the ``Ber`` attribute (), for instance::
+
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
+
+
 
 
 Evolved Packet Core (EPC)

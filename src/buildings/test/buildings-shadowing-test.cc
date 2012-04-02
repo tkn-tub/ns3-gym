@@ -21,7 +21,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/buildings-shadowing-test.h"
-#include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/hybrid-buildings-propagation-loss-model.h>
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include <ns3/building.h>
@@ -122,8 +122,8 @@ BuildingsShadowingTestCase::DoRun (void)
   int samples = 10000;
   for (int i = 0; i < samples; i++)
     {
-      Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
-      loss.push_back (propagationLossModel->GetLoss (mma, mmb) - m_lossRef);
+      Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
+      loss.push_back (propagationLossModel->DoCalcRxPower (0.0, mma, mmb) + m_lossRef);
       sum += loss.at (loss.size () - 1);
       sumSquared += (loss.at (loss.size () - 1) * loss.at (loss.size () - 1));
     }
@@ -167,7 +167,8 @@ BuildingsShadowingTestCase::CreateMobilityModel (uint16_t index)
   double henbHeight = 10.0;
   Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
-  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
+  static Ptr<Building> building1 = Create<Building> ();
+  building1->SetBoundaries (Box (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/));
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);

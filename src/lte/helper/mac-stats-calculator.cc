@@ -48,8 +48,42 @@ MacStatsCalculator::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MacStatsCalculator")
     .SetParent<LteStatsCalculator> ()
     .AddConstructor<MacStatsCalculator> ()
+    .AddAttribute ("DlOutputFilename",
+                   "Name of the file where the downlink results will be saved.",
+                   StringValue ("DlMacStats.txt"),
+                   MakeStringAccessor (&MacStatsCalculator::SetDlOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("UlOutputFilename",
+                   "Name of the file where the uplink results will be saved.",
+                   StringValue ("UlMacStats.txt"),
+                   MakeStringAccessor (&MacStatsCalculator::SetUlOutputFilename),
+                   MakeStringChecker ())
   ;
   return tid;
+}
+
+void
+MacStatsCalculator::SetUlOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetUlOutputFilename (outputFilename);
+}
+
+std::string
+MacStatsCalculator::GetUlOutputFilename (void)
+{
+  return LteStatsCalculator::GetUlOutputFilename ();
+}
+
+void
+MacStatsCalculator::SetDlOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetDlOutputFilename (outputFilename);
+}
+
+std::string
+MacStatsCalculator::GetDlOutputFilename (void)
+{
+  return LteStatsCalculator::GetDlOutputFilename ();
 }
 
 void
@@ -112,7 +146,7 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
           return;
         }
       m_ulFirstWrite = false;
-      outFile << "# time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcs\tsize";
+      outFile << "% time\tcellId\tIMSI\tframe\tsframe\tRNTI\tmcs\tsize";
       outFile << std::endl;
     }
   else

@@ -30,6 +30,7 @@
 #include <ns3/lte-amc.h>
 #include <ns3/lte-ue-phy-sap.h>
 #include <ns3/ptr.h>
+#include <ns3/lte-amc.h>
 
 
 namespace ns3 {
@@ -101,6 +102,16 @@ public:
   double GetNoiseFigure () const;
 
   /**
+   * \param delay the TTI delay between MAC and channel
+   */
+  void SetMacChDelay (uint8_t delay);
+
+  /**
+   * \returns the TTI delay between MAC and channel
+   */
+  uint8_t GetMacChDelay (void) const;
+
+  /**
    * \brief Queue the MAC PDU to be sent
    * \param p the MAC PDU to sent
    */
@@ -150,7 +161,7 @@ public:
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
   virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
@@ -189,6 +200,8 @@ public:
 private:
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
+  
+  Ptr<LteAmc> m_amc;
 
   Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
   Time m_p10CqiLast;

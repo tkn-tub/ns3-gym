@@ -27,8 +27,6 @@
 #include <ns3/building.h>
 #include <ns3/buildings-mobility-model.h>
 
-// #include <ns3/jakes-fading-loss-model.h>
-// #include <ns3/shadowing-loss-model.h>
 
 namespace ns3 {
 
@@ -80,7 +78,7 @@ public:
    * \param b the mobility model of the destination
    * \returns the propagation loss (in dBm)
    */
-  double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
   void SetEnvironment (Environment env);
   void SetCitySize (CitySize size);
   void SetLambda (double lambda);
@@ -94,17 +92,21 @@ public:
 //   void SetLambda (double frequency, double speed);
 
 
-private:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  double OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+protected:
+  virtual double OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  virtual double ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  virtual double ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  virtual double ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
 //   double ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
   double ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double BEWPL (Ptr<BuildingsMobilityModel> a) const;
 
-  double HeightGain (Ptr<BuildingsMobilityModel> n) const;
+  double ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const;
+  double HeightLoss (Ptr<BuildingsMobilityModel> n) const;
+  double InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
+  
+  double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b)
+  const;
 
   double C;  // OH loss coefficient for the environment
   double N;  // ITU-R P.1238: power loss coefficient
@@ -120,28 +122,32 @@ private:
   double m_streetsWidth; // in meters
   double m_buildingsExtend; // in meters
   double m_buildingSeparation; // in meters
+  double m_lossInternalWall; // in meters
 
-  // the shadowing tx/rx pairs management has been inspired by the
-  // JakesFadingLossModel developed by Federico Maguolo (see jakes-propagation-model.h/cc)
-  class ShadowingLoss;
-  friend class ShadowingLoss;
-  typedef std::vector<ShadowingLoss *> DestinationList;
-  struct PairsSet
+  
+  class ShadowingLoss
   {
-    Ptr<MobilityModel> sender;
-    DestinationList receivers;
+  public:
+    ShadowingLoss ();
+    ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
+    double GetLoss () const;
+    Ptr<MobilityModel> GetReceiver (void) const;
+  protected:
+    Ptr<MobilityModel> m_receiver;
+    NormalVariable m_randVariable;
+    double m_shadowingValue;
   };
-  typedef std::vector<PairsSet *> PairsList;
+
+  mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
   double EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
 
 
   double m_shadowingSigmaExtWalls;
   double m_shadowingSigmaOutdoor;
   double m_shadowingSigmaIndoor;
-  mutable PairsList m_shadowingPairs;
 
 };
 
 }
 
-#endif /* COST231PROPAGATIONMODEL_H_ */
+#endif /* BUILDINGS_PROPAGATION_LOSS_MODEL_H_ */

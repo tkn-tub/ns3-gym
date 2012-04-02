@@ -7,7 +7,13 @@
 ^testpy-output
 ^doc/html
 ^doc/latex
-^\.lock-wafbuild
+^doc/ns3-object.txt
+^\.lock-waf_darwin_build
+^\.lock-waf_linux2_build
+^\.lock-waf_cygwin_build
+^\.lock-waf_freebsd7_build
+^\.lock-waf_freebsd8_build
+^\.lock-waf_freebsd9_build
 ^\.waf
 ^doc/introspected-doxygen\.h$
 .*\.py[co]$

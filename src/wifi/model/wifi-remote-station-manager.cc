@@ -368,9 +368,6 @@ WifiRemoteStationManager::GetDataMode (Mac48Address address, const WifiMacHeader
       bool found;
       found = ConstCast<Packet> (packet)->PeekPacketTag (tag);
       NS_ASSERT (found);
-      // cast found to void, to suppress 'found' set but not used
-      // compiler warning
-      (void) found;
       return tag.GetDataMode ();
     }
   return DoGetDataMode (Lookup (address, header), fullPacketSize);
@@ -386,9 +383,6 @@ WifiRemoteStationManager::GetRtsMode (Mac48Address address, const WifiMacHeader 
       bool found;
       found = ConstCast<Packet> (packet)->PeekPacketTag (tag);
       NS_ASSERT (found);
-      // cast found to void, to suppress 'found' set but not used
-      // compiler warning
-      (void) found;
       return tag.GetRtsMode ();
     }
   return DoGetRtsMode (Lookup (address, header));

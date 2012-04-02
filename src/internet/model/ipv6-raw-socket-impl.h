@@ -36,6 +36,30 @@ class Node;
 /**
  * \class Ipv6RawSocketImpl
  * \brief IPv6 raw socket.
+ *
+ * A RAW Socket typically is used to access specific IP layers not usually
+ * available through L4 sockets, e.g., ICMP. The implementer should take
+ * particular care to define the Ipv6RawSocketImpl Attributes, and in
+ * particular the Protocol attribute.
+ * Not setting it will result in a zero protocol at IP level (corresponding
+ * to the HopByHop IPv6 Extension header, i.e., Ipv6ExtensionHopByHopHeader)
+ * when sending data through the socket, which is probably not the intended
+ * behavior.
+ *
+ * A correct example is (from src/applications/model/radvd.cc):
+ * \code
+   if (!m_socket)
+     {
+       TypeId tid = TypeId::LookupByName ("ns3::Ipv6RawSocketFactory");
+       m_socket = Socket::CreateSocket (GetNode (), tid);
+
+       NS_ASSERT (m_socket);
+
+       m_socket->SetAttribute ("Protocol", UintegerValue(Ipv6Header::IPV6_ICMPV6));
+       m_socket->SetRecvCallback (MakeCallback (&Radvd::HandleRead, this));
+     }
+ * \endcode
+ *
  */
 class Ipv6RawSocketImpl : public Socket
 {
@@ -92,6 +116,7 @@ public:
    * \return 0 if success, -1 otherwise
    */
   virtual int Bind ();
+  virtual int Bind6 ();
 
   /**
    * \brief Get socket address.
@@ -195,10 +220,47 @@ public:
   virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
 
+  /**
+   * \brief Clean the ICMPv6 filter structure
+   */
+  void Icmpv6FilterSetPassAll();
+
+  /**
+   * \brief Set the filter to block all the ICMPv6 types
+   */
+  void Icmpv6FilterSetBlockAll();
+
+  /**
+   * \brief Set the filter to pass one ICMPv6 type
+   * \param the ICMPv6 type to pass
+   */
+  void Icmpv6FilterSetPass(uint8_t type);
+
+  /**
+   * \brief Set the filter to block one ICMPv6 type
+   * \param the ICMPv6 type to block
+   */
+  void Icmpv6FilterSetBlock(uint8_t type);
+
+  /**
+   * \brief Ask the filter about the status of one ICMPv6 type
+   * \param the ICMPv6 type
+   * \return true if the ICMP type is passing through
+   */
+  bool Icmpv6FilterWillPass(uint8_t type);
+
+  /**
+   * \brief Ask the filter about the status of one ICMPv6 type
+   * \param the ICMPv6 type
+   * \return true if the ICMP type is being blocked
+   */
+  bool Icmpv6FilterWillBlock(uint8_t type);
+
+
 private:
   /**
    * \struct Data
-   * \brief IPv6 raw data and additionnal information.
+   * \brief IPv6 raw data and additional information.
    */
   struct Data
   {
@@ -253,9 +315,17 @@ private:
   bool m_shutdownRecv;
 
   /**
+   * \brief Struct to hold the ICMPv6 filter
+   */
+  typedef struct
+  {
+    uint32_t icmpv6Filt[8];
+  } icmpv6Filter;
+
+  /**
    * \brief ICMPv6 filter.
    */
-  uint32_t m_icmpFilter;
+  icmpv6Filter m_icmpFilter;
 };
 
 } /* namespace ns3 */

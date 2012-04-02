@@ -23,7 +23,6 @@
 #include <ns3/log.h>
 #include <ns3/inet-socket-address.h>
 #include <ns3/mac48-address.h>
-#include <ns3/epc-gtpu-tunnel-endpoint.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/internet-stack-helper.h>
@@ -64,14 +63,16 @@ EpcHelper::EpcHelper ()
   NS_ASSERT (retval == 0);
 
   // create TUN device implementing tunneling of user data over GTP-U/UDP/IP 
-  Ptr<VirtualNetDevice> tunDevice = CreateObject<VirtualNetDevice> ();
+  m_tunDevice = CreateObject<VirtualNetDevice> ();
+  // allow jumbo packets
+  m_tunDevice->SetAttribute ("Mtu", UintegerValue (30000));
 
   // yes we need this
-  tunDevice->SetAddress (Mac48Address::Allocate ()); 
+  m_tunDevice->SetAddress (Mac48Address::Allocate ()); 
 
-  m_sgwPgw->AddDevice (tunDevice);
+  m_sgwPgw->AddDevice (m_tunDevice);
   NetDeviceContainer tunDeviceContainer;
-  tunDeviceContainer.Add (tunDevice);
+  tunDeviceContainer.Add (m_tunDevice);
   
   // the TUN device is on the same subnet as the UEs, so when a packet
   // addressed to an UE arrives at the intenet to the WAN interface of
@@ -79,11 +80,11 @@ EpcHelper::EpcHelper ()
   Ipv4InterfaceContainer tunDeviceIpv4IfContainer = m_ueAddressHelper.Assign (tunDeviceContainer);  
 
   // create EpcSgwPgwApplication
-  m_sgwPgwApp = CreateObject<EpcSgwPgwApplication> (tunDevice, sgwPgwS1uSocket);
+  m_sgwPgwApp = CreateObject<EpcSgwPgwApplication> (m_tunDevice, sgwPgwS1uSocket);
   m_sgwPgw->AddApplication (m_sgwPgwApp);
   
   // connect SgwPgwApplication and virtual net device for tunneling
-  tunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromTunDevice, m_sgwPgwApp));
+  m_tunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromTunDevice, m_sgwPgwApp));
 
 }
 
@@ -115,6 +116,15 @@ EpcHelper::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
+}
+
+void
+EpcHelper::DoDispose ()
+{
+  m_tunDevice->SetSendCallback (MakeNullCallback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> ());
+  m_tunDevice = 0;
+  m_sgwPgwApp = 0;  
+  m_sgwPgw->Dispose ();
 }
 
 

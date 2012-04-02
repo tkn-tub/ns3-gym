@@ -67,6 +67,11 @@ SpectrumInterference::StartRx (Ptr<const Packet> p, Ptr<const SpectrumValue> rxP
   m_errorModel->StartRx (p);
 }
 
+void
+SpectrumInterference::AbortRx ()
+{
+  m_receiving = false;
+}
 
 bool
 SpectrumInterference::EndRx ()

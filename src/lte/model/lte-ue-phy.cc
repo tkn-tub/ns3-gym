@@ -109,6 +109,7 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     // ideal behavior
     m_a30CqiLast (MilliSeconds (0))
 {
+  m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
 }
 
@@ -151,6 +152,12 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleAccessor (&LteUePhy::SetNoiseFigure, 
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("MacToChannelDelay",
+                   "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteUePhy::SetMacChDelay, 
+                                         &LteUePhy::GetMacChDelay),
+                   MakeUintegerChecker<uint8_t> ())
   ;
   return tid;
 }
@@ -204,6 +211,19 @@ LteUePhy::GetTxPower () const
 {
   NS_LOG_FUNCTION (this);
   return m_txPower;
+}
+
+void
+LteUePhy::SetMacChDelay (uint8_t delay)
+{
+  m_macChTtiDelay = delay;
+  m_packetBurstQueue.resize (delay);
+}
+
+uint8_t
+LteUePhy::GetMacChDelay (void) const
+{
+  return (m_macChTtiDelay);
 }
 
 void
@@ -281,7 +301,7 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteUePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteUePhy::GenerateCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
   // check periodic wideband CQI
@@ -309,14 +329,13 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector<int> cqi = LteAmc::CreateCqiFeedbacks (sinr);
-
   // CREATE DlCqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
   CqiListElement_s dlcqi;
-
+  std::vector<int> cqi;
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
+      cqi = m_amc->CreateCqiFeedbacks (sinr, m_dlBandwidth);
 
       int nbSubChannels = cqi.size ();
       double cqiSum = 0.0;
@@ -349,7 +368,8 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
     }
   else if (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
     {
-      int nbSubChannels = cqi.size ();
+      cqi = m_amc->CreateCqiFeedbacks (sinr, GetRbgSize ());
+      int nbSubChannels = m_dlBandwidth;
       int rbgSize = GetRbgSize ();
       double cqiSum = 0.0;
       int cqiNum = 0;
@@ -433,6 +453,10 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
             }
           mask = (mask << 1);
         }
+      
+      // send TB info to LteSpectrumPhy
+      NS_LOG_DEBUG (this << " UE " << m_rnti << " DCI " << dci.m_rnti << " bimap "  << dci.m_rbBitmap);
+      m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_tbsSize.at (0), dci.m_mcs.at (0), dlRb);  // SISO mode
 
       SetSubChannelsForReception (dlRb);
 
@@ -489,6 +513,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
+      NS_LOG_LOGIC (this << " start TX");
       m_uplinkSpectrumPhy->StartTx (pb);
     }
     

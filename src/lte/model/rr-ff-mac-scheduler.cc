@@ -23,6 +23,7 @@
 
 #include "lte-amc.h"
 #include "rr-ff-mac-scheduler.h"
+#include <ns3/simulator.h>
 
 NS_LOG_COMPONENT_DEFINE ("RrFfMacScheduler");
 
@@ -215,6 +216,7 @@ RrFfMacScheduler::RrFfMacScheduler ()
     m_nextRntiDl (0),
     m_nextRntiUl (0)
 {
+  m_amc = CreateObject <LteAmc> ();
   m_cschedSapProvider = new RrSchedulerMemberCschedSapProvider (this);
   m_schedSapProvider = new RrSchedulerMemberSchedSapProvider (this);
 }
@@ -509,13 +511,13 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
       else
         {
-          newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*itCqi).second) );
+          newDci.m_mcs.push_back ( m_amc->GetMcsFromCqi ((*itCqi).second) );
         }
       // group the LCs of this RNTI
       std::vector <struct RlcPduListElement_s> newRlcPduLe;
 //       int totRbg = lcNum * rbgPerFlow;
 //       totRbg = rbgNum / nTbs;
-      int tbSize = (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
+int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
       NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " << rbgPerTb * rbgSize << " mcs " << (uint16_t) newDci.m_mcs.at (0));
       uint16_t rlcPduSize = tbSize / lcNum;
       for (int i = 0; i < lcNum ; i++)
@@ -717,7 +719,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                               ( (-log (5.0 * 0.00005 )) / 1.5) ));
 
 
-          cqi = LteAmc::GetCqiFromSpectralEfficiency (s);
+          cqi = m_amc->GetCqiFromSpectralEfficiency (s);
           if (cqi == 0)
             {
               it++;
@@ -728,7 +730,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                 }
               continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             }
-          uldci.m_mcs = LteAmc::GetMcsFromCqi (cqi);
+          uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
           //NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
 
         }
@@ -740,9 +742,9 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
           rbgAllocationMap.push_back ((*it).first);
         }
         
-      uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
-      UpdateUlRlcBufferInfo (uldci.m_rnti, uldci.m_tbSize);
+      uldci.m_tbSize = (m_amc->GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
       NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize);
+      UpdateUlRlcBufferInfo (uldci.m_rnti, uldci.m_tbSize);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
       uldci.m_aggrLevel = 1;
@@ -816,6 +818,7 @@ RrFfMacScheduler::DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::S
             {
               // update the CQI value
               (*it).second = BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0));
+//               NS_LOG_DEBUG (this << " Update BSR with " << BufferSizeLevelBsr::BsrId2BufferSize (params.m_macCeList.at (i).m_macCeValue.m_bufferStatus.at (0)) << " at " << Simulator::Now ());
             }
         }
     }
@@ -913,13 +916,15 @@ RrFfMacScheduler::RefreshDlCqiMaps(void)
           NS_ASSERT_MSG (itMap != m_p10CqiRxed.end (), " Does not find CQI report for user " << (*itP10).first);
           NS_LOG_INFO (this << " P10-CQI exired for user " << (*itP10).first);
           m_p10CqiRxed.erase (itMap);
-          m_p10CqiTimers.erase (itP10);
+          std::map <uint16_t,uint32_t>::iterator temp = itP10;
+          itP10++;
+          m_p10CqiTimers.erase (temp);
         }
       else
         {
           (*itP10).second--;
+          itP10++;
         }
-      itP10++;
     }
   
   return;
@@ -942,13 +947,15 @@ RrFfMacScheduler::RefreshUlCqiMaps(void)
           NS_LOG_INFO (this << " UL-CQI exired for user " << (*itUl).first);
           (*itMap).second.clear ();
           m_ueCqi.erase (itMap);
-          m_ueCqiTimers.erase (itUl);
+          std::map <uint16_t,uint32_t>::iterator temp = itUl;
+          itUl++;
+          m_ueCqiTimers.erase (temp);
         }
       else
         {
           (*itUl).second--;
+          itUl++;
         }
-      itUl++;
     }
   
   return;
@@ -1011,8 +1018,15 @@ RrFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
-//       NS_LOG_DEBUG (this << " UE " << rnti << " szie " << size << " BSR " << (*it).second);      
-      (*it).second -= size;
+//       NS_LOG_DEBUG (this << " Update RLC BSR UE " << rnti << " size " << size << " BSR " << (*it).second);      
+      if ((*it).second >= size)
+        {
+          (*it).second -= size;
+        }
+      else
+        {
+          (*it).second = 0;
+        }
     }
   else
     {

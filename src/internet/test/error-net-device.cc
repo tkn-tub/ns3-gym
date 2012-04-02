@@ -61,7 +61,7 @@ void
 ErrorNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol,
 			  Mac48Address to, Mac48Address from)
 {
-  NS_LOG_FUNCTION (packet << protocol << to << from);
+  NS_LOG_FUNCTION (packet << protocol << to << from << *packet);
   NetDevice::PacketType packetType;
 
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
@@ -194,7 +194,7 @@ ErrorNetDevice::IsBridge (void) const
 bool 
 ErrorNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (packet << dest << protocolNumber);
+  NS_LOG_FUNCTION (packet << dest << protocolNumber << *packet);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   m_channel->Send (packet, protocolNumber, to, m_address, this);
   return true;
@@ -202,6 +202,7 @@ ErrorNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolN
 bool 
 ErrorNetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (packet << source << dest << protocolNumber << *packet);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   Mac48Address from = Mac48Address::ConvertFrom (source);
   m_channel->Send (packet, protocolNumber, to, from, this);

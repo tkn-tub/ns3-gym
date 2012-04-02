@@ -31,6 +31,8 @@
 #include <ns3/spectrum-propagation-loss-model.h>
 #include <ns3/propagation-loss-model.h>
 #include <ns3/propagation-delay-model.h>
+#include <ns3/antenna-model.h>
+#include <ns3/angles.h>
 
 
 #include "single-model-spectrum-channel.h"
@@ -80,15 +82,16 @@ SingleModelSpectrumChannel::GetTypeId (void)
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&SingleModelSpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
-    .AddTraceSource ("PropagationLoss",
-                     "If a PropagationLossModel is plugged on the channel, this trace is fired "
+    .AddTraceSource ("PathLoss",
+                     "This trace is fired "
                      "whenever a new path loss value is calculated. The first and second parameters "
                      "to the trace are pointers respectively to the TX and RX SpectrumPhy instances, "
                      "whereas the third parameters is the loss value in dB. Note that the loss value "
-                     "reported by this trace is the single-frequency loss value obtained by "
-                     "PropagationLossModel, and is not affected by whether an additional "
-                     "SpectrumPropagationLossModel is being used or not.",
-                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_propagationLossTrace))
+                     "reported by this trace is the single-frequency loss value obtained by evaluating "
+                     "only the TX and RX AntennaModels and the PropagationLossModel. In particular, note that "
+                     "SpectrumPropagationLossModel (even if present) is never used to evaluate the loss value "
+                     "reported in this trace. ",
+                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_pathLossTrace))
   ;
   return tid;
 }
@@ -140,18 +143,37 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 
           if (senderMobility && receiverMobility)
             {
+              double pathLossDb = 0;
+              if (rxParams->txAntenna != 0)
+                {
+                  Angles txAngles (receiverMobility->GetPosition (), senderMobility->GetPosition ());
+                  double txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
+                  NS_LOG_LOGIC ("txAntennaGain = " << txAntennaGain << " dB");
+                  pathLossDb -= txAntennaGain;
+                }
+              Ptr<AntennaModel> rxAntenna = (*rxPhyIterator)->GetRxAntenna ();
+              if (rxAntenna != 0)
+                {
+                  Angles rxAngles (senderMobility->GetPosition (), receiverMobility->GetPosition ());
+                  double rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
+                  NS_LOG_LOGIC ("rxAntennaGain = " << rxAntennaGain << " dB");
+                  pathLossDb -= rxAntennaGain;
+                }
               if (m_propagationLoss)
                 {
-                  double gainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
-                  m_propagationLossTrace (txParams->txPhy, *rxPhyIterator, -gainDb);
-                  if ( (-gainDb) > m_maxLossDb)
-                    {
-                      // beyond range
-                      continue;
-                    }
-                  double gainLinear = pow (10.0, gainDb / 10.0);
-                  *(rxParams->psd) *= gainLinear;
+                  double propagationGainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
+                  NS_LOG_LOGIC ("propagationGainDb = " << propagationGainDb << " dB");
+                  pathLossDb -= propagationGainDb;
+                }                    
+              NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");    
+              m_pathLossTrace (txParams->txPhy, *rxPhyIterator, pathLossDb);
+              if ( pathLossDb > m_maxLossDb)
+                {
+                  // beyond range
+                  continue;
                 }
+              double pathGainLinear = pow (10.0, (-pathLossDb) / 10.0);
+              *(rxParams->psd) *= pathGainLinear;              
 
               if (m_spectrumPropagationLoss)
                 {

@@ -22,6 +22,7 @@
 #define LTE_RLC_HEADER_H
 
 #include "ns3/header.h"
+#include "ns3/lte-rlc-sequence-number.h"
 
 #include <list>
 
@@ -48,10 +49,10 @@ public:
   ~LteRlcHeader ();
 
   void SetFramingInfo (uint8_t framingInfo);
-  void SetSequenceNumber (uint16_t sequenceNumber);
+  void SetSequenceNumber (SequenceNumber10 sequenceNumber);
 
   uint8_t GetFramingInfo () const;
-  uint16_t GetSequenceNumber () const;
+  SequenceNumber10 GetSequenceNumber () const;
 
   void PushExtensionBit (uint8_t extensionBit);
   void PushLengthIndicator (uint16_t lengthIndicator);
@@ -85,7 +86,7 @@ public:
 private:
   uint16_t m_headerLength;
   uint8_t  m_framingInfo;      //  2 bits
-  uint16_t m_sequenceNumber;   // 10 bits  TODO Maybe should be SequenceNumber10 or similar
+  SequenceNumber10 m_sequenceNumber;
 
   std::list <uint8_t> m_extensionBits; // Includes extensionBit of the fixed part
   std::list <uint16_t> m_lengthIndicators;

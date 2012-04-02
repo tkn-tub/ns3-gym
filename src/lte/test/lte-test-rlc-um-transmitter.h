@@ -44,12 +44,17 @@ class LteRlcUmTransmitterTestCase : public TestCase
     LteRlcUmTransmitterTestCase ();
     virtual ~LteRlcUmTransmitterTestCase ();
 
+    void CheckDataReceived (Time time, std::string shouldReceived, std::string assertMsg);
+
   protected:
     virtual void DoRun (void);
 
     Ptr<LteTestPdcp> txPdcp;
     Ptr<LteRlc> txRlc;
     Ptr<LteTestMac> txMac;
+
+  private:
+    void DoCheckDataReceived (std::string shouldReceived, std::string assertMsg);
 
 };
 

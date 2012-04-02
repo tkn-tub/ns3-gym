@@ -29,7 +29,7 @@
 #include "ns3/lte-sinr-chunk-processor.h"
 
 #include "ns3/lte-test-pathloss-model.h"
-#include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/hybrid-buildings-propagation-loss-model.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/lte-helper.h>
@@ -200,14 +200,15 @@ LtePathlossModelSystemTestCase::DoRun (void)
 //   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
 //   LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("HybridBuildingsPropagationLossModel", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);
-//   LogComponentDisable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+
 //   
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   //   lteHelper->EnableLogComponents ();
   lteHelper->EnableMacTraces ();
   lteHelper->EnableRlcTraces ();
-  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
 
   // set frequency. This is important because it changes the behavior of the pathloss model
   lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (200));
@@ -274,7 +275,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   Simulator::Stop (Seconds (0.005));
   Simulator::Run ();
   
-  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()[0]);
+  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
   NS_LOG_INFO ("Distance " << m_distance << " Calculated SINR " << calculatedSinrDb << " ref " << m_snrDb);
   Simulator::Destroy ();
   NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.001, "Wrong SINR !");

@@ -36,7 +36,6 @@
 #include "loopback-net-device.h"
 #include "arp-l3-protocol.h"
 #include "ipv4-l3-protocol.h"
-#include "ipv4-l4-protocol.h"
 #include "icmpv4-l4-protocol.h"
 #include "ipv4-interface.h"
 #include "ipv4-raw-socket-impl.h"
@@ -98,11 +97,11 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 }
 
 void
-Ipv4L3Protocol::Insert (Ptr<Ipv4L4Protocol> protocol)
+Ipv4L3Protocol::Insert (Ptr<IpL4Protocol> protocol)
 {
   m_protocols.push_back (protocol);
 }
-Ptr<Ipv4L4Protocol>
+Ptr<IpL4Protocol>
 Ipv4L3Protocol::GetProtocol (int protocolNumber) const
 {
   for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
@@ -115,7 +114,7 @@ Ipv4L3Protocol::GetProtocol (int protocolNumber) const
   return 0;
 }
 void
-Ipv4L3Protocol::Remove (Ptr<Ipv4L4Protocol> protocol)
+Ipv4L3Protocol::Remove (Ptr<IpL4Protocol> protocol)
 {
   m_protocols.remove (protocol);
 }
@@ -234,7 +233,7 @@ Ipv4L3Protocol::SetupLoopback (void)
   // First check whether an existing LoopbackNetDevice exists on the node
   for (uint32_t i = 0; i < m_node->GetNDevices (); i++)
     {
-      if (device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i)))
+      if ((device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i))))
         {
           break;
         }
@@ -512,7 +511,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
 Ptr<Icmpv4L4Protocol> 
 Ipv4L3Protocol::GetIcmp (void) const
 {
-  Ptr<Ipv4L4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
+  Ptr<IpL4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
   if (prot != 0)
     {
       return prot->GetObject<Icmpv4L4Protocol> ();
@@ -863,22 +862,22 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
 
   m_localDeliverTrace (ip, packet, iif);
 
-  Ptr<Ipv4L4Protocol> protocol = GetProtocol (ip.GetProtocol ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
   if (protocol != 0)
     {
       // we need to make a copy in the unlikely event we hit the
       // RX_ENDPOINT_UNREACH codepath
       Ptr<Packet> copy = p->Copy ();
-      enum Ipv4L4Protocol::RxStatus status = 
+      enum IpL4Protocol::RxStatus status = 
         protocol->Receive (p, ip, GetInterface (iif));
       switch (status) {
-        case Ipv4L4Protocol::RX_OK:
+        case IpL4Protocol::RX_OK:
         // fall through
-        case Ipv4L4Protocol::RX_ENDPOINT_CLOSED:
+        case IpL4Protocol::RX_ENDPOINT_CLOSED:
         // fall through
-        case Ipv4L4Protocol::RX_CSUM_FAILED:
+        case IpL4Protocol::RX_CSUM_FAILED:
           break;
-        case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
+        case IpL4Protocol::RX_ENDPOINT_UNREACH:
           if (ip.GetDestination ().IsBroadcast () == true ||
               ip.GetDestination ().IsMulticast () == true)
             {
@@ -1135,7 +1134,15 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
 
   uint16_t offset = 0;
   bool moreFragment = true;
+  uint16_t originalOffset = 0;
+  bool alreadyFragmented = false;
   uint32_t currentFragmentablePartSize = 0;
+
+  if (!ipv4Header.IsLastFragment())
+    {
+      alreadyFragmented = true;
+      originalOffset = ipv4Header.GetFragmentOffset();
+    }
 
   // IPv4 fragments are all 8 bytes aligned but the last.
   // The IP payload size is:
@@ -1158,14 +1165,21 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
         {
           moreFragment = false;
           currentFragmentablePartSize = p->GetSize () - offset;
-          fragmentHeader.SetLastFragment ();
+          if (alreadyFragmented)
+            {
+              fragmentHeader.SetMoreFragments ();
+            }
+          else
+            {
+              fragmentHeader.SetLastFragment ();
+            }
         }
 
       NS_LOG_LOGIC ("Fragment creation - " << offset << ", " << currentFragmentablePartSize  );
       Ptr<Packet> fragment = p->CreateFragment (offset, currentFragmentablePartSize);
       NS_LOG_LOGIC ("Fragment created - " << offset << ", " << fragment->GetSize ()  );
 
-      fragmentHeader.SetFragmentOffset (offset);
+      fragmentHeader.SetFragmentOffset (offset+originalOffset);
       fragmentHeader.SetPayloadSize (currentFragmentablePartSize);
 
       if (Node::ChecksumEnabled ())

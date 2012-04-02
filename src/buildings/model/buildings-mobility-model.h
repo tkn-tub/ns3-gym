@@ -59,8 +59,6 @@ public:
   void SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);
   void SetOutdoor (void);
 
-  void SetSurroudingBuilding (Ptr<Building> building);
-
   void SetFloorNumber (uint8_t nfloor);
   void SetRoomNumberX (uint8_t nroomx);
   void SetRoomNumberY (uint8_t nroomy);
@@ -79,8 +77,7 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
   ConstantVelocityHelper m_helper;
-  Box m_bounds;     // bounds of the simulation field (if needed)
-  std::list < Ptr<Building> > m_surroudingBuildings;    // buildings blocks
+
   Ptr<Building> m_myBuilding;
   bool m_indoor;
   /**

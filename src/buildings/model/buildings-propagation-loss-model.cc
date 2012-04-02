@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Marco Miozzo  <marco.miozzo@cttc.es>
+ * Author: Marco Miozzo  <marco.miozzo@cttc.es>,
+ *         Nicola Baldo <nbaldo@cttc.es>
  * 
  */
 
@@ -29,9 +30,6 @@
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
 
-//#include <ns3/shadowing-loss-model.h>
-//#include <ns3/jakes-fading-loss-model.h>
-
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
 
@@ -40,19 +38,9 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
 
 
-
-class BuildingsPropagationLossModel::ShadowingLoss 
+BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss ()
 {
-public:
-  ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
-  ~ShadowingLoss ();
-  double GetLoss ();
-  Ptr<MobilityModel> GetReceiver (void);
-private:
-  Ptr<MobilityModel> m_receiver;
-  NormalVariable m_randVariable;
-  double m_shadowingValue;
-};
+}
 
 
 BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver)
@@ -63,19 +51,14 @@ BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double
   NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
 }
 
-BuildingsPropagationLossModel::ShadowingLoss::~ShadowingLoss ()
-{
-
-}
-
 double
-BuildingsPropagationLossModel::ShadowingLoss::GetLoss ()
+BuildingsPropagationLossModel::ShadowingLoss::GetLoss () const
 {
   return (m_shadowingValue);
 }
 
 Ptr<MobilityModel>
-BuildingsPropagationLossModel::ShadowingLoss::GetReceiver ()
+BuildingsPropagationLossModel::ShadowingLoss::GetReceiver () const
 {
   return m_receiver;
 }
@@ -86,8 +69,6 @@ BuildingsPropagationLossModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::BuildingsPropagationLossModel")
 
     .SetParent<PropagationLossModel> ()
-
-    .AddConstructor<BuildingsPropagationLossModel> ()
 
     .AddAttribute ("Lambda",
                    "The wavelength  (default is 2.106 GHz at 300 000 km/s).",
@@ -130,12 +111,6 @@ BuildingsPropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&BuildingsPropagationLossModel::m_itu1411NlosThreshold),
                    MakeDoubleChecker<double> ())
 
-    .AddAttribute ("ITU1411DistanceThr",
-                   " Threshold for ITU 1411 [m].",
-                   DoubleValue (2000.0),
-                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_itu1411DistanceThreshold),
-                   MakeDoubleChecker<double> ())
-
     .AddAttribute ("MinDistance",
                    "The distance under which the propagation model refuses to give results (m) ",
                    DoubleValue (0.5),
@@ -157,7 +132,12 @@ BuildingsPropagationLossModel::GetTypeId (void)
                    MakeEnumAccessor (&BuildingsPropagationLossModel::SetCitySize),
                    MakeEnumChecker (BuildingsPropagationLossModel::Small, "Small",
                                     BuildingsPropagationLossModel::Medium, "Medium",
-                                    BuildingsPropagationLossModel::Large, "Large"));
+                                    BuildingsPropagationLossModel::Large, "Large"))
+    .AddAttribute ("InternalWallLoss",
+                   "Additional loss for each internal wall [dB]",
+                   DoubleValue (5.0),
+                   MakeDoubleAccessor (&BuildingsPropagationLossModel::m_lossInternalWall),
+                   MakeDoubleChecker<double> ());
 
 
   return tid;
@@ -176,27 +156,7 @@ BuildingsPropagationLossModel::BuildingsPropagationLossModel ()
 
 BuildingsPropagationLossModel::~BuildingsPropagationLossModel ()
 {
-  for (PairsList::reverse_iterator i = m_shadowingPairs.rbegin (); i != m_shadowingPairs.rend (); i++)
-    {
-      PairsSet *ps = *i;
-      for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++)
-        {
-          ShadowingLoss *pc = *r;
-          delete pc;
-        }
-      ps->sender = 0;
-      ps->receivers.clear ();
-      delete ps;
-    }
-  m_shadowingPairs.clear ();
 }
-
-// void
-// BuildingsPropagationLossModel::SetLambda (double frequency, double speed)
-// {
-//   m_lambda = speed / frequency;
-//   m_frequency = frequency;
-// }
 
 void
 BuildingsPropagationLossModel::SetLambda (double lambda)
@@ -238,18 +198,6 @@ BuildingsPropagationLossModel::GetMinDistance (void) const
 void
 BuildingsPropagationLossModel::SetEnvironment (Environment env)
 {
-//   if (env==Urban)
-//   {
-//      NS_LOG_INFO (this << " Urban");
-//   }
-//   else if (env==SubUrban)
-//   {
-//     NS_LOG_INFO (this << " SubUrban");
-//   }
-//   else if (env==OpenAreas)
-//   {
-//     NS_LOG_INFO (this << " OpenAreas");
-//   }
   m_environment = env;
 }
 
@@ -503,44 +451,13 @@ BuildingsPropagationLossModel::ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityMod
   return (loss);
 }
 
-// double
-// BuildingsPropagationLossModel::ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
-// {
-//   NS_LOG_INFO (this);
-//   // reflection pathloss
-//   double x1 = a->GetStreetCrossingDistence ();
-//   double x2 = b->GetStreetCrossingDistence ();
-//   double f_alpha = 0.0;
-//   if (m_cornerAngle<= 0.33)
-//   {
-//     f_alpha = -41.0 + 110*m_cornerAngle;
-//   }
-//   else if (m_cornerAngle<= 0.42)
-//   {
-//     f_alpha = -13.94 + 28*m_cornerAngle;
-//   }
-//   else if (m_cornerAngle<= 0.71)
-//   {
-//     f_alpha = -5.33 + 7.51*m_cornerAngle;
-//   }
-//   double pi = 3.141592653589793;
-//   double Lr = -20*log10 (x1+x2) + (x1*x2*f_alpha/(m_streetsWidth*m_streetsWidth)) - 20*log10 (4*pi/m_lambda);
-//
-//   // diffraction pathloss
-//   double Da = -1*(40/(2*pi))*(atan (x2/m_streetsWidth) + atan (x1/m_streetsWidth) - (pi/2));
-//   double Ld = -10*log10 (x2*x1*(x1+x2)) + 2*Da + 0.1*(90 - m_cornerAngle*(180/pi)) - 20*log10 (4*pi/m_lambda);
-//
-//   double loss = -10*log10 (pow (10, Lr/10) + pow (10, Ld/10));
-//   return (loss);
-// }
-
 
 double
 BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
   double N = 0.0;
   int n = abs (a->GetFloorNumber () - b->GetFloorNumber ());
-//   NS_LOG_INFO (this << " A floor " << (uint16_t)a->GetFloorNumber () << " B floor " << (uint16_t)b->GetFloorNumber () << " n " << n);
+  NS_LOG_LOGIC (this << " A floor " << (uint16_t)a->GetFloorNumber () << " B floor " << (uint16_t)b->GetFloorNumber () << " n " << n);
   double Lf = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
   if (aBuilding->GetBuildingType () == Building::Residential)
@@ -550,7 +467,7 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
         {
           Lf = 4 * n;
         }
-//     NS_LOG_INFO (this << " Residential ");
+      NS_LOG_LOGIC (this << " Residential ");
     }
   else if (aBuilding->GetBuildingType () == Building::Office)
     {
@@ -559,7 +476,7 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
         {
           Lf = 15 + (4 * (n - 1));
         }
-//     NS_LOG_INFO (this << " Office ");
+      NS_LOG_LOGIC (this << " Office ");
     }
   else if (aBuilding->GetBuildingType () == Building::Commercial)
     {
@@ -568,21 +485,20 @@ BuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<Buil
         {
           Lf = 6 + (3 * (n - 1));
         }
-//     NS_LOG_INFO (this << " Commercial ");
+      NS_LOG_LOGIC (this << " Commercial ");
     }
   else
     {
       NS_LOG_ERROR (this << " Unkwnon Wall Type");
     }
-  NS_LOG_INFO (this << " Node " << a->GetPosition () << " <-> " << b->GetPosition ());
   double loss = 20 * log10 (m_frequency / 1e6 /*MHz*/) + N*log10 (a->GetDistanceFrom (b)) + Lf - 28.0;
-
+  NS_LOG_INFO (this << " Node " << a->GetPosition () << " <-> " << b->GetPosition () << " loss = " << loss << " dB");
   return (loss);
 }
 
 
 double
-BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
+BuildingsPropagationLossModel::ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const
 {
   double loss = 0.0;
   Ptr<Building> aBuilding = a->GetBuilding ();
@@ -602,14 +518,11 @@ BuildingsPropagationLossModel::BEWPL (Ptr<BuildingsMobilityModel> a) const
     {
       loss = 12;
     }
-
-
   return (loss);
 }
 
-
 double
-BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) const
+BuildingsPropagationLossModel::HeightLoss (Ptr<BuildingsMobilityModel> node) const
 {
   double loss = 0.0;
 
@@ -618,188 +531,51 @@ BuildingsPropagationLossModel::HeightGain (Ptr<BuildingsMobilityModel> node) con
   return (loss);
 }
 
+double
+BuildingsPropagationLossModel::InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel>b) const
+{
+  // approximate the number of internal walls with the Manhattan distance in "rooms" units
+  double dx = abs (a->GetRoomNumberX () - b->GetRoomNumberX ());
+  double dy = abs (a->GetRoomNumberY () - b->GetRoomNumberY ());    
+  return m_lossInternalWall * (dx+dy);
+}
 
 
 
 double
-BuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+BuildingsPropagationLossModel::GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b)
+const
 {
-
-  double distance = a->GetDistanceFrom (b);
-  if (distance <= m_minDistance)
+    Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
+    Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
+    NS_ASSERT_MSG ((a1 != 0) && (b1 != 0), "BuildingsPropagationLossModel only works with BuildingsMobilityModel");
+  
+  std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> >::iterator ait = m_shadowingLossMap.find (a);
+  if (ait != m_shadowingLossMap.end ())
     {
-      return 0.0;
-    }
-
-  // get the BuildingsMobilityModel pointers
-  Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
-  Ptr<BuildingsMobilityModel> b1 = DynamicCast<BuildingsMobilityModel> (b);
-
-  double loss = 0.0;
-
-  if (a1->IsOutdoor ())
-    {
-      if (b1->IsOutdoor ())
+      std::map<Ptr<MobilityModel>, ShadowingLoss>::iterator bit = ait->second.find (b);
+      if (bit != ait->second.end ())
         {
-          if (distance > 1000)
-            {
-              NS_LOG_INFO (this << a1->GetPosition ().z << b1->GetPosition ().z << m_rooftopHeight);
-              if ((a1->GetPosition ().z < m_rooftopHeight)
-                  && (b1->GetPosition ().z < m_rooftopHeight))
-                {
-                  // ITU limit in distance (i.e., < 2000 for small cells)
-                  if (distance < m_itu1411DistanceThreshold)
-                    {
-                      // short range communication
-                      loss = ItuR1411 (a1, b1);
-                      NS_LOG_INFO (this << " 0-0 (>1000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                  else
-                    {
-                      // out of bound
-                      loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-0 (>2000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                }
-              else
-                {
-                  // Over the rooftop tranmission -> Okumura Hata
-                  loss = OkumuraHata (a1, b1);
-                  NS_LOG_INFO (this << " O-O (>1000): Over the rooftop -> OH : " << loss);
-                }
-            }
-          else
-            {
-              // short range outdoor communication
-              loss = ItuR1411 (a1, b1);
-              NS_LOG_INFO (this << " 0-0 (<1000) Street canyon -> ITUR1411 : " << loss);
-            }
+          return (bit->second.GetLoss ());
         }
       else
         {
-          // b indoor
-          if (distance > 1000)
-            {
-              if ((a1->GetPosition ().z < m_rooftopHeight)
-                  && (b1->GetPosition ().z < m_rooftopHeight))
-                {
-
-                  // ITU limit in distance (i.e., < 2000 for small cells)
-                  if (distance < m_itu1411DistanceThreshold)
-                    {
-                      // short range communication
-                      loss = ItuR1411 (a1, b1) + BEWPL (b1) + HeightGain (a1);
-                      NS_LOG_INFO (this << " 0-I (>1000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                  else
-                    {
-                      // out of bound
-                      loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " 0-I (>2000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                }
-              else
-                {
-                  // Over the rooftop tranmission -> Okumura Hata
-                  loss = OkumuraHata (a1, b1) + BEWPL (b1);
-                  NS_LOG_INFO (this << " O-I (>1000): Over the rooftop -> OH : " << loss);
-                }
-            }
-          else
-            {
-              loss = ItuR1411 (a1, b1) + BEWPL (b1) + HeightGain (b1);
-              NS_LOG_INFO (this << " 0-I (<1000) ITUR1411 + BEL : " << loss);
-            }
-        } // end b1->isIndoor ()
+          double sigma = EvaluateSigma (a1, b1);
+          // side effect: will create new entry          
+          ait->second[b] = ShadowingLoss (0.0, sigma, b);          
+          return (ait->second[b].GetLoss ());
+        }
     }
   else
     {
-      // a is indoor
-      if (b1->IsIndoor ())
-        {
-          if (a1->GetBuilding () == b1->GetBuilding ())
-            {
-              // nodes are in same building -> indoor communication ITU-R P.1238
-              loss = ItuR1238 (a1, b1);
-              NS_LOG_INFO (this << " I-I (same building) ITUR1238 : " << loss);
-
-            }
-          else
-            {
-              // nodes are in different buildings
-              loss = ItuR1411 (a1, b1) + BEWPL (a1) + BEWPL (b1);
-              NS_LOG_INFO (this << " I-I (different) ITUR1238 + 2*BEL : " << loss);
-            }
-        }
-      else
-        {
-          // b is outdoor
-          if (distance > 1000)
-            {
-              if ((a1->GetPosition ().z < m_rooftopHeight)
-                  && (b1->GetPosition ().z < m_rooftopHeight))
-                {
-
-                  // ITU limit in distance (i.e., < 2000 for small cells)
-                  if (distance < m_itu1411DistanceThreshold)
-                    {
-                      // short range communication
-                      loss = ItuR1411 (a1, b1) + BEWPL (a1) + HeightGain (a1);
-                      NS_LOG_INFO (this << " I-O (>1000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                  else
-                    {
-                      // out of bound
-                      loss = std::numeric_limits<double>::infinity ();
-                      NS_LOG_INFO (this << " I-O (>2000): down rooftop -> ITUR1411 : " << loss);
-                    }
-                }
-              else
-                {
-                  // above rooftop -> OH
-                  loss = OkumuraHata (a1, b1) + BEWPL (a1) + HeightGain (a1);
-                  NS_LOG_INFO (this << " =I-O (>1000) over rooftop OH + BEL + HG: " << loss);
-                }
-            }
-          else
-            {
-              loss = ItuR1411 (a1, b1) + BEWPL (a1)  + HeightGain (a1);
-              NS_LOG_INFO (this << " I-O (<1000)  ITUR1411 + BEL + HG: " << loss);
-            }
-        } // end b1->IsIndoor ()
-    } // end a1->IsOutdoor ()
-
-  // Evaluate the shadowing
-  PairsList::iterator i = m_shadowingPairs.end ();
-  while (i != m_shadowingPairs.begin ()) 
-    {
-      i--;
-      PairsSet *ps = *i;
-      if (ps->sender == a) 
-        {
-          for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
-            {
-              ShadowingLoss *pc = *r;
-              if (pc->GetReceiver () == b) 
-                {
-                  return loss + pc->GetLoss ();
-                }
-            }
-          double sigma = EvaluateSigma (a1, b1);
-          ShadowingLoss *pc = new ShadowingLoss (0.0, sigma,b);
-          ps->receivers.push_back (pc);
-          return loss + pc->GetLoss ();
-        }
+      double sigma = EvaluateSigma (a1, b1);
+      // side effect: will create new entries in both maps
+      m_shadowingLossMap[a][b] = ShadowingLoss (0.0, sigma, b);  
+      return (m_shadowingLossMap[a][b].GetLoss ());       
     }
-  PairsSet *ps = new PairsSet;
-  ps->sender = a;
-  double sigma = EvaluateSigma (a1, b1);
-  ShadowingLoss *pc = new ShadowingLoss (0.0, sigma, b);
-  ps->receivers.push_back (pc);
-  m_shadowingPairs.push_back (ps);
-  return loss + pc->GetLoss ();
-
 }
+
+
 
 double
 BuildingsPropagationLossModel::EvaluateSigma (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b)
@@ -833,7 +609,7 @@ const
 double
 BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  return txPowerDbm - GetLoss (a, b);
+  return txPowerDbm - GetLoss (a, b) - GetShadowing (a, b);
 }
 
 

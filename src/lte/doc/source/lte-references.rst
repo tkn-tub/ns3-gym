@@ -49,6 +49,18 @@
 .. [pl26ghz] Sun Kun; Wang Ping; Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
    in Proc. of ISAPE 2008,  Kunming,  China, Nov 2008.
 
+
+.. [PaduaPEM] http://mailman.isi.edu/pipermail/ns-developers/2011-November/009559.html
+
+.. [Vienna] The Vienna LTE Simulators http://www.nt.tuwien.ac.at/about-us/staff/josep-colom-ikuno/lte-simulators/
+
+.. [LozanoCost] Joan Olmos, Silvia Ruiz, Mario García-Lozano and David Martín-Sacristán, "Link Abstraction Models Based on Mutual Information for LTE Downlink", COST 2100 TD(10)11052 Report
+
+.. [wimaxEmd] WiMAX Forum White Paper, WiMAX System Evaluation Methodology, July 2008.
+
+.. [TS36.212] 3GPP TS 36.212 "E-UTRA Multiplexing and channel coding"
+
+
 .. [turkmani] Turkmani A.M.D., J.D. Parson and D.G. Lewis, "Radio propagation into buildings at 441, 900 and 1400 MHz",
    in Proc. of 4th Int. Conference on Land Mobile Radio, 1987.
 

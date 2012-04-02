@@ -114,6 +114,10 @@ Ipv4ClickRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 Ipv4ClickRouting::DoDispose ()
 {
+  if (m_clickInitialised)
+    {
+      simclick_click_kill (m_simNode);
+    }
   m_ipv4 = 0;
   delete m_simNode;
   Ipv4RoutingProtocol::DoDispose ();
@@ -256,11 +260,48 @@ Ipv4ClickRouting::GetClickInstanceFromSimNode (simclick_node_t *simnode)
   return m_clickInstanceFromSimNode[simnode];
 }
 
+struct timeval
+Ipv4ClickRouting::GetTimevalFromNow () const
+{
+  struct timeval curtime;
+  uint64_t remainder = 0;
+
+  curtime.tv_sec = Simulator::Now ().GetSeconds ();
+  curtime.tv_usec = Simulator::Now ().GetMicroSeconds () % 1000000;
+
+  switch (Simulator::Now ().GetResolution()) 
+    {
+      case Time::NS:
+        remainder = Simulator::Now ().GetNanoSeconds () % 1000;
+        break;
+      case Time::PS:
+        remainder = Simulator::Now ().GetPicoSeconds () % 1000000;
+        break;
+      case Time::FS:
+        remainder = Simulator::Now ().GetFemtoSeconds () % 1000000000;
+        break;
+      default:
+        break;
+    }
+
+  if (remainder)
+    {
+      ++curtime.tv_usec;
+      if (curtime.tv_usec == 1000000)
+        {
+          ++curtime.tv_sec;
+          curtime.tv_usec = 0;
+        }
+    }
+
+  return curtime;
+}
+
 void
 Ipv4ClickRouting::RunClickEvent ()
 {
-  m_simNode->curtime.tv_sec = Simulator::Now ().GetSeconds ();
-  m_simNode->curtime.tv_usec = Simulator::Now ().GetMicroSeconds () % 1000000;
+  m_simNode->curtime = GetTimevalFromNow ();
+
   NS_LOG_DEBUG ("RunClickEvent at " << m_simNode->curtime.tv_sec << " " << 
                                        m_simNode->curtime.tv_usec << " " << Simulator::Now ());
   simclick_click_run (m_simNode);
@@ -311,8 +352,7 @@ void
 Ipv4ClickRouting::SendPacketToClick (int ifid, int ptype, const unsigned char* data, int len)
 {
   NS_LOG_FUNCTION (this << ifid);
-  m_simNode->curtime.tv_sec = Simulator::Now ().GetSeconds ();
-  m_simNode->curtime.tv_usec = Simulator::Now ().GetMicroSeconds () % 1000000;
+  m_simNode->curtime = GetTimevalFromNow ();
 
   // Since packets in ns-3 don't have global Packet ID's and Flow ID's, we
   // feed dummy values into pinfo. This avoids the need to make changes in the Click code
@@ -380,8 +420,15 @@ Ipv4ClickRouting::Receive (Ptr<Packet> p, Mac48Address receiverAddr, Mac48Addres
 std::string
 Ipv4ClickRouting::ReadHandler (std::string elementName, std::string handlerName)
 {
-  std::string s = simclick_click_read_handler (m_simNode, elementName.c_str (), handlerName.c_str (), 0, 0);
-  return s;
+  char *handle = simclick_click_read_handler (m_simNode, elementName.c_str (), handlerName.c_str (), 0, 0);
+  std::string ret (handle);
+
+  // This is required because Click does not free
+  // the memory allocated to the return string
+  // from simclick_click_read_handler()
+  free(handle);
+
+  return ret;
 }
 
 int

@@ -30,7 +30,6 @@
 
 #include "loopback-net-device.h"
 #include "ipv6-l3-protocol.h"
-#include "ipv6-l4-protocol.h"
 #include "ipv6-interface.h"
 #include "ipv6-raw-socket-impl.h"
 #include "ipv6-autoconfigured-prefix.h"
@@ -434,7 +433,7 @@ void Ipv6L3Protocol::SetupLoopback ()
   /* see if we have already an loopback NetDevice */
   for (i = 0; i < m_node->GetNDevices (); i++)
     {
-      if (device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i)))
+      if ((device = DynamicCast<LoopbackNetDevice> (m_node->GetDevice (i))))
         {
           break;
         }
@@ -519,19 +518,19 @@ void Ipv6L3Protocol::SetNode (Ptr<Node> node)
   SetupLoopback ();
 }
 
-void Ipv6L3Protocol::Insert (Ptr<Ipv6L4Protocol> protocol)
+void Ipv6L3Protocol::Insert (Ptr<IpL4Protocol> protocol)
 {
   NS_LOG_FUNCTION (this << protocol);
   m_protocols.push_back (protocol);
 }
 
-void Ipv6L3Protocol::Remove (Ptr<Ipv6L4Protocol> protocol)
+void Ipv6L3Protocol::Remove (Ptr<IpL4Protocol> protocol)
 {
   NS_LOG_FUNCTION (this << protocol);
   m_protocols.remove (protocol);
 }
 
-Ptr<Ipv6L4Protocol> Ipv6L3Protocol::GetProtocol (int protocolNumber) const
+Ptr<IpL4Protocol> Ipv6L3Protocol::GetProtocol (int protocolNumber) const
 {
   NS_LOG_FUNCTION (this << protocolNumber);
 
@@ -571,7 +570,7 @@ void Ipv6L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 Ptr<Icmpv6L4Protocol> Ipv6L3Protocol::GetIcmpv6 () const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Ptr<Ipv6L4Protocol> protocol = GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
 
   if (protocol)
     {
@@ -941,7 +940,7 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 {
   NS_LOG_FUNCTION (this << packet << ip << iif);
   Ptr<Packet> p = packet->Copy ();
-  Ptr<Ipv6L4Protocol> protocol = 0; 
+  Ptr<IpL4Protocol> protocol = 0; 
   Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
   Ptr<Ipv6Extension> ipv6Extension = 0;
   Ipv6Address src = ip.GetSourceAddress ();
@@ -957,6 +956,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
       p->CopyData (buf, sizeof(buf));
       nextHeader = buf[0];
       nextHeaderPosition = buf[1];
+      NS_ASSERT_MSG (nextHeader != Ipv6Header::IPV6_EXT_HOP_BY_HOP, "Double Ipv6Header::IPV6_EXT_HOP_BY_HOP in packet, aborting");
+      NS_ASSERT_MSG (nextHeaderPosition != 0, "Zero-size IPv6 Option Header, aborting");
     }
 
   /* process all the extensions found and the layer 4 protocol */
@@ -966,12 +967,17 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
       if (ipv6Extension)
         {
-          nextHeaderPosition += ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
+          uint8_t nextHeaderStep = 0;
+          uint8_t curHeader = nextHeader;
+          nextHeaderStep = ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
+          nextHeaderPosition += nextHeaderStep;
 
           if (isDropped)
             {
               return;
             }
+          NS_ASSERT_MSG (nextHeaderStep != 0 || curHeader == Ipv6Header::IPV6_EXT_FRAGMENTATION,
+                         "Zero-size IPv6 Option Header, aborting" << *packet );
         }
       else
         {
@@ -1002,15 +1008,17 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
               /* L4 protocol */
               Ptr<Packet> copy = p->Copy ();
-              enum Ipv6L4Protocol::RxStatus_e status = protocol->Receive (p, ip.GetSourceAddress (), ip.GetDestinationAddress (), GetInterface (iif));
+              enum IpL4Protocol::RxStatus status = protocol->Receive (p, src, dst, GetInterface (iif));
 
               switch (status)
                 {
-                case Ipv6L4Protocol::RX_OK:
+                case IpL4Protocol::RX_OK:
                   break;
-                case Ipv6L4Protocol::RX_CSUM_FAILED:
+                case IpL4Protocol::RX_CSUM_FAILED:
                   break;
-                case Ipv6L4Protocol::RX_ENDPOINT_UNREACH:
+                case IpL4Protocol::RX_ENDPOINT_CLOSED:
+                  break;
+                case IpL4Protocol::RX_ENDPOINT_UNREACH:
                   if (ip.GetDestinationAddress ().IsMulticast ())
                     {
                       /* do not rely on multicast address */

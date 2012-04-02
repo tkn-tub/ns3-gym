@@ -382,17 +382,20 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // --- DOWNLINK ---
   // Send Dl-CQI info to the scheduler
-  FfMacSchedSapProvider::SchedDlCqiInfoReqParameters dlcqiInfoReq;
-  dlcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
-
-  int cqiNum = m_dlCqiReceived.size ();
-  if (cqiNum > MAX_CQI_LIST)
+  if (m_dlCqiReceived.size () > 0)
     {
-      cqiNum = MAX_CQI_LIST;
+      FfMacSchedSapProvider::SchedDlCqiInfoReqParameters dlcqiInfoReq;
+      dlcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+
+      int cqiNum = m_dlCqiReceived.size ();
+      if (cqiNum > MAX_CQI_LIST)
+        {
+          cqiNum = MAX_CQI_LIST;
+        }
+      dlcqiInfoReq.m_cqiList.insert (dlcqiInfoReq.m_cqiList.begin (), m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
+      m_dlCqiReceived.erase (m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
+      m_schedSapProvider->SchedDlCqiInfoReq (dlcqiInfoReq);
     }
-  dlcqiInfoReq.m_cqiList.insert (dlcqiInfoReq.m_cqiList.begin (), m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
-  m_dlCqiReceived.erase (m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
-  m_schedSapProvider->SchedDlCqiInfoReq (dlcqiInfoReq);
 
 
   // Get downlink transmission opportunities
@@ -403,29 +406,35 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // --- UPLINK ---
   // Send UL-CQI info to the scheduler
-  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqiInfoReq;
-  ulcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
-  cqiNum = m_ulCqiReceived.size ();
-  if (cqiNum >= 1)
+  if (m_ulCqiReceived.size () > 0)
     {
-      ulcqiInfoReq.m_ulCqi = m_ulCqiReceived.at (cqiNum - 1);
-      if (cqiNum > 1)
+      FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqiInfoReq;
+      ulcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+      int cqiNum = m_ulCqiReceived.size ();
+      if (cqiNum >= 1)
         {
-          // empty old ul cqi
-          while (m_ulCqiReceived.size () > 0)
+          ulcqiInfoReq.m_ulCqi = m_ulCqiReceived.at (cqiNum - 1);
+          if (cqiNum > 1)
             {
-              m_ulCqiReceived.pop_back ();
+              // empty old ul cqi
+              while (m_ulCqiReceived.size () > 0)
+                {
+                  m_ulCqiReceived.pop_back ();
+                }
             }
+          m_schedSapProvider->SchedUlCqiInfoReq (ulcqiInfoReq);
         }
-      m_schedSapProvider->SchedUlCqiInfoReq (ulcqiInfoReq);
     }
-
+  
   // Send BSR reports to the scheduler
-  FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters ulMacReq;
-  ulMacReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
-  ulMacReq.m_macCeList.insert (ulMacReq.m_macCeList.begin (), m_ulCeReceived.begin (), m_ulCeReceived.end ());
-  m_ulCeReceived.erase (m_ulCeReceived.begin (), m_ulCeReceived.end ());
-  m_schedSapProvider->SchedUlMacCtrlInfoReq (ulMacReq);
+  if (m_ulCeReceived.size () > 0)
+    {
+      FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters ulMacReq;
+      ulMacReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+      ulMacReq.m_macCeList.insert (ulMacReq.m_macCeList.begin (), m_ulCeReceived.begin (), m_ulCeReceived.end ());
+      m_ulCeReceived.erase (m_ulCeReceived.begin (), m_ulCeReceived.end ());
+      m_schedSapProvider->SchedUlMacCtrlInfoReq (ulMacReq);
+    }
 
 
   // Get uplink transmission opportunities
@@ -471,7 +480,7 @@ LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
     }
   else
     {
-      NS_LOG_FUNCTION (this << " IdealControlMessage not recognized");
+      NS_LOG_LOGIC (this << " IdealControlMessage not recognized");
     }
 }
 
@@ -492,10 +501,9 @@ void
 LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
-  // NS_LOG_FUNCTION (this << msg->GetSourceDevice () << msg->GetDestinationDevice ());
 
   CqiListElement_s dlcqi = msg->GetDlCqi ();
-  NS_LOG_FUNCTION (this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
+  NS_LOG_LOGIC (this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
   m_dlCqiReceived.push_back (dlcqi);
 
 }
@@ -744,7 +752,6 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
 void
 LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind)
 {
-
   NS_LOG_FUNCTION (this);
 
   for (unsigned int i = 0; i < ind.m_dciList.size (); i++)

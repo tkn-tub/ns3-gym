@@ -243,9 +243,6 @@ V4Ping::StartApplication (void)
   InetSocketAddress dst = InetSocketAddress (m_remote, 0);
   status = m_socket->Connect (dst);
   NS_ASSERT (status != -1);
-  //cast status to void, to suppress 'status' set but not used compiler warning
-  //in optimized builds
-  (void) status;
 
   Send ();
 }

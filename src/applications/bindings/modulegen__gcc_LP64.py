@@ -242,6 +242,14 @@ def register_types(module):
     module.add_enum('', ['FRAME_FLAG_NONE', 'FRAME_FLAG_CFP', 'FRAME_FLAG_SHORT_PREAMBLE', 'FRAME_FLAG_WEP', 'FRAME_FLAG_FRAGMENTED', 'FRAME_FLAG_FCS_INCLUDED', 'FRAME_FLAG_DATA_PADDING', 'FRAME_FLAG_BAD_FCS', 'FRAME_FLAG_SHORT_GUARD'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
     ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [enumeration]
     module.add_enum('', ['CHANNEL_FLAG_NONE', 'CHANNEL_FLAG_TURBO', 'CHANNEL_FLAG_CCK', 'CHANNEL_FLAG_OFDM', 'CHANNEL_FLAG_SPECTRUM_2GHZ', 'CHANNEL_FLAG_SPECTRUM_5GHZ', 'CHANNEL_FLAG_PASSIVE', 'CHANNEL_FLAG_DYNAMIC', 'CHANNEL_FLAG_GFSK'], outer_class=root_module['ns3::RadiotapHeader'], import_from_module='ns.network')
+    ## red-queue.h (module 'network'): ns3::RedQueue [class]
+    module.add_class('RedQueue', import_from_module='ns.network', parent=root_module['ns3::Queue'])
+    ## red-queue.h (module 'network'): ns3::RedQueue [enumeration]
+    module.add_enum('', ['DTYPE_NONE', 'DTYPE_FORCED', 'DTYPE_UNFORCED'], outer_class=root_module['ns3::RedQueue'], import_from_module='ns.network')
+    ## red-queue.h (module 'network'): ns3::RedQueue::Mode [enumeration]
+    module.add_enum('Mode', ['ILLEGAL', 'PACKETS', 'BYTES'], outer_class=root_module['ns3::RedQueue'], import_from_module='ns.network')
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats [struct]
+    module.add_class('Stats', import_from_module='ns.network', outer_class=root_module['ns3::RedQueue'])
     ## seq-ts-header.h (module 'applications'): ns3::SeqTsHeader [class]
     module.add_class('SeqTsHeader', parent=root_module['ns3::Header'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
@@ -306,6 +314,10 @@ def register_types(module):
     module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
     module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    ## boolean.h (module 'core'): ns3::BooleanChecker [class]
+    module.add_class('BooleanChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## boolean.h (module 'core'): ns3::BooleanValue [class]
+    module.add_class('BooleanValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## bulk-send-application.h (module 'applications'): ns3::BulkSendApplication [class]
     module.add_class('BulkSendApplication', parent=root_module['ns3::Application'])
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
@@ -585,6 +597,8 @@ def register_methods(root_module):
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
     register_Ns3RadiotapHeader_methods(root_module, root_module['ns3::RadiotapHeader'])
+    register_Ns3RedQueue_methods(root_module, root_module['ns3::RedQueue'])
+    register_Ns3RedQueueStats_methods(root_module, root_module['ns3::RedQueue::Stats'])
     register_Ns3SeqTsHeader_methods(root_module, root_module['ns3::SeqTsHeader'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
@@ -613,6 +627,8 @@ def register_methods(root_module):
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
+    register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
+    register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
     register_Ns3BulkSendApplication_methods(root_module, root_module['ns3::BulkSendApplication'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
@@ -1836,6 +1852,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'void', 
                    [param('uint8_t *', 'buf')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv6Address::GetIpv4MappedAddress() const [member function]
+    cls.add_method('GetIpv4MappedAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetLoopback() [member function]
     cls.add_method('GetLoopback', 
                    'ns3::Ipv6Address', 
@@ -1876,8 +1897,17 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    cls.add_method('IsIpv4MappedAddress', 
+                   'bool', 
+                   [])
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocalMulticast() const [member function]
+    cls.add_method('IsLinkLocalMulticast', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -1910,6 +1940,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac48Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('MakeIpv4MappedAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv4Address', 'addr')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeSolicitedAddress(ns3::Ipv6Address addr) [member function]
     cls.add_method('MakeSolicitedAddress', 
@@ -3471,7 +3506,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
@@ -3547,6 +3582,10 @@ def register_Ns3UdpClientHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv6Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper::UdpClientHelper(ns3::Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-client-server-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpClientHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -3560,8 +3599,12 @@ def register_Ns3UdpClientHelper_methods(root_module, cls):
 def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::UdpEchoClientHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UdpEchoClientHelper const &', 'arg0')])
+    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::Ipv6Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpEchoClientHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -3647,8 +3690,12 @@ def register_Ns3UdpTraceClientHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::UdpTraceClientHelper const &', 'arg0')])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper() [constructor]
     cls.add_constructor([])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Address ip, uint16_t port, std::string filename) [constructor]
+    cls.add_constructor([param('ns3::Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv4Address ip, uint16_t port, std::string filename) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
+    ## udp-client-server-helper.h (module 'applications'): ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv6Address ip, uint16_t port, std::string filename) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
     ## udp-client-server-helper.h (module 'applications'): ns3::ApplicationContainer ns3::UdpTraceClientHelper::Install(ns3::NodeContainer c) [member function]
     cls.add_method('Install', 
                    'ns3::ApplicationContainer', 
@@ -4504,6 +4551,70 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
                    [param('uint64_t', 'tsft')])
     return
 
+def register_Ns3RedQueue_methods(root_module, cls):
+    ## red-queue.h (module 'network'): ns3::RedQueue::RedQueue(ns3::RedQueue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RedQueue const &', 'arg0')])
+    ## red-queue.h (module 'network'): ns3::RedQueue::RedQueue() [constructor]
+    cls.add_constructor([])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Mode ns3::RedQueue::GetMode() [member function]
+    cls.add_method('GetMode', 
+                   'ns3::RedQueue::Mode', 
+                   [])
+    ## red-queue.h (module 'network'): uint32_t ns3::RedQueue::GetQueueSize() [member function]
+    cls.add_method('GetQueueSize', 
+                   'uint32_t', 
+                   [])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats ns3::RedQueue::GetStats() [member function]
+    cls.add_method('GetStats', 
+                   'ns3::RedQueue::Stats', 
+                   [])
+    ## red-queue.h (module 'network'): static ns3::TypeId ns3::RedQueue::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetMode(ns3::RedQueue::Mode mode) [member function]
+    cls.add_method('SetMode', 
+                   'void', 
+                   [param('ns3::RedQueue::Mode', 'mode')])
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetQueueLimit(uint32_t lim) [member function]
+    cls.add_method('SetQueueLimit', 
+                   'void', 
+                   [param('uint32_t', 'lim')])
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetTh(double minTh, double maxTh) [member function]
+    cls.add_method('SetTh', 
+                   'void', 
+                   [param('double', 'minTh'), param('double', 'maxTh')])
+    ## red-queue.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::RedQueue::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## red-queue.h (module 'network'): bool ns3::RedQueue::DoEnqueue(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='private', is_virtual=True)
+    ## red-queue.h (module 'network'): ns3::Ptr<const ns3::Packet> ns3::RedQueue::DoPeek() const [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::Packet const >', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RedQueueStats_methods(root_module, cls):
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::Stats() [constructor]
+    cls.add_constructor([])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::Stats(ns3::RedQueue::Stats const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RedQueue::Stats const &', 'arg0')])
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::forcedDrop [variable]
+    cls.add_instance_attribute('forcedDrop', 'uint32_t', is_const=False)
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::qLimDrop [variable]
+    cls.add_instance_attribute('qLimDrop', 'uint32_t', is_const=False)
+    ## red-queue.h (module 'network'): ns3::RedQueue::Stats::unforcedDrop [variable]
+    cls.add_instance_attribute('unforcedDrop', 'uint32_t', is_const=False)
+    return
+
 def register_Ns3SeqTsHeader_methods(root_module, cls):
     ## seq-ts-header.h (module 'applications'): ns3::SeqTsHeader::SeqTsHeader(ns3::SeqTsHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SeqTsHeader const &', 'arg0')])
@@ -4747,6 +4858,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Bind() [member function]
     cls.add_method('Bind', 
+                   'int', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## socket.h (module 'network'): int ns3::Socket::Bind6() [member function]
+    cls.add_method('Bind6', 
                    'int', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -5470,6 +5586,47 @@ def register_Ns3AttributeValue_methods(root_module, cls):
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3BooleanChecker_methods(root_module, cls):
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker(ns3::BooleanChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanChecker const &', 'arg0')])
+    return
+
+def register_Ns3BooleanValue_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(ns3::BooleanValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BooleanValue const &', 'arg0')])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue() [constructor]
+    cls.add_constructor([])
+    ## boolean.h (module 'core'): ns3::BooleanValue::BooleanValue(bool value) [constructor]
+    cls.add_constructor([param('bool', 'value')])
+    ## boolean.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::BooleanValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## boolean.h (module 'core'): bool ns3::BooleanValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## boolean.h (module 'core'): std::string ns3::BooleanValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## boolean.h (module 'core'): void ns3::BooleanValue::Set(bool value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('bool', 'value')])
     return
 
 def register_Ns3BulkSendApplication_methods(root_module, cls):
@@ -6710,6 +6867,11 @@ def register_Ns3PacketSocket_methods(root_module, cls):
     cls.add_method('Bind', 
                    'int', 
                    [param('ns3::Address const &', 'address')], 
+                   is_virtual=True)
+    ## packet-socket.h (module 'network'): int ns3::PacketSocket::Bind6() [member function]
+    cls.add_method('Bind6', 
+                   'int', 
+                   [], 
                    is_virtual=True)
     ## packet-socket.h (module 'network'): int ns3::PacketSocket::Close() [member function]
     cls.add_method('Close', 
@@ -8557,6 +8719,14 @@ def register_Ns3UdpClient_methods(root_module, cls):
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client.h (module 'applications'): void ns3::UdpClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-client.h (module 'applications'): void ns3::UdpClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8605,10 +8775,18 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
     cls.add_method('SetFill', 
                    'void', 
                    [param('uint8_t *', 'fill'), param('uint32_t', 'fillSize'), param('uint32_t', 'dataSize')])
+    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h (module 'applications'): void ns3::UdpEchoClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8719,10 +8897,18 @@ def register_Ns3UdpTraceClient_methods(root_module, cls):
     cls.add_method('SetMaxPacketSize', 
                    'void', 
                    [param('uint16_t', 'maxPacketSize')])
+    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Address', 'ip'), param('uint16_t', 'port')])
     ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetRemote(ns3::Ipv6Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ip'), param('uint16_t', 'port')])
     ## udp-trace-client.h (module 'applications'): void ns3::UdpTraceClient::SetTraceFile(std::string filename) [member function]
     cls.add_method('SetTraceFile', 
                    'void', 

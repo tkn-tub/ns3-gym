@@ -140,6 +140,12 @@ LteEnbPhy::GetTypeId (void)
                    MakeDoubleAccessor (&LteEnbPhy::SetNoiseFigure, 
                                        &LteEnbPhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("MacToChannelDelay",
+                   "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbPhy::SetMacChDelay, 
+                                         &LteEnbPhy::GetMacChDelay),
+                   MakeUintegerChecker<uint8_t> ())
   ;
   return tid;
 }
@@ -206,6 +212,19 @@ LteEnbPhy::GetNoiseFigure () const
 {
   NS_LOG_FUNCTION (this);
   return m_noiseFigure;
+}
+
+void
+LteEnbPhy::SetMacChDelay (uint8_t delay)
+{
+  m_macChTtiDelay = delay;
+  m_packetBurstQueue.resize (delay);
+}
+
+uint8_t
+LteEnbPhy::GetMacChDelay (void) const
+{
+  return (m_macChTtiDelay);
 }
 
 bool
@@ -381,6 +400,14 @@ LteEnbPhy::StartSubFrame (void)
               else
                 {
                   (*it2).second->ReceiveIdealControlMessage (msg);
+                  // send info of TB to LteSpectrumPhy 
+                  // translate to allocation map
+                  std::vector <int> rbMap;
+                  for (int i = dci->GetDci ().m_rbStart; i < dci->GetDci ().m_rbStart + dci->GetDci ().m_rbLen; i++)
+                    {
+                      rbMap.push_back (i);
+                    }
+                  m_uplinkSpectrumPhy->AddExpectedTb (dci->GetDci ().m_rnti, dci->GetDci ().m_tbSize, dci->GetDci ().m_mcs, rbMap);
                 }
             }
           ctrlMsg.pop_front ();
@@ -393,6 +420,7 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
+      NS_LOG_LOGIC (this << " start TX");
       m_downlinkSpectrumPhy->StartTx (pb);
     }
 
@@ -438,14 +466,10 @@ LteEnbPhy::EndFrame (void)
 
 
 void 
-LteEnbPhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteEnbPhy::GenerateCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-  Ptr<LteEnbNetDevice> thisDevice = GetDevice ()->GetObject<LteEnbNetDevice> ();
-
   m_enbPhySapUser->UlCqiReport (CreateUlCqiReport (sinr));
-
-
 }
 
 

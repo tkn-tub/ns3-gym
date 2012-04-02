@@ -301,6 +301,24 @@ Ipv6Address Ipv6Address::Deserialize (const uint8_t buf[16])
   return ipv6;
 }
 
+Ipv6Address Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
+{
+  uint8_t buf[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                      0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00 };
+  addr.Serialize (&buf[12]);
+  return (Ipv6Address (buf));
+}
+
+Ipv4Address Ipv6Address::GetIpv4MappedAddress() const
+{
+    uint8_t buf[16];
+    Ipv4Address v4Addr;
+
+    Serialize (buf);
+    v4Addr = Ipv4Address::Deserialize (&buf[12]);
+    return (v4Addr);
+}
+
 Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Address prefix)
 {
   Ipv6Address ret;
@@ -396,6 +414,26 @@ bool Ipv6Address::IsMulticast () const
       return true;
     }
   return false;
+}
+
+bool Ipv6Address::IsLinkLocalMulticast () const
+{
+  if (m_address[0] == 0xff && m_address[1] == 0x02)
+    {
+      return true;
+    }
+  return false;
+}
+
+bool Ipv6Address::IsIpv4MappedAddress ()
+{
+  uint8_t v4MappedPrefix[12] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                 0x00, 0x00, 0xff, 0xff };
+  if (memcmp(m_address, v4MappedPrefix, sizeof(v4MappedPrefix)) == 0)
+    {
+      return (true);
+    }
+  return (false);
 }
 
 Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix)

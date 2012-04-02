@@ -1440,6 +1440,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'void', 
                    [param('uint8_t *', 'buf')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv6Address::GetIpv4MappedAddress() const [member function]
+    cls.add_method('GetIpv4MappedAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetLoopback() [member function]
     cls.add_method('GetLoopback', 
                    'ns3::Ipv6Address', 
@@ -1480,8 +1485,17 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    cls.add_method('IsIpv4MappedAddress', 
+                   'bool', 
+                   [])
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocalMulticast() const [member function]
+    cls.add_method('IsLinkLocalMulticast', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -1514,6 +1528,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac48Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('MakeIpv4MappedAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv4Address', 'addr')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeSolicitedAddress(ns3::Ipv6Address addr) [member function]
     cls.add_method('MakeSolicitedAddress', 
@@ -2539,7 +2558,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
@@ -3495,6 +3514,10 @@ def register_Ns3SpectrumInterference_methods(root_module, cls):
     cls.add_constructor([param('ns3::SpectrumInterference const &', 'arg0')])
     ## spectrum-interference.h (module 'spectrum'): ns3::SpectrumInterference::SpectrumInterference() [constructor]
     cls.add_constructor([])
+    ## spectrum-interference.h (module 'spectrum'): void ns3::SpectrumInterference::AbortRx() [member function]
+    cls.add_method('AbortRx', 
+                   'void', 
+                   [])
     ## spectrum-interference.h (module 'spectrum'): void ns3::SpectrumInterference::AddSignal(ns3::Ptr<ns3::SpectrumValue const> spd, ns3::Time const duration) [member function]
     cls.add_method('AddSignal', 
                    'void', 
@@ -4876,6 +4899,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True)
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
+    cls.add_method('GetRelativeSpeed', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
+                   is_const=True)
     ## mobility-model.h (module 'mobility'): static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -6248,14 +6276,14 @@ def register_functions(root_module):
     module.add_function('Norm', 
                         'double', 
                         [param('ns3::SpectrumValue const &', 'x')])
-    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(ns3::SpectrumValue const & base, double exp) [free function]
+    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(ns3::SpectrumValue const & lhs, double rhs) [free function]
     module.add_function('Pow', 
                         'ns3::SpectrumValue', 
-                        [param('ns3::SpectrumValue const &', 'base'), param('double', 'exp')])
-    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(double base, ns3::SpectrumValue const & exp) [free function]
+                        [param('ns3::SpectrumValue const &', 'lhs'), param('double', 'rhs')])
+    ## spectrum-value.h (module 'spectrum'): extern ns3::SpectrumValue ns3::Pow(double lhs, ns3::SpectrumValue const & rhs) [free function]
     module.add_function('Pow', 
                         'ns3::SpectrumValue', 
-                        [param('double', 'base'), param('ns3::SpectrumValue const &', 'exp')])
+                        [param('double', 'lhs'), param('ns3::SpectrumValue const &', 'rhs')])
     ## spectrum-value.h (module 'spectrum'): extern double ns3::Prod(ns3::SpectrumValue const & x) [free function]
     module.add_function('Prod', 
                         'double', 

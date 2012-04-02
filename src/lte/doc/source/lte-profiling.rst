@@ -45,15 +45,17 @@ Simulation input parameters
 ---------------------------
 
 The *lena-profiling* simulation script accepts the following input parameters: 
-* ``simTime``: time to simulate (in seconds)
-* ``nUe``: number of UEs attached to each eNodeB 
-* ``nEnb``: number of eNodeB composing the grid per floor
-* ``nFloors``: number of floors, 0 for *Friis propagation model* (no walls), 1 or greater for *Building propagation model* generating a nFloors-storey building.
-* ``traceDirectory``: destination directory where simulation traces will be stored
+
+ * ``simTime``: time to simulate (in seconds)
+ * ``nUe``: number of UEs attached to each eNodeB 
+ * ``nEnb``: number of eNodeB composing the grid per floor
+ * ``nFloors``: number of floors, 0 for *Friis propagation model* (no walls), 1 or greater for *Building propagation model* generating a nFloors-storey building.
+ * ``traceDirectory``: destination directory where simulation traces will be stored
 
 The *lena-simple-epc* script accepts those other parameters:
-* ``simTime``: time to simulate (in seconds)
-* ``numberOfNodes``: number of eNodeB + UE pairs created
+
+ * ``simTime``: time to simulate (in seconds)
+ * ``numberOfNodes``: number of eNodeB + UE pairs created
 
 Time measurement
 ~~~~~~~~~~~~~~~~
@@ -166,7 +168,7 @@ Running time evolution is quadratic since we increase at the same time the numbe
 
    Running time
 
-As a rough complexity estimation, we compare two scenarios using the simplified E-UTRAN version (PHY+MAC) against the complete E-UTRAN + EPC, with same number of UEs per eNodeB, same number of eNodeBs and roughly same volume of transmitted data. 
+To estimate the additional complexity of the upper LTE Radio Protocol Stack model and the EPC model, we compare two scenarios using the simplified E-UTRAN version (using only PHY, MAC and the simplified RLC/SM, with no EPC and no ns-3 applications) against the complete E-UTRAN + EPC (with UM RLC, PDCP, end-to-end IP networking and regular ns-3 applications). Both configuration have been tested with the same number of UEs per eNodeB, the same number of eNodeBs, and approximately the same volume of transmitted data (an exact match was not possible due to the different ways in which packets are generated in the two configurations). 
 
 .. _fig-epcEutranRunTime:
 
@@ -176,7 +178,8 @@ As a rough complexity estimation, we compare two scenarios using the simplified 
 
    EPC E-UTRAN running time
 
-Figures for the complete system are more or less doubling the previous one, but considering the overhead of all the logic and entities incorporated this order of increment is to be expected.
+From the figure, it is evident that the additional complexity of using the upper LTE stack plus the EPC model translates approximately into a doubling of the execution time of the simulations. We believe that, considered all the new features that have been added, this figure is acceptable.
+
 
 Simulation time
 ---------------

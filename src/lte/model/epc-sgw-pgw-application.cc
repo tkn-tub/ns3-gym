@@ -85,6 +85,13 @@ EpcSgwPgwApplication::GetTypeId (void)
   return tid;
 }
 
+void
+EpcSgwPgwApplication::DoDispose ()
+{
+  m_s1uSocket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+  m_s1uSocket = 0;
+}
+
   
 
 EpcSgwPgwApplication::EpcSgwPgwApplication (const Ptr<VirtualNetDevice> tunDevice, const Ptr<Socket> s1uSocket)
@@ -188,6 +195,7 @@ void
 EpcSgwPgwApplication::SendToTunDevice (Ptr<Packet> packet, uint32_t teid)
 {
   NS_LOG_FUNCTION (this << packet << teid);
+  NS_LOG_LOGIC (" packet size: " << packet->GetSize () << " bytes");
   m_tunDevice->Receive (packet, 0x0800, m_tunDevice->GetAddress (), m_tunDevice->GetAddress (), NetDevice::PACKET_HOST);
 }
 

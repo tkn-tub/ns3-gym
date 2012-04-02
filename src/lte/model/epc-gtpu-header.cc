@@ -36,8 +36,9 @@ TypeId
 GtpuHeader::GetTypeId (void)
 {
   static TypeId tid =
-    TypeId ("ns3::GtpuHeader").SetParent<Header> ().AddConstructor<
-      GtpuHeader> ();
+    TypeId ("ns3::GtpuHeader")
+    .SetParent<Header> ()
+    .AddConstructor<GtpuHeader> ();
   return tid;
 }
 GtpuHeader::GtpuHeader ()

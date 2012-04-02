@@ -60,6 +60,30 @@ public:
   static TypeId GetTypeId (void);
 
   /**
+   * Set the name of the file where the uplink statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetUlOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the uplink statistics will be stored.
+   */
+  std::string GetUlOutputFilename (void);
+
+  /**
+   * Set the name of the file where the downlink statistics will be stored.
+   *
+   * @param outputFilename string with the name of the file
+   */
+  void SetDlOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the downlink statistics will be stored.
+   */
+  std::string GetDlOutputFilename (void);
+
+  /**
    * Notifies the stats calculator that an downlink scheduling has occurred.
    * @param cellId Cell ID of the attached Enb
    * @param imsi IMSI of the scheduled UE
@@ -86,7 +110,6 @@ public:
    */
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
                      uint16_t rnti, uint8_t mcs, uint16_t sizeTb);
-
 
 private:
 

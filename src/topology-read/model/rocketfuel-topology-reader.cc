@@ -25,6 +25,7 @@
 #include <regex.h>
 
 #include "ns3/log.h"
+#include "ns3/unused.h"
 #include "rocketfuel-topology-reader.h"
 
 namespace ns3 {
@@ -75,6 +76,18 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
 int linksNumber = 0;
 int nodesNumber = 0;
 std::map<std::string, Ptr<Node> > nodeMap;
+
+void
+PrintNodeInfo (std::string & uid, std::string & loc, bool dns, bool bb,
+               std::vector <std::string>::size_type neighListSize,
+               std::string & name, int radius)
+{
+  /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
+  NS_LOG_INFO ("Load Node[" << uid << "]: location: " << loc << " dns: " << dns
+                            << " bb: " << bb << " neighbors: " << neighListSize
+                            << "(" << "%d" << ") externals: \"%s\"(%d) "
+                            << "name: " << name << " radius: " << radius);
+}
 
 NodeContainer
 RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
@@ -150,16 +163,7 @@ RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
       return nodes;
     }
 
-  /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
-  NS_LOG_INFO ("Load Node[" << uid << "]: location: " << loc << " dns: " << dns
-                            << " bb: " << bb << " neighbors: " << neigh_list.size ()
-                            << "(" << "%d" << ") externals: \"%s\"(%d) "
-                            << "name: " << name << " radius: " << radius);
-
-  //cast bb and dns to void, to suppress variable set but not used compiler warning
-  //in optimized builds
-  (void) bb;
-  (void) dns;
+  PrintNodeInfo (uid, loc, dns, bb, neigh_list.size (), name, radius);
 
   // Create node and link
   if (!uid.empty ())
@@ -209,8 +213,7 @@ RocketfuelTopologyReader::GenerateFromWeightsFile (int argc, char *argv[])
   sname = argv[0];
   tname = argv[1];
   double v = strtod (argv[2], &endptr); // weight
-  // cast v to void , to suppress 'v' set but not used compiler warning
-  (void) v;
+  NS_UNUSED (v); // suppress "set but not used" compiler warning in optimized builds
   if (*endptr != '\0')
     {
       NS_LOG_WARN ("invalid weight: " << argv[2]);

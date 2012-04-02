@@ -25,7 +25,6 @@
 #include <ns3/address.h>
 #include <ns3/socket.h>
 #include <ns3/virtual-net-device.h>
-#include <ns3/epc-gtpu-l5-protocol.h>
 #include <ns3/traced-callback.h>
 #include <ns3/callback.h>
 #include <ns3/ptr.h>
@@ -51,6 +50,7 @@ public:
 
   // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    * Constructor that binds the tap device to the callback methods.

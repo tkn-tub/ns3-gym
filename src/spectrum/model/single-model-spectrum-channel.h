@@ -109,7 +109,7 @@ private:
 
   double m_maxLossDb;
 
-  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_propagationLossTrace;
+  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
 };
 
 

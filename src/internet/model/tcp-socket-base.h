@@ -1,5 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+ * Copyright (c) 2007 Georgia Tech Research Corporation
  * Copyright (c) 2010 Adrian Sai-wah Tam
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,6 +38,7 @@
 namespace ns3 {
 
 class Ipv4EndPoint;
+class Ipv6EndPoint;
 class Node;
 class Packet;
 class TcpL4Protocol;
@@ -53,7 +55,7 @@ class TcpHeader;
  * functions where the sliding window mechanism is handled here. This class
  * provides connection orientation and sliding window flow control. Part of
  * this class is modified from the original NS-3 TCP socket implementation
- * (TcpSocketImpl) by Raj Bhattacharjea.
+ * (TcpSocketImpl) by Raj Bhattacharjea <raj.b@gatech.edu> of Georgia Tech.
  */
 class TcpSocketBase : public TcpSocket
 {
@@ -80,6 +82,7 @@ public:
   virtual enum SocketType GetSocketType (void) const; // returns socket type
   virtual Ptr<Node> GetNode (void) const;            // returns m_node
   virtual int Bind (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
+  virtual int Bind6 (void);    // Bind a socket by setting up endpoint in TcpL4Protocol
   virtual int Bind (const Address &address);         // ... endpoint of specific addr or port
   virtual int Connect (const Address &address);      // Setup endpoint and call ProcessAction() to connect
   virtual int Listen (void);  // Verify the socket is in a correct state and call ProcessAction() to listen
@@ -115,33 +118,42 @@ protected:
   virtual Time     GetDelAckTimeout (void) const;
   virtual void     SetDelAckMaxCount (uint32_t count);
   virtual uint32_t GetDelAckMaxCount (void) const;
+  virtual void     SetTcpNoDelay (bool noDelay);
+  virtual bool     GetTcpNoDelay (void) const;
   virtual void     SetPersistTimeout (Time timeout);
   virtual Time     GetPersistTimeout (void) const;
   virtual bool     SetAllowBroadcast (bool allowBroadcast);
-  virtual bool     GetAllowBroadcast () const;
+  virtual bool     GetAllowBroadcast (void) const;
 
   // Helper functions: Connection set up
   int SetupCallback (void);        // Common part of the two Bind(), i.e. set callback and remembering local addr:port
   int DoConnect (void);            // Sending a SYN packet to make a connection if the state allows
   void ConnectionSucceeded (void); // Schedule-friendly wrapper for Socket::NotifyConnectionSucceeded()
   int SetupEndpoint (void);        // Configure m_endpoint for local addr for given remote addr
+  int SetupEndpoint6 (void);       // Configure m_endpoint6 for local addr for given remote addr
   void CompleteFork (Ptr<Packet>, const TcpHeader&, const Address& fromAddress, const Address& toAdress);
 
   // Helper functions: Transfer operation
-  void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
+  void ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface);
+  void ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
+  virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
+  virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port); // Ipv6 version
   bool SendPendingData (bool withAck = false); // Send as much as the window allows
+  uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck); // Send a data packet
   void SendEmptyPacket (uint8_t flags); // Send a empty packet that carries a flag, e.g. ACK
   void SendRST (void); // Send reset and tear down this socket
-  bool OutOfRange (SequenceNumber32 s) const; // Check if a sequence number is within rx window
+  bool OutOfRange (SequenceNumber32 head, SequenceNumber32 tail) const; // Check if a sequence number range is within the rx window
 
   // Helper functions: Connection close
   int DoClose (void); // Close a socket by sending RST, FIN, or FIN+ACK, depend on the current state
   void CloseAndNotify (void); // To CLOSED state, notify upper layer, and deallocate end point
   void Destroy (void); // Kill this socket by zeroing its attributes
+  void Destroy6 (void); // Kill this socket by zeroing its attributes
   void DeallocateEndPoint (void); // Deallocate m_endPoint
   void PeerClose (Ptr<Packet>, const TcpHeader&); // Received a FIN from peer, notify rx buffer
   void DoPeerClose (void); // FIN is in sequence, notify app and respond with a FIN
   void CancelAllTimers (void); // Cancel all timer when endpoint is deleted
+  void TimeWait (void);  // Move from CLOSING or FIN_WAIT_2 to TIME_WAIT state
 
   // State transition functions
   void ProcessEstablished (Ptr<Packet>, const TcpHeader&); // Received a packet upon ESTABLISHED state
@@ -172,6 +184,8 @@ protected:
   virtual void LastAckTimeout (void); // Timeout at LAST_ACK, close the connection
   virtual void PersistTimeout (void); // Send 1 byte probe to get an updated window size
   virtual void DoRetransmit (void); // Retransmit the oldest packet
+  virtual void ReadOptions (const TcpHeader&); // Read option from incoming packets
+  virtual void AddOptions (TcpHeader&); // Add option to outgoing packets
 
 protected:
   // Counters and events
@@ -179,10 +193,13 @@ protected:
   EventId           m_lastAckEvent;    //< Last ACK timeout event
   EventId           m_delAckEvent;     //< Delayed ACK timeout event
   EventId           m_persistEvent;    //< Persist event: Send 1 byte to probe for a non-zero Rx window
+  EventId           m_timewaitEvent;   //< TIME_WAIT expiration event: Move this socket to CLOSED state
   uint32_t          m_dupAckCount;     //< Dupack counter
   uint32_t          m_delAckCount;     //< Delayed ACK counter
   uint32_t          m_delAckMaxCount;  //< Number of packet to fire an ACK before delay timeout
+  bool              m_noDelay;         //< Set to true to disable Nagle's algorithm
   uint32_t          m_cnCount;         //< Count of remaining connection retries
+  uint32_t          m_cnRetries;       //< Number of connection retries before giving up
   TracedValue<Time> m_rto;             //< Retransmit timeout
   TracedValue<Time> m_lastRtt;         //< Last RTT sample collected
   Time              m_delAckTimeout;   //< Time to delay an ACK
@@ -191,6 +208,7 @@ protected:
 
   // Connections to other layers of TCP/IP
   Ipv4EndPoint*       m_endPoint;
+  Ipv6EndPoint*       m_endPoint6;
   Ptr<Node>           m_node;
   Ptr<TcpL4Protocol>  m_tcp;
 
@@ -211,9 +229,11 @@ protected:
   bool                     m_shutdownSend;  //< Send no longer allowed
   bool                     m_shutdownRecv;  //< Receive no longer allowed
   bool                     m_connected;     //< Connection established
+  double                   m_msl;           //< Max segment lifetime
 
   // Window management
   uint32_t              m_segmentSize; //< Segment size
+  uint16_t              m_maxWinSize;  //< Maximum window size to advertise
   TracedValue<uint32_t> m_rWnd;        //< Flow control window at remote side
 };
 

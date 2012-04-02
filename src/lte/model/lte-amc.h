@@ -17,6 +17,7 @@
  *
  * Original Author: Giuseppe Piro  <g.piro@poliba.it>
  * Modified by:     Nicola Baldo   <nbaldo@cttc.es>
+ * Modified by:     Marco Miozzo   <mmiozzo@cttc.es>
  */
 
 #ifndef AMCMODULE_H
@@ -24,6 +25,7 @@
 
 #include <vector>
 #include <ns3/ptr.h>
+#include <ns3/object.h>
 
 namespace ns3 {
 
@@ -38,17 +40,31 @@ class SpectrumValue;
  * \note All the methods of this class are static, so you'll never
  * need to create and manage instances of this class.
  */
-class LteAmc
+class LteAmc : public Object
 {
 
 public:
+  static TypeId GetTypeId (void);
+  
+  LteAmc ();
+  virtual ~LteAmc();
+  
+  enum AmcModel
+    {
+      PiroEW2010,
+      // model based on Piro, G.; Grieco, L.A.; Boggia, G.; Camarda, P.;
+      //A two-level scheduling algorithm for QoS support in the downlink of 
+      //LTE cellular networks European Wireless Conference (EW), 2010
+      MiErrorModel // model based on 10% of BER according to LteMiErrorModel
+    };
+  
   /**
    * \brief Get the Modulation anc Coding Scheme for
    * a CQI value
    * \param cqi the cqi value
    * \return the MCS  value
    */
-  static int GetMcsFromCqi (int cqi);
+  /*static*/ int GetMcsFromCqi (int cqi);
 
   /**
   * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 7.1.7.2.1-1 of 36.213)
@@ -56,7 +72,7 @@ public:
   * \param nprb the no. of PRB
   * \return the Transport Block Size in bits
   */
-  static int GetTbSizeFromMcs (int mcs, int nprb);
+  /*static*/ int GetTbSizeFromMcs (int mcs, int nprb);
 
   /**
    * \brief Get the spectral efficiency value associated
@@ -64,13 +80,15 @@ public:
    * \param cqi the cqi value
    * \return the spectral efficiency in (bit/s)/Hz
    */
-  static double GetSpectralEfficiencyFromCqi (int cqi);
+  /*static*/ double GetSpectralEfficiencyFromCqi (int cqi);
 
   /**
    * \brief Create a message with CQI feedback
+   * \param sinr the SpectrumValue vector of SINR for evaluating the CQI
+   * \param rbgSize size of RB group (in RBs) for evaluating subband/wideband CQI
    *
    */
-  static std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr);
+  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize = 0);
 
   /**
    * \brief Get a proper CQI for the spectrale efficiency value.
@@ -79,7 +97,14 @@ public:
    * \param s the spectral efficiency
    * \return the CQI value
    */
-  static int GetCqiFromSpectralEfficiency (double s);
+  /*static*/ int GetCqiFromSpectralEfficiency (double s);
+  
+private:
+  
+  double m_ber;
+  AmcModel m_amcModel;
+
+
 
 };
 

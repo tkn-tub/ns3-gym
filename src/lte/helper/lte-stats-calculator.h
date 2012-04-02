@@ -1,8 +1,21 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * lte-stats-calculator.h
+ * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
- *  Created on: Nov 4, 2011
- *      Author: jnin
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Jaume Nin <jnin@cttc.es>
  */
 
 #ifndef LTE_STATS_CALCULATOR_H_
@@ -49,7 +62,7 @@ public:
   void SetDlOutputFilename (std::string outputFilename);
 
   /**
-   * Get the name of the file where the uplink statistics will be stored.
+   * Get the name of the file where the downlink statistics will be stored.
    */
   std::string GetDlOutputFilename (void);
 
@@ -95,6 +108,7 @@ private:
 
   std::map<std::string, uint64_t> m_pathImsiMap;
   std::map<std::string, uint16_t> m_pathCellIdMap;
+
   std::string m_dlOutputFilename;
   std::string m_ulOutputFilename;
 };

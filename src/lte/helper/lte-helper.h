@@ -110,6 +110,47 @@ public:
    */
   void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
 
+  /** 
+   * 
+   * \param type the type of AntennaModel to be used for the eNBs
+   */
+  void SetEnbAntennaModelType (std::string type);
+
+  /**
+   * set an attribute for the AntennaModel to be used for the eNBs
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v);
+
+  /** 
+   * 
+   * \param type the type of AntennaModel to be used for the UEs
+   */
+  void SetUeAntennaModelType (std::string type);
+
+  /**
+   * set an attribute for the AntennaModel to be used for the UEs
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetUeAntennaModelAttribute (std::string n, const AttributeValue &v);
+
+  /** 
+   * 
+   * \param type the type of SpectrumChannel to be used for the UEs
+   */
+  void SetSpectrumChannelType (std::string type);
+
+  /**
+   * set an attribute for the SpectrumChannel to be used for the UEs
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetSpectrumChannelAttribute (std::string n, const AttributeValue &v);
   /**
    * create a set of eNB devices
    *
@@ -143,6 +184,22 @@ public:
    * \param enbDevice
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+
+  /** 
+   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set
+   * 
+   * \param ueDevices the set of UEs
+   * \param enbDevices the set of eNBs
+   */
+  void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
+
+  /** 
+   * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
+   * 
+   * \param ueDevice the UE
+   * \param enbDevices the set of eNBs
+   */
+  void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
   /**
    * Activate an EPS bearer on a given set of UE devices
@@ -223,11 +280,6 @@ public:
    */
   void EnableUlRlcTraces (void);
 
-  /**
-   * Set the output directory for the MAC/RLC trace
-   */
-  void SetTraceDirectory (std::string path);
-
   /** 
    * 
    * \return the RLC stats calculator object
@@ -255,6 +307,11 @@ public:
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
 
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4};
+
 protected:
   // inherited from Object
   virtual void DoStart (void);
@@ -265,33 +322,34 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
-  
+
   Ptr<Object> m_downlinkPathlossModel;
   Ptr<Object> m_uplinkPathlossModel;
 
   ObjectFactory m_schedulerFactory;
   ObjectFactory m_propagationModelFactory;
   ObjectFactory m_enbNetDeviceFactory;
+  ObjectFactory m_enbAntennaModelFactory;
+  ObjectFactory m_ueAntennaModelFactory;
 
   ObjectFactory m_dlPathlossModelFactory;
   ObjectFactory m_ulPathlossModelFactory;
 
+  ObjectFactory m_channelFactory;
+
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
-  
+
   Ptr<TraceFadingLossModel> m_fadingModule;
-  
+
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
 
-  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
-                                   RLC_UM_ALWAYS = 2,
-                                   RLC_AM_ALWAYS = 3,
-                                   PER_BASED = 4} m_epsBearerToRlcMapping;
+  enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
 
   Ptr<EpcHelper> m_epcHelper;
-  
+
 };
 
 

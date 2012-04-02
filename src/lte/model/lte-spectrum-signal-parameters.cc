@@ -20,6 +20,7 @@
 
 #include <ns3/log.h>
 #include <ns3/packet-burst.h>
+#include <ns3/ptr.h>
 #include "lte-spectrum-signal-parameters.h"
 
 
@@ -43,7 +44,14 @@ Ptr<SpectrumSignalParameters>
 LteSpectrumSignalParameters::Copy ()
 {
   NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParameters> (*this);
+  // Ideally we would use:
+  //   return Copy<LteSpectrumSignalParameters> (*this);
+  // but for some reason it doesn't work. Another alternative is 
+  //   return Copy<LteSpectrumSignalParameters> (this);
+  // but it causes a double creation of the object, hence it is less efficient.
+  // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
+  Ptr<LteSpectrumSignalParameters> lssp (new LteSpectrumSignalParameters (*this), false);  
+  return lssp;
 }
 
 } // namespace ns3

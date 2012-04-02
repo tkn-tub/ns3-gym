@@ -169,7 +169,7 @@ class UanPhy : public Object
 public:
   static TypeId GetTypeId (void);
 
-  // / Enum defining possible Phy states
+  /// Enum defining possible Phy states
   enum State
   {
     IDLE, CCABUSY, RX, TX, SLEEP

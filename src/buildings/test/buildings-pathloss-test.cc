@@ -178,6 +178,7 @@ BuildingsPathlossTestCase::DoRun (void)
 //   LogComponentEnable ("LteEnbNetDevice", logLevel);
 
   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("HybridBuildingsPropagationLossModel", LOG_LEVEL_ALL);
 
   NS_LOG_FUNCTION (this);
 
@@ -187,7 +188,7 @@ BuildingsPathlossTestCase::DoRun (void)
 
 
 
-  Ptr<BuildingsPropagationLossModel> propagationLossModel = CreateObject<BuildingsPropagationLossModel> ();
+  Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   propagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
   propagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 / m_freq));
   propagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
@@ -245,7 +246,8 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
   mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
 
   // this needs to be static otherwise it will look like a different building every time
-  static Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
+  static Ptr<Building> building1 = Create<Building> ();
+  building1->SetBoundaries (Box (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/));
   building1->SetBuildingType (Building::Residential);
   building1->SetExtWallsType (Building::ConcreteWithWindows);
   mm5->SetIndoor (building1);

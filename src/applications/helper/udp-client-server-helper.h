@@ -100,6 +100,8 @@ public:
    */
 
   UdpClientHelper (Ipv4Address ip, uint16_t port);
+  UdpClientHelper (Ipv6Address ip, uint16_t port);
+  UdpClientHelper (Address ip, uint16_t port);
 
   /**
    * Record an attribute to be set in each Application after it is is created.
@@ -150,7 +152,9 @@ public:
    * \param port The port number of the remote udp server
    * \param filename the file from which packet traces will be loaded
    */
+  UdpTraceClientHelper (Address ip, uint16_t port, std::string filename);
   UdpTraceClientHelper (Ipv4Address ip, uint16_t port, std::string filename);
+  UdpTraceClientHelper (Ipv6Address ip, uint16_t port, std::string filename);
 
   /**
     * Record an attribute to be set in each Application after it is is created.

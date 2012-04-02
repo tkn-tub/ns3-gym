@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <limits>
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/type-id.h"
@@ -208,16 +209,23 @@ private:
                                   const uint8_t* start,
                                   const uint8_t* current,
                                   uint32_t maxSize);
+
+  /**
+   * the size of PacketMetadata::Data::m_data such that the total size
+   * of PacketMetadata::Data is 16 bytes
+   */ 
+#define PACKET_METADATA_DATA_M_DATA_SIZE 8
+  
   struct Data {
     /* number of references to this struct Data instance. */
-    uint16_t m_count;
+    uint32_t m_count;
     /* size (in bytes) of m_data buffer below */
     uint16_t m_size;
     /* max of the m_used field over all objects which 
      * reference this struct Data instance */
     uint16_t m_dirtyEnd;
     /* variable-sized buffer of bytes */
-    uint8_t m_data[10];
+    uint8_t m_data[PACKET_METADATA_DATA_M_DATA_SIZE]; 
   };
   /* Note that since the next and prev fields are 16 bit integers
      and since the value 0xffff is reserved to identify the 
@@ -376,6 +384,7 @@ PacketMetadata::PacketMetadata (PacketMetadata const &o)
     m_packetUid (o.m_packetUid)
 {
   NS_ASSERT (m_data != 0);
+  NS_ASSERT (m_data->m_count < std::numeric_limits<uint32_t>::max());
   m_data->m_count++;
 }
 PacketMetadata &

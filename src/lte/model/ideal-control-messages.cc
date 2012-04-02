@@ -87,36 +87,6 @@ IdealControlMessage::GetMessageType (void)
 }
 
 
-
-// ----------------------------------------------------------------------------------------------------------
-
-PdcchMapIdealControlMessage::PdcchMapIdealControlMessage (void)
-{
-  m_idealPdcchMessage =  new IdealPdcchMessage ();
-  SetMessageType (IdealControlMessage::ALLOCATION_MAP);
-}
-
-
-PdcchMapIdealControlMessage::~PdcchMapIdealControlMessage (void)
-{
-  delete m_idealPdcchMessage;
-}
-
-void
-PdcchMapIdealControlMessage::AddNewRecord (Direction direction,
-                                           int subChannel, Ptr<LteNetDevice> ue, double mcs)
-{
-
-}
-
-
-PdcchMapIdealControlMessage::IdealPdcchMessage*
-PdcchMapIdealControlMessage::GetMessage (void)
-{
-  return m_idealPdcchMessage;
-}
-
-
 // ----------------------------------------------------------------------------------------------------------
 
 

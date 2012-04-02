@@ -163,7 +163,7 @@ Review the ns-3 coding style document
 At this point, you may want to pause and read the |ns3| coding style document,
 especially if you are considering to contribute your code back to the project.
 The coding style document is linked off the main project page: `ns-3 coding
-style <http://www.nsnam.org/codingstyle.html>`_.
+style <http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
 
 Decide where in the source tree the model will reside in
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -249,7 +249,7 @@ use of class Object?
 This is an important design step; whether to use class :cpp:class:`Object` as a
 base class for your new classes.
 
-As described in the chapter on the |ns3| :ref:`Object model`, classes that
+As described in the chapter on the |ns3| :ref:`Object-model`, classes that
 inherit from class :cpp:class:`Object` get special properties:
 
 * the |ns3| type and attribute system (see :ref:`Attributes`)
@@ -370,7 +370,7 @@ certain objects can be created via the object creation framework
 
 The macro ``NS_OBJECT_ENSURE_REGISTERED (classname)`` is needed also once for
 every class that defines a new GetTypeId method, and it does the actual
-registration of the class into the system.  The :ref:`Object model` chapter
+registration of the class into the system.  The :ref:`Object-model` chapter
 discusses this in more detail.
 
 how to include files from elsewhere

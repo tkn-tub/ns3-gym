@@ -42,7 +42,7 @@ public:
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
   virtual void End ();
 
-  SpectrumValue GetSinr ();
+  Ptr<SpectrumValue> GetSinr ();
 
 private:
   Ptr<SpectrumValue> m_sumSinr;

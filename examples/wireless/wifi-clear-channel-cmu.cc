@@ -81,7 +81,7 @@ void
 Experiment::ReceivePacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  while ((packet = socket->Recv ()))
     {
       m_pktsTotal++;
     }
@@ -150,6 +150,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
   Ptr<Socket> source = Socket::CreateSocket (c.Get (1), tid);
   InetSocketAddress remote = InetSocketAddress (Ipv4Address ("255.255.255.255"), 80);
+  source->SetAllowBroadcast (true);
   source->Connect (remote);
   uint32_t packetSize = 1014;
   uint32_t maxPacketCount = 200;
@@ -212,6 +213,7 @@ int main (int argc, char *argv[])
           wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (-110.0) );
           wifiPhy.Set ("CcaMode1Threshold", DoubleValue (-110.0) );
           wifiPhy.Set ("TxPowerStart", DoubleValue (15.0) );
+          wifiPhy.Set ("TxPowerEnd", DoubleValue (15.0) );
           wifiPhy.Set ("RxGain", DoubleValue (0) );
           wifiPhy.Set ("RxNoiseFigure", DoubleValue (7) );
           uint32_t pktsRecvd = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);

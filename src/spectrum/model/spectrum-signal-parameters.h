@@ -32,6 +32,7 @@ namespace ns3 {
 
 class SpectrumPhy;
 class SpectrumValue;
+class AntennaModel;
 
 /**
  * This struct provides the generic signal representation to be used by
@@ -102,6 +103,11 @@ struct SpectrumSignalParameters : public SimpleRefCount<SpectrumSignalParameters
    * The SpectrumPhy instance that is making the transmission
    */
   Ptr<SpectrumPhy> txPhy;
+
+  /**
+   * The AntennaModel instance that was used to transmit this signal.
+   */
+  Ptr<AntennaModel> txAntenna;
 };
 
 

@@ -41,6 +41,9 @@ namespace ns3 {
  * Simple SpectrumPhy implemetation that averages the spectrum power
  * density of incoming transmissions to produce a spectrogram.
  *
+ *
+ * This PHY model supports a single antenna model instance which is
+ * used for reception (this PHY model never transmits). 
  */
 class SpectrumAnalyzer : public SpectrumPhy
 {
@@ -58,6 +61,7 @@ public:
   Ptr<MobilityModel> GetMobility ();
   Ptr<NetDevice> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
 
@@ -68,6 +72,12 @@ public:
    */
   void SetRxSpectrumModel (Ptr<SpectrumModel> m);
 
+  /** 
+   * set the AntennaModel to be used
+   * 
+   * \param a the Antenna Model
+   */
+  void SetAntenna (Ptr<AntennaModel> a);
 
   /**
    * Start the spectrum analyzer
@@ -87,6 +97,7 @@ protected:
 
 private:
   Ptr<MobilityModel> m_mobility;
+  Ptr<AntennaModel> m_antenna;
   Ptr<NetDevice> m_netDevice;
   Ptr<SpectrumChannel> m_channel;
 

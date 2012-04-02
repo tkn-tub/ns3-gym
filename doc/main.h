@@ -56,7 +56,6 @@
  *     - spectrum
  *     - stats
  *     - tap-bridge
- *     - template
  *     - test
  *     - tools
  *     - topology-read
@@ -65,7 +64,6 @@
  *     - visualizer
  *     - wifi
  *     - wimax
- *
  *
  */
 /**

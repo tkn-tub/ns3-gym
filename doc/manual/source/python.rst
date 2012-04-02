@@ -239,9 +239,9 @@ Organization of the Monolithic Python Bindings
 
 The monolithic Python API definitions are organized as follows. For each |ns3| module <name>, the file ``bindings/python/ns3_module_<name>.py`` describes its API.  Each of those files have 3 toplevel functions:
 
-#. :cpp:func:`def register_types(module)`: this function takes care of registering new types (e.g. C++ classes, enums) that are defined in tha module;
-#. :cpp:func:`def register_methods(module)`: this function calls, for each class <name>, another function register_methods_Ns3<name>(module).  These latter functions add method definitions for each class;
-#. :cpp:func:`def register_functions(module)`: this function registers |ns3| functions that belong to that module.
+#. :py:func:`def register_types(module)`: this function takes care of registering new types (e.g. C++ classes, enums) that are defined in tha module;
+#. :py:func:`def register_methods(module)`: this function calls, for each class <name>, another function register_methods_Ns3<name>(module).  These latter functions add method definitions for each class;
+#. :py:func:`def register_functions(module)`: this function registers |ns3| functions that belong to that module.
 
 Modular Python Bindings
 ***********************

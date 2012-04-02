@@ -40,6 +40,9 @@ Ipv4EndPoint::~Ipv4EndPoint ()
     {
       m_destroyCallback ();
     }
+  m_rxCallback.Nullify ();
+  m_icmpCallback.Nullify ();
+  m_destroyCallback.Nullify ();
 }
 
 Ipv4Address 

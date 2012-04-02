@@ -242,6 +242,7 @@ LteUeRrc::Send (Ptr<Packet> packet)
     }
   else
     {
+      NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending " << packet << "on LCID " << (uint32_t) lcid << " (" << packet->GetSize () << " bytes)");
       it->second->m_pdcp->GetLtePdcpSapProvider ()->TransmitRrcPdu (params);
       return true;
     }

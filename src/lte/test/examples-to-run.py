@@ -9,12 +9,18 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("lena-simple", "True", "True"),
-    ("lena-intercell-interference", "True", "True"),
-    ("lena-rlc-traces", "True", "True"),
-    ("lena-profiling", "True", "True"),
-    ("lena-pathloss-traces", "True", "True"),
+    ("lena-cqi-threshold", "True", "True"),
+    ("lena-dual-stripe", "True", "True"),
     ("lena-fading", "True", "True"),
+    ("lena-gtpu-tunnel", "True", "True"),
+    ("lena-intercell-interference", "True", "True"),
+    ("lena-pathloss-traces", "True", "True"),
+    ("lena-profiling", "True", "True"),
+    ("lena-rlc-traces", "True", "True"),
+    ("lena-rem", "True", "True"),
+    ("lena-rem-sector-antenna", "True", "True"),
+    ("lena-simple", "True", "True"),
+    ("lena-simple-epc", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
+#include <ns3/enum.h>
 
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
@@ -154,6 +155,9 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 void
 LteLinkAdaptationTestCase::DoRun (void)
 {
+  
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   /**
     * Simulation Topology
     */
@@ -205,7 +209,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   Simulator::Stop (Seconds (0.005));
   Simulator::Run ();
 
-  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()[0]);
+  double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
   NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinrDb, m_snrDb, 0.0000001, "Wrong SINR !");
   Simulator::Destroy ();
 }

@@ -128,23 +128,67 @@ TcpHeader::InitializeChecksum (Ipv4Address source,
   m_protocol = protocol;
 }
 
+void 
+TcpHeader::InitializeChecksum (Ipv6Address source, 
+                               Ipv6Address destination,
+                               uint8_t protocol)
+{
+  m_source = source;
+  m_destination = destination;
+  m_protocol = protocol;
+}
+
+void 
+TcpHeader::InitializeChecksum (Address source, 
+                               Address destination,
+                               uint8_t protocol)
+{
+  m_source = source;
+  m_destination = destination;
+  m_protocol = protocol;
+}
+
 uint16_t
 TcpHeader::CalculateHeaderChecksum (uint16_t size) const
 {
-  Buffer buf = Buffer (12);
-  buf.AddAtStart (12);
+  /* Buffer size must be at least as large as the largest IP pseudo-header */
+  /* [per RFC2460, but without consideration for IPv6 extension hdrs]      */
+  /* Src address            16 bytes (more generally, Address::MAX_SIZE)   */
+  /* Dst address            16 bytes (more generally, Address::MAX_SIZE)   */
+  /* Upper layer pkt len    4 bytes                                        */
+  /* Zero                   3 bytes                                        */
+  /* Next header            1 byte                                         */
+
+  uint32_t maxHdrSz = (2 * Address::MAX_SIZE) + 8;
+  Buffer buf = Buffer (maxHdrSz);
+  buf.AddAtStart (maxHdrSz);
   Buffer::Iterator it = buf.Begin ();
+  uint32_t hdrSize = 0;
 
   WriteTo (it, m_source);
   WriteTo (it, m_destination);
-  it.WriteU8 (0); /* protocol */
-  it.WriteU8 (m_protocol); /* protocol */
-  it.WriteU8 (size >> 8); /* length */
-  it.WriteU8 (size & 0xff); /* length */
+  if (Ipv4Address::IsMatchingType(m_source))
+    {
+      it.WriteU8 (0); /* protocol */
+      it.WriteU8 (m_protocol); /* protocol */
+      it.WriteU8 (size >> 8); /* length */
+      it.WriteU8 (size & 0xff); /* length */
+      hdrSize = 12;
+    }
+  else
+    {
+      it.WriteU16 (0);
+      it.WriteU8 (size >> 8); /* length */
+      it.WriteU8 (size & 0xff); /* length */
+      it.WriteU16 (0);
+      it.WriteU8 (0);
+      it.WriteU8 (m_protocol); /* protocol */
+      hdrSize = 40;
+    }
 
   it = buf.Begin ();
   /* we don't CompleteChecksum ( ~ ) now */
-  return ~(it.CalculateIpChecksum (12));
+  return ~(it.CalculateIpChecksum (hdrSize));
 }
 
 bool
@@ -196,6 +240,14 @@ void TcpHeader::Print (std::ostream &os)  const
       if((m_flags & URG) != 0)
         {
           os<<" URG ";
+        }
+      if((m_flags & ECE) != 0)
+        {
+          os<<" ECE ";
+        }
+      if((m_flags & CWR) != 0)
+        {
+          os<<" CWR ";
         }
       os<<"]";
     }

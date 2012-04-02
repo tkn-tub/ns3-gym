@@ -292,6 +292,8 @@ Socket::DoDispose (void)
 
   m_connectionSucceeded = MakeNullCallback<void,Ptr<Socket> > ();
   m_connectionFailed = MakeNullCallback<void,Ptr<Socket> > ();
+  m_normalClose = MakeNullCallback<void,Ptr<Socket> > ();
+  m_errorClose = MakeNullCallback<void,Ptr<Socket> > ();
   m_connectionRequest = MakeNullCallback<bool,Ptr<Socket>, const Address &> ();
   m_newConnectionCreated = MakeNullCallback<void,Ptr<Socket>, const Address &> ();
   m_dataSent = MakeNullCallback<void,Ptr<Socket>, uint32_t> ();
@@ -314,9 +316,6 @@ Socket::BindToNetDevice (Ptr<NetDevice> netdevice)
             }
         }
       NS_ASSERT_MSG (found, "Socket cannot be bound to a NetDevice not existing on the Node");
-      //cast found to void, to suppress 'found' set but not used compiler warning
-      //in optimized builds
-      (void) found;
     }
   m_boundnetdevice = netdevice;
   return;
