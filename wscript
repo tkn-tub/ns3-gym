@@ -666,6 +666,14 @@ def _exclude_taskgen(self, taskgen):
         break
 
 
+def _find_ns3_module(self, name):
+    for obj in _get_all_task_gen(self):
+        # disable the modules themselves
+        if hasattr(obj, "is_ns3_module") and obj.name == name:
+            return obj
+    raise KeyError(name)
+
+
 def build(bld):
     env = bld.env
 
@@ -694,6 +702,7 @@ def build(bld):
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
     bld.__class__.all_task_gen = property(_get_all_task_gen)
     bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
+    bld.find_ns3_module = types.MethodType(_find_ns3_module, bld)
 
     # process subfolders from here
     bld.add_subdirs('src')
@@ -776,7 +785,7 @@ def build(bld):
 
             # disable pcfile taskgens for disabled modules
             if 'ns3pcfile' in getattr(obj, "features", []):
-                if obj.module.name not in bld.env.NS3_ENABLED_MODULES:
+                if obj.module not in bld.env.NS3_ENABLED_MODULES:
                     bld.exclude_taskgen(obj)
 
 
