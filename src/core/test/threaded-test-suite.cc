@@ -240,7 +240,13 @@ public:
       "ns3::HeapScheduler",
       "ns3::MapScheduler",
       "ns3::CalendarScheduler",
+#if 0
+      // Bug 1397
+      "ns3::CalendarScheduler",
       "ns3::Ns2CalendarScheduler"
+#else
+      "ns3::CalendarScheduler"
+#endif
     };
     unsigned int threadcounts[] = {
       0,
