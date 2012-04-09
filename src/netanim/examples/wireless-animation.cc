@@ -151,6 +151,9 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop (Seconds (15.0));
+  AnimationInterface::SetNodeDescription (wifiApNode, "AP");
+  AnimationInterface::SetNodeDescription (wifiStaNodes, "STA");
+  AnimationInterface::SetNodeDescription (csmaNodes, "CSMA");
   AnimationInterface anim ("wireless-animation.xml");
   anim.EnablePacketMetadata (true);
   Simulator::Run ();

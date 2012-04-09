@@ -26,6 +26,7 @@
 #include <map>
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"
+#include "ns3/node-container.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/node-list.h"
@@ -229,6 +230,22 @@ public:
   static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
 
   /**
+   * \brief Helper function to set a brief description for a given node
+   * \param n Ptr to the node
+   * \param descr A string to briefly describe the node
+   *
+   */
+  static void SetNodeDescription (Ptr <Node> n, std::string descr);
+
+  /**
+   * \brief Helper function to set a brief description for nodes in a Node Container
+   * \param nc NodeContainer containing the nodes
+   * \param descr A string to briefly describe the nodes
+   *
+   */
+  static void SetNodeDescription (NodeContainer nc, std::string descr);
+
+  /**
    * \brief Is AnimationInterface started
    * \returns true if AnimationInterface was started
    *
@@ -250,6 +267,8 @@ public:
    *        if false disables writing the packet metadata
    */
   void EnablePacketMetadata (bool enable);
+
+
 
 private:
 #ifndef WIN32
@@ -372,6 +391,8 @@ private:
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
+
+  static std::map <uint32_t, std::string> nodeDescriptions;
 
   // XML helpers
   std::string GetPreamble (void);

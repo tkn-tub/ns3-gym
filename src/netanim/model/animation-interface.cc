@@ -54,10 +54,13 @@
 
 NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 
-#define PURGE_INTERVAL 5
-static bool initialized = false;
+
 
 namespace ns3 {
+
+#define PURGE_INTERVAL 5
+static bool initialized = false;
+std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
 
 AnimationInterface::AnimationInterface ()
   : m_fHandle (STDOUT_FILENO), m_xml (false), mobilitypollinterval (Seconds(0.25)),
@@ -249,7 +252,7 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
     }
   else
    {
-     NS_LOG_UNCOND ( "WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
+     NS_LOG_UNCOND ( "AnimationInterface WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
      Vector deterministicVector (100,100,0);
      Vector randomVector (UniformVariable (0, topo_maxX-topo_minX).GetValue (), UniformVariable (0, topo_maxY-topo_minY).GetValue (), 0);
      if (randomPosition)
@@ -1025,6 +1028,7 @@ void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packe
       NS_LOG_WARN ("CsmaPhyTxEndTrace: unknown Uid"); 
       AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
       AddPendingCsmaPacket (AnimUid, pktinfo);
+      NS_LOG_WARN ("Unknown Uid, but adding Csma Packet anyway");
     }
   // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
   AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
@@ -1251,6 +1255,22 @@ void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, 
 
 }
 
+void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
+{
+  NS_ASSERT (n);
+  nodeDescriptions[n->GetId ()] = descr;
+}
+
+void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr)
+{
+  for (uint32_t i = 0; i < nc.GetN (); ++i)
+    {
+      Ptr <Node> n = nc.Get (i);
+      NS_ASSERT (n);
+      nodeDescriptions[n->GetId ()] = descr;
+    }
+}
+
 
 // XML Private Helpers
 
@@ -1273,8 +1293,16 @@ std::string AnimationInterface::GetXMLOpen_topology (double minX,double minY,dou
 std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY)
 {
   std::ostringstream oss;
-  oss <<"<node lp = \"" << lp << "\" id = \"" << id << "\"" << " locX = \"" 
-      << locX << "\" " << "locY = \"" << locY << "\" />\n";
+  oss <<"<node id = \"" << id << "\""; 
+  if (nodeDescriptions.find (id) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[id] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+  oss << " locX = \"" << locX << "\" " << "locY = \"" << locY << "\" />\n";
   return oss.str ();
 }
 std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId)
@@ -1306,7 +1334,7 @@ std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fro
   oss << "<wpacket fromId=\"" << fromId
       << "\" fbTx=\"" << fbTx
       << "\" lbTx=\"" << lbTx
-      << "\" range= \"" << range << "\">" << std::endl;
+      << "\" range=\"" << range << "\">" << std::endl;
   return oss.str ();
 
 }
