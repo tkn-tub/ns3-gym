@@ -23,7 +23,7 @@
 #include <ns3/double.h>
 #include <ns3/cosine-antenna-model.h>
 #include <ns3/simulator.h>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <sstream>

@@ -20,7 +20,7 @@
 
 
 #include <ns3/log.h>
-#include <math.h>
+#include <cmath>
 #include "antenna-model.h"
 
 

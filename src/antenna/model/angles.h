@@ -49,7 +49,11 @@ double RadiansToDegrees (double radians);
  * 
  * struct holding the azimuth and inclination angles of spherical
  * coordinates. The notation is the one used in  "Antenna Theory - Analysis
- * and Design", C.A. Balanis, Wiley, 2nd Ed., section 2.2 "Radiation pattern".
+ * and Design", C.A. Balanis, Wiley, 2nd Ed., section 2.2 "Radiation
+ * pattern".
+ * This notation corresponds to the standard spherical coordinates, with phi
+ * measured counterclockwise in the x-y plane off the x-axis, and
+ * theta measured off the z-axis. 
  * 
  *          ^
  *        z | 
@@ -67,7 +71,7 @@ double RadiansToDegrees (double radians);
 struct Angles
 {
   /** 
-   * default constructor, will inizialize phi and theta to zero
+   * default constructor, will initialize phi and theta to zero
    * 
    */
   Angles ();

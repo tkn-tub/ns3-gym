@@ -21,7 +21,7 @@
 
 #include <ns3/log.h>
 #include <ns3/double.h>
-#include <math.h>
+#include <cmath>
 
 #include "antenna-model.h"
 #include "parabolic-antenna-model.h"
