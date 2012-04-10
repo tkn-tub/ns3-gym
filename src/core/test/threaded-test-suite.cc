@@ -232,7 +232,9 @@ public:
     : TestSuite ("threaded-simulator")
   {
     std::string simulatorTypes[] = {
+#ifdef HAVE_RT
       "ns3::RealtimeSimulatorImpl",
+#endif
       "ns3::DefaultSimulatorImpl"
     };
     std::string schedulerTypes[] = {
