@@ -124,7 +124,16 @@ struct Angles
  * \return a reference to the output stream
  */
 std::ostream& operator<< ( std::ostream& os, const Angles& a);
-
+  
+/** 
+ * initialize a struct Angles from input
+ * 
+ * \param is the input stream
+ * \param a the Angles struct
+ * 
+ * \return a reference to the input stream
+ */
+std::istream &operator >> (std::istream &is, Angles &a);
 
 } // namespace ns3
 

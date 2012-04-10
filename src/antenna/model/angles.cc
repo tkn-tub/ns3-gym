@@ -46,6 +46,17 @@ std::ostream& operator<< (std::ostream& os, const Angles& a)
   return os;
 }
 
+std::istream &operator >> (std::istream &is, Angles &a)
+{
+  char c;
+  is >> a.phi >> c >> a.theta;
+  if (c != ':')
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  return is;
+}
+
   
 Angles::Angles ()
   : phi (0),
