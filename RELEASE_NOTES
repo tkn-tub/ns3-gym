@@ -30,6 +30,9 @@ New user-visible features
 - New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
   Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects",
   i.e., enable/disable the ICMPv6 Redirect sending.
+- An antenna module is now included, which includes different
+  radiation pattern models. See the corresponding new section of the
+  ns-3 models library documentation for details. 
    
 Bugs fixed
 ----------

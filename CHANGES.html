@@ -46,6 +46,12 @@ us a note on ns-developers mailing list.</p>
 <hr>
 <h1>Changes from ns-3.13 to ns-3-dev</h1>
 
+<h2>New API:</h2>
+<ul>
+<li>The new class AntennaModel provides an API for modeling the radiation pattern of antennas.
+</li>
+</ul>
+
 <h2>Changes to existing API:</h2>
 <ul>
 <li> The Ipv6RawSocketImpl "IcmpFilter" attribute has been removed. Six 
@@ -82,6 +88,10 @@ intervals or time. Exactly like Ipv4RoutingHelper do.
 New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
 Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects", 
 i.e., enable/disable the ICMPv6 Redirect sending.
+</li>
+<li> The SpectrumPhy abstract class now has a new method
+<pre>virtual Ptr&#60;AntennaModel&#62; GetRxAntenna () = 0;</pre>
+that all derived classes need to implement in order to integrate properly with the newly added antenna model. In addition, a new member variable "Ptr&#60;AntennaModel&#62; txAntenna" has been added to SpectrumSignalParameters in order to allow derived SpectrumPhy classes to provide information about the antenna model used for the transmission of a waveform.
 </li>
 </ul>
 
