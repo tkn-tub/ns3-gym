@@ -17,6 +17,10 @@ SOURCES = \
 	source/internet-models.rst \
 	source/network.rst \
 	source/emulation-overview.rst \
+	$(SRC)/antenna/doc/source/antenna.rst \
+	$(SRC)/antenna/doc/source/antenna-design.rst \
+	$(SRC)/antenna/doc/source/antenna-user.rst \
+	$(SRC)/antenna/doc/source/antenna-testing.rst \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
@@ -59,6 +63,7 @@ SOURCES = \
 SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
+	$(SRC)/antenna/doc/source/figures/antenna-coordinate-system.dia	\
 	$(SRC)/network/doc/packet.dia \
 	$(SRC)/network/doc/node.dia \
 	$(SRC)/network/doc/buffer.dia \
@@ -87,6 +92,7 @@ IMAGES_EPS = \
 	$(FIGURES)/node.eps \
 	$(FIGURES)/buffer.eps \
 	$(FIGURES)/sockets-overview.eps \
+	$(FIGURES)/antenna-coordinate-system.eps \
 	$(FIGURES)/internet-node-send.eps \
 	$(FIGURES)/internet-node-recv.eps \
 	$(FIGURES)/routing.eps \
@@ -99,6 +105,7 @@ IMAGES_EPS = \
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
+$(FIGURES)/antenna-coordinate-system.pdf_width = 7cm	
 $(FIGURES)/node.pdf_width = 5in
 $(FIGURES)/packet.pdf_width = 4in
 $(FIGURES)/buffer.pdf_width = 15cm

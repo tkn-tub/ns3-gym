@@ -55,7 +55,7 @@ values.
 
 
 ParabolicAntennaModel
-------------------
+---------------------
 
 The unit test suite ``parabolic-antenna-model`` checks that the
 ``ParabolicAntennaModel`` class works properly. Several test cases are

@@ -105,8 +105,7 @@ antenna.
 
 
 
-References
-++++++++++
+
 
 .. [Balanis] C.A. Balanis, "Antenna Theory - Analysis and Design",  Wiley, 2nd Ed.
 
