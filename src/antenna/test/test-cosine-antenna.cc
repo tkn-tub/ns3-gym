@@ -165,7 +165,7 @@ CosineAntennaModelTestSuite::CosineAntennaModelTestSuite ()
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians (54.677),  0),       150,        -150,        0,           -20,     EQUAL));
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians   (30),    0),       150,        -150,        0,           -20,  LESSTHAN));
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians   (20),    0),       150,        -150,        0,           -20,  LESSTHAN));
-  
+
   // test maxGain
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians    (0),    0),        60,           0,       10,            10,     EQUAL));
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians   (30),    0),        60,           0,       22,            19,     EQUAL));
@@ -200,7 +200,7 @@ CosineAntennaModelTestSuite::CosineAntennaModelTestSuite ()
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians (-150),  9.5),       100,        -150,        2,             2,     EQUAL));
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians (-100),  9.5),       100,        -150,        4,             1,     EQUAL));
   AddTestCase (new CosineAntennaModelTestCase (Angles (DegreesToRadians (-200),  9.5),       100,        -150,       -1,            -4,     EQUAL));
-                   
+
 };
 
 static CosineAntennaModelTestSuite staticCosineAntennaModelTestSuiteInstance;

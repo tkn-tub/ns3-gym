@@ -57,7 +57,7 @@ std::istream &operator >> (std::istream &is, Angles &a)
   return is;
 }
 
-  
+
 Angles::Angles ()
   : phi (0),
     theta (0)

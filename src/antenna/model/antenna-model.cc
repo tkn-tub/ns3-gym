@@ -34,7 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (AntennaModel);
 AntennaModel::AntennaModel ()
 {
 }
-  
+
 AntennaModel::~AntennaModel ()
 {
 }
@@ -44,11 +44,11 @@ AntennaModel::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::AntennaModel")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 
-  
-  
+
+
 }
 

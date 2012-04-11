@@ -58,8 +58,8 @@ double RadiansToDegrees (double radians);
  *          ^
  *        z | 
  *          |_ theta
- *          | \   
- *          | /|  
+ *          | \
+ *          | /|
  *          |/ |   y
  *          +-------->
  *         /  \|
@@ -128,7 +128,7 @@ struct Angles
  * \return a reference to the output stream
  */
 std::ostream& operator<< ( std::ostream& os, const Angles& a);
-  
+
 /** 
  * initialize a struct Angles from input
  * 

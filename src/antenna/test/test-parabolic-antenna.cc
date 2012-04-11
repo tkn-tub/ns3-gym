@@ -154,7 +154,7 @@ ParabolicAntennaModelTestSuite::ParabolicAntennaModelTestSuite ()
   AddTestCase (new ParabolicAntennaModelTestCase (Angles (DegreesToRadians   (60),    0),       80,        -150,       10,           -10,     EQUAL));
   AddTestCase (new ParabolicAntennaModelTestCase (Angles (DegreesToRadians   (90),    0),       80,        -150,       10,           -10,     EQUAL));
   AddTestCase (new ParabolicAntennaModelTestCase (Angles (DegreesToRadians   (30),    0),       80,        -150,       10,           -10,     EQUAL));
-  
+
 
 
   // test elevation angle
@@ -179,7 +179,7 @@ ParabolicAntennaModelTestSuite::ParabolicAntennaModelTestSuite ()
   AddTestCase (new ParabolicAntennaModelTestCase (Angles (DegreesToRadians (-150),  9.5),       100,        -150,       30,             0,     EQUAL));
   AddTestCase (new ParabolicAntennaModelTestCase (Angles (DegreesToRadians (-100),  9.5),       100,        -150,       30,            -3,     EQUAL));
   AddTestCase (new ParabolicAntennaModelTestCase (Angles (DegreesToRadians (-200),  9.5),       100,        -150,       30,            -3,     EQUAL));
-                   
+
 };
 
 static ParabolicAntennaModelTestSuite staticParabolicAntennaModelTestSuiteInstance;
