@@ -49,7 +49,11 @@ double RadiansToDegrees (double radians);
  * 
  * struct holding the azimuth and inclination angles of spherical
  * coordinates. The notation is the one used in  "Antenna Theory - Analysis
- * and Design", C.A. Balanis, Wiley, 2nd Ed., section 2.2 "Radiation pattern".
+ * and Design", C.A. Balanis, Wiley, 2nd Ed., section 2.2 "Radiation
+ * pattern".
+ * This notation corresponds to the standard spherical coordinates, with phi
+ * measured counterclockwise in the x-y plane off the x-axis, and
+ * theta measured off the z-axis. 
  * 
  *          ^
  *        z | 
@@ -67,7 +71,7 @@ double RadiansToDegrees (double radians);
 struct Angles
 {
   /** 
-   * default constructor, will inizialize phi and theta to zero
+   * default constructor, will initialize phi and theta to zero
    * 
    */
   Angles ();
@@ -124,7 +128,16 @@ struct Angles
  * \return a reference to the output stream
  */
 std::ostream& operator<< ( std::ostream& os, const Angles& a);
-
+  
+/** 
+ * initialize a struct Angles from input
+ * 
+ * \param is the input stream
+ * \param a the Angles struct
+ * 
+ * \return a reference to the input stream
+ */
+std::istream &operator >> (std::istream &is, Angles &a);
 
 } // namespace ns3
 

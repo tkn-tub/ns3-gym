@@ -34,10 +34,10 @@ namespace ns3 {
  * 
  * This class provides an interface for the definition of antenna
  * radiation pattern models. This interface is based on the use of
- * spherical coordinates, in particolar of the azimuth and inclination
+ * spherical coordinates, in particular of the azimuth and inclination
  * angles. This choice is the one proposed "Antenna Theory - Analysis
  * and Design", C.A. Balanis, Wiley, 2nd Ed., see in particular
- *  section 2.2 "Radiation pattern".
+ * section 2.2 "Radiation pattern".
  * 
  *
  */
@@ -59,7 +59,10 @@ public:
    * \param the spherical angles at which the radiation pattern should
    * be evaluated
    * 
-   * \return the gain in dB of the antenna radiation pattern at the specified angles
+   * \return the power gain in dBi of the antenna radiation pattern at
+   * the specified angles; dBi means dB with respect to the gain of an
+   * isotropic radiator. Since a power gain is used, the efficiency of
+   * the antenna is expected to be included in the gain value. 
    */
   virtual double GetGainDb (Angles a) = 0;
 
