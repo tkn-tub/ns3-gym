@@ -24,7 +24,7 @@
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
 #include "ns3/timer.h"
-#include "ipv4-l4-protocol.h"
+#include "ip-l4-protocol.h"
 
 struct INetStack;
 
@@ -43,7 +43,7 @@ class NscInterfaceImpl;
  * 
  * \brief Nsc wrapper glue, to interface with the Ipv4 protocol underneath.
  */
-class NscTcpL4Protocol : public Ipv4L4Protocol {
+class NscTcpL4Protocol : public IpL4Protocol {
 public:
   static const uint8_t PROT_NUMBER;
   static TypeId GetTypeId (void);
@@ -80,14 +80,20 @@ public:
    * \param header IPv4 Header information
    * \param incomingInterface The Ipv4Interface it was received on
    */
-  virtual Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+  virtual IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                             Ipv4Header const &header,
                                             Ptr<Ipv4Interface> incomingInterface);
+  virtual IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                                 Ipv6Address &src,
+                                                 Ipv6Address &dst,
+                                                 Ptr<Ipv6Interface> interface);
 
-  // From Ipv4L4Protocol
-  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
-  // From Ipv4L4Protocol
-  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+  // From IpL4Protocol
+  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
+  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  // From IpL4Protocol
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
@@ -123,7 +129,7 @@ private:
   std::string m_nscLibrary;
   Timer m_softTimer;
   std::vector<Ptr<NscTcpSocketImpl> > m_sockets;
-  Ipv4L4Protocol::DownTargetCallback m_downTarget;
+  IpL4Protocol::DownTargetCallback m_downTarget;
 };
 
 } // namespace ns3

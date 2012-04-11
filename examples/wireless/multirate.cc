@@ -89,7 +89,6 @@ public:
 
 private:
 
-  Vector GetPosition (Ptr<Node> node);
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
   NodeContainer GenerateNeighbors (NodeContainer c, uint32_t senderId);
 
@@ -164,7 +163,7 @@ void
 Experiment::ReceivePacket (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
-  while (packet = socket->Recv ())
+  while ((packet = socket->Recv ()))
     {
       bytesTotal += packet->GetSize ();
     }
@@ -179,13 +178,6 @@ Experiment::CheckThroughput ()
 
   //check throughput every 1/10 of a second 
   Simulator::Schedule (Seconds (0.1), &Experiment::CheckThroughput, this);
-}
-
-Vector
-Experiment::GetPosition (Ptr<Node> node)
-{
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
-  return mobility->GetPosition ();
 }
 
 /**
@@ -309,10 +301,16 @@ Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
     }
 }
 
-void
-Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, double stop)
+Vector
+GetPosition (Ptr<Node> node)
 {
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
+  return mobility->GetPosition ();
+}
 
+std::string
+PrintPosition (Ptr<Node> client, Ptr<Node> server)
+{
   Vector serverPos = GetPosition (server);
   Vector clientPos = GetPosition (client);
 
@@ -325,20 +323,27 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
   Ipv4Address ipv4AddrServer = iaddrServer.GetLocal ();
   Ipv4Address ipv4AddrClient = iaddrClient.GetLocal ();
 
-  NS_LOG_DEBUG ("Set up Server Device " <<  (server->GetDevice (0))->GetAddress ()
-                                        << " with ip " << ipv4AddrServer
-                                        << " position (" << serverPos.x << "," << serverPos.y << "," << serverPos.z << ")");
+  std::ostringstream oss;
+  oss << "Set up Server Device " <<  (server->GetDevice (0))->GetAddress ()
+                                 << " with ip " << ipv4AddrServer
+                                 << " position (" << serverPos.x << "," << serverPos.y << "," << serverPos.z << ")";
 
-  NS_LOG_DEBUG ("Set up Client Device " <<  (client->GetDevice (0))->GetAddress ()
-                                        << " with ip " << ipv4AddrClient
-                                        << " position (" << clientPos.x << "," << clientPos.y << "," << clientPos.z << ")"
-                                        << "\n");
+  oss << "Set up Client Device " <<  (client->GetDevice (0))->GetAddress ()
+                                 << " with ip " << ipv4AddrClient
+                                 << " position (" << clientPos.x << "," << clientPos.y << "," << clientPos.z << ")"
+                                 << "\n";
+  return oss.str ();
+}
 
-  //cast serverPos,clientPos,iaddrClient to void, to suppress variable set but not
-  //used compiler warning in optimized builds
-  (void) serverPos;
-  (void) clientPos;
-  (void) ipv4AddrClient;
+void
+Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, double stop)
+{
+  Ptr<Ipv4> ipv4Server = server->GetObject<Ipv4> ();
+
+  Ipv4InterfaceAddress iaddrServer = ipv4Server->GetAddress (1,0);
+  Ipv4Address ipv4AddrServer = iaddrServer.GetLocal ();
+
+  NS_LOG_DEBUG (PrintPosition (client, server));
 
   // Equipping the source  node with OnOff Application used for sending 
   OnOffHelper onoff ("ns3::UdpSocketFactory", Address (InetSocketAddress (Ipv4Address ("10.0.0.1"), port)));

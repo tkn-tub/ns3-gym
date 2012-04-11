@@ -1,11 +1,27 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
+import wutils
+from waflib import Options
+
+
+def options(opt):
+    opt.add_option('--disable-gtk',
+                   help=('Disable GTK+ support'),
+                   dest='disable_gtk', default=False, action="store_true")
+
 def configure(conf):
-    have_gtk = conf.pkg_check_modules('GTK_CONFIG_STORE', 'gtk+-2.0 >= 2.12', mandatory=False)
-    conf.env['ENABLE_GTK_CONFIG_STORE'] = have_gtk
-    conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
-                                 conf.env['ENABLE_GTK_CONFIG_STORE'],
-                                 "library 'gtk+-2.0 >= 2.12' not found")
+    if Options.options.disable_gtk:
+        conf.env['ENABLE_GTK_CONFIG_STORE'] = False
+        conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
+                                     conf.env['ENABLE_GTK_CONFIG_STORE'],
+                                     "--disable-gtk option given")
+    else:
+        have_gtk = conf.pkg_check_modules('GTK_CONFIG_STORE', 'gtk+-2.0 >= 2.12', mandatory=False)
+        conf.env['ENABLE_GTK_CONFIG_STORE'] = have_gtk
+        conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
+                                     conf.env['ENABLE_GTK_CONFIG_STORE'],
+                                     "library 'gtk+-2.0 >= 2.12' not found")
+
     have_libxml2 = conf.pkg_check_modules('LIBXML2', 'libxml-2.0 >= 2.6', mandatory=False)
     if have_libxml2:
         conf.define('HAVE_LIBXML2', 1)
@@ -18,7 +34,7 @@ def configure(conf):
 
 
 def build(bld):
-    bld.install_files('${PREFIX}/include/ns3', '../../ns3/config-store-config.h')
+    bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/config-store-config.h')
 
     module = bld.create_ns3_module('config-store', ['core', 'network'])
     module.source = [

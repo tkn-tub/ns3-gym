@@ -34,6 +34,7 @@
 namespace ns3 {
 
 class Ipv4EndPoint;
+class Ipv6EndPoint;
 class Node;
 class Packet;
 class UdpL4Protocol;
@@ -63,6 +64,7 @@ public:
   virtual enum SocketType GetSocketType (void) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
+  virtual int Bind6 (void);
   virtual int Bind (const Address &address);
   virtual int Close (void);
   virtual int ShutdownSend (void);
@@ -104,18 +106,25 @@ private:
   int FinishBind (void);
   void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port, 
                   Ptr<Ipv4Interface> incomingInterface);
+  void ForwardUp6 (Ptr<Packet> p, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
   void Destroy (void);
+  void Destroy6 (void);
   int DoSend (Ptr<Packet> p);
   int DoSendTo (Ptr<Packet> p, const Address &daddr);
   int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);
+  int DoSendTo (Ptr<Packet> p, Ipv6Address daddr, uint16_t dport);
   void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
                     uint8_t icmpType, uint8_t icmpCode,
                     uint32_t icmpInfo);
+  void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, 
+                     uint8_t icmpType, uint8_t icmpCode,
+                     uint32_t icmpInfo);
 
   Ipv4EndPoint *m_endPoint;
+  Ipv6EndPoint *m_endPoint6;
   Ptr<Node> m_node;
   Ptr<UdpL4Protocol> m_udp;
-  Ipv4Address m_defaultAddress;
+  Address m_defaultAddress;
   uint16_t m_defaultPort;
   TracedCallback<Ptr<const Packet> > m_dropTrace;
 
@@ -136,6 +145,7 @@ private:
   bool m_ipMulticastLoop;
   bool m_mtuDiscover;
   Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
+  Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6;
 };
 
 } // namespace ns3

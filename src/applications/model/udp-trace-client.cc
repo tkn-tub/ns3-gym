@@ -22,6 +22,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
@@ -59,10 +60,10 @@ UdpTraceClient::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<UdpTraceClient> ()
     .AddAttribute ("RemoteAddress",
-                   "The destination Ipv4Address of the outbound packets",
-                   Ipv4AddressValue (),
-                   MakeIpv4AddressAccessor (&UdpTraceClient::m_peerAddress),
-                   MakeIpv4AddressChecker ())
+                   "The destination Address of the outbound packets",
+                   AddressValue (),
+                   MakeAddressAccessor (&UdpTraceClient::m_peerAddress),
+                   MakeAddressChecker ())
     .AddAttribute ("RemotePort",
                    "The destination port of the outbound packets",
                    UintegerValue (100),
@@ -116,10 +117,26 @@ UdpTraceClient::~UdpTraceClient ()
 }
 
 void
-UdpTraceClient::SetRemote (Ipv4Address ip, uint16_t port)
+UdpTraceClient::SetRemote (Address ip, uint16_t port)
 {
   m_entries.clear ();
   m_peerAddress = ip;
+  m_peerPort = port;
+}
+
+void
+UdpTraceClient::SetRemote (Ipv4Address ip, uint16_t port)
+{
+  m_entries.clear ();
+  m_peerAddress = Address (ip);
+  m_peerPort = port;
+}
+
+void
+UdpTraceClient::SetRemote (Ipv6Address ip, uint16_t port)
+{
+  m_entries.clear ();
+  m_peerAddress = Address (ip);
   m_peerPort = port;
 }
 
@@ -223,8 +240,16 @@ UdpTraceClient::StartApplication (void)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode (), tid);
-      m_socket->Bind ();
-      m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
+      if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
+        {
+          m_socket->Bind ();
+          m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom (m_peerAddress), m_peerPort));
+        }
+      else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
+        {
+          m_socket->Bind6 ();
+          m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_peerPort));
+        }
     }
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   m_sendEvent = Simulator::Schedule (Seconds (0.0), &UdpTraceClient::Send, this);
@@ -255,16 +280,31 @@ UdpTraceClient::SendPacket (uint32_t size)
   SeqTsHeader seqTs;
   seqTs.SetSeq (m_sent);
   p->AddHeader (seqTs);
+
+  std::stringstream addressString;
+  if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
+    {
+      addressString << Ipv4Address::ConvertFrom (m_peerAddress);
+    }
+  else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
+    {
+      addressString << Ipv6Address::ConvertFrom (m_peerAddress);
+    }
+  else
+    {
+      addressString << m_peerAddress;
+    }
+
   if ((m_socket->Send (p)) >= 0)
     {
       ++m_sent;
       NS_LOG_INFO ("Sent " << size << " bytes to "
-                           << m_peerAddress);
+                           << addressString.str ());
     }
   else
     {
       NS_LOG_INFO ("Error while sending " << size << " bytes to "
-                                          << m_peerAddress);
+                                          << addressString.str ());
     }
 }
 

@@ -185,10 +185,10 @@ private:
 
   Ptr<RrcEntity> m_rrcEntity;
 
-  TracedCallback<Ptr<const Packet> > m_macTxTrace;
-  TracedCallback<Ptr<const Packet> > m_macTxDropTrace;
-  TracedCallback<Ptr<const Packet> > m_macPromiscRxTrace;
-  TracedCallback<Ptr<const Packet> > m_macRxTrace;
+  TracedCallback<Ptr<const Packet>, const Mac48Address&> m_macTxTrace;
+  // TracedCallback<Ptr<const Packet>, const Mac48Address&> m_macTxDropTrace;
+  // TracedCallback<Ptr<const Packet>, const Mac48Address&> m_macPromiscRxTrace;
+  TracedCallback<Ptr<const Packet>, const Mac48Address&> m_macRxTrace;
 
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;

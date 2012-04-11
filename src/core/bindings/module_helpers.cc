@@ -1,5 +1,6 @@
 #include "ns3module.h"
 #include "ns3/ref-count-base.h"
+#include <unistd.h>
 
 
 namespace {
@@ -10,14 +11,34 @@ class PythonEventImpl : public ns3::EventImpl
 private:
   PyObject *m_callback;
   PyObject *m_args;
+
 public:
-  PythonEventImpl (PyObject *callback, PyObject *args)
+
+  PythonEventImpl (PyObject *callback, PyObject *args, PyObject *py_context=NULL)
   {
     m_callback = callback;
     Py_INCREF (m_callback);
-    m_args = args;
-    Py_INCREF (m_args);
+    
+    if (py_context == NULL)
+      {
+        m_args = args;
+        Py_INCREF (m_args);
+      }
+    else 
+      {
+        Py_ssize_t arglen = PyTuple_GET_SIZE (args);
+        m_args = PyTuple_New (arglen + 1);
+        PyTuple_SET_ITEM (m_args, 0, py_context);
+        Py_INCREF (py_context);
+        for (Py_ssize_t i = 0; i < arglen; ++i) 
+          {
+            PyObject *arg = PyTuple_GET_ITEM (args, i);
+            Py_INCREF (arg);
+            PyTuple_SET_ITEM (m_args, 1 + i, arg);
+          }
+      }
   }
+
   virtual ~PythonEventImpl ()
   {
     PyGILState_STATE __py_gil_state;
@@ -51,7 +72,6 @@ public:
 };
 
 } // closes: namespace {
-
 
 PyObject *
 _wrap_Simulator_Schedule (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
@@ -124,7 +144,7 @@ _wrap_Simulator_ScheduleNow (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject 
   py_callback = PyTuple_GET_ITEM (args, 0);
 
   if (!PyCallable_Check (py_callback)) {
-      PyErr_SetString (PyExc_TypeError, "Parameter 2 should be callable");
+      PyErr_SetString (PyExc_TypeError, "Parameter 1 should be callable");
       goto error;
     }
   user_args = PyTuple_GetSlice (args, 1, PyTuple_GET_SIZE (args));
@@ -143,6 +163,60 @@ error:
   return NULL;
 }
 
+PyObject *
+_wrap_Simulator_ScheduleWithContext (PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyObject *kwargs,
+                                     PyObject **return_exception)
+{
+    PyObject *exc_type, *traceback;
+    PyObject *py_obj_context;
+    uint32_t context;
+    PyObject *py_time;
+    PyObject *py_callback;
+    PyObject *user_args;
+    PythonEventImpl *py_event_impl;
+
+    if (kwargs && PyObject_Length(kwargs) > 0) {
+        PyErr_SetString(PyExc_TypeError, "keyword arguments not supported");
+        goto error;
+    }
+
+    if (PyTuple_GET_SIZE(args) < 3 ) {
+        PyErr_SetString(PyExc_TypeError, "ns3.Simulator.ScheduleWithContext needs at least 3 arguments");
+        goto error;
+    }
+
+    py_obj_context = PyTuple_GET_ITEM(args, 0);
+    py_time = PyTuple_GET_ITEM(args, 1);
+    py_callback = PyTuple_GET_ITEM(args, 2);
+
+    context = PyInt_AsUnsignedLongMask(py_obj_context);
+    if (PyErr_Occurred()) {
+        goto error;
+    }
+    if (!PyObject_IsInstance(py_time, (PyObject*) &PyNs3Time_Type)) {
+        PyErr_SetString(PyExc_TypeError, "Parameter 2 should be a ns3.Time instance");
+        goto error;
+    }
+    if (!PyCallable_Check(py_callback)) {
+        PyErr_SetString(PyExc_TypeError, "Parameter 3 should be callable");
+        goto error;
+    }
+
+    user_args = PyTuple_GetSlice(args, 3, PyTuple_GET_SIZE(args));
+    py_event_impl = new PythonEventImpl (py_callback, user_args, py_obj_context);
+    Py_DECREF(user_args);
+
+    ns3::Simulator::ScheduleWithContext(context, *((PyNs3Time *) py_time)->obj, py_event_impl);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+
+error:
+    PyErr_Fetch(&exc_type, return_exception, &traceback);
+    Py_XDECREF(exc_type);
+    Py_XDECREF(traceback);
+    return NULL;
+}
 
 PyObject *
 _wrap_Simulator_ScheduleDestroy (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
@@ -275,58 +349,104 @@ _wrap_CommandLine_AddValue (PyNs3CommandLine *self, PyObject *args, PyObject *kw
   return Py_None;
 }
 
+class PythonSimulator
+{
+public:
+  PythonSimulator();
+  void Run(void);
+  bool IsFailed(void) const;
+
+private:
+  void DoCheckSignals(void);
+  void DoRun(void);
+  volatile bool m_stopped;
+  bool m_failed;
+  volatile bool m_isCheckPending;
+  ns3::Ptr<ns3::SystemThread> m_thread;
+  PyThreadState *m_py_thread_state;
+};
+
+PythonSimulator::PythonSimulator()
+  : m_stopped(false),
+    m_failed(false),
+    m_isCheckPending(false)
+{
+  m_thread = ns3::Create<ns3::SystemThread>(ns3::MakeCallback(&PythonSimulator::DoRun, this));
+  m_py_thread_state = NULL;
+}
+
+void
+PythonSimulator::Run(void)
+{
+  m_failed = false;
+  m_stopped = false;
+  m_isCheckPending = false;
+  m_thread->Start();
+  if (PyEval_ThreadsInitialized ())
+    {
+      m_py_thread_state = PyEval_SaveThread ();
+    }
+  ns3::Simulator::Run ();
+  m_stopped = true;
+  m_thread->Join();
+  if (m_py_thread_state)
+    {
+      PyEval_RestoreThread (m_py_thread_state);
+    }
+}
+
+bool 
+PythonSimulator::IsFailed(void) const
+{
+  return m_failed;
+}
+
+void
+PythonSimulator::DoCheckSignals(void)
+{
+  if (m_py_thread_state)
+    {
+      PyEval_RestoreThread (m_py_thread_state);
+    }
+  PyErr_CheckSignals ();
+  if (PyErr_Occurred ())
+    {
+      m_failed = true;
+      ns3::Simulator::Stop();
+    }
+  if (PyEval_ThreadsInitialized ())
+    {
+      m_py_thread_state = PyEval_SaveThread ();
+    }
+
+  m_isCheckPending = false;
+}
+
+void 
+PythonSimulator::DoRun(void)
+{
+  while (!m_stopped)
+    {
+      if (!m_isCheckPending)
+        {
+          m_isCheckPending = true;
+          ns3::Simulator::ScheduleWithContext(0xffffffff, ns3::Seconds(0.0),
+					  &PythonSimulator::DoCheckSignals, this);
+        }
+      usleep(200000);
+    }
+}
 
 PyObject *
 _wrap_Simulator_Run (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
                      PyObject **return_exception)
 {
-  const char *keywords[] = { "signal_check_frequency", NULL};
-  int signal_check_frequency;
-
-  ns3::Ptr<ns3::DefaultSimulatorImpl> defaultSim =
-    ns3::DynamicCast<ns3::DefaultSimulatorImpl> (ns3::Simulator::GetImplementation ());
-  if (defaultSim) {
-      signal_check_frequency = 100;
-    } else {
-      signal_check_frequency = -1;
-    }
-
-  if (!PyArg_ParseTupleAndKeywords (args, kwargs, (char *) "|i", (char **) keywords, &signal_check_frequency)) {
-      PyObject *exc_type, *traceback;
-      PyErr_Fetch (&exc_type, return_exception, &traceback);
-      Py_XDECREF (exc_type);
-      Py_XDECREF (traceback);
-      return NULL;
-    }
-
-  PyThreadState *py_thread_state = NULL;
-
-  if (signal_check_frequency == -1)
+  PythonSimulator simulator;
+  simulator.Run();
+  if (simulator.IsFailed())
     {
-      if (PyEval_ThreadsInitialized ())
-        py_thread_state = PyEval_SaveThread ();
-      ns3::Simulator::Run ();
-      if (py_thread_state)
-        PyEval_RestoreThread (py_thread_state);
-    } else {
-      while (!ns3::Simulator::IsFinished ())
-        {
-          if (PyEval_ThreadsInitialized ())
-            py_thread_state = PyEval_SaveThread ();
-
-          for (int n = signal_check_frequency; n > 0 && !ns3::Simulator::IsFinished (); --n)
-            {
-              ns3::Simulator::RunOneEvent ();
-            }
-
-          if (py_thread_state)
-            PyEval_RestoreThread (py_thread_state);
-          PyErr_CheckSignals ();
-          if (PyErr_Occurred ())
-            return NULL;
-        }
+      return NULL;
     }
   Py_INCREF (Py_None);
   return Py_None;
 }
-

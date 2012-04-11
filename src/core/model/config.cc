@@ -377,56 +377,69 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
     {
       // this is a normal attribute.
       TypeId tid = root->GetInstanceTypeId ();
-      struct TypeId::AttributeInformation info;
-      if (!tid.LookupAttributeByName (item, &info))
+      bool foundMatch = false;
+      for (uint32_t i = 0; i < tid.GetAttributeN(); i++)
+        {
+          struct TypeId::AttributeInformation info;
+          info = tid.GetAttribute(i);
+          if (info.name != item && item != "*")
+            {
+              continue;
+            }
+          // attempt to cast to a pointer checker.
+          const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
+          if (ptr != 0)
+            {
+              NS_LOG_DEBUG ("GetAttribute(ptr)="<<info.name<<" on path="<<GetResolvedPath ());
+              PointerValue ptr;
+              root->GetAttribute (info.name, ptr);
+              Ptr<Object> object = ptr.Get<Object> ();
+              if (object == 0)
+                {
+                  NS_LOG_ERROR ("Requested object name=\""<<item<<
+                                "\" exists on path=\""<<GetResolvedPath ()<<"\""
+                                " but is null.");
+                  continue;
+                }
+              foundMatch = true;
+              m_workStack.push_back (info.name);
+              DoResolve (pathLeft, object);
+              m_workStack.pop_back ();
+            }
+          // attempt to cast to an object vector.
+          const ObjectPtrContainerChecker *vectorChecker = 
+            dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
+          if (vectorChecker != 0)
+            {
+              NS_LOG_DEBUG ("GetAttribute(vector)="<<info.name<<" on path="<<GetResolvedPath () << pathLeft);
+              foundMatch = true;
+              ObjectPtrContainerValue vector;
+              root->GetAttribute (info.name, vector);
+              m_workStack.push_back (info.name);
+              DoArrayResolve (pathLeft, vector);
+              m_workStack.pop_back ();
+            }
+          // this could be anything else and we don't know what to do with it.
+          // So, we just ignore it.
+        }
+      if (!foundMatch)
         {
           NS_LOG_DEBUG ("Requested item="<<item<<" does not exist on path="<<GetResolvedPath ());
           return;
         }
-      // attempt to cast to a pointer checker.
-      const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-      if (ptr != 0)
-        {
-          NS_LOG_DEBUG ("GetAttribute(ptr)="<<item<<" on path="<<GetResolvedPath ());
-          PointerValue ptr;
-          root->GetAttribute (item, ptr);
-          Ptr<Object> object = ptr.Get<Object> ();
-          if (object == 0)
-            {
-              NS_LOG_ERROR ("Requested object name=\""<<item<<
-                            "\" exists on path=\""<<GetResolvedPath ()<<"\""
-                            " but is null.");
-              return;
-            }
-          m_workStack.push_back (item);
-          DoResolve (pathLeft, object);
-          m_workStack.pop_back ();
-        }
-      // attempt to cast to an object vector.
-      const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
-      if (vectorChecker != 0)
-        {
-          NS_LOG_DEBUG ("GetAttribute(vector)="<<item<<" on path="<<GetResolvedPath ());
-          ObjectPtrContainerValue vector;
-          root->GetAttribute (item, vector);
-          m_workStack.push_back (item);
-          DoArrayResolve (pathLeft, vector);
-          m_workStack.pop_back ();
-        }
-      // this could be anything else and we don't know what to do with it.
-      // So, we just ignore it.
     }
 }
 
 void 
 Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector)
 {
+  NS_LOG_FUNCTION(this << path);
   NS_ASSERT (path != "");
   NS_ASSERT ((path.find ("/")) == 0);
   std::string::size_type next = path.find ("/", 1);
   if (next == std::string::npos)
     {
-      NS_FATAL_ERROR ("vector path includes no index data on path=\""<<path<<"\"");
+      return;
     }
   std::string item = path.substr (1, next-1);
   std::string pathLeft = path.substr (next, path.size ()-next);
@@ -525,7 +538,7 @@ ConfigImpl::LookupMatches (std::string path)
   NS_LOG_FUNCTION (path);
   class LookupMatchesResolver : public Resolver 
   {
-public:
+  public:
     LookupMatchesResolver (std::string path)
       : Resolver (path)
     {}

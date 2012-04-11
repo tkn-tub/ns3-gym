@@ -42,6 +42,13 @@ main (int argc, char *argv[])
   LogComponentEnable ("UdpTraceClient", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpServer", LOG_LEVEL_INFO);
 
+  bool useV6 = false;
+  Address serverAddress;
+
+  CommandLine cmd;
+  cmd.AddValue ("useIpv6", "Use Ipv6", useV6);
+  cmd.Parse (argc, argv);
+
 //
 // Explicitly create the nodes required by the topology (shown above).
 //
@@ -62,13 +69,24 @@ main (int argc, char *argv[])
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1500));
   NetDeviceContainer d = csma.Install (n);
 
-  Ipv4AddressHelper ipv4;
 //
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
   NS_LOG_INFO ("Assign IP Addresses.");
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i = ipv4.Assign (d);
+  if (useV6 == false)
+    {
+      Ipv4AddressHelper ipv4;
+      ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+      Ipv4InterfaceContainer i = ipv4.Assign (d);
+      serverAddress = Address (i.GetAddress (1));
+    }
+  else
+    {
+      Ipv6AddressHelper ipv6;
+      ipv6.NewNetwork ("2001:0000:f00d:cafe::", 64);
+      Ipv6InterfaceContainer i6 = ipv6.Assign (d);
+      serverAddress = Address(i6.GetAddress (1,1));
+    }
 
   NS_LOG_INFO ("Create Applications.");
 //
@@ -85,7 +103,7 @@ main (int argc, char *argv[])
 // node one.
 //
   uint32_t MaxPacketSize = 1472;  // Back off 20 (IP) + 8 (UDP) bytes from MTU
-  UdpTraceClientHelper client (i.GetAddress (1), port,"");
+  UdpTraceClientHelper client (serverAddress, port,"");
   client.SetAttribute ("MaxPacketSize", UintegerValue (MaxPacketSize));
   apps = client.Install (n.Get (0));
   apps.Start (Seconds (2.0));

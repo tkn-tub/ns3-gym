@@ -29,7 +29,7 @@ Ipv4RawSocketImpl::GetTypeId (void)
                    MakeUintegerAccessor (&Ipv4RawSocketImpl::m_protocol),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("IcmpFilter", 
-                   "Any icmp header whose type field matches a bit in this filter is dropped.",
+                   "Any icmp header whose type field matches a bit in this filter is dropped. Type must be less than 32.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&Ipv4RawSocketImpl::m_icmpFilter),
                    MakeUintegerChecker<uint32_t> ())
@@ -114,6 +114,11 @@ Ipv4RawSocketImpl::Bind (void)
   NS_LOG_FUNCTION (this);
   m_src = Ipv4Address::GetAny ();
   return 0;
+}
+int 
+Ipv4RawSocketImpl::Bind6 (void)
+{
+  return (-1);
 }
 int 
 Ipv4RawSocketImpl::GetSockName (Address &address) const
@@ -313,7 +318,7 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
     {
       Ptr<Packet> copy = p->Copy ();
       // Should check via getsockopt ()..
-      if (this->m_recvpktinfo)
+      if (IsRecvPktInfo ())
         {
           Ipv4PacketInfoTag tag;
           copy->RemovePacketTag (tag);
@@ -326,7 +331,7 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
           copy->PeekHeader (icmpHeader);
           uint8_t type = icmpHeader.GetType ();
           if (type < 32 &&
-              ((1 << type) & m_icmpFilter))
+              ((uint32_t(1) << type) & m_icmpFilter))
             {
               // filter out icmp packet.
               return false;

@@ -70,7 +70,7 @@ Layer-3 protocols
 ~~~~~~~~~~~~~~~~~
 
 At the lowest layer, sitting above the NetDevices, are the "layer 3" protocols,
-including IPv4, IPv6 (in the future), and ARP. The class
+including IPv4, IPv6, and ARP. The class
 :cpp:class:`Ipv4L3Protocol` is an implementation class whose public interface is
 typically class :cpp:class:`Ipv4`, but the
 Ipv4L3Protocol public API is also used internally at present.
@@ -127,7 +127,22 @@ paired with an IPv4 representation of such device. In Linux, this class
 main purpose is to provide address-family specific information (addresses) about
 an interface.
 
-The IPv6 implementation follows a similar architecture.
+All the classes have appropriate traces in order to track sent, received and lost packets.
+The users is encouraged to use them so to find out if (and where) a packet is dropped. A
+common mistake is to forget the effects of local queues when sending packets, e.g., the ARP
+queue. This can be particularly puzzling when sending jumbo packets or packet bursts using UDP.
+The ARP cache pending queue is limited (3 datagrams) and IP packets might be fragmented, easily
+overfilling the ARP cache queue size. In those cases it is useful to increase the ARP cache
+pending size to a proper value, e.g.:::
+
+    Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (MAX_BURST_SIZE/L2MTU*3));
+
+The IPv6 implementation follows a similar architecture.  Dual-stacked nodes (one with
+support for both IPv4 and IPv6) will allow an IPv6 socket to receive IPv4 connections
+as a standard dual-stacked system does.  A socket bound and listening to an IPv6 endpoint
+can receive an IPv4 connection and will return the remote address as an IPv4-mapped address.
+Support for the IPV6_V6ONLY socket option does not currently exist.
+
 
 Layer-4 protocols and sockets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -146,8 +161,14 @@ such as the following:::
 
 The above will query the node to get a pointer to its UDP socket factory, will
 create one such socket, and will use the socket with an API similar to the
-C-based sockets API, such as ``Connect ()`` and ``Send ()``.  See the chapter on
-|ns3| sockets for more information.  
+C-based sockets API, such as ``Connect ()`` and ``Send ()``.  The address passed
+to the ``Bind ()``, ``Connect ()``, or ``Send ()`` functions may be a
+:cpp:class:`Ipv4Address`, :cpp:class:`Ipv6Address`, or :cpp:class:`Address`.
+If a :cpp:class:`Address` is passed in and contains anything other than
+a :cpp:class:`Ipv4Address` or :cpp:class:`Ipv6Address`, these functions will
+return an error.  The ``Bind (void)`` and ``Bind6 (void)`` functions bind to
+"0.0.0.0" and "::" respectively.
+See the chapter on |ns3| sockets for more information.  
 
 We have described so far a socket factory (e.g. ``class Udp``) and a socket,
 which may be specialized (e.g., class :cpp:class:`UdpSocket`).  There are a few

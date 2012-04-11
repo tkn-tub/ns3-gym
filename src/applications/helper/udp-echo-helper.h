@@ -25,6 +25,7 @@
 #include "ns3/node-container.h"
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 
 namespace ns3 {
 
@@ -106,7 +107,9 @@ public:
    * \param ip The IP address of the remote udp echo server
    * \param port The port number of the remote udp echo server
    */
+  UdpEchoClientHelper (Address ip, uint16_t port);
   UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
+  UdpEchoClientHelper (Ipv6Address ip, uint16_t port);
 
   /**
    * Record an attribute to be set in each Application after it is is created.

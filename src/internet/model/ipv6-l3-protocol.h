@@ -34,7 +34,7 @@ namespace ns3
 
 class Node;
 class Ipv6Interface;
-class Ipv6L4Protocol;
+class IpL4Protocol;
 class Ipv6Route;
 class Ipv6MulticastRoute;
 class Ipv6RawSocketImpl;
@@ -102,20 +102,20 @@ public:
    * \brief Add an L4 protocol.
    * \param protocol L4 protocol
    */
-  void Insert (Ptr<Ipv6L4Protocol> protocol);
+  void Insert (Ptr<IpL4Protocol> protocol);
 
   /**
    * \brief Remove an L4 protocol.
    * \param protocol L4 protocol to remove
    */
-  void Remove (Ptr<Ipv6L4Protocol> protocol);
+  void Remove (Ptr<IpL4Protocol> protocol);
 
   /**
    * \brief Get L4 protocol by protocol number.
    * \param protocolNumber protocol number
    * \return corresponding Ipv6L4Protocol or 0 if not found
    */
-  Ptr<Ipv6L4Protocol> GetProtocol (int protocolNumber) const;
+  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
 
   /**
    * \brief Create raw IPv6 socket.
@@ -360,7 +360,7 @@ private:
 
   typedef std::list<Ptr<Ipv6Interface> > Ipv6InterfaceList;
   typedef std::list<Ptr<Ipv6RawSocketImpl> > SocketList;
-  typedef std::list<Ptr<Ipv6L4Protocol> > L4List_t;
+  typedef std::list<Ptr<IpL4Protocol> > L4List_t;
 
   typedef std::list< Ptr<Ipv6AutoconfiguredPrefix> > Ipv6AutoconfiguredPrefixList;
   typedef std::list< Ptr<Ipv6AutoconfiguredPrefix> >::iterator Ipv6AutoconfiguredPrefixListI;
@@ -469,6 +469,18 @@ private:
   virtual bool GetIpForward () const;
 
   /**
+   * \brief Set the ICMPv6 Redirect sending state.
+   * \param sendIcmpv6Redirect ICMPv6 Redirect sending enabled or not
+   */
+  virtual void SetSendIcmpv6Redirect (bool sendIcmpv6Redirect);
+
+  /**
+   * \brief Get the ICMPv6 Redirect sending state.
+   * \return ICMPv6 Redirect sending state (enabled or not)
+   */
+  virtual bool GetSendIcmpv6Redirect () const;
+
+  /**
    * \brief Node attached to stack.
    */
   Ptr<Node> m_node;
@@ -512,6 +524,11 @@ private:
    * \brief List of IPv6 prefix received from RA.
    */
   Ipv6AutoconfiguredPrefixList m_prefixes;
+
+  /**
+   * \brief Allow ICMPv6 Redirect sending state
+   */
+  bool m_sendIcmpv6Redirect;
 };
 
 } /* namespace ns3 */

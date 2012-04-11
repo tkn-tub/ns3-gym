@@ -48,7 +48,6 @@ class FakeNetDevice
 public:
   FakeNetDevice ();
   void Doit3 (void);
-  void Doit4 (void);
 };
 
 FakeNetDevice::FakeNetDevice ()
@@ -66,25 +65,11 @@ FakeNetDevice::Doit3 (void)
       //
       // Exercise the realtime relative now path
       //
-      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (MakeEvent (&inserted_function));
+      Simulator::ScheduleWithContext(0xffffffff, Seconds(0.0), MakeEvent (&inserted_function));
       usleep (1000);
     }
 }
 
-void
-FakeNetDevice::Doit4 (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  sleep (1);
-  for (uint32_t i = 0; i < 10000; ++i)
-    {
-      //
-      // Exercise the realtime relative schedule path
-      //
-      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtime (Seconds (0), MakeEvent (&inserted_function));
-      usleep (1000);
-    }
-}
 
 void 
 test (void)
@@ -97,7 +82,7 @@ test (void)
   // 
   // Make sure ScheduleNow works when the system isn't running
   //
-  DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (MakeEvent (&first_function));
+  Simulator::ScheduleWithContext(0xffffffff, Seconds(0.0), MakeEvent (&first_function));
 
   // 
   // drive the progression of m_currentTs at a ten millisecond rate from the main thread
@@ -111,14 +96,9 @@ test (void)
       MakeCallback (&FakeNetDevice::Doit3, &fnd));
   st3->Start ();
 
-  Ptr<SystemThread> st4 = Create<SystemThread> (
-      MakeCallback (&FakeNetDevice::Doit4, &fnd));
-  st4->Start ();
-
   Simulator::Stop (Seconds (15.0));
   Simulator::Run ();
   st3->Join ();
-  st4->Join ();
   Simulator::Destroy ();
 }
 

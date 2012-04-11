@@ -51,7 +51,11 @@ main (int argc, char *argv[])
 // Allow the user to override any of the defaults and the above Bind() at
 // run-time, via command-line arguments
 //
+  bool useV6 = false;
+  Address serverAddress;
+
   CommandLine cmd;
+  cmd.AddValue ("useIpv6", "Use Ipv6", useV6);
   cmd.Parse (argc, argv);
 //
 // Explicitly create the nodes required by the topology (shown above).
@@ -73,13 +77,24 @@ main (int argc, char *argv[])
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
   NetDeviceContainer d = csma.Install (n);
 
-  Ipv4AddressHelper ipv4;
 //
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
   NS_LOG_INFO ("Assign IP Addresses.");
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i = ipv4.Assign (d);
+  if (useV6 == false)
+    {
+      Ipv4AddressHelper ipv4;
+      ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+      Ipv4InterfaceContainer i = ipv4.Assign (d);
+      serverAddress = Address(i.GetAddress (1));
+    }
+  else
+    {
+      Ipv6AddressHelper ipv6;
+      ipv6.NewNetwork ("2001:0000:f00d:cafe::", 64);
+      Ipv6InterfaceContainer i6 = ipv6.Assign (d);
+      serverAddress = Address(i6.GetAddress (1,1));
+    }
 
   NS_LOG_INFO ("Create Applications.");
 //
@@ -98,7 +113,7 @@ main (int argc, char *argv[])
   uint32_t packetSize = 1024;
   uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
-  UdpEchoClientHelper client (i.GetAddress (1), port);
+  UdpEchoClientHelper client (serverAddress, port);
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   client.SetAttribute ("Interval", TimeValue (interPacketInterval));
   client.SetAttribute ("PacketSize", UintegerValue (packetSize));

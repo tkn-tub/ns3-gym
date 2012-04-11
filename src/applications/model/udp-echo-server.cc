@@ -18,9 +18,11 @@
 
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 #include "ns3/address-utils.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
 #include "ns3/simulator.h"
@@ -58,6 +60,7 @@ UdpEchoServer::~UdpEchoServer()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_socket = 0;
+  m_socket6 = 0;
 }
 
 void
@@ -88,12 +91,34 @@ UdpEchoServer::StartApplication (void)
             }
           else
             {
-              NS_FATAL_ERROR ("Error: joining multicast on a non-UDP socket");
+              NS_FATAL_ERROR ("Error: Failed to join multicast group");
+            }
+        }
+    }
+
+  if (m_socket6 == 0)
+    {
+      TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+      m_socket6 = Socket::CreateSocket (GetNode (), tid);
+      Inet6SocketAddress local6 = Inet6SocketAddress (Ipv6Address::GetAny (), m_port);
+      m_socket6->Bind (local6);
+      if (addressUtils::IsMulticast (local6))
+        {
+          Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket> (m_socket6);
+          if (udpSocket)
+            {
+              // equivalent to setsockopt (MCAST_JOIN_GROUP)
+              udpSocket->MulticastJoinGroup (0, local6);
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Error: Failed to join multicast group");
             }
         }
     }
 
   m_socket->SetRecvCallback (MakeCallback (&UdpEchoServer::HandleRead, this));
+  m_socket6->SetRecvCallback (MakeCallback (&UdpEchoServer::HandleRead, this));
 }
 
 void 
@@ -106,6 +131,11 @@ UdpEchoServer::StopApplication ()
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
+  if (m_socket6 != 0) 
+    {
+      m_socket6->Close ();
+      m_socket6->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
+    }
 }
 
 void 
@@ -113,18 +143,38 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       InetSocketAddress::ConvertFrom (from).GetIpv4 ());
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server received " << packet->GetSize () << " bytes from " <<
+                       InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
+                       InetSocketAddress::ConvertFrom (from).GetPort ());
+        }
+      else if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server received " << packet->GetSize () << " bytes from " <<
+                       Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
+                       InetSocketAddress::ConvertFrom (from).GetPort ());
+        }
 
-          packet->RemoveAllPacketTags ();
-          packet->RemoveAllByteTags ();
+      packet->RemoveAllPacketTags ();
+      packet->RemoveAllByteTags ();
 
-          NS_LOG_LOGIC ("Echoing packet");
-          socket->SendTo (packet, 0, from);
+      NS_LOG_LOGIC ("Echoing packet");
+      socket->SendTo (packet, 0, from);
+
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server sent " << packet->GetSize () << " bytes to " <<
+                       InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
+                       InetSocketAddress::ConvertFrom (from).GetPort ());
+        }
+      else if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s server sent " << packet->GetSize () << " bytes to " <<
+                       Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
+                       InetSocketAddress::ConvertFrom (from).GetPort ());
         }
     }
 }

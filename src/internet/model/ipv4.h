@@ -24,7 +24,7 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ns3/callback.h"
-#include "ns3/ipv4-l4-protocol.h"
+#include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-address.h"
 #include "ipv4-route.h"
 #include "ipv4-interface-address.h"
@@ -149,7 +149,7 @@ public:
    * Adds a protocol to an internal list of L4 protocols.
    *
    */
-  virtual void Insert (Ptr<Ipv4L4Protocol> protocol) = 0;
+  virtual void Insert (Ptr<IpL4Protocol> protocol) = 0;
 
   /**
    * \brief Determine whether address and interface corresponding to

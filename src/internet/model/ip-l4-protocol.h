@@ -1,4 +1,4 @@
-// -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 //
@@ -21,12 +21,14 @@
 // NS3 - Layer 4 Protocol base class
 // George F. Riley, Georgia Tech, Spring 2007
 
-#ifndef IPV4_L4_PROTOCOL_H
-#define IPV4_L4_PROTOCOL_H
+#ifndef IP_L4_PROTOCOL_H
+#define IP_L4_PROTOCOL_H
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/ipv6-header.h"
+#include "ns3/ipv6-interface.h"
 
 namespace ns3 {
 
@@ -34,14 +36,15 @@ class Packet;
 class Ipv4Address;
 class Ipv4Interface;
 class Ipv4Route;
+class Ipv6Route;
 
 /**
  * \brief L4 Protocol abstract base class 
  *
- * This is an abstract base class for layer four protocols which use IPv4 as
+ * This is an abstract base class for layer four protocols which use IP as
  * the network layer.
  */
-class Ipv4L4Protocol : public Object
+class IpL4Protocol : public Object
 {
 public:
   enum RxStatus {
@@ -53,7 +56,7 @@ public:
 
   static TypeId GetTypeId (void);
 
-  virtual ~Ipv4L4Protocol ();
+  virtual ~IpL4Protocol ();
 
   /**
    * \returns the protocol number of this protocol.
@@ -71,6 +74,10 @@ public:
   virtual enum RxStatus Receive (Ptr<Packet> p,
                                  Ipv4Header const &header,
                                  Ptr<Ipv4Interface> incomingInterface) = 0;
+  virtual enum RxStatus Receive (Ptr<Packet> p,
+                                 Ipv6Address &src,
+                                 Ipv6Address &dst,
+                                 Ptr<Ipv6Interface> incomingInterface) = 0;
 
   /**
    * \param icmpSource the source address of the icmp message
@@ -90,8 +97,13 @@ public:
                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
                             Ipv4Address payloadSource, Ipv4Address payloadDestination,
                             const uint8_t payload[8]);
+  virtual void ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv6Address payloadSource, Ipv6Address payloadDestination,
+                            const uint8_t payload[8]);
 
   typedef Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint8_t, Ptr<Ipv4Route> > DownTargetCallback;
+  typedef Callback<void,Ptr<Packet>, Ipv6Address, Ipv6Address, uint8_t, Ptr<Ipv6Route> > DownTargetCallback6;
   /**
    * This method allows a caller to set the current down target callback
    * set for this L4 protocol
@@ -99,6 +111,7 @@ public:
    * \param cb current Callback for the L4 protocol
    */
   virtual void SetDownTarget (DownTargetCallback cb) = 0;
+  virtual void SetDownTarget6 (DownTargetCallback6 cb) = 0;
   /**
    * This method allows a caller to get the current down target callback
    * set for this L4 protocol, for
@@ -106,6 +119,7 @@ public:
    * \return current Callback for the L4 protocol
    */
   virtual DownTargetCallback GetDownTarget (void) const = 0;
+  virtual DownTargetCallback6 GetDownTarget6 (void) const = 0;
 };
 
 } // Namespace ns3

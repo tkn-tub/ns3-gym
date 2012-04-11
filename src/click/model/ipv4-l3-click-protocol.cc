@@ -33,7 +33,7 @@
 
 #include "ns3/ipv4-raw-socket-impl.h"
 #include "ns3/arp-l3-protocol.h"
-#include "ns3/ipv4-l4-protocol.h"
+#include "ns3/ip-l4-protocol.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/loopback-net-device.h"
 
@@ -738,23 +738,23 @@ Ipv4L3ClickProtocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip
 
   m_localDeliverTrace (ip, packet, iif);
 
-  Ptr<Ipv4L4Protocol> protocol = GetProtocol (ip.GetProtocol ());
+  Ptr<IpL4Protocol> protocol = GetProtocol (ip.GetProtocol ());
   if (protocol != 0)
     {
       // we need to make a copy in the unlikely event we hit the
       // RX_ENDPOINT_UNREACH codepath
       Ptr<Packet> copy = p->Copy ();
-      enum Ipv4L4Protocol::RxStatus status =
+      enum IpL4Protocol::RxStatus status =
         protocol->Receive (p, ip, GetInterface (iif));
       switch (status)
         {
-        case Ipv4L4Protocol::RX_OK:
+        case IpL4Protocol::RX_OK:
         // fall through
-        case Ipv4L4Protocol::RX_ENDPOINT_CLOSED:
+        case IpL4Protocol::RX_ENDPOINT_CLOSED:
         // fall through
-        case Ipv4L4Protocol::RX_CSUM_FAILED:
+        case IpL4Protocol::RX_CSUM_FAILED:
           break;
-        case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
+        case IpL4Protocol::RX_ENDPOINT_UNREACH:
           if (ip.GetDestination ().IsBroadcast () == true
               || ip.GetDestination ().IsMulticast () == true)
             {
@@ -782,7 +782,7 @@ Ipv4L3ClickProtocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip
 Ptr<Icmpv4L4Protocol>
 Ipv4L3ClickProtocol::GetIcmp (void) const
 {
-  Ptr<Ipv4L4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
+  Ptr<IpL4Protocol> prot = GetProtocol (Icmpv4L4Protocol::GetStaticProtocolNumber ());
   if (prot != 0)
     {
       return prot->GetObject<Icmpv4L4Protocol> ();
@@ -794,12 +794,12 @@ Ipv4L3ClickProtocol::GetIcmp (void) const
 }
 
 void
-Ipv4L3ClickProtocol::Insert (Ptr<Ipv4L4Protocol> protocol)
+Ipv4L3ClickProtocol::Insert (Ptr<IpL4Protocol> protocol)
 {
   m_protocols.push_back (protocol);
 }
 
-Ptr<Ipv4L4Protocol>
+Ptr<IpL4Protocol>
 Ipv4L3ClickProtocol::GetProtocol (int protocolNumber) const
 {
   for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)

@@ -153,12 +153,19 @@ PyViz::PyViz ()
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/MacRx",
                    MakeCallback (&PyViz::TraceNetDevRxPointToPoint, this));
 
+  // WiMax
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
                    MakeCallback (&PyViz::TraceNetDevTxWimax, this));
 
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
                    MakeCallback (&PyViz::TraceNetDevRxWimax, this));
 
+  // LTE
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
+                   MakeCallback (&PyViz::TraceNetDevTxLte, this));
+
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
+                   MakeCallback (&PyViz::TraceNetDevRxLte, this));
 }
 
 void
@@ -820,6 +827,19 @@ PyViz::TraceNetDevRxWimax (std::string context, Ptr<const Packet> packet, Mac48A
   TraceNetDevRxCommon (context, packet, source);
 }
 
+void
+PyViz::TraceNetDevTxLte (std::string context, Ptr<const Packet> packet, Mac48Address const &destination)
+{
+  NS_LOG_FUNCTION (context);
+  TraceNetDevTxCommon (context, packet, destination);
+}
+
+void
+PyViz::TraceNetDevRxLte (std::string context, Ptr<const Packet> packet, Mac48Address const &source)
+{
+  NS_LOG_FUNCTION (context);
+  TraceNetDevRxCommon (context, packet, source);
+}
 
 // ---------------------
 

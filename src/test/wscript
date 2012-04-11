@@ -3,10 +3,6 @@
 import sys
 
 def configure(conf):
-    conf.sub_config('perf')
-    conf.sub_config('ns3tcp')
-    conf.sub_config('ns3wifi')
-
     # Add the test module to the list of enabled modules that should
     # not be built if this is a static build on Darwin.  They don't
     # work there for the test module, and this is probably because the
@@ -19,7 +15,7 @@ def build(bld):
     if 'test' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point', 'csma-layout', 'flow-monitor'])
+    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point', 'csma-layout', 'flow-monitor', 'wifi'])
     headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'test'
 
@@ -30,5 +26,15 @@ def build(bld):
         'static-routing-test-suite.cc',
         'error-model-test-suite.cc',
         'mobility-test-suite.cc',
+        'ns3wifi/wifi-interference-test-suite.cc',
+        'ns3wifi/wifi-msdu-aggregator-test-suite.cc',
+        'ns3tcp/ns3tcp-cwnd-test-suite.cc',
+        'ns3tcp/ns3tcp-interop-test-suite.cc',
+        'ns3tcp/ns3tcp-loss-test-suite.cc',
+        'ns3tcp/ns3tcp-no-delay-test-suite.cc',
+        'ns3tcp/ns3tcp-socket-test-suite.cc',
+        'ns3tcp/ns3tcp-state-test-suite.cc',
+        'ns3tcp/nsctcp-loss-test-suite.cc',
+        'ns3tcp/ns3tcp-socket-writer.cc',
         ]
 

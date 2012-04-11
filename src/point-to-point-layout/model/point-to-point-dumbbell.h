@@ -25,8 +25,10 @@
 
 #include "point-to-point-helper.h"
 #include "ipv4-address-helper.h"
+#include "ipv6-address-helper.h"
 #include "internet-stack-helper.h"
 #include "ipv4-interface-container.h"
+#include "ipv6-interface-container.h"
 
 namespace ns3 {
 
@@ -101,6 +103,16 @@ public:
   Ipv4Address GetRightIpv4Address (uint32_t i) const; // Get right leaf address
 
   /**
+   * \returns an Ipv6Address of the i'th left leaf
+   */
+  Ipv6Address GetLeftIpv6Address (uint32_t i ) const; // Get left leaf address
+
+  /**
+   * \returns an Ipv6Address of the i'th right leaf
+   */
+  Ipv6Address GetRightIpv6Address (uint32_t i) const; // Get right leaf address
+
+  /**
    * \returns total number of left side leaf nodes
    */
   uint32_t  LeftCount () const;
@@ -131,6 +143,13 @@ public:
                                  Ipv4AddressHelper routerIp);
 
   /**
+   * \param network an IPv6 address representing the network portion
+   *                of the IPv6 Address
+   * \param prefix the prefix length
+   */
+  void      AssignIpv6Addresses (Ipv6Address network, Ipv6Prefix prefix);
+
+  /**
    * Sets up the node canvas locations for every node in the dumbbell.
    * This is needed for use with the animation interface
    *
@@ -155,6 +174,11 @@ private:
   Ipv4InterfaceContainer m_rightLeafInterfaces;
   Ipv4InterfaceContainer m_rightRouterInterfaces;
   Ipv4InterfaceContainer m_routerInterfaces;
+  Ipv6InterfaceContainer m_leftLeafInterfaces6;
+  Ipv6InterfaceContainer m_leftRouterInterfaces6;
+  Ipv6InterfaceContainer m_rightLeafInterfaces6;
+  Ipv6InterfaceContainer m_rightRouterInterfaces6;
+  Ipv6InterfaceContainer m_routerInterfaces6;
 };
 
 } // namespace ns3

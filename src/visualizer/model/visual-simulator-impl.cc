@@ -109,12 +109,6 @@ VisualSimulatorImpl::IsFinished (void) const
   return m_simulator->IsFinished ();
 }
 
-Time
-VisualSimulatorImpl::Next (void) const
-{
-  return m_simulator->Next ();
-}
-
 void
 VisualSimulatorImpl::Run (void)
 {
@@ -128,12 +122,6 @@ VisualSimulatorImpl::Run (void)
     "import visualizer\n"
     "visualizer.start();\n"
     );
-}
-
-void
-VisualSimulatorImpl::RunOneEvent (void)
-{
-  m_simulator->RunOneEvent ();
 }
 
 void 

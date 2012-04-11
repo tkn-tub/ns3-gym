@@ -57,10 +57,6 @@ import wutils
 
 Configure.autoconfig = 0
 
-# until http://code.google.com/p/waf/issues/detail?id=1039 gets fixed...
-wutils.monkey_patch_Runner_start()
-
-
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION", "rt").read().strip()
 APPNAME = 'ns'
@@ -68,10 +64,8 @@ APPNAME = 'ns'
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
 
-# note: here we disable the VNUM for OSX since it causes problems (bug #1251)
+# we don't use VNUM anymore (see bug #1327 for details)
 wutils.VNUM = None
-if sys.platform != 'darwin' and re.match(r"^\d+\.\d+(\.\d+)?$", VERSION) is not None:
-    wutils.VNUM = VERSION
 
 # these variables are mandatory ('/' are converted automatically)
 top = '.'
@@ -276,6 +270,11 @@ def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
     conf.env.append_value('NS3_OPTIONAL_FEATURES', [(name, caption, was_enabled, reason_not_enabled)])
 
+def check_optional_feature(conf, name):
+    for (name1, caption, was_enabled, reason_not_enabled) in conf.env.NS3_OPTIONAL_FEATURES:
+        if name1 == name:
+            return was_enabled
+    raise KeyError("Feature %r not declared yet" % (name,))
 
 # starting with waf 1.6, conf.check() becomes fatal by default if the
 # test fails, this alternative method makes the test non-fatal, as it
@@ -293,6 +292,7 @@ def configure(conf):
     conf.check_nonfatal = types.MethodType(_check_nonfatal, conf)
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
+    conf.check_optional_feature = types.MethodType(check_optional_feature, conf)
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.check_tool('compiler_c')
@@ -320,6 +320,9 @@ def configure(conf):
         env.append_value('DEFINES', 'NS3_LOG_ENABLE')
 
     env['PLATFORM'] = sys.platform
+    env['BUILD_PROFILE'] = Options.options.build_profile
+    env['APPNAME'] = wutils.APPNAME
+    env['VERSION'] = wutils.VERSION
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if Options.options.build_profile == 'release': 
@@ -367,6 +370,8 @@ def configure(conf):
 
     conf.env['MODULES_NOT_BUILT'] = []
 
+    conf.sub_config('bindings/python')
+
     conf.sub_config('src')
 
     # Set the list of enabled modules.
@@ -398,8 +403,6 @@ def configure(conf):
             conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
                 raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
-
-    conf.sub_config('bindings/python')
 
     conf.sub_config('src/mpi')
 
@@ -540,7 +543,7 @@ class SuidBuild_task(Task.TaskBase):
         super(SuidBuild_task, self).__init__(*args, **kwargs)
         self.m_display = 'build-suid'
         try:
-            program_obj = wutils.find_program(self.generator.target, self.generator.env)
+            program_obj = wutils.find_program(self.generator.name, self.generator.env)
         except ValueError, ex:
             raise WafError(str(ex))
         program_node = program_obj.path.find_or_declare(program_obj.target)
@@ -557,7 +560,10 @@ class SuidBuild_task(Task.TaskBase):
 
     def runnable_status(self):
         "RUN_ME SKIP_ME or ASK_LATER"
-        st = os.stat(self.filename)
+        try:
+            st = os.stat(self.filename)
+        except OSError:
+            return Task.ASK_LATER
         if st.st_uid == 0:
             return Task.SKIP_ME
         else:
@@ -570,7 +576,7 @@ def create_suid_program(bld, name):
     program.is_ns3_program = True
     program.module_deps = list()
     program.name = name
-    program.target = name
+    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
 
     if bld.env['ENABLE_SUDO']:
         program.create_task("SuidBuild")
@@ -584,7 +590,7 @@ def create_ns3_program(bld, name, dependencies=('core',)):
 
     program.is_ns3_program = True
     program.name = name
-    program.target = program.name
+    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "# #/.."
@@ -625,9 +631,10 @@ def add_scratch_programs(bld):
         if os.path.isdir(os.path.join("scratch", filename)):
             obj = bld.create_ns3_program(filename, all_modules)
             obj.path = obj.path.find_dir('scratch').find_dir(filename)
-            obj.find_sources_in_dirs('.')
+            obj.source = obj.path.ant_glob('*.cc')
             obj.target = filename
             obj.name = obj.target
+            obj.install_path = None
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
@@ -635,6 +642,7 @@ def add_scratch_programs(bld):
             obj.source = filename
             obj.target = name
             obj.name = obj.target
+            obj.install_path = None
 
 
 def _get_all_task_gen(self):
@@ -656,6 +664,14 @@ def _exclude_taskgen(self, taskgen):
         else:
             continue
         break
+
+
+def _find_ns3_module(self, name):
+    for obj in _get_all_task_gen(self):
+        # disable the modules themselves
+        if hasattr(obj, "is_ns3_module") and obj.name == name:
+            return obj
+    raise KeyError(name)
 
 
 def build(bld):
@@ -686,6 +702,7 @@ def build(bld):
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
     bld.__class__.all_task_gen = property(_get_all_task_gen)
     bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
+    bld.find_ns3_module = types.MethodType(_find_ns3_module, bld)
 
     # process subfolders from here
     bld.add_subdirs('src')
@@ -748,7 +765,9 @@ def build(bld):
                 # Add this program to the list if all of its
                 # dependencies will be built.
                 if program_built:
-                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', obj.name)
+                    object_name = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, 
+                                                  obj.name, bld.env.BUILD_PROFILE)
+                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_name)
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
@@ -763,6 +782,12 @@ def build(bld):
             if 'ns3header' in getattr(obj, "features", []):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
+
+            # disable pcfile taskgens for disabled modules
+            if 'ns3pcfile' in getattr(obj, "features", []):
+                if obj.module not in bld.env.NS3_ENABLED_MODULES:
+                    bld.exclude_taskgen(obj)
+
 
     if env['NS3_ENABLED_MODULES']:
         env['NS3_ENABLED_MODULES'] = list(modules)

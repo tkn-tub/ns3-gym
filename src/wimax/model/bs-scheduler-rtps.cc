@@ -494,7 +494,6 @@ BSSchedulerRtps::BSSchedulerRTPSConnection (uint32_t &availableSymbols)
   ServiceFlowRecord *serviceFlowRecord;
   std::vector<ServiceFlow*> serviceFlows;
 
-  std::deque<WimaxMacQueue::QueueElement>::const_iterator iter3;
   uint32_t symbolsRequired[100];
   WimaxPhy::ModulationType modulationType_[100];
   uint8_t diuc_[100];

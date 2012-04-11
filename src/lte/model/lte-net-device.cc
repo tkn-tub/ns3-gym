@@ -62,6 +62,10 @@ TypeId LteNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteNetDevice::GetPhy, &LteNetDevice::SetPhy),
                    MakePointerChecker<LtePhy> ())
+
+    .AddTraceSource ("Rx", "Receive trace", MakeTraceSourceAccessor (&LteNetDevice::m_macRxTrace))
+    .AddTraceSource ("Tx", "Transmit trace", MakeTraceSourceAccessor (&LteNetDevice::m_macTxTrace));
+
   ;
   return tid;
 }
@@ -185,11 +189,11 @@ LteNetDevice::ForwardUp (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
 
-  m_macRxTrace (packet);
-
   LteMacHeader header;
   packet->RemoveHeader (header);
   NS_LOG_LOGIC ("packet " << header.GetSource () << " --> " << header.GetDestination () << " (here: " << m_address << ")");
+
+  m_macRxTrace (packet, header.GetSource ());
 
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
@@ -212,12 +216,14 @@ LteNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address
 {
   NS_LOG_FUNCTION (packet << source << dest << protocolNumber);
 
+  Mac48Address from = Mac48Address::ConvertFrom (source);
+  Mac48Address to = Mac48Address::ConvertFrom (dest);
+
   LlcSnapHeader llcHdr;
   llcHdr.SetType (protocolNumber);
   packet->AddHeader (llcHdr);
 
-  Mac48Address from = Mac48Address::ConvertFrom (source);
-  Mac48Address to = Mac48Address::ConvertFrom (dest);
+  m_macTxTrace (packet, to);
 
   LteMacHeader header;
   header.SetSource (from);

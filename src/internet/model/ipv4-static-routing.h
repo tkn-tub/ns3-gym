@@ -213,7 +213,7 @@ public:
  * \return If route is set, the metric is returned. If not, an infinity metric (0xffffffff) is returned
  *
  */
-  uint32_t GetMetric (uint32_t index);
+  uint32_t GetMetric (uint32_t index) const;
 
 /**
  * \brief Remove a route from the static unicast routing table.

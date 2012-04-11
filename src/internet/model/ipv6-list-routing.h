@@ -25,7 +25,7 @@
 namespace ns3 {
 
 /**
- * \ingroup internet 
+ * \ingroup internet
  * \defgroup ipv6ListRouting Ipv6 List Routing
  */
 
@@ -34,15 +34,15 @@ namespace ns3 {
  * \class Ipv6ListRouting
  * \brief Hold list of Ipv6RoutingProtocol objects.
  *
- * This class is a specialization of Ipv6RoutingProtocol that allows 
- * other instances of Ipv6RoutingProtocol to be inserted in a 
+ * This class is a specialization of Ipv6RoutingProtocol that allows
+ * other instances of Ipv6RoutingProtocol to be inserted in a
  * prioritized list.  Routing protocols in the list are consulted one
  * by one, from highest to lowest priority, until a routing protocol
  * is found that will take the packet (this corresponds to a non-zero
  * return value to RouteOutput, or a return value of true to RouteInput).
- * The order by which routing protocols with the same priority value 
+ * The order by which routing protocols with the same priority value
  * are consulted is undefined.
- * 
+ *
  */
 class Ipv6ListRouting : public Ipv6RoutingProtocol
 {
@@ -78,7 +78,7 @@ public:
   virtual uint32_t GetNRoutingProtocols (void) const;
 
   /**
-   * \brief Get pointer to routing protocol stored at index, 
+   * \brief Get pointer to routing protocol stored at index,
    *
    * The first protocol (index 0) the highest priority, the next one (index 1)
    * the second highest priority, and so on.  The priority parameter is an
@@ -86,7 +86,7 @@ public:
    * \param index index of protocol to return
    * \param priority output parameter, set to the priority of the protocol
    * being returned
-   * \return pointer to routing protocol indexed by 
+   * \return pointer to routing protocol indexed by
    */
   virtual Ptr<Ipv6RoutingProtocol> GetRoutingProtocol (uint32_t index, int16_t& priority) const;
 
@@ -104,11 +104,18 @@ public:
   virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
   virtual void SetIpv6 (Ptr<Ipv6> ipv6);
 
+  /**
+   * \brief Print the Routing Table entries
+   *
+   * \param stream the ostream the Routing table is printed to
+   */
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
+
 protected:
   /**
    * \brief Dispose this object.
    */
-  void DoDispose (void);
+  virtual void DoDispose (void);
 
 private:
   typedef std::pair<int16_t, Ptr<Ipv6RoutingProtocol> > Ipv6RoutingProtocolEntry;

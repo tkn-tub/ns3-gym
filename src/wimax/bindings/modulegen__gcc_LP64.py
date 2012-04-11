@@ -364,6 +364,8 @@ def register_types(module):
     module.add_class('WimaxConnection', parent=root_module['ns3::Object'])
     ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue [class]
     module.add_class('WimaxMacQueue', parent=root_module['ns3::Object'])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement [struct]
+    module.add_class('QueueElement', outer_class=root_module['ns3::WimaxMacQueue'])
     ## wimax-mac-to-mac-header.h (module 'wimax'): ns3::WimaxMacToMacHeader [class]
     module.add_class('WimaxMacToMacHeader', parent=root_module['ns3::Header'])
     ## wimax-phy.h (module 'wimax'): ns3::WimaxPhy [class]
@@ -704,6 +706,7 @@ def register_methods(root_module):
     register_Ns3UplinkSchedulerSimple_methods(root_module, root_module['ns3::UplinkSchedulerSimple'])
     register_Ns3WimaxConnection_methods(root_module, root_module['ns3::WimaxConnection'])
     register_Ns3WimaxMacQueue_methods(root_module, root_module['ns3::WimaxMacQueue'])
+    register_Ns3WimaxMacQueueQueueElement_methods(root_module, root_module['ns3::WimaxMacQueue::QueueElement'])
     register_Ns3WimaxMacToMacHeader_methods(root_module, root_module['ns3::WimaxMacToMacHeader'])
     register_Ns3WimaxPhy_methods(root_module, root_module['ns3::WimaxPhy'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
@@ -1960,6 +1963,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'void', 
                    [param('uint8_t *', 'buf')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv6Address::GetIpv4MappedAddress() const [member function]
+    cls.add_method('GetIpv4MappedAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetLoopback() [member function]
     cls.add_method('GetLoopback', 
                    'ns3::Ipv6Address', 
@@ -2000,8 +2008,17 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    cls.add_method('IsIpv4MappedAddress', 
+                   'bool', 
+                   [])
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocalMulticast() const [member function]
+    cls.add_method('IsLinkLocalMulticast', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -2034,6 +2051,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac48Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('MakeIpv4MappedAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv4Address', 'addr')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeSolicitedAddress(ns3::Ipv6Address addr) [member function]
     cls.add_method('MakeSolicitedAddress', 
@@ -4379,7 +4401,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
@@ -7622,6 +7644,46 @@ def register_Ns3WimaxMacQueue_methods(root_module, cls):
     cls.add_method('SetMaxSize', 
                    'void', 
                    [param('uint32_t', 'maxSize')])
+    return
+
+def register_Ns3WimaxMacQueueQueueElement_methods(root_module, cls):
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::QueueElement(ns3::WimaxMacQueue::QueueElement const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WimaxMacQueue::QueueElement const &', 'arg0')])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::QueueElement() [constructor]
+    cls.add_constructor([])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::QueueElement(ns3::Ptr<ns3::Packet> packet, ns3::MacHeaderType const & hdrType, ns3::GenericMacHeader const & hdr, ns3::Time timeStamp) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::MacHeaderType const &', 'hdrType'), param('ns3::GenericMacHeader const &', 'hdr'), param('ns3::Time', 'timeStamp')])
+    ## wimax-mac-queue.h (module 'wimax'): uint32_t ns3::WimaxMacQueue::QueueElement::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## wimax-mac-queue.h (module 'wimax'): void ns3::WimaxMacQueue::QueueElement::SetFragmentNumber() [member function]
+    cls.add_method('SetFragmentNumber', 
+                   'void', 
+                   [])
+    ## wimax-mac-queue.h (module 'wimax'): void ns3::WimaxMacQueue::QueueElement::SetFragmentOffset(uint32_t offset) [member function]
+    cls.add_method('SetFragmentOffset', 
+                   'void', 
+                   [param('uint32_t', 'offset')])
+    ## wimax-mac-queue.h (module 'wimax'): void ns3::WimaxMacQueue::QueueElement::SetFragmentation() [member function]
+    cls.add_method('SetFragmentation', 
+                   'void', 
+                   [])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_fragmentNumber [variable]
+    cls.add_instance_attribute('m_fragmentNumber', 'uint32_t', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_fragmentOffset [variable]
+    cls.add_instance_attribute('m_fragmentOffset', 'uint32_t', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_fragmentation [variable]
+    cls.add_instance_attribute('m_fragmentation', 'bool', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_hdr [variable]
+    cls.add_instance_attribute('m_hdr', 'ns3::GenericMacHeader', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_hdrType [variable]
+    cls.add_instance_attribute('m_hdrType', 'ns3::MacHeaderType', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_packet [variable]
+    cls.add_instance_attribute('m_packet', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_timeStamp [variable]
+    cls.add_instance_attribute('m_timeStamp', 'ns3::Time', is_const=False)
     return
 
 def register_Ns3WimaxMacToMacHeader_methods(root_module, cls):
