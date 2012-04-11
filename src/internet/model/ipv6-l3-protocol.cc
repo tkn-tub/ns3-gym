@@ -22,6 +22,7 @@
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
 #include "ns3/vector.h"
+#include "ns3/boolean.h"
 #include "ns3/callback.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
@@ -41,8 +42,7 @@
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6L3Protocol);
 
@@ -63,6 +63,11 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
                    MakeObjectVectorChecker<Ipv6Interface> ())
+    .AddAttribute ("SendIcmpv6Redirect", "Send the ICMPv6 Redirect when appropriate.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&Ipv6L3Protocol::SetSendIcmpv6Redirect,
+                                        &Ipv6L3Protocol::GetSendIcmpv6Redirect),
+                   MakeBooleanChecker ())
     .AddTraceSource ("Tx", "Send IPv6 packet to outgoing interface.",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive IPv6 packet from incoming interface.",
@@ -130,7 +135,7 @@ void Ipv6L3Protocol::SetRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtoco
   m_routingProtocol->SetIpv6 (this);
 }
 
-Ptr<Ipv6RoutingProtocol> Ipv6L3Protocol::GetRoutingProtocol () const 
+Ptr<Ipv6RoutingProtocol> Ipv6L3Protocol::GetRoutingProtocol () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_routingProtocol;
@@ -175,7 +180,7 @@ Ptr<Ipv6Interface> Ipv6L3Protocol::GetInterface (uint32_t index) const
   return 0;
 }
 
-uint32_t Ipv6L3Protocol::GetNInterfaces () const 
+uint32_t Ipv6L3Protocol::GetNInterfaces () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_nInterfaces;
@@ -183,7 +188,7 @@ uint32_t Ipv6L3Protocol::GetNInterfaces () const
 
 int32_t Ipv6L3Protocol::GetInterfaceForAddress (Ipv6Address address) const
 {
-  NS_LOG_FUNCTION (this << address); 
+  NS_LOG_FUNCTION (this << address);
   int32_t index = 0;
 
   for (Ipv6InterfaceList::const_iterator it = m_interfaces.begin (); it != m_interfaces.end (); it++)
@@ -193,7 +198,7 @@ int32_t Ipv6L3Protocol::GetInterfaceForAddress (Ipv6Address address) const
 
       for (j = 0; j < max; j++)
         {
-          if ((*it)->GetAddress (j).GetAddress () == address) 
+          if ((*it)->GetAddress (j).GetAddress () == address)
             {
               return index;
             }
@@ -252,7 +257,7 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
 
   Address addr = GetInterface (interface)->GetDevice ()->GetAddress ();
 
-  if (flags & (1<< 6)) /* auto flag */
+  if (flags & (1 << 6)) /* auto flag */
     {
       /* XXX : add other L2 address case */
       if (Mac48Address::IsMatchingType (addr))
@@ -282,7 +287,7 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
       AddAddress (interface, address);
 
       /* add default router
-       * if a previous default route exists, the new ones is simply added 
+       * if a previous default route exists, the new ones is simply added
        */
       GetRoutingProtocol ()->NotifyAddRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface, network);
 
@@ -304,7 +309,7 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
 
   for (i = 0; i < max; i++)
     {
-      if (iface->GetAddress (i).GetAddress () == toFound) 
+      if (iface->GetAddress (i).GetAddress () == toFound)
         {
           RemoveAddress (interface, i);
           break;
@@ -369,14 +374,14 @@ bool Ipv6L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
   return false;
 }
 
-void Ipv6L3Protocol::SetMetric (uint32_t i, uint16_t metric) 
+void Ipv6L3Protocol::SetMetric (uint32_t i, uint16_t metric)
 {
   NS_LOG_FUNCTION (this << i << metric);
   Ptr<Ipv6Interface> interface = GetInterface (i);
   interface->SetMetric (metric);
 }
 
-uint16_t Ipv6L3Protocol::GetMetric (uint32_t i) const 
+uint16_t Ipv6L3Protocol::GetMetric (uint32_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   Ptr<Ipv6Interface> interface = GetInterface (i);
@@ -491,6 +496,18 @@ bool Ipv6L3Protocol::GetIpForward () const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_ipForward;
+}
+
+void Ipv6L3Protocol::SetSendIcmpv6Redirect (bool sendIcmpv6Redirect)
+{
+  NS_LOG_FUNCTION (this << sendIcmpv6Redirect);
+  m_sendIcmpv6Redirect = sendIcmpv6Redirect;
+}
+
+bool Ipv6L3Protocol::GetSendIcmpv6Redirect () const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_sendIcmpv6Redirect;
 }
 
 void Ipv6L3Protocol::NotifyNewAggregate ()
@@ -635,12 +652,12 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
 
   //for link-local traffic, we need to determine the interface
-  if (source.IsLinkLocal () ||
-      destination.IsLinkLocal () ||
-      destination.IsAllNodesMulticast () ||
-      destination.IsAllRoutersMulticast () ||
-      destination.IsAllHostsMulticast () ||
-      destination.IsSolicitedMulticast ())
+  if (source.IsLinkLocal ()
+      || destination.IsLinkLocal ()
+      || destination.IsAllNodesMulticast ()
+      || destination.IsAllRoutersMulticast ()
+      || destination.IsAllHostsMulticast ()
+      || destination.IsSolicitedMulticast ())
     {
       int32_t index = GetInterfaceForAddress (source);
       NS_ASSERT (index >= 0);
@@ -707,7 +724,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
       socket->ForwardUp (packet, hdr, device);
     }
 
-  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
+  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
   Ptr<Ipv6Extension> ipv6Extension = 0;
   uint8_t nextHeader = hdr.GetNextHeader ();
   bool isDropped = false;
@@ -763,6 +780,12 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       // Router => drop
       if (m_ipForward)
         {
+          Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();
+          if ( icmpv6 )
+            {
+              packet->AddHeader(ipHeader);
+              icmpv6->SendErrorTooBig (packet, ipHeader.GetSourceAddress (), dev->GetMtu ());
+            }
           return;
         }
 
@@ -771,7 +794,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       packet->AddHeader (ipHeader);
 
       // To get specific method GetFragments from Ipv6ExtensionFragmentation
-      Ipv6ExtensionFragment *ipv6Fragment = dynamic_cast<Ipv6ExtensionFragment *>(PeekPointer (ipv6ExtensionDemux->GetExtension (Ipv6Header::IPV6_EXT_FRAGMENTATION)));
+      Ipv6ExtensionFragment *ipv6Fragment = dynamic_cast<Ipv6ExtensionFragment *> (PeekPointer (ipv6ExtensionDemux->GetExtension (Ipv6Header::IPV6_EXT_FRAGMENTATION)));
       ipv6Fragment->GetFragments (packet, outInterface->GetDevice ()->GetMtu (), fragments);
     }
 
@@ -858,8 +881,8 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
       NS_LOG_WARN ("TTL exceeded.  Drop.");
       m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv6> (), 0);
       // Do not reply to ICMPv6 or to multicast IPv6 address
-      if (ipHeader.GetNextHeader () != Icmpv6L4Protocol::PROT_NUMBER &&
-          ipHeader.GetDestinationAddress ().IsMulticast () == false)
+      if (ipHeader.GetNextHeader () != Icmpv6L4Protocol::PROT_NUMBER
+          && ipHeader.GetDestinationAddress ().IsMulticast () == false)
         {
           packet->AddHeader (ipHeader);
           GetIcmpv6 ()->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_HOPLIMIT);
@@ -869,12 +892,14 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
 
   /* ICMPv6 Redirect */
 
-  /* if we forward to a machine on the same network as the source, 
-   * we send him an ICMPv6 redirect message to notify him that a short route 
+  /* if we forward to a machine on the same network as the source,
+   * we send him an ICMPv6 redirect message to notify him that a short route
    * exists.
    */
-  if ((!rtentry->GetGateway ().IsAny () && rtentry->GetGateway ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64))) ||
-      (rtentry->GetDestination ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64))))
+
+  if (m_sendIcmpv6Redirect &&
+      ((!rtentry->GetGateway ().IsAny () && rtentry->GetGateway ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))
+      || (rtentry->GetDestination ().CombinePrefix (Ipv6Prefix (64)) == header.GetSourceAddress ().CombinePrefix (Ipv6Prefix (64)))))
     {
       NS_LOG_LOGIC ("ICMPv6 redirect!");
       Ptr<Icmpv6L4Protocol> icmpv6 = GetIcmpv6 ();
@@ -940,8 +965,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 {
   NS_LOG_FUNCTION (this << packet << ip << iif);
   Ptr<Packet> p = packet->Copy ();
-  Ptr<IpL4Protocol> protocol = 0; 
-  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
+  Ptr<IpL4Protocol> protocol = 0;
+  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
   Ptr<Ipv6Extension> ipv6Extension = 0;
   Ipv6Address src = ip.GetSourceAddress ();
   Ipv6Address dst = ip.GetDestinationAddress ();
@@ -961,7 +986,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
     }
 
   /* process all the extensions found and the layer 4 protocol */
-  do {
+  do
+    {
       /* it return 0 for non-extension (i.e. layer 4 protocol) */
       ipv6Extension = ipv6ExtensionDemux->GetExtension (nextHeader);
 
@@ -1030,7 +1056,8 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
                 }
             }
         }
-    } while (ipv6Extension);
+    }
+  while (ipv6Extension);
 }
 
 void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipHeader, Socket::SocketErrno sockErrno)

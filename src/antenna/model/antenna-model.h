@@ -53,7 +53,7 @@ public:
   static TypeId GetTypeId ();
 
 
-  /**       
+  /**
    * this method is expected to be re-implemented by each antenna model 
    * 
    * \param the spherical angles at which the radiation pattern should

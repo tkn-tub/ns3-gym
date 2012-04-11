@@ -57,7 +57,7 @@ CosineAntennaModel::GetTypeId ()
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&CosineAntennaModel::m_maxGain),
                    MakeDoubleChecker<double> ())
-    ;
+  ;
   return tid;
 }
 
@@ -66,7 +66,7 @@ CosineAntennaModel::SetBeamwidth (double beamwidthDegrees)
 { 
   NS_LOG_FUNCTION (this << beamwidthDegrees);
   m_beamwidthRadians = DegreesToRadians (beamwidthDegrees);
-  m_exponent = - 3.0 / (20*log10 (cos (m_beamwidthRadians / 4.0)));
+  m_exponent = -3.0 / (20*log10 (cos (m_beamwidthRadians / 4.0)));
   NS_LOG_LOGIC (this << " m_exponent = " << m_exponent);
 }
 
@@ -107,15 +107,15 @@ CosineAntennaModel::GetGainDb (Angles a)
     }
 
   NS_LOG_LOGIC ("phi = " << phi );
-  
+
   // element factor: amplitude gain of a single antenna element in linear units
   double ef = pow (cos (phi / 2.0), m_exponent);
-  
+
   // the array factor is not considered. Note that if we did consider
   // the array factor, the actual beamwidth would change, and in
   // particular it would be different from the one specified by the
   // user. Hence it is not desirable to use the array factor, for the
-  // ease of use of this model.  
+  // ease of use of this model.
 
   double gainDb = 20*log10 (ef);
   NS_LOG_LOGIC ("gain = " << gainDb << " + " << m_maxGain << " dB");

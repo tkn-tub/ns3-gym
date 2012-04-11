@@ -41,6 +41,7 @@ public:
   virtual ~MinMaxAvgTotalCalculator();
 
   void Update (const T i);
+  void Reset ();
 
   virtual void Output (DataOutputCallback &callback) const;
 
@@ -166,6 +167,24 @@ MinMaxAvgTotalCalculator<T>::Update (const T i)
         }
     }
   // end MinMaxAvgTotalCalculator::Update
+}
+
+template <typename T>
+void
+MinMaxAvgTotalCalculator<T>::Reset ()
+{
+  m_count = 0;
+
+  m_total       = 0;
+  m_squareTotal = 0;
+
+  m_meanCurr     = NaN;
+  m_sCurr        = NaN;
+  m_varianceCurr = NaN;
+
+  m_meanPrev     = NaN;
+  m_sPrev        = NaN;
+  // end MinMaxAvgTotalCalculator::Reset
 }
 
 template <typename T>

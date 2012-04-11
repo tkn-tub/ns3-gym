@@ -1,5 +1,6 @@
 #include "ns3module.h"
 #include "ns3/ref-count-base.h"
+#include <unistd.h>
 
 
 namespace {
@@ -71,7 +72,6 @@ public:
 };
 
 } // closes: namespace {
-
 
 PyObject *
 _wrap_Simulator_Schedule (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
@@ -349,58 +349,104 @@ _wrap_CommandLine_AddValue (PyNs3CommandLine *self, PyObject *args, PyObject *kw
   return Py_None;
 }
 
+class PythonSimulator
+{
+public:
+  PythonSimulator();
+  void Run(void);
+  bool IsFailed(void) const;
+
+private:
+  void DoCheckSignals(void);
+  void DoRun(void);
+  volatile bool m_stopped;
+  bool m_failed;
+  volatile bool m_isCheckPending;
+  ns3::Ptr<ns3::SystemThread> m_thread;
+  PyThreadState *m_py_thread_state;
+};
+
+PythonSimulator::PythonSimulator()
+  : m_stopped(false),
+    m_failed(false),
+    m_isCheckPending(false)
+{
+  m_thread = ns3::Create<ns3::SystemThread>(ns3::MakeCallback(&PythonSimulator::DoRun, this));
+  m_py_thread_state = NULL;
+}
+
+void
+PythonSimulator::Run(void)
+{
+  m_failed = false;
+  m_stopped = false;
+  m_isCheckPending = false;
+  m_thread->Start();
+  if (PyEval_ThreadsInitialized ())
+    {
+      m_py_thread_state = PyEval_SaveThread ();
+    }
+  ns3::Simulator::Run ();
+  m_stopped = true;
+  m_thread->Join();
+  if (m_py_thread_state)
+    {
+      PyEval_RestoreThread (m_py_thread_state);
+    }
+}
+
+bool 
+PythonSimulator::IsFailed(void) const
+{
+  return m_failed;
+}
+
+void
+PythonSimulator::DoCheckSignals(void)
+{
+  if (m_py_thread_state)
+    {
+      PyEval_RestoreThread (m_py_thread_state);
+    }
+  PyErr_CheckSignals ();
+  if (PyErr_Occurred ())
+    {
+      m_failed = true;
+      ns3::Simulator::Stop();
+    }
+  if (PyEval_ThreadsInitialized ())
+    {
+      m_py_thread_state = PyEval_SaveThread ();
+    }
+
+  m_isCheckPending = false;
+}
+
+void 
+PythonSimulator::DoRun(void)
+{
+  while (!m_stopped)
+    {
+      if (!m_isCheckPending)
+        {
+          m_isCheckPending = true;
+          ns3::Simulator::ScheduleWithContext(0xffffffff, ns3::Seconds(0.0),
+					  &PythonSimulator::DoCheckSignals, this);
+        }
+      usleep(200000);
+    }
+}
 
 PyObject *
 _wrap_Simulator_Run (PyNs3Simulator *PYBINDGEN_UNUSED (dummy), PyObject *args, PyObject *kwargs,
                      PyObject **return_exception)
 {
-  const char *keywords[] = { "signal_check_frequency", NULL};
-  int signal_check_frequency;
-
-  ns3::Ptr<ns3::DefaultSimulatorImpl> defaultSim =
-    ns3::DynamicCast<ns3::DefaultSimulatorImpl> (ns3::Simulator::GetImplementation ());
-  if (defaultSim) {
-      signal_check_frequency = 100;
-    } else {
-      signal_check_frequency = -1;
-    }
-
-  if (!PyArg_ParseTupleAndKeywords (args, kwargs, (char *) "|i", (char **) keywords, &signal_check_frequency)) {
-      PyObject *exc_type, *traceback;
-      PyErr_Fetch (&exc_type, return_exception, &traceback);
-      Py_XDECREF (exc_type);
-      Py_XDECREF (traceback);
-      return NULL;
-    }
-
-  PyThreadState *py_thread_state = NULL;
-
-  if (signal_check_frequency == -1)
+  PythonSimulator simulator;
+  simulator.Run();
+  if (simulator.IsFailed())
     {
-      if (PyEval_ThreadsInitialized ())
-        py_thread_state = PyEval_SaveThread ();
-      ns3::Simulator::Run ();
-      if (py_thread_state)
-        PyEval_RestoreThread (py_thread_state);
-    } else {
-      while (!ns3::Simulator::IsFinished ())
-        {
-          if (PyEval_ThreadsInitialized ())
-            py_thread_state = PyEval_SaveThread ();
-
-          for (int n = signal_check_frequency; n > 0 && !ns3::Simulator::IsFinished (); --n)
-            {
-              ns3::Simulator::RunOneEvent ();
-            }
-
-          if (py_thread_state)
-            PyEval_RestoreThread (py_thread_state);
-          PyErr_CheckSignals ();
-          if (PyErr_Occurred ())
-            return NULL;
-        }
+      return NULL;
     }
   Py_INCREF (Py_None);
   return Py_None;
 }
-

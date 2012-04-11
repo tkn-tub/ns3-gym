@@ -17,7 +17,6 @@
  */
 
 #include "ns3/point-to-point-grid.h"
-#include "ns3/animation-interface.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/constant-position-mobility-model.h"

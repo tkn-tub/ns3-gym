@@ -101,12 +101,6 @@ public:
    * return true. Return false otherwise.
    */
   static bool IsFinished (void);
-  /**
-   * If Simulator::IsFinished returns true, the behavior of this
-   * method is undefined. Otherwise, it returns the microsecond-based
-   * time of the next event expected to be scheduled.
-   */
-  static Time Next (void) NS_DEPRECATED;
 
   /**
    * Run the simulation until one of:
@@ -117,11 +111,6 @@ public:
    *     is greater than or equal to the stop time.
    */
   static void Run (void);
-
-  /**
-   * Process only the next simulation event, then return immediately.
-   */
-  static void RunOneEvent (void) NS_DEPRECATED;
 
   /**
    * If an event invokes this method, it will be the last
@@ -286,6 +275,7 @@ public:
   /**
    * Schedule an event with the given context.
    * A context of 0xffffffff means no context is specified.
+   * This method is thread-safe: it can be called from any thread.
    *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
@@ -296,6 +286,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param mem_ptr member method pointer to invoke
@@ -306,6 +298,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param mem_ptr member method pointer to invoke
@@ -317,6 +311,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param mem_ptr member method pointer to invoke
@@ -330,6 +326,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param mem_ptr member method pointer to invoke
@@ -344,6 +342,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param mem_ptr member method pointer to invoke
@@ -359,6 +359,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, 
                                    T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param f the function to invoke
@@ -366,6 +368,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, void (*f)(void));
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param f the function to invoke
@@ -375,6 +379,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, void (*f)(U1), T1 a1);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param f the function to invoke
@@ -385,6 +391,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, void (*f)(U1,U2), T1 a1, T2 a2);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param f the function to invoke
@@ -396,6 +404,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, void (*f)(U1,U2,U3), T1 a1, T2 a2, T3 a3);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param f the function to invoke
@@ -409,6 +419,8 @@ public:
   static void ScheduleWithContext (uint32_t context, Time const &time, void (*f)(U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * @param time the relative expiration time of the event.
    * @param context user-specified context parameter
    * @param f the function to invoke
@@ -743,6 +755,8 @@ public:
   static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
 
   /**
+   * This method is thread-safe: it can be called from any thread.
+   *
    * \param time delay until the event expires
    * \param context event context
    * \param event the event to schedule

@@ -128,7 +128,7 @@ DegreesRadiansTestSuite::DegreesRadiansTestSuite ()
   AddTestCase (new RadiansToDegreesTestCase (M_PI + M_PI, 360));
   AddTestCase (new RadiansToDegreesTestCase (-M_PI_2, -90));
   AddTestCase (new RadiansToDegreesTestCase (4.5*M_PI, 810));
-  
+
 };
 
 static DegreesRadiansTestSuite staticDegreesRadiansTestSuiteInstance;

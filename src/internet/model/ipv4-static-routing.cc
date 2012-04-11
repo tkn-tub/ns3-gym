@@ -413,11 +413,11 @@ Ipv4StaticRouting::GetRoute (uint32_t index) const
 }
 
 uint32_t
-Ipv4StaticRouting::GetMetric (uint32_t index)
+Ipv4StaticRouting::GetMetric (uint32_t index) const
 {
   NS_LOG_FUNCTION (this << index);
   uint32_t tmp = 0;
-  for (NetworkRoutesI j = m_networkRoutes.begin (); 
+  for (NetworkRoutesCI j = m_networkRoutes.begin ();
        j != m_networkRoutes.end (); 
        j++) 
     {
@@ -700,7 +700,6 @@ Ipv4StaticRouting::SetIpv4 (Ptr<Ipv4> ipv4)
         }
     }
 }
-
 // Formatted like output of "route -n" command
 void
 Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
@@ -713,11 +712,11 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
         {
           std::ostringstream dest, gw, mask, flags;
           Ipv4RoutingTableEntry route = GetRoute (j);
-          dest << route.GetDest (); 
+          dest << route.GetDest ();
           *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str ();
-          gw << route.GetGateway (); 
+          gw << route.GetGateway ();
           *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str ();
-          mask << route.GetDestNetworkMask (); 
+          mask << route.GetDestNetworkMask ();
           *os << std::setiosflags (std::ios::left) << std::setw (16) << mask.str ();
           flags << "U";
           if (route.IsHost ())
@@ -729,8 +728,7 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
               flags << "GS";
             }
           *os << std::setiosflags (std::ios::left) << std::setw (6) << flags.str ();
-          // Metric not implemented
-          *os << "-" << "      ";
+          *os << std::setiosflags (std::ios::left) << std::setw (7) << GetMetric (j);
           // Ref ct not implemented
           *os << "-" << "      ";
           // Use not implemented
@@ -747,7 +745,6 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
         }
     }
 }
-
 Ipv4Address
 Ipv4StaticRouting::SourceAddressSelection (uint32_t interfaceIdx, Ipv4Address dest)
 {

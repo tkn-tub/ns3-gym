@@ -24,14 +24,26 @@ New user-visible features
 - Dual-stacked IPv6 sockets are implemented. An IPv6 socket can accept an IPv4 
   connection, returning the senders address as an IPv4-mapped address 
   (IPV6_V6ONLY socket option is not implemented).
-
+- Ipv6RoutingHelper is now in-line with Ipv4RoutingHelper concerning the RT 
+  print functions. Various minor changes made in Ipv6RoutingProtocol and derived 
+  classes to make this possible.
+- New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
+  Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects",
+  i.e., enable/disable the ICMPv6 Redirect sending.
+- An antenna module is now included, which includes different
+  radiation pattern models. See the corresponding new section of the
+  ns-3 models library documentation for details. 
+   
 Bugs fixed
 ----------
  - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
  - bug 1318 - Asserts for IPv6 malformed packets
  - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
  - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
-
+ - bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
+ - bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor fixes to ICMPv6)
+ - bug 1395 - AODV DeferredRouteOutputTag missing constructor
+ 
 Known issues
 ------------
 In general, known issues are tracked on the project tracker available

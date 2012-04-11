@@ -285,13 +285,14 @@ def build(bld):
 
     if env['ENABLE_THREADING']:
         core.source.extend([
+            'model/system-thread.cc',
             'model/unix-fd-reader.cc',
-            'model/unix-system-thread.cc',
             'model/unix-system-mutex.cc',
             'model/unix-system-condition.cc',
             ])
         core.use.append('PTHREAD')
         core_test.use.append('PTHREAD')
+        core_test.source.extend(['test/threaded-test-suite.cc'])
         headers.source.extend([
                 'model/unix-fd-reader.h',
                 'model/system-mutex.h',

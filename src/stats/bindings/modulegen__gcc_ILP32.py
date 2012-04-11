@@ -3175,6 +3175,10 @@ def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls)
                    'void', 
                    [param('ns3::DataOutputCallback &', 'callback')], 
                    is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::Reset() [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [])
     ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<unsigned int>::Update(unsigned int const i) [member function]
     cls.add_method('Update', 
                    'void', 

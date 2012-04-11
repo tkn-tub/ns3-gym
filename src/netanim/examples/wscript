@@ -12,3 +12,7 @@ def build(bld):
     obj = bld.create_ns3_program('star-animation',
                                  ['netanim', 'applications', 'point-to-point-layout'])
     obj.source = 'star-animation.cc'
+
+    obj = bld.create_ns3_program('wireless-animation',
+                                 ['netanim', 'applications', 'point-to-point', 'csma', 'wifi', 'mobility', 'network'])
+    obj.source = 'wireless-animation.cc'

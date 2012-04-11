@@ -264,6 +264,8 @@ def register_types(module):
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## channel.h (module 'network'): ns3::Channel [class]
     module.add_class('Channel', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): ns3::ConstantSpectrumPropagationLossModel [class]
+    module.add_class('ConstantSpectrumPropagationLossModel', parent=root_module['ns3::SpectrumPropagationLossModel'])
     ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel [class]
     module.add_class('ConstantSpeedPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
     ## data-rate.h (module 'network'): ns3::DataRateChecker [class]
@@ -554,6 +556,7 @@ def register_methods(root_module):
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
     register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
+    register_Ns3ConstantSpectrumPropagationLossModel_methods(root_module, root_module['ns3::ConstantSpectrumPropagationLossModel'])
     register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
@@ -4329,6 +4332,32 @@ def register_Ns3Channel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3ConstantSpectrumPropagationLossModel_methods(root_module, cls):
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): ns3::ConstantSpectrumPropagationLossModel::ConstantSpectrumPropagationLossModel(ns3::ConstantSpectrumPropagationLossModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ConstantSpectrumPropagationLossModel const &', 'arg0')])
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): ns3::ConstantSpectrumPropagationLossModel::ConstantSpectrumPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): double ns3::ConstantSpectrumPropagationLossModel::GetLossDb() const [member function]
+    cls.add_method('GetLossDb', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): static ns3::TypeId ns3::ConstantSpectrumPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## constant-spectrum-propagation-loss.h (module 'spectrum'): void ns3::ConstantSpectrumPropagationLossModel::SetLossDb(double lossDb) [member function]
+    cls.add_method('SetLossDb', 
+                   'void', 
+                   [param('double', 'lossDb')])
     return
 
 def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):

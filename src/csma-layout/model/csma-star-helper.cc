@@ -18,11 +18,11 @@
 #include <sstream>
 
 // ns3 includes
-#include "ns3/animation-interface.h"
 #include "ns3/csma-star-helper.h"
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
+#include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE ("CsmaStarHelper");
 

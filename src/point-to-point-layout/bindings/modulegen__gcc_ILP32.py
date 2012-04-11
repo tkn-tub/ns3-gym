@@ -4125,6 +4125,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): bool ns3::Socket::IsRecvPktInfo() const [member function]
+    cls.add_method('IsRecvPktInfo', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## socket.h (module 'network'): int ns3::Socket::Listen() [member function]
     cls.add_method('Listen', 
                    'int', 

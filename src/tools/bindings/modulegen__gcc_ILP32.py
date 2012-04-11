@@ -40,6 +40,8 @@ def register_types(module):
     module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
+    ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback [class]
+    module.add_class('DataOutputCallback', allow_subclassing=True, import_from_module='ns.stats')
     ## delay-jitter-estimation.h (module 'tools'): ns3::DelayJitterEstimation [class]
     module.add_class('DelayJitterEstimation')
     ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector [class]
@@ -78,6 +80,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
+    ## data-calculator.h (module 'stats'): ns3::StatisticalSummary [class]
+    module.add_class('StatisticalSummary', allow_subclassing=True, import_from_module='ns.stats')
     ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
@@ -152,10 +156,16 @@ def register_types(module):
     module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     ## callback.h (module 'core'): ns3::CallbackValue [class]
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## data-calculator.h (module 'stats'): ns3::DataCalculator [class]
+    module.add_class('DataCalculator', import_from_module='ns.stats', parent=root_module['ns3::Object'])
+    ## data-output-interface.h (module 'stats'): ns3::DataOutputInterface [class]
+    module.add_class('DataOutputInterface', import_from_module='ns.stats', parent=root_module['ns3::Object'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<double> [class]
+    module.add_class('MinMaxAvgTotalCalculator', import_from_module='ns.stats', template_parameters=['double'], parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']])
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -194,6 +204,7 @@ def register_methods(root_module):
     register_Ns3ByteTagListIterator_methods(root_module, root_module['ns3::ByteTagList::Iterator'])
     register_Ns3ByteTagListIteratorItem_methods(root_module, root_module['ns3::ByteTagList::Iterator::Item'])
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
+    register_Ns3DataOutputCallback_methods(root_module, root_module['ns3::DataOutputCallback'])
     register_Ns3DelayJitterEstimation_methods(root_module, root_module['ns3::DelayJitterEstimation'])
     register_Ns3EventGarbageCollector_methods(root_module, root_module['ns3::EventGarbageCollector'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
@@ -212,6 +223,7 @@ def register_methods(root_module):
     register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
+    register_Ns3StatisticalSummary_methods(root_module, root_module['ns3::StatisticalSummary'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -244,8 +256,11 @@ def register_methods(root_module):
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3DataCalculator_methods(root_module, root_module['ns3::DataCalculator'])
+    register_Ns3DataOutputInterface_methods(root_module, root_module['ns3::DataOutputInterface'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
+    register_Ns3MinMaxAvgTotalCalculator__Double_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< double >'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
@@ -662,6 +677,43 @@ def register_Ns3CallbackBase_methods(root_module, cls):
                    'std::string', 
                    [param('std::string const &', 'mangled')], 
                    is_static=True, visibility='protected')
+    return
+
+def register_Ns3DataOutputCallback_methods(root_module, cls):
+    ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback::DataOutputCallback() [constructor]
+    cls.add_constructor([])
+    ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback::DataOutputCallback(ns3::DataOutputCallback const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataOutputCallback const &', 'arg0')])
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, int val) [member function]
+    cls.add_method('OutputSingleton', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('int', 'val')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, uint32_t val) [member function]
+    cls.add_method('OutputSingleton', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('uint32_t', 'val')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, double val) [member function]
+    cls.add_method('OutputSingleton', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('double', 'val')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, std::string val) [member function]
+    cls.add_method('OutputSingleton', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('std::string', 'val')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, ns3::Time val) [member function]
+    cls.add_method('OutputSingleton', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('ns3::Time', 'val')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputStatistic(std::string key, std::string variable, ns3::StatisticalSummary const * statSum) [member function]
+    cls.add_method('OutputStatistic', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('ns3::StatisticalSummary const *', 'statSum')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3DelayJitterEstimation_methods(root_module, cls):
@@ -1228,6 +1280,53 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time const &', 'time')], 
                    is_static=True)
+    return
+
+def register_Ns3StatisticalSummary_methods(root_module, cls):
+    ## data-calculator.h (module 'stats'): ns3::StatisticalSummary::StatisticalSummary() [constructor]
+    cls.add_constructor([])
+    ## data-calculator.h (module 'stats'): ns3::StatisticalSummary::StatisticalSummary(ns3::StatisticalSummary const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::StatisticalSummary const &', 'arg0')])
+    ## data-calculator.h (module 'stats'): long int ns3::StatisticalSummary::getCount() const [member function]
+    cls.add_method('getCount', 
+                   'long int', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getMax() const [member function]
+    cls.add_method('getMax', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getMean() const [member function]
+    cls.add_method('getMean', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getMin() const [member function]
+    cls.add_method('getMin', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getSqrSum() const [member function]
+    cls.add_method('getSqrSum', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getStddev() const [member function]
+    cls.add_method('getStddev', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getSum() const [member function]
+    cls.add_method('getSum', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): double ns3::StatisticalSummary::getVariance() const [member function]
+    cls.add_method('getVariance', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3Tag_methods(root_module, cls):
@@ -2271,6 +2370,90 @@ def register_Ns3CallbackValue_methods(root_module, cls):
                    [param('ns3::CallbackBase', 'base')])
     return
 
+def register_Ns3DataCalculator_methods(root_module, cls):
+    ## data-calculator.h (module 'stats'): ns3::DataCalculator::DataCalculator(ns3::DataCalculator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataCalculator const &', 'arg0')])
+    ## data-calculator.h (module 'stats'): ns3::DataCalculator::DataCalculator() [constructor]
+    cls.add_constructor([])
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Disable() [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [])
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Enable() [member function]
+    cls.add_method('Enable', 
+                   'void', 
+                   [])
+    ## data-calculator.h (module 'stats'): std::string ns3::DataCalculator::GetContext() const [member function]
+    cls.add_method('GetContext', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## data-calculator.h (module 'stats'): bool ns3::DataCalculator::GetEnabled() const [member function]
+    cls.add_method('GetEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## data-calculator.h (module 'stats'): std::string ns3::DataCalculator::GetKey() const [member function]
+    cls.add_method('GetKey', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
+    cls.add_method('Output', 
+                   'void', 
+                   [param('ns3::DataOutputCallback &', 'callback')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::SetContext(std::string const context) [member function]
+    cls.add_method('SetContext', 
+                   'void', 
+                   [param('std::string const', 'context')])
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::SetKey(std::string const key) [member function]
+    cls.add_method('SetKey', 
+                   'void', 
+                   [param('std::string const', 'key')])
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Start(ns3::Time const & startTime) [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [param('ns3::Time const &', 'startTime')], 
+                   is_virtual=True)
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::Stop(ns3::Time const & stopTime) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time const &', 'stopTime')], 
+                   is_virtual=True)
+    ## data-calculator.h (module 'stats'): void ns3::DataCalculator::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3DataOutputInterface_methods(root_module, cls):
+    ## data-output-interface.h (module 'stats'): ns3::DataOutputInterface::DataOutputInterface(ns3::DataOutputInterface const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataOutputInterface const &', 'arg0')])
+    ## data-output-interface.h (module 'stats'): ns3::DataOutputInterface::DataOutputInterface() [constructor]
+    cls.add_constructor([])
+    ## data-output-interface.h (module 'stats'): std::string ns3::DataOutputInterface::GetFilePrefix() const [member function]
+    cls.add_method('GetFilePrefix', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputInterface::Output(ns3::DataCollector & dc) [member function]
+    cls.add_method('Output', 
+                   'void', 
+                   [param('ns3::DataCollector &', 'dc')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputInterface::SetFilePrefix(std::string const prefix) [member function]
+    cls.add_method('SetFilePrefix', 
+                   'void', 
+                   [param('std::string const', 'prefix')])
+    ## data-output-interface.h (module 'stats'): void ns3::DataOutputInterface::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue::EmptyAttributeValue(ns3::EmptyAttributeValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EmptyAttributeValue const &', 'arg0')])
@@ -2315,6 +2498,71 @@ def register_Ns3EventImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3MinMaxAvgTotalCalculator__Double_methods(root_module, cls):
+    ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<double>::MinMaxAvgTotalCalculator(ns3::MinMaxAvgTotalCalculator<double> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< double > const &', 'arg0')])
+    ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<double>::MinMaxAvgTotalCalculator() [constructor]
+    cls.add_constructor([])
+    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<double>::Output(ns3::DataOutputCallback & callback) const [member function]
+    cls.add_method('Output', 
+                   'void', 
+                   [param('ns3::DataOutputCallback &', 'callback')], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<double>::Reset() [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [])
+    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<double>::Update(double const i) [member function]
+    cls.add_method('Update', 
+                   'void', 
+                   [param('double const', 'i')])
+    ## basic-data-calculators.h (module 'stats'): long int ns3::MinMaxAvgTotalCalculator<double>::getCount() const [member function]
+    cls.add_method('getCount', 
+                   'long int', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getMax() const [member function]
+    cls.add_method('getMax', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getMean() const [member function]
+    cls.add_method('getMean', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getMin() const [member function]
+    cls.add_method('getMin', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getSqrSum() const [member function]
+    cls.add_method('getSqrSum', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getStddev() const [member function]
+    cls.add_method('getStddev', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getSum() const [member function]
+    cls.add_method('getSum', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): double ns3::MinMaxAvgTotalCalculator<double>::getVariance() const [member function]
+    cls.add_method('getVariance', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h (module 'stats'): void ns3::MinMaxAvgTotalCalculator<double>::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3NixVector_methods(root_module, cls):

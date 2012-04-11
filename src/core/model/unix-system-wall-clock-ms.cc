@@ -21,6 +21,7 @@
 #include "system-wall-clock-ms.h"
 #include "abort.h"
 #include <sys/times.h>
+#include <unistd.h>
 
 namespace ns3 {
 

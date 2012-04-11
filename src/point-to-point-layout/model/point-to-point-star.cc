@@ -18,7 +18,7 @@
 #include <sstream>
 
 // ns3 includes
-#include "ns3/animation-interface.h"
+#include "ns3/log.h"
 #include "ns3/point-to-point-star.h"
 #include "ns3/constant-position-mobility-model.h"
 

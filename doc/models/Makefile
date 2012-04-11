@@ -200,6 +200,7 @@ IMAGES_EPS = \
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
+$(FIGURES)/antenna-coordinate-system.pdf_width = 7cm	
 $(FIGURES)/node.pdf_width = 5in
 $(FIGURES)/packet.pdf_width = 4in
 $(FIGURES)/buffer.pdf_width = 15cm
