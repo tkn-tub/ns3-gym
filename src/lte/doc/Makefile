@@ -7,21 +7,26 @@ CONVERT = convert -density 250
 SOURCE = source
 FIGURES = $(SOURCE)/figures
 
-# specify figures from which .png and .pdf figures need to be
-# generated (all dia and eps figures)
+# specify dia figures from which .png and .pdf figures need to be built
+
+IMAGES_DIA = \
+	$(FIGURES)/epc-data-flow-dl.dia \
+	$(FIGURES)/epc-data-flow-ul.dia \
+	$(FIGURES)/epc-profiling-scenario.dia \
+	$(FIGURES)/epc-topology.dia \
+	$(FIGURES)/eutran-profiling-scenario.dia \
+	$(FIGURES)/ff-example.dia \
+	$(FIGURES)/ff-mac-saps.dia \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.dia \
+	$(FIGURES)/lte-enb-architecture.dia \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
+	$(FIGURES)/lte-interference-test-scenario.dia \
+	$(FIGURES)/lte-ue-architecture.dia
+
+
+# specify eps figures from which .png and .pdf figures need to be built
+
 IMAGES_EPS = \
-	$(FIGURES)/ff-mac-saps.eps \
-	$(FIGURES)/ff-example.eps \
-	$(FIGURES)/lte-enb-architecture.eps \
-	$(FIGURES)/lte-ue-architecture.eps \
-	$(FIGURES)/epc-profiling-scenario.eps \
-	$(FIGURES)/eutran-profiling-scenario.eps \
-	$(FIGURES)/lte-interference-test-scenario.eps \
-	$(FIGURES)/epc-topology.eps \
-	$(FIGURES)/epc-data-flow-dl.eps \
-	$(FIGURES)/epc-data-flow-ul.eps \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/MCS_2_test.eps \
 	$(FIGURES)/MCS_12_test.eps \
 	$(FIGURES)/MCS_14_test.eps \
@@ -68,17 +73,12 @@ $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
-IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
-
-IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
 
 IMAGES_SEQDIAG = \
-	$(FIGURES)/lte-phy-interference.png \
-	$(FIGURES)/lte-phy-interference.pdf \
-	$(FIGURES)/helpers.png \
-	$(FIGURES)/helpers.pdf
+	$(FIGURES)/lte-phy-interference.seqdiag \
+	$(FIGURES)/helpers.seqdiag
 
-IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
+IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
 	$(FIGURES)/fading_urban_3kmph.png \
 	$(FIGURES)/fading_pedestrian.pdf \
@@ -104,9 +104,19 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/helpers.pdf \
 	$(FIGURES)/miesm_scheme.pdf \
 	$(FIGURES)/miesm_scheme.png \
-	$(IMAGES_SEQDIAG) 
+	${IMAGES_SEQDIAG:.seqdiag=.png} \
+	${IMAGES_SEQDIAG:.seqdiag=.pdf}
 
-IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
+IMAGES_BUILD = \
+	${IMAGES_DIA:.dia=.eps} \
+	${IMAGES_DIA:.dia=.png} \
+	${IMAGES_DIA:.dia=.pdf} \
+	${IMAGES_EPS:.eps=.png} \
+	${IMAGES_EPS:.eps=.pdf} 
+
+
+
+IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
@@ -153,8 +163,7 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/*
-	-rm -f $(IMAGES_PNG)
-	-rm -f $(IMAGES_PDF)
+	-rm -f $(IMAGES_BUILD)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
@@ -253,3 +262,4 @@ doctest:  $(IMAGES)
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+
