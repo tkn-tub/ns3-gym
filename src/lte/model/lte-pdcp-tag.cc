@@ -84,5 +84,18 @@ PdcpTag::Print (std::ostream &os) const
   os << m_senderTimestamp;
 }
 
+Time
+PdcpTag::GetSenderTimestamp (void) const
+{
+  return m_senderTimestamp;
+}
+
+void
+PdcpTag::SetSenderTimestamp (Time senderTimestamp)
+{
+  this->m_senderTimestamp = senderTimestamp;
+}
+
+
 } // namespace ns3
 

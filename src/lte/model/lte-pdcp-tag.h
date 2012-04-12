@@ -57,19 +57,13 @@ public:
   /**
    * Get the instant when the PDCP delivers the PDU to the MAC SAP provider
    */
-  Time  GetSenderTimestamp (void) const
-  {
-    return m_senderTimestamp;
-  }
+  Time  GetSenderTimestamp (void) const;
 
   /**
    * Set the sender timestamp
    * @param senderTimestamp time stamp of the instant when the PDCP delivers the PDU to the MAC SAP provider
    */
-  void  SetSenderTimestamp (Time senderTimestamp)
-  {
-    this->m_senderTimestamp = senderTimestamp;
-  }
+  void  SetSenderTimestamp (Time senderTimestamp);
 
 private:
   Time m_senderTimestamp;
