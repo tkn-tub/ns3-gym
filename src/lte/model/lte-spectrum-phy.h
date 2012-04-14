@@ -39,6 +39,7 @@
 namespace ns3 {
 
 class LteNetDevice;
+class AntennaModel;
 
 /**
  * \ingroup lte
