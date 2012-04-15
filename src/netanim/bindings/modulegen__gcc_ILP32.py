@@ -72,6 +72,8 @@ def register_types(module):
     module.add_class('Mac48Address', import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## node-container.h (module 'network'): ns3::NodeContainer [class]
+    module.add_class('NodeContainer', import_from_module='ns.network')
     ## node-list.h (module 'network'): ns3::NodeList [class]
     module.add_class('NodeList', import_from_module='ns.network')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
@@ -294,6 +296,7 @@ def register_methods(root_module):
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
+    register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
     register_Ns3NodeList_methods(root_module, root_module['ns3::NodeList'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
@@ -445,8 +448,8 @@ def register_Ns3AnimPacketInfo_methods(root_module, cls):
     cls.add_constructor([param('ns3::AnimPacketInfo const &', 'arg0')])
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimPacketInfo::AnimPacketInfo() [constructor]
     cls.add_constructor([])
-    ## animation-interface-helper.h (module 'netanim'): ns3::AnimPacketInfo::AnimPacketInfo(ns3::Ptr<ns3::NetDevice const> tx_nd, ns3::Time const & fbTx, ns3::Time const & lbTx, ns3::Vector txLoc) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::NetDevice const >', 'tx_nd'), param('ns3::Time const &', 'fbTx'), param('ns3::Time const &', 'lbTx'), param('ns3::Vector', 'txLoc')])
+    ## animation-interface-helper.h (module 'netanim'): ns3::AnimPacketInfo::AnimPacketInfo(ns3::Ptr<ns3::NetDevice const> tx_nd, ns3::Time const & fbTx, ns3::Time const & lbTx, ns3::Vector txLoc, uint32_t txNodeId=0) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::NetDevice const >', 'tx_nd'), param('ns3::Time const &', 'fbTx'), param('ns3::Time const &', 'lbTx'), param('ns3::Vector', 'txLoc'), param('uint32_t', 'txNodeId', default_value='0')])
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimRxInfo ns3::AnimPacketInfo::GetRxInfo(ns3::Ptr<ns3::NetDevice const> nd) [member function]
     cls.add_method('GetRxInfo', 
                    'ns3::AnimRxInfo', 
@@ -477,6 +480,8 @@ def register_Ns3AnimPacketInfo_methods(root_module, cls):
     cls.add_instance_attribute('m_rx', 'std::map< unsigned int, ns3::AnimRxInfo >', is_const=False)
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimPacketInfo::m_txLoc [variable]
     cls.add_instance_attribute('m_txLoc', 'ns3::Vector', is_const=False)
+    ## animation-interface-helper.h (module 'netanim'): ns3::AnimPacketInfo::m_txNodeId [variable]
+    cls.add_instance_attribute('m_txNodeId', 'uint32_t', is_const=False)
     ## animation-interface-helper.h (module 'netanim'): ns3::AnimPacketInfo::m_txnd [variable]
     cls.add_instance_attribute('m_txnd', 'ns3::Ptr< ns3::NetDevice const >', is_const=False)
     return
@@ -545,6 +550,16 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_method('SetMobilityPollInterval', 
                    'void', 
                    [param('ns3::Time', 't')])
+    ## animation-interface.h (module 'netanim'): static void ns3::AnimationInterface::SetNodeDescription(ns3::Ptr<ns3::Node> n, std::string descr) [member function]
+    cls.add_method('SetNodeDescription', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'n'), param('std::string', 'descr')], 
+                   is_static=True)
+    ## animation-interface.h (module 'netanim'): static void ns3::AnimationInterface::SetNodeDescription(ns3::NodeContainer nc, std::string descr) [member function]
+    cls.add_method('SetNodeDescription', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'nc'), param('std::string', 'descr')], 
+                   is_static=True)
     ## animation-interface.h (module 'netanim'): bool ns3::AnimationInterface::SetOutputFile(std::string const & fn) [member function]
     cls.add_method('SetOutputFile', 
                    'bool', 
@@ -557,6 +572,14 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_method('SetServerPort', 
                    'bool', 
                    [param('uint16_t', 'port')])
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetStartTime(ns3::Time t) [member function]
+    cls.add_method('SetStartTime', 
+                   'void', 
+                   [param('ns3::Time', 't')])
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetStopTime(ns3::Time t) [member function]
+    cls.add_method('SetStopTime', 
+                   'void', 
+                   [param('ns3::Time', 't')])
     ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::SetXMLOutput() [member function]
     cls.add_method('SetXMLOutput', 
                    'void', 
@@ -1536,6 +1559,70 @@ def register_Ns3Mac48Address_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3NodeContainer_methods(root_module, cls):
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NodeContainer const &', 'arg0')])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer() [constructor]
+    cls.add_constructor([])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(ns3::Ptr<ns3::Node> node) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Node >', 'node')])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(std::string nodeName) [constructor]
+    cls.add_constructor([param('std::string', 'nodeName')])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b) [constructor]
+    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b')])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c) [constructor]
+    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b'), param('ns3::NodeContainer const &', 'c')])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c, ns3::NodeContainer const & d) [constructor]
+    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b'), param('ns3::NodeContainer const &', 'c'), param('ns3::NodeContainer const &', 'd')])
+    ## node-container.h (module 'network'): ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c, ns3::NodeContainer const & d, ns3::NodeContainer const & e) [constructor]
+    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b'), param('ns3::NodeContainer const &', 'c'), param('ns3::NodeContainer const &', 'd'), param('ns3::NodeContainer const &', 'e')])
+    ## node-container.h (module 'network'): void ns3::NodeContainer::Add(ns3::NodeContainer other) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'other')])
+    ## node-container.h (module 'network'): void ns3::NodeContainer::Add(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## node-container.h (module 'network'): void ns3::NodeContainer::Add(std::string nodeName) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('std::string', 'nodeName')])
+    ## node-container.h (module 'network'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::Begin() const [member function]
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Node > const, std::vector< ns3::Ptr< ns3::Node > > >', 
+                   [], 
+                   is_const=True)
+    ## node-container.h (module 'network'): void ns3::NodeContainer::Create(uint32_t n) [member function]
+    cls.add_method('Create', 
+                   'void', 
+                   [param('uint32_t', 'n')])
+    ## node-container.h (module 'network'): void ns3::NodeContainer::Create(uint32_t n, uint32_t systemId) [member function]
+    cls.add_method('Create', 
+                   'void', 
+                   [param('uint32_t', 'n'), param('uint32_t', 'systemId')])
+    ## node-container.h (module 'network'): __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::End() const [member function]
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Node > const, std::vector< ns3::Ptr< ns3::Node > > >', 
+                   [], 
+                   is_const=True)
+    ## node-container.h (module 'network'): ns3::Ptr<ns3::Node> ns3::NodeContainer::Get(uint32_t i) const [member function]
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## node-container.h (module 'network'): static ns3::NodeContainer ns3::NodeContainer::GetGlobal() [member function]
+    cls.add_method('GetGlobal', 
+                   'ns3::NodeContainer', 
+                   [], 
+                   is_static=True)
+    ## node-container.h (module 'network'): uint32_t ns3::NodeContainer::GetN() const [member function]
+    cls.add_method('GetN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    return
+
 def register_Ns3NodeList_methods(root_module, cls):
     ## node-list.h (module 'network'): ns3::NodeList::NodeList() [constructor]
     cls.add_constructor([])
@@ -1924,11 +2011,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Now() [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -1939,11 +2021,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 

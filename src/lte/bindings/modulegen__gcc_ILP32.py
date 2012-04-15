@@ -4070,44 +4070,45 @@ def register_Ns3SpectrumModel_methods(root_module, cls):
     return
 
 def register_Ns3SpectrumPhy_methods(root_module, cls):
-    ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy::SpectrumPhy() [constructor]
-    cls.add_constructor([])
-    ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy::SpectrumPhy(ns3::SpectrumPhy const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SpectrumPhy const &', 'arg0')])
+    ## spectrum-phy.h (module 'spectrum'): static ns3::TypeId ns3::SpectrumPhy::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
+    cls.add_method('SetDevice', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::SpectrumPhy::GetDevice() [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
+    cls.add_method('SetMobility', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
                    is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::SpectrumPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
                    'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumModel const> ns3::SpectrumPhy::GetRxSpectrumModel() const [member function]
-    cls.add_method('GetRxSpectrumModel', 
-                   'ns3::Ptr< ns3::SpectrumModel const >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): static ns3::TypeId ns3::SpectrumPhy::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetChannel(ns3::Ptr<ns3::SpectrumChannel> c) [member function]
     cls.add_method('SetChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
-    cls.add_method('SetDevice', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
-    cls.add_method('SetMobility', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumModel const> ns3::SpectrumPhy::GetRxSpectrumModel() const [member function]
+    cls.add_method('GetRxSpectrumModel', 
+                   'ns3::Ptr< ns3::SpectrumModel const >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::AntennaModel> ns3::SpectrumPhy::GetRxAntenna() [member function]
+    cls.add_method('GetRxAntenna', 
+                   'ns3::Ptr< ns3::AntennaModel >', 
+                   [], 
                    is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
@@ -4161,6 +4162,8 @@ def register_Ns3SpectrumSignalParameters_methods(root_module, cls):
     cls.add_instance_attribute('duration', 'ns3::Time', is_const=False)
     ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::psd [variable]
     cls.add_instance_attribute('psd', 'ns3::Ptr< ns3::SpectrumValue >', is_const=False)
+    ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::txAntenna [variable]
+    cls.add_instance_attribute('txAntenna', 'ns3::Ptr< ns3::AntennaModel >', is_const=False)
     ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters::txPhy [variable]
     cls.add_instance_attribute('txPhy', 'ns3::Ptr< ns3::SpectrumPhy >', is_const=False)
     return
@@ -5485,38 +5488,8 @@ def register_Ns3LtePropagationLossModel_methods(root_module, cls):
     return
 
 def register_Ns3LteSpectrumPhy_methods(root_module, cls):
-    ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy::LteSpectrumPhy(ns3::LteSpectrumPhy const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LteSpectrumPhy const &', 'arg0')])
     ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy::LteSpectrumPhy() [constructor]
     cls.add_constructor([])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::CalcSinrValues(ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::Ptr<ns3::SpectrumValue const> noise) [member function]
-    cls.add_method('CalcSinrValues', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::Ptr< ns3::SpectrumValue const >', 'noise')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumChannel> ns3::LteSpectrumPhy::GetChannel() [member function]
-    cls.add_method('GetChannel', 
-                   'ns3::Ptr< ns3::SpectrumChannel >', 
-                   [])
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::NetDevice> ns3::LteSpectrumPhy::GetDevice() [member function]
-    cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [], 
-                   is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::MobilityModel> ns3::LteSpectrumPhy::GetMobility() [member function]
-    cls.add_method('GetMobility', 
-                   'ns3::Ptr< ns3::MobilityModel >', 
-                   [], 
-                   is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumValue const> ns3::LteSpectrumPhy::GetNoisePowerSpectralDensity() [member function]
-    cls.add_method('GetNoisePowerSpectralDensity', 
-                   'ns3::Ptr< ns3::SpectrumValue const >', 
-                   [])
-    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumModel const> ns3::LteSpectrumPhy::GetRxSpectrumModel() const [member function]
-    cls.add_method('GetRxSpectrumModel', 
-                   'ns3::Ptr< ns3::SpectrumModel const >', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): static ns3::TypeId ns3::LteSpectrumPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -5527,11 +5500,73 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
                    is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
+    cls.add_method('SetMobility', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
+                   is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
                    is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::MobilityModel> ns3::LteSpectrumPhy::GetMobility() [member function]
+    cls.add_method('GetMobility', 
+                   'ns3::Ptr< ns3::MobilityModel >', 
+                   [], 
+                   is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::NetDevice> ns3::LteSpectrumPhy::GetDevice() [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [], 
+                   is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumModel const> ns3::LteSpectrumPhy::GetRxSpectrumModel() const [member function]
+    cls.add_method('GetRxSpectrumModel', 
+                   'ns3::Ptr< ns3::SpectrumModel const >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::AntennaModel> ns3::LteSpectrumPhy::GetRxAntenna() [member function]
+    cls.add_method('GetRxAntenna', 
+                   'ns3::Ptr< ns3::AntennaModel >', 
+                   [], 
+                   is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
+    cls.add_method('StartRx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
+                   is_virtual=True)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumChannel> ns3::LteSpectrumPhy::GetChannel() [member function]
+    cls.add_method('GetChannel', 
+                   'ns3::Ptr< ns3::SpectrumChannel >', 
+                   [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetTxPowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue> txPsd) [member function]
+    cls.add_method('SetTxPowerSpectralDensity', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetNoisePowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> noisePsd) [member function]
+    cls.add_method('SetNoisePowerSpectralDensity', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'noisePsd')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumValue const> ns3::LteSpectrumPhy::GetNoisePowerSpectralDensity() [member function]
+    cls.add_method('GetNoisePowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue const >', 
+                   [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetAntenna(ns3::Ptr<ns3::AntennaModel> a) [member function]
+    cls.add_method('SetAntenna', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::AntennaModel >', 'a')])
+    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTx(ns3::Ptr<ns3::PacketBurst> pb) [member function]
+    cls.add_method('StartTx', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetGenericPhyTxEndCallback(ns3::GenericPhyTxEndCallback c) [member function]
+    cls.add_method('SetGenericPhyTxEndCallback', 
+                   'void', 
+                   [param('ns3::GenericPhyTxEndCallback', 'c')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetGenericPhyRxStartCallback(ns3::GenericPhyRxStartCallback c) [member function]
+    cls.add_method('SetGenericPhyRxStartCallback', 
+                   'void', 
+                   [param('ns3::GenericPhyRxStartCallback', 'c')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetGenericPhyRxEndErrorCallback(ns3::GenericPhyRxEndErrorCallback c) [member function]
     cls.add_method('SetGenericPhyRxEndErrorCallback', 
                    'void', 
@@ -5540,40 +5575,15 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetGenericPhyRxEndOkCallback', 
                    'void', 
                    [param('ns3::GenericPhyRxEndOkCallback', 'c')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetGenericPhyRxStartCallback(ns3::GenericPhyRxStartCallback c) [member function]
-    cls.add_method('SetGenericPhyRxStartCallback', 
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::CalcSinrValues(ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::Ptr<ns3::SpectrumValue const> noise) [member function]
+    cls.add_method('CalcSinrValues', 
                    'void', 
-                   [param('ns3::GenericPhyRxStartCallback', 'c')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetGenericPhyTxEndCallback(ns3::GenericPhyTxEndCallback c) [member function]
-    cls.add_method('SetGenericPhyTxEndCallback', 
-                   'void', 
-                   [param('ns3::GenericPhyTxEndCallback', 'c')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
-    cls.add_method('SetMobility', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
-                   is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetNoisePowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> noisePsd) [member function]
-    cls.add_method('SetNoisePowerSpectralDensity', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'noisePsd')])
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::Ptr< ns3::SpectrumValue const >', 'noise')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetState(ns3::LteSpectrumPhy::State newState) [member function]
     cls.add_method('SetState', 
                    'void', 
                    [param('ns3::LteSpectrumPhy::State', 'newState')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetTxPowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue> txPsd) [member function]
-    cls.add_method('SetTxPowerSpectralDensity', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd')])
-    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
-    cls.add_method('StartRx', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
-                   is_virtual=True)
-    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTx(ns3::Ptr<ns3::PacketBurst> pb) [member function]
-    cls.add_method('StartTx', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::EndRx() [member function]
     cls.add_method('EndRx', 
                    'void', 
@@ -6514,20 +6524,18 @@ def register_Ns3UeLtePhy_methods(root_module, cls):
     return
 
 def register_Ns3UeLteSpectrumPhy_methods(root_module, cls):
-    ## ue-lte-spectrum-phy.h (module 'lte'): ns3::UeLteSpectrumPhy::UeLteSpectrumPhy(ns3::UeLteSpectrumPhy const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UeLteSpectrumPhy const &', 'arg0')])
     ## ue-lte-spectrum-phy.h (module 'lte'): ns3::UeLteSpectrumPhy::UeLteSpectrumPhy() [constructor]
     cls.add_constructor([])
-    ## ue-lte-spectrum-phy.h (module 'lte'): void ns3::UeLteSpectrumPhy::CalcSinrValues(ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::Ptr<ns3::SpectrumValue const> noise) [member function]
-    cls.add_method('CalcSinrValues', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::Ptr< ns3::SpectrumValue const >', 'noise')], 
-                   is_virtual=True)
     ## ue-lte-spectrum-phy.h (module 'lte'): static ns3::TypeId ns3::UeLteSpectrumPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## ue-lte-spectrum-phy.h (module 'lte'): void ns3::UeLteSpectrumPhy::CalcSinrValues(ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::Ptr<ns3::SpectrumValue const> noise) [member function]
+    cls.add_method('CalcSinrValues', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::Ptr< ns3::SpectrumValue const >', 'noise')], 
+                   is_virtual=True)
     return
 
 def register_Ns3UeMacEntity_methods(root_module, cls):
@@ -6785,20 +6793,18 @@ def register_Ns3EnbLtePhy_methods(root_module, cls):
     return
 
 def register_Ns3EnbLteSpectrumPhy_methods(root_module, cls):
-    ## enb-lte-spectrum-phy.h (module 'lte'): ns3::EnbLteSpectrumPhy::EnbLteSpectrumPhy(ns3::EnbLteSpectrumPhy const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EnbLteSpectrumPhy const &', 'arg0')])
     ## enb-lte-spectrum-phy.h (module 'lte'): ns3::EnbLteSpectrumPhy::EnbLteSpectrumPhy() [constructor]
     cls.add_constructor([])
-    ## enb-lte-spectrum-phy.h (module 'lte'): void ns3::EnbLteSpectrumPhy::CalcSinrValues(ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::Ptr<ns3::SpectrumValue const> noise) [member function]
-    cls.add_method('CalcSinrValues', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::Ptr< ns3::SpectrumValue const >', 'noise')], 
-                   is_virtual=True)
     ## enb-lte-spectrum-phy.h (module 'lte'): static ns3::TypeId ns3::EnbLteSpectrumPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## enb-lte-spectrum-phy.h (module 'lte'): void ns3::EnbLteSpectrumPhy::CalcSinrValues(ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::Ptr<ns3::SpectrumValue const> noise) [member function]
+    cls.add_method('CalcSinrValues', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::Ptr< ns3::SpectrumValue const >', 'noise')], 
+                   is_virtual=True)
     return
 
 def register_Ns3EnbMacEntity_methods(root_module, cls):
