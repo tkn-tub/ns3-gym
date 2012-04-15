@@ -46,6 +46,7 @@ class SpectrumPhy  : public Object
 {
 
 public:
+  SpectrumPhy ();
   virtual ~SpectrumPhy ();
 
   static TypeId GetTypeId (void);
@@ -107,7 +108,9 @@ public:
    */
   virtual void StartRx (Ptr<SpectrumSignalParameters> params) = 0;
 
-
+private:
+  SpectrumPhy (SpectrumPhy const &);
+  SpectrumPhy& operator= (SpectrumPhy const &);
 };
 
 
