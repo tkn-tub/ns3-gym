@@ -69,7 +69,7 @@ LteRlcUm::GetTypeId (void)
 void
 LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   /** Store arrival time */
   RlcTag timeTag (Simulator::Now ());
@@ -100,7 +100,7 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
 void
 LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
 {
-  NS_LOG_FUNCTION (this << bytes);
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
 
   if (bytes <= 2)
     {
@@ -373,7 +373,7 @@ LteRlcUm::DoNotifyHarqDeliveryFailure ()
 void
 LteRlcUm::DoReceivePdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   // Receiver timestamp
   RlcTag rlcTag;
@@ -424,13 +424,13 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
        ( ((m_vrUh - m_windowSize) <= seqNumber) && (seqNumber < m_vrUr) )
      )
     {
-      // TODO discard the received UMD PDU. How a packet is discarded?
-      NS_LOG_LOGIC ("UMD PDU discarded");
+      NS_LOG_LOGIC ("PDU discarded");
+      p = 0;
       return;
     }
   else
     {
-      NS_LOG_LOGIC ("Place UMD PDU in the reception buffer");
+      NS_LOG_LOGIC ("Place PDU in the reception buffer");
       m_rxBuffer[seqNumber.GetValue ()] = p;
     }
 
@@ -726,7 +726,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                               * ERROR: Transition not possible
                               */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
@@ -797,13 +797,13 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                 * ERROR: Transition not possible
                                 */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
 
           default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << m_reassemblingState);
+                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -902,7 +902,7 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * ERROR: Transition not possible
                                */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
@@ -1019,13 +1019,13 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                 * ERROR: Transition not possible
                                 */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
 
           default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << m_reassemblingState);
+                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -1118,6 +1118,7 @@ LteRlcUm::DoReportBufferStatus (void)
 void
 LteRlcUm::ExpireReorderingTimer (void)
 {
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid);
   NS_LOG_LOGIC ("Reordering timer has expired");
 
   // 5.1.2.2.4 Actions when t-Reordering expires
