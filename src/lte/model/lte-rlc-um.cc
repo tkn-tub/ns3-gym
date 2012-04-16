@@ -104,7 +104,7 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes)
 
   if (bytes <= 2)
     {
-      // TODO ERROR: Header fix part is 2 bytes, we need more bytes for the data
+      // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
       NS_LOG_LOGIC ("TX opportunity too small = " << bytes);
       return;
     }
@@ -475,6 +475,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
 
       std::map <uint16_t, Ptr<Packet> >::iterator it;
       uint16_t newVrUr;
+      SequenceNumber10 oldVrUr = m_vrUr;
 
       it = m_rxBuffer.find (m_vrUr.GetValue ());
       newVrUr = (it->first) + 1;
@@ -485,7 +486,7 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p)
       m_vrUr = newVrUr;
       NS_LOG_LOGIC ("New VR(UR) = " << m_vrUr);
 
-      ReassembleSnLessThan (m_vrUr);
+      ReassembleSnInterval (oldVrUr, m_vrUr);
     }
 
   // m_vrUh can change previously, set new modulus base
@@ -576,7 +577,6 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
   if ( currSeqNumber != m_expectedSeqNumber )
     {
       expectedSnLost = true;
-      // TODO LOSSES
       NS_LOG_LOGIC ("There are losses. Expected SN = " << m_expectedSeqNumber << ". Current SN = " << currSeqNumber);
       m_expectedSeqNumber = currSeqNumber + 1;
     }
@@ -608,7 +608,6 @@ LteRlcUm::ReassembleAndDeliver (Ptr<Packet> packet)
           if ( lengthIndicator >= packet->GetSize () )
             {
               NS_LOG_LOGIC ("INTERNAL ERROR: Not enough data in the packet (" << packet->GetSize () << "). Needed LI=" << lengthIndicator);
-              // TODO What to do in this case? Discard packet and continue? Or Assert?
             }
 
           // Split packet in two fragments
@@ -1060,28 +1059,32 @@ LteRlcUm::ReassembleOutsideWindow (void)
 }
 
 void
-LteRlcUm::ReassembleSnLessThan (SequenceNumber10 seqNumber)
+LteRlcUm::ReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 highSeqNumber)
 {
-  NS_LOG_LOGIC ("Reassemble SN < updated VR(UR)" );
+  NS_LOG_LOGIC ("Reassemble SN between " << lowSeqNumber << " and " << highSeqNumber);
 
   std::map <uint16_t, Ptr<Packet> >::iterator it;
-  it = m_rxBuffer.begin ();
 
-  while ( (it != m_rxBuffer.end ()) && (it->first < seqNumber.GetValue ()) )
+  SequenceNumber10 reassembleSn = lowSeqNumber;
+  NS_LOG_LOGIC ("reassembleSN = " << reassembleSn);
+  NS_LOG_LOGIC ("highSeqNumber = " << highSeqNumber);
+  while (reassembleSn < highSeqNumber)
     {
-      NS_LOG_LOGIC ("SN = " << it->first);
+      NS_LOG_LOGIC ("reassembleSn < highSeqNumber");
+      it = m_rxBuffer.find (reassembleSn.GetValue ());
+      NS_LOG_LOGIC ("it->first  = " << it->first);
+      NS_LOG_LOGIC ("it->second = " << it->second);
+      if (it != m_rxBuffer.end () )
+        {
+          NS_LOG_LOGIC ("SN = " << it->first);
 
-      // Reassemble RLC SDUs and deliver the PDCP PDU to upper layer
-      ReassembleAndDeliver (it->second);
+          // Reassemble RLC SDUs and deliver the PDCP PDU to upper layer
+          ReassembleAndDeliver (it->second);
 
-      std::map <uint16_t, Ptr<Packet> >::iterator it_tmp = it;
-      ++it;
-      m_rxBuffer.erase (it_tmp);
-    }
-
-  if (it != m_rxBuffer.end ())
-    {
-      NS_LOG_LOGIC ("(SN = " << it->first << ") >= " << m_vrUr.GetValue ());
+          m_rxBuffer.erase (it);
+        }
+        
+      reassembleSn++;
     }
 }
 
@@ -1137,10 +1140,11 @@ LteRlcUm::ExpireReorderingTimer (void)
     {
       newVrUr++;
     }
+  SequenceNumber10 oldVrUr = m_vrUr;
   m_vrUr = newVrUr;
   NS_LOG_LOGIC ("New VR(UR) = " << m_vrUr);
 
-  ReassembleSnLessThan (m_vrUr);
+  ReassembleSnInterval (oldVrUr, m_vrUr);
 
   if ( m_vrUh > m_vrUr)
     {

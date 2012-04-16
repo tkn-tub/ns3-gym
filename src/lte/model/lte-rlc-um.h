@@ -60,7 +60,7 @@ private:
   bool IsInsideReorderingWindow (SequenceNumber10 seqNumber);
 
   void ReassembleOutsideWindow (void);
-  void ReassembleSnLessThan (SequenceNumber10 seqNumber);
+  void ReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 highSeqNumber);
 
   void ReassembleAndDeliver (Ptr<Packet> packet);
 
