@@ -212,7 +212,7 @@ PfFfMacScheduler::PfFfMacScheduler ()
     m_schedSapUser (0),
     m_timeWindow (99.0),
     m_schedTtiDelay (2),
-    // WILD ACK: based on a m_macChTtiDelay = 1
+    // WILD HACK: based on a m_macChTtiDelay = 1
     m_nextRntiUl (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -447,7 +447,6 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   
   int rbgSize = GetRbgSize (m_cschedCellConfig.m_dlBandwidth);
   int rbgNum = m_cschedCellConfig.m_dlBandwidth / rbgSize;
-  //std::vector <LteFlowId_t> rbgAllocationMap;
   std::map <uint16_t, std::vector <uint16_t> > allocationMap;
   for (int i = 0; i < rbgNum; i++)
     {
@@ -466,12 +465,10 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               NS_FATAL_ERROR ("No Transmission Mode info on user " << (*it).first);
             }
           int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
-          //uint8_t cqi = 0;
           std::vector <uint8_t> sbCqi;
           if (itCqi == m_a30CqiRxed.end ())
             {
 //               NS_LOG_DEBUG (this << " No DL-CQI for this UE " << (*it).first);
-              //cqi = 1;  // start with lowest value
               for (uint8_t k = 0; k < nLayer; k++)
                 {
                   sbCqi.push_back (1);  // start with lowest value
@@ -580,7 +577,6 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           NS_FATAL_ERROR ("No Transmission Mode info on user " << (*itMap).first);
         }
       int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
-      //uint8_t worstCqi = 15;
       std::vector <uint8_t> worstCqi (2, 15);
       if (itCqi != m_a30CqiRxed.end ())
         {
@@ -643,7 +639,6 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newDci.m_rbBitmap = rbgMask; // (32 bit bitmap see 7.1.6 of 36.213)
 
       // create the rlc PDUs -> equally divide resources among actives LCs
-//       int rlcPduSize = tbSize / lcActives;
       std::map <LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator itBufReq;
       for (itBufReq = m_rlcBufferReq.begin (); itBufReq != m_rlcBufferReq.end (); itBufReq++)
         {
