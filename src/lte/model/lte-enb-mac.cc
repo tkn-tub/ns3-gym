@@ -669,7 +669,7 @@ void
 LteEnbMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
   NS_LOG_FUNCTION (this);
-  LteRadioBearerTag tag (params.rnti, params.lcid);
+  LteRadioBearerTag tag (params.rnti, params.lcid, params.layer);
   params.pdu->AddPacketTag (tag);
 //   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
 //   pb->AddPacket (params.pdu);
