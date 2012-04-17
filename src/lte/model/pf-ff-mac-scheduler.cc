@@ -482,7 +482,14 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               sbCqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi;
 //               NS_LOG_INFO (this << " CQI " << (uint32_t)cqi);
             }
-            if ((sbCqi.at(0) > 0)||(sbCqi.at(1) > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
+          uint8_t cqi1 = sbCqi.at(0);
+          uint8_t cqi2 = 1;
+          if (sbCqi.size () > 1)
+            {
+              cqi2 = sbCqi.at(1);
+            }
+          
+          if ((cqi1 > 0)||(cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
             {
 //               NS_LOG_DEBUG (this << " LC active " << LcActivePerFlow ((*it).first));
               if (LcActivePerFlow ((*it).first) > 0)
