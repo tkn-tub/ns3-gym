@@ -619,7 +619,7 @@ LteUePhy::SetTxMode1Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode1Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (1, gain);
   
 }
 
@@ -648,7 +648,7 @@ LteUePhy::SetTxMode2Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode2Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (2, gain);
 }
 
 void 
@@ -676,7 +676,7 @@ LteUePhy::SetTxMode3Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode3Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (3, gain);
 }
 
 void 
@@ -704,7 +704,7 @@ LteUePhy::SetTxMode4Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode4Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (4, gain);
 }
 
 void 
@@ -732,7 +732,7 @@ LteUePhy::SetTxMode5Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode5Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (5, gain);
 }
 
 void 
@@ -760,7 +760,7 @@ LteUePhy::SetTxMode6Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode6Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (6, gain);
 }
 
 void 
@@ -788,7 +788,7 @@ LteUePhy::SetTxMode7Gain (double gain)
     }
   }
   // forward the info to DL LteSpectrumPhy
-  m_downlinkSpectrumPhy->SetTxMode7Gain (gain);
+  m_downlinkSpectrumPhy->SetTxModeGain (7, gain);
 }
 
 
