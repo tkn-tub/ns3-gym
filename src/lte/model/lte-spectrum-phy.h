@@ -41,17 +41,17 @@
 
 namespace ns3 {
 
-struct tbId_t
+struct TbId_t
 {
   uint16_t m_rnti;
   uint8_t m_layer;
   
   public:
-  tbId_t ();
-  tbId_t (const uint16_t a, const uint8_t b);
+  TbId_t ();
+  TbId_t (const uint16_t a, const uint8_t b);
   
-  friend bool operator == (const tbId_t &a, const tbId_t &b);
-  friend bool operator < (const tbId_t &a, const tbId_t &b);
+  friend bool operator == (const TbId_t &a, const TbId_t &b);
+  friend bool operator < (const TbId_t &a, const TbId_t &b);
 };
 
   
@@ -63,7 +63,7 @@ struct tbInfo_t
   bool corrupt;
 };
 
-typedef std::map<tbId_t, tbInfo_t> expectedTbs_t;
+typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;
 
 class LteNetDevice;
 
@@ -215,13 +215,8 @@ private:
   void EndTx ();
   void EndRx ();
   
-  void SetTxMode1Gain (double gain);
-  void SetTxMode2Gain (double gain);
-  void SetTxMode3Gain (double gain);
-  void SetTxMode4Gain (double gain);
-  void SetTxMode5Gain (double gain);
-  void SetTxMode6Gain (double gain);
-  void SetTxMode7Gain (double gain);
+  void SetTxModeGain (uint8_t txMode, double gain);
+  
 
   Ptr<MobilityModel> m_mobility;
   Ptr<AntennaModel> m_antenna;

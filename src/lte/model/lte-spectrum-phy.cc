@@ -43,24 +43,24 @@ NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 namespace ns3 {
   
   
-tbId_t::tbId_t ()
+TbId_t::TbId_t ()
 {
 }
 
-tbId_t::tbId_t (const uint16_t a, const uint8_t b)
+TbId_t::TbId_t (const uint16_t a, const uint8_t b)
 : m_rnti (a),
   m_layer (b)
 {
 }
 
 bool
-operator == (const tbId_t &a, const tbId_t &b)
+operator == (const TbId_t &a, const TbId_t &b)
 {
   return ( (a.m_rnti == b.m_rnti) && (a.m_layer == b.m_layer) );
 }
 
 bool
-operator < (const tbId_t& a, const tbId_t& b)
+operator < (const TbId_t& a, const TbId_t& b)
 {
   return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_layer < b.m_layer) ) );
 }
@@ -459,7 +459,7 @@ void
 LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer)
 {
   NS_LOG_LOGIC (this << " rnti: " << rnti << " size " << size << " mcs " << (uint16_t)mcs << " layer " << (uint8_t)layer);
-  tbId_t tbId;
+  TbId_t tbId;
   tbId.m_rnti = rnti;
   tbId.m_layer = layer;
   expectedTbs_t::iterator it;
@@ -471,7 +471,7 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::
   }
   // insert new entry
   tbInfo_t tbInfo = {size, mcs, map, false};
-  m_expectedTbs.insert (std::pair<tbId_t, tbInfo_t> (tbId,tbInfo ));
+  m_expectedTbs.insert (std::pair<TbId_t, tbInfo_t> (tbId,tbInfo ));
 }
 
 
@@ -519,7 +519,7 @@ LteSpectrumPhy::EndRx ()
             // retrieve TB info of this packet 
             LteRadioBearerTag tag;
             (*j)->PeekPacketTag (tag);
-            tbId_t tbId;
+            TbId_t tbId;
             tbId.m_rnti = tag.GetRnti ();
             tbId.m_layer = tag.GetLayer ();
             itTb = m_expectedTbs.find (tbId);
@@ -568,188 +568,31 @@ LteSpectrumPhy::SetTransmissionMode (uint8_t txMode)
   m_transmissionMode = txMode;
 }
 
+
 void 
-LteSpectrumPhy::SetTxMode1Gain (double gain)
+LteSpectrumPhy::SetTxModeGain (uint8_t txMode, double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
   gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 1)
-    {
-      m_txModeGain.resize (1);
-    }
-
+  if (m_txModeGain.size () < txMode)
+  {
+    m_txModeGain.resize (txMode);
+  }
   std::vector <double> temp;
   temp = m_txModeGain;
   m_txModeGain.clear ();
   for (uint8_t i = 0; i < temp.size (); i++)
+  {
+    if (i==txMode-1)
     {
-      if (i==0)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
+      m_txModeGain.push_back (gain);
     }
-  
-}
-
-void 
-LteSpectrumPhy::SetTxMode2Gain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  // convert to linear
-  gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 2)
+    else
     {
-      m_txModeGain.resize (2);
+      m_txModeGain.push_back (temp.at (i));
     }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i==1)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
-    }
-}
-
-void 
-LteSpectrumPhy::SetTxMode3Gain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  // convert to linear
-  gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 3)
-    {
-      m_txModeGain.resize (3);
-    }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i==2)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
-    }
-}
-
-void 
-LteSpectrumPhy::SetTxMode4Gain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  // convert to linear
-  gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 4)
-    {
-      m_txModeGain.resize (4);
-    }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i==3)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
-    }
-}
-
-void 
-LteSpectrumPhy::SetTxMode5Gain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  // convert to linear
-  gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 5)
-    {
-      m_txModeGain.resize (5);
-    }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i==4)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
-    }
-}
-
-void 
-LteSpectrumPhy::SetTxMode6Gain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  // convert to linear
-  gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 6)
-    {
-      m_txModeGain.resize (6);
-    }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i==5)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
-    }
-}
-
-void 
-LteSpectrumPhy::SetTxMode7Gain (double gain)
-{
-  NS_LOG_FUNCTION (this << gain);
-  // convert to linear
-  gain = pow (10.0, (gain / 10.0));
-  if (m_txModeGain.size () < 7)
-    {
-      m_txModeGain.resize (7);
-    }
-  std::vector <double> temp;
-  temp = m_txModeGain;
-  m_txModeGain.clear ();
-  for (uint8_t i = 0; i < temp.size (); i++)
-    {
-      if (i==6)
-        {
-          m_txModeGain.push_back (gain);
-        }
-      else
-        {
-          m_txModeGain.push_back (temp.at (i));
-        }
-    }
+  }
 }
 
 
