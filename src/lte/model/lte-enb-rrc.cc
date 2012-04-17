@@ -35,7 +35,7 @@
 #include "ns3/object-map.h"
 #include <ns3/ff-mac-csched-sap.h>
 
-// WILD ACK for UE-RRC direct communications
+// WILD HACK for UE-RRC direct communications
 #include <ns3/node-list.h>
 #include <ns3/node.h>
 #include <ns3/lte-ue-net-device.h>
