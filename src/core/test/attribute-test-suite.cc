@@ -31,6 +31,7 @@
 #include "ns3/callback.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
+#include "ns3/object-factory.h"
 
 namespace ns3 {
 
@@ -61,11 +62,15 @@ class Derived : public Object
 public:
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("ns3::Derived")
+      .AddConstructor<Derived> ()
       .SetParent<Object> ()
     ;
     return tid;
   }
+  Derived () {}
 };
+
+NS_OBJECT_ENSURE_REGISTERED (Derived);
 
 class AttributeObjectTest : public Object
 {
@@ -77,6 +82,7 @@ public:
   };
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("ns3::AttributeObjectTest")
+      .AddConstructor<AttributeObjectTest> ()
       .SetParent<Object> ()
       .HideFromDocumentation ()
       .AddAttribute ("TestBoolName", "help text",
@@ -167,6 +173,14 @@ public:
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),
                      MakePointerChecker<Derived> ())
+      .AddAttribute ("PointerInitialized", "help text",
+                     StringValue("ns3::Derived"),
+                     MakePointerAccessor (&AttributeObjectTest::m_ptrInitialized),
+                     MakePointerChecker<Derived> ())
+      .AddAttribute ("PointerInitialized2", "help text",
+                     StringValue("ns3::Derived[]"),
+                     MakePointerAccessor (&AttributeObjectTest::m_ptrInitialized2),
+                     MakePointerChecker<Derived> ())
       .AddAttribute ("Callback", "help text",
                      CallbackValue (),
                      MakeCallbackAccessor (&AttributeObjectTest::m_cbValue),
@@ -214,6 +228,8 @@ private:
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;
+  Ptr<Derived> m_ptrInitialized;
+  Ptr<Derived> m_ptrInitialized2;
   TracedValue<uint8_t> m_uintSrc;
   TracedValue<enum Test_e> m_enumSrc;
   TracedValue<double> m_doubleSrc;
@@ -1019,6 +1035,41 @@ PointerAttributeTestCase::DoRun (void)
   p->GetAttribute ("Pointer", ptr);
   Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
   NS_TEST_ASSERT_MSG_EQ (x, 0, "Unexpectedly retreived unrelated Ptr<type> from stored Ptr<Derived>");
+
+  //
+  // Test whether the initialized pointers from two different objects
+  // point to different Derived objects
+  //
+  p->GetAttribute ("PointerInitialized", ptr);
+  Ptr<Derived> storedPtr = ptr.Get<Derived> ();
+  Ptr<AttributeObjectTest> p2 = CreateObject<AttributeObjectTest> ();
+  PointerValue ptr2;
+  p2->GetAttribute ("PointerInitialized", ptr2);
+  Ptr<Derived> storedPtr2 = ptr2.Get<Derived> ();
+  NS_TEST_ASSERT_MSG_NE (storedPtr, storedPtr2, "ptr and ptr2 both have PointerInitialized pointing to the same object");
+  PointerValue ptr3;
+  p2->GetAttribute ("PointerInitialized", ptr3);
+  Ptr<Derived> storedPtr3 = ptr3.Get<Derived> ();
+  NS_TEST_ASSERT_MSG_NE (storedPtr, storedPtr3, "ptr and ptr3 both have PointerInitialized pointing to the same object");
+
+  // 
+  // Test whether object factory creates the objects properly
+  //
+  ObjectFactory factory;
+  factory.SetTypeId ("ns3::AttributeObjectTest");
+  factory.Set ("PointerInitialized", StringValue ("ns3::Derived"));
+  Ptr<AttributeObjectTest> aotPtr = factory.Create ()->GetObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (aotPtr, 0, "Unable to factory.Create() a AttributeObjectTest");
+  Ptr<AttributeObjectTest> aotPtr2 = factory.Create ()->GetObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (aotPtr2, 0, "Unable to factory.Create() a AttributeObjectTest");
+  NS_TEST_ASSERT_MSG_NE (aotPtr, aotPtr2, "factory object not creating unique objects");
+  PointerValue ptr4;
+  aotPtr->GetAttribute ("PointerInitialized", ptr4);
+  Ptr<Derived> storedPtr4 = ptr4.Get<Derived> ();
+  PointerValue ptr5;
+  aotPtr2->GetAttribute ("PointerInitialized", ptr5);
+  Ptr<Derived> storedPtr5 = ptr5.Get<Derived> ();
+  NS_TEST_ASSERT_MSG_NE (storedPtr4, storedPtr5, "aotPtr and aotPtr2 are unique, but their Derived member is not");
 }
 
 // ===========================================================================
