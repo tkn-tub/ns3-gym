@@ -93,6 +93,8 @@ i.e., enable/disable the ICMPv6 Redirect sending.
 <pre>virtual Ptr&#60;AntennaModel&#62; GetRxAntenna () = 0;</pre>
 that all derived classes need to implement in order to integrate properly with the newly added antenna model. In addition, a new member variable "Ptr&#60;AntennaModel&#62; txAntenna" has been added to SpectrumSignalParameters in order to allow derived SpectrumPhy classes to provide information about the antenna model used for the transmission of a waveform.
 </li>
+<li> The Ns2CalendarScheduler event scheduler has been removed.
+</li>
 </ul>
 
 <h2>Changes to build system:</h2>
