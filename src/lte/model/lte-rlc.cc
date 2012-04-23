@@ -42,7 +42,7 @@ public:
   LteRlcSpecificLteMacSapUser (LteRlc* rlc);
 
   // Interface implemented from LteMacSapUser
-  virtual void NotifyTxOpportunity (uint32_t bytes);
+  virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer);
   virtual void NotifyHarqDeliveryFailure ();
   virtual void ReceivePdu (Ptr<Packet> p);
 
@@ -61,9 +61,9 @@ LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser ()
 }
 
 void
-LteRlcSpecificLteMacSapUser::NotifyTxOpportunity (uint32_t bytes)
+LteRlcSpecificLteMacSapUser::NotifyTxOpportunity (uint32_t bytes, uint8_t layer)
 {
-  m_rlc->DoNotifyTxOpportunity (bytes);
+  m_rlc->DoNotifyTxOpportunity (bytes, layer);
 }
 
 void
@@ -210,13 +210,14 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 }
 
 void
-LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
+LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
 {
   NS_LOG_FUNCTION (this << bytes);
   LteMacSapProvider::TransmitPduParameters params;
   params.pdu = Create<Packet> (bytes);
   params.rnti = m_rnti;
   params.lcid = m_lcid;
+  params.layer = layer;
 
   // RLC Performance evaluation
   RlcTag tag (Simulator::Now());

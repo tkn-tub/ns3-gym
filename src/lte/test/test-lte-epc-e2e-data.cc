@@ -109,7 +109,7 @@ LteEpcE2eDataTestCase::~LteEpcE2eDataTestCase ()
 void 
 LteEpcE2eDataTestCase::DoRun ()
 {
-
+  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);

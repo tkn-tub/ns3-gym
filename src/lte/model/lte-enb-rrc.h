@@ -222,7 +222,8 @@ public:
 private:
 
   void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
-
+  void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+  
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
   LtePdcpSapProvider* GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid);
 
@@ -244,6 +245,8 @@ private:
   uint16_t m_lastAllocatedRnti;
 
   std::map<uint16_t, Ptr<UeInfo> > m_ueMap;
+  
+  uint8_t m_defaultTransmissionMode;
 
 };
 

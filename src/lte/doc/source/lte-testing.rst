@@ -404,10 +404,18 @@ The parameters of the nine test cases are reported in the following:
 
    BLER for test 8.
 
+
 The test verifies that in each case the expected number of packets received correct corresponds to a Bernoulli distribution with a confidence interval of 95%, where the probability of success in each trail is :math:`1-BER` and :math:`n` is the total number of packet sent.
 
 
+MIMO Model
+----------
 
+The test suite ``lte-mimo`` aims at verifying both the effect of the gain considered for each Transmission Mode on the system performance and the Transmission Mode switching through the scheduler interface. The test consists on checking whether the amount of bytes received during a certain window of time (0.1 seconds in our case) corresponds to the expected ones according to the values of transport block
+size reported in table 7.1.7.2.1-1 of [TS36.213]_, similarly to what done for the tests of the schedulers.
+
+The test is performed both for Round Robin and Proportional Fair schedulers. The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. This tolerance is needed to account for the
+transient behavior at the beginning of the simulation and the transition phase between the Transmission Modes.
 
 
 Antenna Model integration

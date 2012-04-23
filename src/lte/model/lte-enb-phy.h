@@ -151,6 +151,8 @@ public:
   bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
   bool DeleteUePhy (uint16_t rnti);
+  
+  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode); 
 
 
   /**
@@ -187,6 +189,7 @@ private:
 
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;
+  
 };
 
 

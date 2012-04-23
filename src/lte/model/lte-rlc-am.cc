@@ -162,7 +162,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
  */
 
 void
-LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
+LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
 {
   NS_LOG_FUNCTION (this << bytes);
   NS_ASSERT_MSG (bytes > 2, "Tx opportunity too small = " << bytes);
@@ -500,6 +500,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes)
   params.pdu = packet;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
+  params.layer = layer;
 
   m_macSapProvider->TransmitPdu (params);
 }

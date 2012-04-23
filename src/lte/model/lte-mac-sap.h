@@ -47,6 +47,7 @@ public:
     Ptr<Packet> pdu;  /**< the RLC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
+    uint8_t     layer; /**< the layer value that was passed by the MAC in the call to NotifyTxOpportunity that generated this PDU */
   };
 
   /**
@@ -98,8 +99,9 @@ public:
    * transmission opportunity to this RLC instance.
    *
    * \param bytes the number of bytes to transmit
+   * \param layer the layer of transmission (MIMO)
    */
-  virtual void NotifyTxOpportunity (uint32_t bytes) = 0;
+  virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer) = 0;
 
   /**
    * Called by the MAC to notify the RLC that an HARQ process related

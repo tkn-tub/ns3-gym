@@ -298,6 +298,15 @@ LteUeRrc::GetLcIdVector ()
   return v;
 }
 
+void
+LteUeRrc::DoRrcConfigurationUpdateInd (LteUeConfig_t params)
+{
+  NS_LOG_FUNCTION (this << " RNTI " << params.m_rnti << " txMode " << (uint16_t)params.m_transmissionMode);
+  
+  // propagate the information to MAC layer
+  m_cmacSapProvider->RrcUpdateConfigurationReq (params);
+}
+
 
 } // namespace ns3
 

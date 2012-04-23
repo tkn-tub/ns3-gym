@@ -74,6 +74,25 @@ operator < (const ImsiLcidPair_t& a, const ImsiLcidPair_t& b)
 }
 
 
+LteUeConfig_t::LteUeConfig_t ()
+{
+}
+
+
+
+bool
+operator == (const LteUeConfig_t &a, const LteUeConfig_t &b)
+{
+  return (a.m_rnti == b.m_rnti);
+}
+
+bool
+operator < (const LteUeConfig_t& a, const LteUeConfig_t& b)
+{
+  return (a.m_rnti < b.m_rnti);
+}
+
+
 uint16_t
 LteFfConverter::double2fpS11dot3 (double val)
 {
@@ -144,6 +163,38 @@ BufferSizeLevelBsr::BufferSize2BsrId (uint32_t val)
     }
     
   return (index);
+}
+
+
+uint8_t
+TransmissionModesLayers::TxMode2LayerNum (uint8_t txMode)
+{
+  uint8_t nLayer = 0;
+  switch (txMode)
+    {
+    case 0: // Tx MODE 1: SISO
+      nLayer = 1;
+      break;
+    case 1: // Tx MODE 2: MIMO Tx Diversity
+      nLayer = 1;
+      break;
+    case 2: // Tx MODE 3: MIMO Spatial Multiplexity Open Loop
+      nLayer = 2;
+      break;
+    case 3: // Tx MODE 4: MIMO Spatial Multiplexity Closed Loop
+      nLayer = 2;
+      break;
+    case 4: // Tx MODE 5: MIMO Multi-User
+      nLayer = 2;
+      break;
+    case 5: // Tx MODE 6: Closer loop single layer percoding
+      nLayer = 1;
+      break;
+    case 6: // Tx MODE 7: Single antenna port 5
+      nLayer = 1;
+      break;
+    }
+  return (nLayer);
 }
 
 

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
 #ifndef LTE_ENB_CMAC_SAP_H
@@ -24,6 +25,8 @@
 #include <ns3/packet.h>
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/lte-common.h>
+#include <ns3/ff-mac-csched-sap.h>
 
 namespace ns3 {
 
@@ -94,6 +97,8 @@ public:
    * \param lcid
    */
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid) = 0;
+  
+  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params) = 0;
 
 
 };
@@ -118,6 +123,7 @@ public:
    * \param success true if the operation was successful, false otherwise
    */
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success) = 0;
+  virtual void RrcConfigurationUpdateInd (LteUeConfig_t params) = 0;
 };
 
 
