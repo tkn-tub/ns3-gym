@@ -201,6 +201,7 @@ private:
   void SetTxMode5Gain (double gain);
   void SetTxMode6Gain (double gain);
   void SetTxMode7Gain (double gain);
+  void SetTxModeGain (uint8_t txMode, double gain);
   
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
