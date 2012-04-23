@@ -47,7 +47,7 @@ public:
     Ptr<Packet> pdu;  /**< the RLC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
-    uint8_t     layer; /**< the layer of transmission (MIMO) */
+    uint8_t     layer; /**< the layer value that was passed by the MAC in the call to NotifyTxOpportunity that generated this PDU */
   };
 
   /**
