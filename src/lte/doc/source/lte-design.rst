@@ -1108,6 +1108,8 @@ The generation of CQI feedback is done accordingly to what specified in [FFAPI]_
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
+The CQI feedbacks are currently evaluated according to the SINR perceived by data transmissions (i.e., PDSHC for downlink and PUSCH for uplink) instead of the one based on reference signals (i.e., RS for downlink and SRS for uplink) since that signals are not implemented in the current version of the PHY layer. This implies that a UE has to transmit some data in order to have CQI feedbacks. This assumption is based on the fact that the reference signals defined in LTE are usually multiplexed within the data transmissions resources.
+
 Interference Model
 ^^^^^^^^^^^^^^^^^^
 
