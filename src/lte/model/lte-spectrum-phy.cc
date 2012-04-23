@@ -76,7 +76,7 @@ LteSpectrumPhy::LteSpectrumPhy ()
   m_interference = CreateObject<LteInterference> ();
   for (uint8_t i = 0; i < 7; i++)
     {
-      m_txModeGain.push_back (0.0);
+      m_txModeGain.push_back (1.0);
     }
 }
 
@@ -491,7 +491,7 @@ LteSpectrumPhy::EndRx ()
   expectedTbs_t::iterator itTb = m_expectedTbs.begin ();
   
   // apply transmission mode gain
-  NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_txModeGain.size () << " gain " << m_txModeGain.at (m_transmissionMode));
+  NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_transmissionMode << " gain " << m_txModeGain.at (m_transmissionMode));
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
   m_sinrPerceived *= m_txModeGain.at (m_transmissionMode);
   
@@ -572,7 +572,7 @@ LteSpectrumPhy::SetTransmissionMode (uint8_t txMode)
 void 
 LteSpectrumPhy::SetTxModeGain (uint8_t txMode, double gain)
 {
-  NS_LOG_FUNCTION (this << gain);
+  NS_LOG_FUNCTION (this << " txmode " << (uint16_t)txMode << " gain " << gain);
   // convert to linear
   gain = pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < txMode)
