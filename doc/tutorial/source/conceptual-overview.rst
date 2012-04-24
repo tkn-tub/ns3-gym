@@ -184,7 +184,7 @@ adhere.  If you want to contribute your code to the project, you will
 eventually have to conform to the |ns3| coding standard as described 
 in the file ``doc/codingstd.txt`` or shown on the project web page
 `here
-<http://www.nsnam.org/codingstyle.html>`_.
+<http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
 
 We recommend that you, well, just get used to the look and feel of |ns3|
 code and adopt this standard whenever you are working with our code.  All of 

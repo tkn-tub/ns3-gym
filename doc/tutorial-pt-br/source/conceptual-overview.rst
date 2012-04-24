@@ -278,9 +278,9 @@ A primeira linha do arquivo é uma linha de modo emacs, que informa sobre a conve
 	eventually have to conform to the |ns3| coding standard as described 
 	in the file ``doc/codingstd.txt`` or shown on the project web page
 	`here
-	<http://www.nsnam.org/codingstyle.html>`_.
+	<http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
 
-Este é sempre um assunto um tanto quanto controverso. O projeto |ns3|, tal como a maioria dos projetos de grande porte, adotou um estilo de codificação, para o qual todo o código deve conformar. Se o leitor quiser contribuir com o projeto, deverá estar em conformidade com a codificação que está descrita no arquivo ``doc/codingstd.txt`` ou no `sítio <http://www.nsnam.org/codingstyle.html>`_.
+Este é sempre um assunto um tanto quanto controverso. O projeto |ns3|, tal como a maioria dos projetos de grande porte, adotou um estilo de codificação, para o qual todo o código deve conformar. Se o leitor quiser contribuir com o projeto, deverá estar em conformidade com a codificação que está descrita no arquivo ``doc/codingstd.txt`` ou no `sítio <http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
 
 ..
 	We recommend that you, well, just get used to the look and feel of |ns3|
