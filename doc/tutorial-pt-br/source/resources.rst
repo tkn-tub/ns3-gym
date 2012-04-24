@@ -27,10 +27,10 @@ A Internet
 	aware.  The main web site is located at http://www.nsnam.org and 
 	provides access to basic information about the |ns3| system.  Detailed 
 	documentation is available through the main web site at
-	http://www.nsnam.org/documents.html.  You can also find documents 
+	http://www.nsnam.org/documentation/.  You can also find documents 
 	relating to the system architecture from this page.
 
-Há vários recursos importantes que um usuário do |ns3| deve conhecer. O principal está em http://www.nsnam.org e fornece acesso a informações básicas sobre o |ns3|. A documentação detalhada esta disponível no sítio principal através do endereço http://www.nsnam.org/documents.html. Nesta página, também podem ser encontrados documentos relacionados a arquitetura do sistema.
+Há vários recursos importantes que um usuário do |ns3| deve conhecer. O principal está em http://www.nsnam.org e fornece acesso a informações básicas sobre o |ns3|. A documentação detalhada esta disponível no sítio principal através do endereço http://www.nsnam.org/documentation/. Nesta página, também podem ser encontrados documentos relacionados a arquitetura do sistema.
 
 ..
 	There is a Wiki that complements the main |ns3| web site which you will
