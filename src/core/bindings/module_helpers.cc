@@ -41,19 +41,16 @@ public:
 
   virtual ~PythonEventImpl ()
   {
-    PyGILState_STATE __py_gil_state;
-    __py_gil_state = (PyEval_ThreadsInitialized () ? PyGILState_Ensure () : (PyGILState_STATE) 0);
+    PyGILState_STATE __py_gil_state = PyGILState_Ensure ();
 
     Py_DECREF (m_callback);
     Py_DECREF (m_args);
 
-    if (PyEval_ThreadsInitialized ())
-      PyGILState_Release (__py_gil_state);
+    PyGILState_Release (__py_gil_state);
   }
   virtual void Notify ()
   {
-    PyGILState_STATE __py_gil_state;
-    __py_gil_state = (PyEval_ThreadsInitialized () ? PyGILState_Ensure () : (PyGILState_STATE) 0);
+    PyGILState_STATE __py_gil_state = PyGILState_Ensure ();
 
     PyObject *retval = PyObject_CallObject (m_callback, m_args);
     if (retval) {
@@ -66,8 +63,7 @@ public:
         PyErr_Print ();
       }
 
-    if (PyEval_ThreadsInitialized ())
-      PyGILState_Release (__py_gil_state);
+    PyGILState_Release (__py_gil_state);
   }
 };
 
@@ -382,17 +378,15 @@ PythonSimulator::Run(void)
   m_stopped = false;
   m_isCheckPending = false;
   m_thread->Start();
-  if (PyEval_ThreadsInitialized ())
-    {
-      m_py_thread_state = PyEval_SaveThread ();
-    }
+
+  Py_BEGIN_ALLOW_THREADS;
+  
   ns3::Simulator::Run ();
+
+  Py_END_ALLOW_THREADS;
+
   m_stopped = true;
   m_thread->Join();
-  if (m_py_thread_state)
-    {
-      PyEval_RestoreThread (m_py_thread_state);
-    }
 }
 
 bool 
@@ -404,20 +398,16 @@ PythonSimulator::IsFailed(void) const
 void
 PythonSimulator::DoCheckSignals(void)
 {
-  if (m_py_thread_state)
-    {
-      PyEval_RestoreThread (m_py_thread_state);
-    }
+  PyGILState_STATE __py_gil_state = PyGILState_Ensure ();
+
   PyErr_CheckSignals ();
   if (PyErr_Occurred ())
     {
       m_failed = true;
       ns3::Simulator::Stop();
     }
-  if (PyEval_ThreadsInitialized ())
-    {
-      m_py_thread_state = PyEval_SaveThread ();
-    }
+
+  PyGILState_Release (__py_gil_state);
 
   m_isCheckPending = false;
 }
@@ -431,7 +421,7 @@ PythonSimulator::DoRun(void)
         {
           m_isCheckPending = true;
           ns3::Simulator::ScheduleWithContext(0xffffffff, ns3::Seconds(0.0),
-					  &PythonSimulator::DoCheckSignals, this);
+                                              &PythonSimulator::DoCheckSignals, this);
         }
       usleep(200000);
     }
