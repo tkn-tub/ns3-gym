@@ -111,6 +111,8 @@ public:
   * \param p the MAC PDU to sent
   */
   virtual void DoSendMacPdu (Ptr<Packet> p);
+  
+  virtual uint8_t DoGetMacChTtiDelay ();
 
 
   void DoSetDownlinkSubChannels ();

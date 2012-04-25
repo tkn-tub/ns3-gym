@@ -35,6 +35,7 @@
 #include "lte-ue-mac.h"
 #include "ff-mac-common.h"
 #include "lte-sinr-chunk-processor.h"
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUePhy");
@@ -118,8 +119,15 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
+  m_macChTtiDelay = UL_PUSCH_TTIS_DELAY + 1; // +1 for avoiding UL/DL trigger synchronization remove 1 TTI of delay
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+      std::list<Ptr<IdealControlMessage> > l;
+      m_controlMessagesQueue.push_back (l);
+    }
   std::vector <int> ulRb;
-  SetMacChDelay (m_macChTtiDelay + 1); // +1 for avoiding UL/DL trigger synchronization remove 1 TTI of delay
   m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
 }
 
@@ -253,13 +261,6 @@ LteUePhy::GetTxPower () const
   return m_txPower;
 }
 
-void
-LteUePhy::SetMacChDelay (uint8_t delay)
-{
-  m_macChTtiDelay = delay;
-  Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
-  m_packetBurstQueue.resize (delay, pb);
-}
 
 uint8_t
 LteUePhy::GetMacChDelay (void) const
@@ -527,6 +528,7 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
   else if (msg->GetMessageType () == IdealControlMessage::UL_DCI) 
     {
       // set the uplink bandwidht according to the UL-CQI
+      NS_LOG_DEBUG (this << " UL DCI");
       Ptr<UlDciIdealControlMessage> msg2 = DynamicCast<UlDciIdealControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       std::vector <int> ulRb;
@@ -592,7 +594,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      NS_LOG_LOGIC (this << " UE " << m_rnti << " start TX " << pb->GetNPackets());
+      NS_LOG_LOGIC (this << " UE - start TX");
       m_uplinkSpectrumPhy->StartTx (pb);
     }
     

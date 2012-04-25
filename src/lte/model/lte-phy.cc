@@ -48,19 +48,9 @@ LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_ulBandwidth (0),
     m_dlBandwidth (0),
     m_rbgSize (0),
-    m_macChTtiDelay (2) // 1 TTI delay between MAC and CH
+    m_macChTtiDelay (0)
 {
   NS_LOG_FUNCTION (this);
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
-      m_packetBurstQueue.push_back (pb);
-    }
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      std::list<Ptr<IdealControlMessage> > l;
-      m_controlMessagesQueue.push_back (l);
-    }
 }
 
 

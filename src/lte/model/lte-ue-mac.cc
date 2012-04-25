@@ -388,8 +388,15 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
           if (itBsr!=m_ulBsrReceived.end ())
             {
               NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
-              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0); // UE works only in SISO mode
-              (*itBsr).second -= dci.m_tbSize / activeLcs;
+              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0);
+              if ((*itBsr).second >=  dci.m_tbSize / activeLcs)
+                {
+                  (*itBsr).second -= dci.m_tbSize / activeLcs;
+                }
+              else
+                {
+                  (*itBsr).second = 0;
+                }
             }
         }
 

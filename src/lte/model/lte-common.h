@@ -24,6 +24,9 @@
 #include "ns3/uinteger.h"
 #include <math.h>
 
+// see 36.213 section 8
+#define UL_PUSCH_TTIS_DELAY 4
+
 namespace ns3 {
 
 

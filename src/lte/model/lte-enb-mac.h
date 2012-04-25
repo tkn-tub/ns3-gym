@@ -227,6 +227,9 @@ private:
    * Frame number, Subframe number, RNTI, MCS of TB, size of TB
    */
   TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t> m_ulScheduling;
+  
+  uint8_t m_macChTtiDelay; // delay of MAC, PHY and channel in terms of TTIs
+  
 
 };
 

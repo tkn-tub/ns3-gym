@@ -56,6 +56,7 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetCellId (uint16_t cellId);
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual uint8_t GetMacChTtiDelay ();
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   
 
@@ -93,6 +94,12 @@ EnbMemberLteEnbPhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage>
   m_phy->DoSendIdealControlMessage (msg);
 }
 
+uint8_t
+EnbMemberLteEnbPhySapProvider::GetMacChTtiDelay ()
+{
+  return (m_phy->DoGetMacChTtiDelay ());
+}
+
 void
 EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
 {
@@ -122,11 +129,6 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      std::list<UlDciIdealControlMessage> l;
-      m_ulDciQueue.push_back (l);
-    }
 }
 
 TypeId
@@ -231,7 +233,20 @@ void
 LteEnbPhy::SetMacChDelay (uint8_t delay)
 {
   m_macChTtiDelay = delay;
-  m_packetBurstQueue.resize (delay);
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+      std::list<Ptr<IdealControlMessage> > l;
+      m_controlMessagesQueue.push_back (l);
+      std::list<UlDciIdealControlMessage> l1;
+      m_ulDciQueue.push_back (l1);
+    }
+  for (int i = 0; i < UL_PUSCH_TTIS_DELAY; i++)
+    {
+      std::list<UlDciIdealControlMessage> l1;
+      m_ulDciQueue.push_back (l1);
+    }
 }
 
 uint8_t
@@ -281,6 +296,12 @@ LteEnbPhy::DoSendMacPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
   SetMacPdu (p);
+}
+
+uint8_t
+LteEnbPhy::DoGetMacChTtiDelay ()
+{
+  return (m_macChTtiDelay);
 }
 
 
@@ -534,7 +555,7 @@ void
 LteEnbPhy::QueueUlDci (UlDciIdealControlMessage m)
 {
   NS_LOG_FUNCTION (this);
-  m_ulDciQueue.at (m_macChTtiDelay - 1).push_back (m);
+  m_ulDciQueue.at (UL_PUSCH_TTIS_DELAY - 1).push_back (m);
 }
 
 std::list<UlDciIdealControlMessage>

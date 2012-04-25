@@ -202,7 +202,7 @@ LteInterferenceTestCase::DoRun (void)
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 
-  Simulator::Stop (Seconds (0.010));
+  Simulator::Stop (Seconds (0.020));
   Simulator::Run ();
   
 
@@ -232,7 +232,7 @@ LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
    *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 8) )
+  if ( (frameNo > 1) || (subframeNo > 9) )
     {
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_dlMcs, "Wrong DL MCS ");
     }
@@ -247,7 +247,7 @@ LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
    *    For first 5 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 9) )
+  if ( (frameNo > 1) && (subframeNo > 4) )
     {
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcs, m_ulMcs, "Wrong UL MCS");
     }
