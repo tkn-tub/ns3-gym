@@ -118,6 +118,9 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
+  std::vector <int> ulRb;
+  SetMacChDelay (m_macChTtiDelay + 1); // +1 for avoiding UL/DL trigger synchronization remove 1 TTI of delay
+  m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
 }
 
 
@@ -254,7 +257,8 @@ void
 LteUePhy::SetMacChDelay (uint8_t delay)
 {
   m_macChTtiDelay = delay;
-  m_packetBurstQueue.resize (delay);
+  Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+  m_packetBurstQueue.resize (delay, pb);
 }
 
 uint8_t
@@ -531,7 +535,8 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
           ulRb.push_back (i + dci.m_rbStart);
           //NS_LOG_DEBUG (this << " UE RB " << i + dci.m_rbStart);
         }
-      SetSubChannelsForTransmission (ulRb);
+        
+      QueueSubChannelsForTransmission (ulRb);
       // pass the info to the MAC
       m_uePhySapUser->ReceiveIdealControlMessage (msg);
     }
@@ -544,11 +549,27 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 }
 
+void
+LteUePhy::QueueSubChannelsForTransmission (std::vector <int> rbMap)
+{
+  m_subChannelsForTransmissionQueue.at (m_macChTtiDelay - 1) = rbMap;
+}
+
 
 void
 LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   // trigger from eNB
+  
+  // update uplink transmission mask according to previous UL-CQIs
+  SetSubChannelsForTransmission (m_subChannelsForTransmissionQueue.at (0));
+  // shift the queue
+  for (uint8_t i = 1; i < m_macChTtiDelay; i++)
+    {
+      m_subChannelsForTransmissionQueue.at (i-1) = m_subChannelsForTransmissionQueue.at (i);
+    }
+  m_subChannelsForTransmissionQueue.at (m_macChTtiDelay-1).clear ();
+  
 
   // send control messages
   std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
@@ -571,7 +592,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      NS_LOG_LOGIC (this << " start TX");
+      NS_LOG_LOGIC (this << " UE " << m_rnti << " start TX " << pb->GetNPackets());
       m_uplinkSpectrumPhy->StartTx (pb);
     }
     

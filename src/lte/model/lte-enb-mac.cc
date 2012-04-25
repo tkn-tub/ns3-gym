@@ -603,6 +603,7 @@ LteEnbMac::DoAddUe (uint16_t rnti)
   NS_LOG_FUNCTION (this << " rnti=" << rnti);
   FfMacCschedSapProvider::CschedUeConfigReqParameters params;
   params.m_rnti = rnti;
+  params.m_transmissionMode = 0; // set to default value (SISO) for avoiding random initialization (valgrind error)
   m_cschedSapProvider->CschedUeConfigReq (params);
 }
 

@@ -211,8 +211,8 @@ PfFfMacScheduler::PfFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
     m_timeWindow (99.0),
-    m_schedTtiDelay (2),
-    // WILD HACK: based on a m_macChTtiDelay = 1
+    m_schedTtiDelay (4),
+    // WILD HACK: based on a m_macChTtiDelay = 2
     m_nextRntiUl (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -1052,14 +1052,14 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   uint32_t frameNo = (0x3FF & (params.m_sfnSf >> 4));
   uint32_t subframeNo = (0xF & params.m_sfnSf);
 //   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
-  if (subframeNo <= m_schedTtiDelay)
+  if (subframeNo <= (uint32_t)(m_schedTtiDelay + 1))
     {
       frameNo--;
-      subframeNo = (10 + subframeNo - m_schedTtiDelay) % 11;
+      subframeNo = (10 + subframeNo - (m_schedTtiDelay + 1)) % 11;
     }
   else
     {
-      subframeNo = (subframeNo - m_schedTtiDelay) % 11;
+      subframeNo = (subframeNo - (m_schedTtiDelay + 1)) % 11;
     }
   uint16_t sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
 //   NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo << " sfnSf "  << sfnSf);

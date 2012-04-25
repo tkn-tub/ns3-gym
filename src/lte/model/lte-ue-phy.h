@@ -213,8 +213,13 @@ private:
   void SetTxMode7Gain (double gain);
   void SetTxModeGain (uint8_t txMode, double gain);
   
+  void QueueSubChannelsForTransmission (std::vector <int> rbMap);
+  
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
+  
+  std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
+  
   
   Ptr<LteAmc> m_amc;
 
