@@ -26,6 +26,12 @@ def get_list_from_file(file_path, list_name):
         list_string = ""
         parsing_multiline_list = False
         for line in file_in:
+
+            # Remove any comments.
+            if '#' in line:
+                (line, comment) = line.split('#', 1)
+
+            # Parse the line.
             if list_name in line or parsing_multiline_list:
                 list_string += line
 
@@ -60,6 +66,12 @@ def get_bool_from_file(file_path, bool_name, value_if_missing):
         # Look for the boolean variable.
         bool_found = False
         for line in file_in:
+
+            # Remove any comments.
+            if '#' in line:
+                (line, comment) = line.split('#', 1)
+
+            # Parse the line.
             if bool_name in line:
                 # Evaluate the variable's line once it is found.  Make
                 # the split function only split it once.
