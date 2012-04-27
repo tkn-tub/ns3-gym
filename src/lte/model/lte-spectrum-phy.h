@@ -66,6 +66,7 @@ struct tbInfo_t
 typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;
 
 class LteNetDevice;
+class AntennaModel;
 
 /**
  * \ingroup lte

@@ -171,8 +171,8 @@ int main (int argc, char *argv[]) {
   appSink->AddApplication (receiver);
   receiver->SetStartTime (Seconds (0));
 
-  //  Config::Set("/NodeList/*/ApplicationList/*/$Sender/Destination",
-  //              Ipv4AddressValue("192.168.0.2"));
+  Config::Set ("/NodeList/*/ApplicationList/*/$Sender/Destination",
+               Ipv4AddressValue ("192.168.0.2"));
 
 
 

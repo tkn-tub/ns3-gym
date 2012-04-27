@@ -36,12 +36,16 @@ New user-visible features
    
 Bugs fixed
 ----------
+ - bug 1313 - Stddev (average.h) returning NaN
  - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
  - bug 1318 - Asserts for IPv6 malformed packets
+ - bug 1339 - test.py uses the old name for the test runner
  - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
  - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
  - bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
  - bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor fixes to ICMPv6)
+ - bug 1391 - .ns3rc does not allow comments as expected
+ - bug 1392 - Modules built report does not clarify C++ or Python
  - bug 1395 - AODV DeferredRouteOutputTag missing constructor
  
 Known issues

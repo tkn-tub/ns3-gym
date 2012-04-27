@@ -846,7 +846,12 @@ def shutdown(ctx):
         # Print the list of built modules.
         print
         print 'Modules built:'
-        names_without_prefix =[name[len('ns3-'):] for name in env['NS3_ENABLED_MODULES']]
+        names_without_prefix = []
+        for name in env['NS3_ENABLED_MODULES']:
+            name1 = name[len('ns3-'):]
+            if name not in env.MODULAR_BINDINGS_MODULES:
+                name1 += " (no Python)"
+            names_without_prefix.append(name1)
         print_module_names(names_without_prefix)
         print
 

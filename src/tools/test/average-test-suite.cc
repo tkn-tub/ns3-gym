@@ -31,28 +31,28 @@ const double TOLERANCE = 1e-14;
 // Test case for a single integer.
 // ===========================================================================
 
-class OneIntegerTestCase : public TestCase
+class OneIntegerAverageTestCase : public TestCase
 {
 public:
-  OneIntegerTestCase ();
-  virtual ~OneIntegerTestCase ();
+  OneIntegerAverageTestCase ();
+  virtual ~OneIntegerAverageTestCase ();
 
 private:
   virtual void DoRun (void);
 };
 
-OneIntegerTestCase::OneIntegerTestCase ()
+OneIntegerAverageTestCase::OneIntegerAverageTestCase ()
   : TestCase ("Average Object Test using One Integer")
 
 {
 }
 
-OneIntegerTestCase::~OneIntegerTestCase ()
+OneIntegerAverageTestCase::~OneIntegerAverageTestCase ()
 {
 }
 
 void
-OneIntegerTestCase::DoRun (void)
+OneIntegerAverageTestCase::DoRun (void)
 {
   Average<int> calculator;
 
@@ -107,28 +107,28 @@ OneIntegerTestCase::DoRun (void)
 // Test case for five integers.
 // ===========================================================================
 
-class FiveIntegersTestCase : public TestCase
+class FiveIntegersAverageTestCase : public TestCase
 {
 public:
-  FiveIntegersTestCase ();
-  virtual ~FiveIntegersTestCase ();
+  FiveIntegersAverageTestCase ();
+  virtual ~FiveIntegersAverageTestCase ();
 
 private:
   virtual void DoRun (void);
 };
 
-FiveIntegersTestCase::FiveIntegersTestCase ()
+FiveIntegersAverageTestCase::FiveIntegersAverageTestCase ()
   : TestCase ("Average Object Test using Five Integers")
 
 {
 }
 
-FiveIntegersTestCase::~FiveIntegersTestCase ()
+FiveIntegersAverageTestCase::~FiveIntegersAverageTestCase ()
 {
 }
 
 void
-FiveIntegersTestCase::DoRun (void)
+FiveIntegersAverageTestCase::DoRun (void)
 {
   Average<int> calculator;
 
@@ -183,28 +183,28 @@ FiveIntegersTestCase::DoRun (void)
 // Test case for five double values.
 // ===========================================================================
 
-class FiveDoublesTestCase : public TestCase
+class FiveDoublesAverageTestCase : public TestCase
 {
 public:
-  FiveDoublesTestCase ();
-  virtual ~FiveDoublesTestCase ();
+  FiveDoublesAverageTestCase ();
+  virtual ~FiveDoublesAverageTestCase ();
 
 private:
   virtual void DoRun (void);
 };
 
-FiveDoublesTestCase::FiveDoublesTestCase ()
+FiveDoublesAverageTestCase::FiveDoublesAverageTestCase ()
   : TestCase ("Average Object Test using Five Double Values")
 
 {
 }
 
-FiveDoublesTestCase::~FiveDoublesTestCase ()
+FiveDoublesAverageTestCase::~FiveDoublesAverageTestCase ()
 {
 }
 
 void
-FiveDoublesTestCase::DoRun (void)
+FiveDoublesAverageTestCase::DoRun (void)
 {
   Average<double> calculator;
 
@@ -264,9 +264,9 @@ public:
 AverageTestSuite::AverageTestSuite ()
   : TestSuite ("average", UNIT)
 {
-  AddTestCase (new OneIntegerTestCase);
-  AddTestCase (new FiveIntegersTestCase);
-  AddTestCase (new FiveDoublesTestCase);
+  AddTestCase (new OneIntegerAverageTestCase);
+  AddTestCase (new FiveIntegersAverageTestCase);
+  AddTestCase (new FiveDoublesAverageTestCase);
 }
 
 static AverageTestSuite averageTestSuite;

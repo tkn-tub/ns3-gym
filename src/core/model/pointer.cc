@@ -18,6 +18,8 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "pointer.h"
+#include "object-factory.h"
+#include <sstream>
 
 namespace ns3 {
 
@@ -59,8 +61,19 @@ PointerValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 bool 
 PointerValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
-  NS_FATAL_ERROR ("It is not possible to deserialize a pointer.");
-  return false;
+  // We assume that the string you want to deserialize contains
+  // a description for an ObjectFactory to create an object and then assign it to the
+  // member variable.
+  ObjectFactory factory;
+  std::istringstream iss;
+  iss.str(value);
+  iss >> factory;
+  if (iss.fail())
+    {
+      return false;
+    }
+  m_value = factory.Create<Object> ();
+  return true;
 }
 
 } // namespace ns3

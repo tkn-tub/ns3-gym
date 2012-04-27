@@ -117,11 +117,22 @@ VisualSimulatorImpl::Run (void)
       const char *argv[] = { "python", NULL};
       Py_Initialize ();
       PySys_SetArgv (1, (char**) argv);
+      PyRun_SimpleString (
+                          "import visualizer\n"
+                          "visualizer.start();\n"
+                          );
     }
-  PyRun_SimpleString (
-    "import visualizer\n"
-    "visualizer.start();\n"
-    );
+  else
+    {
+      PyGILState_STATE __py_gil_state = PyGILState_Ensure ();
+    
+      PyRun_SimpleString (
+                          "import visualizer\n"
+                          "visualizer.start();\n"
+                          );
+
+      PyGILState_Release (__py_gil_state);
+    }
 }
 
 void 
