@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
+ * Copyright (C) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Nicola Baldo <nbaldo@cttc.es> (took position-allocator and turned it into building-allocator)
  */
 #include "building-allocator.h"
 #include "ns3/building.h"
@@ -36,6 +38,8 @@ GridBuildingAllocator::GridBuildingAllocator ()
   : m_current (0)
 {
   m_buildingFactory.SetTypeId ("ns3::Building");
+  m_lowerLeftPositionAllocator = CreateObject<GridPositionAllocator> ();
+  m_upperRightPositionAllocator = CreateObject<GridPositionAllocator> ();
 }
 
 GridBuildingAllocator::~GridBuildingAllocator ()
@@ -68,11 +72,11 @@ GridBuildingAllocator::GetTypeId (void)
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&GridBuildingAllocator::m_lengthY),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("DeltaX", "The x space between objects.",
+    .AddAttribute ("DeltaX", "The x space between buildings.",
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&GridBuildingAllocator::m_deltaX),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("DeltaY", "The y space between objects.",
+    .AddAttribute ("DeltaY", "The y space between buildings.",
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&GridBuildingAllocator::m_deltaY),
                    MakeDoubleChecker<double> ())
@@ -81,85 +85,12 @@ GridBuildingAllocator::GetTypeId (void)
                    MakeDoubleAccessor (&GridBuildingAllocator::m_height),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("LayoutType", "The type of layout.",
-                   EnumValue (ROW_FIRST),
+                   EnumValue (GridPositionAllocator::ROW_FIRST),
                    MakeEnumAccessor (&GridBuildingAllocator::m_layoutType),
-                   MakeEnumChecker (ROW_FIRST, "RowFirst",
-                                    COLUMN_FIRST, "ColumnFirst"))
+                   MakeEnumChecker (GridPositionAllocator::ROW_FIRST, "RowFirst",
+                                    GridPositionAllocator::COLUMN_FIRST, "ColumnFirst"))
   ;
   return tid;
-}
-
-void
-GridBuildingAllocator::SetMinX (double xMin)
-{
-  m_xMin = xMin;
-}
-void
-GridBuildingAllocator::SetMinY (double yMin)
-{
-  m_yMin = yMin;
-}
-void
-GridBuildingAllocator::SetLengthX (double lengthX)
-{
-  m_lengthX = lengthX;
-}
-void
-GridBuildingAllocator::SetLengthY (double lengthY)
-{
-  m_lengthY = lengthY;
-}
-
-void
-GridBuildingAllocator::SetDeltaX (double deltaX)
-{
-  m_deltaX = deltaX;
-}
-void
-GridBuildingAllocator::SetDeltaY (double deltaY)
-{
-  m_deltaY = deltaY;
-}
-void
-GridBuildingAllocator::SetN (uint32_t n)
-{
-  m_n = n;
-}
-void
-GridBuildingAllocator::SetLayoutType (enum LayoutType layoutType)
-{
-  m_layoutType = layoutType;
-}
-
-double
-GridBuildingAllocator::GetMinX (void) const
-{
-  return m_xMin;
-}
-double
-GridBuildingAllocator::GetMinY (void) const
-{
-  return m_yMin;
-}
-double
-GridBuildingAllocator::GetDeltaX (void) const
-{
-  return m_deltaX;
-}
-double
-GridBuildingAllocator::GetDeltaY (void) const
-{
-  return m_deltaY;
-}
-uint32_t
-GridBuildingAllocator::GetN (void) const
-{
-  return m_n;
-}
-enum GridBuildingAllocator::LayoutType
-GridBuildingAllocator::GetLayoutType (void) const
-{
-  return m_layoutType;
 }
 
 void
@@ -172,33 +103,43 @@ GridBuildingAllocator::SetBuildingAttribute (std::string n, const AttributeValue
 BuildingContainer
 GridBuildingAllocator::Create (uint32_t n) const
 {
+  NS_LOG_FUNCTION (this);
+  PushAttributes ();
   BuildingContainer bc;
   uint32_t limit = n + m_current;
   for (; m_current < limit; ++m_current)
     {
-      double bxmin = 0.0;
-      double bymin = 0.0;
-      switch (m_layoutType) {
-      case ROW_FIRST:
-        bxmin = m_xMin + (m_deltaX + m_lengthX) * (m_current % m_n);
-        bymin = m_yMin + (m_deltaY + m_lengthY) * (m_current / m_n);
-        break;
-      case COLUMN_FIRST:
-        bxmin = m_xMin + (m_deltaX + m_lengthX) * (m_current / m_n);
-        bymin = m_yMin + (m_deltaY + m_lengthY) * (m_current % m_n);
-        break;
-      }
-      double bxmax = bxmin + m_lengthX;
-      double bymax = bymin + m_lengthY;
-      Box box (bxmin, bxmax, bymin, bymax, 0, m_height);
+      Vector lowerLeft = m_lowerLeftPositionAllocator->GetNext ();
+      Vector upperRight = m_upperRightPositionAllocator->GetNext ();
+      Box box (lowerLeft.x, upperRight.x, lowerLeft.y, upperRight.y, 0, m_height);
       NS_LOG_LOGIC ("new building : " <<  box);
       BoxValue boxValue (box);
       m_buildingFactory.Set ("Boundaries", boxValue);
       Ptr<Building> b  = m_buildingFactory.Create<Building> ();
-      //b->SetAttribute ("Boundaries", boxValue);
       bc.Add (b);     
     }
   return bc;
+}
+
+void
+GridBuildingAllocator::PushAttributes () const
+{
+  NS_LOG_FUNCTION (this);
+  m_lowerLeftPositionAllocator->SetMinX (m_xMin);
+  m_upperRightPositionAllocator->SetMinX (m_xMin + m_lengthX);
+  m_lowerLeftPositionAllocator->SetDeltaX (m_lengthX + m_deltaX);
+  m_upperRightPositionAllocator->SetDeltaX (m_lengthX + m_deltaX);
+  
+  m_lowerLeftPositionAllocator->SetMinY (m_yMin);
+  m_upperRightPositionAllocator->SetMinY (m_yMin + m_lengthY);
+  m_lowerLeftPositionAllocator->SetDeltaY (m_lengthY + m_deltaY);
+  m_upperRightPositionAllocator->SetDeltaY (m_lengthY + m_deltaY); 
+
+  m_lowerLeftPositionAllocator->SetLayoutType (m_layoutType);
+  m_upperRightPositionAllocator->SetLayoutType (m_layoutType);
+
+  m_lowerLeftPositionAllocator->SetN (m_n);
+  m_upperRightPositionAllocator->SetN (m_n);
 }
 
 
