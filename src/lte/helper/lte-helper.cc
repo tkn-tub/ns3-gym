@@ -371,22 +371,21 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
-  if (m_downlinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
+  double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
+  NS_LOG_LOGIC ("DL freq: " << dlFreq);
+  bool dlFreqOk = m_downlinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (dlFreq));
+  if (!dlFreqOk)
     {
-      double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
-      NS_LOG_LOGIC ("DL freq: " << dlFreq);
-      m_downlinkPathlossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
+      NS_LOG_WARN ("DL propagation model does not have a Frequency attribute");
     }
-  else
+  double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
+  NS_LOG_LOGIC ("UL freq: " << ulFreq);
+  bool ulFreqOk = m_uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+  if (!ulFreqOk)
     {
-      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPathlossModel->GetTypeId ());
+      NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
     }
-  if (m_uplinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
-    {
-      double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
-      NS_LOG_LOGIC ("UL freq: " << ulFreq);
-      m_uplinkPathlossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
-    }
+  
 
   dev->Start ();
 

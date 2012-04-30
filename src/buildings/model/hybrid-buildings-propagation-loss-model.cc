@@ -20,15 +20,20 @@
  * 
  */
 
-#include "ns3/propagation-loss-model.h"
+#include <cmath>
+
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/double.h"
 #include "ns3/pointer.h"
-#include <math.h>
-#include "hybrid-buildings-propagation-loss-model.h"
+#include "ns3/okumura-hata-propagation-loss-model.h"
+#include "ns3/itu-r-1411-los-propagation-loss-model.h"
+#include "ns3/itu-r-1411-nlos-over-rooftop-propagation-loss-model.h"
+#include "ns3/itu-r-1238-propagation-loss-model.h"
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
+
+#include "hybrid-buildings-propagation-loss-model.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("HybridBuildingsPropagationLossModel");
@@ -40,8 +45,11 @@ NS_OBJECT_ENSURE_REGISTERED (HybridBuildingsPropagationLossModel);
 
 
 HybridBuildingsPropagationLossModel::HybridBuildingsPropagationLossModel ()
-  : BuildingsPropagationLossModel ()
 {
+  m_okumuraHata = CreateObject<OkumuraHataPropagationLossModel> ();
+  m_ituR1411Los = CreateObject<ItuR1411LosPropagationLossModel> ();
+  m_ituR1411NlosOverRooftop = CreateObject<ItuR1411NlosOverRooftopPropagationLossModel> ();
+  m_ituR1238 = CreateObject<ItuR1238PropagationLossModel> ();
 }
 
 HybridBuildingsPropagationLossModel::~HybridBuildingsPropagationLossModel ()
@@ -52,12 +60,78 @@ TypeId
 HybridBuildingsPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HybridBuildingsPropagationLossModel")
-  
-  .SetParent<BuildingsPropagationLossModel> ()
-  
-  .AddConstructor<HybridBuildingsPropagationLossModel> ();
+    
+    .SetParent<BuildingsPropagationLossModel> ()
+    
+    .AddConstructor<HybridBuildingsPropagationLossModel> ()
+    
+    .AddAttribute ("Frequency",
+                   "The Frequency  (default is 2.106 GHz).",
+                   DoubleValue (2160e6),
+                   MakeDoubleAccessor (&HybridBuildingsPropagationLossModel::SetFrequency),
+                   MakeDoubleChecker<double> ())
+
+    .AddAttribute ("Los2NlosThr",
+                   " Threshold from LoS to NLoS in ITU 1411 [m].",
+                   DoubleValue (200.0),
+                   MakeDoubleAccessor (&HybridBuildingsPropagationLossModel::m_itu1411NlosThreshold),
+                   MakeDoubleChecker<double> ())
+
+    .AddAttribute ("Environment",
+                   "Environment Scenario",
+                   EnumValue (UrbanEnvironment),
+                   MakeEnumAccessor (&HybridBuildingsPropagationLossModel::SetEnvironment),
+                   MakeEnumChecker (UrbanEnvironment, "Urban",
+                                    SubUrbanEnvironment, "SubUrban",
+                                    OpenAreasEnvironment, "OpenAreas"))
+
+    .AddAttribute ("CitySize",
+                   "Dimension of the city",
+                   EnumValue (LargeCity),
+                   MakeEnumAccessor (&HybridBuildingsPropagationLossModel::SetCitySize),
+                   MakeEnumChecker (SmallCity, "Small",
+                                    MediumCity, "Medium",
+                                    LargeCity, "Large"))
+
+    .AddAttribute ("RooftopLevel",
+                   "The height of the rooftop level in meters",
+                   DoubleValue (20.0),
+                   MakeDoubleAccessor (&HybridBuildingsPropagationLossModel::SetRooftopHeight),
+                   MakeDoubleChecker<double> (0.0, 90.0))
+
+    ;
   
   return tid;
+}
+
+void
+HybridBuildingsPropagationLossModel::SetEnvironment (EnvironmentType env)
+{
+  m_okumuraHata->SetAttribute ("Environment", EnumValue (env));
+  m_ituR1411NlosOverRooftop->SetAttribute ("Environment", EnumValue (env));
+}
+
+void
+HybridBuildingsPropagationLossModel::SetCitySize (CitySize size)
+{
+  m_okumuraHata->SetAttribute ("CitySize", EnumValue (size));
+  m_ituR1411NlosOverRooftop->SetAttribute ("CitySize", EnumValue (size));
+}
+
+void
+HybridBuildingsPropagationLossModel::SetFrequency (double freq)
+{
+  m_okumuraHata->SetAttribute ("Frequency", DoubleValue (freq));
+  m_ituR1411Los->SetAttribute ("Frequency", DoubleValue (freq));
+  m_ituR1411NlosOverRooftop->SetAttribute ("Frequency", DoubleValue (freq));
+  m_ituR1238->SetAttribute ("Frequency", DoubleValue (freq));
+}
+
+void
+HybridBuildingsPropagationLossModel::SetRooftopHeight (double rooftopHeight)
+{
+  m_rooftopHeight = rooftopHeight;
+  m_ituR1411NlosOverRooftop->SetAttribute ("RooftopLevel", DoubleValue (rooftopHeight));
 }
 
 
@@ -68,10 +142,6 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
 
   
   double distance = a->GetDistanceFrom (b);
-  if (distance <= m_minDistance)
-    {
-      return 0.0;
-    }
 
   // get the BuildingsMobilityModel pointers
   Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
@@ -176,7 +246,35 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
         } // end b1->IsIndoor ()
     } // end a1->IsOutdoor ()
 
+  loss = std::max (loss, 0.0);
+
   return loss;
+}
+
+
+double
+HybridBuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  return m_okumuraHata->GetLoss (a, b);
+}
+
+double
+HybridBuildingsPropagationLossModel::ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  if (a->GetDistanceFrom (b) < m_itu1411NlosThreshold)
+    {
+      return (m_ituR1411Los->GetLoss (a, b));
+    }
+  else
+    {
+      return (m_ituR1411NlosOverRooftop->GetLoss (a, b));
+    }
+}
+
+double
+HybridBuildingsPropagationLossModel::ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
+{
+  return m_ituR1238->GetLoss (a,b);
 }
 
 
