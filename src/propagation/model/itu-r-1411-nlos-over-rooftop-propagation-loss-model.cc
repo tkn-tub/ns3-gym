@@ -104,7 +104,10 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<
   NS_LOG_FUNCTION (this << a << b);
   double Lori = 0.0;
   double fmhz = m_frequency / 1e6;
-  if ((m_streetsOrientation >= 0)&&(m_streetsOrientation < 35))
+
+  NS_ASSERT_MSG (((m_streetsOrientation >= 0) && (m_streetsOrientation <= 90)),
+                 " Street Orientation must be in [0,90]");
+  if (m_streetsOrientation < 35)
     {
       Lori = -10.0 + 0.354 * m_streetsOrientation;
     }
@@ -112,14 +115,11 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<
     {
       Lori = 2.5 + 0.075 * (m_streetsOrientation - 35);
     }
-  else if ((m_streetsOrientation >= 55)&&(m_streetsOrientation < 90))
+  else // m_streetsOrientation >= 55
     {
       Lori = 2.5 + 0.075 * (m_streetsOrientation - 55);
     }
-  else
-    {
-      NS_FATAL_ERROR (this << " Street Orientation must be in [0,90]");
-    }
+
   double distance = a->GetDistanceFrom (b);
   double hb = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
   double hm = (a->GetPosition ().z < b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
@@ -127,7 +127,6 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<
   double Dhb = hb - m_rooftopHeight;
   double ds = (m_lambda * distance * distance) / (Dhb * Dhb);
   double Lmsd = 0.0;
-  double pi = 3.141592653589793;
   NS_LOG_LOGIC (this << " build " << m_buildingsExtend << " ds " << ds << " roof " << m_rooftopHeight << " hb " << hb << " lambda " << m_lambda);
   if (ds < m_buildingsExtend)
     {
@@ -184,7 +183,7 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<
         }
       else
         {
-          Qm = m_buildingSeparation / (2 * pi * distance) * sqrt (m_lambda / rho) * (1 / theta - (1 / (2 * pi + theta)));
+          Qm = m_buildingSeparation / (2 * M_PI * distance) * sqrt (m_lambda / rho) * (1 / theta - (1 / (2 * M_PI + theta)));
         }
       Lmsd = -10 * log10 (Qm * Qm);
     }

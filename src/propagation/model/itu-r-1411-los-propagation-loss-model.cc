@@ -52,7 +52,7 @@ ItuR1411LosPropagationLossModel::GetTypeId (void)
 double
 ItuR1411LosPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
- NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this);
   double dist = a->GetDistanceFrom (b);
   double lossLow = 0.0;
   double lossUp = 0.0;
@@ -80,6 +80,7 @@ ItuR1411LosPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
 void
 ItuR1411LosPropagationLossModel::SetFrequency (double freq)
 {
+  NS_ASSERT (freq > 0.0);
   m_lambda = 300000000 / freq;
 }
 

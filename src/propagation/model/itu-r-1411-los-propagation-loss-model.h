@@ -27,6 +27,18 @@
 
 namespace ns3 {
 
+
+/**
+ * \ingroup propagation
+ *
+ * \brief the ITU-R 1411 LOS propagation model
+ * 
+ * This class implements the ITU-R 1411 LOS propagation model for
+ * Line-of-Sight (LoS) short range outdoor communication in the
+ * frequency range 300 MHz to 100 GHz.  
+ * For more information about the model, please see
+ * the propagation module documentation in .rst format.
+ */
 class ItuR1411LosPropagationLossModel : public PropagationLossModel
 {
 

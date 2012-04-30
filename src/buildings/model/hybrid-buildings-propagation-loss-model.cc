@@ -30,6 +30,7 @@
 #include "ns3/itu-r-1411-los-propagation-loss-model.h"
 #include "ns3/itu-r-1411-nlos-over-rooftop-propagation-loss-model.h"
 #include "ns3/itu-r-1238-propagation-loss-model.h"
+#include "ns3/kun-2600-mhz-propagation-loss-model.h"
 #include "ns3/buildings-mobility-model.h"
 #include "ns3/enum.h"
 
@@ -50,6 +51,7 @@ HybridBuildingsPropagationLossModel::HybridBuildingsPropagationLossModel ()
   m_ituR1411Los = CreateObject<ItuR1411LosPropagationLossModel> ();
   m_ituR1411NlosOverRooftop = CreateObject<ItuR1411NlosOverRooftopPropagationLossModel> ();
   m_ituR1238 = CreateObject<ItuR1238PropagationLossModel> ();
+  m_kun2600Mhz = CreateObject<Kun2600MhzPropagationLossModel> ();
 }
 
 HybridBuildingsPropagationLossModel::~HybridBuildingsPropagationLossModel ()
@@ -125,6 +127,7 @@ HybridBuildingsPropagationLossModel::SetFrequency (double freq)
   m_ituR1411Los->SetAttribute ("Frequency", DoubleValue (freq));
   m_ituR1411NlosOverRooftop->SetAttribute ("Frequency", DoubleValue (freq));
   m_ituR1238->SetAttribute ("Frequency", DoubleValue (freq));
+  m_frequency = freq;
 }
 
 void
@@ -255,7 +258,14 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
 double
 HybridBuildingsPropagationLossModel::OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const
 {
-  return m_okumuraHata->GetLoss (a, b);
+  if (m_frequency <= 2.3e9)
+    {
+      return m_okumuraHata->GetLoss (a, b);
+    }
+  else
+    {
+      return m_kun2600Mhz->GetLoss (a, b);
+    }
 }
 
 double

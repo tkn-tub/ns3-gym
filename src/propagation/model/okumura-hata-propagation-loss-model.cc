@@ -74,7 +74,8 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
   double dist = a->GetDistanceFrom (b) / 1000.0; 
   if (m_frequency <= 1.500e9)
     {
-      // standard Okumura Hata (from wikipedia)
+      // standard Okumura Hata 
+      // see eq. (4.4.1) in the COST 231 final report
       double log_f = log10 (fmhz);
       double hb = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       double hm = (a->GetPosition ().z < b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
@@ -97,7 +98,7 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
           log_bHeight = 0.8 + (1.1 * log_f - 0.7) * hm - 1.56 * log_f;
         }
 
-      //       NS_LOG_INFO (this << " logf " << 26.16 * log_f << " loga " << log_aHeight << " X " << (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) << " logb " << log_bHeight);
+      NS_LOG_INFO (this << " logf " << 26.16 * log_f << " loga " << log_aHeight << " X " << (((44.9 - (6.55 * log10(hb)) ))*log10 (a->GetDistanceFrom (b))) << " logb " << log_bHeight);
       loss = 69.55 + (26.16 * log_f) - log_aHeight + (((44.9 - (6.55 * log10 (hb)) )) * log10 (dist)) - log_bHeight;
       if (m_environment == SubUrbanEnvironment)
         {
@@ -109,9 +110,11 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
         }
 
     }
-  else if (m_frequency <= 2.170e9) // max 3GPP freq EUTRA band #1
+  else
     {
       // COST 231 Okumura model
+      // see eq. (4.4.3) in the COST 231 final report
+
       double log_f = log10 (fmhz);
       double hb = (a->GetPosition ().z > b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
       double hm = (a->GetPosition ().z < b->GetPosition ().z ? a->GetPosition ().z : b->GetPosition ().z);
@@ -131,14 +134,6 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
         }
 
       loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * log10 (hb)) )) * log10 (dist)) - log_bHeight + C;
-    }
-  else if (m_frequency <= 2.690e9) // max 3GPP freq EUTRA band #1
-    {
-      // Empirical model from
-      // "Path Loss Models for Suburban Scenario at 2.3GHz, 2.6GHz and 3.5GHz"
-      // Sun Kun, Wang Ping, Li Yingze
-      // Antennas, Propagation and EM Theory, 2008. ISAPE 2008. 8th International Symposium on 
-      loss = 36 + 26 * log10 (dist * 1000);
     }
   return loss;
 }

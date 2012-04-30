@@ -28,6 +28,17 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup propagation
+ *
+ * \brief the ITU-R 1411 NLOS over rooftop propagation model
+ * 
+ * This class implements the ITU-R 1411 LOS propagation model for
+ * Non-Line-of-Sight (NLoS) short range outdoor communication over 
+ * rooftops in the frequency range 300 MHz to 100 GHz.  
+ * For more information about the model, please see
+ * the propagation module documentation in .rst format.
+ */
 class ItuR1411NlosOverRooftopPropagationLossModel : public PropagationLossModel
 {
 

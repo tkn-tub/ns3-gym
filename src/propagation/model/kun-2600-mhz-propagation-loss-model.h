@@ -20,11 +20,10 @@
  * 
  */
 
-#ifndef OKUMURA_HATA_PROPAGATION_LOSS_MODEL_H
-#define OKUMURA_HATA_PROPAGATION_LOSS_MODEL_H
+#ifndef KUN_2600MHZ_PROPAGATION_LOSS_MODEL_H
+#define KUN_2600MHZ_PROPAGATION_LOSS_MODEL_H
 
 #include <ns3/propagation-loss-model.h>
-#include <ns3/propagation-environment.h>
 
 namespace ns3 {
 
@@ -32,15 +31,14 @@ namespace ns3 {
 /**
  * \ingroup propagation
  *
- * \brief this class implements the Okumura Hata propagation loss model
+ * \brief Empirical propagation model for the 2.6 GHz frequency
  * 
- * this class implements the Okumura Hata propagation loss model,
- * which is used to model open area pathloss for distances > 1 Km
- * and frequencies ranging from 150 MHz to 2.0 GHz. 
- * For more information about the model, please see
- * the propagation module documentation in .rst format.
+ * This class implements the empirical model for 2.6 GHz taken from this paper:
+ * Sun Kun, Wang Ping, Li Yingze 
+ * "Path Loss Models for Suburban Scenario at 2.3GHz, 2.6GHz and 3.5GHz"
+ * 8th International Symposium on Antennas, Propagation and EM Theory (ISAPE), 2008.
  */
-class OkumuraHataPropagationLossModel : public PropagationLossModel
+class Kun2600MhzPropagationLossModel : public PropagationLossModel
 {
 
 public:
@@ -64,13 +62,10 @@ private:
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   
-  EnvironmentType m_environment;
-  CitySize m_citySize;
-  double m_frequency; // frequency in MHz
 };
 
 } // namespace ns3
 
 
-#endif // OKUMURA_HATA_PROPAGATION_LOSS_MODEL_H
+#endif // KUN_2600MHZ_PROPAGATION_LOSS_MODEL_H
 

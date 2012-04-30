@@ -151,7 +151,7 @@ HybridBuildingsPropagationLossModel
 
 The ``HybridBuildingsPropagationLossModel`` pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different outdoor and indoor scenarios, as well as indoor-to-outdoor and outdoor-to-indoor scenarios. In detail, the class ``HybridBuildingsPropagationLossModel`` integrates the following pathloss models:
 
- * OkumuraHataPropagationLossModel (OH)
+ * OkumuraHataPropagationLossModel (OH) (at frequencies > 2.3 GHz substituted by Kun2600MhzPropagationLossModel)
  * ItuR1411LosPropagationLossModel and ItuR1411NlosOverRooftopPropagationLossModel (I1411)
  * ItuR1238PropagationLossModel (I1238)
  * the pathloss elements of the BuildingsPropagationLossModel (EWL, HG, IWL)

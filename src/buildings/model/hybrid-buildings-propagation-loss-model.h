@@ -32,6 +32,7 @@ class OkumuraHataPropagationLossModel;
 class ItuR1411LosPropagationLossModel;
 class ItuR1411NlosOverRooftopPropagationLossModel;
 class ItuR1238PropagationLossModel;
+class Kun2600MhzPropagationLossModel;
 
 /**
  * \ingroup propagation
@@ -47,10 +48,6 @@ class ItuR1238PropagationLossModel;
  *  - Node position respect to buildings: indoor, outdoor and hybrid (indoor <-> outdoor)
  *  - Building penetretation loss
  *  - floors, etc...
- *
- *  Frequency: 200 MHz to 2000 MHz
- *  Link Distance:up to 20 km
- *  Short/long distance commutation: 1 Km
  *
  *  \warning This model works only with BuildingsMobilityModel
  *
@@ -111,9 +108,11 @@ private:
   Ptr<ItuR1411LosPropagationLossModel> m_ituR1411Los;
   Ptr<ItuR1411NlosOverRooftopPropagationLossModel> m_ituR1411NlosOverRooftop;
   Ptr<ItuR1238PropagationLossModel> m_ituR1238;
+  Ptr<Kun2600MhzPropagationLossModel> m_kun2600Mhz;
 
   double m_itu1411NlosThreshold; ///< in meters (switch Los -> NLoS)
   double m_rooftopHeight;
+  double m_frequency;
 
 };
 

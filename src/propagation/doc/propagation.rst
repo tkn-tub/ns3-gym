@@ -133,15 +133,6 @@ The extension for the standard OH in open area is
 The literature lacks of extensions of the COST231 to open area (for suburban it seems that we can just impose C = 0); therefore we consider it a special case fo the suburban one.
 
 
-Regarding the pathloss at 2600 MHz, in literature we found a paper presenting a model coming from an empirical evaluation for urban area [pl26ghz]_:
-
-.. math::
-
-  L = 36 + 26\log{d}
-
-Therefore, also in this case, the suburban and openareas environment scenarios are model as the urban one.
-
-
 
 
 ItuR1411LosPropagationLossModel
@@ -288,6 +279,17 @@ where:
 
 
 
+Kun2600MhzPropagationLossModel
+++++++++++++++++++++++++++++++
+
+This is the empirical model for the pathloss at 2600 MHz for urban areas which is described in [kun2600mhz]_. The model is as follows. Let :math:`d` be the distance between the transmitter and the receiver in meters; the pathloss :math:`L` in dB is calculated as:
+
+.. math::
+
+  L = 36 + 26\log{d}
+
+
+
 
 +++++++++++++++++++++
 PropagationDelayModel
@@ -314,10 +316,10 @@ ConstantSpeedPropagationDelayModel
 
 .. [cost231] “Digital Mobile Radio: COST 231 View on the Evolution Towards 3rd Generation Systems”, Commission of the European Communities, L-2920, Luxembourg, 1989
 
-.. [pl26ghz] Sun Kun, Wang Ping, Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
-   in Proc. of ISAPE 2008,  Kunming,  China, Nov 2008.
-
 .. [walfisch]  J.Walfisch and H.L. Bertoni, "A Theoretical model of UHF propagation in urban environments," in IEEE Trans. Antennas Propagat., vol.36, 1988, pp.1788- 1796
 
 .. [ikegami] F.Ikegami, T.Takeuchi, and S.Yoshida, "Theoretical prediction of mean field strength for Urban Mobile Radio", in IEEE Trans. Antennas Propagat., Vol.39, No.3, 1991
+
+.. [kun2600mhz] Sun Kun, Wang Ping, Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
+   in Proc. of the 8th International Symposium on Antennas, Propagation and EM Theory (ISAPE),  Kunming,  China, Nov 2008.
 
