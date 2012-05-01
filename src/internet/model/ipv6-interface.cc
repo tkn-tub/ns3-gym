@@ -34,6 +34,8 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6Interface");
 
+NS_OBJECT_ENSURE_REGISTERED (Ipv6Interface);
+
 TypeId Ipv6Interface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6Interface")

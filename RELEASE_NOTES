@@ -36,6 +36,7 @@ New user-visible features
    
 Bugs fixed
 ----------
+ - bug 962  - list of paths to reach objects contains bogus entries
  - bug 1313 - Stddev (average.h) returning NaN
  - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
  - bug 1318 - Asserts for IPv6 malformed packets

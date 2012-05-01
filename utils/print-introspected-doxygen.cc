@@ -207,6 +207,19 @@ StaticInformation::DoGather (TypeId tid)
       if (ptrChecker != 0)
         {
           TypeId pointee = ptrChecker->GetPointeeTypeId ();
+
+	  // See if this is a pointer to an Object.
+	  Ptr<Object> object = CreateObject<Object> ();
+	  TypeId objectTypeId = object->GetTypeId ();
+	  if (objectTypeId == pointee)
+	    {
+	      // Stop the recursion at this attribute if it is a
+	      // pointer to an Object, which create too many spurious
+	      // paths in the list of attribute paths because any
+	      // Object can be in that part of the path.
+	      continue;
+	    }
+
           m_currentPath.push_back (info.name);
           m_alreadyProcessed.push_back (tid);
           DoGather (pointee);
