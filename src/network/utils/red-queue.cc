@@ -81,11 +81,11 @@ TypeId RedQueue::GetTypeId (void)
     .SetParent<Queue> ()
     .AddConstructor<RedQueue> ()
     .AddAttribute ("Mode",
-                   "Bytes or packets",
-                   EnumValue (PACKETS),
+                   "Determines unit for QueueLimit",
+                   EnumValue (QUEUE_MODE_PACKETS),
                    MakeEnumAccessor (&RedQueue::SetMode),
-                   MakeEnumChecker (BYTES, "Bytes",
-                                    PACKETS, "Packets"))
+                   MakeEnumChecker (QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
+                                    QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"))
     .AddAttribute ("MeanPktSize",
                    "Average of packet size",
                    UintegerValue (500),
@@ -166,13 +166,13 @@ RedQueue::~RedQueue ()
 }
 
 void
-RedQueue::SetMode (enum Mode mode)
+RedQueue::SetMode (RedQueue::QueueMode mode)
 {
   NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
-RedQueue::Mode
+RedQueue::QueueMode
 RedQueue::GetMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -215,12 +215,12 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
 
   uint32_t nQueued = 0;
 
-  if (GetMode () == BYTES)
+  if (GetMode () == QUEUE_MODE_BYTES)
     {
       NS_LOG_DEBUG ("Enqueue in bytes mode");
       nQueued = m_bytesInQueue;
     }
-  else if (GetMode () == PACKETS)
+  else if (GetMode () == QUEUE_MODE_PACKETS)
     {
       NS_LOG_DEBUG ("Enqueue in packets mode");
       nQueued = m_packets.size ();
@@ -540,7 +540,7 @@ RedQueue::ModifyP (double p, uint32_t count, uint32_t countBytes,
   NS_LOG_FUNCTION (this << p << count << countBytes << meanPktSize << isWait << size);
   double count1 = (double) count;
 
-  if (GetMode () == BYTES)
+  if (GetMode () == QUEUE_MODE_BYTES)
     {
       count1 = (double) (countBytes / meanPktSize);
     }
@@ -572,7 +572,7 @@ RedQueue::ModifyP (double p, uint32_t count, uint32_t countBytes,
         }
     }
 
-  if ((GetMode () == BYTES) && (p < 1.0))
+  if ((GetMode () == QUEUE_MODE_BYTES) && (p < 1.0))
     {
       p = (p * size) / meanPktSize;
     }
@@ -589,11 +589,11 @@ uint32_t
 RedQueue::GetQueueSize (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (GetMode () == BYTES)
+  if (GetMode () == QUEUE_MODE_BYTES)
     {
       return m_bytesInQueue;
     }
-  else if (GetMode () == PACKETS)
+  else if (GetMode () == QUEUE_MODE_PACKETS)
     {
       return m_packets.size ();
     }

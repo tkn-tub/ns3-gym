@@ -112,13 +112,6 @@ private:
   bool m_enable;
 };
 
-enum ErrorUnit
-{
-  EU_BIT,
-  EU_BYTE,
-  EU_PKT
-};
-
 /**
  * \brief Determine which packets are errored corresponding to an underlying
  * distribution, rate, and unit.
@@ -142,10 +135,17 @@ public:
   RateErrorModel ();
   virtual ~RateErrorModel ();
 
+  enum ErrorUnit
+  {
+    ERROR_UNIT_BIT,
+    ERROR_UNIT_BYTE,
+    ERROR_UNIT_PACKET
+  };
+
   /**
    * \returns the ErrorUnit being used by the underlying model
    */ 
-  enum ErrorUnit GetUnit (void) const;
+  RateErrorModel::ErrorUnit GetUnit (void) const;
   /**
    * \param error_unit the ErrorUnit to be used by the underlying model
    */ 

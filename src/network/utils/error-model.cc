@@ -111,11 +111,11 @@ TypeId RateErrorModel::GetTypeId (void)
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ()
     .AddAttribute ("ErrorUnit", "The error unit",
-                   EnumValue (EU_BYTE),
+                   EnumValue (ERROR_UNIT_BYTE),
                    MakeEnumAccessor (&RateErrorModel::m_unit),
-                   MakeEnumChecker (EU_BYTE, "EU_BYTE",
-                                    EU_PKT, "EU_PKT",
-                                    EU_BIT, "EU_BIT"))
+                   MakeEnumChecker (ERROR_UNIT_BIT, "ERROR_UNIT_BIT",
+                                    ERROR_UNIT_BYTE, "ERROR_UNIT_BYTE",
+                                    ERROR_UNIT_PACKET, "ERROR_UNIT_PACKET"))
     .AddAttribute ("ErrorRate", "The error rate.",
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&RateErrorModel::m_rate),
@@ -139,7 +139,7 @@ RateErrorModel::~RateErrorModel ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-enum ErrorUnit 
+RateErrorModel::ErrorUnit
 RateErrorModel::GetUnit (void) const 
 { 
   NS_LOG_FUNCTION_NOARGS ();
@@ -184,11 +184,11 @@ RateErrorModel::DoCorrupt (Ptr<Packet> p)
     }
   switch (m_unit) 
     {
-    case EU_PKT:
+    case ERROR_UNIT_PACKET:
       return DoCorruptPkt (p);
-    case EU_BYTE:
+    case ERROR_UNIT_BYTE:
       return DoCorruptByte (p);
-    case EU_BIT:
+    case ERROR_UNIT_BIT:
       return DoCorruptBit (p);
     default:
       NS_ASSERT_MSG (false, "m_unit not supported yet");

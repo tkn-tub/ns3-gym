@@ -128,23 +128,12 @@ public:
   };
 
   /*
-   * \brief Enumeration of the modes supported in the class.
-   *
-   */
-  enum Mode
-  {
-    ILLEGAL,     // Mode not set
-    PACKETS,     // Use number of packets for maximum queue size
-    BYTES,       // Use number of bytes for maximum queue size
-  };
-
-  /*
    * \brief Set the operating mode of this queue.
    *  Set operating mode
    *
    * \param mode The operating mode of this queue.
    */
-  void SetMode (RedQueue::Mode mode);
+  void SetMode (RedQueue::QueueMode mode);
 
   /*
    * \brief Get the encapsulation mode of this queue.
@@ -152,7 +141,7 @@ public:
    *
    * \returns The encapsulation mode of this queue.
    */
-  RedQueue::Mode  GetMode (void);
+  RedQueue::QueueMode GetMode (void);
 
   /*
    * \brief Get the current value of the queue in bytes or packets.
@@ -209,7 +198,7 @@ private:
 
   // ** Variables supplied by user
   // Bytes or packets?
-  Mode m_mode;
+  QueueMode m_mode;
   // Avg pkt size
   uint32_t m_meanPktSize;
   // Avg pkt size used during idle times
