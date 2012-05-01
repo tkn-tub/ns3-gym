@@ -58,6 +58,12 @@ CsmaChannel::CsmaChannel ()
   m_deviceList.clear ();
 }
 
+CsmaChannel::~CsmaChannel ()
+{
+  NS_LOG_FUNCTION (this);
+  m_deviceList.clear ();
+}
+
 int32_t
 CsmaChannel::Attach (Ptr<CsmaNetDevice> device)
 {
@@ -343,6 +349,12 @@ CsmaDeviceRec::CsmaDeviceRec (Ptr<CsmaNetDevice> device)
 {
   devicePtr = device; 
   active = true;
+}
+
+CsmaDeviceRec::CsmaDeviceRec (CsmaDeviceRec const &deviceRec)
+{
+  devicePtr = deviceRec.devicePtr;
+  active = deviceRec.active;
 }
 
 bool
