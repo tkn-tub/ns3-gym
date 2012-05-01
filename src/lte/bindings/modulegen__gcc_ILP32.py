@@ -4070,6 +4070,8 @@ def register_Ns3SpectrumModel_methods(root_module, cls):
     return
 
 def register_Ns3SpectrumPhy_methods(root_module, cls):
+    ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy::SpectrumPhy() [constructor]
+    cls.add_constructor([])
     ## spectrum-phy.h (module 'spectrum'): static ns3::TypeId ns3::SpectrumPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
