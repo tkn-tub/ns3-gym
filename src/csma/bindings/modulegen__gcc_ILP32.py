@@ -1051,10 +1051,6 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     return
 
 def register_Ns3CsmaDeviceRec_methods(root_module, cls):
-    ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::devicePtr [variable]
-    cls.add_instance_attribute('devicePtr', 'ns3::Ptr< ns3::CsmaNetDevice >', is_const=False)
-    ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::active [variable]
-    cls.add_instance_attribute('active', 'bool', is_const=False)
     ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::CsmaDeviceRec() [constructor]
     cls.add_constructor([])
     ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::Ptr<ns3::CsmaNetDevice> device) [constructor]
@@ -1065,6 +1061,10 @@ def register_Ns3CsmaDeviceRec_methods(root_module, cls):
     cls.add_method('IsActive', 
                    'bool', 
                    [])
+    ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::active [variable]
+    cls.add_instance_attribute('active', 'bool', is_const=False)
+    ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::devicePtr [variable]
+    cls.add_instance_attribute('devicePtr', 'ns3::Ptr< ns3::CsmaNetDevice >', is_const=False)
     return
 
 def register_Ns3DataRate_methods(root_module, cls):

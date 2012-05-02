@@ -24,8 +24,6 @@ def register_types(module):
     module.add_enum('PbbAddressLength', ['IPV4', 'IPV6'])
     ## ethernet-header.h (module 'network'): ns3::ethernet_header_t [enumeration]
     module.add_enum('ethernet_header_t', ['LENGTH', 'VLAN', 'QINQ'])
-    ## error-model.h (module 'network'): ns3::ErrorUnit [enumeration]
-    module.add_enum('ErrorUnit', ['EU_BIT', 'EU_BYTE', 'EU_PKT'])
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -216,6 +214,8 @@ def register_types(module):
     module.add_class('PcapFileWrapper', parent=root_module['ns3::Object'])
     ## queue.h (module 'network'): ns3::Queue [class]
     module.add_class('Queue', parent=root_module['ns3::Object'])
+    ## queue.h (module 'network'): ns3::Queue::QueueMode [enumeration]
+    module.add_enum('QueueMode', ['QUEUE_MODE_PACKETS', 'QUEUE_MODE_BYTES'], outer_class=root_module['ns3::Queue'])
     ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [class]
     module.add_class('RadiotapHeader', parent=root_module['ns3::Header'])
     ## radiotap-header.h (module 'network'): ns3::RadiotapHeader [enumeration]
@@ -226,8 +226,6 @@ def register_types(module):
     module.add_class('RedQueue', parent=root_module['ns3::Queue'])
     ## red-queue.h (module 'network'): ns3::RedQueue [enumeration]
     module.add_enum('', ['DTYPE_NONE', 'DTYPE_FORCED', 'DTYPE_UNFORCED'], outer_class=root_module['ns3::RedQueue'])
-    ## red-queue.h (module 'network'): ns3::RedQueue::Mode [enumeration]
-    module.add_enum('Mode', ['ILLEGAL', 'PACKETS', 'BYTES'], outer_class=root_module['ns3::RedQueue'])
     ## red-queue.h (module 'network'): ns3::RedQueue::Stats [struct]
     module.add_class('Stats', outer_class=root_module['ns3::RedQueue'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
@@ -306,8 +304,6 @@ def register_types(module):
     module.add_class('DataRateValue', parent=root_module['ns3::AttributeValue'])
     ## drop-tail-queue.h (module 'network'): ns3::DropTailQueue [class]
     module.add_class('DropTailQueue', parent=root_module['ns3::Queue'])
-    ## drop-tail-queue.h (module 'network'): ns3::DropTailQueue::Mode [enumeration]
-    module.add_enum('Mode', ['ILLEGAL', 'PACKETS', 'BYTES'], outer_class=root_module['ns3::DropTailQueue'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## error-model.h (module 'network'): ns3::ErrorModel [class]
@@ -382,6 +378,8 @@ def register_types(module):
     module.add_class('RandomVariableValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## error-model.h (module 'network'): ns3::RateErrorModel [class]
     module.add_class('RateErrorModel', parent=root_module['ns3::ErrorModel'])
+    ## error-model.h (module 'network'): ns3::RateErrorModel::ErrorUnit [enumeration]
+    module.add_enum('ErrorUnit', ['ERROR_UNIT_BIT', 'ERROR_UNIT_BYTE', 'ERROR_UNIT_PACKET'], outer_class=root_module['ns3::RateErrorModel'])
     ## error-model.h (module 'network'): ns3::ReceiveListErrorModel [class]
     module.add_class('ReceiveListErrorModel', parent=root_module['ns3::ErrorModel'])
     ## simple-channel.h (module 'network'): ns3::SimpleChannel [class]
@@ -4159,9 +4157,9 @@ def register_Ns3RedQueue_methods(root_module, cls):
     cls.add_constructor([param('ns3::RedQueue const &', 'arg0')])
     ## red-queue.h (module 'network'): ns3::RedQueue::RedQueue() [constructor]
     cls.add_constructor([])
-    ## red-queue.h (module 'network'): ns3::RedQueue::Mode ns3::RedQueue::GetMode() [member function]
+    ## red-queue.h (module 'network'): ns3::Queue::QueueMode ns3::RedQueue::GetMode() [member function]
     cls.add_method('GetMode', 
-                   'ns3::RedQueue::Mode', 
+                   'ns3::Queue::QueueMode', 
                    [])
     ## red-queue.h (module 'network'): uint32_t ns3::RedQueue::GetQueueSize() [member function]
     cls.add_method('GetQueueSize', 
@@ -4176,10 +4174,10 @@ def register_Ns3RedQueue_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## red-queue.h (module 'network'): void ns3::RedQueue::SetMode(ns3::RedQueue::Mode mode) [member function]
+    ## red-queue.h (module 'network'): void ns3::RedQueue::SetMode(ns3::Queue::QueueMode mode) [member function]
     cls.add_method('SetMode', 
                    'void', 
-                   [param('ns3::RedQueue::Mode', 'mode')])
+                   [param('ns3::Queue::QueueMode', 'mode')])
     ## red-queue.h (module 'network'): void ns3::RedQueue::SetQueueLimit(uint32_t lim) [member function]
     cls.add_method('SetQueueLimit', 
                    'void', 
@@ -4453,6 +4451,11 @@ def register_Ns3Socket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): static ns3::TypeId ns3::Socket::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## socket.h (module 'network'): bool ns3::Socket::IsRecvPktInfo() const [member function]
     cls.add_method('IsRecvPktInfo', 
                    'bool', 
@@ -5281,19 +5284,19 @@ def register_Ns3DropTailQueue_methods(root_module, cls):
     cls.add_constructor([param('ns3::DropTailQueue const &', 'arg0')])
     ## drop-tail-queue.h (module 'network'): ns3::DropTailQueue::DropTailQueue() [constructor]
     cls.add_constructor([])
-    ## drop-tail-queue.h (module 'network'): ns3::DropTailQueue::Mode ns3::DropTailQueue::GetMode() [member function]
+    ## drop-tail-queue.h (module 'network'): ns3::Queue::QueueMode ns3::DropTailQueue::GetMode() [member function]
     cls.add_method('GetMode', 
-                   'ns3::DropTailQueue::Mode', 
+                   'ns3::Queue::QueueMode', 
                    [])
     ## drop-tail-queue.h (module 'network'): static ns3::TypeId ns3::DropTailQueue::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## drop-tail-queue.h (module 'network'): void ns3::DropTailQueue::SetMode(ns3::DropTailQueue::Mode mode) [member function]
+    ## drop-tail-queue.h (module 'network'): void ns3::DropTailQueue::SetMode(ns3::Queue::QueueMode mode) [member function]
     cls.add_method('SetMode', 
                    'void', 
-                   [param('ns3::DropTailQueue::Mode', 'mode')])
+                   [param('ns3::Queue::QueueMode', 'mode')])
     ## drop-tail-queue.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::DropTailQueue::DoDequeue() [member function]
     cls.add_method('DoDequeue', 
                    'ns3::Ptr< ns3::Packet >', 
@@ -7450,9 +7453,9 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## error-model.h (module 'network'): ns3::ErrorUnit ns3::RateErrorModel::GetUnit() const [member function]
+    ## error-model.h (module 'network'): ns3::RateErrorModel::ErrorUnit ns3::RateErrorModel::GetUnit() const [member function]
     cls.add_method('GetUnit', 
-                   'ns3::ErrorUnit', 
+                   'ns3::RateErrorModel::ErrorUnit', 
                    [], 
                    is_const=True)
     ## error-model.h (module 'network'): void ns3::RateErrorModel::SetRandomVariable(ns3::RandomVariable const & ranvar) [member function]
@@ -7463,10 +7466,10 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
     cls.add_method('SetRate', 
                    'void', 
                    [param('double', 'rate')])
-    ## error-model.h (module 'network'): void ns3::RateErrorModel::SetUnit(ns3::ErrorUnit error_unit) [member function]
+    ## error-model.h (module 'network'): void ns3::RateErrorModel::SetUnit(ns3::RateErrorModel::ErrorUnit error_unit) [member function]
     cls.add_method('SetUnit', 
                    'void', 
-                   [param('ns3::ErrorUnit', 'error_unit')])
+                   [param('ns3::RateErrorModel::ErrorUnit', 'error_unit')])
     ## error-model.h (module 'network'): bool ns3::RateErrorModel::DoCorrupt(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoCorrupt', 
                    'bool', 

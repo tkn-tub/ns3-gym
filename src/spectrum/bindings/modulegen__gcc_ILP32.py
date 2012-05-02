@@ -186,6 +186,8 @@ def register_types(module):
     module.add_class('PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## queue.h (module 'network'): ns3::Queue [class]
     module.add_class('Queue', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## queue.h (module 'network'): ns3::Queue::QueueMode [enumeration]
+    module.add_enum('QueueMode', ['QUEUE_MODE_PACKETS', 'QUEUE_MODE_BYTES'], outer_class=root_module['ns3::Queue'], import_from_module='ns.network')
     ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel [class]
     module.add_class('RandomPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::RandomPropagationLossModel [class]
