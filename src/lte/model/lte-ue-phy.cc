@@ -172,37 +172,37 @@ LteUePhy::GetTypeId (void)
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode1Gain",
-                  "Transmission mode 1 gain in dBm",
+                  "Transmission mode 1 gain in dB",
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode1Gain                       ),
                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode2Gain",
-                    "Transmission mode 2 gain in dBm",
+                    "Transmission mode 2 gain in dB",
                     DoubleValue (4.2),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode2Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode3Gain",
-                    "Transmission mode 3 gain in dBm",
+                    "Transmission mode 3 gain in dB",
                     DoubleValue (-2.8),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode3Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode4Gain",
-                    "Transmission mode 4 gain in dBm",
+                    "Transmission mode 4 gain in dB",
                     DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode4Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode5Gain",
-                  "Transmission mode 5 gain in dBm",
+                  "Transmission mode 5 gain in dB",
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode5Gain                       ),
                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode6Gain",
-                    "Transmission mode 6 gain in dBm",
+                    "Transmission mode 6 gain in dB",
                     DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode6Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode7Gain",
-                  "Transmission mode 7 gain in dBm",
+                  "Transmission mode 7 gain in dB",
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain                       ),
                   MakeDoubleChecker<double> ())
