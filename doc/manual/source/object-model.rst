@@ -122,7 +122,7 @@ smart pointer to avoid memory leaks. These functions are really small
 convenience functions and their goal is just to save you a small bit of typing.
 
 CreateObject and Create
-+++++++++++++++++++++++
+***********************
 
 Objects in C++ may be statically, dynamically, or automatically created.  This
 holds true for |ns3| also, but some objects in the system have some additional
@@ -150,7 +150,7 @@ counting (e.g. :cpp:class:`Packet`), and use ``CreateObject<B>`` if B derives
 from :cpp:class:`ns3::Object`.
 
 Aggregation
-+++++++++++
+***********
 
 The |ns3| object aggregation system is motivated in strong part by a recognition
 that a common use case for |ns2| has been the use of inheritance and
@@ -174,6 +174,9 @@ problems. This design is based on elements of the `Component Object Model
 <http://en.wikipedia.org/wiki/Bonobo_(component_model)>`_ although full
 binary-level compatibility of replaceable components is not supported and we
 have tried to simplify the syntax and impact on model developers.  
+
+Exmaples
+********
 
 Aggregation example
 +++++++++++++++++++
