@@ -1,6 +1,27 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * This code was ported from ns-2 (queue/red.h), with license:
+ * Copyright © 2011 Marcos Talau
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Marcos Talau (talau@users.sourceforge.net)
+ *
+ * Thanks to: Duy Nguyen<duy@soe.ucsc.edu> by RED efforts in NS3
+ *
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
  *
  * Copyright (c) 1990-1997 Regents of the University of California.
  * All rights reserved.
@@ -28,32 +49,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * This port:
- *
- * Copyright © 2011 Marcos Talau
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Marcos Talau (talau@users.sourceforge.net)
- *
- * Thanks to: Duy Nguyen<duy@soe.ucsc.edu> by RED efforts in NS3
- *
  */
 
 /*
- * PORT NOTE: Almost all comments also been ported from NS-2
+ * PORT NOTE: This code was ported from ns-2 (queue/red.h).  Almost all
+ * comments also been ported from NS-2.
  * This implementation aims to be close to the results cited in [0]
  * [0] S.Floyd, K.Fall http://icir.org/floyd/papers/redsims.ps
  */
