@@ -32,6 +32,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    lte
    mesh
    distributed
+   mobility
    network
    olsr
    openflow-switch
