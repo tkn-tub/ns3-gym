@@ -17,6 +17,10 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('propagation')
     module_test.source = [
         'test/propagation-loss-model-test-suite.cc',
+        'test/okumura-hata-test-suite.cc',
+        'test/itu-r-1411-los-test-suite.cc',
+        'test/kun-2600-mhz-test-suite.cc',
+        'test/itu-r-1411-nlos-over-rooftop-test-suite.cc',
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
