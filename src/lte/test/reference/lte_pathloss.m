@@ -2,8 +2,12 @@ clear all;
 close all;
 
 %% LTE pathloss model
-%% ITU1411, ITU1238, COST231, OH, etc.
 
+%% ITU1411, COST231, OH, etc. scripts are in the propagation module
+addpath ("../../../propagation/test/reference/");
+
+%% ITU1238 script is in the buildings module
+addpath ("../../../buildings/test/reference/");
 
 
 d = 104.12;

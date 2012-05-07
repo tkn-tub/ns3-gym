@@ -2,7 +2,11 @@ clear all;
 close all;
 
 %% BuildingsPropagationLossModel pathloss test reference script
-%% ITU1411, ITU1238, COST231, OH, etc.
+
+
+%% ITU1411, COST231, OH, etc. scripts are in the propagation module
+addpath ("../../../propagation/test/reference/");
+
 
 %f = 2114e6;  % carrier freq Hz, EARFCN = 500 (downlink)
 %f = 1900e6;  % carrier freq Hz, EARFCN = 500 (downlink)
