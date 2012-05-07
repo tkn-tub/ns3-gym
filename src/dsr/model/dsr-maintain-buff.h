@@ -38,22 +38,38 @@
 #include "ns3/ipv4-header.h"
 #include "dsr-option-header.h"
 
-
 namespace ns3 {
 namespace dsr {
 /*
  * The maintenance buffer is responsible for maintaining packet next hop delivery
  * The data packet is saved in maintenance buffer whenever the data packet is sent out of send buffer
  */
-
 /*
  * The packet timer key for controlling data packet retransmission
  */
-struct PacketKey
+struct NetworkKey
 {
   uint16_t m_ackId;
   Ipv4Address m_ourAdd;
   Ipv4Address m_nextHop;
+  Ipv4Address m_source;
+  Ipv4Address m_destination;
+
+  /**
+   * Compare maintain Buffer entries
+   * \return true if equal
+   */
+  bool operator < (NetworkKey const & o) const
+  {
+    return ((m_ackId < o.m_ackId) && (m_ourAdd < o.m_ourAdd) && (m_nextHop < o.m_nextHop) && (m_source < o.m_source)
+            && (m_destination < o.m_destination)
+            );
+  }
+};
+
+struct PassiveKey
+{
+  uint16_t m_ackId;
   Ipv4Address m_source;
   Ipv4Address m_destination;
   uint8_t m_segsLeft;
@@ -62,13 +78,14 @@ struct PacketKey
    * Compare maintain Buffer entries
    * \return true if equal
    */
-  bool operator < (PacketKey const & o) const
+  bool operator < (PassiveKey const & o) const
   {
-    return ((m_ackId < o.m_ackId) && (m_ourAdd < o.m_ourAdd) && (m_nextHop < o.m_nextHop) && (m_source < o.m_source)
+    return ((m_ackId < o.m_ackId) && (m_source < o.m_source)
             && (m_destination < o.m_destination) && (m_segsLeft < o.m_segsLeft)
             );
   }
 };
+
 /**
  * \ingroup dsr
  * \brief DSR Maintain Buffer Entry
@@ -87,7 +104,6 @@ public:
       m_dst (dst),
       m_ackId (ackId),
       m_segsLeft (segs),
-      m_isPassive (true),
       m_expire (exp + Simulator::Now ())
   {
   }
@@ -150,14 +166,6 @@ public:
   {
     m_segsLeft = segs;
   }
-  bool GetPassive () const
-  {
-    return m_isPassive;
-  }
-  void SetPassive (bool pa)
-  {
-    m_isPassive = pa;
-  }
   void SetExpireTime (Time exp)
   {
     m_expire = exp + Simulator::Now ();
@@ -184,10 +192,6 @@ private:
   uint16_t m_id;
   // / The segments left field
   uint8_t m_segsLeft;
-  // / The fragment offset of ipv4 header
-  uint16_t m_fragment;
-  // / if the ack metric is passive ack or not
-  bool m_isPassive;
   // / Expire time for queue entry
   Time m_expire;
 };
@@ -209,6 +213,7 @@ public:
   bool Dequeue (Ipv4Address dst, MaintainBuffEntry & entry);
   // / Remove all packets with destination IP address dst
   void DropPacketWithNextHop (Ipv4Address nextHop);
+  bool FindMaintainEntry (Ptr<Packet> packet, Ipv4Address ourAdd, Ipv4Address src, Ipv4Address nextHop, Ipv4Address dst, NetworkKey networkKey);
   // / Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address nextHop);
   // / Number of entries
@@ -231,8 +236,9 @@ public:
   {
     m_maintainBufferTimeout = t;
   }
-  // / Verify if the maintain buffer entry is the same in every field for network ack
   bool AllEqual (MaintainBuffEntry & entry);
+  // / Verify if the maintain buffer entry is the same in every field for network ack
+  bool NetworkEqual (MaintainBuffEntry & entry);
   // / Verify if the maintain buffer entry is the same in every field for promiscuous ack
   bool PromiscEqual (MaintainBuffEntry & entry);
   // \}
@@ -240,6 +246,7 @@ public:
 private:
   // / The vector of maintain buffer entries
   std::vector<MaintainBuffEntry> m_maintainBuffer;
+  std::vector<NetworkKey> m_allNetworkKey;
   // / Remove all expired entries
   void Purge ();
   // / The maximum number of packets that we allow a routing protocol to buffer.

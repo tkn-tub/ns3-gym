@@ -269,6 +269,21 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
+  MobilityHelper mobilityAdhoc;
+
+  ObjectFactory pos;
+  pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
+  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
+  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
+
+  Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
+  mobilityAdhoc.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
+                                  "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
+                                  "Pause", RandomVariableValue (ConstantVariable (nodePause)),
+                                  "PositionAllocator", PointerValue (taPositionAlloc));
+  mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
+  mobilityAdhoc.Install (adhocNodes);
+
   AodvHelper aodv;
   OlsrHelper olsr;
   DsdvHelper dsdv;
@@ -316,21 +331,6 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   Ipv4InterfaceContainer adhocInterfaces;
   adhocInterfaces = addressAdhoc.Assign (adhocDevices);
 
-  MobilityHelper mobilityAdhoc;
-
-  ObjectFactory pos;
-  pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
-  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
-  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
-
-  Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
-  mobilityAdhoc.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-                                  "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
-                                  "Pause", RandomVariableValue (ConstantVariable (nodePause)),
-                                  "PositionAllocator", PointerValue (taPositionAlloc));
-  mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
-  mobilityAdhoc.Install (adhocNodes);
-
   OnOffHelper onoff1 ("ns3::UdpSocketFactory",Address ());
   onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable  (1)));
   onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -344,7 +344,7 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
 
       UniformVariable var;
       ApplicationContainer temp = onoff1.Install (adhocNodes.Get (i + nSinks));
-      temp.Start (Seconds (var.GetValue (50.0,51.0)));
+      temp.Start (Seconds (var.GetValue (100.0,101.0)));
       temp.Stop (Seconds (TotalTime));
     }
 

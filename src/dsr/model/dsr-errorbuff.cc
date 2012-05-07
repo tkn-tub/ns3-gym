@@ -29,90 +29,93 @@
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
 
-#include "dsr-rsendbuff.h"
+#include "dsr-errorbuff.h"
 #include <algorithm>
 #include <functional>
 #include "ns3/ipv4-route.h"
 #include "ns3/socket.h"
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrSendBuffer");
+NS_LOG_COMPONENT_DEFINE ("DsrErrorBuffer");
 
 namespace ns3 {
 namespace dsr {
 
 uint32_t
-SendBuffer::GetSize ()
+ErrorBuffer::GetSize ()
 {
   Purge ();
-  return m_sendBuffer.size ();
+  return m_errorBuffer.size ();
 }
 
 bool
-SendBuffer::Enqueue (SendBuffEntry & entry)
+ErrorBuffer::Enqueue (ErrorBuffEntry & entry)
 {
   Purge ();
-  for (std::vector<SendBuffEntry>::const_iterator i = m_sendBuffer.begin (); i
-       != m_sendBuffer.end (); ++i)
+  for (std::vector<ErrorBuffEntry>::const_iterator i = m_errorBuffer.begin (); i
+       != m_errorBuffer.end (); ++i)
     {
-      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid ()
-                   << " dst " << i->GetDestination () << " " << entry.GetDestination ());
+      NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
+                   << " next hop " << i->GetNextHop () << " " << entry.GetNextHop () << " dst " << i->GetDestination () << " " << entry.GetDestination ());
 
-      if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
+      if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ()) && (i->GetSource () == entry.GetSource ()) && (i->GetNextHop () == entry.GetSource ())
           && (i->GetDestination () == entry.GetDestination ()))
         {
           return false;
         }
     }
 
-  entry.SetExpireTime (m_sendBufferTimeout);     // Initialize the send buffer timeout
+  entry.SetExpireTime (m_errorBufferTimeout);     // Initialize the send buffer timeout
   /*
    * Drop the most aged packet when buffer reaches to max
    */
-  if (m_sendBuffer.size () >= m_maxLen)
+  if (m_errorBuffer.size () >= m_maxLen)
     {
-      Drop (m_sendBuffer.front (), "Drop the most aged packet");         // Drop the most aged packet
-      m_sendBuffer.erase (m_sendBuffer.begin ());
+      Drop (m_errorBuffer.front (), "Drop the most aged packet");         // Drop the most aged packet
+      m_errorBuffer.erase (m_errorBuffer.begin ());
     }
   // enqueue the entry
-  m_sendBuffer.push_back (entry);
+  m_errorBuffer.push_back (entry);
   return true;
 }
 
 void
-SendBuffer::DropPacketWithDst (Ipv4Address dst)
+ErrorBuffer::DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop)
 {
-  NS_LOG_FUNCTION (this << dst);
+  NS_LOG_FUNCTION (this << source << nextHop);
   Purge ();
-  const Ipv4Address addr = dst;
+  std::vector<Ipv4Address> list;
+  list.push_back (source);
+  list.push_back (nextHop);
+  const std::vector<Ipv4Address> link = list;
   /*
-   * Drop the packet with destination address dst
+   * Drop the packet with the error link source----------nextHop
    */
-  for (std::vector<SendBuffEntry>::iterator i = m_sendBuffer.begin (); i
-       != m_sendBuffer.end (); ++i)
+  for (std::vector<ErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i
+       != m_errorBuffer.end (); ++i)
     {
-      if (IsEqual (*i, dst))
+      if (LinkEqual (*i, link))
         {
-          Drop (*i, "DropPacketWithDst");
+          DropLink (*i, "DropPacketForErrLink");
         }
     }
-  m_sendBuffer.erase (std::remove_if (m_sendBuffer.begin (), m_sendBuffer.end (),
-                                      std::bind2nd (std::ptr_fun (SendBuffer::IsEqual), dst)), m_sendBuffer.end ());
+  m_errorBuffer.erase (std::remove_if (m_errorBuffer.begin (), m_errorBuffer.end (),
+                                      std::bind2nd (std::ptr_fun (ErrorBuffer::LinkEqual), link)), m_errorBuffer.end ());
 }
 
 bool
-SendBuffer::Dequeue (Ipv4Address dst, SendBuffEntry & entry)
+ErrorBuffer::Dequeue (Ipv4Address dst, ErrorBuffEntry & entry)
 {
   Purge ();
   /*
    * Dequeue the entry with destination address dst
    */
-  for (std::vector<SendBuffEntry>::iterator i = m_sendBuffer.begin (); i != m_sendBuffer.end (); ++i)
+  for (std::vector<ErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i != m_errorBuffer.end (); ++i)
     {
       if (i->GetDestination () == dst)
         {
           entry = *i;
-          m_sendBuffer.erase (i);
+          m_errorBuffer.erase (i);
           NS_LOG_DEBUG ("Packet size while dequeuing " << entry.GetPacket ()->GetSize ());
           return true;
         }
@@ -121,13 +124,13 @@ SendBuffer::Dequeue (Ipv4Address dst, SendBuffEntry & entry)
 }
 
 bool
-SendBuffer::Find (Ipv4Address dst)
+ErrorBuffer::Find (Ipv4Address dst)
 {
   /*
    * Make sure if the send buffer contains entry with certain dst
    */
-  for (std::vector<SendBuffEntry>::const_iterator i = m_sendBuffer.begin (); i
-       != m_sendBuffer.end (); ++i)
+  for (std::vector<ErrorBuffEntry>::const_iterator i = m_errorBuffer.begin (); i
+       != m_errorBuffer.end (); ++i)
     {
       if (i->GetDestination () == dst)
         {
@@ -141,7 +144,7 @@ SendBuffer::Find (Ipv4Address dst)
 struct IsExpired
 {
   bool
-  operator() (SendBuffEntry const & e) const
+  operator() (ErrorBuffEntry const & e) const
   {
     // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
     return (e.GetExpireTime () < Seconds (0));
@@ -149,15 +152,15 @@ struct IsExpired
 };
 
 void
-SendBuffer::Purge ()
+ErrorBuffer::Purge ()
 {
   /*
    * Purge the buffer to eliminate expired entries
    */
-  NS_LOG_DEBUG ("The send buffer size " << m_sendBuffer.size ());
+  NS_LOG_DEBUG ("The error buffer size " << m_errorBuffer.size ());
   IsExpired pred;
-  for (std::vector<SendBuffEntry>::iterator i = m_sendBuffer.begin (); i
-       != m_sendBuffer.end (); ++i)
+  for (std::vector<ErrorBuffEntry>::iterator i = m_errorBuffer.begin (); i
+       != m_errorBuffer.end (); ++i)
     {
       if (pred (*i))
         {
@@ -165,14 +168,23 @@ SendBuffer::Purge ()
           Drop (*i, "Drop out-dated packet ");
         }
     }
-  m_sendBuffer.erase (std::remove_if (m_sendBuffer.begin (), m_sendBuffer.end (), pred),
-                      m_sendBuffer.end ());
+  m_errorBuffer.erase (std::remove_if (m_errorBuffer.begin (), m_errorBuffer.end (), pred),
+                      m_errorBuffer.end ());
 }
 
 void
-SendBuffer::Drop (SendBuffEntry en, std::string reason)
+ErrorBuffer::Drop (ErrorBuffEntry en, std::string reason)
 {
   NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetDestination ());
+//  en.GetErrorCallback () (en.GetPacket (), en.GetDestination (),
+//     Socket::ERROR_NOROUTETOHOST);
+  return;
+}
+
+void
+ErrorBuffer::DropLink (ErrorBuffEntry en, std::string reason)
+{
+  NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetSource () << " " << en.GetNextHop ());
 //  en.GetErrorCallback () (en.GetPacket (), en.GetDestination (),
 //     Socket::ERROR_NOROUTETOHOST);
   return;

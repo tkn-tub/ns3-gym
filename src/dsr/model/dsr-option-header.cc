@@ -38,7 +38,6 @@
 #include "ns3/packet.h"
 #include "ns3/enum.h"
 
-
 namespace ns3 {
 namespace dsr {
 NS_LOG_COMPONENT_DEFINE ("DsrOptionHeader");
@@ -681,7 +680,7 @@ DsrOptionRerrHeader::DsrOptionRerrHeader ()
     m_errorLength (4)
 {
   SetType (3);
-  SetLength (14);
+  SetLength (18);
 }
 
 DsrOptionRerrHeader::~DsrOptionRerrHeader ()
@@ -738,7 +737,7 @@ void DsrOptionRerrHeader::Print (std::ostream &os) const
 
 uint32_t DsrOptionRerrHeader::GetSerializedSize () const
 {
-  return 16;
+  return 20;
 }
 
 void DsrOptionRerrHeader::Serialize (Buffer::Iterator start) const
@@ -799,10 +798,10 @@ TypeId DsrOptionRerrUnreachHeader::GetInstanceTypeId () const
 
 DsrOptionRerrUnreachHeader::DsrOptionRerrUnreachHeader ()
   :    m_reserved (0),
-    m_salvage (0)
+       m_salvage (0)
 {
   SetType (3);
-  SetLength (14);
+  SetLength (18);
   SetErrorType (1);
 }
 
@@ -850,6 +849,16 @@ Ipv4Address DsrOptionRerrUnreachHeader::GetUnreachNode () const
   return m_unreachNode;
 }
 
+void DsrOptionRerrUnreachHeader::SetOriginalDst (Ipv4Address originalDst)
+{
+  m_originalDst = originalDst;
+}
+
+Ipv4Address DsrOptionRerrUnreachHeader::GetOriginalDst () const
+{
+  return m_originalDst;
+}
+
 void DsrOptionRerrUnreachHeader::Print (std::ostream &os) const
 {
   os << "( type = " << (uint32_t)GetType () << " length = " << (uint32_t)GetLength ()
@@ -860,7 +869,7 @@ void DsrOptionRerrUnreachHeader::Print (std::ostream &os) const
 
 uint32_t DsrOptionRerrUnreachHeader::GetSerializedSize () const
 {
-  return 16;
+  return 20;
 }
 
 void DsrOptionRerrUnreachHeader::Serialize (Buffer::Iterator start) const
@@ -874,7 +883,7 @@ void DsrOptionRerrUnreachHeader::Serialize (Buffer::Iterator start) const
   WriteTo (i, m_errorSrcAddress);
   WriteTo (i, m_errorDstAddress);
   WriteTo (i, m_unreachNode);
-
+  WriteTo (i, m_originalDst);
 }
 
 uint32_t DsrOptionRerrUnreachHeader::Deserialize (Buffer::Iterator start)
@@ -888,6 +897,7 @@ uint32_t DsrOptionRerrUnreachHeader::Deserialize (Buffer::Iterator start)
   ReadFrom (i, m_errorSrcAddress);
   ReadFrom (i, m_errorDstAddress);
   ReadFrom (i, m_unreachNode);
+  ReadFrom (i, m_originalDst);
 
   return GetSerializedSize ();
 }

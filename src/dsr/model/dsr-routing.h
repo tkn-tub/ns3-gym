@@ -62,12 +62,14 @@
 #include "ns3/event-garbage-collector.h"
 #include "ns3/test.h"
 
+#include "dsr-network-queue.h"
 #include "dsr-rcache.h"
 #include "dsr-rreq-table.h"
 #include "dsr-maintain-buff.h"
 #include "dsr-option-header.h"
 #include "dsr-fs-header.h"
 #include "dsr-rsendbuff.h"
+#include "dsr-errorbuff.h"
 #include "dsr-gratuitous-reply-table.h"
 
 namespace ns3 {
@@ -138,16 +140,28 @@ public:
     * \return the request table
     */
   Ptr<dsr::RreqTable> GetRequestTable () const;
+
+  ///\functions used to direct to route cache
+  //\{
+  bool IsLinkCache ();
+  void UseExtends (RouteCacheEntry::IP_VECTOR rt);
+  bool LookupRoute (Ipv4Address id, RouteCacheEntry & rt);
+  bool AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address source);
+  bool AddRoute (RouteCacheEntry & rt);
+  void DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node);
+  bool UpdateRouteEntry (Ipv4Address dst);
+  //\}
+
   /**
     * \brief Get the node id from ip address.
     * \return the node id
     */
-  uint32_t GetIDfromIP (Ipv4Address address);
+  uint16_t GetIDfromIP (Ipv4Address address);
   /**
     * \brief Get the ip address from id.
     * \return the ip address for the id
     */
-  Ipv4Address GetIPfromID (uint32_t id);
+  Ipv4Address GetIPfromID (uint16_t id);
   /**
     * \brief Get the Ip address from mac address.
     * \return the ip address
@@ -162,10 +176,6 @@ public:
     * \return the next hop address of the route
     */
   Ipv4Address SearchNextHop (Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
-  /**
-    * \brief Cut the route before our own ip address
-    */
-  void CutRoute (Ipv4Address ourAdd, std::vector<Ipv4Address>& nodeList);
   /**
     * \brief Get the dsr protocol number.
     * \return protocol number
@@ -193,9 +203,14 @@ public:
    */
   Ptr<Ipv4Route> SetRoute (Ipv4Address nextHop, Ipv4Address srcAddress);
   /*
+   * \brief Set the priority of the packet in network queue
+   * \return the priority value
+   */
+  uint32_t GetPriority (DsrMessageType messageType);
+  /*
    * \brief This function is responsible for sending error packets in case of break link to next hop
    */
-  void SendUnreachError (Ipv4Address errorHop, Ipv4Address destination, uint8_t salvage, uint8_t protocol);
+  void SendUnreachError (Ipv4Address errorHop, Ipv4Address destination, Ipv4Address originalDst, uint8_t salvage, uint8_t protocol);
   /*
    * \brief This function is responsible for forwarding error packets along the route
    */
@@ -210,17 +225,40 @@ public:
   void Send (Ptr<Packet> packet, Ipv4Address source,
              Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
   /*
+   * \brief This function is called to add ack request header for network acknowledgement
+   */
+  uint16_t AddAckReqHeader (Ptr<Packet> &packet, Ipv4Address nextHop);
+  /*
+   * \brief This function is called by when really sending out the packet
+   */
+  void SendPacket (Ptr<Packet> packet, Ipv4Address source, Ipv4Address nextHop, uint8_t protocol);
+  /*
+   * \brief This function is called to schedule sending packets from the network queue
+   */
+  void Scheduler (uint32_t priority);
+  /*
+   * \brief This function is called to schedule sending packets from the network queue by priority
+   */
+  void PriorityScheduler (uint32_t priority, bool continueWithFirst);
+  /*
+   * \brief This function is called to increase the retransmission timer for data packet in the network queue
+   */
+  void IncreaseRetransTimer ();
+  /*
+   * \brief This function is called to send packets down stack
+   */
+  bool SendRealDown (DsrNetworkQueueEntry & newEntry);
+  /*
    * This function is responsible for sending out data packets when have route, if no route found, it will
    * cache the packet and send out route requests
    */
-  void SendPacket (DsrOptionSRHeader const &sourceRoute,
-                   Ipv4Address nextHop,
-                   uint8_t protocol);
+  void SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute,
+                             Ipv4Address nextHop,
+                             uint8_t protocol);
   /*
    * \brief Find the similar entries in the maintenance buffer
    */
-  bool FindSamePackets (Ptr<Packet> packet, Ipv4Header const& ipv4Header, Ipv4Address source, Ipv4Address destination,
-                        uint8_t segsLeft);
+  bool FindSamePackets (Ptr<Packet> packet, Ipv4Address source, Ipv4Address destination, uint8_t segsLeft);
   /*
    * Call the cancel packet retransmission timer function
    */
@@ -242,22 +280,28 @@ public:
    */
   void SalvagePacket (Ptr<const Packet> packet, Ipv4Address source, Ipv4Address dst, uint8_t protocol);
   /*
-   * Add ack request header to the data packet when need to use network acknowledgment
+   * Schedule the packet retransmission when the packet has not reached to the next hop address
    */
-  void AddAckReqHeader (Ptr<Packet> packet, DsrOptionSRHeader const &sourceRoute, Ipv4Address nextHop);
+  void SchedulePassivePacketRetry   (MaintainBuffEntry & mb,
+                                     bool onlyPassive,
+                                     uint8_t protocol);
   /*
    * Schedule the packet retransmission when the packet has not reached to the next hop address
    */
-  void SchedulePacketRetry   (MaintainBuffEntry & mb,
-                              PacketKey const & packetKey,
-                              uint8_t protocol);
+  void ScheduleNetworkPacketRetry   (MaintainBuffEntry & mb,
+                                     bool isFirst,
+                                     uint8_t protocol);
   /*
    * This function deals with packet retransmission timer expire
    */
-  void PacketScheduleTimerExpire  (MaintainBuffEntry & mb,
-                                   PacketKey const & pk,
-                                   uint8_t protocol,
-                                   bool isPassive);
+  void NetworkScheduleTimerExpire  (MaintainBuffEntry & mb,
+                                    uint8_t protocol);
+  /*
+   * This function deals with packet retransmission timer expire
+   */
+  void PassiveScheduleTimerExpire  (MaintainBuffEntry & mb,
+                                    bool onlyPassive,
+                                    uint8_t protocol);
   /*
    * Forward the packet using the route saved in the source route option header
    */
@@ -335,7 +379,7 @@ public:
                             Ipv4Address source,
                             Ipv4Address destination,
                             Ptr<Ipv4Route> route,
-                            uint16_t hops);
+                            double hops);
   /*
    * Send network layer acknowledgment back to the earlier hop to notify the receipt of data packet
    */
@@ -394,15 +438,16 @@ public:
   /**
    * \brief Cancel the route request timer.
    * \param dst The dst address of the route request timer
+   * \param isRemove whether to remove the route request entry or not
    */
-  void CancelRreqTimer (Ipv4Address dst);
+  void CancelRreqTimer (Ipv4Address dst, bool isRemove);
   /**
    * \brief Schedule the route request retry.
    * \param dst The dst address of the route request
    */
-  void ScheduleRreqRetry (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dst, bool nonProp, uint8_t protocol);
+  void ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> address, bool nonProp, uint32_t requestId, uint8_t protocol);
   // / Handle route discovery timer
-  void RouteRequestTimerExpire (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dst, uint8_t protocol);
+  void RouteRequestTimerExpire (Ptr<Packet> packet, std::vector<Ipv4Address> address, uint32_t requestId, uint8_t protocol);
 
 protected:
   /*
@@ -454,7 +499,11 @@ private:
 
   Ipv4L4Protocol::DownTargetCallback m_downTarget;    // The callback for down layer
 
-  uint8_t m_discoveryHopLimit;             // / Maximum hops to go for route request
+  uint32_t m_maxNetworkSize;             // / Maximum network queue size
+
+  Time m_maxNetworkDelay;                // / Maximum network delay
+
+  uint32_t m_discoveryHopLimit;             // / Maximum hops to go for route request
 
   uint8_t m_maxSalvageCount;             // / Maximum # times to salvage a packet
 
@@ -462,7 +511,9 @@ private:
 
   Time m_nonpropRequestTimeout;            // / The non-propagation request timeout
 
-  uint32_t  m_sendRetries;                // / # of retries have been sent for data packet
+  uint32_t m_sendRetries;                    // / # of retries have been sent for network acknowledgment
+
+  uint32_t m_passiveRetries;                 // / # of retries have been sent for passive acknowledgment
 
   uint32_t m_rreqRetries;                  // /< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
 
@@ -475,6 +526,8 @@ private:
   Time  m_sendBufferTimeout;               // /< The maximum period of time that a routing protocol is allowed to buffer a packet for.
 
   SendBuffer m_sendBuffer;               // / The send buffer
+
+  ErrorBuffer m_errorBuffer;             // / The error buffer to save the error messages
 
   uint32_t  m_maxMaintainLen;            // / Max # of entries for maintainance buffer
 
@@ -490,7 +543,7 @@ private:
 
   MaintainBuffer m_maintainBuffer;       // / The declaration of maintain buffer
 
-  uint16_t m_requestId;                  // / The id assigned to each route request
+  uint32_t m_requestId;                  // / The id assigned to each route request
 
   uint16_t m_ackId;                      // / The ack id assigned to each acknowledge
 
@@ -504,7 +557,7 @@ private:
 
   Ipv4Address m_broadcast;                 // / The broadcast IP address
 
-  uint16_t m_broadcastJitter;              // / The max time to delay route request broadcast.
+  uint32_t m_broadcastJitter;              // / The max time to delay route request broadcast.
 
   Time  m_passiveAckTimeout;               // / The timeout value for passive acknowledge
 
@@ -522,42 +575,51 @@ private:
 
   std::string m_cacheType;                // / The type of route cache
 
-  double m_stabilityDecrFactor;           // / The initial decrease factor for link cache
+  std::string m_routeSortType;         // / The type of route sort methods
 
-  double m_stabilityIncrFactor;           // / The initial increase factor for link cache
+  uint64_t m_stabilityDecrFactor;           // / The initial decrease factor for link cache
 
-  double m_initStability;                 // / The initial stability value for link cache
+  uint64_t m_stabilityIncrFactor;           // / The initial increase factor for link cache
 
-  double m_minLifeTime;                   // / The min life time
+  Time m_initStability;                 // / The initial stability value for link cache
 
-  double m_useExtends;                    // / The use extension of the life time for link cache
+  Time m_minLifeTime;                   // / The min life time
+
+  Time m_useExtends;                    // / The use extension of the life time for link cache
 
   bool m_subRoute;                        // / Whether to save sub route or not
 
-  std::vector<Ipv4Address> m_finalRoute; // / The route cache
+  Time m_retransIncr;                     // / the increase time for retransmission timer when face network congestion
+
+  std::vector<Ipv4Address> m_finalRoute;                 // / The route cache
 
   std::map<Ipv4Address, Timer> m_addressReqTimer;        // / Map IP address + RREQ timer.
 
   std::map<Ipv4Address, Timer> m_nonPropReqTimer;        // / Map IP address + RREQ timer.
 
-  std::map<PacketKey, Timer>  m_addressForwardTimer;   // / Map packet key + forward timer.
+  std::map<NetworkKey, Timer>  m_addressForwardTimer;    // / Map network key + forward timer.
 
-  std::map<PacketKey, uint32_t> m_addressForwardCnt;    // / Map packet key + forward counts.
+  std::map<NetworkKey, uint32_t> m_addressForwardCnt;      // / Map network key + forward counts.
 
-  std::map<PacketKey, Timer> m_passiveAckTimer;               // / The timer for passive acknowledgment
+  std::map<PassiveKey, uint32_t> m_passiveCnt;             // / Map packet key + passive forward counts.
+
+  std::map<PassiveKey, Timer> m_passiveAckTimer;         // / The timer for passive acknowledgment
 
   Ptr<dsr::RouteCache> m_routeCache;      // / A "drop-front" queue used by the routing layer to cache routes found.
 
   Ptr<dsr::RreqTable> m_rreqTable;        // / A "drop-front" queue used by the routing layer to cache route request sent.
 
+  uint32_t m_numPriorityQueues;
+
+  std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> > m_priorityQueue;   // / priority queueus
+
   GraReply m_graReply;                    // / The gratuitous route reply.
 
   std::vector<Ipv4Address> m_clearList;   // / The node that is clear to send packet to
-
-  uint32_t m_newPacketSize;               // / The packet size of a newly created packet
 
   std::vector<Ipv4Address> m_addresses;   // / The bind ipv4 addresses with next hop, src, destination address in sequence
 };
 }  /* namespace dsr */
 }  /* namespace ns3 */
+
 #endif /* DSR_ROUTING_H */

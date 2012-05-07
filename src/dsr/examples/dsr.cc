@@ -29,11 +29,6 @@
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
@@ -41,14 +36,13 @@
 #include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/dsr-module.h"
 
-NS_LOG_COMPONENT_DEFINE ("DsrExample");
-
 using namespace ns3;
+NS_LOG_COMPONENT_DEFINE ("DsrTest");
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
   //
   // Users may find it convenient to turn on explicit debugging
@@ -72,150 +66,128 @@ int main (int argc, char *argv[])
   LogComponentEnable ("RouteCache", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrMaintainBuffer", LOG_LEVEL_ALL);
   LogComponentEnable ("RreqTable", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsrErrorBuffer", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsrNetworkQueue", LOG_LEVEL_ALL);
 #endif
 
-  SeedManager::SetSeed (99);
-  SeedManager::SetRun (1);
+  NS_LOG_INFO ("creating the nodes");
 
-  double totalTime = 1000.0;
-  double dataStart = 50.0;
+  // General parameters
   uint32_t nWifis = 50;
   uint32_t nSinks = 10;
-  double txp = 8.9048;
+  double TotalTime = 600.0;
+  double dataTime = 500.0;
+  double ppers = 1;
+  uint32_t packetSize = 64;
+  double dataStart = 100.0; // start sending data at 100s
+
+  //mobility parameters
   double pauseTime = 0.0;
   double nodeSpeed = 20.0;
-  uint32_t packetSize = 64;
-  std::string phyModeControl ("DsssRate11Mbps");
-  std::string phyModeData ("DsssRate11Mbps");
+  double txpDistance = 250.0;
+
   std::string rate = "0.512kbps";
-  double ppers = 1.0;
-  /*
-   * Define the DSR parameters
-   */
-  uint32_t m_maxCacheLen = 64;
-  Time m_maxCacheTime = Seconds (30);
-  Time m_nodeTraversalTime = MicroSeconds (2);
-  Time m_passiveAckTimeout = MicroSeconds (4);
-  uint32_t m_maxSendBuffLen = 64;
-  Time m_sendBufferTimeout = Seconds (30);
-  uint32_t m_maxMaintainLen = 50;
-  Time m_maxMaintainTime = Seconds (30);
-  uint32_t m_maintenanceRetries = 2;
-  std::string cacheType ("PathCache");            // PathCache
-  bool enableSubRoute = false;
+  std::string dataMode ("DsssRate11Mbps");
+  std::string phyMode ("DsssRate11Mbps");
 
   //Allow users to override the default parameters and set it to new ones from CommandLine.
   CommandLine cmd;
-  cmd.AddValue ("MaxCacheLen", "Max route cache length.", m_maxCacheLen);
-  cmd.AddValue ("RouteCacheTimeout", "Max route cache timeout.", m_maxCacheTime);
-  cmd.AddValue ("NodeTraversalTime", "The time it takes to travel to neighboring nodes.", m_nodeTraversalTime);
-  cmd.AddValue ("PassiveAckTimeout", "The time for ack to traversal the two neighboring nodes.", m_passiveAckTimeout);
-  cmd.AddValue ("MaxSendBuffLen", "Maximum number of packets that can be stored.", m_maxSendBuffLen);
-  cmd.AddValue ("MaxSendBuffTime", "Maximum time packets can be queued.", m_sendBufferTimeout);
-  cmd.AddValue ("MaxMaintLen", "Maximum number of packets that can be stored.", m_maxMaintainLen);
-  cmd.AddValue ("MaxMaintTime", "Maximum time packets can be queued.", m_maxMaintainTime);
-  cmd.AddValue ("MaintenanceRetries", "Maximum retransmission retries for maintenance data packet.", m_maintenanceRetries);
-  cmd.AddValue ("CacheType", "route cache type, Default:PathCache", cacheType);
-  cmd.AddValue ("EnableSubRoute", "whether to enable the sub route mechanism, Default:false", enableSubRoute);
+  cmd.AddValue ("nWifis", "Number of wifi nodes", nWifis);
+  cmd.AddValue ("nSinks", "Number of SINK traffic nodes", nSinks);
+  cmd.AddValue ("rate", "CBR traffic rate(in kbps), Default:8", rate);
+  cmd.AddValue ("nodeSpeed", "Node speed in RandomWayPoint model, Default:20", nodeSpeed);
+  cmd.AddValue ("packetSize", "The packet size", packetSize);
+  cmd.AddValue ("txpDistance", "Specify node's transmit range, Default:300", txpDistance);
+  cmd.AddValue ("pauseTime", "pauseTime for mobility model, Default: 0", pauseTime);
   cmd.Parse (argc, argv);
 
-  NS_LOG_INFO ("Create nodes.");
-  NodeContainer nodes;
-  nodes.Create (nWifis);
-  NetDeviceContainer devices;
+  SeedManager::SetSeed (10);
+  SeedManager::SetRun (1);
 
-  // Fix non-unicast data rate to be the same as that of unicast
-  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue (phyModeData));
+  NodeContainer adhocNodes;
+  adhocNodes.Create (nWifis);
+  NetDeviceContainer allDevices;
+
+  NS_LOG_INFO ("setting the default phy and channel parameters");
+  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue (phyMode));
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
-  // disable fragmentation
+  // disable fragmentation for frames below 2200 bytes
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
 
-  NS_LOG_INFO ("Create channels.");
+  NS_LOG_INFO ("setting the default phy and channel parameters ");
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
+  wifiChannel.AddPropagationLoss("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (txpDistance));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue (phyModeData),
-                                "ControlMode", StringValue (phyModeControl));
-  wifiPhy.Set ("TxPowerStart", DoubleValue (txp));
-  wifiPhy.Set ("TxPowerEnd", DoubleValue (txp));
-  // Set it to adhoc mode
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue (dataMode), "ControlMode",
+      StringValue (phyMode));
+
   wifiMac.SetType ("ns3::AdhocWifiMac");
-  devices = wifi.Install (wifiPhy, wifiMac, nodes);
+  allDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
-  InternetStackHelper internet;
-  DsrMainHelper dsrMain;
-  DsrHelper dsr;
-  dsr.Set ("MaxCacheLen", UintegerValue (m_maxCacheLen));
-  dsr.Set ("RouteCacheTimeout", TimeValue (m_maxCacheTime));
-  dsr.Set ("NodeTraversalTime", TimeValue (m_nodeTraversalTime));
-  dsr.Set ("PassiveAckTimeout", TimeValue (m_passiveAckTimeout));
-  dsr.Set ("MaxSendBuffLen", UintegerValue (m_maxSendBuffLen));
-  dsr.Set ("MaxSendBuffTime", TimeValue (m_sendBufferTimeout));
-  dsr.Set ("MaxMaintLen", UintegerValue (m_maxMaintainLen));
-  dsr.Set ("MaxMaintTime", TimeValue (m_maxMaintainTime));
-  dsr.Set ("MaintenanceRetries", UintegerValue (m_maintenanceRetries));
-  dsr.Set ("EnableSubRoute", BooleanValue (false));
-  dsr.Set ("CacheType", StringValue (cacheType));
-  dsr.Set ("SendBuffInterval", TimeValue (Seconds (50)));
-  internet.Install (nodes);
-  dsrMain.Install (dsr, nodes);
-
-  NS_LOG_INFO ("assigning ip address");
-  Ipv4AddressHelper addressAdhoc;
-  addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer adhocInterfaces;
-  adhocInterfaces = addressAdhoc.Assign (devices);
-
-  MobilityHelper mobility;
-
-  ObjectFactory pos;
-  pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
-  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
-  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
-  Ptr<PositionAllocator> positionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
-  mobility.SetPositionAllocator (positionAlloc);
-
-  mobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-                             "Speed", RandomVariableValue (ConstantVariable (nodeSpeed)),
-                             "Pause", RandomVariableValue (ConstantVariable (pauseTime)),
-                             "PositionAllocator", PointerValue (positionAlloc));
-  mobility.Install (nodes);
-
-  // many to many application
-  uint16_t port = 9;
-  double randomStartTime = (1 / ppers) / nSinks;     //distributed btw 1s evenly as we are sending 1pkt/s
-
-  for (uint32_t i = 0; i < nSinks; i++)
-    {
-      PacketSinkHelper sink ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
-      ApplicationContainer apps_sink = sink.Install (nodes.Get (i));
-      apps_sink.Start (Seconds (0.0));
-      apps_sink.Stop (Seconds (totalTime));
-
-      OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address (InetSocketAddress (adhocInterfaces.GetAddress (i), port)));
-      onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-      onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
-      onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
-
-      ApplicationContainer apps1 = onoff1.Install (nodes.Get (i + nSinks));
-      apps1.Start (Seconds (dataStart + i * randomStartTime));
-      apps1.Stop (Seconds (totalTime));
-    }
+  NS_LOG_INFO ("Configure Tracing.");
 
   AsciiTraceHelper ascii;
   Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("dsrtest.tr");
   wifiPhy.EnableAsciiAll (stream);
 
+  MobilityHelper adhocMobility;
+  ObjectFactory pos;
+  pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
+  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
+  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
+  Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
+
+  adhocMobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
+      "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
+      "Pause", RandomVariableValue (ConstantVariable (pauseTime)),
+      "PositionAllocator", PointerValue (taPositionAlloc)
+      );
+  adhocMobility.Install (adhocNodes);
+
+  InternetStackHelper internet;
+  DsrMainHelper dsrMain;
+  DsrHelper dsr;
+  internet.Install (adhocNodes);
+  dsrMain.Install (dsr, adhocNodes);
+
+  NS_LOG_INFO ("assigning ip address");
+  Ipv4AddressHelper address;
+  address.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer allInterfaces;
+  allInterfaces = address.Assign (allDevices);
+
+  uint16_t port = 9;
+  double randomStartTime = (1/ppers) / nSinks; //distributed btw 1s evenly as we are sending 4pkt/s
+
+  for (uint32_t i = 0; i < nSinks; ++i)
+  {
+    PacketSinkHelper sink ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
+    ApplicationContainer apps_sink = sink.Install (adhocNodes.Get (i));
+    apps_sink.Start (Seconds (0.0));
+    apps_sink.Stop (Seconds (TotalTime));
+
+    OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address (InetSocketAddress (allInterfaces.GetAddress (i), port)));
+    onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+    onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+    onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
+    onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
+
+    ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (i + nWifis - nSinks));
+    apps1.Start (Seconds (dataStart + i*randomStartTime));
+    apps1.Stop (Seconds (dataTime + i*randomStartTime));
+  }
+
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Stop (Seconds (totalTime));
+  Simulator::Stop (Seconds (TotalTime));
   Simulator::Run ();
   Simulator::Destroy ();
 }
+

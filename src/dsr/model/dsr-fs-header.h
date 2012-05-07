@@ -76,13 +76,6 @@ namespace dsr {
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   \endverbatim
 */
-
-enum DsrMessageType
-{
-  DSR_CONTROL_PACKET = 1,
-  DSR_DATA_PACKET = 2
-};
-
 class DsrFsHeader : public Header
 {
 public:

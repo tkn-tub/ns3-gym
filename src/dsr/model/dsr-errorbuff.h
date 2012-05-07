@@ -29,8 +29,8 @@
  * US Department of Defense (DoD), and ITTC at The University of Kansas.
  */
 
-#ifndef DSR_SENDBUFF_H
-#define DSR_SENDBUFF_H
+#ifndef DSR_ERRORBUFF_H
+#define DSR_ERRORBUFF_H
 
 #include <vector>
 #include "ns3/ipv4-routing-protocol.h"
@@ -40,16 +40,18 @@ namespace ns3 {
 namespace dsr {
 /**
  * \ingroup dsr
- * \brief DSR Send Buffer Entry
+ * \brief DSR Error Buffer Entry
  */
-class SendBuffEntry
+class ErrorBuffEntry
 {
 public:
   // / c-tor
-  SendBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (),
-                 Time exp = Simulator::Now (), uint8_t p = 0)
+  ErrorBuffEntry (Ptr<const Packet> pa = 0, Ipv4Address d = Ipv4Address (), Ipv4Address s = Ipv4Address (),
+                  Ipv4Address n = Ipv4Address (), Time exp = Simulator::Now (), uint8_t p = 0)
     : m_packet (pa),
       m_dst (d),
+      m_source (s),
+      m_nextHop (n),
       m_expire (exp + Simulator::Now ()),
       m_protocol (p)
   {
@@ -58,9 +60,9 @@ public:
    * Compare send buffer entries
    * \return true if equal
    */
-  bool operator== (SendBuffEntry const & o) const
+  bool operator== (ErrorBuffEntry const & o) const
   {
-    return ((m_packet == o.m_packet) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
+    return ((m_packet == o.m_packet) && (m_source == o.m_source) && (m_nextHop == o.m_nextHop) && (m_dst == o.m_dst) && (m_expire == o.m_expire));
   }
   // /\name Fields
   // \{
@@ -79,6 +81,22 @@ public:
   void SetDestination (Ipv4Address d)
   {
     m_dst = d;
+  }
+  Ipv4Address GetSource () const
+  {
+    return m_source;
+  }
+  void SetSource (Ipv4Address s)
+  {
+    m_source = s;
+  }
+  Ipv4Address GetNextHop () const
+  {
+    return m_nextHop;
+  }
+  void SetNextHop (Ipv4Address n)
+  {
+    m_nextHop = n;
   }
   void SetExpireTime (Time exp)
   {
@@ -102,6 +120,10 @@ private:
   Ptr<const Packet> m_packet;
   // / Destination address
   Ipv4Address m_dst;
+  // / Source address
+  Ipv4Address m_source;
+  // / Nexthop address
+  Ipv4Address m_nextHop;
   // / Expire time for queue entry
   Time m_expire;
   // / The protocol number
@@ -110,22 +132,22 @@ private:
 
 /**
  * \ingroup dsr
- * \brief DSR send buffer
+ * \brief DSR error buffer
  */
 /************************************************************************************************************************/
-class SendBuffer
+class ErrorBuffer
 {
 public:
   // / Default c-tor
-  SendBuffer ()
+  ErrorBuffer ()
   {
   }
   // / Push entry in queue, if there is no entry with the same packet and destination address in queue.
-  bool Enqueue (SendBuffEntry & entry);
+  bool Enqueue (ErrorBuffEntry & entry);
   // / Return first found (the earliest) entry for given destination
-  bool Dequeue (Ipv4Address dst, SendBuffEntry & entry);
-  // / Remove all packets with destination IP address dst
-  void DropPacketWithDst (Ipv4Address dst);
+  bool Dequeue (Ipv4Address dst, ErrorBuffEntry & entry);
+  // / Remove all packets with the error link
+  void DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop);
   // / Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address dst);
   // / Number of entries
@@ -140,40 +162,42 @@ public:
   {
     m_maxLen = len;
   }
-  Time GetSendBufferTimeout () const
+  Time GetErrorBufferTimeout () const
   {
-    return m_sendBufferTimeout;
+    return m_errorBufferTimeout;
   }
-  void SetSendBufferTimeout (Time t)
+  void SetErrorBufferTimeout (Time t)
   {
-    m_sendBufferTimeout = t;
+    m_errorBufferTimeout = t;
   }
   // \}
 
-  std::vector<SendBuffEntry> & GetBuffer ()
+  std::vector<ErrorBuffEntry> & GetBuffer ()
   {
-    return m_sendBuffer;
+    return m_errorBuffer;
   }
 
 private:
   // / The send buffer to cache unsent packet
-  std::vector<SendBuffEntry> m_sendBuffer;
+  std::vector<ErrorBuffEntry> m_errorBuffer;
   // / Remove all expired entries
   void Purge ();
   // / Notify that packet is dropped from queue by timeout
-  void Drop (SendBuffEntry en, std::string reason);
+  void Drop (ErrorBuffEntry en, std::string reason);
+  // / Notify that packet is dropped from queue by timeout
+  void DropLink (ErrorBuffEntry en, std::string reason);
   // / The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   // / The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
-  Time m_sendBufferTimeout;
+  Time m_errorBufferTimeout;
   // / Check if the send buffer entry is the same or not
-  static bool IsEqual (SendBuffEntry en, const Ipv4Address dst)
+  static bool LinkEqual (ErrorBuffEntry en, const std::vector<Ipv4Address> link)
   {
-    return (en.GetDestination () == dst);
+    return ((en.GetSource () == link[0]) && (en.GetNextHop () == link[1]));
   }
 };
 /*******************************************************************************************************************************/
 } // namespace dsr
 } // namespace ns3
 
-#endif /* DSR_SENDBUFF_H */
+#endif /* DSR_ERRORBUFF_H */

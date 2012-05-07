@@ -52,12 +52,33 @@ NS_LOG_COMPONENT_DEFINE ("RouteCache");
 namespace ns3 {
 namespace dsr {
 
-void Link::Print () const
+bool CompareRoutesBoth (const RouteCacheEntry &a, const RouteCacheEntry &b)
+{
+  // compare based on both with hop count considered priority
+  return (a.GetVector ().size () < b.GetVector ().size ()) ||
+      ((a.GetVector ().size () == b.GetVector ().size ()) && (a.GetExpireTime() > b.GetExpireTime()))
+      ;
+}
+
+bool CompareRoutesHops (const RouteCacheEntry &a, const RouteCacheEntry &b)
+{
+  // compare based on hops
+  return a.GetVector ().size () < b.GetVector ().size ();
+}
+
+bool CompareRoutesExpire (const RouteCacheEntry &a, const RouteCacheEntry &b)
+{
+  // compare based on expire time
+  return a.GetExpireTime() > b.GetExpireTime();
+}
+
+void Link::Print() const
 {
   NS_LOG_DEBUG (m_low << "----" << m_high);
 }
 
-NodeStab::NodeStab ()
+NodeStab::NodeStab (Time nodeStab)
+  : m_nodeStability (nodeStab + Simulator::Now ())
 {
 }
 
@@ -65,19 +86,8 @@ NodeStab::~NodeStab ()
 {
 }
 
-void
-NodeStab::IncStability ()
-{
-  m_nodeStability = Time (GetNodeStability () * m_stabilityIncrFactor);
-}
-
-void
-NodeStab::DecStability ()
-{
-  m_nodeStability = Time (GetNodeStability () / m_stabilityDecrFactor);
-}
-
-LinkStab::LinkStab ()
+LinkStab::LinkStab (Time linkStab)
+  : m_linkStability (linkStab + Simulator::Now ())
 {
 }
 
@@ -119,23 +129,6 @@ RouteCacheEntry::Print (std::ostream & os) const
 {
   os << m_dst << "\t" << (m_expire - Simulator::Now ()).GetSeconds ()
      << "\t";
-}
-
-bool CompareRoutesExpire (const RouteCacheEntry &a, const RouteCacheEntry &b)
-{
-  return a.GetExpireTime () > b.GetExpireTime ();
-}
-
-bool CompareRoutesHop (const RouteCacheEntry &a, const RouteCacheEntry &b)
-{
-  return a.GetVector ().size () < b.GetVector ().size ();
-}
-
-bool CompareRoutes (const RouteCacheEntry &a, const RouteCacheEntry &b)
-{
-  return (a.GetVector ().size () < b.GetVector ().size ())
-         || ((a.GetVector ().size () == b.GetVector ().size ()) && (a.GetExpireTime () > b.GetExpireTime ()))
-  ;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (RouteCache);
@@ -211,7 +204,7 @@ bool
 RouteCache::LookupRoute (Ipv4Address id, RouteCacheEntry & rt)
 {
   NS_LOG_FUNCTION (this << id);
-  if (IsLinkCache ())
+  if (IsLinkCache())
     {
       return LookupRoute_Link (id, rt);
     }
@@ -261,7 +254,7 @@ RouteCache::LookupRoute (Ipv4Address id, RouteCacheEntry & rt)
                       RouteCacheEntry changeEntry; // Create the route entry
                       changeEntry.SetVector (changeVector);
                       changeEntry.SetDestination (id);
-                      // use the expire time from original route entry
+                      // Use the expire time from original route entry
                       changeEntry.SetExpireTime (k->GetExpireTime ());
                       // We need to add new route entry here
                       std::list<RouteCacheEntry> newVector;
@@ -285,7 +278,7 @@ RouteCache::LookupRoute (Ipv4Address id, RouteCacheEntry & rt)
        */
       std::list<RouteCacheEntry> rtVector = m->second;
       rt = rtVector.front ();  // use the first entry in the route vector
-      NS_LOG_DEBUG ("Route to " << id << " with route size " << rtVector.size ());
+      NS_LOG_DEBUG ("Route to " << id << " with route size " << rtVector.size());
       return true;
     }
 }
@@ -295,23 +288,20 @@ RouteCache::SetCacheType (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   if (type == std::string ("LinkCache"))
-    {
-      m_isLinkCache = true;
-    }
+    m_isLinkCache = true;
   else if (type == std::string ("PathCache"))
-    {
-      m_isLinkCache = false;
-    }
+    m_isLinkCache = false;
   else
     {
       m_isLinkCache = false;             // use path cache as default
-      NS_LOG_DEBUG ("Error Cache Type");
+      NS_LOG_INFO ("Error Cache Type");
     }
 }
 
 bool
 RouteCache::IsLinkCache ()
 {
+  NS_LOG_FUNCTION (this);
   return m_isLinkCache;
 }
 
@@ -319,14 +309,13 @@ void
 RouteCache::RebuildBestRouteTable (Ipv4Address source)
 {
   NS_LOG_FUNCTION (this << source);
-  /*
-   * the followings are initialize-single-source
+  /**
+   * \brief The followings are initialize-single-source
    */
   // @d shortest-path estimate
   std::map<Ipv4Address, uint32_t> d;
   // @pre preceeding node
   std::map<Ipv4Address, Ipv4Address> pre;
-  NS_LOG_FUNCTION (this << source);
   for (std::map<Ipv4Address, std::map<Ipv4Address, uint32_t> >::iterator i = m_netGraph.begin (); i != m_netGraph.end (); ++i)
     {
       if (i->second.find (source) != i->second.end ())
@@ -342,72 +331,72 @@ RouteCache::RebuildBestRouteTable (Ipv4Address source)
     }
   d[source] = 0;
   /**
-   * the followings are core of dijskra algorithm
-   *
+   * \brief The followings are core of dijskra algorithm
    */
   // the node set which shortest distance has been calculated, if true calculated
   std::map<Ipv4Address, bool> s;
   double temp = MAXWEIGHT;
   Ipv4Address tempip = Ipv4Address ("255.255.255.255");
   for (uint32_t i = 0; i < m_netGraph.size (); i++)
+  {
+    temp = MAXWEIGHT;
+    for (std::map<Ipv4Address,uint32_t>::const_iterator j = d.begin (); j != d.end (); ++j)
+      {
+        Ipv4Address ip = j->first;
+        if (s.find (ip) == s.end ())
+          {
+            /**
+             * \brief The followings are for comparison
+             */
+            if (j->second <= temp)
+              {
+                temp = j->second;
+                tempip = ip;
+              }
+          }
+      }
+    if (!tempip.IsBroadcast ())
     {
-      temp = MAXWEIGHT;
-      for (std::map<Ipv4Address,uint32_t>::iterator j = d.begin (); j != d.end (); ++j)
+      s[tempip] = true;
+      for (std::map<Ipv4Address, uint32_t>::const_iterator k = m_netGraph[tempip].begin (); k != m_netGraph[tempip].end (); ++k)
+      {
+        if (s.find (k->first) == s.end () && d[k->first] > d[tempip] + k->second)
+          {
+            d[k->first] = d[tempip] + k->second;
+            pre[k->first] = tempip;
+          }
+        /**
+         *  Selects the shortest-length route that has the longest expected lifetime
+         *  (highest minimum timeout of any link in the route)
+         *  For the computation overhead and complexity
+         *  Here I just implement kind of greedy strategy to select link with the longest expected lifetime when there is two options
+         */
+        else if (d[k->first] == d[tempip] + k->second)
         {
-          Ipv4Address ip = j->first;
-          if (s.find (ip) == s.end ())
+          std::map<Link, LinkStab>::iterator oldlink = m_linkCache.find (Link (k->first, pre[k->first]));
+          std::map<Link, LinkStab>::iterator newlink = m_linkCache.find (Link (k->first, tempip));
+          if (oldlink != m_linkCache.end () && newlink != m_linkCache.end ())
             {
-              /*
-               * the followings are for comparison
-               */
-              if (j->second <= temp)
+              if (oldlink->second.GetLinkStability () < newlink->second.GetLinkStability ())
                 {
-                  temp = j->second;
-                  tempip = ip;
-                }
-            }
-        }
-      if (!tempip.IsBroadcast ())
-        {
-          s[tempip] = true;
-          for (std::map<Ipv4Address, uint32_t>::iterator k = m_netGraph[tempip].begin (); k != m_netGraph[tempip].end (); ++k)
-            {
-              if (s.find (k->first) == s.end () && d[k->first] > d[tempip] + k->second)
-                {
+                  NS_LOG_INFO ("Select the link with longest expected lifetime");
                   d[k->first] = d[tempip] + k->second;
                   pre[k->first] = tempip;
                 }
-              /**
-               *  Selects the shortest-length route that has the longest expected lifetime
-               *  (highest minimum timeout of any link in the route)
-               *  For the computation overhead and complexity
-               *  Here I just implement kind of greedy strategy to select link with the longest expected lifetime when there is two options
-               */
-              else if (d[k->first] == d[tempip] + k->second)
-                {
-                  std::map<Link, LinkStab>::iterator oldlink = m_linkCache.find (Link (k->first, pre[k->first]));
-                  std::map<Link, LinkStab>::iterator newlink = m_linkCache.find (Link (k->first, tempip));
-                  if (oldlink != m_linkCache.end () && newlink != m_linkCache.end ())
-                    {
-                      if (oldlink->second.GetLinkStability () < newlink->second.GetLinkStability ())
-                        {
-                          NS_LOG_DEBUG ("Select the link with longest expected lifetime");
-                          d[k->first] = d[tempip] + k->second;
-                          pre[k->first] = tempip;
-                        }
-                    }
-                  else
-                    {
-                      NS_LOG_DEBUG ("Link Stability Info Corrupt");
-                    }
-                }
+            }
+          else
+            {
+              NS_LOG_INFO ("Link Stability Info Corrupt");
             }
         }
+      }
     }
+  }
   // clean the best route table
   m_bestRoutesTable_link.clear ();
-  for (std::map<Ipv4Address, Ipv4Address>::iterator i = pre.begin (); i != pre.end (); ++i)
-    { // loop for all vertexes
+  for(std::map<Ipv4Address, Ipv4Address>::iterator i = pre.begin (); i != pre.end (); ++i)
+    {
+      // loop for all vertexes
       RouteCacheEntry::IP_VECTOR route;
       Ipv4Address iptemp = i->first;
 
@@ -419,11 +408,11 @@ RouteCache::RebuildBestRouteTable (Ipv4Address source)
               iptemp = pre[iptemp];
             }
           route.push_back (source);
-          /*
-           * reverse the route
+          /**
+           * \brief Reverse the route
            */
           RouteCacheEntry::IP_VECTOR reverseroute;
-          for (RouteCacheEntry::IP_VECTOR::reverse_iterator j = route.rbegin (); j != route.rend (); ++j)
+          for(RouteCacheEntry::IP_VECTOR::reverse_iterator j = route.rbegin (); j!= route.rend (); ++j)
             {
               reverseroute.push_back (*j);
             }
@@ -438,24 +427,26 @@ bool
 RouteCache::LookupRoute_Link (Ipv4Address id, RouteCacheEntry & rt)
 {
   NS_LOG_FUNCTION (this << id);
-  NS_LOG_DEBUG ("Use Link Cache");
-  std::map<Ipv4Address, RouteCacheEntry::IP_VECTOR>::iterator i = m_bestRoutesTable_link.find (id);
+  std::map<Ipv4Address, RouteCacheEntry::IP_VECTOR>::const_iterator i = m_bestRoutesTable_link.find (id);
   if (i == m_bestRoutesTable_link.end ())
     {
-      NS_LOG_DEBUG ("No Route To " << id);
+      NS_LOG_INFO("No Route To " << id);
       return false;
     }
   else
     {
       if (i->second.size () < 2)
         {
-          NS_LOG_DEBUG ("Route To " << id << " Error");
+          NS_LOG_DEBUG ("Route To " << id << " error");
           return false;
         }
-      RouteCacheEntry toSource (/*IP_VECTOR=*/ i->second, /*dst=*/ id, /*expire time=*/ Time (0));
-      rt = toSource;
-      NS_LOG_DEBUG ("The route length " << i->second.size ());
-      NS_LOG_LOGIC ("Route to " << id << " found");
+
+      RouteCacheEntry newEntry; // Create the route entry
+      newEntry.SetVector (i->second);
+      newEntry.SetDestination (id);
+      newEntry.SetExpireTime (RouteCacheTimeout);
+      NS_LOG_INFO ("Route to " << id << " found with the route length " << i->second.size ());
+      rt = newEntry;
       std::vector<Ipv4Address> path = rt.GetVector ();
       PrintVector (path);
       return true;
@@ -466,26 +457,34 @@ void
 RouteCache::PurgeLinkNode ()
 {
   NS_LOG_FUNCTION (this);
-  for (std::map<Link, LinkStab>::iterator i = m_linkCache.begin (); i != m_linkCache.end (); )
+  NS_LOG_DEBUG ("The size of the link cache before " << m_linkCache.size());
+  for (std::map<Link, LinkStab>::iterator i = m_linkCache.begin (); i != m_linkCache.end ();)
     {
+      NS_LOG_DEBUG ("The link stability " << i->second.GetLinkStability());
+      std::map<Link, LinkStab>::iterator itmp = i;
       if (i->second.GetLinkStability () <= Seconds (0))
         {
-          m_linkCache.erase (i++);
+          ++i;
+          m_linkCache.erase (itmp);
         }
       else
         {
-          i++;
+          ++i;
         }
     }
-  for (std::map<Ipv4Address, NodeStab>::iterator i = m_nodeCache.begin (); i != m_nodeCache.end (); )
+  NS_LOG_DEBUG ("The size of the node cache before " << m_nodeCache.size());
+  for (std::map<Ipv4Address, NodeStab>::iterator i = m_nodeCache.begin (); i != m_nodeCache.end ();)
     {
+      NS_LOG_DEBUG ("The node stability " << i->second.GetNodeStability ());
+      std::map<Ipv4Address, NodeStab>::iterator itmp = i;
       if (i->second.GetNodeStability () <= Seconds (0))
         {
-          m_nodeCache.erase (i++);
+          ++i;
+          m_nodeCache.erase (itmp);
         }
       else
         {
-          i++;
+          ++i;
         }
     }
 }
@@ -495,12 +494,54 @@ RouteCache::UpdateNetGraph ()
 {
   NS_LOG_FUNCTION (this);
   m_netGraph.clear ();
-  for (std::map<Link, LinkStab>::iterator i = m_linkCache.begin (); i != m_linkCache.end (); ++i)
+  for(std::map<Link, LinkStab>::iterator i = m_linkCache.begin (); i != m_linkCache.end (); ++i)
     {
+      // Here the weight is set as 1
       uint32_t weight = 1;
       m_netGraph[i->first.m_low][i->first.m_high] = weight;
       m_netGraph[i->first.m_high][i->first.m_low] = weight;
     }
+}
+
+bool
+RouteCache::IncStability (Ipv4Address node)
+{
+  NS_LOG_FUNCTION (this << node);
+  std::map<Ipv4Address, NodeStab>::const_iterator i = m_nodeCache.find (node);
+  if (i == m_nodeCache.end ())
+    {
+      NS_LOG_INFO ("The initial stability " << m_initStability.GetSeconds ());
+      NodeStab ns (m_initStability);
+      m_nodeCache[node] = ns;
+      return false;
+    }
+  else
+    {
+      NodeStab ns (Time (i->second.GetNodeStability () * m_stabilityIncrFactor));
+      m_nodeCache[node] = ns;
+      return true;
+    }
+  return false;
+}
+
+bool
+RouteCache::DecStability (Ipv4Address node)
+{
+  NS_LOG_FUNCTION (this << node);
+  std::map<Ipv4Address, NodeStab>::const_iterator i = m_nodeCache.find (node);
+  if (i == m_nodeCache.end ())
+    {
+      NodeStab ns (m_initStability);
+      m_nodeCache[node] = ns;
+      return false;
+    }
+  else
+    {
+      NodeStab ns (Time (i->second.GetNodeStability () / m_stabilityDecrFactor));
+      m_nodeCache[node] = ns;
+      return true;
+    }
+  return false;
 }
 
 bool
@@ -511,34 +552,31 @@ RouteCache::AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address sour
   for (uint32_t i = 0; i < nodelist.size () - 1; i++)
     {
       NodeStab ns;
-      ns.SetNodeStability (Seconds (m_initStability));
-      ns.SetStabilityIncrFactor (m_stabilityIncrFactor);
-      ns.SetStabilityDecrFactor (m_stabilityDecrFactor);
+      ns.SetNodeStability (m_initStability);
 
       if (m_nodeCache.find (nodelist[i]) == m_nodeCache.end ())
         {
           m_nodeCache[nodelist[i]] = ns;
         }
-      if (m_nodeCache.find (nodelist[i + 1]) == m_nodeCache.end ())
+      if (m_nodeCache.find (nodelist[i+1]) == m_nodeCache.end ())
         {
-          m_nodeCache[nodelist[i + 1]] = ns;
+          m_nodeCache[nodelist[i+1]] = ns;
         }
-      Link link (nodelist[i], nodelist[i + 1]);
+      Link link (nodelist[i], nodelist[i+1]);
       LinkStab stab;
-      stab.SetLinkStability (Seconds (m_initStability));
-      if (m_nodeCache[nodelist[i]].GetNodeStability () < m_nodeCache[nodelist[i + 1]].GetNodeStability ())
+      stab.SetLinkStability (m_initStability);
+      if (m_nodeCache[nodelist[i]].GetNodeStability () < m_nodeCache[nodelist[i+1]].GetNodeStability ())
         {
           stab.SetLinkStability (m_nodeCache[nodelist[i]].GetNodeStability ());
         }
       else
         {
-          stab.SetLinkStability (m_nodeCache[nodelist[i + 1]].GetNodeStability ());
+          stab.SetLinkStability (m_nodeCache[nodelist[i+1]].GetNodeStability ());
         }
-
-      if (stab.GetLinkStability () < (Seconds (m_minLifeTime)))
+      if (stab.GetLinkStability () < m_minLifeTime)
         {
-          NS_LOG_DEBUG ("stability: " << stab.GetLinkStability ());
-          stab.SetLinkStability (Seconds (m_minLifeTime));
+          NS_LOG_DEBUG ("Stability: " << stab.GetLinkStability ().GetSeconds ());
+          stab.SetLinkStability (m_minLifeTime);
         }
       m_linkCache[link] = stab;
       NS_LOG_DEBUG ("Add a new link");
@@ -555,24 +593,25 @@ RouteCache::AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address sour
 void
 RouteCache::UseExtends (RouteCacheEntry::IP_VECTOR rt)
 {
+  NS_LOG_FUNCTION (this);
   if (rt.size () < 2)
     {
-      NS_LOG_DEBUG ("The route is too short");
+      NS_LOG_INFO ("The route is too short");
     }
   for (RouteCacheEntry::IP_VECTOR::iterator i = rt.begin (); i != rt.end () - 1; ++i)
     {
-      Link link (*i, *(i + 1));
+      Link link (*i, *(i+1));
       if (m_linkCache.find (link) != m_linkCache.end ())
         {
-          if (m_linkCache[link].GetLinkStability () < Time (Seconds (m_useExtends)))
+          if (m_linkCache[link].GetLinkStability () < m_useExtends)
             {
-              m_linkCache[link].SetLinkStability (Time (Seconds (m_useExtends)));
+              m_linkCache[link].SetLinkStability (m_useExtends);
+              NS_LOG_DEBUG ("The time of the link " << m_linkCache[link].GetLinkStability ().GetSeconds ());
             }
-          NS_LOG_DEBUG ("The time of the link " << m_linkCache[link].GetLinkStability ().GetSeconds ());
         }
       else
         {
-          NS_LOG_DEBUG ("we cannot find a link in cache");
+          NS_LOG_INFO ("we cannot find a link in cache");
         }
     }
   // Increase the stability of the node cache
@@ -580,14 +619,14 @@ RouteCache::UseExtends (RouteCacheEntry::IP_VECTOR rt)
     {
       if (m_nodeCache.find (*i) != m_nodeCache.end ())
         {
-          NS_LOG_DEBUG ("increase the stability");
+          NS_LOG_DEBUG ("Increase the stability");
           if (m_nodeCache[*i].GetNodeStability () <= m_initStability)
             {
-              m_nodeCache[*i].IncStability ();
+              IncStability (*i);
             }
           else
             {
-              NS_LOG_DEBUG ("The node stability has already been increased");
+              NS_LOG_INFO ("The node stability has already been increased");
             }
         }
     }
@@ -609,8 +648,8 @@ RouteCache::AddRoute (RouteCacheEntry & rt)
   if (i == m_sortedRoutes.end ())
     {
       rtVector.push_back (rt);
-      m_sortedRoutes.erase (dst);   // erase the route entries for dst first
-      /*
+      m_sortedRoutes.erase (dst);   // Erase the route entries for dst first
+      /**
        * Save the new route cache along with the destination address in map
        */
       std::pair<std::map<Ipv4Address, std::list<RouteCacheEntry> >::iterator, bool> result =
@@ -621,8 +660,8 @@ RouteCache::AddRoute (RouteCacheEntry & rt)
     {
       rtVector = i->second;
       NS_LOG_DEBUG ("The existing route size " << rtVector.size () << " for destination address " << dst);
-      /*
-       * Drop the most aged packet when buffer reaches to max
+      /**
+       * \brief Drop the most aged packet when buffer reaches to max
        */
       if (rtVector.size () >= m_maxEntriesEachDst)
         {
@@ -643,12 +682,12 @@ RouteCache::AddRoute (RouteCacheEntry & rt)
               // This sort function will sort the route cache entries based on the size of route in each of the
               // route entries
               rtVector.sort (CompareRoutesExpire);
-              NS_LOG_DEBUG ("The first time" << rtVector.front ().GetExpireTime ().GetSeconds () << " The second time "
-                                             << rtVector.back ().GetExpireTime ().GetSeconds ());
+              NS_LOG_DEBUG ("The first time" << rtVector.front().GetExpireTime().GetSeconds() << " The second time "
+                  << rtVector.back ().GetExpireTime ().GetSeconds ());
               NS_LOG_DEBUG ("The first hop" << rtVector.front ().GetVector ().size () << " The second hop "
-                                            << rtVector.back ().GetVector ().size ());
+                  << rtVector.back ().GetVector ().size ());
               m_sortedRoutes.erase (dst);               // erase the route entries for dst first
-              /*
+              /**
                * Save the new route cache along with the destination address in map
                */
               std::pair<std::map<Ipv4Address, std::list<RouteCacheEntry> >::iterator, bool> result =
@@ -657,7 +696,7 @@ RouteCache::AddRoute (RouteCacheEntry & rt)
             }
           else
             {
-              NS_LOG_DEBUG ("The newly found route is expired");
+              NS_LOG_INFO ("The newly found route is already expired");
             }
         }
     }
@@ -676,9 +715,9 @@ bool RouteCache::FindSameRoute (RouteCacheEntry & rt, std::list<RouteCacheEntry>
       if (routeVector == newVector)
         {
           NS_LOG_DEBUG ("Found same routes in the route cache with the vector size "
-                        << rt.GetDestination () << " " << rtVector.size ());
-          NS_LOG_DEBUG ("The new route expire time " << rt.GetExpireTime ().GetSeconds ()
-                                                     << " the original expire time " << i->GetExpireTime ().GetSeconds ());
+              << rt.GetDestination() << " " << rtVector.size());
+          NS_LOG_DEBUG ("The new route expire time " << rt.GetExpireTime().GetSeconds()
+              << " the original expire time " << i->GetExpireTime().GetSeconds());
           if (rt.GetExpireTime () > i->GetExpireTime ())
             {
               i->SetExpireTime (rt.GetExpireTime ());
@@ -699,6 +738,7 @@ bool RouteCache::FindSameRoute (RouteCacheEntry & rt, std::list<RouteCacheEntry>
 bool
 RouteCache::DeleteRoute (Ipv4Address dst)
 {
+  NS_LOG_FUNCTION (this << dst);
   Purge (); // purge the route cache first to remove timeout entries
   if (m_sortedRoutes.erase (dst) != 0)
     {
@@ -713,37 +753,36 @@ void
 RouteCache::DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node)
 {
   NS_LOG_FUNCTION (this << errorSrc << unreachNode << node);
-  if (IsLinkCache ())
+  if(IsLinkCache ())
     {
       /*
-       * the followings are for cleaning the broken link in linkcache
+       * The followings are for cleaning the broken link in linkcache
        *
        */
-      Link link (errorSrc, unreachNode);
-      if (m_linkCache.erase (link) == 0)
+      Link link1 (errorSrc, unreachNode);
+      Link link2 (unreachNode, errorSrc);
+      // erase the two kind of links to make sure the link is removed from the link cache
+      NS_LOG_DEBUG ("Erase the route ");
+      m_linkCache.erase (link1);
+      m_linkCache.erase (link2);
+
+      std::map<Ipv4Address, NodeStab>::iterator i = m_nodeCache.find (errorSrc);
+      if (i == m_nodeCache.end ())
         {
-          NS_LOG_LOGIC ("Cut route unsuccessful and erase the route");
+          NS_LOG_LOGIC ("Update the node stability unsuccessfully");
         }
       else
         {
-          std::map<Ipv4Address, NodeStab>::iterator i = m_nodeCache.find (errorSrc);
-          if (i == m_nodeCache.end ())
-            {
-              NS_LOG_LOGIC ("Update the node stability unsuccessfully");
-            }
-          else
-            {
-              i->second.DecStability ();
-            }
-          i = m_nodeCache.find (unreachNode);
-          if (i == m_nodeCache.end ())
-            {
-              NS_LOG_LOGIC ("Update the node stability unsuccessfully");
-            }
-          else
-            {
-              i->second.DecStability ();
-            }
+          DecStability (i->first);
+        }
+      i = m_nodeCache.find (unreachNode);
+      if (i == m_nodeCache.end ())
+        {
+          NS_LOG_LOGIC ("Update the node stability unsuccessfully");
+        }
+      else
+        {
+          DecStability (i->first);
         }
       PurgeLinkNode ();
       UpdateNetGraph ();
@@ -845,10 +884,8 @@ RouteCache::DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreac
             }
           ++j;
           if (!IsLinkCache ())
-            {
-              m_sortedRoutes.erase (jtmp);
-            }
-          if (rtVector.size ())
+            m_sortedRoutes.erase (jtmp);
+          if (rtVector.size())
             {
               /*
                * Save the new route cache along with the destination address in map
@@ -867,6 +904,7 @@ RouteCache::DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreac
 void
 RouteCache::PrintVector (std::vector<Ipv4Address>& vec)
 {
+  NS_LOG_FUNCTION (this);
   /*
    * Check elements in a route vector, used when one wants to check the IP addresses saved in
    */
@@ -887,10 +925,11 @@ RouteCache::PrintVector (std::vector<Ipv4Address>& vec)
 void
 RouteCache::PrintRouteVector (std::list<RouteCacheEntry> route)
 {
+  NS_LOG_FUNCTION (this);
   for (std::list<RouteCacheEntry>::iterator i = route.begin (); i != route.end (); i++)
     {
-      std::vector<Ipv4Address> path = i->GetVector ();
-      NS_LOG_DEBUG ("Route NO. ");
+      std::vector<Ipv4Address> path = i->GetVector();
+      NS_LOG_INFO ("Route NO. ");
       PrintVector (path);
     }
 }
@@ -898,6 +937,7 @@ RouteCache::PrintRouteVector (std::list<RouteCacheEntry> route)
 void
 RouteCache::Purge ()
 {
+  NS_LOG_FUNCTION (this);
   //Trying to purge the route cache
   if (m_sortedRoutes.empty ())
     {
@@ -905,7 +945,7 @@ RouteCache::Purge ()
       return;
     }
   for (std::map<Ipv4Address, std::list<RouteCacheEntry> >::iterator i =
-         m_sortedRoutes.begin (); i != m_sortedRoutes.end (); )
+          m_sortedRoutes.begin (); i != m_sortedRoutes.end (); )
     {
       // Loop of route cache entry with the route size
       std::map<Ipv4Address, std::list<RouteCacheEntry> >::iterator itmp = i;
@@ -914,7 +954,7 @@ RouteCache::Purge ()
        */
       Ipv4Address dst = i->first;
       std::list<RouteCacheEntry> rtVector = i->second;
-      NS_LOG_DEBUG ("The route vector size of1 " << dst << " " << rtVector.size ());
+      NS_LOG_DEBUG ("The route vector size of 1 " << dst << " " << rtVector.size());
       if (rtVector.size ())
         {
           for (std::list<RouteCacheEntry>::iterator j = rtVector.begin (); j != rtVector.end (); )
@@ -936,7 +976,7 @@ RouteCache::Purge ()
                   ++j;
                 }
             }
-          NS_LOG_DEBUG ("The route vector size of2 " << dst << " " << rtVector.size ());
+          NS_LOG_DEBUG ("The route vector size of 2 " << dst << " " << rtVector.size());
           if (rtVector.size ())
             {
               ++i;
@@ -965,6 +1005,7 @@ RouteCache::Purge ()
 void
 RouteCache::Print (std::ostream &os)
 {
+  NS_LOG_FUNCTION (this);
   Purge ();
   os << "\nDSR Route Cache\n"
      << "Destination\tGateway\t\tInterface\tFlag\tExpire\tHops\n";
@@ -983,14 +1024,14 @@ RouteCache::Print (std::ostream &os)
 uint16_t
 RouteCache::CheckUniqueAckId (Ipv4Address nextHop)
 {
-  NS_LOG_DEBUG ("The size of ack id cache " << m_ackIdCache.size ());
+  NS_LOG_FUNCTION (this);
   std::map<Ipv4Address, uint16_t>::const_iterator i =
     m_ackIdCache.find (nextHop);
   if (i == m_ackIdCache.end ())
     {
-      NS_LOG_LOGIC ("No Ack id for " << nextHop << " found");
-      m_ackIdCache[nextHop] = 0;
-      return 0;
+      NS_LOG_LOGIC ("No Ack id for " << nextHop << " found and use id 1 for the first network ack id");
+      m_ackIdCache[nextHop] = 1;
+      return 1;
     }
   else
     {
@@ -1015,6 +1056,7 @@ RouteCache::GetAckSize ()
 bool
 RouteCache::IsNeighbor (Ipv4Address addr)
 {
+  NS_LOG_FUNCTION (this);
   PurgeMac ();  // purge the mac cache
   for (std::vector<Neighbor>::const_iterator i = m_nb.begin ();
        i != m_nb.end (); ++i)
@@ -1030,6 +1072,7 @@ RouteCache::IsNeighbor (Ipv4Address addr)
 Time
 RouteCache::GetExpireTime (Ipv4Address addr)
 {
+  NS_LOG_FUNCTION (this);
   PurgeMac ();
   for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i
        != m_nb.end (); ++i)
@@ -1045,6 +1088,7 @@ RouteCache::GetExpireTime (Ipv4Address addr)
 void
 RouteCache::UpdateNeighbor (std::vector<Ipv4Address> nodeList, Time expire)
 {
+  NS_LOG_FUNCTION (this);
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
     {
       for (std::vector<Ipv4Address>::iterator j = nodeList.begin (); j != nodeList.end (); ++j)

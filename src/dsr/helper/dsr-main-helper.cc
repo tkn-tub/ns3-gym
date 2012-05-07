@@ -90,13 +90,13 @@ DsrMainHelper::Install (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (node);
   Ptr<ns3::dsr::DsrRouting> dsr = m_dsrHelper->Create (node);
-  Ptr<ns3::dsr::RouteCache> routeCache = CreateObject<ns3::dsr::RouteCache> ();
-  Ptr<ns3::dsr::RreqTable> rreqTable = CreateObject<ns3::dsr::RreqTable> ();
-  dsr->SetRouteCache (routeCache);
-  dsr->SetRequestTable (rreqTable);
+//  Ptr<ns3::dsr::RouteCache> routeCache = CreateObject<ns3::dsr::RouteCache> ();
+//  Ptr<ns3::dsr::RreqTable> rreqTable = CreateObject<ns3::dsr::RreqTable> ();
+//  dsr->SetRouteCache (routeCache);
+//  dsr->SetRequestTable (rreqTable);
   dsr->SetNode (node);
-  node->AggregateObject (routeCache);
-  node->AggregateObject (rreqTable);
+//  node->AggregateObject (routeCache);
+//  node->AggregateObject (rreqTable);
 }
 
 void

@@ -957,6 +957,16 @@ public:
    */
   Ipv4Address GetUnreachNode () const;
   /**
+   * \brief Set the unreachable node ip address
+   * \param The unreachable ip address
+   */
+  void SetOriginalDst (Ipv4Address originalDst);
+  /**
+   * \brief Get the unreachable node ip address
+   * \return The unreachable ip address
+   */
+  Ipv4Address GetOriginalDst () const;
+  /**
    * \brief Print some informations about the packet.
    * \param os output stream
    * \return info about this packet
@@ -1013,6 +1023,10 @@ private:
    * \brief The unreachable node address
    */
   Ipv4Address    m_unreachNode;
+  /**
+   * \brief The original destination address
+   */
+  Ipv4Address    m_originalDst;
   /**
    * \brief The specific error type
    */

@@ -79,7 +79,6 @@ namespace dsr {
 
   \endverbatim
  */
-
 /**
  * \ingroup dsr
  * \brief DSR Route Cache Entry
@@ -89,81 +88,28 @@ struct Link
   Ipv4Address m_low;
   Ipv4Address m_high;
   Link (Ipv4Address ip1, Ipv4Address ip2)
-  {
-    if (ip1 < ip2)
-      {
-        m_low = ip1;
-        m_high = ip2;
-      }
-    else
-      {
-        m_low = ip2;
-        m_high = ip1;
-      }
-  }
+    {
+      if (ip1 < ip2)
+        {
+          m_low = ip1;
+          m_high = ip2;
+        }
+      else
+        {
+          m_low = ip2;
+          m_high = ip1;
+        }
+    }
   bool operator < (Link const& L) const
-  {
-    if (m_low < L.m_low)
-      {
+    {
+      if (m_low < L.m_low)
         return true;
-      }
-    else if (m_low == L.m_low)
-      {
+      else if (m_low == L.m_low)
         return (m_high < L.m_high);
-      }
-    else
-      {
+      else
         return false;
-      }
-  }
+    }
   void Print () const;
-};
-
-class NodeStab
-{
-public:
-  /**
-   * \brief Constructor
-   */
-  NodeStab ();
-  /**
-   * \brief Destructor
-   */
-  virtual ~NodeStab ();
-
-  void SetStabilityIncrFactor (double stabilityIncrFactor)
-  {
-    m_stabilityIncrFactor = stabilityIncrFactor;
-  }
-  double GetStabilityIncrFactor () const
-  {
-    return m_stabilityIncrFactor;
-  }
-  void SetStabilityDecrFactor (double stabilityDecrFactor)
-  {
-    m_stabilityDecrFactor = stabilityDecrFactor;
-  }
-  double GetStabilityDecrFactor () const
-  {
-    return m_stabilityDecrFactor;
-  }
-
-  void IncStability ();
-
-  void DecStability ();
-
-  void SetNodeStability (Time nodeStab)
-  {
-    m_nodeStability = nodeStab + Simulator::Now ();
-  }
-  Time GetNodeStability () const
-  {
-    return m_nodeStability - Simulator::Now ();
-  }
-private:
-  Time m_nodeStability;
-  double m_stabilityIncrFactor;
-  double m_stabilityDecrFactor;
 };
 
 class LinkStab
@@ -172,7 +118,7 @@ public:
   /**
    * \brief Constructor
    */
-  LinkStab ();
+  LinkStab (Time linkStab = Simulator::Now ());
   /**
    * \brief Destructor
    */
@@ -188,12 +134,38 @@ public:
   }
 
   void Print () const;
+
 private:
   /*
    * The link stability lifetime expected, when the time is due, the link expires the expiration happens
    * when purge the node and link cache before update them when receiving new information
    */
   Time m_linkStability;
+};
+
+class NodeStab
+{
+public:
+  /**
+   * \brief Constructor
+   */
+//  NodeStab ();
+  NodeStab (Time nodeStab = Simulator::Now ());
+  /**
+   * \brief Destructor
+   */
+  virtual ~NodeStab ();
+
+  void SetNodeStability (Time nodeStab)
+  {
+    m_nodeStability = nodeStab + Simulator::Now ();
+  }
+  Time GetNodeStability () const
+  {
+    return m_nodeStability - Simulator::Now ();
+  }
+private:
+  Time m_nodeStability;
 };
 
 class RouteCacheEntry
@@ -266,36 +238,37 @@ public:
   bool operator== (RouteCacheEntry const & o) const
   {
     if (m_path.size () != o.m_path.size ())
-      {
-        NS_ASSERT (false);
-        return false;
-      }
+    {
+      NS_ASSERT (false);
+      return false;
+    }
     IP_VECTOR::const_iterator j = o.m_path.begin ();
     for (IP_VECTOR::const_iterator i = m_path.begin (); i
          != m_path.end (); i++, j++)
+    {
+      /*
+       * Verify if neither the entry are not 0 and they equal to each other
+       */
+      if (((*i) == 0) || ((*j) == 0))
       {
-        /*
-         * Verify if neither the entry are not 0 and they equal to each other
-         */
-        if (((*i) == 0) || ((*j) == 0))
-          {
-            return false;
-          }
-        else if (!((*i) == (*j)) )
-          {
-            return false;
-          }
-        else
-          {
-            return true;
-          }
+        return false;
       }
+      else if (!((*i) == (*j)) )
+      {
+        return false;
+      }
+      else
+      {
+        return true;
+      }
+    }
     return false;
   }
   // \}
+
+private:
   // / RREP_ACK timer
   Timer m_ackTimer;
-private:
   // / The destination Ip address
   Ipv4Address m_dst;
   // / brief The IP address constructed route
@@ -389,43 +362,43 @@ public:
   {
     m_badLinkLifetime = t;
   }
-  double GetStabilityDecrFactor () const
+  uint64_t GetStabilityDecrFactor () const
   {
     return m_stabilityDecrFactor;
   }
-  void SetStabilityDecrFactor (double decrFactor)
+  void SetStabilityDecrFactor (uint64_t decrFactor)
   {
     m_stabilityDecrFactor = decrFactor;
   }
-  double GetStabilityIncrFactor () const
+  uint64_t GetStabilityIncrFactor () const
   {
     return m_stabilityIncrFactor;
   }
-  void SetStabilityIncrFactor (double incrFactor)
+  void SetStabilityIncrFactor (uint64_t incrFactor)
   {
     m_stabilityIncrFactor = incrFactor;
   }
-  double GetInitStability () const
+  Time GetInitStability () const
   {
     return m_initStability;
   }
-  void SetInitStability (double initStability)
+  void SetInitStability (Time initStability)
   {
     m_initStability = initStability;
   }
-  double GetMinLifeTime () const
+  Time GetMinLifeTime () const
   {
     return m_minLifeTime;
   }
-  void SetMinLifeTime (double minLifeTime)
+  void SetMinLifeTime (Time minLifeTime)
   {
     m_minLifeTime = minLifeTime;
   }
-  double GetUseExtends () const
+  Time GetUseExtends () const
   {
     return m_useExtends;
   }
-  void SetUseExtends (double useExtends)
+  void SetUseExtends (Time useExtends)
   {
     m_useExtends = useExtends;
   }
@@ -566,11 +539,11 @@ private:
   /*
    * Define the parameters for link cache type
    */
-  double m_stabilityDecrFactor;
-  double m_stabilityIncrFactor;
-  double m_initStability;
-  double m_minLifeTime;
-  double m_useExtends;
+  uint64_t m_stabilityDecrFactor;
+  uint64_t m_stabilityIncrFactor;
+  Time m_initStability;
+  Time m_minLifeTime;
+  Time m_useExtends;
   /*
    * Define the route cache data structure
    */
@@ -587,12 +560,12 @@ private:
   bool m_isLinkCache;
   // / Check if save the sub route entries or not
   bool m_subRoute;
-  /*
+  /**
    * The link cache to update all the link status, bi-link is two link for link is a struct
    * when the weight is calculated we normalized them: 100*weight/max of Weight
    */
   #define MAXWEIGHT 0xFFFF;
-  /*
+  /**
    * Current network graph state for this node, double is weight, which is calculated by the node information
    * and link information, any time some changes of link cache and node cache
    * change the weight and then recompute the best choice for each node
@@ -602,23 +575,27 @@ private:
   std::map<Ipv4Address, RouteCacheEntry::IP_VECTOR> m_bestRoutesTable_link;
   std::map<Link, LinkStab> m_linkCache;
   std::map<Ipv4Address, NodeStab> m_nodeCache;
-  //used by LookupRoute when LinkCache
+  // used by LookupRoute when LinkCache
   bool LookupRoute_Link (Ipv4Address id, RouteCacheEntry & rt);
+
+  bool IncStability (Ipv4Address node);
+
+  bool DecStability (Ipv4Address node);
+
 public:
   /**
    * \brief dijsktra algorithm to get the best route from m_netGraph and update the m_bestRoutesTable_link
    * \when current graph information has changed
-   *
    */
   void SetCacheType (std::string type);
   bool IsLinkCache ();
   bool AddRoute_Link (RouteCacheEntry::IP_VECTOR nodelist, Ipv4Address node);
-  /*
-   *  USE MAXWEIGHT TO REPRESENT MAX; USE BROADCAST ADDRESS TO REPRESENT NULL PRECEEDING ADDRESS
+  /**
+   *  \brief USE MAXWEIGHT TO REPRESENT MAX; USE BROADCAST ADDRESS TO REPRESENT NULL PRECEEDING ADDRESS
    */
   void RebuildBestRouteTable (Ipv4Address source);
   void PurgeLinkNode ();
-  /*
+  /**
    * When a link from the Route Cache is used in routing a packet originated or salvaged
    * by that node, the stability metric for each of the two endpoint nodes of that link is incremented by the
    * amount of time since that link was last used. When a link is used in a route chosen for a packet originated or
@@ -630,7 +607,7 @@ public:
    */
   void UpdateNetGraph ();
   //---------------------------------------------------------------------------------------
-  /*
+  /**
    * The following code handles link-layer acks
    */
   // / link failure callback

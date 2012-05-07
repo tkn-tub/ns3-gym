@@ -67,7 +67,7 @@ struct BlackList
  */
 struct RreqTableEntry
 {
-  uint16_t m_reqNo;
+  uint32_t m_reqNo;
   Time m_expire;
 };
 /*
@@ -76,8 +76,9 @@ struct RreqTableEntry
  */
 struct SourceRreqEntry
 {
-  uint16_t m_identification;
+  uint32_t m_identification;
   Ipv4Address m_dst;
+  bool m_isError;
   Time m_expire;
 };
 /**
@@ -104,11 +105,11 @@ public:
 
   // /\name Fields
   // \{
-  void SetInitHopLimit (uint8_t hl)
+  void SetInitHopLimit (uint32_t hl)
   {
     m_initHopLimit = hl;
   }
-  uint8_t GetInitHopLimit () const
+  uint32_t GetInitHopLimit () const
   {
     return m_initHopLimit;
   }
@@ -128,11 +129,11 @@ public:
   {
     return m_requestIdSize;
   }
-  void SetUniqueRreqIdSize (uint16_t uid)
+  void SetUniqueRreqIdSize (uint32_t uid)
   {
     m_maxRreqId = uid;
   }
-  uint16_t GetUniqueRreqIdSize () const
+  uint32_t GetUniqueRreqIdSize () const
   {
     return m_maxRreqId;
   }
@@ -145,29 +146,16 @@ public:
   // / Remove route request entry for dst
   void RemoveRreqEntry (Ipv4Address dst);
   // / Get the request count number for one destination address
-  uint16_t GetRreqCnt (Ipv4Address dst);
-
-  //----------------------------------------------------------------------------------------------------------
-  /*
-   * The following code deals with duplicate request ids
-   */
-  bool FindSrc (Ipv4Address source, Ipv4Address target, uint16_t id);
-  // / Purge the rreq table
-  void Purge ();
-  // / Set the source rreq expire time to the time of max route expire time
-  void SetRreqExpire (Time expire)
-  {
-    m_rreqEntryExpire = expire;
-  }
+  uint32_t GetRreqCnt (Ipv4Address dst);
 
   //----------------------------------------------------------------------------------------------------------
   /*
    * The following code generates new request id for each destination
    */
   // / Check for duplicate ids and save new entries if the id is not present in the table
-  uint16_t CheckUniqueRreqId (Ipv4Address dst);
+  uint32_t CheckUniqueRreqId (Ipv4Address dst);
   // / Get the request id size
-  uint16_t GetRreqSize ();
+  uint32_t GetRreqSize ();
 
   // ---------------------------------------------------------------------------------------------------------
   /*
@@ -189,6 +177,7 @@ public:
   void PurgeNeighbor ();
 
 private:
+
   // / Timer for neighbor's list. Schedule Purge().
   Timer m_ntimer;
   // / The max # of requests to retransmit
@@ -202,19 +191,19 @@ private:
   // / The source route entry expire time
   Time m_rreqEntryExpire;
   // / The initial hop limit
-  uint8_t m_initHopLimit;
+  uint32_t m_initHopLimit;
   // / The request table size
   uint32_t m_requestTableSize;
   // / The request source id size
   uint32_t m_requestIdSize;
   // / The unique request id for any destination
-  uint16_t m_maxRreqId;
+  uint32_t m_maxRreqId;
   // / The state of the unidirectional link
   LinkStates m_linkStates;
   // / Map of entries
   std::list<SourceRreqEntry> m_sourceRreq;
   // / The id cache to ensure all the ids are unique
-  std::map<Ipv4Address, uint16_t> m_rreqIdCache;
+  std::map<Ipv4Address, uint32_t> m_rreqIdCache;
   // / The cache to save route request table entries indexed with destination address
   std::map<Ipv4Address, RreqTableEntry > m_rreqDstMap;
   // / The cache to ensure all the route request from unique source
