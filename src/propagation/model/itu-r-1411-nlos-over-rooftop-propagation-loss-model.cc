@@ -208,7 +208,7 @@ void
 ItuR1411NlosOverRooftopPropagationLossModel::SetFrequency (double freq)
 {
   m_frequency = freq;
-  m_lambda = 300000000 / freq;
+  m_lambda = 299792458.0 / freq;
 }
 
 

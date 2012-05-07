@@ -21,7 +21,7 @@ b = 50;
 st_w = 20;
 phi = 45;
 big = 1; % metropolitan centre
-g = loss_ITU1411_LOS (d, hb, hm, hr, f);
+g = loss_ITU1411_LOS (d, hb, hm, f);
 printf ("Test #11: the value of ITU1411 in LOS is: %f\n", g);
 
 d = d = 500.84;

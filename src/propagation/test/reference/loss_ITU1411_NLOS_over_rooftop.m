@@ -10,7 +10,7 @@ function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, 
   assert(f > 0);
 
 
-  lambda = 300000000.0 / f;
+  lambda = 299792458 / f;
   fmhz = f/1e6;
   Dhb = hb - hr;
   ds = (lambda*d*d)/(Dhb*Dhb);

@@ -81,7 +81,7 @@ void
 ItuR1411LosPropagationLossModel::SetFrequency (double freq)
 {
   NS_ASSERT (freq > 0.0);
-  m_lambda = 300000000 / freq;
+  m_lambda = 299792458.0 / freq;
 }
 
 

@@ -46,7 +46,7 @@ disp ("Test #3: the value of Kun 2.6 GHz is:"), disp (g)
 % Test #4
 d = 1041.2; %m
 f = 2114e6;
-g = loss_ITU1411_LOS (d, hb, hm, hr, f);
+g = loss_ITU1411_LOS (d, hb, hm, f);
 disp ("Test #4: the value of ITU1411 in LOS is:"), disp (g)
 
 % Test #5

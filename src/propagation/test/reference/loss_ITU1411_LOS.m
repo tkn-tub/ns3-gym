@@ -1,7 +1,7 @@
-function g = loss_ITU1411_LOS (d, hb, hm, hr, f)
+function g = loss_ITU1411_LOS (d, hb, hm, f)
 
   %%
-  %% function g = loss_ITU1411_LOS(d, hb, hm, hr, f)
+  %% function g = loss_ITU1411_LOS(d, hb, hm, f)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb
@@ -10,7 +10,7 @@ function g = loss_ITU1411_LOS (d, hb, hm, hr, f)
   assert(f > 0);
 
 
-  lambda = 300000000.0 / f;
+  lambda = 299792458 / f;
   Lbp = abs(20*log10(lambda^2/(8*pi*hb*hm)));
   Rbp = (4*hb*hm) / lambda;
   if (d<=Rbp)
