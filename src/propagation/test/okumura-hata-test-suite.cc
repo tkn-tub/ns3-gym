@@ -114,6 +114,10 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
 
   LogComponentEnable ("OkumuraHataPropagationLossModelTest", LOG_LEVEL_ALL);
 
+
+  // reference values obtained with the octave scripts in src/propagation/test/reference/
+
+
   double freq = 869e6; // this will use the original OH model
 
   AddTestCase (new OkumuraHataPropagationLossModelTestCase (freq, 2000, 30, 1, UrbanEnvironment, LargeCity, 137.93, "original OH Urban Large city"));
