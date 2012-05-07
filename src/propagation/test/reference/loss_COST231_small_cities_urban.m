@@ -1,7 +1,7 @@
 function g = loss_COST231_small_cities_urban(d, hb, hm, f)
 
   %%
-  %% function g = gain_freespace(d, c)
+  %% function g = loss_COST231_small_cities_urban(d, c)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb

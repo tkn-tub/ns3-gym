@@ -40,8 +40,8 @@ g = loss_COST231_small_cities_urban (d, hb, hm, fmhz);
 disp ("Test #2: the value of COST231 for small cities is:"), disp (g)
 
 % Test #3
-g = loss_OH_2_6GHz (d*1000);
-disp ("Test #3: the value of OH at 2.6 GHz is:"), disp (g)
+g = loss_Kun_2_6GHz (d*1000);
+disp ("Test #3: the value of Kun 2.6 GHz is:"), disp (g)
 
 % Test #4
 d = 1041.2; %m

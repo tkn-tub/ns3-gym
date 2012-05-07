@@ -1,7 +1,7 @@
 function g = loss_ITU1411_LOS (d, hb, hm, hr, f)
 
   %%
-  %% function g = loss_ITU1411_LOS(d, c)
+  %% function g = loss_ITU1411_LOS(d, hb, hm, hr, f)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb

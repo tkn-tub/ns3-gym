@@ -1,7 +1,7 @@
 function g = loss_OH_openareas (d, hb, hm, f)
 
   %%
-  %% function g = gain_freespace(d, c)
+  %% function g = loss_OH_openareas (d, hb, hm, f)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb

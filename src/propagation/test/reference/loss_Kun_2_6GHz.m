@@ -1,7 +1,7 @@
-function g = loss_OH_2_6GHz (d)
+function g = loss_Kun_2_6GHz (d)
 
   %%
-  %% function g = gain_freespace(d, c)
+  %% function g = loss_Kun_2_6GHz (d, c)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb

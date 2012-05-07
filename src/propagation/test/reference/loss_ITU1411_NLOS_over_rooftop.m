@@ -1,7 +1,7 @@
 function g = loss_ITU1411_NLOS_over_rooftop (d, hb, hm, hr, f, l, b, st_w, phi, big)
 
   %%
-  %% function g = loss_ITU1411_LOS(d, c)
+  %% function g = loss_ITU1411_NLOS_over_rooftop(d, hb, hm, hr, f, l, b, st_w, phi, big)
   %%
   %% returns the loss at d meters for f frequency and mobile height m and
   %% base station height of hb
