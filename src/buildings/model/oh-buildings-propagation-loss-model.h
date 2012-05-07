@@ -26,32 +26,16 @@
 
 namespace ns3 {
 
+class OkumuraHataPropagationLossModel;
 
 /**
  * \ingroup propagation
  *
- *  \brief The Okumura Hata (OH)-Building-Propagation-Model is propagation module
- *  using only the Okumura Hata model from the one provided by
- *   BuildingsPropagationLossModel, in different environments and with 
- *   buildings (i.e., indoor and outdoor communications).
- *
- *  This model includes Hata model, COST231, ITU-R P.1411 (short range
- *  communications), ITU-R P.1238 (indoor communications). 
- *  Building-Propagation-Model properly combines the models above in order
- *  to be able to evaluate the pathloss under different scenarios, in detail:
- *  - Environments: urban, suburban, open-areas;
- *  - frequency: from 200 uo to 2600 MHz
- *  - short range communications vs long range communications
- *  - Node position respect to buildings: indoor, outdoor and hybrid (indoor <-> outdoor)
- *  - Building penetretation loss
- *  - floors, etc...
- *
- *  Frequency: 200 MHz to 2000 MHz
- *  Link Distance:up to 20 km
- *  \warning This model works with BuildingsMobilityModel
+ *  this model combines the OkumuraHata model with the BuildingsPropagationLossModel
+ * 
+ *  \warning This model works with BuildingsMobilityModel only
  *
  */
-
 class OhBuildingsPropagationLossModel : public BuildingsPropagationLossModel
 {
 
@@ -67,6 +51,9 @@ public:
    */
   virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   
+private:
+
+  Ptr<OkumuraHataPropagationLossModel> m_okumuraHata;
 
 };
 

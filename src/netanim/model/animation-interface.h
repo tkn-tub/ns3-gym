@@ -26,6 +26,7 @@
 #include <map>
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"
+#include "ns3/node-container.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/node-list.h"
@@ -128,6 +129,24 @@ public:
   void SetXMLOutput ();
 
   /**
+   * \brief Specify the time at which capture should start
+   * 
+   * \param t The time at which AnimationInterface should begin capture of traffic info
+   *
+   * \returns none
+   */
+  void SetStartTime (Time t);
+
+  /**
+   * \brief Specify the time at which capture should stop
+   * 
+   * \param t The time at which AnimationInterface should stop capture of traffic info
+   *
+   * \returns none
+   */
+  void SetStopTime (Time t);
+
+  /**
    * \brief (Deprecated) Specify that animation commands are to be written to
    * a socket.
    *
@@ -208,7 +227,23 @@ public:
    * \param z Z co-ordinate of the node
    *
    */
-  void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+  static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+
+  /**
+   * \brief Helper function to set a brief description for a given node
+   * \param n Ptr to the node
+   * \param descr A string to briefly describe the node
+   *
+   */
+  static void SetNodeDescription (Ptr <Node> n, std::string descr);
+
+  /**
+   * \brief Helper function to set a brief description for nodes in a Node Container
+   * \param nc NodeContainer containing the nodes
+   * \param descr A string to briefly describe the nodes
+   *
+   */
+  static void SetNodeDescription (NodeContainer nc, std::string descr);
 
   /**
    * \brief Is AnimationInterface started
@@ -216,6 +251,24 @@ public:
    *
    */
   bool IsStarted (void);
+
+  /**
+   * \brief Show all 802.11 frames. Default: show only frames accepted by mac layer
+   * \param showAll if true shows all 802.11 frames including beacons, association
+   *  request and acks (very chatty). if false only frames accepted by mac layer
+   *
+   */
+  void ShowAll802_11 (bool showAll); 
+
+  /**
+   *
+   * \brief Enable Packet metadata
+   * \param enable if true enables writing the packet metadata to the XML trace file
+   *        if false disables writing the packet metadata
+   */
+  void EnablePacketMetadata (bool enable);
+
+
 
 private:
 #ifndef WIN32
@@ -233,6 +286,7 @@ private:
   std::string outputfilename;
   bool OutputFileSet;
   bool ServerPortSet;
+
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
                    Ptr<NetDevice> tx,
@@ -267,13 +321,22 @@ private:
                           Ptr<const Packet> p);
   void CsmaMacRxTrace (std::string context,
                        Ptr<const Packet> p);
+
+  void LteTxTrace (std::string context,
+                      Ptr<const Packet> p,
+                      const Mac48Address &);
+
+  void LteRxTrace (std::string context,
+                      Ptr<const Packet> p,
+                      const Mac48Address &);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
   int  WriteN (int, const std::string&);
 
-  void OutputWirelessPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
-  void OutputCsmaPacket (AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
+  void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void MobilityAutoCheck ();
   
   uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
@@ -285,6 +348,10 @@ private:
   std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
   void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WimaxPacketIsPending (uint64_t AnimUid); 
+
+  std::map<uint64_t, AnimPacketInfo> pendingLtePackets;
+  void AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool LtePacketIsPending (uint64_t AnimUid);
 
   std::map<uint64_t, AnimPacketInfo> pendingCsmaPackets;
   void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
@@ -302,6 +369,7 @@ private:
 
   void PurgePendingWifi ();
   void PurgePendingWimax ();
+  void PurgePendingLte ();
   void PurgePendingCsma ();
 
   // Recalculate topology bounds
@@ -313,10 +381,18 @@ private:
   void ConnectCallbacks ();
 
   bool m_started;
+  bool m_enablePacketMetadata; 
+  Time m_startTime;
+  Time m_stopTime;
+  
+  std::map <std::string, uint32_t> m_macToNodeIdMap;
+  bool IsInTimeWindow ();
 
   // Path helper
   std::vector<std::string> GetElementsFromContext (std::string context);
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
+
+  static std::map <uint32_t, std::string> nodeDescriptions;
 
   // XML helpers
   std::string GetPreamble (void);
@@ -326,6 +402,8 @@ private:
   double topo_maxX;
   double topo_maxY;
 
+  std::string GetPacketMetadata (Ptr<const Packet> p);
+
   std::string GetXMLOpen_anim (uint32_t lp);
   std::string GetXMLOpen_topology (double minX,double minY,double maxX,double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY);
@@ -334,6 +412,7 @@ private:
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
   std::string GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
+  std::string GetXMLOpenClose_meta (std::string metaInfo);
 
 };
 

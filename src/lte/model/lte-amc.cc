@@ -325,7 +325,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
 
               NS_LOG_LOGIC (" PRB =" << cqi.size ()
                                     << ", sinr = " << sinr_
-                                    << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
+                                    << " (=" << 10 * log10 (sinr_) << " dB)"
                                     << ", spectral efficiency =" << s
                                     << ", CQI = " << cqi_ << ", BER = " << m_ber);
 

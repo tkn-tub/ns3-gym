@@ -149,25 +149,11 @@ Simulator::IsFinished (void)
   return GetImpl ()->IsFinished ();
 }
 
-Time
-Simulator::Next (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return GetImpl ()->Next ();
-}
-
 void 
 Simulator::Run (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   GetImpl ()->Run ();
-}
-
-void 
-Simulator::RunOneEvent (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  GetImpl ()->RunOneEvent ();
 }
 
 void 

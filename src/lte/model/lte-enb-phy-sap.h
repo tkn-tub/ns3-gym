@@ -53,6 +53,12 @@ public:
    * \param dlBandwidth the DL bandwidth in RB
    */
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth) = 0;
+  
+  /**
+  * \param rnti the RNTI of the user
+  * \param txMode the transmissionMode of the user
+  */
+  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode) = 0;
 
   /** 
    * 
@@ -66,6 +72,12 @@ public:
    * \param msg the Ideal Control Message to send
    */
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  
+  /**
+  * \brief Get the delay from MAC to Channel expressed in TTIs
+  *
+  */
+  virtual uint8_t GetMacChTtiDelay () = 0;
 
 
 };

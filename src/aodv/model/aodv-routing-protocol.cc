@@ -53,22 +53,35 @@ const uint32_t RoutingProtocol::AODV_PORT = 654;
 
 //-----------------------------------------------------------------------------
 /// Tag used by AODV implementation
-struct DeferredRouteOutputTag : public Tag
-{
-  /// Positive if output device is fixed in RouteOutput
-  int32_t oif;
 
-  DeferredRouteOutputTag (int32_t o = -1) : Tag (), oif (o) {}
+class DeferredRouteOutputTag : public Tag
+{
+
+public:
+  DeferredRouteOutputTag (int32_t o = -1) : Tag (), m_oif (o) {}
 
   static TypeId GetTypeId ()
   {
-    static TypeId tid = TypeId ("ns3::aodv::DeferredRouteOutputTag").SetParent<Tag> ();
+    static TypeId tid = TypeId ("ns3::aodv::DeferredRouteOutputTag").SetParent<Tag> ()
+      .SetParent<Tag> ()
+      .AddConstructor<DeferredRouteOutputTag> ()
+    ;
     return tid;
   }
 
   TypeId  GetInstanceTypeId () const 
   {
     return GetTypeId ();
+  }
+
+  int32_t GetInterface() const
+  {
+    return m_oif;
+  }
+
+  void SetInterface(int32_t oif)
+  {
+    m_oif = oif;
   }
 
   uint32_t GetSerializedSize () const
@@ -78,19 +91,26 @@ struct DeferredRouteOutputTag : public Tag
 
   void  Serialize (TagBuffer i) const
   {
-    i.WriteU32 (oif);
+    i.WriteU32 (m_oif);
   }
 
   void  Deserialize (TagBuffer i)
   {
-    oif = i.ReadU32 ();
+    m_oif = i.ReadU32 ();
   }
 
   void  Print (std::ostream &os) const
   {
-    os << "DeferredRouteOutputTag: output interface = " << oif;
+    os << "DeferredRouteOutputTag: output interface = " << m_oif;
   }
+
+private:
+  /// Positive if output device is fixed in RouteOutput
+  int32_t m_oif;
 };
+
+NS_OBJECT_ENSURE_REGISTERED (DeferredRouteOutputTag);
+
 
 //-----------------------------------------------------------------------------
 RoutingProtocol::RoutingProtocol () :
@@ -1577,8 +1597,8 @@ RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route)
       DeferredRouteOutputTag tag;
       Ptr<Packet> p = ConstCast<Packet> (queueEntry.GetPacket ());
       if (p->RemovePacketTag (tag) && 
-          tag.oif != -1 && 
-          tag.oif != m_ipv4->GetInterfaceForDevice (route->GetOutputDevice ()))
+          tag.GetInterface() != -1 &&
+          tag.GetInterface() != m_ipv4->GetInterfaceForDevice (route->GetOutputDevice ()))
         {
           NS_LOG_DEBUG ("Output device doesn't match. Dropped.");
           return;

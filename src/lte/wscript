@@ -92,7 +92,8 @@ def build(bld):
         'test/epc-test-s1u-uplink.cc',
         'test/test-lte-epc-e2e-data.cc',
         'test/test-lte-antenna.cc',
-        'test/lte-test-phy-error-model.cc'
+        'test/lte-test-phy-error-model.cc',
+        'test/lte-test-mimo.cc'
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
@@ -176,7 +177,8 @@ def build(bld):
         'test/lte-test-rlc-am-e2e.h',
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
-        'model/lte-mi-error-model.h'
+        'model/lte-mi-error-model.h',
+        'test/lte-test-mimo.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

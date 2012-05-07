@@ -21,7 +21,7 @@
 #include <ns3/log.h>
 #include <ns3/test.h>
 #include <ns3/isotropic-antenna-model.h>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <sstream>

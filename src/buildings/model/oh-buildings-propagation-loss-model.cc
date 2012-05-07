@@ -27,6 +27,7 @@
 #include <math.h>
 #include "oh-buildings-propagation-loss-model.h"
 #include "ns3/buildings-mobility-model.h"
+#include "ns3/okumura-hata-propagation-loss-model.h"
 #include "ns3/enum.h"
 
 
@@ -39,8 +40,8 @@ NS_OBJECT_ENSURE_REGISTERED (OhBuildingsPropagationLossModel);
 
 
 OhBuildingsPropagationLossModel::OhBuildingsPropagationLossModel ()
-  : BuildingsPropagationLossModel ()
 {
+  m_okumuraHata = CreateObject<OkumuraHataPropagationLossModel> ();
 }
 
 OhBuildingsPropagationLossModel::~OhBuildingsPropagationLossModel ()
@@ -63,12 +64,7 @@ OhBuildingsPropagationLossModel::GetTypeId (void)
 double
 OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  
-  double distance = a->GetDistanceFrom (b);
-  if (distance <= m_minDistance)
-    {
-      return 0.0;
-    }
+  NS_LOG_FUNCTION (this << a << b);
 
   // get the BuildingsMobilityModel pointers
   Ptr<BuildingsMobilityModel> a1 = DynamicCast<BuildingsMobilityModel> (a);
@@ -81,13 +77,13 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
     {
       if (b1->IsOutdoor ())
         {
-          loss = OkumuraHata (a1, b1);
+          loss = m_okumuraHata->GetLoss (a1, b1);
           NS_LOG_INFO (this << " O-O : " << loss);
         }
       else
         {
           // b indoor
-          loss = OkumuraHata (a1, b1) + ExternalWallLoss (b1);
+          loss = m_okumuraHata->GetLoss (a1, b1) + ExternalWallLoss (b1);
           NS_LOG_INFO (this << " O-I : " << loss);
         } // end b1->isIndoor ()
     }
@@ -99,24 +95,25 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
           if (a1->GetBuilding () == b1->GetBuilding ())
             {
               // nodes are in same building -> indoor communication ITU-R P.1238
-              loss = OkumuraHata (a1, b1) + InternalWallsLoss (a1, b1);;
+              loss = m_okumuraHata->GetLoss (a1, b1) + InternalWallsLoss (a1, b1);;
               NS_LOG_INFO (this << " I-I (same building)" << loss);
 
             }
           else
             {
               // nodes are in different buildings
-              loss = OkumuraHata (a1, b1) + ExternalWallLoss (a1) + ExternalWallLoss (b1);
+              loss = m_okumuraHata->GetLoss (a1, b1) + ExternalWallLoss (a1) + ExternalWallLoss (b1);
               NS_LOG_INFO (this << " I-O-I (different buildings): " << loss);
             }
         }
       else
         {
-          loss = OkumuraHata (a1, b1) + ExternalWallLoss (a1);
+          loss = m_okumuraHata->GetLoss (a1, b1) + ExternalWallLoss (a1);
           NS_LOG_INFO (this << " I-O : " << loss);
         } // end b1->IsIndoor ()
     } // end a1->IsOutdoor ()
 
+  loss = std::max (0.0, loss);
   return loss;
 }
 

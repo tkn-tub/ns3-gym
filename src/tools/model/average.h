@@ -25,6 +25,7 @@
 #include <ostream>
 #include <limits>
 #include <stdint.h>
+#include "ns3/basic-data-calculators.h"
 
 namespace ns3 {
 
@@ -45,28 +46,28 @@ class Average
 {
 public:
   Average ()
-    : m_size (0), m_min (std::numeric_limits<T>::max ()), m_max (0),
-      m_avg (0), m_avg2 (0) 
+    : m_size (0), m_min (std::numeric_limits<T>::max ()), m_max (0)
   {
   }
 
   /// Add new sample
   void Update (T const & x)
   {
+    // Give the variance calculator the next value.
+    m_varianceCalculator.Update (x);
+
     m_min = std::min (x, m_min);
     m_max = std::max (x, m_max);
-    m_avg = (m_size * m_avg + x) / (m_size + 1);
-    m_avg2 = (m_size * m_avg2 + x * x) / (m_size + 1);
     m_size++;
   }
   /// Reset statistics
   void Reset ()
   {
+    m_varianceCalculator.Reset ();
+
     m_size = 0;
     m_min = std::numeric_limits<T>::max ();
     m_max = 0;
-    m_avg = 0;
-    m_avg2 = 0;
   }
 
   ///\name Sample statistics
@@ -78,11 +79,11 @@ public:
   /// Maximum
   T        Max     () const { return m_max; }
   /// Sample average
-  double   Avg     () const { return m_avg; }
+  double   Avg     () const { return m_varianceCalculator.getMean ();}
   /// Estimate of mean, alias to Avg
   double   Mean    () const { return Avg (); }
   /// Unbiased estimate of variance
-  double   Var     () const { return Count () / (double)(Count () - 1) * (m_avg2 - m_avg*m_avg); }
+  double   Var     () const { return m_varianceCalculator.getVariance ();}
   /// Standard deviation
   double   Stddev  () const { return sqrt (Var ()); }
   //\}
@@ -107,7 +108,7 @@ public:
 private:
   uint32_t m_size;
   T      m_min, m_max;
-  double m_avg, m_avg2;
+  MinMaxAvgTotalCalculator<double> m_varianceCalculator;
 };
 
 /// Print avg (err) [min, max]

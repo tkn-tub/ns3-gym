@@ -47,7 +47,7 @@ public:
   /**
    * MAC SAP
    */
-  virtual void DoNotifyTxOpportunity (uint32_t bytes);
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
@@ -60,7 +60,7 @@ private:
   bool IsInsideReorderingWindow (SequenceNumber10 seqNumber);
 
   void ReassembleOutsideWindow (void);
-  void ReassembleSnLessThan (SequenceNumber10 seqNumber);
+  void ReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 highSeqNumber);
 
   void ReassembleAndDeliver (Ptr<Packet> packet);
 

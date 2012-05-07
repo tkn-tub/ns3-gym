@@ -331,12 +331,6 @@ uint32_t DistributedSimulatorImpl::GetSystemId () const
 }
 
 void
-DistributedSimulatorImpl::RunOneEvent (void)
-{
-  ProcessOneEvent ();
-}
-
-void
 DistributedSimulatorImpl::Stop (void)
 {
   m_stop = true;

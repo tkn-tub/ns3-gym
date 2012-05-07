@@ -121,6 +121,7 @@ Architecture
 For the sake of an easier explanation, we further divide the LTE model
 in two separate parts, which are described in the following.
 
+The overall architecture of the LTE module is represented in the following figures.
 
 The first part is the lower LTE radio protocol stack, which is
 represented in the figures 
@@ -649,6 +650,7 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
 
    \widehat{T}_{j}(t) = \frac{S\left( \widehat{M}_j(t), \widehat{B}_j(t)
    \right)}{\tau}
+   
 
 
 Transport Blocks
@@ -1106,6 +1108,8 @@ The generation of CQI feedback is done accordingly to what specified in [FFAPI]_
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
+The CQI feedbacks are currently evaluated according to the SINR perceived by data transmissions (i.e., PDSHC for downlink and PUSCH for uplink) instead of the one based on reference signals (i.e., RS for downlink and SRS for uplink) since that signals are not implemented in the current version of the PHY layer. This implies that a UE has to transmit some data in order to have CQI feedbacks. This assumption is based on the fact that the reference signals defined in LTE are usually multiplexed within the data transmissions resources.
+
 Interference Model
 ^^^^^^^^^^^^^^^^^^
 
@@ -1277,11 +1281,21 @@ The model can be disabled for working with a zero-losses channel by setting the 
 
 
 
+MIMO Model
+----------
+
+The use of multiple antennas both at transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power _[CatreuxMIMO].
+
+According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, _[CatreuxMIMO] presents the statistical gain of several MIMO solutions respect to the SISO one in case of no correlation between the antennas. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution can be approximated with a log-normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximatively equal to the one of the SISO mode already included in the shadowing component of the ``BuildingsPropagationLossModel``, in detail:
+
+ * SISO: :math:`\mu = 13.5` and :math:`\sigma = 20` [dB].
+ * MIMO-Alamouti: :math:`\mu = 17.7` and :math:`\sigma = 11.1` [dB].
+ * MIMO-MMSE: :math:`\mu = 10.7` and :math:`\sigma = 16.6` [dB].
+ * MIMO-OSIC-MMSE: :math:`\mu = 12.6` and :math:`\sigma = 15.5` [dB].
+ * MIMO-ZF: :math:`\mu = 10.3` and :math:`\sigma = 12.6` [dB].
 
 
-
-
-
+Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 
 -----------------------

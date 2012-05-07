@@ -469,6 +469,18 @@ private:
   virtual bool GetIpForward () const;
 
   /**
+   * \brief Set the ICMPv6 Redirect sending state.
+   * \param sendIcmpv6Redirect ICMPv6 Redirect sending enabled or not
+   */
+  virtual void SetSendIcmpv6Redirect (bool sendIcmpv6Redirect);
+
+  /**
+   * \brief Get the ICMPv6 Redirect sending state.
+   * \return ICMPv6 Redirect sending state (enabled or not)
+   */
+  virtual bool GetSendIcmpv6Redirect () const;
+
+  /**
    * \brief Node attached to stack.
    */
   Ptr<Node> m_node;
@@ -512,6 +524,11 @@ private:
    * \brief List of IPv6 prefix received from RA.
    */
   Ipv6AutoconfiguredPrefixList m_prefixes;
+
+  /**
+   * \brief Allow ICMPv6 Redirect sending state
+   */
+  bool m_sendIcmpv6Redirect;
 };
 
 } /* namespace ns3 */

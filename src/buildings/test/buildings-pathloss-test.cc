@@ -52,56 +52,56 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite ()
 
   double freq = 869e6;  // E_UTRA BAND #5 see table 5.5-1 of 36.101
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 137.93, "OH Urban Large city"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, UrbanEnvironment, LargeCity, 137.93, "OH Urban Large city"));
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 137.88, "OH Urban small city"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, UrbanEnvironment, SmallCity, 137.88, "OH Urban small city"));
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::SubUrban, BuildingsPropagationLossModel::Large, 128.03, "loss OH SubUrban"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, SubUrbanEnvironment, LargeCity, 128.03, "loss OH SubUrban"));
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::OpenAreas, BuildingsPropagationLossModel::Large, 110.21, "loss OH OpenAreas"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, OpenAreasEnvironment, LargeCity, 110.21, "loss OH OpenAreas"));
 
   // Test #2 COST231 Model (1500 < freq < 2000~2170 MHz) (Macro<->UE)
 
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 148.55, "COST231 Urban Large city"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, UrbanEnvironment, LargeCity, 148.55, "COST231 Urban Large city"));
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 150.64, "COST231 Urban small city and suburban"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, UrbanEnvironment, SmallCity, 150.64, "COST231 Urban small city and suburban"));
 
   // Test #3 2.6 GHz model (Macro<->UE)
 
   freq = 2.620e9; // E_UTRA BAND #7 see table 5.5-1 of 36.101
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Small, 121.83, "2.6GHz model"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 2, UrbanEnvironment, SmallCity, 121.83, "2.6GHz model"));
 
   // Test #4 ITU1411 LOS model (Macro<->UE)
 
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 3, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 81.00, "ITU1411 LOS"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 3, UrbanEnvironment, LargeCity, 81.00, "ITU1411 LOS"));
 
   // Test #5 ITU1411 NLOS model (Macro<->UE)
 
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
 
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 4, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 143.69, "ITU1411 NLOS"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 4, UrbanEnvironment, LargeCity, 143.69, "ITU1411 NLOS"));
 
   // Test #6 ITUP1238 (HeNB <-> UE)
 
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
-  AddTestCase (new BuildingsPathlossTestCase (freq, 5, 6, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 88.3855, "ITUP1238"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 5, 6, UrbanEnvironment, LargeCity, 88.3855, "ITUP1238"));
 
   // Test #7 Outdoor -> Indoor OkumuraHata (Macro<->UE)
 
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   // The loss is as in test #2 (large city) plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB -> 148.55 + 7 = 155.55
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 7, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 155.55, "Okumura Hata Outdoor -> Indoor"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 7, UrbanEnvironment, LargeCity, 155.55, "Okumura Hata Outdoor -> Indoor"));
 
   // Test #8 Outdoor -> Indoor ITU1411 (Macro<->UE)
   freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
   // The loss is as in test #4 plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB -> 81.000 + 7 = 88.000
-  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 8, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 88.000, "ITU1411 LOS Outdoor -> Indoor"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 1, 8, UrbanEnvironment, LargeCity, 88.000, "ITU1411 LOS Outdoor -> Indoor"));
 
   // Test #9 Indoor -> Outdoor LOS (HeNB <-> UE)
 
@@ -109,7 +109,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite ()
   // The loss is similar of test #4 plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB and the height gain
   // (2 floors x 2 dB/floor = 4) -> 81.838 + 7 - 4 = 84.838
-  AddTestCase (new BuildingsPathlossTestCase (freq, 9, 10, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 84.838, "ITU1411 LOS Indoor -> Outdoor"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 9, 10, UrbanEnvironment, LargeCity, 84.838, "ITU1411 LOS Indoor -> Outdoor"));
 
   // Test #10 Indoor -> Outdoor NLOS (HeNB <-> UE)
 
@@ -117,7 +117,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite ()
   // The loss is similar as in test #4 plus the building penetration loss
   // which for ConcreteWithWindows is equal to 7 dB and the height gain
   // (2 floors x 2 dB/floor = 4) -> 180.90 + 7 - 4 = 183.90
-  AddTestCase (new BuildingsPathlossTestCase (freq, 9, 11, BuildingsPropagationLossModel::Urban, BuildingsPropagationLossModel::Large, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
+  AddTestCase (new BuildingsPathlossTestCase (freq, 9, 11, UrbanEnvironment, LargeCity, 183.90, "ITU1411 NLOS Indoor -> Outdoor"));
 
 
 }
@@ -131,7 +131,7 @@ static BuildingsPathlossTestSuite buildingsPathlossTestSuite;
  * TestCase
  */
 
-BuildingsPathlossTestCase::BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, BuildingsPropagationLossModel::Environment env, BuildingsPropagationLossModel::CitySize city, double refValue, std::string name)
+BuildingsPathlossTestCase::BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, EnvironmentType env, CitySize city, double refValue, std::string name)
   : TestCase ("LOSS calculation: " + name),
     m_freq (freq),
     m_mobilityModelIndex1 (m1),
@@ -190,7 +190,6 @@ BuildingsPathlossTestCase::DoRun (void)
 
   Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   propagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
-  propagationLossModel->SetAttribute ("Lambda", DoubleValue (300000000.0 / m_freq));
   propagationLossModel->SetAttribute ("Environment", EnumValue (m_env));
   propagationLossModel->SetAttribute ("CitySize", EnumValue (m_city));
   // cancel shadowing effect

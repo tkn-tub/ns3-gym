@@ -81,6 +81,7 @@ private:
   void DoConfigureUe (uint16_t rnti);
   void DoAddLc (uint8_t lcId, LteMacSapUser* msu);
   void DoRemoveLc (uint8_t lcId);
+  void DoRrcUpdateConfigurationReq (LteUeConfig_t params);
 
   // forwarded from PHY SAP
   void DoReceivePhyPdu (Ptr<Packet> p);

@@ -364,6 +364,8 @@ def register_types(module):
     module.add_class('WimaxConnection', parent=root_module['ns3::Object'])
     ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue [class]
     module.add_class('WimaxMacQueue', parent=root_module['ns3::Object'])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement [struct]
+    module.add_class('QueueElement', outer_class=root_module['ns3::WimaxMacQueue'])
     ## wimax-mac-to-mac-header.h (module 'wimax'): ns3::WimaxMacToMacHeader [class]
     module.add_class('WimaxMacToMacHeader', parent=root_module['ns3::Header'])
     ## wimax-phy.h (module 'wimax'): ns3::WimaxPhy [class]
@@ -704,6 +706,7 @@ def register_methods(root_module):
     register_Ns3UplinkSchedulerSimple_methods(root_module, root_module['ns3::UplinkSchedulerSimple'])
     register_Ns3WimaxConnection_methods(root_module, root_module['ns3::WimaxConnection'])
     register_Ns3WimaxMacQueue_methods(root_module, root_module['ns3::WimaxMacQueue'])
+    register_Ns3WimaxMacQueueQueueElement_methods(root_module, root_module['ns3::WimaxMacQueue::QueueElement'])
     register_Ns3WimaxMacToMacHeader_methods(root_module, root_module['ns3::WimaxMacToMacHeader'])
     register_Ns3WimaxPhy_methods(root_module, root_module['ns3::WimaxPhy'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
@@ -4076,11 +4079,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Now() [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -4091,11 +4089,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 
@@ -7641,6 +7634,46 @@ def register_Ns3WimaxMacQueue_methods(root_module, cls):
     cls.add_method('SetMaxSize', 
                    'void', 
                    [param('uint32_t', 'maxSize')])
+    return
+
+def register_Ns3WimaxMacQueueQueueElement_methods(root_module, cls):
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::QueueElement(ns3::WimaxMacQueue::QueueElement const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WimaxMacQueue::QueueElement const &', 'arg0')])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::QueueElement() [constructor]
+    cls.add_constructor([])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::QueueElement(ns3::Ptr<ns3::Packet> packet, ns3::MacHeaderType const & hdrType, ns3::GenericMacHeader const & hdr, ns3::Time timeStamp) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::MacHeaderType const &', 'hdrType'), param('ns3::GenericMacHeader const &', 'hdr'), param('ns3::Time', 'timeStamp')])
+    ## wimax-mac-queue.h (module 'wimax'): uint32_t ns3::WimaxMacQueue::QueueElement::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## wimax-mac-queue.h (module 'wimax'): void ns3::WimaxMacQueue::QueueElement::SetFragmentNumber() [member function]
+    cls.add_method('SetFragmentNumber', 
+                   'void', 
+                   [])
+    ## wimax-mac-queue.h (module 'wimax'): void ns3::WimaxMacQueue::QueueElement::SetFragmentOffset(uint32_t offset) [member function]
+    cls.add_method('SetFragmentOffset', 
+                   'void', 
+                   [param('uint32_t', 'offset')])
+    ## wimax-mac-queue.h (module 'wimax'): void ns3::WimaxMacQueue::QueueElement::SetFragmentation() [member function]
+    cls.add_method('SetFragmentation', 
+                   'void', 
+                   [])
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_fragmentNumber [variable]
+    cls.add_instance_attribute('m_fragmentNumber', 'uint32_t', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_fragmentOffset [variable]
+    cls.add_instance_attribute('m_fragmentOffset', 'uint32_t', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_fragmentation [variable]
+    cls.add_instance_attribute('m_fragmentation', 'bool', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_hdr [variable]
+    cls.add_instance_attribute('m_hdr', 'ns3::GenericMacHeader', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_hdrType [variable]
+    cls.add_instance_attribute('m_hdrType', 'ns3::MacHeaderType', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_packet [variable]
+    cls.add_instance_attribute('m_packet', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement::m_timeStamp [variable]
+    cls.add_instance_attribute('m_timeStamp', 'ns3::Time', is_const=False)
     return
 
 def register_Ns3WimaxMacToMacHeader_methods(root_module, cls):

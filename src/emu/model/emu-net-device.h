@@ -33,7 +33,6 @@
 #include "ns3/mac48-address.h"
 #include "ns3/system-thread.h"
 #include "ns3/system-mutex.h"
-#include "ns3/realtime-simulator-impl.h"
 
 namespace ns3 {
 
@@ -516,12 +515,6 @@ private:
    * A 64K buffer to hold packet data while it is being sent.
    */
   uint8_t *m_packetBuffer;
-
-  /**
-   * A copy of a raw pointer to the required real-time simulator implementation.
-   * Never free this pointer!
-   */
-  RealtimeSimulatorImpl *m_rtImpl;
 
   /*
    * a copy of the node id so the read thread doesn't have to GetNode() in

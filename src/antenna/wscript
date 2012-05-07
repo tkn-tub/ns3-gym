@@ -30,8 +30,5 @@ def build(bld):
         'model/cosine-antenna-model.h',
         'model/parabolic-antenna-model.h',
 	]
-    
 
-
-
-
+    bld.ns3_python_bindings()

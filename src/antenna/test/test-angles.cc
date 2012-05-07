@@ -21,7 +21,7 @@
 #include <ns3/log.h>
 #include <ns3/test.h>
 #include <ns3/antenna-model.h>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -44,7 +44,7 @@ private:
 std::string OneVectorConstructorTestCase::BuildNameString (Vector v)
 {
   std::ostringstream oss;
-  oss <<  " v = " << v ;
+  oss <<  " v = " << v;
   return oss.str ();
 }
 
@@ -133,7 +133,7 @@ AnglesTestSuite::AnglesTestSuite ()
   AddTestCase (new OneVectorConstructorTestCase (Vector (0, -2, 0),    Angles (-M_PI_2, M_PI_2)));
   AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, 2),     Angles (0, 0)));
   AddTestCase (new OneVectorConstructorTestCase (Vector (0, 0, -2),    Angles (0, M_PI)));
-  
+
   AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, 1),     Angles (0, M_PI_4)));
   AddTestCase (new OneVectorConstructorTestCase (Vector (1, 0, -1),    Angles (0, 3*M_PI_4)));
   AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, 0),     Angles (M_PI_4, M_PI_2)));
@@ -168,7 +168,7 @@ AnglesTestSuite::AnglesTestSuite ()
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, 0),    Vector (0, 0, 0), Angles (-M_PI_2, M_PI_2)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, 2),     Vector (0, 0, 0), Angles (0, 0)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, 0, -2),    Vector (0, 0, 0), Angles (0, M_PI)));
-  
+
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, 1),     Vector (0, 0, 0), Angles (0, M_PI_4)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 0, -1),    Vector (0, 0, 0), Angles (0, 3*M_PI_4)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, 0),     Vector (0, 0, 0), Angles (M_PI_4, M_PI_2)));
@@ -197,7 +197,7 @@ AnglesTestSuite::AnglesTestSuite ()
 
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (-2, 2, -1),     Vector (-4, 2, -1), Angles (0, M_PI_2)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (2, 2, 0),    Vector (4, 2, 0), Angles (M_PI, M_PI_2)));
-  
+
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 4, 4),     Vector (-2, 4, 3), Angles (0, M_PI_4)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, -6),    Vector (-1, -2, -5), Angles (0, 3*M_PI_4)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (77, 3, 43),    Vector (78, 2, 43), Angles (3*M_PI_4, M_PI_2)));

@@ -1831,11 +1831,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::Next() const [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -1848,11 +1843,6 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Run() [member function]
     cls.add_method('Run', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -2297,11 +2287,6 @@ def register_Ns3DistributedSimulatorImpl_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## distributed-simulator-impl.h (module 'mpi'): ns3::Time ns3::DistributedSimulatorImpl::Next() const [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## distributed-simulator-impl.h (module 'mpi'): ns3::Time ns3::DistributedSimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -2314,11 +2299,6 @@ def register_Ns3DistributedSimulatorImpl_methods(root_module, cls):
                    is_virtual=True)
     ## distributed-simulator-impl.h (module 'mpi'): void ns3::DistributedSimulatorImpl::Run() [member function]
     cls.add_method('Run', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## distributed-simulator-impl.h (module 'mpi'): void ns3::DistributedSimulatorImpl::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
                    is_virtual=True)

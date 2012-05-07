@@ -41,7 +41,7 @@ public:
 class BuildingsPathlossTestCase : public TestCase
 {
 public:
-  BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, BuildingsPropagationLossModel::Environment env, BuildingsPropagationLossModel::CitySize city, double refValue, std::string name);
+  BuildingsPathlossTestCase (double freq, uint16_t m1, uint16_t m2, EnvironmentType env, CitySize city, double refValue, std::string name);
   virtual ~BuildingsPathlossTestCase ();
 
 private:
@@ -51,8 +51,8 @@ private:
   double m_freq;
   uint16_t m_mobilityModelIndex1;
   uint16_t m_mobilityModelIndex2;
-  BuildingsPropagationLossModel::Environment m_env;
-  BuildingsPropagationLossModel::CitySize m_city;
+  EnvironmentType m_env;
+  CitySize m_city;
   double m_lossRef;
 
 };

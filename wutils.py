@@ -58,7 +58,7 @@ def find_program(program_name, env):
 
         ## filter out programs not in the subtree starting at the launch dir
         if not (obj.path.abspath().startswith(launch_dir)
-                or obj.path.abspath(env).startswith(launch_dir)):
+                or obj.path.get_bld().abspath().startswith(launch_dir)):
             continue
         
         name1 = obj.name

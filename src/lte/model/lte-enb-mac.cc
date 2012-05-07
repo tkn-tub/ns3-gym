@@ -34,6 +34,7 @@
 #include <ns3/lte-ue-phy.h>
 
 #include "ns3/lte-mac-sap.h"
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
@@ -61,6 +62,7 @@ public:
   virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
+  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params);
 
 private:
   LteEnbMac* m_mac;
@@ -100,6 +102,12 @@ void
 EnbMacMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
 {
   m_mac->DoReleaseLc (rnti, lcid);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+{
+  m_mac->DoRrcUpdateConfigurationReq (params);
 }
 
 
@@ -373,7 +381,7 @@ LteEnbMac::GetLteEnbPhySapUser ()
 void
 LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << " EnbMac - frame " << frameNo << " subframe " << subframeNo);
 
   // Store current frame / subframe number
   m_frameNo = frameNo;
@@ -399,8 +407,22 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
   // Get downlink transmission opportunities
+//   uint32_t dlSchedFrameNo = (0x3FF & (m_frameNo >> 4));
+//   uint32_t dlSchedSubframeNo = (0xF & m_subframeNo);
+  uint32_t dlSchedFrameNo = m_frameNo;
+  uint32_t dlSchedSubframeNo = m_subframeNo;
+  //   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
+  if (dlSchedSubframeNo + m_macChTtiDelay > 10)
+    {
+      dlSchedFrameNo++;
+      dlSchedSubframeNo = (dlSchedSubframeNo + m_macChTtiDelay) % 10;
+    }
+  else
+    {
+      dlSchedSubframeNo = dlSchedSubframeNo + m_macChTtiDelay;
+    }
   FfMacSchedSapProvider::SchedDlTriggerReqParameters params;  // to be filled
-  params.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+  params.m_sfnSf = ((0x3FF & dlSchedFrameNo) << 4) | (0xF & dlSchedSubframeNo);
   m_schedSapProvider->SchedDlTriggerReq (params);
 
 
@@ -409,7 +431,14 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   if (m_ulCqiReceived.size () > 0)
     {
       FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqiInfoReq;
-      ulcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+      if (subframeNo>1)
+        {        
+          ulcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+        }
+      else
+        {
+          ulcqiInfoReq.m_sfnSf = ((0x3FF & (frameNo-1)) << 4) | (0xF & 10);
+        }
       int cqiNum = m_ulCqiReceived.size ();
       if (cqiNum >= 1)
         {
@@ -438,8 +467,21 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
   // Get uplink transmission opportunities
+  uint32_t ulSchedFrameNo = m_frameNo;
+  uint32_t ulSchedSubframeNo = m_subframeNo;
+  //   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
+  if (ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY) > 10)
+    {
+      ulSchedFrameNo++;
+      ulSchedSubframeNo = (ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY)) % 10;
+    }
+  else
+    {
+//       ulSchedSubframeNo = (ulSchedSubframeNo + (2*m_macChTtiDelay)) % 11;
+      ulSchedSubframeNo = ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY);
+    }
   FfMacSchedSapProvider::SchedUlTriggerReqParameters ulparams;
-  ulparams.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+  ulparams.m_sfnSf = ((0x3FF & ulSchedFrameNo) << 4) | (0xF & ulSchedSubframeNo);
 
   std::map <uint16_t,UlInfoListElement_s>::iterator it;
   for (it = m_ulInfoListElements.begin (); it != m_ulInfoListElements.end (); it++)
@@ -584,6 +626,7 @@ LteEnbMac::DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth)
   // Configure the subset of parameters used by FfMacScheduler
   params.m_ulBandwidth = ulBandwidth;
   params.m_dlBandwidth = dlBandwidth;
+  m_macChTtiDelay = m_enbPhySapProvider->GetMacChTtiDelay ();
   // ...more parameters can be configured
   m_cschedSapProvider->CschedCellConfigReq (params);
 }
@@ -595,6 +638,7 @@ LteEnbMac::DoAddUe (uint16_t rnti)
   NS_LOG_FUNCTION (this << " rnti=" << rnti);
   FfMacCschedSapProvider::CschedUeConfigReqParameters params;
   params.m_rnti = rnti;
+  params.m_transmissionMode = 0; // set to default value (SISO) for avoiding random initialization (valgrind error)
   m_cschedSapProvider->CschedUeConfigReq (params);
 }
 
@@ -660,7 +704,7 @@ void
 LteEnbMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
 {
   NS_LOG_FUNCTION (this);
-  LteRadioBearerTag tag (params.rnti, params.lcid);
+  LteRadioBearerTag tag (params.rnti, params.lcid, params.layer);
   params.pdu->AddPacketTag (tag);
 //   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
 //   pb->AddPacket (params.pdu);
@@ -709,7 +753,8 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                                 ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_logicalChannelIdentity);
               it = m_rlcAttached.find (flow);
               NS_ASSERT_MSG (it != m_rlcAttached.end (), "rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
-              (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size);
+              NS_LOG_DEBUG (this << " rnti= " << flow.m_rnti << " lcid= " << (uint32_t) flow.m_lcId << " layer= " << k);
+              (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size, k);
             }
         }
       // send the relative DCI
@@ -817,6 +862,24 @@ void
 LteEnbMac::DoCschedUeConfigUpdateInd (FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params)
 {
   NS_LOG_FUNCTION (this);
+  // propagates to RRC
+  LteUeConfig_t ueConfigUpdate;
+  ueConfigUpdate.m_rnti = params.m_rnti;
+  ueConfigUpdate.m_transmissionMode = params.m_transmissionMode;
+  m_cmacSapUser->RrcConfigurationUpdateInd (ueConfigUpdate);
+}
+
+void
+LteEnbMac::DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  // propagates to PHY layer
+  m_enbPhySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  req.m_rnti = params.m_rnti;
+  req.m_transmissionMode = params.m_transmissionMode;
+  m_cschedSapProvider->CschedUeConfigReq (req);
 }
 
 void

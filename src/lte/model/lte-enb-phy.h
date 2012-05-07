@@ -111,6 +111,8 @@ public:
   * \param p the MAC PDU to sent
   */
   virtual void DoSendMacPdu (Ptr<Packet> p);
+  
+  virtual uint8_t DoGetMacChTtiDelay ();
 
 
   void DoSetDownlinkSubChannels ();
@@ -151,6 +153,18 @@ public:
   bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
   bool DeleteUePhy (uint16_t rnti);
+  
+  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
+  /**
+  * \param m the UL-CQI to be queued
+  */
+  void QueueUlDci (UlDciIdealControlMessage m);
+  
+  /**
+  * \returns the list of UL-CQI to be processed
+  */
+  std::list<UlDciIdealControlMessage> DequeueUlDci (void);
 
 
   /**
@@ -181,12 +195,15 @@ public:
 
 private:
   std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
+  
+  std::vector< std::list<UlDciIdealControlMessage> > m_ulDciQueue; // for storing info on future receptions
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
 
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;
+  
 };
 
 

@@ -46,10 +46,6 @@
 
 .. [ns3manual] `The ns-3 Manual <http://www.nsnam.org/docs/manual/singlehtml/index.html>`_
 
-.. [pl26ghz] Sun Kun; Wang Ping; Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
-   in Proc. of ISAPE 2008,  Kunming,  China, Nov 2008.
-
-
 .. [PaduaPEM] http://mailman.isi.edu/pipermail/ns-developers/2011-November/009559.html
 
 .. [Vienna] The Vienna LTE Simulators http://www.nt.tuwien.ac.at/about-us/staff/josep-colom-ikuno/lte-simulators/
@@ -60,15 +56,17 @@
 
 .. [TS36.212] 3GPP TS 36.212 "E-UTRA Multiplexing and channel coding"
 
-
-.. [turkmani] Turkmani A.M.D., J.D. Parson and D.G. Lewis, "Radio propagation into buildings at 441, 900 and 1400 MHz",
-   in Proc. of 4th Int. Conference on Land Mobile Radio, 1987.
-
-.. [walfisch]  J.Walfisch and H.L. Bertoni, "A Theoretical model of UHF propagation in urban environments," in IEEE Trans. Antennas Propagat., vol.36, 1988, pp.1788- 1796
-
-.. [ikegami] F.Ikegami, T.Takeuchi, and S.Yoshida, "Theoretical prediction of mean field strength for Urban Mobile Radio", in IEEE Trans. Antennas Propagat., Vol.39, No.3, 1991
-
-.. [cost231] "Digital Mobile Radio: COST 231 View on the Evolution Towards 3rd Generation Systems", Commission of the European Communities, L-2920, Luxembourg, 1989
-
 .. [mathworks] Matlab R2011b Documentation Communications System Toolbox, `Methodology for Simulating Multipath Fading Channels <http://www.mathworks.es/help/toolbox/comm/ug/a1069449399.html#bq5zk36>`_
+
+.. [PaduaPEM] http://mailman.isi.edu/pipermail/ns-developers/2011-November/009559.html
+
+.. [Vienna] The Vienna LTE Simulators http://www.nt.tuwien.ac.at/about-us/staff/josep-colom-ikuno/lte-simulators/
+
+.. [LozanoCost] Joan Olmos, Silvia Ruiz, Mario García-Lozano and David Martín-Sacristán, "Link Abstraction Models Based on Mutual Information for LTE Downlink", COST 2100 TD(10)11052 Report
+
+.. [CatreuxMIMO] S. Catreux, L.J. Greenstein, V. Erceg, "Some results and insights on the performance gains of MIMO systems," Selected Areas in Communications, IEEE Journal on , vol.21, no.5, pp. 839- 847, June 2003
+
+.. [ViennaPaper] J.C. Ikuno, M. Wrulich, M. Rupp, "System Level Simulation of LTE Networks," Vehicular Technology Conference (VTC 2010-Spring), 2010 IEEE 71st , vol., no., pp.1-5, 16-19 May 2010
+
+.. [TS36.211] 3GPP TS 36.211 "E-UTRA Physical Channels and Modulation"
 

@@ -318,7 +318,7 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
     {
       Ptr<Packet> copy = p->Copy ();
       // Should check via getsockopt ()..
-      if (this->m_recvpktinfo)
+      if (IsRecvPktInfo ())
         {
           Ipv4PacketInfoTag tag;
           copy->RemovePacketTag (tag);

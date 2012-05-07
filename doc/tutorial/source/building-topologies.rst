@@ -808,12 +808,13 @@ to the Wifi module and the mobility module which we will discuss below.
 ::
 
 #include "ns3/core-module.h"
+#include "ns3/point-to-point-module.h"
 #include "ns3/network-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/wifi-module.h"
+#include "ns3/mobility-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/point-to-point-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/ipv4-global-routing-helper.h"
 
 The network topology illustration follows:
 
@@ -1006,17 +1007,13 @@ requirements of the AP.
 ::
 
   mac.SetType ("ns3::ApWifiMac",
-    "Ssid", SsidValue (ssid),
-    "BeaconGeneration", BooleanValue (true),
-    "BeaconInterval", TimeValue (Seconds (2.5)));
+               "Ssid", SsidValue (ssid));
 
 In this case, the ``NqosWifiMacHelper`` is going to create MAC
 layers of the "ns3::ApWifiMac", the latter specifying that a MAC
 instance configured as an AP should be created, with the helper type
 implying that the "QosSupported" ``Attribute`` should be set to
-false - disabling 802.11e/WMM-style QoS support at created APs.  We
-set the "BeaconGeneration" ``Attribute`` to true and also set an
-interval between beacons of 2.5 seconds.
+false - disabling 802.11e/WMM-style QoS support at created APs.  
 
 The next lines create the single AP which shares the same set of PHY-level
 ``Attributes`` (and channel) as the stations:
@@ -1236,34 +1233,23 @@ You should see some wifi-looking contents you haven't seen here before:
 ::
 
   reading from file third-0-1.pcap, link-type IEEE802_11 (802.11)
-  0.000025 Beacon () [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  0.000263 Assoc Request () [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.000279 Acknowledgment RA:00:00:00:00:00:07
-  0.000357 Assoc Response AID(0) :: Succesful
-  0.000501 Acknowledgment RA:00:00:00:00:00:0a
-  0.000748 Assoc Request () [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.000764 Acknowledgment RA:00:00:00:00:00:08
-  0.000842 Assoc Response AID(0) :: Succesful
-  0.000986 Acknowledgment RA:00:00:00:00:00:0a
-  0.001242 Assoc Request () [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.001258 Acknowledgment RA:00:00:00:00:00:09
-  0.001336 Assoc Response AID(0) :: Succesful
-  0.001480 Acknowledgment RA:00:00:00:00:00:0a
-  2.000112 arp who-has 10.1.3.4 (ff:ff:ff:ff:ff:ff) tell 10.1.3.3
-  2.000128 Acknowledgment RA:00:00:00:00:00:09
-  2.000206 arp who-has 10.1.3.4 (ff:ff:ff:ff:ff:ff) tell 10.1.3.3
-  2.000487 arp reply 10.1.3.4 is-at 00:00:00:00:00:0a
-  2.000659 Acknowledgment RA:00:00:00:00:00:0a
-  2.002169 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.002185 Acknowledgment RA:00:00:00:00:00:09
-  2.009771 arp who-has 10.1.3.3 (ff:ff:ff:ff:ff:ff) tell 10.1.3.4
-  2.010029 arp reply 10.1.3.3 is-at 00:00:00:00:00:09
-  2.010045 Acknowledgment RA:00:00:00:00:00:09
-  2.010231 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
-  2.011767 Acknowledgment RA:00:00:00:00:00:0a
-  2.500000 Beacon () [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  5.000000 Beacon () [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
-  7.500000 Beacon () [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
+  0.000025 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
+  0.000263 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.000279 Acknowledgment RA:00:00:00:00:00:09 
+  0.000552 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.000568 Acknowledgment RA:00:00:00:00:00:07 
+  0.000664 Assoc Response AID(0) :: Succesful
+  0.001001 Assoc Response AID(0) :: Succesful
+  0.001145 Acknowledgment RA:00:00:00:00:00:0a 
+  0.001233 Assoc Response AID(0) :: Succesful
+  0.001377 Acknowledgment RA:00:00:00:00:00:0a 
+  0.001597 Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.001613 Acknowledgment RA:00:00:00:00:00:08 
+  0.001691 Assoc Response AID(0) :: Succesful
+  0.001835 Acknowledgment RA:00:00:00:00:00:0a 
+  0.102400 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
+  0.204800 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
+  0.307200 Beacon (ns-3-ssid) [6.0* 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit] IBSS
 
 You can see that the link type is now 802.11 as you would expect.  You can 
 probably understand what is going on and find the IP echo request and response
@@ -1281,8 +1267,8 @@ Again, you should see some familiar looking contents:
 ::
 
   reading from file third-0-0.pcap, link-type PPP (PPP)
-  2.002169 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.009771 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.002160 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.009767 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This is the echo packet going from left to right (from Wifi to CSMA) and back
 again across the point-to-point link.
@@ -1298,8 +1284,8 @@ Again, you should see some familiar looking contents:
 ::
 
   reading from file third-1-0.pcap, link-type PPP (PPP)
-  2.005855 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.006084 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.005846 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.006081 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This is also the echo packet going from left to right (from Wifi to CSMA) and 
 back again across the point-to-point link with slightly different timings
@@ -1317,12 +1303,12 @@ You should see some familiar looking contents:
 ::
 
   reading from file third-1-1.pcap, link-type EN10MB (Ethernet)
-  2.005855 arp who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1
-  2.005877 arp reply 10.1.2.4 is-at 00:00:00:00:00:06
-  2.005877 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
-  2.005980 arp who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4
-  2.005980 arp reply 10.1.2.1 is-at 00:00:00:00:00:03
-  2.006084 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
+  2.005846 ARP, Request who-has 10.1.2.4 (ff:ff:ff:ff:ff:ff) tell 10.1.2.1, length 50
+  2.005870 ARP, Reply 10.1.2.4 is-at 00:00:00:00:00:06, length 50
+  2.005870 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
+  2.005975 ARP, Request who-has 10.1.2.1 (ff:ff:ff:ff:ff:ff) tell 10.1.2.4, length 50
+  2.005975 ARP, Reply 10.1.2.1 is-at 00:00:00:00:00:03, length 50
+  2.006081 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
 This should be easily understood.  If you've forgotten, go back and look at
 the discussion in ``second.cc``.  This is the same sequence.

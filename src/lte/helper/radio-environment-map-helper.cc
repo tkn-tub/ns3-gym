@@ -188,7 +188,7 @@ RadioEnvironmentMapHelper::Install ()
       return;
     }
   
-  Simulator::Schedule (Seconds (0.0016), 
+  Simulator::Schedule (Seconds (0.0026), 
                        &RadioEnvironmentMapHelper::DelayedInstall,
                                    this);
 }

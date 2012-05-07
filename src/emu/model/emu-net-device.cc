@@ -49,6 +49,7 @@
 #include <limits>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
 
@@ -269,26 +270,6 @@ EmuNetDevice::StartDevice (void)
     {
       NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Device is already started");
     }
-
-  //
-  // We're going to need a pointer to the realtime simulator implementation.
-  // It's important to remember that access to that implementation may happen 
-  // in a completely different thread than the simulator is running in (we're 
-  // going to spin up that thread below).  We are talking about multiple threads
-  // here, so it is very, very dangerous to do any kind of reference couning on
-  // a shared object that is unaware of what is happening.  What we are going to 
-  // do to address that is to get a reference to the realtime simulator here 
-  // where we are running in the context of a running simulator scheduler --
-  // recall we did a Simulator::Schedule of this method above.  We get the
-  // simulator implementation pointer in a single-threaded way and save the
-  // underlying raw pointer for use by the (other) read thread.  We must not
-  // free this pointer or we may delete the simulator out from under us an 
-  // everyone else.  We assume that the simulator implementation cannot be 
-  // replaced while the emu device is running and so will remain valid through
-  // the time during which the read thread is running.
-  //
-  Ptr<RealtimeSimulatorImpl> impl = DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ());
-  m_rtImpl = GetPointer (impl);
 
   //
   // A similar story exists for the node ID.  We can't just naively do a
@@ -822,8 +803,8 @@ EmuNetDevice::ReadThread (void)
 
       NS_LOG_INFO ("EmuNetDevice::EmuNetDevice(): Received packet on node " << m_nodeId);
       NS_LOG_INFO ("EmuNetDevice::ReadThread(): Scheduling handler");
-      NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
-      m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
+      Simulator::ScheduleWithContext (m_nodeId, Seconds (0.0),
+                                      MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
       buf = 0;
     }
 }

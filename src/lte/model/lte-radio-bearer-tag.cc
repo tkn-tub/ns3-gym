@@ -53,12 +53,20 @@ LteRadioBearerTag::GetInstanceTypeId (void) const
 
 LteRadioBearerTag::LteRadioBearerTag ()
   : m_rnti (0),
-    m_lcid (0)
+    m_lcid (0),
+    m_layer (0)
 {
 }
 LteRadioBearerTag::LteRadioBearerTag (uint16_t rnti, uint8_t lcid)
   : m_rnti (rnti),
     m_lcid (lcid)
+{
+}
+
+LteRadioBearerTag::LteRadioBearerTag (uint16_t rnti, uint8_t lcid, uint8_t layer)
+: m_rnti (rnti),
+  m_lcid (lcid),
+  m_layer (layer)
 {
 }
 
@@ -72,6 +80,12 @@ void
 LteRadioBearerTag::SetLcid (uint8_t lcid)
 {
   m_lcid = lcid;
+}
+
+void
+LteRadioBearerTag::SetLayer (uint8_t layer)
+{
+  m_layer = layer;
 }
 
 uint32_t
@@ -104,6 +118,12 @@ uint8_t
 LteRadioBearerTag::GetLcid () const
 {
   return m_lcid;
+}
+
+uint8_t
+LteRadioBearerTag::GetLayer () const
+{
+  return m_layer;
 }
 
 void

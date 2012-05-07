@@ -46,6 +46,11 @@ public:
    * Create a LteRadioBearerTag with the given RNTI and LC id
    */
   LteRadioBearerTag (uint16_t  rnti, uint8_t lcId);
+  
+  /**
+  * Create a LteRadioBearerTag with the given RNTI, LC id and layer
+  */
+  LteRadioBearerTag (uint16_t  rnti, uint8_t lcId, uint8_t layer);
 
   /**
    * Set the RNTI to the given value.
@@ -60,6 +65,13 @@ public:
    * @param lcid the value of the RNTI to set
    */
   void SetLcid (uint8_t lcid);
+  
+  /**
+  * Set the layer id to the given value.
+  *
+  * @param layer the value of the layer to set
+  */
+  void SetLayer (uint8_t lcid);
 
 
   virtual void Serialize (TagBuffer i) const;
@@ -69,10 +81,12 @@ public:
 
   uint16_t GetRnti (void) const;
   uint8_t GetLcid (void) const;
+  uint8_t GetLayer (void) const;
 
 private:
   uint16_t m_rnti;
   uint8_t m_lcid;
+  uint8_t m_layer;
 
 };
 

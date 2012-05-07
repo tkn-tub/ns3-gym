@@ -29,8 +29,7 @@
 #include "icmpv6-header.h"
 #include "ip-l4-protocol.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class NetDevice;
 class Node;
@@ -194,7 +193,7 @@ public:
    * \brief Send a packet via ICMPv6.
    * \param packet the packet to send
    * \param dst destination address
-   * \param icmpv6Hdr ICMPv6 header (needed to calculate checksum 
+   * \param icmpv6Hdr ICMPv6 header (needed to calculate checksum
    * after source address is determined by routing stuff
    * \param ttl next hop limit
    */
@@ -202,8 +201,8 @@ public:
 
   /**
    * \brief Do the Duplication Address Detection (DAD).
-   * It consists in sending a NS with our IPv6 as target. If 
-   * we received a NA with matched target address, we could not use 
+   * It consists in sending a NS with our IPv6 as target. If
+   * we received a NA with matched target address, we could not use
    * the address, else the address pass from TENTATIVE to PERMANENT.
    *
    * \param target target address
@@ -325,13 +324,20 @@ public:
   /**
    * \brief Receive method.
    * \param p the packet
-   * \param src source address
-   * \param dst destination address
+   * \param header the IPv4 header
    * \param interface the interface from which the packet is coming
    */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv4Header const &header,
                                                Ptr<Ipv4Interface> interface);
+
+  /**
+   * \brief Receive method.
+   * \param p the packet
+   * \param src source address
+   * \param dst destination address
+   * \param interface the interface from which the packet is coming
+   */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                Ipv6Address &src, Ipv6Address &dst,
                                                Ptr<Ipv6Interface> interface);
@@ -396,7 +402,6 @@ protected:
   virtual void DoDispose ();
 
 private:
-
   typedef std::list<Ptr<NdiscCache> > CacheList;
 
   /**
@@ -413,6 +418,18 @@ private:
    * \brief Always do DAD ?
    */
   bool m_alwaysDad;
+
+  /**
+   * \brief Notify an ICMPv6 reception to upper layers (if requested).
+   * \param source the ICMP source
+   * \param icmp the ICMP header
+   * \param info information about the ICMP
+   * \param ipHeader the IP header carried by the ICMP
+   * \param payload the data carried by the ICMP
+   */
+  void Forward (Ipv6Address source, Icmpv6Header icmp,
+                uint32_t info, Ipv6Header ipHeader,
+                const uint8_t payload[8]);
 
   /**
    * \brief Receive Neighbor Solicitation method.
@@ -467,6 +484,42 @@ private:
    * \param interface the interface from which the packet is coming
    */
   void HandleRedirection (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface);
+
+  /**
+   * \brief Receive Destination Unreachable method.
+   * \param p the packet
+   * \param src source address
+   * \param dst destination address
+   * \param interface the interface from which the packet is coming
+   */
+  void HandleDestinationUnreachable (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface);
+
+  /**
+   * \brief Receive Time Exceeded method.
+   * \param p the packet
+   * \param src source address
+   * \param dst destination address
+   * \param interface the interface from which the packet is coming
+   */
+  void HandleTimeExceeded (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface);
+
+  /**
+   * \brief Receive Packet Too Big method.
+   * \param p the packet
+   * \param src source address
+   * \param dst destination address
+   * \param interface the interface from which the packet is coming
+   */
+  void HandlePacketTooBig (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface);
+
+  /**
+   * \brief Receive Parameter Error method.
+   * \param p the packet
+   * \param src source address
+   * \param dst destination address
+   * \param interface the interface from which the packet is coming
+   */
+  void HandleParameterError (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface);
 
   /**
    * \brief Link layer address option processing.

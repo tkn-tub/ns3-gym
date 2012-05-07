@@ -142,7 +142,10 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   double receiverNoiseFigureDb = 9.0; // default UE noise figure
   double noiseLin = pow (10, (noisePowerDbm-30+receiverNoiseFigureDb)/10);
-  double loss[] = {81.057184, 134.081310, 144.259958};
+
+  // reference values obtained with the octave script src/lte/test/reference/lte_pathloss.m
+
+  double loss[] = {81.062444, 134.078605, 144.259958};
   double dist[] = {100.0, 500.0, 1500};
 
   int numOfTests = sizeof (loss) / sizeof (double);
