@@ -46,7 +46,7 @@
 #include "ns3/buffer.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4.h"
-#include "ns3/ipv4-l4-protocol.h"
+#include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ipv4-interface.h"
@@ -90,7 +90,7 @@ class DsrOptions;
  * \class DsrRouting
  * \brief Dsr Routing base
  */
-class DsrRouting : public Ipv4L4Protocol
+class DsrRouting : public IpL4Protocol
 {
 public:
   /**
@@ -401,12 +401,28 @@ public:
    * Called from lower-level layers to send the packet up
    * in the stack.
    */
-  virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> incomingInterface);
 
-  void SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback);
-  Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+  /**
+   * \param p packet to forward up
+   * \param src source IPv6 address
+   * \param dst destination IPv6 address
+   * \param incomingInterface the Ipv6Interface on which the packet arrived
+   *
+   * Called from lower-level layers to send the packet up
+   * in the stack.  Not implemented (IPv6).
+   */
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                               Ipv6Address &src,
+                                               Ipv6Address &dst,
+                                               Ptr<Ipv6Interface> incomingInterface);
+
+  void SetDownTarget (IpL4Protocol::DownTargetCallback callback);
+  void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback);
+  IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
+  IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
   /**
    * \brief Get the extension number.
    * \return extension number
@@ -497,7 +513,7 @@ private:
 
   uint8_t segsLeft;                  // / The segment left value from SR header
 
-  Ipv4L4Protocol::DownTargetCallback m_downTarget;    // The callback for down layer
+  IpL4Protocol::DownTargetCallback m_downTarget;    // The callback for down layer
 
   uint32_t m_maxNetworkSize;             // / Maximum network queue size
 

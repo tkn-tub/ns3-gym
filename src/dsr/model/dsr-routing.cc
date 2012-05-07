@@ -54,7 +54,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-l3-protocol.h"
-#include "ns3/ipv4-l4-protocol.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/random-variable.h"
@@ -103,7 +102,7 @@ const uint8_t DsrRouting::PROT_NUMBER = 48;
 TypeId DsrRouting::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrRouting")
-    .SetParent<Ipv4L4Protocol> ()
+    .SetParent<IpL4Protocol> ()
     .AddConstructor<DsrRouting> ()
     .AddAttribute ("RouteCache", "The route cache for saving routes from route discovery process.",
                    PointerValue (0),
@@ -443,7 +442,7 @@ DsrRouting::DoDispose (void)
             }
         }
     }
-  Ipv4L4Protocol::DoDispose ();
+  IpL4Protocol::DoDispose ();
 }
 
 void
@@ -724,7 +723,6 @@ void DsrRouting::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop, uint8_t p
           if (findRoute && (salvage < m_maxSalvageCount))
             {
               // Need to salvage the packet instead of discard it
-              Ipv4Address source = nodeList.front ();
               std::vector<Ipv4Address> nodeList = salvageRoute.GetVector ();
               DsrOptionSRHeader newSR;
               newSR.SetNodesAddress (nodeList);
@@ -1029,9 +1027,8 @@ bool DsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet
           uint8_t *data = new uint8_t[size];
           p->CopyData (data, size);
           uint8_t optionType = 0;
-          uint8_t optionLength = 0;
-
           optionType = *(data);
+
           Ptr<dsr::DsrOptions> dsrOption;
 
           if (optionType == 96)        // This is the source route option
@@ -1047,7 +1044,7 @@ bool DsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet
                             " and destination IP " << ipv4Header.GetDestination () <<
                             " and packet : " << *dsrPacket);
               bool isPromisc = true;                     // Set the boolean value isPromisc as true
-              optionLength = dsrOption->Process (p, dsrPacket, m_mainAddress, source, ipv4Header, nextHeader, isPromisc);
+              dsrOption->Process (p, dsrPacket, m_mainAddress, source, ipv4Header, nextHeader, isPromisc);
               return true;
             }
         }
@@ -2059,9 +2056,6 @@ DsrRouting::SchedulePassivePacketRetry (MaintainBuffEntry & mb,
                                         uint8_t protocol)
 {
   NS_LOG_FUNCTION (this << onlyPassive << (uint32_t)protocol);
-  Ipv4Address nextHop = mb.GetNextHop ();
-  Ipv4Address source = mb.GetSrc ();
-  Ipv4Address dst = mb.GetDst ();
 
   PassiveKey passiveKey;
   passiveKey.m_ackId = 0;
@@ -2091,8 +2085,6 @@ DsrRouting::ScheduleNetworkPacketRetry (MaintainBuffEntry & mb,
   // The new entry will be used for retransmission
   NetworkKey networkKey;
   Ipv4Address nextHop = mb.GetNextHop ();
-  Ipv4Address source = mb.GetSrc ();
-  Ipv4Address dst = mb.GetDst ();
   NS_LOG_DEBUG ("is the first retry or not " << isFirst);
   if (isFirst)
     {
@@ -2185,7 +2177,6 @@ DsrRouting::PassiveScheduleTimerExpire  (MaintainBuffEntry & mb,
   NS_LOG_FUNCTION (this << onlyPassive << (uint32_t)protocol);
   Ipv4Address nextHop = mb.GetNextHop ();
   Ipv4Address source = mb.GetSrc ();
-  Ipv4Address dst = mb.GetDst ();
   Ptr<const Packet> packet = mb.GetPacket ();
   SetRoute (nextHop, m_mainAddress);
   Ptr<Packet> p = packet->Copy ();
@@ -2459,7 +2450,6 @@ DsrRouting::SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol
     {
       NS_LOG_INFO ("No route found, initiate route error request");
       Ptr<Packet> packet = Create<Packet> ();
-      Ipv4Address unreachAddress = rerr.GetUnreachNode ();
       Ipv4Address originalDst = rerr.GetOriginalDst ();
       // Create an empty route ptr
       Ptr<Ipv4Route> route = 0;
@@ -2910,7 +2900,7 @@ DsrRouting::SendAck   (uint16_t ackId,
     }
 }
 
-enum Ipv4L4Protocol::RxStatus
+enum IpL4Protocol::RxStatus
 DsrRouting::Receive (Ptr<Packet> p,
                      Ipv4Header const &ip,
                      Ptr<Ipv4Interface> incomingInterface)
@@ -3037,7 +3027,7 @@ DsrRouting::Receive (Ptr<Packet> p,
               // / Get the next header
               uint8_t nextHeader = dsrRoutingHeader.GetNextHeader ();
               Ptr<Ipv4L3Protocol> l3proto = m_node->GetObject<Ipv4L3Protocol> ();
-              Ptr<Ipv4L4Protocol> nextProto = l3proto->GetProtocol (nextHeader);
+              Ptr<IpL4Protocol> nextProto = l3proto->GetProtocol (nextHeader);
               if (nextProto != 0)
                 {
                   // we need to make a copy in the unlikely event we hit the
@@ -3045,18 +3035,18 @@ DsrRouting::Receive (Ptr<Packet> p,
                   // Here we can use the packet that has been get off whole DSR header
                   NS_LOG_DEBUG ("The packet size here " << copy->GetSize());
                   NS_LOG_DEBUG ("The packet received " << *copy);
-                  enum Ipv4L4Protocol::RxStatus status =
+                  enum IpL4Protocol::RxStatus status =
                     nextProto->Receive (copy, ip, incomingInterface);
                   NS_LOG_DEBUG ("The receive status " << status);
                   switch (status)
                     {
-                      case Ipv4L4Protocol::RX_OK:
+                      case IpL4Protocol::RX_OK:
                       // fall through
-                      case Ipv4L4Protocol::RX_ENDPOINT_CLOSED:
+                      case IpL4Protocol::RX_ENDPOINT_CLOSED:
                       // fall through
-                      case Ipv4L4Protocol::RX_CSUM_FAILED:
+                      case IpL4Protocol::RX_CSUM_FAILED:
                         break;
-                      case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
+                      case IpL4Protocol::RX_ENDPOINT_UNREACH:
                       if (ip.GetDestination ().IsBroadcast () == true
                           || ip.GetDestination ().IsMulticast () == true)
                         {
@@ -3094,7 +3084,17 @@ DsrRouting::Receive (Ptr<Packet> p,
        */
 //            SendError (rerrUnsupportHeader, 0, protocol); // Send the error packet
     }
-  return Ipv4L4Protocol::RX_OK;
+  return IpL4Protocol::RX_OK;
+}
+
+enum IpL4Protocol::RxStatus
+DsrRouting::Receive (Ptr<Packet> p,
+                     Ipv6Address &src,
+                     Ipv6Address &dst,
+                     Ptr<Ipv6Interface> incomingInterface)
+{
+  NS_LOG_FUNCTION (this << p << src << dst << incomingInterface);
+  return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 
 void
@@ -3103,10 +3103,24 @@ DsrRouting::SetDownTarget (DownTargetCallback callback)
   m_downTarget = callback;
 }
 
-Ipv4L4Protocol::DownTargetCallback
+void
+DsrRouting::SetDownTarget6 (DownTargetCallback6 callback)
+{
+  NS_FATAL_ERROR ("Unimplemented");
+}
+
+
+IpL4Protocol::DownTargetCallback
 DsrRouting::GetDownTarget (void) const
 {
   return m_downTarget;
+}
+
+IpL4Protocol::DownTargetCallback6
+DsrRouting::GetDownTarget6 (void) const
+{
+  NS_FATAL_ERROR ("Unimplemented");
+  return MakeNullCallback<void,Ptr<Packet>, Ipv6Address, Ipv6Address, uint8_t, Ptr<Ipv6Route> > ();
 }
 
 void DsrRouting::Insert (Ptr<dsr::DsrOptions> option)

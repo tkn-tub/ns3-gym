@@ -39,7 +39,6 @@
 #include "ns3/packet.h"
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
-#include "ns3/ipv4-l4-protocol.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-route.h"

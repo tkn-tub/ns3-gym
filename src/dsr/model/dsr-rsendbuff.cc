@@ -84,7 +84,6 @@ SendBuffer::DropPacketWithDst (Ipv4Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
   Purge ();
-  const Ipv4Address addr = dst;
   /*
    * Drop the packet with destination address dst
    */

@@ -984,7 +984,6 @@ RouteCache::Purge ()
               /*
                * Save the new route cache along with the destination address in map
                */
-              std::pair<std::map<Ipv4Address, std::list<RouteCacheEntry> >::iterator, bool> result =
                 m_sortedRoutes.insert (std::make_pair (dst, rtVector));
             }
           else

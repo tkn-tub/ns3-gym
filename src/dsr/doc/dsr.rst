@@ -16,7 +16,7 @@ DSR Routing Overview
  This model implements the base specification of the Dynamic Source Routing (DSR)
  protocol. Implementation is based on RFC4728.
 
- Class dsr::DsrRouting implements all functionality of service packet exchange and inherits Ipv4L4Protocol.
+ Class dsr::DsrRouting implements all functionality of service packet exchange and inherits IpL4Protocol.
 
  Class dsr::DsrOptions implements functionality of packet processing and talk to DsrRouting to send/receive packets
 

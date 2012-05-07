@@ -55,7 +55,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/icmpv4-l4-protocol.h"
-#include "ns3/ipv4-l4-protocol.h"
+#include "ns3/ip-l4-protocol.h"
 
 #include "dsr-option-header.h"
 #include "dsr-options.h"
@@ -475,7 +475,6 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   NS_LOG_FUNCTION (this << packet << dsrP << ipv4Address << source << ipv4Header << (uint32_t)protocol << isPromisc);
   // Fields from IP header
   Ipv4Address srcAddress = ipv4Header.GetSource ();
-  Ipv4Address destAddress = ipv4Header.GetDestination ();
   /*
    * \ when the ip source address is equal to the address of our own, this is request packet originated
    * \ by the node itself, discard it
@@ -492,8 +491,6 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
   Ptr<Node> node = GetNodeWithAddress (ipv4Address);
   Ptr<dsr::DsrRouting> dsr = node->GetObject<dsr::DsrRouting> ();
 
-  // Set the isError boolean value as false
-  bool isError = false;
   Ptr<Packet> p = packet->Copy (); // The packet here doesn't contain the fixed size dsr header
   /*
    * \brief Get the number of routers' address field before removing the header
@@ -862,7 +859,6 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
                 }
               else
                 {
-                  isError = true;
                   dsr->DeleteAllRoutesIncludeLink (errorSrc, unreachNode, ipv4Address);
 
                   DsrOptionRerrUnreachHeader newUnreach;
