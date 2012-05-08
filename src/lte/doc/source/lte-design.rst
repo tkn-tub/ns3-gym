@@ -1465,3 +1465,118 @@ A few notes on the above diagram:
     on control plane only.
 
 
+
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
+
+-----------------
+X2-based handover
+-----------------
+
+The X2 interface interconnects two eNBs [TS36.420]_. From a logical point of view, the X2 interface is a point-to-point interface between the two eNBs. In a real E-UTRAN, the logical point-to-point interface should be feasible even in the absence of a physical direct connection between the two eNBs. In the X2 model implemented in the simulator, the X2 interface is a point-to-point interface.
+
+The overall architecture of the LENA simulation model is depicted in the figure :ref:`fig-epc-topology-x2-enhanced`. It adds the X2 interface between eNBs to the original architecture described in :ref:`overall-architecture`.
+
+.. _fig-epc-topology-x2-enhanced:
+   
+.. figure:: figures/epc-topology-x2-enhanced.*
+   :align: center
+
+   Overall architecture of the LTE-EPC simulation model enhanced with X2 interface
+
+
+X2 model
+++++++++
+
+The X2 model implemented in the simulator provides detailed implementation of the following elementary procedures of the Mobility Management functionality [TS36.423]_:
+
+  * Handover Request procedure
+
+  * Handover Request Acknowledgement procedure
+
+  * SN Status Transfer procedure
+
+  * UE Context Release procedure
+
+These procedures are involved in the X2-based handover. You can find the detailed description of the handover in section 10.1.2.1 of [TS36.300]_. Figure :ref:`x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
+
+.. _fig-x2-based-handover-seq-diagram:
+
+.. figure:: figures/lte-epc-x2-handover-seq-diagram.*
+    :width: 700px
+    :align: center
+
+    Sequence diagram of the X2-based handover
+
+The X2 model is an entity that uses services from:
+
+  * the X2 interfaces (Socket)
+
+      * to send/receive X2 PDUs through the X2-C and X2-U interfaces
+
+  * the S1 application (current it is the EpcEnbApplication)
+
+      * to get some information needed for the Elementary Procedures
+
+  * the RRC entity (RRC-SAP)
+
+      * to get some information neeeded for the Elementary Procedures
+
+      * to get the transparent container to be sent to the UE as an RRC message
+
+Figure :ref:`fig-x2-entity-saps` shows the implentation model of the X2 entity and its relationship with all the other entities and services in the protocol stack.
+
+.. _fig-x2-entity-saps:
+
+.. figure:: figures/lte-epc-x2-entity-saps.*
+    :width: 700px
+    :align: center
+
+    Implementation Model of X2 entity and SAPs
+
+
+X2 interfaces
++++++++++++++
+
+The X2 model contains two interfaces:
+
+  * The X2-C interface. It is the control interface and it is used to send the X2-AP PDUs
+    (i.e. the elementary procedures).
+
+  * The X2-U interface. It is used to send the bearer data when there is `DL forwarding`.
+
+Figure :ref:`fig-lte-epc-x2-interface` shows the protocol stacks of the X2-U interface and X2-C interface modeled in the simulator.
+
+.. _fig-lte-epc-x2-interface:
+
+.. figure:: figures/lte-epc-x2-interface.*          
+    :align: center
+
+    X2 interface protocol stacks
+
+In the original X2 interface control plane protocol stack, SCTP is used as the transport protocol but currently, the SCTP protocol is not modeled in the ns-3 simulator and its implementation is out-of-scope of the project. UDP protocol is used as the datagram oriented protocol instead of the SCTP protocol.
+
+
+RRC Service Interface
++++++++++++++++++++++
+
+The RRC service interface is used by the X2 entity to get some informations needed to build the X2 messages. It is divided into two parts:
+
+* the ``RrcSapProvider`` part is provided by the RRC entity and used by the X2 entity and
+
+* the ``RrcSapUser`` part is provided by the X2 entity and used by the RRC entity
+
+
+S1 Service Interface
+++++++++++++++++++++
+
+The S1 service interface is used by the X2 entity to get some information neeeded to build the X2 messages. It is divided into two parts:
+
+* the ``S1SapProvider`` part is provided by the S1 entity and used by the X2 entity and
+
+* the ``S1SapUser`` part is provided by the X2 entity and used by the S1 entity
+
+
