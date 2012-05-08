@@ -95,6 +95,12 @@ that all derived classes need to implement in order to integrate properly with t
 </li>
 <li> The Ns2CalendarScheduler event scheduler has been removed.
 </li>
+<li>
+ErrorUnit enum has been moved into RateErrorModel class, and symbols EU_BIT, EU_BYTE and EU_PKT have been renamed to RateErrorModel::ERROR_UNIT_BIT, RateErrorModel::ERROR_UNIT_BYTE and RateErrorModel::ERROR_UNIT_PACKET. RateErrorModel class attribute "ErrorUnit" values have also been renamed for consistency, and are now "ERROR_UNIT_BIT", "ERROR_UNIT_BYTE", "ERROR_UNIT_PACKET".
+</li>
+<li>
+QueueMode enum from DropTailQueue and RedQueue classes has been unified and moved to Queueu class. Symbols DropTailQueue::PACKETS and DropTailQueue::BYTES are now named Queue::QUEUE_MODE_PACKETS and DropTailQueue::QUEUE_MODE_BYTES. In addition, DropTailQueue and RedQueue class attributes "Mode" have been renamed for consistency from "Packets" and "Bytes" to "QUEUE_MODE_PACKETS" and "QUEUE_MODE_BYTES".
+</li>
 </ul>
 
 <h2>Changes to build system:</h2>
