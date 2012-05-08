@@ -38,6 +38,13 @@
 .. [TS36.104] 3GPP TS 36.104 "E-UTRA Base Station (BS) radio transmission and reception"
 
 
+.. [TS36.300] 3GPP TS 36.420 "E-UTRA and E-UTRAN; Overall description; Stage 2"
+
+.. [TS36.420] 3GPP TS 36.420 "E-UTRAN X2 general aspects and principles"
+
+.. [TS36.423] 3GPP TS 36.420 "E-UTRAN X2 application protocol (X2AP)"
+
+
 .. [R1-081483] 3GPP R1-081483 `Conveying MCS and TB size via PDCCH <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 
 .. [FFAPI] `FemtoForum LTE MAC Scheduler Interface Specification v1.11 <http://www.femtoforum.org/femto/technical.php>`_
