@@ -14,6 +14,7 @@ IMAGES_DIA = \
 	$(FIGURES)/epc-data-flow-ul.dia \
 	$(FIGURES)/epc-profiling-scenario.dia \
 	$(FIGURES)/epc-topology.dia \
+	$(FIGURES)/epc-topology-x2-enhanced.dia \
 	$(FIGURES)/eutran-profiling-scenario.dia \
 	$(FIGURES)/ff-example.dia \
 	$(FIGURES)/ff-mac-saps.dia \
@@ -21,7 +22,9 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-enb-architecture.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
-	$(FIGURES)/lte-ue-architecture.dia
+	$(FIGURES)/lte-ue-architecture.dia \
+	$(FIGURES)/lte-epc-x2-interface.dia
+
 
 
 # specify eps figures from which .png and .pdf figures need to be built
@@ -45,7 +48,9 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-txon-dl.eps \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
-	$(FIGURES)/lte-rlc-data-retx-ul.eps 
+	$(FIGURES)/lte-rlc-data-retx-ul.eps \
+	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
+	$(FIGURES)/lte-epc-x2-entity-saps.eps
 
 
 # rescale pdf figures as necessary
@@ -62,6 +67,7 @@ $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
 $(FIGURES)/epc-topology.pdf_width = 4in
+$(FIGURES)/epc-topology-x2-enhanced.pdf_width = 14cm
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
 $(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
 $(FIGURES)/ff-mac-saps.pdf_width = 5in
