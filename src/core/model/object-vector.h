@@ -20,7 +20,6 @@
 #ifndef OBJECT_VECTOR_H
 #define OBJECT_VECTOR_H
 
-#include <vector>
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
@@ -47,10 +46,6 @@ Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
                           Ptr<U> (T::*get)(INDEX) const);
 
-} // namespace ns3
-
-namespace ns3 {
-
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (U T::*memberVector)
@@ -66,7 +61,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
       *n = (obj->*m_memberVector).size ();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const {
+    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const {
       const T *obj = static_cast<const T *> (object);
       typename U::const_iterator begin = (obj->*m_memberVector).begin ();
       typename U::const_iterator end = (obj->*m_memberVector).end ();
@@ -75,6 +70,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
         {
           if (k == i)
             {
+              *index = k;
               return *j;
               break;
             }

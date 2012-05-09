@@ -222,18 +222,20 @@ AttributeIterator::DoIterate (Ptr<Object> object)
                 }
               continue;
             }
-          // attempt to cast to an object vector.
+          // attempt to cast to an object container
           const ObjectPtrContainerChecker *vectorChecker = dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
           if (vectorChecker != 0)
             {
-              NS_LOG_DEBUG ("vector attribute " << info.name);
+              NS_LOG_DEBUG ("ObjectPtrContainer attribute " << info.name);
               ObjectPtrContainerValue vector;
               object->GetAttribute (info.name, vector);
               StartVisitArrayAttribute (object, info.name, vector);
-              for (uint32_t j = 0; j < vector.GetN (); ++j)
+              ObjectPtrContainerValue::Iterator it;
+              for (it = vector.Begin (); it != vector.End (); ++it)
                 {
-                  NS_LOG_DEBUG ("vector attribute item " << j);
-                  Ptr<Object> tmp = vector.Get (j);
+                  uint32_t j = (*it).first;
+                  NS_LOG_DEBUG ("ObjectPtrContainer attribute item " << j);
+                  Ptr<Object> tmp = (*it).second;
                   StartVisitArrayItem (vector, j, tmp);
                   m_examined.push_back (object);
                   DoIterate (tmp);

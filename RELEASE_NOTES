@@ -51,6 +51,8 @@ Bugs fixed
  - bug 1391 - .ns3rc does not allow comments as expected
  - bug 1392 - Modules built report does not clarify C++ or Python
  - bug 1395 - AODV DeferredRouteOutputTag missing constructor
+ - bug 1352 - Fixed MapAttributes, previously was mapped to a vector in ObjectPtrContainer
+              and (and key information was dropped). Now the container is a map.
  
 Known issues
 ------------

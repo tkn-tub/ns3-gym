@@ -20,7 +20,6 @@
 #ifndef OBJECT_MAP_H
 #define OBJECT_MAP_H
 
-#include <vector>
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
@@ -39,17 +38,13 @@ Ptr<const AttributeChecker> MakeObjectMapChecker (void);
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (Ptr<U> (T::*get)(INDEX) const,
+MakeObjectMapAccessor (Ptr<U> (T::*get)(INDEX) const,
                           INDEX (T::*getN)(void) const);
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
-MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
-                          Ptr<U> (T::*get)(INDEX) const);
-
-} // namespace ns3
-
-namespace ns3 {
+MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
+                       Ptr<U> (T::*get)(INDEX) const);
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
@@ -66,7 +61,7 @@ MakeObjectMapAccessor (U T::*memberVector)
       *n = (obj->*m_memberVector).size ();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const {
+    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const {
       const T *obj = static_cast<const T *> (object);
       typename U::const_iterator begin = (obj->*m_memberVector).begin ();
       typename U::const_iterator end = (obj->*m_memberVector).end ();
@@ -75,6 +70,7 @@ MakeObjectMapAccessor (U T::*memberVector)
         {
           if (k == i)
             {
+              *index = (*j).first;
               return (*j).second;
               break;
             }
@@ -110,8 +106,6 @@ MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
 {
   return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
-
-
 
 } // namespace ns3
 
