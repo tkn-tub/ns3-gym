@@ -67,6 +67,7 @@ private:
   void DoReportBufferStatus ();
 
 private:
+  uint32_t m_maxTxBufferSize;
   uint32_t m_txBufferSize;
   std::vector < Ptr<Packet> > m_txBuffer;       // Transmission buffer
   std::map <uint16_t, Ptr<Packet> > m_rxBuffer; // Reception buffer
