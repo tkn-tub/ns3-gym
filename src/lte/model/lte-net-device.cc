@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include "ns3/llc-snap-header.h"
@@ -29,12 +30,11 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "radio-bearer-instance.h"
-#include "amc-module.h"
-#include "rrc-entity.h"
-#include "rlc-entity.h"
-#include "lte-mac-header.h"
+#include "lte-amc.h"
 #include "ns3/ipv4-header.h"
+#include <ns3/lte-radio-bearer-tag.h>
+#include <ns3/ipv4-l3-protocol.h>
+#include <ns3/log.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
 
@@ -42,6 +42,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( LteNetDevice);
 
+////////////////////////////////
+// LteNetDevice
+////////////////////////////////
 
 TypeId LteNetDevice::GetTypeId (void)
 {
@@ -52,20 +55,10 @@ TypeId LteNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
 
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
-                   UintegerValue (1500),
+                   UintegerValue (30000),
                    MakeUintegerAccessor (&LteNetDevice::SetMtu,
                                          &LteNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> (0,MAX_MSDU_SIZE))
-
-    .AddAttribute ("Phy",
-                   "The PHY layer attached to this device.",
-                   PointerValue (),
-                   MakePointerAccessor (&LteNetDevice::GetPhy, &LteNetDevice::SetPhy),
-                   MakePointerChecker<LtePhy> ())
-
-    .AddTraceSource ("Rx", "Receive trace", MakeTraceSourceAccessor (&LteNetDevice::m_macRxTrace))
-    .AddTraceSource ("Tx", "Transmit trace", MakeTraceSourceAccessor (&LteNetDevice::m_macTxTrace));
-
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -87,12 +80,7 @@ LteNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_phy->Dispose ();
-  m_phy = 0;
   m_node = 0;
-  m_rrcEntity->Dispose ();
-  m_rrcEntity = 0;
-  m_phyMacTxStartCallback = MakeNullCallback< bool, Ptr<Packet> > ();
   NetDevice::DoDispose ();
 }
 
@@ -101,39 +89,8 @@ Ptr<Channel>
 LteNetDevice::GetChannel (void) const
 {
   NS_LOG_FUNCTION (this);
-  return GetPhy ()->GetDownlinkSpectrumPhy ()->GetChannel ();
-}
-
-
-void
-LteNetDevice::SetPhy (Ptr<LtePhy> phy)
-{
-  NS_LOG_FUNCTION (this << phy);
-  m_phy = phy;
-}
-
-
-Ptr<LtePhy>
-LteNetDevice::GetPhy (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_phy;
-}
-
-
-void
-LteNetDevice::SetRrcEntity (Ptr<RrcEntity> rrc)
-{
-  NS_LOG_FUNCTION (this << rrc);
-  m_rrcEntity = rrc;
-}
-
-
-Ptr<RrcEntity>
-LteNetDevice::GetRrcEntity (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_rrcEntity;
+  // we can't return a meaningful channel here, because LTE devices using FDD have actually two channels.
+  return 0;
 }
 
 
@@ -177,62 +134,11 @@ LteNetDevice::SetReceiveCallback (ReceiveCallback cb)
 }
 
 
-void
-LteNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &source, const Mac48Address &dest)
-{
-
-}
-
-
-void
-LteNetDevice::ForwardUp (Ptr<Packet> packet)
-{
-  NS_LOG_FUNCTION (this << packet);
-
-  LteMacHeader header;
-  packet->RemoveHeader (header);
-  NS_LOG_LOGIC ("packet " << header.GetSource () << " --> " << header.GetDestination () << " (here: " << m_address << ")");
-
-  m_macRxTrace (packet, header.GetSource ());
-
-  LlcSnapHeader llc;
-  packet->RemoveHeader (llc);
-
-  m_rxCallback (this, packet, llc.GetType (), header.GetSource ());
-}
-
-
-
-bool
-LteNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
-{
-  NS_LOG_FUNCTION (packet << dest << protocolNumber);
-  return SendFrom (packet, m_address, dest, protocolNumber);
-}
-
-
 bool
 LteNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (packet << source << dest << protocolNumber);
-
-  Mac48Address from = Mac48Address::ConvertFrom (source);
-  Mac48Address to = Mac48Address::ConvertFrom (dest);
-
-  LlcSnapHeader llcHdr;
-  llcHdr.SetType (protocolNumber);
-  packet->AddHeader (llcHdr);
-
-  m_macTxTrace (packet, to);
-
-  LteMacHeader header;
-  header.SetSource (from);
-  header.SetDestination (to);
-  packet->AddHeader (header);
-
-  // m_macTxTrace (packet);
-
-  return DoSend (packet, from, to, protocolNumber);
+  NS_FATAL_ERROR ("SendFrom () not supported");
+  return false;
 }
 
 
@@ -244,32 +150,11 @@ LteNetDevice::SupportsSendFrom (void) const
 }
 
 
-void
-LteNetDevice::SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c)
-{
-  NS_LOG_FUNCTION (this);
-  m_phyMacTxStartCallback = c;
-}
-
-
-void
-LteNetDevice::Receive (Ptr<Packet> p)
-{
-  NS_LOG_FUNCTION (this << p);
-  Ptr<Packet> packet = p->Copy ();
-  DoReceive (packet);
-}
-
-
 
 bool
 LteNetDevice::SetMtu (const uint16_t mtu)
 {
   NS_LOG_FUNCTION (this << mtu);
-  if (mtu > MAX_MSDU_SIZE)
-    {
-      return false;
-    }
   m_mtu = mtu;
   return true;
 }
@@ -301,7 +186,7 @@ bool
 LteNetDevice::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_phy != 0 && m_linkUp;
+  return m_linkUp;
 }
 
 
@@ -339,7 +224,7 @@ bool
 LteNetDevice::NeedsArp (void) const
 {
   NS_LOG_FUNCTION (this);
-  return true;
+  return false;
 }
 
 
@@ -353,8 +238,7 @@ LteNetDevice::IsBridge (void) const
 Address
 LteNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_FUNCTION (multicastGroup);
+  NS_LOG_FUNCTION (this << multicastGroup);
 
   Mac48Address ad = Mac48Address::GetMulticast (multicastGroup);
 
@@ -390,23 +274,17 @@ void
 LteNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
   NS_LOG_FUNCTION (this);
-  m_promiscRxCallback = cb;
+  NS_LOG_WARN ("Promisc mode not supported");
 }
+
 
 
 void
-LteNetDevice::SetPacketToSend (Ptr<PacketBurst> p)
+LteNetDevice::Receive (Ptr<Packet> p)
 {
-  m_packetToSend = p;
+  NS_LOG_FUNCTION (this << p);
+  m_rxCallback (this, p, Ipv4L3Protocol::PROT_NUMBER, Address ());
 }
-
-
-Ptr<PacketBurst>
-LteNetDevice::GetPacketToSend (void)
-{
-  return m_packetToSend;
-}
-
 
 
 }

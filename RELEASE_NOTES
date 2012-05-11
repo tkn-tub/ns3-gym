@@ -36,6 +36,13 @@ New user-visible features
 - Longer and more descriptive names are used for error units in RateErrorModel
   class and queue mode in Queue class. Attributs in those classes are also
   changed for consistency. See API documentation for details.
+- A new buildings module is introduced which allows to model the
+  presence of buildings in a wireless network topology.  
+- New propagation models (OkumuraHata, ITU-R P.1411, ITU-R P.1238)
+  have been added
+- The LTE code from the LENA project has been merged, bringin in a
+  significant redesign of the LTE module as well as many new features.
+
 
 Bugs fixed
 ----------

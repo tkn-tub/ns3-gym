@@ -50,6 +50,13 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>The new class AntennaModel provides an API for modeling the radiation pattern of antennas.
 </li>
+<li>The new buildings module introduces an API (classes, helpers, etc)
+  to model the presence of buildings in a wireless network topology. 
+</li>
+<li>The LENA project's implementation of the LTE Mac Scheduler Interface Specification
+   standardized by the Small Cell Forum (formerly Femto Forum) is now available for
+  use with the LTE module.
+</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -100,6 +107,11 @@ ErrorUnit enum has been moved into RateErrorModel class, and symbols EU_BIT, EU_
 </li>
 <li>
 QueueMode enum from DropTailQueue and RedQueue classes has been unified and moved to Queueu class. Symbols DropTailQueue::PACKETS and DropTailQueue::BYTES are now named Queue::QUEUE_MODE_PACKETS and DropTailQueue::QUEUE_MODE_BYTES. In addition, DropTailQueue and RedQueue class attributes "Mode" have been renamed for consistency from "Packets" and "Bytes" to "QUEUE_MODE_PACKETS" and "QUEUE_MODE_BYTES".
+</li>
+<li>
+The API of the LTE module has undergone a significant redesign with
+the merge of the code from the LENA project. The new API is not
+backwards compatible with the previous version of the LTE module.
 </li>
 </ul>
 

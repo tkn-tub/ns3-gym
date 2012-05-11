@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
 #ifndef IDEAL_CONTROL_MESSAGES_H
@@ -40,13 +41,15 @@ class LteNetDevice;
 class IdealControlMessage : public SimpleRefCount<IdealControlMessage>
 {
 public:
-
   /**
    * The type of the message
    */
   enum MessageType
   {
-    CQI_FEEDBACKS, ALLOCATION_MAP
+    CQI_FEEDBACKS, ALLOCATION_MAP,
+    DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator
+    DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator
+    BSR // Buffer Status Report
   };
 
   IdealControlMessage (void);
@@ -96,15 +99,103 @@ private:
 
 
 
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+#ifndef DL_DCI_IDEAL_CONTROL_MESSAGES_H
+#define DL_DCI_IDEAL_CONTROL_MESSAGES_H
+
+#include <ns3/object.h>
+#include <ns3/ff-mac-common.h>
+
+namespace ns3 {
+
+/**
+ * \ingroup lte
+ * The Downlink Data Control Indicator messages defines the RB allocation for the
+ * users in the downlink
+ */
+class DlDciIdealControlMessage : public IdealControlMessage
+{
+public:
+  DlDciIdealControlMessage (void);
+  virtual ~DlDciIdealControlMessage (void);
+
+  /**
+  * \brief add a DCI into the message
+  * \param dci the dci
+  */
+  void SetDci (DlDciListElement_s dci);
+
+  /**
+  * \brief Get dic informations
+  * \return dci messages
+  */
+  DlDciListElement_s GetDci (void);
+
+
+private:
+  DlDciListElement_s m_dci;
+};
+} // namespace ns3
+
+#endif /* DL_DCI_IDEAL_CONTROL_MESSAGES_H */
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+#ifndef UL_DCI_IDEAL_CONTROL_MESSAGES_H
+#define UL_DCI_IDEAL_CONTROL_MESSAGES_H
+
+#include <ns3/object.h>
+#include <ns3/ff-mac-common.h>
+
+namespace ns3 {
+
+/**
+ * \ingroup lte
+ * The Uplink Data Control Indicator messages defines the RB allocation for the
+ * users in the uplink
+ */
+class UlDciIdealControlMessage : public IdealControlMessage
+{
+public:
+  UlDciIdealControlMessage (void);
+  virtual ~UlDciIdealControlMessage (void);
+
+  /**
+  * \brief add a DCI into the message
+  * \param dci the dci
+  */
+  void SetDci (UlDciListElement_s dci);
+
+  /**
+  * \brief Get dic informations
+  * \return dci messages
+  */
+  UlDciListElement_s GetDci (void);
+
+
+private:
+  UlDciListElement_s m_dci;
+};
+} // namespace ns3
+
+#endif /* UL_DCI_IDEAL_CONTROL_MESSAGES_H */
+
+
+
 // ----------------------------------------------------------------------------------------------------------
 
 
 
-#ifndef PDCCH_MAP_IDEAL_CONTROL_MESSAGES_H
-#define PDCCH_MAP_IDEAL_CONTROL_MESSAGES_H
+#ifndef DLCQI_IDEAL_CONTROL_MESSAGES_H
+#define DLCQI_IDEAL_CONTROL_MESSAGES_H
 
-#include "ns3/object.h"
-#include <list>
+#include <ns3/object.h>
+#include <ns3/ff-mac-common.h>
 
 namespace ns3 {
 
@@ -112,89 +203,43 @@ class LteNetDevice;
 
 /**
  * \ingroup lte
- *
- * \brief The PdcchMapIdealControlMessage defines an ideal allocation map
- * for both UL and DL sends by the eNodeB to all UE,
- * using an ideal PDCCH control channel.
- * IdealPdcchMessage is composed by a list of IdealPdcchRecord
- * where is indicated the UE that can use a particular sub channel
- * with a proper MCS scheme.
- * This records are the same for both UL and DL, and are created by the
- * packet scheduler at the beginning of each sub frame.
- * When the IdealPdcchMessage is sent under an ideal control channel,
- * all UE stores into a proper variables the informations about
- * the resource mapping.
+ * The downlink CqiIdealControlMessage defines an ideal list of
+ * feedback about the channel quality sent by the UE to the eNodeB.
  */
-class PdcchMapIdealControlMessage : public IdealControlMessage
+class DlCqiIdealControlMessage : public IdealControlMessage
 {
 public:
-
-  PdcchMapIdealControlMessage (void);
-  virtual ~PdcchMapIdealControlMessage (void);
-
-  /**
-   * Direction for which the message is created 
-   */
-  enum Direction
-  {
-    DOWNLINK, UPLINK
-  };
+  DlCqiIdealControlMessage (void);
+  virtual ~DlCqiIdealControlMessage (void);
 
   /**
-   * The PDCCH ideal record
-   */
-  struct IdealPdcchRecord
-  {
-    /** the direction */
-    Direction m_direction;
-    /** the sub channel */ 
-    int m_idSubChannel;
-    /** the ue that receive the mapping */
-    Ptr<LteNetDevice> m_ue;
-    /** the selected msc */
-    double m_mcsIndex;
-  };
+  * \brief add a DL-CQI feedback record into the message.
+  * \param dlcqi the DL cqi feedback
+  */
+  void SetDlCqi (CqiListElement_s dlcqi);
 
   /**
-   * The PDCCH ideal message
-   */
-  typedef std::list<struct IdealPdcchRecord>  IdealPdcchMessage;
+  * \brief Get DL cqi informations
+  * \return dlcqi messages
+  */
+  CqiListElement_s GetDlCqi (void);
 
-  /**
-   * \brief add a PDCCH record into the message.
-   * \param direction the direction of the map
-   * \param subChannel the scheduled sub channel
-   * \param ue the ue the can use the sub channel for transmission
-   * \param mcs the selected MCS scheme
-   */
-  void AddNewRecord (Direction direction,
-                     int subChannel, Ptr<LteNetDevice> ue, double mcs);
-
-  /**
-   * \brief Get the message
-   * \return the pointer to the message
-   */
-  IdealPdcchMessage* GetMessage (void);
 
 private:
-  IdealPdcchMessage *m_idealPdcchMessage;
+  CqiListElement_s m_dlCqi;
 };
-
 } // namespace ns3
 
-#endif /* PDCCH_MAP_IDEAL_CONTROL_MESSAGES_H */
-
+#endif /* DLCQI_IDEAL_CONTROL_MESSAGES_H */
 
 
 // ----------------------------------------------------------------------------------------------------------
 
+#ifndef BSR_IDEAL_CONTROL_MESSAGES_H
+#define BSR_IDEAL_CONTROL_MESSAGES_H
 
-
-#ifndef CQI_IDEAL_CONTROL_MESSAGES_H
-#define CQI_IDEAL_CONTROL_MESSAGES_H
-
-#include "ns3/object.h"
-#include <list>
+#include <ns3/object.h>
+#include <ns3/ff-mac-common.h>
 
 namespace ns3 {
 
@@ -202,50 +247,34 @@ class LteNetDevice;
 
 /**
  * \ingroup lte
- *
- * The CqiIdealControlMessage defines an ideal list of feedback about
- * the channel quality sent by the UE to the eNodeB.
+ * The uplink BsrIdealControlMessage defines the specific
+ * extension of the CE element for reporting the buffer status report
  */
-class CqiIdealControlMessage : public IdealControlMessage
+class BsrIdealControlMessage : public IdealControlMessage
 {
 public:
-
-  CqiIdealControlMessage (void);
-  virtual ~CqiIdealControlMessage (void);
-
-  /**
-   * The CQI feedback ideal record
-   */
-  struct CqiFeedback
-  {
-    /** the sub channel */
-    int m_idSubChannel; 
-    /** the cqi feedback */
-    double m_cqi;
-  };
+  BsrIdealControlMessage (void);
+  virtual ~BsrIdealControlMessage (void);
 
   /**
-   * The ideal CQI feedback message
-   */
-  typedef std::list<struct CqiFeedback>  CqiFeedbacks;
+  * \brief add a BSR feedback record into the message.
+  * \param bsr the BSR feedback
+  */
+  void SetBsr (MacCeListElement_s ulcqi);
 
   /**
-   * \brief add a CQI feedback record into the message.
-   * \param subChannel the scheduled sub channel
-   * \param cqi the cqi feedback
-   */
-  void AddNewRecord (int subChannel, double cqi);
-
-  /**
-   * \brief Get cqi informations
-   * \return cqi messages
-   */
-  CqiFeedbacks* GetMessage (void);
+  * \brief Get BSR informations
+  * \return BSR message
+  */
+  MacCeListElement_s GetBsr (void);
 
 
 private:
-  CqiFeedbacks *m_cqiFeedbacks;
+  MacCeListElement_s m_bsr;
+
+
 };
 } // namespace ns3
 
-#endif /* CQI_IDEAL_CONTROL_MESSAGES_H */
+#endif /* BSR_IDEAL_CONTROL_MESSAGES_H */
+

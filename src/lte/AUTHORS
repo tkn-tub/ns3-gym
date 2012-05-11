@@ -1,16 +1,25 @@
-Giuseppe Piro
-===============
-Module manager and main developer
-2010
-TELEMATICS LAB, Politecnico di Bari
-G.Piro@poliba.it
+
+The ns-3 LTE module is the result of the development effort carried out by different people/institutions/projects. The main contributors are listed below.
+
+====================================================
+       Google Summer of Code (GSoC) (2010)
+====================================================
+
+Giuseppe Piro, TELEMATICS LAB, Politecnico di Bari <G.Piro@poliba.it>
+design and development
+
+Nicola Baldo, CTTC <nbaldo@cttc.es>
+Marco Miozzo, CTTC <mmiozzo@cttc.es>
+supervision and GSoC project mentorship
 
 
-The module has been firtly developed with 
-the support of Google Summer of Code Program, 
-under the supervision of 
-Nicola Baldo (n.baldo@cttc.es)
-and Marco Miozzo (m.miozzo@cttc.es) 
+====================================================
+  LTE-EPC Network simulAtor (LENA) Project (2011-12)
+====================================================
 
+Nicola Baldo, CTTC <nbaldo@cttc.es>
+Marco Miozzo, CTTC <mmiozzo@cttc.es>
+Manuel Requena, CTTC <mrequena@cttc.es>
+Jaume Nin, CTTC <jnin@cttc.es>
 
 
