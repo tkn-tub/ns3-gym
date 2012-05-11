@@ -222,6 +222,8 @@ main (int argc, char *argv[])
   cmd.AddValue ("simTime", "Total duration of the simulation [s]", simTime);
   cmd.AddValue ("generateRem", "if true, will generate a REM and then abort the simulation;"
                 "if false, will run the simulation normally (without generating any REM)", generateRem);
+  cmd.AddValue ("printBuildingList", "if true, will save a list of buildings with their positions to file;"
+                "if false, will run the simulation normally (without generating any REM)", printBuildingList);
   cmd.AddValue ("epc", "if true, will setup the EPC to simulate an end-to-end topology;"
                 "if false, only the LTE radio access will be simulated.", epc);
   cmd.AddValue ("epcDl", "if true, will activate data flows in the downlink when EPC is being used. "
@@ -348,6 +350,7 @@ main (int argc, char *argv[])
 
   // home UEs located in the same apartment in which there are the Home eNBs
   positionAlloc = CreateObject<SameRoomPositionAllocator> (homeEnbs);
+  mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
   lteHelper->AttachToClosestEnb (homeUeDevs, homeEnbDevs);
