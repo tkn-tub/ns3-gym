@@ -431,7 +431,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 }
 
 void 
-Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector)
+Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &container)
 {
   NS_LOG_FUNCTION(this << path);
   NS_ASSERT (path != "");
@@ -445,14 +445,15 @@ Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &vecto
   std::string pathLeft = path.substr (next, path.size ()-next);
 
   ArrayMatcher matcher = ArrayMatcher (item);
-  for (uint32_t i = 0; i < vector.GetN (); i++)
+  ObjectPtrContainerValue::Iterator it;
+  for (it = container.Begin (); it != container.End (); ++it)
     {
-      if (matcher.Matches (i))
+      if (matcher.Matches ((*it).first))
         {
           std::ostringstream oss;
-          oss << i;
+          oss << (*it).first;
           m_workStack.push_back (oss.str ());
-          DoResolve (pathLeft, vector.Get (i));
+          DoResolve (pathLeft, (*it).second);
           m_workStack.pop_back ();
         }
     }
