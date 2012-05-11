@@ -19,6 +19,7 @@
  */
 #include "building-position-allocator.h"
 #include "ns3/buildings-mobility-model.h"
+#include "ns3/buildings-helper.h"
 #include "ns3/random-variable.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -189,9 +190,18 @@ SameRoomPositionAllocator::SameRoomPositionAllocator ()
 
 
 SameRoomPositionAllocator::SameRoomPositionAllocator (NodeContainer c)
-  : m_nodes (c),
-    m_nodeIt (c.Begin ())
+  : m_nodes (c)
 {
+  m_nodeIt = m_nodes.Begin ();
+  // this is needed to make sure the building models associated with c have been initialized
+  for (NodeContainer::Iterator it = m_nodes.Begin (); it != m_nodes.End (); ++it)
+    {
+      Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel> ();
+      NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
+      Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+      NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+      BuildingsHelper::MakeConsistent (bmm);
+    }
 }
 
 TypeId
@@ -216,11 +226,17 @@ SameRoomPositionAllocator::GetNext () const
   
   NS_ASSERT_MSG (m_nodeIt != m_nodes.End (), "no node in container");
 
-  Ptr<BuildingsMobilityModel> bmm = (*m_nodeIt)->GetObject<BuildingsMobilityModel> ();
+  NS_LOG_LOGIC ("considering node " << (*m_nodeIt)->GetId ());
+  Ptr<MobilityModel> mm = (*m_nodeIt)->GetObject<MobilityModel> ();
+  NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
+  Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+  NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+
+  ++m_nodeIt;
   uint32_t roomx = bmm->GetRoomNumberX ();
   uint32_t roomy = bmm->GetRoomNumberY ();
   uint32_t floor = bmm->GetFloorNumber ();
-  NS_LOG_LOGIC ("considering room (" << roomx << ", " << roomy << ", " << floor << ")");
+  NS_LOG_LOGIC ("considering building " << bmm->GetBuilding ()->GetId () << " room (" << roomx << ", " << roomy << ", " << floor << ")");
 
   Ptr<Building> b = bmm->GetBuilding ();
   Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
