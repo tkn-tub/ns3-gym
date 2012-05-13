@@ -144,6 +144,8 @@ TypeId RouteCache::GetTypeId ()
 
 RouteCache::RouteCache ()
   : m_vector (0),
+    m_maxEntriesEachDst (3),
+    m_isLinkCache (false),
     m_ntimer (Timer::CANCEL_ON_DESTROY),
     m_delay (MilliSeconds (100))
 {
