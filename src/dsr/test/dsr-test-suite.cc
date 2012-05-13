@@ -252,7 +252,7 @@ DsrRerrHeaderTest::DoRun ()
   p->RemoveAtStart (8);
   dsr::DsrOptionRerrUnreachHeader h2;
   uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_EXPECT_MSG_EQ (bytes, 16, "Total RREP is 16 bytes long");
+  NS_TEST_EXPECT_MSG_EQ (bytes, 20, "Total RREP is 20 bytes long");
 }
 // -----------------------------------------------------------------------------
 // / Unit test for ACK-REQ
