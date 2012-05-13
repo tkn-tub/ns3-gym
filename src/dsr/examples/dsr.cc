@@ -121,13 +121,13 @@ main (int argc, char *argv[])
 
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (txpDistance));
+  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (txpDistance));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue (dataMode), "ControlMode",
-      StringValue (phyMode));
+                                StringValue (phyMode));
 
   wifiMac.SetType ("ns3::AdhocWifiMac");
   allDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
@@ -146,10 +146,10 @@ main (int argc, char *argv[])
   Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
 
   adhocMobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-      "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
-      "Pause", RandomVariableValue (ConstantVariable (pauseTime)),
-      "PositionAllocator", PointerValue (taPositionAlloc)
-      );
+                                  "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
+                                  "Pause", RandomVariableValue (ConstantVariable (pauseTime)),
+                                  "PositionAllocator", PointerValue (taPositionAlloc)
+                                  );
   adhocMobility.Install (adhocNodes);
 
   InternetStackHelper internet;
@@ -165,25 +165,25 @@ main (int argc, char *argv[])
   allInterfaces = address.Assign (allDevices);
 
   uint16_t port = 9;
-  double randomStartTime = (1/ppers) / nSinks; //distributed btw 1s evenly as we are sending 4pkt/s
+  double randomStartTime = (1 / ppers) / nSinks; //distributed btw 1s evenly as we are sending 4pkt/s
 
   for (uint32_t i = 0; i < nSinks; ++i)
-  {
-    PacketSinkHelper sink ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
-    ApplicationContainer apps_sink = sink.Install (adhocNodes.Get (i));
-    apps_sink.Start (Seconds (0.0));
-    apps_sink.Stop (Seconds (TotalTime));
+    {
+      PacketSinkHelper sink ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
+      ApplicationContainer apps_sink = sink.Install (adhocNodes.Get (i));
+      apps_sink.Start (Seconds (0.0));
+      apps_sink.Stop (Seconds (TotalTime));
 
-    OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address (InetSocketAddress (allInterfaces.GetAddress (i), port)));
-    onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-    onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
-    onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
-    onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
+      OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address (InetSocketAddress (allInterfaces.GetAddress (i), port)));
+      onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
+      onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
+      onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
 
-    ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (i + nWifis - nSinks));
-    apps1.Start (Seconds (dataStart + i*randomStartTime));
-    apps1.Stop (Seconds (dataTime + i*randomStartTime));
-  }
+      ApplicationContainer apps1 = onoff1.Install (adhocNodes.Get (i + nWifis - nSinks));
+      apps1.Start (Seconds (dataStart + i * randomStartTime));
+      apps1.Stop (Seconds (dataTime + i * randomStartTime));
+    }
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (TotalTime));

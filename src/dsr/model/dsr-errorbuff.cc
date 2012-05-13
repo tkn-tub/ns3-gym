@@ -56,7 +56,7 @@ ErrorBuffer::Enqueue (ErrorBuffEntry & entry)
        != m_errorBuffer.end (); ++i)
     {
       NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid () << " source " << i->GetSource () << " " << entry.GetSource ()
-                   << " next hop " << i->GetNextHop () << " " << entry.GetNextHop () << " dst " << i->GetDestination () << " " << entry.GetDestination ());
+                                << " next hop " << i->GetNextHop () << " " << entry.GetNextHop () << " dst " << i->GetDestination () << " " << entry.GetDestination ());
 
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ()) && (i->GetSource () == entry.GetSource ()) && (i->GetNextHop () == entry.GetSource ())
           && (i->GetDestination () == entry.GetDestination ()))
@@ -100,7 +100,7 @@ ErrorBuffer::DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop)
         }
     }
   m_errorBuffer.erase (std::remove_if (m_errorBuffer.begin (), m_errorBuffer.end (),
-                                      std::bind2nd (std::ptr_fun (ErrorBuffer::LinkEqual), link)), m_errorBuffer.end ());
+                                       std::bind2nd (std::ptr_fun (ErrorBuffer::LinkEqual), link)), m_errorBuffer.end ());
 }
 
 bool
@@ -169,7 +169,7 @@ ErrorBuffer::Purge ()
         }
     }
   m_errorBuffer.erase (std::remove_if (m_errorBuffer.begin (), m_errorBuffer.end (), pred),
-                      m_errorBuffer.end ());
+                       m_errorBuffer.end ());
 }
 
 void

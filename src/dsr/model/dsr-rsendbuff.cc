@@ -56,7 +56,7 @@ SendBuffer::Enqueue (SendBuffEntry & entry)
        != m_sendBuffer.end (); ++i)
     {
       NS_LOG_INFO ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket ()->GetUid ()
-                   << " dst " << i->GetDestination () << " " << entry.GetDestination ());
+                                << " dst " << i->GetDestination () << " " << entry.GetDestination ());
 
       if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
           && (i->GetDestination () == entry.GetDestination ()))

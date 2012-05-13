@@ -177,7 +177,6 @@ public:
   void PurgeNeighbor ();
 
 private:
-
   // / Timer for neighbor's list. Schedule Purge().
   Timer m_ntimer;
   // / The max # of requests to retransmit

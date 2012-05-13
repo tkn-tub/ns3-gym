@@ -69,22 +69,52 @@ public:
    */
   bool operator== (DsrNetworkQueueEntry const & o) const
   {
-    return ((m_packet == o.m_packet) && (m_srcAddr == o.m_srcAddr) && (m_nextHopAddr == o.m_nextHopAddr) &&
-            (tstamp == o.tstamp) && (m_ipv4Route == o.m_ipv4Route));
+    return ((m_packet == o.m_packet) && (m_srcAddr == o.m_srcAddr) && (m_nextHopAddr == o.m_nextHopAddr)
+            && (tstamp == o.tstamp) && (m_ipv4Route == o.m_ipv4Route));
   }
 
   ///\name Fields
   //\{
-  Ptr<const Packet> GetPacket () const { return m_packet; }
-  void SetPacket (Ptr<const Packet> p) { m_packet = p; }
-  Ptr<Ipv4Route> GetIpv4Route() const { return m_ipv4Route; }
-  void SetIpv4Route (Ptr<Ipv4Route> route) { m_ipv4Route = route; }
-  Ipv4Address GetSourceAddress() const { return m_srcAddr; }
-  void SetSourceAddress (Ipv4Address addr) { m_srcAddr = addr; }
-  Ipv4Address GetNextHopAddress() const { return m_nextHopAddr; }
-  void SetNextHopAddress (Ipv4Address addr) { m_nextHopAddr = addr; }
-  Time GetInsertedTimeStamp (void) const {return tstamp;}
-  void SetInsertedTimeStamp (Time time) {tstamp = time;}
+  Ptr<const Packet> GetPacket () const
+  {
+    return m_packet;
+  }
+  void SetPacket (Ptr<const Packet> p)
+  {
+    m_packet = p;
+  }
+  Ptr<Ipv4Route> GetIpv4Route () const
+  {
+    return m_ipv4Route;
+  }
+  void SetIpv4Route (Ptr<Ipv4Route> route)
+  {
+    m_ipv4Route = route;
+  }
+  Ipv4Address GetSourceAddress () const
+  {
+    return m_srcAddr;
+  }
+  void SetSourceAddress (Ipv4Address addr)
+  {
+    m_srcAddr = addr;
+  }
+  Ipv4Address GetNextHopAddress () const
+  {
+    return m_nextHopAddr;
+  }
+  void SetNextHopAddress (Ipv4Address addr)
+  {
+    m_nextHopAddr = addr;
+  }
+  Time GetInsertedTimeStamp (void) const
+  {
+    return tstamp;
+  }
+  void SetInsertedTimeStamp (Time time)
+  {
+    tstamp = time;
+  }
   //\}
 private:
   /// Data packet

@@ -402,8 +402,8 @@ public:
    * in the stack.
    */
   virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv4Header const &header,
-                                                 Ptr<Ipv4Interface> incomingInterface);
+                                               Ipv4Header const &header,
+                                               Ptr<Ipv4Interface> incomingInterface);
 
   /**
    * \param p packet to forward up

@@ -621,8 +621,8 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
               bool addRoute = false;
               if (numberAddress > 0)
                 {
-                  RouteCacheEntry toSource (/*IP_VECTOR=*/m_finalRoute, /*dst=*/
-                                  dst, /*expire time=*/ActiveRouteTimeout);
+                  RouteCacheEntry toSource (/*IP_VECTOR=*/ m_finalRoute, /*dst=*/
+                                                           dst, /*expire time=*/ ActiveRouteTimeout);
                   if (dsr->IsLinkCache ())
                     {
                       addRoute = dsr->AddRoute_Link (m_finalRoute, ipv4Address);
@@ -984,7 +984,7 @@ uint8_t DsrOptionRrep::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
       RouteCacheEntry toDestination (/*IP_VECTOR=*/ nodeList, /*dst=*/ dst, /*expire time=*/ ActiveRouteTimeout);
       NS_ASSERT (nodeList.front () == ipv4Address);
       bool addRoute = false;
-      if(dsr->IsLinkCache())
+      if (dsr->IsLinkCache ())
         {
           addRoute = dsr->AddRoute_Link (nodeList, ipv4Address);
         }
@@ -1051,7 +1051,7 @@ uint8_t DsrOptionRrep::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
           RouteCacheEntry toDestination (/*IP_VECTOR=*/ cutRoute, /*dst=*/ dst, /*expire time=*/ ActiveRouteTimeout);
           NS_ASSERT (cutRoute.front () == ipv4Address);
           bool addRoute = false;
-          if(dsr->IsLinkCache())
+          if (dsr->IsLinkCache ())
             {
               addRoute = dsr->AddRoute_Link (nodeList, ipv4Address);
             }
@@ -1207,7 +1207,7 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
       p->CopyData (data, size);
       uint8_t optionType = 0;
       optionType = *(data);
-      NS_LOG_DEBUG ("The packet size over here " << p->GetSize());
+      NS_LOG_DEBUG ("The packet size over here " << p->GetSize ());
 
       NS_LOG_DEBUG ("The option type over here " << (uint32_t)optionType);
       if (optionType == 160)
@@ -1289,7 +1289,7 @@ uint8_t DsrOptionSR::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Address 
         }
       // Set the route and forward the data packet
       SetRoute (nextAddress, ipv4Address);
-      NS_LOG_DEBUG ("dsr packet size " << dsrP->GetSize());
+      NS_LOG_DEBUG ("dsr packet size " << dsrP->GetSize ());
       dsr->ForwardPacket (dsrP, newSourceRoute, ipv4Header, realSource, nextAddress, targetAddress, protocol, m_ipv4Route);
     }
   return sourceRoute.GetSerializedSize ();

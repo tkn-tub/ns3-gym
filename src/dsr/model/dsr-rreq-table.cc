@@ -67,7 +67,7 @@ RreqTable::RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDstMa
   Ipv4Address firstExpire;
   Time max = Seconds (0.0);
   for (std::map<Ipv4Address, RreqTableEntry >::const_iterator i =
-      rreqDstMap.begin (); i != rreqDstMap.end (); ++i)
+         rreqDstMap.begin (); i != rreqDstMap.end (); ++i)
     {
       Ipv4Address dst = i->first;
       RreqTableEntry rreqTableEntry = i->second;
@@ -99,7 +99,7 @@ RreqTable::FindAndUpdate (Ipv4Address dst)
         }
       RreqTableEntry rreqTableEntry;
       rreqTableEntry.m_reqNo = 1;
-      rreqTableEntry.m_expire = Simulator::Now();
+      rreqTableEntry.m_expire = Simulator::Now ();
       m_rreqDstMap [dst] = rreqTableEntry;
     }
   else
@@ -109,7 +109,7 @@ RreqTable::FindAndUpdate (Ipv4Address dst)
       RreqTableEntry rreqTableEntry = i->second;
       NS_LOG_DEBUG ("The request count before incrementing " << rreqTableEntry.m_reqNo);
       rreqTableEntry.m_reqNo = (rreqTableEntry.m_reqNo + 1);
-      rreqTableEntry.m_expire = Simulator::Now();
+      rreqTableEntry.m_expire = Simulator::Now ();
       m_rreqDstMap [dst] = rreqTableEntry;
     }
 }

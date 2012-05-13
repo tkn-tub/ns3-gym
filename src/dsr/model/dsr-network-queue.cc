@@ -49,27 +49,29 @@ TypeId
 DsrNetworkQueue::GetTypeID (void)
 {
   static TypeId tid = TypeId ("ns3::dsr::DsrNetworkQueue")
-      .SetParent<Object> ()
-      .AddConstructor<DsrNetworkQueue>  ()
-      ;
+    .SetParent<Object> ()
+    .AddConstructor<DsrNetworkQueue>  ()
+  ;
   return tid;
 }
 
-DsrNetworkQueue::DsrNetworkQueue (uint32_t maxLen, Time maxDelay) :
-    m_size(0), m_maxSize (maxLen), m_maxDelay (maxDelay)
+DsrNetworkQueue::DsrNetworkQueue (uint32_t maxLen, Time maxDelay)
+  : m_size (0),
+    m_maxSize (maxLen),
+    m_maxDelay (maxDelay)
 {
-  NS_LOG_FUNCTION(this );
+  NS_LOG_FUNCTION (this );
 }
 
-DsrNetworkQueue::DsrNetworkQueue () : m_size(0)
+DsrNetworkQueue::DsrNetworkQueue () : m_size (0)
 {
-  NS_LOG_FUNCTION(this );
+  NS_LOG_FUNCTION (this );
 }
 
 DsrNetworkQueue::~DsrNetworkQueue ()
 {
-  NS_LOG_FUNCTION(this );
-  Flush();
+  NS_LOG_FUNCTION (this );
+  Flush ();
 }
 
 void
@@ -101,9 +103,9 @@ DsrNetworkQueue::Enqueue (DsrNetworkQueueEntry & entry)
 {
   NS_LOG_FUNCTION (this << m_size << m_maxSize);
   if (m_size >= m_maxSize)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
   Time now = Simulator::Now ();
   entry.SetInsertedTimeStamp (now);
   m_dsrNetworkQueue.push_back (entry);
@@ -119,11 +121,11 @@ DsrNetworkQueue::Dequeue (DsrNetworkQueueEntry & entry)
   Cleanup ();
   std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin ();
   if (i == m_dsrNetworkQueue.end ())
-  {
-    // no elements in array
-    NS_LOG_DEBUG ("Does not find the queued packet in the network queue");
-    return false;
-  }
+    {
+      // no elements in array
+      NS_LOG_DEBUG ("Does not find the queued packet in the network queue");
+      return false;
+    }
   entry = *i;
   m_dsrNetworkQueue.erase (i);
   m_size--;
@@ -133,7 +135,7 @@ DsrNetworkQueue::Dequeue (DsrNetworkQueueEntry & entry)
 void
 DsrNetworkQueue::Cleanup (void)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   if (m_dsrNetworkQueue.empty ())
     {
       return;
@@ -141,9 +143,9 @@ DsrNetworkQueue::Cleanup (void)
 
   Time now = Simulator::Now ();
   uint32_t n = 0;
-  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end ();)
+  for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin (); i != m_dsrNetworkQueue.end (); )
     {
-      if (i->GetInsertedTimeStamp() + m_maxDelay > now)
+      if (i->GetInsertedTimeStamp () + m_maxDelay > now)
         {
           i++;
         }
@@ -159,14 +161,14 @@ DsrNetworkQueue::Cleanup (void)
 uint32_t
 DsrNetworkQueue::GetSize ()
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   return m_size;
 }
 
 void
 DsrNetworkQueue::Flush (void)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   m_dsrNetworkQueue.erase (m_dsrNetworkQueue.begin (), m_dsrNetworkQueue.end ());
   m_size = 0;
 }

@@ -56,8 +56,8 @@ MaintainBuffer::Enqueue (MaintainBuffEntry & entry)
        != m_maintainBuffer.end (); ++i)
     {
       NS_LOG_INFO ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our add " << i->GetOurAdd () << " " << entry.GetOurAdd ()
-                   << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-                   << " ackId " << i->GetAckId () << " " << entry.GetAckId () << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " << (uint32_t)entry.GetSegsLeft ()
+                              << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
+                              << " ackId " << i->GetAckId () << " " << entry.GetAckId () << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " << (uint32_t)entry.GetSegsLeft ()
                    );
 
       if ((i->GetNextHop () == entry.GetNextHop ()) && (i->GetOurAdd () == entry.GetOurAdd ()) && (i->GetSrc () == entry.GetSrc ())
@@ -75,7 +75,7 @@ MaintainBuffer::Enqueue (MaintainBuffEntry & entry)
       m_maintainBuffer.erase (m_maintainBuffer.begin ());        // Drop the most aged packet
     }
   m_maintainBuffer.push_back (entry);
-  NS_LOG_DEBUG ("The maintain size " << m_maintainBuffer.size());
+  NS_LOG_DEBUG ("The maintain size " << m_maintainBuffer.size ());
   return true;
 }
 
@@ -157,8 +157,8 @@ MaintainBuffer::AllEqual (MaintainBuffEntry & entry)
     {
 
       NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
-                 << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-                 << " ackId " << i->GetAckId () << " " << entry.GetAckId ());
+                               << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
+                               << " ackId " << i->GetAckId () << " " << entry.GetAckId ());
 
       if ((i->GetOurAdd () == entry.GetOurAdd ()) && (i->GetNextHop () == entry.GetNextHop ())
           && (i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
@@ -179,8 +179,8 @@ MaintainBuffer::NetworkEqual (MaintainBuffEntry & entry)
     {
 
       NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
-                 << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-                 << " ackId " << i->GetAckId () << " " << entry.GetAckId ());
+                               << " src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
+                               << " ackId " << i->GetAckId () << " " << entry.GetAckId ());
 
       if ((i->GetOurAdd () == entry.GetOurAdd ()) && (i->GetNextHop () == entry.GetNextHop ())
           && (i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
@@ -196,14 +196,14 @@ MaintainBuffer::NetworkEqual (MaintainBuffEntry & entry)
 bool
 MaintainBuffer::PromiscEqual (MaintainBuffEntry & entry)
 {
-  NS_LOG_DEBUG ("The maintenance buffer size " << m_maintainBuffer.size());
+  NS_LOG_DEBUG ("The maintenance buffer size " << m_maintainBuffer.size ());
   for (std::vector<MaintainBuffEntry>::iterator i = m_maintainBuffer.begin (); i
        != m_maintainBuffer.end (); ++i)
     {
       NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " << i->GetDst () << " " << entry.GetDst ()
-                 << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " << (uint32_t)entry.GetSegsLeft () << " ackId " << (uint32_t)i->GetAckId () << " "
-                 << (uint32_t)entry.GetAckId ()
-          );
+                           << " SegsLeft " << (uint32_t)i->GetSegsLeft () << " " << (uint32_t)entry.GetSegsLeft () << " ackId " << (uint32_t)i->GetAckId () << " "
+                           << (uint32_t)entry.GetAckId ()
+                    );
 
       if ((i->GetSrc () == entry.GetSrc ()) && (i->GetDst () == entry.GetDst ())
           && (i->GetSegsLeft () == entry.GetSegsLeft ()) && (i->GetAckId () == entry.GetAckId ())

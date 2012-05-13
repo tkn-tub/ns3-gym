@@ -798,7 +798,7 @@ TypeId DsrOptionRerrUnreachHeader::GetInstanceTypeId () const
 
 DsrOptionRerrUnreachHeader::DsrOptionRerrUnreachHeader ()
   :    m_reserved (0),
-       m_salvage (0)
+    m_salvage (0)
 {
   SetType (3);
   SetLength (18);

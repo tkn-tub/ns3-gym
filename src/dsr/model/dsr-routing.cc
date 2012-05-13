@@ -359,7 +359,7 @@ void DsrRouting::Start ()
         {
           // Use primary address, if multiple
           Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
-          m_broadcast = m_ipv4->GetAddress (i, 0).GetBroadcast();
+          m_broadcast = m_ipv4->GetAddress (i, 0).GetBroadcast ();
           NS_LOG_DEBUG ("The addr " << addr);
           if (addr != loopback)
             {
@@ -387,18 +387,18 @@ void DsrRouting::Start ()
               break;
             }
         }
-      NS_ASSERT (m_mainAddress != Ipv4Address () && m_broadcast != Ipv4Address());
+      NS_ASSERT (m_mainAddress != Ipv4Address () && m_broadcast != Ipv4Address ());
     }
 
   NS_LOG_DEBUG ("The number queues " << m_numPriorityQueues);
   for (uint32_t i = 0; i < m_numPriorityQueues; i++)
-  {
-    // Set the network queue max size and the delay
-    NS_LOG_DEBUG ("The network size " << m_maxNetworkSize << " and the network delay " << m_maxNetworkDelay.GetSeconds());
-    Ptr<dsr::DsrNetworkQueue> queue_i = CreateObject<dsr::DsrNetworkQueue> (m_maxNetworkSize,m_maxNetworkDelay);
-    std::pair<std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator, bool> result_i = m_priorityQueue.insert (std::make_pair (i, queue_i));
-    NS_ASSERT_MSG (result_i.second, "Error in creating queues");
-  }
+    {
+      // Set the network queue max size and the delay
+      NS_LOG_DEBUG ("The network size " << m_maxNetworkSize << " and the network delay " << m_maxNetworkDelay.GetSeconds ());
+      Ptr<dsr::DsrNetworkQueue> queue_i = CreateObject<dsr::DsrNetworkQueue> (m_maxNetworkSize,m_maxNetworkDelay);
+      std::pair<std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator, bool> result_i = m_priorityQueue.insert (std::make_pair (i, queue_i));
+      NS_ASSERT_MSG (result_i.second, "Error in creating queues");
+    }
   Ptr<dsr::RreqTable> rreqTable = CreateObject<dsr::RreqTable> ();
   // Set the initial hop limit
   rreqTable->SetInitHopLimit (m_discoveryHopLimit);
@@ -624,7 +624,7 @@ DsrRouting::GetIDfromIP (Ipv4Address address)
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       if (ipv4->GetAddress (1, 0).GetLocal () == address)
         {
-          return uint16_t(i);
+          return uint16_t (i);
         }
     }
   return 256;
@@ -884,7 +884,7 @@ void DsrRouting::CheckSendBuffer ()
                   dsrRoutingHeader.SetMessageType (1);
                   dsrRoutingHeader.SetSourceId (GetIDfromIP (m_mainAddress));
                   dsrRoutingHeader.SetDestId (255);
-                  dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 4);
+                  dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 4);
                   dsrRoutingHeader.AddDsrOption (newUnreach);
                   dsrRoutingHeader.AddDsrOption (sourceRoute);
 
@@ -896,7 +896,7 @@ void DsrRouting::CheckSendBuffer ()
                   uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
                   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
                   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-                  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+                  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
                   DsrNetworkQueueEntry newEntry (newPacket, m_mainAddress, nextHop, Simulator::Now (), m_ipv4Route);
 
@@ -931,7 +931,7 @@ void DsrRouting::CheckSendBuffer ()
               sourceRoute.SetSalvage (salvage);
 
               uint8_t length = sourceRoute.GetLength ();
-              dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+              dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
               dsrRoutingHeader.AddDsrOption (sourceRoute);
               cleanP->AddHeader (dsrRoutingHeader);
               // Send the data packet out before schedule the next packet transmission
@@ -939,8 +939,8 @@ void DsrRouting::CheckSendBuffer ()
               Ptr<const Packet> mtP = cleanP->Copy ();
               // Put the data packet in the maintenance queue for data packet retransmission
               MaintainBuffEntry newEntry (/*Packet=*/ mtP, /*Ipv4Address=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                                          /*source=*/ m_mainAddress, /*destination=*/ destination, /*ackId=*/ 0,
-                                          /*SegsLeft=*/nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+                                                      /*source=*/ m_mainAddress, /*destination=*/ destination, /*ackId=*/ 0,
+                                                      /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
               bool result = m_maintainBuffer.Enqueue (newEntry); // Enqueue the packet the the maintenance buffer
               if (result)
                 {
@@ -1113,7 +1113,7 @@ DsrRouting::PacketNewRoute (Ptr<Packet> packet,
       sourceRoute.SetSalvage (salvage);
 
       uint8_t length = sourceRoute.GetLength ();
-      dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+      dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
       dsrRoutingHeader.AddDsrOption (sourceRoute);
       cleanP->AddHeader (dsrRoutingHeader);
       // Send the data packet out before schedule the next packet transmission
@@ -1123,7 +1123,7 @@ DsrRouting::PacketNewRoute (Ptr<Packet> packet,
       // Put the data packet in the maintenance queue for data packet retransmission
       MaintainBuffEntry newEntry (/*Packet=*/ mtP, /*Ipv4Address=*/ m_mainAddress, /*nextHop=*/ nextHop,
                                               /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
-                                              /*SegsLeft=*/nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+                                              /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
       bool result = m_maintainBuffer.Enqueue (newEntry);     // Enqueue the packet the the maintenance buffer
 
       if (result)
@@ -1226,7 +1226,7 @@ DsrRouting::SendUnreachError (Ipv4Address errorHop, Ipv4Address destination, Ipv
       uint8_t srLength = sourceRoute.GetLength ();
       uint8_t length = (srLength + rerrLength);
 
-      dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 4);
+      dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 4);
       dsrRoutingHeader.AddDsrOption (rerrUnreachHeader);
       dsrRoutingHeader.AddDsrOption (sourceRoute);
       newPacket->AddHeader (dsrRoutingHeader);
@@ -1234,12 +1234,12 @@ DsrRouting::SendUnreachError (Ipv4Address errorHop, Ipv4Address destination, Ipv
       SetRoute (nextHop, m_mainAddress);
       Ptr<NetDevice> dev = m_ip->GetNetDevice (m_ip->GetInterfaceForAddress (m_mainAddress));
       m_ipv4Route->SetOutputDevice (dev);
-      NS_LOG_INFO ("Send the packet to the next hop address " << nextHop << " from " << m_mainAddress << " with the size " << newPacket->GetSize());
+      NS_LOG_INFO ("Send the packet to the next hop address " << nextHop << " from " << m_mainAddress << " with the size " << newPacket->GetSize ());
 
       uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
       std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
       Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-      NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+      NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
       DsrNetworkQueueEntry newEntry (newPacket, m_mainAddress, nextHop, Simulator::Now (), m_ipv4Route);
 
@@ -1270,7 +1270,7 @@ DsrRouting::ForwardErrPacket (DsrOptionRerrUnreachHeader &rerr,
   dsrRoutingHeader.SetDestId (GetIDfromIP (rerr.GetErrorDst ()));
 
   uint8_t length = (sourceRoute.GetLength () + rerr.GetLength ());
-  dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 4);
+  dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 4);
   dsrRoutingHeader.AddDsrOption (rerr);
   dsrRoutingHeader.AddDsrOption (sourceRoute);
   Ptr<Packet> packet = Create<Packet> ();
@@ -1281,9 +1281,9 @@ DsrRouting::ForwardErrPacket (DsrOptionRerrUnreachHeader &rerr,
   uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
-   DsrNetworkQueueEntry newEntry (packet, m_mainAddress, nextHop, Simulator::Now (), route);
+  DsrNetworkQueueEntry newEntry (packet, m_mainAddress, nextHop, Simulator::Now (), route);
 
   if (dsrNetworkQueue->Enqueue (newEntry))
     {
@@ -1371,18 +1371,18 @@ DsrRouting::Send (Ptr<Packet> packet,
 
           uint8_t length = sourceRoute.GetLength ();
 
-          dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+          dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
           dsrRoutingHeader.AddDsrOption (sourceRoute);
           cleanP->AddHeader (dsrRoutingHeader);
           // Send the data packet out before schedule the next packet transmission
           SendPacket (cleanP, source, nextHop, protocol);
 
           Ptr<const Packet> mtP = cleanP->Copy ();
-          NS_LOG_DEBUG ("maintain packet size " << cleanP->GetSize());
+          NS_LOG_DEBUG ("maintain packet size " << cleanP->GetSize ());
           // Put the data packet in the maintenance queue for data packet retransmission
           MaintainBuffEntry newEntry (/*Packet=*/ mtP, /*ourAddress=*/ m_mainAddress, /*nextHop=*/ nextHop,
-                                      /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
-                                      /*SegsLeft=*/nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+                                                  /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
+                                                  /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
           bool result = m_maintainBuffer.Enqueue (newEntry);       // Enqueue the packet the the maintenance buffer
           if (result)
             {
@@ -1473,7 +1473,7 @@ DsrRouting::SendPacket (Ptr<Packet> packet, Ipv4Address source, Ipv4Address next
   uint32_t priority = GetPriority (DSR_DATA_PACKET);
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
   DsrNetworkQueueEntry newEntry (packet, source, nextHop, Simulator::Now (), m_ipv4Route);
 
@@ -1510,61 +1510,61 @@ DsrRouting::PriorityScheduler (uint32_t priority, bool continueWithFirst)
     }
   // priorities range from 0 to m_numPriorityQueues, with 0 as the highest priority
   for (uint32_t i = priority; numPriorities < m_numPriorityQueues; numPriorities++)
-  {
-    std::map<uint32_t, Ptr<DsrNetworkQueue> >::iterator q = m_priorityQueue.find (i);
-    Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = q->second;
-    uint32_t queueSize = dsrNetworkQueue->GetSize ();
-    if (queueSize == 0)
     {
-      if ((i == (m_numPriorityQueues - 1)) && continueWithFirst)
-      {
-        i = 0;
-      }
-      else
-      {
-        i++;
-      }
-    }
-    else
-    {
-      uint32_t totalQueueSize;
-      for (std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator j = m_priorityQueue.begin (); j != m_priorityQueue.end (); j++)
+      std::map<uint32_t, Ptr<DsrNetworkQueue> >::iterator q = m_priorityQueue.find (i);
+      Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = q->second;
+      uint32_t queueSize = dsrNetworkQueue->GetSize ();
+      if (queueSize == 0)
         {
-          NS_LOG_DEBUG ("The size of the network queue for " << j->first << " is " << j->second->GetSize());
-          totalQueueSize += j->second->GetSize ();
-          NS_LOG_DEBUG ("And the total size is " << totalQueueSize);
+          if ((i == (m_numPriorityQueues - 1)) && continueWithFirst)
+            {
+              i = 0;
+            }
+          else
+            {
+              i++;
+            }
         }
-      if (totalQueueSize > 5)
+      else
         {
-          // Here the queue size is larger than 5, we need to increase the retransmission timer for each packet in the network queue
-          IncreaseRetransTimer ();
+          uint32_t totalQueueSize;
+          for (std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator j = m_priorityQueue.begin (); j != m_priorityQueue.end (); j++)
+            {
+              NS_LOG_DEBUG ("The size of the network queue for " << j->first << " is " << j->second->GetSize ());
+              totalQueueSize += j->second->GetSize ();
+              NS_LOG_DEBUG ("And the total size is " << totalQueueSize);
+            }
+          if (totalQueueSize > 5)
+            {
+              // Here the queue size is larger than 5, we need to increase the retransmission timer for each packet in the network queue
+              IncreaseRetransTimer ();
+            }
+          DsrNetworkQueueEntry newEntry;
+          dsrNetworkQueue->Dequeue (newEntry);
+          if (SendRealDown (newEntry))
+            {
+              NS_LOG_DEBUG ("Packet sent by Dsr. Calling PriorityScheduler after some time");
+              //packet was successfully sent down. call scheduler after some time
+              Simulator::Schedule (MicroSeconds (UniformVariable ().GetInteger (0, 1000)),
+                                   &DsrRouting::PriorityScheduler,this, i, false);
+            }
+          else
+            {
+              // packet was dropped by Dsr. Call scheduler immediately so that we can
+              // send another packet immediately.
+              NS_LOG_DEBUG ("Packet dropped by Dsr. Calling PriorityScheduler immediately");
+              Simulator::Schedule (Seconds (0), &DsrRouting::PriorityScheduler, this, i, false);
+            }
+          if ((i == (m_numPriorityQueues - 1)) && continueWithFirst)
+            {
+              i = 0;
+            }
+          else
+            {
+              i++;
+            }
         }
-      DsrNetworkQueueEntry newEntry;
-      dsrNetworkQueue->Dequeue (newEntry);
-      if (SendRealDown (newEntry))
-      {
-        NS_LOG_DEBUG("Packet sent by Dsr. Calling PriorityScheduler after some time");
-        //packet was successfully sent down. call scheduler after some time
-        Simulator::Schedule (MicroSeconds (UniformVariable ().GetInteger (0, 1000)),
-            &DsrRouting::PriorityScheduler,this, i, false);
-      }
-      else
-      {
-        // packet was dropped by Dsr. Call scheduler immediately so that we can
-        // send another packet immediately.
-        NS_LOG_DEBUG("Packet dropped by Dsr. Calling PriorityScheduler immediately");
-        Simulator::Schedule (Seconds (0), &DsrRouting::PriorityScheduler, this, i, false);
-      }
-      if ((i == (m_numPriorityQueues - 1)) && continueWithFirst)
-      {
-        i = 0;
-      }
-      else
-      {
-        i++;
-      }
     }
-  }
 }
 
 void
@@ -1584,7 +1584,7 @@ DsrRouting::IncreaseRetransTimer ()
         {
           if (nextHop == j->first.m_nextHop)
             {
-              NS_LOG_DEBUG ("The network delay left is " << j->second.GetDelayLeft());
+              NS_LOG_DEBUG ("The network delay left is " << j->second.GetDelayLeft ());
               j->second.SetDelay (j->second.GetDelayLeft () + m_retransIncr);
               NS_LOG_DEBUG ("The new network delay time is " << j->second.GetDelayLeft ());
             }
@@ -1600,7 +1600,7 @@ DsrRouting::SendRealDown (DsrNetworkQueueEntry & newEntry)
   Ipv4Address nextHop = newEntry.GetNextHopAddress ();
   Ptr<Packet> packet = newEntry.GetPacket ()->Copy ();
   Ptr<Ipv4Route> route = newEntry.GetIpv4Route ();
-  m_downTarget (packet, source, nextHop, GetProtocolNumber(), route);
+  m_downTarget (packet, source, nextHop, GetProtocolNumber (), route);
   return true;
 }
 
@@ -1638,7 +1638,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
           dsrRoutingHeader.SetDestId (GetIDfromIP (destination));
 
           uint8_t length = sourceRoute.GetLength ();
-          dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+          dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
           dsrRoutingHeader.AddDsrOption (sourceRoute);
 
           p->AddHeader (dsrRoutingHeader);
@@ -1650,7 +1650,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
           // Put the data packet in the maintenance queue for data packet retransmission
           MaintainBuffEntry newEntry (/*Packet=*/ mtP, /*ourAddress=*/ m_mainAddress, /*nextHop=*/ nextHop,
                                                   /*source=*/ source, /*destination=*/ destination, /*ackId=*/ 0,
-                                                  /*SegsLeft=*/nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
+                                                  /*SegsLeft=*/ nodeList.size () - 2, /*expire time=*/ m_maxMaintainTime);
           bool result = m_maintainBuffer.Enqueue (newEntry);       // Enqueue the packet the the maintenance buffer
 
           if (result)
@@ -1750,7 +1750,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
                   newRoutingHeader.SetMessageType (1);
                   newRoutingHeader.SetSourceId (GetIDfromIP (rerr.GetErrorSrc ()));
                   newRoutingHeader.SetDestId (GetIDfromIP (rerr.GetErrorDst ()));
-                  newRoutingHeader.SetPayloadLength (uint16_t(length) + 4);
+                  newRoutingHeader.SetPayloadLength (uint16_t (length) + 4);
                   newRoutingHeader.AddDsrOption (newUnreach);
                   newRoutingHeader.AddDsrOption (sourceRoute);
                   if (m_routeCache->IsLinkCache ())
@@ -1766,7 +1766,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
                   uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
                   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
                   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-                  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+                  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
                   DsrNetworkQueueEntry newEntry (newPacket, m_mainAddress, nextHop, Simulator::Now (), m_ipv4Route);
 
@@ -1781,12 +1781,12 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
                 }
             }
 
-        if (m_errorBuffer.GetSize () != 0 && m_errorBuffer.Find (destination))
-          {
-            NS_LOG_DEBUG ("Schedule sending the next packet in send buffer");
-            Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
-                                 &DsrRouting::SendPacketFromBuffer,this,sourceRoute,nextHop,protocol);
-          }
+          if (m_errorBuffer.GetSize () != 0 && m_errorBuffer.Find (destination))
+            {
+              NS_LOG_DEBUG ("Schedule sending the next packet in send buffer");
+              Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+                                   &DsrRouting::SendPacketFromBuffer,this,sourceRoute,nextHop,protocol);
+            }
         }
     }
   else
@@ -1832,8 +1832,8 @@ DsrRouting::CallCancelPacketTimer (uint16_t ackId, Ipv4Header const& ipv4Header,
    */
   Ptr<Packet> mainP = Create<Packet> ();
   MaintainBuffEntry newEntry (/*Packet=*/ mainP, /*ourAddress=*/ sender, /*nextHop=*/ receiver,
-                              /*source=*/ realSrc, /*destination=*/ realDst, /*ackId=*/ ackId,
-                              /*SegsLeft=*/0, /*expire time=*/ Simulator::Now ());
+                                          /*source=*/ realSrc, /*destination=*/ realDst, /*ackId=*/ ackId,
+                                          /*SegsLeft=*/ 0, /*expire time=*/ Simulator::Now ());
   CancelNetworkPacketTimer (newEntry);
 }
 
@@ -1856,10 +1856,10 @@ DsrRouting::CancelNetworkPacketTimer (MaintainBuffEntry & mb)
   NS_LOG_INFO ("ackId " << mb.GetAckId () << " ourAdd " << mb.GetOurAdd () << " nextHop " << mb.GetNextHop ()
                         << " source " << mb.GetSrc () << " destination " << mb.GetDst ()
                         << " segsLeft " << (uint32_t)mb.GetSegsLeft ()
-                        );
+               );
   // Find the network acknowledgment timer
   std::map<NetworkKey, Timer>::const_iterator i =
-      m_addressForwardTimer.find (networkKey);
+    m_addressForwardTimer.find (networkKey);
   if (i == m_addressForwardTimer.end ())
     {
       NS_LOG_INFO ("did not find the packet timer");
@@ -1879,12 +1879,12 @@ DsrRouting::CancelNetworkPacketTimer (MaintainBuffEntry & mb)
         }
       m_addressForwardTimer.erase (networkKey);
     }
-    // Erase the maintenance entry
-    // yet this does not check the segments left value here
-    if (m_maintainBuffer.NetworkEqual (mb))
-      {
-        NS_LOG_INFO ("Remove same maintenance buffer entry based on network acknowledgment");
-      }
+  // Erase the maintenance entry
+  // yet this does not check the segments left value here
+  if (m_maintainBuffer.NetworkEqual (mb))
+    {
+      NS_LOG_INFO ("Remove same maintenance buffer entry based on network acknowledgment");
+    }
 }
 
 void
@@ -1902,7 +1902,7 @@ DsrRouting::CancelPassivePacketTimer (MaintainBuffEntry & mb)
 
   // Find the passive acknowledgment timer
   std::map<PassiveKey, Timer>::const_iterator j =
-      m_passiveAckTimer.find (passiveKey);
+    m_passiveAckTimer.find (passiveKey);
   if (j == m_passiveAckTimer.end ())
     {
       NS_LOG_INFO ("did not find the passive timer");
@@ -2013,7 +2013,7 @@ DsrRouting::SalvagePacket (Ptr<const Packet> packet, Ipv4Address source, Ipv4Add
       uint8_t length = (sourceRoute.GetLength () + ackReq.GetLength ());
       NS_LOG_INFO ("length of source route header " << (uint32_t)(sourceRoute.GetLength ())
                                                     << " length of ack request header " << (uint32_t)(ackReq.GetLength ()));
-      newDsrRoutingHeader.SetPayloadLength (uint16_t(length) + 4);
+      newDsrRoutingHeader.SetPayloadLength (uint16_t (length) + 4);
       newDsrRoutingHeader.AddDsrOption (sourceRoute);
       newDsrRoutingHeader.AddDsrOption (ackReq);
       p->AddHeader (newDsrRoutingHeader);
@@ -2026,7 +2026,7 @@ DsrRouting::SalvagePacket (Ptr<const Packet> packet, Ipv4Address source, Ipv4Add
       uint32_t priority = GetPriority (DSR_DATA_PACKET);
       std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
       Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-      NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+      NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
       DsrNetworkQueueEntry newEntry (p, m_mainAddress, nextHop, Simulator::Now (), m_ipv4Route);
 
@@ -2119,8 +2119,8 @@ DsrRouting::ScheduleNetworkPacketRetry (MaintainBuffEntry & mb,
       m_addressForwardTimer[networkKey].SetFunction (&DsrRouting::NetworkScheduleTimerExpire, this);
       m_addressForwardTimer[networkKey].Remove ();
       m_addressForwardTimer[networkKey].SetArguments (newEntry, protocol);
-      NS_LOG_DEBUG ("The packet retries time for " << newEntry.GetAckId() << " is " << m_sendRetries
-          << " and the delay time is " << Time (2 * m_nodeTraversalTime));
+      NS_LOG_DEBUG ("The packet retries time for " << newEntry.GetAckId () << " is " << m_sendRetries
+                                                   << " and the delay time is " << Time (2 * m_nodeTraversalTime));
       // Back-off mechanism
       m_addressForwardTimer[networkKey].Schedule (Time (2 * m_nodeTraversalTime));
     }
@@ -2140,7 +2140,7 @@ DsrRouting::ScheduleNetworkPacketRetry (MaintainBuffEntry & mb,
       p = mb.GetPacket ()->Copy ();
       dsrP = mb.GetPacket ()->Copy ();
 
-      NS_LOG_DEBUG ("The packet with dsr header " << dsrP->GetSize());
+      NS_LOG_DEBUG ("The packet with dsr header " << dsrP->GetSize ());
       networkKey.m_ackId = mb.GetAckId ();
       networkKey.m_ourAdd = mb.GetOurAdd ();
       networkKey.m_nextHop = mb.GetNextHop ();
@@ -2162,8 +2162,8 @@ DsrRouting::ScheduleNetworkPacketRetry (MaintainBuffEntry & mb,
       m_addressForwardTimer[networkKey].SetFunction (&DsrRouting::NetworkScheduleTimerExpire, this);
       m_addressForwardTimer[networkKey].Remove ();
       m_addressForwardTimer[networkKey].SetArguments (mb, protocol);
-      NS_LOG_DEBUG ("The packet retries time for " << mb.GetAckId() << " is " << m_sendRetries
-          << " and the delay time is " << Time (2 * m_sendRetries *  m_nodeTraversalTime));
+      NS_LOG_DEBUG ("The packet retries time for " << mb.GetAckId () << " is " << m_sendRetries
+                                                   << " and the delay time is " << Time (2 * m_sendRetries *  m_nodeTraversalTime));
       // Back-off mechanism
       m_addressForwardTimer[networkKey].Schedule (Time (2 * m_sendRetries * m_nodeTraversalTime));
     }
@@ -2316,7 +2316,7 @@ DsrRouting::ForwardPacket (Ptr<const Packet> packet,
   // We get the salvage value in sourceRoute header and set it to route error header if triggered error
   Ptr<Packet> p = packet->Copy ();
   uint8_t length = sourceRoute.GetLength ();
-  dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+  dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
   dsrRoutingHeader.AddDsrOption (sourceRoute);
   p->AddHeader (dsrRoutingHeader);
 
@@ -2327,7 +2327,7 @@ DsrRouting::ForwardPacket (Ptr<const Packet> packet,
 
   MaintainBuffEntry newEntry (/*Packet=*/ mtP, /*ourAddress=*/ m_mainAddress, /*nextHop=*/ nextHop,
                                           /*source=*/ source, /*destination=*/ targetAddress,
-                                          /*ackId=*/ m_ackId, /*SegsLeft=*/sourceRoute.GetSegmentsLeft(), /*expire time=*/ m_maxMaintainTime);
+                                          /*ackId=*/ m_ackId, /*SegsLeft=*/ sourceRoute.GetSegmentsLeft (), /*expire time=*/ m_maxMaintainTime);
   bool result = m_maintainBuffer.Enqueue (newEntry);
 
   if (result)
@@ -2386,7 +2386,7 @@ DsrRouting::SendInitialRequest (Ipv4Address source,
 
   dsrRoutingHeader.AddDsrOption (rreqHeader);                      // Add the rreqHeader to the dsr extension header
   uint8_t length = rreqHeader.GetLength ();
-  dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+  dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
   packet->AddHeader (dsrRoutingHeader);
 
   // Schedule the route requests retry with non-propagation set true
@@ -2414,8 +2414,8 @@ DsrRouting::SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol
   uint8_t salvage = rerr.GetSalvage ();
   Ipv4Address dst = rerr.GetOriginalDst ();
   NS_LOG_DEBUG ("our own address here " << m_mainAddress << " error source " << rerr.GetErrorSrc () << " error destination " << rerr.GetErrorDst ()
-      << " error next hop " << rerr.GetUnreachNode () << " original dst " << rerr.GetOriginalDst ()
-     );
+                                        << " error next hop " << rerr.GetUnreachNode () << " original dst " << rerr.GetOriginalDst ()
+                );
   RouteCacheEntry toDst;
   if (m_routeCache->LookupRoute (dst, toDst))
     {
@@ -2472,7 +2472,7 @@ DsrRouting::SendErrorRequest (DsrOptionRerrUnreachHeader &rerr, uint8_t protocol
       dsrRoutingHeader.AddDsrOption (rreqHeader);         // Add the rreqHeader to the dsr extension header
       dsrRoutingHeader.AddDsrOption (rerr);
       uint8_t length = rreqHeader.GetLength () + rerr.GetLength ();
-      dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 4);
+      dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 4);
       dstP->AddHeader (dsrRoutingHeader);
       // Schedule the route requests retry, propagate the route request message as it contains error
       bool nonProp = false;
@@ -2615,12 +2615,12 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
       if (rreqDelay > m_maxRequestPeriod)
         {
           // use the max request period
-          NS_LOG_DEBUG ("The max request delay time " << m_maxRequestPeriod.GetSeconds());
+          NS_LOG_DEBUG ("The max request delay time " << m_maxRequestPeriod.GetSeconds ());
           m_addressReqTimer[dst].Schedule (m_maxRequestPeriod);
         }
       else
         {
-          NS_LOG_DEBUG ("The request delay time " << rreqDelay.GetSeconds());
+          NS_LOG_DEBUG ("The request delay time " << rreqDelay.GetSeconds ());
           m_addressReqTimer[dst].Schedule (rreqDelay);
         }
 
@@ -2708,7 +2708,7 @@ DsrRouting::SendRequest (Ptr<Packet> packet,
   uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
   DsrNetworkQueueEntry newEntry (packet, source, m_broadcast, Simulator::Now (), 0);
 
@@ -2780,7 +2780,7 @@ DsrRouting::SendGratuitousReply (Ipv4Address source, Ipv4Address srcAddress, std
       dsrRoutingHeader.SetDestId (GetIDfromIP (replyDst));
 
       uint8_t length = rrep.GetLength ();        // Get the length of the rrep header excluding the type header
-      dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+      dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
       dsrRoutingHeader.AddDsrOption (rrep);
       Ptr<Packet> newPacket = Create<Packet> ();
       newPacket->AddHeader (dsrRoutingHeader);
@@ -2811,7 +2811,7 @@ DsrRouting::SendReply (Ptr<Packet> packet,
   uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
   DsrNetworkQueueEntry newEntry (packet, source, nextHop, Simulator::Now (), route);
 
@@ -2874,7 +2874,7 @@ DsrRouting::SendAck   (uint16_t ackId,
   ack.SetRealDst (realDst);
 
   uint8_t length = ack.GetLength ();
-  dsrRoutingHeader.SetPayloadLength (uint16_t(length) + 2);
+  dsrRoutingHeader.SetPayloadLength (uint16_t (length) + 2);
   dsrRoutingHeader.AddDsrOption (ack);
 
   Ptr<Packet> packet = Create<Packet> ();
@@ -2886,7 +2886,7 @@ DsrRouting::SendAck   (uint16_t ackId,
   uint32_t priority = GetPriority (DSR_CONTROL_PACKET);
   std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator i = m_priorityQueue.find (priority);
   Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
-  NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
+  NS_LOG_DEBUG ("Will be inserting into priority queue " << dsrNetworkQueue << " number: " << priority);
 
   DsrNetworkQueueEntry newEntry (packet, m_mainAddress, destination, Simulator::Now (), route);
 
@@ -2945,7 +2945,7 @@ DsrRouting::Receive (Ptr<Packet> p,
   uint8_t segmentsLeft = 0;
 
   optionType = *(data);
-  NS_LOG_LOGIC ("The option type value " << (uint32_t)optionType << " with packet size " << p->GetSize());
+  NS_LOG_LOGIC ("The option type value " << (uint32_t)optionType << " with packet size " << p->GetSize ());
   dsrOption = GetOption (optionType);       // Get the relative dsr option and demux to the process function
 
   if (optionType == 1)        // This is the request option
@@ -3033,20 +3033,20 @@ DsrRouting::Receive (Ptr<Packet> p,
                   // we need to make a copy in the unlikely event we hit the
                   // RX_ENDPOINT_UNREACH code path
                   // Here we can use the packet that has been get off whole DSR header
-                  NS_LOG_DEBUG ("The packet size here " << copy->GetSize());
+                  NS_LOG_DEBUG ("The packet size here " << copy->GetSize ());
                   NS_LOG_DEBUG ("The packet received " << *copy);
                   enum IpL4Protocol::RxStatus status =
                     nextProto->Receive (copy, ip, incomingInterface);
                   NS_LOG_DEBUG ("The receive status " << status);
                   switch (status)
                     {
-                      case IpL4Protocol::RX_OK:
-                      // fall through
-                      case IpL4Protocol::RX_ENDPOINT_CLOSED:
-                      // fall through
-                      case IpL4Protocol::RX_CSUM_FAILED:
-                        break;
-                      case IpL4Protocol::RX_ENDPOINT_UNREACH:
+                    case IpL4Protocol::RX_OK:
+                    // fall through
+                    case IpL4Protocol::RX_ENDPOINT_CLOSED:
+                    // fall through
+                    case IpL4Protocol::RX_CSUM_FAILED:
+                      break;
+                    case IpL4Protocol::RX_ENDPOINT_UNREACH:
                       if (ip.GetDestination ().IsBroadcast () == true
                           || ip.GetDestination ().IsMulticast () == true)
                         {

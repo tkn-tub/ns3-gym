@@ -88,27 +88,33 @@ struct Link
   Ipv4Address m_low;
   Ipv4Address m_high;
   Link (Ipv4Address ip1, Ipv4Address ip2)
-    {
-      if (ip1 < ip2)
-        {
-          m_low = ip1;
-          m_high = ip2;
-        }
-      else
-        {
-          m_low = ip2;
-          m_high = ip1;
-        }
-    }
+  {
+    if (ip1 < ip2)
+      {
+        m_low = ip1;
+        m_high = ip2;
+      }
+    else
+      {
+        m_low = ip2;
+        m_high = ip1;
+      }
+  }
   bool operator < (Link const& L) const
-    {
-      if (m_low < L.m_low)
+  {
+    if (m_low < L.m_low)
+      {
         return true;
-      else if (m_low == L.m_low)
+      }
+    else if (m_low == L.m_low)
+      {
         return (m_high < L.m_high);
-      else
+      }
+    else
+      {
         return false;
-    }
+      }
+  }
   void Print () const;
 };
 
@@ -238,30 +244,30 @@ public:
   bool operator== (RouteCacheEntry const & o) const
   {
     if (m_path.size () != o.m_path.size ())
-    {
-      NS_ASSERT (false);
-      return false;
-    }
+      {
+        NS_ASSERT (false);
+        return false;
+      }
     IP_VECTOR::const_iterator j = o.m_path.begin ();
     for (IP_VECTOR::const_iterator i = m_path.begin (); i
          != m_path.end (); i++, j++)
-    {
-      /*
-       * Verify if neither the entry are not 0 and they equal to each other
-       */
-      if (((*i) == 0) || ((*j) == 0))
       {
-        return false;
+        /*
+         * Verify if neither the entry are not 0 and they equal to each other
+         */
+        if (((*i) == 0) || ((*j) == 0))
+          {
+            return false;
+          }
+        else if (!((*i) == (*j)) )
+          {
+            return false;
+          }
+        else
+          {
+            return true;
+          }
       }
-      else if (!((*i) == (*j)) )
-      {
-        return false;
-      }
-      else
-      {
-        return true;
-      }
-    }
     return false;
   }
   // \}
