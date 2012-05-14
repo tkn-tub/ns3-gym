@@ -43,7 +43,13 @@ ObjectPtrContainerValue::GetN (void) const
 Ptr<Object>
 ObjectPtrContainerValue::Get (uint32_t i) const
 {
-  return m_objects.find (i)->second;
+  Iterator it = m_objects.find (i); 
+  Ptr<Object> value = 0;
+  if ( it != m_objects.end () )
+  {
+    value = m_objects.find (i)->second;
+  }
+  return value;
 }
 
 Ptr<AttributeValue>

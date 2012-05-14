@@ -780,7 +780,7 @@ ObjectMapAttributeTestCase::DoRun (void)
   //
   // Get the Object pointer from the value.
   //
-  Ptr<Object> a = map.Get (0);
+  Ptr<Object> a = map.Get (1);
   NS_TEST_ASSERT_MSG_NE (a, 0, "Ptr<Object> from VectorValue \"TestMap1\" is zero");
 
   //
