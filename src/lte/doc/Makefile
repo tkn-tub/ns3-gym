@@ -69,6 +69,7 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
+$(FIGURES)/rrc-connection-establishment.pdf_width = 12cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
@@ -78,6 +79,16 @@ IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 IMAGES_SEQDIAG = \
 	$(FIGURES)/lte-phy-interference.png \
 	$(FIGURES)/lte-phy-interference.pdf \
+	$(FIGURES)/rrc-connection-establishment.png \
+	$(FIGURES)/rrc-connection-establishment.pdf \
+	$(FIGURES)/rrc-connection-reconfiguration.png \
+	$(FIGURES)/rrc-connection-reconfiguration.pdf \
+	$(FIGURES)/rrc-connection-reconfiguration-handover.png \
+	$(FIGURES)/rrc-connection-reconfiguration-handover.pdf \
+	$(FIGURES)/nas-attach.png \
+	$(FIGURES)/nas-attach.pdf \
+	$(FIGURES)/nas-activate-dedicated-bearer.png \
+	$(FIGURES)/nas-activate-dedicated-bearer.pdf \
 	$(FIGURES)/helpers.png \
 	$(FIGURES)/helpers.pdf
 
@@ -113,9 +124,9 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
-%.png : %.seqdiag; $(SEQDIAG) -Tpng -o $@ $< 
+%.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.seqdiag; $(SEQDIAG) -Tsvg -o $<.svg $< && $(CONVERT) $<.svg $@ ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
@@ -138,6 +149,11 @@ PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SOURCE) 
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
+
+cleanseqdiags: 
+	rm -f $(IMAGES_SEQDIAG)
+
+seqdiags: $(IMAGES_SEQDIAG) Makefile
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"

@@ -1,0 +1,54 @@
+
+diagram {
+   UeRrc; UeMac; UePhy; EnbPhy; EnbMac; FfSched; EnbRrc;	
+		
+   UeRrc ->> UeMac [label="SendOverCcch (RrcConnectionRequest)"]
+   === start contention based MAC Random Access Procedure ===
+   UeMac ->> UeMac [label="Select PRACH ID in 0,1,...,63-Ncf"]
+   UeMac ->> UePhy [label="SendRachPreamble (PRACH ID)"] 
+   UePhy ->> EnbPhy [label="RachPreamble over RACH"]	
+   EnbPhy ->> EnbMac [label="NotifyRxRachPreamble (PRACH ID)"]
+   EnbMac ->> EnbRrc [label="Allocate T-C-RNTI"]	
+   EnbMac <<- EnbRrc [label="T-C-RNTI"]	
+   EnbMac ->> FfSched [label="SCHED_DL_RACH_INFO_REQ (RNTI list)"]	
+   EnbPhy ->> EnbMac [label="SubframeIndication"]	
+   EnbMac ->> FfSched [label="SCHED_DL_TRIGGER_REQ"]	
+   EnbMac <<- FfSched  [label="SCHED_DL_CONFIG_IND (RAR list with UL grant per RNTI)"]
+   EnbMac ->> EnbMac [label="determine RA-RNTI from PRACH ID"] 
+   EnbPhy <<- EnbMac [label="Send RAR with RA-RNTI identifying preambleId"]
+   UePhy <<- EnbPhy [label="RAR over PDSCH"]
+   UeMac <<- UePhy [label="Rx"] 
+   UeMac ->> UePhy [label="SendOverUlsch (RrcConnectionRequest)"] 
+   UePhy ->> EnbPhy [label="TX over PUSCH with T-C-RNTI"]
+   EnbPhy ->> EnbMac [label="RxOverUlsch"]
+   EnbMac ->> EnbRrc [label="RxOverCcch (RrcConnectionRequest, T-C-RNTI)"]
+   EnbMac <<- EnbRrc [label="ConfigureUe (C-RNTI = T-C-RNTI)"] 
+   EnbMac ->> FfSched  [label="CSCHED_UE_CONFIG_REQ"]
+   EnbMac <<- FfSched  [label="CSCHED_UE_CONFIG_CNF"]
+   EnbMac ->> FfSched  [label="CSCHED_LC_CONFIG_REQ (SRB1)"]
+   EnbMac <<- FfSched  [label="CSCHED_LC_CONFIG_CNF"]
+   EnbMac <<- EnbRrc [label="ResolveContentionAfterMessage3 (UE Identity)"]
+   EnbMac ->> FfSched [label="SCHED_DL_MAC_BUFFER_REQ"]
+   EnbPhy ->> EnbMac [label="SubframeIndication"]	
+   EnbMac ->> FfSched [label="SCHED_DL_TRIGGER_REQ"]	
+   EnbMac <<- FfSched  [label="SCHED_DL_CONFIG_IND (MAC CR CE)"]	   
+   EnbPhy <<- EnbMac [label="SendOverDlsch (CR with UE identity CE)"]
+   UePhy <<- EnbPhy [label="CR over PD-SCH"]
+   UeMac <<- UePhy [label="Rx"] 
+   UeMac <<- UeMac [label="C-RNTI = T-C-RNTI"] 
+   UeRrc <<- UeMac [label="NotifyRandomAccessProcedureEndOk (C-RNTI)"] 
+   === end contention based MAC Random Access Procedure ===
+   EnbMac <<- EnbRrc [label="SendOverCcch (RrcConnectionSetup)"]
+   EnbMac ->> FfSched [label="SCHED_DL_RLC_BUFFER_REQ"]
+   EnbPhy ->> EnbMac [label="SubframeIndication"]	
+   EnbMac ->> FfSched [label="SCHED_DL_TRIGGER_REQ"]
+   EnbMac <<- FfSched  [label="SCHED_DL_CONFIG_IND (DATA list)"]		
+   EnbPhy <<- EnbMac [label="Send PDU"]
+   UePhy <<- EnbPhy [label="PDU over DL-SCH"]
+   UeMac <<- UePhy [label="Rx PDU"] 
+   UeRrc <<- UeMac [label="RxOverCcch (RrcConnectionSetup)"] 
+   UeRrc ->> EnbRrc [label="RrcConnectionSetupCompleted over SRB1)"] 
+}
+
+
+

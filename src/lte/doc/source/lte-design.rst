@@ -1053,27 +1053,253 @@ The following features are currently not supported:
 
 
 
+.. only:: latex
 
-RRC
-+++
+    .. raw:: latex
+      
+        \clearpage
 
-At the time of this writing, the RRC model implemented in the
-simulator is not comprehensive of all the funcionalities defined  
-by the 3GPP standard. 
-In particular, RRC messaging over signaling
-radio bearer is not implemented; the corresponding control
-functionality is performed via direct function calls among the
-relevant eNB and UE protocol entities and the helper objects.
 
-The RRC implements the procedures for
-managing the connection of the UEs to the eNBs, and to setup and
-release the Radio Bearers. The RRC entity also takes care of multiplexing
-data packets coming from the upper layers into the appropriate radio
-bearer. In the UE, this is performed in the uplink by using the
-Traffic Flow Template classifier (TftClassifier). In the eNB, this is
-done for downlink traffic, by leveraging on the one-to-one mapping
-between S1-U bearers and Radio Bearers, which is required by the 3GPP
-specifications. 
+
+Radio Resource Control (RRC)
+++++++++++++++++++++++++++++
+
+The RRC model implemented in the simulator provides the following functionality:
+
+ - generation (at the eNB) and interpretation (at the UE) of the Master Information Block and System Information Block Type 1 (including in particular PLMN identity, CSG-indication and CSG-identity)
+ - RRC connection establishment procedure
+ - RRC reconfiguration procedure, supporting the following use cases:
+   + reconfiguration of the PHY TX mode (MIMO)
+   + data radio bearer setup
+   + handover
+
+
+Idle mode
+---------
+
+The RRC model supports a much simplified idle mode cell selection
+process. With respect to [TS36.304]_, the main simplifications are:
+
+ - at most one PLMN and one CSG id are supported
+ - w.r.t. section 5.2.2, the only states supported are "Initial cell
+   selection", "Camped normally", "Connected"
+ - a simplified cell selection/reselection criterion is adopted, according to
+   which the cell with the highest RSRP that matches the PLMN (and CSG
+   if specified) is selected.
+
+
+
+
+RRC connection establishment
+----------------------------
+
+Figure :ref:`fig-rrc-connection-establishment` shows how the RRC
+Connection Establishment procedure is modeled, highlighting the role
+of the RRC layer at both the UE and the eNB, as well as the
+interaction with the lower layers. The figure highlights the different
+type of control messages involved and the interactions with the
+scheduler to allocate the radio resources needed for their transmission.
+
+.. _fig-rrc-connection-establishment:
+   
+.. figure:: figures/rrc-connection-establishment.*
+   :align: center
+
+   Sequence diagram of the RRC Connection Establishment procedure
+
+
+
+RRC connection reconfiguration
+------------------------------
+
+Figure :ref:`fig-rrc-connection-reconfiguration` shows how the RRC
+Connection Reconfiguration procedure is modeled for the case where
+MobilityControlInfo is not provided, i.e., handover is not
+performed. In this case, only RRC messages sent over SRB1/DCCH1 are
+involved. The allocation of radio resources to send these messages
+follows the usual procedure of RLC AM described in section :ref:`AM
+data transfer`, which is therefore omitted from the figure for
+simplicity. 
+
+
+.. _fig-rrc-connection-reconfiguration:
+   
+.. figure:: figures/rrc-connection-reconfiguration.*
+   :align: center
+
+   Sequence diagram of the RRC Connection Reconfiguration procedure
+
+
+Figure :ref:`fig-rrc-connection-reconfiguration-handover` shows how the RRC
+Connection Reconfiguration procedure is modeled for the case where
+MobilityControlInfo is provided, i.e., handover is to be performed.
+As specified in [TS36.331]_, *After receiving the handover message,
+the UE attempts to access the target cell at the first available RACH
+occasion according to Random Access resource selection defined in TS
+36.321 [6], i.e. the handover is asynchronous. Consequently, when
+allocating a dedicated preamble for the random access in the target
+cell, E-UTRA shall ensure it is available from the first RACH occasion
+the UE may use. Upon successful completion of the handover, the UE
+sends a message used to confirm the handover.* Note that the random
+access procedure in this case is non-contention based, hence in a real
+LTE system it differs slightly from the one used in RRC connection
+established. Also note that the RA Preamble ID is signalled via RRC
+using the RACH-ConfigDedicated IE which is part of MobilityControlInfo.
+
+
+.. _fig-rrc-connection-reconfiguration-handover:
+   
+.. figure:: figures/rrc-connection-reconfiguration-handover.*
+   :align: center
+
+   Sequence diagram of the RRC Connection Reconfiguration procedure
+   for the handover case
+
+
+
+RRC Signaling implementation
+----------------------------
+
+As can be observed from the sequence diagrams of the RRC procedures
+reported in the previous subsection, RRC procedures involve control
+messages of several kinds at various layers (especially for the random
+access procedure). In the following, we describe how they are
+implemented in the simulator.  
+ 
+
+ * **MAC** messages:
+
+   - **Random Access (RA) preamble**: in real LTE systems this
+     corresponds to a Zadoff-Chu (ZC)
+     sequence using one of several formats available and sent in the
+     PRACH slots which could in principle overlap with PUSCH. Since an
+     accurate modeling of the random access procedure is not a
+     requirement of the simulator, the RA preamble will be modeled by
+     an apposite ideal control message, without consuming any radio
+     resources and without any associated error model. 
+
+   - **Random Access Response (RAR)**: in real LTE systems, this is a
+     special MAC PDU sent on the DL-SCH. Since MAC PDUs are not
+     accurately modeled in the simulator (only RLC and above PDUs
+     are), the RAR is modeled as an ideal control message, without any
+     associated error model. Still, the consumption of Radio
+     Resources for sending the RAR is modeled by interaction with
+     the scheduler using the FF MAC Scheduler primitive
+     SCHED_DL_RACH_INFO_REQ. In the RR and PF scheduler implementations,
+     this is implemented by the member variable ``m_sendingRar`` which is set upon 
+     SCHED_DL_RACH_INFO_REQ being called, so that this member variable
+     can then be checked by the scheduler when DoSchedUlTriggerReq()
+     is executed later, and the needed resources can be allcoated.
+
+   - **Contention Resolution (CR)**: in real LTE system, the CR is
+     sent as a regular MAC PDU with a special LCID and a CR MAC CE sent on the
+     DL-SCH. In the simulator, it is implemented as an
+     ideal control message without any associated error model, but still
+     modeling the associated consumption of scheduler resources by
+     using the FF MAC Scheduler primitive SCHED_DL_MAC_BUFFER_REQ. In
+     the RR and PF scheduler implementations, this is handled by
+     setting a member fariable ``m_sendingCr``, which is set upon
+     SCHED_DL_MAC_BUFFER_REQ and then checked upon resource allocation
+     in DoSchedUlTriggerReq(). This is similar to the way the resource
+     consumption of RAR is modeled.
+
+ * **SRB0** messages (over CCCH):
+
+   - **RrcConnectionRequest**: in real LTE systems, this is an RLC TM
+     SDU sent over resources specified in the UL Grant in the RAR (not
+     in UL DCIs); the reason is that C-RNTI is not known yet at this
+     stage. In the simulator, this is modeled as a real RLC TM RLC PDU
+     whose UL resources are allocated by the sched upon call to
+     SCHED_DL_RACH_INFO_REQ. 
+
+   - **RrcConnectionSetup**: in the simulator this is implemented as in
+     real LTE systems, i.e., with an RLC TM SDU sent over resources
+     indicated by a regular UL DCI, allocated with
+     SCHED_DL_RLC_BUFFER_REQ triggered by the RLC TM instance that is
+     mapped to LCID 0 (the CCCH).
+
+ * **SRB1** messages (over DCCH):
+
+   - All the SRB1 messages modeled in the simulator (e.g.,
+     **RrcConnectionCompleted**) are implemented as in real LTE systems,
+     i.e., with a real RLC SDU sent over RLC AM using DL resources
+     allocated via Buffer Status Reports. See the RLC model
+     documentation for details.
+
+ * **SRB2** messages (over DCCH):
+
+     - According to [TS36.331]_, "*SRB1 is for RRC messages (which may
+       include a piggybacked NAS message) as well as for NAS messages
+       prior to the establishment of SRB2, all using DCCH logical
+       channel*", whereas "*SRB2 is for NAS messages, using DCCH
+       logical channel*" and "*SRB2 has a lower-priority than SRB1 and is 
+       always configured by E-UTRAN after security
+       activation*". Modeling security-related aspects is not a
+       requirement of the LTE simulation model, hence we always use
+       SRB1 and never activate SRB2.
+
+
+Handling of Radio Link Failure (RLF)
+------------------------------------
+
+
+
+
+
+
+
+
+Non-Access Stratum (NAS) model
+++++++++++++++++++++++++++++++
+
+
+The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
+
+ - EMM and ECM are not modeled explicitly; instead, the NAS entity at the UE will interact directy with the EpcHelper to perfom actions that are equivalent (with gross simplifications) to taking the UE to the states EMM Connected and ECM Connected; 
+ - each UE supports at most one PLMN and one CSG ID, which are passed to the RRC to perform  cell selection in idle mode, following in a simplified way what specified in [TS36.304]_;
+
+ - the NAS also takes care of multiplexing uplink data packets coming from the upper layers into the appropriate EPS bearer by using the Traffic Flow Template classifier (TftClassifier). (NB: this is currently in the RRC, but it is better to move it to the NAS).
+
+- the NAS does *not* support any location update/paging procedure in idle mode
+
+
+
+Figure :ref:`fig-nas-attach` shows how the simplified NAS model implements the attach procedure. Note that the default EPS bearer is also activated as part of this procedure.
+
+
+.. _fig-nas-attach:
+   
+.. figure:: figures/nas-attach.*
+   :align: center
+
+   Sequence diagram of the attach procedure
+
+
+
+
+Figure :ref:`fig-nas-activate-dedicated-bearer` shows how the simplified NAS model implements the activation of a dedicated EPS bearer.
+
+
+.. _fig-nas-attach:
+   
+.. figure:: figures/nas-activate-dedicated-bearer.*
+   :align: center
+
+   Sequence diagram of the procedure for the activation of a dedicated EPS bearer
+
+
+
+
+
+
+
+
+.. only:: latex
+
+    .. raw:: latex
+      
+        \clearpage
+
 
 
 
@@ -1131,7 +1357,7 @@ The usage of the radio spectrum by eNBs and UEs in LTE is described in
 Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
 identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
 the Transmission Bandwidth Configuration in number of Resource Blocks. For every
-pair :math:`(f_c,B)` used in the simulation we define a corresponding spectrum
+pair :math:`(f_c,B)` used in the simulationwe define a corresponding spectrum
 model using the Spectrum framework described
 in [Baldo2009]_.  :math:`f_c` and :math:`B` can be configured for every eNB instantiated
 in the simulation; hence, each eNB can use a different spectrum model. Every UE

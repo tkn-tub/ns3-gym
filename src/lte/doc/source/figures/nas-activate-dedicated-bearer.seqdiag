@@ -1,0 +1,25 @@
+
+diagram {
+	LteHelper; LteUeNetDevice; EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcSgwPgwApplication; EpcHelper;	
+	
+	LteHelper => LteUeNetDevice [label="ActivateDedicatedEpsBearer(Tft)"] {
+		LteUeNetDevice => EpcUeNas [label="ActivateDedicatedEpsBearer(Tft)"] {
+			EpcUeNas => LteHelper [label="ActivateEpsBearer(UeDevice, EnbDevice, Tft)"] {
+				LteHelper => EpcHelper [label="ActivateEpsBearer(UeDevice, EnbDevice, Tft)"] {
+					EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, Tft)", return="TEID"] {
+						EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
+						EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
+					}
+					EpcHelper => EpcEnbApplication [label="ErabSetupRequest(TEID, RNTI)"] {
+						EpcEnbApplication => LteEnbRrc [label="SetupRadioBearer", return="LCID"] {
+							LteEnbRrc => LteUeRrc [label="RRC connection reconfiguration"];
+						}
+						EpcEnbApplication -> EpcEnbApplication [label="Create GTP-U tunnel endpoint (TEID)"];
+						EpcEnbApplication -> EpcEnbApplication [label="store TEID<->(RNTI,LCID) mapping"];
+					}  
+				}
+			}
+		}
+	}
+}
+		
