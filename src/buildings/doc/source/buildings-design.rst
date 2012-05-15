@@ -46,9 +46,32 @@ The model includes a specific class called ``Building`` which contains a ns3 ``B
   * number of rooms in x-axis (default value 1)
   * number of rooms in y-axis (default value 1)
 
-By means of the number of rooms in x and y axis it is possible the definition of buildings where rooms are organized in grids, typical reference scenario for femto-cells in 3GPP called dual-strip.
+The Building class is based on the following assumptions:
 
-The ``Building`` class is included in ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel`` and it is in charge of managing the standard mobility functionalities plus the building ones (e.g., floor and room of the node).
+ * a buildings is represented as a rectangular parallelepiped (i.e., a box)
+ * the walls are parallel to the x, y, and z axis
+ * a building is divided into a grid of rooms, identified by the following parameters:
+ 
+   * number of floors 
+   * number of rooms along the x-axis
+   * number of rooms along the y-axis
+
+ * the z axis is the vertical axis, i.e., floor numbers increase for increasing z axis values
+ * the x and y room indices start from 1 and increase along the x and y axis respectively
+ * all rooms in a building have equal size
+
+
+
+The BuildingsMobilityModel class
+++++++++++++++++++++++++++++++++
+
+The ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel``, is in charge of managing the standard mobility functionalities plus providing information about the position of a node with respect to building. The information managed by ``BuildingsMobilityModel`` is:
+
+  * whether the node is indoor or outdoor
+  * if indoor:
+
+    * in which building the node is
+    * in which room the node is positioned (x, y and floor room indices)  
 
 The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 

@@ -24,6 +24,7 @@
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/pointer.h>
 #include <ns3/log.h>
+#include <ns3/assert.h>
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsMobilityModel");
 
@@ -111,10 +112,14 @@ BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8
   m_roomX = nroomx;
   m_roomY = nroomy;
   
-  if (!building->IsInside (m_helper.GetCurrentPosition ()))
-    {
-      NS_FATAL_ERROR ("Position of the node is inconsistent with building bounds");
-    }
+  NS_ASSERT_MSG (building->IsInside (m_helper.GetCurrentPosition ()), "Position of the node is outside of building bounds");
+  NS_ASSERT (m_roomX > 0);
+  NS_ASSERT (m_roomX <= building->GetNRoomsX ());
+  NS_ASSERT (m_roomY > 0);
+  NS_ASSERT (m_roomY <= building->GetNRoomsY ());
+  NS_ASSERT (m_nFloor > 0);
+  NS_ASSERT (m_nFloor <= building->GetNFloors ());
+
 }
 
 
