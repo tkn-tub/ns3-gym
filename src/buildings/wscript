@@ -20,6 +20,7 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('buildings')
     module_test.source = [
         'test/buildings-helper-test.cc',
+        'test/building-position-allocator-test.cc',
         'test/buildings-pathloss-test.cc',
         'test/buildings-shadowing-test.cc',
         ]
