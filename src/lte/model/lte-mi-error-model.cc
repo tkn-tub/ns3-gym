@@ -293,7 +293,7 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
   NS_LOG_FUNCTION (mib << (uint32_t) mcs << (uint32_t) cbSize);
   double b = 0;
   double c = 0;
-  NS_ASSERT_MSG (mcs>=0 && mcs < 32, "MCS out of range");
+  NS_ASSERT_MSG (mcs < 32, "MCS out of range");
   int tbsIndex = TbsIndex[mcs];
   int cbIndex = 1;
   while ((cbIndex < 9)&&(cbMiSizeTable[cbIndex]< cbSize))
