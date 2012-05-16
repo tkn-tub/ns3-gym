@@ -48,7 +48,7 @@ BuildingsMobilityModel::BuildingsMobilityModel ()
 {
   NS_LOG_FUNCTION (this);
   m_indoor = false;
-  m_nFloor = 0;
+  m_nFloor = 1;
   m_roomX = 1;
   m_roomY = 1;
 }
@@ -95,14 +95,6 @@ BuildingsMobilityModel::IsOutdoor (void)
 }
 
 void
-BuildingsMobilityModel::SetIndoor (Ptr<Building> building)
-{
-  NS_LOG_FUNCTION (this);
-  m_indoor = true;
-  m_myBuilding = building;
-}
-
-void
 BuildingsMobilityModel::SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy)
 {
   NS_LOG_FUNCTION (this);
@@ -128,26 +120,6 @@ BuildingsMobilityModel::SetOutdoor (void)
 {
   NS_LOG_FUNCTION (this);
   m_indoor = false;
-}
-
-void
-BuildingsMobilityModel::SetFloorNumber (uint8_t nfloor)
-{
-  NS_LOG_FUNCTION (this);
-  m_nFloor = nfloor;
-}
-
-void
-BuildingsMobilityModel::SetRoomNumberX (uint8_t nroomx)
-{
-  m_roomX = nroomx;
-}
-
-void
-BuildingsMobilityModel::SetRoomNumberY (uint8_t nroomy)
-{
-  NS_LOG_FUNCTION (this);
-  m_roomY = nroomy;
 }
 
 uint8_t

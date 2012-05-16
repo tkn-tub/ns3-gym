@@ -128,7 +128,7 @@ BuildingsPropagationLossModel::HeightLoss (Ptr<BuildingsMobilityModel> node) con
 {
   double loss = 0.0;
 
-  int nfloors  = node->GetFloorNumber ();
+  int nfloors  = node->GetFloorNumber () - 1;
   loss = -2 * (nfloors);
   return (loss);
 }

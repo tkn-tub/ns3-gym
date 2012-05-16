@@ -23,6 +23,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
+#include <ns3/buildings-helper.h>
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
 
 #include <iomanip>
@@ -67,11 +68,12 @@ main (int argc, char *argv[])
   mmEnb->SetPosition (Vector (0.0, 0.0, hEnb));
   if (enbIndoor)
     {
-      Ptr<Building> building1 = Create<Building> (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/);
+      Ptr<Building> building1 = Create<Building> (-2, 2, -2, 2, 0.0, 20.0);
       building1->SetBuildingType (Building::Residential);
       building1->SetExtWallsType (Building::ConcreteWithWindows);
-      mmEnb->SetIndoor (building1);
     }
+
+  BuildingsHelper::MakeConsistent (mmEnb);
   
   Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   // cancel shadowing effect
@@ -85,7 +87,8 @@ main (int argc, char *argv[])
   for (uint32_t i = 1; i < 2300; i++)
     {
       Ptr<BuildingsMobilityModel> mmUe = CreateObject<BuildingsMobilityModel> ();
-      mmUe->SetPosition (Vector (i, 0.0, hUe));
+      mmUe->SetPosition (Vector (i, 0.0, hUe));      
+      BuildingsHelper::MakeConsistent (mmUe);
       double loss = propagationLossModel->GetLoss (mmEnb, mmUe);
       outFile << i << "\t"
               << loss 

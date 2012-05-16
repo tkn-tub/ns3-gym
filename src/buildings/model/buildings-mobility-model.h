@@ -62,15 +62,6 @@ public:
    */
   bool IsOutdoor (void);
 
-
-  /** 
-   * Mark this MobilityModel instance as indoor 
-   * 
-   * \param building the building into which the MobilityModel instance is located
-   */
-  void SetIndoor (Ptr<Building> building);
-
-
   /** 
    * Mark this MobilityModel instance as indoor 
    * 
@@ -82,14 +73,10 @@ public:
   void SetIndoor (Ptr<Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy);
 
   /** 
-   * Mark this MobilityModel instance as outdoor 
+   * Mark this MobilityModel instance as outdoor
    * 
    */
-  void SetOutdoor (void);
-
-  void SetFloorNumber (uint8_t nfloor);
-  void SetRoomNumberX (uint8_t nroomx);
-  void SetRoomNumberY (uint8_t nroomy);
+  void SetOutdoor ();
 
   /** 
    * 
