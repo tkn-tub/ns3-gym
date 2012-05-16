@@ -219,7 +219,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
   double MI;
   double MIsum = 0.0;
   
-  for (uint i = 0; i < map.size (); i++)
+  for (uint32_t i = 0; i < map.size (); i++)
     {
       SpectrumValue sinrCopy = sinr;
       double sinrLin = sinrCopy[map.at (i)];
@@ -432,12 +432,12 @@ LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& 
   double errorRate = 1.0;
   if (C!=1)
     {
-        for (uint i = 0; i < Cplus; i++)
+        for (uint32_t i = 0; i < Cplus; i++)
         {
           double cbler = MappingMiBler (MI, mcs, Kplus);
           errorRate *= (1.0 - cbler);
         }
-      for (uint i = 0; i < Cminus; i++)
+      for (uint32_t i = 0; i < Cminus; i++)
         {
           double cbler = MappingMiBler (MI, mcs, Kminus);
           errorRate *= (1.0 - cbler);
