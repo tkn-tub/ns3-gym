@@ -375,7 +375,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
               activeLcs++;
             }
         }
-      if (activeLcs <= 0)
+      if (activeLcs == 0)
         {
           NS_LOG_ERROR (this << " No active flows for this UL-DCI");
           return;
