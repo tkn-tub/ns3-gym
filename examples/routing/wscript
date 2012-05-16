@@ -34,7 +34,7 @@ def build(bld):
     obj.source = 'simple-routing-ping6.cc'
 
     obj = bld.create_ns3_program('manet-routing-compare',
-                                 ['wifi', 'dsdv', 'aodv', 'olsr', 'internet', 'applications'])
+                                 ['wifi', 'dsr', 'dsdv', 'aodv', 'olsr', 'internet', 'applications'])
     obj.source = 'manet-routing-compare.cc'
 
     bld.register_ns3_script('simple-routing-ping6.py', ['csma', 'internet', 'applications'])

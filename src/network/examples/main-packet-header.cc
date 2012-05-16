@@ -100,6 +100,9 @@ MyHeader::GetData (void) const
 
 int main (int argc, char *argv[])
 {
+  // Enable the packet printing through Packet::Print command.
+  Packet::EnablePrinting ();
+
   // instantiate a header.
   MyHeader sourceHeader;
   sourceHeader.SetData (2);

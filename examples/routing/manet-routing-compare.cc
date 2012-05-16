@@ -75,9 +75,11 @@
 #include "ns3/aodv-module.h"
 #include "ns3/olsr-module.h"
 #include "ns3/dsdv-module.h"
+#include "ns3/dsr-module.h"
 #include "ns3/applications-module.h"
 
 using namespace ns3;
+using namespace dsr;
 
 NS_LOG_COMPONENT_DEFINE ("manet-routing-compare");
 
@@ -190,7 +192,7 @@ RoutingExperiment::CommandSetup (int argc, char **argv)
   CommandLine cmd;
   cmd.AddValue ("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
-  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV", m_protocol);
+  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR", m_protocol);
   cmd.Parse (argc, argv);
   return m_CSVfileName;
 }
@@ -267,40 +269,6 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
-  AodvHelper aodv;
-  OlsrHelper olsr;
-  DsdvHelper dsdv;
-  Ipv4ListRoutingHelper list;
-
-  switch (m_protocol)
-    {
-    case 1:
-      list.Add (olsr, 100);
-      m_protocolName = "OLSR";
-      break;
-    case 2:
-      list.Add (aodv, 100);
-      m_protocolName = "AODV";
-      break;
-    case 3:
-      list.Add (dsdv, 100);
-      m_protocolName = "DSDV";
-      break;
-    default:
-      NS_FATAL_ERROR ("No such protocol:" << m_protocol);
-    }
-
-  InternetStackHelper internet;
-  internet.SetRoutingHelper (list);
-  internet.Install (adhocNodes);
-
-  NS_LOG_INFO ("assigning ip address");
-
-  Ipv4AddressHelper addressAdhoc;
-  addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer adhocInterfaces;
-  adhocInterfaces = addressAdhoc.Assign (adhocDevices);
-
   MobilityHelper mobilityAdhoc;
 
   ObjectFactory pos;
@@ -316,6 +284,53 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
   mobilityAdhoc.Install (adhocNodes);
 
+  AodvHelper aodv;
+  OlsrHelper olsr;
+  DsdvHelper dsdv;
+  DsrHelper dsr;
+  DsrMainHelper dsrMain;
+  Ipv4ListRoutingHelper list;
+  InternetStackHelper internet;
+
+  switch (m_protocol)
+    {
+    case 1:
+      list.Add (olsr, 100);
+      m_protocolName = "OLSR";
+      break;
+    case 2:
+      list.Add (aodv, 100);
+      m_protocolName = "AODV";
+      break;
+    case 3:
+      list.Add (dsdv, 100);
+      m_protocolName = "DSDV";
+      break;
+    case 4:
+      m_protocolName = "DSR";
+      break;
+    default:
+      NS_FATAL_ERROR ("No such protocol:" << m_protocol);
+    }
+
+  if (m_protocol < 4)
+    {
+      internet.SetRoutingHelper (list);
+      internet.Install (adhocNodes);
+    }
+  else if (m_protocol == 4)
+    {
+      internet.Install (adhocNodes);
+      dsrMain.Install (dsr, adhocNodes);
+    }
+
+  NS_LOG_INFO ("assigning ip address");
+
+  Ipv4AddressHelper addressAdhoc;
+  addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer adhocInterfaces;
+  adhocInterfaces = addressAdhoc.Assign (adhocDevices);
+
   OnOffHelper onoff1 ("ns3::UdpSocketFactory",Address ());
   onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable  (1)));
   onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
@@ -329,7 +344,7 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
 
       UniformVariable var;
       ApplicationContainer temp = onoff1.Install (adhocNodes.Get (i + nSinks));
-      temp.Start (Seconds (var.GetValue (50.0,51.0)));
+      temp.Start (Seconds (var.GetValue (100.0,101.0)));
       temp.Stop (Seconds (TotalTime));
     }
 
@@ -356,7 +371,7 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   //Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (tr_name + ".tr").c_str());
   //wifiPhy.EnableAsciiAll (osw);
   std::ofstream os;
-  os.open ((tr_name + ".mob").c_str());
+  os.open ((tr_name + ".mob").c_str ());
   MobilityHelper::EnableAsciiAll (os);
 
   //Ptr<FlowMonitor> flowmon;

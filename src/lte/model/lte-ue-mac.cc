@@ -375,7 +375,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
               activeLcs++;
             }
         }
-      if (activeLcs <= 0)
+      if (activeLcs == 0)
         {
           NS_LOG_ERROR (this << " No active flows for this UL-DCI");
           return;
@@ -389,7 +389,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
             {
               NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
               (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0);
-              if ((*itBsr).second >=  dci.m_tbSize / activeLcs)
+              if ((*itBsr).second >=  static_cast<uint64_t> (dci.m_tbSize / activeLcs))
                 {
                   (*itBsr).second -= dci.m_tbSize / activeLcs;
                 }
