@@ -359,9 +359,10 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
           // (NO more segments) → exit
           // break;
         }
-      else if ( (firstSegment->GetSize () == nextSegmentSize) || (m_txonBuffer.size () == 0) )
+      else if ( (nextSegmentSize - firstSegment->GetSize () <= 2) || (m_txBuffer.size () == 0) )
         {
-          NS_LOG_LOGIC ("    IF firstSegment == NextSegmentSize || txonBuffer.size == 0");
+          NS_LOG_LOGIC ("    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txBuffer.size == 0");
+
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
           dataFieldTotalSize += dataFieldAddedSize;
@@ -384,7 +385,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
 
-          // nextSegmentSize MUST be zero (only if txonBuffer is not empty)
+          // nextSegmentSize <= 2 (only if txBuffer is not empty)
 
           // (NO more segments) → exit
           // break;
