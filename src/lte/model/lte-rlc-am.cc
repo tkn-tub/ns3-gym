@@ -359,9 +359,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
           // (NO more segments) → exit
           // break;
         }
-      else if ( (nextSegmentSize - firstSegment->GetSize () <= 2) || (m_txBuffer.size () == 0) )
+      else if ( (nextSegmentSize - firstSegment->GetSize () <= 2) || (m_txonBuffer.size () == 0) )
         {
-          NS_LOG_LOGIC ("    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txBuffer.size == 0");
+          NS_LOG_LOGIC ("    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txonBuffer.size == 0");
 
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
@@ -625,15 +625,15 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::SEGMENT )
         {
-          NS_LOG_LOGIC ("AMD PDU segment received ( SN = " << seqNumber << " )");
+          NS_LOG_LOGIC ("PDU segment received ( SN = " << seqNumber << " )");
         }
       else if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::PDU )
         {
-          NS_LOG_LOGIC ("AMD PDU received ( SN = " << seqNumber << " )");
+          NS_LOG_LOGIC ("PDU received ( SN = " << seqNumber << " )");
         }
       else
         {
-          NS_ASSERT_MSG (false, "Neither an AMD PDU segment nor a AMD PDU received");
+          NS_ASSERT_MSG (false, "Neither a PDU segment nor a PDU received");
           return ;
         }
 
@@ -711,12 +711,12 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       // - if byte segment numbers y to z of the AMD PDU with SN = x have been received before:
       if ( ! IsInsideReceivingWindow (seqNumber) )
         {
-          NS_LOG_LOGIC ("AMD PDU discarded");
+          NS_LOG_LOGIC ("PDU discarded");
           return;
         }
       else
         {
-          NS_LOG_LOGIC ("Place AMD PDU in the reception buffer ( SN = " << seqNumber << " )");
+          NS_LOG_LOGIC ("Place PDU in the reception buffer ( SN = " << seqNumber << " )");
           m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.push_back (p);
           m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete = true;
 
@@ -1142,7 +1142,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                               * ERROR: Transition not possible
                               */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
@@ -1213,13 +1213,13 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                 * ERROR: Transition not possible
                                 */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
 
           default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << m_reassemblingState);
+                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -1318,7 +1318,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * ERROR: Transition not possible
                                */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
@@ -1435,13 +1435,13 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                 * ERROR: Transition not possible
                                 */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
 
           default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << m_reassemblingState);
+                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
