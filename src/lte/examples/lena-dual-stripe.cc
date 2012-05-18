@@ -415,7 +415,17 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
-  lteHelper->AttachToClosestEnb (homeUeDevs, homeEnbDevs);
+
+  NetDeviceContainer::Iterator ueDevIt;
+  NetDeviceContainer::Iterator enbDevIt;
+  // attach explicitly each home UE to its home eNB
+  for (ueDevIt = homeUeDevs.Begin (), 
+          enbDevIt = homeEnbDevs.Begin (); 
+       ueDevIt != homeUeDevs.End () && enbDevIt != homeEnbDevs.End (); 
+       ++ueDevIt, ++enbDevIt)
+    {
+      lteHelper->Attach (*ueDevIt, *enbDevIt);
+    }
 
 
   if (epc)
