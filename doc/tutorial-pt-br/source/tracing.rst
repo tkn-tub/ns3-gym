@@ -3562,10 +3562,10 @@ Métodos da Classe Assistente de Dispositivo para Rastreamento  ASCII
   		uint32_t deviceid);
 
 ..
-	You are encouraged to peruse the Doxygen for class ``TraceHelperForDevice``
+	You are encouraged to peruse the Doxygen for class ``AsciiTraceHelperForDevice``
 	to find the details of these methods; but to summarize ...
 
-Para maiores detalhes sobre os métodos é interessante consultar a documentação para a classe ``TraceHelperForDevice``; mas para resumir ...
+Para maiores detalhes sobre os métodos é interessante consultar a documentação para a classe ``AsciiTraceHelperForDevice``; mas para resumir ...
 
 ..
 	There are twice as many methods available for ascii tracing as there were for
