@@ -94,7 +94,7 @@ AnimationInterfaceTestCase::DoRun (void)
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
-  std::string traceFileName = "testpy-output/netanim-test.xml";
+  std::string traceFileName = "netanim-test.xml";
   AnimationInterface anim(traceFileName.c_str ());
   Simulator::Run ();
   NS_TEST_ASSERT_MSG_EQ (anim.GetTracePktCount (), 32, "Expected 32 packets traced");
