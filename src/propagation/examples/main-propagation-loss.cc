@@ -249,7 +249,7 @@ int main (int argc, char *argv[])
     Ptr<JakesPropagationLossModel> jakes = CreateObject<JakesPropagationLossModel> ();
 
     // doppler frequency shift for 5.15 GHz at 100 km/h
-    jakes->SetAttribute ("DopplerFreq", DoubleValue (477.9));
+    Config::SetDefault ("ns3::JakesProcess::DopplerFrequencyHz", DoubleValue (477.9));
 
     Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.001), Seconds (1.0));
     plot.SetTitle ("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 1 millisec resolution)");
@@ -260,7 +260,7 @@ int main (int argc, char *argv[])
     Ptr<JakesPropagationLossModel> jakes = CreateObject<JakesPropagationLossModel> ();
 
     // doppler frequency shift for 5.15 GHz at 100 km/h
-    jakes->SetAttribute ("DopplerFreq", DoubleValue (477.9));
+    Config::SetDefault ("ns3::JakesProcess::DopplerFrequencyHz", DoubleValue (477.9));
 
     Gnuplot plot = TestDeterministicByTime (jakes, Seconds (0.0001), Seconds (0.1));
     plot.SetTitle ("ns3::JakesPropagationLossModel (with 477.9 Hz shift and 0.1 millisec resolution)");
