@@ -46,6 +46,7 @@
 #include <ns3/config.h>
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
+#include <ns3/unused.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestPhyErrorModel");
@@ -244,7 +245,10 @@ LenaPhyErrorModelTestCase::DoRun (void)
       int lambda = (double)dlDataRxed.at (i) / m_tbSize;
       double ber = 2.0 - ((double)dlDataRxed.at (i)/txed);
       double np = n-n*m_berRef;
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed 
+        << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda 
+        << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+      NS_UNUSED (ber);
       // the quantiles are evaluated offline according to a Bernoulli 
       // ditribution with n equal to the number of packet sent and p equal 
       // to the BER (see /reference/bernuolliDistribution.m for details)
