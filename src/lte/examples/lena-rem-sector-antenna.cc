@@ -164,12 +164,12 @@ main (int argc, char *argv[])
   vector < NetDeviceContainer > ueDevs;
 
   // power setting in dBm for small cells
-  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (10.0));
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20.0));
   enbDevs = lteHelper->InstallEnbDevice (oneSectorNodes);
 
 
   // power setting for three-sector macrocell
-  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30.0));
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (43.0));
 
   // Beam width is made quite narrow so sectors can be noticed in the REM
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
