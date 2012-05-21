@@ -148,7 +148,7 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
       m_outputFileSet = true;
       return true;
     }
-  NS_LOG_UNCOND (fn.c_str ());
+  NS_LOG_INFO ("Creating new trace file:" << fn.c_str ());
   FILE* f = fopen (fn.c_str (), "w");
   if (!f)
     {

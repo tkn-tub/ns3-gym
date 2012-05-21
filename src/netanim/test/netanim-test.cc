@@ -101,6 +101,7 @@ AnimationInterfaceTestCase::DoRun (void)
   FILE * fp = fopen (traceFileName.c_str (), "r");
   NS_TEST_ASSERT_MSG_NE (fp, 0, "Trace file was not created");
   fclose (fp);
+  unlink (traceFileName.c_str ());
   Simulator::Destroy ();
 }
 
