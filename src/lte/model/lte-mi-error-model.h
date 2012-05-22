@@ -44,9 +44,9 @@
 
 namespace ns3 {
   
-  const uint16_t MI_MAP_QPSK_SIZE = 411;
-  const uint16_t MI_MAP_16QAM_SIZE = 601;
-  const uint16_t MI_MAP_64QAM_SIZE = 676;
+  const uint16_t MI_MAP_QPSK_SIZE = 766;
+  const uint16_t MI_MAP_16QAM_SIZE = 843;
+  const uint16_t MI_MAP_64QAM_SIZE = 725;
   
 
 

@@ -1255,15 +1255,26 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 
    BLER for MCS 21, 22, 23 and 24.
 
-.. _fig-mcs-25-27-ber:
 
-.. figure:: figures/MCS_25_27.*
+.. _fig-mcs-25-28-ber:
+
+.. figure:: figures/MCS_25_28.*
    :width: 900px
    :align: center
    :height: 700px
 
 
-   BLER for MCS 25, 26 and 27.
+   BLER for MCS 25, 26, 27 and 28.
+
+.. _fig-mcs-29-29-ber:
+
+.. figure:: figures/MCS_29_29.*
+   :width: 900px
+   :align: center
+   :height: 700px
+
+
+   BLER for MCS 29.
 
 
 
