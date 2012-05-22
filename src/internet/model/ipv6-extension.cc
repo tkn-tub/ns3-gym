@@ -347,7 +347,7 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
       m_fragments.insert (std::make_pair (fragmentsId, fragments));
       EventId timeout = Simulator::Schedule (Seconds (60),
                                              &Ipv6ExtensionFragment::HandleFragmentsTimeout, this,
-                                             fragmentsId, fragments, ipHeader);
+                                             fragmentsId, ipHeader);
       fragments->SetTimeoutEventId (timeout);
     }
   else
@@ -548,8 +548,15 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
 }
 
 
-void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> fragmentsId, Ptr<Fragments> fragments, Ipv6Header & ipHeader)
+void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> fragmentsId,
+                                                    Ipv6Header & ipHeader)
 {
+  Ptr<Fragments> fragments;
+
+  MapFragments_t::iterator it = m_fragments.find (fragmentsId);
+  NS_ASSERT_MSG(it != m_fragments.end (), "IPv6 Fragment timeout reached for non-existent fragment");
+  fragments = it->second;
+
   Ptr<Packet> packet = fragments->GetPartialPacket ();
 
   packet->AddHeader (ipHeader);
@@ -557,7 +564,6 @@ void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint3
   // if we have at least 8 bytes, we can send an ICMP.
   if ( packet->GetSize () > 8 )
     {
-
       Ptr<Icmpv6L4Protocol> icmp = GetNode ()->GetObject<Icmpv6L4Protocol> ();
       icmp->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_FRAGTIME);
     }
@@ -580,7 +586,7 @@ void Ipv6ExtensionFragment::Fragments::AddFragment (Ptr<Packet> fragment, uint16
 {
   std::list<std::pair<Ptr<Packet>, uint16_t> >::iterator it;
 
-  for (it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for (it = m_packetFragments.begin (); it != m_packetFragments.end (); it++)
     {
       if (it->second > fragmentOffset)
         {
@@ -588,12 +594,12 @@ void Ipv6ExtensionFragment::Fragments::AddFragment (Ptr<Packet> fragment, uint16
         }
     }
 
-  if (it == m_fragments.end ())
+  if (it == m_packetFragments.end ())
     {
       m_moreFragment = moreFragment;
     }
 
-  m_fragments.insert (it, std::make_pair<Ptr<Packet>, uint16_t> (fragment, fragmentOffset));
+  m_packetFragments.insert (it, std::make_pair<Ptr<Packet>, uint16_t> (fragment, fragmentOffset));
 }
 
 void Ipv6ExtensionFragment::Fragments::SetUnfragmentablePart (Ptr<Packet> unfragmentablePart)
@@ -603,13 +609,13 @@ void Ipv6ExtensionFragment::Fragments::SetUnfragmentablePart (Ptr<Packet> unfrag
 
 bool Ipv6ExtensionFragment::Fragments::IsEntire () const
 {
-  bool ret = !m_moreFragment && m_fragments.size () > 0;
+  bool ret = !m_moreFragment && m_packetFragments.size () > 0;
 
   if (ret)
     {
       uint16_t lastEndOffset = 0;
 
-      for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin (); it != m_fragments.end (); it++)
+      for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_packetFragments.begin (); it != m_packetFragments.end (); it++)
         {
           if (lastEndOffset != it->second)
             {
@@ -628,7 +634,7 @@ Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPacket () const
 {
   Ptr<Packet> p =  m_unfragmentable->Copy ();
 
-  for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_packetFragments.begin (); it != m_packetFragments.end (); it++)
     {
       p->AddAtEnd (it->first);
     }
@@ -651,7 +657,7 @@ Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPartialPacket () const
 
   uint16_t lastEndOffset = 0;
 
-  for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_fragments.begin (); it != m_fragments.end (); it++)
+  for (std::list<std::pair<Ptr<Packet>, uint16_t> >::const_iterator it = m_packetFragments.begin (); it != m_packetFragments.end (); it++)
     {
       if (lastEndOffset != it->second)
         {
