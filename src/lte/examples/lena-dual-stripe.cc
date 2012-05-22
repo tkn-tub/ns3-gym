@@ -154,11 +154,66 @@ PrintGnuplottableBuildingListToFile (std::string filename)
       outFile << "set object " << index
               << " rect from " << box.xMin  << "," << box.yMin  
               << " to "   << box.xMax  << "," << box.yMax
-              << " front"
+              << " front fs empty "
               << std::endl;
     }
 }
 
+void 
+PrintGnuplottableUeListToFile (std::string filename)
+{
+  std::ofstream outFile;
+  outFile.open (filename.c_str ());
+  if (!outFile.is_open ())
+    {
+      NS_LOG_ERROR ("Can't open file " << filename);
+      return;
+    }
+  for (NodeList::Iterator it = NodeList::Begin (); it != NodeList::End (); ++it)
+    {
+      Ptr<Node> node = *it;
+      int nDevs = node->GetNDevices ();
+      for (int j = 0; j < nDevs; j++)
+        {
+          Ptr<LteUeNetDevice> uedev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
+          if (uedev)
+            {
+              Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
+              outFile << "set label \"" << uedev->GetImsi ()
+                      << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,4\" textcolor rgb \"grey\" front point pt 1 ps 0.3 lc rgb \"grey\" offset 0,0"  
+                      << std::endl;
+            }
+        }
+    }
+}
+
+void 
+PrintGnuplottableEnbListToFile (std::string filename)
+{
+  std::ofstream outFile;
+  outFile.open (filename.c_str ());
+  if (!outFile.is_open ())
+    {
+      NS_LOG_ERROR ("Can't open file " << filename);
+      return;
+    }
+  for (NodeList::Iterator it = NodeList::Begin (); it != NodeList::End (); ++it)
+    {
+      Ptr<Node> node = *it;
+      int nDevs = node->GetNDevices ();
+      for (int j = 0; j < nDevs; j++)
+        {
+          Ptr<LteEnbNetDevice> enbdev = node->GetDevice (j)->GetObject <LteEnbNetDevice> ();
+          if (enbdev)
+            {
+              Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
+              outFile << "set label \"" << enbdev->GetCellId ()
+                      << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,4\" textcolor rgb \"white\" front  point pt 2 ps 0.3 lc rgb \"white\" offset 0,0"  
+                      << std::endl;
+            }
+        }
+    }
+}
 
 int
 main (int argc, char *argv[])
@@ -193,7 +248,6 @@ main (int argc, char *argv[])
   bool epcUl = true;
   bool useUdp = true;
   bool generateRem = false;
-  bool printBuildingList = false;
   
   CommandLine cmd;
   cmd.AddValue ("nBlocks", "Number of femtocell blocks", nBlocks);
@@ -222,8 +276,6 @@ main (int argc, char *argv[])
   cmd.AddValue ("simTime", "Total duration of the simulation [s]", simTime);
   cmd.AddValue ("generateRem", "if true, will generate a REM and then abort the simulation;"
                 "if false, will run the simulation normally (without generating any REM)", generateRem);
-  cmd.AddValue ("printBuildingList", "if true, will save a list of buildings with their positions to file;"
-                "if false, will run the simulation normally (without generating any REM)", printBuildingList);
   cmd.AddValue ("epc", "if true, will setup the EPC to simulate an end-to-end topology;"
                 "if false, only the LTE radio access will be simulated.", epc);
   cmd.AddValue ("epcDl", "if true, will activate data flows in the downlink when EPC is being used. "
@@ -244,22 +296,32 @@ main (int argc, char *argv[])
 
   cmd.Parse (argc, argv);
 
-  uint32_t currentSite = nMacroEnbSites -1;
-  uint32_t biRowIndex = (currentSite / (nMacroEnbSitesX + nMacroEnbSitesX + 1));
-  uint32_t biRowRemainder = currentSite % (nMacroEnbSitesX + nMacroEnbSitesX + 1);
-  uint32_t rowIndex = biRowIndex*2 + 1;
-  if (biRowRemainder >= nMacroEnbSitesX)
-    {
-      ++rowIndex;
-    }
-  uint32_t nMacroEnbSitesY = rowIndex;
-  NS_LOG_LOGIC ("nMacroEnbSitesY = " << nMacroEnbSitesY);
+  Box macroUeBox;
 
-  Box macroUeBox (-areaMarginFactor*interSiteDistance, 
-                  (nMacroEnbSitesX + areaMarginFactor)*interSiteDistance, 
-                  -areaMarginFactor*interSiteDistance, 
-                  (nMacroEnbSitesY -1)*interSiteDistance*sqrt(0.75) + areaMarginFactor*interSiteDistance,
-                  1.0, 2.0);
+  if (nMacroEnbSites > 0)
+    {
+      uint32_t currentSite = nMacroEnbSites -1;
+      uint32_t biRowIndex = (currentSite / (nMacroEnbSitesX + nMacroEnbSitesX + 1));
+      uint32_t biRowRemainder = currentSite % (nMacroEnbSitesX + nMacroEnbSitesX + 1);
+      uint32_t rowIndex = biRowIndex*2 + 1;
+      if (biRowRemainder >= nMacroEnbSitesX)
+        {
+          ++rowIndex;
+        }
+      uint32_t nMacroEnbSitesY = rowIndex;
+      NS_LOG_LOGIC ("nMacroEnbSitesY = " << nMacroEnbSitesY);
+
+      macroUeBox = Box (-areaMarginFactor*interSiteDistance, 
+                        (nMacroEnbSitesX + areaMarginFactor)*interSiteDistance, 
+                        -areaMarginFactor*interSiteDistance, 
+                        (nMacroEnbSitesY -1)*interSiteDistance*sqrt(0.75) + areaMarginFactor*interSiteDistance,
+                        1.0, 2.0);
+    }
+  else
+    {
+      // still need the box to place femtocell blocks
+      macroUeBox = Box (0, 150, 0, 150, 1.0, 2.0);
+    }
   
   FemtocellBlockAllocator blockAllocator (macroUeBox, nApartmentsX, nFloors);
   blockAllocator.Create (nBlocks);
@@ -353,7 +415,17 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
-  lteHelper->AttachToClosestEnb (homeUeDevs, homeEnbDevs);
+
+  NetDeviceContainer::Iterator ueDevIt;
+  NetDeviceContainer::Iterator enbDevIt;
+  // attach explicitly each home UE to its home eNB
+  for (ueDevIt = homeUeDevs.Begin (), 
+          enbDevIt = homeEnbDevs.Begin (); 
+       ueDevIt != homeUeDevs.End () && enbDevIt != homeEnbDevs.End (); 
+       ++ueDevIt, ++enbDevIt)
+    {
+      lteHelper->Attach (*ueDevIt, *enbDevIt);
+    }
 
 
   if (epc)
@@ -478,6 +550,10 @@ main (int argc, char *argv[])
   Ptr<RadioEnvironmentMapHelper> remHelper;
   if (generateRem)
     {
+      PrintGnuplottableBuildingListToFile ("buildings.txt");
+      PrintGnuplottableEnbListToFile ("enbs.txt");
+      PrintGnuplottableUeListToFile ("ues.txt");
+
       remHelper = CreateObject<RadioEnvironmentMapHelper> ();
       remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
       remHelper->SetAttribute ("OutputFile", StringValue ("lena-dual-stripe.rem"));
@@ -488,6 +564,8 @@ main (int argc, char *argv[])
       remHelper->SetAttribute ("Z", DoubleValue (1.5));
       remHelper->Install ();
       // simulation will stop right after the REM has been generated
+
+
     }
   else
     {
@@ -499,11 +577,6 @@ main (int argc, char *argv[])
   if (epc)
     {
       lteHelper->EnablePdcpTraces ();
-    }
-
-  if (printBuildingList)
-    {
-      PrintGnuplottableBuildingListToFile ("buildings.txt");
     }
 
   Simulator::Run ();

@@ -10281,6 +10281,8 @@ def register_Ns3DsrRouteCacheNeighbor_methods(root_module, cls):
     cls.add_constructor([param('ns3::dsr::RouteCache::Neighbor const &', 'arg0')])
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::RouteCache::Neighbor::Neighbor(ns3::Ipv4Address ip, ns3::Mac48Address mac, ns3::Time t) [constructor]
     cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('ns3::Mac48Address', 'mac'), param('ns3::Time', 't')])
+    ## dsr-rcache.h (module 'dsr'): ns3::dsr::RouteCache::Neighbor::Neighbor() [constructor]
+    cls.add_constructor([])
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::RouteCache::Neighbor::close [variable]
     cls.add_instance_attribute('close', 'bool', is_const=False)
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::RouteCache::Neighbor::m_expireTime [variable]

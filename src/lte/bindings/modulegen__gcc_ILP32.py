@@ -12574,14 +12574,6 @@ def register_Ns3BuildingsMobilityModel_methods(root_module, cls):
     cls.add_method('IsOutdoor', 
                    'bool', 
                    [])
-    ## buildings-mobility-model.h (module 'buildings'): void ns3::BuildingsMobilityModel::SetFloorNumber(uint8_t nfloor) [member function]
-    cls.add_method('SetFloorNumber', 
-                   'void', 
-                   [param('uint8_t', 'nfloor')])
-    ## buildings-mobility-model.h (module 'buildings'): void ns3::BuildingsMobilityModel::SetIndoor(ns3::Ptr<ns3::Building> building) [member function]
-    cls.add_method('SetIndoor', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Building >', 'building')])
     ## buildings-mobility-model.h (module 'buildings'): void ns3::BuildingsMobilityModel::SetIndoor(ns3::Ptr<ns3::Building> building, uint8_t nfloor, uint8_t nroomx, uint8_t nroomy) [member function]
     cls.add_method('SetIndoor', 
                    'void', 
@@ -12590,14 +12582,6 @@ def register_Ns3BuildingsMobilityModel_methods(root_module, cls):
     cls.add_method('SetOutdoor', 
                    'void', 
                    [])
-    ## buildings-mobility-model.h (module 'buildings'): void ns3::BuildingsMobilityModel::SetRoomNumberX(uint8_t nroomx) [member function]
-    cls.add_method('SetRoomNumberX', 
-                   'void', 
-                   [param('uint8_t', 'nroomx')])
-    ## buildings-mobility-model.h (module 'buildings'): void ns3::BuildingsMobilityModel::SetRoomNumberY(uint8_t nroomy) [member function]
-    cls.add_method('SetRoomNumberY', 
-                   'void', 
-                   [param('uint8_t', 'nroomy')])
     ## buildings-mobility-model.h (module 'buildings'): void ns3::BuildingsMobilityModel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

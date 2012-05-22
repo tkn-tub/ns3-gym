@@ -493,6 +493,8 @@ public:
         close (false)
     {
     }
+
+    Neighbor () {} // For Python bindings
   };
   // / Return expire time for neighbor node with address addr, if exists, else return 0.
   Time GetExpireTime (Ipv4Address addr);

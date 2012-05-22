@@ -1527,7 +1527,7 @@ DsrRouting::PriorityScheduler (uint32_t priority, bool continueWithFirst)
         }
       else
         {
-          uint32_t totalQueueSize;
+          uint32_t totalQueueSize = 0;
           for (std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator j = m_priorityQueue.begin (); j != m_priorityQueue.end (); j++)
             {
               NS_LOG_DEBUG ("The size of the network queue for " << j->first << " is " << j->second->GetSize ());

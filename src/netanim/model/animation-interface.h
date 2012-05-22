@@ -52,6 +52,8 @@
 
 namespace ns3 {
 
+#define MAX_PKTS_PER_TRACE_FILE 100000
+
 /**
  * \defgroup netanim Netanim
  *
@@ -85,10 +87,16 @@ public:
   /**
    * \brief Constructor
    * \param filename The Filename for the trace file used by the Animator
+   * \param maxPktsPerFile The maximum number of packets per trace file.
+	    AnimationInterface will create trace files with the following 
+            filenames : filename, filename-1, filename-2..., filename-N
+	    where each file contains packet info for 'maxPktPerFile' number of packets
    * \param usingXML Set to true if XML output traces are required
    *
    */
-  AnimationInterface (const std::string filename, bool usingXML = true);
+  AnimationInterface (const std::string filename, 
+	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE, 
+	bool usingXML = true);
 
   /**
    * \brief Constructor
@@ -169,9 +177,10 @@ public:
    * on prior calls to SetOutputFile, SetServerPort, or SetInternalAnimation.
    * Then creates the callbacks needed for the animator to start processing
    * packets.
-   *
+   * 
+   * \param restart True when restarting animation
    */
-  void StartAnimation ();
+  void StartAnimation (bool restart = false);
 
   /**
    * \brief Closes the interface to the animator.
@@ -269,6 +278,15 @@ public:
   void EnablePacketMetadata (bool enable);
 
 
+  /**
+   *
+   * \brief Get trace file packet count (This used only for testing)
+   *
+   * returns Number of packets recorded in the current trace file
+   *
+   */
+  uint64_t GetTracePktCount ();
+
 
 private:
 #ifndef WIN32
@@ -280,12 +298,21 @@ private:
   int  WriteN (SOCKET, const char*, uint32_t);
 #endif
   bool m_xml;      // True if xml format desired
-  Time mobilitypollinterval;
-  bool usingSockets;
-  uint16_t mport;
-  std::string outputfilename;
-  bool OutputFileSet;
-  bool ServerPortSet;
+  Time m_mobilityPollInterval;
+  bool m_usingSockets;
+  uint16_t m_port;
+  std::string m_outputFileName;
+  bool m_outputFileSet;
+  bool m_serverPortSet;
+  uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
+  bool m_randomPosition;
+  AnimWriteCallback m_writeCallback;
+  bool m_started;
+  bool m_enablePacketMetadata; 
+  Time m_startTime;
+  Time m_stopTime;
+  uint64_t m_maxPktsPerFile;
+  std::string m_originalFileName;
 
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
@@ -339,27 +366,26 @@ private:
   void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void MobilityAutoCheck ();
   
-  uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
 
-  std::map<uint64_t, AnimPacketInfo> pendingWifiPackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingWifiPackets;
   void AddPendingWifiPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WifiPacketIsPending (uint64_t AnimUid); 
 
-  std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingWimaxPackets;
   void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WimaxPacketIsPending (uint64_t AnimUid); 
 
-  std::map<uint64_t, AnimPacketInfo> pendingLtePackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingLtePackets;
   void AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo&);
   bool LtePacketIsPending (uint64_t AnimUid);
 
-  std::map<uint64_t, AnimPacketInfo> pendingCsmaPackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingCsmaPackets;
   void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool CsmaPacketIsPending (uint64_t AnimUid);
 
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
 
-  std::map<uint32_t, Vector> nodeLocation;
+  std::map<uint32_t, Vector> m_nodeLocation;
   Vector GetPosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n, Vector v);
@@ -376,14 +402,8 @@ private:
   void RecalcTopoBounds (Vector v);
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
-  bool randomPosition;
-  AnimWriteCallback m_writeCallback;
   void ConnectCallbacks ();
 
-  bool m_started;
-  bool m_enablePacketMetadata; 
-  Time m_startTime;
-  Time m_stopTime;
   
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   bool IsInTimeWindow ();
@@ -393,14 +413,17 @@ private:
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
 
   static std::map <uint32_t, std::string> nodeDescriptions;
+  uint64_t m_currentPktCount;
+
+  void StartNewTraceFile();
 
   // XML helpers
   std::string GetPreamble (void);
   // Topology element dimensions
-  double topo_minX;
-  double topo_minY;
-  double topo_maxX;
-  double topo_maxY;
+  double m_topoMinX;
+  double m_topoMinY;
+  double m_topoMaxX;
+  double m_topoMaxY;
 
   std::string GetPacketMetadata (Ptr<const Packet> p);
 

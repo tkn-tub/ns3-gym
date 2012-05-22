@@ -2168,7 +2168,7 @@ pointer to a reference counted object that is a very lightweight thing.
 Remember to always look at the object you are referencing before making any
 assumptions about the "powers" that object may have.  
 
-For example, take a look at ``src/network/model/pcap-file-object.h`` in the 
+For example, take a look at ``src/network/utils/pcap-file-wrapper.h`` in the 
 distribution and notice, 
 
 ::
@@ -2566,7 +2566,7 @@ Ascii Tracing Device Helper Methods
   void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
   void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
 
-You are encouraged to peruse the Doxygen for class ``TraceHelperForDevice``
+You are encouraged to peruse the Doxygen for class ``AsciiTraceHelperForDevice``
 to find the details of these methods; but to summarize ...
 
 There are twice as many methods available for ascii tracing as there were for

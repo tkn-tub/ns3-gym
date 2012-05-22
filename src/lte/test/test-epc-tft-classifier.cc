@@ -114,7 +114,7 @@ EpcTftClassifierTestCase::BuildNameString (Ptr<EpcTftClassifier> c,
       << ", da = " << da
       << ", sp = " << sp
       << ", dp = " << dp
-      << ", tos = 0x" << std::hex << tos
+      << ", tos = 0x" << std::hex << (int) tos
       << " --> tftId = " << tftId;  
   return oss.str ();
 }
