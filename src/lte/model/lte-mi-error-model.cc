@@ -457,18 +457,10 @@ LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& 
   double errorRate = 1.0;
   if (C!=1)
     {
-        for (uint32_t i = 0; i < Cplus; i++)
-        {
-          double cbler = MappingMiBler (MI, mcs, Kplus);
-          NS_LOG_LOGIC (" CBLER " << cbler);
-          errorRate *= (1.0 - cbler);
-        }
-      for (uint32_t i = 0; i < Cminus; i++)
-        {
-          double cbler = MappingMiBler (MI, mcs, Kminus);
-          NS_LOG_LOGIC (" CBLER " << cbler);
-          errorRate *= (1.0 - cbler);
-        }
+      double cbler = MappingMiBler (MI, mcs, Kplus);
+      errorRate *= pow (1.0 - cbler, Cplus);
+      cbler = MappingMiBler (MI, mcs, Kminus);
+      errorRate *= pow (1.0 - cbler, Cminus);
       errorRate = 1.0 - errorRate;
     }
   else
