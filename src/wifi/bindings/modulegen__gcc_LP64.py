@@ -158,6 +158,8 @@ def register_types(module):
     module.add_enum('', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
+    ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess> [class]
+    module.add_class('PropagationCache', import_from_module='ns.propagation', template_parameters=['ns3::JakesProcess'])
     ## random-variable.h (module 'core'): ns3::RandomVariable [class]
     module.add_class('RandomVariable', import_from_module='ns.core')
     ## minstrel-wifi-manager.h (module 'wifi'): ns3::RateInfo [struct]
@@ -188,6 +190,10 @@ def register_types(module):
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## random-variable.h (module 'core'): ns3::UniformVariable [class]
     module.add_class('UniformVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
+    ## vector.h (module 'core'): ns3::Vector2D [class]
+    module.add_class('Vector2D', import_from_module='ns.core')
+    ## vector.h (module 'core'): ns3::Vector3D [class]
+    module.add_class('Vector3D', import_from_module='ns.core')
     ## random-variable.h (module 'core'): ns3::WeibullVariable [class]
     module.add_class('WeibullVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## wifi-helper.h (module 'wifi'): ns3::WifiHelper [class]
@@ -440,6 +446,8 @@ def register_types(module):
     module.add_class('ItuR1411LosPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): ns3::ItuR1411NlosOverRooftopPropagationLossModel [class]
     module.add_class('ItuR1411NlosOverRooftopPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## jakes-process.h (module 'propagation'): ns3::JakesProcess [class]
+    module.add_class('JakesProcess', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel [class]
     module.add_class('JakesPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## kun-2600-mhz-propagation-loss-model.h (module 'propagation'): ns3::Kun2600MhzPropagationLossModel [class]
@@ -458,6 +466,8 @@ def register_types(module):
     module.add_class('MgtBeaconHeader', parent=root_module['ns3::MgtProbeResponseHeader'])
     ## minstrel-wifi-manager.h (module 'wifi'): ns3::MinstrelWifiManager [class]
     module.add_class('MinstrelWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
+    ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
+    module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
     ## msdu-aggregator.h (module 'wifi'): ns3::MsduAggregator [class]
     module.add_class('MsduAggregator', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel [class]
@@ -512,6 +522,14 @@ def register_types(module):
     module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## uinteger.h (module 'core'): ns3::UintegerValue [class]
     module.add_class('UintegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## vector.h (module 'core'): ns3::Vector2DChecker [class]
+    module.add_class('Vector2DChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## vector.h (module 'core'): ns3::Vector2DValue [class]
+    module.add_class('Vector2DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## vector.h (module 'core'): ns3::Vector3DChecker [class]
+    module.add_class('Vector3DChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    ## vector.h (module 'core'): ns3::Vector3DValue [class]
+    module.add_class('Vector3DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## wifi-channel.h (module 'wifi'): ns3::WifiChannel [class]
     module.add_class('WifiChannel', parent=root_module['ns3::Channel'])
     ## wifi-mode.h (module 'wifi'): ns3::WifiModeChecker [class]
@@ -542,15 +560,27 @@ def register_types(module):
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >', 'ns3::WifiModeListIterator')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >*', 'ns3::WifiModeListIterator*')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >&', 'ns3::WifiModeListIterator&')
+    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
+    typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
+    typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >', 'ns3::MinstrelRate')
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >*', 'ns3::MinstrelRate*')
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >&', 'ns3::MinstrelRate&')
     typehandlers.add_type_alias('std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > >', 'ns3::WifiModeList')
     typehandlers.add_type_alias('std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > >*', 'ns3::WifiModeList*')
     typehandlers.add_type_alias('std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > >&', 'ns3::WifiModeList&')
+    typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
+    typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
+    typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
+    module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >', 'ns3::SampleRate')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >*', 'ns3::SampleRate*')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >&', 'ns3::SampleRate&')
+    typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
+    typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
+    typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
+    module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
     
     ## Register a nested module for the namespace FatalImpl
     
@@ -624,6 +654,7 @@ def register_methods(root_module):
     register_Ns3PcapFile_methods(root_module, root_module['ns3::PcapFile'])
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
+    register_Ns3PropagationCache__Ns3JakesProcess_methods(root_module, root_module['ns3::PropagationCache< ns3::JakesProcess >'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
     register_Ns3RateInfo_methods(root_module, root_module['ns3::RateInfo'])
     register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
@@ -638,6 +669,8 @@ def register_methods(root_module):
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
+    register_Ns3Vector2D_methods(root_module, root_module['ns3::Vector2D'])
+    register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
     register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
     register_Ns3WifiHelper_methods(root_module, root_module['ns3::WifiHelper'])
     register_Ns3WifiMacHelper_methods(root_module, root_module['ns3::WifiMacHelper'])
@@ -749,6 +782,7 @@ def register_methods(root_module):
     register_Ns3Ipv6PrefixValue_methods(root_module, root_module['ns3::Ipv6PrefixValue'])
     register_Ns3ItuR1411LosPropagationLossModel_methods(root_module, root_module['ns3::ItuR1411LosPropagationLossModel'])
     register_Ns3ItuR1411NlosOverRooftopPropagationLossModel_methods(root_module, root_module['ns3::ItuR1411NlosOverRooftopPropagationLossModel'])
+    register_Ns3JakesProcess_methods(root_module, root_module['ns3::JakesProcess'])
     register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
     register_Ns3Kun2600MhzPropagationLossModel_methods(root_module, root_module['ns3::Kun2600MhzPropagationLossModel'])
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
@@ -758,6 +792,7 @@ def register_methods(root_module):
     register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3MgtBeaconHeader_methods(root_module, root_module['ns3::MgtBeaconHeader'])
     register_Ns3MinstrelWifiManager_methods(root_module, root_module['ns3::MinstrelWifiManager'])
+    register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
     register_Ns3MsduAggregator_methods(root_module, root_module['ns3::MsduAggregator'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
@@ -784,6 +819,10 @@ def register_methods(root_module):
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
     register_Ns3UintegerValue_methods(root_module, root_module['ns3::UintegerValue'])
+    register_Ns3Vector2DChecker_methods(root_module, root_module['ns3::Vector2DChecker'])
+    register_Ns3Vector2DValue_methods(root_module, root_module['ns3::Vector2DValue'])
+    register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
+    register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
     register_Ns3WifiChannel_methods(root_module, root_module['ns3::WifiChannel'])
     register_Ns3WifiModeChecker_methods(root_module, root_module['ns3::WifiModeChecker'])
     register_Ns3WifiModeValue_methods(root_module, root_module['ns3::WifiModeValue'])
@@ -3292,6 +3331,17 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     return
 
+def register_Ns3PropagationCache__Ns3JakesProcess_methods(root_module, cls):
+    ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess>::PropagationCache(ns3::PropagationCache<ns3::JakesProcess> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PropagationCache< ns3::JakesProcess > const &', 'arg0')])
+    ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess>::PropagationCache() [constructor]
+    cls.add_constructor([])
+    ## propagation-cache.h (module 'propagation'): ns3::Ptr<ns3::JakesProcess> ns3::PropagationCache<ns3::JakesProcess>::GetPathData(ns3::Ptr<ns3::MobilityModel const> a, ns3::Ptr<ns3::MobilityModel const> b, uint32_t modelUid) [member function]
+    cls.add_method('GetPathData', 
+                   'ns3::Ptr< ns3::JakesProcess >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b'), param('uint32_t', 'modelUid')])
+    return
+
 def register_Ns3RandomVariable_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## random-variable.h (module 'core'): ns3::RandomVariable::RandomVariable() [constructor]
@@ -3807,6 +3857,36 @@ def register_Ns3UniformVariable_methods(root_module, cls):
     cls.add_method('GetValue', 
                    'double', 
                    [param('double', 's'), param('double', 'l')])
+    return
+
+def register_Ns3Vector2D_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## vector.h (module 'core'): ns3::Vector2D::Vector2D(ns3::Vector2D const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector2D const &', 'arg0')])
+    ## vector.h (module 'core'): ns3::Vector2D::Vector2D(double _x, double _y) [constructor]
+    cls.add_constructor([param('double', '_x'), param('double', '_y')])
+    ## vector.h (module 'core'): ns3::Vector2D::Vector2D() [constructor]
+    cls.add_constructor([])
+    ## vector.h (module 'core'): ns3::Vector2D::x [variable]
+    cls.add_instance_attribute('x', 'double', is_const=False)
+    ## vector.h (module 'core'): ns3::Vector2D::y [variable]
+    cls.add_instance_attribute('y', 'double', is_const=False)
+    return
+
+def register_Ns3Vector3D_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## vector.h (module 'core'): ns3::Vector3D::Vector3D(ns3::Vector3D const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector3D const &', 'arg0')])
+    ## vector.h (module 'core'): ns3::Vector3D::Vector3D(double _x, double _y, double _z) [constructor]
+    cls.add_constructor([param('double', '_x'), param('double', '_y'), param('double', '_z')])
+    ## vector.h (module 'core'): ns3::Vector3D::Vector3D() [constructor]
+    cls.add_constructor([])
+    ## vector.h (module 'core'): ns3::Vector3D::x [variable]
+    cls.add_instance_attribute('x', 'double', is_const=False)
+    ## vector.h (module 'core'): ns3::Vector3D::y [variable]
+    cls.add_instance_attribute('y', 'double', is_const=False)
+    ## vector.h (module 'core'): ns3::Vector3D::z [variable]
+    cls.add_instance_attribute('z', 'double', is_const=False)
     return
 
 def register_Ns3WeibullVariable_methods(root_module, cls):
@@ -9225,32 +9305,36 @@ def register_Ns3ItuR1411NlosOverRooftopPropagationLossModel_methods(root_module,
                    is_const=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
-    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::JakesPropagationLossModel() [constructor]
+def register_Ns3JakesProcess_methods(root_module, cls):
+    ## jakes-process.h (module 'propagation'): ns3::JakesProcess::JakesProcess(ns3::JakesProcess const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::JakesProcess const &', 'arg0')])
+    ## jakes-process.h (module 'propagation'): ns3::JakesProcess::JakesProcess() [constructor]
     cls.add_constructor([])
-    ## jakes-propagation-loss-model.h (module 'propagation'): uint8_t ns3::JakesPropagationLossModel::GetNOscillators() const [member function]
-    cls.add_method('GetNOscillators', 
-                   'uint8_t', 
+    ## jakes-process.h (module 'propagation'): double ns3::JakesProcess::GetChannelGainDb() const [member function]
+    cls.add_method('GetChannelGainDb', 
+                   'double', 
                    [], 
                    is_const=True)
-    ## jakes-propagation-loss-model.h (module 'propagation'): uint8_t ns3::JakesPropagationLossModel::GetNRays() const [member function]
-    cls.add_method('GetNRays', 
-                   'uint8_t', 
+    ## jakes-process.h (module 'propagation'): std::complex<double> ns3::JakesProcess::GetComplexGain() const [member function]
+    cls.add_method('GetComplexGain', 
+                   'std::complex< double >', 
                    [], 
                    is_const=True)
+    ## jakes-process.h (module 'propagation'): static ns3::TypeId ns3::JakesProcess::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
     ## jakes-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::JakesPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## jakes-propagation-loss-model.h (module 'propagation'): void ns3::JakesPropagationLossModel::SetNOscillators(uint8_t nOscillators) [member function]
-    cls.add_method('SetNOscillators', 
-                   'void', 
-                   [param('uint8_t', 'nOscillators')])
-    ## jakes-propagation-loss-model.h (module 'propagation'): void ns3::JakesPropagationLossModel::SetNRays(uint8_t nRays) [member function]
-    cls.add_method('SetNRays', 
-                   'void', 
-                   [param('uint8_t', 'nRays')])
+    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::JakesPropagationLossModel() [constructor]
+    cls.add_constructor([])
     ## jakes-propagation-loss-model.h (module 'propagation'): double ns3::JakesPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 
@@ -9592,6 +9676,62 @@ def register_Ns3MinstrelWifiManager_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3MobilityModel_methods(root_module, cls):
+    ## mobility-model.h (module 'mobility'): ns3::MobilityModel::MobilityModel(ns3::MobilityModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MobilityModel const &', 'arg0')])
+    ## mobility-model.h (module 'mobility'): ns3::MobilityModel::MobilityModel() [constructor]
+    cls.add_constructor([])
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetDistanceFrom(ns3::Ptr<ns3::MobilityModel const> position) const [member function]
+    cls.add_method('GetDistanceFrom', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'position')], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::GetPosition() const [member function]
+    cls.add_method('GetPosition', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<ns3::MobilityModel const> other) const [member function]
+    cls.add_method('GetRelativeSpeed', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::GetVelocity() const [member function]
+    cls.add_method('GetVelocity', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::SetPosition(ns3::Vector const & position) [member function]
+    cls.add_method('SetPosition', 
+                   'void', 
+                   [param('ns3::Vector const &', 'position')])
+    ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::NotifyCourseChange() const [member function]
+    cls.add_method('NotifyCourseChange', 
+                   'void', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetPosition() const [member function]
+    cls.add_method('DoGetPosition', 
+                   'ns3::Vector', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetVelocity() const [member function]
+    cls.add_method('DoGetVelocity', 
+                   'ns3::Vector', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
+    cls.add_method('DoSetPosition', 
+                   'void', 
+                   [param('ns3::Vector const &', 'position')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3MsduAggregator_methods(root_module, cls):
@@ -10867,6 +11007,86 @@ def register_Ns3UintegerValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('uint64_t const &', 'value')])
+    return
+
+def register_Ns3Vector2DChecker_methods(root_module, cls):
+    ## vector.h (module 'core'): ns3::Vector2DChecker::Vector2DChecker() [constructor]
+    cls.add_constructor([])
+    ## vector.h (module 'core'): ns3::Vector2DChecker::Vector2DChecker(ns3::Vector2DChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector2DChecker const &', 'arg0')])
+    return
+
+def register_Ns3Vector2DValue_methods(root_module, cls):
+    ## vector.h (module 'core'): ns3::Vector2DValue::Vector2DValue() [constructor]
+    cls.add_constructor([])
+    ## vector.h (module 'core'): ns3::Vector2DValue::Vector2DValue(ns3::Vector2DValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector2DValue const &', 'arg0')])
+    ## vector.h (module 'core'): ns3::Vector2DValue::Vector2DValue(ns3::Vector2D const & value) [constructor]
+    cls.add_constructor([param('ns3::Vector2D const &', 'value')])
+    ## vector.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::Vector2DValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## vector.h (module 'core'): bool ns3::Vector2DValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## vector.h (module 'core'): ns3::Vector2D ns3::Vector2DValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Vector2D', 
+                   [], 
+                   is_const=True)
+    ## vector.h (module 'core'): std::string ns3::Vector2DValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## vector.h (module 'core'): void ns3::Vector2DValue::Set(ns3::Vector2D const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Vector2D const &', 'value')])
+    return
+
+def register_Ns3Vector3DChecker_methods(root_module, cls):
+    ## vector.h (module 'core'): ns3::Vector3DChecker::Vector3DChecker() [constructor]
+    cls.add_constructor([])
+    ## vector.h (module 'core'): ns3::Vector3DChecker::Vector3DChecker(ns3::Vector3DChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector3DChecker const &', 'arg0')])
+    return
+
+def register_Ns3Vector3DValue_methods(root_module, cls):
+    ## vector.h (module 'core'): ns3::Vector3DValue::Vector3DValue() [constructor]
+    cls.add_constructor([])
+    ## vector.h (module 'core'): ns3::Vector3DValue::Vector3DValue(ns3::Vector3DValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector3DValue const &', 'arg0')])
+    ## vector.h (module 'core'): ns3::Vector3DValue::Vector3DValue(ns3::Vector3D const & value) [constructor]
+    cls.add_constructor([param('ns3::Vector3D const &', 'value')])
+    ## vector.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::Vector3DValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## vector.h (module 'core'): bool ns3::Vector3DValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## vector.h (module 'core'): ns3::Vector3D ns3::Vector3DValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Vector3D', 
+                   [], 
+                   is_const=True)
+    ## vector.h (module 'core'): std::string ns3::Vector3DValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## vector.h (module 'core'): void ns3::Vector3DValue::Set(ns3::Vector3D const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Vector3D const &', 'value')])
     return
 
 def register_Ns3WifiChannel_methods(root_module, cls):
