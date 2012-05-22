@@ -1476,7 +1476,7 @@ A few notes on the above diagram:
 X2-based handover
 -----------------
 
-The X2 interface interconnects two eNBs [TS36.420]_. From a logical point of view, the X2 interface is a point-to-point interface between the two eNBs. In a real E-UTRAN, the logical point-to-point interface should be feasible even in the absence of a physical direct connection between the two eNBs. In the X2 model implemented in the simulator, the X2 interface is a point-to-point interface.
+The X2 interface interconnects two eNBs [TS36.420]_. From a logical point of view, the X2 interface is a point-to-point interface between the two eNBs. In a real E-UTRAN, the logical point-to-point interface should be feasible even in the absence of a physical direct connection between the two eNBs. In the X2 model implemented in the simulator, the X2 interface is a point-to-point link between the two eNBs. A point-to-point device is created in both eNBs and the two point-to-point devices are attached to the point-to-point link.
 
 The overall architecture of the LENA simulation model is depicted in the figure :ref:`fig-epc-topology-x2-enhanced`. It adds the X2 interface between eNBs to the original architecture described in :ref:`overall-architecture`.
 
@@ -1513,19 +1513,23 @@ These procedures are involved in the X2-based handover. You can find the detaile
 
 The X2 model is an entity that uses services from:
 
-  * the X2 interfaces (Socket)
+  * the X2 interfaces,
+      
+    * They are implemented as Sockets on top of the point-to-point devices.
 
-      * to send/receive X2 PDUs through the X2-C and X2-U interfaces
+    * They are used to send/receive X2 messages through the X2-C and X2-U interfaces (i.e. the point-to-point device attached to the point-to-point link) towards the peer eNB.
 
-  * the S1 application (current it is the EpcEnbApplication)
+  * the S1 application.
 
-      * to get some information needed for the Elementary Procedures
+    * Currently, it is the EpcEnbApplication.
 
-  * the RRC entity (RRC-SAP)
+    * It is used to get some information needed for the Elementary Procedures of the X2 messages.
 
-      * to get some information neeeded for the Elementary Procedures
+and it provides services to:
 
-      * to get the transparent container to be sent to the UE as an RRC message
+  * the RRC entity (X2 SAP)
+
+    * to send/receive RRC messages. The X2 entity sends the RRC message as a transparent container in the X2 message. This RRC message is sent to the UE. 
 
 Figure :ref:`fig-x2-entity-saps` shows the implentation model of the X2 entity and its relationship with all the other entities and services in the protocol stack.
 
@@ -1537,16 +1541,17 @@ Figure :ref:`fig-x2-entity-saps` shows the implentation model of the X2 entity a
 
     Implementation Model of X2 entity and SAPs
 
+The RRC entity manages the initiation of the handover procedure. This is done in the Handover Management submodule of the eNB RRC entity. The target eNB may perform some Admission Control procedures. This is done in the Admission Control submodule. Initially, this submodule will accept any handover request.
 
 X2 interfaces
 +++++++++++++
 
 The X2 model contains two interfaces:
 
-  * The X2-C interface. It is the control interface and it is used to send the X2-AP PDUs
+  * the X2-C interface. It is the control interface and it is used to send the X2-AP PDUs
     (i.e. the elementary procedures).
 
-  * The X2-U interface. It is used to send the bearer data when there is `DL forwarding`.
+  * the X2-U interface. It is used to send the bearer data when there is `DL forwarding`.
 
 Figure :ref:`fig-lte-epc-x2-interface` shows the protocol stacks of the X2-U interface and X2-C interface modeled in the simulator.
 
@@ -1557,26 +1562,43 @@ Figure :ref:`fig-lte-epc-x2-interface` shows the protocol stacks of the X2-U int
 
     X2 interface protocol stacks
 
-In the original X2 interface control plane protocol stack, SCTP is used as the transport protocol but currently, the SCTP protocol is not modeled in the ns-3 simulator and its implementation is out-of-scope of the project. UDP protocol is used as the datagram oriented protocol instead of the SCTP protocol.
+In the original X2 interface control plane protocol stack, SCTP is used as the transport protocol but currently, the SCTP protocol is not modeled in the ns-3 simulator and its implementation is out-of-scope of the project. The UDP protocol is used as the datagram oriented protocol instead of the SCTP protocol.
 
+X2 Service Interface
+++++++++++++++++++++
 
-RRC Service Interface
-+++++++++++++++++++++
+The X2 service interface is used by the RRC entity to send and receive messages of the X2 procedures. It is divided into two parts:
 
-The RRC service interface is used by the X2 entity to get some informations needed to build the X2 messages. It is divided into two parts:
+  * the ``EpcX2SapProvider`` part is provided by the X2 entity and used by the RRC entity and
 
-* the ``RrcSapProvider`` part is provided by the RRC entity and used by the X2 entity and
+  * the ``EpcX2SapUser`` part is provided by the RRC entity and used by the RRC enity.
 
-* the ``RrcSapUser`` part is provided by the X2 entity and used by the RRC entity
+X2 Service Primitives
+---------------------
 
+The following list specifies which service primitives are provided by the X2 service interface:
+
+  * ``EpcX2SapProvider::SendHandoverRequest``
+
+    * The RRC entity uses this primitive to indicate to the X2 entity that it must initiate a handover preparation procedure by sending a HANDOVER REQUEST message.
+
+  * ``EpcX2SapUser::RecvHandoverRequest``
+
+    * The X2 entity in the target eNB uses this primitive to indicate to the RRC entity that a HANDOVER REQUEST message has been received from the source eNB.
+
+  * ``EpcX2Sapuser::SendHandoverRequestAck``
+
+    * The RRC entity uses this primitive to indicate to the X2 entity that it must send a HANDOVER REQUEST ACKNOWLEDGE message back to the source eNB.
+
+  * ``EpcX2SapProvider::RecvHandoverRequestAck``
+
+    * The X2 entity in the source eNB uses this primitive to indicate to the RRC entity that a HANDOVER REQUEST ACKNOWLEDGE message has been received from the target eNB.
 
 S1 Service Interface
 ++++++++++++++++++++
 
 The S1 service interface is used by the X2 entity to get some information neeeded to build the X2 messages. It is divided into two parts:
 
-* the ``S1SapProvider`` part is provided by the S1 entity and used by the X2 entity and
+  * the ``S1SapProvider`` part is provided by the S1 entity and used by the X2 entity and
 
-* the ``S1SapUser`` part is provided by the X2 entity and used by the S1 entity
-
-
+  * the ``S1SapUser`` part is provided by the X2 entity and used by the S1 entity.
