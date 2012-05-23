@@ -343,17 +343,12 @@ private:
     /**
      * \brief The current fragments.
      */
-    std::list<std::pair<Ptr<Packet>, uint16_t> > m_fragments;
+    std::list<std::pair<Ptr<Packet>, uint16_t> > m_packetFragments;
 
     /**
      * \brief The unfragmentable part.
      */
     Ptr<Packet> m_unfragmentable;
-
-    /**
-     * \brief Number of references.
-     */
-    mutable uint32_t m_refCount;
 
     /**
      * \brief Timeout handler event
@@ -367,7 +362,7 @@ private:
    * \param ipHeader the IP header of the original packet
    * \param iif Input Interface
    */
-  void HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> key, Ptr<Fragments> fragments, Ipv6Header & ipHeader);
+  void HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> key, Ipv6Header & ipHeader);
 
   /**
    * \brief Get the packet parts so far received.
