@@ -802,9 +802,8 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
               rrep.SetNodesAddress (m_finalRoute);     // Set the node addresses in the route reply header
               // Get the real source of the reply
               Ipv4Address realSource = m_finalRoute.back ();
-              Ipv4Address realDst = m_finalRoute.front ();
               PrintVector (m_finalRoute);
-              NS_LOG_DEBUG ("This is the full route from " << realSource << " to " << realDst);
+              NS_LOG_DEBUG ("This is the full route from " << realSource << " to " << m_finalRoute.front ());
               /*
                * This part add dsr header to the packet and send route reply packet
                */
@@ -1355,11 +1354,10 @@ uint8_t DsrOptionRerr::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
       /*
        * Get the error destination address
        */
-      Ipv4Address targetAddress = rerrUnreach.GetErrorDst ();
       Ipv4Address unreachAddress = rerrUnreach.GetUnreachNode ();
       Ipv4Address errorSource = rerrUnreach.GetErrorSrc ();
 
-      NS_LOG_DEBUG ("The destination address and the unreachable node " << targetAddress << " " << unreachAddress);
+      NS_LOG_DEBUG ("The destination address and the unreachable node " << rerrUnreach.GetErrorDst () << " " << unreachAddress);
       /*
        * Get the serialized size of the rerr header
        */
