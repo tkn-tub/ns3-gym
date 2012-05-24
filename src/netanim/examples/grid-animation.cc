@@ -88,11 +88,7 @@ int main (int argc, char *argv[])
   // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  std::cout << "Running the simulation" << std::endl;
   Simulator::Run ();
-  std::cout << "Destroying the simulation" << std::endl;
   Simulator::Destroy ();
-  std::cout << "Stopping the animation" << std::endl;
-  anim.StopAnimation ();
   return 0;
 }
