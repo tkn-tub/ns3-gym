@@ -15,11 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Original Authors: Marco Mezzavilla <mezzavil@dei.unipd.it>
- *                   Giovanni Tomasi <tomasigv@gmail.com>
- * Integration in LENA and extension done by: 
- *                            Marco Miozzo <marco.miozzo@cttc.es>
- */
+ *
+ * Original Work Authors:
+ *      Marco Mezzavilla <mezzavil@dei.unipd.it>
+ *      Giovanni Tomasi <tomasigv@gmail.com>
+ * Original Work Acknowldegments:
+ *      This work was supported by the MEDIEVAL (MultiMEDia transport
+ *      for mobIlE Video AppLications) project, which is a
+ *      medium-scale focused research project (STREP) of the 7th
+ *      Framework Programme (FP7)
+ *
+ * Subsequent integration in LENA and extension done by:
+ *      Marco Miozzo <marco.miozzo@cttc.es>
+ */ 
 
 #ifndef LTE_MI_ERROR_MODEL_H
 #define LTE_MI_ERROR_MODEL_H
@@ -36,9 +44,9 @@
 
 namespace ns3 {
   
-  const uint16_t MI_MAP_QPSK_SIZE = 411;
-  const uint16_t MI_MAP_16QAM_SIZE = 601;
-  const uint16_t MI_MAP_64QAM_SIZE = 676;
+  const uint16_t MI_MAP_QPSK_SIZE = 766;
+  const uint16_t MI_MAP_16QAM_SIZE = 843;
+  const uint16_t MI_MAP_64QAM_SIZE = 725;
   
 
 
@@ -50,10 +58,6 @@ class LteMiErrorModel
 
 public:
 
-  LteMiErrorModel (void);
-
-  ~LteMiErrorModel (void);
-
   /** 
    * \brief find the mmib (mean mutual information per bit) for different modulations of the specified TB
    * \param sinr the perceived sinrs in the whole bandwidth
@@ -61,7 +65,7 @@ public:
    * \param cms the MCS of the TB
    * \return the mmib
    */
-  static double Mib (SpectrumValue& sinr, std::vector<int> map, uint8_t mcs);
+  static double Mib (const SpectrumValue& sinr, const std::vector<int>& map, uint8_t mcs);
   /** 
    * \brief map the mmib (mean mutual information per bit) for different MCS
    * \param mmib mean mutual information per bit of a code-block
@@ -76,7 +80,7 @@ public:
    * \param modulation the modulations (qpsk, 16-qam, 64-qam)
    * \param code block-size and code-rate
    */  
-  static double GetTbError (SpectrumValue& sinr, std::vector<int> map, uint16_t size, uint8_t mcs);
+  static double GetTbError (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs);
 
 
 //private:

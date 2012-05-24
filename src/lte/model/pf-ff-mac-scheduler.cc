@@ -211,8 +211,6 @@ PfFfMacScheduler::PfFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
     m_timeWindow (99.0),
-    m_schedTtiDelay (2),
-    // WILD HACK: based on a m_macChTtiDelay = 1
     m_nextRntiUl (0)
 {
   m_amc = CreateObject <LteAmc> ();
@@ -811,7 +809,7 @@ PfFfMacScheduler::EstimateUlSinr (uint16_t rnti, uint16_t rb)
 void
 PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params)
 {
-//   NS_LOG_FUNCTION (this << " Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+  NS_LOG_FUNCTION (this << " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
  
   RefreshUlCqiMaps ();
 
@@ -933,6 +931,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
       uldci.m_tbSize = (m_amc->GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
 //       NS_LOG_DEBUG (this << " UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize << " RbAlloc " << rbAllocated);
+      UpdateUlRlcBufferInfo (uldci.m_rnti, uldci.m_tbSize);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
       uldci.m_aggrLevel = 1;
@@ -1046,26 +1045,11 @@ void
 PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf << " delay " << (uint32_t)m_schedTtiDelay);
-  // correlate info on UL-CQIs with previous scheduling -> calculate m_sfnSf of transmission
-  uint32_t frameNo = (0x3FF & (params.m_sfnSf >> 4));
-  uint32_t subframeNo = (0xF & params.m_sfnSf);
-//   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
-  if (subframeNo <= m_schedTtiDelay)
-    {
-      frameNo--;
-      subframeNo = (10 + subframeNo - m_schedTtiDelay) % 11;
-    }
-  else
-    {
-      subframeNo = (subframeNo - m_schedTtiDelay) % 11;
-    }
-  uint16_t sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
-//   NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo << " sfnSf "  << sfnSf);
+//   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;
-  itMap = m_allocationMaps.find (sfnSf);
+  itMap = m_allocationMaps.find (params.m_sfnSf);
   if (itMap == m_allocationMaps.end ())
     {
       NS_LOG_DEBUG (this << " Does not find info on allocation, size : " << m_allocationMaps.size ());

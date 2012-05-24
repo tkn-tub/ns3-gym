@@ -50,18 +50,24 @@ class ConstantVelocityMobilityModel;
    $ns at $time $node set Z_ Z1
  \endverbatim
  *
+ * Note that initial position statements may also appear at the end of
+ * the mobility file like this:
+ \verbatim
+   $ns at $time $node setdest x2 y2 speed
+   $ns at $time $node set X_ x1
+   $ns at $time $node set Y_ Y1
+   $ns at $time $node set Z_ Z1
+   $node set X_ x1
+   $node set Y_ y1
+   $node set Z_ z1
+ \endverbatim
+ *
  * The following tools are known to support this format:
  *  - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/
  *  - SUMO http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page
  *  - TraNS http://trans.epfl.ch/ 
  *
  *  See usage example in examples/mobility/ns2-mobility-trace.cc
- *
- * \bug Traces that generate initial position statements at the end of the
- * mobility file (e.g. SUMO TraceExporter) will not be read correctly.  The
- * workaround is to relocate these three initial position statements to the
- * beginning of the trace.  
- * See https://www.nsnam.org/bugzilla/show_bug.cgi?id=1316
  *
  * \bug Rounding errors may cause movement to diverge from the mobility
  * pattern in ns-2 (using the same trace).

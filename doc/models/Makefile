@@ -17,6 +17,10 @@ SOURCES = \
 	source/internet-models.rst \
 	source/network.rst \
 	source/emulation-overview.rst \
+	$(SRC)/antenna/doc/source/antenna.rst \
+	$(SRC)/antenna/doc/source/antenna-design.rst \
+	$(SRC)/antenna/doc/source/antenna-user.rst \
+	$(SRC)/antenna/doc/source/antenna-testing.rst \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
@@ -24,9 +28,11 @@ SOURCES = \
 	$(SRC)/buildings/doc/source/buildings-design.rst \
 	$(SRC)/buildings/doc/source/buildings-user.rst \
 	$(SRC)/buildings/doc/source/buildings-testing.rst \
+	$(SRC)/buildings/doc/source/buildings-references.rst \
 	$(SRC)/click/doc/click.rst \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
+	$(SRC)/dsr/doc/dsr.rst \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/emu/doc/emu.rst \
@@ -48,6 +54,7 @@ SOURCES = \
 	$(SRC)/internet/doc/ipv6.rst \
 	$(SRC)/internet/doc/routing-overview.rst \
 	$(SRC)/internet/doc/tcp.rst \
+	$(SRC)/mobility/doc/mobility.rst \
 	$(SRC)/olsr/doc/olsr.rst \
 	$(SRC)/openflow/doc/openflow-switch.rst \
 	$(SRC)/point-to-point/doc/point-to-point.rst \
@@ -68,6 +75,7 @@ SOURCES = \
 SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
+	$(SRC)/antenna/doc/source/figures/antenna-coordinate-system.dia	\
 	$(SRC)/network/doc/packet.dia \
 	$(SRC)/network/doc/node.dia \
 	$(SRC)/network/doc/buffer.dia \
@@ -91,6 +99,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-ul.dia \
 	$(SRC)/lte/doc/source/figures/lte-arch-data-rrc-pdcp-rlc.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
+	$(SRC)/lte/doc/source/figures/MCS_2_test.eps \
+	$(SRC)/lte/doc/source/figures/MCS_12_test.eps \
+	$(SRC)/lte/doc/source/figures/MCS_14_test.eps \
+	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase2.eps \
@@ -106,16 +118,32 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.eps \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.eps \
+	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.png \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.png \
-	$(SRC)/lte/doc/source/figures/fading_pedestrian.png \
+	$(SRC)/lte/doc/source/figures/fading_pedestrian.pdf \
 	$(SRC)/lte/doc/source/figures/fading_vehicular.pdf \
 	$(SRC)/lte/doc/source/figures/fading_urban_3kmph.pdf \
-	$(SRC)/lte/doc/source/figures/fading_pedestrian.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_1_4.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_1_4.png \
+	$(SRC)/lte/doc/source/figures/MCS_5_8.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_5_8.png \
+	$(SRC)/lte/doc/source/figures/MCS_9_12.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_9_12.png \
+	$(SRC)/lte/doc/source/figures/MCS_13_16.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_13_16.png \
+	$(SRC)/lte/doc/source/figures/MCS_17_20.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_17_20.png \
+	$(SRC)/lte/doc/source/figures/MCS_21_24.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_21_24.png \
+	$(SRC)/lte/doc/source/figures/MCS_25_27.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_25_27.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
 	$(SRC)/lte/doc/source/figures/helpers.png \
 	$(SRC)/lte/doc/source/figures/helpers.pdf \
+	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
+	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
@@ -131,6 +159,7 @@ IMAGES_EPS = \
 	$(FIGURES)/node.eps \
 	$(FIGURES)/buffer.eps \
 	$(FIGURES)/sockets-overview.eps \
+	$(FIGURES)/antenna-coordinate-system.eps \
 	$(FIGURES)/internet-node-send.eps \
 	$(FIGURES)/internet-node-recv.eps \
 	$(FIGURES)/routing.eps \
@@ -150,6 +179,10 @@ IMAGES_EPS = \
 	$(FIGURES)/epc-data-flow-ul.eps \
 	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
+	$(FIGURES)/MCS_2_test.eps \
+	$(FIGURES)/MCS_12_test.eps \
+	$(FIGURES)/MCS_14_test.eps \
+	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
@@ -170,6 +203,7 @@ IMAGES_EPS = \
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
 $(FIGURES)/emulated-channel.pdf_width = 6in
+$(FIGURES)/antenna-coordinate-system.pdf_width = 7cm	
 $(FIGURES)/node.pdf_width = 5in
 $(FIGURES)/packet.pdf_width = 4in
 $(FIGURES)/buffer.pdf_width = 15cm

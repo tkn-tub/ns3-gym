@@ -54,7 +54,7 @@ type_annotations = {
         'params': {'seed':{'direction':'out',
                            'array_length':'6'}}
         },
-    'bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInfo * info) const [member function]': {
+    'bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]': {
         'params': {'info':{'transfer_ownership': 'false'}}
         },
     'static bool ns3::TypeId::LookupByNameFailSafe(std::string name, ns3::TypeId * tid) [member function]': {

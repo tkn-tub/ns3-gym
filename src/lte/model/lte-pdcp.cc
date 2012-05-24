@@ -147,7 +147,7 @@ LtePdcp::GetLteRlcSapUser ()
 void
 LtePdcp::DoTransmitRrcPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   LtePdcpHeader pdcpHeader;
   pdcpHeader.SetSequenceNumber (m_txSequenceNumber);
@@ -179,7 +179,7 @@ LtePdcp::DoTransmitRrcPdu (Ptr<Packet> p)
 void
 LtePdcp::DoReceivePdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   // Receiver timestamp
   PdcpTag pdcpTag;

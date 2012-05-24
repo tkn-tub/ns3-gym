@@ -5,6 +5,7 @@ import ns.network
 import ns.internet
 import ns.mobility
 import ns.csma
+import ns.applications
 
 
 class TestSimulator(unittest.TestCase):
@@ -45,6 +46,21 @@ class TestSimulator(unittest.TestCase):
         Simulator.ScheduleDestroy(callback, "args")
         Simulator.Run()
         Simulator.Destroy()
+        self.assertEqual(self._args_received, "args")
+        self.assertEqual(self._cb_time.GetSeconds(), 123.0)
+
+    def testScheduleWithContext(self):
+        def callback(context, args):
+            self._context_received = context
+            self._args_received = args
+            self._cb_time = Simulator.Now()
+        Simulator.Destroy()
+        self._args_received = None
+        self._cb_time = None
+        self._context_received = None
+        Simulator.ScheduleWithContext(54321, Seconds(123), callback, "args")
+        Simulator.Run()
+        self.assertEqual(self._context_received, 54321)
         self.assertEqual(self._args_received, "args")
         self.assertEqual(self._cb_time.GetSeconds(), 123.0)
 

@@ -32,9 +32,12 @@
 #include "ns3/animation-interface-helper.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wimax-mac-header.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/constant-position-mobility-model.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -51,36 +54,45 @@
 
 NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 
-#define PURGE_INTERVAL 5
-static bool initialized = false;
+
 
 namespace ns3 {
 
+#define PURGE_INTERVAL 5
+static bool initialized = false;
+std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
+
 AnimationInterface::AnimationInterface ()
-  : m_fHandle (STDOUT_FILENO), m_xml (false), mobilitypollinterval (Seconds(0.25)),
-    usingSockets (false), mport (0), outputfilename (""),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0),randomPosition (true),
-    m_writeCallback (0), m_started (false)
+  : m_fHandle (STDOUT_FILENO), m_xml (false), m_mobilityPollInterval (Seconds(0.25)),
+    m_usingSockets (false), m_port (0), m_outputFileName (""),
+    m_outputFileSet (false), m_serverPortSet (false), gAnimUid (0),m_randomPosition (true),
+    m_writeCallback (0), m_started (false), 
+    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
+    m_maxPktsPerFile (MAX_PKTS_PER_TRACE_FILE)
 {
   initialized = true;
   StartAnimation ();
 }
 
-AnimationInterface::AnimationInterface (const std::string fn, bool usingXML)
-  : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
-    usingSockets (false), mport (0), outputfilename (fn),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
-    m_writeCallback (0), m_started (false)
+AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
+  : m_fHandle (STDOUT_FILENO), m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
+    m_usingSockets (false), m_port (0), m_outputFileName (fn),
+    m_outputFileSet (false), m_serverPortSet (false), gAnimUid (0), m_randomPosition (true),
+    m_writeCallback (0), m_started (false), 
+    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
+    m_maxPktsPerFile (maxPktsPerFile), m_originalFileName (fn)
 {
   initialized = true;
   StartAnimation ();
 }
 
 AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
-  : m_fHandle (STDOUT_FILENO), m_xml (usingXML), mobilitypollinterval (Seconds(0.25)), 
-    usingSockets (true), mport (port), outputfilename (""),
-    OutputFileSet (false), ServerPortSet (false), gAnimUid (0), randomPosition (true),
-    m_writeCallback (0), m_started (false)
+  : m_fHandle (STDOUT_FILENO), m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
+    m_usingSockets (true), m_port (port), m_outputFileName (""),
+    m_outputFileSet (false), m_serverPortSet (false), gAnimUid (0), m_randomPosition (true),
+    m_writeCallback (0), m_started (false), 
+    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
+    m_maxPktsPerFile (MAX_PKTS_PER_TRACE_FILE)
 {
   initialized = true;
   StartAnimation ();
@@ -97,18 +109,46 @@ void AnimationInterface::SetXMLOutput ()
   m_xml = true;
 }
 
+
+void AnimationInterface::StartNewTraceFile ()
+{
+  static int i = 0;
+  std::ostringstream oss;
+  oss << i;
+  ++m_currentPktCount;
+  if (m_currentPktCount <= m_maxPktsPerFile)
+    {
+      return;
+    }
+  StopAnimation ();
+  m_outputFileName = m_originalFileName + "-" + oss.str ();
+  StartAnimation (true);
+  ++i;
+
+}
+void AnimationInterface::SetStartTime (Time t)
+{
+  m_startTime = t;
+}
+
+void AnimationInterface::SetStopTime (Time t)
+{
+  m_stopTime = t;
+}
+
 bool AnimationInterface::SetOutputFile (const std::string& fn)
 {
-  if (OutputFileSet)
+  if (m_outputFileSet)
     {
       return true;
     }
   if (fn == "")
     {
       m_fHandle = STDOUT_FILENO;
-      OutputFileSet = true;
+      m_outputFileSet = true;
       return true;
     }
+  NS_LOG_INFO ("Creating new trace file:" << fn.c_str ());
   FILE* f = fopen (fn.c_str (), "w");
   if (!f)
     {
@@ -116,10 +156,17 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
       return false; // Can't open
     }
   m_fHandle = fileno (f); // Set the file handle
-  usingSockets = false;
-  outputfilename = fn;
-  OutputFileSet = true;
+  m_usingSockets = false;
+  m_outputFileName = fn;
+  m_outputFileSet = true;
   return true;
+}
+
+void AnimationInterface::EnablePacketMetadata (bool enable)
+{
+   m_enablePacketMetadata = enable;
+   if (enable)
+     Packet::EnablePrinting ();
 }
 
 bool AnimationInterface::IsInitialized ()
@@ -143,10 +190,19 @@ void AnimationInterface::ResetAnimWriteCallback ()
   m_writeCallback = 0;
 }
 
+bool AnimationInterface::IsInTimeWindow ()
+{
+  if ((Simulator::Now () >= m_startTime) && 
+      (Simulator::Now () <= m_stopTime))
+    return true;
+  else
+    return false;
+}
+
 bool AnimationInterface::SetServerPort (uint16_t port)
 {
 #if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
-  if (ServerPortSet)
+  if (m_serverPortSet)
     {
       return true;
     }
@@ -168,8 +224,8 @@ bool AnimationInterface::SetServerPort (uint16_t port)
   // set the linger socket option
   int t = 1;
   setsockopt (s, SOL_SOCKET, SO_LINGER, &t, sizeof(t));
-  usingSockets = true;
-  ServerPortSet = true;
+  m_usingSockets = true;
+  m_serverPortSet = true;
   return true;
 #endif
   return false; // never reached unless the above is disabled
@@ -178,28 +234,33 @@ bool AnimationInterface::SetServerPort (uint16_t port)
 
 bool AnimationInterface::WifiPacketIsPending (uint64_t AnimUid)
 {
-  return (pendingWifiPackets.find (AnimUid) != pendingWifiPackets.end ());
+  return (m_pendingWifiPackets.find (AnimUid) != m_pendingWifiPackets.end ());
 }
 
 bool AnimationInterface::CsmaPacketIsPending (uint64_t AnimUid)
 {
-  return (pendingCsmaPackets.find (AnimUid) != pendingCsmaPackets.end ());
+  return (m_pendingCsmaPackets.find (AnimUid) != m_pendingCsmaPackets.end ());
 }
 
 
 bool AnimationInterface::WimaxPacketIsPending (uint64_t AnimUid)
 {
-  return (pendingWimaxPackets.find (AnimUid) != pendingWimaxPackets.end ());
+  return (m_pendingWimaxPackets.find (AnimUid) != m_pendingWimaxPackets.end ());
+}
+
+bool AnimationInterface::LtePacketIsPending (uint64_t AnimUid)
+{
+  return (m_pendingLtePackets.find (AnimUid) != m_pendingLtePackets.end ());
 }
 
 void AnimationInterface::SetMobilityPollInterval (Time t)
 {
-  mobilitypollinterval = t;
+  m_mobilityPollInterval = t;
 }
 
 void AnimationInterface::SetRandomPosition (bool setRandPos)
 {
-  randomPosition = setRandPos;
+  m_randomPosition = setRandPos;
 }
 
 Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
@@ -207,49 +268,49 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
   Ptr<MobilityModel> loc = n->GetObject<MobilityModel> ();
   if (loc)
     {
-      nodeLocation[n->GetId ()] = loc->GetPosition ();
+      m_nodeLocation[n->GetId ()] = loc->GetPosition ();
     }
   else
    {
-     NS_LOG_WARN ( "Node:" << n->GetId () << " Does not have a mobility model");
+     NS_LOG_UNCOND ( "AnimationInterface WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
      Vector deterministicVector (100,100,0);
-     Vector randomVector (UniformVariable (0, topo_maxX-topo_minX).GetValue (), UniformVariable (0, topo_maxY-topo_minY).GetValue (), 0);
-     if (randomPosition)
+     Vector randomVector (UniformVariable (0, m_topoMaxX - m_topoMinX).GetValue (), UniformVariable (0, m_topoMaxY - m_topoMinY).GetValue (), 0);
+     if (m_randomPosition)
        {
-         nodeLocation[n->GetId ()] = randomVector;
+         m_nodeLocation[n->GetId ()] = randomVector;
        }
      else
        {
-         nodeLocation[n->GetId ()] = deterministicVector;
+         m_nodeLocation[n->GetId ()] = deterministicVector;
        }
    }
-  return nodeLocation[n->GetId ()];
+  return m_nodeLocation[n->GetId ()];
 }
 
 Vector AnimationInterface::UpdatePosition (Ptr <Node> n, Vector v)
 {
-  nodeLocation[n->GetId ()] = v;
+  m_nodeLocation[n->GetId ()] = v;
   return v;
 }
 
 Vector AnimationInterface::GetPosition (Ptr <Node> n)
 {
   #ifdef NS_LOG
-  if (nodeLocation.find (n->GetId()) == nodeLocation.end ())
+  if (m_nodeLocation.find (n->GetId()) == m_nodeLocation.end ())
     {
       NS_FATAL_ERROR ("Node:" <<n->GetId() << " not found in Location table");
     }  
   #endif
-  return nodeLocation[n->GetId ()];
+  return m_nodeLocation[n->GetId ()];
 }
 
 void AnimationInterface::PurgePendingWifi ()
 {
-  if (pendingWifiPackets.empty ())
+  if (m_pendingWifiPackets.empty ())
     return;
   std::vector <uint64_t> purgeList;
-  for (std::map<uint64_t, AnimPacketInfo>::iterator i = pendingWifiPackets.begin ();
-       i != pendingWifiPackets.end ();
+  for (std::map<uint64_t, AnimPacketInfo>::iterator i = m_pendingWifiPackets.begin ();
+       i != m_pendingWifiPackets.end ();
        ++i)
     {
      
@@ -265,18 +326,18 @@ void AnimationInterface::PurgePendingWifi ()
        i != purgeList.end ();
        ++i)
     {
-      pendingWifiPackets.erase (*i);
+      m_pendingWifiPackets.erase (*i);
     }
 
 }
 
 void AnimationInterface::PurgePendingWimax ()
 {
-  if (pendingWimaxPackets.empty ())
+  if (m_pendingWimaxPackets.empty ())
     return;
   std::vector <uint64_t> purgeList;
-  for (std::map<uint64_t, AnimPacketInfo>::iterator i = pendingWimaxPackets.begin ();
-       i != pendingWimaxPackets.end ();
+  for (std::map<uint64_t, AnimPacketInfo>::iterator i = m_pendingWimaxPackets.begin ();
+       i != m_pendingWimaxPackets.end ();
        ++i)
     {
 
@@ -292,18 +353,45 @@ void AnimationInterface::PurgePendingWimax ()
        i != purgeList.end ();
        ++i)
     {
-      pendingWimaxPackets.erase (*i);
+      m_pendingWimaxPackets.erase (*i);
     }
 
 }
 
-void AnimationInterface::PurgePendingCsma ()
+
+void AnimationInterface::PurgePendingLte ()
 {
-  if (pendingCsmaPackets.empty ())
+  if (m_pendingLtePackets.empty ())
     return;
   std::vector <uint64_t> purgeList;
-  for (std::map<uint64_t, AnimPacketInfo>::iterator i = pendingCsmaPackets.begin ();
-       i != pendingCsmaPackets.end ();
+  for (std::map<uint64_t, AnimPacketInfo>::iterator i = m_pendingLtePackets.begin ();
+       i != m_pendingLtePackets.end ();
+       ++i)
+    {
+
+      AnimPacketInfo pktInfo = i->second;
+      double delta = (Simulator::Now ().GetSeconds () - pktInfo.m_fbTx);
+      if (delta > PURGE_INTERVAL)
+        {
+          purgeList.push_back (i->first);
+        }
+    }
+
+  for (std::vector <uint64_t>::iterator i = purgeList.begin ();
+       i != purgeList.end ();
+       ++i)
+    {
+      m_pendingLtePackets.erase (*i);
+    }
+}
+
+void AnimationInterface::PurgePendingCsma ()
+{
+  if (m_pendingCsmaPackets.empty ())
+    return;
+  std::vector <uint64_t> purgeList;
+  for (std::map<uint64_t, AnimPacketInfo>::iterator i = m_pendingCsmaPackets.begin ();
+       i != m_pendingCsmaPackets.end ();
        ++i)
     {
     
@@ -319,37 +407,38 @@ void AnimationInterface::PurgePendingCsma ()
        i != purgeList.end ();
        ++i)
     {
-      pendingCsmaPackets.erase (*i);
+      m_pendingCsmaPackets.erase (*i);
     }
 
 }
 
-void AnimationInterface::StartAnimation ()
+void AnimationInterface::StartAnimation (bool restart)
 {
+  m_currentPktCount = 0;
   m_started = true;
-  if (usingSockets)
+  if (m_usingSockets)
     {
-      SetServerPort (mport);
+      SetServerPort (m_port);
     }
   else
     {
-      SetOutputFile (outputfilename);
+      SetOutputFile (m_outputFileName);
     }      
 
   // Find the min/max x/y for the xml topology element
-  topo_minX = -2;
-  topo_minY = -2;
-  topo_maxX = 2;
-  topo_maxY = 2;
+  m_topoMinX = -2;
+  m_topoMinY = -2;
+  m_topoMaxX = 2;
+  m_topoMaxY = 2;
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
     {
       Ptr<Node> n = *i;
       NS_LOG_INFO ("Update Position for Node: " << n->GetId ());
       Vector v = UpdatePosition (n); 
-      topo_minX = std::min (topo_minX, v.x);
-      topo_minY = std::min (topo_minY, v.y);
-      topo_maxX = std::max (topo_maxX, v.x);
-      topo_maxY = std::max (topo_maxY, v.y);
+      m_topoMinX = std::min (m_topoMinX, v.x);
+      m_topoMinY = std::min (m_topoMinY, v.y);
+      m_topoMaxX = std::max (m_topoMaxX, v.x);
+      m_topoMaxY = std::max (m_topoMaxY, v.y);
     }
 
   AddMargin ();
@@ -358,7 +447,7 @@ void AnimationInterface::StartAnimation ()
       std::ostringstream oss;
       oss << GetXMLOpen_anim (0);
       oss << GetPreamble ();
-      oss << GetXMLOpen_topology (topo_minX, topo_minY, topo_maxX, topo_maxY);
+      oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
       WriteN (m_fHandle, oss.str ());
     }
   NS_LOG_INFO ("Setting topology for "<<NodeList::GetNNodes ()<<" Nodes");
@@ -429,13 +518,13 @@ void AnimationInterface::StartAnimation ()
             }
         }
     }
-  if (m_xml)
+  if (m_xml && !restart)
     {
       WriteN (m_fHandle, GetXMLClose ("topology"));
-      Simulator::Schedule (mobilitypollinterval, &AnimationInterface::MobilityAutoCheck, this);
+      Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
-
-  ConnectCallbacks ();
+  if (!restart)
+    ConnectCallbacks ();
 }
 
 void AnimationInterface::ConnectCallbacks ()
@@ -445,20 +534,18 @@ void AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::DevTxTrace, this));
   Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxBegin",
                    MakeCallback (&AnimationInterface::WifiPhyTxBeginTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxEnd",
-                   MakeCallback (&AnimationInterface::WifiPhyTxEndTrace, this));
   Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxBegin",
                    MakeCallback (&AnimationInterface::WifiPhyRxBeginTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxEnd",
-                   MakeCallback (&AnimationInterface::WifiPhyRxEndTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
-                   MakeCallback (&AnimationInterface::WifiMacRxTrace, this));
   Config::ConnectWithoutContext ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                    MakeCallback (&AnimationInterface::MobilityCourseChangeTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
                    MakeCallback (&AnimationInterface::WimaxTxTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
                    MakeCallback (&AnimationInterface::WimaxRxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
+                   MakeCallback (&AnimationInterface::LteTxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
+                   MakeCallback (&AnimationInterface::LteRxTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxBegin",
                    MakeCallback (&AnimationInterface::CsmaPhyTxBeginTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxEnd",
@@ -487,7 +574,7 @@ void AnimationInterface::StopAnimation ()
         {
           close (m_fHandle);
         }
-      OutputFileSet = false;
+      m_outputFileSet = false;
       m_fHandle = -1;
     }
 }
@@ -505,19 +592,18 @@ int AnimationInterface::WriteN (int h, const std::string& st)
   return WriteN (h, st.c_str (), st.length ());
 }
 
-
 // Private methods
 void AnimationInterface::AddMargin ()
 {
   // Compute width/height, and add a small margin
-  double w = topo_maxX - topo_minX;
-  double h = topo_maxY - topo_minY;
-  topo_minX -= w * 0.05;
-  topo_minY -= h * 0.05;
-  topo_maxX = topo_minX + w * 1.5;
-  topo_maxY = topo_minY + h * 1.5;
-  NS_LOG_INFO ("Added Canvas Margin:" << topo_minX << "," <<
-               topo_minY << "," << topo_maxX << "," << topo_maxY);                 
+  double w = m_topoMaxX - m_topoMinX;
+  double h = m_topoMaxY - m_topoMinY;
+  m_topoMinX -= w * 0.05;
+  m_topoMinY -= h * 0.05;
+  m_topoMaxX = m_topoMinX + w * 1.5;
+  m_topoMaxY = m_topoMinY + h * 1.5;
+  NS_LOG_INFO ("Added Canvas Margin:" << m_topoMinX << "," <<
+               m_topoMinY << "," << m_topoMaxX << "," << m_topoMaxY);                 
 }
 
 std::vector <Ptr <Node> >  AnimationInterface::RecalcTopoBounds ()
@@ -553,17 +639,17 @@ std::vector <Ptr <Node> >  AnimationInterface::RecalcTopoBounds ()
 
 void AnimationInterface::RecalcTopoBounds (Vector v)
 {
-  double oldminX = topo_minX;
-  double oldminY = topo_minY;
-  double oldmaxX = topo_maxX;
-  double oldmaxY = topo_maxY;
-  topo_minX = std::min (topo_minX, v.x);
-  topo_minY = std::min (topo_minY, v.y);
-  topo_maxX = std::max (topo_maxX, v.x);
-  topo_maxY = std::max (topo_maxY, v.y);
+  double oldminX = m_topoMinX;
+  double oldminY = m_topoMinY;
+  double oldmaxX = m_topoMaxX;
+  double oldmaxY = m_topoMaxY;
+  m_topoMinX = std::min (m_topoMinX, v.x);
+  m_topoMinY = std::min (m_topoMinY, v.y);
+  m_topoMaxX = std::max (m_topoMaxX, v.x);
+  m_topoMaxY = std::max (m_topoMaxY, v.y);
   
-  if ((topo_minX != oldminX) || (topo_minY != oldminY) ||
-      (topo_maxX != oldmaxX) || (topo_maxY != oldmaxY))
+  if ((m_topoMinX != oldminX) || (m_topoMinY != oldminY) ||
+      (m_topoMaxX != oldmaxX) || (m_topoMaxY != oldmaxY))
     {
       AddMargin ();
     } 
@@ -603,8 +689,8 @@ void AnimationInterface::WriteDummyPacket ()
   double lbRx = now.GetSeconds ();
   if (m_xml)
     {
-      oss << GetXMLOpen_packet (0,0,fbTx,lbTx,"DummyPktIgnoreThis");
-      oss << GetXMLOpenClose_rx (0,0,fbRx,lbRx);
+      oss << GetXMLOpen_packet (0, 0, fbTx, lbTx, "DummyPktIgnoreThis");
+      oss << GetXMLOpenClose_rx (0, 0, fbRx, lbRx);
       oss << GetXMLClose ("packet");
     }
   WriteN (m_fHandle, oss.str ());
@@ -627,9 +713,13 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
   double lbRx = (now + rxTime).GetSeconds ();
   if (m_xml)
     {
-      oss << GetXMLOpen_packet (0,tx->GetNode ()->GetId (),fbTx,lbTx);
-      oss << GetXMLOpenClose_rx (0,rx->GetNode ()->GetId (),fbRx,lbRx); 
+      oss << GetXMLOpen_packet (0, tx->GetNode ()->GetId (), fbTx, lbTx);
+      oss << GetXMLOpenClose_rx (0, rx->GetNode ()->GetId (), fbRx, lbRx); 
+      if (m_enablePacketMetadata)
+        oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
       oss << GetXMLClose ("packet");
+      StartNewTraceFile ();
+      ++m_currentPktCount;
     }
   else
     {
@@ -660,27 +750,43 @@ AnimationInterface::GetNetDeviceFromContext (std::string context)
                                   
 void AnimationInterface::AddPendingWifiPacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
 {
-  NS_ASSERT (pktinfo.m_txnd);
-  pendingWifiPackets[AnimUid] = pktinfo;
+  m_pendingWifiPackets[AnimUid] = pktinfo;
 }
 
 void AnimationInterface::AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
 {
   NS_ASSERT (pktinfo.m_txnd);
-  pendingWimaxPackets[AnimUid] = pktinfo;
+  m_pendingWimaxPackets[AnimUid] = pktinfo;
 }
 
+void AnimationInterface::AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
+{
+  NS_ASSERT (pktinfo.m_txnd);
+  m_pendingLtePackets[AnimUid] = pktinfo;
+}
 
 void AnimationInterface::AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
 {
   NS_ASSERT (pktinfo.m_txnd);
-  pendingCsmaPackets[AnimUid] = pktinfo;
+  m_pendingCsmaPackets[AnimUid] = pktinfo;
 }
 
 uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
 {
   AnimByteTag tag;
-  if (p->FindFirstMatchingByteTag (tag))
+  TypeId tid = tag.GetInstanceTypeId ();
+  ByteTagIterator i = p->GetByteTagIterator ();
+  bool found = false;
+  while (i.HasNext ())
+    {
+      ByteTagIterator::Item item = i.Next ();
+      if (tid == item.GetTypeId ())
+        {
+          item.GetTag (tag);
+          found = true;
+        }
+    }
+  if (found)
     {
       return tag.Get ();
     }
@@ -693,7 +799,7 @@ uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
 void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
                                           Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context); 
   NS_ASSERT (ndev);
@@ -707,6 +813,12 @@ void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
   p->AddByteTag (tag);
   AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
   AddPendingWifiPacket (gAnimUid, pktinfo);
+  Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice> (ndev);
+  Mac48Address nodeAddr = netDevice->GetMac()->GetAddress();
+  std::ostringstream oss; 
+  oss << nodeAddr;
+  m_macToNodeIdMap[oss.str ()] = n->GetId ();
+  NS_LOG_INFO ("Added Mac" << oss.str () << " node:" <<m_macToNodeIdMap[oss.str ()]);
 }
 
 void AnimationInterface::WifiPhyTxEndTrace (std::string context,
@@ -717,7 +829,7 @@ void AnimationInterface::WifiPhyTxEndTrace (std::string context,
 void AnimationInterface::WifiPhyTxDropTrace (std::string context,
                                              Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -725,33 +837,53 @@ void AnimationInterface::WifiPhyTxDropTrace (std::string context,
   uint64_t AnimUid = GetAnimUidFromPacket (p);
   NS_LOG_INFO ("TxDropTrace for packet:" << AnimUid);
   NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
-  pendingWifiPackets.erase (pendingWifiPackets.find (AnimUid));
+  m_pendingWifiPackets.erase (m_pendingWifiPackets.find (AnimUid));
 }
 
 
 void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
                                               Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
   NS_LOG_INFO ("RxBeginTrace for packet:" << AnimUid);
   if (!WifiPacketIsPending (AnimUid))
     {
       NS_LOG_WARN ("WifiPhyRxBeginTrace: unknown Uid");
-      return;
+      std::ostringstream oss;
+      WifiMacHeader hdr;
+      if(!p->PeekHeader (hdr))
+      { 
+        NS_LOG_WARN ("WifiMacHeader not present");
+        return;
+      }
+      oss << hdr.GetAddr2 ();
+      if (m_macToNodeIdMap.find (oss.str ()) == m_macToNodeIdMap.end ()) 
+      {
+        NS_LOG_UNCOND (oss.str ());
+        return;
+      }
+      Ptr <Node> txNode = NodeList::GetNode (m_macToNodeIdMap[oss.str ()]);
+      AnimPacketInfo pktinfo (0, Simulator::Now (), Simulator::Now (), UpdatePosition (txNode), m_macToNodeIdMap[oss.str ()]);
+      AddPendingWifiPacket (AnimUid, pktinfo);
+      NS_LOG_WARN ("WifiPhyRxBegin: unknown Uid, but we are adding a wifi packet");
     }
   // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
-  pendingWifiPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
+  m_pendingWifiPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
+  m_pendingWifiPackets[AnimUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
+  OutputWirelessPacket (p, m_pendingWifiPackets[AnimUid], m_pendingWifiPackets[AnimUid].GetRxInfo (ndev));
 }
 
 
 void AnimationInterface::WifiPhyRxEndTrace (std::string context,
                                             Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -761,17 +893,24 @@ void AnimationInterface::WifiPhyRxEndTrace (std::string context,
   if (!WifiPacketIsPending (AnimUid))
     {
       NS_LOG_WARN ("WifiPhyRxEndTrace: unknown Uid");
-      return;
+      AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+      AddPendingWifiPacket (AnimUid, pktinfo);
     }
   // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
-  AnimPacketInfo& pktInfo = pendingWifiPackets[AnimUid];
+  AnimPacketInfo& pktInfo = m_pendingWifiPackets[AnimUid];
   pktInfo.ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
+  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
+  if (pktrxInfo.IsPhyRxComplete ())
+    {
+      NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
+      OutputWirelessPacket (p, pktInfo, pktrxInfo);
+    }
 }
 
 void AnimationInterface::WifiMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -784,12 +923,12 @@ void AnimationInterface::WifiMacRxTrace (std::string context,
       return;
     }
   // TODO: NS_ASSERT (WifiPacketIsPending (AnimUid) == true);
-  AnimPacketInfo& pktInfo = pendingWifiPackets[AnimUid];
+  AnimPacketInfo& pktInfo = m_pendingWifiPackets[AnimUid];
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
   if (pktrxInfo.IsPhyRxComplete ())
     {
       NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
-      OutputWirelessPacket (pktInfo, pktrxInfo);
+      OutputWirelessPacket (p, pktInfo, pktrxInfo);
     }
 
 }
@@ -800,7 +939,7 @@ void AnimationInterface::WifiPhyRxDropTrace (std::string context,
 
 void AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -819,25 +958,69 @@ void AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p,
 
 void AnimationInterface::WimaxRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("WimaxRxTrace for packet:" << AnimUid);
   NS_ASSERT (WimaxPacketIsPending (AnimUid) == true);
-  AnimPacketInfo& pktInfo = pendingWimaxPackets[AnimUid];
+  AnimPacketInfo& pktInfo = m_pendingWimaxPackets[AnimUid];
   pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
   pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
   //TODO 0.001 is used until Wimax implements RxBegin and RxEnd traces
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
-  OutputWirelessPacket (pktInfo, pktrxInfo);
+  OutputWirelessPacket (p, pktInfo, pktrxInfo);
 }
+
+void AnimationInterface::LteTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
+{
+  if (!m_started || !IsInTimeWindow ())
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+  gAnimUid++;
+  NS_LOG_INFO ("LteTxTrace for packet:" << gAnimUid);
+  AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now () + Seconds (0.001), UpdatePosition (n));
+  //TODO 0.0001 is used until Lte implements TxBegin and TxEnd traces
+  AnimByteTag tag;
+  tag.Set (gAnimUid);
+  p->AddByteTag (tag);
+  AddPendingLtePacket (gAnimUid, pktinfo);
+}
+
+
+void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
+{
+  if (!m_started || !IsInTimeWindow ())
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+  uint64_t AnimUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("LteRxTrace for packet:" << gAnimUid);
+  if (!LtePacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("LteRxTrace: unknown Uid");
+      return;
+    }
+  AnimPacketInfo& pktInfo = m_pendingLtePackets[AnimUid];
+  pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
+  pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
+  //TODO 0.001 is used until Lte implements RxBegin and RxEnd traces
+  AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
+  OutputWirelessPacket (p, pktInfo, pktrxInfo);
+}
+
 
 void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -855,25 +1038,29 @@ void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Pac
 
 void AnimationInterface::CsmaPhyTxEndTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
   NS_LOG_INFO ("CsmaPhyTxEndTrace for packet:" << AnimUid);
   if (!CsmaPacketIsPending (AnimUid))
     {
       NS_LOG_WARN ("CsmaPhyTxEndTrace: unknown Uid"); 
-      return;
+      AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+      AddPendingCsmaPacket (AnimUid, pktinfo);
+      NS_LOG_WARN ("Unknown Uid, but adding Csma Packet anyway");
     }
   // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
-  AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
+  AnimPacketInfo& pktInfo = m_pendingCsmaPackets[AnimUid];
   pktInfo.m_lbTx = Simulator::Now ().GetSeconds ();
 }
 
 void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
   NS_ASSERT (ndev);
@@ -886,8 +1073,8 @@ void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packe
       return;
     }
   // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
-  AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
-  pendingCsmaPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
+  AnimPacketInfo& pktInfo = m_pendingCsmaPackets[AnimUid];
+  m_pendingCsmaPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
   pktInfo.ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
   NS_LOG_INFO ("CsmaPhyRxEndTrace for packet:" << AnimUid);
 }
@@ -896,7 +1083,7 @@ void AnimationInterface::CsmaPhyRxEndTrace (std::string context, Ptr<const Packe
 void AnimationInterface::CsmaMacRxTrace (std::string context,
                                          Ptr<const Packet> p)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   NS_LOG_FUNCTION (this);
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
@@ -910,12 +1097,12 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
       return;
     }
   // TODO: NS_ASSERT (CsmaPacketIsPending (AnimUid) == true);
-  AnimPacketInfo& pktInfo = pendingCsmaPackets[AnimUid];
+  AnimPacketInfo& pktInfo = m_pendingCsmaPackets[AnimUid];
   AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
   if (pktrxInfo.IsPhyRxComplete ())
     {
       NS_LOG_INFO ("MacRxTrace for packet:" << AnimUid << " complete");
-      OutputCsmaPacket (pktInfo, pktrxInfo);
+      OutputCsmaPacket (p, pktInfo, pktrxInfo);
     }
 }
 
@@ -923,7 +1110,7 @@ void AnimationInterface::CsmaMacRxTrace (std::string context,
 void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mobility)
 
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <Node> n = mobility->GetObject <Node> ();
   NS_ASSERT (n);
@@ -939,7 +1126,7 @@ void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mo
   UpdatePosition (n,v);
   RecalcTopoBounds (v);
   std::ostringstream oss; 
-  oss << GetXMLOpen_topology (topo_minX,topo_minY,topo_maxX,topo_maxY);
+  oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
   oss << GetXMLOpenClose_node (0,n->GetId (),v.x,v.y);
   oss << GetXMLClose ("topology");
   WriteN (m_fHandle, oss.str ());
@@ -963,9 +1150,11 @@ bool AnimationInterface::NodeHasMoved (Ptr <Node> n, Vector newLocation)
 
 void AnimationInterface::MobilityAutoCheck ()
 {
+  if (!m_started || !IsInTimeWindow ())
+    return;
   std::vector <Ptr <Node> > MovedNodes = RecalcTopoBounds ();
   std::ostringstream oss;
-  oss << GetXMLOpen_topology (topo_minX, topo_minY, topo_maxX, topo_maxY);
+  oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
   for (uint32_t i = 0; i < MovedNodes.size (); i++)
     {
       Ptr <Node> n = MovedNodes [i];
@@ -980,9 +1169,22 @@ void AnimationInterface::MobilityAutoCheck ()
     {
       PurgePendingWifi ();
       PurgePendingWimax ();
+      PurgePendingLte ();
       PurgePendingCsma ();
-      Simulator::Schedule (mobilitypollinterval, &AnimationInterface::MobilityAutoCheck, this);
+      Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
+}
+
+std::string AnimationInterface::GetPacketMetadata (Ptr<const Packet> p)
+{
+  std::ostringstream oss;
+  p->Print (oss);
+  return oss.str ();
+}
+
+uint64_t AnimationInterface::GetTracePktCount ()
+{
+  return m_currentPktCount;
 }
 
 
@@ -997,39 +1199,31 @@ std::string AnimationInterface::GetPreamble ()
     Description of attributes:\n\
     =========================\n\
     anim\n\
-    * lp = Logical Processor Id\n\
     topology\n\
     * minX = minimum X coordinate of the canvas\n\
     * minY = minimum Y coordinate of the canvas\n\
     * maxX = maximum X coordinate of the canvas\n\
     * maxY = maximum Y coordinate of the canvas\n\
     node\n\
-    * lp = Logical Processor Id\n\
     * id = Node Id\n\
     * locX = X coordinate\n\
     * locY = Y coordinate\n\
     link\n\
-    * fromLp = From logical processor Id\n\
     * fromId = From Node Id\n\
-    * toLp   = To logical processor Id\n\
     * toId   = To Node Id\n\
     packet\n\
-    * fromLp = From logical processor Id\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
     rx\n\
-    * toLp = To logical processor Id\n\
     * toId = To Node Id\n\
     * fbRx = First bit Rx Time\n\
     * lbRx = Last bit Rx\n\
     wpacket\n\
-    * fromLp = From logical processor Id\n\
     * fromId = From Node Id\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
     * range = Reception range\n\
     rx\n\
-    * toLp = To logical processor Id\n\
     * toId = To Node Id\n\
     * fbRx = First bit Rx time\n\
     * lbRx = Last bit Rx time-->\n\
@@ -1037,25 +1231,32 @@ std::string AnimationInterface::GetPreamble ()
 return s;
 }
 
-void AnimationInterface::OutputWirelessPacket (AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
+void AnimationInterface::OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
 {
+  StartNewTraceFile ();
   NS_ASSERT (m_xml);
   std::ostringstream oss;
-  NS_ASSERT (pktInfo.m_txnd);
-  uint32_t nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
+  uint32_t nodeId =  0;
+  if (pktInfo.m_txnd)
+    nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
+  else
+    nodeId = pktInfo.m_txNodeId;
 
   double lbTx = pktInfo.firstlastbitDelta + pktInfo.m_fbTx;
   oss << GetXMLOpen_wpacket (0, nodeId, pktInfo.m_fbTx, lbTx, pktrxInfo.rxRange);
 
   uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
   oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
+  if (m_enablePacketMetadata)
+    oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
 
   oss << GetXMLClose ("wpacket");
   WriteN (m_fHandle, oss.str ());
 }
 
-void AnimationInterface::OutputCsmaPacket (AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
+void AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
 {
+  StartNewTraceFile ();
   NS_ASSERT (m_xml);
   std::ostringstream oss;
   NS_ASSERT (pktInfo.m_txnd);
@@ -1064,6 +1265,8 @@ void AnimationInterface::OutputCsmaPacket (AnimPacketInfo &pktInfo, AnimRxInfo p
   oss << GetXMLOpen_packet (0, nodeId, pktInfo.m_fbTx, pktInfo.m_lbTx);
   uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
   oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
+  if (m_enablePacketMetadata)
+    oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
   oss << GetXMLClose ("packet");
   WriteN (m_fHandle, oss.str ());
 }
@@ -1081,6 +1284,22 @@ void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, 
   hubLoc->SetPosition (hubVec);
   NS_LOG_INFO ("Node:" << n->GetId () << " Position set to:(" << x << "," << y << "," << z << ")");
 
+}
+
+void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
+{
+  NS_ASSERT (n);
+  nodeDescriptions[n->GetId ()] = descr;
+}
+
+void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr)
+{
+  for (uint32_t i = 0; i < nc.GetN (); ++i)
+    {
+      Ptr <Node> n = nc.Get (i);
+      NS_ASSERT (n);
+      nodeDescriptions[n->GetId ()] = descr;
+    }
 }
 
 
@@ -1105,14 +1324,22 @@ std::string AnimationInterface::GetXMLOpen_topology (double minX,double minY,dou
 std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY)
 {
   std::ostringstream oss;
-  oss <<"<node lp = \"" << lp << "\" id = \"" << id << "\"" << " locX = \"" 
-      << locX << "\" " << "locY = \"" << locY << "\" />\n";
+  oss <<"<node id = \"" << id << "\""; 
+  if (nodeDescriptions.find (id) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[id] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+  oss << " locX = \"" << locX << "\" " << "locY = \"" << locY << "\" />\n";
   return oss.str ();
 }
 std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId)
 {
   std::ostringstream oss;
-  oss << "<link fromLp=\"0\" fromId=\"" << fromId
+  oss << "<link fromId=\"" << fromId
       << "\" toLp=\"0\" toId=\"" << toId
       << "\"/>" << std::endl;
   return oss.str ();
@@ -1123,7 +1350,7 @@ std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp,uint32_t from
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<packet fromLp=\"" << fromLp << "\" fromId=\"" << fromId
+  oss << "<packet fromId=\"" << fromId
       << "\" fbTx=\"" << fbTx
       << "\" lbTx=\"" << lbTx
       << (auxInfo.empty()?"":"\" aux=\"") << auxInfo.c_str ()
@@ -1135,10 +1362,10 @@ std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fro
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<wpacket fromLp = \"" << fromLp << "\" fromId = \"" << fromId
-      << "\" fbTx = \"" << fbTx
-      << "\" lbTx = \"" << lbTx
-      << "\" range = \"" << range << "\">" << std::endl;
+  oss << "<wpacket fromId=\"" << fromId
+      << "\" fbTx=\"" << fbTx
+      << "\" lbTx=\"" << lbTx
+      << "\" range=\"" << range << "\">" << std::endl;
   return oss.str ();
 
 }
@@ -1147,11 +1374,19 @@ std::string AnimationInterface::GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<rx toLp=\"" << toLp <<"\" toId=\"" << toId
+  oss << "<rx toId=\"" << toId
       << "\" fbRx=\"" << fbRx
       << "\" lbRx=\"" << lbRx
       << "\"/>" << std::endl;
   return oss.str ();
+}
+
+std::string AnimationInterface::GetXMLOpenClose_meta (std::string metaInfo)
+{
+  std::ostringstream oss;
+  oss << "<meta info=\""
+      << metaInfo << "\" />" << std::endl;
+  return oss.str ();      
 }
 
 std::vector<std::string> AnimationInterface::GetElementsFromContext (std::string context)

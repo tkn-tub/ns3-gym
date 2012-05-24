@@ -25,8 +25,11 @@
 #include <ns3/log.h>
 #include <ns3/assert.h>
 #include <math.h>
+#include <vector>
 #include <ns3/spectrum-value.h>
 #include <ns3/double.h>
+#include "ns3/enum.h"
+#include <ns3/lte-mi-error-model.h>
 
 #ifdef __FreeBSD__
 #define log2(x) (log(x)/M_LN2)
@@ -223,7 +226,13 @@ LteAmc::GetTypeId (void)
                  "The requested BER in assigning MCS (default is 0.00005).",
                  DoubleValue (0.00005),
                  MakeDoubleAccessor (&LteAmc::m_ber),
-                 MakeDoubleChecker<double> ());
+                 MakeDoubleChecker<double> ())
+  .AddAttribute ("AmcModel",
+                "AMC model used to assign CQI",
+                 EnumValue (LteAmc::MiErrorModel),
+                 MakeEnumAccessor (&LteAmc::m_amcModel),
+                 MakeEnumChecker (LteAmc::MiErrorModel, "Vienna",
+                                  LteAmc::PiroEW2010, "PiroEW2010"));
   return tid;
 }
 
@@ -238,7 +247,7 @@ LteAmc::GetCqiFromSpectralEfficiency (double s)
     {
       ++cqi;
     }
-  NS_LOG_FUNCTION (s << cqi);
+  NS_LOG_LOGIC ("cqi = " << cqi);
   return cqi;
 }
 
@@ -254,7 +263,7 @@ LteAmc::GetMcsFromCqi (int cqi)
     {
       ++mcs;
     }
-  NS_LOG_FUNCTION (cqi << mcs);
+  NS_LOG_LOGIC ("mcs = " << mcs);
   return mcs;
 }
 
@@ -274,50 +283,107 @@ LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 double
 LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 {
+  NS_LOG_FUNCTION (cqi);
   NS_ASSERT_MSG (cqi >= 0 && cqi <= 15, "CQI must be in [0..15] = " << cqi);
-  NS_LOG_FUNCTION (cqi << SpectralEfficiencyForCqi[cqi]);
+  NS_LOG_LOGIC ("Spectral efficiency = " << SpectralEfficiencyForCqi[cqi]);
   return SpectralEfficiencyForCqi[cqi];
 }
 
 
 std::vector<int>
-LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
+LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   std::vector<int> cqi;
   Values::const_iterator it;
-
-  for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+  
+  if (m_amcModel == PiroEW2010)
     {
-      double sinr_ = (*it);
-      if (sinr_ == 0.0)
+
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
         {
-          cqi.push_back (-1); // SINR == 0 (linear units) means no signal in this RB
+          double sinr_ = (*it);
+          if (sinr_ == 0.0)
+            {
+              cqi.push_back (-1); // SINR == 0 (linear units) means no signal in this RB
+            }
+          else
+            {
+              /*
+              * Compute the spectral efficiency from the SINR
+              *                                        SINR
+              * spectralEfficiency = log2 (1 + -------------------- )
+              *                                    -ln(5*BER)/1.5
+              * NB: SINR must be expressed in linear units
+              */
+
+              double s = log2 ( 1 + ( sinr_ /
+                                      ( (-log (5.0 * m_ber )) / 1.5) ));
+
+              int cqi_ = GetCqiFromSpectralEfficiency (s);
+
+              NS_LOG_LOGIC (" PRB =" << cqi.size ()
+                                    << ", sinr = " << sinr_
+                                    << " (=" << 10 * log10 (sinr_) << " dB)"
+                                    << ", spectral efficiency =" << s
+                                    << ", CQI = " << cqi_ << ", BER = " << m_ber);
+
+              cqi.push_back (cqi_);
+            }
         }
-      else
-        {
-          /*
-          * Compute the spectral efficiency from the SINR
-          *                                        SINR
-          * spectralEfficiency = log2 (1 + -------------------- )
-          *                                    -ln(5*BER)/1.5
-          * NB: SINR must be expressed in linear units
-          */
-
-          double s = log2 ( 1 + ( sinr_ /
-                                  ( (-log (5.0 * m_ber )) / 1.5) ));
-
-          int cqi_ = GetCqiFromSpectralEfficiency (s);
-
-          NS_LOG_LOGIC (" PRB =" << cqi.size ()
-                                 << ", sinr = " << sinr_
-                                 << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
-                                 << ", spectral efficiency =" << s
-                                 << ", CQI = " << cqi_ << ", BER = " << m_ber);
-
-          cqi.push_back (cqi_);
-        }
+    }
+  else if (m_amcModel == MiErrorModel)
+    {
+      NS_LOG_DEBUG (this << " AMC-VIENNA RBG size " << (uint16_t)rbgSize);
+      NS_ASSERT_MSG (rbgSize > 0, " LteAmc-Vienna: RBG size must be greater than 0");
+      std::vector <int> rbgMap;
+      int rbId = 0;
+      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+      {
+        rbgMap.push_back (rbId++);
+        if ((rbId % rbgSize == 0)||((it+1)==sinr.ConstValuesEnd ()))
+         {
+            uint8_t mcs = 0;
+            double ber = 0.0;
+            while (mcs < 28)
+              {
+                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs);
+                if (ber > 0.1)
+                  break;
+                mcs++;
+                
+              }
+            NS_LOG_DEBUG (this << "\t RBG " << rbId << " MCS " << (uint16_t)mcs << " BER " << ber);
+            int rbgCqi = 0;
+            if ((ber > 0.1)&&(mcs==0))
+              {
+                rbgCqi = 0; // any MCS can guarantee the 10 % of BER
+              }
+            else if (mcs == 28)
+              {
+                rbgCqi = 15; // all MCSs can guarantee the 10 % of BER
+              }
+            else
+              {
+                double s = SpectralEfficiencyForMcs[mcs];
+                rbgCqi = 0;
+                while ((rbgCqi < 15) && (SpectralEfficiencyForCqi[rbgCqi + 1] < s))
+                {
+                  ++rbgCqi;
+                }
+              }
+            NS_LOG_DEBUG (this << "\t CQI " << rbgCqi);
+            // fill the cqi vector (per RB basis)
+            for (uint8_t j = 0; j < rbgSize; j++)
+              {
+                cqi.push_back (rbgCqi);
+              }
+            rbgMap.clear ();
+         }
+        
+      }
+      
     }
 
   return cqi;

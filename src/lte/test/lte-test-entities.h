@@ -21,6 +21,7 @@
 #ifndef LTE_TEST_ENTITIES_H
 #define LTE_TEST_ENTITIES_H
 
+#include "ns3/simulator.h"
 #include "ns3/test.h"
 // #include "ns3/type-id.h"
 
@@ -28,6 +29,7 @@
 #include "ns3/lte-rlc-sap.h"
 #include "ns3/lte-pdcp-sap.h"
 
+#include "ns3/net-device.h"
 
 using namespace ns3;
 
@@ -64,9 +66,22 @@ class LteTestRrc : public Object
     LtePdcpSapUser* GetLtePdcpSapUser (void);
 
     void Start ();
+    void Stop ();
 
     void SendData (Time at, std::string dataToSend);
     std::string GetDataReceived (void);
+
+    // Stats
+    uint32_t GetTxPdus (void);
+    uint32_t GetTxBytes (void);
+    uint32_t GetRxPdus (void);
+    uint32_t GetRxBytes (void);
+
+    Time GetTxLastTime (void);
+    Time GetRxLastTime (void);
+
+    void SetArrivalTime (Time arrivalTime);
+    void SetPduSize (uint32_t pduSize);
 
   private:
     // Interface forwarded by LtePdcpSapUser
@@ -77,6 +92,16 @@ class LteTestRrc : public Object
 
     std::string m_receivedData;
 
+    uint32_t m_txPdus;
+    uint32_t m_txBytes;
+    uint32_t m_rxPdus;
+    uint32_t m_rxBytes;
+    Time     m_txLastTime;
+    Time     m_rxLastTime;
+
+    EventId m_nextPdu;
+    Time m_arrivalTime;
+    uint32_t m_pduSize;
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -125,7 +150,6 @@ class LteTestPdcp : public Object
     LteRlcSapProvider* m_rlcSapProvider;
 
     std::string m_receivedData;
-
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -148,8 +172,12 @@ class LteTestMac : public Object
     virtual ~LteTestMac (void);
     virtual void DoDispose (void);
 
-    void SendTxOpportunity (Time time, uint32_t bytes);
+    void SetDevice (Ptr<NetDevice> device);
+
+    void SendTxOpportunity (Time, uint32_t);
     std::string GetDataReceived (void);
+
+    bool Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
 
     /**
      * \brief Set the MAC SAP user
@@ -190,8 +218,18 @@ class LteTestMac : public Object
 
     typedef enum {
       MANUAL_MODE     = 0,
-      AUTOMATIC_MODE  = 1
+      AUTOMATIC_MODE  = 1,
+      RANDOM_MODE     = 2
     } TxOpportunityMode_t;
+
+    void SetTxOppTime (Time txOppTime);
+    void SetTxOppSize (uint32_t txOppSize);
+
+    // Stats
+    uint32_t GetTxPdus (void);
+    uint32_t GetTxBytes (void);
+    uint32_t GetRxPdus (void);
+    uint32_t GetRxBytes (void);
 
   private:
     // forwarded from LteMacSapProvider
@@ -206,7 +244,20 @@ class LteTestMac : public Object
 
     uint8_t m_rlcHeaderType;
     bool m_pdcpHeaderPresent;
-    bool m_txOpportunityMode;
+    uint8_t m_txOpportunityMode;
+
+    Ptr<NetDevice> m_device;
+
+    // TxOpportunity configuration
+    EventId m_nextTxOpp;
+    Time m_txOppTime;
+    uint32_t m_txOppSize;
+
+    // Stats
+    uint32_t m_txPdus;
+    uint32_t m_txBytes;
+    uint32_t m_rxPdus;
+    uint32_t m_rxBytes;
 
 };
 

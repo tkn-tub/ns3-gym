@@ -18,13 +18,14 @@
 #include <sstream>
 
 // ns3 includes
-#include "ns3/animation-interface.h"
+#include "ns3/log.h"
 #include "ns3/point-to-point-star.h"
 #include "ns3/constant-position-mobility-model.h"
 
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
+#include "ns3/ipv6-address-generator.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointStarHelper");
 
@@ -72,6 +73,18 @@ PointToPointStarHelper::GetSpokeIpv4Address (uint32_t i) const
   return m_spokeInterfaces.GetAddress (i);
 }
 
+Ipv6Address
+PointToPointStarHelper::GetHubIpv6Address (uint32_t i) const
+{
+  return m_hubInterfaces6.GetAddress (i, 1);
+}
+
+Ipv6Address
+PointToPointStarHelper::GetSpokeIpv6Address (uint32_t i) const
+{
+  return m_spokeInterfaces6.GetAddress (i, 1);
+}
+
 uint32_t
 PointToPointStarHelper::SpokeCount () const
 {
@@ -93,6 +106,27 @@ PointToPointStarHelper::AssignIpv4Addresses (Ipv4AddressHelper address)
       m_hubInterfaces.Add (address.Assign (m_hubDevices.Get (i)));
       m_spokeInterfaces.Add (address.Assign (m_spokeDevices.Get (i)));
       address.NewNetwork ();
+    }
+}
+
+void 
+PointToPointStarHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6Prefix prefix)
+{
+  Ipv6AddressGenerator::Init (addrBase, prefix);
+  Ipv6Address v6network;
+  Ipv6AddressHelper addressHelper;
+
+  for (uint32_t i = 0; i < m_spokes.GetN (); ++i)
+    {
+      v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+      addressHelper.NewNetwork(v6network, prefix);
+
+      Ipv6InterfaceContainer ic = addressHelper.Assign (m_hubDevices.Get (i));
+      m_hubInterfaces6.Add (ic);
+      ic = addressHelper.Assign (m_spokeDevices.Get (i));
+      m_spokeInterfaces6.Add (ic);
+
+      Ipv6AddressGenerator::NextNetwork (prefix);
     }
 }
 

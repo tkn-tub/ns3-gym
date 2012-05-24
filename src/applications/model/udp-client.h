@@ -56,6 +56,8 @@ public:
    * \param port remote port
    */
   void SetRemote (Ipv4Address ip, uint16_t port);
+  void SetRemote (Ipv6Address ip, uint16_t port);
+  void SetRemote (Address ip, uint16_t port);
 
 protected:
   virtual void DoDispose (void);
@@ -74,7 +76,7 @@ private:
 
   uint32_t m_sent;
   Ptr<Socket> m_socket;
-  Ipv4Address m_peerAddress;
+  Address m_peerAddress;
   uint16_t m_peerPort;
   EventId m_sendEvent;
 

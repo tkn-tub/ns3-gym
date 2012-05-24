@@ -138,6 +138,19 @@ public:
    */
   void SetUeAntennaModelAttribute (std::string n, const AttributeValue &v);
 
+  /** 
+   * 
+   * \param type the type of SpectrumChannel to be used for the UEs
+   */
+  void SetSpectrumChannelType (std::string type);
+
+  /**
+   * set an attribute for the SpectrumChannel to be used for the UEs
+   * 
+   * \param n the name of the attribute
+   * \param v the value of the attribute
+   */
+  void SetSpectrumChannelAttribute (std::string n, const AttributeValue &v);
   /**
    * create a set of eNB devices
    *
@@ -171,6 +184,22 @@ public:
    * \param enbDevice
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+
+  /** 
+   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set
+   * 
+   * \param ueDevices the set of UEs
+   * \param enbDevices the set of eNBs
+   */
+  void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
+
+  /** 
+   * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
+   * 
+   * \param ueDevice the UE
+   * \param enbDevices the set of eNBs
+   */
+  void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
   /**
    * Activate an EPS bearer on a given set of UE devices
@@ -305,6 +334,8 @@ private:
 
   ObjectFactory m_dlPathlossModelFactory;
   ObjectFactory m_ulPathlossModelFactory;
+
+  ObjectFactory m_channelFactory;
 
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;

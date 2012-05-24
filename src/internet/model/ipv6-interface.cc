@@ -34,6 +34,8 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6Interface");
 
+NS_OBJECT_ENSURE_REGISTERED (Ipv6Interface);
+
 TypeId Ipv6Interface::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6Interface")
@@ -48,6 +50,7 @@ Ipv6Interface::Ipv6Interface ()
     m_metric (1),
     m_node (0),
     m_device (0),
+    m_ndCache (0),
     m_curHopLimit (0),
     m_baseReachableTime (0),
     m_reachableTime (0),
@@ -64,6 +67,9 @@ Ipv6Interface::~Ipv6Interface ()
 void Ipv6Interface::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_node = 0;
+  m_device = 0;
+  m_ndCache = 0;
   Object::DoDispose ();
 }
 

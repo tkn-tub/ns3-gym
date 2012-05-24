@@ -37,8 +37,6 @@ using std::vector;
 int
 main (int argc, char *argv[])
 {
-  double simTime = 0.03;
-
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
@@ -46,8 +44,6 @@ main (int argc, char *argv[])
   inputConfig.ConfigureDefaults ();
 
   cmd.Parse (argc, argv);
-
-  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
 
   // Geometry of the scenario (in meters)
   // Assume squared building
@@ -61,7 +57,7 @@ main (int argc, char *argv[])
 
   Ptr < LteHelper > lteHelper = CreateObject<LteHelper> ();
   //lteHelper->EnableLogComponents ();
-  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -86,9 +82,10 @@ main (int argc, char *argv[])
   vector<Vector> enbPosition;
   Ptr < ListPositionAllocator > positionAlloc = CreateObject<ListPositionAllocator> ();
   Ptr < Building > building;
-  building = Create<Building> (0.0, nRooms * roomLength,
-                               0.0, nRooms * roomLength,
-                               0.0, roomHeight);
+  building = Create<Building> ();
+  building->SetBoundaries (Box (0.0, nRooms * roomLength,
+                                0.0, nRooms * roomLength,
+                                0.0, roomHeight));
   building->SetBuildingType (Building::Residential);
   building->SetExtWallsType (Building::ConcreteWithWindows);
   building->SetNFloors (1);
@@ -108,23 +105,6 @@ main (int argc, char *argv[])
           enbPosition.push_back (v);
           Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
           mmEnb->SetPosition (v);
-          mmEnb->SetIndoor (building);
-          mmEnb->SetFloorNumber (0);
-          mmEnb->SetRoomNumberX (row);
-          mmEnb->SetRoomNumberY (column);
-
-          // Positioning UEs attached to eNB
-          mobility.Install (ueNodes.at (plantedEnb));
-          for (uint32_t ue = 0; ue < nUe; ue++)
-            {
-              Ptr<BuildingsMobilityModel> mmUe = ueNodes.at (plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
-              Vector vUe (v.x, v.y, v.z);
-              mmUe->SetPosition (vUe);
-              mmUe->SetIndoor (building);
-              mmUe->SetFloorNumber (0);
-              mmUe->SetRoomNumberX (row);
-              mmUe->SetRoomNumberY (column);
-            }
         }
     }
 
@@ -132,7 +112,7 @@ main (int argc, char *argv[])
   Vector v (500, 3000, nodeHeight);
   positionAlloc->Add (v);
   enbPosition.push_back (v);
-  mobility.Install (ueNodes.at (plantedEnb));
+  mobility.Install (ueNodes.at(plantedEnb));
   plantedEnb++;
 
   // Add the 3-sector site
@@ -141,7 +121,7 @@ main (int argc, char *argv[])
       Vector v (500, 2000, nodeHeight);
       positionAlloc->Add (v);
       enbPosition.push_back (v);
-      mobility.Install (ueNodes.at (plantedEnb));
+      mobility.Install (ueNodes.at(plantedEnb));
     }
 
 
@@ -151,24 +131,24 @@ main (int argc, char *argv[])
   // Position of UEs attached to eNB
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      UniformVariable posX (enbPosition.at (i).x - roomLength * 0,
-                            enbPosition.at (i).x + roomLength * 0);
-      UniformVariable posY (enbPosition.at (i).y - roomLength * 0,
-                            enbPosition.at (i).y + roomLength * 0);
+      UniformVariable posX (enbPosition.at(i).x - roomLength * 0,
+                            enbPosition.at(i).x + roomLength * 0);
+      UniformVariable posY (enbPosition.at(i).y - roomLength * 0,
+                            enbPosition.at(i).y + roomLength * 0);
       positionAlloc = CreateObject<ListPositionAllocator> ();
       for (uint32_t j = 0; j < nUe; j++)
         {
           if ( i == nEnb - 3 )
             {
-              positionAlloc->Add (Vector (enbPosition.at (i).x + 10, enbPosition.at (i).y, nodeHeight));
+              positionAlloc->Add (Vector (enbPosition.at(i).x + 10, enbPosition.at(i).y, nodeHeight));
             }
           else if ( i == nEnb - 2 )
             {
-              positionAlloc->Add (Vector (enbPosition.at (i).x - sqrt (10), enbPosition.at (i).y + sqrt (10), nodeHeight));
+              positionAlloc->Add (Vector (enbPosition.at(i).x - sqrt (10), enbPosition.at(i).y + sqrt (10), nodeHeight));
             }
           else if ( i == nEnb - 1 )
             {
-              positionAlloc->Add (Vector (enbPosition.at (i).x - sqrt (10), enbPosition.at (i).y - sqrt (10), nodeHeight));
+              positionAlloc->Add (Vector (enbPosition.at(i).x - sqrt (10), enbPosition.at(i).y - sqrt (10), nodeHeight));
             }
           else
             {
@@ -176,39 +156,43 @@ main (int argc, char *argv[])
             }
           mobility.SetPositionAllocator (positionAlloc);
         }
-      mobility.Install (ueNodes.at (i));
+      mobility.Install (ueNodes.at(i));
     }
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   vector < NetDeviceContainer > ueDevs;
 
+  // power setting in dBm for small cells
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20.0));
   enbDevs = lteHelper->InstallEnbDevice (oneSectorNodes);
+
+
+  // power setting for three-sector macrocell
+  Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (43.0));
 
   // Beam width is made quite narrow so sectors can be noticed in the REM
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (20));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (0)));
 
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (360/3));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (20));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (1)));
 
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (2*360/3));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (20));
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (2)));
 
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      NetDeviceContainer ueDev = lteHelper->InstallUeDevice (ueNodes.at (i));
+      NetDeviceContainer ueDev = lteHelper->InstallUeDevice (ueNodes.at(i));
       ueDevs.push_back (ueDev);
       lteHelper->Attach (ueDev, enbDevs.Get (i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
@@ -216,29 +200,28 @@ main (int argc, char *argv[])
       lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());
     }
 
-  Simulator::Stop (Seconds (simTime));
 
-  // better to leave traces disabled
-  //lteHelper->EnableTraces ();
+  BuildingsHelper::MakeMobilityModelConsistent ();
+
+  // by default, simulation will anyway stop right after the REM has been generated
+  Simulator::Stop (Seconds (0.0069));  
 
   Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
   remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
-  remHelper->SetAttribute ("XMin", DoubleValue (-200.0));
-  remHelper->SetAttribute ("XMax", DoubleValue (1200.0));
-  remHelper->SetAttribute ("XRes", UintegerValue (300));
-  remHelper->SetAttribute ("YMin", DoubleValue (-300.0));
+  remHelper->SetAttribute ("XMin", DoubleValue (-2000.0));
+  remHelper->SetAttribute ("XMax", DoubleValue (+2000.0));
+  remHelper->SetAttribute ("YMin", DoubleValue (-500.0));
   remHelper->SetAttribute ("YMax", DoubleValue (+3500.0));
-  remHelper->SetAttribute ("YRes", UintegerValue (300));
   remHelper->SetAttribute ("Z", DoubleValue (1.5));
   remHelper->Install ();
-  // Recall the buildings helper to place the REM nodes in its position
-  BuildingsHelper::MakeMobilityModelConsistent ();
+
   Simulator::Run ();
 
-  // GtkConfigStore config;
-  // config.ConfigureAttributes ();
+//  GtkConfigStore config;
+//  config.ConfigureAttributes ();
 
+  lteHelper = 0;
   Simulator::Destroy ();
   return 0;
 }

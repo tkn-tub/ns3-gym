@@ -51,7 +51,6 @@ public:
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
   virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
-  virtual void RemoveRx (Ptr<SpectrumPhy> phy);
   virtual void StartTx (Ptr<SpectrumSignalParameters> params);
 
 

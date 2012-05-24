@@ -71,6 +71,6 @@ private:
 
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif // LTE_PDCP_HEADER_H

@@ -35,9 +35,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (RemSpectrumPhy);
 
 RemSpectrumPhy::RemSpectrumPhy ()
-  : m_mobility (0),
-    m_netDevice (0),
-    m_channel (0),
+  : m_mobility (0),    
     m_referenceSignalPower (0),
     m_sumPower (0),
     m_active (true)
@@ -57,8 +55,6 @@ RemSpectrumPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_mobility = 0;
-  m_netDevice = 0;
-  m_channel = 0;
   SpectrumPhy::DoDispose ();
 }
 
@@ -68,44 +64,17 @@ RemSpectrumPhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::RemSpectrumPhy")
     .SetParent<SpectrumPhy> ()
     .AddConstructor<RemSpectrumPhy> ()
-    .AddAttribute ("NoisePower",
-                   "the power of the measuring instrument noise, in Watts. Default to a kT of -174 dBm with a noise figure of 9 dB and a bandwidth of 25 LTE Resource Blocks",
-                   DoubleValue (1.4230e-10),
-                   MakeDoubleAccessor (&RemSpectrumPhy::m_noisePower),
-                   MakeDoubleChecker<double> ())
     ;
   return tid;
 }
 
 
 
-Ptr<NetDevice>
-RemSpectrumPhy::GetDevice ()
-{
-  return m_netDevice;
-}
-
-
-Ptr<MobilityModel>
-RemSpectrumPhy::GetMobility ()
-{
-  return m_mobility;
-}
-
-
-Ptr<const SpectrumModel>
-RemSpectrumPhy::GetRxSpectrumModel () const
-{
-  return m_spectrumModel;
-}
-
 void
-RemSpectrumPhy::SetDevice (Ptr<NetDevice> d)
+RemSpectrumPhy::SetChannel (Ptr<SpectrumChannel> c)
 {
-  NS_LOG_FUNCTION (this << d);
-  m_netDevice = d;
+  // this is a no-op, RemSpectrumPhy does not transmit hence it does not need a reference to the channel
 }
-
 
 void
 RemSpectrumPhy::SetMobility (Ptr<MobilityModel> m)
@@ -114,19 +83,29 @@ RemSpectrumPhy::SetMobility (Ptr<MobilityModel> m)
   m_mobility = m;
 }
 
-
 void
-RemSpectrumPhy::SetChannel (Ptr<SpectrumChannel> c)
+RemSpectrumPhy::SetDevice (Ptr<NetDevice> d)
 {
-  NS_LOG_FUNCTION (this << c);
-  m_channel = c;
+  NS_LOG_FUNCTION (this << d);
+  // this is a no-op, RemSpectrumPhy does not handle any data hence it does not support the use of a NetDevice
 }
 
-void
-RemSpectrumPhy::SetRxSpectrumModel (Ptr<SpectrumModel> m)
+Ptr<MobilityModel>
+RemSpectrumPhy::GetMobility ()
 {
-  NS_LOG_FUNCTION (this << m);
-  m_spectrumModel = m;
+  return m_mobility;
+}
+
+Ptr<NetDevice>
+RemSpectrumPhy::GetDevice ()
+{
+  return 0;
+}
+
+Ptr<const SpectrumModel>
+RemSpectrumPhy::GetRxSpectrumModel () const
+{
+  return m_rxSpectrumModel;
 }
 
 Ptr<AntennaModel>
@@ -153,16 +132,36 @@ RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
     }
 }
 
-double
-RemSpectrumPhy::GetSinr ()
+void
+RemSpectrumPhy::SetRxSpectrumModel (Ptr<const SpectrumModel> m)
 {
-  return m_referenceSignalPower / (m_sumPower + m_noisePower);
+  NS_LOG_FUNCTION (this << m);
+  m_rxSpectrumModel = m;
+}
+
+double
+RemSpectrumPhy::GetSinr (double noisePower)
+{
+  return m_referenceSignalPower / (m_sumPower - m_referenceSignalPower + noisePower);
 }
 
 void
 RemSpectrumPhy::Deactivate ()
 {
   m_active = false;
+}
+
+bool
+RemSpectrumPhy::IsActive ()
+{
+  return m_active;
+}
+
+void
+RemSpectrumPhy::Reset ()
+{
+  m_referenceSignalPower = 0;
+  m_sumPower = 0;
 }
 
 

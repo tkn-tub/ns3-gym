@@ -2,7 +2,11 @@ clear all;
 close all;
 
 %% BuildingsPropagationLossModel pathloss test reference script
-%% ITU1411, ITU1238, COST231, OH, etc.
+
+
+%% ITU1411, COST231, OH, etc. scripts are in the propagation module
+addpath ("../../../propagation/test/reference/");
+
 
 %f = 2114e6;  % carrier freq Hz, EARFCN = 500 (downlink)
 %f = 1900e6;  % carrier freq Hz, EARFCN = 500 (downlink)
@@ -36,13 +40,13 @@ g = loss_COST231_small_cities_urban (d, hb, hm, fmhz);
 disp ("Test #2: the value of COST231 for small cities is:"), disp (g)
 
 % Test #3
-g = loss_OH_2_6GHz (d*1000);
-disp ("Test #3: the value of OH at 2.6 GHz is:"), disp (g)
+g = loss_Kun_2_6GHz (d*1000);
+disp ("Test #3: the value of Kun 2.6 GHz is:"), disp (g)
 
 % Test #4
 d = 1041.2; %m
 f = 2114e6;
-g = loss_ITU1411_LOS (d, hb, hm, hr, f);
+g = loss_ITU1411_LOS (d, hb, hm, f);
 disp ("Test #4: the value of ITU1411 in LOS is:"), disp (g)
 
 % Test #5

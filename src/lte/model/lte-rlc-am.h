@@ -21,6 +21,8 @@
 #ifndef LTE_RLC_AM_H
 #define LTE_RLC_AM_H
 
+#include "ns3/lte-rlc-sequence-number.h"
+
 #include "ns3/lte-rlc.h"
 
 #include <vector>
@@ -61,7 +63,7 @@ private:
   void ExpireReorderingTimer (void);
   void ExpirePollRetransmitTimer (void);
 
-  bool IsInsideReceivingWindow (uint16_t seqNumber);
+  bool IsInsideReceivingWindow (SequenceNumber10 seqNumber);
 // 
 //   void ReassembleOutsideWindow (void);
 //   void ReassembleSnLessThan (uint16_t seqNumber);
@@ -89,7 +91,7 @@ private:
 
     struct PduBuffer
     {
-      uint16_t  m_seqNumber;
+      SequenceNumber10  m_seqNumber;
       std::list < Ptr<Packet> >  m_byteSegments;
 
       bool      m_pduComplete;
@@ -110,17 +112,17 @@ private:
    * State variables. See section 7.1 in TS 36.322
    */
   // Transmitting side
-  uint16_t m_vtA;                   // VT(A)
-  uint16_t m_vtMs;                  // VT(MS)
-  uint16_t m_vtS;                   // VT(S)
-  uint16_t m_pollSn;                // POLL_SN
+  SequenceNumber10 m_vtA;                   // VT(A)
+  SequenceNumber10 m_vtMs;                  // VT(MS)
+  SequenceNumber10 m_vtS;                   // VT(S)
+  SequenceNumber10 m_pollSn;                // POLL_SN
 
   // Receiving side
-  uint16_t m_vrR;                   // VR(R)
-  uint16_t m_vrMr;                  // VR(MR)
-  uint16_t m_vrX;                   // VR(X)
-  uint16_t m_vrMs;                  // VR(MS)
-  uint16_t m_vrH;                   // VR(H)
+  SequenceNumber10 m_vrR;                   // VR(R)
+  SequenceNumber10 m_vrMr;                  // VR(MR)
+  SequenceNumber10 m_vrX;                   // VR(X)
+  SequenceNumber10 m_vrMs;                  // VR(MS)
+  SequenceNumber10 m_vrH;                   // VR(H)
 
   /**
    * Counters. See section 7.1 in TS 36.322
@@ -159,7 +161,7 @@ private:
   /**
    * Expected Sequence Number
    */
-  uint16_t m_expectedSeqNumber;
+  SequenceNumber10 m_expectedSeqNumber;
 
 };
 

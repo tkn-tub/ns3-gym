@@ -102,6 +102,11 @@ public:
   double GetNoiseFigure () const;
 
   /**
+   * \returns the TTI delay between MAC and channel
+   */
+  uint8_t GetMacChDelay (void) const;
+
+  /**
    * \brief Queue the MAC PDU to be sent
    * \param p the MAC PDU to sent
    */
@@ -151,7 +156,7 @@ public:
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
   virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
@@ -203,8 +208,13 @@ private:
   void SetTxMode7Gain (double gain);
   void SetTxModeGain (uint8_t txMode, double gain);
   
+  void QueueSubChannelsForTransmission (std::vector <int> rbMap);
+  
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
+  
+  std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
+  
   
   Ptr<LteAmc> m_amc;
 

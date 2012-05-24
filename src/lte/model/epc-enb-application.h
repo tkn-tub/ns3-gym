@@ -25,7 +25,6 @@
 #include <ns3/address.h>
 #include <ns3/socket.h>
 #include <ns3/virtual-net-device.h>
-#include <ns3/epc-gtpu-l5-protocol.h>
 #include <ns3/traced-callback.h>
 #include <ns3/callback.h>
 #include <ns3/ptr.h>

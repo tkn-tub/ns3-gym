@@ -57,10 +57,6 @@ import wutils
 
 Configure.autoconfig = 0
 
-# until http://code.google.com/p/waf/issues/detail?id=1039 gets fixed...
-wutils.monkey_patch_Runner_start()
-
-
 # the following two variables are used by the target "waf dist"
 VERSION = file("VERSION", "rt").read().strip()
 APPNAME = 'ns'
@@ -274,6 +270,11 @@ def _check_compilation_flag(conf, flag, mode='cxx', linkflags=None):
 def report_optional_feature(conf, name, caption, was_enabled, reason_not_enabled):
     conf.env.append_value('NS3_OPTIONAL_FEATURES', [(name, caption, was_enabled, reason_not_enabled)])
 
+def check_optional_feature(conf, name):
+    for (name1, caption, was_enabled, reason_not_enabled) in conf.env.NS3_OPTIONAL_FEATURES:
+        if name1 == name:
+            return was_enabled
+    raise KeyError("Feature %r not declared yet" % (name,))
 
 # starting with waf 1.6, conf.check() becomes fatal by default if the
 # test fails, this alternative method makes the test non-fatal, as it
@@ -291,6 +292,7 @@ def configure(conf):
     conf.check_nonfatal = types.MethodType(_check_nonfatal, conf)
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
+    conf.check_optional_feature = types.MethodType(check_optional_feature, conf)
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.check_tool('compiler_c')
@@ -368,6 +370,8 @@ def configure(conf):
 
     conf.env['MODULES_NOT_BUILT'] = []
 
+    conf.sub_config('bindings/python')
+
     conf.sub_config('src')
 
     # Set the list of enabled modules.
@@ -399,8 +403,6 @@ def configure(conf):
             conf.env['NS3_ENABLED_MODULES'].remove(not_built_name)
             if not conf.env['NS3_ENABLED_MODULES']:
                 raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
-
-    conf.sub_config('bindings/python')
 
     conf.sub_config('src/mpi')
 
@@ -541,7 +543,7 @@ class SuidBuild_task(Task.TaskBase):
         super(SuidBuild_task, self).__init__(*args, **kwargs)
         self.m_display = 'build-suid'
         try:
-            program_obj = wutils.find_program(self.generator.target, self.generator.env)
+            program_obj = wutils.find_program(self.generator.name, self.generator.env)
         except ValueError, ex:
             raise WafError(str(ex))
         program_node = program_obj.path.find_or_declare(program_obj.target)
@@ -558,7 +560,10 @@ class SuidBuild_task(Task.TaskBase):
 
     def runnable_status(self):
         "RUN_ME SKIP_ME or ASK_LATER"
-        st = os.stat(self.filename)
+        try:
+            st = os.stat(self.filename)
+        except OSError:
+            return Task.ASK_LATER
         if st.st_uid == 0:
             return Task.SKIP_ME
         else:
@@ -626,7 +631,7 @@ def add_scratch_programs(bld):
         if os.path.isdir(os.path.join("scratch", filename)):
             obj = bld.create_ns3_program(filename, all_modules)
             obj.path = obj.path.find_dir('scratch').find_dir(filename)
-            obj.find_sources_in_dirs('.')
+            obj.source = obj.path.ant_glob('*.cc')
             obj.target = filename
             obj.name = obj.target
             obj.install_path = None
@@ -661,6 +666,14 @@ def _exclude_taskgen(self, taskgen):
         break
 
 
+def _find_ns3_module(self, name):
+    for obj in _get_all_task_gen(self):
+        # disable the modules themselves
+        if hasattr(obj, "is_ns3_module") and obj.name == name:
+            return obj
+    raise KeyError(name)
+
+
 def build(bld):
     env = bld.env
 
@@ -689,6 +702,7 @@ def build(bld):
     bld.create_suid_program = types.MethodType(create_suid_program, bld)
     bld.__class__.all_task_gen = property(_get_all_task_gen)
     bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
+    bld.find_ns3_module = types.MethodType(_find_ns3_module, bld)
 
     # process subfolders from here
     bld.add_subdirs('src')
@@ -769,6 +783,12 @@ def build(bld):
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
+            # disable pcfile taskgens for disabled modules
+            if 'ns3pcfile' in getattr(obj, "features", []):
+                if obj.module not in bld.env.NS3_ENABLED_MODULES:
+                    bld.exclude_taskgen(obj)
+
+
     if env['NS3_ENABLED_MODULES']:
         env['NS3_ENABLED_MODULES'] = list(modules)
 
@@ -826,7 +846,12 @@ def shutdown(ctx):
         # Print the list of built modules.
         print
         print 'Modules built:'
-        names_without_prefix =[name[len('ns3-'):] for name in env['NS3_ENABLED_MODULES']]
+        names_without_prefix = []
+        for name in env['NS3_ENABLED_MODULES']:
+            name1 = name[len('ns3-'):]
+            if name not in env.MODULAR_BINDINGS_MODULES:
+                name1 += " (no Python)"
+            names_without_prefix.append(name1)
         print_module_names(names_without_prefix)
         print
 

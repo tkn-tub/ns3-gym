@@ -7,27 +7,27 @@ CONVERT = convert -density 250
 SOURCE = source
 FIGURES = $(SOURCE)/figures
 
-# specify figures from which .png and .pdf figures need to be
-# generated (all dia and eps figures)
-IMAGES_EPS = \
-	$(FIGURES)/ff-mac-saps.eps \
-	$(FIGURES)/ff-example.eps \
-	$(FIGURES)/lte-enb-architecture.eps \
-	$(FIGURES)/lte-ue-architecture.eps \
-	$(FIGURES)/epc-profiling-scenario.eps \
-	$(FIGURES)/eutran-profiling-scenario.eps \
-	$(FIGURES)/lte-interference-test-scenario.eps \
-	$(FIGURES)/epc-topology.eps \
-	$(FIGURES)/epc-data-flow-dl.eps \
-	$(FIGURES)/epc-data-flow-ul.eps \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
-	$(FIGURES)/MCS_2_test.eps \
-	$(FIGURES)/MCS_12_test.eps \
-	$(FIGURES)/MCS_14_test.eps
+# specify dia figures from which .png and .pdf figures need to be built
 
-# specify figures for build process (all eps figures)
-GRAPHS_EPS = \
+IMAGES_DIA = \
+	$(FIGURES)/epc-data-flow-dl.dia \
+	$(FIGURES)/epc-data-flow-ul.dia \
+	$(FIGURES)/epc-profiling-scenario.dia \
+	$(FIGURES)/epc-topology.dia \
+	$(FIGURES)/eutran-profiling-scenario.dia \
+	$(FIGURES)/ff-example.dia \
+	$(FIGURES)/ff-mac-saps.dia \
+	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.dia \
+	$(FIGURES)/lte-enb-architecture.dia \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
+	$(FIGURES)/lte-interference-test-scenario.dia \
+	$(FIGURES)/lte-ue-architecture.dia
+
+
+# specify eps figures from which .png and .pdf figures need to be built
+
+IMAGES_EPS = \
+	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
 	$(FIGURES)/lenaThrTestCase2.eps \
@@ -70,17 +70,12 @@ $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
-IMAGES_PNG = ${IMAGES_EPS:.eps=.png} 
-
-IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 
 
 IMAGES_SEQDIAG = \
-	$(FIGURES)/lte-phy-interference.png \
-	$(FIGURES)/lte-phy-interference.pdf \
-	$(FIGURES)/helpers.png \
-	$(FIGURES)/helpers.pdf
+	$(FIGURES)/lte-phy-interference.seqdiag \
+	$(FIGURES)/helpers.seqdiag
 
-IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
+IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
 	$(FIGURES)/fading_urban_3kmph.png \
 	$(FIGURES)/fading_pedestrian.pdf \
@@ -98,17 +93,34 @@ IMAGES_OTHER = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/MCS_17_20.png \
 	$(FIGURES)/MCS_21_24.pdf \
 	$(FIGURES)/MCS_21_24.png \
-	$(FIGURES)/MCS_25_27.pdf \
-	$(FIGURES)/MCS_25_27.png \
+	$(FIGURES)/MCS_25_28.pdf \
+	$(FIGURES)/MCS_29_29.pdf \
+	$(FIGURES)/MCS_29_29.png \
+	$(FIGURES)/MCS_2_test.png \
+	$(FIGURES)/MCS_2_test.pdf \
+	$(FIGURES)/MCS_12_test.png \
+	$(FIGURES)/MCS_12_test.pdf \
+	$(FIGURES)/MCS_16_test.png \
+	$(FIGURES)/MCS_16_test.pdf \
 	$(FIGURES)/lte-phy-interference.png \
 	$(FIGURES)/lte-phy-interference.pdf \
 	$(FIGURES)/helpers.png \
 	$(FIGURES)/helpers.pdf \
 	$(FIGURES)/miesm_scheme.pdf \
 	$(FIGURES)/miesm_scheme.png \
-	$(IMAGES_SEQDIAG) 
+	${IMAGES_SEQDIAG:.seqdiag=.png} \
+	${IMAGES_SEQDIAG:.seqdiag=.pdf}
 
-IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
+IMAGES_BUILD = \
+	${IMAGES_DIA:.dia=.eps} \
+	${IMAGES_DIA:.dia=.png} \
+	${IMAGES_DIA:.dia=.pdf} \
+	${IMAGES_EPS:.eps=.png} \
+	${IMAGES_EPS:.eps=.pdf} 
+
+
+
+IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
@@ -117,10 +129,6 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF) $(IMAGES_OTHER)
 %.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
-GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
-GRAPHS_PDF = ${GRAPHS_EPS:.eps=.pdf}
-
-GRAPHS = $(GRAPHS_EPS) $(GRAPHS_PNG) $(GRAPHS_PDF)
 
 %.png : %.eps; $(CONVERT) $< $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
@@ -159,17 +167,14 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/*
-	-rm -f $(IMAGES_PNG)
-	-rm -f $(IMAGES_PDF)
-	-rm -f $(GRAPHS_PNG)
-	-rm -f $(GRAPHS_PDF)
+	-rm -f $(IMAGES_BUILD)
 
 frag: pickle
 	@if test ! -d $(BUILDDIR)/frag; then mkdir $(BUILDDIR)/frag; fi
 	pushd $(BUILDDIR)/frag && ../../pickle-to-xml.py ../pickle/index.fpickle  > navigation.xml && popd
 	cp -r $(BUILDDIR)/pickle/_images $(BUILDDIR)/frag
 
-html:  $(IMAGES) ${GRAPHS}
+html:  $(IMAGES) 
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
@@ -223,14 +228,14 @@ epub:  $(IMAGES)
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-latex:  $(IMAGES) ${GRAPHS}
+latex:  $(IMAGES)
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf:  $(IMAGES) ${GRAPHS}
+latexpdf:  $(IMAGES)
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(BUILDDIR)/latex all-pdf
@@ -261,3 +266,4 @@ doctest:  $(IMAGES)
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+

@@ -25,8 +25,11 @@
 
 #include "ns3/packet.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 #include "ns3/ptr.h"
-#include "ipv4-l4-protocol.h"
+#include "ns3/ip-l4-protocol.h"
+#include "ipv6-interface.h"
+#include "ipv6-header.h"
 
 namespace ns3 {
 
@@ -34,13 +37,15 @@ class Node;
 class Socket;
 class Ipv4EndPointDemux;
 class Ipv4EndPoint;
+class Ipv6EndPointDemux;
+class Ipv6EndPoint;
 class UdpSocketImpl;
 
 /**
  * \ingroup udp
  * \brief Implementation of the UDP protocol
  */
-class UdpL4Protocol : public Ipv4L4Protocol {
+class UdpL4Protocol : public IpL4Protocol {
 public:
   static TypeId GetTypeId (void);
   static const uint8_t PROT_NUMBER;
@@ -64,8 +69,15 @@ public:
   Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
   Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                           Ipv4Address peerAddress, uint16_t peerPort);
+  Ipv6EndPoint *Allocate6 (void);
+  Ipv6EndPoint *Allocate6 (Ipv6Address address);
+  Ipv6EndPoint *Allocate6 (uint16_t port);
+  Ipv6EndPoint *Allocate6 (Ipv6Address address, uint16_t port);
+  Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
+                          Ipv6Address peerAddress, uint16_t peerPort);
 
   void DeAllocate (Ipv4EndPoint *endPoint);
+  void DeAllocate (Ipv6EndPoint *endPoint);
 
   // called by UdpSocket.
   /**
@@ -82,6 +94,12 @@ public:
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route);
+  void Send (Ptr<Packet> packet,
+             Ipv6Address saddr, Ipv6Address daddr, 
+             uint16_t sport, uint16_t dport);
+  void Send (Ptr<Packet> packet,
+             Ipv6Address saddr, Ipv6Address daddr, 
+             uint16_t sport, uint16_t dport, Ptr<Ipv6Route> route);
   /**
    * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
@@ -89,9 +107,13 @@ public:
    * \param interface the interface from which the packet is coming.
    */
   // inherited from Ipv4L4Protocol
-  virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> interface);
+  virtual enum IpL4Protocol::RxStatus Receive (Ptr<Packet> p,
+                                                 Ipv6Address &src,
+                                                 Ipv6Address &dst,
+                                                 Ptr<Ipv6Interface> interface);
 
   /**
    * \brief Receive an ICMP packet
@@ -108,11 +130,17 @@ public:
                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
                             Ipv4Address payloadSource,Ipv4Address payloadDestination,
                             const uint8_t payload[8]);
+  virtual void ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv6Address payloadSource,Ipv6Address payloadDestination,
+                            const uint8_t payload[8]);
 
-  // From Ipv4L4Protocol
-  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
-  // From Ipv4L4Protocol
-  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+  // From IpL4Protocol
+  virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
+  virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
+  // From IpL4Protocol
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
 
 protected:
   virtual void DoDispose (void);
@@ -124,10 +152,12 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
+  Ipv6EndPointDemux *m_endPoints6;
   UdpL4Protocol (const UdpL4Protocol &o);
   UdpL4Protocol &operator = (const UdpL4Protocol &o);
   std::vector<Ptr<UdpSocketImpl> > m_sockets;
-  Ipv4L4Protocol::DownTargetCallback m_downTarget;
+  IpL4Protocol::DownTargetCallback m_downTarget;
+  IpL4Protocol::DownTargetCallback6 m_downTarget6;
 };
 
 } // namespace ns3

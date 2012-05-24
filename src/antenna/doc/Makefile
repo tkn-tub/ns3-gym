@@ -13,7 +13,7 @@ IMAGES_EPS = ${FIGURES}/antenna-coordinate-system.eps
 GRAPHS_EPS = 
 
 # rescale pdf figures as necessary
-$(FIGURES)/testbed.pdf_width = 5in
+$(FIGURES)/antenna-coordinate-system.pdf_width = 3in
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf} 

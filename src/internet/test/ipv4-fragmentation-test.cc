@@ -20,7 +20,6 @@
 /**
  * This is the test code for ipv4-l3protocol.cc (only the fragmentation and reassembly part).
  */
-#define NS3_LOG_ENABLE 1
 
 #include "ns3/test.h"
 #include "ns3/config.h"
@@ -158,7 +157,7 @@ Ipv4FragmentationTest::HandleReadServer (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
@@ -192,7 +191,7 @@ Ipv4FragmentationTest::HandleReadClient (Ptr<Socket> socket)
 {
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
         {

@@ -47,7 +47,7 @@ class Ipv4Route;
 class Node;
 class Socket;
 class Ipv4RawSocketImpl;
-class Ipv4L4Protocol;
+class IpL4Protocol;
 class Icmpv4L4Protocol;
 
 
@@ -117,7 +117,7 @@ public:
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  void Insert (Ptr<Ipv4L4Protocol> protocol);
+  void Insert (Ptr<IpL4Protocol> protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
@@ -127,14 +127,14 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from NodeImpl::GetUdp for example.
    */
-  Ptr<Ipv4L4Protocol> GetProtocol (int protocolNumber) const;
+  Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
   /**
    * \param protocol protocol to remove from this demux.
    *
    * The input value to this method should be the value
    * returned from the Ipv4L4Protocol::Insert method.
    */
-  void Remove (Ptr<Ipv4L4Protocol> protocol);
+  void Remove (Ptr<IpL4Protocol> protocol);
 
   /**
    * \param ttl default ttl to use
@@ -292,7 +292,7 @@ private:
 
   typedef std::vector<Ptr<Ipv4Interface> > Ipv4InterfaceList;
   typedef std::list<Ptr<Ipv4RawSocketImpl> > SocketList;
-  typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
+  typedef std::list<Ptr<IpL4Protocol> > L4List_t;
 
   bool m_ipForward;
   bool m_weakEsModel;
@@ -370,10 +370,6 @@ private:
      */
     std::list<std::pair<Ptr<Packet>, uint16_t> > m_fragments;
 
-    /**
-     * \brief Number of references.
-     */
-    mutable uint32_t m_refCount;
   };
 
   typedef std::map< std::pair<uint64_t, uint32_t>, Ptr<Fragments> > MapFragments_t;

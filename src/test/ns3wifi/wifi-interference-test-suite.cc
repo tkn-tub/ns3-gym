@@ -77,16 +77,23 @@ WifiInterferenceTestCase::~WifiInterferenceTestCase ()
 {
 }
 
-void 
-WifiInterferenceTestCase::ReceivePacket (Ptr<Socket> socket)
+std::string
+PrintReceivedPacket (Ptr<Socket> socket)
 {
   Address addr;
   socket->GetSockName (addr);
   InetSocketAddress iaddr = InetSocketAddress::ConvertFrom (addr);
-  NS_LOG_UNCOND ("Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ());
-  //cast iaddr to void, to suppress 'iaddr' set but not used compiler warning 
-  //in optimized builds
-  (void) iaddr;
+
+  std::ostringstream oss;
+  oss << "Received one packet!  Socket: " << iaddr.GetIpv4 () << " port: " << iaddr.GetPort ();
+
+  return oss.str ();
+}
+
+void
+WifiInterferenceTestCase::ReceivePacket (Ptr<Socket> socket)
+{
+  NS_LOG_UNCOND (PrintReceivedPacket (socket));
 }
 
 void 

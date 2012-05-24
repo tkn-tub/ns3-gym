@@ -34,9 +34,8 @@ int main (int argc, char *argv[])
   // invoke cbOne function through callback instance
   double retOne;
   retOne = one (10.0, 20.0);
-  // cast retOne to void, to suppress variable ‘retOne’ set but
-  // not used compiler warning
-  (void) retOne; 
+  // callback returned expected value
+  NS_ASSERT (retOne == 10.0);
 
   // return type: int
   // first arg type: double
@@ -49,9 +48,9 @@ int main (int argc, char *argv[])
   // invoke MyCb::cbTwo through callback instance
   int retTwo;
   retTwo = two (10.0);
-  // cast retTwo to void, to suppress variable ‘retTwo’ set but
-  // not used compiler warning
-  (void) retTwo;
+  // callback returned expected value
+  NS_ASSERT (retTwo == -5);
+
   two = MakeNullCallback<int, double> ();
   // invoking a null callback is just like
   // invoking a null function pointer:

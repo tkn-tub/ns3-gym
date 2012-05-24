@@ -115,6 +115,16 @@ public:
    */
   void ResetStatistics (void);
 
+  /**
+   * \brief Enumeration of the modes supported in the class.
+   *
+   */
+  enum QueueMode
+  {
+    QUEUE_MODE_PACKETS,     /**< Use number of packets for maximum queue size */
+    QUEUE_MODE_BYTES,       /**< Use number of bytes for maximum queue size */
+  };
+
 #if 0
   // average calculation requires keeping around
   // a buffer with the date of arrival of past received packets

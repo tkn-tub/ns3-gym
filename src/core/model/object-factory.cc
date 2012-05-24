@@ -69,7 +69,7 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
       NS_FATAL_ERROR ("Invalid value for attribute set (" << name << ") on " << m_tid.GetName ());
       return;
     }
-  m_parameters.Add (name, info.checker, v);
+  m_parameters.Add (name, info.checker, value.Copy ());
 }
 
 TypeId 
@@ -112,6 +112,16 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
   std::string::size_type lbracket, rbracket;
   lbracket = v.find ("[");
   rbracket = v.find ("]");
+  if (lbracket == std::string::npos && rbracket == std::string::npos)
+    {
+      factory.SetTypeId (v);
+      return is;
+    }
+  if (lbracket == std::string::npos || rbracket == std::string::npos)
+    {
+      NS_LOG_DEBUG ("Error while parsing factory specification: mismatching brackets. \"" << v << "\"");
+      return is;
+    }
   NS_ASSERT (lbracket != std::string::npos);
   NS_ASSERT (rbracket != std::string::npos);
   std::string tid = v.substr (0, lbracket);

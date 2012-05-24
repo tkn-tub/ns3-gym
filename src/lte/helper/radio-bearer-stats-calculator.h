@@ -63,7 +63,7 @@ public:
   /**
     * Class constructor
     */
-  RadioBearerStatsCalculator (std::string bearerType);
+  RadioBearerStatsCalculator (std::string protocolType);
 
   /**
    * Class destructor
@@ -74,8 +74,8 @@ public:
   /**
    * Inherited from ns3::Object
    */
-  static TypeId
-  GetTypeId (void);
+  static TypeId GetTypeId (void);
+  void DoDispose ();
 
   /**
    * Get the name of the file where the uplink statistics will be stored.
@@ -342,8 +342,16 @@ private:
    */
   Time m_epochDuration;
 
+  /**
+   * true if output files have not been opened yet
+   */
   bool m_firstWrite;
-  std::string m_bearerType;
+
+  /**
+   * true if any output is pending
+   */
+  bool m_pendingOutput;
+  std::string m_protocolType;
 
   std::string m_dlPdcpOutputFilename;
   std::string m_ulPdcpOutputFilename;

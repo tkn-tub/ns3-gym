@@ -20,7 +20,7 @@
 #ifndef LTE_RADIO_BEARER_TAG_H
 #define LTE_RADIO_BEARER_TAG_H
 
-#include "ns3/packet.h"
+#include "ns3/tag.h"
 
 namespace ns3 {
 

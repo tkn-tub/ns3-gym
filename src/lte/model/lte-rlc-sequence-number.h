@@ -51,7 +51,6 @@ public:
   SequenceNumber10& operator= (uint16_t value)
   {
     m_value = value % 1024;
-    m_modulusBase = 0;
     return *this;
   }
 
@@ -123,6 +122,11 @@ public:
   bool operator <= (const SequenceNumber10 &other) const
   {
     return (!this->operator> (other));
+  }
+
+  bool operator >= (const SequenceNumber10 &other) const
+  {
+    return (this->operator> (other) || this->operator== (other));
   }
 
   bool operator < (const SequenceNumber10 &other) const

@@ -49,6 +49,15 @@ public:
   LteAmc ();
   virtual ~LteAmc();
   
+  enum AmcModel
+    {
+      PiroEW2010,
+      // model based on Piro, G.; Grieco, L.A.; Boggia, G.; Camarda, P.;
+      //A two-level scheduling algorithm for QoS support in the downlink of 
+      //LTE cellular networks European Wireless Conference (EW), 2010
+      MiErrorModel // model based on 10% of BER according to LteMiErrorModel
+    };
+  
   /**
    * \brief Get the Modulation anc Coding Scheme for
    * a CQI value
@@ -75,9 +84,11 @@ public:
 
   /**
    * \brief Create a message with CQI feedback
+   * \param sinr the SpectrumValue vector of SINR for evaluating the CQI
+   * \param rbgSize size of RB group (in RBs) for evaluating subband/wideband CQI
    *
    */
-  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr);
+  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize = 0);
 
   /**
    * \brief Get a proper CQI for the spectrale efficiency value.
@@ -91,6 +102,7 @@ public:
 private:
   
   double m_ber;
+  AmcModel m_amcModel;
 
 
 

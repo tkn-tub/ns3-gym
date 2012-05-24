@@ -41,13 +41,13 @@ GlobalValue::GlobalValue (std::string name, std::string help,
 {
   if (m_checker == 0)
     {
-      NS_FATAL_ERROR ("Checker should not be zero.");
+      NS_FATAL_ERROR ("Checker should not be zero on " << name );
     }
   m_initialValue = m_checker->CreateValidValue (initialValue);
   m_currentValue = m_initialValue;
   if (m_initialValue == 0)
     {
-      NS_FATAL_ERROR ("Value set by user is invalid.");
+      NS_FATAL_ERROR ("Value set by user on " << name << " is invalid.");
     }
   GetVector ()->push_back (this);
   InitializeFromEnv ();

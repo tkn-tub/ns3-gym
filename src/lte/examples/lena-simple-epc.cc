@@ -136,8 +136,8 @@ main (int argc, char *argv[])
 
   // Install and start applications on UEs and remote host
   uint16_t dlPort = 1234;
-  uint16_t ulPort = 1235;
-  uint16_t otherPort = 1236;
+  uint16_t ulPort = 2000;
+  uint16_t otherPort = 3000;
   PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
   PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
   PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), otherPort));
@@ -145,6 +145,8 @@ main (int argc, char *argv[])
   ApplicationContainer serverApps;
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
+      ++ulPort;
+      ++otherPort;
       serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get(u)));
       serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
       serverApps.Add (packetSinkHelper.Install (ueNodes.Get(u)));

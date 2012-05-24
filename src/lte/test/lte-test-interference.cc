@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
+#include <ns3/enum.h>
 
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
@@ -112,6 +113,8 @@ LteInterferenceTestCase::~LteInterferenceTestCase ()
 void
 LteInterferenceTestCase::DoRun (void)
 {
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 //   lteHelper->EnableLogComponents ();
   lteHelper->EnableMacTraces ();
@@ -199,7 +202,7 @@ LteInterferenceTestCase::DoRun (void)
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 
-  Simulator::Stop (Seconds (0.006));
+  Simulator::Stop (Seconds (0.020));
   Simulator::Run ();
   
 
@@ -229,7 +232,7 @@ LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
    *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 4) )
+  if ( (frameNo > 1) || (subframeNo > 9) )
     {
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_dlMcs, "Wrong DL MCS ");
     }
@@ -244,7 +247,7 @@ LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
    *    For first 5 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 5) )
+  if ( (frameNo > 1) && (subframeNo > 4) )
     {
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcs, m_ulMcs, "Wrong UL MCS");
     }

@@ -257,6 +257,11 @@ LteEpcE2eDataTestCase::DoRun ()
             
     } 
 
+  Config::Set ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/MaxTxBufferSize",
+               UintegerValue (2 * 1024 * 1024));
+  Config::Set ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/MaxTxBufferSize",
+               UintegerValue (2 * 1024 * 1024));
+
   lteHelper->EnableRlcTraces ();
   lteHelper->EnablePdcpTraces ();
   Time simulationTime = Seconds (2.0);

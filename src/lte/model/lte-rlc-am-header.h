@@ -22,6 +22,7 @@
 #define LTE_RLC_AM_HEADER_H
 
 #include "ns3/header.h"
+#include "ns3/lte-rlc-sequence-number.h"
 
 #include <list>
 
@@ -65,8 +66,8 @@ public:
   // DATA PDU
   //
 
-  void SetSequenceNumber (uint16_t sequenceNumber);
-  uint16_t GetSequenceNumber () const;
+  void SetSequenceNumber (SequenceNumber10 sequenceNumber);
+  SequenceNumber10 GetSequenceNumber () const;
 
   void SetFramingInfo (uint8_t framingInfo);
   uint8_t GetFramingInfo () const;
@@ -124,8 +125,8 @@ public:
   // CONTROL PDU
   //
 
-  void SetAckSn (uint16_t ackSn);
-  uint16_t GetAckSn () const;
+  void SetAckSn (SequenceNumber10 ackSn);
+  SequenceNumber10 GetAckSn () const;
 
 
   static TypeId GetTypeId (void);
@@ -143,7 +144,7 @@ private:
   uint8_t  m_resegmentationFlag;
   uint8_t  m_pollingBit;
   uint8_t  m_framingInfo;      //  2 bits
-  uint16_t m_sequenceNumber;   // 10 bits
+  SequenceNumber10 m_sequenceNumber;
   uint8_t  m_lastSegmentFlag;
   uint16_t m_segmentOffset;
   uint16_t m_lastOffset;
@@ -155,8 +156,8 @@ private:
   uint8_t  m_controlPduType;
 
   // Status PDU fields
-  uint16_t m_ackSn;
-  uint16_t m_nackSn;
+  SequenceNumber10 m_ackSn;
+  SequenceNumber10 m_nackSn;
 
   std::list <uint8_t> m_extensionBits1; // Includes E1 after ACK_SN
   std::list <uint8_t> m_extensionBits2;

@@ -20,15 +20,14 @@
 #ifndef OBJECT_VECTOR_H
 #define OBJECT_VECTOR_H
 
-#include <vector>
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
-#include "object-ptr-vector.h"
+#include "object-ptr-container.h"
 
 namespace ns3 {
 
-typedef ObjectPtrVectorValue ObjectVectorValue;
+typedef ObjectPtrContainerValue ObjectVectorValue;
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
@@ -47,15 +46,11 @@ Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
                           Ptr<U> (T::*get)(INDEX) const);
 
-} // namespace ns3
-
-namespace ns3 {
-
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (U T::*memberVector)
 {
-  struct MemberStdContainer : public ObjectPtrVectorAccessor
+  struct MemberStdContainer : public ObjectPtrContainerAccessor
   {
     virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
@@ -66,7 +61,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
       *n = (obj->*m_memberVector).size ();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const {
+    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const {
       const T *obj = static_cast<const T *> (object);
       typename U::const_iterator begin = (obj->*m_memberVector).begin ();
       typename U::const_iterator end = (obj->*m_memberVector).end ();
@@ -75,6 +70,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
         {
           if (k == i)
             {
+              *index = k;
               return *j;
               break;
             }
@@ -92,7 +88,7 @@ MakeObjectVectorAccessor (U T::*memberVector)
 template <typename T>
 Ptr<const AttributeChecker> MakeObjectVectorChecker (void)
 {
-  return MakeObjectPtrVectorChecker<T> ();
+  return MakeObjectPtrContainerChecker<T> ();
 }
 
 template <typename T, typename U, typename INDEX>
@@ -100,7 +96,7 @@ Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (Ptr<U> (T::*get)(INDEX) const,
 			  INDEX (T::*getN)(void) const)
 {
-  return MakeObjectPtrVectorAccessor<T,U,INDEX>(get, getN);
+  return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
 
 template <typename T, typename U, typename INDEX>
@@ -108,7 +104,7 @@ Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN)(void) const,
 			  Ptr<U> (T::*get)(INDEX) const)
 {
-  return MakeObjectPtrVectorAccessor<T,U,INDEX>(get, getN);
+  return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
 
 

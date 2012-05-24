@@ -39,29 +39,42 @@ BuildingsHelper::MakeMobilityModelConsistent ()
   NS_LOG_FUNCTION_NOARGS ();
   for (NodeList::Iterator nit = NodeList::Begin (); nit != NodeList::End (); ++nit)
     {
-      Ptr<BuildingsMobilityModel> bmm = (*nit)->GetObject<BuildingsMobilityModel> ();
-      NS_ABORT_MSG_UNLESS (0 != bmm, "node " << (*nit)->GetId () << " does not have a BuildingsMobilityModel");
-      bool found = false;
-      for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
-	{
-	  Vector pos = bmm->GetPosition ();
-	  if ((*bit)->IsInside (pos))
-	    {
-	      NS_LOG_LOGIC ("node " << (*nit)->GetId () << " falls inside building " << (*bit)->GetId ());
-	      NS_ABORT_MSG_UNLESS (found == false, "node already inside another building!");		
-	      found = true;
-	      uint16_t floor = (*bit)->GetFloor (pos);
-	      uint16_t roomX = (*bit)->GetRoomX (pos);
-	      uint16_t roomY = (*bit)->GetRoomY (pos);	   
-	      bmm->SetIndoor (*bit, floor, roomX, roomY);	      
-	    }		    	  
-	}
-      if (!found)
-	{
-	  NS_LOG_LOGIC ("node " << (*nit)->GetId () << " is outdoor");
-	  bmm->SetOutdoor ();
-	}
+      Ptr<MobilityModel> mm = (*nit)->GetObject<MobilityModel> ();
+      if (mm != 0)
+        {
+          Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+          NS_ABORT_MSG_UNLESS (0 != bmm, "node " << (*nit)->GetId () << " has a MobilityModel but it is not a BuildingsMobilityModel");
+          MakeConsistent (bmm);
+        }
     }
+}
+
+
+void
+BuildingsHelper::MakeConsistent (Ptr<BuildingsMobilityModel> bmm)
+{
+  bool found = false;
+  for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
+    {
+      NS_LOG_LOGIC ("checking building " << (*bit)->GetId () << " with boundaries " << (*bit)->GetBoundaries ());
+      Vector pos = bmm->GetPosition ();
+      if ((*bit)->IsInside (pos))
+        {
+          NS_LOG_LOGIC ("BuildingsMobilityModel " << bmm << " pos " << bmm->GetPosition () << " falls inside building " << (*bit)->GetId ());
+          NS_ABORT_MSG_UNLESS (found == false, " BuildingsMobilityModel already inside another building!");		
+          found = true;
+          uint16_t floor = (*bit)->GetFloor (pos);
+          uint16_t roomX = (*bit)->GetRoomX (pos);
+          uint16_t roomY = (*bit)->GetRoomY (pos);	   
+          bmm->SetIndoor (*bit, floor, roomX, roomY);	      
+        }		    	  
+    }
+  if (!found)
+    {
+      NS_LOG_LOGIC ("BuildingsMobilityModel " << bmm << " pos " << bmm->GetPosition ()  << " is outdoor");
+      bmm->SetOutdoor ();
+    }
+
 }
 
 } // namespace ns3

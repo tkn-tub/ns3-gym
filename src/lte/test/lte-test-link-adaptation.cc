@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
+#include <ns3/enum.h>
 
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
@@ -154,6 +155,9 @@ LteLinkAdaptationTestCase::~LteLinkAdaptationTestCase ()
 void
 LteLinkAdaptationTestCase::DoRun (void)
 {
+  
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   /**
     * Simulation Topology
     */
@@ -202,7 +206,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
-  Simulator::Stop (Seconds (0.005));
+  Simulator::Stop (Seconds (0.007));
   Simulator::Run ();
 
   double calculatedSinrDb = 10.0 * log10 (testSinr->GetSinr ()->operator[] (0));
@@ -228,7 +232,7 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
    *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 4) )
+  if ( (frameNo > 1) || (subframeNo > 8) )
     {
       NS_LOG_INFO (m_snrDb << "\t" << m_mcsIndex << "\t" << (uint16_t)mcsTb1);
 

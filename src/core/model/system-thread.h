@@ -21,11 +21,13 @@
 #ifndef SYSTEM_THREAD_H
 #define SYSTEM_THREAD_H
 
+#include "ns3/core-config.h"
 #include "callback.h"
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#endif /* HAVE_PTHREAD_H */
 
 namespace ns3 { 
-
-class SystemThreadImpl;
 
 /**
  * @brief A class which provides a relatively platform-independent thread
@@ -45,6 +47,11 @@ class SystemThreadImpl;
 class SystemThread : public SimpleRefCount<SystemThread>
 {
 public:
+
+#ifdef HAVE_PTHREAD_H
+  typedef pthread_t ThreadId;
+#endif
+
   /**
    * @brief Create a SystemThread object.
    *
@@ -94,10 +101,6 @@ public:
    *
    * @param callback entry point of the thread
    * 
-   * @warning The SystemThread uses SIGALRM to wake threads that are possibly
-   * blocked on IO.
-   * @see Shutdown
-   *
    * @warning I've made the system thread class look like a normal ns3 object
    * with smart pointers, and living in the heap.  This makes it very easy to
    * manage threads from a single master thread context.  You should be very
@@ -125,47 +128,28 @@ public:
    * provided callback, finishes.
    */
   void Join (void);
+  /**
+   * @brief Returns the current thread Id.
+   *
+   * @returns current thread Id. 
+   */
+  static ThreadId Self(void);
 
   /**
-   * @brief Indicates to a managed thread doing cooperative multithreading that
-   * its managing thread wants it to exit.
+   * @brief Compares an TharedId with the current ThreadId .
    *
-   * It is often the case that we want a thread to be off doing work until such
-   * time as its job is done (typically when the simulation is done).  We then 
-   * want the thread to exit itself.  This method provides a consistent way for
-   * the managing thread to communicate with the managed thread.  After the
-   * manager thread calls this method, the Break() method will begin returning
-   * true, telling the managed thread to exit.
-   *
-   * This alone isn't really enough to merit these events, but in Unix, if a
-   * worker thread is doing blocking IO, it will need to be woken up from that
-   * read somehow.  This method also provides that functionality, by sending a
-   * SIGALRM signal to the possibly blocked thread.
-   *
-   * @warning Uses SIGALRM to notify threads possibly blocked on IO.  Beware
-   * if you are using signals.
-   * @see Break
+   * @returns true if Id matches the current ThreadId.
    */
-  void Shutdown (void);
-
-  /**
-   * @brief Indicates to a thread doing cooperative multithreading that
-   * its managing thread wants it to exit.
-   *
-   * It is often the case that we want a thread to be off doing work until such
-   * time as its job is done.  We then want the thread to exit itself.  This
-   * method allows a thread to query whether or not it should be running.
-   * Typically, the worker thread is running in a forever-loop, and will need to
-   * "break" out of that loop to exit -- thus the name.
-   *
-   * @see Shutdown
-   * @returns true if thread is expected to exit (break out of the forever-loop)
-   */
-  bool Break (void);
+  static bool Equals(ThreadId id);
 
 private:
-  SystemThreadImpl * m_impl;
-  bool m_break;
+#ifdef HAVE_PTHREAD_H
+  static void *DoRun (void *arg);
+
+  Callback<void> m_callback;
+  pthread_t m_thread;
+  void *    m_ret;
+#endif 
 };
 
 } // namespace ns3

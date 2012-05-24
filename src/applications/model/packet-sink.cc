@@ -21,6 +21,7 @@
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket.h"
@@ -156,35 +157,44 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () == 0)
         { //EOF
           break;
         }
+      m_totalRx += packet->GetSize ();
       if (InetSocketAddress::IsMatchingType (from))
         {
-          m_totalRx += packet->GetSize ();
-          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       address.GetIpv4 () << " [" << address << "]"
-                                   << " total Rx " << m_totalRx);
-          //cast address to void , to suppress 'address' set but not used 
-          //compiler warning in optimized builds
-          (void) address;
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+                       << "s packet sink received "
+                       <<  packet->GetSize () << " bytes from "
+                       << InetSocketAddress::ConvertFrom(from).GetIpv4 ()
+                       << " port " << InetSocketAddress::ConvertFrom (from).GetPort ()
+                       << " total Rx " << m_totalRx << " bytes");
+        }
+      else if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+                       << "s packet sink received "
+                       <<  packet->GetSize () << " bytes from "
+                       << Inet6SocketAddress::ConvertFrom(from).GetIpv6 ()
+                       << " port " << Inet6SocketAddress::ConvertFrom (from).GetPort ()
+                       << " total Rx " << m_totalRx << " bytes");
         }
       m_rxTrace (packet, from);
     }
 }
 
+
 void PacketSink::HandlePeerClose (Ptr<Socket> socket)
 {
-  NS_LOG_INFO ("PktSink, peerClose");
+  NS_LOG_FUNCTION (this << socket);
 }
  
 void PacketSink::HandlePeerError (Ptr<Socket> socket)
 {
-  NS_LOG_INFO ("PktSink, peerError");
+  NS_LOG_FUNCTION (this << socket);
 }
  
 

@@ -22,13 +22,14 @@
 #include "ipv6-end-point.h"
 #include "ns3/log.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6EndPointDemux");
 
 Ipv6EndPointDemux::Ipv6EndPointDemux ()
-  : m_ephemeral (49152)
+  : m_ephemeral (49152),
+    m_portFirst (49152),
+    m_portLast (65535)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -36,7 +37,7 @@ Ipv6EndPointDemux::Ipv6EndPointDemux ()
 Ipv6EndPointDemux::~Ipv6EndPointDemux ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       Ipv6EndPoint *endPoint = *i;
       delete endPoint;
@@ -47,9 +48,9 @@ Ipv6EndPointDemux::~Ipv6EndPointDemux ()
 bool Ipv6EndPointDemux::LookupPortLocal (uint16_t port)
 {
   NS_LOG_FUNCTION (this << port);
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
-      if ((*i)->GetLocalPort  () == port) 
+      if ((*i)->GetLocalPort  () == port)
         {
           return true;
         }
@@ -60,10 +61,10 @@ bool Ipv6EndPointDemux::LookupPortLocal (uint16_t port)
 bool Ipv6EndPointDemux::LookupLocal (Ipv6Address addr, uint16_t port)
 {
   NS_LOG_FUNCTION (this << addr << port);
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
-      if ((*i)->GetLocalPort () == port &&
-          (*i)->GetLocalAddress () == addr) 
+      if ((*i)->GetLocalPort () == port
+          && (*i)->GetLocalAddress () == addr)
         {
           return true;
         }
@@ -75,7 +76,7 @@ Ipv6EndPoint* Ipv6EndPointDemux::Allocate ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   uint16_t port = AllocateEphemeralPort ();
-  if (port == 0) 
+  if (port == 0)
     {
       NS_LOG_WARN ("Ephemeral port allocation failed.");
       return 0;
@@ -90,7 +91,7 @@ Ipv6EndPoint* Ipv6EndPointDemux::Allocate (Ipv6Address address)
 {
   NS_LOG_FUNCTION (this << address);
   uint16_t port = AllocateEphemeralPort ();
-  if (port == 0) 
+  if (port == 0)
     {
       NS_LOG_WARN ("Ephemeral port allocation failed.");
       return 0;
@@ -111,7 +112,7 @@ Ipv6EndPoint* Ipv6EndPointDemux::Allocate (uint16_t port)
 Ipv6EndPoint* Ipv6EndPointDemux::Allocate (Ipv6Address address, uint16_t port)
 {
   NS_LOG_FUNCTION (this << address << port);
-  if (LookupLocal (address, port)) 
+  if (LookupLocal (address, port))
     {
       NS_LOG_WARN ("Duplicate address/port; failing.");
       return 0;
@@ -126,12 +127,12 @@ Ipv6EndPoint* Ipv6EndPointDemux::Allocate (Ipv6Address localAddress, uint16_t lo
                                            Ipv6Address peerAddress, uint16_t peerPort)
 {
   NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
-      if ((*i)->GetLocalPort () == localPort &&
-          (*i)->GetLocalAddress () == localAddress &&
-          (*i)->GetPeerPort () == peerPort &&
-          (*i)->GetPeerAddress () == peerAddress) 
+      if ((*i)->GetLocalPort () == localPort
+          && (*i)->GetLocalAddress () == localAddress
+          && (*i)->GetPeerPort () == peerPort
+          && (*i)->GetPeerAddress () == peerAddress)
         {
           NS_LOG_WARN ("No way we can allocate this end-point.");
           /* no way we can allocate this end-point. */
@@ -150,7 +151,7 @@ Ipv6EndPoint* Ipv6EndPointDemux::Allocate (Ipv6Address localAddress, uint16_t lo
 void Ipv6EndPointDemux::DeAllocate (Ipv6EndPoint *endPoint)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       if (*i == endPoint)
         {
@@ -166,7 +167,7 @@ void Ipv6EndPointDemux::DeAllocate (Ipv6EndPoint *endPoint)
  * Otherwise, if we find a generic match, we return it.
  * Otherwise, we return 0.
  */
-Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint16_t dport, 
+Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint16_t dport,
                                                         Ipv6Address saddr, uint16_t sport,
                                                         Ptr<Ipv6Interface> incomingInterface)
 {
@@ -178,14 +179,14 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
   EndPoints retval4; /* Exact match on all 4 */
 
   NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++)
     {
       Ipv6EndPoint* endP = *i;
       NS_LOG_DEBUG ("Looking at endpoint dport=" << endP->GetLocalPort ()
                                                  << " daddr=" << endP->GetLocalAddress ()
                                                  << " sport=" << endP->GetPeerPort ()
                                                  << " saddr=" << endP->GetPeerAddress ());
-      if (endP->GetLocalPort () != dport) 
+      if (endP->GetLocalPort () != dport)
         {
           NS_LOG_LOGIC ("Skipping endpoint " << &endP
                                              << " because endpoint dport "
@@ -203,7 +204,9 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
 
       /* if no match here, keep looking */
       if (!(localAddressMatchesExact || localAddressMatchesWildCard))
-        continue; 
+        {
+          continue;
+        }
       bool remotePeerMatchesExact = endP->GetPeerPort () == sport;
       bool remotePeerMatchesWildCard = endP->GetPeerPort () == 0;
       bool remoteAddressMatchesExact = endP->GetPeerAddress () == saddr;
@@ -212,41 +215,54 @@ Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::Lookup (Ipv6Address daddr, uint1
       /* If remote does not match either with exact or wildcard,i
          skip this one */
       if (!(remotePeerMatchesExact || remotePeerMatchesWildCard))
-        continue;
+        {
+          continue;
+        }
       if (!(remoteAddressMatchesExact || remoteAddressMatchesWildCard))
-        continue;
+        {
+          continue;
+        }
 
       /* Now figure out which return list to add this one to */
-      if (localAddressMatchesWildCard &&
-          remotePeerMatchesWildCard && 
-          remoteAddressMatchesWildCard)
+      if (localAddressMatchesWildCard
+          && remotePeerMatchesWildCard
+          && remoteAddressMatchesWildCard)
         { /* Only local port matches exactly */
           retval1.push_back (endP);
         }
-      if ((localAddressMatchesExact || (localAddressMatchesAllRouters))&&
-          remotePeerMatchesWildCard &&
-          remoteAddressMatchesWildCard)
+      if ((localAddressMatchesExact || (localAddressMatchesAllRouters))
+          && remotePeerMatchesWildCard
+          && remoteAddressMatchesWildCard)
         { /* Only local port and local address matches exactly */
           retval2.push_back (endP);
         }
-      if (localAddressMatchesWildCard &&
-          remotePeerMatchesExact &&
-          remoteAddressMatchesExact)
+      if (localAddressMatchesWildCard
+          && remotePeerMatchesExact
+          && remoteAddressMatchesExact)
         { /* All but local address */
           retval3.push_back (endP);
         }
-      if (localAddressMatchesExact &&
-          remotePeerMatchesExact &&
-          remoteAddressMatchesExact)
+      if (localAddressMatchesExact
+          && remotePeerMatchesExact
+          && remoteAddressMatchesExact)
         { /* All 4 match */
           retval4.push_back (endP);
         }
     }
 
   /* Here we find the most exact match */
-  if (!retval4.empty ()) return retval4;
-  if (!retval3.empty ()) return retval3;
-  if (!retval2.empty ()) return retval2;
+  if (!retval4.empty ())
+    {
+      return retval4;
+    }
+  if (!retval3.empty ())
+    {
+      return retval3;
+    }
+  if (!retval2.empty ())
+    {
+      return retval2;
+    }
   return retval1;  /* might be empty if no matches */
 }
 
@@ -264,8 +280,8 @@ Ipv6EndPoint* Ipv6EndPointDemux::SimpleLookup (Ipv6Address dst, uint16_t dport, 
           continue;
         }
 
-      if ((*i)->GetLocalAddress () == dst && (*i)->GetPeerPort () == sport &&
-          (*i)->GetPeerAddress () == src)
+      if ((*i)->GetLocalAddress () == dst && (*i)->GetPeerPort () == sport
+          && (*i)->GetPeerAddress () == src)
         {
           /* this is an exact match. */
           return *i;
@@ -294,19 +310,22 @@ uint16_t Ipv6EndPointDemux::AllocateEphemeralPort ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   uint16_t port = m_ephemeral;
-  do 
+  int count = m_portLast - m_portFirst;
+  do
     {
-      port++;
-      if (port == 65535) 
+      if (count-- < 0)
         {
-          port = 49152;
+          return 0;
         }
-      if (!LookupPortLocal (port)) 
+      ++port;
+      if (port < m_portFirst || port > m_portLast)
         {
-          return port;
+          port = m_portFirst;
         }
-    } while (port != m_ephemeral);
-  return 0;
+    }
+  while (LookupPortLocal (port));
+  m_ephemeral = port;
+  return port;
 }
 
 Ipv6EndPointDemux::EndPoints Ipv6EndPointDemux::GetEndPoints () const

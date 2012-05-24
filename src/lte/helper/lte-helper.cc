@@ -62,14 +62,15 @@ LteHelper::LteHelper (void)
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
   m_enbAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
   m_ueAntennaModelFactory.SetTypeId (IsotropicAntennaModel::GetTypeId ());
+  m_channelFactory.SetTypeId (SingleModelSpectrumChannel::GetTypeId ());
 }
 
 void 
 LteHelper::DoStart (void)
 {
   NS_LOG_FUNCTION (this);
-  m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
+  m_downlinkChannel = m_channelFactory.Create<SpectrumChannel> ();
+  m_uplinkChannel = m_channelFactory.Create<SpectrumChannel> ();
 
   m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
   Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
@@ -101,7 +102,6 @@ LteHelper::DoStart (void)
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
 
-  //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
       m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
@@ -265,6 +265,19 @@ LteHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
   m_fadingModelFactory.Set (n, v);
 }
 
+void 
+LteHelper::SetSpectrumChannelType (std::string type) 
+{
+  NS_LOG_FUNCTION (this << type);
+  m_channelFactory.SetTypeId (type);
+}
+
+void 
+LteHelper::SetSpectrumChannelAttribute (std::string n, const AttributeValue &v)
+{
+  m_channelFactory.Set (n, v);
+}
+
 
 NetDeviceContainer
 LteHelper::InstallEnbDevice (NodeContainer c)
@@ -317,7 +330,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
-  m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<AntennaModel> antenna = (m_enbAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
   NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
@@ -359,24 +371,25 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
-  if (m_downlinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
+  double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
+  NS_LOG_LOGIC ("DL freq: " << dlFreq);
+  bool dlFreqOk = m_downlinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (dlFreq));
+  if (!dlFreqOk)
     {
-      double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetDlEarfcn ());
-      NS_LOG_LOGIC ("DL freq: " << dlFreq);
-      m_downlinkPathlossModel->SetAttribute ("Frequency", DoubleValue (dlFreq));
+      NS_LOG_WARN ("DL propagation model does not have a Frequency attribute");
     }
-  else
+  double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
+  NS_LOG_LOGIC ("UL freq: " << ulFreq);
+  bool ulFreqOk = m_uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+  if (!ulFreqOk)
     {
-      NS_LOG_LOGIC ("DL propagation model: " << m_downlinkPathlossModel->GetTypeId ());
+      NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
     }
-  if (m_uplinkPathlossModel->GetObject<BuildingsPropagationLossModel> () != 0)
-    {
-      double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (dev->GetUlEarfcn ());
-      NS_LOG_LOGIC ("UL freq: " << ulFreq);
-      m_uplinkPathlossModel->SetAttribute ("Frequency", DoubleValue (ulFreq));
-    }
+  
 
   dev->Start ();
+
+  m_uplinkChannel->AddRx (ulPhy);
 
   if (m_epcHelper != 0)
     {
@@ -410,7 +423,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
 
-  m_downlinkChannel->AddRx (dlPhy);
 
   Ptr<AntennaModel> antenna = (m_ueAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
   NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
@@ -444,6 +456,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 void
 LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this);
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
       Attach (*i, enbDevice);
@@ -453,6 +466,7 @@ LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 void
 LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this);
   // setup RRC connection
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   uint16_t rnti = enbRrc->AddUe (ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
@@ -468,7 +482,6 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
 
-  //if (m_fadingModelFactory.GetTypeId ().GetName ().compare ( "ns3::TraceFadingLossModel") == 0)
   if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
     {
       Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
@@ -489,13 +502,46 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
                       enbDevice->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
 
   ueDevice->Start ();
+  
+  m_downlinkChannel->AddRx (uePhy->GetDownlinkSpectrumPhy ());
 }
 
+void
+LteHelper::AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      AttachToClosestEnb (*i, enbDevices);
+    }
+}
 
+void
+LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (enbDevices.GetN () > 0, "empty enb device container");
+  Vector uepos = ueDevice->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
+  double minDistance = std::numeric_limits<double>::infinity ();
+  Ptr<NetDevice> closestEnbDevice;
+  for (NetDeviceContainer::Iterator i = enbDevices.Begin (); i != enbDevices.End (); ++i)
+    {
+      Vector enbpos = (*i)->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
+      double distance = CalculateDistance (uepos, enbpos);
+      if (distance < minDistance)
+        {
+          minDistance = distance;
+          closestEnbDevice = *i;
+        }      
+    }
+  NS_ASSERT (closestEnbDevice != 0);
+  Attach (ueDevice, closestEnbDevice);
+}
 
 void
 LteHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft)
 {
+  NS_LOG_FUNCTION (this);
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
       ActivateEpsBearer (*i, bearer, tft);
@@ -506,6 +552,7 @@ LteHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Pt
 void
 LteHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft)
 {
+  NS_LOG_FUNCTION (this);
   NS_LOG_INFO (" setting up Radio Bearer");
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
@@ -580,32 +627,6 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
 
   std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
-/*
-  const char* propModel = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
-  if (propModelStr.compare ("RandomPropagationLossModel") ||
-    propModelStr.compare ("FriisPropagationLossModel")||
-    propModelStr.compare ("TwoRayGroundPropagationLossModel")||
-    propModelStr.compare ("LogDistancePropagationLossModel")||
-    propModelStr.compare ("ThreeLogDistancePropagationLossModel")||
-    propModelStr.compare ("NakagamiPropagationLossModel")||
-    propModelStr.compare ("FixedRssLossModel")||
-    propModelStr.compare ("MatrixPropagationLossModel")||
-    propModelStr.compare ("RangePropagationLossModel"))
-    {
-      LogComponentEnable ("PropagationLossModel", LOG_LEVEL_ALL);
-    }
-  else
-    {
-      LogComponentEnable (propModel, LOG_LEVEL_ALL);
-    }
-
-  if (m_fadingModelType.compare ("ns3::TraceFadingLossModel") == 0)
-    {
-      const char* fadingModel = m_fadingModelType.erase (0,5).c_str ();
-      LogComponentEnable (fadingModel, LOG_LEVEL_ALL);
-    }
-  LogComponentEnable ("SingleModelSpectrumChannel", LOG_LEVEL_ALL);
-*/
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);

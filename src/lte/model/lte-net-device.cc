@@ -238,8 +238,7 @@ LteNetDevice::IsBridge (void) const
 Address
 LteNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
-  NS_LOG_FUNCTION (this);
-  NS_LOG_FUNCTION (multicastGroup);
+  NS_LOG_FUNCTION (this << multicastGroup);
 
   Mac48Address ad = Mac48Address::GetMulticast (multicastGroup);
 

@@ -80,7 +80,9 @@ public:
    * \param ip the destination ip address to which the stream will be sent
    * \param port the destination udp port to which the stream will be sent
    */
+  void SetRemote (Address ip, uint16_t port);
   void SetRemote (Ipv4Address ip, uint16_t port);
+  void SetRemote (Ipv6Address ip, uint16_t port);
 
   /**
    * \brief set the trace file to be used by the application
@@ -122,7 +124,7 @@ private:
   };
   uint32_t m_sent;
   Ptr<Socket> m_socket;
-  Ipv4Address m_peerAddress;
+  Address m_peerAddress;
   uint16_t m_peerPort;
   EventId m_sendEvent;
   std::vector<struct TraceEntry> m_entries;

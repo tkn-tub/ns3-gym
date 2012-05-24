@@ -48,19 +48,9 @@ LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_ulBandwidth (0),
     m_dlBandwidth (0),
     m_rbgSize (0),
-    m_macChTtiDelay (1) // 1 TTI delay between MAC and CH
+    m_macChTtiDelay (0)
 {
   NS_LOG_FUNCTION (this);
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
-      m_packetBurstQueue.push_back (pb);
-    }
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      std::list<Ptr<IdealControlMessage> > l;
-      m_controlMessagesQueue.push_back (l);
-    }
 }
 
 
@@ -232,25 +222,10 @@ LtePhy::GetRbgSize (void) const
   return m_rbgSize;
 }
 
-
-void
-LtePhy::SetMacChDelay (uint8_t delay)
-{
-  m_macChTtiDelay = delay;
-  m_packetBurstQueue.resize (delay);
-}
-
-
-uint8_t
-LtePhy::GetMacChDelay (void)
-{
-  return (m_macChTtiDelay);
-}
-
 void
 LtePhy::SetMacPdu (Ptr<Packet> p)
 {
-  m_packetBurstQueue.at (m_macChTtiDelay - 1)->AddPacket (p);
+  m_packetBurstQueue.at (m_packetBurstQueue.size () - 1)->AddPacket (p);
 }
 
 Ptr<PacketBurst>
@@ -275,7 +250,9 @@ LtePhy::GetPacketBurst (void)
 void
 LtePhy::SetControlMessages (Ptr<IdealControlMessage> m)
 {
-  m_controlMessagesQueue.at (m_macChTtiDelay - 1).push_back (m);
+  // In uplink the queue of control messages and packet are of different sizes
+  // for avoiding TTI cancellation due to synchronization of subframe triggers
+  m_controlMessagesQueue.at (m_controlMessagesQueue.size () - 1).push_back (m);
 }
 
 std::list<Ptr<IdealControlMessage> >

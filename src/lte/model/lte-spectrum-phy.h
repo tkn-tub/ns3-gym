@@ -66,6 +66,7 @@ struct tbInfo_t
 typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;
 
 class LteNetDevice;
+class AntennaModel;
 
 /**
  * \ingroup lte
@@ -224,6 +225,7 @@ private:
 
   Ptr<SpectrumChannel> m_channel;
 
+  Ptr<const SpectrumModel> m_rxSpectrumModel;
   Ptr<SpectrumValue> m_txPsd;
   Ptr<PacketBurst> m_txPacketBurst;
   std::list<Ptr<PacketBurst> > m_rxPacketBurstList;

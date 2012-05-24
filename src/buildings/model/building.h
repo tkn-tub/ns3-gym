@@ -88,6 +88,13 @@ public:
    */
   uint32_t GetId (void) const;
 
+  /** 
+   * Set the boundaries of the building
+   * 
+   * \param box the Box defining the boundaries of the building
+   */
+  void SetBoundaries (Box box);
+
   /**
    * \param t the type of building (i.e., Residential, Office, Commercial)
    *
@@ -126,10 +133,14 @@ public:
    */
   void SetNRoomsY (uint16_t nroomy);
 
+  /** 
+   * 
+   * \return the boundaries of the building
+   */
+  Box GetBoundaries () const;
 
   /**
    * \return the type of building
-   * Return the type of building (i.e., Residential, Office, Commercial)
    */
   BuildingType_t GetBuildingType () const;
 
@@ -195,8 +206,6 @@ public:
 
 private:
 
-  void Construct ();
-
   Box m_buildingBounds;
 
   /**
@@ -212,12 +221,6 @@ private:
   ExtWallsType_t m_externalWalls;
 
 };
-
-//std::ostream &operator << (std::ostream &os, const Box &box);
-//std::istream &operator >> (std::istream &is, Box &box);
-
-
-//ATTRIBUTE_HELPER_HEADER (Building);
 
 } // namespace ns3
 

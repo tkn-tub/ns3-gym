@@ -22,13 +22,14 @@
 #include <sstream>
 
 // ns3 includes
-#include "ns3/animation-interface.h"
+#include "ns3/log.h"
 #include "ns3/point-to-point-dumbbell.h"
 #include "ns3/constant-position-mobility-model.h"
 
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
+#include "ns3/ipv6-address-generator.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointDumbbellHelper");
 
@@ -100,6 +101,16 @@ Ipv4Address PointToPointDumbbellHelper::GetRightIpv4Address (uint32_t i) const
   return m_rightLeafInterfaces.GetAddress (i);
 }
 
+Ipv6Address PointToPointDumbbellHelper::GetLeftIpv6Address (uint32_t i) const
+{
+  return m_leftLeafInterfaces6.GetAddress (i, 1);
+}
+
+Ipv6Address PointToPointDumbbellHelper::GetRightIpv6Address (uint32_t i) const
+{
+  return m_rightLeafInterfaces6.GetAddress (i, 1);
+}
+
 uint32_t  PointToPointDumbbellHelper::LeftCount () const
 { // Number of left side nodes
   return m_leftLeaf.GetN ();
@@ -144,6 +155,52 @@ void PointToPointDumbbellHelper::AssignIpv4Addresses (Ipv4AddressHelper leftIp,
       m_rightLeafInterfaces.Add (ifc.Get (0));
       m_rightRouterInterfaces.Add (ifc.Get (1));
       rightIp.NewNetwork ();
+    }
+}
+
+void PointToPointDumbbellHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6Prefix prefix)
+{
+  // Assign the router network
+  Ipv6AddressGenerator::Init (addrBase, prefix);
+  Ipv6Address v6network;
+  Ipv6AddressHelper addressHelper;
+  
+  v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+  addressHelper.NewNetwork (v6network, prefix);
+  m_routerInterfaces6 = addressHelper.Assign (m_routerDevices);
+  Ipv6AddressGenerator::NextNetwork (prefix);
+
+  // Assign to left side
+  for (uint32_t i = 0; i < LeftCount (); ++i)
+    {
+      v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+      addressHelper.NewNetwork (v6network, prefix);
+
+      NetDeviceContainer ndc;
+      ndc.Add (m_leftLeafDevices.Get (i));
+      ndc.Add (m_leftRouterDevices.Get (i));
+      Ipv6InterfaceContainer ifc = addressHelper.Assign (ndc);
+      Ipv6InterfaceContainer::Iterator it = ifc.Begin ();
+      m_leftLeafInterfaces6.Add ((*it).first, (*it).second);
+      it++;
+      m_leftRouterInterfaces6.Add ((*it).first, (*it).second);
+      Ipv6AddressGenerator::NextNetwork (prefix);
+    }
+  // Assign to right side
+  for (uint32_t i = 0; i < RightCount (); ++i)
+    {
+      v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+      addressHelper.NewNetwork (v6network, prefix);
+
+      NetDeviceContainer ndc;
+      ndc.Add (m_rightLeafDevices.Get (i));
+      ndc.Add (m_rightRouterDevices.Get (i));
+      Ipv6InterfaceContainer ifc = addressHelper.Assign (ndc);
+      Ipv6InterfaceContainer::Iterator it = ifc.Begin ();
+      m_rightLeafInterfaces6.Add ((*it).first, (*it).second);
+      it++;
+      m_rightRouterInterfaces6.Add ((*it).first, (*it).second);
+      Ipv6AddressGenerator::NextNetwork (prefix);
     }
 }
 

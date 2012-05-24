@@ -17,13 +17,13 @@
  */
 
 #include "ns3/point-to-point-grid.h"
-#include "ns3/animation-interface.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/string.h"
 #include "ns3/vector.h"
 #include "ns3/log.h"
+#include "ns3/ipv6-address-generator.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointGridHelper");
 
@@ -131,6 +131,56 @@ PointToPointGridHelper::AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4Addres
 }
 
 void
+PointToPointGridHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix prefix)
+{
+  Ipv6AddressGenerator::Init(addrBase, prefix);
+  Ipv6Address v6network;
+  Ipv6AddressHelper addrHelper;
+
+  // Assign addresses to all row devices in the grid.
+  // These devices are stored in a vector.  Each row 
+  // of the grid has all the row devices in one entry 
+  // of the vector.  These entries come in pairs.
+  for (uint32_t i = 0; i < m_rowDevices.size (); ++i)
+    {
+      Ipv6InterfaceContainer rowInterfaces; 
+      NetDeviceContainer rowContainer = m_rowDevices[i];
+      for (uint32_t j = 0; j < rowContainer.GetN (); j+=2)
+        {
+          v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+          addrHelper.NewNetwork(v6network, prefix);
+          Ipv6InterfaceContainer ic = addrHelper.Assign (rowContainer.Get (j));
+          rowInterfaces.Add (ic);
+          ic = addrHelper.Assign (rowContainer.Get (j+1));
+          rowInterfaces.Add (ic);
+          Ipv6AddressGenerator::NextNetwork (prefix);
+        }
+      m_rowInterfaces6.push_back (rowInterfaces);
+    }
+
+  // Assign addresses to all col devices in the grid.
+  // These devices are stored in a vector.  Each col 
+  // of the grid has all the col devices in one entry 
+  // of the vector.  These entries come in pairs.
+  for (uint32_t i = 0; i < m_colDevices.size (); ++i)
+    {
+      Ipv6InterfaceContainer colInterfaces; 
+      NetDeviceContainer colContainer = m_colDevices[i];
+      for (uint32_t j = 0; j < colContainer.GetN (); j+=2)
+        {
+          v6network = Ipv6AddressGenerator::GetNetwork (prefix);
+          addrHelper.NewNetwork(v6network, prefix);
+          Ipv6InterfaceContainer ic = addrHelper.Assign (colContainer.Get (j));
+          colInterfaces.Add (ic);
+          ic = addrHelper.Assign (colContainer.Get (j+1));
+          colInterfaces.Add (ic);
+          Ipv6AddressGenerator::NextNetwork (prefix);
+        }
+      m_colInterfaces6.push_back (colInterfaces);
+    }
+}
+
+void
 PointToPointGridHelper::BoundingBox (double ulx, double uly,
                                      double lrx, double lry)
 {
@@ -211,6 +261,32 @@ PointToPointGridHelper::GetIpv4Address (uint32_t row, uint32_t col)
   else
     {
       return (m_rowInterfaces.at (row)).GetAddress ((2*col)-1);
+    }
+}
+
+Ipv6Address
+PointToPointGridHelper::GetIpv6Address (uint32_t row, uint32_t col)
+{
+  if (row > m_nodes.size () - 1 ||
+      col > m_nodes.at (row).GetN () - 1)
+    {
+      NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv4Address.");
+    }
+
+  // Right now this just gets one of the addresses of the
+  // specified node.  The exact device can't be specified.
+  // If you picture the grid, the address returned is the
+  // address of the left (row) device of all nodes, with
+  // the exception of the left-most nodes in the grid;
+  // in which case the right (row) device address is
+  // returned
+  if (col == 0)
+    {
+      return (m_rowInterfaces6.at (row)).GetAddress (0, 1);
+    }
+  else
+    {
+      return (m_rowInterfaces6.at (row)).GetAddress ((2*col)-1, 1);
     }
 }
 

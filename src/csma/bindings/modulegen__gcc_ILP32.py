@@ -1051,12 +1051,12 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     return
 
 def register_Ns3CsmaDeviceRec_methods(root_module, cls):
-    ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::CsmaDeviceRec const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CsmaDeviceRec const &', 'arg0')])
     ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::CsmaDeviceRec() [constructor]
     cls.add_constructor([])
     ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::Ptr<ns3::CsmaNetDevice> device) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
+    ## csma-channel.h (module 'csma'): ns3::CsmaDeviceRec::CsmaDeviceRec(ns3::CsmaDeviceRec const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaDeviceRec const &', 'arg0')])
     ## csma-channel.h (module 'csma'): bool ns3::CsmaDeviceRec::IsActive() [member function]
     cls.add_method('IsActive', 
                    'bool', 
@@ -1365,6 +1365,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'void', 
                    [param('uint8_t *', 'buf')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): ns3::Ipv4Address ns3::Ipv6Address::GetIpv4MappedAddress() const [member function]
+    cls.add_method('GetIpv4MappedAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::GetLoopback() [member function]
     cls.add_method('GetLoopback', 
                    'ns3::Ipv6Address', 
@@ -1405,8 +1410,17 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() [member function]
+    cls.add_method('IsIpv4MappedAddress', 
+                   'bool', 
+                   [])
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocal() const [member function]
     cls.add_method('IsLinkLocal', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsLinkLocalMulticast() const [member function]
+    cls.add_method('IsLinkLocalMulticast', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -1439,6 +1453,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac48Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('MakeIpv4MappedAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Ipv4Address', 'addr')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeSolicitedAddress(ns3::Ipv6Address addr) [member function]
     cls.add_method('MakeSolicitedAddress', 
@@ -2262,11 +2281,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Now() [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -2277,11 +2291,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 
@@ -2513,7 +2522,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInformation * info) const [member function]
     cls.add_method('LookupAttributeByName', 
                    'bool', 
-                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info')], 
+                   [param('std::string', 'name'), param('ns3::TypeId::AttributeInformation *', 'info', transfer_ownership=False)], 
                    is_const=True)
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::LookupByName(std::string name) [member function]
     cls.add_method('LookupByName', 
@@ -3632,8 +3641,11 @@ def register_Ns3Channel_methods(root_module, cls):
     return
 
 def register_Ns3CsmaChannel_methods(root_module, cls):
-    ## csma-channel.h (module 'csma'): ns3::CsmaChannel::CsmaChannel(ns3::CsmaChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CsmaChannel const &', 'arg0')])
+    ## csma-channel.h (module 'csma'): static ns3::TypeId ns3::CsmaChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## csma-channel.h (module 'csma'): ns3::CsmaChannel::CsmaChannel() [constructor]
     cls.add_constructor([])
     ## csma-channel.h (module 'csma'): int32_t ns3::CsmaChannel::Attach(ns3::Ptr<ns3::CsmaNetDevice> device) [member function]
@@ -3648,6 +3660,56 @@ def register_Ns3CsmaChannel_methods(root_module, cls):
     cls.add_method('Detach', 
                    'bool', 
                    [param('uint32_t', 'deviceId')])
+    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::Reattach(uint32_t deviceId) [member function]
+    cls.add_method('Reattach', 
+                   'bool', 
+                   [param('uint32_t', 'deviceId')])
+    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::Reattach(ns3::Ptr<ns3::CsmaNetDevice> device) [member function]
+    cls.add_method('Reattach', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
+    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::TransmitStart(ns3::Ptr<ns3::Packet> p, uint32_t srcId) [member function]
+    cls.add_method('TransmitStart', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'srcId')])
+    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::TransmitEnd() [member function]
+    cls.add_method('TransmitEnd', 
+                   'bool', 
+                   [])
+    ## csma-channel.h (module 'csma'): void ns3::CsmaChannel::PropagationCompleteEvent() [member function]
+    cls.add_method('PropagationCompleteEvent', 
+                   'void', 
+                   [])
+    ## csma-channel.h (module 'csma'): int32_t ns3::CsmaChannel::GetDeviceNum(ns3::Ptr<ns3::CsmaNetDevice> device) [member function]
+    cls.add_method('GetDeviceNum', 
+                   'int32_t', 
+                   [param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
+    ## csma-channel.h (module 'csma'): ns3::WireState ns3::CsmaChannel::GetState() [member function]
+    cls.add_method('GetState', 
+                   'ns3::WireState', 
+                   [])
+    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::IsBusy() [member function]
+    cls.add_method('IsBusy', 
+                   'bool', 
+                   [])
+    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::IsActive(uint32_t deviceId) [member function]
+    cls.add_method('IsActive', 
+                   'bool', 
+                   [param('uint32_t', 'deviceId')])
+    ## csma-channel.h (module 'csma'): uint32_t ns3::CsmaChannel::GetNumActDevices() [member function]
+    cls.add_method('GetNumActDevices', 
+                   'uint32_t', 
+                   [])
+    ## csma-channel.h (module 'csma'): uint32_t ns3::CsmaChannel::GetNDevices() const [member function]
+    cls.add_method('GetNDevices', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::NetDevice> ns3::CsmaChannel::GetDevice(uint32_t i) const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
     ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::CsmaNetDevice> ns3::CsmaChannel::GetCsmaDevice(uint32_t i) const [member function]
     cls.add_method('GetCsmaDevice', 
                    'ns3::Ptr< ns3::CsmaNetDevice >', 
@@ -3661,61 +3723,6 @@ def register_Ns3CsmaChannel_methods(root_module, cls):
     cls.add_method('GetDelay', 
                    'ns3::Time', 
                    [])
-    ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::NetDevice> ns3::CsmaChannel::GetDevice(uint32_t i) const [member function]
-    cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
-    ## csma-channel.h (module 'csma'): int32_t ns3::CsmaChannel::GetDeviceNum(ns3::Ptr<ns3::CsmaNetDevice> device) [member function]
-    cls.add_method('GetDeviceNum', 
-                   'int32_t', 
-                   [param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
-    ## csma-channel.h (module 'csma'): uint32_t ns3::CsmaChannel::GetNDevices() const [member function]
-    cls.add_method('GetNDevices', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## csma-channel.h (module 'csma'): uint32_t ns3::CsmaChannel::GetNumActDevices() [member function]
-    cls.add_method('GetNumActDevices', 
-                   'uint32_t', 
-                   [])
-    ## csma-channel.h (module 'csma'): ns3::WireState ns3::CsmaChannel::GetState() [member function]
-    cls.add_method('GetState', 
-                   'ns3::WireState', 
-                   [])
-    ## csma-channel.h (module 'csma'): static ns3::TypeId ns3::CsmaChannel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::IsActive(uint32_t deviceId) [member function]
-    cls.add_method('IsActive', 
-                   'bool', 
-                   [param('uint32_t', 'deviceId')])
-    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::IsBusy() [member function]
-    cls.add_method('IsBusy', 
-                   'bool', 
-                   [])
-    ## csma-channel.h (module 'csma'): void ns3::CsmaChannel::PropagationCompleteEvent() [member function]
-    cls.add_method('PropagationCompleteEvent', 
-                   'void', 
-                   [])
-    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::Reattach(uint32_t deviceId) [member function]
-    cls.add_method('Reattach', 
-                   'bool', 
-                   [param('uint32_t', 'deviceId')])
-    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::Reattach(ns3::Ptr<ns3::CsmaNetDevice> device) [member function]
-    cls.add_method('Reattach', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::CsmaNetDevice >', 'device')])
-    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::TransmitEnd() [member function]
-    cls.add_method('TransmitEnd', 
-                   'bool', 
-                   [])
-    ## csma-channel.h (module 'csma'): bool ns3::CsmaChannel::TransmitStart(ns3::Ptr<ns3::Packet> p, uint32_t srcId) [member function]
-    cls.add_method('TransmitStart', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'srcId')])
     return
 
 def register_Ns3DataRateChecker_methods(root_module, cls):

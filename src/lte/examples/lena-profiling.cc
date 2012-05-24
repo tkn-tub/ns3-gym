@@ -23,14 +23,13 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/config-store.h"
-#include <ns3/buildings-propagation-loss-model.h>
+#include <ns3/buildings-module.h>
 #include <iomanip>
 #include <string>
 #include <vector>
 //#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
-using std::vector;
 
 int
 main (int argc, char *argv[])
@@ -63,7 +62,7 @@ main (int argc, char *argv[])
   uint32_t nRooms = ceil (sqrt (nEnbPerFloor));
   uint32_t nEnb;
 
-  Ptr < LteHelper > lteHelper = CreateObject<LteHelper> ();
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   //lteHelper->EnableLogComponents ();
   //LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
   if (nFloors == 0)
@@ -81,7 +80,7 @@ main (int argc, char *argv[])
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
-  vector < NodeContainer > ueNodes;
+  std::vector<NodeContainer> ueNodes;
 
   enbNodes.Create (nEnb);
   for (uint32_t i = 0; i < nEnb; i++)
@@ -92,13 +91,13 @@ main (int argc, char *argv[])
     }
 
   MobilityHelper mobility;
-  vector<Vector> enbPosition;
-  Ptr < ListPositionAllocator > positionAlloc = CreateObject<ListPositionAllocator> ();
-  Ptr < Building > building;
+  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  std::vector<Vector> enbPosition;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  Ptr<Building> building;
 
   if (nFloors == 0)
     {
-      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       // Position of eNBs
       uint32_t plantedEnb = 0;
       for (uint32_t row = 0; row < nRooms; row++)
@@ -108,7 +107,7 @@ main (int argc, char *argv[])
               Vector v (roomLength * (column + 0.5), roomLength * (row + 0.5), nodeHeight);
               positionAlloc->Add (v);
               enbPosition.push_back (v);
-              mobility.Install (ueNodes[plantedEnb]);
+              mobility.Install (ueNodes.at(plantedEnb));
             }
         }
       mobility.SetPositionAllocator (positionAlloc);
@@ -117,31 +116,30 @@ main (int argc, char *argv[])
       // Position of UEs attached to eNB
       for (uint32_t i = 0; i < nEnb; i++)
         {
-          UniformVariable posX (enbPosition[i].x - roomLength * 0.5,
-                                enbPosition[i].x + roomLength * 0.5);
-          UniformVariable posY (enbPosition[i].y - roomLength * 0.5,
-                                enbPosition[i].y + roomLength * 0.5);
+          UniformVariable posX (enbPosition.at(i).x - roomLength * 0.5,
+                                enbPosition.at(i).x + roomLength * 0.5);
+          UniformVariable posY (enbPosition.at(i).y - roomLength * 0.5,
+                                enbPosition.at(i).y + roomLength * 0.5);
           positionAlloc = CreateObject<ListPositionAllocator> ();
           for (uint32_t j = 0; j < nUe; j++)
             {
               positionAlloc->Add (Vector (posX.GetValue (), posY.GetValue (), nodeHeight));
               mobility.SetPositionAllocator (positionAlloc);
             }
-          mobility.Install (ueNodes[i]);
+          mobility.Install (ueNodes.at(i));
         }
 
     }
   else
     {
-      building = Create<Building> (0.0, nRooms * roomLength,
-                                   0.0, nRooms * roomLength,
-                                   0.0, nFloors* roomHeight);
+      building = CreateObject<Building> (0.0, nRooms * roomLength,
+                                         0.0, nRooms * roomLength,
+                                         0.0, nFloors* roomHeight);
       building->SetBuildingType (Building::Residential);
       building->SetExtWallsType (Building::ConcreteWithWindows);
       building->SetNFloors (nFloors);
       building->SetNRoomsX (nRooms);
       building->SetNRoomsY (nRooms);
-      mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
       mobility.Install (enbNodes);
       uint32_t plantedEnb = 0;
       for (uint32_t floor = 0; floor < nFloors; floor++)
@@ -158,22 +156,14 @@ main (int argc, char *argv[])
                   enbPosition.push_back (v);
                   Ptr<BuildingsMobilityModel> mmEnb = enbNodes.Get (plantedEnb)->GetObject<BuildingsMobilityModel> ();
                   mmEnb->SetPosition (v);
-                  mmEnb->SetIndoor (building);
-                  mmEnb->SetFloorNumber (floor);
-                  mmEnb->SetRoomNumberX (row);
-                  mmEnb->SetRoomNumberY (column);
 
                   // Positioning UEs attached to eNB
-                  mobility.Install (ueNodes[plantedEnb]);
+                  mobility.Install (ueNodes.at(plantedEnb));
                   for (uint32_t ue = 0; ue < nUe; ue++)
                     {
-                      Ptr<BuildingsMobilityModel> mmUe = ueNodes[plantedEnb].Get (ue)->GetObject<BuildingsMobilityModel> ();
+                      Ptr<BuildingsMobilityModel> mmUe = ueNodes.at(plantedEnb).Get (ue)->GetObject<BuildingsMobilityModel> ();
                       Vector vUe (v.x, v.y, v.z);
                       mmUe->SetPosition (vUe);
-                      mmUe->SetIndoor (building);
-                      mmUe->SetFloorNumber (floor);
-                      mmUe->SetRoomNumberX (row);
-                      mmUe->SetRoomNumberY (column);
                     }
                 }
             }
@@ -187,17 +177,20 @@ main (int argc, char *argv[])
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
-  vector < NetDeviceContainer > ueDevs;
+  std::vector<NetDeviceContainer> ueDevs;
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   for (uint32_t i = 0; i < nEnb; i++)
     {
-      NetDeviceContainer ueDev = lteHelper->InstallUeDevice (ueNodes[i]);
+      NetDeviceContainer ueDev = lteHelper->InstallUeDevice (ueNodes.at(i));
       ueDevs.push_back (ueDev);
       lteHelper->Attach (ueDev, enbDevs.Get (i));
       enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
       EpsBearer bearer (q);
       lteHelper->ActivateEpsBearer (ueDev, bearer, EpcTft::Default ());
     }
+
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
 
   Simulator::Stop (Seconds (simTime));
   lteHelper->EnableTraces ();

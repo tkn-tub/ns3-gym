@@ -196,14 +196,7 @@ LteSpectrumPhy::SetChannel (Ptr<SpectrumChannel> c)
 Ptr<const SpectrumModel>
 LteSpectrumPhy::GetRxSpectrumModel () const
 {
-  if (m_txPsd)
-    {
-      return m_txPsd->GetSpectrumModel ();
-    }
-  else
-    {
-      return 0;
-    }
+  return m_rxSpectrumModel;
 }
 
 
@@ -221,6 +214,7 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 {
   NS_LOG_FUNCTION (this << noisePsd);
   NS_ASSERT (noisePsd);
+  m_rxSpectrumModel = noisePsd->GetSpectrumModel ();
   m_interference->SetNoisePowerSpectralDensity (noisePsd);
 }
 
@@ -501,7 +495,7 @@ LteSpectrumPhy::EndRx ()
         {
           double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
           (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
-          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint8_t)(*itTb).first.m_layer << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
+          NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
        }
       
 //       for (uint16_t i = 0; i < (*itTb).second.rbBitmap.size (); i++)

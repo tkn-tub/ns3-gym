@@ -1,4 +1,4 @@
-.. include:: replace.txt
+cd .. include:: replace.txt
 
 
 ++++++++++++++++++++++++++++++++++++++
@@ -11,13 +11,18 @@ Overview
 
 The Buildings module provides:
 
- #. a new class (Building) that models the presence of a building in a simulation scenario;  
- #. a new mobility model (BuildingsMobilityModel) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
- #. a new propagation model (BuildingsPropagationLossModel) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
+ #. a new class (``Building``) that models the presence of a building in a simulation scenario;  
+ #. a new mobility model (``BuildingsMobilityModel``) that allows to specify the location, size and characteristics of buildings present in the simulated area, and allows the placement of nodes inside those buildings;
+ #. a container class with the definition of the most useful pathloss models and the correspondent variables called ``BuildingsPropagationLossModel``.
+ #. a new propagation model (``HybridBuildingsPropagationLossModel``) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
+ #. a simplified model working only with Okumura Hata (``OhBuildingsPropagationLossModel``) considering the phenomenon of indoor/outdoor propagation in the presence of buildings.
 
-Both models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi). 
+The models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi, wimax). 
 
-The pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. Finally, the frequency also represent an important parameter since it spans from 600 MHz up to 2600 MHz according to [TS36.101]_.
+The ``HybridBuildingsPropagationLossModel`` pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. 
+
+The ``OhBuildingsPropagationLossModel`` pathloss model has been created for simplifying the previous one removing the thresholds for switching from one model to other. For doing this it has been used only one propagation model from the one available (i.e., the Okumura Hata). The presence of building is still considered in the model; therefore all the considerations of above regarding the building type are still valid. The same consideration can be done for what concern the environmental scenario and frequency since both of them are parameters of the model considered.
+
 
 The Building class
 ++++++++++++++++++
@@ -41,253 +46,42 @@ The model includes a specific class called ``Building`` which contains a ns3 ``B
   * number of rooms in x-axis (default value 1)
   * number of rooms in y-axis (default value 1)
 
-By means of the number of rooms in x and y axis it is possible the definition of buildings where rooms are organized in grids, typical reference scenario for femto-cells in 3GPP called dual-strip.
+The Building class is based on the following assumptions:
 
-The ``Building`` class is included in ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel`` and it is in charge of managing the standard mobility functionalities plus the building ones (e.g., floor and room of the node).
+ * a buildings is represented as a rectangular parallelepiped (i.e., a box)
+ * the walls are parallel to the x, y, and z axis
+ * a building is divided into a grid of rooms, identified by the following parameters:
+ 
+   * number of floors 
+   * number of rooms along the x-axis
+   * number of rooms along the y-axis
+
+ * the z axis is the vertical axis, i.e., floor numbers increase for increasing z axis values
+ * the x and y room indices start from 1 and increase along the x and y axis respectively
+ * all rooms in a building have equal size
+
+
+
+The BuildingsMobilityModel class
+++++++++++++++++++++++++++++++++
+
+The ``BuildingsMobilityModel`` class, which inherits from the ns3 class ``MobilityModel``, is in charge of managing the standard mobility functionalities plus providing information about the position of a node with respect to building. The information managed by ``BuildingsMobilityModel`` is:
+
+  * whether the node is indoor or outdoor
+  * if indoor:
+
+    * in which building the node is
+    * in which room the node is positioned (x, y and floor room indices)  
 
 The class ``BuildingsMobilityModel`` is used by ``BuildingsPropagationLossModel`` class, which inherits from the ns3 class ``PropagationLossModel`` and manages the pathloss computation of the single components and their composition according to the nodes' positions. Moreover, it implements also the shadowing, that is the loss due to obstacles in the main path (i.e., vegetation, buildings, etc.).
 
-Pathloss models used in BuildingsPropagationLossModel
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-In the following we present the pathloss models that are included in the BuildingsPropagationLossModel
 
-Okumura Hata (OH)
------------------
 
-This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need to consider several variant of the well known Okumura Hata model. In fact, the standard one is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 [cost231]_ one for the 1500 MHz up to 2000 MHz and [pl26ghz]_ for the one at 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
+ItuR1238PropagationLossModel
+++++++++++++++++++++++++++++
 
-
-
-The pathloss expression of the COST231 OH is:
-
-.. math::
-
-  L = 46.3 + 33.9\log{f} - 13.82 \log{h_\mathrm{b}} + (44.9 - 6.55\log{h_\mathrm{b}})\log{d} - F(h_\mathrm{M}) + C
-
-where
-
-.. math::
-
-  F(h_\mathrm{M}) = \left\{\begin{array}{ll} (1.1\log(f))-0.7 \times h_\mathrm{M} - (1.56\times \log(f)-0.8) & \mbox{for medium and small size cities} \\ 3.2\times (\log{(11.75\times h_\mathrm{M}}))^2 & \mbox{for large cities}\end{array} \right.
-
-
-.. math::
-
-  C = \left\{\begin{array}{ll} 0dB & \mbox{for medium-size cities and suburban areas} \\ 3dB & \mbox{for large cities}\end{array} \right.
-
-and
-
-  :math:`f` : frequency [MHz]
-
-  :math:`h_\mathrm{b}` : eNB height above the ground [m]
-
-  :math:`h_\mathrm{M}` : UE height above the ground [m]
-
-  :math:`d` : distance [km]
-  
-  :math:`log` : is a logarithm in base 10 (this for the whole document) 
-
-
-This model is only for urban scenarios.
-
-The pathloss expression of the standard OH in urban area is:
-
-.. math::
-
-  L = 69.55 + 26.16\log{f} - 13.82 \log{h_\mathrm{b}} + (44.9 - 6.55\log{h_\mathrm{b}})\log{d} - C_\mathrm{H}
-
-where for small or medium sized city
-
-.. math::
-
-  C_\mathrm{H} = 0.8 + (1.1\log{f} - 0.7)h_\mathrm{M} -1.56\log{f}
-
-and for large cities
-
-.. math::
-  C_\mathrm{H} = \left\{\begin{array}{ll} 8.29 (\log{(1.54h_M)})^2 -1.1 & \mbox{if } 150\leq f\leq 200 \\ 3.2(\log{(11.75h_M)})^2 -4.97 & \mbox{if } 200<f\leq 1500\end{array} \right.
-
-There extension for the standard OH in suburban is
-
-.. math::
-
-  L_\mathrm{SU} = L_\mathrm{U} - 2 \left(\log{\frac{f}{28}}\right)^2 - 5.4
-
-where
-
-  :math:`L_\mathrm{U}` : pathloss in urban areas
-
-The extension for the standard OH in open area is
-
-.. math::
-
-  L_\mathrm{O} = L_\mathrm{U} - 4.70 (\log{f})^2 + 18.33\log{f} - 40.94
-
-
-The literature lacks of extensions of the COST231 to open area (for suburban it seems that we can just impose C = 0); therefore we consider it a special case fo the suburban one.
-
-
-Regarding the pathloss at 2600 MHz, in literature we found a paper presenting a model coming from an empirical evaluation for urban area [pl26ghz]_:
-
-.. math::
-
-  L = 36 + 26\log{d}
-
-Therefore, also in this case, the suburban and openareas environment scenarios are model as the urban one.
-
-
-Short Range Communications ITU-R P.1411 (I1411)
------------------------------------------------
-
-This model is designed for short range outdoor communication in the frequency range 300 MHz to 100 GHz. It is divided in LOS and NLoS models and NLoS is split in roof-tops and canyons. The model implemented considers the LoS propagation for short distances according to a tunable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, the over the roof-top model is taken in consideration for modeling both macro BS and SC. In case on NLoS several parameters scenario dependent have been included, such as average street width, orientation, etc. The values of such parameters have to be properly set according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used, apart for the height of the mobile and BS, which instead their integrity is tested directly in the code (i.e., they have to be greater then zero).  In the following we give the expressions of the components of the model.
-
-
-LoS within street canyons
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This model provides an upper and lower bound respectively according to the following formulas
-
-.. math::
-
-  L_\mathrm{LoS,l} = L_\mathrm{bp} + \left\{\begin{array}{ll} 20\log{\frac{d}{R_\mathrm{bp}}} & \mbox{for $d \le R_\mathrm{bp}$} \\ 40\log{\frac{d}{R_\mathrm{bp}}} & \mbox{for $d > R_\mathrm{bp}$}\end{array} \right.
-
-.. math::
-
-  L_\mathrm{LoS,u} = L_\mathrm{bp} + 20 + \left\{\begin{array}{ll} 25\log{\frac{d}{R_\mathrm{bp}}} & \mbox{for $d \le R_\mathrm{bp}$} \\ 40\log{\frac{d}{R_\mathrm{bp}}} & \mbox{for $d > R_\mathrm{bp}$}\end{array} \right.
-
-where the breakpoint distance is given by
-
-.. math::
-
-  R_\mathrm{bp} \approx \frac{4h_\mathrm{b}h_\mathrm{m}}{\lambda}
-
-and the above parameters are
-
-  :math:`\lambda` : wavelength [m]
-
-  :math:`h_\mathrm{b}` : eNB height above the ground [m]
-
-  :math:`h_\mathrm{m}` : UE height above the ground [m]
-
-  :math:`d` : distance [m]
-
-and :math:`L_{bp}` is the value for the basic transmission loss at the break point, defined as:
-
-.. math::
-
-  L_{bp} = \left|20\log \left(\frac{\lambda^2}{8\pi h_\mathrm{b}h\mathrm{m}}\right)\right|
-
-The value used by the simulator is the average one for modeling the median pathloss.
-
-
-NLoS over the rooftops
-~~~~~~~~~~~~~~~~~~~~~~
-
-In this case the model is based on [walfisch]_ and [ikegami]_, where the loss is expressed as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past rows of building (:math:`L_{msd}`). The formula is:
-
-.. math::
-
-  L_{NLOS1} = \left\{ \begin{array}{ll} L_{bf} + L_{rts} + L_{msd} & \mbox{for } L_{rts} + L_{msd} > 0 \\ L_{bf} & \mbox{for } L_{rts} + L_{msd} \le 0\end{array}\right.
-
-The free-space loss is given by:
-
-.. math::
-
-  L_{bf} = 32.4 + 20 \log {(d/1000)} + 20\log{(f)}
-
-where:
-
-  :math:`f` : frequency [MHz]
-
-  :math:`d` : distance (where :math:`d > 1`) [m]
-
-The term :math:`L_{rts}` takes into account the width of the street and its orientation, according to the formulas
-
-.. math::
-
-  L_{rts} = -8.2 - 10\log {(w)} + 10\log{(f)} + 20\log{(\Delta h_m)} + L_{ori}
-
-  L_{ori} = \left\{ \begin{array}{lll} -10 + 0.354\varphi & \mbox{for } 0^{\circ} \le \varphi < 35^{\circ} \\ 2.5 + 0.075(\varphi-35) & \mbox{for } 35^{\circ} \le \varphi < 55^{\circ} \\ 4.0 -0.114(\varphi-55) & \mbox{for } 55^{\circ} \varphi \le 90^{\circ}\end{array}\right.
-
-  \Delta h_m = h_r - h_m
-
-where:
-
-  :math:`h_r` : is the height of the rooftop [m]
-
-  :math:`h_m` : is the height of the mobile [m]
-
-  :math:`\varphi` : is the street orientation with respect to the direct path (degrees)
-
-
-The multiple screen diffraction loss depends on the BS antenna height relative to the building height and on the incidence angle. The former is selected as the higher antenna in the communication link. Regarding the latter, the "settled field distance" is used for select the proper model; its value is given by
-
-.. math::
-
-  d_{s} = \frac{\lambda d^2}{\Delta h_{b}^2}
-
-with
-
-  :math:`\Delta h_b = h_b - h_m`
-
-Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the building extend), it can be evaluated according to
-
-.. math::
-
-  L_{msd} = L_{bsh} + k_{a} + k_{d}\log{(d/1000)} + k_{f}\log{(f)} - 9\log{(b)}
-
-  L_{bsh} = \left\{ \begin{array}{ll} -18\log{(1+\Delta h_{b})} & \mbox{for } h_{b} > h_{r} \\ 0 & \mbox{for } h_{b} \le h_{hr} \end{array}\right.
-
-  k_a = \left\{ \begin{array}{lll} 
-      71.4 & \mbox{for } h_{b} > h_{r} \mbox{ and } f>2000 \mbox{ MHz} \\
-      54 & \mbox{for } h_{b} > h_{r} \mbox{ and } f\le2000 \mbox{ MHz} \\
-      54-0.8\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d \ge 500 \mbox{ m} \\
-      54-1.6\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d < 500 \mbox{ m} \\
-      \end{array} \right.
-
-  k_d = \left\{ \begin{array}{ll}
-        18 & \mbox{for } h_{b} > h_{r} \\
-        18 -15\frac{\Delta h_b}{h_r} & \mbox{for } h_{b} \le h_{r}
-        \end{array} \right.
-
-  k_f = \left\{ \begin{array}{ll}
-        -8 & \mbox{for } f>2000 \mbox{ MHz} \\
-        -4 + 0.7(f/925 -1) & \mbox{for medium city and suburban centres and} f\le2000 \mbox{ MHz} \\
-        -4 + 1.5(f/925 -1) & \mbox{for metropolitan centres and } f\le2000 \mbox{ MHz}
-        \end{array}\right.
-
-
-Alternatively, in case of :math:`l < d_s`, the formula is:
-
-.. math::
-
-  L_{msd} = -10\log{\left(Q_M^2\right)}
-
-where
-
-.. math::
-
-  Q_M = \left\{ \begin{array}{lll}
-        2.35\left(\frac{\Delta h_b}{d}\sqrt{\frac{b}{\lambda}}\right)^{0.9} & \mbox{for } h_{b} > h_{r} \\
-        \frac{b}{d} &  \mbox{for } h_{b} \approx h_{r} \\
-        \frac{b}{2\pi d}\sqrt{\frac{\lambda}{\rho}}\left(\frac{1}{\theta}-\frac{1}{2\pi + \theta}\right) & \mbox{for }  h_{b} < h_{r} 
-        \end{array}\right.
-
-
-where:
-
-.. math::
-
-  \theta = arc tan \left(\frac{\Delta h_b}{b}\right)
-
-  \rho = \sqrt{\Delta h_b^2 + b^2}
-
-
-Indoor Communications (I1238)
------------------------------
-
-In this case the model considers the ITU P.1238, which includes losses due to type of building (i.e., residential, office and commercial).
+This class implements a building-dependent indoor propagation loss model based on the ITU P.1238 model, which includes losses due to type of building (i.e., residential, office and commercial).
 The analytical expression is given in the following.
 
 .. math::
@@ -308,35 +102,84 @@ where:
 
 
 
-External Walls Penetration Loss (BEL)
--------------------------------------
+
+BuildingsPropagationLossModel
++++++++++++++++++++++++++++++
+
+The BuildingsPropagationLossModel provides an additional set of building-dependent pathloss model elements that are used to implement different pathloss logics. These pathloss model elements are described in the following subsections.
+
+
+
+External Wall Loss (EWL)
+-------------------------
 
 This component models the penetration loss through walls for indoor to outdoor communications and vice-versa. The values are taken from the [cost231]_ model.
 
   * Wood ~ 4 dB
-  * Concrete with windows (no metallised) ~ 7 dB
+  * Concrete with windows (not metallized) ~ 7 dB
   * Concrete without windows ~ 15 dB (spans between 10 and 20 in COST231)
   * Stone blocks ~ 12 dB
+
+
+Internal Walls Loss (IWL)
+-------------------------
+
+This component models the penetration loss occurring in indoor-to-indoor communications within the same building. The total loss is calculated assuming that each single internal wall has a constant penetration loss :math:`L_{siw}`, and approximating the number of walls that are penetrated with the manhattan distance (in number of rooms) between the transmitter and the receiver. In detail, let :math:`x_1`, :math:`y_1`, :math:`x_2`, :math:`y_2` denote the room number along the :math:`x` and :math:`y` axis respectively for user 1 and 2; the total loss :math:`L_{IWL}` is calculated as 
+
+.. math::
+
+  L_{IWL} = L_{siw} (|x_1 -x_2| + |y_1 - y_2|)
+
+  
+
 
 
 Height Gain Model (HG)
 -----------------------
 
-This component model the gain due to the fact that the transmitting device is on a floor above the ground. In literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and vice-versa.
+This component model the gain due to the fact that the transmitting device is on a floor above the ground. In the literature [turkmani]_ this gain has been evaluated as about 2 dB per floor. This gain can be applied to all the indoor to outdoor communications and vice-versa.
+
+
+Shadowing Model
+---------------
+
+The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the connection characteristics. In the implementation we considered three main possible scenarios which correspond to three standard deviations (i.e., the mean is always 0), in detail:
+
+ * outdoor (``m_shadowingSigmaOutdoor``, defaul value of 7 dB) :math:`\rightarrow X_\mathrm{O} \sim N(\mu_\mathrm{O}, \sigma_\mathrm{O}^2)`.
+ * indoor (``m_shadowingSigmaIndoor``, defaul value of 10 dB) :math:`\rightarrow X_\mathrm{I} \sim N(\mu_\mathrm{I}, \sigma_\mathrm{I}^2)`.
+ * external walls penetration (``m_shadowingSigmaExtWalls``, default value 5 dB) :math:`\rightarrow X_\mathrm{W} \sim N(\mu_\mathrm{W}, \sigma_\mathrm{W}^2)`
+
+The simulator generates a shadowing value per each active link according to nodes' position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and vice-versa, the standard deviation (:math:`\sigma_\mathrm{IO}`) has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that that the components producing the shadowing are independent of each other; therefore, the variance of a distribution resulting from the sum of two independent normal ones is the sum of the variances. 
+
+.. math::
+  
+  X \sim N(\mu,\sigma^2) \mbox{ and } Y \sim N(\nu,\tau^2)
+
+  Z = X + Y \sim Z (\mu + \nu, \sigma^2 + \tau^2) 
+
+  \Rightarrow \sigma_\mathrm{IO} = \sqrt{\sigma_\mathrm{O}^2 + \sigma_\mathrm{W}^2}
 
 
 
-Hybrid Model Indoor<->Outdoor
------------------------------
-
-The pathloss model characterizes the hybrid cases (i.e., when an outdoor node transmit to an indoor one and vice-versa) by adding to the proper model, evaluated according to correspond distance, the external wall penetration loss due to the building (see Section BEL).
 
 
+Pathloss logics
++++++++++++++++
 
-Pathloss Model Logic of BuildingsPropagationLossModel
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+In the following we describe the different pathloss logic that are implemented by inheriting from BuildingsPropagationLossModel.
 
-The following pseudo-code illustrates how the different pathloss models described above are integrated in the BuildingsPropagationLossModel::
+
+HybridBuildingsPropagationLossModel
+-----------------------------------
+
+The ``HybridBuildingsPropagationLossModel`` pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different outdoor and indoor scenarios, as well as indoor-to-outdoor and outdoor-to-indoor scenarios. In detail, the class ``HybridBuildingsPropagationLossModel`` integrates the following pathloss models:
+
+ * OkumuraHataPropagationLossModel (OH) (at frequencies > 2.3 GHz substituted by Kun2600MhzPropagationLossModel)
+ * ItuR1411LosPropagationLossModel and ItuR1411NlosOverRooftopPropagationLossModel (I1411)
+ * ItuR1238PropagationLossModel (I1238)
+ * the pathloss elements of the BuildingsPropagationLossModel (EWL, HG, IWL)
+
+The following pseudo-code illustrates how the different pathloss model elements described above are integrated in  ``HybridBuildingsPropagationLossModel``::
 
   if (txNode is outdoor)
     then
@@ -355,50 +198,69 @@ The following pseudo-code illustrates how the different pathloss models describe
           if (distance > 1 km)
             then
               if (rxNode or txNode is below the rooftop)
-                L = I1411 + BEL + HG
+                L = I1411 + EWL + HG
               else
-                L = OH + BEL + HG
+                L = OH + EWL + HG
             else
-              L = I1411 + BEL + HG
+              L = I1411 + EWL + HG
   else (txNode is indoor)
     if (rxNode is indoor)
       then
        if (same building)
           then
-            L = I1238
+            L = I1238 + IWL
           else
-            L = I1411 + 2*BEL 
+            L = I1411 + 2*EWL 
      else (rxNode is outdoor)
       if (distance > 1 km)
         then 
           if (rxNode or txNode is below the rooftop)
                 then
-                  L = I1411 + BEL + HG
+                  L = I1411 + EWL + HG
                 else
-                  L = OH + BEL + HG
+                  L = OH + EWL + HG
         else
-          L = I1411 + BEL
+          L = I1411 + EWL
 
 
-We note that, for the case of communication between two nodes below rooftop level with distance is greater then 1 km, we still consider the I1411 model, since OH is specifically designed for macro cells and therefore for antennas above the roof-top level. Finally, we introduced a threshold called ``m_itu1411DistanceThreshold``) for pruning the communications between nodes below rooftop when the distance is too large (the default values is 2 km).
 
 
-Shadowing Model
-+++++++++++++++
+We note that, for the case of communication between two nodes below rooftop level with distance is greater then 1 km, we still consider the I1411 model, since OH is specifically designed for macro cells and therefore for antennas above the roof-top level.
 
-The shadowing is modeled according to a log-normal distribution with variable standard deviation as function of the connection characteristics. In the implementation we considered three main possible scenarios which correspond to three standard deviations (i.e., the mean is always 0), in detail:
+For the ITU-R P.1411 model we consider both the LOS and NLoS versions. In particular, we considers the LoS propagation for distances that are shorted than a tunable threshold (``m_itu1411NlosThreshold``). In case on NLoS propagation, the over the roof-top model is taken in consideration for modeling both macro BS and SC. In case on NLoS several parameters scenario dependent have been included, such as average street width, orientation, etc. The values of such parameters have to be properly set according to the scenario implemented, the model does not calculate natively their values. In case any values is provided, the standard ones are used, apart for the height of the mobile and BS, which instead their integrity is tested directly in the code (i.e., they have to be greater then zero).  In the following we give the expressions of the components of the model.
 
- * outdoor (``m_shadowingSigmaOutdoor``, defaul value of 7 dB) :math:`\rightarrow X_\mathrm{O} \sim N(\mu_\mathrm{O}, \sigma_\mathrm{O}^2)`.
- * indoor (``m_shadowingSigmaIndoor``, defaul value of 10 dB) :math:`\rightarrow X_\mathrm{I} \sim N(\mu_\mathrm{I}, \sigma_\mathrm{I}^2)`.
- * external walls penetration (``m_shadowingSigmaExtWalls``, default value 5 dB) :math:`\rightarrow X_\mathrm{W} \sim N(\mu_\mathrm{W}, \sigma_\mathrm{W}^2)`
+We also note that the use of different propagation models (OH, I1411, I1238 with their variants) in HybridBuildingsPropagationLossModel can result in discontinuities of the pathloss with respect to distance. A proper tuning of the attributes (especially the distance threshold attributes) can avoid these discontinuities. However, since the behavior of each model depends on several other parameters (frequency, node heigth, etc), there is no default value of these thresholds that can avoid the discontinuities in all possible configurations. Hence, an appropriate tuning of these parameters is left to the user.
 
-The simulator generates a shadowing value per each active link according to nodes' position the first time the link is used for transmitting. In case of transmissions from outdoor nodes to indoor ones, and vice-versa, the standard deviation (:math:`\sigma_\mathrm{IO}`) has to be calculated as the square root of the sum of the quadratic values of the standard deviatio in case of outdoor nodes and the one for the external walls penetration. This is due to the fact that that the components producing the shadowing are independent of each other; therefore, the variance of a distribution resulting from the sum of two independent normal ones is the sum of the variances. 
 
-.. math::
-  
-  X \sim N(\mu,\sigma^2) \mbox{ and } Y \sim N(\nu,\tau^2)
+OhBuildingsPropagationLossModel
+-------------------------------
 
-  Z = X + Y \sim Z (\mu + \nu, \sigma^2 + \tau^2) 
+The ``OhBuildingsPropagationLossModel`` class has been created as a simple means to solve the discontinuity problems of ``HybridBuildingsPropagationLossModel`` without doing scenario-specific  parameter tuning. The solution is to use only one propagation loss model (i.e., Okumura Hata), while retaining the structure of the pathloss logic for the calculation of other path loss components (such as wall penetration losses). The result is a model that is free of discontinuities (except those due to walls), but that is less realistic overall for a generic scenario with buildings and outdoor/indoor users, e.g., because Okumura Hata is not suitable neither for indoor communications nor for outdoor communications below rooftop level. 
 
-  \Rightarrow \sigma_\mathrm{IO} = \sqrt{\sigma_\mathrm{O}^2 + \sigma_\mathrm{W}^2}
+In detail, the class ``OhBuildingsPropagationLossModel`` integrates the following pathloss models:
+
+ * OkumuraHataPropagationLossModel (OH)
+ * the pathloss elements of the BuildingsPropagationLossModel (EWL, HG, IWL)
+
+The following pseudo-code illustrates how the different pathloss model elements described above are integrated in ``OhBuildingsPropagationLossModel``::
+
+  if (txNode is outdoor)
+    then
+      if (rxNode is outdoor)
+        then
+          L = OH 
+        else (rxNode is indoor)
+          L = OH + EWL
+  else (txNode is indoor)
+    if (rxNode is indoor)
+      then
+       if (same building)
+          then
+            L = OH + IWL
+          else
+            L = OH + 2*EWL 
+     else (rxNode is outdoor)
+        L = OH + EWL
+      
+We note that OhBuildingsPropagationLossModel is a significant simplification with respect to HybridBuildingsPropagationLossModel, due to the fact that OH is used always. While this gives a less accurate model in some scenarios (especially below rooftop and indoor), it effectively avoids the issue of pathloss discontinuities that affects HybridBuildingsPropagationLossModel. 
 

@@ -58,7 +58,7 @@ main (int argc, char *argv[])
 
   // Set a few attributes
   Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (0.01));
-  Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", StringValue ("EU_PKT"));
+  Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRateValue (DataRate ("448kb/s")));

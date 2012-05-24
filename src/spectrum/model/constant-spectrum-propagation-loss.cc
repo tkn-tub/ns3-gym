@@ -88,13 +88,12 @@ ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const Sp
   Values::iterator vit = rxPsd->ValuesBegin ();
   Bands::const_iterator fit = rxPsd->ConstBandsBegin ();
 
-//   NS_LOG_INFO ("Loss = " << m_loss);
   while (vit != rxPsd->ValuesEnd ())
     {
       NS_ASSERT (fit != rxPsd->ConstBandsEnd ());
-//       NS_LOG_INFO ("Ptx = " << *vit);
+      NS_LOG_LOGIC ("Ptx = " << *vit);
       *vit /= m_lossLinear; // Prx = Ptx / loss
-//       NS_LOG_INFO ("Prx = " << *vit);
+      NS_LOG_LOGIC ("Prx = " << *vit);
       ++vit;
       ++fit;
     }

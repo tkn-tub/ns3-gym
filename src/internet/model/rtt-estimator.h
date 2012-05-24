@@ -35,14 +35,14 @@ namespace ns3 {
 /**
  * \ingroup tcp
  *
- * \brief Implements several variations of round trip time estimators
+ * \brief Helper class to store RTT measurements
  */
 class RttHistory {
 public:
   RttHistory (SequenceNumber32 s, uint32_t c, Time t);
   RttHistory (const RttHistory& h); // Copy constructor
 public:
-  SequenceNumber32  seq;    // First sequence number in packet sent
+  SequenceNumber32  seq;  // First sequence number in packet sent
   uint32_t        count;  // Number of bytes sent
   Time            time;   // Time this one was sent
   bool            retx;   // True if this has been retransmitted
@@ -50,68 +50,151 @@ public:
 
 typedef std::deque<RttHistory> RttHistory_t;
 
-class RttEstimator : public Object {  //  Base class for all RTT Estimators
+/**
+ * \ingroup tcp
+ *
+ * \brief Base class for all RTT Estimators
+ */
+class RttEstimator : public Object {
 public:
   static TypeId GetTypeId (void);
 
   RttEstimator();
-  RttEstimator(const RttEstimator&); // Copy constructor
+  RttEstimator (const RttEstimator&); 
+
   virtual ~RttEstimator();
 
-  virtual void SentSeq (SequenceNumber32, uint32_t);
-  virtual Time AckSeq (SequenceNumber32);
+  /**
+   * \brief Note that a particular sequence has been sent
+   * \param seq the packet sequence number.
+   * \param size the packet size.
+   */
+  virtual void SentSeq (SequenceNumber32 seq, uint32_t size);
+
+  /**
+   * \brief Note that a particular ack sequence has been received
+   * \param ackSeq the ack sequence number.
+   * \return The measured RTT for this ack.
+   */
+  virtual Time AckSeq (SequenceNumber32 ackSeq);
+
+  /**
+   * \brief Clear all history entries
+   */
   virtual void ClearSent ();
-  virtual void   Measurement (Time t) = 0;
+
+  /**
+   * \brief Add a new measurement to the estimator. Pure virtual function.
+   * \param t the new RTT measure.
+   */
+  virtual void  Measurement (Time t) = 0;
+
+  /**
+   * \brief Returns the estimated RTO. Pure virtual function.
+   * \return the estimated RTO.
+   */
   virtual Time RetransmitTimeout () = 0;
-  void Init (SequenceNumber32 s) { next = s; }
+
   virtual Ptr<RttEstimator> Copy () const = 0;
+
+  /**
+   * \brief Increase the estimation multiplier up to MaxMultiplier.
+   */
   virtual void IncreaseMultiplier ();
+
+  /**
+   * \brief Resets the estimation multiplier to 1.
+   */
   virtual void ResetMultiplier ();
+
+  /**
+   * \brief Resets the estimation to its initial state.
+   */
   virtual void Reset ();
 
+  /**
+   * \brief Sets the Minimum RTO.
+   * \param minRto The minimum RTO returned by the estimator.
+   */
   void SetMinRto (Time minRto);
+
+  /**
+   * \brief Get the Minimum RTO.
+   * \return The minimum RTO returned by the estimator.
+   */
   Time GetMinRto (void) const;
-  void SetEstimate (Time estimate);
-  Time GetEstimate (void) const;
+
+  /**
+   * \brief Sets the current RTT estimate (forcefully).
+   * \param estimate The current RTT estimate.
+   */
+  void SetCurrentEstimate (Time estimate);
+
+  /**
+   * \brief gets the current RTT estimate.
+   * \return The current RTT estimate.
+   */
+  Time GetCurrentEstimate (void) const;
 
 private:
-  SequenceNumber32        next;    // Next expected sequence to be sent
-  RttHistory_t history; // List of sent packet
-  double m_maxMultiplier;
-public:
-  int64x64_t       est;     // Current estimate
-  int64x64_t       minrto; // minimum value of the timeout
-  uint32_t      nSamples; // Number of samples
-  double       multiplier;   // RTO Multiplier
+  SequenceNumber32 m_next;    // Next expected sequence to be sent
+  RttHistory_t m_history;     // List of sent packet
+  uint16_t m_maxMultiplier;
+  Time m_initialEstimatedRtt;
+
+protected:
+  Time         m_currentEstimatedRtt;     // Current estimate
+  Time         m_minRto;                  // minimum value of the timeout
+  uint32_t     m_nSamples;                // Number of samples
+  uint16_t     m_multiplier;              // RTO Multiplier
 };
 
-// The "Mean-Deviation" estimator, as discussed by Van Jacobson
-// "Congestion Avoidance and Control", SIGCOMM 88, Appendix A
-
-//Doc:Class Class {\tt RttMeanDeviation} implements the "Mean--Deviation" estimator
-//Doc:Class as described by Van Jacobson
-//Doc:Class "Congestion Avoidance and Control", SIGCOMM 88, Appendix A
+/**
+ * \ingroup tcp
+ *
+ * \brief The "Mean--Deviation" RTT estimator, as discussed by Van Jacobson
+ *
+ * This class implements the "Mean--Deviation" RTT estimator, as discussed
+ * by Van Jacobson and Michael J. Karels, in
+ * "Congestion Avoidance and Control", SIGCOMM 88, Appendix A
+ *
+ */
 class RttMeanDeviation : public RttEstimator {
 public:
   static TypeId GetTypeId (void);
 
   RttMeanDeviation ();
 
+  RttMeanDeviation (const RttMeanDeviation&);
 
-  //Doc:Method
-  RttMeanDeviation (const RttMeanDeviation&); // Copy constructor
-  //Doc:Desc Copy constructor.
-  //Doc:Arg1 {\tt RttMeanDeviation} object to copy.
+  /**
+   * \brief Add a new measurement to the estimator.
+   * \param measure the new RTT measure.
+   */
+  void Measurement (Time measure);
 
-  void Measurement (Time);
+  /**
+   * \brief Returns the estimated RTO.
+   * \return the estimated RTO.
+   */
   Time RetransmitTimeout ();
-  Ptr<RttEstimator> Copy () const;
-  void Reset ();
-  void Gain (double g) { gain = g; }
 
-public:
-  double       gain;       // Filter gain
-  int64x64_t   variance;   // Current variance
+  Ptr<RttEstimator> Copy () const;
+
+  /**
+   * \brief Resets sthe estimator.
+   */
+  void Reset ();
+
+  /**
+   * \brief Sets the estimator Gain.
+   * \param g the gain, where 0 < g < 1.
+   */
+  void Gain (double g);
+
+private:
+  double       m_gain;       // Filter gain
+  Time         m_variance;   // Current variance
 };
 } // namespace ns3
 

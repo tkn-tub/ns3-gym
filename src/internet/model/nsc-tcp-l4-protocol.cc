@@ -96,7 +96,7 @@ TypeId
 NscTcpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NscTcpL4Protocol")
-    .SetParent<Ipv4L4Protocol> ()
+    .SetParent<IpL4Protocol> ()
     .AddConstructor<NscTcpL4Protocol>()
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),
@@ -242,7 +242,7 @@ NscTcpL4Protocol::DoDispose (void)
   delete m_nscInterface;
   m_nscInterface = 0;
   m_downTarget.Nullify ();
-  Ipv4L4Protocol::DoDispose ();
+  IpL4Protocol::DoDispose ();
 }
 
 Ptr<Socket>
@@ -301,7 +301,7 @@ NscTcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
   // NSC m_endPoints->DeAllocate (endPoint);
 }
 
-Ipv4L4Protocol::RxStatus
+IpL4Protocol::RxStatus
 NscTcpL4Protocol::Receive (Ptr<Packet> packet,
                            Ipv4Header const &header,
                            Ptr<Ipv4Interface> incomingInterface)
@@ -335,7 +335,13 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
   delete[] buf;
 
   wakeup ();
-  return Ipv4L4Protocol::RX_OK;
+  return IpL4Protocol::RX_OK;
+}
+
+IpL4Protocol::RxStatus
+NscTcpL4Protocol::Receive(Ptr<Packet>, Ipv6Address&, Ipv6Address&, Ptr<Ipv6Interface>)
+{
+  return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 
 void NscTcpL4Protocol::SoftInterrupt (void)
@@ -434,38 +440,43 @@ void NscTcpL4Protocol::AddInterface (void)
 
       if (i == 1)
         {
-          // We need to come up with a default gateway here. Can't guarantee this to be
-          // correct really...
-
-          uint8_t addrBytes[4];
-          addr.Serialize (addrBytes);
-
-          // XXX: this is all a bit of a horrible hack
+          // The NSC stack requires a default gateway and only supports
+          // single-interface nodes.  The below is a hack, but
+          // it turns out that we can pass the interface address to nsc as
+          // a default gateway.  Bug 1398 has been opened to track this
+          // issue (NSC's limitation to single-interface nodes)
           //
-          // Just increment the last octet, this gives a decent chance of this being
-          // 'enough'.
-          //
-          // All we need is another address on the same network as the interface. This
-          // will force the stack to output the packet out of the network interface.
-          addrBytes[3]++;
-          addr.Deserialize (addrBytes);
-          addrOss.str ("");
-          addr.Print (addrOss);
+          // Previous versions of this code tried to assign the "next"
+          // IP address of the subnet but this was found to fail for
+          // some use cases in /30 subnets.
+
+          // XXX
           m_nscStack->add_default_gateway (addrOss.str ().c_str ());
         }
     }
 }
 
 void
-NscTcpL4Protocol::SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback)
+NscTcpL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 {
   m_downTarget = callback;
 }
 
-Ipv4L4Protocol::DownTargetCallback
+void
+NscTcpL4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
+{
+}
+
+IpL4Protocol::DownTargetCallback
 NscTcpL4Protocol::GetDownTarget (void) const
 {
   return m_downTarget;
+}
+
+IpL4Protocol::DownTargetCallback6
+NscTcpL4Protocol::GetDownTarget6 (void) const
+{
+  return (IpL4Protocol::DownTargetCallback6)0;
 }
 
 } // namespace ns3

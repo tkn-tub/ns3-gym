@@ -85,6 +85,7 @@ public:
    */
   double GetTxPower () const;
 
+
   /**
    * \param pw the noise figure in dB
    */
@@ -96,10 +97,22 @@ public:
   double GetNoiseFigure () const;
 
   /**
+   * \param delay the TTI delay between MAC and channel
+   */
+  void SetMacChDelay (uint8_t delay);
+  
+  /**
+   * \returns the TTI delay between MAC and channel
+   */
+  uint8_t GetMacChDelay (void) const;
+
+  /**
   * \brief Queue the MAC PDU to be sent
   * \param p the MAC PDU to sent
   */
   virtual void DoSendMacPdu (Ptr<Packet> p);
+  
+  virtual uint8_t DoGetMacChTtiDelay ();
 
 
   void DoSetDownlinkSubChannels ();
@@ -141,7 +154,17 @@ public:
 
   bool DeleteUePhy (uint16_t rnti);
   
-  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode); 
+  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
+  /**
+  * \param m the UL-CQI to be queued
+  */
+  void QueueUlDci (UlDciIdealControlMessage m);
+  
+  /**
+  * \returns the list of UL-CQI to be processed
+  */
+  std::list<UlDciIdealControlMessage> DequeueUlDci (void);
 
 
   /**
@@ -167,11 +190,13 @@ public:
   void PhyPduReceived (Ptr<Packet> p);
 
   // inherited from LtePhy
-  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+  virtual void GenerateCqiReport (const SpectrumValue& sinr);
 
 
 private:
   std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
+  
+  std::vector< std::list<UlDciIdealControlMessage> > m_ulDciQueue; // for storing info on future receptions
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;

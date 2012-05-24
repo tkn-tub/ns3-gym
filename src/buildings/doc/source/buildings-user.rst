@@ -18,13 +18,13 @@ The ``Building`` class has the following configurable parameters:
 * number of floors.
 * number of rooms in x-axis and y-axis (rooms can be placed only in a grid way).
 
-The ``BuildingMobilityModel`` parameter configurable with the ns3 attribute system is represented by the bound (string ``Bounds``) of the simulation area by providing a ``Box`` class with the area bounds. Moreover, by means of its methos the following parameters can be configured:
+The ``BuildingMobilityLossModel`` parameter configurable with the ns3 attribute system is represented by the bound (string ``Bounds``) of the simulation area by providing a ``Box`` class with the area bounds. Moreover, by means of its methos the following parameters can be configured:
 
 * the number of floor the node is placed (default 0).
 * the position in the rooms grid.
 
 
-The ``BuildingPropagationModel`` class has the following configurable parameters configurable with the attribute system:
+The ``BuildingPropagationLossModel`` class has the following configurable parameters configurable with the attribute system:
 
 * ``Frequency``: reference frequency (default 2160 MHz), note that by setting the frequency the wavelength is set accordingly automatically and viceversa).
 * ``Lambda``: the wavelength (0.139 meters, considering the above frequency).
@@ -37,6 +37,9 @@ The ``BuildingPropagationModel`` class has the following configurable parameters
 * ``MinDistance``: the minimum distance in meters between two nodes for evaluating the pathloss (considered neglictible before this threshold) (default 0.5 meters).
 * ``Environment``: the environment scenario among Urban, SubUrban and OpenAreas (default Urban).
 * ``CitySize``: the dimension of the city among Small, Medium, Large (default Large).
+
+In order to use the hybrid mode, the class to be used is the ``HybridBuildingMobilityLossModel``, which allows the selection of the proper pathloss model according to the pathloss logic presented in the design chapter. However, this solution has the problem that the pathloss model switching points might present discontinuities due to the different characteristics of the model. This implies that according to the specific scenario, the threshold used for switching have to be properly tuned.
+The simple ``OhBuildingMobilityLossModel`` overcome this problem by using only the Okumura Hata model and the wall penetration losses.
 
 
 

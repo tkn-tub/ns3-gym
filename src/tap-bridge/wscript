@@ -43,11 +43,13 @@ def build(bld):
         ]
 
     if not bld.env['PLATFORM'].startswith('freebsd'):
-        obj = bld.create_suid_program('tap-creator')
-        obj.source = [
+        tap_creator = bld.create_suid_program('tap-creator')
+        tap_creator.source = [
             'model/tap-creator.cc',
             'model/tap-encode-decode.cc',
             ]
+
+    module.env.append_value("DEFINES", "TAP_CREATOR=\"%s\"" % (tap_creator.target,))
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.add_subdirs('examples')

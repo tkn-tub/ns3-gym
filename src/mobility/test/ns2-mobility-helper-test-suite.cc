@@ -300,6 +300,30 @@ public:
     t->AddReferencePoint ("0", 5, Vector (0, 0, 0), Vector (0,  0, 0));
     AddTestCase (t);
 
+    // Copy of previous test case but with the initial positions at
+    // the end of the trace rather than at the beginning.
+    //
+    // Several set and setdest. Arguments are interpreted as x, y, speed by default
+    t = new Ns2MobilityHelperTest ("square setdest (initial positions at end)", Seconds (6));
+    t->SetTrace ("$ns_ at 1.0 \"$node_(0) setdest 15  10  5\"\n"
+                 "$ns_ at 2.0 \"$node_(0) setdest 15  15  5\"\n"
+                 "$ns_ at 3.0 \"$node_(0) setdest 10  15  5\"\n"
+                 "$ns_ at 4.0 \"$node_(0) setdest 10  10  5\"\n"
+                 "$node_(0) set X_ 10.0\n"
+                 "$node_(0) set Y_ 10.0\n"
+                 );
+    //                     id  t  position         velocity
+    t->AddReferencePoint ("0", 0, Vector (10, 10, 0), Vector (0,  0, 0));
+    t->AddReferencePoint ("0", 1, Vector (10, 10, 0), Vector (5,  0, 0));
+    t->AddReferencePoint ("0", 2, Vector (15, 10, 0), Vector (0,  0, 0));
+    t->AddReferencePoint ("0", 2, Vector (15, 10, 0), Vector (0,  5, 0));
+    t->AddReferencePoint ("0", 3, Vector (15, 15, 0), Vector (0,  0, 0));
+    t->AddReferencePoint ("0", 3, Vector (15, 15, 0), Vector (-5, 0, 0));
+    t->AddReferencePoint ("0", 4, Vector (10, 15, 0), Vector (0, 0, 0));
+    t->AddReferencePoint ("0", 4, Vector (10, 15, 0), Vector (0, -5, 0));
+    t->AddReferencePoint ("0", 5, Vector (10, 10, 0), Vector (0,  0, 0));
+    AddTestCase (t);
+
     // Scheduled set position
     t = new Ns2MobilityHelperTest ("scheduled set position", Seconds (2));
     t->SetTrace ("$ns_ at 1.0 \"$node_(0) set X_ 10\"\n"

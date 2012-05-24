@@ -35,6 +35,7 @@
 #include "lte-ue-mac.h"
 #include "ff-mac-common.h"
 #include "lte-sinr-chunk-processor.h"
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteUePhy");
@@ -118,6 +119,16 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
+  m_macChTtiDelay = UL_PUSCH_TTIS_DELAY + 1; // +1 for avoiding UL/DL trigger synchronization remove 1 TTI of delay
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+      std::list<Ptr<IdealControlMessage> > l;
+      m_controlMessagesQueue.push_back (l);
+    }
+  std::vector <int> ulRb;
+  m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
 }
 
 
@@ -161,37 +172,37 @@ LteUePhy::GetTypeId (void)
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode1Gain",
-                  "Transmission mode 1 gain in dBm",
+                  "Transmission mode 1 gain in dB",
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode1Gain                       ),
                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode2Gain",
-                    "Transmission mode 2 gain in dBm",
+                    "Transmission mode 2 gain in dB",
                     DoubleValue (4.2),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode2Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode3Gain",
-                    "Transmission mode 3 gain in dBm",
+                    "Transmission mode 3 gain in dB",
                     DoubleValue (-2.8),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode3Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode4Gain",
-                    "Transmission mode 4 gain in dBm",
+                    "Transmission mode 4 gain in dB",
                     DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode4Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode5Gain",
-                  "Transmission mode 5 gain in dBm",
+                  "Transmission mode 5 gain in dB",
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode5Gain                       ),
                   MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode6Gain",
-                    "Transmission mode 6 gain in dBm",
+                    "Transmission mode 6 gain in dB",
                     DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode6Gain                       ),
                     MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode7Gain",
-                  "Transmission mode 7 gain in dBm",
+                  "Transmission mode 7 gain in dB",
                   DoubleValue (0.0),
                    MakeDoubleAccessor (&LteUePhy::SetTxMode7Gain                       ),
                   MakeDoubleChecker<double> ())
@@ -248,6 +259,13 @@ LteUePhy::GetTxPower () const
 {
   NS_LOG_FUNCTION (this);
   return m_txPower;
+}
+
+
+uint8_t
+LteUePhy::GetMacChDelay (void) const
+{
+  return (m_macChTtiDelay);
 }
 
 void
@@ -325,7 +343,7 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteUePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteUePhy::GenerateCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
   // check periodic wideband CQI
@@ -354,20 +372,21 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
   NS_LOG_FUNCTION (this);
   
   // apply transmission mode gain
-  NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_transmissionMode << " gain " << m_txModeGain.at (m_transmissionMode));
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
   SpectrumValue newSinr = sinr;
   newSinr *= m_txModeGain.at (m_transmissionMode);
-  std::vector<int> cqi = m_amc->CreateCqiFeedbacks (newSinr);
+//   std::vector<int> cqi = m_amc->CreateCqiFeedbacks (newSinr);
 
 
 
   // CREATE DlCqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
   CqiListElement_s dlcqi;
-
+  std::vector<int> cqi;
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
+      cqi = m_amc->CreateCqiFeedbacks (newSinr, m_dlBandwidth);
+      
       int nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
       int nbSubChannels = cqi.size ();
       double cqiSum = 0.0;
@@ -405,6 +424,7 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
     }
   else if (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
     {
+      cqi = m_amc->CreateCqiFeedbacks (newSinr, GetRbgSize ());
       int nLayer = TransmissionModesLayers::TxMode2LayerNum (m_transmissionMode);
       int nbSubChannels = cqi.size ();
       int rbgSize = GetRbgSize ();
@@ -508,6 +528,7 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
   else if (msg->GetMessageType () == IdealControlMessage::UL_DCI) 
     {
       // set the uplink bandwidht according to the UL-CQI
+      NS_LOG_DEBUG (this << " UL DCI");
       Ptr<UlDciIdealControlMessage> msg2 = DynamicCast<UlDciIdealControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       std::vector <int> ulRb;
@@ -516,7 +537,8 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
           ulRb.push_back (i + dci.m_rbStart);
           //NS_LOG_DEBUG (this << " UE RB " << i + dci.m_rbStart);
         }
-      SetSubChannelsForTransmission (ulRb);
+        
+      QueueSubChannelsForTransmission (ulRb);
       // pass the info to the MAC
       m_uePhySapUser->ReceiveIdealControlMessage (msg);
     }
@@ -529,11 +551,27 @@ LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 }
 
+void
+LteUePhy::QueueSubChannelsForTransmission (std::vector <int> rbMap)
+{
+  m_subChannelsForTransmissionQueue.at (m_macChTtiDelay - 1) = rbMap;
+}
+
 
 void
 LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   // trigger from eNB
+  
+  // update uplink transmission mask according to previous UL-CQIs
+  SetSubChannelsForTransmission (m_subChannelsForTransmissionQueue.at (0));
+  // shift the queue
+  for (uint8_t i = 1; i < m_macChTtiDelay; i++)
+    {
+      m_subChannelsForTransmissionQueue.at (i-1) = m_subChannelsForTransmissionQueue.at (i);
+    }
+  m_subChannelsForTransmissionQueue.at (m_macChTtiDelay-1).clear ();
+  
 
   // send control messages
   std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
@@ -556,7 +594,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      NS_LOG_LOGIC (this << " start TX");
+      NS_LOG_LOGIC (this << " UE - start TX");
       m_uplinkSpectrumPhy->StartTx (pb);
     }
     

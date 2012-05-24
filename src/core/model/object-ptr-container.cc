@@ -43,7 +43,13 @@ ObjectPtrContainerValue::GetN (void) const
 Ptr<Object>
 ObjectPtrContainerValue::Get (uint32_t i) const
 {
-  return m_objects[i];
+  Iterator it = m_objects.find (i); 
+  Ptr<Object> value = 0;
+  if ( it != m_objects.end () )
+  {
+    value = m_objects.find (i)->second;
+  }
+  return value;
 }
 
 Ptr<AttributeValue>
@@ -55,10 +61,11 @@ std::string
 ObjectPtrContainerValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::ostringstream oss;
-  for (uint32_t i = 0; i < m_objects.size (); ++i)
+  Iterator it;
+  for (it = Begin (); it != End (); ++it)
     {
-      oss << m_objects[i];
-      if (i != m_objects.size () - 1)
+      oss << (*it).second;
+      if (it != End ())
         {
           oss << " ";
         }
@@ -68,7 +75,7 @@ ObjectPtrContainerValue::SerializeToString (Ptr<const AttributeChecker> checker)
 bool 
 ObjectPtrContainerValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
-  NS_FATAL_ERROR ("cannot deserialize a vector of object pointers.");
+  NS_FATAL_ERROR ("cannot deserialize a set of object pointers.");
   return true;
 }
 
@@ -95,8 +102,9 @@ ObjectPtrContainerAccessor::Get (const ObjectBase * object, AttributeValue &valu
     }
   for (uint32_t i = 0; i < n; i++)
     {
-      Ptr<Object> o = DoGet (object, i);
-      v->m_objects.push_back (o);
+      uint32_t index;
+      Ptr<Object> o = DoGet (object, i, &index);
+      v->m_objects.insert (std::pair <uint32_t, Ptr<Object> > (index, o));
     }
   return true;
 }

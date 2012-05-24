@@ -202,7 +202,10 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
     {
       delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
     }
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << delay.GetNanoSeconds ());
+  NS_LOG_LOGIC (" RNTI=" << m_rnti 
+                << " LCID=" << (uint32_t) m_lcid 
+                << " size=" << p->GetSize () 
+                << " delay=" << delay.GetNanoSeconds ());
   m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
 }
 
@@ -219,7 +222,9 @@ LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
   // RLC Performance evaluation
   RlcTag tag (Simulator::Now());
   params.pdu->AddByteTag (tag);
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
+  NS_LOG_LOGIC (" RNTI=" << m_rnti 
+                << " LCID=" << (uint32_t) m_lcid 
+                << " size=" << bytes);
   m_txPdu(m_rnti, m_lcid, bytes);
 
   m_macSapProvider->TransmitPdu (params);

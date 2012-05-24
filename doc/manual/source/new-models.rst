@@ -163,7 +163,7 @@ Review the ns-3 coding style document
 At this point, you may want to pause and read the |ns3| coding style document,
 especially if you are considering to contribute your code back to the project.
 The coding style document is linked off the main project page: `ns-3 coding
-style <http://www.nsnam.org/codingstyle.html>`_.
+style <http://www.nsnam.org/developers/contributing-code/coding-style/>`_.
 
 Decide where in the source tree the model will reside in
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++

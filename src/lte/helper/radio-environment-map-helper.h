@@ -24,7 +24,7 @@
 
 
 #include <ns3/object.h>
-
+#include <fstream>
 
 
 namespace ns3 {
@@ -36,7 +36,7 @@ class SpectrumChannel;
 class BuildingsMobilityModel;
 
 /** 
- * Generates a 2D map of the SINR from the strongest transmitter. 
+ * Generates a 2D map of the SINR from the strongest transmitter in the downlink of an LTE FDD system.
  * 
  */
 class RadioEnvironmentMapHelper : public Object
@@ -44,47 +44,73 @@ class RadioEnvironmentMapHelper : public Object
 public:  
 
   RadioEnvironmentMapHelper ();
-
   virtual ~RadioEnvironmentMapHelper ();
   
   // inherited from Object
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
 
+  /** 
+   * \return the bandwidth (in num of RBs) over which SINR is calculated
+   */
+  uint8_t GetBandwidth () const;
+
+  /** 
+   *
+   * \param bw  the bandwidth (in num of RBs) over which SINR is calculated
+   */
+  void SetBandwidth (uint8_t bw);
+
+  /** 
+   * Deploy the RemSpectrumPhy objects that generate the map according to the specified settings.
+   * 
+   */
   void Install ();
 
 private:
 
-  void Connect ();
-  void PrintAndDeactivate ();
+  void DelayedInstall ();
+  void RunOneIteration (double xMin, double xMax, double yMin, double yMax);
+  void PrintAndReset ();
+  void Finalize ();
 
 
   struct RemPoint 
   {
     Ptr<RemSpectrumPhy> phy;
-    Ptr<Node> node;
-    Ptr<NetDevice> dev;
     Ptr<BuildingsMobilityModel> bmm;
   };
 
-  std::list<std::list<RemPoint> > m_rem;
+  std::list<RemPoint> m_rem;
 
   double m_xMin;
   double m_xMax;
-  uint32_t m_xRes;
+  uint16_t m_xRes;
+  double m_xStep;
 
   double m_yMin;
   double m_yMax;
-  uint32_t m_yRes;
-  
+  uint16_t m_yRes;
+  double m_yStep;
+
+  uint32_t m_maxPointsPerIteration;
+
+  uint16_t m_earfcn;
+  uint16_t m_bandwidth;
+ 
   double m_z;
 
   std::string m_channelPath;
   std::string m_outputFile;
 
-  bool m_exitWhenDone;
+  bool m_stopWhenDone;
   
   Ptr<SpectrumChannel> m_channel;
+
+  double m_noisePower;
+
+  std::ofstream m_outFile;
+
 };
 
 

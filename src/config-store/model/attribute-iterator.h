@@ -21,8 +21,7 @@
 
 #include "ns3/ptr.h"
 #include "ns3/object.h"
-#include "ns3/object-ptr-vector.h"
-#include "ns3/object-ptr-map.h"
+#include "ns3/object-ptr-container.h"
 #include <vector>
 
 namespace ns3 {
@@ -47,14 +46,10 @@ private:
   virtual void DoEndVisitObject (void);
   virtual void DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
   virtual void DoEndVisitPointerAttribute (void);
-  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrVectorValue &vector);
+  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector);
   virtual void DoEndVisitArrayAttribute (void);
-  virtual void DoStartVisitArrayItem (const ObjectPtrVectorValue &vector, uint32_t index, Ptr<Object> item);
+  virtual void DoStartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item);
   virtual void DoEndVisitArrayItem (void);
-  virtual void DoStartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectPtrMapValue &map);
-  virtual void DoEndVisitMapAttribute (void);
-  virtual void DoStartVisitMapItem (const ObjectPtrMapValue &vector, uint32_t index, Ptr<Object> item);
-  virtual void DoEndVisitMapItem (void);
 
   void DoIterate (Ptr<Object> object);
   bool IsExamined (Ptr<const Object> object);
@@ -65,14 +60,11 @@ private:
   void EndVisitObject (void);
   void StartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
   void EndVisitPointerAttribute (void);
-  void StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrVectorValue &vector);
+  void StartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectPtrContainerValue &vector);
   void EndVisitArrayAttribute (void);
-  void StartVisitArrayItem (const ObjectPtrVectorValue &vector, uint32_t index, Ptr<Object> item);
+  void StartVisitArrayItem (const ObjectPtrContainerValue &vector, uint32_t index, Ptr<Object> item);
   void EndVisitArrayItem (void);
-  void StartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectPtrMapValue &map);
-  void EndVisitMapAttribute (void);
-  void StartVisitMapItem (const ObjectPtrMapValue &vector, uint32_t index, Ptr<Object> item);
-  void EndVisitMapItem (void);
+
 
   std::vector<Ptr<Object> > m_examined;
   std::vector<std::string> m_currentPath;

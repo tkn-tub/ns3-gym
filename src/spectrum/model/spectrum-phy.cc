@@ -42,6 +42,10 @@ SpectrumPhy::GetTypeId (void)
   return tid;
 }
 
+SpectrumPhy::SpectrumPhy ()
+{
+  NS_LOG_FUNCTION (this);
+}
 
 SpectrumPhy::~SpectrumPhy ()
 {

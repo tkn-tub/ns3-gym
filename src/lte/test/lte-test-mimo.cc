@@ -51,6 +51,7 @@
 #include <ns3/rr-ff-mac-scheduler.h>
 #include <ns3/pf-ff-mac-scheduler.h>
 #include <ns3/pointer.h>
+#include <ns3/enum.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestMimo");
@@ -104,6 +105,7 @@ void
 LenaMimoTestCase::DoRun (void)
 {
 //   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   LogComponentDisableAll (LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
@@ -148,7 +150,7 @@ LenaMimoTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
   
-  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::BuildingsPropagationLossModel"));
+  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));

@@ -2,7 +2,7 @@
 % related to phy error model test
 
 n = 1000;
-p_vect = [0.19 0.09 0.123 0.097 0.017 0.23 0.72 0.18];
+p_vect = [0.33 0.11 0.02 0.3 0.55 0.14];
 for i=1:length(p_vect)
   p = p_vect(i)
   cdf = 0.0;

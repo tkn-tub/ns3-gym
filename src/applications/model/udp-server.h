@@ -84,6 +84,7 @@ private:
 
   uint16_t m_port;
   Ptr<Socket> m_socket;
+  Ptr<Socket> m_socket6;
   Address m_local;
   uint32_t m_received;
   PacketLossCounter m_lossCounter;

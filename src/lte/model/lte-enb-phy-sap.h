@@ -72,6 +72,12 @@ public:
    * \param msg the Ideal Control Message to send
    */
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  
+  /**
+  * \brief Get the delay from MAC to Channel expressed in TTIs
+  *
+  */
+  virtual uint8_t GetMacChTtiDelay () = 0;
 
 
 };

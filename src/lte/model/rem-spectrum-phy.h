@@ -55,9 +55,11 @@ public:
   RemSpectrumPhy ();
   virtual ~RemSpectrumPhy ();
 
+  // inherited from Object
+  void DoDispose ();
   static TypeId GetTypeId (void);
 
-// inherited from SpectrumPhy
+  // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
   void SetMobility (Ptr<MobilityModel> m);
   void SetDevice (Ptr<NetDevice> d);
@@ -67,38 +69,43 @@ public:
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
+  /** 
+   * set the RX spectrum model to be used
+   * 
+   * \param m 
+   */
+  void SetRxSpectrumModel (Ptr<const SpectrumModel> m);
 
   /** 
-   * set the SpectrumModel to be used for reception
-   * 
-   */
-  void SetRxSpectrumModel (Ptr<SpectrumModel>); 
-  
-  /** 
-   * 
    * 
    * \return the Signal to Noise Ratio calculated 
    */
-  double GetSinr ();
+  double GetSinr (double noisePower);
 
   /** 
-   * make StartRx a no-op from now on
+   * make StartRx a no-op from now on, and mark instance as inactive
    * 
    */
   void Deactivate ();
 
-protected:
-  void DoDispose ();
+  /** 
+   * 
+   * \return true if active
+   */
+  bool IsActive ();
+
+  /** 
+   * Reset the SINR calculator
+   * 
+   */
+  void Reset ();
 
 private:
   Ptr<MobilityModel> m_mobility;
-  Ptr<NetDevice> m_netDevice;
-  Ptr<SpectrumChannel> m_channel;
-  Ptr<SpectrumModel> m_spectrumModel;
+  Ptr<const SpectrumModel> m_rxSpectrumModel;
 
   double m_referenceSignalPower;
   double m_sumPower;
-  double m_noisePower;  
 
   bool m_active;
 

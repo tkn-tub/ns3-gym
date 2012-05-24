@@ -38,19 +38,10 @@ void bar4i (int, int, int, int)
 void bar5i (int, int, int, int, int)
 {
 }
-void bar6i (int, int, int, int, int, int)
-{
-}
 void barcir (const int &)
 {
 }
 void barir (int &)
-{
-}
-void barip (int *)
-{
-}
-void barcip (const int *)
 {
 }
 } // anonymous namespace

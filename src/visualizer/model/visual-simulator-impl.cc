@@ -109,12 +109,6 @@ VisualSimulatorImpl::IsFinished (void) const
   return m_simulator->IsFinished ();
 }
 
-Time
-VisualSimulatorImpl::Next (void) const
-{
-  return m_simulator->Next ();
-}
-
 void
 VisualSimulatorImpl::Run (void)
 {
@@ -123,17 +117,22 @@ VisualSimulatorImpl::Run (void)
       const char *argv[] = { "python", NULL};
       Py_Initialize ();
       PySys_SetArgv (1, (char**) argv);
+      PyRun_SimpleString (
+                          "import visualizer\n"
+                          "visualizer.start();\n"
+                          );
     }
-  PyRun_SimpleString (
-    "import visualizer\n"
-    "visualizer.start();\n"
-    );
-}
+  else
+    {
+      PyGILState_STATE __py_gil_state = PyGILState_Ensure ();
+    
+      PyRun_SimpleString (
+                          "import visualizer\n"
+                          "visualizer.start();\n"
+                          );
 
-void
-VisualSimulatorImpl::RunOneEvent (void)
-{
-  m_simulator->RunOneEvent ();
+      PyGILState_Release (__py_gil_state);
+    }
 }
 
 void 

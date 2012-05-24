@@ -412,9 +412,9 @@ process in order to reach its destination UE.
 
 
 
------------------------------
-Description of the components
------------------------------
+-----------------------------------------
+Detailed description of protocol elements
+-----------------------------------------
 
 
 
@@ -544,8 +544,9 @@ configuration.
 Adaptive Modulation and Coding
 ------------------------------
 
-The Adaptive Modulation and Coding (AMC) model that we provide in the
-simulator is a modified version of the model described in [Piro2011]_,
+The simulator provides two Adaptive Modulation and Coding (AMC) models: one based on the GSoC model [Piro2011]_ and one based on the physical error model (described in the following sections).
+
+The former model is a modified version of the model described in [Piro2011]_,
 which in turn is inspired from [Seo2004]_. Our version is described in the
 following. Let :math:`i` denote the
 generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficiency
@@ -561,7 +562,7 @@ generic user, and let :math:`\gamma_i` be its SINR. We get the spectral efficien
 
 The procedure described in [R1-081483]_ is used to get
 the corresponding MCS scheme. The spectral efficiency is quantized based on the
-CQI (rounding to the lowest value) and is mapped to the corresponding MCS
+channel quality indicator (CQI), rounding to the lowest value, and is mapped to the corresponding MCS
 scheme. 
 
 Finally, we note that there are some discrepancies between the MCS index
@@ -572,6 +573,8 @@ MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
 index
 is 1. Hence to get the value as intended by the standard we need to subtract 1
 from the index reported in [R1-081483]_. 
+
+The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36.213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
 
 
 Round Robin (RR) Scheduler
@@ -600,7 +603,7 @@ on resource block :math:`k` at subframe :math:`t` is defined as
    R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
 
 where :math:`\tau` is the TTI duration.
-At the start of each subframe :math:`t`, all the RBs are assigned to a certain user.
+At the start of each subframe :math:`t`, each RB is assigned to a certain user.
 In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
 :math:`t` is determined as
 
@@ -1092,12 +1095,20 @@ the one described in [Piro2011]_, with the following modifications.  The model n
 inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
 
 
+MAC to Channel delay
+^^^^^^^^^^^^^^^^^^^^
+
+To model the latency of real MAC and PHY implementations, the PHY model simulates a MAC-to-channel delay in multiples of TTIs (1ms). The transmission of both data and control packets are delayed by this amount.
+
+
 CQI feedback
 ^^^^^^^^^^^^
 
 The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
-in use) and inband CQIs (i.e., a set of value representing the channel state for each RBG). 
+in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
+
+The CQI feedbacks are currently evaluated according to the SINR perceived by data transmissions (i.e., PDSHC for downlink and PUSCH for uplink) instead of the one based on reference signals (i.e., RS for downlink and SRS for uplink) since that signals are not implemented in the current version of the PHY layer. This implies that a UE has to transmit some data in order to have CQI feedbacks. This assumption is based on the fact that the reference signals defined in LTE are usually multiplexed within the data transmissions resources.
 
 Interference Model
 ^^^^^^^^^^^^^^^^^^
@@ -1171,11 +1182,11 @@ For estimating the :math:`CBLER_i`, the MI evaluation has been implemented accor
 
   CBLER_i = \frac{1}{2}\left[1-erf\left(\frac{x-b_{ECR}}{\sqrt{2}c_{ECR}} \right) \right]
 
-where :math:`x` is the MI of the TB, :math:`b_{ECR}` represents the "transition center" and :math:`c_{ECR}` is related to the "transition width" of the Gaussian cumulative distribution for each Effective Code Rate (ECR) which is the actual transmission rate according to the channel coding and MCS. For limiting the computational complexity of the model we considered only a subset of the possible ECRs in fact we would have potentially 5076 possible ECRs (i.e., 27 MCSs and 188 CB sizes). On this respect, we will limit the CB sizes to some representative values (i.e., 40, 140, 256, 512, 1024, 2048, 4032, 6144), while for the others the worst one approximating the real one will be used (i.e., the smaller CB size value available respect to the real one). This choice is aligned to the typical performance of turbo codes, where the CB size is not strongly impacting on the BLER. However, it is to be notes that for CB sizes lower than 1000 bits the effect might be relevant (i.e., till 2 dB); therefore, we adopt this unbalanced sampling interval for having more precision where it is necessary. This behaviour is confirmed by the figures presented in the Annes Section.
+where :math:`x` is the MI of the TB, :math:`b_{ECR}` represents the "transition center" and :math:`c_{ECR}` is related to the "transition width" of the Gaussian cumulative distribution for each Effective Code Rate (ECR) which is the actual transmission rate according to the channel coding and MCS. For limiting the computational complexity of the model we considered only a subset of the possible ECRs in fact we would have potentially 5076 possible ECRs (i.e., 27 MCSs and 188 CB sizes). On this respect, we will limit the CB sizes to some representative values (i.e., 40, 140, 160, 256, 512, 1024, 2048, 4032, 6144), while for the others the worst one approximating the real one will be used (i.e., the smaller CB size value available respect to the real one). This choice is aligned to the typical performance of turbo codes, where the CB size is not strongly impacting on the BLER. However, it is to be notes that for CB sizes lower than 1000 bits the effect might be relevant (i.e., till 2 dB); therefore, we adopt this unbalanced sampling interval for having more precision where it is necessary. This behaviour is confirmed by the figures presented in the Annes Section.
 
 
-Link Layer Performance
-^^^^^^^^^^^^^^^^^^^^^^
+BLER Curves
+^^^^^^^^^^^
 
 On this respect, we reused part of the curves obtained within [PaduaPEM]_. In detail, we introduced the CB size dependency to the CB BLER curves with the support of the developers of [PaduaPEM]_ and of the LTE Vienna Simulator. In fact, the module released provides the link layer performance only for what concerns the MCSs (i.e, with a given fixed ECR). In detail the new error rate curves for each has been evaluated with a simulation campaign with the link layer simulator for a single link with AWGN noise and for CB size of 104, 140, 256, 512, 1024, 2048, 4032 and 6144. These curves has been mapped with the Gaussian cumulative model formula presented above for obtaining the correspondents :math:`b_{ECR}` and :math:`c_{ECR}` parameters.
 
@@ -1244,23 +1255,34 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 
    BLER for MCS 21, 22, 23 and 24.
 
-.. _fig-mcs-25-27-ber:
 
-.. figure:: figures/MCS_25_27.*
+.. _fig-mcs-25-28-ber:
+
+.. figure:: figures/MCS_25_28.*
    :width: 900px
    :align: center
    :height: 700px
 
 
-   BLER for MCS 25, 26 and 27.
+   BLER for MCS 25, 26, 27 and 28.
+
+.. _fig-mcs-29-29-ber:
+
+.. figure:: figures/MCS_29_29.*
+   :width: 900px
+   :align: center
+   :height: 700px
+
+
+   BLER for MCS 29.
 
 
 
 
 
 
-Simulator Design
-^^^^^^^^^^^^^^^^
+Integration of the BLER curves in the ns-3 LTE module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINR two instances of ``LtePemSinrChunkProcessor`` (child of ``LteSinrChunkProcessor`` dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution respectively of PDSCH (UE side) and ULSCH (eNB side).
 
@@ -1273,9 +1295,9 @@ The model can be disabled for working with a zero-losses channel by setting the 
 MIMO Model
 ----------
 
-The use of multiple antennas both at transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power _[CatreuxMIMO]. 
+The use of multiple antennas both at transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power _[CatreuxMIMO].
 
-According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, _[CatreuxMIMO] presents the statistical gain of several MIMO solutions respect to the SISO one. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution can be approximated with a log-normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximatively equal to the one of the SISO mode already included in the shadowing component of the ``BuildingsPropagationLossModel``, in detail:
+According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, _[CatreuxMIMO] presents the statistical gain of several MIMO solutions respect to the SISO one in case of no correlation between the antennas. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution can be approximated with a log-normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximatively equal to the one of the SISO mode already included in the shadowing component of the ``BuildingsPropagationLossModel``, in detail:
 
  * SISO: :math:`\mu = 13.5` and :math:`\sigma = 20` [dB].
  * MIMO-Alamouti: :math:`\mu = 17.7` and :math:`\sigma = 11.1` [dB].
@@ -1284,14 +1306,7 @@ According to the considerations above, a model more flexible can be obtained con
  * MIMO-ZF: :math:`\mu = 10.3` and :math:`\sigma = 12.6` [dB].
 
 
-Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. This allows to reuse the SISO PHY error model and the fading tracing scheme and apply the MIMO model in a transparent way. Moreover, new MIMO schemes can be integrated by updating the gain considered according to their statistical behavior. On this matter, considering the MIMO model defined  in the standard (i.e., spatial multiplexing and transmit diversity _[TS36.211]), the gains included are:
-
- * MIMO-Alamouti: :math:`+4.2` [dB].
- * MIMO-MMSE: :math:`-2.8` [dB].
-
-where MIMO-Alamouti is a transmit diversity scheme, while MIMO-MMSE is an implementation of spatial multiplexity.
-
-
+Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 .. only:: latex
 
@@ -1340,6 +1355,7 @@ The SRS is modeled similar to the downlink control frame. The SRS is periodicall
     .. raw:: latex
 
         \clearpage
+
 
 -----------------------
 Channel and Propagation

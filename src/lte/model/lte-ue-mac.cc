@@ -264,7 +264,7 @@ LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters 
 {
   NS_LOG_FUNCTION (this);
   
-  std::map <uint8_t, long uint>::iterator it;
+  std::map <uint8_t, uint64_t>::iterator it;
   
   
   it = m_ulBsrReceived.find (params.lcid);
@@ -275,7 +275,7 @@ LteUeMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters 
     }
   else
     {
-      m_ulBsrReceived.insert (std::pair<uint8_t, long uint> (params.lcid, params.txQueueSize + params.retxQueueSize + params.statusPduSize));
+      m_ulBsrReceived.insert (std::pair<uint8_t, uint64_t> (params.lcid, params.txQueueSize + params.retxQueueSize + params.statusPduSize));
     }
   m_freshUlBsr = true;
 }
@@ -293,7 +293,7 @@ LteUeMac::SendReportBufferStatus (void)
   bsr.m_rnti = m_rnti;
   bsr.m_macCeType = MacCeListElement_s::BSR;
   // BSR
-  std::map <uint8_t, long uint>::iterator it;
+  std::map <uint8_t, uint64_t>::iterator it;
   NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
   
   for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
@@ -320,7 +320,7 @@ LteUeMac::DoConfigureUe (uint16_t rnti)
 void
 LteUeMac::DoAddLc (uint8_t lcId, LteMacSapUser* msu)
 {
-  NS_LOG_FUNCTION (this << " lcId" << lcId);
+  NS_LOG_FUNCTION (this << " lcId" << (uint16_t) lcId);
   NS_ASSERT_MSG (m_macSapUserMap.find (lcId) == m_macSapUserMap.end (), "cannot add channel because LCID " << lcId << " is already present");
   m_macSapUserMap[lcId] = msu;
 }
@@ -365,9 +365,9 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
     {
       Ptr<UlDciIdealControlMessage> msg2 = DynamicCast<UlDciIdealControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
-      std::map <uint8_t, long uint>::iterator itBsr;
+      std::map <uint8_t, uint64_t>::iterator itBsr;
       NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
-      int activeLcs = 0;
+      uint16_t activeLcs = 0;
       for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
         {
           if ((*itBsr).second > 0)
@@ -375,7 +375,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
               activeLcs++;
             }
         }
-      if (activeLcs <= 0)
+      if (activeLcs == 0)
         {
           NS_LOG_ERROR (this << " No active flows for this UL-DCI");
           return;
@@ -388,8 +388,15 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
           if (itBsr!=m_ulBsrReceived.end ())
             {
               NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
-              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0); // UE works only in SISO mode
-              (*itBsr).second -= dci.m_tbSize / activeLcs;
+              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0);
+              if ((*itBsr).second >=  static_cast<uint64_t> (dci.m_tbSize / activeLcs))
+                {
+                  (*itBsr).second -= dci.m_tbSize / activeLcs;
+                }
+              else
+                {
+                  (*itBsr).second = 0;
+                }
             }
         }
 

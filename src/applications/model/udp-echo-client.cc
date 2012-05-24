@@ -17,8 +17,10 @@
  */
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
@@ -49,10 +51,10 @@ UdpEchoClient::GetTypeId (void)
                    MakeTimeAccessor (&UdpEchoClient::m_interval),
                    MakeTimeChecker ())
     .AddAttribute ("RemoteAddress", 
-                   "The destination Ipv4Address of the outbound packets",
-                   Ipv4AddressValue (),
-                   MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
-                   MakeIpv4AddressChecker ())
+                   "The destination Address of the outbound packets",
+                   AddressValue (),
+                   MakeAddressAccessor (&UdpEchoClient::m_peerAddress),
+                   MakeAddressChecker ())
     .AddAttribute ("RemotePort", 
                    "The destination port of the outbound packets",
                    UintegerValue (0),
@@ -90,9 +92,23 @@ UdpEchoClient::~UdpEchoClient()
 }
 
 void 
-UdpEchoClient::SetRemote (Ipv4Address ip, uint16_t port)
+UdpEchoClient::SetRemote (Address ip, uint16_t port)
 {
   m_peerAddress = ip;
+  m_peerPort = port;
+}
+
+void 
+UdpEchoClient::SetRemote (Ipv4Address ip, uint16_t port)
+{
+  m_peerAddress = Address (ip);
+  m_peerPort = port;
+}
+
+void 
+UdpEchoClient::SetRemote (Ipv6Address ip, uint16_t port)
+{
+  m_peerAddress = Address (ip);
   m_peerPort = port;
 }
 
@@ -112,8 +128,16 @@ UdpEchoClient::StartApplication (void)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode (), tid);
-      m_socket->Bind ();
-      m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
+      if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
+        {
+          m_socket->Bind();
+          m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
+        }
+      else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
+        {
+          m_socket->Bind6();
+          m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom(m_peerAddress), m_peerPort));
+        }
     }
 
   m_socket->SetRecvCallback (MakeCallback (&UdpEchoClient::HandleRead, this));
@@ -212,6 +236,7 @@ UdpEchoClient::SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize)
   if (fillSize >= dataSize)
     {
       memcpy (m_data, fill, dataSize);
+      m_size = dataSize;
       return;
     }
 
@@ -281,7 +306,16 @@ UdpEchoClient::Send (void)
 
   ++m_sent;
 
-  NS_LOG_INFO ("Sent " << m_size << " bytes to " << m_peerAddress);
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
+    {
+      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
+                   Ipv4Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
+    }
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
+    {
+      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
+                   Ipv6Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
+    }
 
   if (m_sent < m_count) 
     {
@@ -295,12 +329,19 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
-  while (packet = socket->RecvFrom (from))
+  while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       InetSocketAddress::ConvertFrom (from).GetIpv4 ());
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client received " << packet->GetSize () << " bytes from " <<
+                       InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
+                       InetSocketAddress::ConvertFrom (from).GetPort ());
+        }
+      else if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client received " << packet->GetSize () << " bytes from " <<
+                       Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
+                       Inet6SocketAddress::ConvertFrom (from).GetPort ());
         }
     }
 }
