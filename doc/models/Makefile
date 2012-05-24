@@ -147,8 +147,28 @@ SOURCEFIGS = \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
-	$(SRC)/netanim/doc/animation-dumbbell.png \
-	$(SRC)/netanim/doc/animation-dumbbell.pdf \
+	$(SRC)/netanim/doc/figures/Dumbbell.png \
+	$(SRC)/netanim/doc/figures/Dumbbell.pdf \
+	$(SRC)/netanim/doc/figures/PacketStatistics.png \
+	$(SRC)/netanim/doc/figures/PacketStatistics.pdf \
+	$(SRC)/netanim/doc/figures/FastForward.png \
+	$(SRC)/netanim/doc/figures/FastForward.pdf \
+	$(SRC)/netanim/doc/figures/Wireless.png \
+	$(SRC)/netanim/doc/figures/Wireless.pdf \
+	$(SRC)/netanim/doc/figures/Precision.png \
+	$(SRC)/netanim/doc/figures/Precision.pdf \
+	$(SRC)/netanim/doc/figures/Persist.png \
+	$(SRC)/netanim/doc/figures/Persist.pdf \
+	$(SRC)/netanim/doc/figures/SimTime.png \
+	$(SRC)/netanim/doc/figures/SimTime.pdf \
+	$(SRC)/netanim/doc/figures/Trajectory.png \
+	$(SRC)/netanim/doc/figures/Trajectory.pdf \
+	$(SRC)/netanim/doc/figures/UpdateRateInterval.png \
+	$(SRC)/netanim/doc/figures/UpdateRateInterval.pdf \
+	$(SRC)/netanim/doc/figures/WithoutPrecision.png \
+	$(SRC)/netanim/doc/figures/WithoutPrecision.pdf \
+	$(SRC)/netanim/doc/figures/WithPrecision.png \
+	$(SRC)/netanim/doc/figures/WithPrecision.pdf \
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
