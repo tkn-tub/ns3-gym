@@ -17,6 +17,7 @@
  */
 
 #include "ns3/ipv6-address-helper.h"
+#include "ns3/ipv6-address-generator.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/net-device-container.h"
@@ -35,6 +36,7 @@ public:
 
 private:
   virtual void DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 IpAddressHelperTestCasev6::IpAddressHelperTestCasev6 ()
@@ -128,6 +130,14 @@ IpAddressHelperTestCasev6::DoRun (void)
   // Look also at the interface container (device 0, address 1)
   NS_TEST_ASSERT_MSG_EQ (ic.GetAddress (1,1), Ipv6Address ("2001:00aa:0000:0000:0200:00ff:fe00:0002"), "Ipv6AddressHelper failure");
 }
+
+void
+IpAddressHelperTestCasev6::DoTeardown (void)
+{
+  Ipv6AddressGenerator::Reset ();
+  Simulator::Destroy ();
+}
+
 
 class Ipv6AddressHelperTestSuite : public TestSuite
 {

@@ -583,7 +583,7 @@ int AnimationInterface::WriteN (const char* data, uint32_t count)
   uint32_t    written = 0;
   while (nLeft)
     {
-      int n = fwrite (p, nLeft, 1, m_f);
+      int n = fwrite (p, 1,  nLeft, m_f);
       if (n <= 0) 
         {
           return written;
@@ -781,7 +781,7 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
       oss << hdr.GetAddr2 ();
       if (m_macToNodeIdMap.find (oss.str ()) == m_macToNodeIdMap.end ()) 
       {
-        NS_LOG_UNCOND (oss.str ());
+        //NS_LOG_UNCOND (oss.str ());
         return;
       }
       Ptr <Node> txNode = NodeList::GetNode (m_macToNodeIdMap[oss.str ()]);

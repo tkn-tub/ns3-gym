@@ -187,6 +187,7 @@ public:
 
 private:
   virtual void DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 IpAddressHelperTestCasev4::IpAddressHelperTestCasev4 ()
@@ -244,6 +245,13 @@ IpAddressHelperTestCasev4::DoRun (void)
   // Uncomment below, and 192.168.4.1 will crash since it was allocated above
   // ipAddr1 = ip2.NewAddress (); // 4.1
 
+}
+
+void
+IpAddressHelperTestCasev4::DoTeardown (void)
+{
+  Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 
 

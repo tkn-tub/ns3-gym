@@ -248,7 +248,6 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
     {
       SpectrumValue sinrCopy = sinr;
       double sinrLin = sinrCopy[map.at (i)];
-      double sinr_db = 10*log10 (sinrLin);
       if (mcs <= 10) // QPSK
         {
           int tr = 0;
@@ -303,7 +302,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
                 }
             }
         }
-      NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << sinr_db << " V, MCS = " << (uint16_t)mcs << ", MI = " << MI);
+      NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << 10*log10 (sinrLin) << " V, MCS = " << (uint16_t)mcs << ", MI = " << MI);
       MIsum += MI;
     }
   MI = MIsum / map.size ();
@@ -319,14 +318,13 @@ LteMiErrorModel::MappingMiBler (double mib, uint8_t mcs, uint16_t cbSize)
   double b = 0;
   double c = 0;
   NS_ASSERT_MSG (mcs < 29, "MCS out of range [0..28]");
-  int tbsIndex = TbsIndex[mcs];
   int cbIndex = 1;
   while ((cbIndex < 9)&&(cbMiSizeTable[cbIndex]<= cbSize))
     {
       cbIndex++;
     }
   cbIndex--;
-  NS_LOG_LOGIC (" MCS " << (uint16_t)mcs << " TBS " << tbsIndex << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
+  NS_LOG_LOGIC (" MCS " << (uint16_t)mcs << " TBS " << TbsIndex[mcs] << " CB size " << cbSize << " CB size curve " << cbMiSizeTable[cbIndex]);
 
   b = bEcrTable[cbIndex][mcs];
   if (b<0.0)
