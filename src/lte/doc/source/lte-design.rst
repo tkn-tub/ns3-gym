@@ -1091,12 +1091,13 @@ The physical layer model provided in this LTE simulator is based on
 the one described in [Piro2011]_, with the following modifications.  The model now includes the 
 inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
 
+
 CQI feedback
 ^^^^^^^^^^^^
 
 The generation of CQI feedback is done accordingly to what specified in [FFAPI]_. In detail, we considered the generation 
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
-in use) and inband CQIs (i.e., a set of value representing the channel state for each RB). 
+in use) and inband CQIs (i.e., a set of value representing the channel state for each RBG). 
 
 Interference Model
 ^^^^^^^^^^^^^^^^^^
@@ -1291,6 +1292,54 @@ Therefore the PHY layer implements the MIMO model as the gain perceived by the r
 where MIMO-Alamouti is a transmit diversity scheme, while MIMO-MMSE is an implementation of spatial multiplexity.
 
 
+
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
+
+Reference and Control Signaling
+-------------------------------
+
+Considering the granularity of the simulator based on RB, the control and the reference signaling have to be consequently modeled considering this constraint. On this matter, the simulator splits the transmission of the data frame respect to the control one. According to the standard [TS36.211]_, the control frame starts at the beginning of each subframe and lasts up to three symbols. The actual duration is provided by the Physical Control Format Indicator Channel (PCFICH) by means of three different codewords of 32 bits in order to make it enough robust. These 32 bits are mapped to 16 resource elements (RE), a subcarrier per 1 symbol, using QPSK modulation. The information on the allocation are then mapped in the remaining resource up to the duration defined by the PCFICH, in the so called Physical Downlink Control Channel (PDCCH). A PDCCH transports a single message called Downlink Control Information (DCI) coming from the MAC layer, where the scheduler indicates the resource allocation for a specific user. Each PDCCH is transmitted in a Control Channel Element (CCE), which is defined as group of nine sets of four REs.
+According to the channel conditions the CCEs allocated can be 1, 2, 4 or 8, which correspond respectively to PDCCH format 0, 1, 2 and 3. Each PDCCH carries one of the possible 10 DCI formats configurations, modeling uplink and downlink assignment messages.
+
+
+
+PCFICH & PDDCH
+^^^^^^^^^^^^^^
+
+The PDCCH is modeled with the transmission of the control frame of a fixed duration of 3/14 of milliseconds spanning in the whole available bandwidth. This implies that a single block transmission models the entire control frame with a fixed power (i.e., the one used for the PDSCH) across all the available RBs. The SINR perceived during the reception of this channel has been estimated according to the MIESM model presented above in order to evaluate the error distribution of PCFICH and PDCCH. In detail, the SINR samples of all the RBs are included in the evaluation of the MI associated to the control frame and, according to this values, the effective SINR is obtained by inverting the MI evaluation process. 
+
+The PCFICH error distribution is modeled considering the link level simulation curves of the performance of the PCFICH in AWGN channel presented in [Milos2012]_, by means of look-up tables according to the transmission mode used (e.g., SISO or MIMO) and the SINR evaluated as described before.
+
+While for what concern the PDCCH, the correct reception of all the PDCCHs is modeled with a configurable power threshold on the perceived SINR, where the default value is taken from Section 10.3.3 of [Sesia2009]_ where the performance of the convolutional turbo codes of PDCCH (i.e., with state tailbiting) are presented. This implies that all the DCIs can be correctly decoded only in case of the perceived SINR is above the threshold. In doing this, we are assuming that the DCIs are randomly placed in the control frame and therefore always interfere with the ones of other BSs. According to [Sesia2009]_, the number of bits of the DCIs are at most of 62 bits. Therefore, the default value is taken for a given PDCCH fixed dimension of 62 bits and a considering a rate of :math:`1/3`, which corresponds to 2.4 dB. According to this model, the control frame does not have any limitation in the PDCCHs that can be transmitted. Finally, It has to be noted that, in case of MIMO transmission, the PDCCH uses always the transmit diversity mode according to the standard.
+
+
+Reference Signal
+^^^^^^^^^^^^^^^^
+
+The Reference Signal (RS) is modeled according to the SINR perceived during the reception of the control frame. This allows of having every TTI an evaluation of the interference scenario since all the eNB are transmitting (simultaneously) the control frame over the respective available bandwidths. We note that, the model does not include the power boosting since it does not reflect any improvement in the implemented model of the channel estimation.
+
+
+PUCCH
+^^^^^
+
+The PUCCH is modeled with an error free channel.
+
+
+Sounding Reference Signal (SRS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The SRS is modeled similar to the downlink control frame. The SRS is periodically placed in the last symbol of the subframe; therefore when a SRS signal has to be sent, the data frame will last on the 13th symbol in order to leave space for the SRS, which will be sent in the whole system bandwidth. The SINR can be evaluated according to MIESM model as done for RS. For what concern the periodicity, it can be defined as an integer multiple of TTIs; however we remark that the standard allows the following values: 2, 5, 10, 20, 40, 80, 160 or 320 TTIs.
+
+
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
 
 -----------------------
 Channel and Propagation

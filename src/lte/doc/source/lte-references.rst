@@ -84,3 +84,6 @@
 
 .. [TS36.211] 3GPP TS 36.211 "E-UTRA Physical Channels and Modulation"
 
+.. [Milos2012] J. Milos, "Performace Analysis Of PCFICH LTE Control Channel", Proceedings of the 19th Conference STUDENT EEICT 2012, Brno, CZ, 2012.
+
+
