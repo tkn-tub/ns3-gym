@@ -62,37 +62,13 @@ namespace ns3 {
 static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
 
-AnimationInterface::AnimationInterface ()
-  : m_fHandle (STDOUT_FILENO), m_xml (false), m_mobilityPollInterval (Seconds(0.25)),
-    m_usingSockets (false), m_port (0), m_outputFileName (""),
-    m_outputFileSet (false), m_serverPortSet (false), gAnimUid (0),m_randomPosition (true),
-    m_writeCallback (0), m_started (false), 
-    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
-    m_maxPktsPerFile (MAX_PKTS_PER_TRACE_FILE)
-{
-  initialized = true;
-  StartAnimation ();
-}
-
 AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
-  : m_fHandle (STDOUT_FILENO), m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
-    m_usingSockets (false), m_port (0), m_outputFileName (fn),
-    m_outputFileSet (false), m_serverPortSet (false), gAnimUid (0), m_randomPosition (true),
+  : m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
+    m_outputFileName (fn),
+    m_outputFileSet (false), gAnimUid (0), m_randomPosition (true),
     m_writeCallback (0), m_started (false), 
     m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
     m_maxPktsPerFile (maxPktsPerFile), m_originalFileName (fn)
-{
-  initialized = true;
-  StartAnimation ();
-}
-
-AnimationInterface::AnimationInterface (const uint16_t port, bool usingXML)
-  : m_fHandle (STDOUT_FILENO), m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
-    m_usingSockets (true), m_port (port), m_outputFileName (""),
-    m_outputFileSet (false), m_serverPortSet (false), gAnimUid (0), m_randomPosition (true),
-    m_writeCallback (0), m_started (false), 
-    m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
-    m_maxPktsPerFile (MAX_PKTS_PER_TRACE_FILE)
 {
   initialized = true;
   StartAnimation ();
@@ -142,21 +118,13 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
     {
       return true;
     }
-  if (fn == "")
-    {
-      m_fHandle = STDOUT_FILENO;
-      m_outputFileSet = true;
-      return true;
-    }
   NS_LOG_INFO ("Creating new trace file:" << fn.c_str ());
-  FILE* f = fopen (fn.c_str (), "w");
-  if (!f)
+  m_f = fopen (fn.c_str (), "w");
+  if (!m_f)
     {
       NS_FATAL_ERROR ("Unable to open Animation output file");
       return false; // Can't open
     }
-  m_fHandle = fileno (f); // Set the file handle
-  m_usingSockets = false;
   m_outputFileName = fn;
   m_outputFileSet = true;
   return true;
@@ -197,39 +165,6 @@ bool AnimationInterface::IsInTimeWindow ()
     return true;
   else
     return false;
-}
-
-bool AnimationInterface::SetServerPort (uint16_t port)
-{
-#if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
-  if (m_serverPortSet)
-    {
-      return true;
-    }
-  int s = socket (AF_INET, SOCK_STREAM, 0);
-  struct sockaddr_in addr;
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons (port);
-  addr.sin_addr.s_addr = htonl (INADDR_ANY);
-  if (bind (s, (struct sockaddr*)&addr, sizeof (addr)) < 0)
-    {
-      NS_LOG_WARN ("Can't bind to port " << port << ", exiting.");
-      return false;
-    }
-  listen (s, 1);
-  NS_LOG_INFO ("Waiting for animator connection");
-  // Now wait for the animator to connect in
-  m_fHandle = accept (s, 0, 0);
-  NS_LOG_INFO ("Got animator connection from remote");
-  // set the linger socket option
-  int t = 1;
-  setsockopt (s, SOL_SOCKET, SO_LINGER, &t, sizeof(t));
-  m_usingSockets = true;
-  m_serverPortSet = true;
-  return true;
-#endif
-  return false; // never reached unless the above is disabled
-                // which is done to support a platform like MinGW
 }
 
 bool AnimationInterface::WifiPacketIsPending (uint64_t AnimUid)
@@ -416,14 +351,7 @@ void AnimationInterface::StartAnimation (bool restart)
 {
   m_currentPktCount = 0;
   m_started = true;
-  if (m_usingSockets)
-    {
-      SetServerPort (m_port);
-    }
-  else
-    {
-      SetOutputFile (m_outputFileName);
-    }      
+  SetOutputFile (m_outputFileName);
 
   // Find the min/max x/y for the xml topology element
   m_topoMinX = -2;
@@ -448,7 +376,7 @@ void AnimationInterface::StartAnimation (bool restart)
       oss << GetXMLOpen_anim (0);
       oss << GetPreamble ();
       oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
-      WriteN (m_fHandle, oss.str ());
+      WriteN (oss.str ());
     }
   NS_LOG_INFO ("Setting topology for "<<NodeList::GetNNodes ()<<" Nodes");
   // Dump the topology
@@ -460,7 +388,7 @@ void AnimationInterface::StartAnimation (bool restart)
         {
           Vector v = GetPosition (n);
           oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
-	  WriteN (m_fHandle, oss.str ());
+	  WriteN (oss.str ());
         }
       else
         {
@@ -468,7 +396,7 @@ void AnimationInterface::StartAnimation (bool restart)
           Vector v = GetPosition (n);
           oss << "0.0 N " << n->GetId () 
               << " " << v.x << " " << v.y << std::endl;
-      	  WriteN (m_fHandle, oss.str ().c_str (), oss.str ().length ());
+      	  WriteN (oss.str ().c_str (), oss.str ().length ());
         }
     }
   NS_LOG_INFO ("Setting p2p links");
@@ -508,7 +436,7 @@ void AnimationInterface::StartAnimation (bool restart)
                         {
                           oss << "0.0 L "  << n1Id << " " << n2Id << std::endl;
                         }
-                      WriteN (m_fHandle, oss.str ());
+                      WriteN (oss.str ());
                     }
                 }
             }
@@ -520,7 +448,7 @@ void AnimationInterface::StartAnimation (bool restart)
     }
   if (m_xml && !restart)
     {
-      WriteN (m_fHandle, GetXMLClose ("topology"));
+      WriteN (GetXMLClose ("topology"));
       Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
   if (!restart)
@@ -564,32 +492,24 @@ void AnimationInterface::StopAnimation ()
   m_started = false;
   NS_LOG_INFO ("Stopping Animation");
   ResetAnimWriteCallback ();
-  if (m_fHandle > 0) 
+  if (m_f) 
     {
       if (m_xml)
         { // Terminate the anim element
-          WriteN (m_fHandle, GetXMLClose ("anim"));
+          WriteN (GetXMLClose ("anim"));
         }
-      if (m_fHandle != STDOUT_FILENO)
-        {
-          close (m_fHandle);
-        }
-      m_outputFileSet = false;
-      m_fHandle = -1;
+          fclose (m_f);
     }
+    m_outputFileSet = false;
 }
 
-int AnimationInterface::WriteN (int h, const std::string& st)
+int AnimationInterface::WriteN (const std::string& st)
 {
-  if (h < 0)
-    { 
-      return 0;
-    }
   if (m_writeCallback)
     {
       m_writeCallback (st.c_str ());
     }
-  return WriteN (h, st.c_str (), st.length ());
+  return WriteN (st.c_str (), st.length ());
 }
 
 // Private methods
@@ -655,19 +575,15 @@ void AnimationInterface::RecalcTopoBounds (Vector v)
     } 
 }
 
-int AnimationInterface::WriteN (HANDLETYPE h, const char* data, uint32_t count)
+int AnimationInterface::WriteN (const char* data, uint32_t count)
 { 
-  if (h < 0)
-    {
-      return 0;
-    }
   // Write count bytes to h from data
   uint32_t    nLeft   = count;
   const char* p       = data;
   uint32_t    written = 0;
   while (nLeft)
     {
-      int n = write (h, p, nLeft);
+      int n = fwrite (p, nLeft, 1, m_f);
       if (n <= 0) 
         {
           return written;
@@ -693,7 +609,7 @@ void AnimationInterface::WriteDummyPacket ()
       oss << GetXMLOpenClose_rx (0, 0, fbRx, lbRx);
       oss << GetXMLClose ("packet");
     }
-  WriteN (m_fHandle, oss.str ());
+  WriteN (oss.str ());
 
 
 }
@@ -731,7 +647,7 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
           << (now + rxTime - txTime).GetSeconds () << " " // first bit rx time
           << (now + rxTime).GetSeconds () << std::endl;         // last bit rx time
     }
-  WriteN (m_fHandle, oss.str ());
+  WriteN (oss.str ());
 }
 
 
@@ -1129,7 +1045,7 @@ void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mo
   oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
   oss << GetXMLOpenClose_node (0,n->GetId (),v.x,v.y);
   oss << GetXMLClose ("topology");
-  WriteN (m_fHandle, oss.str ());
+  WriteN (oss.str ());
   WriteDummyPacket ();
 }
 
@@ -1163,7 +1079,7 @@ void AnimationInterface::MobilityAutoCheck ()
       oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
     }
   oss << GetXMLClose ("topology");
-  WriteN (m_fHandle, oss.str ());
+  WriteN (oss.str ());
   WriteDummyPacket ();
   if (!Simulator::IsFinished ())
     {
@@ -1251,7 +1167,7 @@ void AnimationInterface::OutputWirelessPacket (Ptr<const Packet> p, AnimPacketIn
     oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
 
   oss << GetXMLClose ("wpacket");
-  WriteN (m_fHandle, oss.str ());
+  WriteN (oss.str ());
 }
 
 void AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &pktInfo, AnimRxInfo pktrxInfo)
@@ -1268,7 +1184,7 @@ void AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &
   if (m_enablePacketMetadata)
     oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
   oss << GetXMLClose ("packet");
-  WriteN (m_fHandle, oss.str ());
+  WriteN (oss.str ());
 }
 
 void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, double z)
