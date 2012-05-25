@@ -34,6 +34,8 @@
 #include "ns3/config.h"
 #include "ns3/animation-interface-helper.h"
 #include "ns3/mac48-address.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-enb-net-device.h"
 
 namespace ns3 {
 
@@ -304,6 +306,11 @@ private:
                       Ptr<const Packet> p,
                       const Mac48Address &);
 
+  void LteSpectrumPhyTxStart (std::string context,
+                      Ptr<const PacketBurst> pb);
+  void LteSpectrumPhyRxStart (std::string context,
+                      Ptr<const PacketBurst> pb);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
@@ -350,6 +357,9 @@ private:
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
   void ConnectCallbacks ();
+  void ConnectLte ();
+  void ConnectLteUe (Ptr <Node> n, Ptr <LteUeNetDevice> nd, uint32_t devIndex);
+  void ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex);
 
   
   std::map <std::string, uint32_t> m_macToNodeIdMap;

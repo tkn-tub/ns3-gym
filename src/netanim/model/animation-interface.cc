@@ -35,6 +35,8 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/lte-ue-phy.h"
+#include "ns3/lte-enb-phy.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -43,14 +45,6 @@
 #include <string>
 #include <iomanip>
 #include <map>
-
-// Socket related includes
-#if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
-#include <sys/socket.h>
-#include <netinet/in.h>
-#else
-#include <fcntl.h>
-#endif
 
 NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 
@@ -455,6 +449,77 @@ void AnimationInterface::StartAnimation (bool restart)
     ConnectCallbacks ();
 }
 
+void AnimationInterface::ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex)
+{
+
+  Ptr<LteEnbPhy> lteEnbPhy = nd->GetPhy ();
+  Ptr<LteSpectrumPhy> dlPhy = lteEnbPhy->GetDownlinkSpectrumPhy ();
+  Ptr<LteSpectrumPhy> ulPhy = lteEnbPhy->GetUplinkSpectrumPhy ();
+  std::ostringstream oss;
+  //NodeList/*/DeviceList/*/
+  oss << "NodeList/" << n->GetId () << "/DeviceList/" << devIndex << "/";
+  if (dlPhy)
+    {
+      dlPhy->TraceConnect ("TxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyTxStart, this));
+      dlPhy->TraceConnect ("RxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyRxStart, this));
+    }
+  if (ulPhy)
+    {
+      ulPhy->TraceConnect ("TxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyTxStart, this));
+      ulPhy->TraceConnect ("RxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyRxStart, this));
+    }
+}
+
+
+
+void AnimationInterface::ConnectLteUe (Ptr <Node> n, Ptr <LteUeNetDevice> nd, uint32_t devIndex)
+{
+
+  Ptr<LteUePhy> lteUePhy = nd->GetPhy ();
+  Ptr<LteSpectrumPhy> dlPhy = lteUePhy->GetDownlinkSpectrumPhy ();
+  Ptr<LteSpectrumPhy> ulPhy = lteUePhy->GetUplinkSpectrumPhy ();
+  std::ostringstream oss;
+  //NodeList/*/DeviceList/*/
+  oss << "NodeList/" << n->GetId () << "/DeviceList/" << devIndex << "/";
+  if (dlPhy)
+    {
+      dlPhy->TraceConnect ("TxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyTxStart, this));
+      dlPhy->TraceConnect ("RxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyRxStart, this));
+    }
+  if (ulPhy)
+    {
+       ulPhy->TraceConnect ("TxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyTxStart, this));
+       ulPhy->TraceConnect ("RxStart",oss.str (), MakeCallback (&AnimationInterface::LteSpectrumPhyRxStart, this));
+    }
+}
+
+void AnimationInterface::ConnectLte ()
+{
+
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+    {
+      Ptr<Node> n = *i;
+      NS_ASSERT (n);
+      uint32_t nDevices = n->GetNDevices ();
+      for (uint32_t devIndex = 0; devIndex < nDevices; ++devIndex)
+        {
+          Ptr <NetDevice> nd = n->GetDevice(devIndex);
+          if (!nd)
+            continue;
+          Ptr<LteUeNetDevice> lteUeNetDevice = DynamicCast<LteUeNetDevice> (nd);
+          if (lteUeNetDevice)
+            {
+              ConnectLteUe (n, lteUeNetDevice, devIndex);
+              continue;
+            }
+          Ptr<LteEnbNetDevice> lteEnbNetDevice = DynamicCast<LteEnbNetDevice> (nd);
+          if (lteEnbNetDevice)
+            ConnectLteEnb (n, lteEnbNetDevice, devIndex);
+        }
+
+    }
+}
+
 void AnimationInterface::ConnectCallbacks ()
 {
   // Connect the callbacks
@@ -483,6 +548,7 @@ void AnimationInterface::ConnectCallbacks ()
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
                    MakeCallback (&AnimationInterface::CsmaMacRxTrace, this));
 
+  ConnectLte ();
 
 }
 
@@ -933,6 +999,62 @@ void AnimationInterface::LteRxTrace (std::string context, Ptr<const Packet> p, c
   OutputWirelessPacket (p, pktInfo, pktrxInfo);
 }
 
+void AnimationInterface::LteSpectrumPhyTxStart (std::string context, Ptr<const PacketBurst> pb)
+{
+  if (!m_started || !IsInTimeWindow ())
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+
+  std::list <Ptr <Packet> > pbList = pb->GetPackets ();
+  for (std::list <Ptr <Packet> >::iterator i  = pbList.begin ();
+       i != pbList.end ();
+       ++i)
+  {
+    Ptr <Packet> p = *i;
+    gAnimUid++;
+    NS_LOG_INFO ("LteSpectrumPhyTxTrace for packet:" << gAnimUid);
+    AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now () + Seconds (0.001), UpdatePosition (n));
+    //TODO 0.0001 is used until Lte implements TxBegin and TxEnd traces
+    AnimByteTag tag;
+    tag.Set (gAnimUid);
+    p->AddByteTag (tag);
+    AddPendingLtePacket (gAnimUid, pktinfo);
+  }
+}
+
+void AnimationInterface::LteSpectrumPhyRxStart (std::string context, Ptr<const PacketBurst> pb)
+{
+  if (!m_started || !IsInTimeWindow ())
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+
+  std::list <Ptr <Packet> > pbList = pb->GetPackets ();
+  for (std::list <Ptr <Packet> >::iterator i  = pbList.begin ();
+       i != pbList.end ();
+       ++i)
+  {
+    Ptr <Packet> p = *i;
+    uint64_t AnimUid = GetAnimUidFromPacket (p);
+    NS_LOG_INFO ("LteSpectrumPhyRxTrace for packet:" << gAnimUid);
+    if (!LtePacketIsPending (AnimUid))
+      {
+        NS_LOG_WARN ("LteSpectrumPhyRxTrace: unknown Uid");
+        return;
+      }
+    AnimPacketInfo& pktInfo = m_pendingLtePackets[AnimUid];
+    pktInfo.ProcessRxBegin (ndev, Simulator::Now ());
+    pktInfo.ProcessRxEnd (ndev, Simulator::Now () + Seconds (0.001), UpdatePosition (n));
+    //TODO 0.001 is used until Lte implements RxBegin and RxEnd traces
+    AnimRxInfo pktrxInfo = pktInfo.GetRxInfo (ndev);
+    OutputWirelessPacket (p, pktInfo, pktrxInfo);
+  }
+}
 
 void AnimationInterface::CsmaPhyTxBeginTrace (std::string context, Ptr<const Packet> p)
 {
