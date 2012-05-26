@@ -101,7 +101,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
 	$(SRC)/lte/doc/source/figures/MCS_2_test.eps \
 	$(SRC)/lte/doc/source/figures/MCS_12_test.eps \
-	$(SRC)/lte/doc/source/figures/MCS_14_test.eps \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -136,8 +135,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_17_20.png \
 	$(SRC)/lte/doc/source/figures/MCS_21_24.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_21_24.png \
-	$(SRC)/lte/doc/source/figures/MCS_25_27.pdf \
-	$(SRC)/lte/doc/source/figures/MCS_25_27.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
 	$(SRC)/lte/doc/source/figures/helpers.png \
@@ -201,7 +198,6 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/MCS_2_test.eps \
 	$(FIGURES)/MCS_12_test.eps \
-	$(FIGURES)/MCS_14_test.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
