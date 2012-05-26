@@ -121,8 +121,13 @@ ArpHeader::Print (std::ostream &os) const
 uint32_t 
 ArpHeader::GetSerializedSize (void) const
 {
-  /* this is the size of an ARP payload. */
-  return 28;
+  NS_ASSERT((m_macSource.GetLength () == 6) || (m_macSource.GetLength () == 8));
+  NS_ASSERT (m_macSource.GetLength () == m_macDest.GetLength ());
+
+  uint32_t length = 16;   // Length minus two hardware addresses
+  length += m_macSource.GetLength () * 2;
+
+  return length;
 }
 
 void
