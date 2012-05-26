@@ -18,6 +18,10 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
+#ifdef __FreeBSD__
+#define log2(x) (log(x) / M_LN2)
+#endif /* __FreeBSD__ */
+
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 
