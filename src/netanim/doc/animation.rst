@@ -30,7 +30,7 @@ an |ns3| simulation to display the topology and animate the packet flow between 
 
    An example of packet animation on wireless-links
 
-In addition, NetAnim also provides useful features as tables to display meta-data of packets like the image below
+In addition, NetAnim also provides useful features such as tables to display meta-data of packets like the image below
 
 .. figure:: figures/PacketStatistics.*
    :align: center
@@ -62,9 +62,8 @@ Downloading NetAnim
 If NetAnim is not already available in the |ns3| package you downloaded, you can do the following:
 
 Please ensure that you have installed mercurial.
-The latest version of NetAnim can be downloaded using mercurial with the following command
+The latest version of NetAnim can be downloaded using mercurial with the following command::
 
-::
   hg clone http://code.nsnam.org/netanim
 
 Building NetAnim
@@ -237,12 +236,13 @@ Precision button
 
 This setting is turned OFF by default. When using purely point-to-point topologies precision can be turned ON, 
 to distinguish between small and large packets travelling on a link. For instance a small packet such as a 
-TCP ACK segment occupies only a small fraction of the length of the link , which provides a realistic animation
+TCP ACK segment occupies only a small fraction of the length of the link , which provides a realistic animation.
+
 CAUTION: Precision should be turned ON only for completely point-to-point topologies.
 
 The below two images show the difference between packet link animation for the case without precision and for the
-case with precision. The one with precision ON, shows that the segment does not occupy the full link, because they 
-are small packets. This is provides a better visualization.
+case with precision. The one with precision ON, shows that the SYN segment does not occupy the full link, because 
+they are small packets. This is provides a better visualization.
 
 .. figure:: figures/WithoutPrecision.*
    :width: 150px
@@ -281,7 +281,7 @@ Nodes are identified by their unique Node id. The XML begins with the "informati
 
 1. <anim> element
 
-This is the XML root element. All other elements fall within this element
+This is the XML root element. All other elements fall within this element.
   Attributes are::
 
     lp = Logical Processor Id (Used for distributed simulations only)
@@ -302,7 +302,7 @@ Example::
 
 3. <node> element
 
-This element describes each Node's Id and X,Y co-ordinate (position)
+This element describes each Node's Id and X,Y co-ordinate (position).
   Attributes are::
 
    id = Node Id
@@ -327,7 +327,9 @@ Example::
 
 5. <packet> element
 
-This element describes a packet over wired links being transmitted at some node and received at another. The reception details are described in its associated rx element
+This element describes a packet over wired links being transmitted at some node and received at another. 
+
+The reception details are described in its associated rx element
  Attributes are::
 
    fromId = Node Id transmitting the packet
@@ -338,12 +340,12 @@ Example::
 
   <packet fromId="1" fbTx="1" lbTx="1.000067199"><rx toLp="0" toId="0" fbRx="1.002" lbRx="1.002067199"/>
 
-A packet over wired-links from Node 1 was received at Node 0. The first bit of the packet was transmitted at  the 1th second, the last bit was transmitted at the 1.000067199th second of the simulation Node 0 received the first bit of the packet at the 1.002th second and the last bit of the packet at the 1.002067199th second of the simulation
+A packet over wired-links from Node 1 was received at Node 0. The first bit of the packet was transmitted at  the 1st second, the last bit was transmitted at the 1.000067199th second of the simulation Node 0 received the first bit of the packet at the 1.002th second and the last bit of the packet at the 1.002067199th second of the simulation
 NOTE: A packet with fromId == toId is a dummy packet used internally by the AnimationInterface. Please ignore this packet
 
 6. <rx> element
 
-This element describes the reception of a packet at a node
+This element describes the reception of a packet at a node.
  Attributes are::
 
    toId = Node Id receiving the packet
@@ -352,7 +354,9 @@ This element describes the reception of a packet at a node
 
 7. <wpacket> element
 
-This element describes a packet over wireless links being transmitted at some node and received at another. The reception details are described in its associated rx element
+This element describes a packet over wireless links being transmitted at some node and received at another. 
+
+The reception details are described in its associated rx element.
  Attributes are::
 
    fromId = Node Id transmitting the packet
