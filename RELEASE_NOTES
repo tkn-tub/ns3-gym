@@ -9,57 +9,104 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-==============
+Release 3.14
+============
 
 Availability
 ------------
-This release is available from: 
+This release not yet available.
 
 Supported platforms
 -------------------
+ns-3.14 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
+
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- Fedora Core 17 (32/64 bit) with g++-4.7.0
+- Fedora Core 16 (32/64 bit) with g++-4.6.3
+- Fedora Core 15 (64 bit) with g++-4.6.3
+- Ubuntu 11.10 (32 bit) with g++-4.6.1
+- OS X Lion with g++-4.2.1
+- OS X Snow Leopard with g++-4.2.1 
+- FreeBSD 8.2 (32 bit) with g++-4.2.1
 
 New user-visible features
 -------------------------
-- Dual-stacked IPv6 sockets are implemented. An IPv6 socket can accept an IPv4 
-  connection, returning the senders address as an IPv4-mapped address 
-  (IPV6_V6ONLY socket option is not implemented).
-- Ipv6RoutingHelper is now in-line with Ipv4RoutingHelper concerning the RT 
-  print functions. Various minor changes made in Ipv6RoutingProtocol and derived 
-  classes to make this possible.
-- New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
-  Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects",
-  i.e., enable/disable the ICMPv6 Redirect sending.
+- Transport protocol implementations (TCP, UDP) have been refactored to
+  support also IPv6 connections. Dual-stacked IPv6 sockets are implemented. 
+  An IPv6 socket can accept an IPv4 connection, returning the senders 
+  address as an IPv4-mapped address (IPV6_V6ONLY socket option is not 
+  implemented).
+- The LTE code from the LENA project has been merged, bringin in a
+  significant redesign of the LTE module as well as many new features.
 - An antenna module is now included, which includes different
   radiation pattern models. See the corresponding new section of the
   ns-3 models library documentation for details.
-- Longer and more descriptive names are used for error units in RateErrorModel
-  class and queue mode in Queue class. Attributs in those classes are also
-  changed for consistency. See API documentation for details.
 - A new buildings module is introduced which allows to model the
   presence of buildings in a wireless network topology.  
 - New propagation models (OkumuraHata, ITU-R P.1411, ITU-R P.1238)
   have been added
-- The LTE code from the LENA project has been merged, bringin in a
-  significant redesign of the LTE module as well as many new features.
-
+- The Dynamic Source Routing (DSR) MANET routing protocol for IPv4 was added.
+- A Random Early Detection (RED) queue model has been added.
+- Ipv6RoutingHelper is now in-line with Ipv4RoutingHelper concerning the RT 
+  print functions. Various minor changes made in Ipv6RoutingProtocol and 
+  derived classes to make this possible.
+- New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
+  Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects",
+  i.e., enable/disable the ICMPv6 Redirect sending.
+- Longer and more descriptive names are used for error units in RateErrorModel
+  class and queue mode in Queue class. Attributes in those classes are also
+  changed for consistency. See API documentation for details.
+- The netanim animator is now included with the release.
 
 Bugs fixed
 ----------
- - bug 962  - list of paths to reach objects contains bogus entries
+ - bug 631 - RealtimeSimulatorImpl does not handle Ctrl-C with python bindings
+ - bug 603 - Simulator::Next is useless
+ - bug 962 - list of paths to reach objects contains bogus entries
+ - bug 1000 - Make RealtimeSimulatorImpl last until stop
+ - bug 1053 - Need better error diagnostics in ns2-mobility-trace example
+ - bug 1109 - Point out the effects of ArpCache::PendingQueueSize
+ - bug 1179 - Add LTE trace hooks for supporting visualizer
+ - bug 1180 - LTE: Add TX/RX trace support
+ - bug 1273 - Better error message on missing Python development files
+ - bug 1282 - Sleep state and CCA
+ - bug 1283 - PacketSocket::SendTo should return number of bytes 
+ - bug 1302 - Flow monitor bug
+ - bug 1304 - Tag information changed after transmission
  - bug 1313 - Stddev (average.h) returning NaN
- - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
  - bug 1318 - Asserts for IPv6 malformed packets
+ - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
+ - bug 1325 - Python examples get valgrind errors when build subdirectories 
+              are specified in waf
  - bug 1339 - test.py uses the old name for the test runner
- - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
- - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
+ - bug 1348 - python bindings: deprecated conversion from string constant 
+              to ‘char*’
+ - bug 1349 - TypeId.LookupAttributeByName Python bindings missing
+ - bug 1350 - Simulator.ScheduleWithContext Python binding missing
  - bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
- - bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor fixes to ICMPv6)
+ - bug 1352 - Fixed MapAttributes, previously was mapped to a vector in 
+              ObjectPtrContainer and (and key information was dropped). 
+              Now the container is a map.
+ - bug 1354 - Building scratch subdir programs is broken
+ - bug 1355 - Visualizer dependencies not detected at buildtime
+ - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
+ - bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor 
+              fixes to ICMPv6)
+ - bug 1376 - wrong wind variable's name
+ - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
+ - bug 1379 - lte-multiple-flows example crashes
+ - bug 1380 - lte-phy-uplink example crashes
  - bug 1391 - .ns3rc does not allow comments as expected
  - bug 1392 - Modules built report does not clarify C++ or Python
+ - bug 1393 - IPv6 Routing Helper RT Print functions
  - bug 1395 - AODV DeferredRouteOutputTag missing constructor
- - bug 1352 - Fixed MapAttributes, previously was mapped to a vector in ObjectPtrContainer
-              and (and key information was dropped). Now the container is a map.
+ - bug 1396 - ARP with hardware addresses longer than 6 bytes
+ - bug 1404 - Bound user input in tutorial third.cc program
+ - bug 1406 - waf exits with maximum recursion depth exceeded 
+ - bug 1415 - examples-to-run.py doesn't work with command line arguments
+ - bug 1420 - bug 1420: no python bindings for csma-layout
  
 Known issues
 ------------
