@@ -34,7 +34,6 @@
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/buildings-propagation-loss-model.h>
-#include "ns3/lte-test-mimo.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -53,10 +52,12 @@
 #include <ns3/pointer.h>
 #include <ns3/enum.h>
 
+#include "lte-test-mimo.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestMimo");
 
-using namespace ns3;
+namespace ns3 {
 
 
 LenaTestMimoSuite::LenaTestMimoSuite ()
@@ -283,4 +284,7 @@ LenaMimoTestCase::GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, 
 //   NS_LOG_INFO ("\t get bytes " << m_dlDataRxed.at (m_dlDataRxed.size () - 1));
 }
 
+
+
+} // namespace ns3
 

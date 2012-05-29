@@ -18,12 +18,16 @@
  * Author: Manuel Requena <manuel.requena@cttc.es> (Based on lte-helper.cc)
  */
 
-#include "ns3/lte-simple-helper.h"
+
 #include "ns3/log.h"
 #include "ns3/callback.h"
 #include "ns3/config.h"
 #include "ns3/simple-channel.h"
 #include "ns3/error-model.h"
+
+#include "lte-simple-helper.h"
+#include "lte-simple-net-device.h"
+#include "lte-test-entities.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteSimpleHelper");

@@ -29,7 +29,7 @@
 #include <ns3/buildings-propagation-loss-model.h>
 
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -59,6 +59,9 @@ class LtePathlossModelSystemTestCase : public TestCase
     double m_distance;
     uint16_t m_mcsIndex;
 };
+
+
+} // namespace ns3
 
 
 #endif /* LTE_TEST_PATHLOSS_MODEL_H */

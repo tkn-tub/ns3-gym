@@ -29,7 +29,6 @@
 #include <iostream>
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
-#include "ns3/lte-test-rr-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -45,10 +44,11 @@
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
 
+#include "lte-test-rr-ff-mac-scheduler.h"
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
 
-using namespace ns3;
+namespace ns3 {
 
 
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
@@ -323,4 +323,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
+
+
+} // namespace ns3
 

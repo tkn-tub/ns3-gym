@@ -26,7 +26,7 @@
 #include "ns3/test.h"
 
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -56,3 +56,6 @@ private:
 
 
 #endif /* LTE_TEST_UPLINK_SINR_H */
+
+} // namespace ns3
+

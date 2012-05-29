@@ -24,11 +24,12 @@
 #include <ns3/log.h>
 
 #include <ns3/buildings-helper.h>
-#include <ns3/buildings-pathloss-test.h>
-#include "ns3/string.h"
-#include "ns3/double.h"
+#include <ns3/string.h>
+#include <ns3/double.h>
 #include <ns3/building.h>
 #include <ns3/enum.h>
+
+#include "buildings-pathloss-test.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
