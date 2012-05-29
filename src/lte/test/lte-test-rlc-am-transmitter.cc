@@ -38,8 +38,8 @@ using namespace ns3;
 LteRlcAmTransmitterTestSuite::LteRlcAmTransmitterTestSuite ()
   : TestSuite ("lte-rlc-am-transmitter", SYSTEM)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
 
   AddTestCase (new LteRlcAmTransmitterOneSduTestCase ("One SDU, one PDU"));
   AddTestCase (new LteRlcAmTransmitterSegmentationTestCase ("Segmentation"));
@@ -63,12 +63,12 @@ LteRlcAmTransmitterTestCase::~LteRlcAmTransmitterTestCase ()
 void
 LteRlcAmTransmitterTestCase::DoRun (void)
 {
-  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
-  LogComponentEnable ("LteTestEntities", logLevel);
-  LogComponentEnable ("LteRlc", logLevel);
-  LogComponentEnable ("LteRlcAm", logLevel);
-  LogComponentEnable ("LteRlcHeader", logLevel);
+  // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+  // LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
+  // LogComponentEnable ("LteTestEntities", logLevel);
+  // LogComponentEnable ("LteRlc", logLevel);
+  // LogComponentEnable ("LteRlcAm", logLevel);
+  // LogComponentEnable ("LteRlcHeader", logLevel);
 
   uint16_t rnti = 1111;
   uint8_t lcid = 222;

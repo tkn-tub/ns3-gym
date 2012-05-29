@@ -370,10 +370,6 @@ private:
      */
     std::list<std::pair<Ptr<Packet>, uint16_t> > m_fragments;
 
-    /**
-     * \brief Number of references.
-     */
-    mutable uint32_t m_refCount;
   };
 
   typedef std::map< std::pair<uint64_t, uint32_t>, Ptr<Fragments> > MapFragments_t;

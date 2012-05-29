@@ -2996,10 +2996,10 @@ Um objeto |ns3| representando o arquivo pcap é retornado de ``CreateFile`` e usa
 Mas os objetos internos são inteiramente diferentes. Por exemplo, o Ptr<PcapFileWrapper> é um ponteiro para um objeto |ns3| que suporta ``Attributes`` e é integrado dentro do sistema de configuração. O Ptr<OutputStreamWrapper>, por outro lado, é um ponteiro para uma referência para um simples objeto contado. Lembre-se sempre de analisar o objeto que você está referenciando antes de fazer suposições sobre os "poderes" que o objeto pode ter.
 
 ..
-	For example, take a look at ``src/network/model/pcap-file-object.h`` in the 
+	For example, take a look at ``src/network/utils/pcap-file-wrapper.h`` in the 
 	distribution and notice, 
 
-Por exemplo, acesse o arquivo ``src/network/model/pcap-file-object.h`` e observe,
+Por exemplo, acesse o arquivo ``src/network/utils/pcap-file-wrapper.h`` e observe,
 
 ::
 
@@ -3562,10 +3562,10 @@ Métodos da Classe Assistente de Dispositivo para Rastreamento  ASCII
   		uint32_t deviceid);
 
 ..
-	You are encouraged to peruse the Doxygen for class ``TraceHelperForDevice``
+	You are encouraged to peruse the Doxygen for class ``AsciiTraceHelperForDevice``
 	to find the details of these methods; but to summarize ...
 
-Para maiores detalhes sobre os métodos é interessante consultar a documentação para a classe ``TraceHelperForDevice``; mas para resumir ...
+Para maiores detalhes sobre os métodos é interessante consultar a documentação para a classe ``AsciiTraceHelperForDevice``; mas para resumir ...
 
 ..
 	There are twice as many methods available for ascii tracing as there were for

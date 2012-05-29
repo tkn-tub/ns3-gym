@@ -1034,12 +1034,11 @@ bool DsrRouting::PromiscReceive (Ptr<NetDevice> device, Ptr<const Packet> packet
           if (optionType == 96)        // This is the source route option
             {
               dsrOption = GetOption (optionType);       // Get the relative DSR option and demux to the process function
-              Ipv4Address fromAddr = GetIPfromMAC (Mac48Address::ConvertFrom (from));
-              Ipv4Address toAddr = GetIPfromMAC (Mac48Address::ConvertFrom (to));
-
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                            << " DSR node " << m_mainAddress <<
-                            " overhearing packet PID: " << p->GetUid () << " from " << fromAddr << " to " << toAddr <<
+              NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+                            " DSR node " << m_mainAddress <<
+                            " overhearing packet PID: " << p->GetUid () <<
+                            " from " << GetIPfromMAC (Mac48Address::ConvertFrom (from)) <<
+                            " to " << GetIPfromMAC (Mac48Address::ConvertFrom (to)) <<
                             " with source IP " << ipv4Header.GetSource () <<
                             " and destination IP " << ipv4Header.GetDestination () <<
                             " and packet : " << *dsrPacket);
@@ -1527,7 +1526,7 @@ DsrRouting::PriorityScheduler (uint32_t priority, bool continueWithFirst)
         }
       else
         {
-          uint32_t totalQueueSize;
+          uint32_t totalQueueSize = 0;
           for (std::map<uint32_t, Ptr<dsr::DsrNetworkQueue> >::iterator j = m_priorityQueue.begin (); j != m_priorityQueue.end (); j++)
             {
               NS_LOG_DEBUG ("The size of the network queue for " << j->first << " is " << j->second->GetSize ());

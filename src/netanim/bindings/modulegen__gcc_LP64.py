@@ -516,14 +516,18 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_constructor([param('ns3::AnimationInterface const &', 'arg0')])
     ## animation-interface.h (module 'netanim'): ns3::AnimationInterface::AnimationInterface() [constructor]
     cls.add_constructor([])
-    ## animation-interface.h (module 'netanim'): ns3::AnimationInterface::AnimationInterface(std::string const filename, bool usingXML=true) [constructor]
-    cls.add_constructor([param('std::string const', 'filename'), param('bool', 'usingXML', default_value='true')])
+    ## animation-interface.h (module 'netanim'): ns3::AnimationInterface::AnimationInterface(std::string const filename, uint64_t maxPktsPerFile=100000, bool usingXML=true) [constructor]
+    cls.add_constructor([param('std::string const', 'filename'), param('uint64_t', 'maxPktsPerFile', default_value='100000'), param('bool', 'usingXML', default_value='true')])
     ## animation-interface.h (module 'netanim'): ns3::AnimationInterface::AnimationInterface(uint16_t port, bool usingXML=true) [constructor]
     cls.add_constructor([param('uint16_t', 'port'), param('bool', 'usingXML', default_value='true')])
     ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::EnablePacketMetadata(bool enable) [member function]
     cls.add_method('EnablePacketMetadata', 
                    'void', 
                    [param('bool', 'enable')])
+    ## animation-interface.h (module 'netanim'): uint64_t ns3::AnimationInterface::GetTracePktCount() [member function]
+    cls.add_method('GetTracePktCount', 
+                   'uint64_t', 
+                   [])
     ## animation-interface.h (module 'netanim'): static bool ns3::AnimationInterface::IsInitialized() [member function]
     cls.add_method('IsInitialized', 
                    'bool', 
@@ -588,10 +592,10 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_method('ShowAll802_11', 
                    'void', 
                    [param('bool', 'showAll')])
-    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::StartAnimation() [member function]
+    ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::StartAnimation(bool restart=false) [member function]
     cls.add_method('StartAnimation', 
                    'void', 
-                   [])
+                   [param('bool', 'restart', default_value='false')])
     ## animation-interface.h (module 'netanim'): void ns3::AnimationInterface::StopAnimation() [member function]
     cls.add_method('StopAnimation', 
                    'void', 

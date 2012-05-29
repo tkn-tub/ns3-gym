@@ -27,9 +27,6 @@ IMAGES_DIA = \
 # specify eps figures from which .png and .pdf figures need to be built
 
 IMAGES_EPS = \
-	$(FIGURES)/MCS_2_test.eps \
-	$(FIGURES)/MCS_12_test.eps \
-	$(FIGURES)/MCS_14_test.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
@@ -96,8 +93,15 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/MCS_17_20.png \
 	$(FIGURES)/MCS_21_24.pdf \
 	$(FIGURES)/MCS_21_24.png \
-	$(FIGURES)/MCS_25_27.pdf \
-	$(FIGURES)/MCS_25_27.png \
+	$(FIGURES)/MCS_25_28.pdf \
+	$(FIGURES)/MCS_29_29.pdf \
+	$(FIGURES)/MCS_29_29.png \
+	$(FIGURES)/MCS_2_test.png \
+	$(FIGURES)/MCS_2_test.pdf \
+	$(FIGURES)/MCS_12_test.png \
+	$(FIGURES)/MCS_12_test.pdf \
+	$(FIGURES)/MCS_16_test.png \
+	$(FIGURES)/MCS_16_test.pdf \
 	$(FIGURES)/lte-phy-interference.png \
 	$(FIGURES)/lte-phy-interference.pdf \
 	$(FIGURES)/helpers.png \

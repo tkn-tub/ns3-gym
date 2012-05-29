@@ -114,8 +114,8 @@ LteRlcAmE2eTestCase::DoRun (void)
 {
   uint16_t numberOfNodes = 1;
 
-  LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
-  LogComponentEnable ("LteRlcAmE2eTest", level);
+  // LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
+  // LogComponentEnable ("LteRlcAmE2eTest", level);
   // LogComponentEnable ("ErrorModel", level);
   // LogComponentEnable ("LteSimpleHelper", level);
   // LogComponentEnable ("LteSimpleNetDevice", level);
