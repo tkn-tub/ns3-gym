@@ -157,28 +157,9 @@ def build(bld):
         'model/epc-gtpu-header.h',
         'model/epc-enb-application.h',
         'model/epc-sgw-pgw-application.h',
-        'test/lte-test-downlink-sinr.h',
-        'test/lte-test-uplink-sinr.h',
-        'test/lte-test-link-adaptation.h',
-        'test/lte-test-interference.h',
-        'test/lte-test-sinr-chunk-processor.h',
-        'test/lte-test-ue-phy.h',
-        'test/lte-test-rr-ff-mac-scheduler.h',
-        'test/lte-test-pf-ff-mac-scheduler.h',
-        'test/lte-test-phy-error-model.h',
-        'test/lte-test-pathloss-model.h',
-        'test/epc-test-gtpu.h',
-        'test/lte-test-entities.h',
-        'test/lte-simple-net-device.h',
-        'test/lte-simple-helper.h',
-        'test/lte-test-rlc-um-transmitter.h',
-        'test/lte-test-rlc-am-transmitter.h',
-        'test/lte-test-rlc-um-e2e.h',
-        'test/lte-test-rlc-am-e2e.h',
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h',
-        'test/lte-test-mimo.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

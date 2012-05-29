@@ -25,23 +25,20 @@
 #include "ns3/packet.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
-#include "ns3/lte-simple-helper.h"
 #include "ns3/error-model.h"
-
 #include "ns3/radio-bearer-stats-calculator.h"
-
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-um.h"
-
-#include "ns3/lte-test-entities.h"
-#include "ns3/lte-test-rlc-am-e2e.h"
-
 #include "ns3/config-store.h"
+
+#include "lte-test-rlc-am-e2e.h"
+#include "lte-simple-helper.h"
+#include "lte-test-entities.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcAmE2eTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -214,3 +211,6 @@ LteRlcAmE2eTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
+
+} // namespace ns3
+

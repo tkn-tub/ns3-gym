@@ -137,7 +137,7 @@ int main (int argc, char** argv)
   Ipv6AddressHelper ipv6;
 
   /* first subnet */
-  ipv6.NewNetwork (Ipv6Address ("2001:1::"), 64);
+  ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
   NetDeviceContainer tmp;
   tmp.Add (d1.Get (0)); /* n0 */
   Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutAddress (tmp); /* n0 interface */
@@ -152,7 +152,7 @@ int main (int argc, char** argv)
   stackHelper.AddAddress (r, iic1.GetInterfaceIndex (1), Ipv6Address ("2001:ABCD::2"));
 
   /* second subnet R - n1 */
-  ipv6.NewNetwork (Ipv6Address ("2001:2::"), 64);
+  ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   NetDeviceContainer tmp3;
   tmp3.Add (d2.Get (0)); /* R */
   Ipv6InterfaceContainer iicr2 = ipv6.Assign (tmp3); /* R interface */

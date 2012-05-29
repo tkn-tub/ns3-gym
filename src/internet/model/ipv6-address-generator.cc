@@ -160,6 +160,7 @@ Ipv6AddressGeneratorImpl::Init (
   // network number at bit zero of the int that holds it).
   //
   uint32_t index = PrefixToIndex (prefix);
+  NS_LOG_DEBUG ("Index " << index);
   uint32_t a = m_netTable[index].shift / 8;
   uint32_t b = m_netTable[index].shift % 8;
   for (int32_t j = 15 - a; j >= 0; j--)

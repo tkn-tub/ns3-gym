@@ -34,13 +34,13 @@
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-ue-net-device.h"
 
-#include "ns3/lte-test-interference.h"
+#include "lte-test-interference.h"
 
 #include "lte-test-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteInterferenceTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 void
@@ -252,3 +252,6 @@ LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcs, m_ulMcs, "Wrong UL MCS");
     }
 }
+
+} // namespace ns3
+

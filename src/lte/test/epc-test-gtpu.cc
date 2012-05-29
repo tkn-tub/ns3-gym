@@ -22,13 +22,13 @@
 #include "ns3/log.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
-
 #include "ns3/epc-gtpu-header.h"
-#include "ns3/epc-test-gtpu.h"
+
+#include "epc-test-gtpu.h"
 
 NS_LOG_COMPONENT_DEFINE ("EpcGtpuTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -84,3 +84,6 @@ EpsGtpuHeaderTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (h1, h2, "Wrong value!");
 }
+
+} // namespace ns3
+

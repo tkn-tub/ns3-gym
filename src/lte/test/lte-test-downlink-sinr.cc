@@ -25,15 +25,16 @@
 #include "ns3/spectrum-test.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-sinr-chunk-processor.h"
 #include "ns3/lte-spectrum-signal-parameters.h"
 
-#include "ns3/lte-test-downlink-sinr.h"
+#include "lte-test-downlink-sinr.h"
+#include "lte-test-ue-phy.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("LteDownlinkSinrTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -266,3 +267,6 @@ LteDownlinkSinrTestCase::DoRun (void)
   dlPhy->Dispose ();
   Simulator::Destroy ();
 }
+
+} // namespace ns3
+

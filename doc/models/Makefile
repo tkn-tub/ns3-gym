@@ -101,7 +101,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
 	$(SRC)/lte/doc/source/figures/MCS_2_test.eps \
 	$(SRC)/lte/doc/source/figures/MCS_12_test.eps \
-	$(SRC)/lte/doc/source/figures/MCS_14_test.eps \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -136,8 +135,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_17_20.png \
 	$(SRC)/lte/doc/source/figures/MCS_21_24.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_21_24.png \
-	$(SRC)/lte/doc/source/figures/MCS_25_27.pdf \
-	$(SRC)/lte/doc/source/figures/MCS_25_27.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
 	$(SRC)/lte/doc/source/figures/helpers.png \
@@ -147,8 +144,28 @@ SOURCEFIGS = \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
-	$(SRC)/netanim/doc/animation-dumbbell.png \
-	$(SRC)/netanim/doc/animation-dumbbell.pdf \
+	$(SRC)/netanim/doc/figures/Dumbbell.png \
+	$(SRC)/netanim/doc/figures/Dumbbell.pdf \
+	$(SRC)/netanim/doc/figures/PacketStatistics.png \
+	$(SRC)/netanim/doc/figures/PacketStatistics.pdf \
+	$(SRC)/netanim/doc/figures/FastForward.png \
+	$(SRC)/netanim/doc/figures/FastForward.pdf \
+	$(SRC)/netanim/doc/figures/Wireless.png \
+	$(SRC)/netanim/doc/figures/Wireless.pdf \
+	$(SRC)/netanim/doc/figures/Precision.png \
+	$(SRC)/netanim/doc/figures/Precision.pdf \
+	$(SRC)/netanim/doc/figures/Persist.png \
+	$(SRC)/netanim/doc/figures/Persist.pdf \
+	$(SRC)/netanim/doc/figures/SimTime.png \
+	$(SRC)/netanim/doc/figures/SimTime.pdf \
+	$(SRC)/netanim/doc/figures/Trajectory.png \
+	$(SRC)/netanim/doc/figures/Trajectory.pdf \
+	$(SRC)/netanim/doc/figures/UpdateRateInterval.png \
+	$(SRC)/netanim/doc/figures/UpdateRateInterval.pdf \
+	$(SRC)/netanim/doc/figures/WithoutPrecision.png \
+	$(SRC)/netanim/doc/figures/WithoutPrecision.pdf \
+	$(SRC)/netanim/doc/figures/WithPrecision.png \
+	$(SRC)/netanim/doc/figures/WithPrecision.pdf \
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
@@ -181,7 +198,6 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
 	$(FIGURES)/MCS_2_test.eps \
 	$(FIGURES)/MCS_12_test.eps \
-	$(FIGURES)/MCS_14_test.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \

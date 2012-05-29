@@ -113,6 +113,13 @@ The API of the LTE module has undergone a significant redesign with
 the merge of the code from the LENA project. The new API is not
 backwards compatible with the previous version of the LTE module.
 </li>
+<li> The Ipv6AddressHelper API has been aligned with the Ipv4AddressHelper API. 
+The helper can be set with a call to Ipv6AddressHelper::SetBase 
+(Ipv6Address network, Ipv6Prefix prefix) instead of NewNetwork
+(Ipv6Address network, Ipv6Prefix prefix).  A new NewAddress (void) method
+has been added.  Typical usage will involve calls to SetBase (), NewNetwork (),
+and NewAddress (), as in class Ipv4AddressHelper. 
+</li>
 </ul>
 
 <h2>Changes to build system:</h2>

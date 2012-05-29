@@ -26,7 +26,7 @@
 #include "ns3/test.h"
 
 
-using namespace ns3;
+namespace ns3 {
 
 
 
@@ -48,6 +48,9 @@ public:
 private:
   virtual void DoRun (void);
 };
+
+
+} // namespace ns3
 
 
 #endif /* EPC_TEST_GTPU_H */

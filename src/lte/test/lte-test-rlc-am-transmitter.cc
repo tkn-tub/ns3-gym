@@ -24,11 +24,12 @@
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-am.h"
 
-#include "ns3/lte-test-rlc-am-transmitter.h"
+#include "lte-test-rlc-am-transmitter.h"
+#include "lte-test-entities.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcAmTransmitterTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -296,3 +297,6 @@ LteRlcAmTransmitterReportBufferStatusTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 }
+
+} // namespace ns3
+

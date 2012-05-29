@@ -19,15 +19,16 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include "ns3/simulator.h"
-#include "ns3/log.h"
-#include "ns3/buildings-shadowing-test.h"
+#include <ns3/simulator.h>
+#include <ns3/log.h>
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
-#include "ns3/string.h"
-#include "ns3/double.h"
+#include <ns3/string.h>
+#include <ns3/double.h>
 #include <ns3/building.h>
 #include <ns3/enum.h>
 #include <ns3/buildings-helper.h>
+
+#include "buildings-shadowing-test.h"
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsShadowingTest");
 

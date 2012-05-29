@@ -34,21 +34,8 @@
 #include "ns3/config.h"
 #include "ns3/animation-interface-helper.h"
 #include "ns3/mac48-address.h"
-
-#ifdef WIN32
-#include <winsock2.h>
-#include <io.h>
-#define STDOUT_FILENO (SOCKET)GetStdHandle(STD_OUTPUT_HANDLE)
-#define close _close
-#define write _write
-#undef GetObject
-#undef min
-#undef max
-#define HANDLETYPE SOCKET
-#else
-#include "ns3/netanim-config.h"
-#define HANDLETYPE int
-#endif
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-enb-net-device.h"
 
 namespace ns3 {
 
@@ -73,18 +60,6 @@ class AnimationInterface
 public:
 
   /**
-   * \brief Construct the animator interface. No arguments needed.
-   *
-   */
-  AnimationInterface ();
-
-  /**
-   * \brief Destructor for the animator interface.
-   *
-   */
-  ~AnimationInterface ();
-
-  /**
    * \brief Constructor
    * \param filename The Filename for the trace file used by the Animator
    * \param maxPktsPerFile The maximum number of packets per trace file.
@@ -99,13 +74,10 @@ public:
 	bool usingXML = true);
 
   /**
-   * \brief Constructor
-   * \param port Port on which ns-3 should listen to for connection from the
-   *        external netanim application
-   * \param usingXML Set to true if XML output traces are required
+   * \brief Destructor for the animator interface.
    *
    */
-  AnimationInterface (uint16_t port, bool usingXML = true);
+  ~AnimationInterface ();
 
   /**
    * \brief Check if AnimationInterface is initialized
@@ -153,21 +125,6 @@ public:
    * \returns none
    */
   void SetStopTime (Time t);
-
-  /**
-   * \brief (Deprecated) Specify that animation commands are to be written to
-   * a socket.
-   *
-   * This call is used to set the ns3 process in server mode, waiting
-   * for a TCP connection from the animator.  This call will not
-   * return until the animator connects in, or if the bind to the
-   * specified port fails.
-   *
-   * \param port Port number to bind to.
-   * \returns true if connection created, false if bind failed.
-   *
-   */
-  bool SetServerPort (uint16_t port);
 
   /**
    * \brief Writes the topology information and sets up the appropriate
@@ -289,21 +246,13 @@ public:
 
 
 private:
-#ifndef WIN32
-  int m_fHandle;  // File handle for output (-1 if none)
+  FILE * m_f; // File handle for output (-1 if none)
   // Write specified amount of data to the specified handle
-  int WriteN (int, const char*, uint32_t);
-#else
-  SOCKET m_fHandle;  // File handle for output (-1 if none)
-  int  WriteN (SOCKET, const char*, uint32_t);
-#endif
+  int WriteN (const char*, uint32_t);
   bool m_xml;      // True if xml format desired
   Time m_mobilityPollInterval;
-  bool m_usingSockets;
-  uint16_t m_port;
   std::string m_outputFileName;
   bool m_outputFileSet;
-  bool m_serverPortSet;
   uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
   bool m_randomPosition;
   AnimWriteCallback m_writeCallback;
@@ -357,10 +306,15 @@ private:
                       Ptr<const Packet> p,
                       const Mac48Address &);
 
+  void LteSpectrumPhyTxStart (std::string context,
+                      Ptr<const PacketBurst> pb);
+  void LteSpectrumPhyRxStart (std::string context,
+                      Ptr<const PacketBurst> pb);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
-  int  WriteN (int, const std::string&);
+  int  WriteN (const std::string&);
 
   void OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
@@ -403,6 +357,9 @@ private:
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
   void ConnectCallbacks ();
+  void ConnectLte ();
+  void ConnectLteUe (Ptr <Node> n, Ptr <LteUeNetDevice> nd, uint32_t devIndex);
+  void ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex);
 
   
   std::map <std::string, uint32_t> m_macToNodeIdMap;

@@ -25,11 +25,11 @@
 #include "ns3/lte-rlc-am-header.h"
 #include "ns3/lte-pdcp-header.h"
 
-#include "ns3/lte-test-entities.h"
+#include "lte-test-entities.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /////////////////////////////////////////////////////////////////////
@@ -600,3 +600,6 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
   m_macSapUser->ReceivePdu (packet);
   return true;
 }
+
+} // namespace ns3
+

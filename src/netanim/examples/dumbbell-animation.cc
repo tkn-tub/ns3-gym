@@ -100,9 +100,8 @@ int main (int argc, char *argv[])
   // Set up the acutal simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  std::cout << "Running the simulation" << std::endl;
   Simulator::Run ();
-  std::cout << "Destroying the simulation" << std::endl;
+  std::cout << "Animation Trace file created:" << animFile.c_str ()<< std::endl;
   Simulator::Destroy ();
   return 0;
 }

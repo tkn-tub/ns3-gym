@@ -32,7 +32,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 
@@ -237,3 +237,6 @@ BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite ()
 }
 
 static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance;
+
+} // namespace ns3
+

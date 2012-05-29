@@ -142,7 +142,7 @@ main (int argc, char *argv[])
         {
           Ipv6AddressGenerator::Init (ipv6AddressBase, ipv6AddressPrefix);
           Ipv6Address v6network = Ipv6AddressGenerator::GetNetwork (ipv6AddressPrefix);
-          address6.NewNetwork(v6network, ipv6AddressPrefix);
+          address6.SetBase (v6network, ipv6AddressPrefix);
 
           for (uint32_t j = 0; j < nFill; ++j)
             {
