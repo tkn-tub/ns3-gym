@@ -279,25 +279,17 @@ void RttMeanDeviation::Measurement (Time m)
 Time RttMeanDeviation::RetransmitTimeout ()
 {
   NS_LOG_FUNCTION (this);
-  // If not enough samples, just return 2 times estimate
-  //if (nSamples < 2) return est * 2;
-  Time retval (Seconds (0));
-  double var = m_variance.ToDouble (Time::S);
-  NS_LOG_DEBUG ("RetransmitTimeout:  var " << var << " est " << m_currentEstimatedRtt.ToDouble (Time::S) << " multiplier " << m_multiplier);
-  if (var < (m_currentEstimatedRtt.ToDouble (Time::S) / 4.0) )
+  NS_LOG_DEBUG ("RetransmitTimeout:  var " << m_variance.GetSeconds () << " est " << m_currentEstimatedRtt.GetSeconds () << " multiplier " << m_multiplier);
+  // RTO = srtt + 4* rttvar
+  int64_t temp = m_currentEstimatedRtt.ToInteger (Time::MS) + 4 * m_variance.ToInteger (Time::MS);
+  if (temp < m_minRto.ToInteger (Time::MS))
     {
-      for (uint16_t i = 0; i < 2* m_multiplier; i++)
-        {
-          retval += m_currentEstimatedRtt;
-        }
-    }
-  else
-    {
-      int64_t temp = m_currentEstimatedRtt.ToInteger (Time::S) + 4 * m_variance.ToInteger (Time::S);
-      retval = Time::FromInteger (temp, Time::S);
-    }
-  NS_LOG_DEBUG ("RetransmitTimeout:  return " << (retval > m_minRto ? retval.GetSeconds () : m_minRto.GetSeconds ()));
-  return (retval > m_minRto ? retval : m_minRto);  // return maximum
+      temp = m_minRto.ToInteger (Time::MS);
+    } 
+  temp = temp * m_multiplier; // Apply backoff
+  Time retval = Time::FromInteger (temp, Time::MS);
+  NS_LOG_DEBUG ("RetransmitTimeout:  return " << retval.GetSeconds ());
+  return (retval);  
 }
 
 Ptr<RttEstimator> RttMeanDeviation::Copy () const
