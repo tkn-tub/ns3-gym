@@ -753,7 +753,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
               it = m_rxonBuffer.find (m_vrMs.GetValue ());
               NS_LOG_LOGIC ("Incr VR(MS) = " << m_vrMs);
 
-              NS_ASSERT_MSG (firstVrMs == m_vrMs.GetValue (), "Infinite loop in RxonBuffer");
+              NS_ASSERT_MSG (firstVrMs != m_vrMs.GetValue (), "Infinite loop in RxonBuffer");
             }
           NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
         }
@@ -784,7 +784,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                   m_vrR++;
                   it = m_rxonBuffer.find (m_vrR.GetValue ());
 
-                  NS_ASSERT_MSG (firstVrR == m_vrR.GetValue (), "Infinite loop in RxonBuffer");
+                  NS_ASSERT_MSG (firstVrR != m_vrR.GetValue (), "Infinite loop in RxonBuffer");
                 }
               NS_LOG_LOGIC ("New VR(R)  = " << m_vrR);
               m_vrMr = m_vrR + m_windowSize;
@@ -1538,7 +1538,7 @@ LteRlcAm::ExpireReorderingTimer (void)
       m_vrMs++;
       it = m_rxonBuffer.find (m_vrMs.GetValue ());
 
-      NS_ASSERT_MSG (firstVrMs == m_vrMs.GetValue (), "Infinite loop in ExpireReorderingTimer");
+      NS_ASSERT_MSG (firstVrMs != m_vrMs.GetValue (), "Infinite loop in ExpireReorderingTimer");
     }
   NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
 
