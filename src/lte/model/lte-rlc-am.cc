@@ -741,12 +741,19 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       //     - update VR(MS) to the SN of the first AMD PDU with SN > current VR(MS) for
       //       which not all byte segments have been received;
 
-      if ( m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+      std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
+      if ( it != m_rxonBuffer.end () &&
+           m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
         {
-          while ( m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+          int firstVrMs = m_vrMs.GetValue ();
+          while ( it != m_rxonBuffer.end () &&
+                  m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
             {
               m_vrMs++;
+              it = m_rxonBuffer.find (m_vrMs.GetValue ());
               NS_LOG_LOGIC ("Incr VR(MS) = " << m_vrMs);
+
+              NS_ASSERT_MSG (firstVrMs == m_vrMs.GetValue (), "Infinite loop in RxonBuffer");
             }
           NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
         }
@@ -759,9 +766,14 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       if ( seqNumber == m_vrR )
         {
-          if ( m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete )
+          std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
+          if ( it != m_rxonBuffer.end () &&
+               m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete )
             {
-              while ( m_rxonBuffer[ m_vrR.GetValue () ].m_pduComplete )
+              it = m_rxonBuffer.find (m_vrR.GetValue ());
+              int firstVrR = m_vrR.GetValue ();
+              while ( it != m_rxonBuffer.end () &&
+                      m_rxonBuffer[ m_vrR.GetValue () ].m_pduComplete )
                 {
                   NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << m_vrR << " )");
                   NS_ASSERT_MSG (m_rxonBuffer[ m_vrR.GetValue () ].m_byteSegments.size () == 1,
@@ -770,6 +782,9 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                   m_rxonBuffer.erase (m_vrR.GetValue ());
 
                   m_vrR++;
+                  it = m_rxonBuffer.find (m_vrR.GetValue ());
+
+                  NS_ASSERT_MSG (firstVrR == m_vrR.GetValue (), "Infinite loop in RxonBuffer");
                 }
               NS_LOG_LOGIC ("New VR(R)  = " << m_vrR);
               m_vrMr = m_vrR + m_windowSize;
@@ -1515,9 +1530,15 @@ LteRlcAm::ExpireReorderingTimer (void)
   //    - set VR(X) to VR(H).
 
   m_vrMs = m_vrX;
-  while ( m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+  int firstVrMs = m_vrMs.GetValue ();
+  std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
+  while ( it != m_rxonBuffer.end () &&
+          m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
     {
       m_vrMs++;
+      it = m_rxonBuffer.find (m_vrMs.GetValue ());
+
+      NS_ASSERT_MSG (firstVrMs == m_vrMs.GetValue (), "Infinite loop in ExpireReorderingTimer");
     }
   NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
 
