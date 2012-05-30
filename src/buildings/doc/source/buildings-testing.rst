@@ -63,7 +63,7 @@ This test is aimed at validating the COST231 model. The test is similar to the O
 Test #3 2.6 GHz model
 ---------------------
 
-This test validates the 2.6 empirical model [pl26ghz]_. The test is similar to Okumura Hata one except that the frequency is the EUTRA band #7 (2620 MHz) and the test can be performed only in urban scenario.
+This test validates the 2.6 GHz Kun model. The test is similar to Okumura Hata one except that the frequency is the EUTRA band #7 (2620 MHz) and the test can be performed only in urban scenario.
 
 Test #4 ITU1411 LoS model
 -------------------------

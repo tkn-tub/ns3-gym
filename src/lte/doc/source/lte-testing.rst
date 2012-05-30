@@ -103,11 +103,11 @@ E-UTRA Absolute Radio Frequency Channel Number (EARFCN)
 
 The test suite ``lte-earfcn`` checks that the carrier frequency used
 by the LteSpectrumValueHelper class (which implements the LTE spectrum
-model) is done in compliance with [TS36.101]_, where the E-UTRA
+model) is done in compliance with [TS36101]_, where the E-UTRA
 Absolute Radio Frequency Channel Number (EARFCN) is defined. The test
 vector for this test suite comprises a set of EARFCN values and the
 corresponding carrier frequency calculated by hand following the
-specification of [TS36.101]_. The test passes if the carrier frequency
+specification of [TS36101]_. The test passes if the carrier frequency
 returned by LteSpectrumValueHelper is the same as the known value for
 each element in the test vector.
 
@@ -207,10 +207,10 @@ matches a reference throughput value obtained according to the SINR perceived
 within a given tolerance. 
 
 The test vector is obtained according to the values of transport block
-size reported in table 7.1.7.2.1-1 of [TS36.213]_, considering an
+size reported in table 7.1.7.2.1-1 of [TS36213]_, considering an
 equal distribution of the physical resource block among the users
 using Resource Allocation Type 0 as defined in Section 7.1.6.1 of
-[TS36.213]_.  Let :math:`\tau` be the TTI duration, :math:`N` be the
+[TS36213]_.  Let :math:`\tau` be the TTI duration, :math:`N` be the
 number of UEs, :math:`B` the transmission bandwidth configuration in
 number of RBs, :math:`G` the RBG size, :math:`M` the modulation and
 coding scheme in use at the given SINR and :math:`S(M, B)` be the
@@ -273,7 +273,7 @@ at the given SNR by the total number of UEs.
 Let :math:`\tau` be the TTI duration, :math:`B` the transmission
 bandwidth configuration in number of RBs, :math:`M` the modulation and
 coding scheme in use at the given SINR and :math:`S(M, B)` be the
-transport block size as defined in [TS36.213]_. The reference
+transport block size as defined in [TS36213]_. The reference
 throughput :math:`T` in bit/s achieved by each UE is calculated as 
 
 .. math::
@@ -410,7 +410,7 @@ MIMO Model
 ----------
 
 The test suite ``lte-mimo`` aims at verifying both the effect of the gain considered for each Transmission Mode on the system performance and the Transmission Mode switching through the scheduler interface. The test consists on checking whether the amount of bytes received during a certain window of time (0.1 seconds in our case) corresponds to the expected ones according to the values of transport block
-size reported in table 7.1.7.2.1-1 of [TS36.213]_, similarly to what done for the tests of the schedulers.
+size reported in table 7.1.7.2.1-1 of [TS36213]_, similarly to what done for the tests of the schedulers.
 
 The test is performed both for Round Robin and Proportional Fair schedulers. The test passes if the measured throughput matches with the reference throughput within a relative tolerance of 0.1. This tolerance is needed to account for the
 transient behavior at the beginning of the simulation and the transition phase between the Transmission Modes.

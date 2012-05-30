@@ -299,7 +299,7 @@ Fading Traces Generation
 ************************
 
 
-It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
+It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
  * ``fc`` : the frequency in use (it affects the computation of the doppler speed).
  * ``v_km_h`` : the speed of the users
@@ -341,7 +341,7 @@ And for setting the parameters::
 
 It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set explicitly.
 
-The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
+The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
 
 
 .. _fig-fadingPedestrianTrace:

@@ -135,6 +135,16 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/MCS_17_20.png \
 	$(SRC)/lte/doc/source/figures/MCS_21_24.pdf \
 	$(SRC)/lte/doc/source/figures/MCS_21_24.png \
+	$(SRC)/lte/doc/source/figures/MCS_25_28.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_25_28.png \
+	$(SRC)/lte/doc/source/figures/MCS_29_29.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_29_29.png \
+	$(SRC)/lte/doc/source/figures/MCS_2_test.png \
+	$(SRC)/lte/doc/source/figures/MCS_2_test.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_12_test.png \
+	$(SRC)/lte/doc/source/figures/MCS_12_test.pdf \
+	$(SRC)/lte/doc/source/figures/MCS_16_test.png \
+	$(SRC)/lte/doc/source/figures/MCS_16_test.pdf \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.pdf \
 	$(SRC)/lte/doc/source/figures/helpers.png \

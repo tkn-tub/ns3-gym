@@ -61,7 +61,7 @@ for all direction.
 CosineAntennaModel
 ++++++++++++++++++
 
-This is the cosine model described in [Chunjan]_: the antenna gain is
+This is the cosine model described in [Chunjian]_: the antenna gain is
 determined as:
 
 .. math::

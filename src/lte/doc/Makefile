@@ -94,6 +94,7 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/MCS_21_24.pdf \
 	$(FIGURES)/MCS_21_24.png \
 	$(FIGURES)/MCS_25_28.pdf \
+	$(FIGURES)/MCS_25_28.png \
 	$(FIGURES)/MCS_29_29.pdf \
 	$(FIGURES)/MCS_29_29.png \
 	$(FIGURES)/MCS_2_test.png \
