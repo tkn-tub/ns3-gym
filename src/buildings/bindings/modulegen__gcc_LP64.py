@@ -74,8 +74,6 @@ def register_types(module):
     module.add_class('SequentialVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs [class]
-    module.add_class('SystemWallClockMs', import_from_module='ns.core')
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
     ## random-variable.h (module 'core'): ns3::TriangularVariable [class]
@@ -321,7 +319,6 @@ def register_methods(root_module):
     register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
-    register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -1380,36 +1377,6 @@ def register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods
                    'void', 
                    [], 
                    is_static=True)
-    return
-
-def register_Ns3SystemWallClockMs_methods(root_module, cls):
-    ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs::SystemWallClockMs(ns3::SystemWallClockMs const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SystemWallClockMs const &', 'arg0')])
-    ## system-wall-clock-ms.h (module 'core'): ns3::SystemWallClockMs::SystemWallClockMs() [constructor]
-    cls.add_constructor([])
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::End() [member function]
-    cls.add_method('End', 
-                   'int64_t', 
-                   [])
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::GetElapsedReal() const [member function]
-    cls.add_method('GetElapsedReal', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::GetElapsedSystem() const [member function]
-    cls.add_method('GetElapsedSystem', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## system-wall-clock-ms.h (module 'core'): int64_t ns3::SystemWallClockMs::GetElapsedUser() const [member function]
-    cls.add_method('GetElapsedUser', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## system-wall-clock-ms.h (module 'core'): void ns3::SystemWallClockMs::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [])
     return
 
 def register_Ns3TagBuffer_methods(root_module, cls):
