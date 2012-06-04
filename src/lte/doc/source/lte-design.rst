@@ -1159,8 +1159,8 @@ using the RACH-ConfigDedicated IE which is part of MobilityControlInfo.
 
 
 
-RRC Signaling implementation
-----------------------------
+Connection Setup Signaling implementation
+-----------------------------------------
 
 As can be observed from the sequence diagrams of the RRC procedures
 reported in the previous subsection, RRC procedures involve control
@@ -1187,23 +1187,14 @@ implemented in the simulator.
      associated error model. Still, the consumption of Radio
      Resources for sending the RAR is modeled by interaction with
      the scheduler using the FF MAC Scheduler primitive
-     SCHED_DL_RACH_INFO_REQ. In the RR and PF scheduler implementations,
-     this is implemented by the member variable ``m_sendingRar`` which is set upon 
-     SCHED_DL_RACH_INFO_REQ being called, so that this member variable
-     can then be checked by the scheduler when DoSchedUlTriggerReq()
-     is executed later, and the needed resources can be allcoated.
+     SCHED_DL_RACH_INFO_REQ. 
 
    - **Contention Resolution (CR)**: in real LTE system, the CR is
      sent as a regular MAC PDU with a special LCID and a CR MAC CE sent on the
      DL-SCH. In the simulator, it is implemented as an
      ideal control message without any associated error model, but still
      modeling the associated consumption of scheduler resources by
-     using the FF MAC Scheduler primitive SCHED_DL_MAC_BUFFER_REQ. In
-     the RR and PF scheduler implementations, this is handled by
-     setting a member fariable ``m_sendingCr``, which is set upon
-     SCHED_DL_MAC_BUFFER_REQ and then checked upon resource allocation
-     in DoSchedUlTriggerReq(). This is similar to the way the resource
-     consumption of RAR is modeled.
+     using the FF MAC Scheduler primitive SCHED_DL_MAC_BUFFER_REQ. 
 
  * **SRB0** messages (over CCCH):
 
@@ -1241,14 +1232,6 @@ implemented in the simulator.
        SRB1 and never activate SRB2.
 
 
-Handling of Radio Link Failure (RLF)
-------------------------------------
-
-
-
-
-
-
 
 
 Non-Access Stratum (NAS) model
@@ -1258,11 +1241,12 @@ Non-Access Stratum (NAS) model
 The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
 
  - EMM and ECM are not modeled explicitly; instead, the NAS entity at the UE will interact directy with the EpcHelper to perfom actions that are equivalent (with gross simplifications) to taking the UE to the states EMM Connected and ECM Connected; 
- - each UE supports at most one PLMN and one CSG ID, which are passed to the RRC to perform  cell selection in idle mode, following in a simplified way what specified in [TS36304]_;
 
  - the NAS also takes care of multiplexing uplink data packets coming from the upper layers into the appropriate EPS bearer by using the Traffic Flow Template classifier (TftClassifier). (NB: this is currently in the RRC, but it is better to move it to the NAS).
 
-- the NAS does *not* support any location update/paging procedure in idle mode
+- the NAS does not support PLMN and CSG selection 
+
+- the NAS does not support any location update/paging procedure in idle mode
 
 
 
