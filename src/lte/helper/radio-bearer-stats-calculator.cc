@@ -32,23 +32,25 @@ NS_LOG_COMPONENT_DEFINE ("RadioBearerStatsCalculator");
 
 NS_OBJECT_ENSURE_REGISTERED ( RadioBearerStatsCalculator);
 
-RadioBearerStatsCalculator::RadioBearerStatsCalculator () :
-  m_firstWrite (true), m_bearerType ("RLC")
+RadioBearerStatsCalculator::RadioBearerStatsCalculator ()
+  : m_firstWrite (true),
+    m_pendingOutput (false), 
+    m_protocolType ("RLC")
 {
   NS_LOG_FUNCTION (this);
 }
 
-RadioBearerStatsCalculator::RadioBearerStatsCalculator (std::string bearerType) :
-  m_firstWrite (true)
+RadioBearerStatsCalculator::RadioBearerStatsCalculator (std::string protocolType)
+  : m_firstWrite (true),
+    m_pendingOutput (false)
 {
   NS_LOG_FUNCTION (this);
-  m_bearerType = bearerType;
+  m_protocolType = protocolType;
 }
 
 RadioBearerStatsCalculator::~RadioBearerStatsCalculator ()
 {
   NS_LOG_FUNCTION (this);
-  ShowResults ();
 }
 
 TypeId
@@ -84,6 +86,16 @@ RadioBearerStatsCalculator::GetTypeId (void)
 }
 
 void
+RadioBearerStatsCalculator::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  if (m_pendingOutput)
+    {
+      ShowResults ();
+    }
+}
+
+void
 RadioBearerStatsCalculator::UlTxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << "UlTxPDU" << imsi << rnti << (uint32_t) lcid << packetSize);
@@ -95,6 +107,7 @@ RadioBearerStatsCalculator::UlTxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid,
       m_ulTxPackets[p]++;
       m_ulTxData[p] += packetSize;
     }
+  m_pendingOutput = true;
 }
 
 void
@@ -110,6 +123,7 @@ RadioBearerStatsCalculator::DlTxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
       m_dlTxPackets[p]++;
       m_dlTxData[p] += packetSize;
     }
+  m_pendingOutput = true;
 }
 
 void
@@ -136,6 +150,7 @@ RadioBearerStatsCalculator::UlRxPdu (uint16_t cellId, uint64_t imsi, uint16_t rn
       m_ulDelay[p]->Update (delay);
       m_ulPduSize[p]->Update (packetSize);
     }
+  m_pendingOutput = true;
 }
 
 void
@@ -159,6 +174,7 @@ RadioBearerStatsCalculator::DlRxPdu (uint64_t imsi, uint16_t rnti, uint8_t lcid,
       m_dlDelay[p]->Update (delay);
       m_dlPduSize[p]->Update (packetSize);
     }
+  m_pendingOutput = true;
 }
 
 void
@@ -215,6 +231,7 @@ RadioBearerStatsCalculator::ShowResults (void)
 
   WriteUlResults (ulOutFile);
   WriteDlResults (dlOutFile);
+  m_pendingOutput = false;
 
 }
 
@@ -556,7 +573,7 @@ RadioBearerStatsCalculator::GetDlPduSizeStats (uint64_t imsi, uint8_t lcid)
 std::string
 RadioBearerStatsCalculator::GetUlOutputFilename (void)
 {
-  if (m_bearerType == "RLC")
+  if (m_protocolType == "RLC")
     {
       return LteStatsCalculator::GetUlOutputFilename ();
     }
@@ -569,7 +586,7 @@ RadioBearerStatsCalculator::GetUlOutputFilename (void)
 std::string
 RadioBearerStatsCalculator::GetDlOutputFilename (void)
 {
-  if (m_bearerType == "RLC")
+  if (m_protocolType == "RLC")
     {
       return LteStatsCalculator::GetDlOutputFilename ();
     }

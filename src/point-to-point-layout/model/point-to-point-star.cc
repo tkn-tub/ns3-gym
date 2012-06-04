@@ -18,7 +18,7 @@
 #include <sstream>
 
 // ns3 includes
-#include "ns3/animation-interface.h"
+#include "ns3/log.h"
 #include "ns3/point-to-point-star.h"
 #include "ns3/constant-position-mobility-model.h"
 
@@ -119,7 +119,7 @@ PointToPointStarHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6Prefix pr
   for (uint32_t i = 0; i < m_spokes.GetN (); ++i)
     {
       v6network = Ipv6AddressGenerator::GetNetwork (prefix);
-      addressHelper.NewNetwork(v6network, prefix);
+      addressHelper.SetBase (v6network, prefix);
 
       Ipv6InterfaceContainer ic = addressHelper.Assign (m_hubDevices.Get (i));
       m_hubInterfaces6.Add (ic);

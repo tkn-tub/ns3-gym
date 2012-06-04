@@ -242,7 +242,7 @@ PeerManagementProtocol::ConfigurationMismatch (uint32_t interface, Mac48Address 
 void
 PeerManagementProtocol::TransmissionFailure (uint32_t interface, Mac48Address peerAddress)
 {
-  NS_LOG_DEBUG ("transmission failed between "<<GetAddress () << " and " << peerAddress << " failed, link will be colsed");
+  NS_LOG_DEBUG ("transmission failed between "<<GetAddress () << " and " << peerAddress << " failed, link will be closed");
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
   if (peerLink != 0)
     {
@@ -252,7 +252,7 @@ PeerManagementProtocol::TransmissionFailure (uint32_t interface, Mac48Address pe
 void
 PeerManagementProtocol::TransmissionSuccess (uint32_t interface, Mac48Address peerAddress)
 {
-  NS_LOG_DEBUG ("transmission success "<<GetAddress () << " and " << peerAddress << " failed, link will be colsed");
+  NS_LOG_DEBUG ("transmission success "<< GetAddress () << " and " << peerAddress);
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
   if (peerLink != 0)
     {

@@ -56,45 +56,21 @@ class ModelCreator : public AttributeIterator
 public:
   ModelCreator ();
 
-  void
-  Build (GtkTreeStore *treestore);
+  void Build (GtkTreeStore *treestore);
 private:
-  virtual void
-  DoVisitAttribute (Ptr<Object> object, std::string name);
-  virtual void
-  DoStartVisitObject (Ptr<Object> object);
-  virtual void
-  DoEndVisitObject (void);
-  virtual void
-  DoStartVisitPointerAttribute (Ptr<Object> object, std::string name,
-      Ptr<Object> value);
-  virtual void
-  DoEndVisitPointerAttribute (void);
-  virtual void
-  DoStartVisitArrayAttribute (Ptr<Object> object, std::string name,
-      const ObjectPtrVectorValue &vector);
-  virtual void
-  DoEndVisitArrayAttribute (void);
-  virtual void
-  DoStartVisitArrayItem (const ObjectPtrVectorValue &vector, uint32_t index,
-      Ptr<Object> item);
-  virtual void
-  DoEndVisitArrayItem (void);
-  virtual void
-  DoStartVisitMapAttribute (Ptr<Object> object, std::string name,
-      const ObjectPtrMapValue &map);
-  virtual void
-  DoEndVisitMapAttribute (void);
-  virtual void
-  DoStartVisitMapItem (const ObjectPtrMapValue &vector, uint32_t index,
-      Ptr<Object> item);
-  virtual void
-  DoEndVisitMapItem (void);
-
-  void
-  Add (ModelNode *node);
-  void
-  Remove (void);
+  virtual void DoVisitAttribute (Ptr<Object> object, std::string name);
+  virtual void DoStartVisitObject (Ptr<Object> object);
+  virtual void DoEndVisitObject (void);
+  virtual void DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> value);
+  virtual void DoEndVisitPointerAttribute (void);
+  virtual void DoStartVisitArrayAttribute (Ptr<Object> object, std::string name,
+                                           const ObjectPtrContainerValue &vector);
+  virtual void DoEndVisitArrayAttribute (void);
+  virtual void DoStartVisitArrayItem (const ObjectPtrContainerValue &vector,
+                                      uint32_t index, Ptr<Object> item);
+  virtual void DoEndVisitArrayItem (void);
+  void Add (ModelNode *node);
+  void Remove (void);
 
   GtkTreeStore *m_treestore;
   std::vector<GtkTreeIter *> m_iters;

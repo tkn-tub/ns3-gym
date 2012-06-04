@@ -34,13 +34,13 @@
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-ue-net-device.h"
 
-#include "ns3/lte-test-interference.h"
+#include "lte-test-interference.h"
 
 #include "lte-test-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteInterferenceTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 void
@@ -202,7 +202,7 @@ LteInterferenceTestCase::DoRun (void)
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 
-  Simulator::Stop (Seconds (0.006));
+  Simulator::Stop (Seconds (0.020));
   Simulator::Run ();
   
 
@@ -232,7 +232,7 @@ LteInterferenceTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
    *    For first 4 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 4) )
+  if ( (frameNo > 1) || (subframeNo > 9) )
     {
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_dlMcs, "Wrong DL MCS ");
     }
@@ -247,8 +247,11 @@ LteInterferenceTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, ui
    *    For first 5 subframeNo in the first frameNo, the MCS cannot be properly evaluated,
    *    because CQI feedback is still not available at the eNB.
    */
-  if ( (frameNo > 1) || (subframeNo > 5) )
+  if ( (frameNo > 1) && (subframeNo > 4) )
     {
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcs, m_ulMcs, "Wrong UL MCS");
     }
 }
+
+} // namespace ns3
+

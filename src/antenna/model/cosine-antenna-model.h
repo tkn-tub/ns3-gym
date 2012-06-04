@@ -31,7 +31,7 @@ namespace ns3 {
  * 
  * \brief Cosine Antenna Model 
  *
- * This class implements the cosine model as described in [1]
+ * This class implements the cosine model as described in:
  *
  * Li Chunjian, "Efficient Antenna Patterns for Three-Sector WCDMA Systems"
  *
@@ -60,7 +60,7 @@ public:
 private:
 
   /**
-   * this is the variable "n" in [1]
+   * this is the variable "n" in the paper by Chunjian
    * 
    */
   double m_exponent; 

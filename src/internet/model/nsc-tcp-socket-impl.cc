@@ -497,7 +497,7 @@ void NscTcpSocketImpl::CompleteFork (void)
 
   if (0 == m_nscTcpSocket->getpeername ((struct sockaddr*) &sin, &sin_len)) {
       m_remotePort = ntohs (sin.sin_port);
-      m_remoteAddress = m_remoteAddress.Deserialize ((const uint8_t*) &sin.sin_addr);
+      m_remoteAddress = Ipv4Address::Deserialize ((const uint8_t*) &sin.sin_addr);
       m_peerAddress = InetSocketAddress (m_remoteAddress, m_remotePort);
     }
 
@@ -510,7 +510,7 @@ void NscTcpSocketImpl::CompleteFork (void)
   sin_len = sizeof(sin);
 
   if (0 == m_nscTcpSocket->getsockname ((struct sockaddr *) &sin, &sin_len))
-    m_localAddress = m_localAddress.Deserialize ((const uint8_t*) &sin.sin_addr);
+    m_localAddress = Ipv4Address::Deserialize ((const uint8_t*) &sin.sin_addr);
 
   NS_LOG_LOGIC ("NscTcpSocketImpl " << this << " accepted connection from " 
                                     << m_remoteAddress << ":" << m_remotePort
@@ -529,7 +529,7 @@ void NscTcpSocketImpl::ConnectionSucceeded ()
   struct sockaddr_in sin;
   size_t sin_len = sizeof(sin);
   if (0 == m_nscTcpSocket->getsockname ((struct sockaddr *) &sin, &sin_len)) {
-      m_localAddress = m_localAddress.Deserialize ((const uint8_t*)&sin.sin_addr);
+      m_localAddress = Ipv4Address::Deserialize ((const uint8_t*)&sin.sin_addr);
       m_localPort = ntohs (sin.sin_port);
     }
 

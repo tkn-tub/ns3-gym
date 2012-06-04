@@ -31,10 +31,20 @@ NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Socket);
+
+TypeId
+Socket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Socket")
+    .SetParent<Object> ();
+  return tid;
+}
+
 Socket::Socket (void)
 {
   m_boundnetdevice = 0;
-  m_recvpktinfo = false;
+  m_recvPktInfo = false;
   NS_LOG_FUNCTION_NOARGS ();
 }
 
@@ -331,7 +341,13 @@ void
 Socket::SetRecvPktInfo (bool flag)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_recvpktinfo = flag;
+  m_recvPktInfo = flag;
+}
+
+bool Socket::IsRecvPktInfo () const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_recvPktInfo;
 }
 
 /***************************************************************

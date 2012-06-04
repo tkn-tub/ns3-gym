@@ -44,6 +44,9 @@
 #include <sys/sysctl.h>
 #endif
 
+#ifdef __linux__
+#include <unistd.h>
+#endif
 
 #if defined (__win32__)
 #define SYSTEM_PATH_SEP "\\"

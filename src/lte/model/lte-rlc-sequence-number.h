@@ -51,7 +51,6 @@ public:
   SequenceNumber10& operator= (uint16_t value)
   {
     m_value = value % 1024;
-    m_modulusBase = 0;
     return *this;
   }
 

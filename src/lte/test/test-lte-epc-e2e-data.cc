@@ -109,7 +109,7 @@ LteEpcE2eDataTestCase::~LteEpcE2eDataTestCase ()
 void 
 LteEpcE2eDataTestCase::DoRun ()
 {
-
+  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper = CreateObject<EpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
@@ -256,6 +256,11 @@ LteEpcE2eDataTestCase::DoRun ()
         } 
             
     } 
+
+  Config::Set ("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/MaxTxBufferSize",
+               UintegerValue (2 * 1024 * 1024));
+  Config::Set ("/NodeList/*/DeviceList/*/LteUeRrc/RadioBearerMap/*/LteRlc/MaxTxBufferSize",
+               UintegerValue (2 * 1024 * 1024));
 
   lteHelper->EnableRlcTraces ();
   lteHelper->EnablePdcpTraces ();

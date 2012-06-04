@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011, 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  * 
  */
 
@@ -36,23 +37,17 @@ class JakesFadingLossModel;
 /**
  * \ingroup propagation
  *
- *  \brief The Building-Propagation-Model is a compound of different models able to evaluate the pathloss from 200 to 2600 MHz, in different environments and with buildings (i.e., indoor and outdoor communications).
+ *  This model provides means for simulating the following propagation
+ *  phenomena in the presence of buildings: 
  *
- *  This model includes Hata model, COST231, ITU-R P.1411 (short range
- *  communications), ITU-R P.1238 (indoor communications). 
- *  Building-Propagation-Model properly combines the models above in order
- *  to be able to evaluate the pathloss under different scenarios, in detail:
- *  - Environments: urban, suburban, open-areas;
- *  - frequency: from 200 uo to 2600 MHz
- *  - short range communications vs long range communications
- *  - Node position respect to buildings: indoor, outdoor and hybrid (indoor <-> outdoor)
- *  - Building penetretation loss
- *  - floors, etc...
- *
- *  Frequency: 200 MHz to 2000 MHz
- *  Link Distance:up to 20 km
- *  Short/long distance commutation: 1 Km
- *  \warning This model works with BuildingsMobilityModel
+ *   - shadowing (indoor, outdoor)
+ *   - external wall penetration loss
+ *   - internal wall penetration loss
+ *  
+ *  The distance-dependent component of propagation loss is deferred
+ *  to derived classes which are expected to implement the GetLoss method.
+ *  
+ *  \warning This model works only with BuildingsMobilityModel
  *
  */
 
@@ -61,17 +56,6 @@ class BuildingsPropagationLossModel : public PropagationLossModel
 
 public:
   static TypeId GetTypeId (void);
-  BuildingsPropagationLossModel ();
-  ~BuildingsPropagationLossModel ();
-  enum Environment
-  {
-    Urban, SubUrban, OpenAreas
-  };
-
-  enum CitySize
-  {
-    Small, Medium, Large
-  };
 
   /**
    * \param a the mobility model of the source
@@ -79,49 +63,18 @@ public:
    * \returns the propagation loss (in dBm)
    */
   virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
-  void SetEnvironment (Environment env);
-  void SetCitySize (CitySize size);
-  void SetLambda (double lambda);
-  void SetFrequency (double freq);
-  void SetMinDistance (double minDistance);
-  Environment GetEnvironment (void) const;
-  CitySize GetCitySize (void) const;
-  double GetMinDistance (void) const;
-  double GetLambda (void) const;
-  double GetFrequency (void) const;
-//   void SetLambda (double frequency, double speed);
 
-
+  // inherited from PropagationLossModel
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+
 protected:
-  virtual double OkumuraHata (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  virtual double ItuR1411 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  virtual double ItuR1411Los (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  virtual double ItuR1411NlosOverRooftop (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-//   double ItuR1411NlosStreetCanyons (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
-  double ItuR1238 (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
 
   double ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const;
   double HeightLoss (Ptr<BuildingsMobilityModel> n) const;
   double InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
   
-  double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b)
-  const;
+  double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
-  double C;  // OH loss coefficient for the environment
-  double N;  // ITU-R P.1238: power loss coefficient
-  double m_lambda;
-  Environment m_environment;
-  CitySize m_citySize;
-  double m_minDistance; // in meter
-  double m_frequency; // frequency in MHz
-  double m_rooftopHeight; // in meter (used to discriminate OH and short range canyoning)
-  double m_itu1411NlosThreshold; // in meters (switch Los -> NLoS)
-  double m_itu1411DistanceThreshold; // in meters (above infinite loss)
-  double m_streetsOrientation; // in degrees [0,90]
-  double m_streetsWidth; // in meters
-  double m_buildingsExtend; // in meters
-  double m_buildingSeparation; // in meters
   double m_lossInternalWall; // in meters
 
   

@@ -840,7 +840,7 @@ RoutingProtocol::SendPeriodicUpdate ()
   m_routingTable.Purge (removedAddresses);
   MergeTriggerPeriodicUpdates ();
   m_routingTable.GetListOfAllRoutes (allRoutes);
-  if (allRoutes.size () < 0)
+  if (allRoutes.empty ())
     {
       return;
     }

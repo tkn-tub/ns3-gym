@@ -102,11 +102,6 @@ public:
   double GetNoiseFigure () const;
 
   /**
-   * \param delay the TTI delay between MAC and channel
-   */
-  void SetMacChDelay (uint8_t delay);
-
-  /**
    * \returns the TTI delay between MAC and channel
    */
   uint8_t GetMacChDelay (void) const;
@@ -165,6 +160,10 @@ public:
 
   virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  
+  virtual void DoSetTransmissionMode (uint8_t txMode);
+  
+  
 
 
 
@@ -195,11 +194,27 @@ public:
    * \param cellId the cell identifier of the eNB
    */
   void SetEnbCellId (uint16_t cellId);
+  
 
 
 private:
+  
+  void SetTxMode1Gain (double gain);
+  void SetTxMode2Gain (double gain);
+  void SetTxMode3Gain (double gain);
+  void SetTxMode4Gain (double gain);
+  void SetTxMode5Gain (double gain);
+  void SetTxMode6Gain (double gain);
+  void SetTxMode7Gain (double gain);
+  void SetTxModeGain (uint8_t txMode, double gain);
+  
+  void QueueSubChannelsForTransmission (std::vector <int> rbMap);
+  
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
+  
+  std::vector< std::vector <int> > m_subChannelsForTransmissionQueue;
+  
   
   Ptr<LteAmc> m_amc;
 
@@ -217,6 +232,9 @@ private:
   uint16_t  m_rnti;
 
   uint16_t m_enbCellId;
+  
+  uint8_t m_transmissionMode;
+  std::vector <double> m_txModeGain;
 
 };
 

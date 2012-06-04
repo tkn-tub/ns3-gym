@@ -25,7 +25,7 @@
 #include "ns3/test.h"
 
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -62,6 +62,9 @@ public:
   LenaTestRrFfMacSchedulerSuite ();
 };
 
+
+
+} // namespace ns3
 
 
 

@@ -120,7 +120,7 @@ Ipv6PacketInfoTag::Deserialize (TagBuffer i)
 { 
   uint8_t buf[16];
   i.Read (buf, 16);
-  m_addr.Deserialize (buf);
+  m_addr = Ipv6Address::Deserialize (buf);
   m_ifindex = i.ReadU8 ();
   m_hoplimit = i.ReadU8 ();
   m_tclass = i.ReadU8 ();

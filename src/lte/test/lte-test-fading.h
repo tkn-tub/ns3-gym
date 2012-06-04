@@ -31,7 +31,7 @@
 
 #include <ns3/trace-fading-loss-model.h>
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -82,5 +82,8 @@ class LteFadingSystemTestCase : public TestCase
     double m_distance;
     uint16_t m_mcsIndex;
 };
+
+} // namespace ns3
+
 
 #endif /*LTE_TEST_FADING_H*/

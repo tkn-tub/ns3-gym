@@ -33,11 +33,11 @@ TypeId DropTailQueue::GetTypeId (void)
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
     .AddAttribute ("Mode", 
-                   "Whether to use Bytes (see MaxBytes) or Packets (see MaxPackets) as the maximum queue size metric.",
-                   EnumValue (PACKETS),
+                   "Whether to use bytes (see MaxBytes) or packets (see MaxPackets) as the maximum queue size metric.",
+                   EnumValue (QUEUE_MODE_PACKETS),
                    MakeEnumAccessor (&DropTailQueue::SetMode),
-                   MakeEnumChecker (BYTES, "Bytes",
-                                    PACKETS, "Packets"))
+                   MakeEnumChecker (QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
+                                    QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"))
     .AddAttribute ("MaxPackets", 
                    "The maximum number of packets accepted by this DropTailQueue.",
                    UintegerValue (100),
@@ -67,13 +67,13 @@ DropTailQueue::~DropTailQueue ()
 }
 
 void
-DropTailQueue::SetMode (enum Mode mode)
+DropTailQueue::SetMode (DropTailQueue::QueueMode mode)
 {
   NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
-DropTailQueue::Mode
+DropTailQueue::QueueMode
 DropTailQueue::GetMode (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -85,14 +85,14 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
 
-  if (m_mode == PACKETS && (m_packets.size () >= m_maxPackets))
+  if (m_mode == QUEUE_MODE_PACKETS && (m_packets.size () >= m_maxPackets))
     {
       NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
       Drop (p);
       return false;
     }
 
-  if (m_mode == BYTES && (m_bytesInQueue + p->GetSize () >= m_maxBytes))
+  if (m_mode == QUEUE_MODE_BYTES && (m_bytesInQueue + p->GetSize () >= m_maxBytes))
     {
       NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
       Drop (p);

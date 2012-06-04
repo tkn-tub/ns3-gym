@@ -125,7 +125,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.env.append_value("INCLUDES", '#')
 
     module.pcfilegen = bld(features='ns3pcfile')
-    module.pcfilegen.module = module
+    module.pcfilegen.module = module.name
     
     return module
 
@@ -413,13 +413,14 @@ Requires: %s\
 @TaskGen.feature('ns3pcfile')
 @TaskGen.after_method('process_rule')
 def apply(self):
-    output_filename = 'lib%s.pc' % os.path.basename(self.module.target)
+    module = self.bld.find_ns3_module(self.module)
+    output_filename = 'lib%s.pc' % os.path.basename(module.target)
     output_node = self.path.find_or_declare(output_filename)
     assert output_node is not None, str(self)
     task = self.create_task('ns3pcfile')
     self.bld.install_files('${LIBDIR}/pkgconfig', output_node)
     task.set_outputs([output_node])
-    task.module = self.module
+    task.module = module
 
 
 

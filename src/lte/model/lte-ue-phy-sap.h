@@ -52,6 +52,11 @@ public:
   * \param dlBandwidth the DL bandwidth in RB
   */
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth) = 0;
+  
+  /**
+  * \param txMode the transmissionMode of the user
+  */
+  virtual void SetTransmissionMode (uint8_t   txMode) = 0;
 
   /**
   * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel

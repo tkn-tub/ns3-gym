@@ -36,7 +36,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 
@@ -144,7 +144,7 @@ LteEnbAntennaTestCase::DoRun (void)
   enbphy->GetUplinkSpectrumPhy ()->AddSinrChunkProcessor (testUlSinr);
 
 
-  Simulator::Stop (Seconds (0.006));
+  Simulator::Stop (Seconds (0.020));
   Simulator::Run ();
 
 
@@ -221,3 +221,7 @@ LteAntennaTestSuite::LteAntennaTestSuite ()
 }
 
 static LteAntennaTestSuite lteAntennaTestSuite;
+
+
+} // namespace ns3
+

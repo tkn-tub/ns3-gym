@@ -27,10 +27,12 @@
 #include "ns3/random-variable.h"
 #include "ns3/double.h"
 #include "ns3/object-vector.h"
+#include "ns3/object-map.h"
 #include "ns3/traced-value.h"
 #include "ns3/callback.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
+#include "ns3/object-factory.h"
 
 namespace ns3 {
 
@@ -61,11 +63,15 @@ class Derived : public Object
 public:
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("ns3::Derived")
+      .AddConstructor<Derived> ()
       .SetParent<Object> ()
     ;
     return tid;
   }
+  Derived () {}
 };
+
+NS_OBJECT_ENSURE_REGISTERED (Derived);
 
 class AttributeObjectTest : public Object
 {
@@ -77,6 +83,7 @@ public:
   };
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("ns3::AttributeObjectTest")
+      .AddConstructor<AttributeObjectTest> ()
       .SetParent<Object> ()
       .HideFromDocumentation ()
       .AddAttribute ("TestBoolName", "help text",
@@ -128,6 +135,10 @@ public:
                      MakeObjectVectorAccessor (&AttributeObjectTest::DoGetVectorN,
                                                &AttributeObjectTest::DoGetVector),
                      MakeObjectVectorChecker<Derived> ())
+      .AddAttribute ("TestMap1", "help text",
+                     ObjectMapValue (),
+                     MakeObjectMapAccessor (&AttributeObjectTest::m_map1),
+                     MakeObjectMapChecker<Derived> ())
       .AddAttribute ("IntegerTraceSource1", "help text",
                      IntegerValue (-2),
                      MakeIntegerAccessor (&AttributeObjectTest::m_intSrc1),
@@ -167,6 +178,14 @@ public:
                      PointerValue (),
                      MakePointerAccessor (&AttributeObjectTest::m_ptr),
                      MakePointerChecker<Derived> ())
+      .AddAttribute ("PointerInitialized", "help text",
+                     StringValue("ns3::Derived"),
+                     MakePointerAccessor (&AttributeObjectTest::m_ptrInitialized),
+                     MakePointerChecker<Derived> ())
+      .AddAttribute ("PointerInitialized2", "help text",
+                     StringValue("ns3::Derived[]"),
+                     MakePointerAccessor (&AttributeObjectTest::m_ptrInitialized2),
+                     MakePointerChecker<Derived> ())
       .AddAttribute ("Callback", "help text",
                      CallbackValue (),
                      MakeCallbackAccessor (&AttributeObjectTest::m_cbValue),
@@ -178,6 +197,9 @@ public:
 
   void AddToVector1 (void) { m_vector1.push_back (CreateObject<Derived> ()); }
   void AddToVector2 (void) { m_vector2.push_back (CreateObject<Derived> ()); }
+
+  void AddToMap1 (uint32_t i) { m_map1.insert (std::pair <uint32_t, Ptr<Derived> > (i, CreateObject<Derived> ())); }
+
   void InvokeCb (double a, int b, float c) { m_cb (a,b,c); }
 
   void InvokeCbValue (int8_t a)
@@ -208,12 +230,15 @@ private:
   RandomVariable m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
+  std::map <uint32_t, Ptr<Derived> > m_map1;
   Callback<void,int8_t> m_cbValue;
   TracedValue<int8_t> m_intSrc1;
   TracedValue<int8_t> m_intSrc2;
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;
+  Ptr<Derived> m_ptrInitialized;
+  Ptr<Derived> m_ptrInitialized2;
   TracedValue<uint8_t> m_uintSrc;
   TracedValue<enum Test_e> m_enumSrc;
   TracedValue<double> m_doubleSrc;
@@ -707,6 +732,71 @@ ObjectVectorAttributeTestCase::DoRun (void)
 }
 
 // ===========================================================================
+// Test case for Object Map Attributes.
+// ===========================================================================
+class ObjectMapAttributeTestCase : public TestCase
+{
+public:
+  ObjectMapAttributeTestCase (std::string description);
+  virtual ~ObjectMapAttributeTestCase () {}
+
+private:
+  virtual void DoRun (void);
+};
+
+ObjectMapAttributeTestCase::ObjectMapAttributeTestCase (std::string description)
+  : TestCase (description)
+{
+}
+
+void
+ObjectMapAttributeTestCase::DoRun (void)
+{
+  Ptr<AttributeObjectTest> p;
+  ObjectMapValue map;
+
+  p = CreateObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
+
+  //
+  // When the object is first created, the Attribute should have no items in
+  // the vector.
+  //
+  p->GetAttribute ("TestMap1", map);
+  NS_TEST_ASSERT_MSG_EQ (map.GetN (), 0, "Initial count of ObjectVectorValue \"TestMap1\" should be zero");
+
+  //
+  // Adding to the attribute shouldn't affect the value we already have.
+  //
+  p->AddToMap1 (1);
+  NS_TEST_ASSERT_MSG_EQ (map.GetN (), 0, "Initial count of ObjectVectorValue \"TestMap1\" should still be zero");
+
+  //
+  // Getting the attribute again should update the value.
+  //
+  p->GetAttribute ("TestMap1", map);
+  NS_TEST_ASSERT_MSG_EQ (map.GetN (), 1, "ObjectVectorValue \"TestMap1\" should be incremented");
+
+  //
+  // Get the Object pointer from the value.
+  //
+  Ptr<Object> a = map.Get (1);
+  NS_TEST_ASSERT_MSG_NE (a, 0, "Ptr<Object> from VectorValue \"TestMap1\" is zero");
+
+  //
+  // Adding to the attribute shouldn't affect the value we already have.
+  //
+  p->AddToMap1 (2);
+  NS_TEST_ASSERT_MSG_EQ (map.GetN (), 1, "Count of ObjectVectorValue \"TestMap1\" should still be one");
+
+  //
+  // Getting the attribute again should update the value.
+  //
+  p->GetAttribute ("TestMap1", map);
+  NS_TEST_ASSERT_MSG_EQ (map.GetN (), 2, "ObjectVectorValue \"TestMap1\" should be incremented");
+}
+
+// ===========================================================================
 // Trace sources with value semantics can be used like Attributes.  Make sure
 // we can use them that way.
 // ===========================================================================
@@ -1019,6 +1109,41 @@ PointerAttributeTestCase::DoRun (void)
   p->GetAttribute ("Pointer", ptr);
   Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
   NS_TEST_ASSERT_MSG_EQ (x, 0, "Unexpectedly retreived unrelated Ptr<type> from stored Ptr<Derived>");
+
+  //
+  // Test whether the initialized pointers from two different objects
+  // point to different Derived objects
+  //
+  p->GetAttribute ("PointerInitialized", ptr);
+  Ptr<Derived> storedPtr = ptr.Get<Derived> ();
+  Ptr<AttributeObjectTest> p2 = CreateObject<AttributeObjectTest> ();
+  PointerValue ptr2;
+  p2->GetAttribute ("PointerInitialized", ptr2);
+  Ptr<Derived> storedPtr2 = ptr2.Get<Derived> ();
+  NS_TEST_ASSERT_MSG_NE (storedPtr, storedPtr2, "ptr and ptr2 both have PointerInitialized pointing to the same object");
+  PointerValue ptr3;
+  p2->GetAttribute ("PointerInitialized", ptr3);
+  Ptr<Derived> storedPtr3 = ptr3.Get<Derived> ();
+  NS_TEST_ASSERT_MSG_NE (storedPtr, storedPtr3, "ptr and ptr3 both have PointerInitialized pointing to the same object");
+
+  // 
+  // Test whether object factory creates the objects properly
+  //
+  ObjectFactory factory;
+  factory.SetTypeId ("ns3::AttributeObjectTest");
+  factory.Set ("PointerInitialized", StringValue ("ns3::Derived"));
+  Ptr<AttributeObjectTest> aotPtr = factory.Create ()->GetObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (aotPtr, 0, "Unable to factory.Create() a AttributeObjectTest");
+  Ptr<AttributeObjectTest> aotPtr2 = factory.Create ()->GetObject<AttributeObjectTest> ();
+  NS_TEST_ASSERT_MSG_NE (aotPtr2, 0, "Unable to factory.Create() a AttributeObjectTest");
+  NS_TEST_ASSERT_MSG_NE (aotPtr, aotPtr2, "factory object not creating unique objects");
+  PointerValue ptr4;
+  aotPtr->GetAttribute ("PointerInitialized", ptr4);
+  Ptr<Derived> storedPtr4 = ptr4.Get<Derived> ();
+  PointerValue ptr5;
+  aotPtr2->GetAttribute ("PointerInitialized", ptr5);
+  Ptr<Derived> storedPtr5 = ptr5.Get<Derived> ();
+  NS_TEST_ASSERT_MSG_NE (storedPtr4, storedPtr5, "aotPtr and aotPtr2 are unique, but their Derived member is not");
 }
 
 // ===========================================================================
@@ -1121,6 +1246,7 @@ AttributesTestSuite::AttributesTestSuite ()
   AddTestCase (new AttributeTestCase<EnumValue> ("Check Attributes of type EnumValue"));
   AddTestCase (new AttributeTestCase<RandomVariableValue> ("Check Attributes of type RandomVariableValue"));
   AddTestCase (new ObjectVectorAttributeTestCase ("Check Attributes of type ObjectVectorValue"));
+  AddTestCase (new ObjectMapAttributeTestCase ("Check Attributes of type ObjectMapValue"));
   AddTestCase (new IntegerTraceSourceAttributeTestCase ("Ensure TracedValue<uint8_t> can be set like IntegerValue"));
   AddTestCase (new IntegerTraceSourceTestCase ("Ensure TracedValue<uint8_t> also works as trace source"));
   AddTestCase (new TracedCallbackTestCase ("Ensure TracedCallback<double, int, float> works as trace source"));

@@ -30,7 +30,6 @@
 #include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
-#include "ns3/lte-test-phy-error-model.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -46,11 +45,13 @@
 #include <ns3/config.h>
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
+#include <ns3/unused.h>
 
+#include "lte-test-phy-error-model.h"
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestPhyErrorModel");
 
-using namespace ns3;
+namespace ns3 {
 
 
 LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
@@ -58,22 +59,19 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
 {
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
 
-  // MCS 2 TB size of 256 bits BER 0.19 SINR -2.21
-   AddTestCase (new LenaPhyErrorModelTestCase (4, 898, 32, 0.19, 25));
-// MCS 2 TB size of 328 bits BER 0.09 SINR -2.25
-   AddTestCase (new LenaPhyErrorModelTestCase (3, 900, 41, 0.09, 18));
-// MCS 2 TB size of 520 bits BER 0.123 SINR -2.61
-   AddTestCase (new LenaPhyErrorModelTestCase (2, 920, 65, 0.123, 21));
-// MCS 2 TB size of 1080 bits BER 0.097 SINR -2.79
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 930, 135, 0.097, 19));
-  // MCS 12 TB size of 4776 bits  BER 0.017  SINR 6.22
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 538, 597, 0.017, 8));
-// MCS 12 TB size of 1608 bits  BER 0.23  SINR 6.22
-  AddTestCase (new LenaPhyErrorModelTestCase (3, 538, 201, 0.23, 26));
-  // MCS 12 TB size of 376 bits  BER 0.72  SINR 6.22
-   AddTestCase (new LenaPhyErrorModelTestCase (7,538, 47, 0.72, 28));
-// MCS 14 TB size of 6248 bits (3136 x 2) BER 0.18 (0.096 x 2) SINR 5.53
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 500, 781, 0.18, 24));
+  // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
+   AddTestCase (new LenaPhyErrorModelTestCase (4, 1800, 32, 0.33, 29));
+// MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
+   AddTestCase (new LenaPhyErrorModelTestCase (2, 1800, 66, 0.11, 20));
+// MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51
+  AddTestCase (new LenaPhyErrorModelTestCase (1, 1800, 136, 0.02, 9));
+  // MCS 12 TB size of 4800 bits  BER 0.3  SINR 4.43
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 600, 600, 0.3, 29));
+// MCS 12 TB size of 1632 bits  BER 0.55  SINR 4.43
+  AddTestCase (new LenaPhyErrorModelTestCase (3, 600, 204, 0.55, 31));
+// MCS 16 TB size of 7272 bits (3648 x 3584) BER 0.14 SINR 8.48
+// BER 0.14 = 1 - ((1-0.075)*(1-0.075))
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 470, 781, 0.14, 22));
 
  
 
@@ -107,7 +105,7 @@ void
 LenaPhyErrorModelTestCase::DoRun (void)
 {
   
-   double ber = 0.01;
+   double ber = 0.03;
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (ber));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (true));
@@ -153,6 +151,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
 //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
 //   
   LogComponentDisableAll (LOG_LEVEL_ALL);
+  
   LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
 
 
@@ -242,9 +241,12 @@ LenaPhyErrorModelTestCase::DoRun (void)
       double txed = rlcStats->GetDlTxData (imsi, lcId);
       int n = txed / m_tbSize;
       int lambda = (double)dlDataRxed.at (i) / m_tbSize;
-      double ber = 2.0 - ((double)dlDataRxed.at (i)/txed);
+      double ber = 1.0 - ((double)dlDataRxed.at (i)/txed);
       double np = n-n*m_berRef;
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << " txed " << txed 
+        << " BER " << ber << " Err " << fabs (m_berRef - ber) << " lambda " << lambda 
+        << " np " << np << " difference " << abs(lambda - np) << " quantile " << m_bernQuantile);
+      NS_UNUSED (ber);
       // the quantiles are evaluated offline according to a Bernoulli 
       // ditribution with n equal to the number of packet sent and p equal 
       // to the BER (see /reference/bernuolliDistribution.m for details)
@@ -254,4 +256,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
+
+} // namespace ns3
+
 

@@ -41,7 +41,20 @@
 
 namespace ns3 {
 
+struct TbId_t
+{
+  uint16_t m_rnti;
+  uint8_t m_layer;
+  
+  public:
+  TbId_t ();
+  TbId_t (const uint16_t a, const uint8_t b);
+  
+  friend bool operator == (const TbId_t &a, const TbId_t &b);
+  friend bool operator < (const TbId_t &a, const TbId_t &b);
+};
 
+  
 struct tbInfo_t
 {
   uint16_t size;
@@ -50,9 +63,10 @@ struct tbInfo_t
   bool corrupt;
 };
 
-typedef std::map<uint16_t, tbInfo_t> expectedTbs_t;
+typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;
 
 class LteNetDevice;
+class AntennaModel;
 
 /**
  * \ingroup lte
@@ -176,8 +190,9 @@ public:
   * \param size the size of the TB
   * \param mcs the MCS of the TB
   * \param map the map of RB(s) used
+  * \param layer the layer (in case of MIMO tx)
   */
-  void AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map);
+  void AddExpectedTb (uint16_t  rnti, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer);
   
   /** 
   * 
@@ -185,11 +200,24 @@ public:
   * \param sinr vector of sinr perceived per each RB
   */
   void UpdateSinrPerceived (const SpectrumValue& sinr);
+  
+  /** 
+  * 
+  * 
+  * \param txMode UE transmission mode (SISO, MIMO tx diversity, ...)
+  */
+  void SetTransmissionMode (uint8_t txMode);
+  
+  friend class LteUePhy;
+  
 
 private:
   void ChangeState (State newState);
   void EndTx ();
   void EndRx ();
+  
+  void SetTxModeGain (uint8_t txMode, double gain);
+  
 
   Ptr<MobilityModel> m_mobility;
   Ptr<AntennaModel> m_antenna;
@@ -197,6 +225,7 @@ private:
 
   Ptr<SpectrumChannel> m_channel;
 
+  Ptr<const SpectrumModel> m_rxSpectrumModel;
   Ptr<SpectrumValue> m_txPsd;
   Ptr<PacketBurst> m_txPacketBurst;
   std::list<Ptr<PacketBurst> > m_rxPacketBurstList;
@@ -224,6 +253,10 @@ private:
   
   UniformVariable m_random;
   bool m_pemEnabled; // when true (default) the phy error model is enabled
+  
+  uint8_t m_transmissionMode; // for UEs: store the transmission mode
+  std::vector <double> m_txModeGain; // duplicate value of LteUePhy
+  
 };
 
 

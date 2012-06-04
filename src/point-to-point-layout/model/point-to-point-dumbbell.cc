@@ -22,7 +22,7 @@
 #include <sstream>
 
 // ns3 includes
-#include "ns3/animation-interface.h"
+#include "ns3/log.h"
 #include "ns3/point-to-point-dumbbell.h"
 #include "ns3/constant-position-mobility-model.h"
 
@@ -166,7 +166,7 @@ void PointToPointDumbbellHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6
   Ipv6AddressHelper addressHelper;
   
   v6network = Ipv6AddressGenerator::GetNetwork (prefix);
-  addressHelper.NewNetwork (v6network, prefix);
+  addressHelper.SetBase (v6network, prefix);
   m_routerInterfaces6 = addressHelper.Assign (m_routerDevices);
   Ipv6AddressGenerator::NextNetwork (prefix);
 
@@ -174,7 +174,7 @@ void PointToPointDumbbellHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6
   for (uint32_t i = 0; i < LeftCount (); ++i)
     {
       v6network = Ipv6AddressGenerator::GetNetwork (prefix);
-      addressHelper.NewNetwork (v6network, prefix);
+      addressHelper.SetBase (v6network, prefix);
 
       NetDeviceContainer ndc;
       ndc.Add (m_leftLeafDevices.Get (i));
@@ -190,7 +190,7 @@ void PointToPointDumbbellHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6
   for (uint32_t i = 0; i < RightCount (); ++i)
     {
       v6network = Ipv6AddressGenerator::GetNetwork (prefix);
-      addressHelper.NewNetwork (v6network, prefix);
+      addressHelper.SetBase (v6network, prefix);
 
       NetDeviceContainer ndc;
       ndc.Add (m_rightLeafDevices.Get (i));

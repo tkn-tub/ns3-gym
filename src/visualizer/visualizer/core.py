@@ -162,7 +162,13 @@ class Node(PyVizObject):
             ns3_node = ns.network.NodeList.GetNode(self.node_index)
             ipv4 = ns3_node.GetObject(ns.internet.Ipv4.GetTypeId())
             ipv6 = ns3_node.GetObject(ns.internet.Ipv6.GetTypeId())
-            lines = ['<b><u>Node %i</u></b>' % self.node_index]
+        
+            name = '<b><u>Node %i</u></b>' % self.node_index
+            node_name = ns.core.Names.FindName (ns3_node)
+            if len(node_name)!=0:
+                name += ' <b>(' + node_name + ')</b>'
+
+            lines = [name]
             lines.append('')
 
             self.emit("query-extra-tooltip-info", lines)

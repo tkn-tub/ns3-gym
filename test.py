@@ -138,15 +138,31 @@ def parse_examples_to_run_file(
         #
         cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
         for example_name, do_run, do_valgrind_run in cpp_examples:
+            # Seperate the example name from its arguments.
+            example_name_parts = example_name.split(' ', 1)
+            if len(example_name_parts) == 1:
+                example_name      = example_name_parts[0]
+                example_arguments = ""
+            else:
+                example_name      = example_name_parts[0]
+                example_arguments = example_name_parts[1]
+
             # Add the proper prefix and suffix to the example name to
             # match what is done in the wscript file.
             example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
+
+            # Set the full path for the example.
             example_path = os.path.join(cpp_executable_dir, example_name)
             # Add all of the C++ examples that were built, i.e. found
             # in the directory, to the list of C++ examples to run.
             if os.path.exists(example_path):
-                example_tests.append((example_path, do_run, do_valgrind_run))
+                # Add any arguments to the path.
+                if len(example_name_parts) != 1:
+                    example_path = "%s %s" % (example_path, example_arguments)
 
+                # Add this example.
+                example_tests.append((example_path, do_run, do_valgrind_run))
+    
         # Each tuple in the Python list of examples to run contains
         #
         #     (example_name, do_run)
@@ -161,10 +177,26 @@ def parse_examples_to_run_file(
         #
         python_examples = get_list_from_file(examples_to_run_path, "python_examples")
         for example_name, do_run in python_examples:
+            # Seperate the example name from its arguments.
+            example_name_parts = example_name.split(' ', 1)
+            if len(example_name_parts) == 1:
+                example_name      = example_name_parts[0]
+                example_arguments = ""
+            else:
+                example_name      = example_name_parts[0]
+                example_arguments = example_name_parts[1]
+
+            # Set the full path for the example.
             example_path = os.path.join(python_script_dir, example_name)
+
             # Add all of the Python examples that were found to the
             # list of Python examples to run.
             if os.path.exists(example_path):
+                # Add any arguments to the path.
+                if len(example_name_parts) != 1:
+                    example_path = "%s %s" % (example_path, example_arguments)
+
+                # Add this example.
                 python_tests.append((example_path, do_run))
 
 #
@@ -906,8 +938,8 @@ class worker_thread(threading.Thread):
                 if job.is_example or job.is_pyexample:
                     #
                     # If we have an example, the shell command is all we need to
-                    # know.  It will be something like "examples/udp-echo" or 
-                    # "examples/mixed-wireless.py"
+                    # know.  It will be something like "examples/udp/udp-echo" or 
+                    # "examples/wireless/mixed-wireless.py"
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command, 
                         job.cwd, options.valgrind, job.is_pyexample, job.build_path)
@@ -1140,10 +1172,10 @@ def run_tests():
     #  ./test,py:                                           run all of the suites and examples
     #  ./test.py --constrain=core:                          run all of the suites of all kinds
     #  ./test.py --constrain=unit:                          run all unit suites
-    #  ./test,py --suite=some-test-suite:                   run a single suite
-    #  ./test,py --example=udp/udp-echo:                    run no test suites
-    #  ./test,py --pyexample=wireless/mixed-wireless.py:    run no test suites
-    #  ./test,py --suite=some-suite --example=some-example: run the single suite
+    #  ./test.py --suite=some-test-suite:                   run a single suite
+    #  ./test.py --example=examples/udp/udp-echo:           run single example
+    #  ./test.py --pyexample=examples/wireless/mixed-wireless.py:  run python example
+    #  ./test.py --suite=some-suite --example=some-example: run the single suite
     #
     # We can also use the --constrain option to provide an ordering of test 
     # execution quite easily.
@@ -1307,9 +1339,12 @@ def run_tests():
         if len(options.constrain) == 0 or options.constrain == "example":
             if ENABLE_EXAMPLES:
                 for test, do_run, do_valgrind_run in example_tests:
+                    # Remove any arguments and directory names from test.
+                    test_name = test.split(' ', 1)[0] 
+                    test_name = os.path.basename(test_name)
 
                     # Don't try to run this example if it isn't runnable.
-                    if os.path.basename(test) in ns3_runnable_programs:
+                    if test_name in ns3_runnable_programs:
                         if eval(do_run):
                             job = Job()
                             job.set_is_example(True)
@@ -1389,9 +1424,12 @@ def run_tests():
         if len(options.constrain) == 0 or options.constrain == "pyexample":
             if ENABLE_EXAMPLES:
                 for test, do_run in python_tests:
+                    # Remove any arguments and directory names from test.
+                    test_name = test.split(' ', 1)[0] 
+                    test_name = os.path.basename(test_name)
 
                     # Don't try to run this example if it isn't runnable.
-                    if os.path.basename(test) in ns3_runnable_scripts:
+                    if test_name in ns3_runnable_scripts:
                         if eval(do_run):
                             job = Job()
                             job.set_is_example(False)

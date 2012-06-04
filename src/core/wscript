@@ -107,7 +107,6 @@ def build(bld):
         'model/map-scheduler.cc',
         'model/heap-scheduler.cc',
         'model/calendar-scheduler.cc',
-        'model/ns2-calendar-scheduler.cc',
         'model/event-impl.cc',
         'model/simulator.cc',
         'model/simulator-impl.cc',
@@ -137,8 +136,7 @@ def build(bld):
         'model/int64x64.cc',
         'model/string.cc',
         'model/pointer.cc',
-        'model/object-ptr-vector.cc',
-        'model/object-ptr-map.cc',
+        'model/object-ptr-container.cc',
         'model/object-factory.cc',
         'model/global-value.cc',
         'model/trace-source-accessor.cc',
@@ -185,7 +183,6 @@ def build(bld):
         'model/map-scheduler.h',
         'model/heap-scheduler.h',
         'model/calendar-scheduler.h',
-        'model/ns2-calendar-scheduler.h',
         'model/simulation-singleton.h',
         'model/singleton.h',
         'model/timer.h',
@@ -232,8 +229,7 @@ def build(bld):
         'model/traced-value.h',
         'model/trace-source-accessor.h',
         'model/config.h',
-        'model/object-ptr-vector.h',
-        'model/object-ptr-map.h',
+        'model/object-ptr-container.h',
         'model/object-vector.h',
         'model/object-map.h',
         'model/deprecated.h',
@@ -285,13 +281,14 @@ def build(bld):
 
     if env['ENABLE_THREADING']:
         core.source.extend([
+            'model/system-thread.cc',
             'model/unix-fd-reader.cc',
-            'model/unix-system-thread.cc',
             'model/unix-system-mutex.cc',
             'model/unix-system-condition.cc',
             ])
         core.use.append('PTHREAD')
         core_test.use.append('PTHREAD')
+        core_test.source.extend(['test/threaded-test-suite.cc'])
         headers.source.extend([
                 'model/unix-fd-reader.h',
                 'model/system-mutex.h',

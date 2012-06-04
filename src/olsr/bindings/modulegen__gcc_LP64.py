@@ -2353,11 +2353,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_static=True)
-    ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static ns3::Time ns3::Simulator::Now() [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -2368,11 +2363,6 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
-    ## simulator.h (module 'core'): static void ns3::Simulator::RunOneEvent() [member function]
-    cls.add_method('RunOneEvent', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## simulator.h (module 'core'): static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 
@@ -3496,6 +3486,16 @@ def register_Ns3Socket_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## socket.h (module 'network'): static ns3::TypeId ns3::Socket::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## socket.h (module 'network'): bool ns3::Socket::IsRecvPktInfo() const [member function]
+    cls.add_method('IsRecvPktInfo', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## socket.h (module 'network'): int ns3::Socket::Listen() [member function]
     cls.add_method('Listen', 
                    'int', 
@@ -4654,10 +4654,11 @@ def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
     cls.add_method('GetDefaultRoute', 
                    'ns3::Ipv4RoutingTableEntry', 
                    [])
-    ## ipv4-static-routing.h (module 'internet'): uint32_t ns3::Ipv4StaticRouting::GetMetric(uint32_t index) [member function]
+    ## ipv4-static-routing.h (module 'internet'): uint32_t ns3::Ipv4StaticRouting::GetMetric(uint32_t index) const [member function]
     cls.add_method('GetMetric', 
                    'uint32_t', 
-                   [param('uint32_t', 'index')])
+                   [param('uint32_t', 'index')], 
+                   is_const=True)
     ## ipv4-static-routing.h (module 'internet'): ns3::Ipv4MulticastRoutingTableEntry ns3::Ipv4StaticRouting::GetMulticastRoute(uint32_t i) const [member function]
     cls.add_method('GetMulticastRoute', 
                    'ns3::Ipv4MulticastRoutingTableEntry', 

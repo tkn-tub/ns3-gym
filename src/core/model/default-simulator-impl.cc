@@ -59,6 +59,8 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
   m_currentTs = 0;
   m_currentContext = 0xffffffff;
   m_unscheduledEvents = 0;
+  m_eventsWithContextEmpty = true;
+  m_main = SystemThread::Self();
 }
 
 DefaultSimulatorImpl::~DefaultSimulatorImpl ()
@@ -128,6 +130,8 @@ DefaultSimulatorImpl::ProcessOneEvent (void)
   m_currentUid = next.key.m_uid;
   next.impl->Invoke ();
   next.impl->Unref ();
+
+  ProcessEventsWithContext ();
 }
 
 bool 
@@ -136,24 +140,44 @@ DefaultSimulatorImpl::IsFinished (void) const
   return m_events->IsEmpty () || m_stop;
 }
 
-uint64_t
-DefaultSimulatorImpl::NextTs (void) const
+void
+DefaultSimulatorImpl::ProcessEventsWithContext (void)
 {
-  NS_ASSERT (!m_events->IsEmpty ());
-  Scheduler::Event ev = m_events->PeekNext ();
-  return ev.key.m_ts;
-}
+  if (m_eventsWithContextEmpty)
+    {
+      return;
+    }
 
-Time
-DefaultSimulatorImpl::Next (void) const
-{
-  return TimeStep (NextTs ());
+  // swap queues
+  EventsWithContext eventsWithContext;
+  {
+    CriticalSection cs (m_eventsWithContextMutex);
+    m_eventsWithContext.swap(eventsWithContext);
+    m_eventsWithContextEmpty = true;
+  }
+  while (!eventsWithContext.empty ())
+    {
+       EventWithContext event = eventsWithContext.front ();
+       eventsWithContext.pop_front ();
+       Scheduler::Event ev;
+       ev.impl = event.event;
+       ev.key.m_ts = m_currentTs + event.timestamp;
+       ev.key.m_context = event.context;
+       ev.key.m_uid = m_uid;
+       m_uid++;
+       m_unscheduledEvents++;
+       m_events->Insert (ev);
+    }
 }
 
 void
 DefaultSimulatorImpl::Run (void)
 {
+  // Set the current threadId as the main threadId
+  m_main = SystemThread::Self();
+  ProcessEventsWithContext ();
   m_stop = false;
+
   while (!m_events->IsEmpty () && !m_stop) 
     {
       ProcessOneEvent ();
@@ -162,12 +186,6 @@ DefaultSimulatorImpl::Run (void)
   // If the simulator stopped naturally by lack of events, make a
   // consistency test to check that we didn't lose any events along the way.
   NS_ASSERT (!m_events->IsEmpty () || m_unscheduledEvents == 0);
-}
-
-void
-DefaultSimulatorImpl::RunOneEvent (void)
-{
-  ProcessOneEvent ();
 }
 
 void 
@@ -188,6 +206,8 @@ DefaultSimulatorImpl::Stop (Time const &time)
 EventId
 DefaultSimulatorImpl::Schedule (Time const &time, EventImpl *event)
 {
+  NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::Schedule Thread-unsafe invocation!");
+
   Time tAbsolute = time + TimeStep (m_currentTs);
 
   NS_ASSERT (tAbsolute.IsPositive ());
@@ -208,19 +228,37 @@ DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, E
 {
   NS_LOG_FUNCTION (this << context << time.GetTimeStep () << m_currentTs << event);
 
-  Scheduler::Event ev;
-  ev.impl = event;
-  ev.key.m_ts = m_currentTs + time.GetTimeStep ();
-  ev.key.m_context = context;
-  ev.key.m_uid = m_uid;
-  m_uid++;
-  m_unscheduledEvents++;
-  m_events->Insert (ev);
+  if (SystemThread::Equals (m_main))
+    {
+      Time tAbsolute = time + TimeStep (m_currentTs);
+      Scheduler::Event ev;
+      ev.impl = event;
+      ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
+      ev.key.m_context = context;
+      ev.key.m_uid = m_uid;
+      m_uid++;
+      m_unscheduledEvents++;
+      m_events->Insert (ev);
+    }
+  else
+    {
+      EventWithContext ev;
+      ev.context = context;
+      ev.timestamp = time.GetTimeStep ();
+      ev.event = event;
+      {
+        CriticalSection cs (m_eventsWithContextMutex);
+        m_eventsWithContext.push_back(ev);
+        m_eventsWithContextEmpty = false;
+      }
+    }
 }
 
 EventId
 DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 {
+  NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::ScheduleNow Thread-unsafe invocation!");
+
   Scheduler::Event ev;
   ev.impl = event;
   ev.key.m_ts = m_currentTs;
@@ -235,6 +273,8 @@ DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
 EventId
 DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 {
+  NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::ScheduleDestroy Thread-unsafe invocation!");
+
   EventId id (Ptr<EventImpl> (event, false), m_currentTs, 0xffffffff, 2);
   m_destroyEvents.push_back (id);
   m_uid++;

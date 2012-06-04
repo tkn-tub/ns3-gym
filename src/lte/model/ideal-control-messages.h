@@ -99,95 +99,6 @@ private:
 
 
 
-// ----------------------------------------------------------------------------------------------------------
-
-
-
-#ifndef PDCCH_MAP_IDEAL_CONTROL_MESSAGES_H
-#define PDCCH_MAP_IDEAL_CONTROL_MESSAGES_H
-
-#include "ns3/object.h"
-#include <list>
-
-namespace ns3 {
-
-class LteNetDevice;
-
-/**
- * \ingroup lte
- *
- * \brief The PdcchMapIdealControlMessage defines an ideal allocation map
- * for both UL and DL sends by the eNodeB to all UE,
- * using an ideal PDCCH control channel.
- * IdealPdcchMessage is composed by a list of IdealPdcchRecord
- * where is indicated the UE that can use a particular sub channel
- * with a proper MCS scheme.
- * This records are the same for both UL and DL, and are created by the
- * packet scheduler at the beginning of each sub frame.
- * When the IdealPdcchMessage is sent under an ideal control channel,
- * all UE stores into a proper variables the informations about
- * the resource mapping.
- */
-class PdcchMapIdealControlMessage : public IdealControlMessage
-{
-public:
-  PdcchMapIdealControlMessage (void);
-  virtual ~PdcchMapIdealControlMessage (void);
-
-  /**
-   * Direction for which the message is created
-   */
-  enum Direction
-  {
-    DOWNLINK, UPLINK
-  };
-
-  /**
-   * The PDCCH ideal record
-   */
-  struct IdealPdcchRecord
-  {
-    /** the direction */
-    Direction m_direction;
-    /** the sub channel */
-    int m_idSubChannel;
-    /** the ue that receive the mapping */
-    Ptr<LteNetDevice> m_ue;
-    /** the selected msc */
-    double m_mcsIndex;
-  };
-
-  /**
-   * The PDCCH ideal message
-   */
-  typedef std::list<struct IdealPdcchRecord>  IdealPdcchMessage;
-
-  /**
-   * \brief add a PDCCH record into the message.
-   * \param direction the direction of the map
-   * \param subChannel the scheduled sub channel
-   * \param ue the ue the can use the sub channel for transmission
-   * \param mcs the selected MCS scheme
-   */
-  void AddNewRecord (Direction direction,
-                     int subChannel, Ptr<LteNetDevice> ue, double mcs);
-
-  /**
-   * \brief Get the message
-   * \return the pointer to the message
-   */
-  IdealPdcchMessage* GetMessage (void);
-
-private:
-  IdealPdcchMessage *m_idealPdcchMessage;
-};
-
-} // namespace ns3
-
-#endif /* PDCCH_MAP_IDEAL_CONTROL_MESSAGES_H */
-
-
-
 
 // ----------------------------------------------------------------------------------------------------------
 
@@ -201,9 +112,10 @@ private:
 namespace ns3 {
 
 /**
-* The Downlink Data Control Indicator messages defines the RB allocation for the
-* users
-*/
+ * \ingroup lte
+ * The Downlink Data Control Indicator messages defines the RB allocation for the
+ * users in the downlink
+ */
 class DlDciIdealControlMessage : public IdealControlMessage
 {
 public:
@@ -243,9 +155,10 @@ private:
 namespace ns3 {
 
 /**
-* The Uplink Data Control Indicator messages defines the RB allocation for the
-* users
-*/
+ * \ingroup lte
+ * The Uplink Data Control Indicator messages defines the RB allocation for the
+ * users in the uplink
+ */
 class UlDciIdealControlMessage : public IdealControlMessage
 {
 public:
@@ -289,9 +202,10 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
-* The downlink CqiIdealControlMessage defines an ideal list of
-* feedback about the channel quality sent by the UE to the eNodeB.
-*/
+ * \ingroup lte
+ * The downlink CqiIdealControlMessage defines an ideal list of
+ * feedback about the channel quality sent by the UE to the eNodeB.
+ */
 class DlCqiIdealControlMessage : public IdealControlMessage
 {
 public:
@@ -332,9 +246,10 @@ namespace ns3 {
 class LteNetDevice;
 
 /**
-* The uplink BsrIdealControlMessage defines the specific
-* extension of the CE element for reporting the buffer status report
-*/
+ * \ingroup lte
+ * The uplink BsrIdealControlMessage defines the specific
+ * extension of the CE element for reporting the buffer status report
+ */
 class BsrIdealControlMessage : public IdealControlMessage
 {
 public:

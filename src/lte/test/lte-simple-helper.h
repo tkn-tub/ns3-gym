@@ -25,9 +25,7 @@
 #include "ns3/simple-channel.h"
 #include "ns3/node-container.h"
 #include "ns3/radio-bearer-stats-calculator.h"
-#include "ns3/lte-simple-net-device.h"
 
-#include "ns3/lte-test-entities.h"
 #include "ns3/lte-pdcp.h"
 #include "ns3/lte-rlc.h"
 #include "ns3/lte-rlc-um.h"
@@ -35,6 +33,8 @@
 
 namespace ns3 {
 
+class LteTestRrc;
+class LteTestMac;
 
 /**
  * Creation and configuration of LTE entities

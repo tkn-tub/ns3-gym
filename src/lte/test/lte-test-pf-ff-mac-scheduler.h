@@ -26,7 +26,7 @@
 #include "ns3/test.h"
 
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -80,6 +80,9 @@ public:
 };
 
 
+
+
+} // namespace ns3
 
 
 #endif /* LENA_TEST_PF_FF_MAC_SCHEDULER_H */

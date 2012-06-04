@@ -24,6 +24,8 @@
 
 #include "ns3/log.h"
 #include "ns3/address.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
@@ -240,12 +242,30 @@ void OnOffApplication::ScheduleStopEvent ()
 void OnOffApplication::SendPacket ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
+
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> packet = Create<Packet> (m_pktSize);
   m_txTrace (packet);
   m_socket->Send (packet);
   m_totBytes += m_pktSize;
+  if (InetSocketAddress::IsMatchingType (m_peer))
+    {
+      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+                   << "s on-off application sent "
+                   <<  packet->GetSize () << " bytes to "
+                   << InetSocketAddress::ConvertFrom(m_peer).GetIpv4 ()
+                   << " port " << InetSocketAddress::ConvertFrom (m_peer).GetPort ()
+                   << " total Tx " << m_totBytes << " bytes");
+    }
+  else if (Inet6SocketAddress::IsMatchingType (m_peer))
+    {
+      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+                   << "s on-off application sent "
+                   <<  packet->GetSize () << " bytes to "
+                   << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6 ()
+                   << " port " << Inet6SocketAddress::ConvertFrom (m_peer).GetPort ()
+                   << " total Tx " << m_totBytes << " bytes");
+    }
   m_lastStartTime = Simulator::Now ();
   m_residualBits = 0;
   ScheduleNextTx ();

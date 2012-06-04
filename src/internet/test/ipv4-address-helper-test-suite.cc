@@ -179,6 +179,82 @@ ResetAllocatorHelperTestCase::DoTeardown (void)
   Simulator::Destroy ();
 }
 
+class IpAddressHelperTestCasev4 : public TestCase
+{
+public:
+  IpAddressHelperTestCasev4 ();
+  virtual ~IpAddressHelperTestCasev4 ();
+
+private:
+  virtual void DoRun (void);
+  virtual void DoTeardown (void);
+};
+
+IpAddressHelperTestCasev4::IpAddressHelperTestCasev4 ()
+  : TestCase ("IpAddressHelper Ipv4 test case (similar to IPv6)")
+{
+}
+
+IpAddressHelperTestCasev4::~IpAddressHelperTestCasev4 ()
+{
+}
+
+void
+IpAddressHelperTestCasev4::DoRun (void)
+{
+  Ipv4AddressHelper ip1;
+  Ipv4Address ipAddr1;
+  ipAddr1 = ip1.NewAddress ();
+  // Ipv4AddressHelper that is unconfigured
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("255.255.255.255"), "Ipv4AddressHelper failure");
+
+  ip1.SetBase ("192.168.0.0", "255.255.255.0");
+  ipAddr1 = ip1.NewAddress ();
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.0.1"), "Ipv4AddressHelper failure");
+  ipAddr1 = ip1.NewAddress ();
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.0.2"), "Ipv4AddressHelper failure");
+  ip1.NewNetwork ();
+  ipAddr1 = ip1.NewAddress ();
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.1.1"), "Ipv4AddressHelper failure");
+  ip1.NewNetwork ();  // 192.168.2
+  ip1.NewNetwork ();  // 192.168.3
+  ip1.NewNetwork ();  // 192.168.4
+  ipAddr1 = ip1.NewAddress (); // 4.1
+  ipAddr1 = ip1.NewAddress (); // 4.2
+  ipAddr1 = ip1.NewAddress (); // 4.3
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.4.3"), "Ipv4AddressHelper failure");
+
+  // reset base to start at 192.168.0.100
+  ip1.SetBase ("192.168.0.0", "255.255.255.0", "0.0.0.100");
+  ipAddr1 = ip1.NewAddress ();
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.0.100"), "Ipv4AddressHelper failure");
+  
+  // rollover
+  ip1.SetBase ("192.168.0.0", "255.255.255.0", "0.0.0.254");
+  ipAddr1 = ip1.NewAddress (); // .254
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv4Address ("192.168.0.254"), "Ipv4AddressHelper failure");
+  // The below will overflow and assert, so it is commented out
+  // ipAddr1 = ip1.NewAddress (); // .255
+
+  // create with arguments
+  Ipv4AddressHelper ip2 = Ipv4AddressHelper ("192.168.1.0", "255.255.255.0", "0.0.0.1");
+  // duplicate assignment
+  ip2.NewNetwork ();  // 192.168.2
+  ip2.NewNetwork ();  // 192.168.3
+  ip2.NewNetwork ();  // 192.168.4
+  // Uncomment below, and 192.168.4.1 will crash since it was allocated above
+  // ipAddr1 = ip2.NewAddress (); // 4.1
+
+}
+
+void
+IpAddressHelperTestCasev4::DoTeardown (void)
+{
+  Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
+}
+
+
 static class Ipv4AddressHelperTestSuite : public TestSuite
 {
 public:
@@ -188,6 +264,7 @@ public:
     AddTestCase (new NetworkAllocatorHelperTestCase ());
     AddTestCase (new AddressAllocatorHelperTestCase ());
     AddTestCase (new ResetAllocatorHelperTestCase ());
+    AddTestCase (new IpAddressHelperTestCasev4 ());
   }
 } g_ipv4AddressHelperTestSuite;
 

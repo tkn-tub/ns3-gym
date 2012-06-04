@@ -42,6 +42,8 @@ NS_LOG_COMPONENT_DEFINE ("UdpSocketImpl");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (UdpSocketImpl);
+
 static const uint32_t MAX_IPV4_UDP_DATAGRAM_SIZE = 65507;
 
 // Add attributes generic to all UdpSockets to base class UdpSocket
@@ -872,7 +874,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     }
 
   // Should check via getsockopt ()..
-  if (this->m_recvpktinfo)
+  if (IsRecvPktInfo ())
     {
       Ipv4PacketInfoTag tag;
       packet->RemovePacketTag (tag);

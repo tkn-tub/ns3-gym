@@ -47,7 +47,7 @@ public:
   /**
    * MAC SAP
    */
-  virtual void DoNotifyTxOpportunity (uint32_t bytes);
+  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer);
   virtual void DoNotifyHarqDeliveryFailure ();
   virtual void DoReceivePdu (Ptr<Packet> p);
 
@@ -60,13 +60,14 @@ private:
   bool IsInsideReorderingWindow (SequenceNumber10 seqNumber);
 
   void ReassembleOutsideWindow (void);
-  void ReassembleSnLessThan (SequenceNumber10 seqNumber);
+  void ReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 highSeqNumber);
 
   void ReassembleAndDeliver (Ptr<Packet> packet);
 
   void DoReportBufferStatus ();
 
 private:
+  uint32_t m_maxTxBufferSize;
   uint32_t m_txBufferSize;
   std::vector < Ptr<Packet> > m_txBuffer;       // Transmission buffer
   std::map <uint16_t, Ptr<Packet> > m_rxBuffer; // Reception buffer

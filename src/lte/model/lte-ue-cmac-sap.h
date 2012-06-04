@@ -24,6 +24,7 @@
 #include <ns3/packet.h>
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
+#include <ns3/lte-common.h>
 
 namespace ns3 {
 
@@ -50,6 +51,8 @@ public:
   virtual void AddLc (uint8_t lcId, LteMacSapUser* msu) = 0;
 
   virtual void RemoveLc (uint8_t lcId) = 0;
+  
+  virtual void RrcUpdateConfigurationReq (LteUeConfig_t params) = 0;
 
 };
 

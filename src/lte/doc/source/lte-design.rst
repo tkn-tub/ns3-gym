@@ -84,7 +84,7 @@ have been considered:
     so that they use different carrier frequencies and system bandwidths. The
     bandwidth used by different cells should be allowed to overlap, in order to
     support dynamic spectrum licensing solutions such as those described
-    in [Ofcom2.6GHz]_ and [RealWireless]_. The calculation of interference should
+    in [Ofcom2600MHz]_ and [RealWireless]_. The calculation of interference should
     handle appropriately this case.
  #. To be more representative of the LTE standard, as well as to be as
     close as possible to real-world implementations, the simulator
@@ -121,6 +121,7 @@ Architecture
 For the sake of an easier explanation, we further divide the LTE model
 in two separate parts, which are described in the following.
 
+The overall architecture of the LTE module is represented in the following figures.
 
 The first part is the lower LTE radio protocol stack, which is
 represented in the figures 
@@ -411,9 +412,9 @@ process in order to reach its destination UE.
 
 
 
------------------------------
-Description of the components
------------------------------
+-----------------------------------------
+Detailed description of protocol elements
+-----------------------------------------
 
 
 
@@ -524,7 +525,7 @@ hence in a given subframe each RB is always allocated to the same user in both
 slots.
 The allocation bitmap can be coded in
 different formats; in this implementation, we considered the *Allocation
-Type 0* defined in [TS36.213]_, according to which the RBs are grouped in
+Type 0* defined in [TS36213]_, according to which the RBs are grouped in
 Resource Block Groups (RBG) of different size determined as a function of the
 Transmission Bandwidth Configuration in use.
 
@@ -566,14 +567,14 @@ scheme.
 
 Finally, we note that there are some discrepancies between the MCS index
 in [R1-081483]_
-and that indicated by the standard:  [TS36.213]_ Table
+and that indicated by the standard:  [TS36213]_ Table
 7.1.7.1-1 says that the MCS index goes from 0 to 31, and 0 appears to be a valid
 MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
 index
 is 1. Hence to get the value as intended by the standard we need to subtract 1
 from the index reported in [R1-081483]_. 
 
-The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36.213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
+The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
 
 
 Round Robin (RR) Scheduler
@@ -593,7 +594,7 @@ condition over time. Let :math:`i,j` denote generic users; let :math:`t` be the
 subframe index, and :math:`k` be the resource block index; let :math:`M_{i,k}(t)` be MCS
 usable by user :math:`i` on resource block :math:`k` according to what reported by the AMC
 model (see `Adaptive Modulation and Coding`_); finally, let :math:`S(M, B)` be the TB
-size in bits as defined in [TS36.213]_ for the case where a number :math:`B` of
+size in bits as defined in [TS36213]_ for the case where a number :math:`B` of
 resource blocks is used. The achievable rate :math:`R_{i}(k,t)` in bit/s for user :math:`i`
 on resource block :math:`k` at subframe :math:`t` is defined as 
 
@@ -602,7 +603,7 @@ on resource block :math:`k` at subframe :math:`t` is defined as
    R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
 
 where :math:`\tau` is the TTI duration.
-At the start of each subframe :math:`t`, all the RBs are assigned to a certain user.
+At the start of each subframe :math:`t`, each RB is assigned to a certain user.
 In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
 :math:`t` is determined as
 
@@ -649,6 +650,7 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
 
    \widehat{T}_{j}(t) = \frac{S\left( \widehat{M}_j(t), \widehat{B}_j(t)
    \right)}{\tau}
+   
 
 
 Transport Blocks
@@ -1078,7 +1080,7 @@ Idle mode
 ---------
 
 The RRC model supports a much simplified idle mode cell selection
-process. With respect to [TS36.304]_, the main simplifications are:
+process. With respect to [TS36304]_, the main simplifications are:
 
  - at most one PLMN and one CSG id are supported
  - w.r.t. section 5.2.2, the only states supported are "Initial cell
@@ -1133,10 +1135,10 @@ simplicity.
 Figure :ref:`fig-rrc-connection-reconfiguration-handover` shows how the RRC
 Connection Reconfiguration procedure is modeled for the case where
 MobilityControlInfo is provided, i.e., handover is to be performed.
-As specified in [TS36.331]_, *After receiving the handover message,
+As specified in [TS36331]_, *After receiving the handover message,
 the UE attempts to access the target cell at the first available RACH
-occasion according to Random Access resource selection defined in TS
-36.321 [6], i.e. the handover is asynchronous. Consequently, when
+occasion according to Random Access resource selection defined in [TS36321]_,
+i.e. the handover is asynchronous. Consequently, when
 allocating a dedicated preamble for the random access in the target
 cell, E-UTRA shall ensure it is available from the first RACH occasion
 the UE may use. Upon successful completion of the handover, the UE
@@ -1228,7 +1230,7 @@ implemented in the simulator.
 
  * **SRB2** messages (over DCCH):
 
-     - According to [TS36.331]_, "*SRB1 is for RRC messages (which may
+     - According to [TS36331]_, "*SRB1 is for RRC messages (which may
        include a piggybacked NAS message) as well as for NAS messages
        prior to the establishment of SRB2, all using DCCH logical
        channel*", whereas "*SRB2 is for NAS messages, using DCCH
@@ -1256,7 +1258,7 @@ Non-Access Stratum (NAS) model
 The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
 
  - EMM and ECM are not modeled explicitly; instead, the NAS entity at the UE will interact directy with the EpcHelper to perfom actions that are equivalent (with gross simplifications) to taking the UE to the states EMM Connected and ECM Connected; 
- - each UE supports at most one PLMN and one CSG ID, which are passed to the RRC to perform  cell selection in idle mode, following in a simplified way what specified in [TS36.304]_;
+ - each UE supports at most one PLMN and one CSG ID, which are passed to the RRC to perform  cell selection in idle mode, following in a simplified way what specified in [TS36304]_;
 
  - the NAS also takes care of multiplexing uplink data packets coming from the upper layers into the appropriate EPS bearer by using the Traffic Flow Template classifier (TftClassifier). (NB: this is currently in the RRC, but it is better to move it to the NAS).
 
@@ -1332,6 +1334,8 @@ The generation of CQI feedback is done accordingly to what specified in [FFAPI]_
 of periodic wideband CQI (i.e., a single value of channel state that is deemed representative of all RBs 
 in use) and inband CQIs (i.e., a set of value representing the channel state for each RB).
 
+The CQI feedbacks are currently evaluated according to the SINR perceived by data transmissions (i.e., PDSHC for downlink and PUSCH for uplink) instead of the one based on reference signals (i.e., RS for downlink and SRS for uplink) since that signals are not implemented in the current version of the PHY layer. This implies that a UE has to transmit some data in order to have CQI feedbacks. This assumption is based on the fact that the reference signals defined in LTE are usually multiplexed within the data transmissions resources.
+
 Interference Model
 ^^^^^^^^^^^^^^^^^^
 
@@ -1353,11 +1357,11 @@ LTE Spectrum Model
 ^^^^^^^^^^^^^^^^^^
 
 The usage of the radio spectrum by eNBs and UEs in LTE is described in
-[TS36.101]_. In the simulator, radio spectrum usage is modeled as follows. 
+[TS36101]_. In the simulator, radio spectrum usage is modeled as follows. 
 Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
 identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
 the Transmission Bandwidth Configuration in number of Resource Blocks. For every
-pair :math:`(f_c,B)` used in the simulationwe define a corresponding spectrum
+pair :math:`(f_c,B)` used in the simulation we define a corresponding spectrum
 model using the Spectrum framework described
 in [Baldo2009]_.  :math:`f_c` and :math:`B` can be configured for every eNB instantiated
 in the simulation; hence, each eNB can use a different spectrum model. Every UE
@@ -1366,7 +1370,7 @@ the MultiModelSpectrumChannel described in [Baldo2009]_, the interference
 among eNBs that use different spectrum models is properly accounted for. 
 This allows to simulate dynamic spectrum access policies, such as for
 example the spectrum licensing policies that are 
-discussed in [Ofcom2.6GHz]_.
+discussed in [Ofcom2600MHz]_.
 
 
 
@@ -1375,7 +1379,7 @@ PHY Error Model
 
 The simulator includes an error model of the data plane (i.e., PDSCH) according to the standard link-to-system mapping (LSM) techniques. The choice is aligned with the standard system simulation methodology of OFDMA  radio transmission technology. Thanks to LSM we are able to maintain a good level of accuracy and at the same time limiting the computational complexity increase. It is based on the mapping of single link layer performance obtained by means of link level simulators to system (in our case network) simulators. In particular link the layer simulator is used for generating the performance of a single link from a PHY layer perspective, usually in terms of code block error rate (BLER), under specific static conditions. LSM allows the usage of these parameters in more complex scenarios, typical of system/network simulators, where we have more links, interference and "colored" channel propagation phenomena (e.g., frequency selective fading).
 
-To do this the Vienna LTE Simulator [Vienna]_ has been used for what concerns the extraction of link layer performance and the Mutual Information Based Effective SINR (MIESM) as LSM mapping function using part of the work recently published by the Signet Group of University of Padua [PaduaPEM]_.
+To do this the Vienna LTE Simulator [ViennaLteSim]_ has been used for what concerns the extraction of link layer performance and the Mutual Information Based Effective SINR (MIESM) as LSM mapping function using part of the work recently published by the Signet Group of University of Padua [PaduaPEM]_.
 
 
 MIESM
@@ -1391,7 +1395,7 @@ Moreover, from an HARQ perspective, the MIESM has more flexibility in managing t
 
    MIESM computational procedure diagram
 
-The mutual information (MI) is dependent on the constellation mapping and can be calculated per transport block (TB) basis, by evaluating the MI over the symbols and the subcarrier. However, this would be too complex for a network simulator. Hence, in our implementation a flat channel response within the RB has been considered; therefore the overall MI of a TB is calculated averaging the MI evaluated per each RB used in the TB. In detail, the implemented scheme is depicted in Figure :ref:`fig-miesm-architecture`, where we see that the model starts by evaluating the MI value for each RB, represented in the figure by the SINR samples. Then the equivalent MI is evaluated per TB basis by averaging the MI values. Finally, a further step has to be done since the link level simulator returns the performance of the link in terms of block error rate (BLER) in a addive white guassian noise  (AWGN) channel, where the blocks are the code blocks (CBs) independently encoded/decoded by the turbo encoder. On this matter the standard 3GPP segmentation scheme has been used for estimating the actual CB size (described in section 5.1.2 of [TS36.212]_). This scheme divides the the TB in :math:`N_{K_-}` blocks of size :math:`K_-` and :math:`N_{K+}` blocks of size :math:`K_+`. Therefore the overall TB BLER (TBLER) can be expressed as
+The mutual information (MI) is dependent on the constellation mapping and can be calculated per transport block (TB) basis, by evaluating the MI over the symbols and the subcarrier. However, this would be too complex for a network simulator. Hence, in our implementation a flat channel response within the RB has been considered; therefore the overall MI of a TB is calculated averaging the MI evaluated per each RB used in the TB. In detail, the implemented scheme is depicted in Figure :ref:`fig-miesm-architecture`, where we see that the model starts by evaluating the MI value for each RB, represented in the figure by the SINR samples. Then the equivalent MI is evaluated per TB basis by averaging the MI values. Finally, a further step has to be done since the link level simulator returns the performance of the link in terms of block error rate (BLER) in a addive white guassian noise  (AWGN) channel, where the blocks are the code blocks (CBs) independently encoded/decoded by the turbo encoder. On this matter the standard 3GPP segmentation scheme has been used for estimating the actual CB size (described in section 5.1.2 of [TS36212]_). This scheme divides the the TB in :math:`N_{K_-}` blocks of size :math:`K_-` and :math:`N_{K+}` blocks of size :math:`K_+`. Therefore the overall TB BLER (TBLER) can be expressed as
 
 .. math::
 
@@ -1477,15 +1481,26 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 
    BLER for MCS 21, 22, 23 and 24.
 
-.. _fig-mcs-25-27-ber:
 
-.. figure:: figures/MCS_25_27.*
+.. _fig-mcs-25-28-ber:
+
+.. figure:: figures/MCS_25_28.*
    :width: 900px
    :align: center
    :height: 700px
 
 
-   BLER for MCS 25, 26 and 27.
+   BLER for MCS 25, 26, 27 and 28.
+
+.. _fig-mcs-29-29-ber:
+
+.. figure:: figures/MCS_29_29.*
+   :width: 900px
+   :align: center
+   :height: 700px
+
+
+   BLER for MCS 29.
 
 
 
@@ -1503,11 +1518,21 @@ The model can be disabled for working with a zero-losses channel by setting the 
 
 
 
+MIMO Model
+----------
+
+The use of multiple antennas both at transmitter and receiver side, known as multiple-input and multiple-output (MIMO), is a problem well studied in literature during the past years. Most of the work concentrate on evaluating analytically the gain that the different MIMO schemes might have in term of capacity; however someones provide also information of the gain in terms of received power _[CatreuxMIMO].
+
+According to the considerations above, a model more flexible can be obtained considering the gain that MIMO schemes bring in the system from a statistical point of view. As highlighted before, _[CatreuxMIMO] presents the statistical gain of several MIMO solutions respect to the SISO one in case of no correlation between the antennas. In the work the gain is presented as the cumulative distribution function (CDF) of the output SINR for what concern SISO, MIMO-Alamouti, MIMO-MMSE, MIMO-OSIC-MMSE and MIMO-ZF schemes. Elaborating the results, the output SINR distribution can be approximated with a log-normal one with different mean and variance as function of the scheme considered. However, the variances are not so different and they are approximatively equal to the one of the SISO mode already included in the shadowing component of the ``BuildingsPropagationLossModel``, in detail:
+
+ * SISO: :math:`\mu = 13.5` and :math:`\sigma = 20` [dB].
+ * MIMO-Alamouti: :math:`\mu = 17.7` and :math:`\sigma = 11.1` [dB].
+ * MIMO-MMSE: :math:`\mu = 10.7` and :math:`\sigma = 16.6` [dB].
+ * MIMO-OSIC-MMSE: :math:`\mu = 12.6` and :math:`\sigma = 15.5` [dB].
+ * MIMO-ZF: :math:`\mu = 10.3` and :math:`\sigma = 12.6` [dB].
 
 
-
-
-
+Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
 
 
 -----------------------
@@ -1595,7 +1620,7 @@ With respect to the mathematical channel propagation model, we suggest the one p
 The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
 In detail, the channel object created with the rayleighchan function is used for filtering a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model.
 
-Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36.104]_):
+Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36104]_):
 
  * users' speed: typically only a few discrete values are considered, i.e.:
 
@@ -1603,7 +1628,7 @@ Since the number of variable it is pretty high, generate traces considering all 
    * 30 and 60 kmph for vehicular scenarios
    * 0, 3, 30 and 60 for urban scenarios
 
- * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36.104]_.
+ * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36104]_.
  * time granularity: we need one fading value per TTI, i.e., every 1 ms (as this is the granularity in time of the ns-3 LTE PHY model).
  * frequency granularity: we need one fading value per RB (which is the frequency granularity of the spectrum model used by the ns-3 LTE model).
  * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.  
@@ -1614,7 +1639,7 @@ According to the parameters we considered, the following formula express in deta
 .. math::
  S_{traces} = S_{sample} \times N_{RB} \times \frac{T_{trace}}{T_{sample}} \times N_{scenarios} \mbox{ [bytes]}
 
-where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36.104]_:
+where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36104]_:
 
  * Pedestrian: with nodes' speed of 3 kmph.
  * Vehicular: with nodes' speed of 60 kmph.

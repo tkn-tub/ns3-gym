@@ -56,6 +56,9 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetCellId (uint16_t cellId);
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual uint8_t GetMacChTtiDelay ();
+  virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
 
 private:
   LteEnbPhy* m_phy;
@@ -89,6 +92,18 @@ void
 EnbMemberLteEnbPhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_phy->DoSendIdealControlMessage (msg);
+}
+
+uint8_t
+EnbMemberLteEnbPhySapProvider::GetMacChTtiDelay ()
+{
+  return (m_phy->DoGetMacChTtiDelay ());
+}
+
+void
+EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
+{
+  m_phy->DoSetTransmissionMode (rnti, txMode);
 }
 
 
@@ -142,7 +157,7 @@ LteEnbPhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MacToChannelDelay",
                    "The delay in TTI units that occurs between a scheduling decision in the MAC and the actual start of the transmission by the PHY. This is intended to be used to model the latency of real PHY and MAC implementations.",
-                   UintegerValue (1),
+                   UintegerValue (2),
                    MakeUintegerAccessor (&LteEnbPhy::SetMacChDelay, 
                                          &LteEnbPhy::GetMacChDelay),
                    MakeUintegerChecker<uint8_t> ())
@@ -218,7 +233,20 @@ void
 LteEnbPhy::SetMacChDelay (uint8_t delay)
 {
   m_macChTtiDelay = delay;
-  m_packetBurstQueue.resize (delay);
+  for (int i = 0; i < m_macChTtiDelay; i++)
+    {
+      Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
+      m_packetBurstQueue.push_back (pb);
+      std::list<Ptr<IdealControlMessage> > l;
+      m_controlMessagesQueue.push_back (l);
+      std::list<UlDciIdealControlMessage> l1;
+      m_ulDciQueue.push_back (l1);
+    }
+  for (int i = 0; i < UL_PUSCH_TTIS_DELAY; i++)
+    {
+      std::list<UlDciIdealControlMessage> l1;
+      m_ulDciQueue.push_back (l1);
+    }
 }
 
 uint8_t
@@ -266,11 +294,14 @@ LteEnbPhy::DeleteUePhy (uint16_t rnti)
 void
 LteEnbPhy::DoSendMacPdu (Ptr<Packet> p)
 {
-//   NS_LOG_FUNCTION (this << pb->GetNPackets () << pb->GetSize ());
-//   return GetDownlinkSpectrumPhy ()->StartTx (pb);
-
   NS_LOG_FUNCTION (this);
   SetMacPdu (p);
+}
+
+uint8_t
+LteEnbPhy::DoGetMacChTtiDelay ()
+{
+  return (m_macChTtiDelay);
 }
 
 
@@ -346,6 +377,31 @@ LteEnbPhy::StartSubFrame (void)
 
   ++m_nrSubFrames;
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
+  
+  // update info on TB to be received
+  std::list<UlDciIdealControlMessage> uldcilist = DequeueUlDci ();
+  std::list<UlDciIdealControlMessage>::iterator dciIt = uldcilist.begin ();
+  for (dciIt = uldcilist.begin (); dciIt!=uldcilist.end (); dciIt++)
+  {
+    std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
+    it2 = m_ueAttached.find ((*dciIt).GetDci ().m_rnti);
+    
+    if (it2 == m_ueAttached.end ())
+    {
+      NS_LOG_ERROR ("UE not attached");
+    }
+    else
+    {
+      // send info of TB to LteSpectrumPhy 
+      // translate to allocation map
+      std::vector <int> rbMap;
+      for (int i = (*dciIt).GetDci ().m_rbStart; i < (*dciIt).GetDci ().m_rbStart + (*dciIt).GetDci ().m_rbLen; i++)
+      {
+        rbMap.push_back (i);
+      }
+      m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/);
+    }
+  }
 
   // send the current burst of control messages
   std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
@@ -391,6 +447,7 @@ LteEnbPhy::StartSubFrame (void)
             {
               std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<UlDciIdealControlMessage> dci = DynamicCast<UlDciIdealControlMessage> (msg);
+              QueueUlDci (*dci);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
 
               if (it2 == m_ueAttached.end ())
@@ -400,14 +457,7 @@ LteEnbPhy::StartSubFrame (void)
               else
                 {
                   (*it2).second->ReceiveIdealControlMessage (msg);
-                  // send info of TB to LteSpectrumPhy 
-                  // translate to allocation map
-                  std::vector <int> rbMap;
-                  for (int i = dci->GetDci ().m_rbStart; i < dci->GetDci ().m_rbStart + dci->GetDci ().m_rbLen; i++)
-                    {
-                      rbMap.push_back (i);
-                    }
-                  m_uplinkSpectrumPhy->AddExpectedTb (dci->GetDci ().m_rnti, dci->GetDci ().m_tbSize, dci->GetDci ().m_mcs, rbMap);
+                  QueueUlDci (*dci);
                 }
             }
           ctrlMsg.pop_front ();
@@ -420,7 +470,7 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      NS_LOG_LOGIC (this << " start TX");
+      NS_LOG_LOGIC (this << " eNB start TX");
       m_downlinkSpectrumPhy->StartTx (pb);
     }
 
@@ -484,6 +534,7 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
     {
       double sinrdb = 10 * log10 ((*it));
+//       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
       // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
       int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
       ulcqi.m_sinr.push_back (sinrFp);
@@ -492,5 +543,42 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
   return (ulcqi);
 	
 }
+
+void
+LteEnbPhy::DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode)
+{
+  NS_LOG_FUNCTION (this << rnti << (uint16_t)txMode);
+  // UL supports only SISO MODE
+}
+
+void
+LteEnbPhy::QueueUlDci (UlDciIdealControlMessage m)
+{
+  NS_LOG_FUNCTION (this);
+  m_ulDciQueue.at (UL_PUSCH_TTIS_DELAY - 1).push_back (m);
+}
+
+std::list<UlDciIdealControlMessage>
+LteEnbPhy::DequeueUlDci (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_ulDciQueue.at (0).size ()>0)
+    {
+      std::list<UlDciIdealControlMessage> ret = m_ulDciQueue.at (0);
+      m_ulDciQueue.erase (m_ulDciQueue.begin ());
+      std::list<UlDciIdealControlMessage> l;
+      m_ulDciQueue.push_back (l);
+      return (ret);
+    }
+  else
+    {
+      m_ulDciQueue.erase (m_ulDciQueue.begin ());
+      std::list<UlDciIdealControlMessage> l;
+      m_ulDciQueue.push_back (l);
+      std::list<UlDciIdealControlMessage> emptylist;
+      return (emptylist);
+    }
+}
+
 
 };

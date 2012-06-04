@@ -488,7 +488,7 @@ follows:::
 
     ConfigStore::ConfigStore ()
     {
-      ObjectBase::ConstructSelf (AttributeList ());
+      ObjectBase::ConstructSelf (AttributeConstructionList ());
       // continue on with constructor.
     }
 

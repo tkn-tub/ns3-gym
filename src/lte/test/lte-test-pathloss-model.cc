@@ -25,10 +25,9 @@
 #include "ns3/spectrum-test.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-sinr-chunk-processor.h"
 
-#include "ns3/lte-test-pathloss-model.h"
+
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -45,11 +44,14 @@
 #include <ns3/lte-helper.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
-#include <ns3/lte-test-sinr-chunk-processor.h>
+
+#include "lte-test-sinr-chunk-processor.h"
+#include "lte-test-ue-phy.h"
+#include "lte-test-pathloss-model.h"
 
 NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -142,7 +144,10 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   double noisePowerDbm = ktDbm + 10 * log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   double receiverNoiseFigureDb = 9.0; // default UE noise figure
   double noiseLin = pow (10, (noisePowerDbm-30+receiverNoiseFigureDb)/10);
-  double loss[] = {81.057184, 134.081310, 144.259958};
+
+  // reference values obtained with the octave script src/lte/test/reference/lte_pathloss.m
+
+  double loss[] = {81.062444, 134.078605, 144.259958};
   double dist[] = {100.0, 500.0, 1500};
 
   int numOfTests = sizeof (loss) / sizeof (double);
@@ -307,3 +312,6 @@ LtePathlossModelSystemTestCase::DlScheduling (uint32_t frameNo, uint32_t subfram
   }
 }
                                          
+
+} // namespace ns3
+

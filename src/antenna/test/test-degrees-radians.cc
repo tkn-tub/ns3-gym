@@ -21,7 +21,7 @@
 #include <ns3/log.h>
 #include <ns3/test.h>
 #include <ns3/antenna-model.h>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -128,7 +128,7 @@ DegreesRadiansTestSuite::DegreesRadiansTestSuite ()
   AddTestCase (new RadiansToDegreesTestCase (M_PI + M_PI, 360));
   AddTestCase (new RadiansToDegreesTestCase (-M_PI_2, -90));
   AddTestCase (new RadiansToDegreesTestCase (4.5*M_PI, 810));
-  
+
 };
 
 static DegreesRadiansTestSuite staticDegreesRadiansTestSuiteInstance;

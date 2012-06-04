@@ -39,6 +39,7 @@ def build(bld):
         'helper/radio-bearer-stats-calculator.cc',
         'helper/mac-stats-calculator.cc',
         'helper/radio-environment-map-helper.cc',
+        'helper/lte-hex-grid-enb-topology-helper.cc',
         'model/rem-spectrum-phy.cc',
         'model/ff-mac-csched-sap.cc',
         'model/ff-mac-sched-sap.cc',
@@ -91,7 +92,8 @@ def build(bld):
         'test/epc-test-s1u-uplink.cc',
         'test/test-lte-epc-e2e-data.cc',
         'test/test-lte-antenna.cc',
-        'test/lte-test-phy-error-model.cc'
+        'test/lte-test-phy-error-model.cc',
+        'test/lte-test-mimo.cc'
         ]
 
     headers = bld.new_task_gen(features=['ns3header'])
@@ -132,6 +134,7 @@ def build(bld):
         'helper/mac-stats-calculator.h',
         'helper/radio-bearer-stats-calculator.h',
         'helper/radio-environment-map-helper.h',
+        'helper/lte-hex-grid-enb-topology-helper.h',
         'model/rem-spectrum-phy.h',
         'model/ff-mac-common.h',
         'model/ff-mac-csched-sap.h',
@@ -154,27 +157,9 @@ def build(bld):
         'model/epc-gtpu-header.h',
         'model/epc-enb-application.h',
         'model/epc-sgw-pgw-application.h',
-        'test/lte-test-downlink-sinr.h',
-        'test/lte-test-uplink-sinr.h',
-        'test/lte-test-link-adaptation.h',
-        'test/lte-test-interference.h',
-        'test/lte-test-sinr-chunk-processor.h',
-        'test/lte-test-ue-phy.h',
-        'test/lte-test-rr-ff-mac-scheduler.h',
-        'test/lte-test-pf-ff-mac-scheduler.h',
-        'test/lte-test-phy-error-model.h',
-        'test/lte-test-pathloss-model.h',
-        'test/epc-test-gtpu.h',
-        'test/lte-test-entities.h',
-        'test/lte-simple-net-device.h',
-        'test/lte-simple-helper.h',
-        'test/lte-test-rlc-um-transmitter.h',
-        'test/lte-test-rlc-am-transmitter.h',
-        'test/lte-test-rlc-um-e2e.h',
-        'test/lte-test-rlc-am-e2e.h',
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
-        'model/lte-mi-error-model.h'
+        'model/lte-mi-error-model.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

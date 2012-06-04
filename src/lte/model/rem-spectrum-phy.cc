@@ -105,8 +105,7 @@ RemSpectrumPhy::GetDevice ()
 Ptr<const SpectrumModel>
 RemSpectrumPhy::GetRxSpectrumModel () const
 {
-  // supports any SpectrumModel
-  return 0;
+  return m_rxSpectrumModel;
 }
 
 Ptr<AntennaModel>
@@ -133,6 +132,13 @@ RemSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> params)
     }
 }
 
+void
+RemSpectrumPhy::SetRxSpectrumModel (Ptr<const SpectrumModel> m)
+{
+  NS_LOG_FUNCTION (this << m);
+  m_rxSpectrumModel = m;
+}
+
 double
 RemSpectrumPhy::GetSinr (double noisePower)
 {
@@ -143,6 +149,19 @@ void
 RemSpectrumPhy::Deactivate ()
 {
   m_active = false;
+}
+
+bool
+RemSpectrumPhy::IsActive ()
+{
+  return m_active;
+}
+
+void
+RemSpectrumPhy::Reset ()
+{
+  m_referenceSignalPower = 0;
+  m_sumPower = 0;
 }
 
 

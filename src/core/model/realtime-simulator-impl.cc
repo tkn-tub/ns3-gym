@@ -80,6 +80,8 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
   m_currentContext = 0xffffffff;
   m_unscheduledEvents = 0;
 
+  m_main = SystemThread::Self();
+
   // Be very careful not to do anything that would cause a change or assignment
   // of the underlying reference counts of m_synchronizer or you will be sorry.
   m_synchronizer = CreateObject<WallClockSynchronizer> ();
@@ -93,7 +95,7 @@ void
 RealtimeSimulatorImpl::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  while (m_events->IsEmpty () == false)
+  while (!m_events->IsEmpty ())
     {
       Scheduler::Event next = m_events->RemoveNext ();
       next.impl->Unref ();
@@ -406,16 +408,6 @@ RealtimeSimulatorImpl::NextTs (void) const
   return ev.key.m_ts;
 }
 
-//
-// Calls NextTs().  Should be called with critical section locked.
-//
-Time
-RealtimeSimulatorImpl::Next (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return TimeStep (NextTs ());
-}
-
 void
 RealtimeSimulatorImpl::Run (void)
 {
@@ -424,31 +416,41 @@ RealtimeSimulatorImpl::Run (void)
   NS_ASSERT_MSG (m_running == false, 
                  "RealtimeSimulatorImpl::Run(): Simulator already running");
 
+  // Set the current threadId as the main threadId
+  m_main = SystemThread::Self();
+
   m_stop = false;
   m_running = true;
   m_synchronizer->SetOrigin (m_currentTs);
 
-  for (;;) 
+  // Sleep until signalled
+  uint64_t tsNow;
+  uint64_t tsDelay = 1000000000; // wait time of 1 second (in nanoseconds)
+ 
+  while (!m_stop) 
     {
-      bool done = false;
-
+      bool process = false;
       {
         CriticalSection cs (m_mutex);
-        //
-        // In all cases we stop when the event list is empty.  If you are doing a 
-        // realtime simulation and you want it to extend out for some time, you must
-        // call StopAt.  In the realtime case, this will stick a placeholder event out
-        // at the end of time.
-        //
-        if (m_stop || m_events->IsEmpty ())
+
+        if (!m_events->IsEmpty ())
           {
-            done = true;
+            process = true;
+          }
+        else
+          {
+            // Get current timestamp while holding the critical section
+            tsNow = m_synchronizer->GetCurrentRealtime ();
           }
       }
-
-      if (done)
+ 
+      if (!process)
         {
-          break;
+          // Sleep until signalled
+          tsNow = m_synchronizer->Synchronize (tsNow, tsDelay);
+
+          // Re-check event queue
+          continue;
         }
 
       ProcessOneEvent ();
@@ -480,50 +482,6 @@ RealtimeSimulatorImpl::Realtime (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_synchronizer->Realtime ();
-}
-
-//
-// This will run the first event on the queue without considering any realtime
-// synchronization.  It's mainly implemented to allow simulations requiring
-// the multithreaded ScheduleRealtimeNow() functions the possibility of driving
-// the simulation from their own event loop.
-//
-// It is expected that if there are any realtime requirements, the responsibility
-// for synchronizing with real time in an external event loop will be picked up
-// by that loop.  For example, they may call Simulator::Next() to find the 
-// execution time of the next event and wait for that time somehow -- then call
-// RunOneEvent to fire the event.
-// 
-void
-RealtimeSimulatorImpl::RunOneEvent (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-
-  NS_ASSERT_MSG (m_running == false, 
-                 "RealtimeSimulatorImpl::RunOneEvent(): An internal simulator event loop is running");
-
-  EventImpl *event = 0;
-
-  //
-  // Run this in a critical section in case there's another thread around that
-  // may be inserting things onto the event list.
-  //
-  {
-    CriticalSection cs (m_mutex);
-
-    Scheduler::Event next = m_events->RemoveNext ();
-
-    NS_ASSERT (next.key.m_ts >= m_currentTs);
-    m_unscheduledEvents--;
-
-    NS_LOG_LOGIC ("handle " << next.key.m_ts);
-    m_currentTs = next.key.m_ts;
-    m_currentContext = next.key.m_context;
-    m_currentUid = next.key.m_uid;
-    event = next.impl;
-  }
-  event->Invoke ();
-  event->Unref ();
 }
 
 void 
@@ -581,7 +539,20 @@ RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, 
     CriticalSection cs (m_mutex);
     uint64_t ts;
 
-    ts = m_currentTs + time.GetTimeStep ();
+    if (SystemThread::Equals (m_main))
+      {
+        ts = m_currentTs + time.GetTimeStep ();
+      }
+    else
+      {
+        //
+        // If the simulator is running, we're pacing and have a meaningful 
+        // realtime clock.  If we're not, then m_currentTs is where we stopped.
+        // 
+        ts = m_running ? m_synchronizer->GetCurrentRealtime () : m_currentTs;
+        ts += time.GetTimeStep ();
+      }
+
     NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealtime(): schedule for time < m_currentTs");
     Scheduler::Event ev;
     ev.impl = impl;

@@ -31,8 +31,8 @@
 
 #include "ns3/net-device.h"
 
-using namespace ns3;
 
+namespace ns3 {
 
 /**
  * This class implements a testing RRC entity
@@ -260,5 +260,7 @@ class LteTestMac : public Object
     uint32_t m_rxBytes;
 
 };
+
+} // namespace ns3
 
 #endif /* LTE_TEST_MAC_H */

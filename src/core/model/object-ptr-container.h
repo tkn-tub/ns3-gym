@@ -20,7 +20,7 @@
 #ifndef OBJECT_PTR_CONTAINER_H
 #define OBJECT_PTR_CONTAINER_H
 
-#include <vector>
+#include <map>
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
@@ -30,7 +30,7 @@ namespace ns3 {
 /**
  * \ingroup object
  * 
- * \brief contain a vector of ns3::Object pointers.
+ * \brief contain a set of ns3::Object pointers.
  *
  * This class it used to get attribute access to an array of
  * ns3::Object pointers.
@@ -38,20 +38,20 @@ namespace ns3 {
 class ObjectPtrContainerValue : public AttributeValue
 {
 public:
-  typedef std::vector<Ptr<Object> >::const_iterator Iterator;
+  typedef std::map<uint32_t, Ptr<Object> >::const_iterator Iterator;
 
   ObjectPtrContainerValue ();
 
   /**
-   * \returns an iterator to the first object contained in this vector
+   * \returns an iterator to the first object contained in this set
    */
   Iterator Begin (void) const;
   /**
-   * \returns an iterator to the last object contained in this vector
+   * \returns an iterator to the last object contained in this set
    */
   Iterator End (void) const;
   /**
-   * \returns the number of objects contained in this vector.
+   * \returns the number of objects contained in this set.
    */
   uint32_t GetN (void) const;
   /**
@@ -66,7 +66,7 @@ public:
 
 private:
   friend class ObjectPtrContainerAccessor;
-  std::vector<Ptr<Object> > m_objects;
+  std::map<uint32_t, Ptr<Object> > m_objects;
 };
 
 
@@ -141,7 +141,7 @@ public:
   virtual bool HasSetter (void) const;
 private:
   virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
-  virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const = 0;
+  virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const = 0;
 };
 
 template <typename T, typename U, typename INDEX>
@@ -160,8 +160,9 @@ MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
       *n = (obj->*m_getN)();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const {
+    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const {
       const T *obj = static_cast<const T *> (object);
+      *index = i;
       return (obj->*m_get)(i);
     }
     Ptr<U> (T::*m_get)(INDEX) const;

@@ -162,6 +162,7 @@ http://www.nsnam.org/ns-3.x
 - Documentation
 
 2. Repoint http://www.nsnam.org/releases/latest to the new page
+   Repoint /var/www/html/doxygen-release to the new release doxygen.
 
 3. Update the Older Releases page to create an entry for the previous
 release (there are two such pages, one under Releases and one under

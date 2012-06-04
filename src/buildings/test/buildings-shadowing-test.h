@@ -27,12 +27,11 @@
 #include <ns3/buildings-propagation-loss-model.h>
 
 
-using namespace ns3;
-
+namespace ns3 {
 
 /**
-* Test 1.1 shadowing calculation
-*/
+ * Test shadowing calculation
+ */
 class BuildingsShadowingTestSuite : public TestSuite
 {
 public:
@@ -58,3 +57,5 @@ private:
 };
 
 #endif /*BUILDINGS_SHADOWING_TEST_H*/
+
+} // namespace ns3

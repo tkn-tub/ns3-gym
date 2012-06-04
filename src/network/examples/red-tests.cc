@@ -330,7 +330,7 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("Packets"));
+  Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
   Config::SetDefault ("ns3::RedQueue::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::RedQueue::Wait", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueue::Gentle", BooleanValue (true));
@@ -346,7 +346,7 @@ main (int argc, char *argv[])
     }
   else if (redTest == 5) // test 5, same of test 4, but in byte mode
     {
-      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("Bytes"));
+      Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_BYTES"));
       Config::SetDefault ("ns3::RedQueue::Ns1Compat", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueue::MinTh", DoubleValue (5 * meanPktSize));
       Config::SetDefault ("ns3::RedQueue::MaxTh", DoubleValue (15 * meanPktSize));
@@ -414,7 +414,7 @@ main (int argc, char *argv[])
       Ptr<PointToPointNetDevice> nd = StaticCast<PointToPointNetDevice> (devn2n3.Get (1));
       Ptr<Queue> queue = nd->GetQueue ();
 
-      StaticCast<RedQueue> (queue)->SetMode (RedQueue::PACKETS);
+      StaticCast<RedQueue> (queue)->SetMode (RedQueue::QUEUE_MODE_PACKETS);
       StaticCast<RedQueue> (queue)->SetTh (5, 15);
       StaticCast<RedQueue> (queue)->SetQueueLimit (25);
     }

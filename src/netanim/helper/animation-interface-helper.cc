@@ -33,10 +33,12 @@ AnimPacketInfo::AnimPacketInfo()
 }
 
 AnimPacketInfo::AnimPacketInfo(Ptr <const NetDevice> txnd, const Time& fbTx, 
-  const Time& lbTx, Vector txLoc)
+  const Time& lbTx, Vector txLoc, uint32_t txNodeId)
   : m_txnd (txnd), m_fbTx (fbTx.GetSeconds ()), m_lbTx (lbTx.GetSeconds ()), 
     m_txLoc (txLoc)
 {
+  if (!m_txnd)
+    m_txNodeId = txNodeId;
 }
 
 void AnimPacketInfo::ProcessRxBegin (Ptr<const NetDevice> nd, const Time& fbRx)

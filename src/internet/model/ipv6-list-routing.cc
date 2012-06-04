@@ -23,6 +23,7 @@
 #include "ns3/node.h"
 #include "ns3/ipv6-static-routing.h"
 #include "ipv6-list-routing.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6ListRouting");
 
@@ -41,13 +42,13 @@ Ipv6ListRouting::GetTypeId (void)
 }
 
 
-Ipv6ListRouting::Ipv6ListRouting () 
+Ipv6ListRouting::Ipv6ListRouting ()
   : m_ipv6 (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-Ipv6ListRouting::~Ipv6ListRouting () 
+Ipv6ListRouting::~Ipv6ListRouting ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -94,9 +95,9 @@ Ipv6ListRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDe
 }
 
 // Patterned after Linux ip_route_input and ip_route_input_slow
-bool 
-Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev, 
-                             UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
+bool
+Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
+                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb)
 {
   bool retVal = false;
@@ -104,9 +105,9 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
   NS_LOG_LOGIC ("RouteInput logic for node: " << m_ipv6->GetObject<Node> ()->GetId ());
 
   NS_ASSERT (m_ipv6 != 0);
-  // Check if input device supports IP 
+  // Check if input device supports IP
   NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
-  uint32_t iif = m_ipv6->GetInterfaceForDevice (idev); 
+  uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
   Ipv6Address dst = header.GetDestinationAddress ();
 
   // Multicast recognition; handle local delivery here
@@ -171,7 +172,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
               lcb (p, header, iif);
               return true;
             }
-          NS_LOG_LOGIC ("Address "<< addr << " not a match");
+          NS_LOG_LOGIC ("Address " << addr << " not a match");
         }
     }
   // Check if input device supports IP forwarding
@@ -196,7 +197,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
   return retVal;
 }
 
-void 
+void
 Ipv6ListRouting::NotifyInterfaceUp (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
@@ -208,7 +209,7 @@ Ipv6ListRouting::NotifyInterfaceUp (uint32_t interface)
       (*rprotoIter).second->NotifyInterfaceUp (interface);
     }
 }
-void 
+void
 Ipv6ListRouting::NotifyInterfaceDown (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
@@ -220,7 +221,7 @@ Ipv6ListRouting::NotifyInterfaceDown (uint32_t interface)
       (*rprotoIter).second->NotifyInterfaceDown (interface);
     }
 }
-void 
+void
 Ipv6ListRouting::NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
@@ -232,7 +233,7 @@ Ipv6ListRouting::NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress addr
       (*rprotoIter).second->NotifyAddAddress (interface, address);
     }
 }
-void 
+void
 Ipv6ListRouting::NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
@@ -269,7 +270,24 @@ void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6A
     }
 }
 
-void 
+void
+Ipv6ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  NS_LOG_FUNCTION (this);
+
+  *stream->GetStream () << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
+                        << " Time: " << Simulator::Now ().GetSeconds () << "s "
+                        << "Ipv6ListRouting table" << std::endl;
+  for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
+       i != m_routingProtocols.end (); i++)
+    {
+      *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
+      (*i).second->PrintRoutingTable (stream);
+    }
+  *stream->GetStream () << std::endl;
+}
+
+void
 Ipv6ListRouting::SetIpv6 (Ptr<Ipv6> ipv6)
 {
   NS_LOG_FUNCTION (this << ipv6);
@@ -296,14 +314,14 @@ Ipv6ListRouting::AddRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol, i
     }
 }
 
-uint32_t 
+uint32_t
 Ipv6ListRouting::GetNRoutingProtocols (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_routingProtocols.size (); 
+  return m_routingProtocols.size ();
 }
 
-Ptr<Ipv6RoutingProtocol> 
+Ptr<Ipv6RoutingProtocol>
 Ipv6ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
 {
   NS_LOG_FUNCTION (index);
@@ -324,7 +342,7 @@ Ipv6ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
   return 0;
 }
 
-bool 
+bool
 Ipv6ListRouting::Compare (const Ipv6RoutingProtocolEntry& a, const Ipv6RoutingProtocolEntry& b)
 {
   return a.first > b.first;

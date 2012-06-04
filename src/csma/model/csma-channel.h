@@ -45,6 +45,7 @@ public:
 
   CsmaDeviceRec();
   CsmaDeviceRec(Ptr< CsmaNetDevice > device);
+  CsmaDeviceRec (CsmaDeviceRec const &);
 
   /**
    * \return If the net device pointed to by the devicePtr is active
@@ -81,6 +82,10 @@ public:
    * \brief Create a CsmaChannel
    */
   CsmaChannel ();
+  /**
+   * \brief Destroy a CsmaChannel
+   */
+  virtual ~CsmaChannel ();
 
   /**
    * \brief Attach a given netdevice to this channel
@@ -269,6 +274,9 @@ public:
   Time GetDelay (void);
 
 private:
+  // Avoid implicit copy constructor and assignment (python bindings issues)
+  CsmaChannel (CsmaChannel const &);
+  CsmaChannel &operator = (CsmaChannel const &);
 
   /**
    * The assigned data rate of the channel

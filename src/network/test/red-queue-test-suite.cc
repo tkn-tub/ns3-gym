@@ -67,7 +67,7 @@ RedQueueTestCase::RunRedTest (StringValue mode)
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
                          "Verify that we can actually set the attribute QW");
 
-  if (queue->GetMode () == RedQueue::BYTES)
+  if (queue->GetMode () == RedQueue::QUEUE_MODE_BYTES)
     {
       pktSize = 1000;
       modeSize = pktSize;
@@ -264,8 +264,8 @@ RedQueueTestCase::Enqueue (Ptr<RedQueue> queue, uint32_t size, uint32_t nPkt)
 void
 RedQueueTestCase::DoRun (void)
 {
-  RunRedTest (StringValue ("Packets"));
-  RunRedTest (StringValue ("Bytes"));
+  RunRedTest (StringValue ("QUEUE_MODE_PACKETS"));
+  RunRedTest (StringValue ("QUEUE_MODE_BYTES"));
   Simulator::Destroy ();
 
 }

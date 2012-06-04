@@ -55,12 +55,6 @@ public:
    */
   virtual bool IsFinished (void) const = 0;
   /**
-   * If Simulator::IsFinished returns true, the behavior of this
-   * method is undefined. Otherwise, it returns the microsecond-based
-   * time of the next event expected to be scheduled.
-   */
-  virtual Time Next (void) const = 0;
-  /**
    * If an event invokes this method, it will be the last
    * event scheduled by the Simulator::run method before
    * returning to the caller.
@@ -156,10 +150,6 @@ public:
    *     is greater than or equal to the stop time.
    */
   virtual void Run (void) = 0;
-  /**
-   * Process only the next simulation event, then return immediately.
-   */
-  virtual void RunOneEvent (void) = 0;
   /**
    * Return the "current simulation time".
    */

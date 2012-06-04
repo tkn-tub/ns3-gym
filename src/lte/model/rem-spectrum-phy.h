@@ -70,21 +70,39 @@ public:
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /** 
+   * set the RX spectrum model to be used
    * 
+   * \param m 
+   */
+  void SetRxSpectrumModel (Ptr<const SpectrumModel> m);
+
+  /** 
    * 
    * \return the Signal to Noise Ratio calculated 
    */
   double GetSinr (double noisePower);
 
   /** 
-   * make StartRx a no-op from now on
+   * make StartRx a no-op from now on, and mark instance as inactive
    * 
    */
   void Deactivate ();
 
+  /** 
+   * 
+   * \return true if active
+   */
+  bool IsActive ();
+
+  /** 
+   * Reset the SINR calculator
+   * 
+   */
+  void Reset ();
 
 private:
   Ptr<MobilityModel> m_mobility;
+  Ptr<const SpectrumModel> m_rxSpectrumModel;
 
   double m_referenceSignalPower;
   double m_sumPower;

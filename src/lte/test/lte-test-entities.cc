@@ -25,11 +25,11 @@
 #include "ns3/lte-rlc-am-header.h"
 #include "ns3/lte-pdcp-header.h"
 
-#include "ns3/lte-test-entities.h"
+#include "lte-test-entities.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /////////////////////////////////////////////////////////////////////
@@ -450,14 +450,14 @@ void
 LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
 {
   NS_LOG_FUNCTION (this << time << bytes);
-  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes);
+  Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0);
   if (m_txOpportunityMode == RANDOM_MODE)
+  {
+    if (m_txOppTime != Seconds (0))
     {
-      if (m_txOppTime != Seconds (0))
-        {
-          Simulator::Schedule (m_txOppTime, &LteTestMac::SendTxOpportunity, this, m_txOppTime, m_txOppSize);
-        }
+      Simulator::Schedule (m_txOppTime, &LteTestMac::SendTxOpportunity, this, m_txOppTime, m_txOppSize);
     }
+  }
 }
 
 void
@@ -572,17 +572,17 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
       if (params.statusPduSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.statusPduSize + 2);
+                               m_macSapUser, params.statusPduSize + 2, 0);
         }
       else if (params.txQueueSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.txQueueSize + 2);
+                               m_macSapUser, params.txQueueSize + 2, 0);
         }
       else if (params.retxQueueSize)
         {
           Simulator::Schedule (Seconds (0.1), &LteMacSapUser::NotifyTxOpportunity,
-                               m_macSapUser, params.retxQueueSize + 2);
+                               m_macSapUser, params.retxQueueSize + 2, 0);
         }
     }
 }
@@ -600,3 +600,6 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
   m_macSapUser->ReceivePdu (packet);
   return true;
 }
+
+} // namespace ns3
+

@@ -22,6 +22,8 @@
 #define IPV6_ROUTING_HELPER_H
 
 #include "ns3/ptr.h"
+#include "ns3/nstime.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
@@ -61,6 +63,56 @@ public:
    * \returns a newly-created routing protocol
    */
   virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const = 0;
+
+  /**
+   * \brief prints the routing tables of all nodes at a particular time.
+   * \param printTime the time at which the routing table is supposed to be printed.
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintRoutingTable() method of the
+   * Ipv6RoutingProtocol stored in the Ipv6 object, for all nodes at the
+   * specified time; the output format is routing protocol-specific.
+   */
+  void PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \brief prints the routing tables of all nodes at regular intervals specified by user.
+   * \param printInterval the time interval for which the routing table is supposed to be printed.
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintRoutingTable() method of the
+   * Ipv6RoutingProtocol stored in the Ipv6 object, for all nodes at the
+   * specified time interval; the output format is routing protocol-specific.
+   */
+  void PrintRoutingTableAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \brief prints the routing tables of a node at a particular time.
+   * \param printTime the time at which the routing table is supposed to be printed.
+   * \param node The node ptr for which we need the routing table to be printed
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintRoutingTable() method of the
+   * Ipv6RoutingProtocol stored in the Ipv6 object, for the selected node
+   * at the specified time; the output format is routing protocol-specific.
+   */
+  void PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+
+  /**
+   * \brief prints the routing tables of a node at regular intervals specified by user.
+   * \param printInterval the time interval for which the routing table is supposed to be printed.
+   * \param node The node ptr for which we need the routing table to be printed
+   * \param stream The output stream object to use
+   *
+   * This method calls the PrintRoutingTable() method of the
+   * Ipv6RoutingProtocol stored in the Ipv6 object, for the selected node
+   * at the specified interval; the output format is routing protocol-specific.
+   */
+  void PrintRoutingTableEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+
+private:
+  void Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
+  void PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const;
 };
 
 } // namespace ns3

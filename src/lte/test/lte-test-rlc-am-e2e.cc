@@ -25,23 +25,20 @@
 #include "ns3/packet.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
-#include "ns3/lte-simple-helper.h"
 #include "ns3/error-model.h"
-
 #include "ns3/radio-bearer-stats-calculator.h"
-
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-um.h"
-
-#include "ns3/lte-test-entities.h"
-#include "ns3/lte-test-rlc-am-e2e.h"
-
 #include "ns3/config-store.h"
+
+#include "lte-test-rlc-am-e2e.h"
+#include "lte-simple-helper.h"
+#include "lte-test-entities.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcAmE2eTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -114,8 +111,8 @@ LteRlcAmE2eTestCase::DoRun (void)
 {
   uint16_t numberOfNodes = 1;
 
-  LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
-  LogComponentEnable ("LteRlcAmE2eTest", level);
+  // LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
+  // LogComponentEnable ("LteRlcAmE2eTest", level);
   // LogComponentEnable ("ErrorModel", level);
   // LogComponentEnable ("LteSimpleHelper", level);
   // LogComponentEnable ("LteSimpleNetDevice", level);
@@ -159,11 +156,11 @@ LteRlcAmE2eTestCase::DoRun (void)
   // Error models: downlink and uplink
   Ptr<RateErrorModel> dlEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
   dlEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
-  dlEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+  dlEm->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
 //   Ptr<RateErrorModel> ueEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
 //   ueEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
-//   ueEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+//   ueEm->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
   // The below hooks will cause drops and receptions to be counted
   ueLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (dlEm));
@@ -214,3 +211,6 @@ LteRlcAmE2eTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
+
+} // namespace ns3
+

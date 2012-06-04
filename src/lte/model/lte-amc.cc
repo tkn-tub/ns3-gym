@@ -325,7 +325,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
 
               NS_LOG_LOGIC (" PRB =" << cqi.size ()
                                     << ", sinr = " << sinr_
-                                    << " (=" << pow (10.0, sinr_ / 10.0) << " dB)"
+                                    << " (=" << 10 * log10 (sinr_) << " dB)"
                                     << ", spectral efficiency =" << s
                                     << ", CQI = " << cqi_ << ", BER = " << m_ber);
 
@@ -348,7 +348,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
             double ber = 0.0;
             while (mcs < 28)
               {
-                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize), mcs);
+                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs);
                 if (ber > 0.1)
                   break;
                 mcs++;

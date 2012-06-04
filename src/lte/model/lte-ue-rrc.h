@@ -162,6 +162,13 @@ public:
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
   
+  /** 
+  * message from eNB-RRC for changing UE's configuration
+  * (up to now TxMode)
+  *
+  */
+  void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+  
 private:
 
   void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);

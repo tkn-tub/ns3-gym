@@ -20,15 +20,14 @@
 #ifndef OBJECT_MAP_H
 #define OBJECT_MAP_H
 
-#include <map>
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
-#include "object-ptr-map.h"
+#include "object-ptr-container.h"
 
 namespace ns3 {
 
-typedef ObjectPtrMapValue ObjectMapValue;
+typedef ObjectPtrContainerValue ObjectMapValue;
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
@@ -45,13 +44,13 @@ MakeObjectMapAccessor (Ptr<U> (T::*get)(INDEX) const,
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
-                          Ptr<U> (T::*get)(INDEX) const);
+                       Ptr<U> (T::*get)(INDEX) const);
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
-MakeObjectMapAccessor (U T::*memberMap)
+MakeObjectMapAccessor (U T::*memberVector)
 {
-  struct MemberStdContainer : public ObjectPtrMapAccessor
+  struct MemberStdContainer : public ObjectPtrContainerAccessor
   {
     virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
@@ -59,14 +58,13 @@ MakeObjectMapAccessor (U T::*memberMap)
         {
           return false;
         }
-
-      *n = (obj->*m_memberMap).size ();
+      *n = (obj->*m_memberVector).size ();
       return true;
     }
     virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const {
       const T *obj = static_cast<const T *> (object);
-      typename U::const_iterator begin = (obj->*m_memberMap).begin ();
-      typename U::const_iterator end = (obj->*m_memberMap).end ();
+      typename U::const_iterator begin = (obj->*m_memberVector).begin ();
+      typename U::const_iterator end = (obj->*m_memberVector).end ();
       uint32_t k = 0;
       for (typename U::const_iterator j = begin; j != end; j++, k++)
         {
@@ -81,16 +79,16 @@ MakeObjectMapAccessor (U T::*memberMap)
       // quiet compiler.
       return 0;
     }
-    U T::*m_memberMap;
+    U T::*m_memberVector;
   } *spec = new MemberStdContainer ();
-  spec->m_memberMap = memberMap;
+  spec->m_memberVector = memberVector;
   return Ptr<const AttributeAccessor> (spec, false);
 }
 
 template <typename T>
 Ptr<const AttributeChecker> MakeObjectMapChecker (void)
 {
-  return MakeObjectPtrMapChecker<T> ();
+  return MakeObjectPtrContainerChecker<T> ();
 }
 
 template <typename T, typename U, typename INDEX>
@@ -98,7 +96,7 @@ Ptr<const AttributeAccessor>
 MakeObjectMapAccessor (Ptr<U> (T::*get)(INDEX) const,
 		       INDEX (T::*getN)(void) const)
 {
-  return MakeObjectPtrMapAccessor<T,U,INDEX>(get, getN);
+  return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
 
 template <typename T, typename U, typename INDEX>
@@ -106,10 +104,8 @@ Ptr<const AttributeAccessor>
 MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
 		       Ptr<U> (T::*get)(INDEX) const)
 {
-  return MakeObjectPtrMapAccessor<T,U,INDEX>(get, getN);
+  return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
 }
-
-
 
 } // namespace ns3
 

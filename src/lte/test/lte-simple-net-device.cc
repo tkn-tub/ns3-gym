@@ -21,7 +21,7 @@
 #include "ns3/simulator.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
-#include "ns3/lte-simple-net-device.h"
+#include "lte-simple-net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteSimpleNetDevice");
 

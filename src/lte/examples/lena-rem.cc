@@ -108,8 +108,6 @@ int main (int argc, char *argv[])
     
   BuildingsHelper::MakeMobilityModelConsistent ();
 
- // by default, simulation will anyway stop right after the REM has been generated
-  Simulator::Stop (Seconds (0.0069));
 
   Simulator::Run ();
 

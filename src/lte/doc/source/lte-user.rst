@@ -299,7 +299,7 @@ Fading Traces Generation
 ************************
 
 
-It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
+It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
  * ``fc`` : the frequency in use (it affects the computation of the doppler speed).
  * ``v_km_h`` : the speed of the users
@@ -341,7 +341,7 @@ And for setting the parameters::
 
 It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set explicitly.
 
-The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
+The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
 
 
 .. _fig-fadingPedestrianTrace:
@@ -437,6 +437,41 @@ This positions the node on the scenario. Note that, in this example, node 0 will
       BuildingsHelper::MakeMobilityModelConsistent ();
 
 This command will go through the lists of all nodes and of all buildings, determine for each user if it is indoor or outdoor, and if indoor it will also determine the building in which the user is located and the corresponding floor and number inside the building.
+
+
+MIMO Model
+----------
+
+Is this subsection we illustrate how to configure the MIMO parameters. LTE defines 7 types of transmission modes:
+
+ * Transmission Mode 1: SISO.
+ * Transmission Mode 2: MIMO Tx Diversity.
+ * Transmission Mode 3: MIMO Spatial Multiplexity Open Loop.
+ * Transmission Mode 4: MIMO Spatial Multiplexity Closed Loop.
+ * Transmission Mode 5: MIMO Multi-User.
+ * Transmission Mode 6: Closer loop single layer precoding.
+ * Transmission Mode 7: Single antenna port 5.
+
+According to model implemented, the simulator includes the first three transmission modes types. The default one is the Transmission Mode 1 (SISO). In order to change the default Transmission Mode to be used, the attribute ``DefaultTransmissionMode`` of the ``LteEnbRrc`` can be used, as shown in the following::
+
+  Config::SetDefault ("ns3::LteEnbRrc::DefaultTransmissionMode", UintegerValue (0)); // SISO
+  Config::SetDefault ("ns3::LteEnbRrc::DefaultTransmissionMode", UintegerValue (1)); // MIMO Tx diversity (1 layer)
+  Config::SetDefault ("ns3::LteEnbRrc::DefaultTransmissionMode", UintegerValue (2)); // MIMO Spatial Multiplexity (2 layers)
+
+For changing the transmission mode of a certain user during the simulation a specific interface has been implemented in both standard schedulers::
+
+  void TransmissionModeConfigurationUpdate (uint16_t rnti, uint8_t txMode);
+
+This method can be used both for developing transmission mode decision engine (i.e., for optimizing the transmission mode according to channel condition and/or user's requirements) and for manual switching from simulation script. In the latter case, the switching can be done as shown in the following::
+
+  Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
+  PointerValue ptrval;
+  enbNetDev->GetAttribute ("FfMacScheduler", ptrval);
+  Ptr<RrFfMacScheduler> rrsched = ptrval.Get<RrFfMacScheduler> ();
+  Simulator::Schedule (Seconds (0.2), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 1);
+
+Finally, the model implemented can be reconfigured according to different MIMO models by updating the gain values (the only constraints is that the gain has to be constant during simulation run-time and common for the layers). The gain of each Transmission Mode can be changed according to the standard ns3 attribute system, where the attributes are: ``TxMode1Gain``, ``TxMode2Gain``, ``TxMode3Gain``, ``TxMode4Gain``, ``TxMode5Gain``, ``TxMode6Gain`` and ``TxMode7Gain``. By default only ``TxMode1Gain``, ``TxMode2Gain`` and ``TxMode3Gain`` have a meaningful value, that are the ones derived by _[CatreuxMIMO] (i.e., respectively 0.0, 4.2 and -2.8 dB).
+  
 
 
 
