@@ -230,11 +230,13 @@ Model Description
 
 The source code for the new module lives in the directory ``src/%(MODULE)s``.
 
+Add here a basic description of what is being modeled.
+
 Design
 ======
 
-Add here an overall description of the software design and how it fits
-into the existing ns-3 architecture. 
+Briefly describe the software design of the model and how it fits into 
+the existing ns-3 architecture. 
 
 Scope and Limitations
 =====================
@@ -252,17 +254,30 @@ Usage
 *****
 
 This section is principally concerned with the usage of your model, using
-the public API.
+the public API.  Focus first on most common usage patterns, then go
+into more advanced topics.
 
 Building New Module
 ===================
 
-Include this section if there are special build instructions.
+Include this subsection only if there are special build instructions or
+platform limitations.
 
-Helper
-======
+Helpers
+=======
 
 What helper API will users typically use?  Describe it here.
+
+Attributes
+==========
+
+What classes hold attributes, and what are the key ones worth mentioning?
+
+Output
+======
+
+What kind of data does the model generate?  What are the key trace
+sources?   What kind of logging output can be enabled?
 
 Advanced Usage
 ==============
@@ -274,6 +289,11 @@ Examples
 ========
 
 What examples using this new code are available?  Describe them here.
+
+Troubleshooting
+===============
+
+Add any tips for avoiding pitfalls, etc.
 
 Validation
 **********
