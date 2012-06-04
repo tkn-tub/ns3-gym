@@ -9,7 +9,7 @@ Downloading ns-3
 
 The |ns3| system as a whole is a fairly complex system and has a
 number of dependencies on other components.  Along with the systems you will
-most likely deal with every day (the GNU toolchain, Mercurial, you programmer
+most likely deal with every day (the GNU toolchain, Mercurial, a text
 editor) you will need to ensure that a number of additional libraries are
 present on your system before proceeding.  |ns3| provides a wiki
 for your reading pleasure that includes pages with many useful hints and tips.
