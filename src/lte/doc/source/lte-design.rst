@@ -1074,21 +1074,9 @@ The RRC model implemented in the simulator provides the following functionality:
    + reconfiguration of the PHY TX mode (MIMO)
    + data radio bearer setup
    + handover
-
-
-Idle mode
----------
-
-The RRC model supports a much simplified idle mode cell selection
-process. With respect to [TS36304]_, the main simplifications are:
-
- - at most one PLMN and one CSG id are supported
- - w.r.t. section 5.2.2, the only states supported are "Initial cell
-   selection", "Camped normally", "Connected"
- - a simplified cell selection/reselection criterion is adopted, according to
-   which the cell with the highest RSRP that matches the PLMN (and CSG
-   if specified) is selected.
-
+ - RRC connection re-establishment, supporting the following use
+   cases:
+   + handover
 
 
 
@@ -1232,6 +1220,22 @@ implemented in the simulator.
        SRB1 and never activate SRB2.
 
 
+Radio Link Failure
+------------------
+
+Since at this stage the RRC supports the CONNECTED mode only, Radio Link
+Failure (RLF) is not handled. The reason is that one of the possible
+outcomes of RLF (when RRC re-establishment is unsuccessful) is to
+leave RRC CONNECTED notifying the NAS of the RRC connection
+failure. In order to model RLF properly, RRC IDLE mode should be
+supported.
+
+With the current model, an UE that experiences bad link quality will
+just stay associated with the same eNB, and the scheduler will stop
+allocating resources to it for communications. This is also consistent
+with the fact that, at this stage, only handovers explicitly triggered
+within the simulation program are supported (network-driven handovers
+based on UE measurements are planned only at a later stage).
 
 
 Non-Access Stratum (NAS) model

@@ -68,7 +68,8 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
-$(FIGURES)/rrc-connection-establishment.pdf_width = 12cm
+$(FIGURES)/rrc-connection-establishment.pdf_width = 9cm
+$(FIGURES)/rrc-connection-reconfiguration-handover.pdf_width = 11cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
 
