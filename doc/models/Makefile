@@ -49,6 +49,7 @@ SOURCES = \
 	$(SRC)/network/doc/packets.rst \
 	$(SRC)/network/doc/sockets-api.rst \
 	$(SRC)/network/doc/simple.rst \
+	$(SRC)/network/doc/queue.rst \
 	$(SRC)/internet/doc/internet-stack.rst \
 	$(SRC)/internet/doc/ipv4.rst \
 	$(SRC)/internet/doc/ipv6.rst \
