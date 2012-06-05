@@ -193,3 +193,24 @@ Announcing
 
 2. announce to ns-developers and ns-3-users, with summary of release notes
 
+
+4) maintaining the release
+--------------------------
+
+First, create skeletal sections in CHANGES.html and RELEASE_NOTES to
+start collecting inputs for the ns-3.(x+1) release.
+
+The project may decide to make incremental, bug-fix releases from
+time to time, with a minor version number (e.g. ns-3.7.1).  To do
+this, changesets may be cherry-picked from ns-3-dev and added to
+ns-3.x repository.  Do not move over changesets that pertain to 
+adding new features, but documentation fixes and bug fixes are good 
+changesets to make available in a minor release.  The same steps
+above for making a release are generally followed, although one
+does not need to create a separate repository, but instead just tags
+the existing ns-3-dev and ns-3.x repositories with a "ns-3.x.1" type
+of tag.
+
+Also, on the main website, make sure that "latest release" points to
+the right page.  See how it was handled for ns-3.12 (which made
+a minor release): https://www.nsnam.org/ns-3.12/
