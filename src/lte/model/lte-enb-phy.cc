@@ -447,7 +447,7 @@ LteEnbPhy::StartSubFrame (void)
             {
               std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<UlDciIdealControlMessage> dci = DynamicCast<UlDciIdealControlMessage> (msg);
-              QueueUlDci (*dci);
+//               QueueUlDci (*dci);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
 
               if (it2 == m_ueAttached.end ())
