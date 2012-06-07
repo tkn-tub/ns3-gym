@@ -30,6 +30,20 @@ Known issues
 In general, known issues are tracked on the project tracker available
 at http://www.nsnam.org/bugzilla/
 
+Release 3.14.1
+==============
+
+Availability
+------------
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.14.1.tar.bz2
+
+Bugs fixed
+----------
+This hotfix release contains a fix for the PyViz visualizer and makes it
+easier to add PyViz support to examples; otherwise it is the same as the
+ns-3.14 release.
+
 Release 3.14
 ============
 
