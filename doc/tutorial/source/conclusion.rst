@@ -24,7 +24,7 @@ who want to learn more are encouraged to read the following additional
 documentation:
 
 * The |ns3| manual
-* The |ns3| model library documentatio
+* The |ns3| model library documentation
 * The |ns3| Doxygen (API documentation)
 * The |ns3| wiki
 

@@ -7,3 +7,4 @@ Network Module
     network-overview
     sockets-api
     simple
+    queue

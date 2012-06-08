@@ -43,8 +43,8 @@ netdevice_traits = {
     ns.mesh.MeshPointDevice: NetDeviceTraits(is_virtual=True),
     ns.wimax.SubscriberStationNetDevice: NetDeviceTraits(is_wireless=True),
     ns.wimax.BaseStationNetDevice: NetDeviceTraits(is_wireless=True),
-    ns.lte.UeNetDevice: NetDeviceTraits(is_wireless=True),
-    ns.lte.EnbNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.lte.LteUeNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.lte.LteEnbNetDevice: NetDeviceTraits(is_wireless=True),
 }
 
 def lookup_netdevice_traits(class_type):

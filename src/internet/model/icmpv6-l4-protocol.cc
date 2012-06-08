@@ -112,7 +112,7 @@ void Icmpv6L4Protocol::NotifyNewAggregate ()
       if (node != 0)
         {
           Ptr<Ipv6L3Protocol> ipv6 = this->GetObject<Ipv6L3Protocol> ();
-          if (ipv6 != 0)
+          if (ipv6 != 0 && m_downTarget.IsNull ())
             {
               SetNode (node);
               ipv6->Insert (this);
