@@ -21,6 +21,10 @@
 
 .. [R1-081483] 3GPP R1-081483 `Conveying MCS and TB size via PDCCH <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 
+.. [R4-092042] 3GPP R4-092042 "Simulation assumptions and parameters for FDD HeNB RF requirements"
+
+.. [TR36814] 3GPP TR 36.814 "E-UTRA Further advancements for E-UTRA physical layer aspects"
+
 .. [FFAPI] `FemtoForum LTE MAC Scheduler Interface Specification v1.11 <http://www.femtoforum.org/femto/technical.php>`_
 
 .. [ns3tutorial] `The ns-3 Tutorial <http://www.nsnam.org/docs/tutorial/singlehtml/index.html>`_
