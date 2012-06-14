@@ -14,7 +14,7 @@
     href="_static/ns3_stylesheet.css"/>
     
   {%- if theme_favicon %}
-    <link rel="icon" type="image/png" 
+    <link rel="icon" type="image/ico" 
       href="{{ pathto('_static/'+theme_favicon, 1) }}" />
   {%- endif %}
 {% endblock %}
@@ -46,6 +46,11 @@
       
 {% endblock %}
 
+{% block rootrellink %}
+    <li><a href="http://www.nsnam.org/">ns-3</a> &raquo;</li>
+    {{ super() }}
+{% endblock %}
+      
 {% if theme_collapsiblesidebar|tobool %}
   {% set script_files = script_files + ['_static/sidebar.js'] %}
 {% endif %}
