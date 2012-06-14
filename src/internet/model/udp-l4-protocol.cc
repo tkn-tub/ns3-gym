@@ -88,6 +88,7 @@ UdpL4Protocol::SetNode (Ptr<Node> node)
 void
 UdpL4Protocol::NotifyNewAggregate ()
 {
+  NS_LOG_FUNCTION (this);
   Ptr<Node> node = this->GetObject<Node> ();
   Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
   Ptr<Ipv6L3Protocol> ipv6 = node->GetObject<Ipv6L3Protocol> ();
@@ -108,12 +109,12 @@ UdpL4Protocol::NotifyNewAggregate ()
   // need to keep track of whether we are connected to an IPv4 or
   // IPv6 lower layer and call the appropriate one.
   
-  if (ipv4 != 0)
+  if (ipv4 != 0 && m_downTarget.IsNull())
     {
       ipv4->Insert (this);
       this->SetDownTarget (MakeCallback (&Ipv4::Send, ipv4));
     }
-  if (ipv6 != 0)
+  if (ipv6 != 0 && m_downTarget6.IsNull())
     {
       ipv6->Insert (this);
       this->SetDownTarget6 (MakeCallback (&Ipv6L3Protocol::Send, ipv6));
@@ -499,6 +500,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 void
 UdpL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 {
+  NS_LOG_FUNCTION (this);
   m_downTarget = callback;
 }
 
@@ -511,6 +513,7 @@ UdpL4Protocol::GetDownTarget (void) const
 void
 UdpL4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 {
+  NS_LOG_FUNCTION (this);
   m_downTarget6 = callback;
 }
 

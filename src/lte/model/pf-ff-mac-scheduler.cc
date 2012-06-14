@@ -507,7 +507,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                           // no info on this subband -> worst MCS
                           mcs = 0;
                         }
-                      achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, 1) / 8) / 0.001); // = TB size / TTI
+                        achievableRate += ((m_amc->GetTbSizeFromMcs (mcs, rbgSize) / 8) / 0.001); // = TB size / TTI
                     }
                   
                   double rcqi = achievableRate / (*it).second.lastAveragedThroughput;

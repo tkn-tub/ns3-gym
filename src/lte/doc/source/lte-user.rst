@@ -727,11 +727,24 @@ That's all! You can now start your simulation as usual::
   Simulator::Run ();
 
 
-Further Reading
----------------
+
+
+
+Examples Programs
+-----------------
 
 The directory ``src/lte/examples/`` contains some example simulation programs that
 show how to simulate different LTE scenarios. 
+
+
+Reference scenarios
+-------------------
+
+There is a vast amount of reference LTE simulation scenarios which can be found in the literature. Here we list some of them:
+
+ * The dual stripe model [R4-092042]_, which is partially implemented in the example program ``src/lte/examples/lena-dual-stripe.cc``
+
+ * The system simulation scenarios mentioned in section A.2 of [TR36814]_
 
 
 

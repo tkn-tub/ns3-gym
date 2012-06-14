@@ -50,14 +50,15 @@ main (int argc, char *argv[])
   //
 #if 0
   LogComponentEnable ("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable ("Ipv4L4Protocol", LOG_LEVEL_ALL);
   LogComponentEnable ("UdpL4Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("UdpSocketImpl", LOG_LEVEL_ALL);
   LogComponentEnable ("NetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("Ipv4EndPointDemux", LOG_LEVEL_ALL);
 #endif
 
 #if 0
   LogComponentEnable ("DsrOptions", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsrHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrRouting", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrOptionHeader", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrFsHeader", LOG_LEVEL_ALL);

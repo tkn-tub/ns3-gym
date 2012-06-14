@@ -244,6 +244,7 @@ private:
   Ipv4Address m_destination;
   uint16_t m_checksum;
   bool m_goodChecksum;
+  uint16_t m_headerSize;
 };
 
 } // namespace ns3

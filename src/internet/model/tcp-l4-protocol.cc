@@ -132,12 +132,12 @@ TcpL4Protocol::NotifyNewAggregate ()
   // need to keep track of whether we are connected to an IPv4 or
   // IPv6 lower layer and call the appropriate one.
   
-  if (ipv4 != 0)
+  if (ipv4 != 0 && m_downTarget.IsNull ())
     {
       ipv4->Insert(this);
       this->SetDownTarget(MakeCallback(&Ipv4::Send, ipv4));
     }
-  if (ipv6 != 0)
+  if (ipv6 != 0 && m_downTarget6.IsNull ())
     {
       ipv6->Insert(this);
       this->SetDownTarget6(MakeCallback(&Ipv6L3Protocol::Send, ipv6));

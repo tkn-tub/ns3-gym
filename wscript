@@ -823,6 +823,9 @@ def build(bld):
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
         Options.options.targets += ',' + os.path.basename(program_name)
+        if getattr(Options.options, "visualize", False):
+            program_obj = wutils.find_program(program_name, bld.env)
+            program_obj.use.append('ns3-visualizer')
         for gen in bld.all_task_gen:
             if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
                 gen.post()

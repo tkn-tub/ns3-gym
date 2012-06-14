@@ -9,36 +9,73 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3-dev
+============
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.14.1
+==============
+
+Availability
+------------
+This release is available from:
+http://www.nsnam.org/release/ns-allinone-3.14.1.tar.bz2
+
+Bugs fixed
+----------
+This hotfix release contains a fix for the PyViz visualizer and makes it
+easier to add PyViz support to examples; otherwise it is the same as the
+ns-3.14 release.
+
 Release 3.14
 ============
 
 Availability
 ------------
-This release not yet available.
+This release is available from: 
+http://www.nsnam.org/release/ns-allinone-3.14.tar.bz2
 
 Supported platforms
 -------------------
 ns-3.14 has been tested on the following platforms.  Not all features are
 available on all platforms; check the Installation page on the project wiki.
 
-- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
-- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
 - Fedora Core 17 (32/64 bit) with g++-4.7.0
 - Fedora Core 16 (32/64 bit) with g++-4.6.3
 - Fedora Core 15 (64 bit) with g++-4.6.3
+- Ubuntu 12.04 (32/64 bit) with g++-4.6.3
 - Ubuntu 11.10 (32 bit) with g++-4.6.1
-- OS X Lion with g++-4.2.1
-- OS X Snow Leopard with g++-4.2.1 
+- Ubuntu 10.04.4 LTS (64 bit) with g++-4.4.3
+- OS X Lion 10.7.4 with g++-4.2.1
+- OS X Snow Leopard 10.6.8 with g++-4.2.1 
 - FreeBSD 8.2 (32 bit) with g++-4.2.1
+- Cygwin 1.7.9-1 with g++-4.5.3
 
 New user-visible features
 -------------------------
 - Transport protocol implementations (TCP, UDP) have been refactored to
   support also IPv6 connections. Dual-stacked IPv6 sockets are implemented. 
-  An IPv6 socket can accept an IPv4 connection, returning the senders 
+  An IPv6 socket can accept an IPv4 connection, returning the sender's 
   address as an IPv4-mapped address (IPV6_V6ONLY socket option is not 
   implemented).
-- The LTE code from the LENA project has been merged, bringin in a
+- The LTE code from the LENA project has been merged, bringing in a
   significant redesign of the LTE module as well as many new features.
 - An antenna module is now included, which includes different
   radiation pattern models. See the corresponding new section of the
@@ -50,7 +87,7 @@ New user-visible features
 - The Dynamic Source Routing (DSR) MANET routing protocol for IPv4 was added.
 - A Random Early Detection (RED) queue model has been added.
 - Ipv6RoutingHelper is now in-line with Ipv4RoutingHelper concerning the RT 
-  print functions. Various minor changes made in Ipv6RoutingProtocol and 
+  print functions. Various minor changes were made in Ipv6RoutingProtocol and 
   derived classes to make this possible.
 - New "SendIcmpv6Redirect" attribute (and getter/setter functions) to 
   Ipv6L3Protocol. The behavior is similar to Linux's conf "send_redirects",
@@ -58,12 +95,12 @@ New user-visible features
 - Longer and more descriptive names are used for error units in RateErrorModel
   class and queue mode in Queue class. Attributes in those classes are also
   changed for consistency. See API documentation for details.
-- The netanim animator is now included with the release.
+- The netanim animator is now bundled with the release.
 
 Bugs fixed
 ----------
- - bug 631 - RealtimeSimulatorImpl does not handle Ctrl-C with python bindings
  - bug 603 - Simulator::Next is useless
+ - bug 631 - RealtimeSimulatorImpl does not handle Ctrl-C with python bindings
  - bug 962 - list of paths to reach objects contains bogus entries
  - bug 1000 - Make RealtimeSimulatorImpl last until stop
  - bug 1053 - Need better error diagnostics in ns2-mobility-trace example
@@ -103,10 +140,12 @@ Bugs fixed
  - bug 1393 - IPv6 Routing Helper RT Print functions
  - bug 1395 - AODV DeferredRouteOutputTag missing constructor
  - bug 1396 - ARP with hardware addresses longer than 6 bytes
+ - bug 1399 - TCP not backing off retransmissions properly
  - bug 1404 - Bound user input in tutorial third.cc program
  - bug 1406 - waf exits with maximum recursion depth exceeded 
  - bug 1415 - examples-to-run.py doesn't work with command line arguments
- - bug 1420 - bug 1420: no python bindings for csma-layout
+ - bug 1420 - no python bindings for csma-layout
+ - bug 1441 - IPv4 header length handling
  
 Known issues
 ------------

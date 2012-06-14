@@ -596,15 +596,15 @@ usable by user :math:`i` on resource block :math:`k` according to what reported 
 model (see `Adaptive Modulation and Coding`_); finally, let :math:`S(M, B)` be the TB
 size in bits as defined in [TS36213]_ for the case where a number :math:`B` of
 resource blocks is used. The achievable rate :math:`R_{i}(k,t)` in bit/s for user :math:`i`
-on resource block :math:`k` at subframe :math:`t` is defined as 
+on resource block group :math:`k` at subframe :math:`t` is defined as 
 
 .. math::
 
    R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
 
 where :math:`\tau` is the TTI duration.
-At the start of each subframe :math:`t`, each RB is assigned to a certain user.
-In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
+At the start of each subframe :math:`t`, each RBG is assigned to a certain user.
+In detail, the index :math:`\widehat{i}_{k}(t)` to which RBG :math:`k` is assigned at time
 :math:`t` is determined as
 
 .. math::
@@ -637,7 +637,7 @@ determine the MCS :math:`\widehat{M}_j(t)` actually used by user
 
    \widehat{M}_j(t) = \min_{k: \widehat{i}_{k}(t) = j}{M_{j,k}(t)}
 
-then we determine the total number :math:`\widehat{B}_j(t)` of RBs allocated to user
+then we determine the total number :math:`\widehat{B}_j(t)` of RBGs allocated to user
 :math:`j`:
 
 .. math::
