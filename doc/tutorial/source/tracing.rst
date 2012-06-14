@@ -85,7 +85,7 @@ potentially be useful to other people as a patch to the existing core.
 Let's pick a random example.  If you wanted to add more logging to the 
 |ns3| TCP socket (``tcp-socket-base.cc``) you could just add a new 
 message down in the implementation.  Notice that in TcpSocketBase::ReceivedAck()
-there is no log message for the no ack case.  You could simply add one, 
+there is no log message for the no ACK case.  You could simply add one, 
 changing the code from:
 
 ::
