@@ -8,5 +8,5 @@ echo "\documentclass{book}
 \includepdf[width=${1},fitpaper]{${2}}
 \end{document}" >${TMPFILE}.tex
 pdflatex -output-directory /tmp ${TMPFILE}.tex >/dev/null 2>/dev/null
-cp ${TMPFILE}.pdf ${3}
+cp /tmp/`basename ${TMPFILE}`.pdf ${3}
 
