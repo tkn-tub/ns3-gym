@@ -1,0 +1,52 @@
+{#
+    ns-3/layout.html
+    ~~~~~~~~~~~~~~~~~~~
+
+    Sphinx layout template for ns-3.
+
+    :copyright: Copyright 2012 by ns-3, see AUTHORS.
+    :license: GPL, see LICENSE for details.
+#}
+{% extends "basic/layout.html" %}
+
+{%- block extrahead %}
+  <link rel="stylesheet" type="text/css"
+    href="_static/ns3_stylesheet.css"/>
+    
+  {%- if theme_favicon %}
+    <link rel="icon" type="image/png" 
+      href="{{ pathto('_static/'+theme_favicon, 1) }}" />
+  {%- endif %}
+{% endblock %}
+      
+{% block header %}
+  <div id="titlearea">
+    <table cellspacing="0" cellpadding="0" width="100%">
+      <tbody>
+	<tr style="height: 56px;">
+	  <td id="projectlogo">
+	    {%- if theme_logo %}
+	      {% set img = theme_logo %}
+	    {%- endif %}
+	    <a href="https://www.nsnam.org/">
+	      <img alt="ns-3 Logo" src="{{ pathto('_static/%s' % img, 1)}}"/>
+	    </a>
+	  </td>
+	  <td id="projecttext">
+	    <div id="projectbrief">A Discrete-Event Network Simulator</div>
+	      <span id="projectnumber">ns-3-dev</span>
+	  </td>
+	  <td id="projectsection">
+	    <span style="margin-right:10px">{{ docstitle }}</span>
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+      
+{% endblock %}
+
+{% if theme_collapsiblesidebar|tobool %}
+  {% set script_files = script_files + ['_static/sidebar.js'] %}
+{% endif %}
+    
