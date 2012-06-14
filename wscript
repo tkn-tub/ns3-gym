@@ -1090,7 +1090,44 @@ class Ns3DoxygenContext(Context.Context):
 	bld.execute()
         _doxygen(bld)
 
+from waflib import Context, Build
+class Ns3SphinxContext(Context.Context):
+    """build the Sphinx documentation: manual, tutorial, models"""
+    
+    cmd = 'sphinx'
 
+    def sphinx_build(self, path):
+        if subprocess.Popen(["make", "-k", "html"], cwd=path).wait() :
+            raise SystemExit(1)
+
+    def execute(self):
+        for sphinxdir in ["manual", "models", "tutorial", "tutorial-pt-br"] :
+            self.sphinx_build(os.path.join("doc", sphinxdir))
+     
+
+from waflib import Context, Build
+class Ns3DocContext(Context.Context):
+    """build all the documentation: doxygen, manual, tutorial, models"""
+    
+    cmd = 'docs'
+
+    def execute(self):
+        steps = ['doxygen', 'sphinx']
+        Options.commands = steps + Options.commands
+        
+#         # first build doxygen
+# 	bld1 = Context.create_context("build")
+# 	bld1.options = Options.options # provided for convenience
+# 	bld1.cmd = "doxygen"
+# 	bld1.execute()
+
+#         # now build Sphinx stuff
+# 	bld2 = Context.create_context("build")
+# 	bld2.options = Options.options # provided for convenience
+# 	bld2.cmd = "sphinx"
+# 	bld2.execute()
+
+        
     
 def lcov_report(bld):
     env = bld.env
