@@ -8,7 +8,7 @@ NETANIM_RELEASE_NAME = "netanim-3.100"
 
 def build (bld) :
         bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/netanim-config.h')
-	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte'])
+	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan'])
 	module.includes = '.'
 	module.source = [
 			  'model/animation-interface.cc',
@@ -28,9 +28,4 @@ def build (bld) :
 
 	if (bld.env['ENABLE_EXAMPLES']) :
 		bld.add_subdirs ('examples')
-
-def configure (conf) :
-	conf.check (header_name='sys/socket.h', define_name='HAVE_SYS_SOCKET_H')
-	conf.check (header_name='netinet/in.h', define_name='HAVE_NETINET_IN_H')
-        conf.write_config_header ('ns3/netanim-config.h', top=True)
 

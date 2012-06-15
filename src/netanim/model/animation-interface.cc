@@ -37,6 +37,8 @@
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-enb-phy.h"
+#include "ns3/uan-net-device.h"
+#include "ns3/uan-mac.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -47,8 +49,6 @@
 #include <map>
 
 NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
-
-
 
 namespace ns3 {
 
@@ -159,6 +159,11 @@ bool AnimationInterface::IsInTimeWindow ()
     return true;
   else
     return false;
+}
+
+bool AnimationInterface::UanPacketIsPending (uint64_t AnimUid)
+{
+  return (m_pendingUanPackets.find (AnimUid) != m_pendingUanPackets.end ());
 }
 
 bool AnimationInterface::WifiPacketIsPending (uint64_t AnimUid)
@@ -547,6 +552,10 @@ void AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::CsmaPhyRxEndTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
                    MakeCallback (&AnimationInterface::CsmaMacRxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/$ns3::UanPhyGen/Tx",
+                   MakeCallback (&AnimationInterface::UanPhyGenTxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/$ns3::UanPhyGen/RxOk",
+                   MakeCallback (&AnimationInterface::UanPhyGenRxTrace, this));
 
   ConnectLte ();
 
@@ -683,7 +692,7 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
                                      Ptr<NetDevice> tx, Ptr<NetDevice> rx,
                                      Time txTime, Time rxTime)
 {
-  if (!m_started)
+  if (!m_started || !IsInTimeWindow ())
     return;
   NS_ASSERT (tx);
   NS_ASSERT (rx);
@@ -729,6 +738,12 @@ AnimationInterface::GetNetDeviceFromContext (std::string context)
   NS_ASSERT (n);
   return n->GetDevice (atoi (elements[3].c_str ()));
 }
+
+void AnimationInterface::AddPendingUanPacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
+{
+  m_pendingUanPackets[AnimUid] = pktinfo;
+}
+
                                   
 void AnimationInterface::AddPendingWifiPacket (uint64_t AnimUid, AnimPacketInfo &pktinfo)
 {
@@ -778,6 +793,49 @@ uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
     }
 }
 
+void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
+{
+  NS_LOG_UNCOND ("uan tx");
+  if (!m_started || !IsInTimeWindow ())
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+  gAnimUid++;
+  NS_LOG_INFO ("Uan TxBeginTrace for packet:" << gAnimUid);
+  AnimByteTag tag;
+  tag.Set (gAnimUid);
+  p->AddByteTag (tag);
+  AnimPacketInfo pktinfo (ndev, Simulator::Now (), Simulator::Now (), UpdatePosition (n));
+  AddPendingUanPacket (gAnimUid, pktinfo);
+
+
+}
+
+void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
+{
+  NS_LOG_UNCOND ("uan rx");
+  if (!m_started || !IsInTimeWindow ())
+    return;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+  uint64_t AnimUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("UanPhyGenRxTrace for packet:" << AnimUid);
+  if (!UanPacketIsPending (AnimUid))
+    {
+      NS_LOG_WARN ("UanPhyGenRxBeginTrace: unknown Uid");
+      return;
+    }
+  m_pendingUanPackets[AnimUid].ProcessRxBegin (ndev, Simulator::Now ());
+  m_pendingUanPackets[AnimUid].ProcessRxEnd (ndev, Simulator::Now (), UpdatePosition (n));
+  OutputWirelessPacket (p, m_pendingUanPackets[AnimUid], m_pendingUanPackets[AnimUid].GetRxInfo (ndev));
+
+}
+
+
 void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
                                           Ptr<const Packet> p)
 {
@@ -789,7 +847,7 @@ void AnimationInterface::WifiPhyTxBeginTrace (std::string context,
   NS_ASSERT (n);
   // Add a new pending wireless
   gAnimUid++;
-  NS_LOG_INFO ("TxBeginTrace for packet:" << gAnimUid);
+  NS_LOG_INFO ("Wifi TxBeginTrace for packet:" << gAnimUid);
   AnimByteTag tag;
   tag.Set (gAnimUid);
   p->AddByteTag (tag);
@@ -833,7 +891,7 @@ void AnimationInterface::WifiPhyRxBeginTrace (std::string context,
   Ptr <Node> n = ndev->GetNode ();
   NS_ASSERT (n);
   uint64_t AnimUid = GetAnimUidFromPacket (p);
-  NS_LOG_INFO ("RxBeginTrace for packet:" << AnimUid);
+  NS_LOG_INFO ("Wifi RxBeginTrace for packet:" << AnimUid);
   if (!WifiPacketIsPending (AnimUid))
     {
       NS_LOG_WARN ("WifiPhyRxBeginTrace: unknown Uid");

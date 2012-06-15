@@ -36,6 +36,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/lte-ue-net-device.h"
 #include "ns3/lte-enb-net-device.h"
+#include "ns3/uan-phy-gen.h"
 
 namespace ns3 {
 
@@ -311,6 +312,11 @@ private:
   void LteSpectrumPhyRxStart (std::string context,
                       Ptr<const PacketBurst> pb);
 
+  void UanPhyGenTxTrace (std::string context,
+                   Ptr<const Packet>, double, UanTxMode);
+  void UanPhyGenRxTrace (std::string context,
+                   Ptr<const Packet>, double, UanTxMode);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
@@ -336,6 +342,10 @@ private:
   std::map<uint64_t, AnimPacketInfo> m_pendingCsmaPackets;
   void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool CsmaPacketIsPending (uint64_t AnimUid);
+
+  std::map<uint64_t, AnimPacketInfo> m_pendingUanPackets;
+  void AddPendingUanPacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool UanPacketIsPending (uint64_t AnimUid);
 
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
 
