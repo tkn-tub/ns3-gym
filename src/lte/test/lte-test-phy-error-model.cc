@@ -218,6 +218,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
     
   lena->EnableRlcTraces ();
   double simulationTime = 1.000;
+
   Simulator::Stop (Seconds (simulationTime));
 
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();

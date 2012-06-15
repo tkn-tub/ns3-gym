@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by Marco Miozzo <mmiozzo@ctt.es>
+ *     Extend to Data and Ctrl frames
  */
 
 #ifndef LTE_TEST_DOWNLINK_SINR_H
@@ -39,11 +41,11 @@ public:
 };
 
 
-class LteDownlinkSinrTestCase : public TestCase
+class LteDownlinkDataSinrTestCase : public TestCase
 {
 public:
-  LteDownlinkSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
-  virtual ~LteDownlinkSinrTestCase ();
+  LteDownlinkDataSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
+  virtual ~LteDownlinkDataSinrTestCase ();
 
 private:
   virtual void DoRun (void);
@@ -51,6 +53,21 @@ private:
   Ptr<SpectrumValue> m_sv;
   Ptr<const SpectrumModel> m_sm;
   Ptr<SpectrumValue> m_sinr;
+};
+
+
+class LteDownlinkCtrlSinrTestCase : public TestCase
+{
+  public:
+    LteDownlinkCtrlSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
+    virtual ~LteDownlinkCtrlSinrTestCase ();
+    
+  private:
+    virtual void DoRun (void);
+    
+    Ptr<SpectrumValue> m_sv;
+    Ptr<const SpectrumModel> m_sm;
+    Ptr<SpectrumValue> m_sinr;
 };
 
 

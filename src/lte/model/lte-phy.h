@@ -39,7 +39,9 @@ namespace ns3 {
 
 class PacketBurst;
 class LteNetDevice;
-class IdealControlMessage;
+class LteControlMessage;
+
+
 
 /**
  * \ingroup lte
@@ -154,10 +156,10 @@ public:
   void DoDispose ();
 
   /**
-   * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to receive
    */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+//   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
 
   /**
@@ -208,12 +210,12 @@ public:
   /**
   * \param m the control message to be sent
   */
-  void SetControlMessages (Ptr<IdealControlMessage> m);
+  void SetControlMessages (Ptr<LteControlMessage> m);
 
   /**
   * \returns the list of control messages to be sent
   */
-  std::list<Ptr<IdealControlMessage> > GetControlMessages (void);
+  std::list<Ptr<LteControlMessage> > GetControlMessages (void);
 
 
   /** 
@@ -222,6 +224,18 @@ public:
    * \param sinr the SINR vs frequency measured by the device
    */
   virtual void  GenerateCqiReport (const SpectrumValue& sinr) = 0;
+  
+  /** 
+  * Send the control channels (PCFICH and PDCCH in downlink and SRS in uplink)
+  *
+  */
+//   virtual void SendControlChannels (void) = 0;
+  
+  /** 
+  * Send the PDSCH/PUSCH TBs
+  * 
+  */
+//   virtual void SendDataChannels (void) = 0;
 
 
 
@@ -246,7 +260,7 @@ protected:
   uint16_t m_ulEarfcn;
 
   std::vector< Ptr<PacketBurst> > m_packetBurstQueue;
-  std::vector< std::list<Ptr<IdealControlMessage> > > m_controlMessagesQueue;
+  std::vector< std::list<Ptr<LteControlMessage> > > m_controlMessagesQueue;
   uint8_t m_macChTtiDelay; // delay between MAC and channel layer in terms of TTIs
 
   uint16_t m_cellId;

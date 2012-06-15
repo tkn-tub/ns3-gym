@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-class IdealControlMessage;
+class LteControlMessage;
 
 /**
 * Service Access Point (SAP) offered by the UE-PHY to the UE-MAC
@@ -59,10 +59,10 @@ public:
   virtual void SetTransmissionMode (uint8_t   txMode) = 0;
 
   /**
-  * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+  * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
   * \param msg the Ideal Control Message to send
   */
-  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
 
 };
@@ -95,10 +95,10 @@ public:
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) = 0;
 
   /**
-  * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+  * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
   * \param msg the Ideal Control Message to receive
   */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
 };
 

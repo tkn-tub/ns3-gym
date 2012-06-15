@@ -23,10 +23,13 @@
 
 
 #include <ns3/spectrum-signal-parameters.h>
+// #include <ns3/ff-mac-common.h>
 
 namespace ns3 {
 
 class PacketBurst;
+class LteControlMessage;
+
 
 /**
  * \ingroup lte
@@ -54,6 +57,95 @@ struct LteSpectrumSignalParameters : public SpectrumSignalParameters
    */
   Ptr<PacketBurst> packetBurst;
 };
+
+
+/**
+* \ingroup lte
+*
+* Signal parameters for Lte Data Frame (PDSCH), and eventually after some 
+* control messages through other control channel embedded in PDSCH
+* (i.e. PBCH)
+*/
+struct LteSpectrumSignalParametersDataFrame : public SpectrumSignalParameters
+{
+  
+  // inherited from SpectrumSignalParameters
+  virtual Ptr<SpectrumSignalParameters> Copy ();
+  
+  /**
+  * default constructor
+  */
+  LteSpectrumSignalParametersDataFrame ();
+  
+  /**
+  * copy constructor
+  */
+  LteSpectrumSignalParametersDataFrame (const LteSpectrumSignalParametersDataFrame& p);
+  
+  /**
+  * The packet burst being transmitted with this signal
+  */
+  Ptr<PacketBurst> packetBurst;
+  
+  std::list<Ptr<LteControlMessage> > ctrlMsgList;
+  
+  uint16_t cellId;
+};
+
+
+/**
+* \ingroup lte
+*
+* Signal parameters for Lte DL Ctrl Frame (RS, PCFICH and PDCCH)
+*/
+struct LteSpectrumSignalParametersDlCtrlFrame : public SpectrumSignalParameters
+{
+  
+  // inherited from SpectrumSignalParameters
+  virtual Ptr<SpectrumSignalParameters> Copy ();
+  
+  /**
+  * default constructor
+  */
+  LteSpectrumSignalParametersDlCtrlFrame ();
+  
+  /**
+  * copy constructor
+  */
+  LteSpectrumSignalParametersDlCtrlFrame (const LteSpectrumSignalParametersDlCtrlFrame& p);
+
+
+  std::list<Ptr<LteControlMessage> > ctrlMsgList;
+  
+  uint16_t cellId;
+};
+
+
+
+/**
+* \ingroup lte
+*
+* Signal parameters for Lte SRS Frame
+*/
+struct LteSpectrumSignalParametersUlSrsFrame : public SpectrumSignalParameters
+{
+  
+  // inherited from SpectrumSignalParameters
+  virtual Ptr<SpectrumSignalParameters> Copy ();
+  
+  /**
+  * default constructor
+  */
+  LteSpectrumSignalParametersUlSrsFrame ();
+  
+  /**
+  * copy constructor
+  */
+  LteSpectrumSignalParametersUlSrsFrame (const LteSpectrumSignalParametersUlSrsFrame& p);
+  
+  uint16_t cellId;
+};
+
 
 }  // namespace ns3
 

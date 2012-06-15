@@ -25,7 +25,7 @@
 #include <ns3/packet.h>
 
 #include "lte-amc.h"
-#include "ideal-control-messages.h"
+#include "lte-control-messages.h"
 #include "lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 
@@ -225,7 +225,7 @@ public:
   // inherited from LteEnbPhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void UlCqiReport (UlCqi_s ulcqi);
 
 private:
@@ -250,9 +250,9 @@ EnbMacMemberLteEnbPhySapUser::SubframeIndication (uint32_t frameNo, uint32_t sub
 }
 
 void
-EnbMacMemberLteEnbPhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+EnbMacMemberLteEnbPhySapUser::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
-  m_mac->DoReceiveIdealControlMessage (msg);
+  m_mac->DoReceiveLteControlMessage (msg);
 }
 
 void
@@ -507,22 +507,22 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 }
 
 void
-LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
+LteEnbMac::DoReceiveLteControlMessage  (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
-  if (msg->GetMessageType () == IdealControlMessage::DL_CQI)
+  if (msg->GetMessageType () == LteControlMessage::DL_CQI)
     {
-      Ptr<DlCqiIdealControlMessage> dlcqi = DynamicCast<DlCqiIdealControlMessage> (msg);
-      ReceiveDlCqiIdealControlMessage (dlcqi);
+      Ptr<DlCqiLteControlMessage> dlcqi = DynamicCast<DlCqiLteControlMessage> (msg);
+      ReceiveDlCqiLteControlMessage (dlcqi);
     }
-  else if (msg->GetMessageType () == IdealControlMessage::BSR)
+  else if (msg->GetMessageType () == LteControlMessage::BSR)
     {
-      Ptr<BsrIdealControlMessage> bsr = DynamicCast<BsrIdealControlMessage> (msg);
+      Ptr<BsrLteControlMessage> bsr = DynamicCast<BsrLteControlMessage> (msg);
       ReceiveBsrMessage (bsr->GetBsr ());
     }
   else
     {
-      NS_LOG_LOGIC (this << " IdealControlMessage not recognized");
+      NS_LOG_LOGIC (this << " LteControlMessage not recognized");
     }
 }
 
@@ -540,7 +540,7 @@ LteEnbMac::DoUlCqiReport (UlCqi_s ulcqi)
 
 
 void
-LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
+LteEnbMac::ReceiveDlCqiLteControlMessage  (Ptr<DlCqiLteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -758,9 +758,9 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
             }
         }
       // send the relative DCI
-      Ptr<DlDciIdealControlMessage> msg = Create<DlDciIdealControlMessage> ();
+      Ptr<DlDciLteControlMessage> msg = Create<DlDciLteControlMessage> ();
       msg->SetDci (ind.m_buildDataList.at (i).m_dci);
-      m_enbPhySapProvider->SendIdealControlMessage (msg);
+      m_enbPhySapProvider->SendLteControlMessage (msg);
     }
 
   // Fire the trace with the DL information
@@ -802,9 +802,9 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
   for (unsigned int i = 0; i < ind.m_dciList.size (); i++)
     {
       // send the correspondent ul dci
-      Ptr<UlDciIdealControlMessage> msg = Create<UlDciIdealControlMessage> ();
+      Ptr<UlDciLteControlMessage> msg = Create<UlDciLteControlMessage> ();
       msg->SetDci (ind.m_dciList.at (i));
-      m_enbPhySapProvider->SendIdealControlMessage (msg);
+      m_enbPhySapProvider->SendLteControlMessage (msg);
     }
 
   // Fire the trace with the UL information

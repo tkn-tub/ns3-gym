@@ -133,12 +133,12 @@ public:
    * \brief Send the control message
    * \param msg the message to send
    */
-  // virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);  // legacy
+  // virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);  // legacy
   /**
    * \brief Receive the control message
    * \param msg the received message
    */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   /**
   * \brief Create the UL CQI feedback from SINR values perceived at
@@ -148,7 +148,7 @@ public:
   UlCqi_s CreateUlCqiReport (const SpectrumValue& sinr);
 
 
-  void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
 
   bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
@@ -156,15 +156,18 @@ public:
   
   virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   
+  void SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList);
+  void SendDataChannels (Ptr<PacketBurst> pb);
+  
   /**
   * \param m the UL-CQI to be queued
   */
-  void QueueUlDci (UlDciIdealControlMessage m);
+  void QueueUlDci (UlDciLteControlMessage m);
   
   /**
   * \returns the list of UL-CQI to be processed
   */
-  std::list<UlDciIdealControlMessage> DequeueUlDci (void);
+  std::list<UlDciLteControlMessage> DequeueUlDci (void);
 
 
   /**
@@ -188,6 +191,11 @@ public:
    * \brief PhySpectrum received a new PHY-PDU
    */
   void PhyPduReceived (Ptr<Packet> p);
+  
+  /**
+  * \brief PhySpectrum received a new list of LteControlMessage
+  */
+  virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
 
   // inherited from LtePhy
   virtual void GenerateCqiReport (const SpectrumValue& sinr);
@@ -196,10 +204,14 @@ public:
 private:
   std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
   
-  std::vector< std::list<UlDciIdealControlMessage> > m_ulDciQueue; // for storing info on future receptions
+  std::vector <int> m_dlDataRbMap;
+  
+  std::vector< std::list<UlDciLteControlMessage> > m_ulDciQueue; // for storing info on future receptions
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
+  
+  std::vector <uint16_t> m_ulRntiRxed;
 
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;

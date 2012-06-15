@@ -36,9 +36,9 @@
 
 namespace ns3 {
 
-class DlCqiIdealControlMessage;
-class UlCqiIdealControlMessage;
-class PdcchMapIdealControlMessage;
+class DlCqiLteControlMessage;
+class UlCqiLteControlMessage;
+class PdcchMapLteControlMessage;
 
 
 
@@ -123,9 +123,9 @@ public:
   * \brief Receive a DL CQI ideal control message
   * \param msg the DL CQI message
   */
-  void ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg);
+  void ReceiveDlCqiLteControlMessage  (Ptr<DlCqiLteControlMessage> msg);
 
-  void DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   /**
   * \brief Receive a CE element containing the buffer status report

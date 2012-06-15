@@ -28,7 +28,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/nstime.h>
 #include <ns3/lte-phy.h>
-#include <ns3/ideal-control-messages.h>
+#include <ns3/lte-control-messages.h>
 
 namespace ns3 {
 

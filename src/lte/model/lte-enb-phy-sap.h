@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-class IdealControlMessage;
+class LteControlMessage;
 
 /**
  * Service Access Point (SAP) offered by the eNB-PHY to the eNB-MAC
@@ -68,10 +68,10 @@ public:
   virtual void SetCellId (uint16_t cellId) = 0;
 
   /**
-   * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to send
    */
-  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
   
   /**
   * \brief Get the delay from MAC to Channel expressed in TTIs
@@ -110,10 +110,10 @@ public:
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) = 0;
 
   /**
-   * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to receive
    */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
   /**
    * \brief Returns to MAC level the UL-CQI evaluated

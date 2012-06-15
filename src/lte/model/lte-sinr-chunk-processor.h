@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by : Marco Miozzo <mmiozzo@cttc.es>
+ *        (move from CQI to Ctrl and Data SINR Chunk processors)
  */
 
 
@@ -56,11 +58,11 @@ public:
  * This SinrProcessor averages the calculated SINR over time.
  * 
  */
-class LteCqiSinrChunkProcessor : public LteSinrChunkProcessor
+class LteCtrlSinrChunkProcessor : public LteSinrChunkProcessor
 {
 public:
-  virtual ~LteCqiSinrChunkProcessor ();
-  LteCqiSinrChunkProcessor (Ptr<LtePhy> p);
+  virtual ~LteCtrlSinrChunkProcessor ();
+  LteCtrlSinrChunkProcessor (Ptr<LtePhy> p);
   virtual void Start ();
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
   virtual void End ();
@@ -76,18 +78,20 @@ private:
 * This SinrProcessor averages the calculated SINR over time for Phy error model
 * 
 */
-class LtePemSinrChunkProcessor : public LteSinrChunkProcessor
+class LteDataSinrChunkProcessor : public LteSinrChunkProcessor
 {
   public:
-    virtual ~LtePemSinrChunkProcessor ();
-    LtePemSinrChunkProcessor (Ptr<LteSpectrumPhy> p);
+    virtual ~LteDataSinrChunkProcessor ();
+    LteDataSinrChunkProcessor (Ptr<LteSpectrumPhy> p);
+    LteDataSinrChunkProcessor (Ptr<LteSpectrumPhy> s, Ptr<LtePhy> p);
     virtual void Start ();
     virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
     virtual void End ();
   private:
     Ptr<SpectrumValue> m_sumSinr;
     Time m_totDuration;
-    Ptr<LteSpectrumPhy> m_phy;
+    Ptr<LteSpectrumPhy> m_spectrumPhy;
+    Ptr<LtePhy> m_phy;
 };
 
 

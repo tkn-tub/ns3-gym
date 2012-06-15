@@ -248,30 +248,30 @@ LtePhy::GetPacketBurst (void)
 
 
 void
-LtePhy::SetControlMessages (Ptr<IdealControlMessage> m)
+LtePhy::SetControlMessages (Ptr<LteControlMessage> m)
 {
   // In uplink the queue of control messages and packet are of different sizes
   // for avoiding TTI cancellation due to synchronization of subframe triggers
   m_controlMessagesQueue.at (m_controlMessagesQueue.size () - 1).push_back (m);
 }
 
-std::list<Ptr<IdealControlMessage> >
+std::list<Ptr<LteControlMessage> >
 LtePhy::GetControlMessages (void)
 {
   if (m_controlMessagesQueue.at (0).size () > 0)
     {
-      std::list<Ptr<IdealControlMessage> > ret = m_controlMessagesQueue.at (0);
+      std::list<Ptr<LteControlMessage> > ret = m_controlMessagesQueue.at (0);
       m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
-      std::list<Ptr<IdealControlMessage> > newlist;
+      std::list<Ptr<LteControlMessage> > newlist;
       m_controlMessagesQueue.push_back (newlist);
       return (ret);
     }
   else
     {
       m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
-      std::list<Ptr<IdealControlMessage> > newlist;
+      std::list<Ptr<LteControlMessage> > newlist;
       m_controlMessagesQueue.push_back (newlist);
-      std::list<Ptr<IdealControlMessage> > emptylist;
+      std::list<Ptr<LteControlMessage> > emptylist;
       return (emptylist);
     }
 }

@@ -87,7 +87,7 @@ LteTestUePhy::GenerateCqiReport (const SpectrumValue& sinr)
 }
 
 void
-LteTestUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteTestUePhy::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 }
