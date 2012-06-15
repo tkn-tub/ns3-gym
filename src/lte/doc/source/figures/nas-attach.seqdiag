@@ -2,18 +2,13 @@
 diagram {
 	LteHelper; LteUeNetDevice; EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcSgwPgwApplication; EpcHelper;	
 	
-	LteHelper -> LteUeNetDevice [label="Start"];
-	LteUeNetDevice -> EpcUeNas [label="Start"];
-	EpcUeNas -> LteUeRrc [label="set PLMN"];
-	LteUeRrc -> LteUeRrc [label="cell selection"];
-	
-	LteHelper -> LteUeNetDevice [label="Attach"];
-	LteUeNetDevice -> EpcUeNas [label="Attach"];
-	EpcUeNas => LteUeRrc [label="Connect", return="ConnectionCompleted (Cell ID)"];
+	LteHelper -> LteUeNetDevice [label="Attach (eNB)"];
+	LteHelper -> LteUeRrc [label="Set Cell ID"];
+	LteUeNetDevice -> EpcUeNas [label="Connect"];
+	EpcUeNas -> LteUeRrc [label="Connect"];
 	
 	
-	EpcUeNas => LteHelper [label="ActivateEpsBearer(UeDevice, EnbDevice, Tft::Default)"] {
-		LteHelper => EpcHelper [label="ActivateEpsBearer(UeDevice, EnbDevice, Tft::Default)"] {
+	EpcUeNas => EpcHelper [label="ActivateEpsBearer(UeDevice, EnbDevice, Tft::Default)"] {
 			EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, Tft::Default)", return="TEID"] {
 				EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
 				EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
@@ -26,6 +21,6 @@ diagram {
 				EpcEnbApplication -> EpcEnbApplication [label="store TEID<->(RNTI,LCID) mapping"];
 			}  
 		}
-	}
+	
 }
 
