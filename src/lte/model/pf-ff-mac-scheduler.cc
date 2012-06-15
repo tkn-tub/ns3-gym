@@ -1191,6 +1191,7 @@ PfFfMacScheduler::RefreshUlCqiMaps(void)
 void
 PfFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size)
 {
+  size = size - 2; // remove the minimum RLC overhead
   std::map<LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   LteFlowId_t flow (rnti, lcid);
   it = m_rlcBufferReq.find (flow);
@@ -1242,7 +1243,7 @@ void
 PfFfMacScheduler::UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size)
 {
   
-  
+  size = size - 2; // remove the minimum RLC overhead
   std::map <uint16_t,uint32_t>::iterator it = m_ceBsrRxed.find (rnti);
   if (it!=m_ceBsrRxed.end ())
     {
