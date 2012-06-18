@@ -313,9 +313,9 @@ private:
                       Ptr<const PacketBurst> pb);
 
   void UanPhyGenTxTrace (std::string context,
-                   Ptr<const Packet>, double, UanTxMode);
+                         Ptr<const Packet>);
   void UanPhyGenRxTrace (std::string context,
-                   Ptr<const Packet>, double, UanTxMode);
+                         Ptr<const Packet>);
 
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 

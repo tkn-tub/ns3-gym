@@ -552,9 +552,9 @@ void AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::CsmaPhyRxEndTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
                    MakeCallback (&AnimationInterface::CsmaMacRxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/$ns3::UanPhyGen/Tx",
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyTxBegin",
                    MakeCallback (&AnimationInterface::UanPhyGenTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/$ns3::UanPhyGen/RxOk",
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyRxBegin",
                    MakeCallback (&AnimationInterface::UanPhyGenRxTrace, this));
 
   ConnectLte ();
@@ -793,7 +793,8 @@ uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
     }
 }
 
-void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
+//void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
+void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p)
 {
   NS_LOG_UNCOND ("uan tx");
   if (!m_started || !IsInTimeWindow ())
@@ -813,7 +814,8 @@ void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet
 
 }
 
-void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
+//void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
+void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 {
   NS_LOG_UNCOND ("uan rx");
   if (!m_started || !IsInTimeWindow ())
