@@ -793,10 +793,8 @@ uint64_t AnimationInterface::GetAnimUidFromPacket (Ptr <const Packet> p)
     }
 }
 
-//void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
 void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet> p)
 {
-  NS_LOG_UNCOND ("uan tx");
   if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
@@ -814,10 +812,8 @@ void AnimationInterface::UanPhyGenTxTrace (std::string context, Ptr<const Packet
 
 }
 
-//void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p, double a, UanTxMode)
 void AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 {
-  NS_LOG_UNCOND ("uan rx");
   if (!m_started || !IsInTimeWindow ())
     return;
   Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
