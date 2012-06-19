@@ -17,23 +17,23 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Marco Miozzo <mmiozzo@cttc.es>
+ *         Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include <ns3/fatal-error.h>
-#include <ns3/log.h>
-#include <ns3/abort.h>
+#include "ns3/fatal-error.h"
+#include "ns3/log.h"
+#include "ns3/abort.h"
 #include "ns3/pointer.h"
 #include "ns3/object-map.h"
 #include "ns3/object-factory.h"
 
-#include "lte-enb-rrc.h"
-#include "lte-rlc.h"
-#include "lte-pdcp.h"
-#include "lte-pdcp-sap.h"
-#include "lte-radio-bearer-info.h"
-#include "lte-radio-bearer-tag.h"
-#include "ns3/object-map.h"
-#include <ns3/ff-mac-csched-sap.h>
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-rlc.h"
+#include "ns3/lte-pdcp.h"
+#include "ns3/lte-pdcp-sap.h"
+#include "ns3/lte-radio-bearer-info.h"
+#include "ns3/lte-radio-bearer-tag.h"
+#include "ns3/ff-mac-csched-sap.h"
 
 // WILD HACK for UE-RRC direct communications
 #include <ns3/node-list.h>
@@ -209,7 +209,8 @@ UeInfo::RemoveRadioBearer (uint8_t lcid)
 NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
 
 LteEnbRrc::LteEnbRrc ()
-  : m_cmacSapProvider (0),
+  : m_x2SapProvider (0),
+    m_cmacSapProvider (0),
     m_ffMacSchedSapProvider (0),
     m_macSapProvider (0),
     m_configured (false),
@@ -218,6 +219,7 @@ LteEnbRrc::LteEnbRrc ()
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
   m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteEnbRrc> (this);
+  m_x2SapUser = new EpcX2SpecificEpcX2SapUser<LteEnbRrc> (this);
 }
 
 
@@ -233,6 +235,7 @@ LteEnbRrc::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete m_cmacSapUser;
   delete m_pdcpSapUser;
+  delete m_x2SapUser;
 }
 
 TypeId
@@ -280,6 +283,21 @@ LteEnbRrc::SetLastAllocatedRnti (uint16_t lastAllocatedRnti)
   m_lastAllocatedRnti = lastAllocatedRnti;
 }
 
+
+
+void
+LteEnbRrc::SetEpcX2SapProvider (EpcX2SapProvider * s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_x2SapProvider = s;
+}
+
+EpcX2SapUser*
+LteEnbRrc::GetEpcX2SapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_x2SapUser;
+}
 
 
 void
@@ -431,6 +449,50 @@ void
 LteEnbRrc::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 {
   m_forwardUpCallback = cb;
+}
+
+
+//
+// User API
+//
+void
+LteEnbRrc::SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+{
+  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
+  NS_LOG_INFO ("Request to send HANDOVER REQUEST");
+
+  EpcX2SapProvider::HandoverRequestParams params;
+  params.ueNode         = ueNode;
+  params.sourceEnbNode  = sourceEnbNode;
+  params.targetEnbNode  = targetEnbNode;
+
+  m_x2SapProvider->SendHandoverRequest (params);
+}
+
+
+//
+// X2-User SAP
+//
+void
+LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_INFO ("Recv X2 message: HANDOVER REQUEST");
+
+  NS_LOG_INFO ("Send X2 message: HANDOVER REQUEST ACK");
+
+  EpcX2SapProvider::HandoverRequestAckParams ackParams;
+  
+  m_x2SapProvider->SendHandoverRequestAck (ackParams);
+}
+
+void
+LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params)
+{
+  NS_LOG_FUNCTION (this);
+  
+  NS_LOG_INFO ("Recv X2 message: HANDOVER REQUEST ACK");
 }
 
 
