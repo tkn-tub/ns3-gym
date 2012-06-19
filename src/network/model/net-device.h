@@ -59,7 +59,7 @@ class Packet;
  * 
  * If you want to write a new MAC layer, you need to subclass
  * this base class and implement your own version of the
- * NetDevice::SendTo method.
+ * pure virtual methods in this class.
  *
  * This class was designed to hide as many MAC-level details as 
  * possible from the perspective of layer 3 to allow a single layer 3
