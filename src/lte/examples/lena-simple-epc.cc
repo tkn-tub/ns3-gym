@@ -46,14 +46,14 @@ main (int argc, char *argv[])
   uint16_t numberOfNodes = 2;
   double simTime = 5.0;
   double distance = 60.0;
-  // Inter packet interval in ms
-//   double interPacketInterval = 1;
   double interPacketInterval = 100;
 
   // Command line arguments
   CommandLine cmd;
   cmd.AddValue("numberOfNodes", "Number of eNodeBs + UE pairs", numberOfNodes);
-  cmd.AddValue("simTime", "Total duration of the simulation (in seconds)",simTime);
+  cmd.AddValue("simTime", "Total duration of the simulation [s])", simTime);
+  cmd.AddValue("distance", "Distance between eNBs [m]", distance);
+  cmd.AddValue("interPacketInterval", "Inter packet interval [ms])", interPacketInterval);
   cmd.Parse(argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
