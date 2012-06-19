@@ -1115,19 +1115,6 @@ class Ns3DocContext(Context.Context):
         steps = ['doxygen', 'sphinx']
         Options.commands = steps + Options.commands
         
-#         # first build doxygen
-# 	bld1 = Context.create_context("build")
-# 	bld1.options = Options.options # provided for convenience
-# 	bld1.cmd = "doxygen"
-# 	bld1.execute()
-
-#         # now build Sphinx stuff
-# 	bld2 = Context.create_context("build")
-# 	bld2.options = Options.options # provided for convenience
-# 	bld2.cmd = "sphinx"
-# 	bld2.execute()
-
-        
     
 def lcov_report(bld):
     env = bld.env
