@@ -16,26 +16,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ *         Manuel Requena <manuel.requena@cttc.es>
  */
 
 #ifndef LTE_ENB_RRC_H
 #define LTE_ENB_RRC_H
 
-#include <ns3/object.h>
-#include <ns3/packet.h>
-#include <ns3/lte-enb-cmac-sap.h>
-#include <ns3/ff-mac-common.h>
-#include <ns3/lte-pdcp-sap.h>
+#include "ns3/object.h"
+#include "ns3/packet.h"
+#include "ns3/lte-enb-cmac-sap.h"
+#include "ns3/lte-mac-sap.h"
+#include "ns3/ff-mac-sched-sap.h"
+#include "ns3/lte-pdcp-sap.h"
+#include "ns3/epc-x2-sap.h"
 
 #include <map>
 
 namespace ns3 {
 
-class FfMacSchedSapProvider;
-class LteMacSapProvider;
 class LteRadioBearerInfo;
-class LtePdcpSapUser;
-class LtePdcpSapProvider;
 
 
 /**
@@ -97,6 +96,8 @@ class LteEnbRrc : public Object
   friend class EnbRrcMemberLteEnbCmacSapUser;
   friend class LtePdcpSpecificLtePdcpSapUser<LteEnbRrc>;
 
+  friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
+
 public:
   /**
    * create an RRC instance for use within an eNB
@@ -113,6 +114,19 @@ public:
   // inherited from Object
   virtual void DoDispose (void);
   static TypeId GetTypeId (void);
+
+
+  /**
+   * Set the X2 SAP this RRC should interact with
+   * \param s the X2 SAP Provider to be used by this RRC entity
+   */
+  void SetEpcX2SapProvider (EpcX2SapProvider* s);
+
+  /** 
+   * Get the X2 SAP offered by this RRC
+   * \return s the X2 SAP User interface offered to the X2 entity by this RRC entity
+   */
+  EpcX2SapUser* GetEpcX2SapUser ();
 
 
   /**
@@ -217,9 +231,16 @@ public:
    * \param cb 
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
-  
+
+  /** 
+   * Send a HandoverRequest through the X2 SAP interface
+   */
+  void SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
+
   
 private:
+  void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
+  void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
 
   void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
   void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
@@ -233,6 +254,9 @@ private:
   void RemoveUeInfo (uint16_t rnti);
 
   Callback <void, Ptr<Packet> > m_forwardUpCallback;
+
+  EpcX2SapUser* m_x2SapUser;
+  EpcX2SapProvider* m_x2SapProvider;
 
   LteEnbCmacSapUser* m_cmacSapUser;
   LteEnbCmacSapProvider* m_cmacSapProvider;
