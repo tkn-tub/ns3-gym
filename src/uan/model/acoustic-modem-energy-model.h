@@ -196,7 +196,7 @@ private:
   bool IsStateTransitionValid (const int destState);
 
   /**
-   * \param currentState New state the modem is currently in.
+   * \param state New state the modem is currently in.
    *
    * Sets current state. This function is private so that only the energy model
    * can change its own state.

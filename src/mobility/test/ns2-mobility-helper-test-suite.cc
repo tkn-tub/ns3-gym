@@ -93,6 +93,7 @@ public:
    * Create new test case. To make it useful SetTrace () and AddReferencePoint () must be called
    *
    * \param name        Short description
+   * \param timeLimit   Test time limit
    * \param nodes       Number of nodes used in the test trace, 1 by default
    */
   Ns2MobilityHelperTest (std::string const & name, Time timeLimit, uint32_t nodes = 1)
