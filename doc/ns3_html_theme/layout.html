@@ -13,8 +13,10 @@
 {# set reldelim1 = ' @' #}
   
 {%- block extrahead %}
+  {%- if theme_customstylesheet %}
   <link rel="stylesheet" type="text/css"
-    href="_static/ns3_stylesheet.css"/>
+    href="{{ pathto('_static/'+theme_customstylesheet, 1) }}" />
+  {%- endif %}
     
   {%- if theme_favicon %}
     <link rel="icon" type="image/ico" 
@@ -28,16 +30,14 @@
       <tbody>
 	<tr style="height: 56px;">
 	  <td id="projectlogo">
-	    {%- if theme_logo %}
-	      {% set img = theme_logo %}
-	    {%- endif %}
-	    <a href="https://www.nsnam.org/">
-	      <img alt="ns-3 Logo" src="{{ pathto('_static/%s' % img, 1)}}"/>
+	    <a href="{{ theme_homepage }}">
+	      <img alt="ns-3 Logo"
+		   src="{{ pathto('_static/' + theme_logo, 1)}}"/>
 	    </a>
 	  </td>
 	  <td id="projecttext">
-	    <div id="projectbrief">A Discrete-Event Network Simulator</div>
-	      <span id="projectnumber">ns-3-dev</span>
+	    <div id="projectbrief">{{ theme_projectbrief }} </div>
+	      <span id="projectnumber">{{ theme_projectnumber }}</span>
 	  </td>
 	  <td id="projectsection">
 	    <span style="margin-right:10px">{{ docstitle }}</span>
@@ -50,7 +50,7 @@
 {% endblock %}
 
 {% block rootrellink %}
-    <li class="navelem"><a href="http://www.nsnam.org/">ns-3</a><span class="navelem">&nbsp;</span></li>
+    <li class="navelem"><a href="{{ theme_homepage }}">{{ theme_projectname }}</a><span class="navelem">&nbsp;</span></li>
     {{ super() }}
 {% endblock %}
       
