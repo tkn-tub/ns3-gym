@@ -48,19 +48,14 @@ public:
   virtual ~TraceFadingLossModel ();
 
   static TypeId GetTypeId ();
+  
+  virtual void DoStart (void);
 
   /**
    * \brief The couple of mobility mnode that form a fading channel realization
    */
   typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel> > ChannelRealizationId_t;
-  
 
-  /**
-   * \brief Create a fading channel realization among two device
-   * \param enbMobility mobility object of the enb
-   * \param ueMobility mobility object of the ue
-   */
-  void CreateFadingChannelRealization (Ptr<const MobilityModel> enbMobility, Ptr<const MobilityModel> ueMobility);
   
 private:
   /**
