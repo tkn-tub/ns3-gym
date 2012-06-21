@@ -55,7 +55,7 @@ public:
    * whole packet. It means that we will report a BUSY status until
    * one of the following happens:
    *   - NotifyRxEndOk
-   *   - NotifyExEndError
+   *   - NotifyRxEndError
    *   - NotifyTxStart
    */
   virtual void NotifyRxStart (Time duration) = 0;
