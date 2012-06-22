@@ -11,10 +11,11 @@ be asked to contribute test code.  Models that you contribute will be
 used for many years by other people, who probably have no idea upon
 first glance whether the model is correct.  The test code that you
 write for your model will help to avoid future regressions in
-the output and will aid future users in understanding the validity
+the output and will aid future users in understanding the verification
 and bounds of applicability of your models.
 
-There are many ways to test that a model is valid.  In this chapter,
+There are many ways to verify the correctness of a model's implementation.
+In this section,
 we hope to cover some common cases that can be used as a guide to
 writing new tests.
 
@@ -31,14 +32,62 @@ TestSuite), these things need to be decided up front:
   separately in src/test/ directory).  You will have to edit the wscript
   file in that directory to compile your new code, if it is a new file.
 
-See the file ``src/template/test/sample-test-suite.cc`` and corresponding
-wscript file in that directory for a simple example, and see the directories
-under ``src/test`` for more complicated examples.
+A program called ``src/create-module.py`` is a good starting point.
+This program can be invoked such as ``create-module.py router`` for
+a hypothetical new module called ``router``.  Once you do this, you
+will see a ``router`` directory, and a ``test/router-test-suite.cc`` 
+test suite.  This file can be a starting point for your initial test.
+This is a working test suite, although the actual tests performed are
+trivial.  Copy it over to your module's test directory, and do a global
+substitution of "Router" in that file for something pertaining to
+the model that you want to test.  You can also edit things such as a
+more descriptive test case name. 
 
-*The rest of this chapter remains to be written*
+You also need to add a block into your wscript to get this test to
+compile:
+
+::
+
+    module_test.source = [
+        'test/router-test-suite.cc',
+        ]
+
+Before you actually start making this do useful things, it may help
+to try to run the skeleton.  Make sure that ns-3 has been configured with
+the "--enable-tests" option.  Let's assume that your new test suite
+is called "router" such as here:
+
+::
+
+  RouterTestSuite::RouterTestSuite ()
+    : TestSuite ("router", UNIT)
+
+Try this command:
+
+::
+
+  ./test.py -s router
+
+Output such as below should be produced:
+
+::
+
+  PASS: TestSuite router
+  1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
+
+/* see src/lte/test/test-lte-antenna.cc for a worked example */
 
 How to add an example program to the test suite
 ***********************************************
+
+One can "smoke test" that examples compile and run successfully
+to completion (without memory leaks) using the ``examples-to-run.py``
+script located in your module's test directory.  Briefly, by including
+an instance of this file in your test directory, you can cause the
+test runner to execute the examples listed.  It is usually best to make 
+sure that you select examples that have reasonably short run times so as
+to not bog down the tests.  See the example in ``src/lte/test/`` 
+directory.
 
 Testing for boolean outcomes
 ****************************
