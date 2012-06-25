@@ -248,6 +248,7 @@ main (int argc, char *argv[])
   bool epcUl = true;
   bool useUdp = true;
   bool generateRem = false;
+  std::string fadingFileTrace = "";
   
   CommandLine cmd;
   cmd.AddValue ("nBlocks", "Number of femtocell blocks", nBlocks);
@@ -287,6 +288,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("useUdp", "if true, the UdpClient application will be used. "
                 "Otherwise, the BulkSend application will be used over a TCP connection. "
                 "If EPC is not used, this parameter will be ignored.", useUdp);
+  cmd.AddValue ("fadingTrace", "The path of the fading trace (by default any fading trace is loadedm which implies that fading is not considered)", fadingFileTrace);
 
 
   cmd.Parse (argc, argv);
@@ -356,6 +358,12 @@ main (int argc, char *argv[])
   // use always LOS model
   lteHelper->SetPathlossModelAttribute ("Los2NlosThr", DoubleValue (1e6));
   lteHelper->SetSpectrumChannelType ("ns3::MultiModelSpectrumChannel");
+  
+  if (!fadingFileTrace.empty ())
+    {
+      lteHelper->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
+      lteHelper->SetFadingModelAttribute("TraceFilename", StringValue (fadingFileTrace));
+    }
 
   Ptr<EpcHelper> epcHelper;
   if (epc)

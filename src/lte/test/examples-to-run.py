@@ -13,6 +13,7 @@ cpp_examples = [
     ("lena-dual-stripe --simTime=0.01", "True", "True"),
     ("lena-dual-stripe --epc=1 --simTime=0.01", "True", "True"),
     ("lena-dual-stripe --epc=1 --useUdp=0 --simTime=0.01", "True", "True"),
+    ("lena-dual-stripe --epc=1 --fadingTrace=../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad --simTime=0.01", "True", "True"),
     ("lena-fading", "True", "True"),
     ("lena-gtpu-tunnel", "True", "True"),
     ("lena-intercell-interference", "True", "True"),
