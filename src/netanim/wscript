@@ -7,7 +7,6 @@ NETANIM_RELEASE_NAME = "netanim-3.100"
 
 
 def build (bld) :
-        bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/netanim-config.h')
 	module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan'])
 	module.includes = '.'
 	module.source = [
