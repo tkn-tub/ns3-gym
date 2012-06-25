@@ -62,7 +62,7 @@ public:
   virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
-  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params);
+  virtual void UeUpdateConfigurationReq (LteUeConfig_t params);
 
 private:
   LteEnbMac* m_mac;
@@ -105,9 +105,9 @@ EnbMacMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
 }
 
 void
-EnbMacMemberLteEnbCmacSapProvider::RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+EnbMacMemberLteEnbCmacSapProvider::UeUpdateConfigurationReq (LteUeConfig_t params)
 {
-  m_mac->DoRrcUpdateConfigurationReq (params);
+  m_mac->DoUeUpdateConfigurationReq (params);
 }
 
 
@@ -870,11 +870,12 @@ LteEnbMac::DoCschedUeConfigUpdateInd (FfMacCschedSapUser::CschedUeConfigUpdateIn
 }
 
 void
-LteEnbMac::DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+LteEnbMac::DoUeUpdateConfigurationReq (LteUeConfig_t params)
 {
   NS_LOG_FUNCTION (this);
   // propagates to PHY layer
   m_enbPhySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
+  m_enbPhySapProvider->SetSrsConfigurationIndex (params.m_rnti, params.m_srsConfigurationIndex);
   // propagates to scheduler
   FfMacCschedSapProvider::CschedUeConfigReqParameters req;
   req.m_rnti = params.m_rnti;

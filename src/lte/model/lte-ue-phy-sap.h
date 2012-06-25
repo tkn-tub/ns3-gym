@@ -57,6 +57,11 @@ public:
   * \param txMode the transmissionMode of the user
   */
   virtual void SetTransmissionMode (uint8_t   txMode) = 0;
+  
+  /**
+  * \param txMode the transmissionMode of the user
+  */
+  virtual void SetSrsConfigurationIndex (uint16_t   srsCI) = 0;
 
   /**
   * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel

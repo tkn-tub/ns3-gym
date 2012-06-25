@@ -76,7 +76,7 @@ LteCtrlSinrChunkProcessor::End ()
   NS_LOG_FUNCTION (this);
   if (m_totDuration.GetSeconds () > 0)
     {
-      m_phy->GenerateCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      m_phy->GenerateCtrlCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
     }
   else
     {
@@ -143,7 +143,7 @@ LteDataSinrChunkProcessor::End ()
     m_spectrumPhy->UpdateSinrPerceived ((*m_sumSinr) / m_totDuration.GetSeconds ());
     if (m_phy)
       {
-        m_phy->GenerateCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
+        m_phy->GenerateDataCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
       }
   }
   else

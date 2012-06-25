@@ -112,6 +112,10 @@ public:
   */
   virtual void DoSendMacPdu (Ptr<Packet> p);
   
+  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
+  virtual void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI);
+    
   virtual uint8_t DoGetMacChTtiDelay ();
 
 
@@ -142,10 +146,17 @@ public:
 
   /**
   * \brief Create the UL CQI feedback from SINR values perceived at
-  * the physical layer with the signal received from eNB
+  * the physical layer with the PUSCH signal received from eNB
   * \param sinr SINR values vector
   */
-  UlCqi_s CreateUlCqiReport (const SpectrumValue& sinr);
+  UlCqi_s CreatePuschCqiReport (const SpectrumValue& sinr);
+  
+  /**
+  * \brief Create the UL CQI feedback from SINR values perceived at
+  * the physical layer with the SRS signal received from eNB
+  * \param sinr SINR values vector
+  */
+  UlCqi_s CreateSrsCqiReport (const SpectrumValue& sinr);
 
 
   void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
@@ -153,9 +164,7 @@ public:
   bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
   bool DeleteUePhy (uint16_t rnti);
-  
-  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
-  
+    
   void SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList);
   void SendDataChannels (Ptr<PacketBurst> pb);
   
@@ -198,7 +207,8 @@ public:
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
 
   // inherited from LtePhy
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
 
 private:
@@ -215,6 +225,9 @@ private:
 
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;
+  
+  uint16_t m_srsPeriodicity;
+  std::map <uint16_t,uint16_t> m_srsCounter;
   
 };
 

@@ -60,7 +60,7 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
 
   // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
-   AddTestCase (new LenaPhyErrorModelTestCase (4, 1800, 32, 0.33, 29));
+   AddTestCase (new LenaPhyErrorModelTestCase (4, 1800, 32, 0.35, 29));
 // MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
    AddTestCase (new LenaPhyErrorModelTestCase (2, 1800, 66, 0.11, 20));
 // MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51
@@ -151,7 +151,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
 //   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
 //   
   LogComponentDisableAll (LOG_LEVEL_ALL);
-  
+
   LogComponentEnable ("LenaTestPhyErrorModel", LOG_LEVEL_ALL);
 
 

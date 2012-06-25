@@ -57,6 +57,7 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void SetTransmissionMode (uint8_t txMode);
+  virtual void SetSrsConfigurationIndex (uint16_t srsCI);
 
 private:
   LteUePhy* m_phy;
@@ -92,7 +93,11 @@ UeMemberLteUePhySapProvider::SetTransmissionMode (uint8_t   txMode)
   m_phy->DoSetTransmissionMode (txMode);
 }
 
-
+void
+UeMemberLteUePhySapProvider::SetSrsConfigurationIndex (uint16_t   srsCI)
+{
+  m_phy->DoSetSrsConfigurationIndex (srsCI);
+}
 
 ////////////////////////////////////////
 // generic LteUePhy methods
@@ -115,7 +120,9 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_p10CqiLast (MilliSeconds (0)),
     m_a30CqiPeriocity (MilliSeconds (1)),
     // ideal behavior
-    m_a30CqiLast (MilliSeconds (0))
+    m_a30CqiLast (MilliSeconds (0)),
+    m_rnti (0),
+    m_srsPeriodicity (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
@@ -343,7 +350,7 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteUePhy::GenerateCqiReport (const SpectrumValue& sinr)
+LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
   // check periodic wideband CQI
@@ -362,6 +369,12 @@ LteUePhy::GenerateCqiReport (const SpectrumValue& sinr)
       DoSendLteControlMessage (msg);
       m_a30CqiLast = Simulator::Now ();
     }
+}
+
+void
+LteUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
+{
+  // Not used by UE, CQI are based only on RS
 }
 
 
@@ -588,13 +601,22 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     }
   m_subChannelsForTransmissionQueue.at (m_macChTtiDelay-1).clear ();
   
-
-  bool srs = false; // TODO: implement periodicity
-  double dataFrame = 0.001;
+  bool srs = false;
+  // check SRS periodicity
+  if (m_srsCounter==1)
+    {
+      srs = true;
+      m_srsCounter = m_srsPeriodicity;
+    }
+  else
+    {
+      m_srsCounter--;
+    }
+  double dataFrame = 0.001 - 0.000071429; // 0.001 - 1 symbol for SRS
   if (srs)
     {
-      dataFrame -= 0.000071429; // subtract 1 symbol reserved for SRS
-      SendSrsChannel ();
+      Simulator::Schedule (Seconds (0.000928572),  // (0.001/14) * 13
+                           &LteUePhy::SendSrsChannel,                         this);
     }
 
 
@@ -631,7 +653,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 void
 LteUePhy::SendSrsChannel ()
 {
-  NS_LOG_FUNCTION (this << " UE " << m_rnti << " start tx SRS");
+  NS_LOG_FUNCTION (this << " UE " << m_rnti << " start tx SRS, cell Id " << m_cellId);
   // set the current tx power spectral density (full bandwidth)
   std::vector <int> dlRb;
   for (uint8_t i = 0; i < m_ulBandwidth; i++)
@@ -668,6 +690,15 @@ LteUePhy::DoSetTransmissionMode (uint8_t txMode)
   NS_LOG_FUNCTION (this << (uint16_t)txMode);
   m_transmissionMode = txMode;
   m_downlinkSpectrumPhy->SetTransmissionMode (txMode);
+}
+
+void
+LteUePhy::DoSetSrsConfigurationIndex (uint16_t srsCI)
+{
+  NS_LOG_FUNCTION (this << srsCI);
+  m_srsPeriodicity = GetSrsPeriodicity (srsCI);
+  m_srsCounter = GetSrsSubframeOffset (srsCI) + 1;
+  NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << GetSrsSubframeOffset (srsCI) << " cellId " << m_cellId << " CI " << srsCI);
 }
 
 

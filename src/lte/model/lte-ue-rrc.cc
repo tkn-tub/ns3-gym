@@ -99,6 +99,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 LteUeRrc::LteUeRrc ()
   : m_cmacSapProvider (0),
     m_macSapProvider (0),
+    m_rnti (0),
     m_cellId (0)
 {
   NS_LOG_FUNCTION (this);
@@ -138,7 +139,7 @@ LteUeRrc::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("C-RNTI",
                    "Cell Radio Network Temporary Identifier",
-                   UintegerValue (1),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&LteUeRrc::m_rnti),
                    MakeUintegerChecker<uint16_t> ())
   ;

@@ -156,12 +156,14 @@ public:
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   
   virtual void DoSetTransmissionMode (uint8_t txMode);
+  virtual void DoSetSrsConfigurationIndex (uint16_t srsCI);
   
   
 
@@ -238,6 +240,9 @@ private:
   
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
+  
+  uint16_t m_srsPeriodicity;
+  uint16_t m_srsCounter;
 
 };
 

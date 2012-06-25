@@ -339,6 +339,7 @@ LteUeMac::DoRrcUpdateConfigurationReq (LteUeConfig_t params)
   NS_LOG_FUNCTION (this << " txMode " << (uint8_t) params.m_transmissionMode);
   // forward info to PHY layer
   m_uePhySapProvider->SetTransmissionMode (params.m_transmissionMode);
+  m_uePhySapProvider->SetSrsConfigurationIndex (params.m_srsConfigurationIndex);
 }
 
 

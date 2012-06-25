@@ -497,7 +497,7 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
       ChangeState (TX);
       NS_ASSERT (m_channel);
       double ulCtrlFrame = 0.000071429; // 0.001 / 14 * 1 (fixed to 1 symbols)
-      Ptr<LteSpectrumSignalParametersDlCtrlFrame> txParams = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
+      Ptr<LteSpectrumSignalParametersUlSrsFrame> txParams = Create<LteSpectrumSignalParametersUlSrsFrame> ();
       txParams->duration = Seconds (ulCtrlFrame);
       txParams->txPhy = GetObject<SpectrumPhy> ();
       txParams->txAntenna = m_antenna;
@@ -892,9 +892,9 @@ LteSpectrumPhy::EndRxDlCtrl ()
 void
 LteSpectrumPhy::EndRxUlSrs ()
 {
+  ChangeState (IDLE);
   m_interferenceCtrl->EndRx ();
   // nothing to do (used only for SRS at this stage)
-  ChangeState (IDLE);
 }
 
 void 

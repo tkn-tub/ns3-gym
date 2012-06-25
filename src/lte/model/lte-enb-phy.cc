@@ -58,6 +58,7 @@ public:
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual uint8_t GetMacChTtiDelay ();
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI);
   
 
 private:
@@ -106,6 +107,12 @@ EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMo
   m_phy->DoSetTransmissionMode (rnti, txMode);
 }
 
+void
+EnbMemberLteEnbPhySapProvider::SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI)
+{
+  m_phy->DoSetSrsConfigurationIndex (rnti, srsCI);
+}
+
 
 ////////////////////////////////////////
 // generic LteEnbPhy methods
@@ -125,7 +132,8 @@ LteEnbPhy::LteEnbPhy ()
 LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
     m_nrFrames (0),
-    m_nrSubFrames (0)
+    m_nrSubFrames (0),
+    m_srsPeriodicity (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
@@ -547,16 +555,25 @@ LteEnbPhy::EndFrame (void)
 
 
 void 
-LteEnbPhy::GenerateCqiReport (const SpectrumValue& sinr)
+LteEnbPhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-  UlCqi_s ulcqi = CreateUlCqiReport (sinr);
+  UlCqi_s ulcqi = CreateSrsCqiReport (sinr);
+  m_enbPhySapUser->UlCqiReport (ulcqi);
+}
+
+void
+LteEnbPhy::GenerateDataCqiReport (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this << sinr);
+  UlCqi_s ulcqi = CreatePuschCqiReport (sinr);
   m_enbPhySapUser->UlCqiReport (ulcqi);
 }
 
 
+
 UlCqi_s
-LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
+LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
   Values::const_iterator it;
@@ -574,6 +591,28 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
     }
   return (ulcqi);
 	
+}
+
+
+UlCqi_s
+LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this << sinr);
+  Values::const_iterator it;
+  UlCqi_s ulcqi;
+  ulcqi.m_type = UlCqi_s::PUSCH;
+  int i = 0;
+  for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+  {
+    double sinrdb = 10 * log10 ((*it));
+    //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
+    // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
+    int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
+    ulcqi.m_sinr.push_back (sinrFp);
+    i++;
+  }
+  return (ulcqi);
+  
 }
 
 void
@@ -609,6 +648,23 @@ LteEnbPhy::DequeueUlDci (void)
       m_ulDciQueue.push_back (l);
       std::list<UlDciLteControlMessage> emptylist;
       return (emptylist);
+    }
+}
+
+void
+LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI)
+{
+  NS_LOG_FUNCTION (this);
+  m_srsPeriodicity = GetSrsPeriodicity (srsCI);
+  NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srsCI) << " CI " << srsCI);
+  std::map <uint16_t,uint16_t>::iterator it = m_srsCounter.find (rnti);
+  if (it != m_srsCounter.end ())
+    {
+      (*it).second = GetSrsSubframeOffset (srsCI) + 1;
+    }
+    else
+    {
+      m_srsCounter.insert (std::pair<uint16_t, uint16_t> (rnti, GetSrsSubframeOffset (srsCI) + 1));
     }
 }
 

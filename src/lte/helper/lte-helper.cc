@@ -475,6 +475,7 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   uint16_t rnti = enbRrc->AddUe (ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
   Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   ueRrc->ConfigureUe (rnti, enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId () );
+  //enbRrc->SetCellId (enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
 
   // attach UE to eNB
   ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
@@ -498,12 +499,13 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
     }
  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
+  NS_LOG_DEBUG ("!Attach eNB " << enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId () << " with UE " << rnti);
   uePhy->SetRnti (rnti);
   uePhy->DoSetBandwidth (enbDevice->GetObject<LteEnbNetDevice> ()->GetUlBandwidth (),
                          enbDevice->GetObject<LteEnbNetDevice> ()->GetDlBandwidth ());
   uePhy->DoSetEarfcn (enbDevice->GetObject<LteEnbNetDevice> ()->GetDlEarfcn (),
                       enbDevice->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
-
+  enbRrc->ConfigureNewUe (rnti);
   ueDevice->Start ();
   
   m_downlinkChannel->AddRx (uePhy->GetDownlinkSpectrumPhy ());

@@ -163,7 +163,7 @@ private:
   void DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind);
   void DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters params);
   
-  void DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params);
+  void DoUeUpdateConfigurationReq (LteUeConfig_t params);
 
   /**
   * \brief Forwarded from LteEnbPhySapUser: trigger the start from a new frame

@@ -59,7 +59,9 @@ public:
 struct LteUeConfig_t
 {
   uint16_t  m_rnti;
+  bool      m_reconfigureFlag;
   uint8_t   m_transmissionMode;
+  uint16_t  m_srsConfigurationIndex;
   
   public:
     LteUeConfig_t ();

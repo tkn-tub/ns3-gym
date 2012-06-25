@@ -195,6 +195,19 @@ public:
   * \returns the RB gruop size according to the bandwidth
   */
   uint8_t GetRbgSize (void) const;
+  
+  
+  /**
+  * \returns the SRS periodicity (see Table 8.2-1 of 36.213)
+  * \param srsCI the SRS Configuration Index
+  */
+  uint16_t GetSrsPeriodicity (uint16_t srsCI) const;
+  
+  /**
+  * \returns the SRS Subframe offset (see Table 8.2-1 of 36.213)
+  * \param srsCI the SRS Configuration Index
+  */
+  uint16_t GetSrsSubframeOffset (uint16_t srsCI) const;
 
 
   /**
@@ -219,23 +232,19 @@ public:
 
 
   /** 
-   * generate a CQI report based on the given SINR
+   * generate a CQI report based on the given SINR of Ctrl frame
    * 
    * \param sinr the SINR vs frequency measured by the device
    */
-  virtual void  GenerateCqiReport (const SpectrumValue& sinr) = 0;
+  virtual void  GenerateCtrlCqiReport (const SpectrumValue& sinr) = 0;
   
   /** 
-  * Send the control channels (PCFICH and PDCCH in downlink and SRS in uplink)
-  *
-  */
-//   virtual void SendControlChannels (void) = 0;
-  
-  /** 
-  * Send the PDSCH/PUSCH TBs
+  * generate a CQI report based on the given SINR of Data frame
+  * (used for PUSCH CQIs)
   * 
+  * \param sinr the SINR vs frequency measured by the device
   */
-//   virtual void SendDataChannels (void) = 0;
+  virtual void  GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
 
 
 

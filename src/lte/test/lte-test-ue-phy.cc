@@ -78,10 +78,19 @@ LteTestUePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-LteTestUePhy::GenerateCqiReport (const SpectrumValue& sinr)
+LteTestUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
+  // Store calculated SINR, it will be retrieved at the end of the test
+  m_sinr = sinr;
+}
+
+void
+LteTestUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this);
+  
   // Store calculated SINR, it will be retrieved at the end of the test
   m_sinr = sinr;
 }

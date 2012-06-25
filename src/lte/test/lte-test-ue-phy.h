@@ -58,7 +58,9 @@ public:
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
 
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 

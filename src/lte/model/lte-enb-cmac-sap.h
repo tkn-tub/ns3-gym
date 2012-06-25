@@ -26,7 +26,7 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-common.h>
-#include <ns3/ff-mac-csched-sap.h>
+//#include <ns3/ff-mac-csched-sap.h>
 
 namespace ns3 {
 
@@ -98,7 +98,7 @@ public:
    */
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid) = 0;
   
-  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params) = 0;
+  virtual void UeUpdateConfigurationReq (LteUeConfig_t params) = 0;
 
 
 };

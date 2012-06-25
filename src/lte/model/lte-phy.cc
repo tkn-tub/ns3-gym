@@ -35,6 +35,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LtePhy);
 
+
 LtePhy::LtePhy ()
 {
   NS_LOG_FUNCTION (this);
@@ -48,7 +49,8 @@ LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_ulBandwidth (0),
     m_dlBandwidth (0),
     m_rbgSize (0),
-    m_macChTtiDelay (0)
+    m_macChTtiDelay (0),
+    m_cellId (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -207,6 +209,43 @@ LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
           break;
         }
     }
+}
+
+
+uint16_t
+LtePhy::GetSrsPeriodicity (uint16_t srsCI) const
+{
+  // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+  uint16_t SrsPeriodicity[9] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
+  uint16_t SrsCiLow[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+  uint16_t SrsCiHigh[9] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+  uint8_t i;
+  for (i = 8; i > 0; i --)
+    {
+      if ((srsCI>=SrsCiLow[i])&&(srsCI<=SrsCiHigh[i]))
+        {
+          break;
+        }
+    }
+  return SrsPeriodicity[i];
+}
+
+uint16_t
+LtePhy::GetSrsSubframeOffset (uint16_t srsCI) const
+{
+  // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+  uint16_t SrsSubframeOffset[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+  uint16_t SrsCiLow[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+  uint16_t SrsCiHigh[9] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+  uint8_t i;
+  for (i = 8; i > 0; i --)
+    {
+      if ((srsCI>=SrsCiLow[i])&&(srsCI<=SrsCiHigh[i]))
+        {
+          break;
+        }
+    }
+  return (srsCI - SrsSubframeOffset[i]);
 }
 
 void 
