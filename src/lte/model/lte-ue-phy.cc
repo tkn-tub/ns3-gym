@@ -57,7 +57,7 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void SetTransmissionMode (uint8_t txMode);
-  virtual void SetSrsConfigurationIndex (uint16_t srsCI);
+  virtual void SetSrsConfigurationIndex (uint16_t srcCi);
 
 private:
   LteUePhy* m_phy;
@@ -94,9 +94,9 @@ UeMemberLteUePhySapProvider::SetTransmissionMode (uint8_t   txMode)
 }
 
 void
-UeMemberLteUePhySapProvider::SetSrsConfigurationIndex (uint16_t   srsCI)
+UeMemberLteUePhySapProvider::SetSrsConfigurationIndex (uint16_t   srcCi)
 {
-  m_phy->DoSetSrsConfigurationIndex (srsCI);
+  m_phy->DoSetSrsConfigurationIndex (srcCi);
 }
 
 ////////////////////////////////////////
@@ -616,7 +616,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   if (srs)
     {
       Simulator::Schedule (Seconds (0.000928572),  // (0.001/14) * 13
-                           &LteUePhy::SendSrsChannel,                         this);
+                           &LteUePhy::SendSrs,                         this);
     }
 
 
@@ -651,7 +651,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 }
 
 void
-LteUePhy::SendSrsChannel ()
+LteUePhy::SendSrs ()
 {
   NS_LOG_FUNCTION (this << " UE " << m_rnti << " start tx SRS, cell Id " << m_cellId);
   // set the current tx power spectral density (full bandwidth)
@@ -693,12 +693,12 @@ LteUePhy::DoSetTransmissionMode (uint8_t txMode)
 }
 
 void
-LteUePhy::DoSetSrsConfigurationIndex (uint16_t srsCI)
+LteUePhy::DoSetSrsConfigurationIndex (uint16_t srcCi)
 {
-  NS_LOG_FUNCTION (this << srsCI);
-  m_srsPeriodicity = GetSrsPeriodicity (srsCI);
-  m_srsCounter = GetSrsSubframeOffset (srsCI) + 1;
-  NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << GetSrsSubframeOffset (srsCI) << " cellId " << m_cellId << " CI " << srsCI);
+  NS_LOG_FUNCTION (this << srcCi);
+  m_srsPeriodicity = GetSrsPeriodicity (srcCi);
+  m_srsCounter = GetSrsSubframeOffset (srcCi) + 1;
+  NS_LOG_DEBUG (this << " UE SRS P " << m_srsPeriodicity << " RNTI " << m_rnti << " offset " << GetSrsSubframeOffset (srcCi) << " cellId " << m_cellId << " CI " << srcCi);
 }
 
 

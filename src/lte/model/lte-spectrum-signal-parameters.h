@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by Marco Miozzo <mmiozzo@cttc.es> (add data and ctrl diversity)
  */
 
 #ifndef LTE_SPECTRUM_SIGNAL_PARAMETERS_H
@@ -23,7 +24,6 @@
 
 
 #include <ns3/spectrum-signal-parameters.h>
-// #include <ns3/ff-mac-common.h>
 
 namespace ns3 {
 

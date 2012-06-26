@@ -213,7 +213,7 @@ LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
 
 
 uint16_t
-LtePhy::GetSrsPeriodicity (uint16_t srsCI) const
+LtePhy::GetSrsPeriodicity (uint16_t srcCi) const
 {
   // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
   uint16_t SrsPeriodicity[9] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
@@ -222,7 +222,7 @@ LtePhy::GetSrsPeriodicity (uint16_t srsCI) const
   uint8_t i;
   for (i = 8; i > 0; i --)
     {
-      if ((srsCI>=SrsCiLow[i])&&(srsCI<=SrsCiHigh[i]))
+      if ((srcCi>=SrsCiLow[i])&&(srcCi<=SrsCiHigh[i]))
         {
           break;
         }
@@ -231,7 +231,7 @@ LtePhy::GetSrsPeriodicity (uint16_t srsCI) const
 }
 
 uint16_t
-LtePhy::GetSrsSubframeOffset (uint16_t srsCI) const
+LtePhy::GetSrsSubframeOffset (uint16_t srcCi) const
 {
   // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
   uint16_t SrsSubframeOffset[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
@@ -240,12 +240,12 @@ LtePhy::GetSrsSubframeOffset (uint16_t srsCI) const
   uint8_t i;
   for (i = 8; i > 0; i --)
     {
-      if ((srsCI>=SrsCiLow[i])&&(srsCI<=SrsCiHigh[i]))
+      if ((srcCi>=SrsCiLow[i])&&(srcCi<=SrsCiHigh[i]))
         {
           break;
         }
     }
-  return (srsCI - SrsSubframeOffset[i]);
+  return (srcCi - SrsSubframeOffset[i]);
 }
 
 void 

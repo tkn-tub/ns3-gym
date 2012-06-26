@@ -55,7 +55,9 @@ public:
 
 
 /** 
- * This SinrProcessor averages the calculated SINR over time.
+ * The LteCtrlSinrChunkProcessor averages the calculated SINR over time 
+ * for the Ctrl frame and therefore in charge of generating the CQI starting
+ *  from the reference signals.
  * 
  */
 class LteCtrlSinrChunkProcessor : public LteSinrChunkProcessor
@@ -75,7 +77,10 @@ private:
 
 
 /** 
-* This SinrProcessor averages the calculated SINR over time for Phy error model
+* The LteDataSinrChunkProcessor averages the calculated SINR over time for
+* data frame and therefore in charge of generating the sinr values for
+*  evaluating the errors of data packets. Might be used also for generating 
+*  CQI based on data in case any LtePhy is attached.
 * 
 */
 class LteDataSinrChunkProcessor : public LteSinrChunkProcessor

@@ -114,8 +114,11 @@ std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)
     case LteSpectrumPhy::IDLE:
       os << "IDLE";
       break;
-    case LteSpectrumPhy::RX:
-      os << "RX";
+    case LteSpectrumPhy::RX_DATA:
+      os << "RX_DATA";
+      break;
+    case LteSpectrumPhy::RX_CTRL:
+      os << "RX_CTRL";
       break;
     case LteSpectrumPhy::TX:
       os << "TX";
@@ -303,7 +306,8 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
 
   switch (m_state)
     {
-    case RX:
+    case RX_DATA:
+    case RX_CTRL:
       NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
       break;
 
@@ -363,7 +367,8 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
   
   switch (m_state)
   {
-    case RX:
+    case RX_DATA:
+    case RX_CTRL:
       NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
       break;
       
@@ -418,7 +423,8 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
   
   switch (m_state)
   {
-    case RX:
+    case RX_DATA:
+    case RX_CTRL:
       NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
       break;
       
@@ -473,7 +479,8 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
   
   switch (m_state)
   {
-    case RX:
+    case RX_DATA:
+    case RX_CTRL:
       NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
       break;
       
@@ -571,7 +578,7 @@ LteSpectrumPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
         }
       else
         {
-          // other type of signal (cuold be 3G, GSM, whatever) -> interference
+          // other type of signal (could be 3G, GSM, whatever) -> interference
           m_interferenceData->AddSignal (rxPsd, duration);
           m_interferenceCtrl->AddSignal (rxPsd, duration);
         }
@@ -588,9 +595,11 @@ LteSpectrumPhy::StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params)
       case TX:
         NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel access, the physical layer for transmission cannot be used for reception");
         break;
-        
+      case RX_CTRL:
+        NS_FATAL_ERROR ("cannot RX Data while receiving control");
+        break;
       case IDLE:
-      case RX:
+      case RX_DATA:
         // the behavior is similar when
         // we're IDLE or RX because we can receive more signals
         // simultaneously (e.g., at the eNB).
@@ -613,7 +622,7 @@ LteSpectrumPhy::StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params)
                 }
               else
                 {
-                  NS_ASSERT (m_state == RX);
+                  NS_ASSERT (m_state == RX_DATA);
                   // sanity check: if there are multiple RX events, they
                   // should occur at the same time and have the same
                   // duration, otherwise the interference calculation
@@ -622,7 +631,7 @@ LteSpectrumPhy::StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params)
                   && (m_firstRxDuration == params->duration));
                 }
               
-              ChangeState (RX);
+              ChangeState (RX_DATA);
               if (params->packetBurst)
                 {
                   m_rxPacketBurstList.push_back (params->packetBurst);
@@ -662,9 +671,11 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
     case TX:
       NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel access, the physical layer for transmission cannot be used for reception");
       break;
-      
+    case RX_DATA:
+      NS_FATAL_ERROR ("cannot RX data while receing control");
+      break;
     case IDLE:
-    case RX:
+    case RX_CTRL:
       // the behavior is similar when
       // we're IDLE or RX because we can receive more signals
       // simultaneously (e.g., at the eNB).
@@ -708,7 +719,7 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
                 Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxUlSrs, this);
               }
           }
-          else if (m_state == RX)
+          else if (m_state == RX_CTRL)
           {
             // sanity check: if there are multiple RX events, they
             // should occur at the same time and have the same
@@ -718,7 +729,7 @@ LteSpectrumPhy::StartRxCtrl (Ptr<SpectrumSignalParameters> params)
             && (m_firstRxDuration == params->duration));
           }
           
-          ChangeState (RX);
+          ChangeState (RX_CTRL);
           m_interferenceCtrl->StartRx (params->psd);
           
 //           NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());
@@ -774,7 +785,7 @@ LteSpectrumPhy::EndRxData ()
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
 
-  NS_ASSERT (m_state == RX);
+  NS_ASSERT (m_state == RX_DATA);
 
   // this will trigger CQI calculation and Error Model evaluation
   // as a side effect, the error model should update the error status of all TBs
@@ -856,7 +867,7 @@ LteSpectrumPhy::EndRxDlCtrl ()
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this << " state: " << m_state);
   
-  NS_ASSERT (m_state == RX);
+  NS_ASSERT (m_state == RX_CTRL);
   
   // this will trigger CQI calculation and Error Model evaluation
   // as a side effect, the error model should update the error status of all TBs
@@ -892,6 +903,7 @@ LteSpectrumPhy::EndRxDlCtrl ()
 void
 LteSpectrumPhy::EndRxUlSrs ()
 {
+  NS_ASSERT (m_state == RX_CTRL);
   ChangeState (IDLE);
   m_interferenceCtrl->EndRx ();
   // nothing to do (used only for SRS at this stage)

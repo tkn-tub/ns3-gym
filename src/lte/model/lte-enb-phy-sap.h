@@ -64,7 +64,7 @@ public:
   * \param rnti the RNTI of the user
   * \param txMode the SRS Configuration Index of the user
   */
-  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI) = 0;
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) = 0;
 
   /** 
    * 

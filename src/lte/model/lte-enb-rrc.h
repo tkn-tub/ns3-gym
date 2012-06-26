@@ -231,8 +231,11 @@ public:
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
   
-//   void DoStart ();
-
+  /** 
+  * Configure the UE peer RRC with all the correspondet info
+  * 
+  * \param rnti the RNTI of the UE to be configured 
+  */
   void ConfigureNewUe (uint16_t rnti);
   
   
@@ -250,7 +253,7 @@ private:
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
   uint16_t GetNewSrsConfigurationIndex (void);
-  void RemoveSrsConfigurationIndex (uint16_t srsCI);
+  void RemoveSrsConfigurationIndex (uint16_t srcCi);
 
   Callback <void, Ptr<Packet> > m_forwardUpCallback;
 

@@ -26,7 +26,6 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-common.h>
-//#include <ns3/ff-mac-csched-sap.h>
 
 namespace ns3 {
 

@@ -114,7 +114,7 @@ public:
   
   virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   
-  virtual void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI);
+  virtual void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
     
   virtual uint8_t DoGetMacChTtiDelay ();
 
@@ -133,11 +133,6 @@ public:
    */
   void CalcChannelQualityForUe (std::vector <double> sinr, Ptr<LteSpectrumPhy> ue);
 
-  /**
-   * \brief Send the control message
-   * \param msg the message to send
-   */
-  // virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);  // legacy
   /**
    * \brief Receive the control message
    * \param msg the received message
@@ -164,8 +159,17 @@ public:
   bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
   bool DeleteUePhy (uint16_t rnti);
-    
+  
+  /**
+  * \brief Send the PDCCH and PCFICH in the first 3 symbols
+  * \param ctrlMsgList the list of control messages of PDCCH
+  */
   void SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList);
+  
+  /**
+  * \brief Send the PDSCH
+  * \param pb the PacketBurst to be sent
+  */
   void SendDataChannels (Ptr<PacketBurst> pb);
   
   /**

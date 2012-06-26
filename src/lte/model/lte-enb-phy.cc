@@ -58,7 +58,7 @@ public:
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual uint8_t GetMacChTtiDelay ();
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
-  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI);
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
   
 
 private:
@@ -108,9 +108,9 @@ EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMo
 }
 
 void
-EnbMemberLteEnbPhySapProvider::SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI)
+EnbMemberLteEnbPhySapProvider::SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
 {
-  m_phy->DoSetSrsConfigurationIndex (rnti, srsCI);
+  m_phy->DoSetSrsConfigurationIndex (rnti, srcCi);
 }
 
 
@@ -652,19 +652,19 @@ LteEnbPhy::DequeueUlDci (void)
 }
 
 void
-LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCI)
+LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
 {
   NS_LOG_FUNCTION (this);
-  m_srsPeriodicity = GetSrsPeriodicity (srsCI);
-  NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srsCI) << " CI " << srsCI);
+  m_srsPeriodicity = GetSrsPeriodicity (srcCi);
+  NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srcCi) << " CI " << srcCi);
   std::map <uint16_t,uint16_t>::iterator it = m_srsCounter.find (rnti);
   if (it != m_srsCounter.end ())
     {
-      (*it).second = GetSrsSubframeOffset (srsCI) + 1;
+      (*it).second = GetSrsSubframeOffset (srcCi) + 1;
     }
     else
     {
-      m_srsCounter.insert (std::pair<uint16_t, uint16_t> (rnti, GetSrsSubframeOffset (srsCI) + 1));
+      m_srsCounter.insert (std::pair<uint16_t, uint16_t> (rnti, GetSrsSubframeOffset (srcCi) + 1));
     }
 }
 

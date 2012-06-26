@@ -199,15 +199,15 @@ public:
   
   /**
   * \returns the SRS periodicity (see Table 8.2-1 of 36.213)
-  * \param srsCI the SRS Configuration Index
+  * \param srcCi the SRS Configuration Index
   */
-  uint16_t GetSrsPeriodicity (uint16_t srsCI) const;
+  uint16_t GetSrsPeriodicity (uint16_t srcCi) const;
   
   /**
   * \returns the SRS Subframe offset (see Table 8.2-1 of 36.213)
-  * \param srsCI the SRS Configuration Index
+  * \param srcCi the SRS Configuration Index
   */
-  uint16_t GetSrsSubframeOffset (uint16_t srsCI) const;
+  uint16_t GetSrsSubframeOffset (uint16_t srcCi) const;
 
 
   /**

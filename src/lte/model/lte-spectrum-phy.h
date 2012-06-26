@@ -135,7 +135,7 @@ public:
    */
   enum State
   {
-    IDLE, TX, RX
+    IDLE, TX, RX_DATA, RX_CTRL
   };
 
   // inherited from Object
@@ -344,8 +344,6 @@ private:
   
   std::list<Ptr<LteControlMessage> > m_txControlMessageList;
   std::list<Ptr<LteControlMessage> > m_rxControlMessageList;
-//   std::list<DlDciListElement_s> m_rxDlDciBurstList;
-//   std::list<UlDciListElement_s> m_rxUlDciBurstList;
   
   
   State m_state;

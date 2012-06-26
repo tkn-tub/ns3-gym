@@ -506,9 +506,10 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 // /////////////////////////////////////////
 
 // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
-uint16_t SrsPeriodicity[9] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
-uint16_t SrsCiLow[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
-uint16_t SrsCiHigh[9] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+#define SRS_ENTRIES 9
+uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
+uint16_t g_srsCiLow[SRS_ENTRIES] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+uint16_t g_srsCiHigh[SRS_ENTRIES] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
 
 void
 LteEnbRrc::SetCellId (uint16_t cellId)
@@ -552,22 +553,24 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
       
       return 0;
     }
-    NS_LOG_DEBUG (this << " SRS p " << SrsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
-  if (m_ueSrsConfigurationIndexSet.size () == SrsPeriodicity[m_srsCurrentPeriodicityId])
+  NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
+  NS_LOG_DEBUG (this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
+  if (m_ueSrsConfigurationIndexSet.size () == g_srsPeriodicity[m_srsCurrentPeriodicityId])
     {
-      NS_LOG_DEBUG (this << " SRS reconfigure CIs " << SrsPeriodicity[m_srsCurrentPeriodicityId] << " to " << SrsPeriodicity[m_srsCurrentPeriodicityId+1] << " at " << Simulator::Now ());
+//       NS_LOG_DEBUG (this << " SRS reconfigure CIs " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " to " << g_srsPeriodicity[m_srsCurrentPeriodicityId+1] << " at " << Simulator::Now ());
       // increase the current periocity for having enough CIs
       m_ueSrsConfigurationIndexSet.clear ();
       m_srsCurrentPeriodicityId++;
+      NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
       // update all the UE's CI
-      uint16_t srsCI = SrsCiLow[m_srsCurrentPeriodicityId];
+      uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
       std::map<uint16_t, Ptr<UeInfo> >::iterator it;
       for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
         {
-          (*it).second->SetSrsConfigurationIndex (srsCI);
-          m_ueSrsConfigurationIndexSet.insert (srsCI);
-          m_lastAllocatedConfigurationIndex = srsCI;
-          srsCI++;
+          (*it).second->SetSrsConfigurationIndex (srcCi);
+          m_ueSrsConfigurationIndexSet.insert (srcCi);
+          m_lastAllocatedConfigurationIndex = srcCi;
+          srcCi++;
           // send update to peer RRC
           LteUeConfig_t ueConfig;
           ueConfig.m_rnti = (*it).first;
@@ -584,8 +587,8 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
     {
       // find a CI from the available ones
       std::set<uint16_t>::reverse_iterator rit = m_ueSrsConfigurationIndexSet.rbegin ();
-      NS_LOG_DEBUG (this << " lower bound " << (*rit) << " of " << SrsCiHigh[m_srsCurrentPeriodicityId]);
-      if ((*rit) <= SrsCiHigh[m_srsCurrentPeriodicityId])
+      NS_LOG_DEBUG (this << " lower bound " << (*rit) << " of " << g_srsCiHigh[m_srsCurrentPeriodicityId]);
+      if ((*rit) <= g_srsCiHigh[m_srsCurrentPeriodicityId])
         {
           // got it from the upper bound
           m_lastAllocatedConfigurationIndex = (*rit) + 1;
@@ -594,13 +597,13 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
       else
         {
           // look for released ones
-          for (uint16_t srsCI = SrsCiLow[m_srsCurrentPeriodicityId]; srsCI < SrsCiHigh[m_srsCurrentPeriodicityId]; srsCI++) 
+          for (uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId]; srcCi < g_srsCiHigh[m_srsCurrentPeriodicityId]; srcCi++) 
             {
-              std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srsCI);
+              std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
               if (it==m_ueSrsConfigurationIndexSet.end ())
                 {
-                  m_lastAllocatedConfigurationIndex = srsCI;
-                  m_ueSrsConfigurationIndexSet.insert (srsCI);
+                  m_lastAllocatedConfigurationIndex = srcCi;
+                  m_ueSrsConfigurationIndexSet.insert (srcCi);
                   break;
                 }
             }
@@ -612,13 +615,14 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
 
 
 void
-LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srsCI)
+LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
 {
-  NS_LOG_FUNCTION (this << srsCI);
-  std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srsCI);
-  NS_ASSERT_MSG (it != m_ueSrsConfigurationIndexSet.end (), "request to remove unkwown SRS CI " << srsCI);
+  NS_LOG_FUNCTION (this << srcCi);
+  std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
+  NS_ASSERT_MSG (it != m_ueSrsConfigurationIndexSet.end (), "request to remove unkwown SRS CI " << srcCi);
   m_ueSrsConfigurationIndexSet.erase (it);
-  if (m_ueSrsConfigurationIndexSet.size () < SrsPeriodicity[m_srsCurrentPeriodicityId - 1])
+  NS_ASSERT (m_srsCurrentPeriodicityId > 1);
+  if (m_ueSrsConfigurationIndexSet.size () < g_srsPeriodicity[m_srsCurrentPeriodicityId - 1])
     {
       // reduce the periodicity
       m_ueSrsConfigurationIndexSet.clear ();
@@ -631,14 +635,14 @@ LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srsCI)
       else
         {
           // update all the UE's CI
-          uint16_t srsCI = SrsCiLow[m_srsCurrentPeriodicityId];
+          uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
           std::map<uint16_t, Ptr<UeInfo> >::iterator it;
           for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
             {
-              (*it).second->SetSrsConfigurationIndex (srsCI);
-              m_ueSrsConfigurationIndexSet.insert (srsCI);
-              m_lastAllocatedConfigurationIndex = srsCI;
-              srsCI++;
+              (*it).second->SetSrsConfigurationIndex (srcCi);
+              m_ueSrsConfigurationIndexSet.insert (srcCi);
+              m_lastAllocatedConfigurationIndex = srcCi;
+              srcCi++;
               // send update to peer RRC
               LteUeConfig_t ueConfig;
               ueConfig.m_rnti = (*it).first;
@@ -699,7 +703,6 @@ void
 LteEnbRrc::ConfigureNewUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this);
-  // at this stage used only by the scheduler for updating txMode
   // retrieve UE info
   std::map<uint16_t, Ptr<UeInfo> >::iterator it;
   it = m_ueMap.find (rnti);

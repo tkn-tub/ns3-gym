@@ -163,7 +163,7 @@ public:
   virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   
   virtual void DoSetTransmissionMode (uint8_t txMode);
-  virtual void DoSetSrsConfigurationIndex (uint16_t srsCI);
+  virtual void DoSetSrsConfigurationIndex (uint16_t srcCi);
   
   
 
@@ -197,7 +197,10 @@ public:
    */
   void SetEnbCellId (uint16_t cellId);
   
-  void SendSrsChannel ();
+  /**
+  * \brief Send the SRS signal in the last symbols of the frame
+  */
+  void SendSrs ();
   
   
 
