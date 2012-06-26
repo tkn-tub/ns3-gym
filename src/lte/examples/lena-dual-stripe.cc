@@ -425,13 +425,18 @@ main (int argc, char *argv[])
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
   NetDeviceContainer::Iterator ueDevIt;
-  NetDeviceContainer::Iterator enbDevIt;
+  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
   // attach explicitly each home UE to its home eNB
-  for (ueDevIt = homeUeDevs.Begin (), 
-          enbDevIt = homeEnbDevs.Begin (); 
-       ueDevIt != homeUeDevs.End () && enbDevIt != homeEnbDevs.End (); 
+  for (ueDevIt = homeUeDevs.Begin (); 
+       ueDevIt != homeUeDevs.End ();
        ++ueDevIt, ++enbDevIt)
     {
+      // this because of the order in which SameRoomPositionAllocator
+      // will place the UEs
+      if (enbDevIt == homeEnbDevs.End ())
+        {
+          enbDevIt = homeEnbDevs.Begin ();
+        }
       lteHelper->Attach (*ueDevIt, *enbDevIt);
     }
 
