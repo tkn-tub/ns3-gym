@@ -570,6 +570,54 @@ LteHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<Epc
     }
 }
 
+
+void
+LteHelper::AddX2Interface (NodeContainer enbNodes)
+{
+  NS_LOG_FUNCTION (this);
+
+  for (NodeContainer::Iterator i = enbNodes.Begin (); i != enbNodes.End (); ++i)
+    {
+      for (NodeContainer::Iterator j = i + 1; j != enbNodes.End (); ++j)
+        {
+          AddX2Interface (*i, *j);
+        }
+    }
+}
+
+void
+LteHelper::AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_INFO ("setting up the X2 interface");
+
+  m_epcHelper->AddX2Interface (enbNode1, enbNode2);
+}
+
+void
+LteHelper::HandoverRequest (Time hoTime, Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+{
+  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
+  Simulator::Schedule (hoTime, &LteHelper::DoHandoverRequest, this, ueNode, sourceEnbNode, targetEnbNode);
+}
+
+void
+LteHelper::DoHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+{
+  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
+  
+  m_epcHelper->SendHandoverRequest (ueNode, sourceEnbNode, targetEnbNode);
+  
+  // lteHelper->Attach (ueNode, targetEnbNode);
+  // lteHelper->ActivateEpsBearer (ueNode, *);
+
+  // lteHelper->DeactivateEpsBearer (ueNode, *);
+  // lteHelper->Deattach (ueNode, sourceEnbNode);
+  
+}
+
+
+
 TypeId
 LteHelper::GetRlcType (EpsBearer bearer)
 {

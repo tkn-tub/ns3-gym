@@ -34,6 +34,7 @@ class Node;
 class NetDevice;
 class VirtualNetDevice;
 class EpcSgwPgwApplication;
+class EpcX2;
 
 /**
  * \brief Helper class to handle the creation of the EPC entities and protocols.
@@ -70,6 +71,17 @@ public:
    * \param lteEnbNetDevice the LteEnbNetDevice of the eNB node
    */
   void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice);
+
+
+  /** 
+   * Add an X2 interface between two eNB
+   * 
+   * \param enbNode1 one eNB peer of the X2 interface
+   * \param enbNode2 the other eNB peer of the X2 interface
+   */
+  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
+
+  void SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
 
 
   /** 
@@ -115,12 +127,10 @@ public:
 
 
 private:
-  
-  /** 
-   * helper to assign addresses to S1-U
-   * NetDevices 
+
+  /**
+   * SGW-PGW network element
    */
-  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
 
   /** 
    * helper to assign addresses to UE devices as well as to the TUN device of the SGW/PGW
@@ -130,16 +140,77 @@ private:
   Ptr<Node> m_sgwPgw; 
   Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
   Ptr<VirtualNetDevice> m_tunDevice;
+  
+
+  /**
+   * S1-U interfaces
+   */
+
+  /** 
+   * helper to assign addresses to S1-U NetDevices 
+   */
+  Ipv4AddressHelper m_s1uIpv4AddressHelper; 
 
   DataRate m_s1uLinkDataRate;
   Time     m_s1uLinkDelay;
   uint16_t m_s1uLinkMtu;
 
-
   /**
    * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152
    */
   uint16_t m_gtpuUdpPort;
+
+  
+  /**
+   * X2 interfaces
+   * TODO To separate between X2-U interfaces and X2-C interfaces
+   */
+
+  /** 
+   * helper to assign addresses to X2 NetDevices 
+   */
+  Ipv4AddressHelper m_x2Ipv4AddressHelper; 
+
+  DataRate m_x2LinkDataRate;
+  Time     m_x2LinkDelay;
+  uint16_t m_x2LinkMtu;
+
+
+  /**
+   * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152 TODO Check value in the spec
+   */
+  uint16_t m_x2cUdpPort;
+
+
+  /**
+   * X2 Applications
+   */
+  class EpcX2NodePeers : public SimpleRefCount<EpcX2NodePeers>
+  {
+  public:
+    EpcX2NodePeers (Ptr<Node> enbPeer1, Ptr<Node> enbPeer2);
+    virtual ~EpcX2NodePeers (void);
+
+    bool operator< (const EpcX2NodePeers &) const;
+
+    Ptr<Node> m_enbPeer1;
+    Ptr<Node> m_enbPeer2;
+  };
+
+  class EpcX2ApplicationPairs : public SimpleRefCount<EpcX2ApplicationPairs>
+  {
+  public:
+    EpcX2ApplicationPairs ();
+    EpcX2ApplicationPairs (Ptr<EpcX2> m_x2AppPair1, Ptr<EpcX2> m_x2AppPair2);
+    virtual ~EpcX2ApplicationPairs (void);
+
+    EpcX2ApplicationPairs& operator= (const EpcX2ApplicationPairs &);
+
+    Ptr<EpcX2> m_x2AppPair1;
+    Ptr<EpcX2> m_x2AppPair2;
+  };
+
+  std::map < EpcX2NodePeers, EpcX2ApplicationPairs > m_x2Interfaces;
 
 };
 
