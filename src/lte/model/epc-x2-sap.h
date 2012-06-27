@@ -41,19 +41,18 @@ public:
   
   struct HandoverRequestParams
   {
-    Ptr<Node> ueNode;
-    Ptr<Node> sourceEnbNode;
-    Ptr<Node> targetEnbNode;
-
-    uint32_t            targetCellId;
+    uint16_t            cause;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
     std::list<uint32_t> bearers;
     Ptr<Packet>         rrcContext;
   };
   
   struct HandoverRequestAckParams
   {
-    Ptr<Node> ueNode;
-
+    uint16_t            cause;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
     std::list<uint32_t> bearers;
     Ptr<Packet>         rrcContext;
   };
@@ -84,13 +83,18 @@ public:
   
   struct HandoverRequestParams
   {
-    uint32_t            targetCellId;
+    uint16_t            cause;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
     std::list<uint32_t> bearers;
     Ptr<Packet>         rrcContext;
   };
 
   struct HandoverRequestAckParams
   {
+    uint16_t            cause;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
     std::list<uint32_t> bearers;
     Ptr<Packet>         rrcContext;
   };
