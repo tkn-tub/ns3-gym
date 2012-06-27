@@ -44,10 +44,6 @@ NS_LOG_COMPONENT_DEFINE ("EpcHelper");
 NS_OBJECT_ENSURE_REGISTERED (EpcHelper);
 
 
-// TODO For now, the X2 entities are created here statically
-// TODO std::vector< Ptr<EpcX2> > g_epcHelperEnbX2;
-
-
 EpcHelper::EpcHelper () 
   : m_gtpuUdpPort (2152), // fixed by the standard
     m_x2cUdpPort (4444)   // fixed by the standard TODO
@@ -212,8 +208,7 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
   x2->SetEpcX2SapUser (rrc->GetEpcX2SapUser ());
   rrc->SetEpcX2SapProvider (x2->GetEpcX2SapProvider ());
 
-// TODO   g_epcHelperEnbX2.push_back (x2);
- 
+
   enb->AggregateObject (x2);
 
 }
@@ -262,14 +257,12 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   
   // Add X2 interface to the eNB1's X2 entity 
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
-// TODO  Ptr<EpcX2> enb1X2 = g_epcHelperEnbX2[0];
   Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();
   uint16_t enb1CellId = enb1LteDev->GetCellId ();
   NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
 
   // Add X2 interface to the eNB2's X2 entity 
   Ptr<EpcX2> enb2X2 = enb2->GetObject<EpcX2> ();
-// TODO  Ptr<EpcX2> enb2X2 = g_epcHelperEnbX2[1];
   Ptr<LteEnbNetDevice> enb2LteDev = enb2->GetDevice (0)->GetObject<LteEnbNetDevice> ();
   uint16_t enb2CellId = enb2LteDev->GetCellId ();
   NS_LOG_LOGIC ("LteEnbNetDevice #2 = " << enb2LteDev << " - CellId = " << enb2CellId);
@@ -277,11 +270,6 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   enb1X2->AddX2Interface (enb1CellId, enb1X2cSocket, enb2CellId, enb2X2cSocket);
   enb2X2->AddX2Interface (enb2CellId, enb2X2cSocket, enb1CellId, enb1X2cSocket);
 
-  
-  // TODO To remove
-//   EpcX2NodePeers x2NodePeers (enb1, enb2);
-//   EpcX2ApplicationPairs x2ApplicationPairs (enb1X2, enb2X2);
-//   m_x2Interfaces [x2NodePeers] = x2ApplicationPairs;
 }
 
 
@@ -358,58 +346,6 @@ EpcHelper::GetUeDefaultGatewayAddress ()
 {
   // return the address of the tun device
   return m_sgwPgw->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
-}
-
-
-
-EpcHelper::EpcX2NodePeers::EpcX2NodePeers (Ptr<Node> enbPeer1, Ptr<Node> enbPeer2)
-{
-  NS_LOG_FUNCTION (this);
-  m_enbPeer1 = enbPeer1;
-  m_enbPeer2 = enbPeer2;
-}
-
-EpcHelper::EpcX2NodePeers::~EpcX2NodePeers ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-bool
-EpcHelper::EpcX2NodePeers::operator< (const EpcX2NodePeers& value) const
-{
-  NS_LOG_FUNCTION (this);
-  return ((m_enbPeer1 < value.m_enbPeer1) &&
-          (m_enbPeer2 < value.m_enbPeer2));
-}
-
-
-EpcHelper::EpcX2ApplicationPairs::EpcX2ApplicationPairs ()
-{
-  NS_LOG_FUNCTION (this);
-  m_x2AppPair1 = 0;
-  m_x2AppPair2 = 0;
-}
-
-EpcHelper::EpcX2ApplicationPairs::EpcX2ApplicationPairs (Ptr<EpcX2> x2AppPair1, Ptr<EpcX2> x2AppPair2)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_x2AppPair1 = x2AppPair1;
-  m_x2AppPair2 = x2AppPair2;
-}
-
-EpcHelper::EpcX2ApplicationPairs::~EpcX2ApplicationPairs ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-EpcHelper::EpcX2ApplicationPairs& 
-EpcHelper::EpcX2ApplicationPairs::operator= (const EpcX2ApplicationPairs& value)
-{
-  NS_LOG_FUNCTION (this);
-  m_x2AppPair1 = value.m_x2AppPair1;
-  m_x2AppPair2 = value.m_x2AppPair2;
-  return *this;
 }
 
 
