@@ -219,6 +219,33 @@ public:
    */
   void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
+
+  /**
+   * Create an X2 interface between all the eNBs in a given set
+   *
+   * \param enbNodes the set of eNB nodes
+   */
+  void AddX2Interface (NodeContainer enbNodes);
+
+  /**
+   * Create an X2 interface between two eNBs
+   *
+   * \param enbNode1 one eNB of the X2 interface
+   * \param enbNode2 the other eNB of the X2 interface
+   */
+  void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
+
+  /**
+   * Trigger an X2-based handover of a UE between two eNBs
+   *
+   * \param hoTime when the Handover is initiated
+   * \param ueNode the UE that hands off
+   * \param enbNode1 source eNB, originally the UE is attached to this eNB
+   * \param enbNode2 target eNB, the UE is finally connected to this eNB
+   */
+  void HandoverRequest (Time hoTime, Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
+
+
   /** 
    * 
    * \param bearer the specification of an EPS bearer
@@ -319,6 +346,8 @@ protected:
 private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
+
+  void DoHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;

@@ -28,6 +28,7 @@
 #include "ns3/object-factory.h"
 
 #include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-enb-net-device.h"
 #include "ns3/lte-rlc.h"
 #include "ns3/lte-pdcp.h"
 #include "ns3/lte-pdcp-sap.h"
@@ -45,9 +46,6 @@
 NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
 
 namespace ns3 {
-
-
-
 
 
 // ///////////////////////////
@@ -459,30 +457,37 @@ void
 LteEnbRrc::SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
 {
   NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
-  NS_LOG_INFO ("Request to send HANDOVER REQUEST");
+  NS_LOG_LOGIC ("Request to send HANDOVER REQUEST");
 
   EpcX2SapProvider::HandoverRequestParams params;
-  params.ueNode         = ueNode;
-  params.sourceEnbNode  = sourceEnbNode;
-  params.targetEnbNode  = targetEnbNode;
+  params.sourceCellId = sourceEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  params.targetCellId = targetEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
+
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
 
   m_x2SapProvider->SendHandoverRequest (params);
 }
 
 
 //
-// X2-User SAP
+// X2 User SAP
 //
 void
 LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_INFO ("Recv X2 message: HANDOVER REQUEST");
+  NS_LOG_LOGIC ("Recv X2 message: HANDOVER REQUEST");
 
-  NS_LOG_INFO ("Send X2 message: HANDOVER REQUEST ACK");
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+
+  NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
 
   EpcX2SapProvider::HandoverRequestAckParams ackParams;
+  ackParams.sourceCellId = params.sourceCellId;
+  ackParams.targetCellId = params.targetCellId;
   
   m_x2SapProvider->SendHandoverRequestAck (ackParams);
 }
@@ -492,7 +497,10 @@ LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams para
 {
   NS_LOG_FUNCTION (this);
   
-  NS_LOG_INFO ("Recv X2 message: HANDOVER REQUEST ACK");
+  NS_LOG_LOGIC ("Recv X2 message: HANDOVER REQUEST ACK");
+  
+  NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
 }
 
 
