@@ -24,6 +24,7 @@
 #include <ns3/simulator.h>
 #include <ns3/lte-amc.h>
 #include <ns3/pf-ff-mac-scheduler.h>
+#include <ns3/lte-vendor-specific-parameters.h>
 
 NS_LOG_COMPONENT_DEFINE ("PfFfMacScheduler");
 
@@ -290,14 +291,13 @@ PfFfMacScheduler::DoCschedUeConfigReq (const struct FfMacCschedSapProvider::Csch
   NS_LOG_FUNCTION (this << " RNTI " << params.m_rnti << " txMode " << (uint16_t)params.m_transmissionMode);
   std::map <uint16_t,uint8_t>::iterator it = m_uesTxMode.find (params.m_rnti);
   if (it==m_uesTxMode.end ())
-  {
-    m_uesTxMode.insert (std::pair <uint16_t, double> (params.m_rnti, params.m_transmissionMode));
-  }
+    {
+      m_uesTxMode.insert (std::pair <uint16_t, double> (params.m_rnti, params.m_transmissionMode));
+    }
   else
-  {
-    (*it).second = params.m_transmissionMode;
-  }
-  return;
+    {
+      (*it).second = params.m_transmissionMode;
+    }
   return;
 }
 
@@ -1047,6 +1047,32 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   NS_LOG_FUNCTION (this);
 //   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
   // retrieve the allocation for this subframe
+  switch (m_ulCqiFilter)
+    {
+      case FfMacScheduler::SRS:
+        {
+          // filter all the CQIs that are not SRS based
+          if (params.m_ulCqi.m_type!=UlCqi_s::SRS)
+              {
+                return;
+              }
+        }
+      break;
+      case FfMacScheduler::PUSCH:
+        {
+          // filter all the CQIs that are not SRS based
+          if (params.m_ulCqi.m_type!=UlCqi_s::PUSCH)
+            {
+              return;
+            }
+        }
+      case FfMacScheduler::ALL:
+      break;
+      
+      default:
+        NS_FATAL_ERROR ("Unknown UL CQI type");
+    }
+
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;
   itMap = m_allocationMaps.find (params.m_sfnSf);

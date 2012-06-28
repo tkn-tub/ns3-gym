@@ -144,14 +144,14 @@ public:
   * the physical layer with the PUSCH signal received from eNB
   * \param sinr SINR values vector
   */
-  UlCqi_s CreatePuschCqiReport (const SpectrumValue& sinr);
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreatePuschCqiReport (const SpectrumValue& sinr);
   
   /**
   * \brief Create the UL CQI feedback from SINR values perceived at
   * the physical layer with the SRS signal received from eNB
   * \param sinr SINR values vector
   */
-  UlCqi_s CreateSrsCqiReport (const SpectrumValue& sinr);
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreateSrsCqiReport (const SpectrumValue& sinr);
 
 
   void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
@@ -232,6 +232,8 @@ private:
   
   uint16_t m_srsPeriodicity;
   std::map <uint16_t,uint16_t> m_srsCounter;
+  std::vector <uint16_t> m_srsUeOffset;
+  uint16_t m_currentSrsOffset;
   
 };
 

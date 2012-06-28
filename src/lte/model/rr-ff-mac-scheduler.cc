@@ -850,6 +850,31 @@ RrFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG (this << " RX SFNID " << params.m_sfnSf);
 //     NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo << " sfnSf "  << sfnSf);
+  switch (m_ulCqiFilter)
+    {
+      case FfMacScheduler::SRS:
+        {
+          // filter all the CQIs that are not SRS based
+          if (params.m_ulCqi.m_type!=UlCqi_s::SRS)
+            {
+              return;
+            }
+        }
+      break;
+      case FfMacScheduler::PUSCH:
+        {
+          // filter all the CQIs that are not SRS based
+            if (params.m_ulCqi.m_type!=UlCqi_s::PUSCH)
+            {
+              return;
+            }
+        }
+      case FfMacScheduler::ALL:
+        break;
+        
+      default:
+        NS_FATAL_ERROR ("Unknown UL CQI type");
+    }
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
   std::map <uint16_t, std::vector <double> >::iterator itCqi;

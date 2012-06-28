@@ -133,7 +133,7 @@ public:
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
 
-  void DoUlCqiReport (UlCqi_s ulcqi);
+  void DoUlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
 
 
@@ -184,11 +184,10 @@ public:
 
 private:
 private:
-  // std::map <uint16_t, std::map <uint8_t,Ptr<LteMacSapUser> > > m_rlcAttached;
   std::map <LteFlowId_t, LteMacSapUser*> m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
-  std::vector <UlCqi_s> m_ulCqiReceived; // UL-CQI received
+  std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters> m_ulCqiReceived; // UL-CQI received
   std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
 
 

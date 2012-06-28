@@ -318,11 +318,10 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> ());
-//   CQIs are still evaluated with PUSCH, this will be used for SRS ones
-//   ulPhy->AddDataSinrChunkProcessor (pCtrl);
+  ulPhy->AddCtrlSinrChunkProcessor (pCtrl); // for evaluating SRS UL-CQI
 
   Ptr<LteDataSinrChunkProcessor> pData = Create<LteDataSinrChunkProcessor> (ulPhy, phy);
-  ulPhy->AddDataSinrChunkProcessor (pData);
+  ulPhy->AddDataSinrChunkProcessor (pData); // for evaluating PUSCH UL-CQI
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);

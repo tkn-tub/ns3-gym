@@ -25,6 +25,7 @@
 
 #include <ns3/packet.h>
 #include <ns3/ff-mac-common.h>
+#include <ns3/ff-mac-sched-sap.h>
 
 namespace ns3 {
 
@@ -125,7 +126,7 @@ public:
    * \brief Returns to MAC level the UL-CQI evaluated
    * \param ulcqi the UL-CQI (see FF MAC API 4.3.29)
    */
-  virtual void UlCqiReport (UlCqi_s ulcqi) = 0;
+  virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) = 0;
 
 };
 

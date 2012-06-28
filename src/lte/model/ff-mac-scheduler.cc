@@ -21,12 +21,21 @@
 
 #include "ff-mac-scheduler.h"
 #include <ns3/log.h>
+#include <ns3/enum.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("FfMacScheduler");
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (FfMacScheduler);
+
+
+FfMacScheduler::FfMacScheduler ()
+: m_ulCqiFilter (ALL)
+{
+  NS_LOG_FUNCTION (this);
+}
 
 
 FfMacScheduler::~FfMacScheduler ()
@@ -44,9 +53,18 @@ TypeId
 FfMacScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FfMacScheduler")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("UlCqiFilter",
+                   "The filter to apply on UL CQIs received",
+                   EnumValue (FfMacScheduler::ALL),
+                   MakeEnumAccessor (&FfMacScheduler::m_ulCqiFilter),
+                   MakeEnumChecker (FfMacScheduler::SRS, "SRS",
+                                    FfMacScheduler::PUSCH, "PUSCH",
+                                    FfMacScheduler::ALL, "ALL"))
+    ;
   return tid;
 }
+
 
 } // namespace ns3
 

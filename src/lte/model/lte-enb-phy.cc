@@ -34,6 +34,7 @@
 #include "lte-enb-net-device.h"
 #include "lte-enb-mac.h"
 #include <ns3/lte-common.h>
+#include <ns3/lte-vendor-specific-parameters.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
@@ -133,7 +134,8 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
     m_nrFrames (0),
     m_nrSubFrames (0),
-    m_srsPeriodicity (0)
+    m_srsPeriodicity (0),
+    m_currentSrsOffset (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
@@ -183,6 +185,7 @@ LteEnbPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_ueAttached.clear ();
+  m_srsUeOffset.clear ();
   delete m_enbPhySapProvider;
   LtePhy::DoDispose ();
 }
@@ -397,6 +400,7 @@ LteEnbPhy::StartSubFrame (void)
   NS_LOG_FUNCTION (this);
 
   ++m_nrSubFrames;
+  m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
   
   
@@ -558,7 +562,7 @@ void
 LteEnbPhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-  UlCqi_s ulcqi = CreateSrsCqiReport (sinr);
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi = CreateSrsCqiReport (sinr);
   m_enbPhySapUser->UlCqiReport (ulcqi);
 }
 
@@ -566,19 +570,19 @@ void
 LteEnbPhy::GenerateDataCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-  UlCqi_s ulcqi = CreatePuschCqiReport (sinr);
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi = CreatePuschCqiReport (sinr);
   m_enbPhySapUser->UlCqiReport (ulcqi);
 }
 
 
 
-UlCqi_s
+FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
 LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
   Values::const_iterator it;
-  UlCqi_s ulcqi;
-  ulcqi.m_type = UlCqi_s::PUSCH;
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
+  ulcqi.m_ulCqi.m_type = UlCqi_s::PUSCH;
   int i = 0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
     {
@@ -586,7 +590,7 @@ LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
       // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
       int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
-      ulcqi.m_sinr.push_back (sinrFp);
+      ulcqi.m_ulCqi.m_sinr.push_back (sinrFp);
       i++;
     }
   return (ulcqi);
@@ -594,13 +598,13 @@ LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 }
 
 
-UlCqi_s
+FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
 LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
   Values::const_iterator it;
-  UlCqi_s ulcqi;
-  ulcqi.m_type = UlCqi_s::PUSCH;
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
+  ulcqi.m_ulCqi.m_type = UlCqi_s::SRS;
   int i = 0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
   {
@@ -608,9 +612,17 @@ LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
     //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
     // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
     int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
-    ulcqi.m_sinr.push_back (sinrFp);
+    ulcqi.m_ulCqi.m_sinr.push_back (sinrFp);
     i++;
   }
+  // Insert the user generated the srs as a vendor specific parameter
+  NS_LOG_DEBUG (this << " ENB RX UL-CQI of " << m_srsUeOffset.at (m_currentSrsOffset));
+  VendorSpecificListElement_s vsp;
+  vsp.m_type = SRS_CQI_RNTI_VSP;
+  vsp.m_length = sizeof(SrsCqiRntiVsp);
+  Ptr<SrsCqiRntiVsp> rnti  = Create <SrsCqiRntiVsp> (m_srsUeOffset.at (m_currentSrsOffset));
+  vsp.m_value = rnti;
+  ulcqi.m_vendorSpecificList.push_back (vsp);
   return (ulcqi);
   
 }
@@ -655,17 +667,28 @@ void
 LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
 {
   NS_LOG_FUNCTION (this);
-  m_srsPeriodicity = GetSrsPeriodicity (srcCi);
+  uint16_t p = GetSrsPeriodicity (srcCi);
+  if (p!=m_srsPeriodicity)
+    {
+      // resize the array of offset -> re-initialize variables
+      m_srsUeOffset.clear ();
+      m_srsUeOffset.resize (p, 0);
+      m_srsPeriodicity = p;
+      m_currentSrsOffset = p - 1; // for starting from 0 next subframe
+    }
+    
   NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srcCi) << " CI " << srcCi);
   std::map <uint16_t,uint16_t>::iterator it = m_srsCounter.find (rnti);
   if (it != m_srsCounter.end ())
     {
       (*it).second = GetSrsSubframeOffset (srcCi) + 1;
     }
-    else
+  else
     {
       m_srsCounter.insert (std::pair<uint16_t, uint16_t> (rnti, GetSrsSubframeOffset (srcCi) + 1));
     }
+  m_srsUeOffset.at (GetSrsSubframeOffset (srcCi)) = rnti;
+  
 }
 
 

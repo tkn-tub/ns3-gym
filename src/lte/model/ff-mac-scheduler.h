@@ -45,6 +45,22 @@ class FfMacScheduler : public Object
 {
 public:
   /**
+  * The type of UL CQI to be filtered (ALL means accept all the CQI,
+  * where a new CQI of any type overwrite the old one, even of another type)
+  *
+  */
+  enum UlCqiFilter_t
+  {
+    SRS,
+    PUSCH,
+    ALL
+  };
+  /**
+  * constructor
+  *
+  */
+  FfMacScheduler ();
+  /**
    * destructor
    *
    */
@@ -82,6 +98,11 @@ public:
    * \return the Provider part of the FfMacSchedSap provided by the Scheduler
    */
   virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider () = 0;
+
+  
+protected:
+    
+  UlCqiFilter_t m_ulCqiFilter;
 
 };
 

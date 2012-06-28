@@ -41,6 +41,7 @@ def build(bld):
         'helper/radio-environment-map-helper.cc',
         'helper/lte-hex-grid-enb-topology-helper.cc',
         'model/rem-spectrum-phy.cc',
+        'model/ff-mac-common.cc',
         'model/ff-mac-csched-sap.cc',
         'model/ff-mac-sched-sap.cc',
         'model/lte-mac-sap.cc',
@@ -63,7 +64,8 @@ def build(bld):
         'model/epc-sgw-pgw-application.cc',
         'model/epc-tft.cc',
         'model/epc-tft-classifier.cc',
-        'model/lte-mi-error-model.cc'
+        'model/lte-mi-error-model.cc',
+        'model/lte-vendor-specific-parameters.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -157,6 +159,7 @@ def build(bld):
         'model/epc-gtpu-header.h',
         'model/epc-enb-application.h',
         'model/epc-sgw-pgw-application.h',
+        'model/lte-vendor-specific-parameters.h',
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-link-adaptation.h',
