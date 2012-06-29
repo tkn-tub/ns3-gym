@@ -875,11 +875,7 @@ LteSpectrumPhy::EndRxDlCtrl ()
   // apply transmission mode gain
   NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_transmissionMode << " gain " << m_txModeGain.at (m_transmissionMode));
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
-  if (m_transmissionMode > 0)
-    {
-      // Control signaling always is tranmissted in Tx diversity mode
-      m_sinrPerceived *= m_txModeGain.at (1);
-    }
+  m_sinrPerceived *= m_txModeGain.at (m_transmissionMode);
   // TODO: Check correctness
   bool error = false;
   if (!error)
