@@ -78,7 +78,6 @@ public:
   UeInfo (void);
   UeInfo (uint64_t imsi);
   UeInfo (uint64_t imsi, uint16_t srsConfIndex);
-  UeInfo (uint64_t imsi, uint16_t srsConfIndex, uint8_t txMode);
   virtual ~UeInfo (void);
 
   static TypeId GetTypeId (void);

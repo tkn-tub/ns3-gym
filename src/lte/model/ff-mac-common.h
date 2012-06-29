@@ -149,19 +149,12 @@ struct UlDciListElement_s
 };
 
 /**
-* \brief Template class for storing the values of vendor specific parameters
+* \brief Base class for storing the values of vendor specific parameters
 */
 struct VendorSpecificValue : public SimpleRefCount<VendorSpecificValue>
 { 
-  VendorSpecificValue ();
-  
   virtual ~VendorSpecificValue ();
-  
-  /**
-  * copy constructor
-  */
-  // do we need it? it seems that it works without it
-//   VendorSpecificValue (const VendorSpecificValue& p); // do we need it?
+
 };
 
 /**

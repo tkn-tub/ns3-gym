@@ -148,13 +148,6 @@ UeInfo::UeInfo (uint64_t imsi, uint16_t srsConfIndex)
   m_transmissionMode = 0;
 }
 
-UeInfo::UeInfo (uint64_t imsi, uint16_t srsConfIndex, uint8_t txMode)
-{
-  m_imsi = imsi;
-  m_srsConfigurationIndex = srsConfIndex;
-  m_transmissionMode = txMode;
-}
-
 
 
 UeInfo::~UeInfo (void)

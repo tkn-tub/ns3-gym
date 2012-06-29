@@ -22,19 +22,11 @@
 
 namespace ns3 {
   
-VendorSpecificValue::VendorSpecificValue ()
-{
-  
-}
 
 VendorSpecificValue::~VendorSpecificValue ()
 {
   
 }
 
-// VendorSpecificValue::VendorSpecificValue (const VendorSpecificValue& p)
-// {
-//   // remember to copy new parameters???
-// }
   
 } // namespace ns3
