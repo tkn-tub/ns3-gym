@@ -51,7 +51,7 @@
 #include <iostream>
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/lte-spectrum-value-helper.h>
-
+#include <ns3/epc-x2.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteHelper");
 
@@ -403,9 +403,14 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       Ptr<EpcEnbApplication> enbApp = n->GetApplication (0)->GetObject<EpcEnbApplication> ();
       NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
 
-      // EPC SAPS
+      // S1 SAPs
       rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
       enbApp->SetS1SapUser (rrc->GetS1SapUser ());
+      
+      // X2 SAPs
+      Ptr<EpcX2> x2 = n->GetObject<EpcX2> ();
+      x2->SetEpcX2SapUser (rrc->GetEpcX2SapUser ());
+      rrc->SetEpcX2SapProvider (x2->GetEpcX2SapProvider ());
     }
 
   return dev;
@@ -571,6 +576,55 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
   params.teid = 0; // don't care
   enbRrc->GetS1SapUser ()->DataRadioBearerSetupRequest (params);
 }
+
+void
+LteHelper::AddX2Interface (NodeContainer enbNodes)
+{
+  NS_LOG_FUNCTION (this);
+
+  for (NodeContainer::Iterator i = enbNodes.Begin (); i != enbNodes.End (); ++i)
+    {
+      for (NodeContainer::Iterator j = i + 1; j != enbNodes.End (); ++j)
+        {
+          AddX2Interface (*i, *j);
+        }
+    }
+}
+
+void
+LteHelper::AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_INFO ("setting up the X2 interface");
+
+  m_epcHelper->AddX2Interface (enbNode1, enbNode2);
+}
+
+void
+LteHelper::HandoverRequest (Time hoTime, Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+{
+  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
+  Simulator::Schedule (hoTime, &LteHelper::DoHandoverRequest, this, ueNode, sourceEnbNode, targetEnbNode);
+}
+
+void
+LteHelper::DoHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+{
+  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
+  
+  m_epcHelper->SendHandoverRequest (ueNode, sourceEnbNode, targetEnbNode);
+  
+  // lteHelper->Attach (ueNode, targetEnbNode);
+  // lteHelper->ActivateEpsBearer (ueNode, *);
+
+  // lteHelper->DeactivateEpsBearer (ueNode, *);
+  // lteHelper->Deattach (ueNode, sourceEnbNode);
+  
+}
+
+
+
+
 
 void 
 LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bearer)

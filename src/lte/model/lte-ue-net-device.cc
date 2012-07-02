@@ -31,7 +31,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "lte-enb-net-device.h"
+#include "ns3/lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 #include "lte-ue-mac.h"
 #include "lte-ue-rrc.h"

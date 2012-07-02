@@ -34,4 +34,7 @@ def build(bld):
     obj = bld.create_ns3_program('lena-simple-epc',
                                  ['lte'])
     obj.source = 'lena-simple-epc.cc'
+    obj = bld.create_ns3_program('lena-x2-handover',
+                                 ['lte'])
+    obj.source = 'lena-x2-handover.cc'
 
