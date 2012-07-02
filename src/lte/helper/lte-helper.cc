@@ -101,10 +101,11 @@ LteHelper::DoStart (void)
       NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
-
-  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+  if (!m_fadingModelType.empty ())
     {
-      m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
+      Ptr<SpectrumPropagationLossModel> m_fadingModule;
+      m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_fadingModule->Start ();
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
       m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
@@ -482,18 +483,7 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
 
-  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
-    {
-      Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-      Ptr<MobilityModel> mm_ue_ul = uePhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-      Ptr<MobilityModel> mm_enb_ul = enbPhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-      Ptr<MobilityModel> mm_ue_dl = uePhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
- 
-      m_fadingModule->CreateFadingChannelRealization (mm_enb_dl, mm_ue_dl);  //downlink eNB -> UE
-      m_fadingModule->CreateFadingChannelRealization (mm_ue_ul, mm_enb_ul);  //uplink UE -> eNB
-
-    }
- 
+//  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
   uePhy->SetRnti (rnti);
   uePhy->DoSetBandwidth (enbDevice->GetObject<LteEnbNetDevice> ()->GetUlBandwidth (),

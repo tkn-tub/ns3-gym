@@ -32,7 +32,7 @@
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/epc-tft.h>
-#include <ns3/trace-fading-loss-model.h>
+#include <ns3/mobility-model.h>
 
 namespace ns3 {
 
@@ -339,8 +339,6 @@ private:
 
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
-
-  Ptr<TraceFadingLossModel> m_fadingModule;
 
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
