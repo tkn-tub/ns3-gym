@@ -169,19 +169,6 @@ public:
    */
   double GetTti (void) const;
 
-  /**
-  * \param ulBandwidth the UL bandwidth in RB
-  * \param dlBandwidth the DL bandwidth in RB
-  */
-  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
-
-  /**
-   *
-   * \param dlEarfcn the carrier frequency (EARFCN) in downlink
-   * \param ulEarfcn the carrier frequency (EARFCN) in downlink
-   */
-  virtual void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
-
   /** 
    * 
    * \param cellId the Cell Identifier

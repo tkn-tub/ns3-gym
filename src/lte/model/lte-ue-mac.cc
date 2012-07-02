@@ -56,7 +56,6 @@ public:
   virtual void ConfigureUe (uint16_t rnti);
   virtual void AddLc (uint8_t lcId, LteMacSapUser* msu);
   virtual void RemoveLc (uint8_t lcId);
-  virtual void RrcUpdateConfigurationReq (LteUeConfig_t params);
 
 private:
   LteUeMac* m_mac;
@@ -85,13 +84,6 @@ UeMemberLteUeCmacSapProvider::RemoveLc (uint8_t lcid)
 {
   m_mac->DoRemoveLc (lcid);
 }
-
-void
-UeMemberLteUeCmacSapProvider::RrcUpdateConfigurationReq (LteUeConfig_t params)
-{
-  m_mac->DoRrcUpdateConfigurationReq (params);
-}
-
 
 class UeMemberLteMacSapProvider : public LteMacSapProvider
 {
@@ -337,14 +329,6 @@ LteUeMac::DoRemoveLc (uint8_t lcId)
   NS_LOG_FUNCTION (this << " lcId" << lcId);
   NS_ASSERT_MSG (m_macSapUserMap.find (lcId) == m_macSapUserMap.end (), "could not find LCID " << lcId);
   m_macSapUserMap.erase (lcId);
-}
-
-void
-LteUeMac::DoRrcUpdateConfigurationReq (LteUeConfig_t params)
-{
-  NS_LOG_FUNCTION (this << " txMode " << (uint8_t) params.m_transmissionMode);
-  // forward info to PHY layer
-  m_uePhySapProvider->SetTransmissionMode (params.m_transmissionMode);
 }
 
 

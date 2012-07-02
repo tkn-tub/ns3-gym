@@ -871,8 +871,6 @@ void
 LteEnbMac::DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
 {
   NS_LOG_FUNCTION (this);
-  // propagates to PHY layer
-  m_enbPhySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
   // propagates to scheduler
   FfMacCschedSapProvider::CschedUeConfigReqParameters req;
   req.m_rnti = params.m_rnti;

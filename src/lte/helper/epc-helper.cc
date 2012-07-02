@@ -195,22 +195,34 @@ EpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice)
 }
 
 
-void
-EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteDevice, Ptr<EpcTft> tft, uint16_t rnti, uint8_t lcid)
+void 
+EpcHelper::AttachUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<NetDevice> enbDevice)
 {
+  NS_LOG_FUNCTION (this << ueLteDevice << enbDevice);
+
+  m_imsiEnbDeviceMap[imsi] = enbDevice;
+}
+
+void
+EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
+{
+  std::map<uint64_t, Ptr<NetDevice> >::iterator it = m_imsiEnbDeviceMap.find (imsi);
+  NS_ASSERT_MSG (it != m_imsiEnbDeviceMap.end (), "no eNB found for this IMSI, did you attach it before?");
+  Ptr<NetDevice> enbDevice = it->second;
   Ptr<Node> ueNode = ueLteDevice->GetNode (); 
   Ptr<Ipv4> ueIpv4 = ueNode->GetObject<Ipv4> ();
+  NS_ASSERT_MSG (ueIpv4 != 0, "UEs need to have IPv4 installed before EPS bearers can be activated");
   int32_t interface =  ueIpv4->GetInterfaceForDevice (ueLteDevice);
   NS_ASSERT (interface >= 0);
   NS_ASSERT (ueIpv4->GetNAddresses (interface) == 1);
   Ipv4Address ueAddr = ueIpv4->GetAddress (interface, 0).GetLocal ();
   NS_LOG_LOGIC (" UE IP address: " << ueAddr);
 
-  // NOTE: unlike ueLteDevice, enbLteDevice is NOT an Ipv4 enabled
+  // NOTE: unlike ueLteDevice, enbDevice is NOT an Ipv4 enabled
   // device. In fact we are interested in the S1 device of the eNB.
   // We find it by relying on the assumption that the S1 device is the
   // only Ipv4 enabled device of the eNB besides the localhost interface.
-  Ptr<Node> enbNode = enbLteDevice->GetNode (); 
+  Ptr<Node> enbNode = enbDevice->GetNode (); 
   NS_ASSERT (enbNode != 0);
   Ptr<Ipv4> enbIpv4 = enbNode->GetObject<Ipv4> ();
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB: " << enbIpv4->GetNInterfaces ());
@@ -231,7 +243,7 @@ EpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, Ptr<NetDevice> enbLteD
   NS_ASSERT (app != 0);
   Ptr<EpcEnbApplication> epcEnbApp = app->GetObject<EpcEnbApplication> ();
   NS_ASSERT (epcEnbApp != 0);
-  epcEnbApp->ErabSetupRequest (teid, rnti, lcid);
+  epcEnbApp->ErabSetupRequest (teid, imsi, bearer);
   
   
 }

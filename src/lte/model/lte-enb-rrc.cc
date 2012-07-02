@@ -32,8 +32,12 @@
 #include "lte-pdcp-sap.h"
 #include "lte-radio-bearer-info.h"
 #include "lte-radio-bearer-tag.h"
-#include "ns3/object-map.h"
-#include <ns3/ff-mac-csched-sap.h>
+#include "ff-mac-csched-sap.h"
+#include "epc-enb-s1-sap.h"
+
+#include "lte-rlc.h"
+#include "lte-rlc-um.h"
+#include "lte-rlc-am.h"
 
 // WILD HACK for UE-RRC direct communications
 #include <ns3/node-list.h>
@@ -82,35 +86,6 @@ EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (LteUeConfig_t params)
 {
   m_rrc->DoRrcConfigurationUpdateInd (params);
 }
-
-
-////////////////////////////////
-// PDCP SAP Forwarder
-////////////////////////////////
-
-// not needed any more if the template works
-
-// class EnbRrcMemberLtePdcpSapUser : public LtePdcpSapUser
-// {
-// public:
-//   MemberLtePdcpSapUser (LteEnbRrc* rrc);
-//   virtual void ReceiveRrcPdu (Ptr<Packet> p);
-// private:
-//   LteEnbRrc* m_rrc;
-// };
-
-
-// EnbRrcMemberLtePdcpSapUser::EnbRrcMemberLtePdcpSapUser (LteEnbRrc* rrc)
-//   : m_rrc (rrc)
-// {
-// }
-
-// void EnbRrcMemberLtePdcpSapUser::ReceiveRrcPdu (Ptr<Packet> p)
-// {
-//   m_rrc->DoReceiveRrcPdu (p);
-// }
-
-
 
 
 ///////////////////////////////////////////
@@ -212,12 +187,16 @@ LteEnbRrc::LteEnbRrc ()
   : m_cmacSapProvider (0),
     m_ffMacSchedSapProvider (0),
     m_macSapProvider (0),
+    m_s1SapProvider (0),
+    m_cphySapProvider (0),
     m_configured (false),
     m_lastAllocatedRnti (0)
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
   m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteEnbRrc> (this);
+  m_s1SapUser = new MemberEpcEnbS1SapUser<LteEnbRrc> (this);
+  m_cphySapUser = new MemberLteEnbCphySapUser<LteEnbRrc> (this);
 }
 
 
@@ -233,6 +212,8 @@ LteEnbRrc::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete m_cmacSapUser;
   delete m_pdcpSapUser;
+  delete m_s1SapUser;
+  delete m_cphySapUser;
 }
 
 TypeId
@@ -251,7 +232,14 @@ LteEnbRrc::GetTypeId (void)
                   UintegerValue (0),  // default tx-mode
                   MakeUintegerAccessor (&LteEnbRrc::m_defaultTransmissionMode),
                   MakeUintegerChecker<uint8_t> ())
-             
+    .AddAttribute ("EpsBearerToRlcMapping", 
+                   "Specify which type of RLC will be used for each type of EPS bearer. ",
+                   EnumValue (RLC_SM_ALWAYS),
+                   MakeEnumAccessor (&LteEnbRrc::m_epsBearerToRlcMapping),
+                   MakeEnumChecker (RLC_SM_ALWAYS, "RlcSmAlways",
+                                    RLC_UM_ALWAYS, "RlcUmAlways",
+                                    RLC_AM_ALWAYS, "RlcAmAlways",
+                                    PER_BASED,     "PacketErrorRateBased"))             
   ;
   return tid;
 }
@@ -281,6 +269,19 @@ LteEnbRrc::SetLastAllocatedRnti (uint16_t lastAllocatedRnti)
 }
 
 
+void
+LteEnbRrc::SetLteEnbCphySapProvider (LteEnbCphySapProvider * s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_cphySapProvider = s;
+}
+
+LteEnbCphySapUser*
+LteEnbRrc::GetLteEnbCphySapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_cphySapUser;
+}
 
 void
 LteEnbRrc::SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s)
@@ -311,6 +312,19 @@ LteEnbRrc::SetLteMacSapProvider (LteMacSapProvider * s)
   m_macSapProvider = s;
 }
 
+void 
+LteEnbRrc::SetS1SapProvider (EpcEnbS1SapProvider * s)
+{
+  m_s1SapProvider = s;
+}
+
+  
+EpcEnbS1SapUser* 
+LteEnbRrc::GetS1SapUser ()
+{
+  return m_s1SapUser;
+}
+
 LtePdcpSapProvider* 
 LteEnbRrc::GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid)
 {
@@ -318,11 +332,14 @@ LteEnbRrc::GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid)
 }
 
 void
-LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth)
+LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth, uint16_t ulEarfcn, uint16_t dlEarfcn, uint16_t cellId)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (!m_configured);
   m_cmacSapProvider->ConfigureMac (ulBandwidth, dlBandwidth);
+  m_cphySapProvider->SetBandwidth (ulBandwidth, dlBandwidth);
+  m_cphySapProvider->SetEarfcn (ulEarfcn, dlEarfcn);
+  m_cphySapProvider->SetCellId (cellId);
   m_configured = true;
 }
 
@@ -332,8 +349,10 @@ LteEnbRrc::AddUe (uint64_t imsi)
   NS_LOG_FUNCTION (this << imsi);
   // no Call Admission Control for now
   uint16_t rnti = CreateUeInfo (imsi); // side effect: create UeInfo for this UE
+  m_imsiRntiMap[imsi] = rnti; // side effect: add entry if not present
   NS_ASSERT_MSG (rnti != 0, "CreateUeInfo returned RNTI==0");
   m_cmacSapProvider->AddUe (rnti);
+  m_cphySapProvider->AddUe (imsi, rnti);
   return rnti;
 }
 
@@ -342,13 +361,78 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   RemoveUeInfo (rnti);
+  m_imsiRntiMap.erase (rnti);
   NS_FATAL_ERROR ("missing RemoveUe method in CMAC SAP");
 }
 
+TypeId
+LteEnbRrc::GetRlcType (EpsBearer bearer)
+{
+  switch (m_epsBearerToRlcMapping)
+    {
+    case RLC_SM_ALWAYS:
+      return LteRlcSm::GetTypeId ();
+      break;
+
+    case  RLC_UM_ALWAYS:
+      return LteRlcUm::GetTypeId ();
+      break;
+
+    case RLC_AM_ALWAYS:
+      return LteRlcAm::GetTypeId ();
+      break;
+
+    case PER_BASED:
+      if (bearer.GetPacketErrorLossRate () > 1.0e-5)
+        {
+          return LteRlcUm::GetTypeId ();
+        }
+      else
+        {
+          return LteRlcAm::GetTypeId ();
+        }
+      break;
+
+    default:
+      return LteRlcSm::GetTypeId ();
+      break;
+    }
+}
+
+
+void 
+LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
+{
+  EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters response;
+  std::map<uint64_t, uint16_t>::iterator it = m_imsiRntiMap.find (request.imsi);
+  if (it == m_imsiRntiMap.end ())
+    {
+      NS_LOG_ERROR ("unknown IMSI");
+      response.success = false;
+      if (m_s1SapProvider)
+        {
+          m_s1SapProvider->DataRadioBearerSetupResponse (response);      
+        }
+    }
+  else
+    {
+      response.rnti = it->second;
+      response.lcid = SetupRadioBearer (response.rnti, request.bearer);      
+      response.success = (response.lcid > 0);
+      response.teid = request.teid;
+      if (m_s1SapProvider)
+        {          
+          m_s1SapProvider->DataRadioBearerSetupResponse (response);
+        }
+    }
+}
+
 uint8_t
-LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId)
+LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
+
+  TypeId rlcTypeId = GetRlcType (bearer);
   Ptr<UeInfo> ueInfo = GetUeInfo (rnti);
 
   // create RLC instance
@@ -362,6 +446,11 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId)
   Ptr<LteRadioBearerInfo> rbInfo = CreateObject<LteRadioBearerInfo> ();
   rbInfo->m_rlc = rlc;
   uint8_t lcid = ueInfo->AddRadioBearer (rbInfo);
+  if (lcid == 0)
+    {
+      NS_LOG_WARN ("cannot setup radio bearer");
+      return 0;
+    }
   rlc->SetLcId (lcid);
 
   // we need PDCP only for real RLC, i.e., RLC/UM or RLC/AM
@@ -388,6 +477,8 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId)
   lcinfo.gbrUl = bearer.gbrQosInfo.gbrUl;
   lcinfo.gbrDl = bearer.gbrQosInfo.gbrDl;
   m_cmacSapProvider->AddLc (lcinfo, rlc->GetLteMacSapUser ());
+
+  GetUeRrcByRnti (rnti)->SetupRadioBearer (bearer, rlcTypeId, lcid);
   
   // Transmission mode settings
   LteUeConfig_t ueConfig;
@@ -401,7 +492,7 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId)
 void
 LteEnbRrc::ReleaseRadioBearer (uint16_t rnti, uint8_t lcId)
 {
-  NS_LOG_FUNCTION (this << (uint32_t) rnti);
+  NS_LOG_FUNCTION (this << (uint32_t) rnti << (uint32_t) lcId);
   Ptr<UeInfo> ueInfo = GetUeInfo (rnti);
   ueInfo->RemoveRadioBearer (lcId);
 }
@@ -507,44 +598,59 @@ LteEnbRrc::DoRrcConfigurationUpdateInd (LteUeConfig_t params)
   NS_LOG_FUNCTION (this);
   // up tp now only for TxMode change
   // update the peer UE-RRC on the change
+  Ptr<LteUeRrc> ueRrc = GetUeRrcByRnti (params.m_rnti);
+  ueRrc->DoRrcConfigurationUpdateInd (params);
+  
+  // configure MAC (and scheduler)
+  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  req.m_rnti = params.m_rnti;
+  req.m_transmissionMode = params.m_transmissionMode;
+  m_cmacSapProvider->RrcUpdateConfigurationReq (req);
+
+  // configure PHY
+  m_cphySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
+}
+
+
+Ptr<LteUeRrc> 
+LteEnbRrc::GetUeRrcByImsi (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this);
+
   NodeList::Iterator listEnd = NodeList::End ();
-  bool done = false;
+  bool found = false;
   for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
     {
       Ptr<Node> node = *i;
       int nDevs = node->GetNDevices ();
       for (int j = 0; j < nDevs; j++)
         {
-          Ptr<LteUeNetDevice> uedev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
-          if (!uedev)
+          Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
+          if (!ueDev)
             {
               continue;
             }
           else
             {
-              Ptr<LteUeRrc> ueRrc = uedev->GetRrc ();
-              if (ueRrc->GetRnti () == params.m_rnti)
+              if (ueDev->GetImsi () == imsi)
                 {
-                  ueRrc->DoRrcConfigurationUpdateInd (params);
-                  done = true;
-                }
-              else
-                {
-                  continue;
+                  found = true;
+                  return ueDev->GetRrc ();
                 }
             }
         }
     }
-  NS_ASSERT_MSG (done , " Unable to find peer UE-RRC, RNTI " << params.m_rnti);
-  // answer to MAC (and scheduler)
-  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
-  req.m_rnti = params.m_rnti;
-  req.m_transmissionMode = params.m_transmissionMode;
-  m_cmacSapProvider->RrcUpdateConfigurationReq (req);
-  
+  NS_ASSERT_MSG (found , " Unable to find UE with IMSI =" << imsi);
+  return 0;
 }
 
 
+Ptr<LteUeRrc> 
+LteEnbRrc::GetUeRrcByRnti (uint16_t rnti)
+{
+  uint64_t imsi = GetUeInfo (rnti)->GetImsi ();
+  return GetUeRrcByImsi (imsi);
+}
 
 
 } // namespace ns3

@@ -24,8 +24,9 @@
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/lte-ue-cmac-sap.h>
-#include <ns3/epc-tft-classifier.h>
 #include <ns3/lte-pdcp-sap.h>
+#include <ns3/lte-as-sap.h>
+#include <ns3/lte-ue-cphy-sap.h>
 
 #include <map>
 
@@ -36,9 +37,7 @@ class LteMacSapProvider;
 class LteUeCmacSapUser;
 class LteUeCmacSapProvider;
 class LteRadioBearerInfo;
-class LtePdcpSapUser;
-class LtePdcpSapProvider;
-
+class LteEnbRrc;
 
 /**
  *
@@ -50,6 +49,8 @@ class LteUeRrc : public Object
   friend class UeMemberLteUeCmacSapUser;
   friend class UeRrcMemberLteEnbCmacSapUser;
   friend class LtePdcpSpecificLtePdcpSapUser<LteUeRrc>;
+  friend class MemberLteAsSapProvider<LteUeRrc>;
+  friend class MemberLteUeCphySapUser<LteUeRrc>;
 
 public:
   /**
@@ -71,6 +72,20 @@ public:
 
 
   /**
+   * set the CPHY SAP this RRC should use to interact with the PHY
+   *
+   * \param s the CPHY SAP Provider
+   */
+  void SetLteUeCphySapProvider (LteUeCphySapProvider * s);
+
+  /**
+   *
+   *
+   * \return s the CPHY SAP User interface offered to the PHY by this RRC
+   */
+  LteUeCphySapUser* GetLteUeCphySapUser ();
+
+  /**
    * set the CMAC SAP this RRC should interact with
    *
    * \param s the CMAC SAP Provider to be used by this RRC
@@ -84,7 +99,6 @@ public:
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
 
-
   /**
    * set the MAC SAP provider. The ue RRC does not use this
    * directly, but it needs to provide it to newly created RLC instances.
@@ -94,6 +108,27 @@ public:
    */
   void SetLteMacSapProvider (LteMacSapProvider* s);
 
+  /** 
+   * Set the AS SAP user to interact with the NAS entity
+   * 
+   * \param s the AS SAP user
+   */
+  void SetAsSapUser (LteAsSapUser* s);
+
+  /** 
+   * 
+   * 
+   * \return the AS SAP provider exported by this RRC
+   */
+  LteAsSapProvider* GetAsSapProvider ();
+
+  /** 
+   * 
+   * 
+   * \param imsi the unique UE identifier
+   */
+  void SetImsi (uint64_t imsi);
+
   /**
    * Set UE RRC parameters
    *
@@ -102,41 +137,41 @@ public:
    */
   void ConfigureUe (uint16_t rnti, uint16_t cellId);
 
+
+
   /**
    * Setup a new radio bearer for the given user
    *
-   * \param rnti the RNTI of the user
    * \param bearer the characteristics of the bearer to be activated
    * \param rlcTypeId the TypeId identifying the type of RLC to be used for this bearer.
    * \param lcid the logical channel id allocated for this bearer by the eNB
    * \param tft the Traffic Flow Template identifying this bearer
    *
    */
-  void SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid, Ptr<EpcTft> tft);
+  void SetupRadioBearer (EpsBearer bearer, TypeId rlcTypeId, uint8_t lcid);
 
 
   /**
    *
    * Release the given radio bearer
    *
-   * \param rnti the C-RNTI  of the user owning the bearer
    * \param lcId the logical channel id of the bearer to be released
    */
-  void ReleaseRadioBearer (uint16_t rnti, uint8_t lcId);
+  void ReleaseRadioBearer (uint8_t lcId);
 
 
   /**
    *
    * \return the C-RNTI of the user
    */
-  uint16_t GetRnti ();
+  uint16_t GetRnti () const;
 
 
   /**
    *
    * \return the CellId of the attached Enb
    */
-  uint16_t GetCellId ();
+  uint16_t GetCellId () const;
 
   /**
    *
@@ -144,24 +179,6 @@ public:
    */
   std::vector<uint8_t> GetLcIdVector ();
 
-
-  /** 
-   * Enqueue an IP packet on the proper bearer for uplink transmission
-   * 
-   * \param p the packet
-   * 
-   * \return true if successful, false if an error occurred
-   */
-  bool Send (Ptr<Packet> p);
-
-  /** 
-   * set the callback used to forward data packets up the stack
-   * 
-   * \param void 
-   * \param cb 
-   */
-  void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
-  
   /** 
   * message from eNB-RRC for changing UE's configuration
   * (up to now TxMode)
@@ -171,25 +188,36 @@ public:
   
 private:
 
+  // PDCP SAP methods
   void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
 
-  // forwarded from CMAC SAP user
+  // CMAC SAP methods
   void DoLcConfigCompleted ();
 
-  Callback <void, Ptr<Packet> > m_forwardUpCallback;
+  // LTE AS SAP methods
+  void DoForceCampedOnEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
+  void DoConnect ();
+  void DoSendData (Ptr<Packet> packet, uint8_t bid);
+
+  LteUeCphySapUser* m_cphySapUser;
+  LteUeCphySapProvider* m_cphySapProvider;
 
   LteUeCmacSapUser* m_cmacSapUser;
   LteUeCmacSapProvider* m_cmacSapProvider;
 
   LteMacSapProvider* m_macSapProvider;
   LtePdcpSapUser* m_pdcpSapUser;
+  
+  LteAsSapProvider* m_asSapProvider;
+  LteAsSapUser* m_asSapUser;
 
+  uint64_t m_imsi;
   uint16_t m_rnti;
   uint16_t m_cellId;
 
-  std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;
-  
-  EpcTftClassifier m_tftClassifier;
+  std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;  
+
+  Ptr<LteEnbRrc> m_enbRrc; // wild hack, might go away in future versions
   
 };
 

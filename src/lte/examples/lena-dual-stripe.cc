@@ -415,7 +415,8 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (macroUes);
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
-  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
+
+
 
 
   // home UEs located in the same apartment in which there are the Home eNBs
@@ -424,22 +425,7 @@ main (int argc, char *argv[])
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
-  NetDeviceContainer::Iterator ueDevIt;
-  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
-  // attach explicitly each home UE to its home eNB
-  for (ueDevIt = homeUeDevs.Begin (); 
-       ueDevIt != homeUeDevs.End ();
-       ++ueDevIt, ++enbDevIt)
-    {
-      // this because of the order in which SameRoomPositionAllocator
-      // will place the UEs
-      if (enbDevIt == homeEnbDevs.End ())
-        {
-          enbDevIt = homeEnbDevs.Begin ();
-        }
-      lteHelper->Attach (*ueDevIt, *enbDevIt);
-    }
-
+ 
 
   if (epc)
     {
@@ -549,14 +535,35 @@ main (int argc, char *argv[])
     } // end if (epc)
 
 
- 
-  // activate bearer for all UEs
-  enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
-  EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (homeUeDevs, bearer, EpcTft::Default ());  
-  lteHelper->ActivateEpsBearer (macroUeDevs, bearer, EpcTft::Default ());
+  // attachment (needs to be done after IP stack configuration)
+  // macro UEs attached to the closest macro eNB
+  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
+  // each home UE is ttach explicitly to its home eNB
+  NetDeviceContainer::Iterator ueDevIt;
+  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
+  
+  for (ueDevIt = homeUeDevs.Begin (); 
+       ueDevIt != homeUeDevs.End ();
+       ++ueDevIt, ++enbDevIt)
+    {
+      // this because of the order in which SameRoomPositionAllocator
+      // will place the UEs
+      if (enbDevIt == homeEnbDevs.End ())
+        {
+          enbDevIt = homeEnbDevs.Begin ();
+        }
+      lteHelper->Attach (*ueDevIt, *enbDevIt);
+    }
 
-
+  if (!epc)
+    {
+      // simplified LTE-only simulation
+      // need to activate radio bearers explicitly after attachment
+      enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+      EpsBearer bearer (q);
+      lteHelper->ActivateDataRadioBearer (homeUeDevs, bearer);  
+      lteHelper->ActivateDataRadioBearer (macroUeDevs, bearer);      
+    }
 
   BuildingsHelper::MakeMobilityModelConsistent ();
 

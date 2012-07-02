@@ -28,6 +28,7 @@
 
 
 #include "lte-enb-phy.h"
+#include "lte-ue-phy.h"
 #include "lte-net-device.h"
 #include "lte-spectrum-value-helper.h"
 #include "ideal-control-messages.h"
@@ -35,6 +36,10 @@
 #include "lte-enb-mac.h"
 #include <ns3/lte-common.h>
 
+// WILD HACK for the inizialization of direct eNB-UE ctrl messaging
+#include <ns3/node-list.h>
+#include <ns3/node.h>
+#include <ns3/lte-ue-net-device.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
@@ -124,10 +129,13 @@ LteEnbPhy::LteEnbPhy ()
 
 LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
+    m_enbPhySapUser (0),
+    m_enbCphySapUser (0),
     m_nrFrames (0),
     m_nrSubFrames (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
+  m_enbCphySapProvider = new MemberLteEnbCphySapProvider<LteEnbPhy> (this);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
@@ -176,6 +184,7 @@ LteEnbPhy::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_ueAttached.clear ();
   delete m_enbPhySapProvider;
+  delete m_enbCphySapProvider;
   LtePhy::DoDispose ();
 }
 
@@ -199,6 +208,20 @@ LteEnbPhySapProvider*
 LteEnbPhy::GetLteEnbPhySapProvider ()
 {
   return (m_enbPhySapProvider);
+}
+
+void
+LteEnbPhy::SetLteEnbCphySapUser (LteEnbCphySapUser* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbCphySapUser = s;
+}
+
+LteEnbCphySapProvider*
+LteEnbPhy::GetLteEnbCphySapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return (m_enbCphySapProvider);
 }
 
 void
@@ -232,6 +255,7 @@ LteEnbPhy::GetNoiseFigure () const
 void
 LteEnbPhy::SetMacChDelay (uint8_t delay)
 {
+  NS_LOG_FUNCTION (this);
   m_macChTtiDelay = delay;
   for (int i = 0; i < m_macChTtiDelay; i++)
     {
@@ -255,9 +279,12 @@ LteEnbPhy::GetMacChDelay (void) const
   return (m_macChTtiDelay);
 }
 
+
+
 bool
 LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
 {
+  NS_LOG_FUNCTION (this);
   std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
@@ -275,6 +302,7 @@ LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
 bool
 LteEnbPhy::DeleteUePhy (uint16_t rnti)
 {
+  NS_LOG_FUNCTION (this);
   std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
@@ -542,6 +570,77 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
     }
   return (ulcqi);
 	
+}
+
+
+void
+LteEnbPhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
+{
+  NS_LOG_FUNCTION (this << (uint32_t) ulBandwidth << (uint32_t) dlBandwidth);
+  m_ulBandwidth = ulBandwidth;
+  m_dlBandwidth = dlBandwidth;
+
+  int Type0AllocationRbg[4] = {
+    10,     // RGB size 1
+    26,     // RGB size 2
+    63,     // RGB size 3
+    110     // RGB size 4
+  };  // see table 7.1.6.1-1 of 36.213
+  for (int i = 0; i < 4; i++)
+    {
+      if (dlBandwidth < Type0AllocationRbg[i])
+        {
+          m_rbgSize = i + 1;
+          break;
+        }
+    }
+}
+
+void 
+LteEnbPhy::DoSetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn)
+{
+  NS_LOG_FUNCTION (this << ulEarfcn << dlEarfcn);
+  m_ulEarfcn = ulEarfcn;
+  m_dlEarfcn = dlEarfcn;
+}
+
+
+void 
+LteEnbPhy::DoAddUe (uint64_t imsi, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << imsi << rnti);
+  // since for now ctrl messages are still sent directly to the UePhy
+  // without passing to the channel, we need to get a pointer to the
+  // UePhy. We do so by walking the whole UE list. This code will
+  // eventually go away when a real control channel is implemented.
+
+  Ptr<LteUePhy> uePhy;
+  NodeList::Iterator listEnd = NodeList::End ();
+  bool found = false;
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      int nDevs = node->GetNDevices ();
+      for (int j = 0; j < nDevs; j++)
+        {
+          Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
+          if (!ueDev)
+            {
+              continue;
+            }
+          else
+            {
+              if (ueDev->GetImsi () == imsi)
+                {
+                  found = true;
+                  uePhy = ueDev->GetPhy ();
+                }
+            }
+        }
+    }
+  NS_ASSERT_MSG (found , " Unable to find UE with IMSI =" << imsi);
+  bool success = AddUePhy (rnti, uePhy);
+  NS_ASSERT_MSG (success, "AddUePhy() failed");
 }
 
 void
