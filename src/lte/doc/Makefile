@@ -24,7 +24,6 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
-	$(FIGURES)/lte-ue-architecture.dia \
 	$(FIGURES)/lte-epc-x2-interface.dia
 
 
