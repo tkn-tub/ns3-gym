@@ -18,8 +18,10 @@ IMAGES_DIA = \
 	$(FIGURES)/eutran-profiling-scenario.dia \
 	$(FIGURES)/ff-example.dia \
 	$(FIGURES)/ff-mac-saps.dia \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.dia \
-	$(FIGURES)/lte-enb-architecture.dia \
+	$(FIGURES)/lte-arch-enb.dia \
+	$(FIGURES)/lte-arch-ue.dia \
+	$(FIGURES)/lte-enb-phy.dia \
+	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
 	$(FIGURES)/lte-ue-architecture.dia \
