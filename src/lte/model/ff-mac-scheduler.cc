@@ -32,7 +32,7 @@ NS_OBJECT_ENSURE_REGISTERED (FfMacScheduler);
 
 
 FfMacScheduler::FfMacScheduler ()
-: m_ulCqiFilter (ALL)
+: m_ulCqiFilter (ALL_UL_CQI)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -56,11 +56,11 @@ FfMacScheduler::GetTypeId (void)
     .SetParent<Object> ()
     .AddAttribute ("UlCqiFilter",
                    "The filter to apply on UL CQIs received",
-                   EnumValue (FfMacScheduler::ALL),
+                   EnumValue (FfMacScheduler::ALL_UL_CQI),
                    MakeEnumAccessor (&FfMacScheduler::m_ulCqiFilter),
-                   MakeEnumChecker (FfMacScheduler::SRS, "SRS",
-                                    FfMacScheduler::PUSCH, "PUSCH",
-                                    FfMacScheduler::ALL, "ALL"))
+                   MakeEnumChecker (FfMacScheduler::SRS_UL_CQI, "SRS_UL_CQI",
+                                    FfMacScheduler::PUSCH_UL_CQI, "PUSCH_UL_CQI",
+                                    FfMacScheduler::ALL_UL_CQI, "ALL_UL_CQI"))
     ;
   return tid;
 }

@@ -51,9 +51,9 @@ public:
   */
   enum UlCqiFilter_t
   {
-    SRS,
-    PUSCH,
-    ALL
+    SRS_UL_CQI,
+    PUSCH_UL_CQI,
+    ALL_UL_CQI
   };
   /**
   * constructor

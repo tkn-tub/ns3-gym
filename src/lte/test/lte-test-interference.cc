@@ -27,6 +27,7 @@
 
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
+#include "ns3/ff-mac-scheduler.h"
 
 #include "ns3/lte-enb-phy.h"
 #include "ns3/lte-enb-net-device.h"
@@ -153,6 +154,7 @@ LteInterferenceTestCase::DoRun (void)
   NetDeviceContainer ueDevs1;
   NetDeviceContainer ueDevs2;
   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
   ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);

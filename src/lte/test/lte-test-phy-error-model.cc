@@ -47,6 +47,7 @@
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
 #include <ns3/unused.h>
+#include <ns3/ff-mac-scheduler.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestPhyErrorModel");
@@ -184,6 +185,7 @@ LenaPhyErrorModelTestCase::DoRun (void)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lena->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lena->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
   
   enbDevs = lena->InstallEnbDevice (enbNodes);
   ueDevs = lena->InstallUeDevice (ueNodes);

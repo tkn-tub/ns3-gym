@@ -1049,7 +1049,7 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   // retrieve the allocation for this subframe
   switch (m_ulCqiFilter)
     {
-      case FfMacScheduler::SRS:
+      case FfMacScheduler::SRS_UL_CQI:
         {
           // filter all the CQIs that are not SRS based
           if (params.m_ulCqi.m_type!=UlCqi_s::SRS)
@@ -1058,7 +1058,7 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
               }
         }
       break;
-      case FfMacScheduler::PUSCH:
+      case FfMacScheduler::PUSCH_UL_CQI:
         {
           // filter all the CQIs that are not SRS based
           if (params.m_ulCqi.m_type!=UlCqi_s::PUSCH)
@@ -1066,64 +1066,128 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
               return;
             }
         }
-      case FfMacScheduler::ALL:
+      case FfMacScheduler::ALL_UL_CQI:
       break;
       
       default:
         NS_FATAL_ERROR ("Unknown UL CQI type");
     }
 
-  std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
-  std::map <uint16_t, std::vector <double> >::iterator itCqi;
-  itMap = m_allocationMaps.find (params.m_sfnSf);
-  if (itMap == m_allocationMaps.end ())
-    {
-      NS_LOG_DEBUG (this << " Does not find info on allocation, size : " << m_allocationMaps.size ());
-      return;
-    }
-  for (uint32_t i = 0; i < (*itMap).second.size (); i++)
-    {
-      // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
-//       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
-      double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
-      //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
-      itCqi = m_ueCqi.find ((*itMap).second.at (i));
-      if (itCqi == m_ueCqi.end ())
+  switch (params.m_ulCqi.m_type)
+  {
+    case UlCqi_s::PUSCH:
+      {
+        std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+        std::map <uint16_t, std::vector <double> >::iterator itCqi;
+        itMap = m_allocationMaps.find (params.m_sfnSf);
+        if (itMap == m_allocationMaps.end ())
+          {
+            NS_LOG_DEBUG (this << " Does not find info on allocation, size : " << m_allocationMaps.size ());
+            return;
+          }
+        for (uint32_t i = 0; i < (*itMap).second.size (); i++)
+          {
+            // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
+      //       NS_LOG_INFO (this << " i " << i << " size " << params.m_ulCqi.m_sinr.size () << " mapSIze " << (*itMap).second.size ());
+            double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
+            //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
+            itCqi = m_ueCqi.find ((*itMap).second.at (i));
+            if (itCqi == m_ueCqi.end ())
+              {
+                // create a new entry
+                std::vector <double> newCqi;
+                for (uint32_t j = 0; j < m_cschedCellConfig.m_ulBandwidth; j++)
+                  {
+                    if (i == j)
+                      {
+                        newCqi.push_back (sinr);
+                      }
+                    else
+                      {
+                        // initialize with NO_SINR value.
+                        newCqi.push_back (NO_SINR);
+                      }
+
+                  }
+                m_ueCqi.insert (std::pair <uint16_t, std::vector <double> > ((*itMap).second.at (i), newCqi));
+                // generate correspondent timer
+                m_ueCqiTimers.insert (std::pair <uint16_t, uint32_t > ((*itMap).second.at (i), m_cqiTimersThreshold));
+              }
+            else
+              {
+                // update the value
+                (*itCqi).second.at (i) = sinr;
+                // update correspondent timer
+                std::map <uint16_t, uint32_t>::iterator itTimers;
+                itTimers = m_ueCqiTimers.find ((*itMap).second.at (i));
+                (*itTimers).second = m_cqiTimersThreshold;
+                
+              }
+
+          }
+        // remove obsolete info on allocation
+        m_allocationMaps.erase (itMap);
+      }
+      break;
+    case UlCqi_s::SRS:
+      {
+        // get the RNTI from vendor specific parameters
+        uint16_t rnti;
+        NS_ASSERT (params.m_vendorSpecificList.size () > 0);
+        for (uint16_t i = 0; i < params.m_vendorSpecificList.size (); i++)
+          {
+            if (params.m_vendorSpecificList.at (i).m_type == SRS_CQI_RNTI_VSP)
+              {
+                Ptr<SrsCqiRntiVsp> vsp = DynamicCast<SrsCqiRntiVsp> (params.m_vendorSpecificList.at (i).m_value);
+                rnti = vsp->GetRnti ();
+              }
+          }
+        std::map <uint16_t, std::vector <double> >::iterator itCqi;
+        itCqi = m_ueCqi.find (rnti);
+        if (itCqi == m_ueCqi.end ())
+          {
+            // create a new entry
+            std::vector <double> newCqi;
+            for (uint32_t j = 0; j < m_cschedCellConfig.m_ulBandwidth; j++)
+            {
+              double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (j));
+              newCqi.push_back (sinr);
+              NS_LOG_DEBUG (this << " RNTI " << rnti << " new SRS-CQI for RB  " << j << " value " << sinr);
+              
+            }
+            m_ueCqi.insert (std::pair <uint16_t, std::vector <double> > (rnti, newCqi));
+            // generate correspondent timer
+            m_ueCqiTimers.insert (std::pair <uint16_t, uint32_t > (rnti, m_cqiTimersThreshold));
+          }
+        else
         {
-          // create a new entry
-          std::vector <double> newCqi;
+          // update the values
           for (uint32_t j = 0; j < m_cschedCellConfig.m_ulBandwidth; j++)
             {
-              if (i == j)
-                {
-                  newCqi.push_back (sinr);
-                }
-              else
-                {
-                  // initialize with NO_SINR value.
-                  newCqi.push_back (NO_SINR);
-                }
-
+              double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (j));
+              (*itCqi).second.at (j) = sinr;
+              NS_LOG_DEBUG (this << " RNTI " << rnti << " update SRS-CQI for RB  " << j << " value " << sinr);
             }
-          m_ueCqi.insert (std::pair <uint16_t, std::vector <double> > ((*itMap).second.at (i), newCqi));
-          // generate correspondent timer
-          m_ueCqiTimers.insert (std::pair <uint16_t, uint32_t > ((*itMap).second.at (i), m_cqiTimersThreshold));
-        }
-      else
-        {
-          // update the value
-          (*itCqi).second.at (i) = sinr;
           // update correspondent timer
           std::map <uint16_t, uint32_t>::iterator itTimers;
-          itTimers = m_ueCqiTimers.find ((*itMap).second.at (i));
+          itTimers = m_ueCqiTimers.find (rnti);
           (*itTimers).second = m_cqiTimersThreshold;
           
         }
-
-    }
-  // remove obsolete info on allocation
-  m_allocationMaps.erase (itMap);
-
+        
+        
+      }
+      break;
+    case UlCqi_s::PUCCH_1:
+    case UlCqi_s::PUCCH_2:
+    case UlCqi_s::PRACH:
+      {
+        NS_FATAL_ERROR ("PfFfMacScheduler supports only PUSCH and SRS UL-CQIs");
+      }
+      break;
+    default:
+      NS_FATAL_ERROR ("Unknown type of UL-CQI");
+  }
   return;
 }
 
