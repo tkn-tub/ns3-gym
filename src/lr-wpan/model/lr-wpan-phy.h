@@ -30,6 +30,7 @@
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-value.h>
+#include <ns3/antenna-model.h>
 #include <ns3/mobility-model.h>
 #include <ns3/packet.h>
 #include <ns3/nstime.h>
@@ -211,6 +212,8 @@ public:
   Ptr<SpectrumChannel> GetChannel (void);
   void SetDevice (Ptr<NetDevice> d);
   Ptr<NetDevice> GetDevice ();
+  void SetAntenna (Ptr<AntennaModel> a);
+  Ptr<AntennaModel> GetRxAntenna ();
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel () const;
 
   /**
@@ -386,6 +389,7 @@ private:
   Ptr<MobilityModel> m_mobility;
   Ptr<NetDevice> m_device;
   Ptr<SpectrumChannel> m_channel;
+  Ptr<AntennaModel> m_antenna;
   Ptr<SpectrumValue> m_txPsd;
   Ptr<const SpectrumValue> m_rxPsd;
   Ptr<const SpectrumValue> m_noise;

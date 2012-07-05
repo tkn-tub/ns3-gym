@@ -209,6 +209,21 @@ LrWpanPhy::GetRxSpectrumModel () const
     }
 }
 
+Ptr<AntennaModel>
+LrWpanPhy::GetRxAntenna ()
+{
+  return m_antenna;
+}
+
+void
+LrWpanPhy::SetAntenna (Ptr<AntennaModel> a)
+{
+  NS_LOG_FUNCTION (this << a);
+  m_antenna = a;
+}
+
+
+
 void
 LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
@@ -330,6 +345,7 @@ LrWpanPhy::PdDataRequest (const uint32_t psduLength, Ptr<Packet> p)
       txParams->duration = CalculateTxTime (p);
       txParams->txPhy = GetObject<SpectrumPhy> ();
       txParams->psd = m_txPsd;
+      txParams->txAntenna = m_antenna;
       Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
       pb->AddPacket (p);
       txParams->packetBurst = pb;
