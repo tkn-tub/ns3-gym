@@ -36,10 +36,20 @@ LteSinrChunkProcessor::~LteSinrChunkProcessor ()
 
 
 LteCtrlSinrChunkProcessor::LteCtrlSinrChunkProcessor (Ptr<LtePhy> p)
-  : m_phy (p)
+  : m_phy (p),
+  m_spectrumPhy (0)
 {
   NS_LOG_FUNCTION (this << p);
   NS_ASSERT (m_phy);
+}
+
+LteCtrlSinrChunkProcessor::LteCtrlSinrChunkProcessor (Ptr<LtePhy> p, Ptr<LteSpectrumPhy> s)
+: m_phy (p),
+  m_spectrumPhy (s)
+{
+  NS_LOG_FUNCTION (this << p);
+  NS_ASSERT (m_phy);
+  NS_ASSERT (m_spectrumPhy);
 }
 
 
@@ -77,6 +87,10 @@ LteCtrlSinrChunkProcessor::End ()
   if (m_totDuration.GetSeconds () > 0)
     {
       m_phy->GenerateCtrlCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      if (m_spectrumPhy)
+        {
+          m_spectrumPhy->UpdateSinrPerceived ((*m_sumSinr) / m_totDuration.GetSeconds ());
+        }
     }
   else
     {

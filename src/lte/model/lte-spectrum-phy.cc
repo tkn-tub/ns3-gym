@@ -151,10 +151,15 @@ LteSpectrumPhy::GetTypeId (void)
     .AddTraceSource ("RxEndError",
                      "Trace fired when a previosuly started RX terminates with an error",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndErrorTrace))
-    .AddAttribute ("PemEnabled",
-                    "Activate/Deactivate the error model (by default is active).",
+    .AddAttribute ("DataErrorModelEnabled",
+                    "Activate/Deactivate the error model of data (TBs of PDSCH and PUSCH) [by default is active].",
                     BooleanValue (true),
-                    MakeBooleanAccessor (&LteSpectrumPhy::m_pemEnabled),
+                   MakeBooleanAccessor (&LteSpectrumPhy::m_dataErrorModelEnabled),
+                    MakeBooleanChecker ())
+    .AddAttribute ("CtrlErrorModelEnabled",
+                    "Activate/Deactivate the error model of control (PCFICH-PDCCH decodification) [by default is active].",
+                    BooleanValue (true),
+                    MakeBooleanAccessor (&LteSpectrumPhy::m_ctrlErrorModelEnabled),
                     MakeBooleanChecker ())
   ;
   return tid;
@@ -801,7 +806,7 @@ LteSpectrumPhy::EndRxData ()
   
   while (itTb!=m_expectedTbs.end ())
     {
-      if (m_pemEnabled)
+      if (m_dataErrorModelEnabled)
         {
           double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
           (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
@@ -875,9 +880,21 @@ LteSpectrumPhy::EndRxDlCtrl ()
   // apply transmission mode gain
   NS_LOG_DEBUG (this << " txMode " << (uint16_t)m_transmissionMode << " gain " << m_txModeGain.at (m_transmissionMode));
   NS_ASSERT (m_transmissionMode < m_txModeGain.size ());
-  m_sinrPerceived *= m_txModeGain.at (m_transmissionMode);
-  // TODO: Check correctness
+  if (m_transmissionMode>0)
+    {
+      // in case of MIMO, ctrl is always txed as TX diversity
+      m_sinrPerceived *= m_txModeGain.at (1);
+    }
+//   m_sinrPerceived *= m_txModeGain.at (m_transmissionMode);
   bool error = false;
+  if (m_ctrlErrorModelEnabled)
+    {
+      double  errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
+      errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
+      error = m_random.GetValue () > errorRate ? false : true;
+      NS_LOG_DEBUG (this << " PCFICH-PDCCH Decodification, errorRate " << errorRate << " error " << error);
+    }
+
   if (!error)
     {
       if (!m_ltePhyRxCtrlEndOkCallback.IsNull ())

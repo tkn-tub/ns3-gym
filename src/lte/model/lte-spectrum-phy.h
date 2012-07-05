@@ -372,7 +372,8 @@ private:
   SpectrumValue m_sinrPerceived;
   
   UniformVariable m_random;
-  bool m_pemEnabled; // when true (default) the phy error model is enabled
+  bool m_dataErrorModelEnabled; // when true (default) the phy error model is enabled
+  bool m_ctrlErrorModelEnabled; // when true (default) the phy error model is enabled for DL ctrl frame
   
   uint8_t m_transmissionMode; // for UEs: store the transmission mode
   std::vector <double> m_txModeGain; // duplicate value of LteUePhy

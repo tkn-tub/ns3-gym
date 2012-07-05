@@ -57,7 +57,8 @@ public:
 /** 
  * The LteCtrlSinrChunkProcessor averages the calculated SINR over time 
  * for the Ctrl frame and therefore in charge of generating the CQI starting
- *  from the reference signals.
+ *  from the reference signals and the sinr values used for evaluating the 
+ *  decodification error probability of the control channels (PCFICH + PDCCH)
  * 
  */
 class LteCtrlSinrChunkProcessor : public LteSinrChunkProcessor
@@ -65,6 +66,7 @@ class LteCtrlSinrChunkProcessor : public LteSinrChunkProcessor
 public:
   virtual ~LteCtrlSinrChunkProcessor ();
   LteCtrlSinrChunkProcessor (Ptr<LtePhy> p);
+  LteCtrlSinrChunkProcessor (Ptr<LtePhy> p, Ptr<LteSpectrumPhy> s);
   virtual void Start ();
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
   virtual void End ();
@@ -72,6 +74,7 @@ private:
   Ptr<SpectrumValue> m_sumSinr;
   Time m_totDuration;
   Ptr<LtePhy> m_phy;
+  Ptr<LteSpectrumPhy> m_spectrumPhy;
 };
 
 

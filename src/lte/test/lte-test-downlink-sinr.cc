@@ -25,7 +25,7 @@
 #include "ns3/log.h"
 
 #include "ns3/spectrum-test.h"
-
+#include "ns3/boolean.h"
 #include "ns3/lte-phy-tag.h"
 #include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-test-sinr-chunk-processor.h"
@@ -33,6 +33,7 @@
 
 #include "ns3/lte-test-downlink-sinr.h"
 #include <ns3/lte-control-messages.h>
+#include "ns3/lte-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteDownlinkSinrTest");
 
@@ -124,6 +125,7 @@ LteDownlinkDataSinrTestCase::~LteDownlinkDataSinrTestCase ()
 void
 LteDownlinkDataSinrTestCase::DoRun (void)
 {
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   /**
    * Instantiate a single receiving LteSpectrumPhy
    */
@@ -298,6 +300,7 @@ LteDownlinkCtrlSinrTestCase::DoRun (void)
   /**
   * Instantiate a single receiving LteSpectrumPhy
   */
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteTestUePhy> uePhy = CreateObject<LteTestUePhy> (dlPhy, ulPhy);

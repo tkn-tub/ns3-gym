@@ -24,6 +24,7 @@
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include "ns3/enum.h"
+#include "ns3/boolean.h"
 #include "ns3/test.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
@@ -92,7 +93,8 @@ LteEnbAntennaTestCase::~LteEnbAntennaTestCase ()
 void
 LteEnbAntennaTestCase::DoRun (void)
 {
-  
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // use 0dB Pathloss, since we are testing only the antenna gain
