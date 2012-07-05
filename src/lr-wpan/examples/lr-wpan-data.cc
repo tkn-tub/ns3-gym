@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
   dev1->GetMac ()->SetMcpsDataIndicationCallback (cb3);
 
   // Tracing
-  lrWpanHelper.EnablePcapAll ("lr-wpan-data", false);
+  lrWpanHelper.EnablePcapAll (std::string ("lr-wpan-data"), true);
   AsciiTraceHelper ascii;
   Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("lr-wpan-data.tr");
   lrWpanHelper.EnableAsciiAll (stream);
