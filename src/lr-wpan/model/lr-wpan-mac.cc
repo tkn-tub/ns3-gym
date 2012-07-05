@@ -217,22 +217,8 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
       return;
     }
 
-  if ((params.m_dstAddrMode >= NO_PANID_ADDR)
-      && (params.m_dstAddrMode <= EXT_ADDR))
-    {
-      macHdr.SetDstAddrMode (params.m_dstAddrMode);
-      macHdr.SetDstAddrFields (params.m_dstPanId, params.m_dstAddr);
-    }
-  else
-    {
-      NS_LOG_ERROR (this << " Can not send packet with incorrect Destination Address mode" << params.m_dstAddrMode);
-      confirmParams.m_status = IEEE_802_15_4_INVALID_ADDRESS;
-      if (!m_mcpsDataConfirmCallback.IsNull ())
-        {
-          m_mcpsDataConfirmCallback (confirmParams);
-        }
-      return;
-    }
+  macHdr.SetDstAddrMode (params.m_dstAddrMode);
+  macHdr.SetDstAddrFields (params.m_dstPanId, params.m_dstAddr);
   macHdr.SetSecDisable ();
   //extract the last 3 bits in TxOptions and map to macHdr
   int b0 = params.m_txOptions & 1;
