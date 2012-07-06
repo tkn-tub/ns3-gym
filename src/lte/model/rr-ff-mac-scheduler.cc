@@ -536,7 +536,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
 //       int totRbg = lcNum * rbgPerFlow;
 //       totRbg = rbgNum / nTbs;
       int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
-      NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " <<  rbgAllocated * rbgSize << "..." << (rbgAllocated* rbgSize) + (rbgPerTb * rbgSize) - 1 << " mcs " << (uint16_t) newDci.m_mcs.at (0) << " layers " << nLayer);
+      NS_LOG_DEBUG (this << " DL - Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " <<  rbgAllocated * rbgSize << "..." << (rbgAllocated* rbgSize) + (rbgPerTb * rbgSize) - 1 << " mcs " << (uint16_t) newDci.m_mcs.at (0) << " layers " << nLayer);
       uint16_t rlcPduSize = tbSize / lcNum;
       for (int i = 0; i < lcNum ; i++)
         {

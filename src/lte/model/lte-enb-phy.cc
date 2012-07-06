@@ -400,7 +400,11 @@ LteEnbPhy::StartSubFrame (void)
   NS_LOG_FUNCTION (this);
 
   ++m_nrSubFrames;
-  m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
+  if (m_srsPeriodicity>0)
+    { 
+      // might be 0 in case the eNB has no UEs attached
+      m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
+    }
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
   
   

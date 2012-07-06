@@ -541,7 +541,22 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
   else 
     {
       NS_ASSERT_MSG (j<MI_MAP_QPSK_SIZE, "MI map out of data");
-      esinr = MI_map_qpsk_axis[j];
+      // take the closest value (when possible)  
+      if (j>0)
+        {
+          if ((MI_map_qpsk[j]-MI)<(MI-MI_map_qpsk[j-1]))
+            {
+              esinr = MI_map_qpsk_axis[j];
+            }
+          else
+            {
+              esinr = MI_map_qpsk_axis[j-1];
+            }
+        }
+      else
+        {
+          esinr = MI_map_qpsk_axis[0];
+        }
     }
 
   double esirnDb = 10*log10 (esinr); 
