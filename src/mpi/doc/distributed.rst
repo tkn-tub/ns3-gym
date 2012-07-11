@@ -111,6 +111,21 @@ these executables can be used. Finally, if openmpi complains about the inability
 to open shared libraries, such as libmpi_cxx.so.0, it may be necessary to add
 the openmpi lib directory to LD_LIBRARY_PATH.
 
+Here is an example of setting up PATH and LD_LIBRARY_PATH using a bash shell:::
+
+     For a 32-bit Linux distribution:
+         
+          export PATH=$PATH:/usr/lib/openmpi/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/openmpi/lib      
+    
+     For a 64-bit Linux distribution:
+     
+          export PATH=$PATH:/usr/lib64/openmpi/bin
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/openmpi/lib          
+
+These lines can be added into ~/.bash_profile or ~/.bashrc to avoid having to
+retype them when a new shell is opened.
+
 Building and Running Examples
 +++++++++++++++++++++++++++++
 
