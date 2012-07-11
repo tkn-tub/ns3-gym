@@ -72,4 +72,13 @@
 
 .. [Milos2012] J. Milos, "Performace Analysis Of PCFICH LTE Control Channel", Proceedings of the 19th Conference STUDENT EEICT 2012, Brno, CZ, 2012.
 
+.. [FujitsuWhitePaper] "Enhancing LTE Cell-Edge Performance via PDCCH ICIC".
+
+
+.. [Bharucha2011] Z. Bharucha, G. Auer, T. Abe, N. Miki, "Femto-to-Macro Control Channel Interference Mitigation via Cell ID Manipulation in LTE," Vehicular Technology Conference (VTC Fall), 2011 IEEE , vol., no., pp.1-6, 5-8 Sept. 2011
+
+.. [R4-081920] 3GPP R4-081920 `LTE PDCCH/PCFICH Demodulation Performance Results with Implementation Margin
+ <http://www.3gpp.org/ftp/tsg_ran/wg4_radio/TSGR4_48/Documents/R4-081920.zip>`_
+
+
 

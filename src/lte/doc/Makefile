@@ -21,7 +21,8 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-enb-architecture.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
-	$(FIGURES)/lte-ue-architecture.dia
+	$(FIGURES)/lte-ue-architecture.dia \
+	$(FIGURES)/lte-subframe-structure.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built
@@ -69,6 +70,7 @@ $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/lte-subframe-structure.pdf_width = 2in
 
 
 IMAGES_SEQDIAG = \
