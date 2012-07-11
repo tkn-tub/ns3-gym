@@ -56,7 +56,7 @@ public:
   /**
    * this method is expected to be re-implemented by each antenna model 
    * 
-   * \param the spherical angles at which the radiation pattern should
+   * \param a the spherical angles at which the radiation pattern should
    * be evaluated
    * 
    * \return the power gain in dBi of the antenna radiation pattern at

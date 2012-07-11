@@ -57,14 +57,9 @@ class Node : public Object
 public:
   static TypeId GetTypeId (void);
 
-  /**
-   * Must be invoked by subclasses only.
-   */
   Node();
   /**
    * \param systemId a unique integer used for parallel simulations.
-   *
-   * Must be invoked by subclasses only.
    */
   Node(uint32_t systemId);
 

@@ -21,9 +21,19 @@ Supported platforms
 
 New user-visible features
 -------------------------
+- A new random variable base class called 'RandomVariableStream', has been
+introduced.  This base class derives from ns3::Object, unlike the current 
+'RandomVariable' class which is a special type of object in the ns-3 
+system to date.  By making this class derive from ns3::Object, it can be 
+handled with the Ptr class, can carry attributes, and can have its parameters
+and initial state saved in the config-store subsystem.  A new attribute
+called "Stream" has been introduced for this class, to allow users to
+better control the assignment of underlying pseudo-random sequences to
+the RandomVariableStream objects (bug 101).
 
 Bugs fixed
 ----------
+ - bug 101 - random variable initialization
 
 Known issues
 ------------

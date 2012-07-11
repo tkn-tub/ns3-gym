@@ -241,7 +241,6 @@ private:
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
 
-
   double CalculateSinrDb (Ptr<Packet> pkt, Time arrTime, double rxPowerDb, UanTxMode mode, UanPdp pdp);
   double GetInterferenceDb (Ptr<Packet> pkt);
   double DbToKp (double db);

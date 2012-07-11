@@ -33,53 +33,14 @@
 #include <vector>
 
 #include "assert.h"
-#include "config.h"
-#include "integer.h"
 #include "random-variable.h"
+#include "rng-seed-manager.h"
 #include "rng-stream.h"
 #include "fatal-error.h"
 
 using namespace std;
 
 namespace ns3 {
-
-// -----------------------------------------------------------------------------
-// Seed Manager
-// -----------------------------------------------------------------------------
-
-uint32_t SeedManager::GetSeed ()
-{
-  uint32_t s[6];
-  RngStream::GetPackageSeed (s);
-  NS_ASSERT (
-    s[0] == s[1]
-    && s[0] == s[2]
-    && s[0] == s[3]
-    && s[0] == s[4]
-    && s[0] == s[5]
-    );
-  return s[0];
-}
-
-void SeedManager::SetSeed (uint32_t seed)
-{
-  Config::SetGlobal ("RngSeed", IntegerValue (seed));
-}
-
-void SeedManager::SetRun (uint32_t run)
-{
-  Config::SetGlobal ("RngRun", IntegerValue (run));
-}
-
-uint32_t SeedManager::GetRun ()
-{
-  return RngStream::GetPackageRun ();
-}
-
-bool SeedManager::CheckSeed (uint32_t seed)
-{
-  return RngStream::CheckSeed (seed);
-}
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -95,22 +56,24 @@ public:
   virtual double  GetValue () = 0;
   virtual uint32_t GetInteger ();
   virtual RandomVariableBase*   Copy (void) const = 0;
-
-protected:
+  RngStream *GetStream(void);
+private:
   RngStream* m_generator;  // underlying generator being wrapped
 };
 
 RandomVariableBase::RandomVariableBase ()
-  : m_generator (NULL)
+  : m_generator (0)
 {
 }
 
 RandomVariableBase::RandomVariableBase (const RandomVariableBase& r)
   : m_generator (0)
 {
-  if (r.m_generator)
+  if (r.m_generator != 0)
     {
-      m_generator = new RngStream (*r.m_generator);
+      m_generator = new RngStream (RngSeedManager::GetSeed (),
+                                   RngSeedManager::GetNextStreamIndex (),
+                                   RngSeedManager::GetRun ());
     }
 }
 
@@ -122,6 +85,18 @@ RandomVariableBase::~RandomVariableBase ()
 uint32_t RandomVariableBase::GetInteger ()
 {
   return (uint32_t)GetValue ();
+}
+
+RngStream *
+RandomVariableBase::GetStream (void)
+{
+  if (m_generator == 0)
+    {
+      m_generator = new RngStream (RngSeedManager::GetSeed (),
+                                   RngSeedManager::GetNextStreamIndex (),
+                                   RngSeedManager::GetRun ());
+    }
+  return m_generator;
 }
 
 // -------------------------------------------------------
@@ -250,20 +225,14 @@ UniformVariableImpl::GetMax (void) const
 
 double UniformVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
-  return m_min + m_generator->RandU01 () * (m_max - m_min);
+  RngStream *generator = GetStream ();
+  return m_min + generator->RandU01 () * (m_max - m_min);
 }
 
 double UniformVariableImpl::GetValue (double s, double l)
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
-  return s + m_generator->RandU01 () * (l - s);
+  RngStream *generator = GetStream ();
+  return s + generator->RandU01 () * (l - s);
 }
 
 RandomVariableBase* UniformVariableImpl::Copy () const
@@ -573,13 +542,10 @@ ExponentialVariableImpl::ExponentialVariableImpl (const ExponentialVariableImpl&
 
 double ExponentialVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
   while (1)
     {
-      double r = -m_mean*log (m_generator->RandU01 ());
+      double r = -m_mean*log (generator->RandU01 ());
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -737,13 +703,10 @@ ParetoVariableImpl::ParetoVariableImpl (const ParetoVariableImpl& c)
 
 double ParetoVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
   while (1)
     {
-      double r = (m_scale * ( 1.0 / pow (m_generator->RandU01 (), 1.0 / m_shape)));
+      double r = (m_scale * ( 1.0 / pow (generator->RandU01 (), 1.0 / m_shape)));
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -871,14 +834,11 @@ WeibullVariableImpl::WeibullVariableImpl (const WeibullVariableImpl& c)
 
 double WeibullVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
   double exponent = 1.0 / m_alpha;
   while (1)
     {
-      double r = m_mean * pow ( -log (m_generator->RandU01 ()), exponent);
+      double r = m_mean * pow ( -log (generator->RandU01 ()), exponent);
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -981,10 +941,7 @@ NormalVariableImpl::NormalVariableImpl (const NormalVariableImpl& c)
 
 double NormalVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
@@ -994,8 +951,8 @@ double NormalVariableImpl::GetValue ()
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
       // for algorithm; basically a Box-Muller transform:
       // http://en.wikipedia.org/wiki/Box-Muller_transform
-      double u1 = m_generator->RandU01 ();
-      double u2 = m_generator->RandU01 ();
+      double u1 = generator->RandU01 ();
+      double u2 = generator->RandU01 ();
       double v1 = 2 * u1 - 1;
       double v2 = 2 * u2 - 1;
       double w = v1 * v1 + v2 * v2;
@@ -1138,10 +1095,7 @@ EmpiricalVariableImpl::~EmpiricalVariableImpl ()
 double EmpiricalVariableImpl::GetValue ()
 { // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
   if (emp.size () == 0)
     {
       return 0.0; // HuH? No empirical data
@@ -1150,7 +1104,7 @@ double EmpiricalVariableImpl::GetValue ()
     {
       Validate ();      // Insure in non-decreasing
     }
-  double r = m_generator->RandU01 ();
+  double r = generator->RandU01 ();
   if (r <= emp.front ().cdf)
     {
       return emp.front ().value; // Less than first
@@ -1406,18 +1360,15 @@ LogNormalVariableImpl::LogNormalVariableImpl (double mu, double sigma)
 double
 LogNormalVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
   double u, v, r2, normal, z;
 
   do
     {
       /* choose x,y in uniform square (-1,-1) to (+1,+1) */
 
-      u = -1 + 2 * m_generator->RandU01 ();
-      v = -1 + 2 * m_generator->RandU01 ();
+      u = -1 + 2 * generator->RandU01 ();
+      v = -1 + 2 * generator->RandU01 ();
 
       /* see if it is in the unit circle */
       r2 = u * u + v * v;
@@ -1504,14 +1455,11 @@ GammaVariableImpl::GetValue ()
 double
 GammaVariableImpl::GetValue (double alpha, double beta)
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
 
   if (alpha < 1)
     {
-      double u = m_generator->RandU01 ();
+      double u = generator->RandU01 ();
       return GetValue (1.0 + alpha, beta) * pow (u, 1.0 / alpha);
     }
 
@@ -1529,7 +1477,7 @@ GammaVariableImpl::GetValue (double alpha, double beta)
       while (v <= 0);
 
       v = v * v * v;
-      u = m_generator->RandU01 ();
+      u = generator->RandU01 ();
       if (u < 1 - 0.0331 * x * x * x * x)
         {
           break;
@@ -1627,11 +1575,8 @@ ErlangVariableImpl::GetValue ()
 double
 ErlangVariableImpl::GetValue (unsigned int k, double lambda)
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
-
+  // XXX: Fixme: do not create a new 
+  // RNG stream every time the function is called !
   ExponentialVariable exponential (lambda);
 
   double result = 0;
@@ -1723,11 +1668,8 @@ TriangularVariableImpl::TriangularVariableImpl (const TriangularVariableImpl& c)
 
 double TriangularVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
-  double u = m_generator->RandU01 ();
+  RngStream *generator = GetStream ();
+  double u = generator->RandU01 ();
   if (u <= (m_mode - m_min) / (m_max - m_min) )
     {
       return m_min + sqrt (u * (m_max - m_min) * (m_mode - m_min) );
@@ -1811,12 +1753,9 @@ ZipfVariableImpl::ZipfVariableImpl (long n, double alpha)
 double
 ZipfVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
 
-  double u = m_generator->RandU01 ();
+  double u = generator->RandU01 ();
   double sum_prob = 0,zipf_value = 0;
   for (int i = 1; i <= m_n; i++)
     {
@@ -1895,10 +1834,7 @@ ZetaVariableImpl::ZetaVariableImpl (double alpha)
 double
 ZetaVariableImpl::GetValue ()
 {
-  if (!m_generator)
-    {
-      m_generator = new RngStream ();
-    }
+  RngStream *generator = GetStream ();
 
   double u, v;
   double X, T;
@@ -1906,8 +1842,8 @@ ZetaVariableImpl::GetValue ()
 
   do
     {
-      u = m_generator->RandU01 ();
-      v = m_generator->RandU01 ();
+      u = generator->RandU01 ();
+      v = generator->RandU01 ();
       X = floor (pow (u, -1.0 / (m_alpha - 1.0)));
       T = pow (1.0 + 1.0 / X, m_alpha - 1.0);
       test = v * X * (T - 1.0) / (m_b - 1.0);

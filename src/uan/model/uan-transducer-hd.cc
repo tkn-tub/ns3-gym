@@ -158,10 +158,12 @@ UanTransducerHd::Transmit (Ptr<UanPhy> src,
   if (m_state == TX)
     {
       Simulator::Remove (m_endTxEvent);
+      src->NotifyTxDrop(packet);           // traced source netanim
     }
   else
     {
       m_state = TX;
+      src->NotifyTxBegin(packet);             // traced source netanim
     }
 
 
@@ -185,6 +187,7 @@ UanTransducerHd::Transmit (Ptr<UanPhy> src,
 
   m_endTxEvent = Simulator::Schedule (delay, &UanTransducerHd::EndTx, this);
   m_endTxTime = Simulator::Now () + delay;
+  Simulator::Schedule(delay, &UanPhy::NotifyTxEnd, src, packet);    // traced source netanim
 }
 
 void

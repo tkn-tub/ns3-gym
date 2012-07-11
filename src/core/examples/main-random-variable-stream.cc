@@ -229,40 +229,46 @@ int main (int argc, char *argv[])
     gnuplots.AddPlot (plot);
   }
 
+  // XXX Turn this plot back on once its distribution has been finished.
+  /*
   {
     Gnuplot plot;
     plot.SetTitle ("EmpiricalRandomVariable");
     plot.AppendExtra ("set xrange [*:*]");
 
-    Ptr<EmpiricalRandomVariable> emp1 = CreateObject<EmpiricalRandomVariable> ();
-    emp1->CDF (0.0,  0.0 / 15.0);
-    emp1->CDF (0.2,  1.0 / 15.0);
-    emp1->CDF (0.4,  3.0 / 15.0);
-    emp1->CDF (0.6,  6.0 / 15.0);
-    emp1->CDF (0.8, 10.0 / 15.0);
-    emp1->CDF (1.0, 15.0 / 15.0);
+    EmpiricalRandomVariable emp1;
+    emp1.CDF (0.0,  0.0 / 15.0);
+    emp1.CDF (0.2,  1.0 / 15.0);
+    emp1.CDF (0.4,  3.0 / 15.0);
+    emp1.CDF (0.6,  6.0 / 15.0);
+    emp1.CDF (0.8, 10.0 / 15.0);
+    emp1.CDF (1.0, 15.0 / 15.0);
 
     plot.AddDataset ( Histogramm (emp1, probes, precision,
                                   "EmpiricalRandomVariable (Stairs)") );
 
     gnuplots.AddPlot (plot);
   }
+  // XXX Turn the above plot back on once its distribution has been finished.
+  */
 
+  // XXX Turn this plot back on once its distribution has been finished.
+  /*
   {
     Gnuplot plot;
     plot.SetTitle ("DeterministicRandomVariable");
     plot.AppendExtra ("set xrange [*:*]");
 
     double values[] = { 0.0, 0.2, 0.2, 0.4, 0.2, 0.6, 0.8, 0.8, 1.0 };
-
-    Ptr<DeterministicRandomVariable> det1 = CreateObject<DeterministicRandomVariable> ();
-    det1->SetValueArray (values, sizeof(values) / sizeof(values[0]));
+    DeterministicRandomVariable det1 (values, sizeof(values) / sizeof(values[0]));
 
     plot.AddDataset ( Histogramm (det1, probes, precision,
                                   "DeterministicRandomVariable", true) );
 
     gnuplots.AddPlot (plot);
   }
+  // XXX Turn the above plot back on once its distribution has been finished.
+  */
 
   {
     Gnuplot plot;

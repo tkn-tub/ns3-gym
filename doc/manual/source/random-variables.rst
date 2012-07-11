@@ -12,7 +12,7 @@ Quick Overview
 **************
 
 |ns3| random numbers are provided via instances of
-:cpp:class:`ns3::RandomVariable`.
+:cpp:class:`ns3::RandomVariableStream`.
 
 * by default, |ns3| simulations use a fixed seed; if there is any randomness in
   the simulation, each run of the program will yield identical results unless
@@ -21,13 +21,18 @@ Quick Overview
 * in *ns-3.3* and earlier, |ns3| simulations used a random seed by default; this
   marks a change in policy starting with *ns-3.4*.
 
+* in *ns-3.14* and earlier, |ns3| simulations used a different wrapper class
+  called :cpp:class:`ns3::RandomVariable`.  As of *ns-3.15*, this class has been
+  replaced by :cpp:class:`ns3::RandomVariableStream`; the underlying pseudo-random
+  number generator has not changed.
+
 * to obtain randomness across multiple simulation runs, you must either set the
   seed differently or set the run number differently.  To set a seed, call
   :cpp:func:`ns3::SeedManager::SetSeed` at the beginning of the program; to set
   a run number with the same seed, call :cpp:func:`ns3::SeedManager::SetRun` at
   the beginning of the program; see :ref:`seeding-and-independent-replications`.
 
-* each RandomVariable used in |ns3| has a virtual random number generator
+* each RandomVariableStream used in |ns3| has a virtual random number generator
   associated with it; all random variables use either a fixed or random seed
   based on the use of the global seed (previous bullet);
 
@@ -82,14 +87,14 @@ period (*i.e.*, the number of random numbers before overlap) of
 :math:`7.6x10^{22}`. The period of the entire generator is :math:`3.1x10^{57}`. 
 
 
-Class :cpp:class:`ns3::RandomVariable` is the public interface to this
-underlying random number generator.  When users create new ``RandomVariables``
-(such as :cpp:class:`ns3::UniformVariable`,
-:cpp:class:`ns3::ExponentialVariable`, etc.), they create an object that uses
+Class :cpp:class:`ns3::RandomVariableStream` is the public interface to this
+underlying random number generator.  When users create new random variables
+(such as :cpp:class:`ns3::UniformRandomVariable`,
+:cpp:class:`ns3::ExponentialRandomVariable`, etc.), they create an object that uses
 one of the distinct, independent streams of the random number generator.
-Therefore, each object of type :cpp:class:`ns3::RandomVariable` has,
+Therefore, each object of type :cpp:class:`ns3::RandomVariableStream` has,
 conceptually, its own "virtual" RNG.  Furthermore, each
-:cpp:class:`ns3::RandomVariable` can be configured to use one of the set of
+:cpp:class:`ns3::RandomVariableStream` can be configured to use one of the set of
 substreams drawn from the main stream.
 
 An alternate implementation would be to allow each RandomVariable to have its
@@ -122,8 +127,8 @@ before any random variables are created; e.g::
   SeedManager::SetSeed (3);  // Changes seed from default of 1 to 3
   SeedManager::SetRun (7);  // Changes run number from default of 1 to 7
   // Now, create random variables
-  UniformVariable x(0,10);
-  ExponentialVariable y(2902);
+  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+  Ptr<ExponentialRandomVariable> y = CreateObject<ExponentialRandomVarlable> ();
   ...
 
 Which is better, setting a new seed or advancing the substream state?  There is
@@ -154,16 +159,16 @@ or, if you are running programs directly outside of waf::
 The above command-line variants make it easy to run lots of different
 runs from a shell script by just passing a different RngRun index.
 
-Class RandomVariable
-********************
+Class RandomVariableStream
+**************************
 
 All random variables should derive from class :cpp:class:`RandomVariable`. This
-base class provides a few static methods for globally configuring the behavior
+base class provides a few methods for globally configuring the behavior
 of the random number generator. Derived classes provide API for drawing random
 variates from the particular distribution being supported.
 
-Each RandomVariable created in the simulation is given a generator that is a new
-RNGStream from the underlying PRNG. Used in this manner, the L'Ecuyer
+Each RandomVariableStream created in the simulation is given a generator that is a 
+new RNGStream from the underlying PRNG. Used in this manner, the L'Ecuyer
 implementation allows for a maximum of :math:`1.8x10^19` random variables.  Each
 random variable in a single replication can produce up to :math:`7.6x10^22`
 random numbers before overlapping.
@@ -171,7 +176,7 @@ random numbers before overlapping.
 Base class public API
 *********************
 
-Below are excerpted a few public methods of class :cpp:class:`RandomVariable`
+Below are excerpted a few public methods of class :cpp:class:`RandomVariableStream`
 that access the next value in the substream.::
 
   /**
@@ -181,7 +186,7 @@ that access the next value in the substream.::
   double GetValue (void) const;
   
   /**
-   * \brief Returns a random integer integer from the underlying distribution
+   * \brief Returns a random integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
    */
   uint32_t GetInteger (void) const;
@@ -193,36 +198,33 @@ Types of RandomVariables
 ************************
 
 The following types of random variables are provided, and are documented in the
-|ns3| Doxygen or by reading ``src/core/model/random-variable.h``.  Users can also
-create their own custom random variables by deriving from class
-:cpp:class:`RandomVariable`.
+|ns3| Doxygen or by reading ``src/core/model/random-variable-stream.h``.  Users 
+can also create their own custom random variables by deriving from class
+:cpp:class:`RandomVariableStream`.
 
-* class :cpp:class:`UniformVariable`
-* class :cpp:class:`ConstantVariable`
-* class :cpp:class:`SequentialVariable`
-* class :cpp:class:`ExponentialVariable`
-* class :cpp:class:`ParetoVariable`
-* class :cpp:class:`WeibullVariable`
-* class :cpp:class:`NormalVariable`
-* class :cpp:class:`EmpiricalVariable`
-* class :cpp:class:`IntEmpiricalVariable`
-* class :cpp:class:`DeterministicVariable`
-* class :cpp:class:`LogNormalVariable`
-* class :cpp:class:`TriangularVariable`
-* class :cpp:class:`GammaVariable`
-* class :cpp:class:`ErlangVariable`
-* class :cpp:class:`ZipfVariable`
+* class :cpp:class:`UniformRandomVariable`
+* class :cpp:class:`ConstantRandomVariable`
+* class :cpp:class:`SequentialRandomVariable`
+* class :cpp:class:`ExponentialRandomVariable`
+* class :cpp:class:`ParetoRandomVariable`
+* class :cpp:class:`WeibullRandomVariable`
+* class :cpp:class:`NormalRandomVariable`
+* class :cpp:class:`LogNormalRandomVariable`
+* class :cpp:class:`GammaRandomVariable`
+* class :cpp:class:`ErlangRandomVariable`
+* class :cpp:class:`TriangularRandomVariable`
+* class :cpp:class:`ZipfRandomVariable`
+* class :cpp:class:`ZetaRandomVariable`
+* class :cpp:class:`DeterministicRandomVariable`
+* class :cpp:class:`EmpiricalRandomVariable`
 
-Semantics of RandomVariable objects
-***********************************
+Semantics of RandomVariableStream objects
+*****************************************
 
-RandomVariable objects have value semantics. This means that they can be passed
-by value to functions.  The can also be passed by reference to const.
-RandomVariables do not derive from :cpp:class:`ns3::Object` and we do not use
-smart pointers to manage them; they are either allocated on the stack or else
-users explicitly manage any heap-allocated RandomVariables.
+RandomVariableStream objects derive from :cpp:class:`ns3::Object` and are
+handled by smart pointers.
 
-RandomVariable objects can also be used in |ns3| attributes, which means
+RandomVariableStream instances can also be used in |ns3| attributes, which means
 that values can be set for them through the |ns3| attribute system.
 An example is in the propagation models for WifiNetDevice:::
 
@@ -234,15 +236,15 @@ An example is in the propagation models for WifiNetDevice:::
         .AddConstructor<RandomPropagationDelayModel> ()
         .AddAttribute ("Variable",
                        "The random variable which generates random delays (s).",
-                       RandomVariableValue (UniformVariable (0.0, 1.0)),
-             MakeRandomVariableAccessor (&RandomPropagationDelayModel::m_variable), 
-                       MakeRandomVariableChecker ())
+                       StringValue ("ns3::UniformRandomVariable"),
+                       MakePointerAccessor (&RandomPropagationDelayModel::m_variable),
+                       MakePointerChecker<RandomVariableStream> ())
         ;
       return tid;
     }
 
 Here, the |ns3| user can change the default random variable for this
-delay model (which is a UniformVariable ranging from 0 to 1) through
+delay model (which is a UniformRandomVariable ranging from 0 to 1) through
 the attribute system.
 
 Using other PRNG
@@ -252,10 +254,56 @@ There is presently no support for substituting a different underlying
 random number generator (e.g., the GNU Scientific Library or the Akaroa
 package).  Patches are welcome.
 
-More advanced usage
-*******************
+Setting the stream number
+*************************
 
-*To be completed.*
+The underlying MRG32k3a generator provides 2^64 independent streams.
+In ns-3, these are assigned sequentially starting from the first stream as 
+new RandomVariableStream instances make their first call to GetValue().
+
+As a result of how these RandomVariableStream objects are assigned to
+underlying streams, the assignment is sensitive to perturbations of
+the simulation configuration.  The consequence is that if any aspect of the
+simulation configuration is changed, the mapping of RandomVariables to
+streams may (or may not) change.
+
+As a concrete example, a user running a comparative study between routing
+protocols may find that the act of changing one routing protocol for another
+will notice that the underlying mobility pattern also changed.  
+
+Starting with ns-3.15, some control has been provided to users to allow
+users to optionally fix the assignment of selected RandomVariableStream 
+objects to underlying streams.  This is the ``Stream`` attribute, part
+of the base class RandomVariableStream.  
+
+By partitioning the existing sequence of streams from before:
+
+::
+
+   <-------------------------------------------------------------------------->
+   stream 0                                                     stream (2^64 - 1)
+
+into two equal-sized sets:
+
+::
+
+   <--------------------------------------------------------------------------->
+    ^                             ^^                                    ^
+    |                             ||                                    |
+   stream 0       stream (2^63 - 1) stream 2^63          stream (2^64 - 1)
+   <- automatically assigned -----><-------- assigned by user----------->
+
+The first 2^63 streams continue to be automatically assigned, while
+the last 2^63 are given stream indices starting with zero up to
+2^63-1.
+
+The assignment of streams to a fixed stream number is optional; instances
+of RandomVariableStream that do not have a stream value assigned will
+be assigned the next one from the pool of automatic streams.
+
+To fix a RandomVariableStream to a particular underlying stream, assign
+its ``Stream`` attribute to a non-negative integer (the default value
+of -1 means that a value will be automatically allocated).
 
 Publishing your results
 ***********************

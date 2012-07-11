@@ -66,6 +66,7 @@ public:
 private:
   /**
    * \param device Pointer to the NetDevice to install DeviceEnergyModel.
+   * \param source Pointer to EnergySource to install.
    *
    * Implements DeviceEnergyModel::Install.
    */

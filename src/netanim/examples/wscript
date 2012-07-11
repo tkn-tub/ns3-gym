@@ -16,3 +16,7 @@ def build(bld):
     obj = bld.create_ns3_program('wireless-animation',
                                  ['netanim', 'applications', 'point-to-point', 'csma', 'wifi', 'mobility', 'network'])
     obj.source = 'wireless-animation.cc'
+    
+    obj = bld.create_ns3_program('uan-animation',
+                                 ['netanim', 'internet', 'mobility', 'tools', 'applications', 'uan'])
+    obj.source = 'uan-animation.cc'
