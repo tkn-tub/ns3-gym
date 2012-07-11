@@ -60,18 +60,18 @@ LenaTestPhyErrorModelrSuite::LenaTestPhyErrorModelrSuite ()
   NS_LOG_INFO ("creating LenaTestPhyErrorModelTestCase");
 
   // MCS 2 TB size of 256 bits BER 0.33 SINR -5.51
-   AddTestCase (new LenaPhyErrorModelTestCase (4, 1800, 32, 0.33, 29));
+   AddTestCase (new LenaPhyErrorModelTestCase (4, 1800, 32, 0.35, 50));
 // MCS 2 TB size of 528 bits BER 0.11 SINR -5.51
-   AddTestCase (new LenaPhyErrorModelTestCase (2, 1800, 66, 0.11, 20));
+   AddTestCase (new LenaPhyErrorModelTestCase (2, 1800, 66, 0.11, 34));
 // MCS 2 TB size of 1088 bits BER 0.02 SINR -5.51
-  AddTestCase (new LenaPhyErrorModelTestCase (1, 1800, 136, 0.02, 9));
+  AddTestCase (new LenaPhyErrorModelTestCase (1, 1800, 136, 0.02, 16));
   // MCS 12 TB size of 4800 bits  BER 0.3  SINR 4.43
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 600, 600, 0.3, 29));
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 600, 600, 0.3, 48));
 // MCS 12 TB size of 1632 bits  BER 0.55  SINR 4.43
-  AddTestCase (new LenaPhyErrorModelTestCase (3, 600, 204, 0.55, 31));
+  AddTestCase (new LenaPhyErrorModelTestCase (3, 600, 204, 0.55, 52));
 // MCS 16 TB size of 7272 bits (3648 x 3584) BER 0.14 SINR 8.48
 // BER 0.14 = 1 - ((1-0.075)*(1-0.075))
-   AddTestCase (new LenaPhyErrorModelTestCase (1, 470, 781, 0.14, 22));
+   AddTestCase (new LenaPhyErrorModelTestCase (1, 470, 781, 0.14, 29));
 
  
 

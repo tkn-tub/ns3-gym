@@ -403,7 +403,7 @@ The parameters of the nine test cases are reported in the following:
    BLER for test 6.
 
 
-The test verifies that in each case the obtained number of packets received correctly falls within the 95% confidence interval of a Binomial distribution where the parameter :math:`p` is equal to :math:`1-BER`, the parameter :math:`n` is the total number of packets sent and the parameter :math:`k` is the number of packets correctly received.
+The test verifies that in each case the obtained number of packets received correctly falls within the 99.9% confidence interval (CI) of a Binomial distribution where the parameter :math:`p` is equal to :math:`1-BER`, the parameter :math:`n` is the total number of packets sent and the parameter :math:`k` is the number of packets correctly received. The value of the CI has been chosen for guaranteeing a sufficient margin on the errors due to the quantization of the MI values in the tables.
 
 
 MIMO Model
