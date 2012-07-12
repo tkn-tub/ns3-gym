@@ -164,8 +164,8 @@ def register_types(module):
     module.add_class('RandomVariable', import_from_module='ns.core')
     ## minstrel-wifi-manager.h (module 'wifi'): ns3::RateInfo [struct]
     module.add_class('RateInfo')
-    ## random-variable.h (module 'core'): ns3::SeedManager [class]
-    module.add_class('SeedManager', import_from_module='ns.core')
+    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager [class]
+    module.add_class('RngSeedManager', import_from_module='ns.core')
     ## random-variable.h (module 'core'): ns3::SequentialVariable [class]
     module.add_class('SequentialVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
@@ -557,6 +557,10 @@ def register_types(module):
     typehandlers.add_type_alias('uint8_t', 'ns3::WifiInformationElementId')
     typehandlers.add_type_alias('uint8_t*', 'ns3::WifiInformationElementId*')
     typehandlers.add_type_alias('uint8_t&', 'ns3::WifiInformationElementId&')
+    typehandlers.add_type_alias('ns3::RngSeedManager', 'ns3::SeedManager')
+    typehandlers.add_type_alias('ns3::RngSeedManager*', 'ns3::SeedManager*')
+    typehandlers.add_type_alias('ns3::RngSeedManager&', 'ns3::SeedManager&')
+    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >', 'ns3::WifiModeListIterator')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >*', 'ns3::WifiModeListIterator*')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >&', 'ns3::WifiModeListIterator&')
@@ -657,7 +661,7 @@ def register_methods(root_module):
     register_Ns3PropagationCache__Ns3JakesProcess_methods(root_module, root_module['ns3::PropagationCache< ns3::JakesProcess >'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
     register_Ns3RateInfo_methods(root_module, root_module['ns3::RateInfo'])
-    register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
+    register_Ns3RngSeedManager_methods(root_module, root_module['ns3::RngSeedManager'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
@@ -3391,32 +3395,32 @@ def register_Ns3RateInfo_methods(root_module, cls):
     cls.add_instance_attribute('throughput', 'uint32_t', is_const=False)
     return
 
-def register_Ns3SeedManager_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::SeedManager::SeedManager() [constructor]
+def register_Ns3RngSeedManager_methods(root_module, cls):
+    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager::RngSeedManager() [constructor]
     cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::SeedManager::SeedManager(ns3::SeedManager const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SeedManager const &', 'arg0')])
-    ## random-variable.h (module 'core'): static bool ns3::SeedManager::CheckSeed(uint32_t seed) [member function]
-    cls.add_method('CheckSeed', 
-                   'bool', 
-                   [param('uint32_t', 'seed')], 
-                   is_static=True)
-    ## random-variable.h (module 'core'): static uint32_t ns3::SeedManager::GetRun() [member function]
-    cls.add_method('GetRun', 
-                   'uint32_t', 
+    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager::RngSeedManager(ns3::RngSeedManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RngSeedManager const &', 'arg0')])
+    ## rng-seed-manager.h (module 'core'): static uint64_t ns3::RngSeedManager::GetNextStreamIndex() [member function]
+    cls.add_method('GetNextStreamIndex', 
+                   'uint64_t', 
                    [], 
                    is_static=True)
-    ## random-variable.h (module 'core'): static uint32_t ns3::SeedManager::GetSeed() [member function]
+    ## rng-seed-manager.h (module 'core'): static uint64_t ns3::RngSeedManager::GetRun() [member function]
+    cls.add_method('GetRun', 
+                   'uint64_t', 
+                   [], 
+                   is_static=True)
+    ## rng-seed-manager.h (module 'core'): static uint32_t ns3::RngSeedManager::GetSeed() [member function]
     cls.add_method('GetSeed', 
                    'uint32_t', 
                    [], 
                    is_static=True)
-    ## random-variable.h (module 'core'): static void ns3::SeedManager::SetRun(uint32_t run) [member function]
+    ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetRun(uint64_t run) [member function]
     cls.add_method('SetRun', 
                    'void', 
-                   [param('uint32_t', 'run')], 
+                   [param('uint64_t', 'run')], 
                    is_static=True)
-    ## random-variable.h (module 'core'): static void ns3::SeedManager::SetSeed(uint32_t seed) [member function]
+    ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetSeed(uint32_t seed) [member function]
     cls.add_method('SetSeed', 
                    'void', 
                    [param('uint32_t', 'seed')], 

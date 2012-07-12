@@ -138,14 +138,14 @@ def register_types(module):
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
     ## random-variable.h (module 'core'): ns3::RandomVariable [class]
     module.add_class('RandomVariable', import_from_module='ns.core')
+    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager [class]
+    module.add_class('RngSeedManager', import_from_module='ns.core')
     ## snr-to-block-error-rate-manager.h (module 'wimax'): ns3::SNRToBlockErrorRateManager [class]
     module.add_class('SNRToBlockErrorRateManager')
     ## snr-to-block-error-rate-record.h (module 'wimax'): ns3::SNRToBlockErrorRateRecord [class]
     module.add_class('SNRToBlockErrorRateRecord')
     ## ss-record.h (module 'wimax'): ns3::SSRecord [class]
     module.add_class('SSRecord')
-    ## random-variable.h (module 'core'): ns3::SeedManager [class]
-    module.add_class('SeedManager', import_from_module='ns.core')
     ## send-params.h (module 'wimax'): ns3::SendParams [class]
     module.add_class('SendParams')
     ## random-variable.h (module 'core'): ns3::SequentialVariable [class]
@@ -535,6 +535,10 @@ def register_types(module):
     module.add_container('std::vector< ns3::Ptr< ns3::WimaxConnection > >', 'ns3::Ptr< ns3::WimaxConnection >', container_type='vector')
     module.add_container('std::vector< ns3::OfdmDlBurstProfile >', 'ns3::OfdmDlBurstProfile', container_type='vector')
     module.add_container('std::list< ns3::OfdmDlMapIe >', 'ns3::OfdmDlMapIe', container_type='list')
+    typehandlers.add_type_alias('ns3::RngSeedManager', 'ns3::SeedManager')
+    typehandlers.add_type_alias('ns3::RngSeedManager*', 'ns3::SeedManager*')
+    typehandlers.add_type_alias('ns3::RngSeedManager&', 'ns3::SeedManager&')
+    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
@@ -613,10 +617,10 @@ def register_methods(root_module):
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
+    register_Ns3RngSeedManager_methods(root_module, root_module['ns3::RngSeedManager'])
     register_Ns3SNRToBlockErrorRateManager_methods(root_module, root_module['ns3::SNRToBlockErrorRateManager'])
     register_Ns3SNRToBlockErrorRateRecord_methods(root_module, root_module['ns3::SNRToBlockErrorRateRecord'])
     register_Ns3SSRecord_methods(root_module, root_module['ns3::SSRecord'])
-    register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
     register_Ns3SendParams_methods(root_module, root_module['ns3::SendParams'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3ServiceFlow_methods(root_module, root_module['ns3::ServiceFlow'])
@@ -3134,6 +3138,38 @@ def register_Ns3RandomVariable_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3RngSeedManager_methods(root_module, cls):
+    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager::RngSeedManager() [constructor]
+    cls.add_constructor([])
+    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager::RngSeedManager(ns3::RngSeedManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RngSeedManager const &', 'arg0')])
+    ## rng-seed-manager.h (module 'core'): static uint64_t ns3::RngSeedManager::GetNextStreamIndex() [member function]
+    cls.add_method('GetNextStreamIndex', 
+                   'uint64_t', 
+                   [], 
+                   is_static=True)
+    ## rng-seed-manager.h (module 'core'): static uint64_t ns3::RngSeedManager::GetRun() [member function]
+    cls.add_method('GetRun', 
+                   'uint64_t', 
+                   [], 
+                   is_static=True)
+    ## rng-seed-manager.h (module 'core'): static uint32_t ns3::RngSeedManager::GetSeed() [member function]
+    cls.add_method('GetSeed', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetRun(uint64_t run) [member function]
+    cls.add_method('SetRun', 
+                   'void', 
+                   [param('uint64_t', 'run')], 
+                   is_static=True)
+    ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetSeed(uint32_t seed) [member function]
+    cls.add_method('SetSeed', 
+                   'void', 
+                   [param('uint32_t', 'seed')], 
+                   is_static=True)
+    return
+
 def register_Ns3SNRToBlockErrorRateManager_methods(root_module, cls):
     ## snr-to-block-error-rate-manager.h (module 'wimax'): ns3::SNRToBlockErrorRateManager::SNRToBlockErrorRateManager(ns3::SNRToBlockErrorRateManager const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SNRToBlockErrorRateManager const &', 'arg0')])
@@ -3415,38 +3451,6 @@ def register_Ns3SSRecord_methods(root_module, cls):
     cls.add_method('SetSfTransactionId', 
                    'void', 
                    [param('uint16_t', 'sfTransactionId')])
-    return
-
-def register_Ns3SeedManager_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::SeedManager::SeedManager() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::SeedManager::SeedManager(ns3::SeedManager const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SeedManager const &', 'arg0')])
-    ## random-variable.h (module 'core'): static bool ns3::SeedManager::CheckSeed(uint32_t seed) [member function]
-    cls.add_method('CheckSeed', 
-                   'bool', 
-                   [param('uint32_t', 'seed')], 
-                   is_static=True)
-    ## random-variable.h (module 'core'): static uint32_t ns3::SeedManager::GetRun() [member function]
-    cls.add_method('GetRun', 
-                   'uint32_t', 
-                   [], 
-                   is_static=True)
-    ## random-variable.h (module 'core'): static uint32_t ns3::SeedManager::GetSeed() [member function]
-    cls.add_method('GetSeed', 
-                   'uint32_t', 
-                   [], 
-                   is_static=True)
-    ## random-variable.h (module 'core'): static void ns3::SeedManager::SetRun(uint32_t run) [member function]
-    cls.add_method('SetRun', 
-                   'void', 
-                   [param('uint32_t', 'run')], 
-                   is_static=True)
-    ## random-variable.h (module 'core'): static void ns3::SeedManager::SetSeed(uint32_t seed) [member function]
-    cls.add_method('SetSeed', 
-                   'void', 
-                   [param('uint32_t', 'seed')], 
-                   is_static=True)
     return
 
 def register_Ns3SendParams_methods(root_module, cls):
