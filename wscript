@@ -321,12 +321,18 @@ def configure(conf):
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile
+    if Options.options.build_profile == "release":
+        env['BUILD_SUFFIX'] = ''
+    else:
+        env['BUILD_SUFFIX'] = '-'+Options.options.build_profile
+    
     env['APPNAME'] = wutils.APPNAME
     env['VERSION'] = wutils.VERSION
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if Options.options.build_profile == 'release': 
             env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
+        if Options.options.build_profile == 'optimized': 
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
 
@@ -576,7 +582,7 @@ def create_suid_program(bld, name):
     program.is_ns3_program = True
     program.module_deps = list()
     program.name = name
-    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
+    program.target = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_SUFFIX)
 
     if bld.env['ENABLE_SUDO']:
         program.create_task("SuidBuild")
@@ -590,7 +596,7 @@ def create_ns3_program(bld, name, dependencies=('core',)):
 
     program.is_ns3_program = True
     program.name = name
-    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
+    program.target = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_SUFFIX)
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "# #/.."
@@ -765,8 +771,8 @@ def build(bld):
                 # Add this program to the list if all of its
                 # dependencies will be built.
                 if program_built:
-                    object_name = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, 
-                                                  obj.name, bld.env.BUILD_PROFILE)
+                    object_name = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, 
+                                                  obj.name, bld.env.BUILD_SUFFIX)
                     bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_name)
 
             # disable the modules themselves
