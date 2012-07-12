@@ -409,7 +409,6 @@ class python_scan_task_collector(Task.TaskBase):
         # can't cope with it, so we have to force the user to restart
         # WAF)
         self.bld.producer.stop = 1
-        self.bld.producer.free_task_pool()
         return 0
 
 
