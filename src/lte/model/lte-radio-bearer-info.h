@@ -18,6 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
+#ifndef LTE_RADIO_BEARER_INFO_H
+#define LTE_RADIO_BEARER_INFO_H
 
 #include <ns3/object.h>
 #include <ns3/pointer.h>
@@ -46,3 +48,6 @@ public:
 
 
 } // namespace ns3
+
+
+#endif // LTE_RADIO_BEARER_INFO_H
