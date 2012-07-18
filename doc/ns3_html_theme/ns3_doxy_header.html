@@ -14,6 +14,7 @@ $mathjax
 <link href="$relpath$doxygen.css" rel="stylesheet" type="text/css"/>
 <link href="$relpath$ns3_stylesheet.css" rel="stylesheet" type="text/css" />
 <link href="$relpath$favicon.ico" rel="shortcut icon" type="image/ico" />
+<script type="text/javascript" src="$relpath$drop-down-menu.js"></script>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -44,14 +45,45 @@ $mathjax
     </td>
    <!--END PROJECT_BRIEF-->
   <!--END !PROJECT_NAME-->
+
+  <td id="ns3-menu">
+    <div class="menu">
+      <ul >
+        <li><a href="http://www.nsnam.org/">&nbsp;&nbsp;Home</a>
+        </li>
+        <li><a href="http://www.nsnam.org/developers/tools/wiki/">Wiki</a>
+        </li>
+        <li><span onmouseover="mopen('mDocs')" 
+              onmouseout="mclosetime()">Docs &nbsp;&nbsp;&nbsp;&#x25BC;</span>
+            <div id="mDocs"
+                onmouseover="mcancelclosetime()" 
+                onmouseout="mclosetime()">
+              <a href="http://www.nsnam.org/docs/release/3.14/manual/html/index.html">Manual</a><br/>
+              <a href="http://www.nsnam.org/docs/release/3.14/models/html/index.html">Models</a><br/>
+              <a href="http://www.nsnam.org/docs/release/3.14/theme_doxygen">API</a><br/>
+        </li>
+        <li><span onmouseover="mopen('mTuts')" 
+              onmouseout="mclosetime()">Tutorials &nbsp;&#x25BC;</span>
+            <div id="mTuts" 
+                onmouseover="mcancelclosetime()" 
+                onmouseout="mclosetime()">
+              <a href="http://www.nsnam.org/docs/release/3.14/tutorial/html/index.html">English</a><br/>
+              <a href="http://www.nsnam.org/docs/release/3.14/tutorial-pt-br/html/index.html">Portuguese</a><br/>
+        </li>
+        <li><a href="http://www.nsnam.org/developers/tools/bugzilla/">Bugs</a>
+        </li>
+      </ul>
+    </div>
+  </td>
+
+  <td id="projectsection">
+    <span style="margin-right:10px">API</span>
+  </td>
   <!--BEGIN DISABLE_INDEX-->
    <!--BEGIN SEARCHENGINE-->
    <td>$searchbox</td>
    <!--END SEARCHENGINE-->
   <!--END DISABLE_INDEX-->
-  <td id="projectsection">
-    <span style="margin-right:10px">API Documentation</span>
-  </td>
  </tr>
  </tbody>
 </table>

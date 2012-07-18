@@ -22,6 +22,9 @@
     <link rel="icon" type="image/ico" 
       href="{{ pathto('_static/'+theme_favicon, 1) }}" />
   {%- endif %}
+
+  <script type="text/javascript" src="_static/drop-down-menu.js"></script>
+      
 {% endblock %}
       
 {% block header %}
@@ -30,14 +33,44 @@
       <tbody>
 	<tr style="height: 56px;">
 	  <td id="projectlogo">
-	    <a href="{{ theme_homepage }}">
+	    <a href="{{theme_site + theme_homepage}}">
 	      <img alt="ns-3 Logo"
 		   src="{{ pathto('_static/' + theme_logo, 1)}}"/>
 	    </a>
 	  </td>
 	  <td id="projecttext">
 	    <div id="projectbrief">{{ theme_projectbrief }} </div>
-	      <span id="projectnumber">{{ theme_projectnumber }}</span>
+	      <span id="projectnumber"><script type="text/javascript">document.write(rev)</script></span>
+	  </td>
+	      
+	  <td id="ns3-menu">
+	    <div class="menu">
+	      <ul >
+	        <li><a href="{{theme_site + theme_homepage}}">&nbsp;&nbsp;Home</a>
+	        </li>
+	        <li><a href="{{theme_site + theme_wiki}}">Wiki</a>
+	        </li>
+	        <li><span onmouseover="mopen('mDocs')" 
+		      onmouseout="mclosetime()">Docs &nbsp;&nbsp;&nbsp;&#x25BC;</span>
+		    <div id="mDocs"
+		        onmouseover="mcancelclosetime()" 
+		        onmouseout="mclosetime()">
+		      <a href="{{theme_site + theme_release + theme_manual}}">Manual</a><br/>
+		      <a href="{{theme_site + theme_release + theme_models}}">Models</a><br/>
+		      <a href="{{theme_site + theme_release + theme_doxygen}}">API</a><br/>
+	        </li>
+	        <li><span onmouseover="mopen('mTuts')" 
+		      onmouseout="mclosetime()">Tutorials &nbsp;&#x25BC;</span>
+		    <div id="mTuts" 
+		        onmouseover="mcancelclosetime()" 
+		        onmouseout="mclosetime()">
+		      <a href="{{theme_site + theme_release + theme_tutorial}}">English</a><br/>
+		      <a href="{{theme_site + theme_release + theme_tutport}}">Portuguese</a><br/>
+	        </li>
+	        <li><a href="{{theme_site + theme_bugzilla}}">Bugs</a>
+	        </li>
+	      </ul>
+	    </div>
 	  </td>
 	  <td id="projectsection">
 	    <span style="margin-right:10px">{{ docstitle }}</span>
@@ -46,9 +79,8 @@
       </tbody>
     </table>
   </div>
-      
 {% endblock %}
-
+      
 {% block rootrellink %}
     <li class="navelem"><a href="{{ theme_homepage }}">{{ theme_projectname }}</a><span class="navelem">&nbsp;</span></li>
     {{ super() }}

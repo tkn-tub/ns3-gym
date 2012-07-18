@@ -1097,6 +1097,8 @@ class Ns3SphinxContext(Context.Context):
     cmd = 'sphinx'
 
     def sphinx_build(self, path):
+        print
+        print "[waf] Building sphinx docs for " + path
         if subprocess.Popen(["make", "-k", "html"], cwd=path).wait() :
             raise SystemExit(1)
 
