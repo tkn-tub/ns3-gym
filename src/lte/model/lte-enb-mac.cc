@@ -25,7 +25,7 @@
 #include <ns3/packet.h>
 
 #include "lte-amc.h"
-#include "ideal-control-messages.h"
+#include "lte-control-messages.h"
 #include "lte-enb-net-device.h"
 #include "lte-ue-net-device.h"
 
@@ -62,7 +62,7 @@ public:
   virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
-  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params);
+  virtual void UeUpdateConfigurationReq (LteUeConfig_t params);
 
 private:
   LteEnbMac* m_mac;
@@ -105,9 +105,9 @@ EnbMacMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
 }
 
 void
-EnbMacMemberLteEnbCmacSapProvider::RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+EnbMacMemberLteEnbCmacSapProvider::UeUpdateConfigurationReq (LteUeConfig_t params)
 {
-  m_mac->DoRrcUpdateConfigurationReq (params);
+  m_mac->DoUeUpdateConfigurationReq (params);
 }
 
 
@@ -225,8 +225,8 @@ public:
   // inherited from LteEnbPhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
-  virtual void UlCqiReport (UlCqi_s ulcqi);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
+  virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
 private:
   LteEnbMac* m_mac;
@@ -250,13 +250,13 @@ EnbMacMemberLteEnbPhySapUser::SubframeIndication (uint32_t frameNo, uint32_t sub
 }
 
 void
-EnbMacMemberLteEnbPhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+EnbMacMemberLteEnbPhySapUser::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
-  m_mac->DoReceiveIdealControlMessage (msg);
+  m_mac->DoReceiveLteControlMessage (msg);
 }
 
 void
-EnbMacMemberLteEnbPhySapUser::UlCqiReport (UlCqi_s ulcqi)
+EnbMacMemberLteEnbPhySapUser::UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi)
 {
   m_mac->DoUlCqiReport (ulcqi);
 }
@@ -407,8 +407,6 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
   // Get downlink transmission opportunities
-//   uint32_t dlSchedFrameNo = (0x3FF & (m_frameNo >> 4));
-//   uint32_t dlSchedSubframeNo = (0xF & m_subframeNo);
   uint32_t dlSchedFrameNo = m_frameNo;
   uint32_t dlSchedSubframeNo = m_subframeNo;
   //   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
@@ -428,32 +426,20 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   // --- UPLINK ---
   // Send UL-CQI info to the scheduler
-  if (m_ulCqiReceived.size () > 0)
+  std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters>::iterator itCqi; 
+  for (uint16_t i = 0; i < m_ulCqiReceived.size (); i++)
     {
-      FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqiInfoReq;
       if (subframeNo>1)
         {        
-          ulcqiInfoReq.m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
+          m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & frameNo) << 4) | (0xF & subframeNo);
         }
       else
         {
-          ulcqiInfoReq.m_sfnSf = ((0x3FF & (frameNo-1)) << 4) | (0xF & 10);
+          m_ulCqiReceived.at (i).m_sfnSf = ((0x3FF & (frameNo-1)) << 4) | (0xF & 10);
         }
-      int cqiNum = m_ulCqiReceived.size ();
-      if (cqiNum >= 1)
-        {
-          ulcqiInfoReq.m_ulCqi = m_ulCqiReceived.at (cqiNum - 1);
-          if (cqiNum > 1)
-            {
-              // empty old ul cqi
-              while (m_ulCqiReceived.size () > 0)
-                {
-                  m_ulCqiReceived.pop_back ();
-                }
-            }
-          m_schedSapProvider->SchedUlCqiInfoReq (ulcqiInfoReq);
-        }
+      m_schedSapProvider->SchedUlCqiInfoReq (m_ulCqiReceived.at (i));
     }
+    m_ulCqiReceived.clear ();
   
   // Send BSR reports to the scheduler
   if (m_ulCeReceived.size () > 0)
@@ -477,7 +463,6 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     }
   else
     {
-//       ulSchedSubframeNo = (ulSchedSubframeNo + (2*m_macChTtiDelay)) % 11;
       ulSchedSubframeNo = ulSchedSubframeNo + (m_macChTtiDelay+UL_PUSCH_TTIS_DELAY);
     }
   FfMacSchedSapProvider::SchedUlTriggerReqParameters ulparams;
@@ -494,7 +479,6 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
   // reset UL info
-  //std::map <uint16_t,UlInfoListElement_s>::iterator it;
   for (it = m_ulInfoListElements.begin (); it != m_ulInfoListElements.end (); it++)
     {
       for (uint16_t i = 0; i < (*it).second.m_ulReception.size (); i++)
@@ -507,30 +491,30 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 }
 
 void
-LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
+LteEnbMac::DoReceiveLteControlMessage  (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
-  if (msg->GetMessageType () == IdealControlMessage::DL_CQI)
+  if (msg->GetMessageType () == LteControlMessage::DL_CQI)
     {
-      Ptr<DlCqiIdealControlMessage> dlcqi = DynamicCast<DlCqiIdealControlMessage> (msg);
-      ReceiveDlCqiIdealControlMessage (dlcqi);
+      Ptr<DlCqiLteControlMessage> dlcqi = DynamicCast<DlCqiLteControlMessage> (msg);
+      ReceiveDlCqiLteControlMessage (dlcqi);
     }
-  else if (msg->GetMessageType () == IdealControlMessage::BSR)
+  else if (msg->GetMessageType () == LteControlMessage::BSR)
     {
-      Ptr<BsrIdealControlMessage> bsr = DynamicCast<BsrIdealControlMessage> (msg);
+      Ptr<BsrLteControlMessage> bsr = DynamicCast<BsrLteControlMessage> (msg);
       ReceiveBsrMessage (bsr->GetBsr ());
     }
   else
     {
-      NS_LOG_LOGIC (this << " IdealControlMessage not recognized");
+      NS_LOG_LOGIC (this << " LteControlMessage not recognized");
     }
 }
 
 
 void
-LteEnbMac::DoUlCqiReport (UlCqi_s ulcqi)
+LteEnbMac::DoUlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi)
 { 
-  if (ulcqi.m_type == UlCqi_s::PUSCH)
+  if (ulcqi.m_ulCqi.m_type == UlCqi_s::PUSCH)
     {
       NS_LOG_DEBUG (this << " eNB rxed an PUSCH UL-CQI");
     }
@@ -540,7 +524,7 @@ LteEnbMac::DoUlCqiReport (UlCqi_s ulcqi)
 
 
 void
-LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
+LteEnbMac::ReceiveDlCqiLteControlMessage  (Ptr<DlCqiLteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -756,9 +740,9 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
             }
         }
       // send the relative DCI
-      Ptr<DlDciIdealControlMessage> msg = Create<DlDciIdealControlMessage> ();
+      Ptr<DlDciLteControlMessage> msg = Create<DlDciLteControlMessage> ();
       msg->SetDci (ind.m_buildDataList.at (i).m_dci);
-      m_enbPhySapProvider->SendIdealControlMessage (msg);
+      m_enbPhySapProvider->SendLteControlMessage (msg);
     }
 
   // Fire the trace with the DL information
@@ -800,9 +784,9 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
   for (unsigned int i = 0; i < ind.m_dciList.size (); i++)
     {
       // send the correspondent ul dci
-      Ptr<UlDciIdealControlMessage> msg = Create<UlDciIdealControlMessage> ();
+      Ptr<UlDciLteControlMessage> msg = Create<UlDciLteControlMessage> ();
       msg->SetDci (ind.m_dciList.at (i));
-      m_enbPhySapProvider->SendIdealControlMessage (msg);
+      m_enbPhySapProvider->SendLteControlMessage (msg);
     }
 
   // Fire the trace with the UL information
@@ -868,11 +852,12 @@ LteEnbMac::DoCschedUeConfigUpdateInd (FfMacCschedSapUser::CschedUeConfigUpdateIn
 }
 
 void
-LteEnbMac::DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
+LteEnbMac::DoUeUpdateConfigurationReq (LteUeConfig_t params)
 {
   NS_LOG_FUNCTION (this);
   // propagates to PHY layer
   m_enbPhySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
+  m_enbPhySapProvider->SetSrsConfigurationIndex (params.m_rnti, params.m_srsConfigurationIndex);
   // propagates to scheduler
   FfMacCschedSapProvider::CschedUeConfigReqParameters req;
   req.m_rnti = params.m_rnti;

@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: Marco Miozzo <mmiozzo@cttc.es> 
+ *                add transmission Mode and SRS related functionalities
  */
 
 #ifndef LTE_ENB_RRC_H
@@ -28,6 +30,7 @@
 #include <ns3/lte-pdcp-sap.h>
 
 #include <map>
+#include <set>
 
 namespace ns3 {
 
@@ -74,16 +77,23 @@ public:
 
   UeInfo (void);
   UeInfo (uint64_t imsi);
+  UeInfo (uint64_t imsi, uint16_t srsConfIndex);
   virtual ~UeInfo (void);
 
   static TypeId GetTypeId (void);
 
   uint64_t GetImsi (void);
+  uint16_t GetSrsConfigurationIndex (void);
+  uint8_t GetTransmissionMode (void);
+  void SetSrsConfigurationIndex (uint16_t srsConfIndex);
+  void SetTransmissionMode (uint8_t txMode);
 
 private:
   std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;
   uint8_t m_lastAllocatedId;
   uint64_t m_imsi;
+  uint16_t m_srsConfigurationIndex;
+  uint8_t  m_transmissionMode;
 };
 
 
@@ -166,6 +176,8 @@ public:
    * \return the C-RNTI of the newly added UE
    */
   uint16_t AddUe (uint64_t imsi);
+  
+  void SetCellId (uint16_t m_cellId);
 
   /**
    * remove a UE from the cell
@@ -218,11 +230,19 @@ public:
    */
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
   
+  /** 
+  * Configure the UE peer RRC with all the correspondet info
+  * 
+  * \param rnti the RNTI of the UE to be configured 
+  */
+  void ConfigureNewUe (uint16_t rnti);
+  
   
 private:
 
   void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
   void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+  void SendUeConfigurationUpdate (LteUeConfig_t params);
   
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
   LtePdcpSapProvider* GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid);
@@ -231,6 +251,8 @@ private:
   uint16_t CreateUeInfo (uint64_t imsi);
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
+  uint16_t GetNewSrsConfigurationIndex (void);
+  void RemoveSrsConfigurationIndex (uint16_t srcCi);
 
   Callback <void, Ptr<Packet> > m_forwardUpCallback;
 
@@ -244,9 +266,17 @@ private:
   bool m_configured;
   uint16_t m_lastAllocatedRnti;
 
-  std::map<uint16_t, Ptr<UeInfo> > m_ueMap;
+  std::map<uint16_t, Ptr<UeInfo> > m_ueMap;  
   
   uint8_t m_defaultTransmissionMode;
+  
+  uint16_t m_cellId;
+  
+  // SRS related attributes
+  uint16_t m_srsCurrentPeriodicityId;
+  std::set<uint16_t> m_ueSrsConfigurationIndexSet;
+  uint16_t m_lastAllocatedConfigurationIndex;
+  bool m_reconfigureUes;
 
 };
 

@@ -35,11 +35,11 @@ namespace ns3 {
  * implemented obtained by using different SINR values and different numbers of 
  * UEs. The test consists on ...
  */
-class LenaPhyErrorModelTestCase : public TestCase
+class LenaDataPhyErrorModelTestCase : public TestCase
 {
 public:
-  LenaPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBer, uint16_t bernQuantile);
-  virtual ~LenaPhyErrorModelTestCase ();
+  LenaDataPhyErrorModelTestCase (uint16_t nUser, uint16_t dist, uint16_t tbSize, double refBer, uint16_t bernQuantile);
+  virtual ~LenaDataPhyErrorModelTestCase ();
 
 private:
   virtual void DoRun (void);
@@ -50,6 +50,24 @@ private:
   double m_berRef;
   uint16_t m_bernQuantile;
 
+};
+
+
+
+class LenaDlCtrlPhyErrorModelTestCase : public TestCase
+{
+  public:
+    LenaDlCtrlPhyErrorModelTestCase (uint16_t nEnbr, uint16_t dist, uint16_t tbSize, double refBer);
+    virtual ~LenaDlCtrlPhyErrorModelTestCase ();
+    
+  private:
+    virtual void DoRun (void);
+    static std::string BuildNameString (uint16_t nUser, uint16_t dist);
+    uint16_t m_nEnb;
+    uint16_t m_dist;
+    uint16_t m_tbSize;
+    double m_berRef;
+    
 };
 
 

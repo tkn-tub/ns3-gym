@@ -25,10 +25,11 @@
 
 #include <ns3/packet.h>
 #include <ns3/ff-mac-common.h>
+#include <ns3/ff-mac-sched-sap.h>
 
 namespace ns3 {
 
-class IdealControlMessage;
+class LteControlMessage;
 
 /**
  * Service Access Point (SAP) offered by the eNB-PHY to the eNB-MAC
@@ -59,6 +60,12 @@ public:
   * \param txMode the transmissionMode of the user
   */
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode) = 0;
+  
+  /**
+  * \param rnti the RNTI of the user
+  * \param txMode the SRS Configuration Index of the user
+  */
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) = 0;
 
   /** 
    * 
@@ -68,10 +75,10 @@ public:
   virtual void SetCellId (uint16_t cellId) = 0;
 
   /**
-   * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to send
    */
-  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
   
   /**
   * \brief Get the delay from MAC to Channel expressed in TTIs
@@ -110,16 +117,16 @@ public:
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) = 0;
 
   /**
-   * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to receive
    */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
   /**
    * \brief Returns to MAC level the UL-CQI evaluated
    * \param ulcqi the UL-CQI (see FF MAC API 4.3.29)
    */
-  virtual void UlCqiReport (UlCqi_s ulcqi) = 0;
+  virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) = 0;
 
 };
 

@@ -46,7 +46,28 @@
 NS_LOG_COMPONENT_DEFINE ("LteMiErrorModel");
 
 namespace ns3 {
+ 
+  // PCFICH-PDCCH Error model based on 3GPP R4-081920 "LTE PDCCH/PCFICH
+  //  Demodulation Performance Results with Implementation Margin"
   
+  double PdcchPcfichBlerCurveXaxis[PDCCH_PCFICH_CURVE_SIZE] = {
+      -10,-9.8,-9.6, -9.4, -9.2, -9.0, -8.8, -8.6, -8.4, -8.2, -8.0,
+      -7.8, -7.6, -7.4, -7.2, -7.0, -6.8, -6.6, -6.4,   -6.2, -6.0, 
+      -5.8, -5.6, -5.4, -5.2, -5.0, -4.8, -4.6, -4.4, -4.2, -4.0, 
+      -3.8, -3.6, -3.4, -3.2, -3.0, -2.8, -2.6, -2.4, -2.2, -2.0, 
+      -1.8, -1.6, -1.4, -1.2, -1.0
+  };
+  
+  double PdcchPcfichBlerCurveYaxis[PDCCH_PCFICH_CURVE_SIZE] = {
+    0.922602, 0.871559, 0.82334, 0.777789, 0.734758, 0.694107, 0.655706,
+    0.619429, 0.585159, 0.552785, 0.520927, 0.479229, 0.440869, 0.405579,
+    0.373114, 0.343104, 0.309947,0.279994, 0.252936, 0.228492, 0.206048,
+    0.181449, 0.159787, 0.140711, 0.123912, 0.109119, 0.0916184, 0.0769244,
+    0.0645871, 0.0542285, 0.0454971, 0.037584, 0.0310472, 0.0256473, 
+    0.0211866, 0.0175023, 0.0144636, 0.0119524, 0.00987724, 0.00816236,
+    0.00673821, 0.00532283, 0.00420476, 0.00332154, 0.00262385, 0.0020727
+  
+  };
   
   int TbsIndex[32] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, -1, -1, -1};
   
@@ -470,6 +491,93 @@ LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& 
   
   return errorRate;
 }
+
+double
+LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (sinr);
+  double MI;
+  double MIsum = 0.0;
+  SpectrumValue sinrCopy = sinr;
+  Values::iterator sinrIt = sinrCopy.ValuesBegin ();
+  uint16_t rb = 0;
+  NS_ASSERT (sinrIt!=sinrCopy.ValuesEnd ());
+  while (sinrIt!=sinrCopy.ValuesEnd ())
+    {
+      double sinrLin = *sinrIt;
+      int tr = 0;
+      while ((tr<MI_MAP_QPSK_SIZE)&&(MI_map_qpsk_axis[tr] < sinrLin))
+        {
+          tr++;
+        }
+      if (sinrLin > MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1])
+        {
+          MI = 1;
+        }
+      else 
+        {
+          NS_ASSERT_MSG (tr<MI_MAP_QPSK_SIZE, "MI map out of data");
+          MI = MI_map_qpsk[tr];
+        }
+//       NS_LOG_DEBUG (" RB " << rb << " SINR " << 10*log10 (sinrLin) << " MI " << MI);
+      MIsum += MI;
+      sinrIt++;
+      rb++;
+    }
+  MI = MIsum / rb;
+  // return to the effective SINR value
+  int j = 0;
+  double esinr = 0.0;
+  while ((j<MI_MAP_QPSK_SIZE)&&(MI_map_qpsk[j] < MI))
+    {
+      j++;
+    }
+  if (MI > MI_map_qpsk[MI_MAP_QPSK_SIZE-1])
+    {
+      esinr = MI_map_qpsk_axis[MI_MAP_QPSK_SIZE-1];
+    }
+  else 
+    {
+      NS_ASSERT_MSG (j<MI_MAP_QPSK_SIZE, "MI map out of data");
+      // take the closest value (when possible)  
+      if (j>0)
+        {
+          if ((MI_map_qpsk[j]-MI)<(MI-MI_map_qpsk[j-1]))
+            {
+              esinr = MI_map_qpsk_axis[j];
+            }
+          else
+            {
+              esinr = MI_map_qpsk_axis[j-1];
+            }
+        }
+      else
+        {
+          esinr = MI_map_qpsk_axis[0];
+        }
+    }
+
+  double esirnDb = 10*log10 (esinr); 
+//   NS_LOG_DEBUG ("Effective SINR " << esirnDb << " max " << 10*log10 (MI_map_qpsk [MI_MAP_QPSK_SIZE-1]));
+  uint16_t i = 0;
+  double errorRate = 0.0;
+  while ((i<PDCCH_PCFICH_CURVE_SIZE)&&(PdcchPcfichBlerCurveXaxis[i] < esirnDb))
+    {
+      i++;
+    }
+  if (esirnDb > PdcchPcfichBlerCurveXaxis[PDCCH_PCFICH_CURVE_SIZE-1])
+    {
+      errorRate = 0.0;
+    }
+  else 
+    {
+      NS_ASSERT_MSG (i<PDCCH_PCFICH_CURVE_SIZE, "PDCCH-PCFICH map out of data");
+      errorRate = PdcchPcfichBlerCurveYaxis[i];
+    }  
+  
+  return (errorRate);
+}
+
   
 
 } // namespace ns3

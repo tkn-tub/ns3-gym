@@ -26,7 +26,7 @@
 #include <ns3/lte-phy.h>
 #include <ns3/ff-mac-common.h>
 
-#include <ns3/ideal-control-messages.h>
+#include <ns3/lte-control-messages.h>
 #include <ns3/lte-amc.h>
 #include <ns3/lte-ue-phy-sap.h>
 #include <ns3/ptr.h>
@@ -151,17 +151,19 @@ public:
   * the physical layer with the signal received from eNB
   * \param sinr SINR values vector
   */
-  Ptr<DlCqiIdealControlMessage> CreateDlCqiFeedbackMessage (const SpectrumValue& sinr);
+  Ptr<DlCqiLteControlMessage> CreateDlCqiFeedbackMessage (const SpectrumValue& sinr);
 
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
-  virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
+  virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   
   virtual void DoSetTransmissionMode (uint8_t txMode);
+  virtual void DoSetSrsConfigurationIndex (uint16_t srcCi);
   
   
 
@@ -194,6 +196,12 @@ public:
    * \param cellId the cell identifier of the eNB
    */
   void SetEnbCellId (uint16_t cellId);
+  
+  /**
+  * \brief Send the SRS signal in the last symbols of the frame
+  */
+  void SendSrs ();
+  
   
 
 
@@ -235,6 +243,9 @@ private:
   
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
+  
+  uint16_t m_srsPeriodicity;
+  uint16_t m_srsCounter;
 
 };
 

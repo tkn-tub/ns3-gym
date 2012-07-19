@@ -39,7 +39,9 @@ namespace ns3 {
 
 class PacketBurst;
 class LteNetDevice;
-class IdealControlMessage;
+class LteControlMessage;
+
+
 
 /**
  * \ingroup lte
@@ -154,10 +156,10 @@ public:
   void DoDispose ();
 
   /**
-   * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to receive
    */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+//   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
 
   /**
@@ -193,6 +195,19 @@ public:
   * \returns the RB gruop size according to the bandwidth
   */
   uint8_t GetRbgSize (void) const;
+  
+  
+  /**
+  * \returns the SRS periodicity (see Table 8.2-1 of 36.213)
+  * \param srcCi the SRS Configuration Index
+  */
+  uint16_t GetSrsPeriodicity (uint16_t srcCi) const;
+  
+  /**
+  * \returns the SRS Subframe offset (see Table 8.2-1 of 36.213)
+  * \param srcCi the SRS Configuration Index
+  */
+  uint16_t GetSrsSubframeOffset (uint16_t srcCi) const;
 
 
   /**
@@ -208,20 +223,28 @@ public:
   /**
   * \param m the control message to be sent
   */
-  void SetControlMessages (Ptr<IdealControlMessage> m);
+  void SetControlMessages (Ptr<LteControlMessage> m);
 
   /**
   * \returns the list of control messages to be sent
   */
-  std::list<Ptr<IdealControlMessage> > GetControlMessages (void);
+  std::list<Ptr<LteControlMessage> > GetControlMessages (void);
 
 
   /** 
-   * generate a CQI report based on the given SINR
+   * generate a CQI report based on the given SINR of Ctrl frame
    * 
    * \param sinr the SINR vs frequency measured by the device
    */
-  virtual void  GenerateCqiReport (const SpectrumValue& sinr) = 0;
+  virtual void  GenerateCtrlCqiReport (const SpectrumValue& sinr) = 0;
+  
+  /** 
+  * generate a CQI report based on the given SINR of Data frame
+  * (used for PUSCH CQIs)
+  * 
+  * \param sinr the SINR vs frequency measured by the device
+  */
+  virtual void  GenerateDataCqiReport (const SpectrumValue& sinr) = 0;
 
 
 
@@ -246,7 +269,7 @@ protected:
   uint16_t m_ulEarfcn;
 
   std::vector< Ptr<PacketBurst> > m_packetBurstQueue;
-  std::vector< std::list<Ptr<IdealControlMessage> > > m_controlMessagesQueue;
+  std::vector< std::list<Ptr<LteControlMessage> > > m_controlMessagesQueue;
   uint8_t m_macChTtiDelay; // delay between MAC and channel layer in terms of TTIs
 
   uint16_t m_cellId;

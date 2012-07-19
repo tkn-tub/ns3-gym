@@ -19,8 +19,8 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-#ifndef IDEAL_CONTROL_MESSAGES_H
-#define IDEAL_CONTROL_MESSAGES_H
+#ifndef LTE_CONTROL_MESSAGES_H
+#define LTE_CONTROL_MESSAGES_H
 
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
@@ -34,11 +34,11 @@ class LteNetDevice;
 /**
  * \ingroup lte
  *
- * The IdealControlMessage provides a basic implementations for
+ * The LteControlMessage provides a basic implementations for
  * control messages (such as PDCCH allocation map, CQI feedbacks)
  * that are exchanged among eNodeB and UEs.
  */
-class IdealControlMessage : public SimpleRefCount<IdealControlMessage>
+class LteControlMessage : public SimpleRefCount<LteControlMessage>
 {
 public:
   /**
@@ -46,36 +46,13 @@ public:
    */
   enum MessageType
   {
-    CQI_FEEDBACKS, ALLOCATION_MAP,
     DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator
     DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator
     BSR // Buffer Status Report
   };
 
-  IdealControlMessage (void);
-  virtual ~IdealControlMessage (void);
-
-  /**
-   * \brief Set the source  device of the message
-   * \param src the device that sends the message
-   */
-  void SetSourceDevice (Ptr<LteNetDevice> src);
-  /**
-   * \brief Set the destination  device of the message
-   * \param dst the device that receives the message
-   */
-  void SetDestinationDevice (Ptr<LteNetDevice> dst);
-
-  /**
-   * \brief Get the source  device of the message
-   * \return the pointer to the device that sends the message
-   */
-  Ptr<LteNetDevice> GetSourceDevice (void);
-  /**
-   * \brief Get the destination device of the message
-   * \return the pointer to the device that receives the message
-   */
-  Ptr<LteNetDevice> GetDestinationDevice (void);
+  LteControlMessage (void);
+  virtual ~LteControlMessage (void);
 
   /**
    * \brief Set the type of the message
@@ -95,7 +72,7 @@ private:
 };
 } // namespace ns3
 
-#endif /* IDEAL_CONTROL_MESSAGES_H */
+#endif /* LTE_CONTROL_MESSAGES_H */
 
 
 
@@ -103,8 +80,8 @@ private:
 // ----------------------------------------------------------------------------------------------------------
 
 
-#ifndef DL_DCI_IDEAL_CONTROL_MESSAGES_H
-#define DL_DCI_IDEAL_CONTROL_MESSAGES_H
+#ifndef DL_DCI_LTE_CONTROL_MESSAGES_H
+#define DL_DCI_LTE_CONTROL_MESSAGES_H
 
 #include <ns3/object.h>
 #include <ns3/ff-mac-common.h>
@@ -116,11 +93,11 @@ namespace ns3 {
  * The Downlink Data Control Indicator messages defines the RB allocation for the
  * users in the downlink
  */
-class DlDciIdealControlMessage : public IdealControlMessage
+class DlDciLteControlMessage : public LteControlMessage
 {
 public:
-  DlDciIdealControlMessage (void);
-  virtual ~DlDciIdealControlMessage (void);
+  DlDciLteControlMessage (void);
+  virtual ~DlDciLteControlMessage (void);
 
   /**
   * \brief add a DCI into the message
@@ -140,14 +117,14 @@ private:
 };
 } // namespace ns3
 
-#endif /* DL_DCI_IDEAL_CONTROL_MESSAGES_H */
+#endif /* DL_DCI_LTE_CONTROL_MESSAGES_H */
 
 
 // ----------------------------------------------------------------------------------------------------------
 
 
-#ifndef UL_DCI_IDEAL_CONTROL_MESSAGES_H
-#define UL_DCI_IDEAL_CONTROL_MESSAGES_H
+#ifndef UL_DCI_LTE_CONTROL_MESSAGES_H
+#define UL_DCI_LTE_CONTROL_MESSAGES_H
 
 #include <ns3/object.h>
 #include <ns3/ff-mac-common.h>
@@ -159,11 +136,11 @@ namespace ns3 {
  * The Uplink Data Control Indicator messages defines the RB allocation for the
  * users in the uplink
  */
-class UlDciIdealControlMessage : public IdealControlMessage
+class UlDciLteControlMessage : public LteControlMessage
 {
 public:
-  UlDciIdealControlMessage (void);
-  virtual ~UlDciIdealControlMessage (void);
+  UlDciLteControlMessage (void);
+  virtual ~UlDciLteControlMessage (void);
 
   /**
   * \brief add a DCI into the message
@@ -183,7 +160,7 @@ private:
 };
 } // namespace ns3
 
-#endif /* UL_DCI_IDEAL_CONTROL_MESSAGES_H */
+#endif /* UL_DCI_LTE_CONTROL_MESSAGES_H */
 
 
 
@@ -191,8 +168,8 @@ private:
 
 
 
-#ifndef DLCQI_IDEAL_CONTROL_MESSAGES_H
-#define DLCQI_IDEAL_CONTROL_MESSAGES_H
+#ifndef DLCQI_LTE_CONTROL_MESSAGES_H
+#define DLCQI_LTE_CONTROL_MESSAGES_H
 
 #include <ns3/object.h>
 #include <ns3/ff-mac-common.h>
@@ -203,14 +180,14 @@ class LteNetDevice;
 
 /**
  * \ingroup lte
- * The downlink CqiIdealControlMessage defines an ideal list of
+ * The downlink CqiLteControlMessage defines an ideal list of
  * feedback about the channel quality sent by the UE to the eNodeB.
  */
-class DlCqiIdealControlMessage : public IdealControlMessage
+class DlCqiLteControlMessage : public LteControlMessage
 {
 public:
-  DlCqiIdealControlMessage (void);
-  virtual ~DlCqiIdealControlMessage (void);
+  DlCqiLteControlMessage (void);
+  virtual ~DlCqiLteControlMessage (void);
 
   /**
   * \brief add a DL-CQI feedback record into the message.
@@ -230,13 +207,13 @@ private:
 };
 } // namespace ns3
 
-#endif /* DLCQI_IDEAL_CONTROL_MESSAGES_H */
+#endif /* DLCQI_LTE_CONTROL_MESSAGES_H */
 
 
 // ----------------------------------------------------------------------------------------------------------
 
-#ifndef BSR_IDEAL_CONTROL_MESSAGES_H
-#define BSR_IDEAL_CONTROL_MESSAGES_H
+#ifndef BSR_LTE_CONTROL_MESSAGES_H
+#define BSR_LTE_CONTROL_MESSAGES_H
 
 #include <ns3/object.h>
 #include <ns3/ff-mac-common.h>
@@ -247,14 +224,14 @@ class LteNetDevice;
 
 /**
  * \ingroup lte
- * The uplink BsrIdealControlMessage defines the specific
+ * The uplink BsrLteControlMessage defines the specific
  * extension of the CE element for reporting the buffer status report
  */
-class BsrIdealControlMessage : public IdealControlMessage
+class BsrLteControlMessage : public LteControlMessage
 {
 public:
-  BsrIdealControlMessage (void);
-  virtual ~BsrIdealControlMessage (void);
+  BsrLteControlMessage (void);
+  virtual ~BsrLteControlMessage (void);
 
   /**
   * \brief add a BSR feedback record into the message.
@@ -276,5 +253,5 @@ private:
 };
 } // namespace ns3
 
-#endif /* BSR_IDEAL_CONTROL_MESSAGES_H */
+#endif /* LTE_CONTROL_MESSAGES_H */
 

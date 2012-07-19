@@ -81,7 +81,7 @@ LteInterference::StartRx (Ptr<const SpectrumValue> rxPsd)
     }
   else
     {
-      NS_LOG_LOGIC ("additional signal");
+      NS_LOG_LOGIC ("additional signal" << *m_rxSignal);
       // receiving multiple simultaneous signals, make sure they are synchronized
       NS_ASSERT (m_lastChangeTime == Now ());
       // make sure they use orthogonal resource blocks

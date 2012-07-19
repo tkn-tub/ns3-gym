@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by : Marco Miozzo <mmiozzo@cttc.es>
+ *        (move from CQI to Ctrl and Data SINR Chunk processors
  */
 
 
@@ -33,22 +35,32 @@ LteSinrChunkProcessor::~LteSinrChunkProcessor ()
 }
 
 
-LteCqiSinrChunkProcessor::LteCqiSinrChunkProcessor (Ptr<LtePhy> p)
-  : m_phy (p)
+LteCtrlSinrChunkProcessor::LteCtrlSinrChunkProcessor (Ptr<LtePhy> p)
+  : m_phy (p),
+  m_spectrumPhy (0)
 {
   NS_LOG_FUNCTION (this << p);
   NS_ASSERT (m_phy);
 }
 
+LteCtrlSinrChunkProcessor::LteCtrlSinrChunkProcessor (Ptr<LtePhy> p, Ptr<LteSpectrumPhy> s)
+: m_phy (p),
+  m_spectrumPhy (s)
+{
+  NS_LOG_FUNCTION (this << p);
+  NS_ASSERT (m_phy);
+  NS_ASSERT (m_spectrumPhy);
+}
 
-LteCqiSinrChunkProcessor::~LteCqiSinrChunkProcessor ()
+
+LteCtrlSinrChunkProcessor::~LteCtrlSinrChunkProcessor ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 
 void 
-LteCqiSinrChunkProcessor::Start ()
+LteCtrlSinrChunkProcessor::Start ()
 {
   NS_LOG_FUNCTION (this);
   m_sumSinr = 0;
@@ -57,7 +69,7 @@ LteCqiSinrChunkProcessor::Start ()
 
 
 void 
-LteCqiSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
+LteCtrlSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
 {
   NS_LOG_FUNCTION (this << sinr << duration);
   if (m_sumSinr == 0)
@@ -69,12 +81,16 @@ LteCqiSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time dur
 }
  
 void 
-LteCqiSinrChunkProcessor::End ()
+LteCtrlSinrChunkProcessor::End ()
 {
   NS_LOG_FUNCTION (this);
   if (m_totDuration.GetSeconds () > 0)
     {
-      m_phy->GenerateCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      m_phy->GenerateCtrlCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      if (m_spectrumPhy)
+        {
+          m_spectrumPhy->UpdateSinrPerceived ((*m_sumSinr) / m_totDuration.GetSeconds ());
+        }
     }
   else
     {
@@ -85,22 +101,34 @@ LteCqiSinrChunkProcessor::End ()
 
 
 
-LtePemSinrChunkProcessor::LtePemSinrChunkProcessor (Ptr<LteSpectrumPhy> p)
-: m_phy (p)
+LteDataSinrChunkProcessor::LteDataSinrChunkProcessor (Ptr<LteSpectrumPhy> s, Ptr<LtePhy> p)
+: m_spectrumPhy (s),
+  m_phy (p)
 {
   NS_LOG_FUNCTION (this << p);
+  NS_ASSERT (m_spectrumPhy);
   NS_ASSERT (m_phy);
 }
 
+LteDataSinrChunkProcessor::LteDataSinrChunkProcessor (Ptr<LteSpectrumPhy> p)
+: m_spectrumPhy (p),
+  m_phy (0)
+{
+  NS_LOG_FUNCTION (this << p);
+  NS_ASSERT (m_spectrumPhy);
+  
+}
 
-LtePemSinrChunkProcessor::~LtePemSinrChunkProcessor ()
+
+
+LteDataSinrChunkProcessor::~LteDataSinrChunkProcessor ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 
 void 
-LtePemSinrChunkProcessor::Start ()
+LteDataSinrChunkProcessor::Start ()
 {
   NS_LOG_FUNCTION (this);
   m_sumSinr = 0;
@@ -109,7 +137,7 @@ LtePemSinrChunkProcessor::Start ()
 
 
 void 
-LtePemSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
+LteDataSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time duration)
 {
   NS_LOG_FUNCTION (this << sinr << duration);
   if (m_sumSinr == 0)
@@ -121,12 +149,16 @@ LtePemSinrChunkProcessor::EvaluateSinrChunk (const SpectrumValue& sinr, Time dur
 }
 
 void 
-LtePemSinrChunkProcessor::End ()
+LteDataSinrChunkProcessor::End ()
 {
   NS_LOG_FUNCTION (this);
   if (m_totDuration.GetSeconds () > 0)
   {
-    m_phy->UpdateSinrPerceived ((*m_sumSinr) / m_totDuration.GetSeconds ());
+    m_spectrumPhy->UpdateSinrPerceived ((*m_sumSinr) / m_totDuration.GetSeconds ());
+    if (m_phy)
+      {
+        m_phy->GenerateDataCqiReport ((*m_sumSinr) / m_totDuration.GetSeconds ());
+      }
   }
   else
   {

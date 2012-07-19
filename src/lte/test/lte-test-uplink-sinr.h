@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by Marco Miozzo <mmiozzo@ctt.es>
+ *     Extend to Data and SRS frames
  */
 
 #ifndef LTE_TEST_UPLINK_SINR_H
@@ -39,11 +41,11 @@ public:
 };
 
 
-class LteUplinkSinrTestCase : public TestCase
+class LteUplinkDataSinrTestCase : public TestCase
 {
 public:
-  LteUplinkSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
-  virtual ~LteUplinkSinrTestCase ();
+  LteUplinkDataSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
+  virtual ~LteUplinkDataSinrTestCase ();
 
 private:
   virtual void DoRun (void);
@@ -52,6 +54,22 @@ private:
   Ptr<SpectrumValue> m_sv2;
   Ptr<const SpectrumModel> m_sm;
   Ptr<SpectrumValue> m_sinr;
+};
+
+
+class LteUplinkSrsSinrTestCase : public TestCase
+{
+  public:
+    LteUplinkSrsSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
+    virtual ~LteUplinkSrsSinrTestCase ();
+    
+  private:
+    virtual void DoRun (void);
+    
+    Ptr<SpectrumValue> m_sv1;
+    Ptr<SpectrumValue> m_sv2;
+    Ptr<const SpectrumModel> m_sm;
+    Ptr<SpectrumValue> m_sinr;
 };
 
 

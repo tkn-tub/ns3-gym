@@ -112,6 +112,10 @@ public:
   */
   virtual void DoSendMacPdu (Ptr<Packet> p);
   
+  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
+  virtual void DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
+    
   virtual uint8_t DoGetMacChTtiDelay ();
 
 
@@ -130,41 +134,53 @@ public:
   void CalcChannelQualityForUe (std::vector <double> sinr, Ptr<LteSpectrumPhy> ue);
 
   /**
-   * \brief Send the control message
-   * \param msg the message to send
-   */
-  // virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);  // legacy
-  /**
    * \brief Receive the control message
    * \param msg the received message
    */
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   /**
   * \brief Create the UL CQI feedback from SINR values perceived at
-  * the physical layer with the signal received from eNB
+  * the physical layer with the PUSCH signal received from eNB
   * \param sinr SINR values vector
   */
-  UlCqi_s CreateUlCqiReport (const SpectrumValue& sinr);
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreatePuschCqiReport (const SpectrumValue& sinr);
+  
+  /**
+  * \brief Create the UL CQI feedback from SINR values perceived at
+  * the physical layer with the SRS signal received from eNB
+  * \param sinr SINR values vector
+  */
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters CreateSrsCqiReport (const SpectrumValue& sinr);
 
 
-  void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
 
   bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
 
   bool DeleteUePhy (uint16_t rnti);
   
-  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  /**
+  * \brief Send the PDCCH and PCFICH in the first 3 symbols
+  * \param ctrlMsgList the list of control messages of PDCCH
+  */
+  void SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList);
+  
+  /**
+  * \brief Send the PDSCH
+  * \param pb the PacketBurst to be sent
+  */
+  void SendDataChannels (Ptr<PacketBurst> pb);
   
   /**
   * \param m the UL-CQI to be queued
   */
-  void QueueUlDci (UlDciIdealControlMessage m);
+  void QueueUlDci (UlDciLteControlMessage m);
   
   /**
   * \returns the list of UL-CQI to be processed
   */
-  std::list<UlDciIdealControlMessage> DequeueUlDci (void);
+  std::list<UlDciLteControlMessage> DequeueUlDci (void);
 
 
   /**
@@ -188,21 +204,36 @@ public:
    * \brief PhySpectrum received a new PHY-PDU
    */
   void PhyPduReceived (Ptr<Packet> p);
+  
+  /**
+  * \brief PhySpectrum received a new list of LteControlMessage
+  */
+  virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
 
   // inherited from LtePhy
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
 
 private:
   std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
   
-  std::vector< std::list<UlDciIdealControlMessage> > m_ulDciQueue; // for storing info on future receptions
+  std::vector <int> m_dlDataRbMap;
+  
+  std::vector< std::list<UlDciLteControlMessage> > m_ulDciQueue; // for storing info on future receptions
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
+  
+  std::vector <uint16_t> m_ulRntiRxed;
 
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;
+  
+  uint16_t m_srsPeriodicity;
+  std::map <uint16_t,uint16_t> m_srsCounter;
+  std::vector <uint16_t> m_srsUeOffset;
+  uint16_t m_currentSrsOffset;
   
 };
 

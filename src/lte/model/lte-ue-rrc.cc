@@ -138,7 +138,7 @@ LteUeRrc::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("C-RNTI",
                    "Cell Radio Network Temporary Identifier",
-                   UintegerValue (1),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&LteUeRrc::m_rnti),
                    MakeUintegerChecker<uint16_t> ())
   ;

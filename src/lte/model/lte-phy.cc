@@ -35,6 +35,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LtePhy);
 
+
 LtePhy::LtePhy ()
 {
   NS_LOG_FUNCTION (this);
@@ -48,7 +49,8 @@ LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_ulBandwidth (0),
     m_dlBandwidth (0),
     m_rbgSize (0),
-    m_macChTtiDelay (0)
+    m_macChTtiDelay (0),
+    m_cellId (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -209,6 +211,43 @@ LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
     }
 }
 
+
+uint16_t
+LtePhy::GetSrsPeriodicity (uint16_t srcCi) const
+{
+  // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+  uint16_t SrsPeriodicity[9] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
+  uint16_t SrsCiLow[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+  uint16_t SrsCiHigh[9] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+  uint8_t i;
+  for (i = 8; i > 0; i --)
+    {
+      if ((srcCi>=SrsCiLow[i])&&(srcCi<=SrsCiHigh[i]))
+        {
+          break;
+        }
+    }
+  return SrsPeriodicity[i];
+}
+
+uint16_t
+LtePhy::GetSrsSubframeOffset (uint16_t srcCi) const
+{
+  // from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+  uint16_t SrsSubframeOffset[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+  uint16_t SrsCiLow[9] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+  uint16_t SrsCiHigh[9] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+  uint8_t i;
+  for (i = 8; i > 0; i --)
+    {
+      if ((srcCi>=SrsCiLow[i])&&(srcCi<=SrsCiHigh[i]))
+        {
+          break;
+        }
+    }
+  return (srcCi - SrsSubframeOffset[i]);
+}
+
 void 
 LtePhy::DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn)
 {
@@ -248,30 +287,30 @@ LtePhy::GetPacketBurst (void)
 
 
 void
-LtePhy::SetControlMessages (Ptr<IdealControlMessage> m)
+LtePhy::SetControlMessages (Ptr<LteControlMessage> m)
 {
   // In uplink the queue of control messages and packet are of different sizes
   // for avoiding TTI cancellation due to synchronization of subframe triggers
   m_controlMessagesQueue.at (m_controlMessagesQueue.size () - 1).push_back (m);
 }
 
-std::list<Ptr<IdealControlMessage> >
+std::list<Ptr<LteControlMessage> >
 LtePhy::GetControlMessages (void)
 {
   if (m_controlMessagesQueue.at (0).size () > 0)
     {
-      std::list<Ptr<IdealControlMessage> > ret = m_controlMessagesQueue.at (0);
+      std::list<Ptr<LteControlMessage> > ret = m_controlMessagesQueue.at (0);
       m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
-      std::list<Ptr<IdealControlMessage> > newlist;
+      std::list<Ptr<LteControlMessage> > newlist;
       m_controlMessagesQueue.push_back (newlist);
       return (ret);
     }
   else
     {
       m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
-      std::list<Ptr<IdealControlMessage> > newlist;
+      std::list<Ptr<LteControlMessage> > newlist;
       m_controlMessagesQueue.push_back (newlist);
-      std::list<Ptr<IdealControlMessage> > emptylist;
+      std::list<Ptr<LteControlMessage> > emptylist;
       return (emptylist);
     }
 }

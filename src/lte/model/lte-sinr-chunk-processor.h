@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by : Marco Miozzo <mmiozzo@cttc.es>
+ *        (move from CQI to Ctrl and Data SINR Chunk processors)
  */
 
 
@@ -53,14 +55,18 @@ public:
 
 
 /** 
- * This SinrProcessor averages the calculated SINR over time.
+ * The LteCtrlSinrChunkProcessor averages the calculated SINR over time 
+ * for the Ctrl frame and therefore in charge of generating the CQI starting
+ *  from the reference signals and the sinr values used for evaluating the 
+ *  decodification error probability of the control channels (PCFICH + PDCCH)
  * 
  */
-class LteCqiSinrChunkProcessor : public LteSinrChunkProcessor
+class LteCtrlSinrChunkProcessor : public LteSinrChunkProcessor
 {
 public:
-  virtual ~LteCqiSinrChunkProcessor ();
-  LteCqiSinrChunkProcessor (Ptr<LtePhy> p);
+  virtual ~LteCtrlSinrChunkProcessor ();
+  LteCtrlSinrChunkProcessor (Ptr<LtePhy> p);
+  LteCtrlSinrChunkProcessor (Ptr<LtePhy> p, Ptr<LteSpectrumPhy> s);
   virtual void Start ();
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
   virtual void End ();
@@ -68,26 +74,32 @@ private:
   Ptr<SpectrumValue> m_sumSinr;
   Time m_totDuration;
   Ptr<LtePhy> m_phy;
+  Ptr<LteSpectrumPhy> m_spectrumPhy;
 };
 
 
 
 /** 
-* This SinrProcessor averages the calculated SINR over time for Phy error model
+* The LteDataSinrChunkProcessor averages the calculated SINR over time for
+* data frame and therefore in charge of generating the sinr values for
+*  evaluating the errors of data packets. Might be used also for generating 
+*  CQI based on data in case any LtePhy is attached.
 * 
 */
-class LtePemSinrChunkProcessor : public LteSinrChunkProcessor
+class LteDataSinrChunkProcessor : public LteSinrChunkProcessor
 {
   public:
-    virtual ~LtePemSinrChunkProcessor ();
-    LtePemSinrChunkProcessor (Ptr<LteSpectrumPhy> p);
+    virtual ~LteDataSinrChunkProcessor ();
+    LteDataSinrChunkProcessor (Ptr<LteSpectrumPhy> p);
+    LteDataSinrChunkProcessor (Ptr<LteSpectrumPhy> s, Ptr<LtePhy> p);
     virtual void Start ();
     virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
     virtual void End ();
   private:
     Ptr<SpectrumValue> m_sumSinr;
     Time m_totDuration;
-    Ptr<LteSpectrumPhy> m_phy;
+    Ptr<LteSpectrumPhy> m_spectrumPhy;
+    Ptr<LtePhy> m_phy;
 };
 
 
