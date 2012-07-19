@@ -367,7 +367,7 @@ void AnimationInterface::StartAnimation (bool restart)
       m_topoMinY = std::min (m_topoMinY, v.y);
       m_topoMaxX = std::max (m_topoMaxX, v.x);
       m_topoMaxY = std::max (m_topoMaxY, v.y);
-      struct Rgb rgb = {0, 0, 255};
+      struct Rgb rgb = {255, 0, 0};
       if (nodeColors.find (n->GetId ()) == nodeColors.end ())
       {
         nodeColors[n->GetId ()] = rgb;
