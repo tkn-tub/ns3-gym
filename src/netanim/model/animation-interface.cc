@@ -55,6 +55,7 @@ namespace ns3 {
 #define PURGE_INTERVAL 5
 static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
+std::map<uint32_t, Rgb> AnimationInterface::nodeColors;
 
 AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
   : m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
@@ -366,6 +367,11 @@ void AnimationInterface::StartAnimation (bool restart)
       m_topoMinY = std::min (m_topoMinY, v.y);
       m_topoMaxX = std::max (m_topoMaxX, v.x);
       m_topoMaxY = std::max (m_topoMaxY, v.y);
+      struct Rgb rgb = {0, 0, 255};
+      if (nodeColors.find (n->GetId ()) == nodeColors.end ())
+      {
+        nodeColors[n->GetId ()] = rgb;
+      }
     }
 
   AddMargin ();
@@ -386,7 +392,8 @@ void AnimationInterface::StartAnimation (bool restart)
       if (m_xml)
         {
           Vector v = GetPosition (n);
-          oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y);
+          struct Rgb rgb = nodeColors[n->GetId ()];
+          oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y, rgb);
 	  WriteN (oss.str ());
         }
       else
@@ -398,6 +405,7 @@ void AnimationInterface::StartAnimation (bool restart)
       	  WriteN (oss.str ().c_str (), oss.str ().length ());
         }
     }
+  nodeColors.clear ();
   NS_LOG_INFO ("Setting p2p links");
   // Now dump the p2p links
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
@@ -1302,6 +1310,9 @@ std::string AnimationInterface::GetPreamble ()
     * id = Node Id\n\
     * locX = X coordinate\n\
     * locY = Y coordinate\n\
+    * r = Red component\n\
+    * g = Green component\n\
+    * b = Blue component\n\
     link\n\
     * fromId = From Node Id\n\
     * toId   = To Node Id\n\
@@ -1380,14 +1391,38 @@ void AnimationInterface::SetConstantPosition (Ptr <Node> n, double x, double y, 
 
 }
 
+void AnimationInterface::SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
+{
+  if (initialized)
+    NS_FATAL_ERROR ("SetNodeColor must be used prior to creating the AnimationInterface object");
+  NS_ASSERT (n);
+  NS_LOG_INFO ("Setting node color for Node Id:" << n->GetId ());
+  struct Rgb rgb = {r, g, b};
+  nodeColors[n->GetId ()] = rgb;
+}
+
+void AnimationInterface::SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b)
+{
+  for (uint32_t i = 0; i < nc.GetN (); ++i)
+    {
+      Ptr <Node> n = nc.Get (i);
+      NS_ASSERT (n);
+      SetNodeColor (n, r, g, b);
+    }
+}
+
 void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
 {
+  if (initialized)
+    NS_FATAL_ERROR ("SetNodeDescription must be used prior to creating the AnimationInterface object");
   NS_ASSERT (n);
   nodeDescriptions[n->GetId ()] = descr;
 }
 
 void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr)
 {
+  if (initialized)
+    NS_FATAL_ERROR ("SetNodeDescription must be used prior to creating the AnimationInterface object");
   for (uint32_t i = 0; i < nc.GetN (); ++i)
     {
       Ptr <Node> n = nc.Get (i);
@@ -1405,7 +1440,7 @@ std::string AnimationInterface::GetXMLOpen_anim (uint32_t lp)
   oss <<"<anim lp = \"" << lp << "\" >\n";
   return oss.str ();
 }
-std::string AnimationInterface::GetXMLOpen_topology (double minX,double minY,double maxX,double maxY)
+std::string AnimationInterface::GetXMLOpen_topology (double minX, double minY, double maxX, double maxY)
 {
   std::ostringstream oss;
   oss << "<topology minX = \"" << minX << "\" minY = \"" << minY
@@ -1415,7 +1450,7 @@ std::string AnimationInterface::GetXMLOpen_topology (double minX,double minY,dou
 
 }
 
-std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY)
+std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY)
 {
   std::ostringstream oss;
   oss <<"<node id = \"" << id << "\""; 
@@ -1430,6 +1465,29 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp,uint32_t id,do
   oss << " locX = \"" << locX << "\" " << "locY = \"" << locY << "\" />\n";
   return oss.str ();
 }
+
+std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb)
+{
+  uint8_t r = rgb.r;
+  uint8_t g = rgb.g;
+  uint8_t b = rgb.b;
+  std::ostringstream oss;
+  oss <<"<node id = \"" << id << "\"";
+  if (nodeDescriptions.find (id) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[id] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+  oss << " locX=\"" << locX << "\" " << "locY=\"" << locY << "\"" << " r=\"" << (uint32_t)r << "\" " 
+    << " g=\"" << (uint32_t)g << "\" b=\"" << (uint32_t)b <<"\"/>\n";
+  return oss.str ();
+}
+
+
+
 std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId)
 {
   std::ostringstream oss;

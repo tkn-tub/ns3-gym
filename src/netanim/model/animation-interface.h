@@ -41,6 +41,7 @@
 namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
+struct Rgb;
 
 /**
  * \defgroup netanim Netanim
@@ -213,6 +214,28 @@ public:
   static void SetNodeDescription (NodeContainer nc, std::string descr);
 
   /**
+   * \brief Helper function to set the node color
+   * \param n Ptr to the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  static void SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
+
+
+  /**
+   * \brief Helper function to set the color of nodes in a container
+   * \param n Ptr to the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
+
+
+  /**
    * \brief Is AnimationInterface started
    * \returns true if AnimationInterface was started
    *
@@ -379,6 +402,7 @@ private:
   std::vector<std::string> GetElementsFromContext (std::string context);
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
 
+  static std::map<uint32_t, Rgb>  nodeColors;
   static std::map <uint32_t, std::string> nodeDescriptions;
   uint64_t m_currentPktCount;
 
@@ -397,6 +421,7 @@ private:
   std::string GetXMLOpen_anim (uint32_t lp);
   std::string GetXMLOpen_topology (double minX,double minY,double maxX,double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY);
+  std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY, struct Rgb rgb);
   std::string GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId);
   std::string GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
@@ -404,6 +429,18 @@ private:
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
   std::string GetXMLOpenClose_meta (std::string metaInfo);
 
+};
+
+/**
+ * \ingroup netanim
+ * \brief A structure to store red, blue and green components for entities such as nodes
+ *
+ */
+struct Rgb 
+{
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
 };
 
 /**
