@@ -136,12 +136,11 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetD
     }
 
   // if source == dest, then we have a special case
-  // because the node is sending to itself.  have to
-  // build the nix vector a little differently
+  // Do not process packets to self (see bug 1308)
   if (source == destNode)
     {
-      BuildNixVectorLocal (nixVector);
-      return nixVector;
+      NS_LOG_DEBUG ("Do not processs packets to self");
+      return 0;
     }
   else
     {
