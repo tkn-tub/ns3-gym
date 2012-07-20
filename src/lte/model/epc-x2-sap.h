@@ -31,7 +31,14 @@ namespace ns3 {
 class Node;
 
 /**
- * The X2 SAP defines the service offered
+ * The X2 SAP defines the service between the X2 entity and the RRC entity.
+ * 
+ * The X2 SAP follows the specification 3GPP TS 36.423: "X2 application protocol (X2AP)"
+ * 
+ * The service primitives corresponds to the X2AP procedures and messages and 
+ * the service parameters corresponds to the Information Elements
+ * 
+ * Note: Any reference in this file refers to the 3GPP TS 36.423 specification
  */
 
 /**
@@ -42,6 +49,11 @@ class EpcX2Sap
 public:
   virtual ~EpcX2Sap ();
   
+  /**
+   * E-RABs to be setup item as
+   * it is used in the HANDOVER REQUEST message.
+   * See section 9.1.1.1 for further info about the parameters
+   */
   struct ErabToBeSetupItem
   {
     uint16_t    erabId;
@@ -53,6 +65,11 @@ public:
     ErabToBeSetupItem ();
   };
 
+  /**
+   * E-RABs admitted item as
+   * it is used in the HANDOVER REQUEST ACKNOWLEDGE message.
+   * See section 9.1.1.2 for further info about the parameters
+   */
   struct ErabAdmittedItem
   {
     uint16_t    erabId;
@@ -60,6 +77,11 @@ public:
     uint32_t    dlGtpTeid;
   };
   
+  /**
+   * E-RABs not admitted item as
+   * it is used in the HANDOVER REQUEST ACKNOWLEDGE message.
+   * See section 9.1.1.2 for further info about the parameters
+   */
   struct ErabNotAdmittedItem
   {
     uint16_t    erabId;
@@ -73,6 +95,11 @@ public:
   };
 
   
+  /**
+   * \brief Parameters of the HANDOVER REQUEST message.
+   *
+   * See section 9.1.1.1 for further info about the parameters
+   */
   struct HandoverRequestParams
   {
     uint16_t            oldEnbUeX2apId;
@@ -85,6 +112,11 @@ public:
     Ptr<Packet>         rrcContext;
   };
   
+  /**
+   * \brief Parameters of the HANDOVER REQUEST ACKNOWLEDGE message.
+   *
+   * See section 9.1.1.2 for further info about the parameters
+   */
   struct HandoverRequestAckParams
   {
     uint16_t            oldEnbUeX2apId;
@@ -99,17 +131,17 @@ public:
 };
 
 
+/**
+ * These service primitives of this part of the X2 SAP
+ * are provided by the X2 entity and issued by RRC entity
+ */
 class EpcX2SapProvider : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapProvider ();
   
   /**
-   * Parameters of the API primitives
-   */
-  
-  /**
-   * SAP primitives
+   * Service primitives
    */
 
   virtual void SendHandoverRequest (HandoverRequestParams params) = 0;
@@ -123,17 +155,17 @@ public:
 };
 
 
+/**
+ * These service primitives of this part of the X2 SAP
+ * are provided by the RRC entity and issued by the X2 entity
+ */
 class EpcX2SapUser : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapUser ();
 
   /**
-   * Parameters of the API primitives
-   */
-
-  /**
-   * SAP primitives
+   * Service primitives
    */
 
   virtual void RecvHandoverRequest (HandoverRequestParams params) = 0;
