@@ -22,43 +22,126 @@
 #define EPC_X2_SAP_H
 
 #include "ns3/packet.h"
+#include "ns3/eps-bearer.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
 
 class Node;
-class Packet;
+
+/**
+ * The X2 SAP defines the service between the X2 entity and the RRC entity.
+ * 
+ * The X2 SAP follows the specification 3GPP TS 36.423: "X2 application protocol (X2AP)"
+ * 
+ * The service primitives corresponds to the X2AP procedures and messages and 
+ * the service parameters corresponds to the Information Elements
+ * 
+ * Note: Any reference in this file refers to the 3GPP TS 36.423 specification
+ */
+
+/**
+ * \brief Common structures for EpcX2SapProvider and EpcX2SapUser
+ */
+class EpcX2Sap
+{
+public:
+  virtual ~EpcX2Sap ();
+  
+  /**
+   * E-RABs to be setup item as
+   * it is used in the HANDOVER REQUEST message.
+   * See section 9.1.1.1 for further info about the parameters
+   */
+  struct ErabToBeSetupItem
+  {
+    uint16_t    erabId;
+    EpsBearer   erabLevelQosParameters;
+    bool        dlForwarding;
+    Ipv4Address transportLayerAddress;
+    uint32_t    gtpTeid;
+    
+    ErabToBeSetupItem ();
+  };
+
+  /**
+   * E-RABs admitted item as
+   * it is used in the HANDOVER REQUEST ACKNOWLEDGE message.
+   * See section 9.1.1.2 for further info about the parameters
+   */
+  struct ErabAdmittedItem
+  {
+    uint16_t    erabId;
+    uint32_t    ulGtpTeid;
+    uint32_t    dlGtpTeid;
+  };
+  
+  /**
+   * E-RABs not admitted item as
+   * it is used in the HANDOVER REQUEST ACKNOWLEDGE message.
+   * See section 9.1.1.2 for further info about the parameters
+   */
+  struct ErabNotAdmittedItem
+  {
+    uint16_t    erabId;
+    uint16_t    cause;
+  };
+
+  enum IdCause
+  {
+    HandoverDesirableForRadioReason,
+    TimeCriticalHandover
+  };
+
+  
+  /**
+   * \brief Parameters of the HANDOVER REQUEST message.
+   *
+   * See section 9.1.1.1 for further info about the parameters
+   */
+  struct HandoverRequestParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            cause;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
+    uint64_t            ueAggregateMaxBitRateDownlink;
+    uint64_t            ueAggregateMaxBitRateUplink;
+    std::vector <ErabToBeSetupItem> bearers;
+    Ptr<Packet>         rrcContext;
+  };
+  
+  /**
+   * \brief Parameters of the HANDOVER REQUEST ACKNOWLEDGE message.
+   *
+   * See section 9.1.1.2 for further info about the parameters
+   */
+  struct HandoverRequestAckParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            newEnbUeX2apId;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
+    std::vector <ErabAdmittedItem> admittedBearers;
+    std::vector <ErabNotAdmittedItem> notAdmittedBearers;
+    Ptr<Packet>         rrcContext;
+  };
+
+};
 
 
-class EpcX2SapProvider
+/**
+ * These service primitives of this part of the X2 SAP
+ * are provided by the X2 entity and issued by RRC entity
+ */
+class EpcX2SapProvider : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapProvider ();
   
   /**
-   * Parameters of the API primitives
-   */
-  
-  struct HandoverRequestParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
-  
-  struct HandoverRequestAckParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
-  
-  /**
-   * SAP primitives
+   * Service primitives
    */
 
   virtual void SendHandoverRequest (HandoverRequestParams params) = 0;
@@ -72,35 +155,17 @@ public:
 };
 
 
-class EpcX2SapUser
+/**
+ * These service primitives of this part of the X2 SAP
+ * are provided by the RRC entity and issued by the X2 entity
+ */
+class EpcX2SapUser : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapUser ();
 
   /**
-   * Parameters of the API primitives
-   */
-  
-  struct HandoverRequestParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
-
-  struct HandoverRequestAckParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
-
-  /**
-   * SAP primitives
+   * Service primitives
    */
 
   virtual void RecvHandoverRequest (HandoverRequestParams params) = 0;
