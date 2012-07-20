@@ -1,19 +1,23 @@
 
 diagram {
-	LteHelper; LteUeNetDevice; EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcSgwPgwApplication; EpcHelper;	
+	SimProgram; LteHelper; LteUeNetDevice; EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcSgwPgwApplication; EpcHelper;	
 	
-	LteHelper -> LteUeNetDevice [label="Attach (eNB)"];
-	LteHelper -> LteUeRrc [label="Set eNB"];
-	LteUeNetDevice -> EpcUeNas [label="Connect"];
-	EpcUeNas => LteUeRrc [label="Connect"] {
-		LteUeRrc => LteEnbRrc [label="Connection Request (IMSI)"] {
-			=== RRC connection establishment ===
-			LteEnbRrc -> LteEnbRrc [label="store IMSI<->RNTI mapping"];			
+	SimProgram -> LteHelper [label="Attach (ueDevice, enbDevice)"];
+	LteHelper -> EpcUeNas [label="Connect (eNB)"] {
+		EpcUeNas -> LteUeRrc [label="ForceCampedOnEnb (CellID)"];
+		EpcUeNas => LteUeRrc [label="Connect"] {
+			LteUeRrc => LteEnbRrc [label="Connection Request (IMSI)"] {
+				=== RRC connection establishment ===
+				LteEnbRrc -> LteEnbRrc [label="store IMSI<->RNTI mapping"];			
+			}
 		}
-	}	
+	}
 	
-	EpcUeNas => EpcHelper [label="ActivateEpsBearer(UeDevice, EnbDevice, Tft::Default)"] {
-		EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, IMSI, Tft::Default)", return="TEID"] {
+	EpcUeNas => EpcHelper [label="Attach (UeDevice, EnbDevice)"] {
+		EpcHelper -> EpcHelper [label="store UeDevice <-> EnbDevice mapping"]
+	}
+	EpcUeNas => EpcHelper [label="ActivateEpsBearer (UeDevice, IMSI, EpsBearer (NGBR_VIDEO_TCP_DEFAULT), Tft::Default)"] {
+		EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, IMSI, Tft::Default)", return="TEID"] {			
 			EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
 			EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
 		}

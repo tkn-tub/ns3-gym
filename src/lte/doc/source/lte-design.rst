@@ -120,68 +120,57 @@ have been considered:
 Architecture
 ++++++++++++
 
-For the sake of an easier explanation, we further divide the LTE model
-in two separate parts, which are described in the following.
+For the sake of an easier explanation, we consider separately the architecture of the UE and eNB nodes. 
 
-The overall architecture of the LTE module is represented in the following figures.
 
-The first part is the lower LTE radio protocol stack, which is
-represented in the figures 
-:ref:`fig-lte-enb-architecture` and :ref:`fig-lte-ue-architecture`,
-which deal respectively with the eNB and the UE. 
+UE architecture
+---------------
 
-.. _fig-lte-enb-architecture:
+The architecture of the LTE radio protocol stack model of the UE is represented in the figure :ref:`fig-lte-arch-ue`. 
+
+
+.. _fig-lte-arch-ue:
    
-.. figure:: figures/lte-enb-architecture.*
+.. figure:: figures/lte-arch-ue.*
    :align: center
 
-   Lower LTE radio protocol stack architecture for the eNB
+    LTE radio protocol stack architecture for the UE
+
+The architecture of the PHY/channel model of the UE is represented in figure :ref:`fig-lte-ue-phy`. 
 
 
-
-.. _fig-lte-ue-architecture:
-
-.. figure:: figures/lte-ue-architecture.*
-   :align: center
-
-   Lower LTE radio protocol stack architecture for the UE
-
-
-The LTE lower radio stack model includes in particular the PHY and the MAC layers;
-additionally, also the Scheduler is included (which is commonly
-associated with the MAC layer). The most important difference between
-the eNB and the UE is the presence of the Scheduler in the eNB, which
-is in charge of assigning radio resources to all UEs and Radio Bearers
-both in uplink and downlink. This component is not present within the
-UE.
-
-
-
-
-The second part is the upper LTE radio stack, which is represented in
-the figure :ref:`fig-lte-arch-data-rrc-pdcp-rlc`. 
-
-.. _fig-lte-arch-data-rrc-pdcp-rlc:
+.. _fig-lte-ue-phy:
    
-.. figure:: figures/lte-arch-data-rrc-pdcp-rlc.*
+.. figure:: figures/lte-ue-phy.*
    :align: center
 
-   Architecture of the upper LTE radio stack 
+   PHY and channel model architecture for the UE
 
 
-This part includes the RRC, PDCP and RLC protocols. The architecture
-is very similar between the eNB and the UE: in fact, in
-both cases there is a single MAC instance and a single RRC instance,
-that work together with pairs of RLC and PDCP instances (one RLC and
-one PDCP instance per radio bearer).
 
-We note that in the current version of the simulator the data
-plane of the upper LTE radio protocol stack is modeled accurately; in
-particular, the RLC and PDCP protocol are implemented with actual
-protocol headers that match those specified by the 3GPP standard. 
-On the other hand, the functionality of the control plane (which for
-the upper LTE radio protocol stack involves mainly the RRC) is modeled in a
-significantly simplified fashion.   
+
+eNB architecture
+---------------
+
+The architecture of the LTE radio protocol stack model of the eNB is represented in the figure :ref:`fig-lte-arch-enb`. 
+
+
+.. _fig-lte-arch-enb:
+   
+.. figure:: figures/lte-arch-enb.*
+   :align: center
+
+    LTE radio protocol stack architecture for the eNB
+
+The architecture of the PHY/channel model of the eNB is represented in figure :ref:`fig-lte-enb-phy`. 
+
+
+.. _fig-lte-enb-phy:
+   
+.. figure:: figures/lte-enb-phy.*
+   :align: center
+
+   PHY and channel model architecture for the eNB
 
 
 

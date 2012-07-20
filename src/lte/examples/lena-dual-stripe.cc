@@ -248,6 +248,7 @@ main (int argc, char *argv[])
   bool epcUl = true;
   bool useUdp = true;
   bool generateRem = false;
+  std::string fadingFileTrace = "";
   
   CommandLine cmd;
   cmd.AddValue ("nBlocks", "Number of femtocell blocks", nBlocks);
@@ -287,6 +288,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("useUdp", "if true, the UdpClient application will be used. "
                 "Otherwise, the BulkSend application will be used over a TCP connection. "
                 "If EPC is not used, this parameter will be ignored.", useUdp);
+  cmd.AddValue ("fadingTrace", "The path of the fading trace (by default any fading trace is loadedm which implies that fading is not considered)", fadingFileTrace);
 
 
   cmd.Parse (argc, argv);
@@ -356,6 +358,12 @@ main (int argc, char *argv[])
   // use always LOS model
   lteHelper->SetPathlossModelAttribute ("Los2NlosThr", DoubleValue (1e6));
   lteHelper->SetSpectrumChannelType ("ns3::MultiModelSpectrumChannel");
+  
+  if (!fadingFileTrace.empty ())
+    {
+      lteHelper->SetAttribute ("FadingModel", StringValue ("ns3::TraceFadingLossModel"));
+      lteHelper->SetFadingModelAttribute("TraceFilename", StringValue (fadingFileTrace));
+    }
 
   Ptr<EpcHelper> epcHelper;
   if (epc)
@@ -407,7 +415,8 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (macroUes);
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);
-  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
+
+
 
 
   // home UEs located in the same apartment in which there are the Home eNBs
@@ -416,17 +425,7 @@ main (int argc, char *argv[])
   mobility.Install (homeUes);
   NetDeviceContainer homeUeDevs = lteHelper->InstallUeDevice (homeUes);
 
-  NetDeviceContainer::Iterator ueDevIt;
-  NetDeviceContainer::Iterator enbDevIt;
-  // attach explicitly each home UE to its home eNB
-  for (ueDevIt = homeUeDevs.Begin (), 
-          enbDevIt = homeEnbDevs.Begin (); 
-       ueDevIt != homeUeDevs.End () && enbDevIt != homeEnbDevs.End (); 
-       ++ueDevIt, ++enbDevIt)
-    {
-      lteHelper->Attach (*ueDevIt, *enbDevIt);
-    }
-
+ 
 
   if (epc)
     {
@@ -536,14 +535,35 @@ main (int argc, char *argv[])
     } // end if (epc)
 
 
- 
-  // activate bearer for all UEs
-  enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
-  EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (homeUeDevs, bearer, EpcTft::Default ());  
-  lteHelper->ActivateEpsBearer (macroUeDevs, bearer, EpcTft::Default ());
+  // attachment (needs to be done after IP stack configuration)
+  // macro UEs attached to the closest macro eNB
+  lteHelper->AttachToClosestEnb (macroUeDevs, macroEnbDevs);
+  // each home UE is ttach explicitly to its home eNB
+  NetDeviceContainer::Iterator ueDevIt;
+  NetDeviceContainer::Iterator enbDevIt = homeEnbDevs.Begin ();
+  
+  for (ueDevIt = homeUeDevs.Begin (); 
+       ueDevIt != homeUeDevs.End ();
+       ++ueDevIt, ++enbDevIt)
+    {
+      // this because of the order in which SameRoomPositionAllocator
+      // will place the UEs
+      if (enbDevIt == homeEnbDevs.End ())
+        {
+          enbDevIt = homeEnbDevs.Begin ();
+        }
+      lteHelper->Attach (*ueDevIt, *enbDevIt);
+    }
 
-
+  if (!epc)
+    {
+      // simplified LTE-only simulation
+      // need to activate radio bearers explicitly after attachment
+      enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+      EpsBearer bearer (q);
+      lteHelper->ActivateDataRadioBearer (homeUeDevs, bearer);  
+      lteHelper->ActivateDataRadioBearer (macroUeDevs, bearer);      
+    }
 
   BuildingsHelper::MakeMobilityModelConsistent ();
 

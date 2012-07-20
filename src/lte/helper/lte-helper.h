@@ -32,7 +32,7 @@
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/epc-tft.h>
-#include <ns3/trace-fading-loss-model.h>
+#include <ns3/mobility-model.h>
 
 namespace ns3 {
 
@@ -178,7 +178,9 @@ public:
   void Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice);
 
   /**
-   * Attach a UE device to an eNB device
+   * Attach a UE to the network
+   *
+   * Attach a UE device to the network via a given eNB, and activate the default EPS bearer.
    *
    * \param ueDevice
    * \param enbDevice
@@ -186,7 +188,9 @@ public:
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
   /** 
-   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set
+   * Attach each UE in a set to the closest (w.r.t. distance) eNB among those in a set.
+   * 
+   * 
    * 
    * \param ueDevices the set of UEs
    * \param enbDevices the set of eNBs
@@ -195,6 +199,8 @@ public:
 
   /** 
    * Attach an UE ito the closest (w.r.t. distance) eNB among those in a set
+   * Will call LteHelper::Attach () passing to it the single eNB
+   * instance which resulted to be the closest to the UE 
    * 
    * \param ueDevice the UE
    * \param enbDevices the set of eNBs
@@ -202,22 +208,22 @@ public:
   void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 
   /**
-   * Activate an EPS bearer on a given set of UE devices
+   * Activate a dedicated EPS bearer on a given set of UE devices
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
+  void ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft);
 
   /**
-   * Activate an EPS bearer on a given UE device
+   * Activate a dedicated EPS bearer on a given UE device
    *
    * \param ueDevices the set of UE devices
    * \param bearer the characteristics of the bearer to be activated
    * \param tft the Traffic Flow Template that identifies the traffic to go on this bearer
    */
-  void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
+  void ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft);
 
 
   /**
@@ -247,12 +253,24 @@ public:
 
 
   /** 
+   * Activate a Data Radio Bearer for a simplified LTE-only simulation
+   * without EPC.
    * 
-   * \param bearer the specification of an EPS bearer
-   * 
-   * \return the type of RLC that is to be created for the given EPS bearer
+   * \param ueDevice the device of the UE for which the radio bearer
+   * is to be activated
+   * \param bearer the characteristics of the bearer to be activated
    */
-  TypeId GetRlcType (EpsBearer bearer);
+  void ActivateDataRadioBearer (Ptr<NetDevice> ueDevice,  EpsBearer bearer);
+
+
+  /** 
+   * Call ActivateDataRadioBearer (ueDevice, bearer) for each UE
+   * device in a given set
+   * 
+   * \param ueDevices the set of UE devices
+   * \param bearer
+   */
+  void ActivateDataRadioBearer (NetDeviceContainer ueDevices,  EpsBearer bearer);
 
   /** 
    * 
@@ -334,11 +352,6 @@ public:
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
 
-  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
-                                   RLC_UM_ALWAYS = 2,
-                                   RLC_AM_ALWAYS = 3,
-                                   PER_BASED = 4};
-
 protected:
   // inherited from Object
   virtual void DoStart (void);
@@ -369,13 +382,9 @@ private:
   std::string m_fadingModelType;
   ObjectFactory m_fadingModelFactory;
 
-  Ptr<TraceFadingLossModel> m_fadingModule;
-
   Ptr<MacStatsCalculator> m_macStats;
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
-
-  enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
 
   Ptr<EpcHelper> m_epcHelper;
 

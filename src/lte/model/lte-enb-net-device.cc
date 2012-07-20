@@ -276,13 +276,7 @@ LteEnbNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth);
-
-  // Configuring directly for now, but ideally we should use the PHY
-  // SAP instead. Probably should handle this through the RRC.
-  m_phy->DoSetBandwidth (m_ulBandwidth, m_dlBandwidth);
-  m_phy->DoSetEarfcn (m_dlEarfcn, m_ulEarfcn);
-  m_phy->DoSetCellId (m_cellId);
+  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
 
 }
 

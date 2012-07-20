@@ -29,19 +29,23 @@
 #include "ns3/ff-mac-sched-sap.h"
 #include "ns3/lte-pdcp-sap.h"
 #include "ns3/epc-x2-sap.h"
+#include <ns3/epc-enb-s1-sap.h>
+#include <ns3/lte-enb-cphy-sap.h>
 
 #include <map>
 
 namespace ns3 {
 
 class LteRadioBearerInfo;
+class EpcEnbS1SapUser;
+class EpcEnbS1SapProvider;
+class LteUeRrc;
 
 
 /**
  * Manages all the radio bearer information possessed by the ENB RRC for a single UE
  *
  */
-
 class UeInfo : public Object
 {
 public:
@@ -87,15 +91,16 @@ private:
 
 
 /**
- *
- *
+ * \ingroup lte
+ * 
+ * The LTE Radio Resource Control entity at the eNB
  */
 class LteEnbRrc : public Object
 {
 
   friend class EnbRrcMemberLteEnbCmacSapUser;
   friend class LtePdcpSpecificLtePdcpSapUser<LteEnbRrc>;
-
+  friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
 
 public:
@@ -163,15 +168,49 @@ public:
   void SetLteMacSapProvider (LteMacSapProvider* s);
 
 
+  /** 
+   * Set the S1 SAP Provider
+   * 
+   * \param s the S1 SAP Provider
+   */
+  void SetS1SapProvider (EpcEnbS1SapProvider * s);
+
+  /** 
+   * 
+   * \return the S1 SAP user
+   */
+  EpcEnbS1SapUser* GetS1SapUser ();
+
+
+  /**
+   * set the CPHY SAP this RRC should use to interact with the PHY
+   *
+   * \param s the CPHY SAP Provider
+   */
+  void SetLteEnbCphySapProvider (LteEnbCphySapProvider * s);
+
+  /**
+   *
+   *
+   * \return s the CPHY SAP User interface offered to the PHY by this RRC
+   */
+  LteEnbCphySapUser* GetLteEnbCphySapUser ();
+
 
   /**
    * configure cell-specific parameters
    *
    * \param ulBandwidth the uplink bandwdith in number of RB
    * \param dlBandwidth the downlink bandwidth in number of RB
+   * \param ulEarfcn the UL EARFCN
+   * \param dlEarfcn the DL EARFCN
+   * \param cellId the ID of the cell
    */
   void ConfigureCell (uint8_t ulBandwidth,
-                      uint8_t dlBandwidth);
+                      uint8_t dlBandwidth,
+                      uint16_t ulEarfcn, 
+                      uint16_t dlEarfcn,
+                      uint16_t cellId);
 
   /**
    * Add a new UE to the cell
@@ -193,16 +232,24 @@ public:
   void SetUeMap (std::map<uint16_t,Ptr<UeInfo> > ueMap);
   std::map<uint16_t,Ptr<UeInfo> > GetUeMap (void) const;
 
+  /** 
+   * 
+   * \param bearer the specification of an EPS bearer
+   * 
+   * \return the type of RLC that is to be created for the given EPS bearer
+   */
+  TypeId GetRlcType (EpsBearer bearer);
+
+
   /**
    * Setup a new radio bearer for the given user
    *
    * \param rnti the RNTI of the user
    * \param bearer the characteristics of the bearer to be activated
-   * \param rlcTypeId the TypeId identifying the type of RLC to be used for this bearer.
    *
    * \return the logical channel identifier of the radio bearer for the considered user
    */
-  uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer, TypeId rlcTypeId);
+  uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer);
 
 
   /**
@@ -237,21 +284,40 @@ public:
    */
   void SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
 
-  
+  /**
+   * Identifies how EPS Bearer parameters are mapped to different RLC types
+   * 
+   */
+  enum LteEpsBearerToRlcMapping_t {RLC_SM_ALWAYS = 1,
+                                   RLC_UM_ALWAYS = 2,
+                                   RLC_AM_ALWAYS = 3,
+                                   PER_BASED = 4};
 private:
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
 
-  void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
-  void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
-  
-  void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
+
   LtePdcpSapProvider* GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid);
+
+  // PDCP SAP methods
+  void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
+
+  // CMAC SAP methods
+  void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+  void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
+
+  // S1 SAP methods
+  void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
+
 
   // management of multiple UE info instances
   uint16_t CreateUeInfo (uint64_t imsi);
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
+
+  // methods used to talk to UE RRC directly in absence of real RRC protocol
+  Ptr<LteUeRrc> GetUeRrcByImsi (uint64_t imsi);
+  Ptr<LteUeRrc> GetUeRrcByRnti (uint16_t rnti);
 
   Callback <void, Ptr<Packet> > m_forwardUpCallback;
 
@@ -265,12 +331,23 @@ private:
   LteMacSapProvider* m_macSapProvider;
   LtePdcpSapUser* m_pdcpSapUser;
 
+  EpcEnbS1SapProvider* m_s1SapProvider;
+  EpcEnbS1SapUser* m_s1SapUser;
+
+  LteEnbCphySapUser* m_cphySapUser;
+  LteEnbCphySapProvider* m_cphySapProvider;
+
   bool m_configured;
   uint16_t m_lastAllocatedRnti;
+
+  std::map<uint64_t, uint16_t> m_imsiRntiMap;
 
   std::map<uint16_t, Ptr<UeInfo> > m_ueMap;
   
   uint8_t m_defaultTransmissionMode;
+
+  enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
+
 
 };
 

@@ -601,5 +601,72 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
   return true;
 }
 
+
+
+
+
+
+
+
+NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc);
+
+EpcTestRrc::EpcTestRrc ()
+  : m_s1SapProvider (0)
+{
+  NS_LOG_FUNCTION (this);
+  m_s1SapUser = new MemberEpcEnbS1SapUser<EpcTestRrc> (this);
+}
+
+
+EpcTestRrc::~EpcTestRrc ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void
+EpcTestRrc::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete m_s1SapUser;
+}
+
+TypeId
+EpcTestRrc::GetTypeId (void)
+{
+  NS_LOG_FUNCTION ("EpcTestRrc::GetTypeId");
+  static TypeId tid = TypeId ("ns3::EpcTestRrc")
+    .SetParent<Object> ()
+    .AddConstructor<EpcTestRrc> ()
+  ;
+  return tid;
+}
+void 
+EpcTestRrc::SetS1SapProvider (EpcEnbS1SapProvider * s)
+{
+  m_s1SapProvider = s;
+}
+
+  
+EpcEnbS1SapUser* 
+EpcTestRrc::GetS1SapUser ()
+{
+  return m_s1SapUser;
+}
+
+void 
+EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
+{
+  EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters response;   
+  // works for a single eNB scenario with at most 1 LCID per UE
+  response.rnti = (uint16_t) request.imsi;
+  response.lcid = 1;      
+  response.success = true;
+  response.teid = request.teid;
+  m_s1SapProvider->DataRadioBearerSetupResponse (response);
+}
+
+
+
 } // namespace ns3
 

@@ -52,8 +52,6 @@ public:
 
   virtual void RemoveLc (uint8_t lcId) = 0;
   
-  virtual void RrcUpdateConfigurationReq (LteUeConfig_t params) = 0;
-
 };
 
 

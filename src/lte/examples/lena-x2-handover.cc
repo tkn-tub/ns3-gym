@@ -116,12 +116,6 @@ main (int argc, char *argv[])
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
   NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  // Attach all UEs to the first eNodeB
-  for (uint16_t i = 0; i < numberOfUes; i++)
-    {
-      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(0));
-    }
-
   // Install the IP stack on the UEs
   internet.Install (ueNodes);
   Ipv4InterfaceContainer ueIpIface;
@@ -135,8 +129,16 @@ main (int argc, char *argv[])
       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
     }
 
-  // Activate an EPS Bearer (including Radio Bearer) between UEs and its eNB
-  lteHelper->ActivateEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
+
+  // Attach all UEs to the first eNodeB
+  for (uint16_t i = 0; i < numberOfUes; i++)
+    {
+      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(0));
+    }
+
+  // Activate a dedicated EPS Bearer (including Radio Bearer) between UEs and its eNB
+  // (note that the default EPS bearer will already have been activated)
+  // lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), EpcTft::Default ());
 
 
   // Add X2 inteface

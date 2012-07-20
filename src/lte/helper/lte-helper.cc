@@ -26,6 +26,8 @@
 #include <ns3/abort.h>
 #include <ns3/pointer.h>
 #include <ns3/lte-enb-rrc.h>
+#include <ns3/epc-ue-nas.h>
+#include <ns3/epc-enb-application.h>
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-mac.h>
 #include <ns3/lte-enb-mac.h>
@@ -43,12 +45,13 @@
 #include <ns3/lte-rlc.h>
 #include <ns3/lte-rlc-um.h>
 #include <ns3/lte-rlc-am.h>
+#include <ns3/epc-enb-s1-sap.h>
 
 #include <ns3/epc-helper.h>
 #include <iostream>
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/lte-spectrum-value-helper.h>
-
+#include <ns3/epc-x2.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteHelper");
 
@@ -101,10 +104,11 @@ LteHelper::DoStart (void)
       NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
       m_uplinkChannel->AddPropagationLossModel (ulPlm);
     }
-
-  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+  if (!m_fadingModelType.empty ())
     {
-      m_fadingModule = m_fadingModelFactory.Create<TraceFadingLossModel> ();
+      Ptr<SpectrumPropagationLossModel> m_fadingModule;
+      m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_fadingModule->Start ();
       m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
       m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
@@ -143,14 +147,6 @@ TypeId LteHelper::GetTypeId (void)
                    StringValue (""), // fake module -> no fading 
                    MakeStringAccessor (&LteHelper::SetFadingModel),
                    MakeStringChecker ())
-    .AddAttribute ("EpsBearerToRlcMapping", 
-                   "Specify which type of RLC will be used for each type of EPS bearer. ",
-                   EnumValue (RLC_SM_ALWAYS),
-                   MakeEnumAccessor (&LteHelper::m_epsBearerToRlcMapping),
-                   MakeEnumChecker (RLC_SM_ALWAYS, "RlcSmAlways",
-                                    RLC_UM_ALWAYS, "RlcUmAlways",
-                                    RLC_AM_ALWAYS, "RlcAmAlways",
-                                    PER_BASED,     "PacketErrorRateBased"))
   ;
   return tid;
 }
@@ -170,11 +166,6 @@ LteHelper::SetEpcHelper (Ptr<EpcHelper> h)
 {
   NS_LOG_FUNCTION (this << h);
   m_epcHelper = h;
-  // it does not make sense to use RLC/SM when also using the EPC
-  if (m_epsBearerToRlcMapping == RLC_SM_ALWAYS)
-    {
-      m_epsBearerToRlcMapping = RLC_UM_ALWAYS;
-    }
 }
 
 void 
@@ -340,6 +331,16 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
+  if (m_epcHelper != 0)
+    {
+      EnumValue epsBearerToRlcMapping;
+      rrc->GetAttribute ("EpsBearerToRlcMapping", epsBearerToRlcMapping);
+      // it does not make sense to use RLC/SM when also using the EPC
+      if (epsBearerToRlcMapping.Get () == LteEnbRrc::RLC_SM_ALWAYS)
+        {
+          rrc->SetAttribute ("EpsBearerToRlcMapping", EnumValue (LteEnbRrc::RLC_UM_ALWAYS));
+        }
+    }
 
   // connect SAPs
   rrc->SetLteEnbCmacSapProvider (mac->GetLteEnbCmacSapProvider ());
@@ -354,6 +355,10 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   phy->SetLteEnbPhySapUser (mac->GetLteEnbPhySapUser ());
   mac->SetLteEnbPhySapProvider (phy->GetLteEnbPhySapProvider ());
+
+
+  phy->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser ());
+  rrc->SetLteEnbCphySapProvider (phy->GetLteEnbCphySapProvider ());
  
   Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
   dev->SetNode (n);
@@ -395,6 +400,17 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
     {
       NS_LOG_INFO ("adding this eNB to the EPC");
       m_epcHelper->AddEnb (n, dev);
+      Ptr<EpcEnbApplication> enbApp = n->GetApplication (0)->GetObject<EpcEnbApplication> ();
+      NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
+
+      // S1 SAPs
+      rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
+      enbApp->SetS1SapUser (rrc->GetS1SapUser ());
+      
+      // X2 SAPs
+      Ptr<EpcX2> x2 = n->GetObject<EpcX2> ();
+      x2->SetEpcX2SapUser (rrc->GetEpcX2SapUser ());
+      rrc->SetEpcX2SapProvider (x2->GetEpcX2SapProvider ());
     }
 
   return dev;
@@ -423,7 +439,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   dlPhy->SetMobility (mm);
   ulPhy->SetMobility (mm);
 
-
   Ptr<AntennaModel> antenna = (m_ueAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
   NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
   dlPhy->SetAntenna (antenna);
@@ -431,8 +446,14 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
+  Ptr<EpcUeNas> nas = CreateObject<EpcUeNas> ();
+ 
+  nas->SetEpcHelper (m_epcHelper);
 
   // connect SAPs
+  nas->SetAsSapProvider (rrc->GetAsSapProvider ());
+  rrc->SetAsSapUser (nas->GetAsSapUser ());
+
   rrc->SetLteUeCmacSapProvider (mac->GetLteUeCmacSapProvider ());
   mac->SetLteUeCmacSapUser (rrc->GetLteUeCmacSapUser ());
   rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
@@ -440,14 +461,21 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   phy->SetLteUePhySapUser (mac->GetLteUePhySapUser ());
   mac->SetLteUePhySapProvider (phy->GetLteUePhySapProvider ());
 
-  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc);
+  phy->SetLteUeCphySapUser (rrc->GetLteUeCphySapUser ());
+  rrc->SetLteUeCphySapProvider (phy->GetLteUeCphySapProvider ());
+
+  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc, nas);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
+  nas->SetDevice (dev);
 
   n->AddDevice (dev);
   dlPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
-  rrc->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
+  nas->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
+
+
+  dev->Start ();
 
   return dev;
 }
@@ -467,43 +495,18 @@ void
 LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   NS_LOG_FUNCTION (this);
-  // setup RRC connection
-  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  uint16_t rnti = enbRrc->AddUe (ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ());
-  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
-  ueRrc->ConfigureUe (rnti, enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId () );
 
-  // attach UE to eNB
-  ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
+  ueNas->Connect (enbDevice);
 
+  m_downlinkChannel->AddRx (ueLteDevice->GetPhy ()->GetDownlinkSpectrumPhy ());
 
-  // connect at the PHY layer
-  Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
-  Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
-  enbPhy->AddUePhy (rnti, uePhy);
-
-  if (m_fadingModelType.compare ( "ns3::TraceFadingLossModel") == 0)
+  // tricks needed for the simplified LTE-only simulations 
+  if (m_epcHelper == 0)
     {
-      Ptr<MobilityModel> mm_enb_dl = enbPhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-      Ptr<MobilityModel> mm_ue_ul = uePhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-      Ptr<MobilityModel> mm_enb_ul = enbPhy->GetUplinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
-      Ptr<MobilityModel> mm_ue_dl = uePhy->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
- 
-      m_fadingModule->CreateFadingChannelRealization (mm_enb_dl, mm_ue_dl);  //downlink eNB -> UE
-      m_fadingModule->CreateFadingChannelRealization (mm_ue_ul, mm_enb_ul);  //uplink UE -> eNB
-
+      ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
     }
- 
-  // WILD HACK - should be done through PHY SAP, probably passing by RRC
-  uePhy->SetRnti (rnti);
-  uePhy->DoSetBandwidth (enbDevice->GetObject<LteEnbNetDevice> ()->GetUlBandwidth (),
-                         enbDevice->GetObject<LteEnbNetDevice> ()->GetDlBandwidth ());
-  uePhy->DoSetEarfcn (enbDevice->GetObject<LteEnbNetDevice> ()->GetDlEarfcn (),
-                      enbDevice->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
-
-  ueDevice->Start ();
-  
-  m_downlinkChannel->AddRx (uePhy->GetDownlinkSpectrumPhy ());
 }
 
 void
@@ -539,37 +542,40 @@ LteHelper::AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDe
 }
 
 void
-LteHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft)
+LteHelper::ActivateDedicatedEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
-      ActivateEpsBearer (*i, bearer, tft);
+      ActivateDedicatedEpsBearer (*i, bearer, tft);
     }
 }
 
 
 void
-LteHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft)
+LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO (" setting up Radio Bearer");
-  Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
-  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
-  uint16_t rnti = ueRrc->GetRnti ();
-  TypeId rlcTypeId = GetRlcType (bearer);
-  uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer, rlcTypeId);
-  ueRrc->SetupRadioBearer (rnti, bearer, rlcTypeId, lcid, tft);
 
-  if (m_epcHelper != 0)
-    {
-      NS_LOG_INFO (" setting up S1 Bearer");
-      m_epcHelper->ActivateEpsBearer (ueDevice, enbDevice, tft, rnti, lcid);
+  NS_ASSERT_MSG (m_epcHelper != 0, "dedicated EPS bearers cannot be set up when EPC is not used");
+  
+  ueDevice->GetObject<LteUeNetDevice> ()->ActivateDedicatedEpsBearer (bearer, tft);
 
-    }
 }
 
+void 
+LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+  NS_ASSERT_MSG (m_epcHelper == 0, "this method must not be used when EPC is being used");
+  Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
+  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
+  params.imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+  params.bearer = bearer;
+  params.teid = 0; // don't care
+  enbRrc->GetS1SapUser ()->DataRadioBearerSetupRequest (params);
+}
 
 void
 LteHelper::AddX2Interface (NodeContainer enbNodes)
@@ -618,37 +624,15 @@ LteHelper::DoHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Nod
 
 
 
-TypeId
-LteHelper::GetRlcType (EpsBearer bearer)
+
+
+void 
+LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bearer)
 {
-  switch (m_epsBearerToRlcMapping)
+  NS_LOG_FUNCTION (this);
+   for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
     {
-    case RLC_SM_ALWAYS:
-      return LteRlcSm::GetTypeId ();
-      break;
-
-    case  RLC_UM_ALWAYS:
-      return LteRlcUm::GetTypeId ();
-      break;
-
-    case RLC_AM_ALWAYS:
-      return LteRlcAm::GetTypeId ();
-      break;
-
-    case PER_BASED:
-      if (bearer.GetPacketErrorLossRate () > 1.0e-5)
-        {
-          return LteRlcUm::GetTypeId ();
-        }
-      else
-        {
-          return LteRlcAm::GetTypeId ();
-        }
-      break;
-
-    default:
-      return LteRlcSm::GetTypeId ();
-      break;
+      ActivateDataRadioBearer (*i, bearer);
     }
 }
 

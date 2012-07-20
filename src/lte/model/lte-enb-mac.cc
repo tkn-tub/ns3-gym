@@ -579,8 +579,10 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
       // new RNTI
       UlInfoListElement_s ulinfonew;
       ulinfonew.m_rnti = tag.GetRnti ();
-      std::vector <uint16_t>::iterator it = ulinfonew.m_ulReception.begin ();
-      ulinfonew.m_ulReception.insert (it + (tag.GetLcid () - 1), p->GetSize ());
+      // always allocate full size of ulReception vector, initializing all elements to 0
+      ulinfonew.m_ulReception.assign (MAX_LC_LIST+1, 0);
+      // set the element for the current LCID
+      ulinfonew.m_ulReception.at (tag.GetLcid ()) = p->GetSize ();
       ulinfonew.m_receptionStatus = UlInfoListElement_s::Ok;
       ulinfonew.m_tpc = 0; // Tx power control not implemented at this stage
       m_ulInfoListElements.insert (std::pair<uint16_t, UlInfoListElement_s > (tag.GetRnti (), ulinfonew));
@@ -588,15 +590,11 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
     }
   else
     {
-      if ((*it).second.m_ulReception.size () < tag.GetLcid ())
-        {
-          std::vector <uint16_t>::iterator itV = (*it).second.m_ulReception.begin ();
-          (*it).second.m_ulReception.insert (itV + (tag.GetLcid () - 1), p->GetSize ());
-        }
-      else
-        {
-          (*it).second.m_ulReception.at (tag.GetLcid () - 1) += p->GetSize ();
-        }
+      // existing RNTI: we just set the value for the current
+      // LCID. Note that the corresponding element had already been
+      // allocated previously.
+      NS_ASSERT_MSG ((*it).second.m_ulReception.at (tag.GetLcid ()) == 0, "would overwrite previously written ulReception element");
+      (*it).second.m_ulReception.at (tag.GetLcid ()) = p->GetSize ();
       (*it).second.m_receptionStatus = UlInfoListElement_s::Ok;
     }
 
@@ -873,8 +871,6 @@ void
 LteEnbMac::DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params)
 {
   NS_LOG_FUNCTION (this);
-  // propagates to PHY layer
-  m_enbPhySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
   // propagates to scheduler
   FfMacCschedSapProvider::CschedUeConfigReqParameters req;
   req.m_rnti = params.m_rnti;

@@ -109,6 +109,13 @@ TraceFadingLossModel::SetTraceLength (Time t)
   m_traceLength = t;
 }
 
+void 
+TraceFadingLossModel::DoStart ()
+{
+  LoadTrace ();
+}
+
+
 void
 TraceFadingLossModel::LoadTrace ()
 {
@@ -136,6 +143,7 @@ TraceFadingLossModel::LoadTrace ()
       m_fadingTrace.push_back (rbTimeFadingTrace);
     }
   m_timeGranularity = m_traceLength.GetMilliSeconds () / m_samplesNum;
+  m_lastWindowUpdate = Simulator::Now ();
 }
 
 
@@ -150,15 +158,26 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   std::map <ChannelRealizationId_t, int >::iterator itOff;
   ChannelRealizationId_t mobilityPair = std::make_pair (a,b);
   itOff = m_windowOffsetsMap.find (mobilityPair);
-  if (Simulator::Now ().GetSeconds () >= m_lastWindowUpdate.GetSeconds () + m_windowSize.GetSeconds ())
+  if (itOff!=m_windowOffsetsMap.end ())
     {
-      NS_LOG_INFO ("Fading Window Updated");
-      std::map <ChannelRealizationId_t, UniformVariable* >::iterator itVar;
+      if (Simulator::Now ().GetSeconds () >= m_lastWindowUpdate.GetSeconds () + m_windowSize.GetSeconds ())
+        {
+          NS_LOG_INFO ("Fading Window Updated");
+          std::map <ChannelRealizationId_t, UniformVariable* >::iterator itVar;
 
-     itVar = m_startVariableMap.find (mobilityPair);
-     (*itOff).second = (*itVar).second->GetValue ();
+        itVar = m_startVariableMap.find (mobilityPair);
+        (*itOff).second = (*itVar).second->GetValue ();
 
-      m_lastWindowUpdate = Simulator::Now ();
+          m_lastWindowUpdate = Simulator::Now ();
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << "insert new channel realization, m_windowOffsetMap.size () = " << m_windowOffsetsMap.size ());
+      UniformVariable* startV = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
+      ChannelRealizationId_t mobilityPair = std::make_pair (a,b);
+      m_startVariableMap.insert (std::pair<ChannelRealizationId_t,UniformVariable* > (mobilityPair, startV));
+      m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ()));
     }
 
   
@@ -171,7 +190,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   //double speed = sqrt (pow (aSpeedVector.x-bSpeedVector.x,2) +  pow (aSpeedVector.y-bSpeedVector.y,2));
 
   NS_LOG_LOGIC (this << *rxPsd);
-
+  NS_ASSERT (!m_fadingTrace.empty ());
   int now_ms = static_cast<int> (Simulator::Now ().GetMilliSeconds () * m_timeGranularity);
   int lastUpdate_ms = static_cast<int> (m_lastWindowUpdate.GetMilliSeconds () * m_timeGranularity);
   int index = (*itOff).second + now_ms - lastUpdate_ms;
@@ -203,25 +222,6 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   return rxPsd;
 }
 
-
-void
-TraceFadingLossModel::CreateFadingChannelRealization (Ptr<const MobilityModel> enbMobility, Ptr<const MobilityModel> ueMobility)
-{
-  NS_LOG_FUNCTION (this << enbMobility << ueMobility);
-  
-  if (m_fadingTrace.empty ())
-    {
-      TraceFadingLossModel::LoadTrace ();
-      m_lastWindowUpdate = Simulator::Now ();
-    }
-   
-  NS_LOG_LOGIC (this << "insert new channel realization, m_windowOffsetMap.size () = " << m_windowOffsetsMap.size ());
-  UniformVariable* startV = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
-  ChannelRealizationId_t mobilityPair = std::make_pair (enbMobility,ueMobility);
-  m_startVariableMap.insert (std::pair<ChannelRealizationId_t,UniformVariable* > (mobilityPair, startV));
-  m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ()));
-
-}
 
 
 } // namespace ns3

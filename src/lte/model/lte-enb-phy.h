@@ -24,14 +24,16 @@
 
 
 #include "lte-phy.h"
+#include <ns3/ideal-control-messages.h>
 #include <ns3/lte-enb-phy-sap.h>
+#include <ns3/lte-enb-cphy-sap.h>
 #include <map>
-#include <ns3/lte-ue-phy.h>
 
 namespace ns3 {
 
 class PacketBurst;
 class LteNetDevice;
+class LteUePhy;
 
 /**
  * \ingroup lte
@@ -39,9 +41,9 @@ class LteNetDevice;
  */
 class LteEnbPhy : public LtePhy
 {
-
   friend class EnbMemberLteEnbPhySapProvider;
-
+  friend class MemberLteEnbCphySapProvider<LteEnbPhy>;
+  
 public:
   /**
    * @warning the default constructor should not be used
@@ -74,6 +76,18 @@ public:
   * \param s a pointer to the PHY SAP user
   */
   void SetLteEnbPhySapUser (LteEnbPhySapUser* s);
+
+  /**
+   * \brief Get the CPHY SAP provider
+   * \return a pointer to the SAP Provider
+   */
+  LteEnbCphySapProvider* GetLteEnbCphySapProvider ();
+
+  /**
+  * \brief Set the CPHY SAP User
+  * \param s a pointer to the SAP user
+  */
+  void SetLteEnbCphySapUser (LteEnbCphySapUser* s);
 
   /**
    * \param pw the transmission power in dBm
@@ -150,11 +164,6 @@ public:
 
   void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
 
-  bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
-
-  bool DeleteUePhy (uint16_t rnti);
-  
-  virtual void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
   
   /**
   * \param m the UL-CQI to be queued
@@ -194,12 +203,28 @@ public:
 
 
 private:
+
+  // LteEnbCphySapProvider forwarded methods
+  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+  void DoAddUe (uint64_t imsi, uint16_t rnti);  
+  void DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  
+
+  bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
+
+  bool DeleteUePhy (uint16_t rnti);
+
+
   std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
   
   std::vector< std::list<UlDciIdealControlMessage> > m_ulDciQueue; // for storing info on future receptions
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
+
+  LteEnbCphySapProvider* m_enbCphySapProvider;
+  LteEnbCphySapUser* m_enbCphySapUser;
 
   uint32_t m_nrFrames;
   uint32_t m_nrSubFrames;

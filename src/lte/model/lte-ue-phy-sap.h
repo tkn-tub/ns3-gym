@@ -48,17 +48,6 @@ public:
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 
   /**
-  * \param ulBandwidth the UL bandwidth in RB
-  * \param dlBandwidth the DL bandwidth in RB
-  */
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth) = 0;
-  
-  /**
-  * \param txMode the transmissionMode of the user
-  */
-  virtual void SetTransmissionMode (uint8_t   txMode) = 0;
-
-  /**
   * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
   * \param msg the Ideal Control Message to send
   */
@@ -71,7 +60,7 @@ public:
 /**
 * Service Access Point (SAP) offered by the PHY to the MAC
 *
-* This is the MAC SAP User, i.e., the part of the SAP that contains the MAC
+* This is the PHY SAP User, i.e., the part of the SAP that contains the MAC
 * methods called by the PHY
 */
 class LteUePhySapUser

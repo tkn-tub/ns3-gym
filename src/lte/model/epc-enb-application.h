@@ -31,9 +31,14 @@
 #include <ns3/object.h>
 #include <ns3/lte-common.h>
 #include <ns3/application.h>
+#include <ns3/eps-bearer.h>
+#include <ns3/epc-enb-s1-sap.h>
 #include <map>
 
 namespace ns3 {
+class EpcEnbS1SapUser;
+class EpcEnbS1SapProvider;
+
 
 /**
  * \ingroup lte
@@ -67,16 +72,37 @@ public:
   virtual ~EpcEnbApplication (void);
 
 
+  /** 
+   * Set the S1 SAP User
+   * 
+   * \param s the S1 SAP User
+   */
+  void SetS1SapUser (EpcEnbS1SapUser * s);
+
+  /** 
+   * 
+   * \return the S1 SAP Provider
+   */
+  EpcEnbS1SapProvider* GetS1SapProvider ();
+
+
+  /** 
+   * \see EpcEnbS1SapUser::DataRadioBearerSetupResponse
+   * 
+   * \param params 
+   */
+  void DoDataRadioBearerSetupResponse (EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters params);
 
   /** 
    * This method is triggered after the eNB received
-   * a S1-AP message of type E-RAB Setup Request by the MME and the RadioBearer has already been created
+   * a S1-AP message of type E-RAB Setup Request by the MME and will
+   * trigger the corresponding RadioBearer creation 
    * 
    * \param teid the Tunnel Endpoint IDentifier of the S1-bearer to be setup.
-   * \param rnti the unique ID of the UE on this eNB
-   * \param lcid the Logical Channel ID identifying the Radio Bearer
+   * \param imsi the unique ID of the UE
+   * \param bearer the specification of the corresponding EPS bearer
    */
-  void ErabSetupRequest (uint32_t teid, uint16_t rnti, uint8_t lcid);
+  void ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bearer);
 
   /** 
    * Method to be assigned to the recv callback of the LTE socket. It is called when the eNB receives a data packet from the radio interface that is to be forwarded to the SGW.
@@ -145,6 +171,17 @@ private:
    * UDP port to be used for GTP
    */
   uint16_t m_gtpuUdpPort;
+
+  /**
+   * Provider for the S1 SAP 
+   */
+  EpcEnbS1SapProvider* m_s1SapProvider;
+
+  /**
+   * User for the S1 SAP 
+   */
+  EpcEnbS1SapUser* m_s1SapUser;
+
 
 };
 

@@ -76,13 +76,12 @@ int main (int argc, char *argv[])
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs, enbDevs.Get (0));
 
-  // Activate an EPS bearer
+  // Activate a data radio bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
-
-  Simulator::Stop (Seconds (0.005));
+  Simulator::Stop (Seconds (0.010));
 
   Simulator::Run ();
 

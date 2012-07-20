@@ -187,35 +187,6 @@ LtePhy::GetTti (void) const
   return m_tti;
 }
 
-void
-LtePhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
-{
-  m_ulBandwidth = ulBandwidth;
-  m_dlBandwidth = dlBandwidth;
-
-  int Type0AllocationRbg[4] = {
-    10,     // RGB size 1
-    26,     // RGB size 2
-    63,     // RGB size 3
-    110     // RGB size 4
-  };  // see table 7.1.6.1-1 of 36.213
-  for (int i = 0; i < 4; i++)
-    {
-      if (dlBandwidth < Type0AllocationRbg[i])
-        {
-          m_rbgSize = i + 1;
-          break;
-        }
-    }
-}
-
-void 
-LtePhy::DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn)
-{
-  m_dlEarfcn = dlEarfcn;
-  m_ulEarfcn = ulEarfcn;
-}
-
 uint8_t
 LtePhy::GetRbgSize (void) const
 {
@@ -258,6 +229,7 @@ LtePhy::SetControlMessages (Ptr<IdealControlMessage> m)
 std::list<Ptr<IdealControlMessage> >
 LtePhy::GetControlMessages (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_controlMessagesQueue.at (0).size () > 0)
     {
       std::list<Ptr<IdealControlMessage> > ret = m_controlMessagesQueue.at (0);

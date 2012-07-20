@@ -113,10 +113,10 @@ int main (int argc, char *argv[])
   Simulator::Schedule (Seconds (0.010), &ChangePosition, ueNodes.Get (0));
   Simulator::Schedule (Seconds (0.020), &ChangePosition, ueNodes.Get (0));
 
-  // Activate an EPS bearer
+  // Activate a data radio bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
 
   Simulator::Stop (Seconds (0.030));

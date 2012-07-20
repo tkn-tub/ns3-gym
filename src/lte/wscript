@@ -53,7 +53,9 @@ def build(bld):
         'model/lte-radio-bearer-tag.cc',
         'model/lte-phy-tag.cc',
         'model/lte-enb-phy-sap.cc',
+        'model/lte-enb-cphy-sap.cc',
         'model/lte-ue-phy-sap.cc',
+        'model/lte-ue-cphy-sap.cc',
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
@@ -66,7 +68,10 @@ def build(bld):
         'model/epc-x2.cc',
         'model/epc-tft.cc',
         'model/epc-tft-classifier.cc',
-        'model/lte-mi-error-model.cc'
+        'model/lte-mi-error-model.cc',
+        'model/epc-enb-s1-sap.cc',
+        'model/lte-as-sap.cc',
+        'model/epc-ue-nas.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -152,7 +157,9 @@ def build(bld):
         'model/lte-radio-bearer-tag.h',
         'model/lte-phy-tag.h',
         'model/lte-enb-phy-sap.h',
+        'model/lte-enb-cphy-sap.h',
         'model/lte-ue-phy-sap.h',
+        'model/lte-ue-cphy-sap.h',
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
@@ -166,6 +173,9 @@ def build(bld):
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h',
+        'model/epc-enb-s1-sap.h',
+        'model/lte-as-sap.h',
+        'model/epc-ue-nas.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
