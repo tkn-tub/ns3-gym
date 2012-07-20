@@ -458,13 +458,25 @@ LteEnbRrc::SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<N
 {
   NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
   NS_LOG_LOGIC ("Request to send HANDOVER REQUEST");
+  
+  Ptr<LteUeRrc> ueRrc = ueNode->GetDevice (0)->GetObject<LteUeNetDevice> ()->GetRrc ();
+  uint16_t rnti = ueRrc->GetRnti ();
 
   EpcX2SapProvider::HandoverRequestParams params;
-  params.sourceCellId = sourceEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
-  params.targetCellId = targetEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  params.oldEnbUeX2apId = rnti;
+  params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
+  params.sourceCellId   = sourceEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  params.targetCellId   = targetEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  params.ueAggregateMaxBitRateDownlink = 200 * 1000;
+  params.ueAggregateMaxBitRateUplink = 100 * 1000;
+  
+  std::string rrcData ("abcdefghijklmnopqrstuvwxyz");
+  params.rrcContext = Create<Packet> ((uint8_t const *) rrcData.data (), rrcData.length ());
 
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  NS_LOG_LOGIC ("rrcContext   = " << params.rrcContext << " : " << rrcData);
 
   m_x2SapProvider->SendHandoverRequest (params);
 }
@@ -480,15 +492,27 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
 
   NS_LOG_LOGIC ("Recv X2 message: HANDOVER REQUEST");
 
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+  
+  uint8_t rrcData [100];
+  params.rrcContext->CopyData (rrcData, params.rrcContext->GetSize ());
+  NS_LOG_LOGIC ("rrcContext   = " << rrcData);
 
   NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
 
   EpcX2SapProvider::HandoverRequestAckParams ackParams;
+  ackParams.oldEnbUeX2apId = params.oldEnbUeX2apId;
+  ackParams.newEnbUeX2apId = params.oldEnbUeX2apId + 100;
   ackParams.sourceCellId = params.sourceCellId;
   ackParams.targetCellId = params.targetCellId;
-  
+
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << ackParams.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << ackParams.newEnbUeX2apId);
+  NS_LOG_LOGIC ("sourceCellId = " << ackParams.sourceCellId);
+  NS_LOG_LOGIC ("targetCellId = " << ackParams.targetCellId);
+
   m_x2SapProvider->SendHandoverRequestAck (ackParams);
 }
 
@@ -499,6 +523,8 @@ LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams para
   
   NS_LOG_LOGIC ("Recv X2 message: HANDOVER REQUEST ACK");
   
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
 }
