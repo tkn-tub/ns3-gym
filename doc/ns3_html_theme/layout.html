@@ -9,6 +9,9 @@
 #}
 {% extends "basic/layout.html" %}
 
+{% set reldelim1 = '<span class="navelem">&nbsp;</span>' %}
+{# set reldelim1 = ' @' #}
+  
 {%- block extrahead %}
   <link rel="stylesheet" type="text/css"
     href="_static/ns3_stylesheet.css"/>
@@ -47,11 +50,10 @@
 {% endblock %}
 
 {% block rootrellink %}
-    <li><a href="http://www.nsnam.org/">ns-3</a> &raquo;</li>
+    <li class="navelem"><a href="http://www.nsnam.org/">ns-3</a><span class="navelem">&nbsp;</span></li>
     {{ super() }}
 {% endblock %}
       
 {% if theme_collapsiblesidebar|tobool %}
   {% set script_files = script_files + ['_static/sidebar.js'] %}
 {% endif %}
-    
