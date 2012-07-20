@@ -22,15 +22,84 @@
 #define EPC_X2_SAP_H
 
 #include "ns3/packet.h"
+#include "ns3/eps-bearer.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
 
 class Node;
-class Packet;
+
+/**
+ * The X2 SAP defines the service offered
+ */
+
+/**
+ * \brief Common structures for EpcX2SapProvider and EpcX2SapUser
+ */
+class EpcX2Sap
+{
+public:
+  virtual ~EpcX2Sap ();
+  
+  struct ErabToBeSetupItem
+  {
+    uint16_t    erabId;
+    EpsBearer   erabLevelQosParameters;
+    bool        dlForwarding;
+    Ipv4Address transportLayerAddress;
+    uint32_t    gtpTeid;
+    
+    ErabToBeSetupItem ();
+  };
+
+  struct ErabAdmittedItem
+  {
+    uint16_t    erabId;
+    uint32_t    ulGtpTeid;
+    uint32_t    dlGtpTeid;
+  };
+  
+  struct ErabNotAdmittedItem
+  {
+    uint16_t    erabId;
+    uint16_t    cause;
+  };
+
+  enum IdCause
+  {
+    HandoverDesirableForRadioReason,
+    TimeCriticalHandover
+  };
+
+  
+  struct HandoverRequestParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            cause;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
+    uint64_t            ueAggregateMaxBitRateDownlink;
+    uint64_t            ueAggregateMaxBitRateUplink;
+    std::vector <ErabToBeSetupItem> bearers;
+    Ptr<Packet>         rrcContext;
+  };
+  
+  struct HandoverRequestAckParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            newEnbUeX2apId;
+    uint16_t            sourceCellId;
+    uint16_t            targetCellId;
+    std::vector <ErabAdmittedItem> admittedBearers;
+    std::vector <ErabNotAdmittedItem> notAdmittedBearers;
+    Ptr<Packet>         rrcContext;
+  };
+
+};
 
 
-class EpcX2SapProvider
+class EpcX2SapProvider : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapProvider ();
@@ -38,24 +107,6 @@ public:
   /**
    * Parameters of the API primitives
    */
-  
-  struct HandoverRequestParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
-  
-  struct HandoverRequestAckParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
   
   /**
    * SAP primitives
@@ -72,7 +123,7 @@ public:
 };
 
 
-class EpcX2SapUser
+class EpcX2SapUser : public EpcX2Sap
 {
 public:
   virtual ~EpcX2SapUser ();
@@ -80,24 +131,6 @@ public:
   /**
    * Parameters of the API primitives
    */
-  
-  struct HandoverRequestParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
-
-  struct HandoverRequestAckParams
-  {
-    uint16_t            cause;
-    uint16_t            sourceCellId;
-    uint16_t            targetCellId;
-    std::list<uint32_t> bearers;
-    Ptr<Packet>         rrcContext;
-  };
 
   /**
    * SAP primitives
