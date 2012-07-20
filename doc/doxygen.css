@@ -2,7 +2,8 @@
 
 body, table, div, p, dl {
 	font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
-	font-size: 12px;
+	font-size: 13px;
+	line-height: 1.3;
 }
 
 /* @group Heading Levels */
@@ -23,6 +24,19 @@ h2 {
 
 h3 {
 	font-size: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	-webkit-transition: text-shadow 0.5s linear;
+	-moz-transition: text-shadow 0.5s linear;
+	-ms-transition: text-shadow 0.5s linear;
+	-o-transition: text-shadow 0.5s linear;
+	transition: text-shadow 0.5s linear;
+	margin-right: 15px;
+}
+
+h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
+	text-shadow: 0 0 15px cyan;
 }
 
 dt {
@@ -69,8 +83,8 @@ h3.version {
 }
 
 div.qindex, div.navtab{
-	background-color: #EBEFF6;
-	border: 1px solid #A3B4D7;
+	background-color: #EFEFEF;
+	border: 1px solid #B5B5B5;
 	text-align: center;
 }
 
@@ -86,13 +100,13 @@ div.navtab {
 /* @group Link Styling */
 
 a {
-	color: #3D578C;
+	color: #585858;
 	font-weight: normal;
 	text-decoration: none;
 }
 
 .contents a:visited {
-	color: #4665A2;
+	color: #686868;
 }
 
 a:hover {
@@ -105,9 +119,9 @@ a.qindex {
 
 a.qindexHL {
 	font-weight: bold;
-	background-color: #9CAFD4;
+	background-color: #B0B0B0;
 	color: #ffffff;
-	border: 1px double #869DCA;
+	border: 1px double #9F9F9F;
 }
 
 .contents a.qindexHL:visited {
@@ -121,12 +135,12 @@ a.el {
 a.elRef {
 }
 
-a.code {
-	color: #4665A2;
+a.code, a.code:visited {
+	color: #4665A2; 
 }
 
-a.codeRef {
-	color: #4665A2;
+a.codeRef, a.codeRef:visited {
+	color: #4665A2; 
 }
 
 /* @end */
@@ -135,20 +149,72 @@ dl.el {
 	margin-left: -1cm;
 }
 
-.fragment {
-	font-family: monospace, fixed;
-	font-size: 105%;
+pre.fragment {
+        border: 1px solid #C4CFE5;
+        background-color: #FBFCFD;
+        padding: 4px 6px;
+        margin: 4px 8px 4px 2px;
+        overflow: auto;
+        word-wrap: break-word;
+        font-size:  9pt;
+        line-height: 125%;
+        font-family: monospace, fixed;
+        font-size: 105%;
 }
 
-pre.fragment {
-	border: 1px solid #C4CFE5;
-	background-color: #FBFCFD;
-	padding: 4px 6px;
-	margin: 4px 8px 4px 2px;
-	overflow: auto;
-	word-wrap: break-word;
-	font-size:  9pt;
-	line-height: 125%;
+div.fragment {
+        padding: 4px;
+        margin: 4px;
+	background-color: #FCFCFC;
+	border: 1px solid #D0D0D0;
+}
+
+div.line {
+	font-family: monospace, fixed;
+        font-size: 13px;
+	min-height: 13px;
+	line-height: 1.0;
+	text-wrap: unrestricted;
+	white-space: -moz-pre-wrap; /* Moz */
+	white-space: -pre-wrap;     /* Opera 4-6 */
+	white-space: -o-pre-wrap;   /* Opera 7 */
+	white-space: pre-wrap;      /* CSS3  */
+	word-wrap: break-word;      /* IE 5.5+ */
+	text-indent: -53px;
+	padding-left: 53px;
+	padding-bottom: 0px;
+	margin: 0px;
+	-webkit-transition-property: background-color, box-shadow;
+	-webkit-transition-duration: 0.5s;
+	-moz-transition-property: background-color, box-shadow;
+	-moz-transition-duration: 0.5s;
+	-ms-transition-property: background-color, box-shadow;
+	-ms-transition-duration: 0.5s;
+	-o-transition-property: background-color, box-shadow;
+	-o-transition-duration: 0.5s;
+	transition-property: background-color, box-shadow;
+	transition-duration: 0.5s;
+}
+
+div.line.glow {
+	background-color: cyan;
+	box-shadow: 0 0 10px cyan;
+}
+
+
+span.lineno {
+	padding-right: 4px;
+	text-align: right;
+	border-right: 2px solid #0F0;
+	background-color: #E8E8E8;
+        white-space: pre;
+}
+span.lineno a {
+	background-color: #D8D8D8;
+}
+
+span.lineno a:hover {
+	background-color: #C8C8C8;
 }
 
 div.ah {
@@ -188,27 +254,29 @@ body {
 
 div.contents {
 	margin-top: 10px;
-	margin-left: 8px;
+	margin-left: 12px;
 	margin-right: 8px;
 }
 
 td.indexkey {
-	background-color: #EBEFF6;
+	background-color: #EFEFEF;
 	font-weight: bold;
-	border: 1px solid #C4CFE5;
+	border: 1px solid #D0D0D0;
 	margin: 2px 0px 2px 0;
 	padding: 2px 10px;
+        white-space: nowrap;
+        vertical-align: top;
 }
 
 td.indexvalue {
-	background-color: #EBEFF6;
-	border: 1px solid #C4CFE5;
+	background-color: #EFEFEF;
+	border: 1px solid #D0D0D0;
 	padding: 2px 10px;
 	margin: 2px 0px;
 }
 
 tr.memlist {
-	background-color: #EEF1F7;
+	background-color: #F1F1F1;
 }
 
 p.formulaDsp {
@@ -290,6 +358,13 @@ span.vhdllogic {
 	color: #ff0000 
 }
 
+blockquote {
+        background-color: #F8F8F8;
+        border-left: 2px solid #B0B0B0;
+        margin: 0 24px 0 4px;
+        padding: 0 12px 0 16px;
+}
+
 /* @end */
 
 /*
@@ -318,18 +393,18 @@ td.tiny {
 .dirtab {
 	padding: 4px;
 	border-collapse: collapse;
-	border: 1px solid #A3B4D7;
+	border: 1px solid #B5B5B5;
 }
 
 th.dirtab {
-	background: #EBEFF6;
+	background: #EFEFEF;
 	font-weight: bold;
 }
 
 hr {
 	height: 0px;
 	border: none;
-	border-top: 1px solid #4A6AAA;
+	border-top: 1px solid #6E6E6E;
 }
 
 hr.footer {
@@ -343,10 +418,28 @@ table.memberdecls {
 	padding: 0px;
 }
 
+.memberdecls td {
+	-webkit-transition-property: background-color, box-shadow;
+	-webkit-transition-duration: 0.5s;
+	-moz-transition-property: background-color, box-shadow;
+	-moz-transition-duration: 0.5s;
+	-ms-transition-property: background-color, box-shadow;
+	-ms-transition-duration: 0.5s;
+	-o-transition-property: background-color, box-shadow;
+	-o-transition-duration: 0.5s;
+	transition-property: background-color, box-shadow;
+	transition-duration: 0.5s;
+}
+
+.memberdecls td.glow {
+	background-color: cyan;
+	box-shadow: 0 0 15px cyan;
+}
+
 .mdescLeft, .mdescRight,
 .memItemLeft, .memItemRight,
 .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
-	background-color: #F9FAFC;
+	background-color: #FAFAFA;
 	border: none;
 	margin: 4px;
 	padding: 1px 0 0 8px;
@@ -358,7 +451,7 @@ table.memberdecls {
 }
 
 .memItemLeft, .memItemRight, .memTemplParams {
-	border-top: 1px solid #C4CFE5;
+	border-top: 1px solid #D0D0D0;
 }
 
 .memItemLeft, .memTemplItemLeft {
@@ -370,7 +463,7 @@ table.memberdecls {
 }
 
 .memTemplParams {
-	color: #4665A2;
+	color: #686868;
         white-space: nowrap;
 }
 
@@ -382,14 +475,14 @@ table.memberdecls {
 
 .memtemplate {
 	font-size: 80%;
-	color: #4665A2;
+	color: #686868;
 	font-weight: normal;
 	margin-left: 9px;
 }
 
 .memnav {
-	background-color: #EBEFF6;
-	border: 1px solid #A3B4D7;
+	background-color: #EFEFEF;
+	border: 1px solid #B5B5B5;
 	text-align: center;
 	margin: 2px;
 	margin-right: 15px;
@@ -404,61 +497,76 @@ table.memberdecls {
 	padding: 0;
 	margin-bottom: 10px;
 	margin-right: 5px;
+        -webkit-transition: box-shadow 0.5s linear;
+        -moz-transition: box-shadow 0.5s linear;
+        -ms-transition: box-shadow 0.5s linear;
+        -o-transition: box-shadow 0.5s linear;
+        transition: box-shadow 0.5s linear;
+        display: table !important;
+        width: 100%;
+}
+
+.memitem.glow {
+         box-shadow: 0 0 15px cyan;
 }
 
 .memname {
-        white-space: nowrap;
         font-weight: bold;
         margin-left: 6px;
 }
 
+.memname td {
+	vertical-align: bottom;
+}
+
 .memproto, dl.reflist dt {
-        border-top: 1px solid #A8B8D9;
-        border-left: 1px solid #A8B8D9;
-        border-right: 1px solid #A8B8D9;
+        border-top: 1px solid #B9B9B9;
+        border-left: 1px solid #B9B9B9;
+        border-right: 1px solid #B9B9B9;
         padding: 6px 0px 6px 0px;
-        color: #253555;
+        color: #323232;
         font-weight: bold;
         text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9);
-        /* opera specific markup */
-        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
-        border-top-right-radius: 8px;
-        border-top-left-radius: 8px;
-        /* firefox specific markup */
-        -moz-box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
-        -moz-border-radius-topright: 8px;
-        -moz-border-radius-topleft: 8px;
-        /* webkit specific markup */
-        -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
-        -webkit-border-top-right-radius: 8px;
-        -webkit-border-top-left-radius: 8px;
         background-image:url('nav_f.png');
         background-repeat:repeat-x;
-        background-color: #E2E8F2;
+        background-color: #E8E8E8;
+        /* opera specific markup */
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+        border-top-right-radius: 4px;
+        border-top-left-radius: 4px;
+        /* firefox specific markup */
+        -moz-box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
+        -moz-border-radius-topright: 4px;
+        -moz-border-radius-topleft: 4px;
+        /* webkit specific markup */
+        -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+        -webkit-border-top-right-radius: 4px;
+        -webkit-border-top-left-radius: 4px;
 
 }
 
 .memdoc, dl.reflist dd {
-        border-bottom: 1px solid #A8B8D9;      
-        border-left: 1px solid #A8B8D9;      
-        border-right: 1px solid #A8B8D9; 
-        padding: 2px 5px;
-        background-color: #FBFCFD;
+        border-bottom: 1px solid #B9B9B9;      
+        border-left: 1px solid #B9B9B9;      
+        border-right: 1px solid #B9B9B9; 
+        padding: 6px 10px 2px 10px;
+        background-color: #FCFCFC;
         border-top-width: 0;
+        background-image:url('nav_g.png');
+        background-repeat:repeat-x;
+        background-color: #FFFFFF;
         /* opera specific markup */
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
         box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
         /* firefox specific markup */
-        -moz-border-radius-bottomleft: 8px;
-        -moz-border-radius-bottomright: 8px;
+        -moz-border-radius-bottomleft: 4px;
+        -moz-border-radius-bottomright: 4px;
         -moz-box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
-        background-image: -moz-linear-gradient(center top, #FFFFFF 0%, #FFFFFF 60%, #F7F8FB 95%, #EEF1F7);
         /* webkit specific markup */
-        -webkit-border-bottom-left-radius: 8px;
-        -webkit-border-bottom-right-radius: 8px;
+        -webkit-border-bottom-left-radius: 4px;
+        -webkit-border-bottom-right-radius: 4px;
         -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
-        background-image: -webkit-gradient(linear,center top,center bottom,from(#FFFFFF), color-stop(0.6,#FFFFFF), color-stop(0.60,#FFFFFF), color-stop(0.95,#F7F8FB), to(#EEF1F7));
 }
 
 dl.reflist dt {
@@ -485,9 +593,13 @@ dl.reflist dd {
 .paramname em {
 	font-style: normal;
 }
+.paramname code {
+        line-height: 14px;
+}
 
 .params, .retval, .exception, .tparams {
-        border-spacing: 6px 2px;
+        margin-left: 0px;
+        padding-left: 0px;
 }       
 
 .params .paramname, .retval .paramname {
@@ -505,134 +617,144 @@ dl.reflist dd {
         vertical-align: top;
 }
 
+table.mlabels {
+	border-spacing: 0px;
+}
+
+td.mlabels-left {
+	width: 100%;
+	padding: 0px;
+}
+
+td.mlabels-right {
+	vertical-align: bottom;
+	padding: 0px;
+	white-space: nowrap;
+}
+
+span.mlabels {
+        margin-left: 8px;
+}
+
+span.mlabel {
+        background-color: #8F8F8F;
+        border-top:1px solid #787878;
+        border-left:1px solid #787878;
+        border-right:1px solid #D0D0D0;
+        border-bottom:1px solid #D0D0D0;
+	text-shadow: none;
+        color: white;
+        margin-right: 4px;
+        padding: 2px 3px;
+        border-radius: 3px;
+        font-size: 7pt;
+	white-space: nowrap;
+}
 
 
 
 /* @end */
 
-/* @group Directory (tree) */
+/* these are for tree view when not used as main index */
 
-/* for the tree view */
-
-.ftvtree {
-	font-family: sans-serif;
-	margin: 0px;
+div.directory {
+        margin: 10px 0px;
+        border-top: 1px solid #A8B8D9;
+        border-bottom: 1px solid #A8B8D9;
+        width: 100%;
 }
 
-/* these are for tree view when used as main index */
-
-.directory {
-	font-size: 9pt;
-	font-weight: bold;
-	margin: 5px;
+.directory table {
+        border-collapse:collapse;
 }
 
-.directory h3 {
-	margin: 0px;
-	margin-top: 1em;
-	font-size: 11pt;
+.directory td {
+        margin: 0px;
+        padding: 0px;
+	vertical-align: top;
 }
 
-/*
-The following two styles can be used to replace the root node title
-with an image of your choice.  Simply uncomment the next two styles,
-specify the name of your image and be sure to set 'height' to the
-proper pixel height of your image.
-*/
-
-/*
-.directory h3.swap {
-	height: 61px;
-	background-repeat: no-repeat;
-	background-image: url("yourimage.gif");
-}
-.directory h3.swap span {
-	display: none;
-}
-*/
-
-.directory > h3 {
-	margin-top: 0;
+.directory td.entry {
+        white-space: nowrap;
+        padding-right: 6px;
 }
 
-.directory p {
-	margin: 0px;
-	white-space: nowrap;
+.directory td.entry a {
+        outline:none;
 }
 
-.directory div {
-	display: none;
-	margin: 0px;
+.directory td.entry a img {
+        border: none;
+}
+
+.directory td.desc {
+        width: 100%;
+        padding-left: 6px;
+	padding-right: 6px;
+	border-left: 1px solid rgba(0,0,0,0.05);
+}
+
+.directory tr.even {
+	padding-left: 6px;
+	background-color: #F8F8F8;
 }
 
 .directory img {
 	vertical-align: -30%;
 }
 
-/* these are for tree view when not used as main index */
-
-.directory-alt {
-	font-size: 100%;
-	font-weight: bold;
+.directory .levels {
+        white-space: nowrap;
+        width: 100%;
+        text-align: right;
+        font-size: 9pt;
 }
 
-.directory-alt h3 {
-	margin: 0px;
-	margin-top: 1em;
-	font-size: 11pt;
+.directory .levels span {
+        cursor: pointer;
+        padding-left: 2px;
+        padding-right: 2px;
+	color: #585858;
 }
-
-.directory-alt > h3 {
-	margin-top: 0;
-}
-
-.directory-alt p {
-	margin: 0px;
-	white-space: nowrap;
-}
-
-.directory-alt div {
-	display: none;
-	margin: 0px;
-}
-
-.directory-alt img {
-	vertical-align: -30%;
-}
-
-/* @end */
 
 div.dynheader {
         margin-top: 8px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 address {
 	font-style: normal;
-	color: #2A3D61;
+	color: #3A3A3A;
 }
 
 table.doxtable {
 	border-collapse:collapse;
+        margin-top: 4px;
+        margin-bottom: 4px;
 }
 
 table.doxtable td, table.doxtable th {
-	border: 1px solid #2D4068;
+	border: 1px solid #3F3F3F;
 	padding: 3px 7px 2px;
 }
 
 table.doxtable th {
-	background-color: #374F7F;
+	background-color: #4F4F4F;
 	color: #FFFFFF;
 	font-size: 110%;
 	padding-bottom: 4px;
 	padding-top: 5px;
-	text-align:left;
 }
 
 table.fieldtable {
         width: 100%;
         margin-bottom: 10px;
-        border: 1px solid #A8B8D9;
+        border: 1px solid #B9B9B9;
         border-spacing: 0px;
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
@@ -648,13 +770,13 @@ table.fieldtable {
 
 .fieldtable td.fieldtype, .fieldtable td.fieldname {
         white-space: nowrap;
-        border-right: 1px solid #A8B8D9;
-        border-bottom: 1px solid #A8B8D9;
+        border-right: 1px solid #B9B9B9;
+        border-bottom: 1px solid #B9B9B9;
         vertical-align: top;
 }
 
 .fieldtable td.fielddoc {
-        border-bottom: 1px solid #A8B8D9;
+        border-bottom: 1px solid #B9B9B9;
         width: 100%;
 }
 
@@ -665,9 +787,9 @@ table.fieldtable {
 .fieldtable th {
         background-image:url('nav_f.png');
         background-repeat:repeat-x;
-        background-color: #E2E8F2;
+        background-color: #E8E8E8;
         font-size: 90%;
-        color: #253555;
+        color: #323232;
         padding-bottom: 4px;
         padding-top: 5px;
         text-align:left;
@@ -677,7 +799,7 @@ table.fieldtable {
         -webkit-border-top-right-radius: 4px;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
-        border-bottom: 1px solid #A8B8D9;
+        border-bottom: 1px solid #B9B9B9;
 }
 
 
@@ -698,8 +820,8 @@ table.fieldtable {
 	background-repeat:repeat-x;
 	height:30px;
 	line-height:30px;
-	color:#8AA0CC;
-	border:solid 1px #C2CDE4;
+	color:#A2A2A2;
+	border:solid 1px #CECECE;
 	overflow:hidden;
 	margin:0px;
 	padding:0px;
@@ -714,7 +836,7 @@ table.fieldtable {
 	background-image:url('bc_s.png');
 	background-repeat:no-repeat;
 	background-position:right;
-	color:#364D7C;
+	color:#4D4D4D;
 }
 
 .navpath li.navelem a
@@ -727,7 +849,7 @@ table.fieldtable {
 
 .navpath li.navelem a:hover
 {
-	color:#6884BD;
+	color:#888888;
 }
 
 .navpath li.footer
@@ -739,7 +861,7 @@ table.fieldtable {
         background-image:none;
         background-repeat:no-repeat;
         background-position:right;
-        color:#364D7C;
+        color:#4D4D4D;
         font-size: 8pt;
 }
 
@@ -760,9 +882,7 @@ div.summary a
 
 div.ingroups
 {
-	margin-left: 5px;
 	font-size: 8pt;
-	padding-left: 5px;
 	width: 50%;
 	text-align: left;
 }
@@ -776,9 +896,9 @@ div.header
 {
         background-image:url('nav_h.png');
         background-repeat:repeat-x;
-	background-color: #F9FAFC;
+	background-color: #FAFAFA;
 	margin:  0px;
-	border-bottom: 1px solid #C4CFE5;
+	border-bottom: 1px solid #D0D0D0;
 }
 
 div.headertitle
@@ -791,46 +911,73 @@ dl
         padding: 0 0 0 10px;
 }
 
-dl.note, dl.warning, dl.attention, dl.pre, dl.post, dl.invariant, dl.deprecated, dl.todo, dl.test, dl.bug
+/* dl.note, dl.warning, dl.attention, dl.pre, dl.post, dl.invariant, dl.deprecated, dl.todo, dl.test, dl.bug */
+dl.section
 {
-        border-left:4px solid;
-        padding: 0 0 0 6px;
+	margin-left: 0px;
+	padding-left: 0px;
 }
 
 dl.note
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #D0C000;
 }
 
 dl.warning, dl.attention
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #FF0000;
 }
 
 dl.pre, dl.post, dl.invariant
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #00D000;
 }
 
 dl.deprecated
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #505050;
 }
 
 dl.todo
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #00C0E0;
 }
 
 dl.test
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #3030E0;
 }
 
 dl.bug
 {
+        margin-left:-7px;
+        padding-left: 3px;
+        border-left:4px solid;
         border-color: #C08050;
 }
+
+dl.section dd {
+	margin-bottom: 6px;
+}
+
 
 #projectlogo
 {
@@ -870,7 +1017,7 @@ dl.bug
 	padding: 0px;
 	margin: 0px;
 	width: 100%;
-	border-bottom: 1px solid #5373B4;
+	border-bottom: 1px solid #787878;
 }
 
 .image
@@ -895,7 +1042,7 @@ dl.bug
 
 div.zoom
 {
-	border: 1px solid #90A5CE;
+	border: 1px solid #A6A6A6;
 }
 
 dl.citelist {
@@ -903,7 +1050,7 @@ dl.citelist {
 }
 
 dl.citelist dt {
-        color:#334975;
+        color:#484848;
         float:left;
         font-weight:bold;
         margin-right:10px;
@@ -913,6 +1060,79 @@ dl.citelist dt {
 dl.citelist dd {
         margin:2px 0;
         padding:5px 0;
+}
+
+div.toc {
+        padding: 14px 25px;
+        background-color: #F6F6F6;
+        border: 1px solid #DFDFDF;
+        border-radius: 7px 7px 7px 7px;
+        float: right;
+        height: auto;
+        margin: 0 20px 10px 10px;
+        width: 200px;
+}
+
+div.toc li {
+        background: url("bdwn.png") no-repeat scroll 0 5px transparent;
+        font: 10px/1.2 Verdana,DejaVu Sans,Geneva,sans-serif;
+        margin-top: 5px;
+        padding-left: 10px;
+        padding-top: 2px;
+}
+
+div.toc h3 {
+        font: bold 12px/1.2 Arial,FreeSans,sans-serif;
+	color: #686868;
+        border-bottom: 0 none;
+        margin: 0;
+}
+
+div.toc ul {
+        list-style: none outside none;
+        border: medium none;
+        padding: 0px;
+}       
+
+div.toc li.level1 {
+        margin-left: 0px;
+}
+
+div.toc li.level2 {
+        margin-left: 15px;
+}
+
+div.toc li.level3 {
+        margin-left: 30px;
+}
+
+div.toc li.level4 {
+        margin-left: 45px;
+}
+
+.inherit_header {
+        font-weight: bold;
+        color: gray;
+        cursor: pointer;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.inherit_header td {
+        padding: 6px 0px 2px 5px;
+}
+
+.inherit {
+        display: none;
+}
+
+tr.heading h2 {
+        margin-top: 12px;
+        margin-bottom: 4px;
 }
 
 @media print
@@ -931,16 +1151,6 @@ dl.citelist dd {
     width:auto !important;
     overflow:inherit;
     display:inline;
-  }
-  pre.fragment
-  {
-    overflow: visible;
-    text-wrap: unrestricted;
-    white-space: -moz-pre-wrap; /* Moz */
-    white-space: -pre-wrap; /* Opera 4-6 */
-    white-space: -o-pre-wrap; /* Opera 7 */
-    white-space: pre-wrap; /* CSS3  */
-    word-wrap: break-word; /* IE 5.5+ */
   }
 }
 

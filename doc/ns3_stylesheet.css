@@ -1,9 +1,17 @@
 /* ns-3 changes to the default CSS from Doxygen and Sphinx */
 
-body {
+body, table, div, p, dl {
 	font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
 	font-size: 12px;
 	color: black;
+}
+
+a {
+	color: #91A501;
+}
+
+#nav-tree {
+	font-size: 12px;
 }
 
 div.related a {
@@ -29,6 +37,7 @@ div.sphinxsidebar {
 	margin: 10px;
 	vertical-align: middle;
 	width: 220px;
+	color: white;
 }
 
 #projecttext
@@ -43,6 +52,7 @@ div.sphinxsidebar {
 	font: 120% Tahoma, Arial,sans-serif;
 	margin: 0px;
 	padding: 0px;
+	color: white;
 }
 
 #projectnumber
@@ -50,6 +60,7 @@ div.sphinxsidebar {
 	font: 100% Tahoma, Arial,sans-serif;
 	margin: 0px;
 	padding: 0px;
+	color: white;
 }
 
 #projectsection
@@ -59,4 +70,5 @@ div.sphinxsidebar {
 	margin: 10px;
 	margin-right: 10px;
 	vertical-align: middle;
+	color: white;
 }
