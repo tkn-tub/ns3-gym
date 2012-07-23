@@ -291,19 +291,6 @@ LteUePhy::PhyPduReceived (Ptr<Packet> p)
 }
 
 void
-LteUePhy::DoSetUplinkSubChannels ()
-{
-  NS_LOG_FUNCTION (this);
-
-  /*
-   *  XXX: the uplink scheduler is not implemented yet!
-   *  Now, all uplink sub channels can be used for uplink transmission
-   */
-  SetSubChannelsForTransmission (GetUplinkSubChannels ());
-}
-
-
-void
 LteUePhy::SetSubChannelsForTransmission (std::vector <int> mask)
 {
   NS_LOG_FUNCTION (this);

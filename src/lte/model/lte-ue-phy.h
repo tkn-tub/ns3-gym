@@ -119,11 +119,6 @@ public:
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
 
   /**
-   * \brief Update available channel for TX
-   */
-  virtual void DoSetUplinkSubChannels ();
-
-  /**
    * \brief Set a list of sub channels to use in TX
    * \param mask a list of sub channels
    */

@@ -118,8 +118,23 @@ public:
     
   virtual uint8_t DoGetMacChTtiDelay ();
 
+  /**
+   * \brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for transmission
+   * 
+   * \param mask a bitmask implemented as a vector. If the i-th value
+   * of mask is equal to 1 (0) it means that the i-th resource block
+   * is used (not used) for transmission in the downlink.
+   */
+  void SetDownlinkSubChannels (std::vector<int> mask );
 
-  void DoSetDownlinkSubChannels ();
+
+  /**
+   * 
+   * \return a bitmask implemented as a vector. If the i-th value
+   * of mask is equal to 1 (0) it means that the i-th resource block
+   * is used (not used) for transmission in the downlink.
+   */
+  std::vector<int> GetDownlinkSubChannels (void);
 
   /**
    * \brief Create the PSD for TX
@@ -217,6 +232,8 @@ public:
 
 private:
   std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
+  
+  std::vector <int> m_listOfDownlinkSubchannel;
   
   std::vector <int> m_dlDataRbMap;
   

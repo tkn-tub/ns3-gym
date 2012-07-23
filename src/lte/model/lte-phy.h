@@ -111,41 +111,6 @@ public:
    */
   void SetUplinkChannel (Ptr<SpectrumChannel> c);
 
-  /**
-   * \brief set a list of sub channel to use in the downlink.
-   * A sub channel is composed by a couple of resource bloks (180KHz x 1 ms)
-   * \param mask a vector of intefer values. Each elements of this vector carries information about
-   * the corresponding DL sub channel. If the i-th value of mask is equal to 1 (0) it means that the corresponding sub channel is used (not used) for the downlink.
-   */
-  void SetDownlinkSubChannels (std::vector<int> mask );
-  /**
-   * \brief do some operation after the set of a list of DL sub channels
-   */
-  virtual void DoSetDownlinkSubChannels ();
-
-  /**
-   * \brief set a list of sub channel to use in the uplink.
-   * A sub channel is composed by a couple of resource bloks (180KHz x 1 ms)
-   * \param mask a vector of intefer values. Each elements of this vector carries information about
-   * the corresponding UL sub channel. If the i-th value of mask is equal to 1 (0) it means that the corresponding sub channel is used (not used) for the uplink.
-   */
-  void SetUplinkSubChannels (std::vector<int> mask);
-  /**
-   * \brief do some operation after the set of a list of UL sub channels
-   */
-  virtual void DoSetUplinkSubChannels ();
-
-  /**
-   * \brief get a list of sub channel to use in the downlink
-   * \return
-   */
-  std::vector<int> GetDownlinkSubChannels (void);
-  /**
-   * \brief get a list of sub channel to use in the downlink
-   * \return
-   */
-  std::vector<int> GetUplinkSubChannels (void);
-
 
   /**
    * \brief Compute the TX Power Spectral Density
@@ -253,9 +218,6 @@ protected:
 
   Ptr<LteSpectrumPhy> m_downlinkSpectrumPhy;
   Ptr<LteSpectrumPhy> m_uplinkSpectrumPhy;
-
-  std::vector <int> m_listOfDownlinkSubchannel;
-  std::vector <int> m_listOfUplinkSubchannel;
 
   double m_txPower;
   double m_noiseFigure;

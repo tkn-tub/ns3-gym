@@ -128,53 +128,6 @@ LtePhy::SetUplinkChannel (Ptr<SpectrumChannel> c)
 }
 
 void
-LtePhy::SetDownlinkSubChannels (std::vector<int> mask )
-{
-  NS_LOG_FUNCTION (this);
-  m_listOfDownlinkSubchannel = mask;
-  DoSetDownlinkSubChannels ();
-}
-
-
-void
-LtePhy::DoSetDownlinkSubChannels ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-
-void
-LtePhy::SetUplinkSubChannels (std::vector<int> mask )
-{
-  NS_LOG_FUNCTION (this);
-  m_listOfUplinkSubchannel = mask;
-  DoSetUplinkSubChannels ();
-}
-
-
-void
-LtePhy::DoSetUplinkSubChannels ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-
-std::vector<int>
-LtePhy::GetDownlinkSubChannels (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_listOfDownlinkSubchannel;
-}
-
-
-std::vector<int>
-LtePhy::GetUplinkSubChannels (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_listOfUplinkSubchannel;
-}
-
-void
 LtePhy::SetTti (double tti)
 {
   NS_LOG_FUNCTION (this << tti);

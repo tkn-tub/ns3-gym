@@ -324,13 +324,20 @@ LteEnbPhy::PhyPduReceived (Ptr<Packet> p)
 }
 
 void
-LteEnbPhy::DoSetDownlinkSubChannels ()
+LteEnbPhy::SetDownlinkSubChannels (std::vector<int> mask)
 {
   NS_LOG_FUNCTION (this);
+  m_listOfDownlinkSubchannel = mask;
   Ptr<SpectrumValue> txPsd = CreateTxPowerSpectralDensity ();
   m_downlinkSpectrumPhy->SetTxPowerSpectralDensity (txPsd);
 }
 
+std::vector<int>
+LteEnbPhy::GetDownlinkSubChannels (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_listOfDownlinkSubchannel;
+}
 
 Ptr<SpectrumValue>
 LteEnbPhy::CreateTxPowerSpectralDensity ()
