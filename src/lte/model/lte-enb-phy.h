@@ -121,18 +121,20 @@ public:
   /**
    * \brief set the resource blocks (a.k.a. sub channels) to be used in the downlink for transmission
    * 
-   * \param mask a bitmask implemented as a vector. If the i-th value
-   * of mask is equal to 1 (0) it means that the i-th resource block
-   * is used (not used) for transmission in the downlink.
+   * \param mask a vector of integers, if the i-th value is j it means
+   * that the j-th resource block is used for transmission in the
+   * downlink. If there is no i such that the value of the i-th
+   * element is j, it means that RB j is not used.
    */
   void SetDownlinkSubChannels (std::vector<int> mask );
 
 
   /**
    * 
-   * \return a bitmask implemented as a vector. If the i-th value
-   * of mask is equal to 1 (0) it means that the i-th resource block
-   * is used (not used) for transmission in the downlink.
+   * \return  a vector of integers, if the i-th value is j it means
+   * that the j-th resource block is used for transmission in the
+   * downlink. If there is no i such that the value of the i-th
+   * element is j, it means that RB j is not used.
    */
   std::vector<int> GetDownlinkSubChannels (void);
 
