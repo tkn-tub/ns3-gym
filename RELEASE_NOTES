@@ -34,6 +34,10 @@ the RandomVariableStream objects (bug 101).
 Bugs fixed
 ----------
  - bug 101 - random variable initialization
+ - bug 1464 - ConfigStore Save + Load => Could not set default value 
+                  for ns3::UdpSocketImpl::IcmpCallback
+ - bug 1475 - "test.py --list" should sort the output
+ - bug 1476 - TestCase::GetName () should not be private
 
 Known issues
 ------------
