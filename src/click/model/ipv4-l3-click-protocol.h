@@ -117,6 +117,16 @@ public:
              Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
 
   /**
+   * \param packet packet to send
+   * \param ipHeader IP Header
+   * \param route route entry
+   *
+   * Higher-level layers call this method to send a packet with IPv4 Header
+   * (Intend to be used with IpHeaderInclude attribute.)
+   */
+  void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route);
+
+  /**
    * \param packet packet to send down the stack
    * \param ifid interface to be used for sending down packet
    *
