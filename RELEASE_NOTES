@@ -38,6 +38,7 @@ Bugs fixed
                   for ns3::UdpSocketImpl::IcmpCallback
  - bug 1475 - "test.py --list" should sort the output
  - bug 1476 - TestCase::GetName () should not be private
+ - Bug 1477 - Click doesn't work with raw sockets
 
 Known issues
 ------------
