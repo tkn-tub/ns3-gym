@@ -55,7 +55,9 @@ namespace ns3 {
 #define PURGE_INTERVAL 5
 static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
-std::map<uint32_t, Rgb> AnimationInterface::nodeColors;
+std::map <uint32_t, Rgb> AnimationInterface::nodeColors;
+std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> AnimationInterface::linkProperties;
+
 
 AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPerFile, bool usingXML)
   : m_xml (usingXML), m_mobilityPollInterval (Seconds(0.25)), 
@@ -437,7 +439,7 @@ void AnimationInterface::StartAnimation (bool restart)
                       std::ostringstream oss;
                       if (m_xml)
                         {
-                          oss << GetXMLOpenClose_link (0,n1Id,0,n2Id);
+                          oss << GetXMLOpenClose_link (0, n1Id, 0, n2Id);
                         }
                       else
                         {
@@ -453,6 +455,7 @@ void AnimationInterface::StartAnimation (bool restart)
             }
         }
     }
+  linkProperties.clear ();
   if (m_xml && !restart)
     {
       WriteN (GetXMLClose ("topology"));
@@ -1316,6 +1319,9 @@ std::string AnimationInterface::GetPreamble ()
     link\n\
     * fromId = From Node Id\n\
     * toId   = To Node Id\n\
+    * fd = From Node description (for IP Address)\n\
+    * td = To Node description (for IP Address)\n\
+    * ld = Link description (for Bandwidth,delay etc)\n\
     packet\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
@@ -1411,6 +1417,30 @@ void AnimationInterface::SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, u
     }
 }
 
+
+void AnimationInterface::SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
+                                             std::string fromNodeDescription,
+                                             std::string toNodeDescription,
+                                             std::string linkDescription)
+{
+
+  P2pLinkNodeIdPair p2pPair;
+  p2pPair.fromNode = fromNode;
+  p2pPair.toNode = toNode;
+  LinkProperties lp = { fromNodeDescription, toNodeDescription, linkDescription };
+  linkProperties[p2pPair] = lp;
+  /* DEBUG */
+  /*
+  for (std::map <P2pLinkNodeIdPair, LinkProperties>::const_iterator i = linkProperties.begin ();
+	i != linkProperties.end(); ++i)
+   {
+    P2pLinkNodeIdPair ppair = i->first;
+    LinkProperties l = i->second;
+    NS_LOG_UNCOND ("A:" << ppair.nodeA << " B:" << ppair.nodeB << " ad:" << l.nodeADescription << " bd:" << l.nodeBDescription << " ld:" << l.linkDescription);
+     
+   }*/
+}
+
 void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
 {
   if (initialized)
@@ -1488,17 +1518,34 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, 
 
 
 
-std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId)
+std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId)
 {
   std::ostringstream oss;
   oss << "<link fromId=\"" << fromId
-      << "\" toLp=\"0\" toId=\"" << toId
-      << "\"/>" << std::endl;
+      << "\" toId=\"" << toId
+      << "\" ";
+
+  std::string fromNodeDescription = "";
+  std::string toNodeDescription = "";
+  std::string linkDescription = "";
+
+  P2pLinkNodeIdPair p = { fromId, toId };
+  if (linkProperties.find (p) != linkProperties.end())
+    {
+      LinkProperties lprop = linkProperties[p];
+      fromNodeDescription = lprop.fromNodeDescription;
+      toNodeDescription = lprop.toNodeDescription;
+      linkDescription = lprop.linkDescription;
+    }
+  oss << " fd=\"" << fromNodeDescription << "\""
+      << " td=\"" << toNodeDescription << "\""
+      << " ld=\"" << linkDescription << "\""
+      << " />\n";
   return oss.str ();
 }
 
 
-std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, std::string auxInfo)
+std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo)
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
@@ -1510,7 +1557,7 @@ std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp,uint32_t from
   return oss.str ();
 }
 
-std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range)
+std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range)
 {
   std::ostringstream oss;
   oss << std::setprecision (10);

@@ -42,6 +42,37 @@ namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
 struct Rgb;
+typedef struct 
+{
+  uint32_t fromNode;
+  uint32_t toNode;
+} P2pLinkNodeIdPair;
+
+typedef struct
+{
+  std::string fromNodeDescription;
+  std::string toNodeDescription;
+  std::string linkDescription;
+} LinkProperties;
+
+struct LinkPairCompare
+{
+  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second)
+    {
+      //Check if they are the same node pairs but flipped
+      if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
+            ((first.fromNode == second.toNode) && (first.toNode == second.fromNode)) )
+        {
+          return false;
+        }
+      std::ostringstream oss1;
+      oss1 << first.fromNode << first.toNode;
+      std::ostringstream oss2;
+      oss2 << second.fromNode << second.toNode;
+      return oss1.str () < oss2.str ();
+    }
+   
+};
 
 /**
  * \defgroup netanim Netanim
@@ -234,6 +265,20 @@ public:
    */
   static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
 
+  /**
+   * \brief Helper function to set the description for a link
+   * \param fromNode Node Id of the "from Node" of the p2p link
+   * \param toNode Node Id of the "to Node" of the p2p link
+   * \param fromNodeDescription Description at the "from Node" end such as IP address
+   * \param toNodeDescription Description at the "to Node" end such as Ip address
+   * \param linkDescription Description of the link such as link bandwidth
+   *
+   */
+  static void SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
+                                  std::string fromNodeDescription,
+                                  std::string toNodeDescription,
+                                  std::string linkDescription);
+
 
   /**
    * \brief Is AnimationInterface started
@@ -404,6 +449,7 @@ private:
 
   static std::map<uint32_t, Rgb>  nodeColors;
   static std::map <uint32_t, std::string> nodeDescriptions;
+  static std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> linkProperties;
   uint64_t m_currentPktCount;
 
   void StartNewTraceFile();
