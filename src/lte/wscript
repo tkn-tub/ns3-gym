@@ -163,6 +163,8 @@ def build(bld):
         'model/epc-tft.h',
         'model/epc-tft-classifier.h',
         'model/lte-mi-error-model.h',
+        'test/lte-test-ue-phy.h',
+        'test/lte-test-sinr-chunk-processor.h'
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

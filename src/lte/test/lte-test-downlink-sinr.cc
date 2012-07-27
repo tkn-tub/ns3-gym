@@ -31,7 +31,7 @@
 #include "ns3/lte-test-sinr-chunk-processor.h"
 #include "ns3/lte-spectrum-signal-parameters.h"
 
-#include "ns3/lte-test-downlink-sinr.h"
+#include "lte-test-downlink-sinr.h"
 #include <ns3/lte-control-messages.h>
 #include "ns3/lte-helper.h"
 
