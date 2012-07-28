@@ -269,15 +269,15 @@ public:
    * \brief Helper function to set the description for a link
    * \param fromNode Node Id of the "from Node" of the p2p link
    * \param toNode Node Id of the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
    * \param fromNodeDescription Description at the "from Node" end such as IP address
    * \param toNodeDescription Description at the "to Node" end such as Ip address
-   * \param linkDescription Description of the link such as link bandwidth
    *
    */
   static void SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
-                                  std::string fromNodeDescription,
-                                  std::string toNodeDescription,
-                                  std::string linkDescription);
+                                  std::string linkDescription,
+                                  std::string fromNodeDescription = "",
+                                  std::string toNodeDescription = "");
 
 
   /**

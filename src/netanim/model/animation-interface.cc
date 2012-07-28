@@ -1436,9 +1436,10 @@ void AnimationInterface::SetLinkDescription (uint32_t fromNode, uint32_t toNode,
    {
     P2pLinkNodeIdPair ppair = i->first;
     LinkProperties l = i->second;
-    NS_LOG_UNCOND ("A:" << ppair.nodeA << " B:" << ppair.nodeB << " ad:" << l.nodeADescription << " bd:" << l.nodeBDescription << " ld:" << l.linkDescription);
+    NS_LOG_UNCOND ("A:" << ppair.fromNode << " B:" << ppair.toNode << " ad:" << l.fromNodeDescription << " bd:" << l.toNodeDescription << " ld:" << l.linkDescription);
      
-   }*/
+   }
+   */
 }
 
 void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
@@ -1525,21 +1526,25 @@ std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp, uint32_t 
       << "\" toId=\"" << toId
       << "\" ";
 
-  std::string fromNodeDescription = "";
-  std::string toNodeDescription = "";
-  std::string linkDescription = "";
+  LinkProperties lprop ;
+  lprop.fromNodeDescription = "";
+  lprop.toNodeDescription = "";
+  lprop.linkDescription = "";
 
-  P2pLinkNodeIdPair p = { fromId, toId };
-  if (linkProperties.find (p) != linkProperties.end())
+  P2pLinkNodeIdPair p1 = { fromId, toId };
+  P2pLinkNodeIdPair p2 = { toId, fromId };
+  if (linkProperties.find (p1) != linkProperties.end())
     {
-      LinkProperties lprop = linkProperties[p];
-      fromNodeDescription = lprop.fromNodeDescription;
-      toNodeDescription = lprop.toNodeDescription;
-      linkDescription = lprop.linkDescription;
+      lprop = linkProperties[p1];
     }
-  oss << " fd=\"" << fromNodeDescription << "\""
-      << " td=\"" << toNodeDescription << "\""
-      << " ld=\"" << linkDescription << "\""
+  else if (linkProperties.find (p2) != linkProperties.end())
+    {
+      lprop = linkProperties[p2];
+    }
+   
+  oss << " fd=\"" << lprop.fromNodeDescription << "\""
+      << " td=\"" << lprop.toNodeDescription << "\""
+      << " ld=\"" << lprop.linkDescription << "\""
       << " />\n";
   return oss.str ();
 }
