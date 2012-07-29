@@ -41,7 +41,6 @@ class EpcEnbS1SapUser;
 class EpcEnbS1SapProvider;
 class LteUeRrc;
 
-
 /**
  * Manages all the radio bearer information possessed by the ENB RRC for a single UE
  *
@@ -75,6 +74,19 @@ public:
    */
   void RemoveRadioBearer (uint8_t lcid);
 
+  /** 
+   * 
+   * \return a const iterator pointing to the beginning of the embedded map of radio bearers 
+   */
+  std::map <uint8_t, Ptr<LteRadioBearerInfo> >::const_iterator RadioBearerMapBegin ();
+
+
+  /** 
+   * 
+   * \return a const iterator pointing to the end of the embedded map of radio bearers 
+   */
+  std::map <uint8_t, Ptr<LteRadioBearerInfo> >::const_iterator RadioBearerMapEnd ();
+
   UeInfo (void);
   UeInfo (uint64_t imsi);
   virtual ~UeInfo (void);
@@ -82,6 +94,8 @@ public:
   static TypeId GetTypeId (void);
 
   uint64_t GetImsi (void);
+
+  void SetImsi (uint64_t imsi);
 
 private:
   std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;
@@ -212,13 +226,25 @@ public:
                       uint16_t dlEarfcn,
                       uint16_t cellId);
 
-  /**
-   * Add a new UE to the cell
-   *
-   * \param imsi IMSI of the attaching UE
-   * \return the C-RNTI of the newly added UE
+
+  /** 
+   * RRC connection request by an UE
+   * 
+   * \param imsi the id of the UE
+   * 
+   * \return the RNTI identifying the UE in this cell
    */
-  uint16_t AddUe (uint64_t imsi);
+  uint16_t ConnectionRequest (uint64_t imsi);
+  
+  /** 
+   * RRC connection reestablishment request by UE
+   * 
+   * \param imsi 
+   * \param rnti 
+   * 
+   * \return 
+   */
+  uint16_t ConnectionReestablishmentRequest (uint64_t imsi, uint16_t rnti);
 
   /**
    * remove a UE from the cell
@@ -239,17 +265,6 @@ public:
    * \return the type of RLC that is to be created for the given EPS bearer
    */
   TypeId GetRlcType (EpsBearer bearer);
-
-
-  /**
-   * Setup a new radio bearer for the given user
-   *
-   * \param rnti the RNTI of the user
-   * \param bearer the characteristics of the bearer to be activated
-   *
-   * \return the logical channel identifier of the radio bearer for the considered user
-   */
-  uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer);
 
 
   /**
@@ -281,8 +296,15 @@ public:
 
   /** 
    * Send a HandoverRequest through the X2 SAP interface
+   * 
+   * This method will trigger a handover which is started by the RRC
+   * by sending a handover request to the target eNB over the X2
+   * interface 
+   *
+   * \param imsi the id of the UE to be handed over 
+   * \param cellId the id of the target eNB
    */
-  void SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
+  void SendHandoverRequest (uint16_t rnti, uint16_t cellId);
 
   /**
    * Identifies how EPS Bearer parameters are mapped to different RLC types
@@ -293,6 +315,28 @@ public:
                                    RLC_AM_ALWAYS = 3,
                                    PER_BASED = 4};
 private:
+
+  /**
+   * Add a new UE to the cell
+   *
+   * \return the C-RNTI of the newly added UE
+   */
+  uint16_t AddUe ();
+
+
+
+  /**
+   * Setup a new radio bearer for the given user
+   *
+   * \param rnti the RNTI of the user
+   * \param bearer the characteristics of the bearer to be activated
+   * \param teid the S1-U Tunnel Endpoint Identifier for this bearer
+   *
+   * \return the logical channel identifier of the radio bearer for the considered user
+   */
+  uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint32_t teid);
+
+
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
 
@@ -311,7 +355,7 @@ private:
 
 
   // management of multiple UE info instances
-  uint16_t CreateUeInfo (uint64_t imsi);
+  uint16_t CreateUeInfo ();
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
 
@@ -338,9 +382,8 @@ private:
   LteEnbCphySapProvider* m_cphySapProvider;
 
   bool m_configured;
+  uint16_t m_cellId;
   uint16_t m_lastAllocatedRnti;
-
-  std::map<uint64_t, uint16_t> m_imsiRntiMap;
 
   std::map<uint16_t, Ptr<UeInfo> > m_ueMap;
   

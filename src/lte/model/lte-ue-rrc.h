@@ -185,6 +185,15 @@ public:
   *
   */
   void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+
+
+  /** 
+   * Execute a handover
+   * 
+   * \param targetCellId 
+   * \param newRnti 
+   */
+  void ConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti);
   
 private:
 

@@ -48,6 +48,8 @@ class EpcEnbS1SapProvider;
 class EpcEnbApplication : public Application
 {
 
+  friend class MemberEpcEnbS1SapProvider<EpcEnbApplication>;
+
 public:
 
   // inherited from Object
@@ -85,14 +87,6 @@ public:
    */
   EpcEnbS1SapProvider* GetS1SapProvider ();
 
-
-  /** 
-   * \see EpcEnbS1SapUser::DataRadioBearerSetupResponse
-   * 
-   * \param params 
-   */
-  void DoDataRadioBearerSetupResponse (EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters params);
-
   /** 
    * This method is triggered after the eNB received
    * a S1-AP message of type E-RAB Setup Request by the MME and will
@@ -119,6 +113,13 @@ public:
    */
   void RecvFromS1uSocket (Ptr<Socket> socket);
 
+
+private:
+
+  // S1 SAP provider methods
+  void DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params);
+  void DoInitialUeMessage (uint64_t imsi, uint16_t rnti);
+
   /** 
    * Send a packet to the UE via the LTE radio interface of the eNB
    * 
@@ -137,8 +138,15 @@ public:
   void SendToS1uSocket (Ptr<Packet> packet, uint32_t teid);
 
 
-private:
-
+  
+  /** 
+   * internal method used for the actual setup of the S1 Bearer
+   * 
+   * \param teid 
+   * \param rnti 
+   * \param lcid 
+   */
+  void SetupS1Bearer (uint32_t teid, uint16_t rnti, uint8_t lcid);
 
   /**
    * raw packet socket to send and receive the packets to and from the LTE radio interface
@@ -182,6 +190,12 @@ private:
    */
   EpcEnbS1SapUser* m_s1SapUser;
 
+
+  /**
+   * UE context info
+   * 
+   */
+  std::map<uint64_t, uint16_t> m_imsiRntiMap;
 
 };
 

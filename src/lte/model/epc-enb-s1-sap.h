@@ -40,13 +40,11 @@ public:
   virtual ~EpcEnbS1SapProvider ();
   
   /**
-   * Parameters passed to DataRadioBearerSetupResponse ()
+   * Parameters passed to S1BearerSetupRequest ()
    * 
    */
-  struct DataRadioBearerSetupResponseParameters
+  struct S1BearerSetupRequestParameters
   {
-    bool success; /**< true if DataRadioBearer was setup
-		     successfully, false otherwise*/
     uint16_t rnti; /**< the RNTI corresponding to the IMSI for which
                       the radio bearer activation was requested */
     uint8_t lcid; /**< the LCID of the newly created radio bearer */
@@ -57,12 +55,18 @@ public:
   };
 
   /**
-   * response after a call to
-   * EpcEnbS1SapUser::DataRadioBearerSetupRequest ()
+   * Request the setup of a S1 bearer
    * 
    */
-  virtual void DataRadioBearerSetupResponse (DataRadioBearerSetupResponseParameters params) = 0;
+  virtual void S1BearerSetupRequest (S1BearerSetupRequestParameters params) = 0;
   
+  /** 
+   * 
+   * 
+   * \param imsi 
+   * \param rnti 
+   */
+  virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti) = 0;
 };
   
 
@@ -85,13 +89,13 @@ public:
    */
   struct DataRadioBearerSetupRequestParameters
   {
-    uint64_t imsi;   /**< the IMSI identifying the UE for which the
+    uint16_t rnti;   /**< the RNTI identifying the UE for which the
 			DataRadioBearer is to be created */ 
     EpsBearer bearer; /**< the characteristics of the bearer to be set
                          up */
     uint32_t teid;   /**< context information that needs to be passed
                       to the corresponding call to
-                      EpcEnbS1SapProvider::DataRadioBearerSetupResponse */ 
+                      EpcEnbS1SapProvider::S1BearerSetupRequest */ 
   };
 
   /**
@@ -117,8 +121,8 @@ public:
   MemberEpcEnbS1SapProvider (C* owner);
 
   // inherited from EpcEnbS1SapProvider
-  virtual void DataRadioBearerSetupResponse (DataRadioBearerSetupResponseParameters params);
-
+  virtual void S1BearerSetupRequest (S1BearerSetupRequestParameters params);
+  virtual void InitialUeMessage (uint64_t imsi, uint16_t rnti);
 
 private:
   MemberEpcEnbS1SapProvider ();
@@ -137,11 +141,17 @@ MemberEpcEnbS1SapProvider<C>::MemberEpcEnbS1SapProvider ()
 }
 
 template <class C>
-void MemberEpcEnbS1SapProvider<C>::DataRadioBearerSetupResponse (DataRadioBearerSetupResponseParameters params)
+void MemberEpcEnbS1SapProvider<C>::S1BearerSetupRequest (S1BearerSetupRequestParameters params)
 {
-  m_owner->DoDataRadioBearerSetupResponse (params);
+  m_owner->DoS1BearerSetupRequest (params);
 }
 
+
+template <class C>
+void MemberEpcEnbS1SapProvider<C>::InitialUeMessage (uint64_t imsi, uint16_t rnti)
+{
+  m_owner->DoInitialUeMessage (imsi, rnti);
+}
 
 /**
  * Template for the implementation of the EpcEnbS1SapUser as a member

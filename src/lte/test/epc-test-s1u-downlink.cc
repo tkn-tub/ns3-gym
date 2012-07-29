@@ -202,6 +202,7 @@ EpcS1uDlTestCase::DoRun ()
 
           uint64_t imsi = u+1;
           epcHelper->AttachUe (ueLteDevice, imsi, enbDevice);
+          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
           epcHelper->ActivateEpsBearer (ueLteDevice, imsi, EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
         } 
             

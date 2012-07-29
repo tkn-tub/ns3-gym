@@ -245,11 +245,11 @@ public:
    * Trigger an X2-based handover of a UE between two eNBs
    *
    * \param hoTime when the Handover is initiated
-   * \param ueNode the UE that hands off
-   * \param enbNode1 source eNB, originally the UE is attached to this eNB
-   * \param enbNode2 target eNB, the UE is finally connected to this eNB
+   * \param ueDev the UE that hands off
+   * \param enbDev1 source eNB, originally the UE is attached to this eNB
+   * \param enbDev2 target eNB, the UE is finally connected to this eNB
    */
-  void HandoverRequest (Time hoTime, Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
+  void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
 
 
   /** 
@@ -360,7 +360,7 @@ private:
   Ptr<NetDevice> InstallSingleEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleUeDevice (Ptr<Node> n);
 
-  void DoHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
+  void DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;

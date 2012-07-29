@@ -571,7 +571,7 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
   Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
   Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
-  params.imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
+  params.rnti = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->GetRnti();
   params.bearer = bearer;
   params.teid = 0; // don't care
   enbRrc->GetS1SapUser ()->DataRadioBearerSetupRequest (params);
@@ -601,25 +601,21 @@ LteHelper::AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2)
 }
 
 void
-LteHelper::HandoverRequest (Time hoTime, Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+LteHelper::HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev)
 {
-  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
-  Simulator::Schedule (hoTime, &LteHelper::DoHandoverRequest, this, ueNode, sourceEnbNode, targetEnbNode);
+  NS_LOG_FUNCTION (this << ueDev << sourceEnbDev << targetEnbDev);
+  Simulator::Schedule (hoTime, &LteHelper::DoHandoverRequest, this, ueDev, sourceEnbDev, targetEnbDev);
 }
 
 void
-LteHelper::DoHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+LteHelper::DoHandoverRequest (Ptr<NetDevice> ueDev, Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev)
 {
-  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
-  
-  m_epcHelper->SendHandoverRequest (ueNode, sourceEnbNode, targetEnbNode);
-  
-  // lteHelper->Attach (ueNode, targetEnbNode);
-  // lteHelper->ActivateEpsBearer (ueNode, *);
+  NS_LOG_FUNCTION (this << ueDev << sourceEnbDev << targetEnbDev);
 
-  // lteHelper->DeactivateEpsBearer (ueNode, *);
-  // lteHelper->Deattach (ueNode, sourceEnbNode);
-  
+  uint16_t targetCellId = targetEnbDev->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  Ptr<LteEnbRrc> sourceRrc = sourceEnbDev->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  uint64_t imsi = ueDev->GetObject<LteUeNetDevice> ()->GetImsi ();
+  sourceRrc->SendHandoverRequest (imsi, targetCellId);  
 }
 
 
