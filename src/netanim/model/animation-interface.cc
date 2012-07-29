@@ -1321,7 +1321,10 @@ std::string AnimationInterface::GetPreamble ()
     * toId   = To Node Id\n\
     * fd = From Node description (for IP Address)\n\
     * td = To Node description (for IP Address)\n\
-    * ld = Link description (for Bandwidth,delay etc)\n\
+    * ld = Link description (for Bandwidth, delay etc)\n\
+    linkupdate\n\
+    * t = Simulation time\n\
+    * ld = Link description (for Bandwidth, delay etc)\n\
     packet\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
@@ -1417,6 +1420,14 @@ void AnimationInterface::SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, u
     }
 }
 
+
+void AnimationInterface::UpdateLinkDescription (uint32_t fromNode, uint32_t toNode,
+                                                std::string linkDescription)
+{
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_linkupdate (fromNode, toNode, linkDescription);
+  WriteN (oss.str ());
+}
 
 void AnimationInterface::SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
                                              std::string fromNodeDescription,
@@ -1517,7 +1528,31 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, 
   return oss.str ();
 }
 
+std::string AnimationInterface::GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string linkDescription)
+{
+  bool linkFound = false;
+  std::ostringstream oss;
+  oss << "<linkupdate t=\"" << Simulator::Now ().GetSeconds () << "\""
+      << " fromId=\"" << fromId
+      << "\" toId=\"" << toId
+      << "\" ";
 
+  P2pLinkNodeIdPair p1 = { fromId, toId };
+  P2pLinkNodeIdPair p2 = { toId, fromId };
+  if (linkProperties.find (p1) != linkProperties.end())
+    {
+      linkFound = true;
+    }
+  else if (linkProperties.find (p2) != linkProperties.end())
+    {
+      linkFound = true;
+    }
+   
+  oss << " ld=\"" << linkDescription << "\""
+      << " />\n";
+  return oss.str ();
+
+}
 
 std::string AnimationInterface::GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId)
 {
