@@ -42,6 +42,14 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 namespace ns3 {
 
 
+// duration of the data part of a subframe in DL
+// = 0.001 / 14 * 11 (fixed to 11 symbols) -1ns as margin to avoid overlapping simulator events
+static const Time DL_DATA_DURATION = NanoSeconds (785714 -1);
+
+//  delay from subframe start to transmission of the data in DL 
+// = 0.001 / 14 * 3 (ctrl fixed to 3 symbols)
+static const Time DL_CTRL_DELAY_FROM_SUBFRAME_START = NanoSeconds (214286);
+
 ////////////////////////////////////////
 // member SAP forwarders
 ////////////////////////////////////////
@@ -267,13 +275,13 @@ LteEnbPhy::GetMacChDelay (void) const
 }
 
 bool
-LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
+LteEnbPhy::AddUePhy (uint16_t rnti)
 {
-  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
+  std::set <uint16_t>::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
-      m_ueAttached.insert (std::pair<uint16_t, Ptr<LteUePhy> > (rnti, phy));
+      m_ueAttached.insert (rnti);
       return (true);
     }
   else
@@ -286,7 +294,7 @@ LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
 bool
 LteEnbPhy::DeleteUePhy (uint16_t rnti)
 {
-  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
+  std::set <uint16_t>::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
@@ -422,7 +430,7 @@ LteEnbPhy::StartSubFrame (void)
   NS_LOG_DEBUG (this << " eNB Expected TBs " << uldcilist.size ());
   for (dciIt = uldcilist.begin (); dciIt!=uldcilist.end (); dciIt++)
     {
-      std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
+      std::set <uint16_t>::iterator it2;
       it2 = m_ueAttached.find ((*dciIt).GetDci ().m_rnti);
       
       if (it2 == m_ueAttached.end ())
@@ -493,22 +501,13 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      Simulator::Schedule (Seconds (0.000214286), // ctrl frame fixed to 3 symbols
+      Simulator::Schedule (DL_CTRL_DELAY_FROM_SUBFRAME_START, // ctrl frame fixed to 3 symbols
                        &LteEnbPhy::SendDataChannels,
                        this,pb);
     }
 
   // trigger the MAC
   m_enbPhySapUser->SubframeIndication (m_nrFrames, m_nrSubFrames);
-
-
-  // trigger the UE(s)
-  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
-  for (it = m_ueAttached.begin (); it != m_ueAttached.end (); it++)
-    {
-      (*it).second->SubframeIndication (m_nrFrames, m_nrSubFrames);
-    }
-
 
   Simulator::Schedule (Seconds (GetTti ()),
                        &LteEnbPhy::EndSubFrame,
@@ -539,10 +538,9 @@ LteEnbPhy::SendDataChannels (Ptr<PacketBurst> pb)
   SetDownlinkSubChannels (m_dlDataRbMap);
   // send the current burts of packets
   NS_LOG_LOGIC (this << " eNB start TX DATA");
-  double dlDataFrame = 0.000785714; // 0.001 / 14 * 11 (fixed to 11 symbols)
   std::list<Ptr<LteControlMessage> > ctrlMsgList;
   ctrlMsgList.clear ();
-  m_downlinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsgList, dlDataFrame);
+  m_downlinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsgList, DL_DATA_DURATION);
 }
 
 

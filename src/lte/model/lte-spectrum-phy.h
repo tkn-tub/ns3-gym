@@ -174,17 +174,6 @@ public:
    * \param a the Antenna Model
    */
   void SetAntenna (Ptr<AntennaModel> a);
-
-  /**
-   * Start a transmission
-   *
-   *
-   * @param pb the burst of packets to be transmitted
-   *
-   * @return true if an error occurred and the transmission was not
-   * started, false otherwise.
-   */
-  bool StartTx (Ptr<PacketBurst> pb);
   
   /**
   * Start a transmission of data frame in DL and UL
@@ -192,12 +181,12 @@ public:
   *
   * @param pb the burst of packets to be transmitted in PDSCH/PUSCH
   * @param ctrlMsgList the list of LteControlMessage to send
-  * @param duration the duration of the data frame (in sec.)
+  * @param duration the duration of the data frame 
   *
   * @return true if an error occurred and the transmission was not
   * started, false otherwise.
   */
-  bool StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlMessage> > ctrlMsgList, double duration);
+  bool StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlMessage> > ctrlMsgList, Time duration);
   
   /**
   * Start a transmission of control frame in DL

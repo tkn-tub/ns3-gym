@@ -42,6 +42,22 @@ NS_LOG_COMPONENT_DEFINE ("LteUePhy");
 
 namespace ns3 {
 
+
+
+
+// duration of data portion of UL subframe
+// = TTI - 1 symbol for SRS - 1ns as margin to avoid overlapping simulator events
+// (symbol duration in nanoseconds = TTI / 14 (rounded))
+// in other words, duration of data portion of UL subframe = TTI*(13/14) -1ns
+static const Time UL_DATA_DURATION = NanoSeconds (1e6 - 71429 - 1); 
+
+// delay from subframe start to transmission of SRS 
+// = TTI - 1 symbol for SRS 
+static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429); 
+
+
+
+
 ////////////////////////////////////////
 // member SAP forwarders
 ////////////////////////////////////////
@@ -99,6 +115,7 @@ UeMemberLteUePhySapProvider::SetSrsConfigurationIndex (uint16_t   srcCi)
   m_phy->DoSetSrsConfigurationIndex (srcCi);
 }
 
+
 ////////////////////////////////////////
 // generic LteUePhy methods
 ////////////////////////////////////////
@@ -136,6 +153,8 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     }
   std::vector <int> ulRb;
   m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
+
+  Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
 }
 
 
@@ -577,7 +596,7 @@ LteUePhy::QueueSubChannelsForTransmission (std::vector <int> rbMap)
 void
 LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
-  // trigger from eNB
+  NS_LOG_LOGIC (this << frameNo << subframeNo);
   
   // update uplink transmission mask according to previous UL-CQIs
   SetSubChannelsForTransmission (m_subChannelsForTransmissionQueue.at (0));
@@ -599,11 +618,12 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       m_srsCounter--;
     }
-  double dataFrame = 0.001 - 0.000071429; // 0.001 - 1 symbol for SRS
+
   if (srs)
     {
-      Simulator::Schedule (Seconds (0.000928572),  // (0.001/14) * 13
-                           &LteUePhy::SendSrs,                         this);
+      Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START, 
+                           &LteUePhy::SendSrs,
+                           this);
     }
 
 
@@ -614,7 +634,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   if (pb)
     {
       NS_LOG_LOGIC (this << " UE - start TX PUSCH + PUCCH");
-      m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, dataFrame);
+      m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, UL_DATA_DURATION);
     }
   else
     {
@@ -627,7 +647,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
               dlRb.push_back (i);
             }
           SetSubChannelsForTransmission (dlRb);
-          m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, dataFrame);
+          m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, UL_DATA_DURATION);
         }
     }
   
@@ -635,6 +655,16 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   // trigger the MAC
   m_uePhySapUser->SubframeIndication (frameNo, subframeNo);
 
+
+  ++subframeNo;
+  if (subframeNo > 10)
+    {
+      ++frameNo;
+      subframeNo = 1;
+    }
+
+  // schedule next subframe indication
+  Simulator::Schedule (Seconds (GetTti ()), &LteUePhy::SubframeIndication, this, frameNo, subframeNo);  
 }
 
 void

@@ -23,10 +23,14 @@
 #define ENB_LTE_PHY_H
 
 
-#include "lte-phy.h"
 #include <ns3/lte-enb-phy-sap.h>
-#include <map>
+#include <ns3/lte-phy.h>
 #include <ns3/lte-ue-phy.h>
+
+#include <map>
+#include <set>
+
+
 
 namespace ns3 {
 
@@ -173,7 +177,7 @@ public:
 
   void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
 
-  bool AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy);
+  bool AddUePhy (uint16_t rnti);
 
   bool DeleteUePhy (uint16_t rnti);
   
@@ -233,7 +237,7 @@ public:
 
 
 private:
-  std::map <uint16_t, Ptr<LteUePhy> > m_ueAttached;
+  std::set <uint16_t> m_ueAttached;
   
   std::vector <int> m_listOfDownlinkSubchannel;
   

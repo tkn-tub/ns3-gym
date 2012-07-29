@@ -41,7 +41,19 @@
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
 namespace ns3 {
-  
+
+
+
+// duration of SRS portion of UL subframe  
+// = 1 symbol for SRS -1ns as margin to avoid overlapping simulator events
+static const Time UL_SRS_DURATION = NanoSeconds (71429 -1);  
+
+// duration of the control portion of a subframe
+// = 0.001 / 14 * 3 (ctrl fixed to 3 symbols) -1ns as margin to avoid overlapping simulator events
+static const Time DL_CTRL_DURATION = NanoSeconds (214286 -1);
+
+
+
   
 TbId_t::TbId_t ()
 {
@@ -129,7 +141,6 @@ std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)
     }
   return os;
 }
-
 
 TypeId
 LteSpectrumPhy::GetTypeId (void)
@@ -300,70 +311,9 @@ LteSpectrumPhy::ChangeState (State newState)
 }
 
 
-bool
-LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
-{
-  NS_LOG_WARN (this << " Obsolete Function");
-  NS_LOG_FUNCTION (this << pb);
-  NS_LOG_LOGIC (this << " state: " << m_state);
-
-  m_phyTxStartTrace (pb);
-
-  switch (m_state)
-    {
-    case RX_DATA:
-    case RX_CTRL:
-      NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
-      break;
-
-    case TX:
-      NS_FATAL_ERROR ("cannot TX while already TX: the MAC should avoid this");
-      break;
-
-    case IDLE:
-      {
-        /*
-          m_txPsd must be setted by the device, according to
-          (i) the available subchannel for transmission
-          (ii) the power transmission
-        */
-        NS_ASSERT (m_txPsd);
-        m_txPacketBurst = pb;
-
-        // we need to convey some PHY meta information to the receiver
-        // to be used for simulation purposes (e.g., the CellId). This
-        // is done by adding an LtePhyTag to the first packet in the
-        // burst.
-        NS_ASSERT (pb->Begin () != pb->End ());
-        LtePhyTag tag (m_cellId);
-        Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
-        firstPacketInBurst->AddPacketTag (tag);
-
-        ChangeState (TX);
-        NS_ASSERT (m_channel);
-        double tti = 0.001;
-        Ptr<LteSpectrumSignalParameters> txParams = Create<LteSpectrumSignalParameters> ();
-        txParams->duration = Seconds (tti);
-        txParams->txPhy = GetObject<SpectrumPhy> ();
-        txParams->txAntenna = m_antenna;
-        txParams->psd = m_txPsd;
-        txParams->packetBurst = pb;
-        m_channel->StartTx (txParams);
-        Simulator::Schedule (Seconds (tti), &LteSpectrumPhy::EndTx, this);
-      }
-      return false;
-      break;
-
-    default:
-      NS_FATAL_ERROR ("unknown state");
-      return true;
-      break;
-    }
-}
-
 
 bool
-LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlMessage> > ctrlMsgList, double duration)
+LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlMessage> > ctrlMsgList, Time duration)
 {
   NS_LOG_FUNCTION (this << pb);
   NS_LOG_LOGIC (this << " state: " << m_state);
@@ -398,7 +348,7 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
       ChangeState (TX);
       NS_ASSERT (m_channel);
       Ptr<LteSpectrumSignalParametersDataFrame> txParams = Create<LteSpectrumSignalParametersDataFrame> ();
-      txParams->duration = Seconds (duration);
+      txParams->duration = duration;
       txParams->txPhy = GetObject<SpectrumPhy> ();
       txParams->txAntenna = m_antenna;
       txParams->psd = m_txPsd;
@@ -406,7 +356,7 @@ LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlM
       txParams->ctrlMsgList = ctrlMsgList;
       txParams->cellId = m_cellId;
       m_channel->StartTx (txParams);
-      Simulator::Schedule (Seconds (duration), &LteSpectrumPhy::EndTx, this);
+      Simulator::Schedule (duration, &LteSpectrumPhy::EndTx, this);
     }
     return false;
     break;
@@ -452,16 +402,16 @@ LteSpectrumPhy::StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgLi
       // LteSpectrumSignalParametersDlCtrlFrame
       ChangeState (TX);
       NS_ASSERT (m_channel);
-      double dlCtrlFrame = 0.000214286; // 0.001 / 14 * 3 (fixed to 3 symbols)
+
       Ptr<LteSpectrumSignalParametersDlCtrlFrame> txParams = Create<LteSpectrumSignalParametersDlCtrlFrame> ();
-      txParams->duration = Seconds (dlCtrlFrame);
+      txParams->duration = DL_CTRL_DURATION;
       txParams->txPhy = GetObject<SpectrumPhy> ();
       txParams->txAntenna = m_antenna;
       txParams->psd = m_txPsd;
       txParams->cellId = m_cellId;
       txParams->ctrlMsgList = ctrlMsgList;
       m_channel->StartTx (txParams);
-      Simulator::Schedule (Seconds (dlCtrlFrame), &LteSpectrumPhy::EndTx, this);
+      Simulator::Schedule (DL_CTRL_DURATION, &LteSpectrumPhy::EndTx, this);
     }
     return false;
     break;
@@ -508,15 +458,14 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
       // LteSpectrumSignalParametersDlCtrlFrame
       ChangeState (TX);
       NS_ASSERT (m_channel);
-      double ulCtrlFrame = 0.000071429; // 0.001 / 14 * 1 (fixed to 1 symbols)
       Ptr<LteSpectrumSignalParametersUlSrsFrame> txParams = Create<LteSpectrumSignalParametersUlSrsFrame> ();
-      txParams->duration = Seconds (ulCtrlFrame);
+      txParams->duration = UL_SRS_DURATION;
       txParams->txPhy = GetObject<SpectrumPhy> ();
       txParams->txAntenna = m_antenna;
       txParams->psd = m_txPsd;
       txParams->cellId = m_cellId;
       m_channel->StartTx (txParams);
-      Simulator::Schedule (Seconds (ulCtrlFrame), &LteSpectrumPhy::EndTx, this);
+      Simulator::Schedule (UL_SRS_DURATION, &LteSpectrumPhy::EndTx, this);
     }
     return false;
     break;
@@ -622,7 +571,7 @@ LteSpectrumPhy::StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params)
                   // start RX
                   m_firstRxStart = Simulator::Now ();
                   m_firstRxDuration = params->duration;
-                  NS_LOG_LOGIC (this << " scheduling EndRx with delay " << params->duration);
+                  NS_LOG_LOGIC (this << " scheduling EndRx with delay " << params->duration.GetSeconds () << "s");
                   Simulator::Schedule (params->duration, &LteSpectrumPhy::EndRxData, this);
                 }
               else

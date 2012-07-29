@@ -484,7 +484,7 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   // connect at the PHY layer
   Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
   Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
-  enbPhy->AddUePhy (rnti, uePhy);
+  enbPhy->AddUePhy (rnti);
 
 //  
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
