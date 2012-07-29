@@ -1530,24 +1530,12 @@ std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, 
 
 std::string AnimationInterface::GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string linkDescription)
 {
-  bool linkFound = false;
   std::ostringstream oss;
   oss << "<linkupdate t=\"" << Simulator::Now ().GetSeconds () << "\""
       << " fromId=\"" << fromId
       << "\" toId=\"" << toId
       << "\" ";
 
-  P2pLinkNodeIdPair p1 = { fromId, toId };
-  P2pLinkNodeIdPair p2 = { toId, fromId };
-  if (linkProperties.find (p1) != linkProperties.end())
-    {
-      linkFound = true;
-    }
-  else if (linkProperties.find (p2) != linkProperties.end())
-    {
-      linkFound = true;
-    }
-   
   oss << " ld=\"" << linkDescription << "\""
       << " />\n";
   return oss.str ();

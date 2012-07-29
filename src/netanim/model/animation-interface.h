@@ -291,7 +291,6 @@ public:
                               std::string linkDescription);
 
 
-
   /**
    * \brief Is AnimationInterface started
    * \returns true if AnimationInterface was started
@@ -477,14 +476,15 @@ private:
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
   std::string GetXMLOpen_anim (uint32_t lp);
-  std::string GetXMLOpen_topology (double minX,double minY,double maxX,double maxY);
-  std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY);
-  std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY, struct Rgb rgb);
-  std::string GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId);
+  std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
+  std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
+  std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);
+  std::string GetXMLOpenClose_nodeupdate (uint32_t id, std::string description, struct Rgb rgb);
+  std::string GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId);
   std::string GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string);
-  std::string GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
+  std::string GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
-  std::string GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range);
+  std::string GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
   std::string GetXMLOpenClose_meta (std::string metaInfo);
 
