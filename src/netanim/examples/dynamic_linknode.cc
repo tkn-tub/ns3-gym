@@ -45,6 +45,8 @@ void modify ()
   pAnim->UpdateLinkDescription (1, 9, oss.str ());
   pAnim->UpdateLinkDescription (1, 10, oss.str ());
   pAnim->UpdateLinkDescription (1, 11, oss.str ());
+  pAnim->UpdateNodeDescription (0, oss.str ());
+  pAnim->ShowNode (3, false);
   if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
     // will run endlessly
     Simulator::Schedule (Seconds (1), modify);

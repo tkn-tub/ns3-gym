@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George F. Riley<riley@ece.gatech.edu>
- * Modified by: John Abraham <john.abraham@gatech.edu>
+ * Author: John Abraham <john.abraham@gatech.edu>
  */
 
 // Interface between ns3 and the network animator
@@ -237,6 +237,38 @@ public:
   static void SetNodeDescription (Ptr <Node> n, std::string descr);
 
   /**
+   * \brief Helper function to update the description for a given node
+   * \param n Ptr to the node
+   * \param descr A string to briefly describe the node
+   *
+   */
+  void UpdateNodeDescription (Ptr <Node> n, std::string descr);
+
+  /**
+   * \brief Helper function to update the description for a given node
+   * \param nodeId Id of the node
+   * \param descr A string to briefly describe the node
+   *
+   */
+  void UpdateNodeDescription (uint32_t nodeId, std::string descr);
+
+ /**
+  * \brief Helper function to show/hide a node
+  * \param nodeId Id of the node
+  * \param show Set to true to show node, set to false to hide
+  *
+  */
+  void ShowNode (uint32_t nodeId, bool show = true);
+
+ /**
+  * \brief Helper function to show/hide a node
+  * \param n Ptr to the node
+  * \param show Set to true to show node, set to false to hide
+  *
+  */
+  void ShowNode (Ptr <Node> n, bool show = true);
+
+  /**
    * \brief Helper function to set a brief description for nodes in a Node Container
    * \param nc NodeContainer containing the nodes
    * \param descr A string to briefly describe the nodes
@@ -253,6 +285,27 @@ public:
    *
    */
   static void SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
+
+
+  /**
+   * \brief Helper function to update the node color
+   * \param n Ptr to the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  void UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
+
+  /**
+   * \brief Helper function to update the node color
+   * \param nodeId Id of the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  void UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
 
 
   /**
@@ -279,6 +332,20 @@ public:
                                   std::string fromNodeDescription = "",
                                   std::string toNodeDescription = "");
 
+  /**
+   * \brief Helper function to set the description for a link
+   * \param fromNode Ptr to the "from Node" of the p2p link
+   * \param toNode Ptr the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
+   * \param fromNodeDescription Description at the "from Node" end such as IP address
+   * \param toNodeDescription Description at the "to Node" end such as Ip address
+   *
+   */
+  static void SetLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                                  std::string linkDescription,
+                                  std::string fromNodeDescription = "",
+                                  std::string toNodeDescription = "");
+
 
   /**
    * \brief Helper function to update the description for a link
@@ -288,6 +355,16 @@ public:
    *
    */
   void UpdateLinkDescription (uint32_t fromNode, uint32_t toNode,
+                              std::string linkDescription);
+
+  /**
+   * \brief Helper function to update the description for a link
+   * \param fromNode Ptr to the "from Node" of the p2p link
+   * \param toNode Ptr to the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
+   *
+   */
+  void UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
                               std::string linkDescription);
 
 
@@ -458,7 +535,7 @@ private:
   std::vector<std::string> GetElementsFromContext (std::string context);
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
 
-  static std::map<uint32_t, Rgb>  nodeColors;
+  static std::map <uint32_t, Rgb> nodeColors;
   static std::map <uint32_t, std::string> nodeDescriptions;
   static std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> linkProperties;
   uint64_t m_currentPktCount;
@@ -479,7 +556,7 @@ private:
   std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
   std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);
-  std::string GetXMLOpenClose_nodeupdate (uint32_t id, std::string description, struct Rgb rgb);
+  std::string GetXMLOpenClose_nodeupdate (uint32_t id, bool visible = true);
   std::string GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId);
   std::string GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string);
   std::string GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");

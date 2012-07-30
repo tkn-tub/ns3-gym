@@ -407,7 +407,6 @@ void AnimationInterface::StartAnimation (bool restart)
       	  WriteN (oss.str ().c_str (), oss.str ().length ());
         }
     }
-  nodeColors.clear ();
   NS_LOG_INFO ("Setting p2p links");
   // Now dump the p2p links
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
@@ -1410,6 +1409,39 @@ void AnimationInterface::SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8
   nodeColors[n->GetId ()] = rgb;
 }
 
+void AnimationInterface::ShowNode (uint32_t nodeId, bool show)
+{
+  NS_ASSERT (NodeList::GetNode (nodeId));
+  NS_LOG_INFO ("Setting node visibility for Node Id:" << nodeId); 
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_nodeupdate (nodeId, show);
+  WriteN (oss.str ());
+
+}
+
+void AnimationInterface::ShowNode (Ptr <Node> n, bool show)
+{
+  ShowNode (n, show);
+}
+
+void AnimationInterface::UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b)
+{
+  UpdateNodeColor (n->GetId (), r, g, b);
+}
+
+void AnimationInterface::UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b)
+{
+  NS_ASSERT (NodeList::GetNode (nodeId));
+  NS_LOG_INFO ("Setting node color for Node Id:" << nodeId); 
+  struct Rgb rgb = {r, g, b};
+  nodeColors[nodeId] = rgb;
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_nodeupdate (nodeId);
+  WriteN (oss.str ());
+}
+
+
+
 void AnimationInterface::SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b)
 {
   for (uint32_t i = 0; i < nc.GetN (); ++i)
@@ -1429,10 +1461,20 @@ void AnimationInterface::UpdateLinkDescription (uint32_t fromNode, uint32_t toNo
   WriteN (oss.str ());
 }
 
+void AnimationInterface::UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                                                std::string linkDescription)
+{
+  NS_ASSERT (fromNode);
+  NS_ASSERT (toNode);
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_linkupdate (fromNode->GetId (), toNode->GetId (), linkDescription);
+  WriteN (oss.str ());
+}
+
 void AnimationInterface::SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
+                                             std::string linkDescription,
                                              std::string fromNodeDescription,
-                                             std::string toNodeDescription,
-                                             std::string linkDescription)
+                                             std::string toNodeDescription)
 {
 
   P2pLinkNodeIdPair p2pPair;
@@ -1453,6 +1495,17 @@ void AnimationInterface::SetLinkDescription (uint32_t fromNode, uint32_t toNode,
    */
 }
 
+void AnimationInterface::SetLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                                             std::string linkDescription,
+                                             std::string fromNodeDescription,
+                                             std::string toNodeDescription)
+{
+  NS_ASSERT (fromNode);
+  NS_ASSERT (toNode);
+  SetLinkDescription (fromNode->GetId (), toNode->GetId (), linkDescription, fromNodeDescription, toNodeDescription);
+}
+
+
 void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr) 
 {
   if (initialized)
@@ -1460,6 +1513,22 @@ void AnimationInterface::SetNodeDescription (Ptr <Node> n, std::string descr)
   NS_ASSERT (n);
   nodeDescriptions[n->GetId ()] = descr;
 }
+
+void AnimationInterface::UpdateNodeDescription (Ptr <Node> n, std::string descr)
+{
+  UpdateNodeDescription (n->GetId (), descr);
+}
+
+void AnimationInterface::UpdateNodeDescription (uint32_t nodeId, std::string descr)
+{
+  NS_ASSERT (NodeList::GetNode (nodeId));
+  nodeDescriptions[nodeId] = descr;
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_nodeupdate (nodeId);
+  WriteN (oss.str ());
+}
+
+
 
 void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr)
 {
@@ -1492,10 +1561,37 @@ std::string AnimationInterface::GetXMLOpen_topology (double minX, double minY, d
 
 }
 
+std::string AnimationInterface::GetXMLOpenClose_nodeupdate (uint32_t id, bool visible)
+{
+  struct Rgb rgb = nodeColors[id];
+  uint8_t r = rgb.r;
+  uint8_t g = rgb.g;
+  uint8_t b = rgb.b;
+  std::ostringstream oss;
+  oss << "<nodeupdate id=\"" << id << "\"";
+  oss << " t=\"" << Simulator::Now ().GetSeconds () << "\"";
+  if (visible)
+    oss << " visible=\"" << 1 << "\"";
+  else
+    oss << " visible=\"" << 0 << "\"";
+  if (nodeDescriptions.find (id) != nodeDescriptions.end ())
+    {
+      oss << " descr=\""<< nodeDescriptions[id] << "\"";
+    }
+  else
+    {
+      oss << " descr=\"\"";
+    }
+  oss << " r=\"" << (uint32_t)r << "\" "
+      << " g=\"" << (uint32_t)g << "\" b=\"" << (uint32_t)b <<"\"/>\n";
+  return oss.str ();
+
+}
+
 std::string AnimationInterface::GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY)
 {
   std::ostringstream oss;
-  oss <<"<node id = \"" << id << "\""; 
+  oss <<"<node id=\"" << id << "\""; 
   if (nodeDescriptions.find (id) != nodeDescriptions.end ())
     {
       oss << " descr=\""<< nodeDescriptions[id] << "\"";
