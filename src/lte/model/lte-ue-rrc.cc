@@ -22,6 +22,8 @@
 #include <ns3/log.h>
 #include "ns3/object-map.h"
 #include "ns3/object-factory.h"
+#include "ns3/node-list.h"
+#include "ns3/node.h"
 
 #include "lte-ue-rrc.h"
 #include "lte-enb-rrc.h"
@@ -289,7 +291,7 @@ LteUeRrc::DoConnect ()
 {
   NS_LOG_FUNCTION (this);
   
-  m_rnti = m_enbRrc->AddUe (m_imsi);
+  m_rnti = m_enbRrc->ConnectionRequest (m_imsi);
   m_cmacSapProvider->ConfigureUe (m_rnti);
   m_cphySapProvider->SetRnti (m_rnti);
 }
@@ -327,6 +329,43 @@ LteUeRrc::DoRrcConfigurationUpdateInd (LteUeConfig_t params)
   m_cphySapProvider->SetTransmissionMode (params.m_transmissionMode);
 }
 
+void 
+LteUeRrc::ConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti)
+{
+  Ptr<LteEnbNetDevice> enbDev;
+  // WILD HACK - eventually we'll get rid of all these Ptr<Device> around
+  NodeList::Iterator listEnd = NodeList::End ();
+  bool found = false;
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      int nDevs = node->GetNDevices ();
+      for (int j = 0; j < nDevs; j++)
+        {
+          enbDev = node->GetDevice (j)->GetObject <LteEnbNetDevice> ();
+          if (!enbDev)
+            {
+              continue;
+            }
+          else
+            {
+              if (enbDev->GetCellId () == targetCellId)
+                {
+                  found = true;                  
+                }
+            }
+        }
+    }
+  NS_ASSERT_MSG (found , " Unable to find eNB with CellId =" << targetCellId);
 
+
+  DoForceCampedOnEnb (enbDev, targetCellId);
+  m_rnti = newRnti;
+  m_cmacSapProvider->ConfigureUe (m_rnti);
+  m_cphySapProvider->SetRnti (m_rnti);
+  enbDev->GetObject<LteEnbRrc> ()->ConnectionReestablishmentRequest (m_imsi, m_rnti);
+  
+}
+  
 } // namespace ns3
 

@@ -657,13 +657,11 @@ EpcTestRrc::GetS1SapUser ()
 void 
 EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
-  EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters response;   
-  // works for a single eNB scenario with at most 1 LCID per UE
-  response.rnti = (uint16_t) request.imsi;
+  EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;   
+  response.rnti = request.rnti;
   response.lcid = 1;      
-  response.success = true;
   response.teid = request.teid;
-  m_s1SapProvider->DataRadioBearerSetupResponse (response);
+  m_s1SapProvider->S1BearerSetupRequest (response);
 }
 
 

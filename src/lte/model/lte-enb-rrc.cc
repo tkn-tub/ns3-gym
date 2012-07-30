@@ -26,6 +26,7 @@
 #include "ns3/pointer.h"
 #include "ns3/object-map.h"
 #include "ns3/object-factory.h"
+#include "ns3/simulator.h"
 
 #include "ns3/lte-enb-rrc.h"
 #include "ns3/lte-enb-net-device.h"
@@ -132,6 +133,12 @@ UeInfo::GetImsi (void)
   return m_imsi;
 }
 
+void
+UeInfo::SetImsi (uint64_t imsi)
+{
+  m_imsi = imsi;
+}
+
 uint8_t
 UeInfo::AddRadioBearer (Ptr<LteRadioBearerInfo> rbi)
 {
@@ -171,11 +178,7 @@ UeInfo::RemoveRadioBearer (uint8_t lcid)
   NS_ASSERT_MSG (it != m_rbMap.end (), "request to remove radio bearer with unknown lcid " << lcid);
   m_rbMap.erase (it);
 }
-
-
-
-
-
+  
 // ///////////////////////////
 // eNB RRC methods
 // ///////////////////////////
@@ -356,20 +359,60 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth, uint16_t ulE
   m_cmacSapProvider->ConfigureMac (ulBandwidth, dlBandwidth);
   m_cphySapProvider->SetBandwidth (ulBandwidth, dlBandwidth);
   m_cphySapProvider->SetEarfcn (ulEarfcn, dlEarfcn);
+  m_cellId = cellId;
   m_cphySapProvider->SetCellId (cellId);
   m_configured = true;
 }
 
 uint16_t
-LteEnbRrc::AddUe (uint64_t imsi)
+LteEnbRrc::ConnectionRequest (uint64_t imsi)
 {
-  NS_LOG_FUNCTION (this << imsi);
+  NS_LOG_FUNCTION (this);
   // no Call Admission Control for now
-  uint16_t rnti = CreateUeInfo (imsi); // side effect: create UeInfo for this UE
-  m_imsiRntiMap[imsi] = rnti; // side effect: add entry if not present
+  uint16_t rnti = AddUe ();
+  std::map<uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (rnti);
+  NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
+  it->second->SetImsi (imsi);
+
+  if (m_s1SapProvider != 0)
+    {
+      m_s1SapProvider->InitialUeMessage (imsi, rnti);
+    }
+
+  return rnti;
+}
+
+
+uint16_t
+LteEnbRrc::ConnectionReestablishmentRequest (uint64_t imsi, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this);
+  // no Call Admission Control for now
+  std::map<uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (rnti);
+  NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
+
+  // this is needed because if the reestablishment comes from handover we don't know the imsi yet
+  it->second->SetImsi (imsi);
+
+  if (m_s1SapProvider != 0)
+    {
+      m_s1SapProvider->InitialUeMessage (imsi, rnti);
+    }
+
+  return rnti;
+}
+
+
+uint16_t
+LteEnbRrc::AddUe ()
+{
+  NS_LOG_FUNCTION (this);
+  // no Call Admission Control for now
+  uint16_t rnti = CreateUeInfo (); // side effect: create UeInfo for this UE
   NS_ASSERT_MSG (rnti != 0, "CreateUeInfo returned RNTI==0");
   m_cmacSapProvider->AddUe (rnti);
-  m_cphySapProvider->AddUe (imsi, rnti);
+  // need to do this after the present method returns, because under the hood a lookup is done for the RNTI, and otherwise the UE will not have it assigned yet
+  Simulator::ScheduleNow (&LteEnbCphySapProvider::AddUe, m_cphySapProvider, rnti);
   return rnti;
 }
 
@@ -378,7 +421,6 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   RemoveUeInfo (rnti);
-  m_imsiRntiMap.erase (rnti);
   NS_FATAL_ERROR ("missing RemoveUe method in CMAC SAP");
 }
 
@@ -420,32 +462,21 @@ LteEnbRrc::GetRlcType (EpsBearer bearer)
 void 
 LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
-  EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters response;
-  std::map<uint64_t, uint16_t>::iterator it = m_imsiRntiMap.find (request.imsi);
-  if (it == m_imsiRntiMap.end ())
-    {
-      NS_LOG_ERROR ("unknown IMSI");
-      response.success = false;
-      if (m_s1SapProvider)
-        {
-          m_s1SapProvider->DataRadioBearerSetupResponse (response);      
-        }
-    }
-  else
-    {
-      response.rnti = it->second;
-      response.lcid = SetupRadioBearer (response.rnti, request.bearer);      
-      response.success = (response.lcid > 0);
-      response.teid = request.teid;
-      if (m_s1SapProvider)
-        {          
-          m_s1SapProvider->DataRadioBearerSetupResponse (response);
-        }
+  EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;
+  std::map<uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (request.rnti);
+  NS_ASSERT_MSG (it != m_ueMap.end (), "unknown RNTI");
+  response.rnti = request.rnti;
+  response.lcid = SetupRadioBearer (response.rnti, request.bearer, request.teid);      
+  NS_ASSERT_MSG (response.lcid > 0, "SetupRadioBearer() returned LCID == 0. Too many LCs?");
+  response.teid = request.teid;
+  if (m_s1SapProvider)
+    {          
+      m_s1SapProvider->S1BearerSetupRequest (response);
     }
 }
 
 uint8_t
-LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer)
+LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint32_t teid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
 
@@ -461,6 +492,8 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer)
   rlc->SetRnti (rnti);
 
   Ptr<LteRadioBearerInfo> rbInfo = CreateObject<LteRadioBearerInfo> ();
+  rbInfo->m_epsBearer = bearer;
+  rbInfo->m_teid = teid;
   rbInfo->m_rlc = rlc;
   uint8_t lcid = ueInfo->AddRadioBearer (rbInfo);
   if (lcid == 0)
@@ -546,19 +579,19 @@ LteEnbRrc::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 // User API
 //
 void
-LteEnbRrc::SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
+LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
 {
-  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
+  NS_LOG_FUNCTION (this << rnti << cellId);
   NS_LOG_LOGIC ("Request to send HANDOVER REQUEST");
-  
-  Ptr<LteUeRrc> ueRrc = ueNode->GetDevice (0)->GetObject<LteUeNetDevice> ()->GetRrc ();
-  uint16_t rnti = ueRrc->GetRnti ();
+
+  std::map<uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (rnti);
+  NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
 
   EpcX2SapProvider::HandoverRequestParams params;
   params.oldEnbUeX2apId = rnti;
   params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
-  params.sourceCellId   = sourceEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
-  params.targetCellId   = targetEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetCellId ();
+  params.sourceCellId   = m_cellId;
+  params.targetCellId   = cellId;
   params.ueAggregateMaxBitRateDownlink = 200 * 1000;
   params.ueAggregateMaxBitRateUplink = 100 * 1000;
   
@@ -588,9 +621,19 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
   
-  uint8_t rrcData [100];
-  params.rrcContext->CopyData (rrcData, params.rrcContext->GetSize ());
-  NS_LOG_LOGIC ("rrcContext   = " << rrcData);
+  // this crashes, apparently EpcX2 is not correctly filling in the params yet
+  //  uint8_t rrcData [100];
+  // params.rrcContext->CopyData (rrcData, params.rrcContext->GetSize ());
+  // NS_LOG_LOGIC ("rrcContext   = " << rrcData);
+
+  uint16_t rnti = AddUe ();
+
+  for (std::vector <EpcX2Sap::ErabToBeSetupItem>::iterator it = params.bearers.begin ();
+       it != params.bearers.end ();
+       ++it)
+    {
+      SetupRadioBearer (rnti, it->erabLevelQosParameters, it->gtpTeid);
+    }
 
   NS_LOG_LOGIC ("Send X2 message: HANDOVER REQUEST ACK");
 
@@ -651,9 +694,9 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 
 
 uint16_t
-LteEnbRrc::CreateUeInfo (uint64_t imsi)
+LteEnbRrc::CreateUeInfo ()
 {
-  NS_LOG_FUNCTION (this << imsi);
+  NS_LOG_FUNCTION (this);
   for (uint16_t rnti = m_lastAllocatedRnti; rnti != m_lastAllocatedRnti - 1; ++rnti)
     {
       if (rnti != 0)
@@ -661,7 +704,7 @@ LteEnbRrc::CreateUeInfo (uint64_t imsi)
           if (m_ueMap.find (rnti) == m_ueMap.end ())
             {
               m_lastAllocatedRnti = rnti;
-              m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, CreateObject<UeInfo> (imsi)));
+              m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, CreateObject<UeInfo> ()));
               return rnti;
             }
         }

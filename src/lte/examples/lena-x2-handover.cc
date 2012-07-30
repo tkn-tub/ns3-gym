@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover
-  lteHelper->HandoverRequest (Seconds (2.0), ueNodes.Get (0), enbNodes.Get (0), enbNodes.Get (1));
+  lteHelper->HandoverRequest (Seconds (2.0), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
 
   
   Simulator::Stop(Seconds(simTime));

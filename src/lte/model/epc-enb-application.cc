@@ -82,20 +82,31 @@ EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bea
   NS_LOG_FUNCTION (this << teid << imsi);
   // request the RRC to setup a radio bearer
   struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
-  params.imsi = imsi;
   params.bearer = bearer;
   params.teid = teid;
+  std::map<uint64_t, uint16_t>::iterator it = m_imsiRntiMap.find (imsi);
+  NS_ASSERT_MSG (it != m_imsiRntiMap.end (), "unknown IMSI");
+  params.rnti = it->second;
   m_s1SapUser->DataRadioBearerSetupRequest (params);
 }
 
 void 
-EpcEnbApplication::DoDataRadioBearerSetupResponse (EpcEnbS1SapProvider::DataRadioBearerSetupResponseParameters params)
+EpcEnbApplication::DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params)
 {
-  NS_ASSERT_MSG (params.success, "Radio Bearer Setup failed");  
+  NS_LOG_FUNCTION (this);
   LteFlowId_t rbid (params.rnti, params.lcid);
   // side effect: create entries if not exist
   m_rbidTeidMap[rbid] = params.teid;
   m_teidRbidMap[params.teid] = rbid;
+}
+
+
+void 
+EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this);
+  // side effect: create entry if not exist
+  m_imsiRntiMap[imsi] = rnti;
 }
 
 void 

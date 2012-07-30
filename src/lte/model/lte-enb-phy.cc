@@ -33,6 +33,7 @@
 #include "lte-spectrum-value-helper.h"
 #include "ideal-control-messages.h"
 #include "lte-enb-net-device.h"
+#include "lte-ue-rrc.h"
 #include "lte-enb-mac.h"
 #include <ns3/lte-common.h>
 
@@ -606,9 +607,9 @@ LteEnbPhy::DoSetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn)
 
 
 void 
-LteEnbPhy::DoAddUe (uint64_t imsi, uint16_t rnti)
+LteEnbPhy::DoAddUe (uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this << imsi << rnti);
+  NS_LOG_FUNCTION (this << rnti);
   // since for now ctrl messages are still sent directly to the UePhy
   // without passing to the channel, we need to get a pointer to the
   // UePhy. We do so by walking the whole UE list. This code will
@@ -630,7 +631,8 @@ LteEnbPhy::DoAddUe (uint64_t imsi, uint16_t rnti)
             }
           else
             {
-              if (ueDev->GetImsi () == imsi)
+              Ptr<LteUeRrc> rrc = ueDev->GetRrc ();
+              if ((rrc->GetRnti () == rnti) && (rrc->GetCellId () == m_cellId))
                 {
                   found = true;
                   uePhy = ueDev->GetPhy ();
@@ -638,7 +640,7 @@ LteEnbPhy::DoAddUe (uint64_t imsi, uint16_t rnti)
             }
         }
     }
-  NS_ASSERT_MSG (found , " Unable to find UE with IMSI =" << imsi);
+  NS_ASSERT_MSG (found , " Unable to find UE with RNTI=" << rnti << " cellId=" << m_cellId);
   bool success = AddUePhy (rnti, uePhy);
   NS_ASSERT_MSG (success, "AddUePhy() failed");
 }

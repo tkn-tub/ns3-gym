@@ -67,10 +67,9 @@ public:
   /** 
    * Add a new UE to the cell
    * 
-   * \param imsi the unique UE id
    * \param rnti the UE id relative to this cell
    */
-  virtual void AddUe (uint64_t imsi, uint16_t rnti) = 0;
+  virtual void AddUe (uint16_t rnti) = 0;
 
   
   /**
@@ -115,7 +114,7 @@ public:
   virtual void SetCellId (uint16_t cellId);
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn);
-  virtual void AddUe (uint64_t imsi, uint16_t rnti);
+  virtual void AddUe (uint16_t rnti);
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
 
 private:
@@ -158,9 +157,9 @@ MemberLteEnbCphySapProvider<C>::SetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn)
 
 template <class C>
 void 
-MemberLteEnbCphySapProvider<C>::AddUe (uint64_t imsi, uint16_t rnti)
+MemberLteEnbCphySapProvider<C>::AddUe (uint16_t rnti)
 {
-  m_owner->DoAddUe (imsi, rnti);
+  m_owner->DoAddUe (rnti);
 }
 
 

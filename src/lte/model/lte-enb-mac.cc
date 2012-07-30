@@ -59,6 +59,7 @@ public:
   // inherited from LteEnbCmacSapProvider
   virtual void ConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void AddUe (uint16_t rnti);
+  virtual void RemoveUe (uint16_t rnti);
   virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
@@ -84,6 +85,12 @@ void
 EnbMacMemberLteEnbCmacSapProvider::AddUe (uint16_t rnti)
 {
   m_mac->DoAddUe (rnti);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::RemoveUe (uint16_t rnti)
+{
+  m_mac->DoRemoveUe (rnti);
 }
 
 void
@@ -640,6 +647,14 @@ LteEnbMac::DoAddUe (uint16_t rnti)
   m_cschedSapProvider->CschedUeConfigReq (params);
 }
 
+void
+LteEnbMac::DoRemoveUe (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << " rnti=" << rnti);
+  FfMacCschedSapProvider::CschedUeReleaseReqParameters params;
+  params.m_rnti = rnti;
+  m_cschedSapProvider->CschedUeReleaseReq (params);
+}
 
 void
 LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)

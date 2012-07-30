@@ -267,17 +267,6 @@ EpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 }
 
 
-void
-EpcHelper::SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode)
-{
-  NS_LOG_FUNCTION (this << ueNode << sourceEnbNode << targetEnbNode);
-
-  Ptr<LteEnbRrc> sourceRrc = sourceEnbNode->GetDevice (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-
-  sourceRrc->SendHandoverRequest (ueNode, sourceEnbNode, targetEnbNode);
-}
-
-
 void 
 EpcHelper::AttachUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<NetDevice> enbDevice)
 {

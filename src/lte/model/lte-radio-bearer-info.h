@@ -21,6 +21,7 @@
 
 #include <ns3/object.h>
 #include <ns3/pointer.h>
+#include <ns3/eps-bearer.h>
 
 namespace ns3 {
 
@@ -41,7 +42,8 @@ public:
 
   Ptr<LteRlc> m_rlc;
   Ptr<LtePdcp> m_pdcp;  
-
+  EpsBearer m_epsBearer;
+  uint32_t m_teid;
 };
 
 

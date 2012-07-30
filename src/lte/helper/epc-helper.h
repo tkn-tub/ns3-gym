@@ -90,9 +90,6 @@ public:
    */
   void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
 
-  void SendHandoverRequest (Ptr<Node> ueNode, Ptr<Node> sourceEnbNode, Ptr<Node> targetEnbNode);
-
-
   /** 
    * Activate an EPS bearer, setting up the corresponding S1-U tunnel.
    * 
