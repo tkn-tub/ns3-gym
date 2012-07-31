@@ -115,8 +115,17 @@ outf="doc/ns3_html_theme/static/ns3_version.js"
 distance=`hg log -r tip --template '{latesttagdistance}'`
 if [ $distance -eq 0 ]; then
     version=`hg log -r tip --template '{latesttag}'`
+    say "at tag $version"
 else
+    say "beyond latest tag"
     version=`hg log -r tip --template '{node|short}'`
+    say "latest commit: $version"
+    # Check for uncommitted changes
+    hg summary | grep -q 'commit: (clean)'
+    if [ $? ] ; then
+	say "uncommitted changes"
+	version="$version(+)"
+    fi
 fi
 
 if [ $tag -eq 1 ]; then
@@ -148,11 +157,11 @@ else
 fi
 
 # Copy to html directories
-# This is not always done automatically by the Doxygen and Sphinx build steps
+# This seems not always done automatically
+# by the Sphinx build
 cd doc 2>&1 >/dev/null
-for d in {manual,models,tutorial{,-pt-br}}/build/html/_static html ; do
+for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static html ; do
     cp ns3_html_theme/static/ns3_version.js $d
-    cp ns3_html_theme/static/ns3_links.js $d
 done
 cd - 2>&1 >/dev/null
 

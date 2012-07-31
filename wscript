@@ -1079,6 +1079,12 @@ def _doxygen(bld):
 
 from waflib import Context, Build
 
+def _getVersion():
+    """update the ns3_version.js file, when building documentation"""
+
+    if subprocess.Popen(["doc/ns3_html_theme/get_version.sh"]).wait() :
+        raise SystemExit(1)
+
 class Ns3DoxygenContext(Context.Context):
     """do a full build, generate the introspected doxygen and then the doxygen"""
     cmd = 'doxygen'
@@ -1089,6 +1095,7 @@ class Ns3DoxygenContext(Context.Context):
 	bld.cmd = "build"
 	bld.execute()
         _doxygen(bld)
+        _getVersion()
 
 from waflib import Context, Build
 class Ns3SphinxContext(Context.Context):
@@ -1099,13 +1106,15 @@ class Ns3SphinxContext(Context.Context):
     def sphinx_build(self, path):
         print
         print "[waf] Building sphinx docs for " + path
-        if subprocess.Popen(["make", "SPHINXOPTS=-N", "-k", "html", "singlehtml"],
+        if subprocess.Popen(["make", "SPHINXOPTS=-N", "-k",
+                             "html", "singlehtml", "latexpdf" ],
                             cwd=path).wait() :
             raise SystemExit(1)
 
     def execute(self):
         for sphinxdir in ["manual", "models", "tutorial", "tutorial-pt-br"] :
             self.sphinx_build(os.path.join("doc", sphinxdir))
+        _getVersion()
      
 
 from waflib import Context, Build
