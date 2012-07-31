@@ -31,11 +31,12 @@
 #include "lte-ue-phy.h"
 #include "lte-net-device.h"
 #include "lte-spectrum-value-helper.h"
-#include "ideal-control-messages.h"
+#include "lte-control-messages.h"
 #include "lte-enb-net-device.h"
 #include "lte-ue-rrc.h"
 #include "lte-enb-mac.h"
 #include <ns3/lte-common.h>
+#include <ns3/lte-vendor-specific-parameters.h>
 
 // WILD HACK for the inizialization of direct eNB-UE ctrl messaging
 #include <ns3/node-list.h>
@@ -46,6 +47,14 @@ NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 namespace ns3 {
 
+
+// duration of the data part of a subframe in DL
+// = 0.001 / 14 * 11 (fixed to 11 symbols) -1ns as margin to avoid overlapping simulator events
+static const Time DL_DATA_DURATION = NanoSeconds (785714 -1);
+
+//  delay from subframe start to transmission of the data in DL 
+// = 0.001 / 14 * 3 (ctrl fixed to 3 symbols)
+static const Time DL_CTRL_DELAY_FROM_SUBFRAME_START = NanoSeconds (214286);
 
 ////////////////////////////////////////
 // member SAP forwarders
@@ -61,9 +70,10 @@ public:
   virtual void SendMacPdu (Ptr<Packet> p);
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetCellId (uint16_t cellId);
-  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual uint8_t GetMacChTtiDelay ();
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi);
   
 
 private:
@@ -95,9 +105,9 @@ EnbMemberLteEnbPhySapProvider::SetCellId (uint16_t cellId)
 }
 
 void
-EnbMemberLteEnbPhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
+EnbMemberLteEnbPhySapProvider::SendLteControlMessage (Ptr<LteControlMessage> msg)
 {
-  m_phy->DoSendIdealControlMessage (msg);
+  m_phy->DoSendLteControlMessage (msg);
 }
 
 uint8_t
@@ -110,6 +120,12 @@ void
 EnbMemberLteEnbPhySapProvider::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
 {
   m_phy->DoSetTransmissionMode (rnti, txMode);
+}
+
+void
+EnbMemberLteEnbPhySapProvider::SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
+{
+  m_phy->DoSetSrsConfigurationIndex (rnti, srcCi);
 }
 
 
@@ -133,7 +149,9 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_enbPhySapUser (0),
     m_enbCphySapUser (0),
     m_nrFrames (0),
-    m_nrSubFrames (0)
+    m_nrSubFrames (0),
+    m_srsPeriodicity (0),
+    m_currentSrsOffset (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   m_enbCphySapProvider = new MemberLteEnbCphySapProvider<LteEnbPhy> (this);
@@ -184,6 +202,7 @@ LteEnbPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_ueAttached.clear ();
+  m_srsUeOffset.clear ();
   delete m_enbPhySapProvider;
   delete m_enbCphySapProvider;
   LtePhy::DoDispose ();
@@ -262,14 +281,14 @@ LteEnbPhy::SetMacChDelay (uint8_t delay)
     {
       Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
       m_packetBurstQueue.push_back (pb);
-      std::list<Ptr<IdealControlMessage> > l;
+      std::list<Ptr<LteControlMessage> > l;
       m_controlMessagesQueue.push_back (l);
-      std::list<UlDciIdealControlMessage> l1;
+      std::list<UlDciLteControlMessage> l1;
       m_ulDciQueue.push_back (l1);
     }
   for (int i = 0; i < UL_PUSCH_TTIS_DELAY; i++)
     {
-      std::list<UlDciIdealControlMessage> l1;
+      std::list<UlDciLteControlMessage> l1;
       m_ulDciQueue.push_back (l1);
     }
 }
@@ -283,14 +302,14 @@ LteEnbPhy::GetMacChDelay (void) const
 
 
 bool
-LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
+LteEnbPhy::AddUePhy (uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this);
-  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
+  NS_LOG_FUNCTION (this << rnti);
+  std::set <uint16_t>::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
-      m_ueAttached.insert (std::pair<uint16_t, Ptr<LteUePhy> > (rnti, phy));
+      m_ueAttached.insert (rnti);
       return (true);
     }
   else
@@ -303,8 +322,8 @@ LteEnbPhy::AddUePhy (uint16_t rnti, Ptr<LteUePhy> phy)
 bool
 LteEnbPhy::DeleteUePhy (uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this);
-  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
+  NS_LOG_FUNCTION (this << rnti);
+  std::set <uint16_t>::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
@@ -342,13 +361,20 @@ LteEnbPhy::PhyPduReceived (Ptr<Packet> p)
 }
 
 void
-LteEnbPhy::DoSetDownlinkSubChannels ()
+LteEnbPhy::SetDownlinkSubChannels (std::vector<int> mask)
 {
   NS_LOG_FUNCTION (this);
+  m_listOfDownlinkSubchannel = mask;
   Ptr<SpectrumValue> txPsd = CreateTxPowerSpectralDensity ();
   m_downlinkSpectrumPhy->SetTxPowerSpectralDensity (txPsd);
 }
 
+std::vector<int>
+LteEnbPhy::GetDownlinkSubChannels (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_listOfDownlinkSubchannel;
+}
 
 Ptr<SpectrumValue>
 LteEnbPhy::CreateTxPowerSpectralDensity ()
@@ -369,7 +395,7 @@ LteEnbPhy::CalcChannelQualityForUe (std::vector <double> sinr, Ptr<LteSpectrumPh
 
 
 void
-LteEnbPhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteEnbPhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
   // queues the message (wait for MAC-PHY delay)
@@ -379,10 +405,23 @@ LteEnbPhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 
 void
-LteEnbPhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteEnbPhy::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
+  NS_FATAL_ERROR ("Obsolete function");
   NS_LOG_FUNCTION (this << msg);
-  m_enbPhySapUser->ReceiveIdealControlMessage (msg);
+  m_enbPhySapUser->ReceiveLteControlMessage (msg);
+}
+
+void
+LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgList)
+{
+  NS_LOG_FUNCTION (this);
+  std::list<Ptr<LteControlMessage> >::iterator it;
+  for (it = msgList.begin (); it != msgList.end(); it++)
+    {
+      m_enbPhySapUser->ReceiveLteControlMessage (*it);
+    }
+    
 }
 
 
@@ -405,55 +444,59 @@ LteEnbPhy::StartSubFrame (void)
   NS_LOG_FUNCTION (this);
 
   ++m_nrSubFrames;
+  if (m_srsPeriodicity>0)
+    { 
+      // might be 0 in case the eNB has no UEs attached
+      m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
+    }
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
   
+  
   // update info on TB to be received
-  std::list<UlDciIdealControlMessage> uldcilist = DequeueUlDci ();
-  std::list<UlDciIdealControlMessage>::iterator dciIt = uldcilist.begin ();
+  std::list<UlDciLteControlMessage> uldcilist = DequeueUlDci ();
+  std::list<UlDciLteControlMessage>::iterator dciIt = uldcilist.begin ();
+  m_ulRntiRxed.clear ();
+  NS_LOG_DEBUG (this << " eNB Expected TBs " << uldcilist.size ());
   for (dciIt = uldcilist.begin (); dciIt!=uldcilist.end (); dciIt++)
-  {
-    std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
-    it2 = m_ueAttached.find ((*dciIt).GetDci ().m_rnti);
-    
-    if (it2 == m_ueAttached.end ())
     {
-      NS_LOG_ERROR ("UE not attached");
+      std::set <uint16_t>::iterator it2;
+      it2 = m_ueAttached.find ((*dciIt).GetDci ().m_rnti);
+      
+      if (it2 == m_ueAttached.end ())
+        {
+          NS_LOG_ERROR ("UE not attached");
+        }
+      else
+        {
+          // send info of TB to LteSpectrumPhy 
+          // translate to allocation map
+          std::vector <int> rbMap;
+          for (int i = (*dciIt).GetDci ().m_rbStart; i < (*dciIt).GetDci ().m_rbStart + (*dciIt).GetDci ().m_rbLen; i++)
+            {
+              rbMap.push_back (i);
+            }
+          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/);
+          m_ulRntiRxed.push_back ((*dciIt).GetDci ().m_rnti);
+        }
     }
-    else
-    {
-      // send info of TB to LteSpectrumPhy 
-      // translate to allocation map
-      std::vector <int> rbMap;
-      for (int i = (*dciIt).GetDci ().m_rbStart; i < (*dciIt).GetDci ().m_rbStart + (*dciIt).GetDci ().m_rbLen; i++)
-      {
-        rbMap.push_back (i);
-      }
-      m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/);
-    }
-  }
 
-  // send the current burst of control messages
-  std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
-  std::vector <int> dlRb;
+  // process the current burst of control messages
+  std::list<Ptr<LteControlMessage> > ctrlMsg = GetControlMessages ();
+  std::list<DlDciListElement_s> dlDci;
+  std::list<UlDciListElement_s> ulDci;
+//   std::vector <int> dlRb;
+  m_dlDataRbMap.clear ();
   if (ctrlMsg.size () > 0)
     {
-      std::list<Ptr<IdealControlMessage> >::iterator it;
+      std::list<Ptr<LteControlMessage> >::iterator it;
       it = ctrlMsg.begin ();
       while (it != ctrlMsg.end ())
         {
-          Ptr<IdealControlMessage> msg = (*it);
-          if (msg->GetMessageType () == IdealControlMessage::DL_DCI)
+          Ptr<LteControlMessage> msg = (*it);
+          if (msg->GetMessageType () == LteControlMessage::DL_DCI)
             {
-              std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
-              Ptr<DlDciIdealControlMessage> dci = DynamicCast<DlDciIdealControlMessage> (msg);
-              it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
-
-              if (it2 == m_ueAttached.end ())
-                {
-                  NS_LOG_ERROR ("UE not attached");
-                }
-              else
-                {
+              Ptr<DlDciLteControlMessage> dci = DynamicCast<DlDciLteControlMessage> (msg);
+              dlDci.push_back (dci->GetDci ());
                   // get the tx power spectral density according to DL-DCI(s)
                   // translate the DCI to Spectrum framework
                   uint32_t mask = 0x1;
@@ -463,61 +506,70 @@ LteEnbPhy::StartSubFrame (void)
                         {
                           for (int k = 0; k < GetRbgSize (); k++)
                             {
-                              dlRb.push_back ((i * GetRbgSize ()) + k);
+                              m_dlDataRbMap.push_back ((i * GetRbgSize ()) + k);
                               //NS_LOG_DEBUG(this << " [enb]DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
                             }
                         }
                       mask = (mask << 1);
                     }
-                  (*it2).second->ReceiveIdealControlMessage (msg);
-                }
             }
-          else if (msg->GetMessageType () == IdealControlMessage::UL_DCI)
+          else if (msg->GetMessageType () == LteControlMessage::UL_DCI)
             {
-              std::map <uint16_t, Ptr<LteUePhy> >::iterator it2;
-              Ptr<UlDciIdealControlMessage> dci = DynamicCast<UlDciIdealControlMessage> (msg);
-//               QueueUlDci (*dci);
-              it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
-
-              if (it2 == m_ueAttached.end ())
-                {
-                  NS_LOG_ERROR ("UE not attached");
-                }
-              else
-                {
-                  (*it2).second->ReceiveIdealControlMessage (msg);
-                  QueueUlDci (*dci);
-                }
+              Ptr<UlDciLteControlMessage> dci = DynamicCast<UlDciLteControlMessage> (msg);
+              QueueUlDci (*dci);
+              ulDci.push_back (dci->GetDci ());
             }
-          ctrlMsg.pop_front ();
-          it = ctrlMsg.begin ();
+          it++;
+
         }
     }
-  // set the current tx power spectral density
-  SetDownlinkSubChannels (dlRb);
-  // send the current burts of packets
+    
+  SendControlChannels (ctrlMsg);
+  
+  // send data frame
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      NS_LOG_LOGIC (this << " eNB start TX");
-      m_downlinkSpectrumPhy->StartTx (pb);
+      Simulator::Schedule (DL_CTRL_DELAY_FROM_SUBFRAME_START, // ctrl frame fixed to 3 symbols
+                       &LteEnbPhy::SendDataChannels,
+                       this,pb);
     }
 
   // trigger the MAC
   m_enbPhySapUser->SubframeIndication (m_nrFrames, m_nrSubFrames);
 
-
-  // trigger the UE(s)
-  std::map <uint16_t, Ptr<LteUePhy> >::iterator it;
-  for (it = m_ueAttached.begin (); it != m_ueAttached.end (); it++)
-    {
-      (*it).second->SubframeIndication (m_nrFrames, m_nrSubFrames);
-    }
-
   Simulator::Schedule (Seconds (GetTti ()),
                        &LteEnbPhy::EndSubFrame,
                        this);
 
+}
+
+void
+LteEnbPhy::SendControlChannels (std::list<Ptr<LteControlMessage> > ctrlMsgList)
+{
+  NS_LOG_FUNCTION (this << " eNB " << m_cellId << " start tx ctrl frame");
+  // set the current tx power spectral density (full bandwidth)
+  std::vector <int> dlRb;
+  for (uint8_t i = 0; i < m_dlBandwidth; i++)
+    {
+      dlRb.push_back (i);
+    }
+  SetDownlinkSubChannels (dlRb);
+  NS_LOG_LOGIC (this << " eNB start TX CTRL");
+  m_downlinkSpectrumPhy->StartTxDlCtrlFrame (ctrlMsgList);
+  
+}
+
+void
+LteEnbPhy::SendDataChannels (Ptr<PacketBurst> pb)
+{
+  // set the current tx power spectral density
+  SetDownlinkSubChannels (m_dlDataRbMap);
+  // send the current burts of packets
+  NS_LOG_LOGIC (this << " eNB start TX DATA");
+  std::list<Ptr<LteControlMessage> > ctrlMsgList;
+  ctrlMsgList.clear ();
+  m_downlinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsgList, DL_DATA_DURATION);
 }
 
 
@@ -545,20 +597,30 @@ LteEnbPhy::EndFrame (void)
 
 
 void 
-LteEnbPhy::GenerateCqiReport (const SpectrumValue& sinr)
+LteEnbPhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
-  m_enbPhySapUser->UlCqiReport (CreateUlCqiReport (sinr));
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi = CreateSrsCqiReport (sinr);
+  m_enbPhySapUser->UlCqiReport (ulcqi);
+}
+
+void
+LteEnbPhy::GenerateDataCqiReport (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this << sinr);
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi = CreatePuschCqiReport (sinr);
+  m_enbPhySapUser->UlCqiReport (ulcqi);
 }
 
 
-UlCqi_s
-LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
+
+FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
+LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
   Values::const_iterator it;
-  UlCqi_s ulcqi;
-  ulcqi.m_type = UlCqi_s::PUSCH;
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
+  ulcqi.m_ulCqi.m_type = UlCqi_s::PUSCH;
   int i = 0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
     {
@@ -566,7 +628,7 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
 //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
       // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
       int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
-      ulcqi.m_sinr.push_back (sinrFp);
+      ulcqi.m_ulCqi.m_sinr.push_back (sinrFp);
       i++;
     }
   return (ulcqi);
@@ -610,39 +672,39 @@ void
 LteEnbPhy::DoAddUe (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
-  // since for now ctrl messages are still sent directly to the UePhy
-  // without passing to the channel, we need to get a pointer to the
-  // UePhy. We do so by walking the whole UE list. This code will
-  // eventually go away when a real control channel is implemented.
-
-  Ptr<LteUePhy> uePhy;
-  NodeList::Iterator listEnd = NodeList::End ();
-  bool found = false;
-  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
-    {
-      Ptr<Node> node = *i;
-      int nDevs = node->GetNDevices ();
-      for (int j = 0; j < nDevs; j++)
-        {
-          Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
-          if (!ueDev)
-            {
-              continue;
-            }
-          else
-            {
-              Ptr<LteUeRrc> rrc = ueDev->GetRrc ();
-              if ((rrc->GetRnti () == rnti) && (rrc->GetCellId () == m_cellId))
-                {
-                  found = true;
-                  uePhy = ueDev->GetPhy ();
-                }
-            }
-        }
-    }
-  NS_ASSERT_MSG (found , " Unable to find UE with RNTI=" << rnti << " cellId=" << m_cellId);
-  bool success = AddUePhy (rnti, uePhy);
+ 
+  bool success = AddUePhy (rnti);
   NS_ASSERT_MSG (success, "AddUePhy() failed");
+}
+
+
+FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
+LteEnbPhy::CreateSrsCqiReport (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this << sinr);
+  Values::const_iterator it;
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
+  ulcqi.m_ulCqi.m_type = UlCqi_s::SRS;
+  int i = 0;
+  for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+  {
+    double sinrdb = 10 * log10 ((*it));
+    //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
+    // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
+    int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
+    ulcqi.m_ulCqi.m_sinr.push_back (sinrFp);
+    i++;
+  }
+  // Insert the user generated the srs as a vendor specific parameter
+  NS_LOG_DEBUG (this << " ENB RX UL-CQI of " << m_srsUeOffset.at (m_currentSrsOffset));
+  VendorSpecificListElement_s vsp;
+  vsp.m_type = SRS_CQI_RNTI_VSP;
+  vsp.m_length = sizeof(SrsCqiRntiVsp);
+  Ptr<SrsCqiRntiVsp> rnti  = Create <SrsCqiRntiVsp> (m_srsUeOffset.at (m_currentSrsOffset));
+  vsp.m_value = rnti;
+  ulcqi.m_vendorSpecificList.push_back (vsp);
+  return (ulcqi);
+  
 }
 
 void
@@ -653,32 +715,60 @@ LteEnbPhy::DoSetTransmissionMode (uint16_t  rnti, uint8_t txMode)
 }
 
 void
-LteEnbPhy::QueueUlDci (UlDciIdealControlMessage m)
+LteEnbPhy::QueueUlDci (UlDciLteControlMessage m)
 {
   NS_LOG_FUNCTION (this);
   m_ulDciQueue.at (UL_PUSCH_TTIS_DELAY - 1).push_back (m);
 }
 
-std::list<UlDciIdealControlMessage>
+std::list<UlDciLteControlMessage>
 LteEnbPhy::DequeueUlDci (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_ulDciQueue.at (0).size ()>0)
     {
-      std::list<UlDciIdealControlMessage> ret = m_ulDciQueue.at (0);
+      std::list<UlDciLteControlMessage> ret = m_ulDciQueue.at (0);
       m_ulDciQueue.erase (m_ulDciQueue.begin ());
-      std::list<UlDciIdealControlMessage> l;
+      std::list<UlDciLteControlMessage> l;
       m_ulDciQueue.push_back (l);
       return (ret);
     }
   else
     {
       m_ulDciQueue.erase (m_ulDciQueue.begin ());
-      std::list<UlDciIdealControlMessage> l;
+      std::list<UlDciLteControlMessage> l;
       m_ulDciQueue.push_back (l);
-      std::list<UlDciIdealControlMessage> emptylist;
+      std::list<UlDciLteControlMessage> emptylist;
       return (emptylist);
     }
+}
+
+void
+LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
+{
+  NS_LOG_FUNCTION (this);
+  uint16_t p = GetSrsPeriodicity (srcCi);
+  if (p!=m_srsPeriodicity)
+    {
+      // resize the array of offset -> re-initialize variables
+      m_srsUeOffset.clear ();
+      m_srsUeOffset.resize (p, 0);
+      m_srsPeriodicity = p;
+      m_currentSrsOffset = p - 1; // for starting from 0 next subframe
+    }
+    
+  NS_LOG_DEBUG (this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset " << GetSrsSubframeOffset (srcCi) << " CI " << srcCi);
+  std::map <uint16_t,uint16_t>::iterator it = m_srsCounter.find (rnti);
+  if (it != m_srsCounter.end ())
+    {
+      (*it).second = GetSrsSubframeOffset (srcCi) + 1;
+    }
+  else
+    {
+      m_srsCounter.insert (std::pair<uint16_t, uint16_t> (rnti, GetSrsSubframeOffset (srcCi) + 1));
+    }
+  m_srsUeOffset.at (GetSrsSubframeOffset (srcCi)) = rnti;
+  
 }
 
 

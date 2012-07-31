@@ -229,7 +229,7 @@ private:
   virtual double DoGetCurrentA (void) const;
 
   /**
-   * \param currentState New state the radio device is currently in.
+   * \param state New state the radio device is currently in.
    *
    * Sets current state. This function is private so that only the energy model
    * can change its own state.

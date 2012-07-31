@@ -48,12 +48,24 @@ us a note on ns-developers mailing list.</p>
 
 <h2>New API:</h2>
 <ul>
-<li></li>
+<li>A RandomVariableStreamHelper has been introduced to assist with 
+using the Config subsystem path names to assign fixed stream numbers
+to RandomVariableStream objects.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
-<li></li>
+<li>Derived classes of RandomVariable (i.e. the random variable 
+implementations) have been ported to a new RandomVariableStream base class.
+<li>For a given distribution DistributionVariable (such as UniformVariable),
+the new class name is DistributionRandomVariable (such as 
+UniformRandomVariable). </li>
+<li>The new implementations are also derived from class ns3::Object and 
+are handled using the ns-3 smart pointer (Ptr) class.  </li>
+<li>The new variable classes also have a new attributed called "Stream"
+which allows them to be assigned to a fix stream index when assigned
+to the underlying pseudo-random stream of numbers.</li>
+</li>
 </ul>
 
 <h2>Changes to build system:</h2>
@@ -63,7 +75,11 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changed behavior:</h2>
 <ul>
-<li></li>
+<li>Programs using random variables or models that include random variables 
+may exhibit changed output for a given run number or seed, due to a possible 
+change in the order in which random variables are assigned to underlying 
+pseudo-random sequences.  Consult the manual for more information regarding 
+this.</li>
 </ul>
 
 <hr>

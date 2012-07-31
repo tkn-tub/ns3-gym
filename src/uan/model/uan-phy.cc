@@ -69,8 +69,64 @@ NS_OBJECT_ENSURE_REGISTERED (UanPhy);
 TypeId UanPhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanPhy")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddTraceSource ("PhyTxBegin",
+                     "Trace source indicating a packet has begun transmitting over the channel medium",
+                     MakeTraceSourceAccessor (&UanPhy::m_phyTxBeginTrace))
+    .AddTraceSource ("PhyTxEnd",
+                     "Trace source indicating a packet has been completely transmitted over the channel.",
+                   MakeTraceSourceAccessor (&UanPhy::m_phyTxEndTrace))
+    .AddTraceSource ("PhyTxDrop",
+                     "Trace source indicating a packet has been dropped by the device during transmission",
+                     MakeTraceSourceAccessor (&UanPhy::m_phyTxDropTrace))
+    .AddTraceSource ("PhyRxBegin",
+                     "Trace source indicating a packet has begun being received from the channel medium by the device",
+                     MakeTraceSourceAccessor (&UanPhy::m_phyRxBeginTrace))
+    .AddTraceSource ("PhyRxEnd",
+                     "Trace source indicating a packet has been completely received from the channel medium by the device",
+                     MakeTraceSourceAccessor (&UanPhy::m_phyRxEndTrace))
+    .AddTraceSource ("PhyRxDrop",
+                     "Trace source indicating a packet has been dropped by the device during reception",
+                     MakeTraceSourceAccessor (&UanPhy::m_phyRxDropTrace))
+  ;
   return tid;
+}
+
+
+void
+UanPhy::NotifyTxBegin (Ptr<const Packet> packet)
+{
+  m_phyTxBeginTrace (packet);
+}
+
+void
+UanPhy::NotifyTxEnd (Ptr<const Packet> packet)
+{
+  m_phyTxEndTrace (packet);
+}
+
+void
+UanPhy::NotifyTxDrop (Ptr<const Packet> packet)
+{
+  m_phyTxDropTrace (packet);
+}
+
+void
+UanPhy::NotifyRxBegin (Ptr<const Packet> packet)
+{
+  m_phyRxBeginTrace (packet);
+}
+
+void
+UanPhy::NotifyRxEnd (Ptr<const Packet> packet)
+{
+  m_phyRxEndTrace (packet);
+}
+
+void
+UanPhy::NotifyRxDrop (Ptr<const Packet> packet)
+{
+  m_phyRxDropTrace (packet);
 }
 
 } // namespace ns3

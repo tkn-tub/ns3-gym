@@ -26,7 +26,6 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-common.h>
-#include <ns3/ff-mac-csched-sap.h>
 
 namespace ns3 {
 
@@ -104,7 +103,22 @@ public:
    */
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid) = 0;
   
-  virtual void RrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params) = 0;
+  /**
+   * \brief Parameters for [re]configuring the UE 
+   */
+  struct UeConfig
+  {
+    /**
+     * UE id within this cell
+     */
+    uint16_t  m_rnti;
+    /**
+     * Transmission mode [1..7] (i.e., SISO, MIMO, etc.)
+     */
+    uint8_t   m_transmissionMode;
+  };
+
+  virtual void UeUpdateConfigurationReq (UeConfig params) = 0;
 
 
 };
@@ -129,7 +143,28 @@ public:
    * \param success true if the operation was successful, false otherwise
    */
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success) = 0;
-  virtual void RrcConfigurationUpdateInd (LteUeConfig_t params) = 0;
+
+  /**
+   * \brief Parameters for [re]configuring the UE 
+   */
+  struct UeConfig
+  {
+    /**
+     * UE id within this cell
+     */
+    uint16_t  m_rnti;
+    /**
+     * Transmission mode [1..7] (i.e., SISO, MIMO, etc.)
+     */
+    uint8_t   m_transmissionMode;
+  };
+
+  /** 
+   * Notify the RRC of a UE config updated requested by the MAC (normally, by the scheduler)
+   * 
+   * \param params 
+   */
+  virtual void RrcConfigurationUpdateInd (UeConfig params) = 0;
 };
 
 

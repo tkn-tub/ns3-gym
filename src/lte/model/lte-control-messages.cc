@@ -19,26 +19,26 @@
  *         Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-#include "ideal-control-messages.h"
+#include "lte-control-messages.h"
 #include "ns3/address-utils.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "lte-net-device.h"
 #include "lte-ue-net-device.h"
 
-NS_LOG_COMPONENT_DEFINE ("IdealControlMessage");
+NS_LOG_COMPONENT_DEFINE ("LteControlMessage");
 
 
 namespace ns3 {
 
-IdealControlMessage::IdealControlMessage (void)
+LteControlMessage::LteControlMessage (void)
   : m_source (0),
     m_destination (0)
 {
 }
 
 
-IdealControlMessage::~IdealControlMessage (void)
+LteControlMessage::~LteControlMessage (void)
 {
   m_source = 0;
   m_destination = 0;
@@ -46,42 +46,14 @@ IdealControlMessage::~IdealControlMessage (void)
 
 
 void
-IdealControlMessage::SetSourceDevice (Ptr<LteNetDevice> src)
-{
-  m_source = src;
-}
-
-
-void
-IdealControlMessage::SetDestinationDevice (Ptr<LteNetDevice> dst)
-{
-  m_destination = dst;
-}
-
-
-Ptr<LteNetDevice>
-IdealControlMessage::GetSourceDevice (void)
-{
-  return m_source;
-}
-
-
-Ptr<LteNetDevice>
-IdealControlMessage::GetDestinationDevice (void)
-{
-  return m_destination;
-}
-
-
-void
-IdealControlMessage::SetMessageType (IdealControlMessage::MessageType type)
+LteControlMessage::SetMessageType (LteControlMessage::MessageType type)
 {
   m_type = type;
 }
 
 
-IdealControlMessage::MessageType
-IdealControlMessage::GetMessageType (void)
+LteControlMessage::MessageType
+LteControlMessage::GetMessageType (void)
 {
   return m_type;
 }
@@ -90,19 +62,19 @@ IdealControlMessage::GetMessageType (void)
 // ----------------------------------------------------------------------------------------------------------
 
 
-DlDciIdealControlMessage::DlDciIdealControlMessage (void)
+DlDciLteControlMessage::DlDciLteControlMessage (void)
 {
-  SetMessageType (IdealControlMessage::DL_DCI);
+  SetMessageType (LteControlMessage::DL_DCI);
 }
 
 
-DlDciIdealControlMessage::~DlDciIdealControlMessage (void)
+DlDciLteControlMessage::~DlDciLteControlMessage (void)
 {
 
 }
 
 void
-DlDciIdealControlMessage::SetDci (DlDciListElement_s dci)
+DlDciLteControlMessage::SetDci (DlDciListElement_s dci)
 {
   m_dci = dci;
 
@@ -110,7 +82,7 @@ DlDciIdealControlMessage::SetDci (DlDciListElement_s dci)
 
 
 DlDciListElement_s
-DlDciIdealControlMessage::GetDci (void)
+DlDciLteControlMessage::GetDci (void)
 {
   return m_dci;
 }
@@ -119,19 +91,19 @@ DlDciIdealControlMessage::GetDci (void)
 // ----------------------------------------------------------------------------------------------------------
 
 
-UlDciIdealControlMessage::UlDciIdealControlMessage (void)
+UlDciLteControlMessage::UlDciLteControlMessage (void)
 {
-  SetMessageType (IdealControlMessage::UL_DCI);
+  SetMessageType (LteControlMessage::UL_DCI);
 }
 
 
-UlDciIdealControlMessage::~UlDciIdealControlMessage (void)
+UlDciLteControlMessage::~UlDciLteControlMessage (void)
 {
 
 }
 
 void
-UlDciIdealControlMessage::SetDci (UlDciListElement_s dci)
+UlDciLteControlMessage::SetDci (UlDciListElement_s dci)
 {
   m_dci = dci;
 
@@ -139,7 +111,7 @@ UlDciIdealControlMessage::SetDci (UlDciListElement_s dci)
 
 
 UlDciListElement_s
-UlDciIdealControlMessage::GetDci (void)
+UlDciLteControlMessage::GetDci (void)
 {
   return m_dci;
 }
@@ -148,19 +120,19 @@ UlDciIdealControlMessage::GetDci (void)
 // ----------------------------------------------------------------------------------------------------------
 
 
-DlCqiIdealControlMessage::DlCqiIdealControlMessage (void)
+DlCqiLteControlMessage::DlCqiLteControlMessage (void)
 {
-  SetMessageType (IdealControlMessage::DL_CQI);
+  SetMessageType (LteControlMessage::DL_CQI);
 }
 
 
-DlCqiIdealControlMessage::~DlCqiIdealControlMessage (void)
+DlCqiLteControlMessage::~DlCqiLteControlMessage (void)
 {
 
 }
 
 void
-DlCqiIdealControlMessage::SetDlCqi (CqiListElement_s dlcqi)
+DlCqiLteControlMessage::SetDlCqi (CqiListElement_s dlcqi)
 {
   m_dlCqi = dlcqi;
 
@@ -168,7 +140,7 @@ DlCqiIdealControlMessage::SetDlCqi (CqiListElement_s dlcqi)
 
 
 CqiListElement_s
-DlCqiIdealControlMessage::GetDlCqi (void)
+DlCqiLteControlMessage::GetDlCqi (void)
 {
   return m_dlCqi;
 }
@@ -178,19 +150,19 @@ DlCqiIdealControlMessage::GetDlCqi (void)
 // ----------------------------------------------------------------------------------------------------------
 
 
-BsrIdealControlMessage::BsrIdealControlMessage (void)
+BsrLteControlMessage::BsrLteControlMessage (void)
 {
-  SetMessageType (IdealControlMessage::BSR);
+  SetMessageType (LteControlMessage::BSR);
 }
 
 
-BsrIdealControlMessage::~BsrIdealControlMessage (void)
+BsrLteControlMessage::~BsrLteControlMessage (void)
 {
 
 }
 
 void
-BsrIdealControlMessage::SetBsr (MacCeListElement_s bsr)
+BsrLteControlMessage::SetBsr (MacCeListElement_s bsr)
 {
   m_bsr = bsr;
 
@@ -198,7 +170,7 @@ BsrIdealControlMessage::SetBsr (MacCeListElement_s bsr)
 
 
 MacCeListElement_s
-BsrIdealControlMessage::GetBsr (void)
+BsrLteControlMessage::GetBsr (void)
 {
   return m_bsr;
 }

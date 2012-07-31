@@ -23,6 +23,8 @@
 #include "ns3/log.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
+#include "ns3/enum.h"
+#include "ns3/boolean.h"
 #include "ns3/test.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/lte-helper.h"
@@ -31,6 +33,7 @@
 #include "ns3/lte-ue-net-device.h"
 #include "ns3/lte-enb-phy.h"
 #include "ns3/lte-enb-net-device.h"
+#include "ns3/ff-mac-scheduler.h"
 
 #include "lte-test-sinr-chunk-processor.h"
 
@@ -90,7 +93,8 @@ LteEnbAntennaTestCase::~LteEnbAntennaTestCase ()
 void
 LteEnbAntennaTestCase::DoRun (void)
 {
-  
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
   // use 0dB Pathloss, since we are testing only the antenna gain
@@ -117,6 +121,7 @@ LteEnbAntennaTestCase::DoRun (void)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (m_orientationDegrees));
   lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (m_beamwidthDegrees));
@@ -137,11 +142,11 @@ LteEnbAntennaTestCase::DoRun (void)
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testDlSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testDlSinr);
+  uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testDlSinr);
 
   Ptr<LtePhy> enbphy = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testUlSinr = Create<LteTestSinrChunkProcessor> (enbphy);
-  enbphy->GetUplinkSpectrumPhy ()->AddSinrChunkProcessor (testUlSinr);
+  enbphy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr);
 
 
   Simulator::Stop (Seconds (0.020));

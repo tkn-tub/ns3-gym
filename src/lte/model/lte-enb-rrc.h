@@ -15,8 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Nicola Baldo <nbaldo@cttc.es>
- *         Manuel Requena <manuel.requena@cttc.es>
+ * Authors: Nicola Baldo <nbaldo@cttc.es>
+ *          Marco Miozzo <mmiozzo@cttc.es>
+ *          Manuel Requena <manuel.requena@cttc.es> 
  */
 
 #ifndef LTE_ENB_RRC_H
@@ -33,6 +34,7 @@
 #include <ns3/lte-enb-cphy-sap.h>
 
 #include <map>
+#include <set>
 
 namespace ns3 {
 
@@ -87,20 +89,29 @@ public:
    */
   std::map <uint8_t, Ptr<LteRadioBearerInfo> >::const_iterator RadioBearerMapEnd ();
 
-  UeInfo (void);
-  UeInfo (uint64_t imsi);
+  UeInfo ();
+
   virtual ~UeInfo (void);
 
   static TypeId GetTypeId (void);
 
   uint64_t GetImsi (void);
-
   void SetImsi (uint64_t imsi);
+
+  uint8_t GetTransmissionMode (void);  
+  void SetTransmissionMode (uint8_t txMode);
+
+  uint16_t GetSrsConfigurationIndex (void);  
+  void SetSrsConfigurationIndex (uint16_t srsConfIndex);
+
+
 
 private:
   std::map <uint8_t, Ptr<LteRadioBearerInfo> > m_rbMap;
   uint8_t m_lastAllocatedId;
   uint64_t m_imsi;
+  uint16_t m_srsConfigurationIndex;
+  uint8_t  m_transmissionMode;
 };
 
 
@@ -228,23 +239,30 @@ public:
 
 
   /** 
-   * RRC connection request by an UE
+   * receive RRC Connection Request from an UE
    * 
    * \param imsi the id of the UE
    * 
    * \return the RNTI identifying the UE in this cell
    */
-  uint16_t ConnectionRequest (uint64_t imsi);
+  uint16_t DoRecvConnectionRequest (uint64_t imsi);
+
+  /** 
+   * receive RRC Connection Setup Completed from an UE
+   * 
+   * \param rnti the RNTI identifying the UE in this cell
+   */
+  void DoRecvConnectionSetupCompleted (uint16_t rnti);
   
   /** 
-   * RRC connection reestablishment request by UE
+   * receive RRC Connection Reconfiguration Completed message from UE
    * 
-   * \param imsi 
    * \param rnti 
    * 
-   * \return 
    */
-  uint16_t ConnectionReestablishmentRequest (uint64_t imsi, uint16_t rnti);
+  void DoRecvConnectionReconfigurationCompleted (uint16_t rnti);
+  
+  void SetCellId (uint16_t m_cellId);
 
   /**
    * remove a UE from the cell
@@ -317,9 +335,11 @@ public:
 private:
 
   /**
-   * Add a new UE to the cell
+   * Allocate a new RNTI for a new UE. This is done in the following cases:
+   *   * T-C-RNTI allocation upon contention-based MAC Random Access procedure
+   *   * target cell RNTI allocation upon handover
    *
-   * \return the C-RNTI of the newly added UE
+   * \return the newly allocated RNTI
    */
   uint16_t AddUe ();
 
@@ -347,17 +367,21 @@ private:
   void DoReceiveRrcPdu (LtePdcpSapUser::ReceiveRrcPduParameters params);
 
   // CMAC SAP methods
-  void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+  void DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig params);
   void DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
 
   // S1 SAP methods
   void DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params);
+
+  void PropagateRrcConnectionReconfiguration (LteUeConfig_t ueConfig);
 
 
   // management of multiple UE info instances
   uint16_t CreateUeInfo ();
   Ptr<UeInfo> GetUeInfo (uint16_t rnti);
   void RemoveUeInfo (uint16_t rnti);
+  uint16_t GetNewSrsConfigurationIndex (void);
+  void RemoveSrsConfigurationIndex (uint16_t srcCi);
 
   // methods used to talk to UE RRC directly in absence of real RRC protocol
   Ptr<LteUeRrc> GetUeRrcByImsi (uint64_t imsi);
@@ -385,12 +409,17 @@ private:
   uint16_t m_cellId;
   uint16_t m_lastAllocatedRnti;
 
-  std::map<uint16_t, Ptr<UeInfo> > m_ueMap;
+  std::map<uint16_t, Ptr<UeInfo> > m_ueMap;  
   
   uint8_t m_defaultTransmissionMode;
 
   enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
-
+  
+  // SRS related attributes
+  uint16_t m_srsCurrentPeriodicityId;
+  std::set<uint16_t> m_ueSrsConfigurationIndexSet;
+  uint16_t m_lastAllocatedConfigurationIndex;
+  bool m_reconfigureUes;
 
 };
 

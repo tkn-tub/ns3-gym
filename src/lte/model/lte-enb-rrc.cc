@@ -42,11 +42,14 @@
 #include "lte-rlc-um.h"
 #include "lte-rlc-am.h"
 
+#include <ns3/simulator.h>
+
 // WILD HACK for UE-RRC direct communications
 #include <ns3/node-list.h>
 #include <ns3/node.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-ue-rrc.h>
+
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
@@ -64,7 +67,7 @@ public:
   EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc);
 
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
-  virtual void RrcConfigurationUpdateInd (LteUeConfig_t params);
+  virtual void RrcConfigurationUpdateInd (UeConfig params);
 
 private:
   LteEnbRrc* m_rrc;
@@ -82,7 +85,7 @@ EnbRrcMemberLteEnbCmacSapUser::NotifyLcConfigResult (uint16_t rnti, uint8_t lcid
 }
 
 void
-EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (LteUeConfig_t params)
+EnbRrcMemberLteEnbCmacSapUser::RrcConfigurationUpdateInd (UeConfig params)
 {
   m_rrc->DoRrcConfigurationUpdateInd (params);
 }
@@ -99,14 +102,9 @@ UeInfo::UeInfo (void)
   : m_lastAllocatedId (0)
 {
   m_imsi = 0;
+  m_srsConfigurationIndex = 0;
+  m_transmissionMode = 0;
 }
-
-UeInfo::UeInfo (uint64_t imsi)
-  : m_lastAllocatedId (0)
-{
-  m_imsi = imsi;
-}
-
 
 
 UeInfo::~UeInfo (void)
@@ -137,6 +135,30 @@ void
 UeInfo::SetImsi (uint64_t imsi)
 {
   m_imsi = imsi;
+}
+
+uint16_t
+UeInfo::GetSrsConfigurationIndex (void)
+{
+  return m_srsConfigurationIndex;
+}
+
+void
+UeInfo::SetSrsConfigurationIndex (uint16_t srsConfIndex)
+{
+  m_srsConfigurationIndex = srsConfIndex;
+}
+
+uint8_t
+UeInfo::GetTransmissionMode (void)
+{
+  return m_transmissionMode;
+}
+
+void
+UeInfo::SetTransmissionMode (uint8_t txMode)
+{
+  m_transmissionMode = txMode;
 }
 
 uint8_t
@@ -193,7 +215,10 @@ LteEnbRrc::LteEnbRrc ()
     m_s1SapProvider (0),
     m_cphySapProvider (0),
     m_configured (false),
-    m_lastAllocatedRnti (0)
+    m_lastAllocatedRnti (0),
+    m_srsCurrentPeriodicityId (0),
+    m_lastAllocatedConfigurationIndex (0),
+    m_reconfigureUes (false)
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
@@ -365,7 +390,7 @@ LteEnbRrc::ConfigureCell (uint8_t ulBandwidth, uint8_t dlBandwidth, uint16_t ulE
 }
 
 uint16_t
-LteEnbRrc::ConnectionRequest (uint64_t imsi)
+LteEnbRrc::DoRecvConnectionRequest (uint64_t imsi)
 {
   NS_LOG_FUNCTION (this);
   // no Call Admission Control for now
@@ -379,27 +404,37 @@ LteEnbRrc::ConnectionRequest (uint64_t imsi)
       m_s1SapProvider->InitialUeMessage (imsi, rnti);
     }
 
+  // send RRC connection setup
+  LteUeConfig_t ueConfig;
+  ueConfig.m_rnti = rnti;
+  ueConfig.m_transmissionMode = (*it).second->GetTransmissionMode ();
+  ueConfig.m_srsConfigurationIndex = (*it).second->GetSrsConfigurationIndex ();
+  ueConfig.m_reconfigureFlag = false;
+  Ptr<LteUeRrc> ueRrc = GetUeRrcByImsi (imsi);
+  ueRrc->DoRecvConnectionSetup (ueConfig);
+  
+  // configure MAC (and scheduler)
+  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  req.m_rnti = rnti;
+  req.m_transmissionMode = (*it).second->GetTransmissionMode ();
+
+  // configure PHY
+  m_cphySapProvider->SetTransmissionMode (rnti, (*it).second->GetTransmissionMode ());
+  m_cphySapProvider->SetSrsConfigurationIndex (rnti, (*it).second->GetSrsConfigurationIndex ());
+
   return rnti;
 }
 
-
-uint16_t
-LteEnbRrc::ConnectionReestablishmentRequest (uint64_t imsi, uint16_t rnti)
+void
+LteEnbRrc::DoRecvConnectionSetupCompleted (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this);
-  // no Call Admission Control for now
-  std::map<uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (rnti);
-  NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
+}
 
-  // this is needed because if the reestablishment comes from handover we don't know the imsi yet
-  it->second->SetImsi (imsi);
-
-  if (m_s1SapProvider != 0)
-    {
-      m_s1SapProvider->InitialUeMessage (imsi, rnti);
-    }
-
-  return rnti;
+void
+LteEnbRrc::DoRecvConnectionReconfigurationCompleted (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this);
 }
 
 
@@ -407,12 +442,11 @@ uint16_t
 LteEnbRrc::AddUe ()
 {
   NS_LOG_FUNCTION (this);
-  // no Call Admission Control for now
+
   uint16_t rnti = CreateUeInfo (); // side effect: create UeInfo for this UE
   NS_ASSERT_MSG (rnti != 0, "CreateUeInfo returned RNTI==0");
   m_cmacSapProvider->AddUe (rnti);
-  // need to do this after the present method returns, because under the hood a lookup is done for the RNTI, and otherwise the UE will not have it assigned yet
-  Simulator::ScheduleNow (&LteEnbCphySapProvider::AddUe, m_cphySapProvider, rnti);
+  m_cphySapProvider->AddUe (rnti);
   return rnti;
 }
 
@@ -530,12 +564,6 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint32_t teid)
 
   GetUeRrcByRnti (rnti)->SetupRadioBearer (bearer, rlcTypeId, lcid);
   
-  // Transmission mode settings
-  LteUeConfig_t ueConfig;
-  ueConfig.m_rnti = rnti;
-  ueConfig.m_transmissionMode = m_defaultTransmissionMode;
-  DoRrcConfigurationUpdateInd (ueConfig);
-
   return lcid;
 }
 
@@ -692,6 +720,17 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 // management of multiple UE info instances
 // /////////////////////////////////////////
 
+// from 3GPP TS 36.213 table 8.2-1 UE Specific SRS Periodicity
+#define SRS_ENTRIES 9
+uint16_t g_srsPeriodicity[SRS_ENTRIES] = {0, 2, 5, 10, 20, 40, 80, 160, 320};
+uint16_t g_srsCiLow[SRS_ENTRIES] = {0, 0, 2, 7, 17, 37, 77, 157, 317};
+uint16_t g_srsCiHigh[SRS_ENTRIES] = {0, 1, 6, 16, 36, 76, 156, 316, 636};
+
+void
+LteEnbRrc::SetCellId (uint16_t cellId)
+{
+  m_cellId = cellId;
+}
 
 uint16_t
 LteEnbRrc::CreateUeInfo ()
@@ -704,12 +743,139 @@ LteEnbRrc::CreateUeInfo ()
           if (m_ueMap.find (rnti) == m_ueMap.end ())
             {
               m_lastAllocatedRnti = rnti;
-              m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, CreateObject<UeInfo> ()));
+              Ptr<UeInfo> ueInfo = CreateObject<UeInfo> ();
+              ueInfo->SetSrsConfigurationIndex (GetNewSrsConfigurationIndex ());
+              m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, ueInfo));
+              NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueInfo->GetSrsConfigurationIndex ());
               return rnti;
             }
         }
     }
+    
   return 0;
+}
+
+uint16_t
+LteEnbRrc::GetNewSrsConfigurationIndex ()
+{
+  NS_LOG_FUNCTION (this << m_ueSrsConfigurationIndexSet.size ());
+  // SRS
+  if (m_srsCurrentPeriodicityId==0)
+    {
+      // no UEs -> init
+      m_ueSrsConfigurationIndexSet.insert (0);
+      m_lastAllocatedConfigurationIndex = 0;
+      m_srsCurrentPeriodicityId++;
+      
+      return 0;
+    }
+  NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
+  NS_LOG_DEBUG (this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
+  if (m_ueSrsConfigurationIndexSet.size () == g_srsPeriodicity[m_srsCurrentPeriodicityId])
+    {
+//       NS_LOG_DEBUG (this << " SRS reconfigure CIs " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " to " << g_srsPeriodicity[m_srsCurrentPeriodicityId+1] << " at " << Simulator::Now ());
+      // increase the current periocity for having enough CIs
+      m_ueSrsConfigurationIndexSet.clear ();
+      m_srsCurrentPeriodicityId++;
+      NS_ASSERT (m_srsCurrentPeriodicityId < SRS_ENTRIES);
+      // update all the UE's CI
+      uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
+      std::map<uint16_t, Ptr<UeInfo> >::iterator it;
+      for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
+        {
+          (*it).second->SetSrsConfigurationIndex (srcCi);
+          m_ueSrsConfigurationIndexSet.insert (srcCi);
+          m_lastAllocatedConfigurationIndex = srcCi;
+          srcCi++;
+          // send update to peer RRC
+          LteUeConfig_t ueConfig;
+          ueConfig.m_rnti = (*it).first;
+          ueConfig.m_transmissionMode = (*it).second->GetTransmissionMode ();
+          ueConfig.m_srsConfigurationIndex = (*it).second->GetSrsConfigurationIndex ();
+          ueConfig.m_reconfigureFlag = true;
+          NS_LOG_DEBUG (this << "\t rnti "<<ueConfig.m_rnti<< " CI " << ueConfig.m_srsConfigurationIndex);
+          PropagateRrcConnectionReconfiguration (ueConfig);
+        }
+      m_ueSrsConfigurationIndexSet.insert (m_lastAllocatedConfigurationIndex + 1);
+      m_lastAllocatedConfigurationIndex++;
+    }
+  else
+    {
+      // find a CI from the available ones
+      std::set<uint16_t>::reverse_iterator rit = m_ueSrsConfigurationIndexSet.rbegin ();
+      NS_LOG_DEBUG (this << " lower bound " << (*rit) << " of " << g_srsCiHigh[m_srsCurrentPeriodicityId]);
+      if ((*rit) <= g_srsCiHigh[m_srsCurrentPeriodicityId])
+        {
+          // got it from the upper bound
+          m_lastAllocatedConfigurationIndex = (*rit) + 1;
+          m_ueSrsConfigurationIndexSet.insert (m_lastAllocatedConfigurationIndex);
+        }
+      else
+        {
+          // look for released ones
+          for (uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId]; srcCi < g_srsCiHigh[m_srsCurrentPeriodicityId]; srcCi++) 
+            {
+              std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
+              if (it==m_ueSrsConfigurationIndexSet.end ())
+                {
+                  m_lastAllocatedConfigurationIndex = srcCi;
+                  m_ueSrsConfigurationIndexSet.insert (srcCi);
+                  break;
+                }
+            }
+        } 
+    }
+  return m_lastAllocatedConfigurationIndex;
+  
+}
+
+
+void
+LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
+{
+  NS_LOG_FUNCTION (this << srcCi);
+  NS_FATAL_ERROR ("I though this method was unused so far...");
+  std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
+  NS_ASSERT_MSG (it != m_ueSrsConfigurationIndexSet.end (), "request to remove unkwown SRS CI " << srcCi);
+  m_ueSrsConfigurationIndexSet.erase (it);
+  NS_ASSERT (m_srsCurrentPeriodicityId > 1);
+  if (m_ueSrsConfigurationIndexSet.size () < g_srsPeriodicity[m_srsCurrentPeriodicityId - 1])
+    {
+      // reduce the periodicity
+      m_ueSrsConfigurationIndexSet.clear ();
+      m_srsCurrentPeriodicityId--;
+      if (m_srsCurrentPeriodicityId==0)
+        {
+          // no active users : renitialize structures
+          m_lastAllocatedConfigurationIndex = 0;
+        }
+      else
+        {
+          // update all the UE's CI
+          uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId];
+          std::map<uint16_t, Ptr<UeInfo> >::iterator it;
+          for (it = m_ueMap.begin (); it != m_ueMap.end (); it++)
+            {
+              (*it).second->SetSrsConfigurationIndex (srcCi);
+              m_ueSrsConfigurationIndexSet.insert (srcCi);
+              m_lastAllocatedConfigurationIndex = srcCi;
+              srcCi++;
+              // send update to peer RRC
+              LteUeConfig_t ueConfig;
+              ueConfig.m_rnti = (*it).first;
+              ueConfig.m_transmissionMode = (*it).second->GetTransmissionMode ();
+              ueConfig.m_srsConfigurationIndex = (*it).second->GetSrsConfigurationIndex ();
+              ueConfig.m_reconfigureFlag = false;
+              NS_LOG_DEBUG (this << "\t rnti "<<ueConfig.m_rnti<< " CI " << ueConfig.m_srsConfigurationIndex);
+
+              // avoid multiple reconfiguration during initialization
+              if (Simulator::Now ().GetNanoSeconds () != 0)
+                {                 
+                  PropagateRrcConnectionReconfiguration (ueConfig);
+                }
+            }
+        }
+    }
 }
 
 Ptr<UeInfo>
@@ -726,29 +892,56 @@ void
 LteEnbRrc::RemoveUeInfo (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
+  NS_FATAL_ERROR ("I though this method was unused so far...");
   std::map <uint16_t, Ptr<UeInfo> >::iterator it = m_ueMap.find (rnti);
   NS_ASSERT_MSG (it != m_ueMap.end (), "request to remove UE info with unknown rnti " << rnti);
+  RemoveSrsConfigurationIndex ((*it).second->GetSrsConfigurationIndex ());
   m_ueMap.erase (it);
+  // remove SRS configuration index
 }
 
 
 void
-LteEnbRrc::DoRrcConfigurationUpdateInd (LteUeConfig_t params)
+LteEnbRrc::DoRrcConfigurationUpdateInd (LteEnbCmacSapUser::UeConfig cmacParams)
 {
   NS_LOG_FUNCTION (this);
-  // up tp now only for TxMode change
-  // update the peer UE-RRC on the change
+  // at this stage used only by the scheduler for updating txMode
+
+  LteUeConfig_t rrcParams;
+  rrcParams.m_rnti = cmacParams.m_rnti;
+  rrcParams.m_reconfigureFlag = true;
+  rrcParams.m_transmissionMode = cmacParams.m_transmissionMode;
+
+  // for now, the SRS CI is passed every time, so we need to overwrite the value
+  std::map<uint16_t, Ptr<UeInfo> >::iterator it;
+  it = m_ueMap.find (cmacParams.m_rnti);
+  NS_ASSERT_MSG (it!=m_ueMap.end (), "Unable to find UeInfo");
+  rrcParams.m_srsConfigurationIndex = (*it).second->GetSrsConfigurationIndex ();
+
+  // update Tx Mode info at eNB
+  (*it).second->SetTransmissionMode (cmacParams.m_transmissionMode);
+
+  rrcParams.m_reconfigureFlag = true;
+  PropagateRrcConnectionReconfiguration (rrcParams);
+}
+
+
+void 
+LteEnbRrc::PropagateRrcConnectionReconfiguration (LteUeConfig_t params)
+{
+
   Ptr<LteUeRrc> ueRrc = GetUeRrcByRnti (params.m_rnti);
-  ueRrc->DoRrcConfigurationUpdateInd (params);
-  
+  ueRrc->DoRecvConnectionReconfiguration (params);
+
   // configure MAC (and scheduler)
-  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
+  LteEnbCmacSapProvider::UeConfig req;
   req.m_rnti = params.m_rnti;
   req.m_transmissionMode = params.m_transmissionMode;
-  m_cmacSapProvider->RrcUpdateConfigurationReq (req);
+  m_cmacSapProvider->UeUpdateConfigurationReq (req);  
 
   // configure PHY
   m_cphySapProvider->SetTransmissionMode (params.m_rnti, params.m_transmissionMode);
+  m_cphySapProvider->SetSrsConfigurationIndex (params.m_rnti, params.m_srsConfigurationIndex);
 }
 
 
@@ -756,7 +949,7 @@ Ptr<LteUeRrc>
 LteEnbRrc::GetUeRrcByImsi (uint64_t imsi)
 {
   NS_LOG_FUNCTION (this);
-
+ 
   NodeList::Iterator listEnd = NodeList::End ();
   bool found = false;
   for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
@@ -783,15 +976,40 @@ LteEnbRrc::GetUeRrcByImsi (uint64_t imsi)
   NS_ASSERT_MSG (found , " Unable to find UE with IMSI =" << imsi);
   return 0;
 }
+ 
 
 
 Ptr<LteUeRrc> 
 LteEnbRrc::GetUeRrcByRnti (uint16_t rnti)
 {
-  uint64_t imsi = GetUeInfo (rnti)->GetImsi ();
-  return GetUeRrcByImsi (imsi);
-}
+  NS_LOG_FUNCTION (this);
 
+  NodeList::Iterator listEnd = NodeList::End ();
+  bool found = false;
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      int nDevs = node->GetNDevices ();
+      for (int j = 0; j < nDevs; j++)
+        {
+          Ptr<LteUeNetDevice> ueDev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
+          if (!ueDev)
+            {
+              continue;
+            }
+          else
+            {
+              Ptr<LteUeRrc> rrc = ueDev->GetRrc ();
+              if ((rrc->GetRnti () == rnti) && (rrc->GetCellId () == m_cellId))
+                {                 
+                  return rrc;
+                }
+            }
+        }
+    }
+  NS_ASSERT_MSG (found , " Unable to find UE with RNTI=" << rnti << " cellId=" << m_cellId);
+  return 0;
+}
 
 } // namespace ns3
 

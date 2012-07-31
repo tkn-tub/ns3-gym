@@ -272,7 +272,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // It will be used to test that the SNR is as intended
   //Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testSinr);
+  uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testSinr);
    
 //   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
 //                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));

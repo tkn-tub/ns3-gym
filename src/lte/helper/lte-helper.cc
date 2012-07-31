@@ -308,11 +308,11 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
-  Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
-  ulPhy->AddSinrChunkProcessor (p);
+  Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> ());
+  ulPhy->AddCtrlSinrChunkProcessor (pCtrl); // for evaluating SRS UL-CQI
 
-  Ptr<LtePemSinrChunkProcessor> pPem = Create<LtePemSinrChunkProcessor> (ulPhy);
-  ulPhy->AddSinrChunkProcessor (pPem);
+  Ptr<LteDataSinrChunkProcessor> pData = Create<LteDataSinrChunkProcessor> (ulPhy, phy);
+  ulPhy->AddDataSinrChunkProcessor (pData); // for evaluating PUSCH UL-CQI
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
@@ -372,7 +372,8 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  ulPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
+  ulPhy->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
+  ulPhy->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteEnbPhy::ReceiveLteControlMessageList, phy));
   rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
@@ -425,11 +426,11 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
 
-  Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
-  dlPhy->AddSinrChunkProcessor (p);
+  Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> (), dlPhy);
+  dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 
-  Ptr<LtePemSinrChunkProcessor> pPem = Create<LtePemSinrChunkProcessor> (dlPhy);
-  dlPhy->AddSinrChunkProcessor (pPem);
+  Ptr<LteDataSinrChunkProcessor> pData = Create<LteDataSinrChunkProcessor> (dlPhy);
+  dlPhy->AddDataSinrChunkProcessor (pData);
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
@@ -471,7 +472,8 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   nas->SetDevice (dev);
 
   n->AddDevice (dev);
-  dlPhy->SetGenericPhyRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
+  dlPhy->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
+  dlPhy->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, phy));
   nas->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
 
 
@@ -495,11 +497,12 @@ void
 LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   NS_LOG_FUNCTION (this);
+  //enbRrc->SetCellId (enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
 
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
   Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
   ueNas->Connect (enbDevice);
-
+  
   m_downlinkChannel->AddRx (ueLteDevice->GetPhy ()->GetDownlinkSpectrumPhy ());
 
   // tricks needed for the simplified LTE-only simulations 

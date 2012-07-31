@@ -285,7 +285,7 @@ end-to-end flow of data packets.
 .. figure:: figures/epc-data-flow-dl.*
    :align: center
 
-   Data flow in the dowlink between the internet and the UE
+   Data flow in the downlink between the internet and the UE
 
 To begin with, we consider the case of the downlink, which is depicted
 in Figure :ref:`fig-epc-data-flow-dl`.   
@@ -523,7 +523,7 @@ Transmission Bandwidth Configuration in use.
 For certain bandwidth
 values not all the RBs are usable, since the 
 group size is not a common divisor of the group. This is for instance the case
-when the bandwith is equal to 25 RBs, which results in a RBG size of 2 RBs, and
+when the bandwidth is equal to 25 RBs, which results in a RBG size of 2 RBs, and
 therefore 1 RB will result not addressable. 
 In uplink the format of the DCIs is different, since only adjacent RBs
 can be used because of the SC-FDMA modulation. As a consequence, all
@@ -1304,6 +1304,26 @@ the one described in [Piro2011]_, with the following modifications.  The model n
 inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
 
 
+Subframe Structure
+^^^^^^^^^^^^^^^^^^
+
+The subframe is divided into control and data part as described in Figure :ref:`fig-lte-subframe-structure`.
+
+.. _fig-lte-subframe-structure:
+
+.. figure:: figures/lte-subframe-structure.*
+   :width: 50px
+
+   Lte subframe division.
+
+
+Considering the granularity of the simulator based on RB, the control and the reference signaling have to be consequently modeled considering this constraint.  According to the standard [TS36.211]_, the downlink control frame starts at the beginning of each subframe and lasts up to three symbols across the whole system bandwidth, where the actual duration is provided by the Physical Control Format Indicator Channel (PCFICH). The information on the allocation are then mapped in the remaining resource up to the duration defined by the PCFICH, in the so called Physical Downlink Control Channel (PDCCH). A PDCCH transports a single message called Downlink Control Information (DCI) coming from the MAC layer, where the scheduler indicates the resource allocation for a specific user.
+The PCFICH and PDCCH are modeled with the transmission of the control frame of a fixed duration of 3/14 of milliseconds spanning in the whole available bandwidth, since the scheduler does not estimate the size of the control region. This implies that a single transmission block models the entire control frame with a fixed power (i.e., the one used for the PDSCH) across all the available RBs. According to this feature, this transmission represents also a valuable support for the Reference Signal (RS). This allows of having every TTI an evaluation of the interference scenario since all the eNB are transmitting (simultaneously) the control frame over the respective available bandwidths. We note that, the model does not include the power boosting since it does not reflect any improvement in the implemented model of the channel estimation.
+
+
+The Sounding Reference Signal (SRS) is modeled similar to the downlink control frame. The SRS is periodically placed in the last symbol of the subframe in the whole system bandwidth. The RRC module already includes an algorithm for dynamically assigning the periodicity as function of the actual number of UEs attached to a eNB according to the UE-specific procedure (see Section 8.2 of [TS36.213]_).
+
+
 MAC to Channel delay
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -1357,10 +1377,10 @@ discussed in [Ofcom2600MHz]_.
 
 
 
-PHY Error Model
----------------
+Data PHY Error Model
+--------------------
 
-The simulator includes an error model of the data plane (i.e., PDSCH) according to the standard link-to-system mapping (LSM) techniques. The choice is aligned with the standard system simulation methodology of OFDMA  radio transmission technology. Thanks to LSM we are able to maintain a good level of accuracy and at the same time limiting the computational complexity increase. It is based on the mapping of single link layer performance obtained by means of link level simulators to system (in our case network) simulators. In particular link the layer simulator is used for generating the performance of a single link from a PHY layer perspective, usually in terms of code block error rate (BLER), under specific static conditions. LSM allows the usage of these parameters in more complex scenarios, typical of system/network simulators, where we have more links, interference and "colored" channel propagation phenomena (e.g., frequency selective fading).
+The simulator includes an error model of the data plane (i.e., PDSCH and PUSCH) according to the standard link-to-system mapping (LSM) techniques. The choice is aligned with the standard system simulation methodology of OFDMA  radio transmission technology. Thanks to LSM we are able to maintain a good level of accuracy and at the same time limiting the computational complexity increase. It is based on the mapping of single link layer performance obtained by means of link level simulators to system (in our case network) simulators. In particular link the layer simulator is used for generating the performance of a single link from a PHY layer perspective, usually in terms of code block error rate (BLER), under specific static conditions. LSM allows the usage of these parameters in more complex scenarios, typical of system/network simulators, where we have more links, interference and "colored" channel propagation phenomena (e.g., frequency selective fading).
 
 To do this the Vienna LTE Simulator [ViennaLteSim]_ has been used for what concerns the extraction of link layer performance and the Mutual Information Based Effective SINR (MIESM) as LSM mapping function using part of the work recently published by the Signet Group of University of Padua [PaduaPEM]_.
 
@@ -1497,8 +1517,20 @@ The model implemented uses the curves for the LSM of the recently LTE PHY Error 
 
 The model can be disabled for working with a zero-losses channel by setting the ``PemEnabled`` attribute of the ``LteSpectrumPhy`` class (by default is active). This can be done according to the standard ns3 attribute system procedure, that is::
 
-  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
 
+Control Channels PHY Error Model
+--------------------------------
+
+The simulator includes the error model for downlink control channels (PCFICH and PDCCH), while in uplink it is assumed and ideal error-free channel. The model is based on the MIESM approach presented before for considering the effects of the frequency selective channel since most of the control channels span the whole available bandwidth.
+
+
+PCFICH + PDCCH Error Model
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The model adopted for the error distribution of these channels is based on an evaluation study carried out in the RAN4 of 3GPP, where different vendors investigated the demodulation performance of the PCFICH jointly with PDCCH. This is due to the fact that the PCFICH is the channel in charge of communicating to the UEs the actual dimension of the PDCCH (which spans between 1 and 3 symbols); therefore the correct decodification of the DCIs  depends on the correct interpretation of both ones. In 3GPP this problem have been evaluated for improving the cell-edge performance _[FujitsuWhitePaper], where the interference among neighboring cells can be relatively high due to signal degradation. A similar problem has been notices in femto-cell scenario and, more in general, in HetNet scenarios the bottleneck has been detected mainly as the PCFICH channel _[Bharucha2011], where in case of many eNBs are deployed in the same service area, this channel may collide in frequency, making impossible the correct detection of the PDCCH channel, too. 
+
+In the simulator, the SINR perceived during the reception has been estimated according to the MIESM model presented above in order to evaluate the error distribution of PCFICH and PDCCH. In detail, the SINR samples of all the RBs are included in the evaluation of the MI associated to the control frame and, according to this values, the effective SINR (eSINR) is obtained by inverting the MI evaluation process. It has to be noted that, in case of MIMO transmission, both PCFICH and the PDCCH use always the transmit diversity mode as defined by the standard. According to the eSINR perceived the decodification error probability can be estimated as function of the results presented in _[R4-081920]. In case an error occur, the DCIs discarded and therefore the UE will be not able to receive the correspondent Tbs, therefore resulting lost.
 
 
 MIMO Model

@@ -62,21 +62,25 @@ public:
    * \param dlEarfcn the DL EARFCN
    */
   virtual void SetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn) = 0;
-
-
+  
   /** 
    * Add a new UE to the cell
    * 
    * \param rnti the UE id relative to this cell
    */
   virtual void AddUe (uint16_t rnti) = 0;
-
   
   /**
-  * \param rnti the RNTI of the user
-  * \param txMode the transmissionMode of the user
-  */
+   * \param rnti the RNTI of the user
+   * \param txMode the transmissionMode of the user
+   */
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode) = 0;
+
+  /**
+   * \param rnti the RNTI of the user
+   * \param txMode the SRS Configuration Index of the user
+   */
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi) = 0;
 
 };
 
@@ -116,6 +120,7 @@ public:
   virtual void SetEarfcn (uint16_t ulEarfcn, uint16_t dlEarfcn);
   virtual void AddUe (uint16_t rnti);
   virtual void SetTransmissionMode (uint16_t  rnti, uint8_t txMode);
+  virtual void SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi);
 
 private:
   MemberLteEnbCphySapProvider ();
@@ -168,6 +173,13 @@ void
 MemberLteEnbCphySapProvider<C>::SetTransmissionMode (uint16_t  rnti, uint8_t txMode)
 {
   m_owner->DoSetTransmissionMode (rnti, txMode);
+}
+
+template <class C>
+void 
+MemberLteEnbCphySapProvider<C>::SetSrsConfigurationIndex (uint16_t  rnti, uint16_t srsCi)
+{
+  m_owner->DoSetSrsConfigurationIndex (rnti, srsCi);
 }
 
 
