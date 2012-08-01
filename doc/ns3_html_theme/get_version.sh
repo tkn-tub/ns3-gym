@@ -86,16 +86,16 @@ HOST=`hostname`
 NSNAM="nsnam.ece.gatech.edu"
 
 # Build directory
-DAILY="/tmp/daily_nsnam/.*"
+DAILY="^/tmp/daily_nsnam/"
 
 if [ $nsnam -eq 1 ]; then
     HOST=$NSNAM
     OLDPWD=$PWD
-    PWD=/tmp/daily_nsnam/foo
+#    PWD=/tmp/daily_nsnam/foo
     say "forcing build for nsnam.org"
 fi
 
-if [[ $HOST == $NSNAM && $PWD =~ $DAILY ]] ; then
+if [[ ( $HOST == $NSNAM ) && ( $PWD =~ $DAILY ) ]] ; then
     PUBLIC=1
     say "building public docs for nsnam.org"
 else
@@ -158,11 +158,13 @@ fi
 
 # Copy to html directories
 # This seems not always done automatically
-# by the Sphinx build
+# by Sphinx when rebuilding
 cd doc 2>&1 >/dev/null
 for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static html \
     html ; do
-    cp ns3_html_theme/static/ns3_version.js $d
+    # expect the copy to fail if the destination dir
+    # hasn't been created by a prior doc build
+    cp ns3_html_theme/static/ns3_version.js $d 2>/dev/null
 done
 cd - 2>&1 >/dev/null
 

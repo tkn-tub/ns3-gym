@@ -37,3 +37,5 @@ massif.*
 \.diff$
 \.tr$
 \#[^\#/]+\#$
+syntax: glob
+ns3_version.js
