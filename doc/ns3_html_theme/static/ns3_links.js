@@ -33,10 +33,11 @@ if (typeof ns3_builder != 'undefined') {
   } else {
     ns3_index = ns3_local + "html/" + ns3_index;
   }
-  else {
-    ns3_index = ns3_local + "html/" + ns3_index;
-  }
-  
+ }
+ else {
+   ns3_index = ns3_local + "html/" + ns3_index;
+ }
+
 
 var ns3_man  = ns3_rel  + "manual/"         + ns3_index;
 var ns3_mod  = ns3_rel  + "models/"         + ns3_index;

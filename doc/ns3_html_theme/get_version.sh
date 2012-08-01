@@ -160,7 +160,8 @@ fi
 # This seems not always done automatically
 # by the Sphinx build
 cd doc 2>&1 >/dev/null
-for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static html ; do
+for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static html \
+    html ; do
     cp ns3_html_theme/static/ns3_version.js $d
 done
 cd - 2>&1 >/dev/null
