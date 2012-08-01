@@ -146,6 +146,9 @@ main (int argc, char *argv[])
   lteHelper->HandoverRequest (Seconds (2.0), ueNodes.Get (0), enbNodes.Get (0), enbNodes.Get (1));
 
   
+  // Uncomment to enable PCAP tracing
+  //p2ph.EnablePcapAll("lena-x2-handover");
+
   Simulator::Stop(Seconds(simTime));
   Simulator::Run();
 
