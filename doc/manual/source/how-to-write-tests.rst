@@ -75,7 +75,7 @@ Output such as below should be produced:
   PASS: TestSuite router
   1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
-/* see src/lte/test/test-lte-antenna.cc for a worked example */
+See src/lte/test/test-lte-antenna.cc for a worked example.
 
 How to add an example program to the test suite
 ***********************************************

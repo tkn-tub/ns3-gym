@@ -1,5 +1,8 @@
 .. include:: replace.txt
 
+=================================
+References
+=================================
 
 .. [TS25814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access"
 
