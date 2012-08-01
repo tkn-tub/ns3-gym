@@ -1075,6 +1075,7 @@ def _doxygen(bld):
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
         raise SystemExit(1)
+    _getVersion()
 
 
 from waflib import Context, Build
@@ -1095,7 +1096,6 @@ class Ns3DoxygenContext(Context.Context):
 	bld.cmd = "build"
 	bld.execute()
         _doxygen(bld)
-        _getVersion()
 
 from waflib import Context, Build
 class Ns3SphinxContext(Context.Context):
