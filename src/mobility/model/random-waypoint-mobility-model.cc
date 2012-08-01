@@ -59,6 +59,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
 {
   m_helper.Update ();
   Vector m_current = m_helper.GetCurrentPosition ();
+  NS_ASSERT_MSG (m_position, "No position allocator added before using this model");
   Vector destination = m_position->GetNext ();
   double speed = m_speed.GetValue ();
   double dx = (destination.x - m_current.x);
