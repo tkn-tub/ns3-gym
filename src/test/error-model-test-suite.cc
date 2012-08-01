@@ -94,7 +94,7 @@ ErrorModelSimple::DoRun (void)
 
   Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
   em->SetAttribute ("ErrorRate", DoubleValue (0.001));
-  em->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+  em->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
   // The below hooks will cause drops and receptions to be counted
   output->SetAttribute ("ReceiveErrorModel", PointerValue (em));

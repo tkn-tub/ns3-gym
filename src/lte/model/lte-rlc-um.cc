@@ -33,7 +33,8 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteRlcUm);
 
 LteRlcUm::LteRlcUm ()
-  : m_txBufferSize (0),
+  : m_maxTxBufferSize (2 * 1024 * 1024),
+    m_txBufferSize (0),
     m_sequenceNumber (0),
     m_vrUr (0),
     m_vrUx (0),
@@ -57,6 +58,11 @@ LteRlcUm::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteRlcUm")
     .SetParent<LteRlc> ()
     .AddConstructor<LteRlcUm> ()
+    .AddAttribute ("MaxTxBufferSize",
+                   "Maximum Size of the Transmission Buffer (in Bytes)",
+                   UintegerValue (2 * 1024 * 1024),
+                   MakeUintegerAccessor (&LteRlcUm::m_maxTxBufferSize),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
@@ -71,21 +77,32 @@ LteRlcUm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
-  /** Store arrival time */
-  RlcTag timeTag (Simulator::Now ());
-  p->AddPacketTag (timeTag);
+  if (m_txBufferSize + p->GetSize () <= m_maxTxBufferSize)
+    {
+      /** Store arrival time */
+      RlcTag timeTag (Simulator::Now ());
+      p->AddPacketTag (timeTag);
 
-  /** Store PDCP PDU */
+      /** Store PDCP PDU */
 
-  LteRlcSduStatusTag tag;
-  tag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
-  p->AddPacketTag (tag);
+      LteRlcSduStatusTag tag;
+      tag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
+      p->AddPacketTag (tag);
 
-  NS_LOG_LOGIC ("Tx Buffer: New packet added");
-  m_txBuffer.push_back (p);
-  m_txBufferSize += p->GetSize ();
-  NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
-  NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
+      NS_LOG_LOGIC ("Tx Buffer: New packet added");
+      m_txBuffer.push_back (p);
+      m_txBufferSize += p->GetSize ();
+      NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
+      NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
+    }
+  else
+    {
+      // Discard full RLC SDU
+      NS_LOG_LOGIC ("TxBuffer is full. RLC SDU discarded");
+      NS_LOG_LOGIC ("MaxTxBufferSize = " << m_maxTxBufferSize);
+      NS_LOG_LOGIC ("txBufferSize    = " << m_txBufferSize);
+      NS_LOG_LOGIC ("packet size     = " << p->GetSize ());
+    }
 
   /** Report Buffer Status */
   DoReportBufferStatus ();

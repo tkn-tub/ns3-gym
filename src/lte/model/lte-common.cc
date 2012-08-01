@@ -141,7 +141,7 @@ uint32_t BufferSizeLevelBsrTable[64] = {
 uint32_t
 BufferSizeLevelBsr::BsrId2BufferSize (uint8_t val)
 {
-  NS_ABORT_MSG_UNLESS (val >= 0 && val < 64, "val = " << val << " is out of range");
+  NS_ABORT_MSG_UNLESS (val < 64, "val = " << val << " is out of range");
   return BufferSizeLevelBsrTable[val];
 }
 

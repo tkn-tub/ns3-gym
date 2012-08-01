@@ -266,6 +266,7 @@ private:
    * \param stream The output stream object to use when logging ascii traces.
    * \param prefix Filename prefix to use for ascii trace files.
    * \param nd Net device for which you want to enable tracing.
+   * \param explicitFilename Treat the prefix as an explicit filename if true
    */
   virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
                                     std::string prefix,

@@ -20,6 +20,10 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
+    ## propagation-environment.h (module 'propagation'): ns3::CitySize [enumeration]
+    module.add_enum('CitySize', ['SmallCity', 'MediumCity', 'LargeCity'])
+    ## propagation-environment.h (module 'propagation'): ns3::EnvironmentType [enumeration]
+    module.add_enum('EnvironmentType', ['UrbanEnvironment', 'SubUrbanEnvironment', 'OpenAreasEnvironment'])
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList [class]
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
@@ -30,6 +34,8 @@ def register_types(module):
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
     module.add_class('ObjectDeleter', import_from_module='ns.core')
+    ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess> [class]
+    module.add_class('PropagationCache', template_parameters=['ns3::JakesProcess'])
     ## random-variable.h (module 'core'): ns3::RandomVariable [class]
     module.add_class('RandomVariable', import_from_module='ns.core')
     ## random-variable.h (module 'core'): ns3::SeedManager [class]
@@ -144,8 +150,16 @@ def register_types(module):
     module.add_class('FixedRssLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel [class]
     module.add_class('FriisPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## itu-r-1411-los-propagation-loss-model.h (module 'propagation'): ns3::ItuR1411LosPropagationLossModel [class]
+    module.add_class('ItuR1411LosPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): ns3::ItuR1411NlosOverRooftopPropagationLossModel [class]
+    module.add_class('ItuR1411NlosOverRooftopPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## jakes-process.h (module 'propagation'): ns3::JakesProcess [class]
+    module.add_class('JakesProcess', parent=root_module['ns3::Object'])
     ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel [class]
     module.add_class('JakesPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## kun-2600-mhz-propagation-loss-model.h (module 'propagation'): ns3::Kun2600MhzPropagationLossModel [class]
+    module.add_class('Kun2600MhzPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::LogDistancePropagationLossModel [class]
     module.add_class('LogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::MatrixPropagationLossModel [class]
@@ -154,6 +168,8 @@ def register_types(module):
     module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel [class]
     module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## okumura-hata-propagation-loss-model.h (module 'propagation'): ns3::OkumuraHataPropagationLossModel [class]
+    module.add_class('OkumuraHataPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## random-variable.h (module 'core'): ns3::RandomVariableChecker [class]
     module.add_class('RandomVariableChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## random-variable.h (module 'core'): ns3::RandomVariableValue [class]
@@ -203,6 +219,7 @@ def register_methods(root_module):
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
+    register_Ns3PropagationCache__Ns3JakesProcess_methods(root_module, root_module['ns3::PropagationCache< ns3::JakesProcess >'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
     register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
@@ -256,11 +273,16 @@ def register_methods(root_module):
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3FixedRssLossModel_methods(root_module, root_module['ns3::FixedRssLossModel'])
     register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
+    register_Ns3ItuR1411LosPropagationLossModel_methods(root_module, root_module['ns3::ItuR1411LosPropagationLossModel'])
+    register_Ns3ItuR1411NlosOverRooftopPropagationLossModel_methods(root_module, root_module['ns3::ItuR1411NlosOverRooftopPropagationLossModel'])
+    register_Ns3JakesProcess_methods(root_module, root_module['ns3::JakesProcess'])
     register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
+    register_Ns3Kun2600MhzPropagationLossModel_methods(root_module, root_module['ns3::Kun2600MhzPropagationLossModel'])
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
     register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
+    register_Ns3OkumuraHataPropagationLossModel_methods(root_module, root_module['ns3::OkumuraHataPropagationLossModel'])
     register_Ns3RandomVariableChecker_methods(root_module, root_module['ns3::RandomVariableChecker'])
     register_Ns3RandomVariableValue_methods(root_module, root_module['ns3::RandomVariableValue'])
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
@@ -403,6 +425,17 @@ def register_Ns3ObjectDeleter_methods(root_module, cls):
                    'void', 
                    [param('ns3::Object *', 'object')], 
                    is_static=True)
+    return
+
+def register_Ns3PropagationCache__Ns3JakesProcess_methods(root_module, cls):
+    ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess>::PropagationCache(ns3::PropagationCache<ns3::JakesProcess> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PropagationCache< ns3::JakesProcess > const &', 'arg0')])
+    ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess>::PropagationCache() [constructor]
+    cls.add_constructor([])
+    ## propagation-cache.h (module 'propagation'): ns3::Ptr<ns3::JakesProcess> ns3::PropagationCache<ns3::JakesProcess>::GetPathData(ns3::Ptr<ns3::MobilityModel const> a, ns3::Ptr<ns3::MobilityModel const> b, uint32_t modelUid) [member function]
+    cls.add_method('GetPathData', 
+                   'ns3::Ptr< ns3::JakesProcess >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b'), param('uint32_t', 'modelUid')])
     return
 
 def register_Ns3RandomVariable_methods(root_module, cls):
@@ -1768,33 +1801,105 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
-    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::JakesPropagationLossModel() [constructor]
+def register_Ns3ItuR1411LosPropagationLossModel_methods(root_module, cls):
+    ## itu-r-1411-los-propagation-loss-model.h (module 'propagation'): ns3::ItuR1411LosPropagationLossModel::ItuR1411LosPropagationLossModel() [constructor]
     cls.add_constructor([])
-    ## jakes-propagation-loss-model.h (module 'propagation'): uint8_t ns3::JakesPropagationLossModel::GetNOscillators() const [member function]
-    cls.add_method('GetNOscillators', 
-                   'uint8_t', 
+    ## itu-r-1411-los-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::ItuR1411LosPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## itu-r-1411-los-propagation-loss-model.h (module 'propagation'): void ns3::ItuR1411LosPropagationLossModel::SetFrequency(double freq) [member function]
+    cls.add_method('SetFrequency', 
+                   'void', 
+                   [param('double', 'freq')])
+    ## itu-r-1411-los-propagation-loss-model.h (module 'propagation'): double ns3::ItuR1411LosPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## itu-r-1411-los-propagation-loss-model.h (module 'propagation'): double ns3::ItuR1411LosPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ItuR1411NlosOverRooftopPropagationLossModel_methods(root_module, cls):
+    ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): ns3::ItuR1411NlosOverRooftopPropagationLossModel::ItuR1411NlosOverRooftopPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::ItuR1411NlosOverRooftopPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): void ns3::ItuR1411NlosOverRooftopPropagationLossModel::SetFrequency(double freq) [member function]
+    cls.add_method('SetFrequency', 
+                   'void', 
+                   [param('double', 'freq')])
+    ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): double ns3::ItuR1411NlosOverRooftopPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## itu-r-1411-nlos-over-rooftop-propagation-loss-model.h (module 'propagation'): double ns3::ItuR1411NlosOverRooftopPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3JakesProcess_methods(root_module, cls):
+    ## jakes-process.h (module 'propagation'): ns3::JakesProcess::JakesProcess(ns3::JakesProcess const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::JakesProcess const &', 'arg0')])
+    ## jakes-process.h (module 'propagation'): ns3::JakesProcess::JakesProcess() [constructor]
+    cls.add_constructor([])
+    ## jakes-process.h (module 'propagation'): double ns3::JakesProcess::GetChannelGainDb() const [member function]
+    cls.add_method('GetChannelGainDb', 
+                   'double', 
                    [], 
                    is_const=True)
-    ## jakes-propagation-loss-model.h (module 'propagation'): uint8_t ns3::JakesPropagationLossModel::GetNRays() const [member function]
-    cls.add_method('GetNRays', 
-                   'uint8_t', 
+    ## jakes-process.h (module 'propagation'): std::complex<double> ns3::JakesProcess::GetComplexGain() const [member function]
+    cls.add_method('GetComplexGain', 
+                   'std::complex< double >', 
                    [], 
                    is_const=True)
+    ## jakes-process.h (module 'propagation'): static ns3::TypeId ns3::JakesProcess::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
     ## jakes-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::JakesPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## jakes-propagation-loss-model.h (module 'propagation'): void ns3::JakesPropagationLossModel::SetNOscillators(uint8_t nOscillators) [member function]
-    cls.add_method('SetNOscillators', 
-                   'void', 
-                   [param('uint8_t', 'nOscillators')])
-    ## jakes-propagation-loss-model.h (module 'propagation'): void ns3::JakesPropagationLossModel::SetNRays(uint8_t nRays) [member function]
-    cls.add_method('SetNRays', 
-                   'void', 
-                   [param('uint8_t', 'nRays')])
+    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::JakesPropagationLossModel() [constructor]
+    cls.add_constructor([])
     ## jakes-propagation-loss-model.h (module 'propagation'): double ns3::JakesPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3Kun2600MhzPropagationLossModel_methods(root_module, cls):
+    ## kun-2600-mhz-propagation-loss-model.h (module 'propagation'): ns3::Kun2600MhzPropagationLossModel::Kun2600MhzPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## kun-2600-mhz-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::Kun2600MhzPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## kun-2600-mhz-propagation-loss-model.h (module 'propagation'): double ns3::Kun2600MhzPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## kun-2600-mhz-propagation-loss-model.h (module 'propagation'): double ns3::Kun2600MhzPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
@@ -1857,7 +1962,7 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     cls.add_constructor([param('ns3::MobilityModel const &', 'arg0')])
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel::MobilityModel() [constructor]
     cls.add_constructor([])
-    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetDistanceFrom(ns3::Ptr<const ns3::MobilityModel> position) const [member function]
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetDistanceFrom(ns3::Ptr<ns3::MobilityModel const> position) const [member function]
     cls.add_method('GetDistanceFrom', 
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel const >', 'position')], 
@@ -1867,7 +1972,7 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'ns3::Vector', 
                    [], 
                    is_const=True)
-    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<ns3::MobilityModel const> other) const [member function]
     cls.add_method('GetRelativeSpeed', 
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
@@ -1917,6 +2022,26 @@ def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
     ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel::NakagamiPropagationLossModel() [constructor]
     cls.add_constructor([])
     ## propagation-loss-model.h (module 'propagation'): double ns3::NakagamiPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3OkumuraHataPropagationLossModel_methods(root_module, cls):
+    ## okumura-hata-propagation-loss-model.h (module 'propagation'): ns3::OkumuraHataPropagationLossModel::OkumuraHataPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## okumura-hata-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::OkumuraHataPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## okumura-hata-propagation-loss-model.h (module 'propagation'): double ns3::OkumuraHataPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## okumura-hata-propagation-loss-model.h (module 'propagation'): double ns3::OkumuraHataPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 

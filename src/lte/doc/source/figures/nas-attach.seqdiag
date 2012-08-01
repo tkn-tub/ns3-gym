@@ -1,0 +1,34 @@
+
+diagram {
+	SimProgram; LteHelper; LteUeNetDevice; EpcUeNas; LteUeRrc; LteEnbRrc; EpcEnbApplication; EpcSgwPgwApplication; EpcHelper;	
+	
+	SimProgram -> LteHelper [label="Attach (ueDevice, enbDevice)"];
+	LteHelper -> EpcUeNas [label="Connect (eNB)"] {
+		EpcUeNas -> LteUeRrc [label="ForceCampedOnEnb (CellID)"];
+		EpcUeNas => LteUeRrc [label="Connect"] {
+			LteUeRrc => LteEnbRrc [label="Connection Request (IMSI)"] {
+				=== RRC connection establishment ===
+				LteEnbRrc -> LteEnbRrc [label="store IMSI<->RNTI mapping"];			
+			}
+		}
+	}
+	
+	EpcUeNas => EpcHelper [label="Attach (UeDevice, EnbDevice)"] {
+		EpcHelper -> EpcHelper [label="store UeDevice <-> EnbDevice mapping"]
+	}
+	EpcUeNas => EpcHelper [label="ActivateEpsBearer (UeDevice, IMSI, EpsBearer (NGBR_VIDEO_TCP_DEFAULT), Tft::Default)"] {
+		EpcHelper => EpcSgwPgwApplication [label="ActivateS1Bearer (UE IP, eNB IP, IMSI, Tft::Default)", return="TEID"] {			
+			EpcSgwPgwApplication => EpcSgwPgwApplication [label="Store UE IP<->eNB IP mapping"];
+			EpcSgwPgwApplication => EpcSgwPgwApplication [label="Create GTP-U tunnel endpoint"];
+		}
+		EpcHelper => EpcEnbApplication [label="ErabSetupRequest(TEID, IMSI)"] {
+			EpcEnbApplication => LteEnbRrc [label="RadioBearerSetupRequest (IMSI)", return="RadioBearerSetupCompleted (RNTI, LCID)"] {
+				LteEnbRrc => LteUeRrc [label="RRC connection reconfiguration"];
+			}
+			EpcEnbApplication -> EpcEnbApplication [label="Create GTP-U tunnel endpoint (TEID)"];
+			EpcEnbApplication -> EpcEnbApplication [label="store TEID<->(RNTI,LCID) mapping"];
+		}  
+	}
+	
+}
+

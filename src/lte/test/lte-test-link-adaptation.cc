@@ -30,13 +30,13 @@
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-ue-net-device.h"
 
-#include "ns3/lte-test-link-adaptation.h"
+#include "lte-test-link-adaptation.h"
 
 #include "lte-test-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteLinkAdaptationTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -195,13 +195,13 @@ LteLinkAdaptationTestCase::DoRun (void)
   // Activate the default EPS bearer
   enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
 
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testSinr);
+  uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testSinr);
 
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
@@ -239,3 +239,6 @@ LteLinkAdaptationTestCase::DlScheduling (uint32_t frameNo, uint32_t subframeNo, 
       NS_TEST_ASSERT_MSG_EQ ((uint16_t)mcsTb1, m_mcsIndex, "Wrong MCS index");
     }
 }
+
+} // namespace ns3
+

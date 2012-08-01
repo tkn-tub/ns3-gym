@@ -26,6 +26,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    click
    csma
    dsdv
+   dsr
    emulation-overview
    energy
    flow-monitor
@@ -33,12 +34,12 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    lte
    mesh
    distributed
+   mobility
    network
    olsr
    openflow-switch
    point-to-point
    propagation
-   simple
    statistics
    topology
    uan

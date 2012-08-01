@@ -146,12 +146,12 @@ int main (int argc, char **argv)
   NS_LOG_INFO ("Assign IPv6 Addresses.");
   Ipv6AddressHelper ipv6;
 
-  ipv6.NewNetwork (Ipv6Address ("2001:1::"), 64);
+  ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer iic1 = ipv6.Assign (ndc1);
   iic1.SetRouter (2, true);
   iic1.SetRouter (1, true);
 
-  ipv6.NewNetwork (Ipv6Address ("2001:2::"), 64);
+  ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer iic2 = ipv6.Assign (ndc2);
   iic2.SetRouter (0, true);
 

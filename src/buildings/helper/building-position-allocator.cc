@@ -19,6 +19,7 @@
  */
 #include "building-position-allocator.h"
 #include "ns3/buildings-mobility-model.h"
+#include "ns3/buildings-helper.h"
 #include "ns3/random-variable.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -127,11 +128,11 @@ RandomRoomPositionAllocator::GetNext () const
       for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
         {
           NS_LOG_LOGIC ("building " << (*bit)->GetId ());
-          for (uint32_t rx = 0; rx < (*bit)->GetNRoomsX (); ++rx)
+          for (uint32_t rx = 1; rx <= (*bit)->GetNRoomsX (); ++rx)
             {
-              for (uint32_t ry = 0; ry < (*bit)->GetNRoomsY (); ++ry)
+              for (uint32_t ry = 1; ry <= (*bit)->GetNRoomsY (); ++ry)
                 {
-                  for (uint32_t f = 0; f < (*bit)->GetNFloors (); ++f)
+                  for (uint32_t f = 1; f <= (*bit)->GetNFloors (); ++f)
                     {
                       RoomInfo i;
                       i.roomx = rx;
@@ -148,7 +149,7 @@ RandomRoomPositionAllocator::GetNext () const
   uint32_t n = rand.GetInteger (0,m_roomListWithoutReplacement.size () - 1);
   RoomInfo r = m_roomListWithoutReplacement.at (n);      
   m_roomListWithoutReplacement.erase (m_roomListWithoutReplacement.begin () + n);  
-  NS_LOG_LOGIC ("considering room (" << r.roomx << ", " << r.roomy << ", " << r.floor << ")");
+  NS_LOG_LOGIC ("considering building " << r.b->GetId () << " room (" << r.roomx << ", " << r.roomy << ", " << r.floor << ")");
 
   Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
   UniformVariable v;
@@ -158,12 +159,12 @@ RandomRoomPositionAllocator::GetNext () const
   double rdx =  (box.xMax - box.xMin) / r.b->GetNRoomsX ();
   double rdy =  (box.yMax - box.yMin) / r.b->GetNRoomsY ();
   double rdz =  (box.zMax - box.zMin) / r.b->GetNFloors ();
-  double x1 = box.xMin + rdx * r.roomx;
-  double x2 = box.xMin + rdx * (r.roomx + 1);
-  double y1 = box.yMin + rdy * r.roomy;
-  double y2 = box.yMin + rdy * (r.roomy + 1);
-  double z1 = box.zMin + rdz * r.floor;
-  double z2 = box.zMin + rdz * (r.floor + 1);
+  double x1 = box.xMin + rdx * (r.roomx - 1);
+  double x2 = box.xMin + rdx * r.roomx;
+  double y1 = box.yMin + rdy * (r.roomy -1);
+  double y2 = box.yMin + rdy * r.roomy;
+  double z1 = box.zMin + rdz * (r.floor - 1);
+  double z2 = box.zMin + rdz * r.floor;
   NS_LOG_LOGIC ("randomly allocating position in "
                 << " (" << x1 << "," << x2 << ") "
                 << "x (" << y1 << "," << y2 << ") "
@@ -189,9 +190,18 @@ SameRoomPositionAllocator::SameRoomPositionAllocator ()
 
 
 SameRoomPositionAllocator::SameRoomPositionAllocator (NodeContainer c)
-  : m_nodes (c),
-    m_nodeIt (c.Begin ())
+  : m_nodes (c)
 {
+  m_nodeIt = m_nodes.Begin ();
+  // this is needed to make sure the building models associated with c have been initialized
+  for (NodeContainer::Iterator it = m_nodes.Begin (); it != m_nodes.End (); ++it)
+    {
+      Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel> ();
+      NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
+      Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+      NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+      BuildingsHelper::MakeConsistent (bmm);
+    }
 }
 
 TypeId
@@ -216,11 +226,17 @@ SameRoomPositionAllocator::GetNext () const
   
   NS_ASSERT_MSG (m_nodeIt != m_nodes.End (), "no node in container");
 
-  Ptr<BuildingsMobilityModel> bmm = (*m_nodeIt)->GetObject<BuildingsMobilityModel> ();
+  NS_LOG_LOGIC ("considering node " << (*m_nodeIt)->GetId ());
+  Ptr<MobilityModel> mm = (*m_nodeIt)->GetObject<MobilityModel> ();
+  NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
+  Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+  NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+
+  ++m_nodeIt;
   uint32_t roomx = bmm->GetRoomNumberX ();
   uint32_t roomy = bmm->GetRoomNumberY ();
   uint32_t floor = bmm->GetFloorNumber ();
-  NS_LOG_LOGIC ("considering room (" << roomx << ", " << roomy << ", " << floor << ")");
+  NS_LOG_LOGIC ("considering building " << bmm->GetBuilding ()->GetId () << " room (" << roomx << ", " << roomy << ", " << floor << ")");
 
   Ptr<Building> b = bmm->GetBuilding ();
   Ptr<RandomBoxPositionAllocator> pa = CreateObject<RandomBoxPositionAllocator> ();
@@ -231,12 +247,12 @@ SameRoomPositionAllocator::GetNext () const
   double rdx =  (box.xMax - box.xMin) / b->GetNRoomsX ();
   double rdy =  (box.yMax - box.yMin) / b->GetNRoomsY ();
   double rdz =  (box.zMax - box.zMin) / b->GetNFloors ();
-  double x1 = box.xMin + rdx * roomx;
-  double x2 = box.xMin + rdx * (roomx + 1);
-  double y1 = box.yMin + rdy * roomy;
-  double y2 = box.yMin + rdy * (roomy + 1);
-  double z1 = box.zMin + rdz * floor;
-  double z2 = box.zMin + rdz * (floor + 1);
+  double x1 = box.xMin + rdx * (roomx - 1);
+  double x2 = box.xMin + rdx * roomx;
+  double y1 = box.yMin + rdy * (roomy -1);
+  double y2 = box.yMin + rdy * roomy;
+  double z1 = box.zMin + rdz * (floor - 1);
+  double z2 = box.zMin + rdz * floor;
   NS_LOG_LOGIC ("randomly allocating position in "
                 << " (" << x1 << "," << x2 << ") "
                 << "x (" << y1 << "," << y2 << ") "

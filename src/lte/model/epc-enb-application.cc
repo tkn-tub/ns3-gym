@@ -26,8 +26,10 @@
 #include "ns3/ipv4.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/uinteger.h"
-#include "ns3/epc-gtpu-header.h"
-#include "ns3/lte-radio-bearer-tag.h"
+
+#include "epc-gtpu-header.h"
+#include "lte-radio-bearer-tag.h"
+
 
 namespace ns3 {
 
@@ -51,6 +53,7 @@ EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSock
   NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwAddress);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
+  m_s1SapProvider = new MemberEpcEnbS1SapProvider<EpcEnbApplication> (this);
 }
 
 
@@ -58,15 +61,52 @@ EpcEnbApplication::~EpcEnbApplication (void)
 {
   NS_LOG_FUNCTION (this);
 }
- 
+
+
 void 
-EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint16_t rnti, uint8_t lcid)
+EpcEnbApplication::SetS1SapUser (EpcEnbS1SapUser * s)
 {
-  NS_LOG_FUNCTION (this << teid << rnti << (uint16_t) lcid);
-  LteFlowId_t rbid (rnti, lcid);
+  m_s1SapUser = s;
+}
+
+  
+EpcEnbS1SapProvider* 
+EpcEnbApplication::GetS1SapProvider ()
+{
+  return m_s1SapProvider;
+}
+
+void 
+EpcEnbApplication::ErabSetupRequest (uint32_t teid, uint64_t imsi, EpsBearer bearer)
+{
+  NS_LOG_FUNCTION (this << teid << imsi);
+  // request the RRC to setup a radio bearer
+  struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
+  params.bearer = bearer;
+  params.teid = teid;
+  std::map<uint64_t, uint16_t>::iterator it = m_imsiRntiMap.find (imsi);
+  NS_ASSERT_MSG (it != m_imsiRntiMap.end (), "unknown IMSI");
+  params.rnti = it->second;
+  m_s1SapUser->DataRadioBearerSetupRequest (params);
+}
+
+void 
+EpcEnbApplication::DoS1BearerSetupRequest (EpcEnbS1SapProvider::S1BearerSetupRequestParameters params)
+{
+  NS_LOG_FUNCTION (this);
+  LteFlowId_t rbid (params.rnti, params.lcid);
   // side effect: create entries if not exist
-  m_rbidTeidMap[rbid] = teid;
-  m_teidRbidMap[teid] = rbid;
+  m_rbidTeidMap[rbid] = params.teid;
+  m_teidRbidMap[params.teid] = rbid;
+}
+
+
+void 
+EpcEnbApplication::DoInitialUeMessage (uint64_t imsi, uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this);
+  // side effect: create entry if not exist
+  m_imsiRntiMap[imsi] = rnti;
 }
 
 void 

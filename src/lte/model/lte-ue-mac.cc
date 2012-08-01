@@ -30,7 +30,7 @@
 #include "lte-ue-net-device.h"
 #include "lte-radio-bearer-tag.h"
 #include <ns3/ff-mac-common.h>
-#include <ns3/ideal-control-messages.h>
+#include <ns3/lte-control-messages.h>
 #include <ns3/simulator.h>
 #include <ns3/lte-common.h>
 
@@ -56,7 +56,6 @@ public:
   virtual void ConfigureUe (uint16_t rnti);
   virtual void AddLc (uint8_t lcId, LteMacSapUser* msu);
   virtual void RemoveLc (uint8_t lcId);
-  virtual void RrcUpdateConfigurationReq (LteUeConfig_t params);
 
 private:
   LteUeMac* m_mac;
@@ -85,13 +84,6 @@ UeMemberLteUeCmacSapProvider::RemoveLc (uint8_t lcid)
 {
   m_mac->DoRemoveLc (lcid);
 }
-
-void
-UeMemberLteUeCmacSapProvider::RrcUpdateConfigurationReq (LteUeConfig_t params)
-{
-  m_mac->DoRrcUpdateConfigurationReq (params);
-}
-
 
 class UeMemberLteMacSapProvider : public LteMacSapProvider
 {
@@ -136,7 +128,7 @@ public:
   // inherited from LtePhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
 private:
   LteUeMac* m_mac;
@@ -161,9 +153,9 @@ UeMemberLteUePhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframe
 }
 
 void
-UeMemberLteUePhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+UeMemberLteUePhySapUser::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
-  m_mac->DoReceiveIdealControlMessage (msg);
+  m_mac->DoReceiveLteControlMessage (msg);
 }
 
 
@@ -292,21 +284,27 @@ LteUeMac::SendReportBufferStatus (void)
   MacCeListElement_s bsr;
   bsr.m_rnti = m_rnti;
   bsr.m_macCeType = MacCeListElement_s::BSR;
-  // BSR
-  std::map <uint8_t, uint64_t>::iterator it;
-  NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
-  
+
+  // BSR is reported for each LCG. As a simplification, we consider that all LCs belong to the first LCG.
+  std::map <uint8_t, uint64_t>::iterator it;  
+  int queue = 0;
   for (it = m_ulBsrReceived.begin (); it != m_ulBsrReceived.end (); it++)
     {
-      int queue = (*it).second;
-      int index = BufferSizeLevelBsr::BufferSize2BsrId (queue);
-      bsr.m_macCeValue.m_bufferStatus.push_back (index);
+      queue += (*it).second;
+  
     }
+  int index = BufferSizeLevelBsr::BufferSize2BsrId (queue);
+  bsr.m_macCeValue.m_bufferStatus.push_back (index);
+  // FF API says that all 4 LCGs are always present
+  // we do so but reporting a 0 size for all other LCGs
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
+  bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
 
   // create the feedback to eNB
-  Ptr<BsrIdealControlMessage> msg = Create<BsrIdealControlMessage> ();
+  Ptr<BsrLteControlMessage> msg = Create<BsrLteControlMessage> ();
   msg->SetBsr (bsr);
-  m_uePhySapProvider->SendIdealControlMessage (msg);
+  m_uePhySapProvider->SendLteControlMessage (msg);
 
 }
 
@@ -334,15 +332,6 @@ LteUeMac::DoRemoveLc (uint8_t lcId)
 }
 
 void
-LteUeMac::DoRrcUpdateConfigurationReq (LteUeConfig_t params)
-{
-  NS_LOG_FUNCTION (this << " txMode " << (uint8_t) params.m_transmissionMode);
-  // forward info to PHY layer
-  m_uePhySapProvider->SetTransmissionMode (params.m_transmissionMode);
-}
-
-
-void
 LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
 {
   LteRadioBearerTag tag;
@@ -358,12 +347,12 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
 
 
 void
-LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this);
-  if (msg->GetMessageType () == IdealControlMessage::UL_DCI)
+  if (msg->GetMessageType () == LteControlMessage::UL_DCI)
     {
-      Ptr<UlDciIdealControlMessage> msg2 = DynamicCast<UlDciIdealControlMessage> (msg);
+      Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       std::map <uint8_t, uint64_t>::iterator itBsr;
       NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
@@ -375,7 +364,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
               activeLcs++;
             }
         }
-      if (activeLcs <= 0)
+      if (activeLcs == 0)
         {
           NS_LOG_ERROR (this << " No active flows for this UL-DCI");
           return;
@@ -389,7 +378,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
             {
               NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
               (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0);
-              if ((*itBsr).second >=  dci.m_tbSize / activeLcs)
+              if ((*itBsr).second >=  static_cast<uint64_t> (dci.m_tbSize / activeLcs))
                 {
                   (*itBsr).second -= dci.m_tbSize / activeLcs;
                 }
@@ -403,7 +392,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
     }
   else
     {
-      NS_LOG_FUNCTION (this << " IdealControlMessage not recognized");
+      NS_LOG_FUNCTION (this << " LteControlMessage not recognized");
     }
 }
 

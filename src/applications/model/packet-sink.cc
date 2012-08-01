@@ -152,17 +152,6 @@ void PacketSink::StopApplication ()     // Called at time specified by Stop
     }
 }
 
-std::string PrintStats (Address& from, uint32_t packetSize, uint32_t totalRxSize)
-{
-  std::ostringstream oss;
-  InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-  oss << "Received " <<  packetSize << " bytes from "
-      << address.GetIpv4 () << " [" << address << "]"
-      << " total Rx " << totalRxSize;
-
-  return oss.str ();
-}
-
 void PacketSink::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -174,34 +163,38 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         { //EOF
           break;
         }
+      m_totalRx += packet->GetSize ();
       if (InetSocketAddress::IsMatchingType (from))
         {
-          m_totalRx += packet->GetSize ();
-          NS_LOG_INFO (PrintStats (from, packet->GetSize (), m_totalRx));
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+                       << "s packet sink received "
+                       <<  packet->GetSize () << " bytes from "
+                       << InetSocketAddress::ConvertFrom(from).GetIpv4 ()
+                       << " port " << InetSocketAddress::ConvertFrom (from).GetPort ()
+                       << " total Rx " << m_totalRx << " bytes");
         }
       else if (Inet6SocketAddress::IsMatchingType (from))
         {
-          m_totalRx += packet->GetSize ();
-          Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
-          NS_LOG_INFO ("Received " << packet->GetSize () << " bytes from " <<
-                       address.GetIpv6 () << " [" << address << "]"
-                                   << " total Rx " << m_totalRx);
-          //cast address to void , to suppress 'address' set but not used 
-          //compiler warning in optimized builds
-          (void) address;
+          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+                       << "s packet sink received "
+                       <<  packet->GetSize () << " bytes from "
+                       << Inet6SocketAddress::ConvertFrom(from).GetIpv6 ()
+                       << " port " << Inet6SocketAddress::ConvertFrom (from).GetPort ()
+                       << " total Rx " << m_totalRx << " bytes");
         }
       m_rxTrace (packet, from);
     }
 }
 
+
 void PacketSink::HandlePeerClose (Ptr<Socket> socket)
 {
-  NS_LOG_INFO ("PktSink, peerClose");
+  NS_LOG_FUNCTION (this << socket);
 }
  
 void PacketSink::HandlePeerError (Ptr<Socket> socket)
 {
-  NS_LOG_INFO ("PktSink, peerError");
+  NS_LOG_FUNCTION (this << socket);
 }
  
 

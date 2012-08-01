@@ -26,9 +26,10 @@
 #include <ns3/lte-phy.h>
 #include <ns3/ff-mac-common.h>
 
-#include <ns3/ideal-control-messages.h>
+#include <ns3/lte-control-messages.h>
 #include <ns3/lte-amc.h>
 #include <ns3/lte-ue-phy-sap.h>
+#include <ns3/lte-ue-cphy-sap.h>
 #include <ns3/ptr.h>
 #include <ns3/lte-amc.h>
 
@@ -48,6 +49,7 @@ class LteUePhy : public LtePhy
 {
 
   friend class UeMemberLteUePhySapProvider;
+  friend class MemberLteUeCphySapProvider<LteUePhy>;
 
 public:
   /**
@@ -71,15 +73,27 @@ public:
 
   /**
    * \brief Get the PHY SAP provider
-   * \return a pointer to the SAP Provider of the PHY
+   * \return a pointer to the SAP Provider 
    */
   LteUePhySapProvider* GetLteUePhySapProvider ();
 
   /**
   * \brief Set the PHY SAP User
-  * \param s a pointer to the PHY SAP user
+  * \param s a pointer to the SAP user
   */
   void SetLteUePhySapUser (LteUePhySapUser* s);
+
+  /**
+   * \brief Get the CPHY SAP provider
+   * \return a pointer to the SAP Provider
+   */
+  LteUeCphySapProvider* GetLteUeCphySapProvider ();
+
+  /**
+  * \brief Set the CPHY SAP User
+  * \param s a pointer to the SAP user
+  */
+  void SetLteUeCphySapUser (LteUeCphySapUser* s);
 
 
   /**
@@ -119,11 +133,6 @@ public:
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
 
   /**
-   * \brief Update available channel for TX
-   */
-  virtual void DoSetUplinkSubChannels ();
-
-  /**
    * \brief Set a list of sub channels to use in TX
    * \param mask a list of sub channels
    */
@@ -151,18 +160,18 @@ public:
   * the physical layer with the signal received from eNB
   * \param sinr SINR values vector
   */
-  Ptr<DlCqiIdealControlMessage> CreateDlCqiFeedbackMessage (const SpectrumValue& sinr);
+  Ptr<DlCqiLteControlMessage> CreateDlCqiFeedbackMessage (const SpectrumValue& sinr);
 
 
 
   // inherited from LtePhy
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
-  virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
+  virtual void ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> >);
   
-  virtual void DoSetTransmissionMode (uint8_t txMode);
-  
+  virtual void DoSetSrsConfigurationIndex (uint16_t srcCi);
   
 
 
@@ -183,17 +192,10 @@ public:
 
 
   /**
-  * \param rnti the rnti assigned to the UE
+  * \brief Send the SRS signal in the last symbols of the frame
   */
-  void SetRnti (uint16_t rnti);
-
-
-  /**
-   * set the cellId of the eNb this PHY is synchronized with
-   *
-   * \param cellId the cell identifier of the eNB
-   */
-  void SetEnbCellId (uint16_t cellId);
+  void SendSrs ();
+  
   
 
 
@@ -207,8 +209,17 @@ private:
   void SetTxMode6Gain (double gain);
   void SetTxMode7Gain (double gain);
   void SetTxModeGain (uint8_t txMode, double gain);
+
+  void UpdateNoisePsd ();
   
   void QueueSubChannelsForTransmission (std::vector <int> rbMap);
+
+  // CPHY SAP methods
+  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  void DoSetEarfcn (uint16_t dlEarfcn, uint16_t ulEarfcn);
+  void DoSetTransmissionMode (uint8_t txMode);
+  void DoSetRnti (uint16_t rnti);
+  void DoSyncronizeWithEnb (Ptr<LteEnbNetDevice> enbDevice, uint16_t cellId);
   
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
@@ -229,12 +240,19 @@ private:
   LteUePhySapProvider* m_uePhySapProvider;
   LteUePhySapUser* m_uePhySapUser;
 
+  LteUeCphySapProvider* m_ueCphySapProvider;
+  LteUeCphySapUser* m_ueCphySapUser;
+
   uint16_t  m_rnti;
 
   uint16_t m_enbCellId;
+  Ptr<LteEnbNetDevice> m_enbDevice; // wild hack, might go away in later versions
   
   uint8_t m_transmissionMode;
   std::vector <double> m_txModeGain;
+  
+  uint16_t m_srsPeriodicity;
+  uint16_t m_srsCounter;
 
 };
 

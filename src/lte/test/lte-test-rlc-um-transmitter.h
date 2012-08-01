@@ -23,10 +23,12 @@
 
 #include "ns3/test.h"
 
-#include "ns3/lte-test-entities.h"
 
-using namespace ns3;
+namespace ns3 {
 
+class LteTestRrc;
+class LteTestMac;
+class LteTestPdcp;
 
 /**
  * TestSuite 4.1.1 RLC UM: Only transmitter
@@ -117,5 +119,7 @@ class LteRlcUmTransmitterReportBufferStatusTestCase : public LteRlcUmTransmitter
     virtual void DoRun (void);
 
 };
+
+} // namespace ns3
 
 #endif /* LTE_TEST_RLC_UM_TRANSMITTER_H */

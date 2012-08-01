@@ -25,10 +25,9 @@
 #include "ns3/spectrum-test.h"
 
 #include "ns3/lte-phy-tag.h"
-#include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-sinr-chunk-processor.h"
 
-#include "ns3/lte-test-pathloss-model.h"
+
 #include <ns3/hybrid-buildings-propagation-loss-model.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -45,11 +44,14 @@
 #include <ns3/lte-helper.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
-#include <ns3/lte-test-sinr-chunk-processor.h>
+
+#include "lte-test-sinr-chunk-processor.h"
+#include "lte-test-ue-phy.h"
+#include "lte-test-pathloss-model.h"
 
 NS_LOG_COMPONENT_DEFINE ("LtePathlossModelTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -264,13 +266,13 @@ LtePathlossModelSystemTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   
   // Use testing chunk processor in the PHY layer
   // It will be used to test that the SNR is as intended
   //Ptr<LtePhy> uePhy = ueDevs.Get (0)->GetObject<LteUeNetDevice> ()->GetPhy ()->GetObject<LtePhy> ();
   Ptr<LteTestSinrChunkProcessor> testSinr = Create<LteTestSinrChunkProcessor> (uePhy);
-  uePhy->GetDownlinkSpectrumPhy ()->AddSinrChunkProcessor (testSinr);
+  uePhy->GetDownlinkSpectrumPhy ()->AddDataSinrChunkProcessor (testSinr);
    
 //   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
 //                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
@@ -310,3 +312,6 @@ LtePathlossModelSystemTestCase::DlScheduling (uint32_t frameNo, uint32_t subfram
   }
 }
                                          
+
+} // namespace ns3
+

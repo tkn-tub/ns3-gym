@@ -56,10 +56,11 @@ BuildingsHelper::MakeConsistent (Ptr<BuildingsMobilityModel> bmm)
   bool found = false;
   for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
     {
+      NS_LOG_LOGIC ("checking building " << (*bit)->GetId () << " with boundaries " << (*bit)->GetBoundaries ());
       Vector pos = bmm->GetPosition ();
       if ((*bit)->IsInside (pos))
         {
-          NS_LOG_LOGIC ("BuildingsMobilityModel " << bmm << " falls inside building " << (*bit)->GetId ());
+          NS_LOG_LOGIC ("BuildingsMobilityModel " << bmm << " pos " << bmm->GetPosition () << " falls inside building " << (*bit)->GetId ());
           NS_ABORT_MSG_UNLESS (found == false, " BuildingsMobilityModel already inside another building!");		
           found = true;
           uint16_t floor = (*bit)->GetFloor (pos);
@@ -70,7 +71,7 @@ BuildingsHelper::MakeConsistent (Ptr<BuildingsMobilityModel> bmm)
     }
   if (!found)
     {
-      NS_LOG_LOGIC ("BuildingsMobilityModel " << bmm  << " is outdoor");
+      NS_LOG_LOGIC ("BuildingsMobilityModel " << bmm << " pos " << bmm->GetPosition ()  << " is outdoor");
       bmm->SetOutdoor ();
     }
 

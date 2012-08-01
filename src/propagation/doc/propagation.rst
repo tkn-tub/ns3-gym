@@ -60,7 +60,7 @@ RangePropagationLossModel
 OkumuraHataPropagationLossModel
 +++++++++++++++++++++++++++++++
 
-This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need to consider several variants of the well known Okumura Hata model. In fact, the original Okumura Hata model [hata]_ is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 [cost231]_ extends it for the frequency range from 1500 MHz to 2000 MHz, and [pl26ghz]_ further extends it up to 2.6G Hz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
+This model is used to model open area pathloss for long distance (i.e., > 1 Km). In order to include all the possible frequencies usable by LTE we need to consider several variants of the well known Okumura Hata model. In fact, the original Okumura Hata model [hata]_ is designed for frequencies ranging from 150 MHz to 1500 MHz, the COST231 [cost231]_ extends it for the frequency range from 1500 MHz to 2000 MHz. Another important aspect is the scenarios considered by the models, in fact the all models are originally designed for urban scenario and then only the standard one and the COST231 are extended to suburban, while only the standard one has been extended to open areas. Therefore, the model cannot cover all scenarios at all frequencies. In the following we detail the models adopted.
 
 
 

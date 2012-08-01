@@ -31,6 +31,16 @@ NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Socket);
+
+TypeId
+Socket::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Socket")
+    .SetParent<Object> ();
+  return tid;
+}
+
 Socket::Socket (void)
 {
   m_boundnetdevice = 0;

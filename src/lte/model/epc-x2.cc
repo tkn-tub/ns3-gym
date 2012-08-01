@@ -207,7 +207,7 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
                          "Missing infos of local and remote CellId");
           Ptr<X2CellInfo> cellsInfo = m_x2InterfaceCellIds [socket];
 
-          EpcX2SapUser::HandoverRequestAckParams params;
+          EpcX2SapUser::HandoverRequestAckParams params;          
           params.oldEnbUeX2apId = x2HoReqAckHeader.GetOldEnbUeX2apId ();
           params.newEnbUeX2apId = x2HoReqAckHeader.GetNewEnbUeX2apId ();
           params.sourceCellId   = cellsInfo->m_localCellId;

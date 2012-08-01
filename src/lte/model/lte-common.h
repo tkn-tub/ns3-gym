@@ -56,10 +56,24 @@ public:
   friend bool operator < (const ImsiLcidPair_t &a, const ImsiLcidPair_t &b);
 };
 
+/**
+* \brief Parameters for configuring the UE 
+*/
 struct LteUeConfig_t
 {
   uint16_t  m_rnti;
+  /**
+  * When false means that the message is inteded foro configuring a new UE
+  */
+  bool      m_reconfigureFlag;
+  /**
+  * Transmission mode [1..7] (i.e., SISO, MIMO, etc.)
+  */
   uint8_t   m_transmissionMode;
+  /**
+  * Srs Configuration index for UE specific SRS, see section 8.2 of TS 36.213
+  */
+  uint16_t  m_srsConfigurationIndex;
   
   public:
     LteUeConfig_t ();

@@ -98,7 +98,7 @@ LteRlcAm::GetTypeId (void)
 void
 LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   /** Store arrival time */
   Time now = Simulator::Now ();
@@ -164,8 +164,14 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 void
 LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
 {
-  NS_LOG_FUNCTION (this << bytes);
-  NS_ASSERT_MSG (bytes > 2, "Tx opportunity too small = " << bytes);
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
+  
+  if (bytes <= 2)
+    {
+      // Stingy MAC: Header fix part is 2 bytes, we need more bytes for the data
+      NS_LOG_LOGIC ("TX opportunity too small = " << bytes);
+      return;
+    }
 
   if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
     {
@@ -176,7 +182,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
       rlcAmHeader.SetControlPdu (LteRlcAmHeader::STATUS_PDU);
       rlcAmHeader.SetAckSn (m_vrR);
 
-      NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+      NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
       packet->AddHeader (rlcAmHeader);
 
       // Send RLC PDU to MAC layer
@@ -198,7 +204,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
         {
           LteRlcAmHeader rlcAmHeader;
           packet->PeekHeader (rlcAmHeader);
-          NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+          NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
 
           // Send RLC PDU to MAC layer
           LteMacSapProvider::TransmitPduParameters params;
@@ -263,20 +269,30 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
 
   while ( firstSegment && (firstSegment->GetSize () > 0) && (nextSegmentSize > 0) )
     {
-      NS_LOG_LOGIC ("WHILE .. firstSegment && firstSegment->GetSize > 0 && nextSegmentSize > 0 ..");
-      NS_LOG_LOGIC ("    FirstSegment size = " << firstSegment->GetSize ());
-      NS_LOG_LOGIC ("    Next segment size = " << nextSegmentSize);
-      if ( firstSegment->GetSize () > nextSegmentSize )
+      NS_LOG_LOGIC ("WHILE ( firstSegment && firstSegment->GetSize > 0 && nextSegmentSize > 0 )");
+      NS_LOG_LOGIC ("    firstSegment size = " << firstSegment->GetSize ());
+      NS_LOG_LOGIC ("    nextSegmentSize   = " << nextSegmentSize);
+      if ( (firstSegment->GetSize () > nextSegmentSize) ||
+           // Segment larger than 2047 octets can only be mapped to the end of the Data field
+           (firstSegment->GetSize () > 2047)
+         )
         {
-          NS_LOG_LOGIC ("    IF firstSegment > NextSegmentSize");
+          // Take the minimum size, due to the 2047-bytes 3GPP exception
+          // This exception is due to the length of the LI field (just 11 bits)
+          uint32_t currSegmentSize = std::min (firstSegment->GetSize (), nextSegmentSize);
+
+          NS_LOG_LOGIC ("    IF ( firstSegment > nextSegmentSize ||");
+          NS_LOG_LOGIC ("         firstSegment > 2047 )");
+          
           // Segment txBuffer.FirstBuffer and
           // Give back the remaining segment to the transmission buffer
-          Ptr<Packet> newSegment = firstSegment->CreateFragment (0, nextSegmentSize);
+          Ptr<Packet> newSegment = firstSegment->CreateFragment (0, currSegmentSize);
+          NS_LOG_LOGIC ("    newSegment size   = " << newSegment->GetSize ());
 
           // Status tag of the new and remaining segments
           // Note: This is the only place where a PDU is segmented and
           // therefore its status can change
-          LteRlcSduStatusTag oldTag, newTag;    // TODO CreateFragment copy the tag???
+          LteRlcSduStatusTag oldTag, newTag;
           firstSegment->RemovePacketTag (oldTag);
           newSegment->RemovePacketTag (newTag);
           if (oldTag.GetStatus () == LteRlcSduStatusTag::FULL_SDU)
@@ -289,25 +305,46 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
               newTag.SetStatus (LteRlcSduStatusTag::MIDDLE_SEGMENT);
               //oldTag.SetStatus (LteRlcSduStatusTag::LAST_SEGMENT);
             }
-          firstSegment->AddPacketTag (oldTag);
-          newSegment->AddPacketTag (newTag);  // TODO What happens if we add two tags???
 
           // Give back the remaining segment to the transmission buffer
-          firstSegment->RemoveAtStart (nextSegmentSize);
-          m_txonBuffer.insert (m_txonBuffer.begin (), firstSegment);
-          m_txonBufferSize += (*(m_txonBuffer.begin()))->GetSize ();
-          firstSegment = 0; // TODO how to put a null ptr to Packet?
+          firstSegment->RemoveAtStart (currSegmentSize);
+          NS_LOG_LOGIC ("    firstSegment size (after RemoveAtStart) = " << firstSegment->GetSize ());
+          if (firstSegment->GetSize () > 0)
+            {
+              firstSegment->AddPacketTag (oldTag);
 
-          NS_LOG_LOGIC ("    TX buffer: Give back the remaining segment");
-          NS_LOG_LOGIC ("    TX buffers = " << m_txonBuffer.size ());
-          NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txonBuffer.begin()))->GetSize ());
-          NS_LOG_LOGIC ("    txBufferSize = " << m_txonBufferSize );
+              m_txonBuffer.insert (m_txonBuffer.begin (), firstSegment);
+              m_txonBufferSize += (*(m_txonBuffer.begin()))->GetSize ();
+
+              NS_LOG_LOGIC ("    Txon buffer: Give back the remaining segment");
+              NS_LOG_LOGIC ("    Txon buffers = " << m_txonBuffer.size ());
+              NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("    txonBufferSize = " << m_txonBufferSize );
+            }
+          else
+            {
+              // Whole segment was taken, so adjust tag
+              if (newTag.GetStatus () == LteRlcSduStatusTag::FIRST_SEGMENT)
+                {
+                  newTag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
+                }
+              else if (newTag.GetStatus () == LteRlcSduStatusTag::MIDDLE_SEGMENT)
+                {
+                  newTag.SetStatus (LteRlcSduStatusTag::LAST_SEGMENT);
+                }
+            }
+          // Segment is completely taken or
+          // the remaining segment is given back to the transmission buffer
+          firstSegment = 0;
+
+          // Put status tag once it has been adjusted
+          newSegment->AddPacketTag (newTag);
 
           // Add Segment to Data field
           dataFieldAddedSize = newSegment->GetSize ();
           dataFieldTotalSize += dataFieldAddedSize;
           dataField.push_back (newSegment);
-          newSegment = 0; // TODO how to put a null ptr to Packet?
+          newSegment = 0;
 
           // ExtensionBit (Next_Segment - 1) = 0
           rlcAmHeader.PushExtensionBit (LteRlcAmHeader::DATA_FIELD_FOLLOWS);
@@ -317,14 +354,15 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
           nextSegmentSize -= dataFieldAddedSize;
           nextSegmentId++;
 
-          // nextSegmentSize MUST be zero
+          // nextSegmentSize MUST be zero (only if segment is smaller or equal to 2047)
 
           // (NO more segments) → exit
           // break;
         }
-      else if ( (firstSegment->GetSize () == nextSegmentSize) || (m_txonBuffer.size () == 0) )
+      else if ( (nextSegmentSize - firstSegment->GetSize () <= 2) || (m_txonBuffer.size () == 0) )
         {
-          NS_LOG_LOGIC ("    IF firstSegment == NextSegmentSize || txonBuffer.size == 0");
+          NS_LOG_LOGIC ("    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txonBuffer.size == 0");
+
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
           dataFieldTotalSize += dataFieldAddedSize;
@@ -347,7 +385,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
 
-          // nextSegmentSize MUST be zero (only if txonBuffer is not empty)
+          // nextSegmentSize <= 2 (only if txBuffer is not empty)
 
           // (NO more segments) → exit
           // break;
@@ -514,7 +552,7 @@ LteRlcAm::DoNotifyHarqDeliveryFailure ()
 void
 LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   // Receiver timestamp
   RlcTag rlcTag;
@@ -528,7 +566,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
   // Get RLC header parameters
   LteRlcAmHeader rlcAmHeader;
   p->PeekHeader (rlcAmHeader);
-  NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+  NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
 
   if ( rlcAmHeader.IsDataPdu () )
     {
@@ -587,15 +625,15 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::SEGMENT )
         {
-          NS_LOG_LOGIC ("AMD PDU segment received ( SN = " << seqNumber << " )");
+          NS_LOG_LOGIC ("PDU segment received ( SN = " << seqNumber << " )");
         }
       else if ( rlcAmHeader.GetResegmentationFlag () == LteRlcAmHeader::PDU )
         {
-          NS_LOG_LOGIC ("AMD PDU received ( SN = " << seqNumber << " )");
+          NS_LOG_LOGIC ("PDU received ( SN = " << seqNumber << " )");
         }
       else
         {
-          NS_ASSERT_MSG (false, "Neither an AMD PDU segment nor a AMD PDU received");
+          NS_ASSERT_MSG (false, "Neither a PDU segment nor a PDU received");
           return ;
         }
 
@@ -673,12 +711,12 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       // - if byte segment numbers y to z of the AMD PDU with SN = x have been received before:
       if ( ! IsInsideReceivingWindow (seqNumber) )
         {
-          NS_LOG_LOGIC ("AMD PDU discarded");
+          NS_LOG_LOGIC ("PDU discarded");
           return;
         }
       else
         {
-          NS_LOG_LOGIC ("Place AMD PDU in the reception buffer ( SN = " << seqNumber << " )");
+          NS_LOG_LOGIC ("Place PDU in the reception buffer ( SN = " << seqNumber << " )");
           m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.push_back (p);
           m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete = true;
 
@@ -703,12 +741,19 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
       //     - update VR(MS) to the SN of the first AMD PDU with SN > current VR(MS) for
       //       which not all byte segments have been received;
 
-      if ( m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+      std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
+      if ( it != m_rxonBuffer.end () &&
+           m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
         {
-          while ( m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+          int firstVrMs = m_vrMs.GetValue ();
+          while ( it != m_rxonBuffer.end () &&
+                  m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
             {
               m_vrMs++;
+              it = m_rxonBuffer.find (m_vrMs.GetValue ());
               NS_LOG_LOGIC ("Incr VR(MS) = " << m_vrMs);
+
+              NS_ASSERT_MSG (firstVrMs != m_vrMs.GetValue (), "Infinite loop in RxonBuffer");
             }
           NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
         }
@@ -721,9 +766,14 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
 
       if ( seqNumber == m_vrR )
         {
-          if ( m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete )
+          std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
+          if ( it != m_rxonBuffer.end () &&
+               m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete )
             {
-              while ( m_rxonBuffer[ m_vrR.GetValue () ].m_pduComplete )
+              it = m_rxonBuffer.find (m_vrR.GetValue ());
+              int firstVrR = m_vrR.GetValue ();
+              while ( it != m_rxonBuffer.end () &&
+                      m_rxonBuffer[ m_vrR.GetValue () ].m_pduComplete )
                 {
                   NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << m_vrR << " )");
                   NS_ASSERT_MSG (m_rxonBuffer[ m_vrR.GetValue () ].m_byteSegments.size () == 1,
@@ -732,6 +782,9 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p)
                   m_rxonBuffer.erase (m_vrR.GetValue ());
 
                   m_vrR++;
+                  it = m_rxonBuffer.find (m_vrR.GetValue ());
+
+                  NS_ASSERT_MSG (firstVrR != m_vrR.GetValue (), "Infinite loop in RxonBuffer");
                 }
               NS_LOG_LOGIC ("New VR(R)  = " << m_vrR);
               m_vrMr = m_vrR + m_windowSize;
@@ -1104,7 +1157,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                               * ERROR: Transition not possible
                               */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
@@ -1175,13 +1228,13 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                 * ERROR: Transition not possible
                                 */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
 
           default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << m_reassemblingState);
+                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -1280,7 +1333,7 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                * ERROR: Transition not possible
                                */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
@@ -1397,13 +1450,13 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
                               /**
                                 * ERROR: Transition not possible
                                 */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << framingInfo);
+                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
                       break;
                     }
           break;
 
           default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << m_reassemblingState);
+                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -1477,9 +1530,15 @@ LteRlcAm::ExpireReorderingTimer (void)
   //    - set VR(X) to VR(H).
 
   m_vrMs = m_vrX;
-  while ( m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
+  int firstVrMs = m_vrMs.GetValue ();
+  std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
+  while ( it != m_rxonBuffer.end () &&
+          m_rxonBuffer[ m_vrMs.GetValue () ].m_pduComplete )
     {
       m_vrMs++;
+      it = m_rxonBuffer.find (m_vrMs.GetValue ());
+
+      NS_ASSERT_MSG (firstVrMs != m_vrMs.GetValue (), "Infinite loop in ExpireReorderingTimer");
     }
   NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
 

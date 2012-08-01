@@ -21,8 +21,7 @@
 #include "singleton.h"
 #include "object.h"
 #include "global-value.h"
-#include "object-ptr-vector.h"
-#include "object-ptr-map.h"
+#include "object-ptr-container.h"
 #include "names.h"
 #include "pointer.h"
 #include "log.h"
@@ -227,8 +226,7 @@ public:
 private:
   void Canonicalize (void);
   void DoResolve (std::string path, Ptr<Object> root);
-  void DoArrayResolve (std::string path, const ObjectPtrVectorValue &vector);
-  void DoMapResolve (std::string path, const ObjectPtrMapValue &map);
+  void DoArrayResolve (std::string path, const ObjectPtrContainerValue &vector);
   void DoResolveOne (Ptr<Object> object);
   std::string GetResolvedPath (void) const;
   virtual void DoOne (Ptr<Object> object, std::string path) = 0;
@@ -409,30 +407,18 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
               m_workStack.pop_back ();
             }
           // attempt to cast to an object vector.
-          const ObjectPtrVectorChecker *vectorChecker =
-            dynamic_cast<const ObjectPtrVectorChecker *> (PeekPointer (info.checker));
-          
+          const ObjectPtrContainerChecker *vectorChecker = 
+            dynamic_cast<const ObjectPtrContainerChecker *> (PeekPointer (info.checker));
           if (vectorChecker != 0)
             {
               NS_LOG_DEBUG ("GetAttribute(vector)="<<info.name<<" on path="<<GetResolvedPath () << pathLeft);
               foundMatch = true;
-              ObjectPtrVectorValue vector;
+              ObjectPtrContainerValue vector;
               root->GetAttribute (info.name, vector);
               m_workStack.push_back (info.name);
               DoArrayResolve (pathLeft, vector);
               m_workStack.pop_back ();
             }
-      // attempt to cast to an object map.
-      const ObjectPtrMapChecker *mapChecker = dynamic_cast<const ObjectPtrMapChecker *> (PeekPointer (info.checker));
-      if (mapChecker != 0)
-        {
-          NS_LOG_DEBUG ("GetAttribute(map)="<<item<<" on path="<<GetResolvedPath ());
-          ObjectPtrMapValue map;
-          root->GetAttribute (item, map);
-          m_workStack.push_back (item);
-          DoMapResolve (pathLeft, map);
-          m_workStack.pop_back ();
-        }
           // this could be anything else and we don't know what to do with it.
           // So, we just ignore it.
         }
@@ -445,7 +431,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 }
 
 void 
-Resolver::DoArrayResolve (std::string path, const ObjectPtrVectorValue &vector)
+Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &container)
 {
   NS_LOG_FUNCTION(this << path);
   NS_ASSERT (path != "");
@@ -459,35 +445,8 @@ Resolver::DoArrayResolve (std::string path, const ObjectPtrVectorValue &vector)
   std::string pathLeft = path.substr (next, path.size ()-next);
 
   ArrayMatcher matcher = ArrayMatcher (item);
-  for (uint32_t i = 0; i < vector.GetN (); i++)
-    {
-      if (matcher.Matches (i))
-        {
-          std::ostringstream oss;
-          oss << i;
-          m_workStack.push_back (oss.str ());
-          DoResolve (pathLeft, vector.Get (i));
-          m_workStack.pop_back ();
-        }
-    }
-}
-
-void
-Resolver::DoMapResolve (std::string path, const ObjectPtrMapValue &map)
-{
-  NS_ASSERT (path != "");
-  NS_ASSERT ((path.find ("/")) == 0);
-  std::string::size_type next = path.find ("/", 1);
-  if (next == std::string::npos)
-    {
-      NS_FATAL_ERROR ("map path includes no index data on path=\""<<path<<"\"");
-    }
-  std::string item = path.substr (1, next-1);
-  std::string pathLeft = path.substr (next, path.size ()-next);
-
-  ArrayMatcher matcher = ArrayMatcher (item);
-  ObjectPtrMapValue::Iterator it;
-  for (it =  map.Begin (); it != map.End ();  ++it)
+  ObjectPtrContainerValue::Iterator it;
+  for (it = container.Begin (); it != container.End (); ++it)
     {
       if (matcher.Matches ((*it).first))
         {

@@ -45,29 +45,19 @@ public:
   virtual ~DropTailQueue();
 
   /**
-   * Enumeration of the modes supported in the class.
-   *
-   */
-  enum Mode {
-    ILLEGAL,     /**< Mode not set */
-    PACKETS,     /**< Use number of packets for maximum queue size */
-    BYTES,       /**< Use number of bytes for maximum queue size */
-  };
-
-  /**
    * Set the operating mode of this device.
    *
    * \param mode The operating mode of this device.
    *
    */
-  void SetMode (DropTailQueue::Mode mode);
+  void SetMode (DropTailQueue::QueueMode mode);
 
   /**
    * Get the encapsulation mode of this device.
    *
    * \returns The encapsulation mode of this device.
    */
-  DropTailQueue::Mode  GetMode (void);
+  DropTailQueue::QueueMode GetMode (void);
 
 private:
   virtual bool DoEnqueue (Ptr<Packet> p);
@@ -78,7 +68,7 @@ private:
   uint32_t m_maxPackets;
   uint32_t m_maxBytes;
   uint32_t m_bytesInQueue;
-  Mode     m_mode;
+  QueueMode m_mode;
 };
 
 } // namespace ns3

@@ -18,21 +18,19 @@ IMAGES_DIA = \
 	$(FIGURES)/eutran-profiling-scenario.dia \
 	$(FIGURES)/ff-example.dia \
 	$(FIGURES)/ff-mac-saps.dia \
-	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.dia \
-	$(FIGURES)/lte-enb-architecture.dia \
+	$(FIGURES)/lte-arch-enb.dia \
+	$(FIGURES)/lte-arch-ue.dia \
+	$(FIGURES)/lte-enb-phy.dia \
+	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
-	$(FIGURES)/lte-ue-architecture.dia \
+	$(FIGURES)/lte-subframe-structure.dia \
 	$(FIGURES)/lte-epc-x2-interface.dia
-
 
 
 # specify eps figures from which .png and .pdf figures need to be built
 
 IMAGES_EPS = \
-	$(FIGURES)/MCS_2_test.eps \
-	$(FIGURES)/MCS_12_test.eps \
-	$(FIGURES)/MCS_14_test.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
@@ -77,12 +75,20 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
+$(FIGURES)/rrc-connection-establishment.pdf_width = 9cm
+$(FIGURES)/rrc-connection-reconfiguration-handover.pdf_width = 11cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/lte-subframe-structure.pdf_width = 2in
 
 
 IMAGES_SEQDIAG = \
 	$(FIGURES)/lte-phy-interference.seqdiag \
-	$(FIGURES)/helpers.seqdiag
+	$(FIGURES)/helpers.seqdiag \
+	$(FIGURES)/rrc-connection-establishment.seqdiag \
+	$(FIGURES)/rrc-connection-reconfiguration.seqdiag \
+	$(FIGURES)/rrc-connection-reconfiguration-handover.seqdiag \
+	$(FIGURES)/nas-attach.seqdiag \
+	$(FIGURES)/nas-activate-dedicated-bearer.seqdiag \
 
 IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/fading_vehicular.png \
@@ -102,8 +108,16 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/MCS_17_20.png \
 	$(FIGURES)/MCS_21_24.pdf \
 	$(FIGURES)/MCS_21_24.png \
-	$(FIGURES)/MCS_25_27.pdf \
-	$(FIGURES)/MCS_25_27.png \
+	$(FIGURES)/MCS_25_28.pdf \
+	$(FIGURES)/MCS_25_28.png \
+	$(FIGURES)/MCS_29_29.pdf \
+	$(FIGURES)/MCS_29_29.png \
+	$(FIGURES)/MCS_2_test.png \
+	$(FIGURES)/MCS_2_test.pdf \
+	$(FIGURES)/MCS_12_test.png \
+	$(FIGURES)/MCS_12_test.pdf \
+	$(FIGURES)/MCS_16_test.png \
+	$(FIGURES)/MCS_16_test.pdf \
 	$(FIGURES)/lte-phy-interference.png \
 	$(FIGURES)/lte-phy-interference.pdf \
 	$(FIGURES)/helpers.png \
@@ -126,9 +140,9 @@ IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
-%.png : %.seqdiag; $(SEQDIAG) -Tpng -o $@ $< 
+%.png : %.seqdiag; $(SEQDIAG) -Tpng --no-transparency -o $@ $< 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.seqdiag; $(SEQDIAG) -Tsvg -o $<.svg $< && $(CONVERT) $<.svg $@ ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 

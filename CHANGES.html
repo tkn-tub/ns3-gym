@@ -44,11 +44,57 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
-<h1>Changes from ns-3.13 to ns-3-dev</h1>
+<h1>Changes from ns-3.14 to ns-3.15</h1>
+
+<h2>New API:</h2>
+<ul>
+<li>A RandomVariableStreamHelper has been introduced to assist with 
+using the Config subsystem path names to assign fixed stream numbers
+to RandomVariableStream objects.</li>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li>Derived classes of RandomVariable (i.e. the random variable 
+implementations) have been ported to a new RandomVariableStream base class.
+<li>For a given distribution DistributionVariable (such as UniformVariable),
+the new class name is DistributionRandomVariable (such as 
+UniformRandomVariable). </li>
+<li>The new implementations are also derived from class ns3::Object and 
+are handled using the ns-3 smart pointer (Ptr) class.  </li>
+<li>The new variable classes also have a new attributed called "Stream"
+which allows them to be assigned to a fix stream index when assigned
+to the underlying pseudo-random stream of numbers.</li>
+</li>
+</ul>
+
+<h2>Changes to build system:</h2>
+<ul>
+<li></li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+<li>Programs using random variables or models that include random variables 
+may exhibit changed output for a given run number or seed, due to a possible 
+change in the order in which random variables are assigned to underlying 
+pseudo-random sequences.  Consult the manual for more information regarding 
+this.</li>
+</ul>
+
+<hr>
+<h1>Changes from ns-3.13 to ns-3.14</h1>
 
 <h2>New API:</h2>
 <ul>
 <li>The new class AntennaModel provides an API for modeling the radiation pattern of antennas.
+</li>
+<li>The new buildings module introduces an API (classes, helpers, etc)
+  to model the presence of buildings in a wireless network topology. 
+</li>
+<li>The LENA project's implementation of the LTE Mac Scheduler Interface Specification
+   standardized by the Small Cell Forum (formerly Femto Forum) is now available for
+  use with the LTE module.
 </li>
 </ul>
 
@@ -94,6 +140,24 @@ i.e., enable/disable the ICMPv6 Redirect sending.
 that all derived classes need to implement in order to integrate properly with the newly added antenna model. In addition, a new member variable "Ptr&#60;AntennaModel&#62; txAntenna" has been added to SpectrumSignalParameters in order to allow derived SpectrumPhy classes to provide information about the antenna model used for the transmission of a waveform.
 </li>
 <li> The Ns2CalendarScheduler event scheduler has been removed.
+</li>
+<li>
+ErrorUnit enum has been moved into RateErrorModel class, and symbols EU_BIT, EU_BYTE and EU_PKT have been renamed to RateErrorModel::ERROR_UNIT_BIT, RateErrorModel::ERROR_UNIT_BYTE and RateErrorModel::ERROR_UNIT_PACKET. RateErrorModel class attribute "ErrorUnit" values have also been renamed for consistency, and are now "ERROR_UNIT_BIT", "ERROR_UNIT_BYTE", "ERROR_UNIT_PACKET".
+</li>
+<li>
+QueueMode enum from DropTailQueue and RedQueue classes has been unified and moved to Queueu class. Symbols DropTailQueue::PACKETS and DropTailQueue::BYTES are now named Queue::QUEUE_MODE_PACKETS and DropTailQueue::QUEUE_MODE_BYTES. In addition, DropTailQueue and RedQueue class attributes "Mode" have been renamed for consistency from "Packets" and "Bytes" to "QUEUE_MODE_PACKETS" and "QUEUE_MODE_BYTES".
+</li>
+<li>
+The API of the LTE module has undergone a significant redesign with
+the merge of the code from the LENA project. The new API is not
+backwards compatible with the previous version of the LTE module.
+</li>
+<li> The Ipv6AddressHelper API has been aligned with the Ipv4AddressHelper API. 
+The helper can be set with a call to Ipv6AddressHelper::SetBase 
+(Ipv6Address network, Ipv6Prefix prefix) instead of NewNetwork
+(Ipv6Address network, Ipv6Prefix prefix).  A new NewAddress (void) method
+has been added.  Typical usage will involve calls to SetBase (), NewNetwork (),
+and NewAddress (), as in class Ipv4AddressHelper. 
 </li>
 </ul>
 

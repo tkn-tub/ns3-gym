@@ -23,7 +23,7 @@
 
 #include "ns3/lte-phy.h"
 
-#include "ns3/ideal-control-messages.h"
+#include "ns3/lte-control-messages.h"
 
 namespace ns3 {
 
@@ -58,9 +58,11 @@ public:
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
 
-  virtual void GenerateCqiReport (const SpectrumValue& sinr);
+  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
+  
+  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   SpectrumValue GetSinr ();
 

@@ -299,7 +299,7 @@ Fading Traces Generation
 ************************
 
 
-It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36.104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
+It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
  * ``fc`` : the frequency in use (it affects the computation of the doppler speed).
  * ``v_km_h`` : the speed of the users
@@ -341,7 +341,7 @@ And for setting the parameters::
 
 It has to be noted that, ``TraceFilename`` does not have a default value, therefore is has to be always set explicitly.
 
-The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36.104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
+The simulator provide natively three fading traces generated according to the configurations defined in in Annex B.2 of [TS36104]_. These traces are available in the folder ``src/lte/model/fading-traces/``). An excerpt from these traces is represented in the following figures.
 
 
 .. _fig-fadingPedestrianTrace:
@@ -437,6 +437,16 @@ This positions the node on the scenario. Note that, in this example, node 0 will
       BuildingsHelper::MakeMobilityModelConsistent ();
 
 This command will go through the lists of all nodes and of all buildings, determine for each user if it is indoor or outdoor, and if indoor it will also determine the building in which the user is located and the corresponding floor and number inside the building.
+
+PHY Error Model
+---------------
+
+The Physical error model consists of the data error model and the downlink control error model, both of them active by default. It is possible to deactivate them with the ns3 attribute system, in detail::
+
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+
+
 
 
 MIMO Model
@@ -727,11 +737,24 @@ That's all! You can now start your simulation as usual::
   Simulator::Run ();
 
 
-Further Reading
----------------
+
+
+
+Examples Programs
+-----------------
 
 The directory ``src/lte/examples/`` contains some example simulation programs that
 show how to simulate different LTE scenarios. 
+
+
+Reference scenarios
+-------------------
+
+There is a vast amount of reference LTE simulation scenarios which can be found in the literature. Here we list some of them:
+
+ * The dual stripe model [R4-092042]_, which is partially implemented in the example program ``src/lte/examples/lena-dual-stripe.cc``
+
+ * The system simulation scenarios mentioned in section A.2 of [TR36814]_
 
 
 

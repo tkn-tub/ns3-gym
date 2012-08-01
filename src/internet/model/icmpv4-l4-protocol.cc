@@ -57,7 +57,7 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
       if (node != 0)
         {
           Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
-          if (ipv4 != 0)
+          if (ipv4 != 0 && m_downTarget.IsNull ())
             {
               this->SetNode (node);
               ipv4->Insert (this);

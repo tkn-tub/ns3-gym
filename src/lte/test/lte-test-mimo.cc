@@ -34,7 +34,6 @@
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/buildings-mobility-model.h>
 #include <ns3/buildings-propagation-loss-model.h>
-#include "ns3/lte-test-mimo.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -53,10 +52,12 @@
 #include <ns3/pointer.h>
 #include <ns3/enum.h>
 
+#include "lte-test-mimo.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestMimo");
 
-using namespace ns3;
+namespace ns3 {
 
 
 LenaTestMimoSuite::LenaTestMimoSuite ()
@@ -106,40 +107,6 @@ LenaMimoTestCase::DoRun (void)
 {
 //   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
-  LogComponentDisableAll (LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSinrChunkProcessor", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LtePropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("ShadowingLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PenetrationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("MultipathLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
-// 
-//   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-//     LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
-//   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-
-  LogComponentEnable ("LenaTestMimo", LOG_LEVEL_ALL);
-//   LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-//   LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-//   LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
 
   /**
@@ -183,7 +150,7 @@ LenaMimoTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
@@ -283,4 +250,7 @@ LenaMimoTestCase::GetRlcBufferSample (Ptr<RadioBearerStatsCalculator> rlcStats, 
 //   NS_LOG_INFO ("\t get bytes " << m_dlDataRxed.at (m_dlDataRxed.size () - 1));
 }
 
+
+
+} // namespace ns3
 

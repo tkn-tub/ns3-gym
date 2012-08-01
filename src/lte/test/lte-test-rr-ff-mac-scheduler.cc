@@ -29,7 +29,6 @@
 #include <iostream>
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
-#include "ns3/lte-test-rr-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -45,10 +44,11 @@
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
 
+#include "lte-test-rr-ff-mac-scheduler.h"
 
 NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
 
-using namespace ns3;
+namespace ns3 {
 
 
 LenaTestRrFfMacSchedulerSuite::LenaTestRrFfMacSchedulerSuite ()
@@ -191,8 +191,8 @@ LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()
 void
 LenaRrFfMacSchedulerTestCase::DoRun (void)
 {
-  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   LogComponentDisableAll (LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
@@ -262,7 +262,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   
 
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
@@ -316,12 +316,14 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
       uint64_t imsi = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
       // get the lcId
       uint8_t lcId = ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc ()->GetLcIdVector ().at (0);
-      double txed = rlcStats->GetUlTxData (imsi, lcId);
       ulDataRxed.push_back (rlcStats->GetUlRxData (imsi, lcId));
-      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl << " txed " << txed / simulationTime);
+      NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes txed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / simulationTime << " ref " << m_thrRefUl << " txed " << rlcStats->GetUlTxData (imsi, lcId) / simulationTime);
       NS_TEST_ASSERT_MSG_EQ_TOL ((double)ulDataRxed.at (i) / simulationTime, m_thrRefUl, m_thrRefUl * tolerance, " Unfair Throughput!");
     }
 
   Simulator::Destroy ();
 }
+
+
+} // namespace ns3
 

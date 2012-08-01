@@ -186,6 +186,8 @@ def register_types(module):
     module.add_class('PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## queue.h (module 'network'): ns3::Queue [class]
     module.add_class('Queue', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## queue.h (module 'network'): ns3::Queue::QueueMode [enumeration]
+    module.add_enum('QueueMode', ['QUEUE_MODE_PACKETS', 'QUEUE_MODE_BYTES'], outer_class=root_module['ns3::Queue'], import_from_module='ns.network')
     ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel [class]
     module.add_class('RandomPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::RandomPropagationLossModel [class]
@@ -3591,6 +3593,8 @@ def register_Ns3SpectrumModel_methods(root_module, cls):
     return
 
 def register_Ns3SpectrumPhy_methods(root_module, cls):
+    ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy::SpectrumPhy() [constructor]
+    cls.add_constructor([])
     ## spectrum-phy.h (module 'spectrum'): static ns3::TypeId ns3::SpectrumPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

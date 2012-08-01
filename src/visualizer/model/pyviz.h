@@ -220,7 +220,7 @@ private:
   void DoPause (std::string const &message);
 
   bool m_stop;
-  EventId m_stopCallbackEvent;
+  Time m_runUntil;
   void CallbackStopSimulation ();
 };
 

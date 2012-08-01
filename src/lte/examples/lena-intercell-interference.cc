@@ -120,11 +120,11 @@ int main (int argc, char *argv[])
   lteHelper->Attach (ueDevs1, enbDevs.Get (0));
   lteHelper->Attach (ueDevs2, enbDevs.Get (1));
 
-  // Activate an EPS bearer on all UEs
+  // Activate a data radio bearer each UE
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lteHelper->ActivateEpsBearer (ueDevs1, bearer, EpcTft::Default ());
-  lteHelper->ActivateEpsBearer (ueDevs2, bearer, EpcTft::Default ());
+  lteHelper->ActivateDataRadioBearer (ueDevs1, bearer);
+  lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
 
   Simulator::Stop (Seconds (10));
 

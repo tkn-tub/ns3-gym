@@ -1,0 +1,242 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2011, 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Nicola Baldo <nbaldo@cttc.es>
+ */
+
+
+
+#include "ns3/log.h"
+#include "ns3/test.h"
+#include <ns3/building-position-allocator.h>
+#include <ns3/buildings-mobility-model.h>
+#include <ns3/building.h>
+#include <ns3/buildings-helper.h>
+#include <ns3/mobility-helper.h>
+#include <ns3/simulator.h>
+#include <map>
+
+NS_LOG_COMPONENT_DEFINE ("BuildingPositionAllocatorTest");
+
+namespace ns3 {
+
+
+
+struct Room
+{
+  Room (uint32_t xx, uint32_t yy, uint32_t zz);
+  uint32_t x;
+  uint32_t y;
+  uint32_t z;
+};
+
+Room::Room (uint32_t xx, uint32_t yy, uint32_t zz)
+  : x (xx),
+    y (yy),
+    z (zz)
+{
+}
+
+bool
+operator < (const Room& a, const Room& b)
+{
+  return ( (a.x < b.x) 
+           || ( (a.x == b.x) && (a.y < b.y) ) 
+           || ( (a.x == b.x) && (a.y == b.y) && (a.z < b.z) ));
+}
+
+
+
+class RandomRoomPositionAllocatorTestCase : public TestCase
+{
+public:
+  RandomRoomPositionAllocatorTestCase ();
+
+private:
+  virtual void DoRun (void);
+
+};
+
+
+RandomRoomPositionAllocatorTestCase::RandomRoomPositionAllocatorTestCase ()
+  : TestCase ("RandomRoom, 12 rooms, 24 nodes")
+{
+}
+
+void
+RandomRoomPositionAllocatorTestCase::DoRun ()
+{
+  NS_LOG_FUNCTION (this);
+
+ 
+
+  NS_LOG_LOGIC ("create building");
+  Ptr<Building> b = CreateObject<Building> ();
+  b->SetBoundaries (Box (1, 3, 1, 4, 1, 3));
+  b->SetNFloors (2);
+  b->SetNRoomsX (2);
+  b->SetNRoomsY (3);
+
+  NodeContainer nodes;
+  nodes.Create (24);
+
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  Ptr<PositionAllocator> positionAlloc = CreateObject<RandomRoomPositionAllocator> ();
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (nodes);
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
+
+  std::map<Room, uint32_t> roomCounter;
+
+  for (NodeContainer::Iterator it = nodes.Begin (); it != nodes.End (); ++it)
+    {
+      Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel> ();
+      NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
+      Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+      NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+
+      NS_TEST_ASSERT_MSG_EQ (bmm->IsIndoor (), true, "node should be indoor");
+      Room r (bmm->GetRoomNumberX (), bmm->GetRoomNumberY (), bmm->GetFloorNumber ());
+      ++(roomCounter[r]);
+
+      Vector p = bmm->GetPosition ();
+      NS_TEST_ASSERT_MSG_GT (p.x, bmm->GetRoomNumberX (), "wrong x value");
+      NS_TEST_ASSERT_MSG_LT (p.x, bmm->GetRoomNumberX () + 1, "wrong x value");
+      NS_TEST_ASSERT_MSG_GT (p.y, bmm->GetRoomNumberY (), "wrong y value");
+      NS_TEST_ASSERT_MSG_LT (p.y, bmm->GetRoomNumberY () + 1, "wrong y value");
+      NS_TEST_ASSERT_MSG_GT (p.z, bmm->GetFloorNumber (), "wrong z value");
+      NS_TEST_ASSERT_MSG_LT (p.z, bmm->GetFloorNumber () + 1, "wrong z value");
+
+    }
+
+  for (std::map<Room, uint32_t>::iterator it = roomCounter.begin (); it != roomCounter.end (); ++it)
+    {
+      // random selection is done without replacement until the set of
+      // eligible room is empty, at which point the set is filled
+      // again. Hence with 24 nodes and 12 rooms we expect 2 nodes per room
+      NS_TEST_ASSERT_MSG_EQ (it->second, 2, "expected 2 nodes per room");
+    }
+
+  NS_TEST_ASSERT_MSG_EQ (roomCounter.size (), 12, "expected 12 rooms allocated");
+
+  Simulator::Destroy ();
+}
+
+
+
+
+
+class SameRoomPositionAllocatorTestCase : public TestCase
+{
+public:
+  SameRoomPositionAllocatorTestCase ();
+
+private:
+  virtual void DoRun (void);
+
+};
+
+
+SameRoomPositionAllocatorTestCase::SameRoomPositionAllocatorTestCase ()
+  : TestCase ("SameRoom 48 nodes")
+{
+}
+
+void
+SameRoomPositionAllocatorTestCase::DoRun ()
+{
+  NS_LOG_FUNCTION (this);
+
+ 
+
+  NS_LOG_LOGIC ("create building");
+  Ptr<Building> b = CreateObject<Building> ();
+  b->SetBoundaries (Box (-10, -6, 20, 26, -1, 5));
+  b->SetNFloors (2);
+  b->SetNRoomsX (2);
+  b->SetNRoomsY (3);
+
+  NodeContainer nodes;
+  nodes.Create (24);
+
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::BuildingsMobilityModel");
+  Ptr<PositionAllocator> positionAlloc = CreateObject<RandomRoomPositionAllocator> ();
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (nodes);
+
+  NodeContainer copyNodes;
+  copyNodes.Create (48);
+  positionAlloc = CreateObject<SameRoomPositionAllocator> (nodes);
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (copyNodes);
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
+
+  std::map<Room, uint32_t> roomCounter;
+
+  for (NodeContainer::Iterator it = copyNodes.Begin (); it != copyNodes.End (); ++it)
+    {
+      Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel> ();
+      NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
+      Ptr<BuildingsMobilityModel> bmm = DynamicCast<BuildingsMobilityModel> (mm);
+      NS_ASSERT_MSG (bmm, "mobility model aggregated to this node is not a BuildingsMobilityModel");
+
+      NS_TEST_ASSERT_MSG_EQ (bmm->IsIndoor (), true, "node should be indoor");
+      Room r (bmm->GetRoomNumberX (), bmm->GetRoomNumberY (), bmm->GetFloorNumber ());
+      ++(roomCounter[r]);
+    }
+
+  for (std::map<Room, uint32_t>::iterator it = roomCounter.begin (); it != roomCounter.end (); ++it)
+    {
+
+      NS_TEST_ASSERT_MSG_EQ (it->second, 4, "expected 4 nodes per room");
+    }
+
+  NS_TEST_ASSERT_MSG_EQ (roomCounter.size (), 12, "expected 12 rooms allocated");
+
+  Simulator::Destroy ();
+}
+
+
+
+
+
+
+class BuildingPositionAllocatorTestSuite : public TestSuite
+{
+public:
+  BuildingPositionAllocatorTestSuite ();
+};
+
+
+BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite ()
+  : TestSuite ("building-position-allocator", UNIT)
+{
+  NS_LOG_FUNCTION (this);
+
+  AddTestCase (new RandomRoomPositionAllocatorTestCase);
+  AddTestCase (new SameRoomPositionAllocatorTestCase);
+
+}
+
+static BuildingPositionAllocatorTestSuite buildingsPositionAllocatorTestSuiteInstance;
+
+} // namespace ns3
+

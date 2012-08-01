@@ -38,6 +38,7 @@
 #include <ns3/lte-interference.h>
 #include <ns3/random-variable.h>
 #include <map>
+#include <ns3/ff-mac-common.h>
 
 namespace ns3 {
 
@@ -65,8 +66,54 @@ struct tbInfo_t
 
 typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;
 
+
 class LteNetDevice;
 class AntennaModel;
+class LteControlMessage;
+class LteSpectrumSignalParametersDataFrame;
+class LteSpectrumSignalParametersDlCtrlFrame;
+class LteSpectrumSignalParametersUlSrsFrame;
+
+
+/**
+* this method is invoked by the LteSpectrumPhy to notify the PHY that the
+* transmission of a given packet has been completed.
+*
+* @param packet the Packet whose TX has been completed.
+*/
+typedef Callback< void, Ptr<const Packet> > LtePhyTxEndCallback;
+
+/**
+* This method is used by the LteSpectrumPhy to notify the PHY that a
+* previously started RX attempt has terminated without success
+*/
+typedef Callback< void > LtePhyRxDataEndErrorCallback;
+/**
+* This method is used by the LteSpectrumPhy to notify the PHY that a
+* previously started RX attempt has been successfully completed.
+*
+* @param packet the received Packet
+*/
+typedef Callback< void, Ptr<Packet> > LtePhyRxDataEndOkCallback;
+
+
+/**
+* This method is used by the LteSpectrumPhy to notify the PHY that a
+* previously started RX of a control frame attempt has been 
+* successfully completed.
+*
+* @param packet the received Packet
+*/
+typedef Callback< void, std::list<Ptr<LteControlMessage> > > LtePhyRxCtrlEndOkCallback;
+
+/**
+* This method is used by the LteSpectrumPhy to notify the PHY that a
+* previously started RX of a control frame attempt has terminated 
+* without success.
+*/
+typedef Callback< void > LtePhyRxCtrlEndErrorCallback;
+
+
 
 /**
  * \ingroup lte
@@ -88,7 +135,7 @@ public:
    */
   enum State
   {
-    IDLE, TX, RX
+    IDLE, TX, RX_DATA, RX_CTRL
   };
 
   // inherited from Object
@@ -104,6 +151,8 @@ public:
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
   Ptr<AntennaModel> GetRxAntenna ();
   void StartRx (Ptr<SpectrumSignalParameters> params);
+  void StartRxData (Ptr<LteSpectrumSignalParametersDataFrame> params);
+  void StartRxCtrl (Ptr<SpectrumSignalParameters> params);
 
   /**
    * set the Power Spectral Density of outgoing signals in W/Hz.
@@ -125,17 +174,43 @@ public:
    * \param a the Antenna Model
    */
   void SetAntenna (Ptr<AntennaModel> a);
-
+  
   /**
-   * Start a transmission
-   *
-   *
-   * @param pb the burst of packets to be transmitted
-   *
-   * @return true if an error occurred and the transmission was not
-   * started, false otherwise.
-   */
-  bool StartTx (Ptr<PacketBurst> pb);
+  * Start a transmission of data frame in DL and UL
+  *
+  *
+  * @param pb the burst of packets to be transmitted in PDSCH/PUSCH
+  * @param ctrlMsgList the list of LteControlMessage to send
+  * @param duration the duration of the data frame 
+  *
+  * @return true if an error occurred and the transmission was not
+  * started, false otherwise.
+  */
+  bool StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlMessage> > ctrlMsgList, Time duration);
+  
+  /**
+  * Start a transmission of control frame in DL
+  *
+  *
+  * @param dlDci the burst of DL-DCIs to be transmitted
+  * @param ulDci the burst of UL-DCIs to be transmitted
+  *
+  * @return true if an error occurred and the transmission was not
+  * started, false otherwise.
+  */
+  bool StartTxDlCtrlFrame (std::list<Ptr<LteControlMessage> > ctrlMsgList);
+  
+  
+  /**
+  * Start a transmission of control frame in UL
+  *
+  *
+  * @param pb the burst of control messages to be transmitted
+  *
+  * @return true if an error occurred and the transmission was not
+  * started, false otherwise.
+  */
+  bool StartTxUlSrsFrame ();
 
 
   /**
@@ -144,7 +219,7 @@ public:
    *
    * @param c the callback
    */
-  void SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c);
+  void SetLtePhyTxEndCallback (LtePhyTxEndCallback c);
 
   /**
    * set the callback for the end of a RX in error, as part of the
@@ -152,7 +227,7 @@ public:
    *
    * @param c the callback
    */
-  void SetGenericPhyRxEndErrorCallback (GenericPhyRxEndErrorCallback c);
+  void SetLtePhyRxDataEndErrorCallback (LtePhyRxDataEndErrorCallback c);
 
   /**
    * set the callback for the successful end of a RX, as part of the
@@ -160,7 +235,23 @@ public:
    *
    * @param c the callback
    */
-  void SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c);
+  void SetLtePhyRxDataEndOkCallback (LtePhyRxDataEndOkCallback c);
+  
+  /**
+  * set the callback for the successful end of a RX ctrl frame, as part 
+  * of the interconnections betweenthe LteSpectrumPhy and the PHY
+  *
+  * @param c the callback
+  */
+  void SetLtePhyRxCtrlEndOkCallback (LtePhyRxCtrlEndOkCallback c);
+  
+  /**
+  * set the callback for the erroneous end of a RX ctrl frame, as part 
+  * of the interconnections betweenthe LteSpectrumPhy and the PHY
+  *
+  * @param c the callback
+  */
+  void SetLtePhyRxCtrlEndErrorCallback (LtePhyRxCtrlEndErrorCallback c);
 
   /**
    * \brief Set the state of the phy layer
@@ -177,11 +268,19 @@ public:
 
 
   /** 
-   * 
-   * 
-   * \param p the new LteSinrChunkProcessor to be added to the processing chain
-   */
-  void AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  * 
+  * 
+  * \param p the new LteSinrChunkProcessor to be added to the data processing chain
+  */
+  void AddDataSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  
+  
+  /** 
+  * 
+  * 
+  * \param p the new LteSinrChunkProcessor to be added to the ctrl processing chain
+  */
+  void AddCtrlSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
   
   /** 
   * 
@@ -214,7 +313,9 @@ public:
 private:
   void ChangeState (State newState);
   void EndTx ();
-  void EndRx ();
+  void EndRxData ();
+  void EndRxDlCtrl ();
+  void EndRxUlSrs ();
   
   void SetTxModeGain (uint8_t txMode, double gain);
   
@@ -229,7 +330,11 @@ private:
   Ptr<SpectrumValue> m_txPsd;
   Ptr<PacketBurst> m_txPacketBurst;
   std::list<Ptr<PacketBurst> > m_rxPacketBurstList;
-
+  
+  std::list<Ptr<LteControlMessage> > m_txControlMessageList;
+  std::list<Ptr<LteControlMessage> > m_rxControlMessageList;
+  
+  
   State m_state;
   Time m_firstRxStart;
   Time m_firstRxDuration;
@@ -240,11 +345,15 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
-  GenericPhyTxEndCallback        m_genericPhyTxEndCallback;
-  GenericPhyRxEndErrorCallback   m_genericPhyRxEndErrorCallback;
-  GenericPhyRxEndOkCallback      m_genericPhyRxEndOkCallback;
+  LtePhyTxEndCallback        m_ltePhyTxEndCallback;
+  LtePhyRxDataEndErrorCallback   m_ltePhyRxDataEndErrorCallback;
+  LtePhyRxDataEndOkCallback      m_ltePhyRxDataEndOkCallback;
+  
+  LtePhyRxCtrlEndOkCallback     m_ltePhyRxCtrlEndOkCallback;
+  LtePhyRxCtrlEndErrorCallback  m_ltePhyRxCtrlEndErrorCallback;
 
-  Ptr<LteInterference> m_interference;
+  Ptr<LteInterference> m_interferenceData;
+  Ptr<LteInterference> m_interferenceCtrl;
 
   uint16_t m_cellId;
   
@@ -252,7 +361,8 @@ private:
   SpectrumValue m_sinrPerceived;
   
   UniformVariable m_random;
-  bool m_pemEnabled; // when true (default) the phy error model is enabled
+  bool m_dataErrorModelEnabled; // when true (default) the phy error model is enabled
+  bool m_ctrlErrorModelEnabled; // when true (default) the phy error model is enabled for DL ctrl frame
   
   uint8_t m_transmissionMode; // for UEs: store the transmission mode
   std::vector <double> m_txModeGain; // duplicate value of LteUePhy

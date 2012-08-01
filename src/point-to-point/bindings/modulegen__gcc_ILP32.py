@@ -20,8 +20,6 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
-    ## error-model.h (module 'network'): ns3::ErrorUnit [enumeration]
-    module.add_enum('ErrorUnit', ['EU_BIT', 'EU_BYTE', 'EU_PKT'], import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -176,6 +174,8 @@ def register_types(module):
     module.add_class('PppHeader', parent=root_module['ns3::Header'])
     ## queue.h (module 'network'): ns3::Queue [class]
     module.add_class('Queue', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## queue.h (module 'network'): ns3::Queue::QueueMode [enumeration]
+    module.add_enum('QueueMode', ['QUEUE_MODE_PACKETS', 'QUEUE_MODE_BYTES'], outer_class=root_module['ns3::Queue'], import_from_module='ns.network')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
@@ -278,6 +278,8 @@ def register_types(module):
     module.add_class('RandomVariableValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## error-model.h (module 'network'): ns3::RateErrorModel [class]
     module.add_class('RateErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
+    ## error-model.h (module 'network'): ns3::RateErrorModel::ErrorUnit [enumeration]
+    module.add_enum('ErrorUnit', ['ERROR_UNIT_BIT', 'ERROR_UNIT_BYTE', 'ERROR_UNIT_PACKET'], outer_class=root_module['ns3::RateErrorModel'], import_from_module='ns.network')
     ## error-model.h (module 'network'): ns3::ReceiveListErrorModel [class]
     module.add_class('ReceiveListErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
     ## nstime.h (module 'core'): ns3::TimeChecker [class]
@@ -4860,9 +4862,9 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## error-model.h (module 'network'): ns3::ErrorUnit ns3::RateErrorModel::GetUnit() const [member function]
+    ## error-model.h (module 'network'): ns3::RateErrorModel::ErrorUnit ns3::RateErrorModel::GetUnit() const [member function]
     cls.add_method('GetUnit', 
-                   'ns3::ErrorUnit', 
+                   'ns3::RateErrorModel::ErrorUnit', 
                    [], 
                    is_const=True)
     ## error-model.h (module 'network'): void ns3::RateErrorModel::SetRandomVariable(ns3::RandomVariable const & ranvar) [member function]
@@ -4873,10 +4875,10 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
     cls.add_method('SetRate', 
                    'void', 
                    [param('double', 'rate')])
-    ## error-model.h (module 'network'): void ns3::RateErrorModel::SetUnit(ns3::ErrorUnit error_unit) [member function]
+    ## error-model.h (module 'network'): void ns3::RateErrorModel::SetUnit(ns3::RateErrorModel::ErrorUnit error_unit) [member function]
     cls.add_method('SetUnit', 
                    'void', 
-                   [param('ns3::ErrorUnit', 'error_unit')])
+                   [param('ns3::RateErrorModel::ErrorUnit', 'error_unit')])
     ## error-model.h (module 'network'): bool ns3::RateErrorModel::DoCorrupt(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoCorrupt', 
                    'bool', 

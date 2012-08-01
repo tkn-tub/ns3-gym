@@ -34,23 +34,13 @@
 #include "ns3/config.h"
 #include "ns3/animation-interface-helper.h"
 #include "ns3/mac48-address.h"
-
-#ifdef WIN32
-#include <winsock2.h>
-#include <io.h>
-#define STDOUT_FILENO (SOCKET)GetStdHandle(STD_OUTPUT_HANDLE)
-#define close _close
-#define write _write
-#undef GetObject
-#undef min
-#undef max
-#define HANDLETYPE SOCKET
-#else
-#include "ns3/netanim-config.h"
-#define HANDLETYPE int
-#endif
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/uan-phy-gen.h"
 
 namespace ns3 {
+
+#define MAX_PKTS_PER_TRACE_FILE 100000
 
 /**
  * \defgroup netanim Netanim
@@ -71,33 +61,24 @@ class AnimationInterface
 public:
 
   /**
-   * \brief Construct the animator interface. No arguments needed.
+   * \brief Constructor
+   * \param filename The Filename for the trace file used by the Animator
+   * \param maxPktsPerFile The maximum number of packets per trace file.
+	    AnimationInterface will create trace files with the following 
+            filenames : filename, filename-1, filename-2..., filename-N
+	    where each file contains packet info for 'maxPktPerFile' number of packets
+   * \param usingXML Set to true if XML output traces are required
    *
    */
-  AnimationInterface ();
+  AnimationInterface (const std::string filename, 
+	uint64_t maxPktsPerFile = MAX_PKTS_PER_TRACE_FILE, 
+	bool usingXML = true);
 
   /**
    * \brief Destructor for the animator interface.
    *
    */
   ~AnimationInterface ();
-
-  /**
-   * \brief Constructor
-   * \param filename The Filename for the trace file used by the Animator
-   * \param usingXML Set to true if XML output traces are required
-   *
-   */
-  AnimationInterface (const std::string filename, bool usingXML = true);
-
-  /**
-   * \brief Constructor
-   * \param port Port on which ns-3 should listen to for connection from the
-   *        external netanim application
-   * \param usingXML Set to true if XML output traces are required
-   *
-   */
-  AnimationInterface (uint16_t port, bool usingXML = true);
 
   /**
    * \brief Check if AnimationInterface is initialized
@@ -147,21 +128,6 @@ public:
   void SetStopTime (Time t);
 
   /**
-   * \brief (Deprecated) Specify that animation commands are to be written to
-   * a socket.
-   *
-   * This call is used to set the ns3 process in server mode, waiting
-   * for a TCP connection from the animator.  This call will not
-   * return until the animator connects in, or if the bind to the
-   * specified port fails.
-   *
-   * \param port Port number to bind to.
-   * \returns true if connection created, false if bind failed.
-   *
-   */
-  bool SetServerPort (uint16_t port);
-
-  /**
    * \brief Writes the topology information and sets up the appropriate
    *  animation packet tx callback
    *
@@ -169,9 +135,10 @@ public:
    * on prior calls to SetOutputFile, SetServerPort, or SetInternalAnimation.
    * Then creates the callbacks needed for the animator to start processing
    * packets.
-   *
+   * 
+   * \param restart True when restarting animation
    */
-  void StartAnimation ();
+  void StartAnimation (bool restart = false);
 
   /**
    * \brief Closes the interface to the animator.
@@ -269,23 +236,33 @@ public:
   void EnablePacketMetadata (bool enable);
 
 
+  /**
+   *
+   * \brief Get trace file packet count (This used only for testing)
+   *
+   * returns Number of packets recorded in the current trace file
+   *
+   */
+  uint64_t GetTracePktCount ();
+
 
 private:
-#ifndef WIN32
-  int m_fHandle;  // File handle for output (-1 if none)
+  FILE * m_f; // File handle for output (-1 if none)
   // Write specified amount of data to the specified handle
-  int WriteN (int, const char*, uint32_t);
-#else
-  SOCKET m_fHandle;  // File handle for output (-1 if none)
-  int  WriteN (SOCKET, const char*, uint32_t);
-#endif
+  int WriteN (const char*, uint32_t);
   bool m_xml;      // True if xml format desired
-  Time mobilitypollinterval;
-  bool usingSockets;
-  uint16_t mport;
-  std::string outputfilename;
-  bool OutputFileSet;
-  bool ServerPortSet;
+  Time m_mobilityPollInterval;
+  std::string m_outputFileName;
+  bool m_outputFileSet;
+  uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
+  bool m_randomPosition;
+  AnimWriteCallback m_writeCallback;
+  bool m_started;
+  bool m_enablePacketMetadata; 
+  Time m_startTime;
+  Time m_stopTime;
+  uint64_t m_maxPktsPerFile;
+  std::string m_originalFileName;
 
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
@@ -330,36 +307,49 @@ private:
                       Ptr<const Packet> p,
                       const Mac48Address &);
 
+  void LteSpectrumPhyTxStart (std::string context,
+                      Ptr<const PacketBurst> pb);
+  void LteSpectrumPhyRxStart (std::string context,
+                      Ptr<const PacketBurst> pb);
+
+  void UanPhyGenTxTrace (std::string context,
+                         Ptr<const Packet>);
+  void UanPhyGenRxTrace (std::string context,
+                         Ptr<const Packet>);
+
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
   // Write a string to the specified handle;
-  int  WriteN (int, const std::string&);
+  int  WriteN (const std::string&);
 
   void OutputWirelessPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo& pktInfo, AnimRxInfo pktrxInfo);
   void MobilityAutoCheck ();
   
-  uint64_t gAnimUid ;    // Packet unique identifier used by Animtion
 
-  std::map<uint64_t, AnimPacketInfo> pendingWifiPackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingWifiPackets;
   void AddPendingWifiPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WifiPacketIsPending (uint64_t AnimUid); 
 
-  std::map<uint64_t, AnimPacketInfo> pendingWimaxPackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingWimaxPackets;
   void AddPendingWimaxPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool WimaxPacketIsPending (uint64_t AnimUid); 
 
-  std::map<uint64_t, AnimPacketInfo> pendingLtePackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingLtePackets;
   void AddPendingLtePacket (uint64_t AnimUid, AnimPacketInfo&);
   bool LtePacketIsPending (uint64_t AnimUid);
 
-  std::map<uint64_t, AnimPacketInfo> pendingCsmaPackets;
+  std::map<uint64_t, AnimPacketInfo> m_pendingCsmaPackets;
   void AddPendingCsmaPacket (uint64_t AnimUid, AnimPacketInfo&);
   bool CsmaPacketIsPending (uint64_t AnimUid);
 
+  std::map<uint64_t, AnimPacketInfo> m_pendingUanPackets;
+  void AddPendingUanPacket (uint64_t AnimUid, AnimPacketInfo&);
+  bool UanPacketIsPending (uint64_t AnimUid);
+
   uint64_t GetAnimUidFromPacket (Ptr <const Packet>);
 
-  std::map<uint32_t, Vector> nodeLocation;
+  std::map<uint32_t, Vector> m_nodeLocation;
   Vector GetPosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n);
   Vector UpdatePosition (Ptr <Node> n, Vector v);
@@ -376,14 +366,11 @@ private:
   void RecalcTopoBounds (Vector v);
   std::vector < Ptr <Node> > RecalcTopoBounds ();
 
-  bool randomPosition;
-  AnimWriteCallback m_writeCallback;
   void ConnectCallbacks ();
+  void ConnectLte ();
+  void ConnectLteUe (Ptr <Node> n, Ptr <LteUeNetDevice> nd, uint32_t devIndex);
+  void ConnectLteEnb (Ptr <Node> n, Ptr <LteEnbNetDevice> nd, uint32_t devIndex);
 
-  bool m_started;
-  bool m_enablePacketMetadata; 
-  Time m_startTime;
-  Time m_stopTime;
   
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   bool IsInTimeWindow ();
@@ -393,14 +380,17 @@ private:
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
 
   static std::map <uint32_t, std::string> nodeDescriptions;
+  uint64_t m_currentPktCount;
+
+  void StartNewTraceFile();
 
   // XML helpers
   std::string GetPreamble (void);
   // Topology element dimensions
-  double topo_minX;
-  double topo_minY;
-  double topo_maxX;
-  double topo_maxY;
+  double m_topoMinX;
+  double m_topoMinY;
+  double m_topoMaxX;
+  double m_topoMaxY;
 
   std::string GetPacketMetadata (Ptr<const Packet> p);
 

@@ -22,9 +22,9 @@
 #define LTE_RLC_UM_H
 
 #include "ns3/lte-rlc-sequence-number.h"
-
 #include "ns3/lte-rlc.h"
 
+#include <ns3/event-id.h>
 #include <map>
 
 namespace ns3 {
@@ -67,6 +67,7 @@ private:
   void DoReportBufferStatus ();
 
 private:
+  uint32_t m_maxTxBufferSize;
   uint32_t m_txBufferSize;
   std::vector < Ptr<Packet> > m_txBuffer;       // Transmission buffer
   std::map <uint16_t, Ptr<Packet> > m_rxBuffer; // Reception buffer

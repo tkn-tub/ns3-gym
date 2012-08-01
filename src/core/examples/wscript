@@ -18,9 +18,16 @@ def build(bld):
     obj = bld.create_ns3_program('main-random-variable', ['core', 'config-store', 'tools'])
     obj.source = 'main-random-variable.cc'
 
+    obj = bld.create_ns3_program('main-random-variable-stream', ['core', 'config-store', 'tools'])
+    obj.source = 'main-random-variable-stream.cc'
+
     obj = bld.create_ns3_program('sample-random-variable',
                                  ['core'])
     obj.source = 'sample-random-variable.cc'
+
+    obj = bld.create_ns3_program('sample-random-variable-stream',
+                                 ['core'])
+    obj.source = 'sample-random-variable-stream.cc'
 
     if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
         obj = bld.create_ns3_program('main-test-sync', ['network'])

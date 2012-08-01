@@ -25,20 +25,19 @@
 #include "ns3/packet.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
-#include "ns3/lte-simple-helper.h"
 #include "ns3/error-model.h"
 #include "ns3/radio-bearer-stats-calculator.h"
-
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-um.h"
 
-#include "ns3/lte-test-entities.h"
-#include "ns3/lte-test-rlc-um-e2e.h"
+#include "lte-simple-helper.h"
+#include "lte-test-entities.h"
+#include "lte-test-rlc-um-e2e.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteRlcUmE2eTest");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /**
@@ -111,8 +110,8 @@ LteRlcUmE2eTestCase::DoRun (void)
 {
   uint16_t numberOfNodes = 1;
 
-  LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
-  LogComponentEnable ("LteRlcUmE2eTest", level);
+  // LogLevel level = (LogLevel) (LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
+  // LogComponentEnable ("LteRlcUmE2eTest", level);
   // LogComponentEnable ("ErrorModel", level);
   // LogComponentEnable ("LteSimpleHelper", level);
   // LogComponentEnable ("LteSimpleNetDevice", level);
@@ -155,11 +154,11 @@ LteRlcUmE2eTestCase::DoRun (void)
   // Error models: downlink and uplink
   Ptr<RateErrorModel> dlEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
   dlEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
-  dlEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+  dlEm->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
   Ptr<RateErrorModel> ulEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
   ulEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
-  ulEm->SetAttribute ("ErrorUnit", StringValue ("EU_PKT"));
+  ulEm->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
   // The below hooks will cause drops to be counted at simple phy layer
   ueLteDevs.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (dlEm));
@@ -224,3 +223,6 @@ LteRlcUmE2eTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
+
+} // namespace ns3
+

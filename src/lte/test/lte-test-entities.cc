@@ -25,11 +25,11 @@
 #include "ns3/lte-rlc-am-header.h"
 #include "ns3/lte-pdcp-header.h"
 
-#include "ns3/lte-test-entities.h"
+#include "lte-test-entities.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteTestEntities");
 
-using namespace ns3;
+namespace ns3 {
 
 
 /////////////////////////////////////////////////////////////////////
@@ -600,3 +600,71 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
   m_macSapUser->ReceivePdu (packet);
   return true;
 }
+
+
+
+
+
+
+
+
+NS_OBJECT_ENSURE_REGISTERED (EpcTestRrc);
+
+EpcTestRrc::EpcTestRrc ()
+  : m_s1SapProvider (0)
+{
+  NS_LOG_FUNCTION (this);
+  m_s1SapUser = new MemberEpcEnbS1SapUser<EpcTestRrc> (this);
+}
+
+
+EpcTestRrc::~EpcTestRrc ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+
+void
+EpcTestRrc::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  delete m_s1SapUser;
+}
+
+TypeId
+EpcTestRrc::GetTypeId (void)
+{
+  NS_LOG_FUNCTION ("EpcTestRrc::GetTypeId");
+  static TypeId tid = TypeId ("ns3::EpcTestRrc")
+    .SetParent<Object> ()
+    .AddConstructor<EpcTestRrc> ()
+  ;
+  return tid;
+}
+void 
+EpcTestRrc::SetS1SapProvider (EpcEnbS1SapProvider * s)
+{
+  m_s1SapProvider = s;
+}
+
+  
+EpcEnbS1SapUser* 
+EpcTestRrc::GetS1SapUser ()
+{
+  return m_s1SapUser;
+}
+
+void 
+EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
+{
+  EpcEnbS1SapProvider::S1BearerSetupRequestParameters response;   
+  response.rnti = request.rnti;
+  response.lcid = 1;      
+  response.teid = request.teid;
+  m_s1SapProvider->S1BearerSetupRequest (response);
+}
+
+
+
+} // namespace ns3
+

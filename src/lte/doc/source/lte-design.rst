@@ -6,6 +6,8 @@
 ++++++++++++++++++++++++++
 
 
+.. _overall-architecture:
+
 -----------------------
 Overall Architecture 
 -----------------------
@@ -84,7 +86,7 @@ have been considered:
     so that they use different carrier frequencies and system bandwidths. The
     bandwidth used by different cells should be allowed to overlap, in order to
     support dynamic spectrum licensing solutions such as those described
-    in [Ofcom2.6GHz]_ and [RealWireless]_. The calculation of interference should
+    in [Ofcom2600MHz]_ and [RealWireless]_. The calculation of interference should
     handle appropriately this case.
  #. To be more representative of the LTE standard, as well as to be as
     close as possible to real-world implementations, the simulator
@@ -118,68 +120,57 @@ have been considered:
 Architecture
 ++++++++++++
 
-For the sake of an easier explanation, we further divide the LTE model
-in two separate parts, which are described in the following.
+For the sake of an easier explanation, we consider separately the architecture of the UE and eNB nodes. 
 
-The overall architecture of the LTE module is represented in the following figures.
 
-The first part is the lower LTE radio protocol stack, which is
-represented in the figures 
-:ref:`fig-lte-enb-architecture` and :ref:`fig-lte-ue-architecture`,
-which deal respectively with the eNB and the UE. 
+UE architecture
+---------------
 
-.. _fig-lte-enb-architecture:
+The architecture of the LTE radio protocol stack model of the UE is represented in the figure :ref:`fig-lte-arch-ue`. 
+
+
+.. _fig-lte-arch-ue:
    
-.. figure:: figures/lte-enb-architecture.*
+.. figure:: figures/lte-arch-ue.*
    :align: center
 
-   Lower LTE radio protocol stack architecture for the eNB
+    LTE radio protocol stack architecture for the UE
+
+The architecture of the PHY/channel model of the UE is represented in figure :ref:`fig-lte-ue-phy`. 
 
 
-
-.. _fig-lte-ue-architecture:
-
-.. figure:: figures/lte-ue-architecture.*
-   :align: center
-
-   Lower LTE radio protocol stack architecture for the UE
-
-
-The LTE lower radio stack model includes in particular the PHY and the MAC layers;
-additionally, also the Scheduler is included (which is commonly
-associated with the MAC layer). The most important difference between
-the eNB and the UE is the presence of the Scheduler in the eNB, which
-is in charge of assigning radio resources to all UEs and Radio Bearers
-both in uplink and downlink. This component is not present within the
-UE.
-
-
-
-
-The second part is the upper LTE radio stack, which is represented in
-the figure :ref:`fig-lte-arch-data-rrc-pdcp-rlc`. 
-
-.. _fig-lte-arch-data-rrc-pdcp-rlc:
+.. _fig-lte-ue-phy:
    
-.. figure:: figures/lte-arch-data-rrc-pdcp-rlc.*
+.. figure:: figures/lte-ue-phy.*
    :align: center
 
-   Architecture of the upper LTE radio stack 
+   PHY and channel model architecture for the UE
 
 
-This part includes the RRC, PDCP and RLC protocols. The architecture
-is very similar between the eNB and the UE: in fact, in
-both cases there is a single MAC instance and a single RRC instance,
-that work together with pairs of RLC and PDCP instances (one RLC and
-one PDCP instance per radio bearer).
 
-We note that in the current version of the simulator the data
-plane of the upper LTE radio protocol stack is modeled accurately; in
-particular, the RLC and PDCP protocol are implemented with actual
-protocol headers that match those specified by the 3GPP standard. 
-On the other hand, the functionality of the control plane (which for
-the upper LTE radio protocol stack involves mainly the RRC) is modeled in a
-significantly simplified fashion.   
+
+eNB architecture
+---------------
+
+The architecture of the LTE radio protocol stack model of the eNB is represented in the figure :ref:`fig-lte-arch-enb`. 
+
+
+.. _fig-lte-arch-enb:
+   
+.. figure:: figures/lte-arch-enb.*
+   :align: center
+
+    LTE radio protocol stack architecture for the eNB
+
+The architecture of the PHY/channel model of the eNB is represented in figure :ref:`fig-lte-enb-phy`. 
+
+
+.. _fig-lte-enb-phy:
+   
+.. figure:: figures/lte-enb-phy.*
+   :align: center
+
+   PHY and channel model architecture for the eNB
 
 
 
@@ -294,7 +285,7 @@ end-to-end flow of data packets.
 .. figure:: figures/epc-data-flow-dl.*
    :align: center
 
-   Data flow in the dowlink between the internet and the UE
+   Data flow in the downlink between the internet and the UE
 
 To begin with, we consider the case of the downlink, which is depicted
 in Figure :ref:`fig-epc-data-flow-dl`.   
@@ -525,14 +516,14 @@ hence in a given subframe each RB is always allocated to the same user in both
 slots.
 The allocation bitmap can be coded in
 different formats; in this implementation, we considered the *Allocation
-Type 0* defined in [TS36.213]_, according to which the RBs are grouped in
+Type 0* defined in [TS36213]_, according to which the RBs are grouped in
 Resource Block Groups (RBG) of different size determined as a function of the
 Transmission Bandwidth Configuration in use.
 
 For certain bandwidth
 values not all the RBs are usable, since the 
 group size is not a common divisor of the group. This is for instance the case
-when the bandwith is equal to 25 RBs, which results in a RBG size of 2 RBs, and
+when the bandwidth is equal to 25 RBs, which results in a RBG size of 2 RBs, and
 therefore 1 RB will result not addressable. 
 In uplink the format of the DCIs is different, since only adjacent RBs
 can be used because of the SC-FDMA modulation. As a consequence, all
@@ -567,14 +558,14 @@ scheme.
 
 Finally, we note that there are some discrepancies between the MCS index
 in [R1-081483]_
-and that indicated by the standard:  [TS36.213]_ Table
+and that indicated by the standard:  [TS36213]_ Table
 7.1.7.1-1 says that the MCS index goes from 0 to 31, and 0 appears to be a valid
 MCS scheme (TB size is not 0) but in [R1-081483]_ the first useful MCS
 index
 is 1. Hence to get the value as intended by the standard we need to subtract 1
 from the index reported in [R1-081483]_. 
 
-The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36.213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
+The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
 
 
 Round Robin (RR) Scheduler
@@ -594,17 +585,17 @@ condition over time. Let :math:`i,j` denote generic users; let :math:`t` be the
 subframe index, and :math:`k` be the resource block index; let :math:`M_{i,k}(t)` be MCS
 usable by user :math:`i` on resource block :math:`k` according to what reported by the AMC
 model (see `Adaptive Modulation and Coding`_); finally, let :math:`S(M, B)` be the TB
-size in bits as defined in [TS36.213]_ for the case where a number :math:`B` of
+size in bits as defined in [TS36213]_ for the case where a number :math:`B` of
 resource blocks is used. The achievable rate :math:`R_{i}(k,t)` in bit/s for user :math:`i`
-on resource block :math:`k` at subframe :math:`t` is defined as 
+on resource block group :math:`k` at subframe :math:`t` is defined as 
 
 .. math::
 
    R_{i}(k,t) =  \frac{S\left( M_{i,k}(t), 1\right)}{\tau} 
 
 where :math:`\tau` is the TTI duration.
-At the start of each subframe :math:`t`, each RB is assigned to a certain user.
-In detail, the index :math:`\widehat{i}_{k}(t)` to which RB :math:`k` is assigned at time
+At the start of each subframe :math:`t`, each RBG is assigned to a certain user.
+In detail, the index :math:`\widehat{i}_{k}(t)` to which RBG :math:`k` is assigned at time
 :math:`t` is determined as
 
 .. math::
@@ -637,7 +628,7 @@ determine the MCS :math:`\widehat{M}_j(t)` actually used by user
 
    \widehat{M}_j(t) = \min_{k: \widehat{i}_{k}(t) = j}{M_{j,k}(t)}
 
-then we determine the total number :math:`\widehat{B}_j(t)` of RBs allocated to user
+then we determine the total number :math:`\widehat{B}_j(t)` of RBGs allocated to user
 :math:`j`:
 
 .. math::
@@ -901,6 +892,7 @@ by the AM RLC entity.
    Sequence diagram of data PDU retransmission in uplink
 
 
+.. _am_data_transfer:
 
 AM data transfer
 ----------------
@@ -1055,27 +1047,244 @@ The following features are currently not supported:
 
 
 
+.. only:: latex
 
-RRC
-+++
+    .. raw:: latex
+      
+        \clearpage
 
-At the time of this writing, the RRC model implemented in the
-simulator is not comprehensive of all the funcionalities defined  
-by the 3GPP standard. 
-In particular, RRC messaging over signaling
-radio bearer is not implemented; the corresponding control
-functionality is performed via direct function calls among the
-relevant eNB and UE protocol entities and the helper objects.
 
-The RRC implements the procedures for
-managing the connection of the UEs to the eNBs, and to setup and
-release the Radio Bearers. The RRC entity also takes care of multiplexing
-data packets coming from the upper layers into the appropriate radio
-bearer. In the UE, this is performed in the uplink by using the
-Traffic Flow Template classifier (TftClassifier). In the eNB, this is
-done for downlink traffic, by leveraging on the one-to-one mapping
-between S1-U bearers and Radio Bearers, which is required by the 3GPP
-specifications. 
+
+Radio Resource Control (RRC)
+++++++++++++++++++++++++++++
+
+The RRC model implemented in the simulator provides the following functionality:
+
+ - generation (at the eNB) and interpretation (at the UE) of the Master Information Block and System Information Block Type 1 (including in particular PLMN identity, CSG-indication and CSG-identity)
+ - RRC connection establishment procedure
+ - RRC reconfiguration procedure, supporting the following use cases:
+   + reconfiguration of the PHY TX mode (MIMO)
+   + data radio bearer setup
+   + handover
+ - RRC connection re-establishment, supporting the following use
+   cases:
+   + handover
+
+
+
+RRC connection establishment
+----------------------------
+
+Figure :ref:`fig-rrc-connection-establishment` shows how the RRC
+Connection Establishment procedure is modeled, highlighting the role
+of the RRC layer at both the UE and the eNB, as well as the
+interaction with the lower layers. The figure highlights the different
+type of control messages involved and the interactions with the
+scheduler to allocate the radio resources needed for their transmission.
+
+.. _fig-rrc-connection-establishment:
+
+.. figure:: figures/rrc-connection-establishment.*
+   :align: center
+
+   Sequence diagram of the RRC Connection Establishment procedure
+
+
+
+RRC connection reconfiguration
+------------------------------
+
+Figure :ref:`fig-rrc-connection-reconfiguration` shows how the RRC
+Connection Reconfiguration procedure is modeled for the case where
+MobilityControlInfo is not provided, i.e., handover is not
+performed. In this case, only RRC messages sent over SRB1/DCCH1 are
+involved. The allocation of radio resources to send these messages
+follows the usual procedure of RLC AM described in section 
+:ref:`am_data_transfer`, which is therefore omitted from the figure 
+for simplicity. 
+
+
+.. _fig-rrc-connection-reconfiguration:
+
+.. figure:: figures/rrc-connection-reconfiguration.*
+   :align: center
+
+   Sequence diagram of the RRC Connection Reconfiguration procedure
+
+
+
+Figure :ref:`fig-rrc-connection-reconf-handover` shows how the RRC
+Connection Reconfiguration procedure is modeled for the case where
+MobilityControlInfo is provided, i.e., handover is to be performed.
+As specified in [TS36331]_, *After receiving the handover message,
+the UE attempts to access the target cell at the first available RACH
+occasion according to Random Access resource selection defined in [TS36321]_,
+i.e. the handover is asynchronous. Consequently, when
+allocating a dedicated preamble for the random access in the target
+cell, E-UTRA shall ensure it is available from the first RACH occasion
+the UE may use. Upon successful completion of the handover, the UE
+sends a message used to confirm the handover.* Note that the random
+access procedure in this case is non-contention based, hence in a real
+LTE system it differs slightly from the one used in RRC connection
+established. Also note that the RA Preamble ID is signalled via RRC
+using the RACH-ConfigDedicated IE which is part of MobilityControlInfo.
+
+
+.. _fig-rrc-connection-reconf-handover:
+   
+.. figure:: figures/rrc-connection-reconfiguration-handover.*
+   :align: center
+
+   Sequence diagram of the RRC Connection Reconfiguration procedure
+   for the handover case
+
+
+
+Connection Setup Signaling implementation
+-----------------------------------------
+
+As can be observed from the sequence diagrams of the RRC procedures
+reported in the previous subsection, RRC procedures involve control
+messages of several kinds at various layers (especially for the random
+access procedure). In the following, we describe how they are
+implemented in the simulator.  
+ 
+
+ * **MAC** messages:
+
+   - **Random Access (RA) preamble**: in real LTE systems this
+     corresponds to a Zadoff-Chu (ZC)
+     sequence using one of several formats available and sent in the
+     PRACH slots which could in principle overlap with PUSCH. Since an
+     accurate modeling of the random access procedure is not a
+     requirement of the simulator, the RA preamble will be modeled by
+     an apposite ideal control message, without consuming any radio
+     resources and without any associated error model. 
+
+   - **Random Access Response (RAR)**: in real LTE systems, this is a
+     special MAC PDU sent on the DL-SCH. Since MAC PDUs are not
+     accurately modeled in the simulator (only RLC and above PDUs
+     are), the RAR is modeled as an ideal control message, without any
+     associated error model. Still, the consumption of Radio
+     Resources for sending the RAR is modeled by interaction with
+     the scheduler using the FF MAC Scheduler primitive
+     SCHED_DL_RACH_INFO_REQ. 
+
+   - **Contention Resolution (CR)**: in real LTE system, the CR is
+     sent as a regular MAC PDU with a special LCID and a CR MAC CE sent on the
+     DL-SCH. In the simulator, it is implemented as an
+     ideal control message without any associated error model, but still
+     modeling the associated consumption of scheduler resources by
+     using the FF MAC Scheduler primitive SCHED_DL_MAC_BUFFER_REQ. 
+
+ * **SRB0** messages (over CCCH):
+
+   - **RrcConnectionRequest**: in real LTE systems, this is an RLC TM
+     SDU sent over resources specified in the UL Grant in the RAR (not
+     in UL DCIs); the reason is that C-RNTI is not known yet at this
+     stage. In the simulator, this is modeled as a real RLC TM RLC PDU
+     whose UL resources are allocated by the sched upon call to
+     SCHED_DL_RACH_INFO_REQ. 
+
+   - **RrcConnectionSetup**: in the simulator this is implemented as in
+     real LTE systems, i.e., with an RLC TM SDU sent over resources
+     indicated by a regular UL DCI, allocated with
+     SCHED_DL_RLC_BUFFER_REQ triggered by the RLC TM instance that is
+     mapped to LCID 0 (the CCCH).
+
+ * **SRB1** messages (over DCCH):
+
+   - All the SRB1 messages modeled in the simulator (e.g.,
+     **RrcConnectionCompleted**) are implemented as in real LTE systems,
+     i.e., with a real RLC SDU sent over RLC AM using DL resources
+     allocated via Buffer Status Reports. See the RLC model
+     documentation for details.
+
+ * **SRB2** messages (over DCCH):
+
+     - According to [TS36331]_, "*SRB1 is for RRC messages (which may
+       include a piggybacked NAS message) as well as for NAS messages
+       prior to the establishment of SRB2, all using DCCH logical
+       channel*", whereas "*SRB2 is for NAS messages, using DCCH
+       logical channel*" and "*SRB2 has a lower-priority than SRB1 and is 
+       always configured by E-UTRAN after security
+       activation*". Modeling security-related aspects is not a
+       requirement of the LTE simulation model, hence we always use
+       SRB1 and never activate SRB2.
+
+
+Radio Link Failure
+------------------
+
+Since at this stage the RRC supports the CONNECTED mode only, Radio Link
+Failure (RLF) is not handled. The reason is that one of the possible
+outcomes of RLF (when RRC re-establishment is unsuccessful) is to
+leave RRC CONNECTED notifying the NAS of the RRC connection
+failure. In order to model RLF properly, RRC IDLE mode should be
+supported.
+
+With the current model, an UE that experiences bad link quality will
+just stay associated with the same eNB, and the scheduler will stop
+allocating resources to it for communications. This is also consistent
+with the fact that, at this stage, only handovers explicitly triggered
+within the simulation program are supported (network-driven handovers
+based on UE measurements are planned only at a later stage).
+
+
+Non-Access Stratum (NAS) model
+++++++++++++++++++++++++++++++
+
+
+The focus of the LTE-EPC model is on the NAS Active state, which corresponds to EMM Registered, ECM connected, and RRC connected. Because of this, the following simplifications are made:
+
+ - EMM and ECM are not modeled explicitly; instead, the NAS entity at the UE will interact directy with the EpcHelper to perfom actions that are equivalent (with gross simplifications) to taking the UE to the states EMM Connected and ECM Connected; 
+
+ - the NAS also takes care of multiplexing uplink data packets coming from the upper layers into the appropriate EPS bearer by using the Traffic Flow Template classifier (TftClassifier). (NB: this is currently in the RRC, but it is better to move it to the NAS).
+
+- the NAS does not support PLMN and CSG selection 
+
+- the NAS does not support any location update/paging procedure in idle mode
+
+
+
+Figure :ref:`fig-nas-attach` shows how the simplified NAS model implements the attach procedure. Note that the default EPS bearer is also activated as part of this procedure.
+
+
+.. _fig-nas-attach:
+   
+.. figure:: figures/nas-attach.*
+   :align: center
+
+   Sequence diagram of the attach procedure
+
+
+
+
+Figure :ref:`fig-nas-activate-dedicated-bearer` shows how the
+simplified NAS model implements the activation of a dedicated EPS
+bearer.  
+
+
+.. _fig-nas-activate-dedicated-bearer:
+
+.. figure:: figures/nas-activate-dedicated-bearer.*
+   :align: center
+
+   Sequence diagram of the procedure for the activation of a dedicated EPS bearer
+
+
+
+
+
+
+
+
+.. only:: latex
+
+    .. raw:: latex
+      
+        \clearpage
+
 
 
 
@@ -1093,6 +1302,26 @@ Overview
 The physical layer model provided in this LTE simulator is based on
 the one described in [Piro2011]_, with the following modifications.  The model now includes the 
 inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
+
+
+Subframe Structure
+^^^^^^^^^^^^^^^^^^
+
+The subframe is divided into control and data part as described in Figure :ref:`fig-lte-subframe-structure`.
+
+.. _fig-lte-subframe-structure:
+
+.. figure:: figures/lte-subframe-structure.*
+   :width: 50px
+
+   Lte subframe division.
+
+
+Considering the granularity of the simulator based on RB, the control and the reference signaling have to be consequently modeled considering this constraint.  According to the standard [TS36.211]_, the downlink control frame starts at the beginning of each subframe and lasts up to three symbols across the whole system bandwidth, where the actual duration is provided by the Physical Control Format Indicator Channel (PCFICH). The information on the allocation are then mapped in the remaining resource up to the duration defined by the PCFICH, in the so called Physical Downlink Control Channel (PDCCH). A PDCCH transports a single message called Downlink Control Information (DCI) coming from the MAC layer, where the scheduler indicates the resource allocation for a specific user.
+The PCFICH and PDCCH are modeled with the transmission of the control frame of a fixed duration of 3/14 of milliseconds spanning in the whole available bandwidth, since the scheduler does not estimate the size of the control region. This implies that a single transmission block models the entire control frame with a fixed power (i.e., the one used for the PDSCH) across all the available RBs. According to this feature, this transmission represents also a valuable support for the Reference Signal (RS). This allows of having every TTI an evaluation of the interference scenario since all the eNB are transmitting (simultaneously) the control frame over the respective available bandwidths. We note that, the model does not include the power boosting since it does not reflect any improvement in the implemented model of the channel estimation.
+
+
+The Sounding Reference Signal (SRS) is modeled similar to the downlink control frame. The SRS is periodically placed in the last symbol of the subframe in the whole system bandwidth. The RRC module already includes an algorithm for dynamically assigning the periodicity as function of the actual number of UEs attached to a eNB according to the UE-specific procedure (see Section 8.2 of [TS36.213]_).
 
 
 MAC to Channel delay
@@ -1131,7 +1360,7 @@ LTE Spectrum Model
 ^^^^^^^^^^^^^^^^^^
 
 The usage of the radio spectrum by eNBs and UEs in LTE is described in
-[TS36.101]_. In the simulator, radio spectrum usage is modeled as follows. 
+[TS36101]_. In the simulator, radio spectrum usage is modeled as follows. 
 Let :math:`f_c` denote the  LTE Absolute Radio Frequency Channel Number, which
 identifies the carrier frequency on a 100 kHz raster; furthermore, let :math:`B` be
 the Transmission Bandwidth Configuration in number of Resource Blocks. For every
@@ -1144,16 +1373,16 @@ the MultiModelSpectrumChannel described in [Baldo2009]_, the interference
 among eNBs that use different spectrum models is properly accounted for. 
 This allows to simulate dynamic spectrum access policies, such as for
 example the spectrum licensing policies that are 
-discussed in [Ofcom2.6GHz]_.
+discussed in [Ofcom2600MHz]_.
 
 
 
-PHY Error Model
----------------
+Data PHY Error Model
+--------------------
 
-The simulator includes an error model of the data plane (i.e., PDSCH) according to the standard link-to-system mapping (LSM) techniques. The choice is aligned with the standard system simulation methodology of OFDMA  radio transmission technology. Thanks to LSM we are able to maintain a good level of accuracy and at the same time limiting the computational complexity increase. It is based on the mapping of single link layer performance obtained by means of link level simulators to system (in our case network) simulators. In particular link the layer simulator is used for generating the performance of a single link from a PHY layer perspective, usually in terms of code block error rate (BLER), under specific static conditions. LSM allows the usage of these parameters in more complex scenarios, typical of system/network simulators, where we have more links, interference and "colored" channel propagation phenomena (e.g., frequency selective fading).
+The simulator includes an error model of the data plane (i.e., PDSCH and PUSCH) according to the standard link-to-system mapping (LSM) techniques. The choice is aligned with the standard system simulation methodology of OFDMA  radio transmission technology. Thanks to LSM we are able to maintain a good level of accuracy and at the same time limiting the computational complexity increase. It is based on the mapping of single link layer performance obtained by means of link level simulators to system (in our case network) simulators. In particular link the layer simulator is used for generating the performance of a single link from a PHY layer perspective, usually in terms of code block error rate (BLER), under specific static conditions. LSM allows the usage of these parameters in more complex scenarios, typical of system/network simulators, where we have more links, interference and "colored" channel propagation phenomena (e.g., frequency selective fading).
 
-To do this the Vienna LTE Simulator [Vienna]_ has been used for what concerns the extraction of link layer performance and the Mutual Information Based Effective SINR (MIESM) as LSM mapping function using part of the work recently published by the Signet Group of University of Padua [PaduaPEM]_.
+To do this the Vienna LTE Simulator [ViennaLteSim]_ has been used for what concerns the extraction of link layer performance and the Mutual Information Based Effective SINR (MIESM) as LSM mapping function using part of the work recently published by the Signet Group of University of Padua [PaduaPEM]_.
 
 
 MIESM
@@ -1169,7 +1398,7 @@ Moreover, from an HARQ perspective, the MIESM has more flexibility in managing t
 
    MIESM computational procedure diagram
 
-The mutual information (MI) is dependent on the constellation mapping and can be calculated per transport block (TB) basis, by evaluating the MI over the symbols and the subcarrier. However, this would be too complex for a network simulator. Hence, in our implementation a flat channel response within the RB has been considered; therefore the overall MI of a TB is calculated averaging the MI evaluated per each RB used in the TB. In detail, the implemented scheme is depicted in Figure :ref:`fig-miesm-architecture`, where we see that the model starts by evaluating the MI value for each RB, represented in the figure by the SINR samples. Then the equivalent MI is evaluated per TB basis by averaging the MI values. Finally, a further step has to be done since the link level simulator returns the performance of the link in terms of block error rate (BLER) in a addive white guassian noise  (AWGN) channel, where the blocks are the code blocks (CBs) independently encoded/decoded by the turbo encoder. On this matter the standard 3GPP segmentation scheme has been used for estimating the actual CB size (described in section 5.1.2 of [TS36.212]_). This scheme divides the the TB in :math:`N_{K_-}` blocks of size :math:`K_-` and :math:`N_{K+}` blocks of size :math:`K_+`. Therefore the overall TB BLER (TBLER) can be expressed as
+The mutual information (MI) is dependent on the constellation mapping and can be calculated per transport block (TB) basis, by evaluating the MI over the symbols and the subcarrier. However, this would be too complex for a network simulator. Hence, in our implementation a flat channel response within the RB has been considered; therefore the overall MI of a TB is calculated averaging the MI evaluated per each RB used in the TB. In detail, the implemented scheme is depicted in Figure :ref:`fig-miesm-architecture`, where we see that the model starts by evaluating the MI value for each RB, represented in the figure by the SINR samples. Then the equivalent MI is evaluated per TB basis by averaging the MI values. Finally, a further step has to be done since the link level simulator returns the performance of the link in terms of block error rate (BLER) in a addive white guassian noise  (AWGN) channel, where the blocks are the code blocks (CBs) independently encoded/decoded by the turbo encoder. On this matter the standard 3GPP segmentation scheme has been used for estimating the actual CB size (described in section 5.1.2 of [TS36212]_). This scheme divides the the TB in :math:`N_{K_-}` blocks of size :math:`K_-` and :math:`N_{K+}` blocks of size :math:`K_+`. Therefore the overall TB BLER (TBLER) can be expressed as
 
 .. math::
 
@@ -1255,15 +1484,26 @@ The BLER perfomance of all MCS obtained with the link level simulator are plotte
 
    BLER for MCS 21, 22, 23 and 24.
 
-.. _fig-mcs-25-27-ber:
 
-.. figure:: figures/MCS_25_27.*
+.. _fig-mcs-25-28-ber:
+
+.. figure:: figures/MCS_25_28.*
    :width: 900px
    :align: center
    :height: 700px
 
 
-   BLER for MCS 25, 26 and 27.
+   BLER for MCS 25, 26, 27 and 28.
+
+.. _fig-mcs-29-29-ber:
+
+.. figure:: figures/MCS_29_29.*
+   :width: 900px
+   :align: center
+   :height: 700px
+
+
+   BLER for MCS 29.
 
 
 
@@ -1277,8 +1517,20 @@ The model implemented uses the curves for the LSM of the recently LTE PHY Error 
 
 The model can be disabled for working with a zero-losses channel by setting the ``PemEnabled`` attribute of the ``LteSpectrumPhy`` class (by default is active). This can be done according to the standard ns3 attribute system procedure, that is::
 
-  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
 
+Control Channels PHY Error Model
+--------------------------------
+
+The simulator includes the error model for downlink control channels (PCFICH and PDCCH), while in uplink it is assumed and ideal error-free channel. The model is based on the MIESM approach presented before for considering the effects of the frequency selective channel since most of the control channels span the whole available bandwidth.
+
+
+PCFICH + PDCCH Error Model
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The model adopted for the error distribution of these channels is based on an evaluation study carried out in the RAN4 of 3GPP, where different vendors investigated the demodulation performance of the PCFICH jointly with PDCCH. This is due to the fact that the PCFICH is the channel in charge of communicating to the UEs the actual dimension of the PDCCH (which spans between 1 and 3 symbols); therefore the correct decodification of the DCIs  depends on the correct interpretation of both ones. In 3GPP this problem have been evaluated for improving the cell-edge performance _[FujitsuWhitePaper], where the interference among neighboring cells can be relatively high due to signal degradation. A similar problem has been notices in femto-cell scenario and, more in general, in HetNet scenarios the bottleneck has been detected mainly as the PCFICH channel _[Bharucha2011], where in case of many eNBs are deployed in the same service area, this channel may collide in frequency, making impossible the correct detection of the PDCCH channel, too. 
+
+In the simulator, the SINR perceived during the reception has been estimated according to the MIESM model presented above in order to evaluate the error distribution of PCFICH and PDCCH. In detail, the SINR samples of all the RBs are included in the evaluation of the MI associated to the control frame and, according to this values, the effective SINR (eSINR) is obtained by inverting the MI evaluation process. It has to be noted that, in case of MIMO transmission, both PCFICH and the PDCCH use always the transmit diversity mode as defined by the standard. According to the eSINR perceived the decodification error probability can be estimated as function of the results presented in _[R4-081920]. In case an error occur, the DCIs discarded and therefore the UE will be not able to receive the correspondent Tbs, therefore resulting lost.
 
 
 MIMO Model
@@ -1383,7 +1635,7 @@ With respect to the mathematical channel propagation model, we suggest the one p
 The simulator provides a matlab script (``/lte/model/JakesTraces/fading-trace-generator.m``) for generating traces based on the format used by the simulator. 
 In detail, the channel object created with the rayleighchan function is used for filtering a discrete-time impulse signal in order to obtain the channel impulse response. The filtering is repeated for different TTI, thus yielding subsequent time-correlated channel responses (one per TTI). The channel response is then processed with the ``pwelch`` function for obtaining its power spectral density values, which are then saved in a file with the proper format compatible with the simulator model.
 
-Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36.104]_):
+Since the number of variable it is pretty high, generate traces considering all of them might produce a high number of traces of huge size. On this matter, we considered the following assumptions of the parameters based on the 3GPP fading propagation conditions (see Annex B.2 of [TS36104]_):
 
  * users' speed: typically only a few discrete values are considered, i.e.:
 
@@ -1391,7 +1643,7 @@ Since the number of variable it is pretty high, generate traces considering all 
    * 30 and 60 kmph for vehicular scenarios
    * 0, 3, 30 and 60 for urban scenarios
 
- * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36.104]_.
+ * channel taps: only a limited number of sets of channel taps are normally considered, for example three models are mentioned in Annex B.2 of [TS36104]_.
  * time granularity: we need one fading value per TTI, i.e., every 1 ms (as this is the granularity in time of the ns-3 LTE PHY model).
  * frequency granularity: we need one fading value per RB (which is the frequency granularity of the spectrum model used by the ns-3 LTE model).
  * length of the trace: the simulator includes the windowing mechanism implemented during the GSoC 2011, which consists of picking up a window of the trace each window length in a random fashion.  
@@ -1402,7 +1654,7 @@ According to the parameters we considered, the following formula express in deta
 .. math::
  S_{traces} = S_{sample} \times N_{RB} \times \frac{T_{trace}}{T_{sample}} \times N_{scenarios} \mbox{ [bytes]}
 
-where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36.104]_:
+where :math:`S_{sample}` is the size in bytes of the sample (e.g., 8 in case of double precision, 4 in case of float precision), :math:`N_{RB}` is the number of RB or set of RBs to be considered, :math:`T_{trace}` is the total length of the trace, :math:`T_{sample}` is the time resolution of the trace (1 ms), and :math:`N_{scenarios}` is the number of fading scenarios that are desired (i.e., combinations of different sets of channel taps and user speed values). We provide traces for 3 different scenarios one for each taps configuration defined in Annex B.2 of [TS36104]_:
 
  * Pedestrian: with nodes' speed of 3 kmph.
  * Vehicular: with nodes' speed of 60 kmph.
@@ -1476,7 +1728,7 @@ A few notes on the above diagram:
 X2-based handover
 -----------------
 
-The X2 interface interconnects two eNBs [TS36.420]_. From a logical point of view, the X2 interface is a point-to-point interface between the two eNBs. In a real E-UTRAN, the logical point-to-point interface should be feasible even in the absence of a physical direct connection between the two eNBs. In the X2 model implemented in the simulator, the X2 interface is a point-to-point link between the two eNBs. A point-to-point device is created in both eNBs and the two point-to-point devices are attached to the point-to-point link.
+The X2 interface interconnects two eNBs [TS36420]_. From a logical point of view, the X2 interface is a point-to-point interface between the two eNBs. In a real E-UTRAN, the logical point-to-point interface should be feasible even in the absence of a physical direct connection between the two eNBs. In the X2 model implemented in the simulator, the X2 interface is a point-to-point link between the two eNBs. A point-to-point device is created in both eNBs and the two point-to-point devices are attached to the point-to-point link.
 
 The overall architecture of the LENA simulation model is depicted in the figure :ref:`fig-epc-topology-x2-enhanced`. It adds the X2 interface between eNBs to the original architecture described in :ref:`overall-architecture`.
 
@@ -1491,7 +1743,7 @@ The overall architecture of the LENA simulation model is depicted in the figure 
 X2 model
 ++++++++
 
-The X2 model implemented in the simulator provides detailed implementation of the following elementary procedures of the Mobility Management functionality [TS36.423]_:
+The X2 model implemented in the simulator provides detailed implementation of the following elementary procedures of the Mobility Management functionality [TS36423]_:
 
   * Handover Request procedure
 
@@ -1501,7 +1753,7 @@ The X2 model implemented in the simulator provides detailed implementation of th
 
   * UE Context Release procedure
 
-These procedures are involved in the X2-based handover. You can find the detailed description of the handover in section 10.1.2.1 of [TS36.300]_. Figure :ref:`x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
+These procedures are involved in the X2-based handover. You can find the detailed description of the handover in section 10.1.2.1 of [TS36300]_. Figure :ref:`fig-x2-based-handover-seq-diagram` shows the interaction of the entities of the X2 model in the simulator.
 
 .. _fig-x2-based-handover-seq-diagram:
 
@@ -1510,6 +1762,7 @@ These procedures are involved in the X2-based handover. You can find the detaile
     :align: center
 
     Sequence diagram of the X2-based handover
+
 
 The X2 model is an entity that uses services from:
 

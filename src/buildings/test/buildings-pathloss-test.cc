@@ -16,17 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include <ns3/simulator.h>
 
 #include <ns3/log.h>
 
-#include <ns3/buildings-pathloss-test.h>
-#include "ns3/string.h"
-#include "ns3/double.h"
+#include <ns3/buildings-helper.h>
+#include <ns3/string.h>
+#include <ns3/double.h>
 #include <ns3/building.h>
 #include <ns3/enum.h>
+
+#include "buildings-pathloss-test.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("BuildingsPathlossTest");
@@ -149,44 +152,18 @@ BuildingsPathlossTestCase::~BuildingsPathlossTestCase ()
 void
 BuildingsPathlossTestCase::DoRun (void)
 {
-//   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-
-//   LogComponentEnable ("LteEnbRrc", logLevel);
-//   LogComponentEnable ("LteUeRrc", logLevel);
-//   LogComponentEnable ("LteEnbMac", logLevel);
-//   LogComponentEnable ("LteUeMac", logLevel);
-//   LogComponentEnable ("LteRlc", logLevel);
-//   LogComponentEnable ("RrPacketScheduler", logLevel);
-// 
-//   LogComponentEnable ("LtePhy", logLevel);
-//   LogComponentEnable ("LteEnbPhy", logLevel);
-//   LogComponentEnable ("LteUePhy", logLevel);
-// 
-//   LogComponentEnable ("LteSpectrumPhy", logLevel);
-//   LogComponentEnable ("LteInterference", logLevel);
-//   LogComponentEnable ("LteSinrChunkProcessor", logLevel);
-// 
-//   LogComponentEnable ("LtePropagationLossModel", logLevel);
-//   LogComponentEnable ("LossModel", logLevel);
-//   LogComponentEnable ("ShadowingLossModel", logLevel);
-//   LogComponentEnable ("PenetrationLossModel", logLevel);
-//   LogComponentEnable ("MultipathLossModel", logLevel);
-//   LogComponentEnable ("PathLossModel", logLevel);
-// 
-//   LogComponentEnable ("LteNetDevice", logLevel);
-//   LogComponentEnable ("LteUeNetDevice", logLevel);
-//   LogComponentEnable ("LteEnbNetDevice", logLevel);
-
-  LogComponentEnable ("BuildingsPropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("HybridBuildingsPropagationLossModel", LOG_LEVEL_ALL);
-
   NS_LOG_FUNCTION (this);
 
+  // the building basically occupies the negative x plane, so any node
+  // in this area will fall in the building 
+  Ptr<Building> building1 = CreateObject<Building> ();
+  building1->SetBoundaries (Box (-3000, -1, -4000, 4000.0, 0.0, 12));
+  building1->SetBuildingType (Building::Residential);
+  building1->SetExtWallsType (Building::ConcreteWithWindows);
+  building1->SetNFloors (3);
+  
   Ptr<MobilityModel> mma = CreateMobilityModel (m_mobilityModelIndex1);
   Ptr<MobilityModel> mmb = CreateMobilityModel (m_mobilityModelIndex2);
-
-
-
 
   Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   propagationLossModel->SetAttribute ("Frequency", DoubleValue (m_freq));
@@ -220,116 +197,75 @@ BuildingsPathlossTestCase::CreateMobilityModel (uint16_t index)
    * 
    */
 
-
-  double distance = 2000;
   double hm = 1;
   double hb = 30;
-
-  Ptr<BuildingsMobilityModel> mm1 = CreateObject<BuildingsMobilityModel> ();
-  mm1->SetPosition (Vector (0.0, 0.0, hb));
-
-  Ptr<BuildingsMobilityModel> mm2 = CreateObject<BuildingsMobilityModel> ();
-  mm2->SetPosition (Vector (distance, 0.0, hm));
- 
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm3 = CreateObject<BuildingsMobilityModel> ();
-  mm3->SetPosition (Vector (distance, 0.0, hm));
-
-  distance = 900;
-  Ptr<BuildingsMobilityModel> mm4 = CreateObject<BuildingsMobilityModel> ();
-  mm4->SetPosition (Vector (distance, 0.0, hm));
-
-  distance = 30;
   double henbHeight = 10.0;
-  Ptr<BuildingsMobilityModel> mm5 = CreateObject<BuildingsMobilityModel> ();
-  mm5->SetPosition (Vector (0.0, 0.0, henbHeight));
 
-  // this needs to be static otherwise it will look like a different building every time
-  static Ptr<Building> building1 = Create<Building> ();
-  building1->SetBoundaries (Box (0.0, 10.0, 0.0, 10.0, 0.0, 20.0 /*, 1, 1, 1*/));
-  building1->SetBuildingType (Building::Residential);
-  building1->SetExtWallsType (Building::ConcreteWithWindows);
-  mm5->SetIndoor (building1);
-  Ptr<BuildingsMobilityModel> mm6 = CreateObject<BuildingsMobilityModel> ();
-  mm6->SetPosition (Vector (distance, 0.0, hm));
-  mm6->SetIndoor (building1);
-  mm6->SetFloorNumber (2);
- 
-  distance = 2000;
-  Ptr<BuildingsMobilityModel> mm7 = CreateObject<BuildingsMobilityModel> ();
-  mm7->SetPosition (Vector (distance, 0.0, hm));
-  mm7->SetIndoor (building1);
-
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm8 = CreateObject<BuildingsMobilityModel> ();
-  mm8->SetPosition (Vector (distance, 0.0, hm));
-  mm8->SetIndoor (building1);
-
-  distance = 100;
-  Ptr<BuildingsMobilityModel> mm9 = CreateObject<BuildingsMobilityModel> ();
-  mm9->SetPosition (Vector (0.0, 0.0, henbHeight));
-  mm9->SetIndoor (building1);
-  mm9->SetFloorNumber (2);
-  Ptr<BuildingsMobilityModel> mm10 = CreateObject<BuildingsMobilityModel> ();
-  mm10->SetPosition (Vector (distance, 0.0, hm));
-
-  distance = 500;
-  Ptr<BuildingsMobilityModel> mm11 = CreateObject<BuildingsMobilityModel> ();
-  mm11->SetPosition (Vector (distance, 0.0, hm));
- 
-
-
+  Ptr<BuildingsMobilityModel> mm;
+  
   switch (index)
     {
     case 1:
-      return mm1;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (0.0, 0.0, hb));
       break;
 
     case 2:
-      return mm2;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (2000, 0.0, hm));
       break;
 
     case 3:
-      return mm3;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (100, 0.0, hm));
       break;
 
     case 4:
-      return mm4;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (900, 0.0, hm));
       break;
 
     case 5:
-      return mm5;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (-5, 0.0, hm));
       break;
 
     case 6:
-      return mm6;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (-5, 30, henbHeight));
       break;
 
     case 7:
-      return mm7;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (-2000, 0.0, hm));
       break;
 
     case 8:
-      return mm8;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (-100, 0.0, hm));
       break;
 
     case 9:
-      return mm9;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (0, 0.0, hm));
       break;
 
     case 10:
-      return mm10;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (-100, 0.0, henbHeight));
       break;
 
     case 11:
-      return mm11;
+      mm = CreateObject<BuildingsMobilityModel> ();
+      mm->SetPosition (Vector (-500, 0.0, henbHeight));
       break;
 
     default:
-      return 0;
+      mm = 0;
       break;
     }
-  return 0;
+  BuildingsHelper::MakeConsistent (mm); 
+  return mm;
 }
 
 

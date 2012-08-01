@@ -348,7 +348,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
             double ber = 0.0;
             while (mcs < 28)
               {
-                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize), mcs);
+                ber = LteMiErrorModel::GetTbError (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs);
                 if (ber > 0.1)
                   break;
                 mcs++;

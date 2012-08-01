@@ -40,7 +40,8 @@ Ipv4Header::Ipv4Header ()
     m_flags (0),
     m_fragmentOffset (0),
     m_checksum (0),
-    m_goodChecksum (true)
+    m_goodChecksum (true),
+    m_headerSize(5*4)
 {
 }
 
@@ -339,7 +340,8 @@ Ipv4Header::Print (std::ostream &os) const
 uint32_t 
 Ipv4Header::GetSerializedSize (void) const
 {
-  return 5 * 4;
+  //return 5 * 4;
+	return m_headerSize;
 }
 
 void
@@ -414,6 +416,7 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   /* i.Next (2); // checksum */
   m_source.Set (i.ReadNtohU32 ());
   m_destination.Set (i.ReadNtohU32 ());
+  m_headerSize = headerSize;
 
   if (m_calcChecksum) 
     {

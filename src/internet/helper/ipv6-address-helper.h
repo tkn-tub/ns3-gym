@@ -16,24 +16,63 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
+ * modified by Tom Henderson for ns-3.14 release
  */
 
-#ifndef IPV6_ADDRESS_STATIC_HELPER_H
-#define IPV6_ADDRESS_STATIC_HELPER_H
+#ifndef IPV6_ADDRESS_HELPER_H
+#define IPV6_ADDRESS_HELPER_H
 
 #include <vector>
 
 #include "ns3/ipv6-address.h"
-
 #include "ns3/net-device-container.h"
 #include "ipv6-interface-container.h"
+#include "ns3/deprecated.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 /**
  * \class Ipv6AddressHelper
- * \brief Helper class to assign IPv6 address statically.
+ * \brief Helper class to auto-assign global IPv6 unicast addresses
+ *
+ * Assign global unicast IPv6 addresses based on RFC 4291 definition.
+ *
+ *   |         n bits          | 64-n bits |       64 bits              |
+ *   +-------------------------+-----------+----------------------------+
+ *   | global routing prefix   | subnet ID |       interface ID         |
+ *   +-------------------------+-----------+----------------------------+
+ *   <-------------network---------------->
+ *
+ *   11111111111111111111111111000000000000
+ *   <---prefix of length n--->
+ * 
+ * This class handles the following quantities.
+ * 1) The "network" which covers the 64 bit union of the global routing
+ *    prefix and the subnet ID
+ * 2) the "prefix" length "n" which demarcates the global routing prefix
+ *    and the subnet ID
+ * 3) the "base" which is the initial 64-bit interface ID.
+ *
+ * The names "network", "prefix" and "base" are chosen to be consistent 
+ * with a similar address helper for IPv4. 
+ *
+ * This helper class allows users to set or reset the network and
+ * interface components, and call "NewAddress ()" to sequentially increment
+ * the interface ID, and call "NewNetwork ()" to allocate a new subnet
+ * (until the subnet ID quantity rolls over).  A call to NewNetwork ()
+ * that causes the subnet ID to roll over will trigger an assertion.  
+ * 
+ * By default, the prefix is 32 bits and the network is '2001:db8::/32'
+ * (RFC 5156 section 2.6 Documentation prefix).  The prefix may range
+ * from length 0 to 64, with the value 64 having a special meaning that
+ * no subnet ID boundary is enforced (equivalent to value 0).
+ * 
+ * There are two variants of interface ID supported (RFC 4291, Sec. 2.5.1)
+ * The default is a "local" scope, but a "universal" scoped ID may be
+ * formed by calling "NewAddress (Address addr)" with a 48-bit MAC address.
+ * If this method is called, the addressed returned will include a
+ * modified EUI-64-format identifier created from the MAC address as 
+ * specified in RFC 4291.
  */
 class Ipv6AddressHelper
 {
@@ -44,36 +83,92 @@ public:
   Ipv6AddressHelper ();
 
   /**
+   * \brief Constructor.
+   * \param network The IPv6 network
+   * \param prefix The prefix
+   * \param base The base interface ID
+   */
+  Ipv6AddressHelper (Ipv6Address network, Ipv6Prefix prefix,  
+                     Ipv6Address base = Ipv6Address ("::1"));
+
+  /**
+   * \brief Set the base network number, network prefix, and base interface ID
+   *
+   * \param network The IPv6 network
+   * \param prefix The prefix
+   * \param base The base interface ID
+   */
+  void SetBase (Ipv6Address network, Ipv6Prefix prefix,
+                Ipv6Address base = Ipv6Address ("::1"));
+
+  /**
    * \brief Allocate a new network.
+   *
+   * This method will reset the network for future
+   * network IDs, and resets the interface ID to the previously used
+   * base.
+   *  
    * \param network The IPv6 network
    * \param prefix The prefix
    */
-  void NewNetwork (Ipv6Address network, Ipv6Prefix prefix);
+  void NewNetwork (Ipv6Address network, Ipv6Prefix prefix) NS_DEPRECATED;
 
   /**
-   * \brief Allocate a new address.
-   * \param addr L2 address (currently only ethernet address is supported)
+   * \brief Allocate a new network.
+   *
+   * This method will cause the subnet prefix to increment, for future
+   * network IDs, and resets the interface ID to the previously used
+   * base.
+   */
+  void NewNetwork (void);
+
+  /**
+   * \brief Allocate a new Ipv6Address.
+   *
+   * If a Mac48Address is passed in, an Ipv6 autoconfigured address
+   * according to the current subnet prefix is returned.  If something
+   * other than Mac48 address is passed in, the program will terminate.
+   *
+   * \param addr address used to generate the interface ID of the IPv6 address
    * \return newly created Ipv6Address
    */
   Ipv6Address NewAddress (Address addr);
 
   /**
-   * \brief Allocate an Ipv6InterfaceContainer.
+   * \brief Allocate a new Ipv6Address with interface ID equal to the
+   * next one in the underlying generator.
+   *
+   * \return newly created Ipv6Address
+   */
+  Ipv6Address NewAddress (void);
+
+  /**
+   * \brief Allocate an Ipv6InterfaceContainer with auto-assigned addresses.
    * \param c netdevice container
    * \return newly created Ipv6InterfaceContainer
    */
   Ipv6InterfaceContainer Assign (const NetDeviceContainer &c);
 
   /**
-   * \brief Allocate an Ipv6InterfaceContainer.
+   * \brief Allocate an Ipv6InterfaceContainer, and control whether the 
+   *        interfaces have addresses auto-assigned to them
+   *
    * \param c netdevice container
-   * \param withConfiguration true : interface statically configured, false : no static configuration
+   * \param withConfiguration a vector of values for which, for a 
+   *        given device, true : interface automatically addressed, 
+   *        false : no automatic address
    * \return newly created Ipv6InterfaceContainer
    */
   Ipv6InterfaceContainer Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration);
 
   /**
-   * \brief Allocate an Ipv6InterfaceContainer without static IPv6 configuration.
+   * \brief Allocate an Ipv6InterfaceContainer but do not assign any IPv6 addresses
+   *
+   * This method is used when IPv6 address assignment may occur later
+   * (such as dynamic address assignment)
+   *
+   * Equivalent to AssignWithoutAddress (c, std::vector<bool> of false);
+   *
    * \param c netdevice container
    * \return newly created Ipv6InterfaceContainer
    */
@@ -84,16 +179,27 @@ private:
    * \internal
    * \brief The IPv6 network.
    */
-  Ipv6Address m_network;
+  uint8_t m_network[16];
 
   /**
    * \internal
-   * \brief IPv6 The prefix (mask).
+   * \brief The prefix (mask).
    */
-  Ipv6Prefix m_prefix;
+  uint8_t m_prefix[16];
+
+  /**
+   * \internal
+   * \brief The base interface ID
+   */
+  uint64_t m_base;
+  /**
+   * \internal
+   * \brief The current interface ID
+   */
+  uint64_t m_iid;
 };
 
 } /* namespace ns3 */
 
-#endif /* IPV6_ADDRESS_STATIC_HELPER_H */
+#endif /* IPV6_ADDRESS_STATIC_H */
 

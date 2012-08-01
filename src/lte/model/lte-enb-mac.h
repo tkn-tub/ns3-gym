@@ -36,9 +36,9 @@
 
 namespace ns3 {
 
-class DlCqiIdealControlMessage;
-class UlCqiIdealControlMessage;
-class PdcchMapIdealControlMessage;
+class DlCqiLteControlMessage;
+class UlCqiLteControlMessage;
+class PdcchMapLteControlMessage;
 
 
 
@@ -123,9 +123,9 @@ public:
   * \brief Receive a DL CQI ideal control message
   * \param msg the DL CQI message
   */
-  void ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg);
+  void ReceiveDlCqiLteControlMessage  (Ptr<DlCqiLteControlMessage> msg);
 
-  void DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   /**
   * \brief Receive a CE element containing the buffer status report
@@ -133,7 +133,7 @@ public:
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
 
-  void DoUlCqiReport (UlCqi_s ulcqi);
+  void DoUlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi);
 
 
 
@@ -141,6 +141,7 @@ private:
   // forwarded from LteEnbCmacSapProvider
   void DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
   void DoAddUe (uint16_t rnti);
+  void DoRemoveUe (uint16_t rnti);
   void DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu);
   void DoReconfigureLc (LteEnbCmacSapProvider::LcInfo lcinfo);
   void DoReleaseLc (uint16_t  rnti, uint8_t lcid);
@@ -163,7 +164,7 @@ private:
   void DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind);
   void DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters params);
   
-  void DoRrcUpdateConfigurationReq (FfMacCschedSapProvider::CschedUeConfigReqParameters params);
+  void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
 
   /**
   * \brief Forwarded from LteEnbPhySapUser: trigger the start from a new frame
@@ -184,11 +185,10 @@ public:
 
 private:
 private:
-  // std::map <uint16_t, std::map <uint8_t,Ptr<LteMacSapUser> > > m_rlcAttached;
   std::map <LteFlowId_t, LteMacSapUser*> m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
-  std::vector <UlCqi_s> m_ulCqiReceived; // UL-CQI received
+  std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters> m_ulCqiReceived; // UL-CQI received
   std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
 
 

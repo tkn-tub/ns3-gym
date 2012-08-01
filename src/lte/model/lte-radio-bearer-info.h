@@ -18,9 +18,12 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
+#ifndef LTE_RADIO_BEARER_INFO_H
+#define LTE_RADIO_BEARER_INFO_H
 
 #include <ns3/object.h>
 #include <ns3/pointer.h>
+#include <ns3/eps-bearer.h>
 
 namespace ns3 {
 
@@ -41,8 +44,12 @@ public:
 
   Ptr<LteRlc> m_rlc;
   Ptr<LtePdcp> m_pdcp;  
-
+  EpsBearer m_epsBearer;
+  uint32_t m_teid;
 };
 
 
 } // namespace ns3
+
+
+#endif // LTE_RADIO_BEARER_INFO_H

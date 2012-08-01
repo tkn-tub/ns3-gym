@@ -148,7 +148,7 @@ PointToPointGridHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix pre
       for (uint32_t j = 0; j < rowContainer.GetN (); j+=2)
         {
           v6network = Ipv6AddressGenerator::GetNetwork (prefix);
-          addrHelper.NewNetwork(v6network, prefix);
+          addrHelper.SetBase(v6network, prefix);
           Ipv6InterfaceContainer ic = addrHelper.Assign (rowContainer.Get (j));
           rowInterfaces.Add (ic);
           ic = addrHelper.Assign (rowContainer.Get (j+1));
@@ -169,7 +169,7 @@ PointToPointGridHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix pre
       for (uint32_t j = 0; j < colContainer.GetN (); j+=2)
         {
           v6network = Ipv6AddressGenerator::GetNetwork (prefix);
-          addrHelper.NewNetwork(v6network, prefix);
+          addrHelper.SetBase(v6network, prefix);
           Ipv6InterfaceContainer ic = addrHelper.Assign (colContainer.Get (j));
           colInterfaces.Add (ic);
           ic = addrHelper.Assign (colContainer.Get (j+1));
