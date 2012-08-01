@@ -191,8 +191,8 @@ LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()
 void
 LenaRrFfMacSchedulerTestCase::DoRun (void)
 {
-  Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
+  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   LogComponentDisableAll (LOG_LEVEL_ALL);
 //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);

@@ -84,6 +84,7 @@ LteTestSinrChunkProcessor::GetSinr ()
 {
   NS_LOG_FUNCTION (this);
 
+  NS_ASSERT (m_sinr);
   return m_sinr;
 }
 

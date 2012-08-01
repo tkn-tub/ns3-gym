@@ -179,12 +179,18 @@ public:
    */
   std::vector<uint8_t> GetLcIdVector ();
 
+
   /** 
-  * message from eNB-RRC for changing UE's configuration
-  * (up to now TxMode)
-  *
-  */
-  void DoRrcConfigurationUpdateInd (LteUeConfig_t params);
+   * reception of the RRC ConnectionReconfiguration message
+   *
+   */
+  void DoRecvConnectionSetup (LteUeConfig_t params);
+
+  /** 
+   * reception of the RRC ConnectionReconfiguration message
+   *
+   */
+  void DoRecvConnectionReconfiguration (LteUeConfig_t params);
 
 
   /** 
@@ -193,7 +199,7 @@ public:
    * \param targetCellId 
    * \param newRnti 
    */
-  void ConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti);
+  void DoRecvConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti);
   
 private:
 

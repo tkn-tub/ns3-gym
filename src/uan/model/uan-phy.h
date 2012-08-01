@@ -382,6 +382,91 @@ public:
   virtual void Clear (void) = 0;
 
   virtual void SetSleepMode (bool sleep) = 0;
+
+
+  /**
+   * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation
+   * purposes.
+   */
+  void NotifyTxBegin (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation
+   * purposes.
+   */
+  void NotifyTxEnd (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation
+   * purposes.
+   */
+  void NotifyTxDrop (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation
+   * purposes.
+   */
+  void NotifyRxBegin (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation
+   * purposes.
+   */
+  void NotifyRxEnd (Ptr<const Packet> packet);
+
+  /**
+   * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation
+   * purposes.
+   */
+  void NotifyRxDrop (Ptr<const Packet> packet);
+
+private:
+  /**
+   * The trace source fired when a packet begins the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
+
+  /**
+   * The trace source fired when a packet ends the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet as it tries
+   * to transmit it.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyTxDropTrace;
+
+  /**
+   * The trace source fired when a packet begins the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
+
+  /**
+   * The trace source fired when a packet ends the reception process from
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
+
+  /**
+   * The trace source fired when the phy layer drops a packet it has received.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 };
 
 }

@@ -85,7 +85,7 @@ private:
 
   // forwarded from PHY SAP
   void DoReceivePhyPdu (Ptr<Packet> p);
-  void DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
   
   void SendReportBufferStatus (void);
 

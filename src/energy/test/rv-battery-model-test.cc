@@ -76,7 +76,7 @@ private:
   /**
    * \param loads Load profile.
    * \param timeStamps Time stamps.
-   * \param expLifeTime Expected lifetime.
+   * \param expLifetime Expected lifetime.
    * \returns False if no error occurs.
    *
    * Runs simulation with variable load and checks the battery lifetime with

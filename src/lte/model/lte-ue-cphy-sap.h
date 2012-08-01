@@ -77,6 +77,11 @@ public:
    */
   virtual void SetTransmissionMode (uint8_t txMode) = 0;
 
+  /**
+   * \param txMode the transmissionMode of the user
+   */
+  virtual void SetSrsConfigurationIndex (uint16_t   srcCi) = 0;
+
 };
 
 
@@ -116,6 +121,7 @@ public:
   virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
   virtual void SetRnti (uint16_t rnti);
   virtual void SetTransmissionMode (uint8_t txMode);
+  virtual void SetSrsConfigurationIndex (uint16_t srcCi);
 
 private:
   MemberLteUeCphySapProvider ();
@@ -168,6 +174,12 @@ MemberLteUeCphySapProvider<C>::SetTransmissionMode (uint8_t txMode)
   m_owner->DoSetTransmissionMode (txMode);
 }
 
+template <class C>
+void 
+MemberLteUeCphySapProvider<C>::SetSrsConfigurationIndex (uint16_t srcCi)
+{
+  m_owner->DoSetSrsConfigurationIndex (srcCi);
+}
 
 
 

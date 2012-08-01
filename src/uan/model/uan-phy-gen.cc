@@ -428,7 +428,7 @@ UanPhyGen::GetTypeId (void)
 {
 
   static TypeId tid = TypeId ("ns3::UanPhyGen")
-    .SetParent<Object> ()
+    .SetParent<UanPhy> ()
     .AddConstructor<UanPhyGen> ()
     .AddAttribute ("CcaThreshold",
                    "Aggregate energy of incoming signals to move to CCA Busy state dB",
@@ -581,12 +581,14 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
   if (m_disabled)
     {
       NS_LOG_DEBUG ("Energy depleted, node cannot receive any packet. Dropping.");
+      NotifyRxDrop(pkt);    // traced source netanim
       return;
     }
 
   switch (m_state)
     {
     case TX:
+      NotifyRxDrop(pkt);    // traced source netanim
       NS_ASSERT (false);
       break;
     case RX:
@@ -595,6 +597,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
         double newSinrDb = CalculateSinrDb (m_pktRx, m_pktRxArrTime, m_rxRecvPwrDb, m_pktRxMode, m_pktRxPdp);
         m_minRxSinrDb  =  (newSinrDb < m_minRxSinrDb) ? newSinrDb : m_minRxSinrDb;
         NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << ": Starting RX in RX mode.  SINR of pktRx = " << m_minRxSinrDb);
+        NotifyRxBegin(pkt);    // traced source netanim
       }
       break;
 
@@ -623,6 +626,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
           {
             m_state = RX;
             UpdatePowerConsumption (RX);
+            NotifyRxBegin(pkt);    // traced source netanim
             m_rxRecvPwrDb = rxPowerDb;
             m_minRxSinrDb = newsinr;
             m_pktRx = pkt;
@@ -638,6 +642,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
       break;
     case SLEEP:
       NS_LOG_DEBUG ("Sleep mode. Dropping packet.");
+      NotifyRxDrop(pkt);    // traced source netanim
       break;
     }
 
@@ -661,9 +666,11 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode)
     {
       NS_LOG_DEBUG ("Sleep mode or dead. Dropping packet");
       m_pktRx = 0;
+      NotifyRxDrop(pkt);    // traced source netanim
       return;
     }
 
+  NotifyRxEnd(pkt);    // traced source netanim
   if (GetInterferenceDb ( (Ptr<Packet>) 0) > m_ccaThreshDb)
     {
       m_state = CCABUSY;

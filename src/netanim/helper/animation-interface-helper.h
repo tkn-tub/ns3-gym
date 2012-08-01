@@ -142,6 +142,7 @@ public:
    * \param fbTx First bit transmit time
    * \param lbTx Last bit transmit time
    * \param txLoc Transmitter Location
+   * \param txNodeId Tx Node Id if NetDevice is unknown
    *
    */
   AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time& fbTx, const Time& lbTx,Vector txLoc, uint32_t txNodeId = 0);

@@ -36,38 +36,21 @@ namespace ns3 {
  * class are explained in:
  * http://www.iro.umontreal.ca/~lecuyer/myftp/papers/streams00.pdf
  */
-class RngStream {
-public:  //public api
-  RngStream ();
+class RngStream
+{
+public:
+  RngStream (uint32_t seed, uint64_t stream, uint64_t substream);
   RngStream (const RngStream&);
-  void InitializeStream (); // Separate initialization
-  void ResetStartStream ();
-  void ResetStartSubstream ();
-  void ResetNextSubstream ();
-  void ResetNthSubstream (uint32_t N);
-  void SetAntithetic (bool a);
-  void IncreasedPrecis (bool incp);
-  bool SetSeeds (const uint32_t seed[6]);
-  void AdvanceState (int32_t e, int32_t c);
-  void GetState (uint32_t seed[6]) const;
-  double RandU01 ();
-  int32_t RandInt (int32_t i, int32_t j);
-public: //public static api
-  static bool SetPackageSeed (uint32_t seed);
-  static bool SetPackageSeed (const uint32_t seed[6]);
-  static void GetPackageSeed (uint32_t seed[6]);
-  static void SetPackageRun (uint32_t run);
-  static uint32_t GetPackageRun (void);
-  static bool CheckSeed (const uint32_t seed[6]);
-  static bool CheckSeed (uint32_t seed);
-private: //members
-  double Cg[6], Bg[6], Ig[6];
-  bool anti, incPrec;
-  double U01 ();
-  double U01d ();
-  static uint32_t EnsureGlobalInitialized (void);
-private: //static data
-  static double nextSeed[6];
+  /**
+   * Generate the next random number for this stream.
+   * Uniformly distributed between 0 and 1.
+   */
+  double RandU01 (void);
+
+private:
+  void AdvanceNthBy (uint64_t nth, int by, double state[6]);
+
+  double m_currentState[6];
 };
 
 } // namespace ns3

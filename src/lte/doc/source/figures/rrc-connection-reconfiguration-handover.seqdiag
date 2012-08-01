@@ -28,22 +28,10 @@ diagram {
    UeMac <<- UePhy [label="Rx RAR"] 
    UeRrc <<- UeMac [label="NotifyRandomAccessProcedureEndOk"] 
    === end non-contention based MAC Random Access Procedure ===
-   UeMac ->> UePhy [label="SendOverUlsch (RrcConnectionReestablishmentRequest)"] 
+   UeMac ->> UePhy [label="SendOverUlsch (RrcConnectionReconfigurationCompleted)"] 
    UePhy ->> EnbPhy [label="TX over PUSCH"]
-   EnbPhy ->> EnbMac [label="RxOverUlsch (RrcConnectionReestablishmentRequest)"]
-   EnbMac ->> EnbRrc [label="RxOverCcch (RrcConnectionReestablishmentRequest, T-C-RNTI)"]
-   EnbMac <<- EnbRrc [label="SendOverCcch (RrcConnectionReestablishment)"]
-   EnbMac ->> FfSched [label="SCHED_DL_RLC_BUFFER_REQ"]
-   EnbPhy ->> EnbMac [label="SubframeIndication"]	
-   EnbMac ->> FfSched [label="SCHED_DL_TRIGGER_REQ"]
-   EnbMac <<- FfSched  [label="SCHED_DL_CONFIG_IND (DATA list)"]		
-   EnbPhy <<- EnbMac [label="Send PDU"]
-   UePhy <<- EnbPhy [label="PDU over DL-SCH"]
-   UeMac <<- UePhy [label="Rx PDU"] 
-   UeRrc <<- UeMac [label="RxOverCcch (RrcConnectionReestablishment)"] 
-   UeRrc ->> EnbRrc [label="RrcConnectionReestablishmentCompleted over SRB1)"] 
-
-
+   EnbPhy ->> EnbMac [label="RxOverUlsch (RrcConnectionReconfigurationCompleted)"]
+   EnbMac ->> EnbRrc [label="RxOverCcch (RrcConnectionReconfigurationCompleted)"]
 
 }
 

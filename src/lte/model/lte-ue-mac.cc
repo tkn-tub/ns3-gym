@@ -30,7 +30,7 @@
 #include "lte-ue-net-device.h"
 #include "lte-radio-bearer-tag.h"
 #include <ns3/ff-mac-common.h>
-#include <ns3/ideal-control-messages.h>
+#include <ns3/lte-control-messages.h>
 #include <ns3/simulator.h>
 #include <ns3/lte-common.h>
 
@@ -128,7 +128,7 @@ public:
   // inherited from LtePhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
-  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
 private:
   LteUeMac* m_mac;
@@ -153,9 +153,9 @@ UeMemberLteUePhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframe
 }
 
 void
-UeMemberLteUePhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+UeMemberLteUePhySapUser::ReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
-  m_mac->DoReceiveIdealControlMessage (msg);
+  m_mac->DoReceiveLteControlMessage (msg);
 }
 
 
@@ -302,9 +302,9 @@ LteUeMac::SendReportBufferStatus (void)
   bsr.m_macCeValue.m_bufferStatus.push_back (BufferSizeLevelBsr::BufferSize2BsrId (0));
 
   // create the feedback to eNB
-  Ptr<BsrIdealControlMessage> msg = Create<BsrIdealControlMessage> ();
+  Ptr<BsrLteControlMessage> msg = Create<BsrLteControlMessage> ();
   msg->SetBsr (bsr);
-  m_uePhySapProvider->SendIdealControlMessage (msg);
+  m_uePhySapProvider->SendLteControlMessage (msg);
 
 }
 
@@ -331,7 +331,6 @@ LteUeMac::DoRemoveLc (uint8_t lcId)
   m_macSapUserMap.erase (lcId);
 }
 
-
 void
 LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
 {
@@ -348,12 +347,12 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
 
 
 void
-LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this);
-  if (msg->GetMessageType () == IdealControlMessage::UL_DCI)
+  if (msg->GetMessageType () == LteControlMessage::UL_DCI)
     {
-      Ptr<UlDciIdealControlMessage> msg2 = DynamicCast<UlDciIdealControlMessage> (msg);
+      Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
       std::map <uint8_t, uint64_t>::iterator itBsr;
       NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
@@ -393,7 +392,7 @@ LteUeMac::DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
     }
   else
     {
-      NS_LOG_FUNCTION (this << " IdealControlMessage not recognized");
+      NS_LOG_FUNCTION (this << " LteControlMessage not recognized");
     }
 }
 

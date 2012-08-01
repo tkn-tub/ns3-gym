@@ -336,8 +336,6 @@ public:
  * @see GlobalRouter
  * @see GlobalRoutingLSA
  * @see GlobalRoutingLinkRecord
- * @param nextHop The IP address to use when forwarding packets to the host
- * or network represented by "this" SPFVertex.
  * @param exit The pair of next-hop-IP and outgoing-interface-index to use when 
  * forwarding packets to the host or network represented by "this" SPFVertex.
  */

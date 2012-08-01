@@ -388,19 +388,19 @@ Prod (const SpectrumValue& x)
 }
 
 double
-Integral (const SpectrumValue& x)
+Integral (const SpectrumValue& arg)
 {
   double i = 0;
-  Values::const_iterator vit = x.ConstValuesBegin ();
-  Bands::const_iterator bit = x.ConstBandsBegin ();
-  while (vit != x.ConstValuesEnd ())
+  Values::const_iterator vit = arg.ConstValuesBegin ();
+  Bands::const_iterator bit = arg.ConstBandsBegin ();
+  while (vit != arg.ConstValuesEnd ())
     {
-      NS_ASSERT (bit != x.ConstBandsEnd ());
+      NS_ASSERT (bit != arg.ConstBandsEnd ());
       i += (*vit) * (bit->fh - bit->fl);
       ++vit;
       ++bit;
     }
-  NS_ASSERT (bit == x.ConstBandsEnd ());
+  NS_ASSERT (bit == arg.ConstBandsEnd ());
   return i;
 }
 

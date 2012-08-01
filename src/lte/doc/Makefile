@@ -24,8 +24,8 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
+	$(FIGURES)/lte-subframe-structure.dia \
 	$(FIGURES)/lte-epc-x2-interface.dia
-
 
 
 # specify eps figures from which .png and .pdf figures need to be built
@@ -78,6 +78,7 @@ $(FIGURES)/lte-phy-interference.pdf_width = 12cm
 $(FIGURES)/rrc-connection-establishment.pdf_width = 9cm
 $(FIGURES)/rrc-connection-reconfiguration-handover.pdf_width = 11cm
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
+$(FIGURES)/lte-subframe-structure.pdf_width = 2in
 
 
 IMAGES_SEQDIAG = \

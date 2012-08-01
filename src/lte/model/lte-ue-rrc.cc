@@ -291,7 +291,7 @@ LteUeRrc::DoConnect ()
 {
   NS_LOG_FUNCTION (this);
   
-  m_rnti = m_enbRrc->ConnectionRequest (m_imsi);
+  m_rnti = m_enbRrc->DoRecvConnectionRequest (m_imsi);
   m_cmacSapProvider->ConfigureUe (m_rnti);
   m_cphySapProvider->SetRnti (m_rnti);
 }
@@ -321,16 +321,28 @@ LteUeRrc::GetLcIdVector ()
   return v;
 }
 
+void 
+LteUeRrc::DoRecvConnectionSetup (LteUeConfig_t params)
+{    
+  m_cphySapProvider->SetTransmissionMode (params.m_transmissionMode);
+  m_cphySapProvider->SetSrsConfigurationIndex (params.m_srsConfigurationIndex);
+
+
+  m_enbRrc->DoRecvConnectionSetupCompleted (m_rnti);  
+}
+
 void
-LteUeRrc::DoRrcConfigurationUpdateInd (LteUeConfig_t params)
+LteUeRrc::DoRecvConnectionReconfiguration (LteUeConfig_t params)
 {
   NS_LOG_FUNCTION (this << " RNTI " << params.m_rnti << " txMode " << (uint16_t)params.m_transmissionMode);
   
   m_cphySapProvider->SetTransmissionMode (params.m_transmissionMode);
+  m_cphySapProvider->SetSrsConfigurationIndex (params.m_srsConfigurationIndex);
+
 }
 
 void 
-LteUeRrc::ConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti)
+LteUeRrc::DoRecvConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellId, uint16_t newRnti)
 {
   Ptr<LteEnbNetDevice> enbDev;
   // WILD HACK - eventually we'll get rid of all these Ptr<Device> around
@@ -357,13 +369,13 @@ LteUeRrc::ConnectionReconfigurationWithMobilityControlInfo (uint16_t targetCellI
         }
     }
   NS_ASSERT_MSG (found , " Unable to find eNB with CellId =" << targetCellId);
-
+  m_enbRrc = enbDev->GetObject<LteEnbRrc> ();
 
   DoForceCampedOnEnb (enbDev, targetCellId);
   m_rnti = newRnti;
   m_cmacSapProvider->ConfigureUe (m_rnti);
   m_cphySapProvider->SetRnti (m_rnti);
-  enbDev->GetObject<LteEnbRrc> ()->ConnectionReestablishmentRequest (m_imsi, m_rnti);
+  m_enbRrc->DoRecvConnectionReconfigurationCompleted (m_rnti);
   
 }
   

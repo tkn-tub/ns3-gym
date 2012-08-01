@@ -43,7 +43,7 @@ private:
    *
    * @param size size of payload in octets (includes everything after the PLCP header)
    * @param payloadMode the WifiMode used
-   * @param knownPlcpLengthFieldValue the known value of the Length field in the PLCP header
+   * @param knownDurationMicroSeconds the known payload size
    *
    * @return true if values correspond, false otherwise
    */
@@ -56,7 +56,7 @@ private:
    * @param size size of payload in octets (includes everything after the PLCP header)
    * @param payloadMode the WifiMode used
    * @param preamble the WifiPreamble used
-   * @param knownPlcpLengthFieldValue the known value of the Length field in the PLCP header
+   * @param knownDurationMicroSeconds the known value of the transmission
    *
    * @return true if values correspond, false otherwise
    */

@@ -277,6 +277,7 @@ LteEnbNetDevice::UpdateConfig (void)
   NS_LOG_FUNCTION (this);
 
   m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth, m_ulEarfcn, m_dlEarfcn, m_cellId);
+  m_rrc->SetCellId (m_cellId);
 
 }
 
