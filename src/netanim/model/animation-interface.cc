@@ -1324,6 +1324,13 @@ std::string AnimationInterface::GetPreamble ()
     linkupdate\n\
     * t = Simulation time\n\
     * ld = Link description (for Bandwidth, delay etc)\n\
+    nodeupdate\n\
+    * t = Simulation time\n\
+    * descr = Node description\n\
+    * r = Red component\n\
+    * g = Green component\n\
+    * b = Blue component\n\
+    * visible = Node visibility\n\
     packet\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\

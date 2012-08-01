@@ -30,6 +30,18 @@ using namespace ns3;
 
 AnimationInterface * pAnim = 0;
 
+struct rgb {
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+};
+
+struct rgb colors [] = {
+                        { 255, 0, 0 }, // Red
+                        { 0, 255, 0 }, // Blue
+                        { 0, 0, 255 }  // Green
+                        };
+
 void modify ()
 {
   std::ostringstream oss;
@@ -45,8 +57,28 @@ void modify ()
   pAnim->UpdateLinkDescription (1, 9, oss.str ());
   pAnim->UpdateLinkDescription (1, 10, oss.str ());
   pAnim->UpdateLinkDescription (1, 11, oss.str ());
-  pAnim->UpdateNodeDescription (0, oss.str ());
-  pAnim->ShowNode (3, false);
+  
+  // After 5 seconds mark node 3 as invisible 
+  if (Simulator::Now ().GetSeconds () > 5)
+  {
+    pAnim->ShowNode (3, false);
+  }
+
+  // Every update change the node description for node 2
+  std::ostringstream node0Oss;
+  node0Oss << "-----Node:" << Simulator::Now ().GetSeconds ();
+  pAnim->UpdateNodeDescription (2, node0Oss.str ());
+
+  // Every update change the color for node 4
+  static uint32_t index = 0;
+  index++;
+  if (index == 3) 
+    index = 0;
+  struct rgb color = colors[index];
+  for (uint32_t nodeId = 4; nodeId < 12; ++nodeId)
+    pAnim->UpdateNodeColor (nodeId, color.r, color.g, color.b); 
+
+
   if (Simulator::Now ().GetSeconds () < 10) // This is important or the simulation
     // will run endlessly
     Simulator::Schedule (Seconds (1), modify);
@@ -97,6 +129,7 @@ int main (int argc, char *argv[])
                          Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
                          Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
 
+  d.BoundingBox (1, 1, 100, 100);
   // Install on/off app on all right side nodes
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
   clientHelper.SetAttribute 
@@ -117,7 +150,7 @@ int main (int argc, char *argv[])
   clientApps.Stop (Seconds (10.0));
 
   // Set the bounding box for animation
-  d.BoundingBox (1, 1, 100, 100);
+
 
   // Create the animation object and configure for specified output
   pAnim = new AnimationInterface (animFile);
