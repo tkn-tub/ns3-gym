@@ -27,11 +27,16 @@ var ns3_api  = ns3_rel  + ns3_doxy          + ns3_index;
 // The Sphinx layout template defines
 //    var ns3_builder = "html", or "singlehtml"
 // so we can condition the links on single/multi-page view.
-if ( (typeof ns3_builder != 'undefined') && (ns3_builder == "singlehtml") ) {
-  ns3_index = ns3_local + "singlehtml/" + ns3_index;
- } else {
-  ns3_index = ns3_local + "html/" + ns3_index;
- }
+if (typeof ns3_builder != 'undefined') {
+  if (ns3_builder == "singlehtml") {
+    ns3_index = ns3_local + "singlehtml/" + ns3_index;
+  } else {
+    ns3_index = ns3_local + "html/" + ns3_index;
+  }
+  else {
+    ns3_index = ns3_local + "html/" + ns3_index;
+  }
+  
 
 var ns3_man  = ns3_rel  + "manual/"         + ns3_index;
 var ns3_mod  = ns3_rel  + "models/"         + ns3_index;
