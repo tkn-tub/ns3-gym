@@ -39,6 +39,7 @@
 #include "ns3/lte-enb-phy.h"
 #include "ns3/uan-net-device.h"
 #include "ns3/uan-mac.h"
+#include "ns3/ipv4.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -349,6 +350,18 @@ void AnimationInterface::PurgePendingCsma ()
 
 }
 
+std::string AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
+{
+  Ptr<Ipv4> ipv4 = NodeList::GetNode (nd->GetNode ()->GetId ())->GetObject <Ipv4> ();
+  if (!ipv4)
+    return "0.0.0.0";
+  uint32_t ifIndex = ipv4->GetInterfaceForDevice (nd);
+  Ipv4InterfaceAddress addr = ipv4->GetAddress (ifIndex, 0);
+  std::ostringstream oss;
+  oss << addr.GetLocal ();
+  return oss.str ();
+}
+
 void AnimationInterface::StartAnimation (bool restart)
 {
   m_currentPktCount = 0;
@@ -434,7 +447,10 @@ void AnimationInterface::StartAnimation (bool restart)
                   Ptr<NetDevice> chDev = ch->GetDevice (j);
                   uint32_t n2Id = chDev->GetNode ()->GetId ();
                   if (n1Id < n2Id)
-                    { // ouptut the p2p link
+                    { 
+                      // ouptut the p2p link
+                      NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << "----" << GetIpv4Address (chDev));
+                      SetLinkDescription (n1Id, n2Id, "", GetIpv4Address (dev), GetIpv4Address (chDev));
                       std::ostringstream oss;
                       if (m_xml)
                         {

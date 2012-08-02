@@ -542,6 +542,8 @@ private:
 
   void StartNewTraceFile();
 
+  std::string GetIpv4Address (Ptr <NetDevice> nd);
+
   // XML helpers
   std::string GetPreamble (void);
   // Topology element dimensions
