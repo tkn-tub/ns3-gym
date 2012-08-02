@@ -18,7 +18,7 @@
 #
 # The approach to identify cases 1 & 2 is to test:
 # a.  We're on nsnam.org (actually, nsnam.ece.gatech.edu), and
-# b.  We're in the tmp build directory, /tmp/daily_nsnam/
+# b.  We're in the tmp build directory, /tmp/daily-nsnam/
 #     (This is the directory used by the update-* scripts
 #     run by cron jobs.)
 #
@@ -47,52 +47,63 @@ function say
     echo "$me: $*"
 }
 
+function usage
+{
+    cat <<-EOF
+	Usage:  $me                   normal versioning
+	        $me [-n] [-d] [-t]    test options
+	
+	  -n  pretend we are on nsnam.org
+	  -d  pretend we are in the automated build directory
+	  -t  pretend we are at a repo tag
+	    
+EOF
+    exit 1
+}
 
 # script arguments
 say
-verbose=0
 nsnam=0
+daily=0
 tag=0
 
-while getopts ntv option ; do
+while getopts ndth option ; do
     case $option in
-	n)
-	nsnam=1
-	verbose=1
-	;;
+	(n)  nsnam=1 ;;
 
-	t)
-	tag=1
-	verbose=1
-	;;
-	
-	v)
-	verbose=1
-	;;
+	(d)  daily=1 ;;
 
-	\?)
-	say "invalid option: -$OPTION"
-	exit -1
-	;;
+	(t)  tag=1   ;;
+
+	(h | \? ) usage   ;;
     esac
 done
-
-[[ $verbose -eq 1 ]] && say verbose
-[[ $nsnam   -eq 1 ]] && say nsnam
-[[ $tag     -eq 1 ]] && say using tag
 
 # Hostname, fully qualified, e.g. nsnam.ece.gatech.edu
 HOST=`hostname`
 NSNAM="nsnam.ece.gatech.edu"
 
 # Build directory
-DAILY="^/tmp/daily_nsnam/"
+DAILY="^/tmp/daily-nsnam/"
 
 if [ $nsnam -eq 1 ]; then
     HOST=$NSNAM
+    say "-n forcing HOST = $HOST"
+fi
+
+if [ $daily -eq 1 ] ; then
     OLDPWD=$PWD
-#    PWD=/tmp/daily_nsnam/foo
-    say "forcing build for nsnam.org"
+    PWD=/tmp/daily-nsnam/foo
+    say "-d forcing PWD = $PWD"
+fi
+
+if [ $tag -eq 1 ]; then
+    version="3.14"
+    say "-t forcing tagged version = $version"
+fi
+
+if  ((nsnam + daily + tag > 0)) ; then
+    say
 fi
 
 if [[ ( $HOST == $NSNAM ) && ( $PWD =~ $DAILY ) ]] ; then
@@ -103,7 +114,7 @@ else
     say "building private docs"
 fi
 
-if [ $nsnam -eq 1 ]; then
+if [ $daily -eq 1 ]; then
     PWD=$OLDPWD
 fi
 
@@ -113,25 +124,25 @@ outf="doc/ns3_html_theme/static/ns3_version.js"
 # Distance from last tag
 # Zero distance means we're at the tag
 distance=`hg log -r tip --template '{latesttagdistance}'`
+
 if [ $distance -eq 0 ]; then
     version=`hg log -r tip --template '{latesttag}'`
     say "at tag $version"
-else
-    say "beyond latest tag"
-    version=`hg log -r tip --template '{node|short}'`
-    say "latest commit: $version"
-    # Check for uncommitted changes
-    hg summary | grep -q 'commit: (clean)'
-    if [ $? ] ; then
-	say "uncommitted changes"
-	version="$version(+)"
-    fi
-fi
 
-if [ $tag -eq 1 ]; then
+elif [ $tag -eq 1 ]; then
     distance=0
     version="3.14"
-    say "forcing version = $version"
+
+else
+    version=`hg log -r tip --template '{node|short}'`
+    # Check for uncommitted changes
+    hg summary | grep -q 'commit: (clean)'
+    if [ ! $? ] ; then
+	say "beyond latest tag, last commit: $version, dirty"
+	version="$version(+)"
+    else
+	say "beyond latest tag, last commit: $version, clean"
+    fi
 fi
 
 if [ $PUBLIC -eq 1 ]; then
@@ -169,9 +180,8 @@ done
 cd - 2>&1 >/dev/null
 
 # Show what was done
-if [ $verbose ]; then
-    say
-    say "outf = $outf:"
-    cat -n $outf
-fi
+say
+say "outf = $outf:"
+cat -n $outf
+
 
