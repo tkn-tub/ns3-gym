@@ -20,6 +20,7 @@
 \.pcap$
 \.mob$
 \.routes$
+^doc/doxygen.warnings.log$
 ^doc/manual/build
 ^doc/tutorial/build
 ^doc/tutorial-pt-br/build
@@ -29,6 +30,7 @@
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
+^doc/ns3_html_theme/static/ns3_version.js$
 ^src/.*/doc/build
 ^bindings/python/pybindgen/
 ms_print.*
@@ -38,4 +40,3 @@ massif.*
 \.tr$
 \#[^\#/]+\#$
 syntax: glob
-ns3_version.js
