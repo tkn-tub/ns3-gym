@@ -64,6 +64,10 @@ public:
    * packet to be forwarded, and is synchronous.  Can be used for
    * multicast or unicast.  The Linux equivalent is ip_route_output()
    *
+   * The header input parameter may have an uninitialized value
+   * for the source address, but the destination address should always be 
+   * properly set by the caller.
+   *
    * \param p packet to be routed.  Note that this method may modify the packet.
    *          Callers may also pass in a null pointer. 
    * \param header input parameter (used to form key to search for the route)
