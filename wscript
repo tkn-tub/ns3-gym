@@ -1072,10 +1072,10 @@ def _doxygen(bld):
         raise SystemExit(1)
     text_out.close()
 
+    _getVersion()
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
         raise SystemExit(1)
-    _getVersion()
 
 
 from waflib import Context, Build
@@ -1083,8 +1083,11 @@ from waflib import Context, Build
 def _getVersion():
     """update the ns3_version.js file, when building documentation"""
 
-    if subprocess.Popen(["doc/ns3_html_theme/get_version.sh"]).wait() :
+    prog = "doc/ns3_html_theme/get_version.sh"
+    if subprocess.Popen([prog]).wait() :
+        print "ERROR: " + prog
         raise SystemExit(1)
+    print "SUCCESS: " + prog
 
 class Ns3DoxygenContext(Context.Context):
     """do a full build, generate the introspected doxygen and then the doxygen"""
@@ -1112,9 +1115,9 @@ class Ns3SphinxContext(Context.Context):
             raise SystemExit(1)
 
     def execute(self):
+        _getVersion()
         for sphinxdir in ["manual", "models", "tutorial", "tutorial-pt-br"] :
             self.sphinx_build(os.path.join("doc", sphinxdir))
-        _getVersion()
      
 
 from waflib import Context, Build

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Get the current repo name and version
-# and format appropriately as a Javascript
-# variable for inclusion in html files.
+# to format urls appropriately via Javascript
+# variables for inclusion in html files.
 
 # Use cases:
 # 1.  Hosted on nsnam.org, tagged release.
 # 2.  Hosted on nsnam.org, ns-3-dev.
-# 3.  User repo, at modified from a tagged release (or ns-3-dev).
+# 3.  User repo, modified from a tagged release (or ns-3-dev).
 # 4.  User repo, at a release tag.
 # 5.  User repo, at a private tag.
 # 6.  Private web host, at a tag (or ns-3-dev, or local mod).
@@ -16,14 +16,20 @@
 # publicly hosted pages.  For all other cases, we want to point
 # to the built pages in the repo itself.
 #
+# For robustness, we attempt to identify cases 1 & 2
+# automatically.  (There is also an explicit switch '-p'
+# to force us into the public case.)
+#
 # The approach to identify cases 1 & 2 is to test:
 # a.  We're on nsnam.org (actually, nsnam.ece.gatech.edu), and
 # b.  We're in the tmp build directory, /tmp/daily-nsnam/
 #     (This is the directory used by the update-* scripts
 #     run by cron jobs.)
 #
-# If both a and b are true, we're building for nsnam.org.
-#
+# If both a and b are true, we're building for public urls.
+# (The newer update-docs script (through waf) sets the
+# -p switch explicitly.)
+# 
 # The repo version is either a tag name or a commit (short) id.
 #
 # If we're building for nsnam.org, and at a tag, we use just
@@ -35,10 +41,10 @@
 # directory name as the repo name.  (This will typically be
 # a name meaningful to the user doing the build, perhaps a
 # shorthand for the feature they are working on.)  For
-# example, this script was developed in a repo (mis)named
-# 'doxygen'.  We always use the repo version, resulting
-# in document version strings like 'doxygen @ ns-3.15' or
-# 'doxygen @ fd0f27a10eff'
+# example, this script was developed in a repo named
+# 'docs'.  We always use the repo version, resulting
+# in document version strings like 'docs @ ns-3.15' or
+# 'docs @ fd0f27a10eff'
 #
 
 me=`basename $0`
@@ -50,9 +56,11 @@ function say
 function usage
 {
     cat <<-EOF
-	Usage:  $me                   normal versioning
+	Usage:  $me [-p]              normal versioning
 	        $me [-n] [-d] [-t]    test options
-	
+	  -p  build public urls, NS3_WWW_URLS=public is an alternative
+
+	Testing options:
 	  -n  pretend we are on nsnam.org
 	  -d  pretend we are in the automated build directory
 	  -t  pretend we are at a repo tag
@@ -63,19 +71,23 @@ EOF
 
 # script arguments
 say
+public=0
 nsnam=0
 daily=0
 tag=0
 
-while getopts ndth option ; do
+while getopts :pndth option ; do
     case $option in
-	(n)  nsnam=1 ;;
+	(p)  public=1 ;;
+	(n)  nsnam=1  ;;
 
-	(d)  daily=1 ;;
+	(d)  daily=1  ;;
 
-	(t)  tag=1   ;;
+	(t)  tag=1    ;;
 
-	(h | \? ) usage   ;;
+	(h)  usage ;;
+	(:)  say "Missing argument to -$OPTARG" ; usage ;;
+	(\?) say "Invalid option: -$OPTARG"     ; usage ;;
     esac
 done
 
@@ -106,7 +118,9 @@ if  ((nsnam + daily + tag > 0)) ; then
     say
 fi
 
-if [[ ( $HOST == $NSNAM ) && ( $PWD =~ $DAILY ) ]] ; then
+if [[ ($public == 1) || \
+    ("${NS3_WWW_URLS:-}" == "public") || \
+    ( ($HOST == $NSNAM) && ($PWD =~ $DAILY) ) ]] ; then
     PUBLIC=1
     say "building public docs for nsnam.org"
 else
@@ -183,5 +197,3 @@ cd - 2>&1 >/dev/null
 say
 say "outf = $outf:"
 cat -n $outf
-
-
