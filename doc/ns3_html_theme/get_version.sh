@@ -185,11 +185,10 @@ fi
 # This seems not always done automatically
 # by Sphinx when rebuilding
 cd doc 2>&1 >/dev/null
-for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static html \
-    html ; do
+for d in {manual,models,tutorial{,-pt-br}}/build/{single,}html/_static/ ; do
     # expect the copy to fail if the destination dir
     # hasn't been created by a prior doc build
-    cp ns3_html_theme/static/ns3_version.js $d 2>/dev/null
+    cp ns3_html_theme/static/ns3_version.js $d
 done
 cd - 2>&1 >/dev/null
 
@@ -197,3 +196,4 @@ cd - 2>&1 >/dev/null
 say
 say "outf = $outf:"
 cat -n $outf
+say Done.

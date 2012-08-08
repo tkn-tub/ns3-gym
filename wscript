@@ -1075,6 +1075,7 @@ def _doxygen(bld):
     _getVersion()
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
+        Logs.error("Doxygen build returned an error.")
         raise SystemExit(1)
 
 
@@ -1085,9 +1086,8 @@ def _getVersion():
 
     prog = "doc/ns3_html_theme/get_version.sh"
     if subprocess.Popen([prog]).wait() :
-        print "ERROR: " + prog
+        Logs.error(prog + " returned an error")
         raise SystemExit(1)
-    print "SUCCESS: " + prog
 
 class Ns3DoxygenContext(Context.Context):
     """do a full build, generate the introspected doxygen and then the doxygen"""
@@ -1112,6 +1112,7 @@ class Ns3SphinxContext(Context.Context):
         if subprocess.Popen(["make", "SPHINXOPTS=-N", "-k",
                              "html", "singlehtml", "latexpdf" ],
                             cwd=path).wait() :
+            Logs.error("Sphinx build of " + path + " returned an error.")
             raise SystemExit(1)
 
     def execute(self):
