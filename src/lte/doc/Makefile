@@ -127,12 +127,18 @@ IMAGES = $(IMAGES_NOBUILD) $(IMAGES_BUILD)
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.png : %.seqdiag; $(SEQDIAG) -Tpng -o $@ $< 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.seqdiag; $(SEQDIAG) -Tpdf -o $@ $< ; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.seqdiag
+	$(SEQDIAG) -Tpdf -o $@ $<
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
+%.pdf : %.eps
+	$(EPSTOPDF) $< -o=$@
+	if test x$($@_width) != x; ./rescale-pdf.sh $($@_width) $@ ; fi
 
 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.eps
+	$(EPSTOPDF) $< -o=$@
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
 SPHINXOPTS    =

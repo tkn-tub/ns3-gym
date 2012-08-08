@@ -23,7 +23,9 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.eps
+	$(EPSTOPDF) $< -o=$@
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
 
 GRAPHS_PNG = ${GRAPHS_EPS:.eps=.png}
 GRAPHS_PDF = ${GRAPHS_EPS:.eps=.pdf}
@@ -31,7 +33,9 @@ GRAPHS_PDF = ${GRAPHS_EPS:.eps=.pdf}
 GRAPHS = $(GRAPHS_EPS) $(GRAPHS_PNG) $(GRAPHS_PDF)
 
 %.png : %.eps; $(CONVERT) $< $@
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
+%.pdf : %.eps
+	$(EPSTOPDF) $< -o=$@
+	if test x$($@_width) != x; then ./rescale-pdf.sh $($@_width) $@ ; fi
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
