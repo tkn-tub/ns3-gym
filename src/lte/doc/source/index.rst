@@ -1,5 +1,5 @@
 
-.. orphan::
+:orphan: true
 
 .. only:: html or latex
 
