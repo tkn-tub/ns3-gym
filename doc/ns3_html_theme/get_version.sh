@@ -160,7 +160,10 @@ else
 fi
 
 if [ $PUBLIC -eq 1 ]; then
-    echo "var ns3_host = \"http://www.nsnam.org/\";"         >  $outf
+    echo "// ns3_version.js:  automatically generated"       >  $outf
+    echo "//  public urls"                                   >> $outf
+    # Generate URL relative to server root
+    echo "var ns3_host = \"/\";"                             >> $outf
     
     if [ $distance -eq 0 ]; then
 	echo "var ns3_version = \"Release $version\";"       >> $outf
@@ -174,6 +177,8 @@ if [ $PUBLIC -eq 1 ]; then
     
 else
     repo=`basename $PWD`
+    echo "// ns3_version.js:  automatically generated"       >  $outf
+    echo "//  private urls"                                  >> $outf
     echo "var ns3_host = \"file://$PWD/\";"                  >  $outf
     echo "var ns3_version = \"$repo @ $version\";"           >> $outf
     echo "var ns3_release = \"doc/\";"                       >> $outf
