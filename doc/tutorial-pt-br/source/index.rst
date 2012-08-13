@@ -18,7 +18,7 @@ ns-3 Tutorial
 	This is the *ns-3 Tutorial*. Primary documentation for the ns-3 project is
 	available in five forms:
 
-Este é o *Tutorial do ns-3* baseado no *ns-3 Tutorial* (inglês). A documentação para o projeto ns-3 esta disponível da seguinte forma:
+Este é o *Tutorial do ns-3* baseado no *ns-3 Tutorial* (inglês), versão 3.14. A documentação para o projeto ns-3 esta disponível da seguinte forma:
 
 ..
 	* `ns-3 Doxygen <http://www.nsnam.org/doxygen/index.html>`_: Documentation of the public APIs of the simulator
