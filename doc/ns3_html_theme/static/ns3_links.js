@@ -7,7 +7,7 @@ var ns3_bugs = ns3_site + "bugzilla";
 // Links that depend on version:
 // Defined in ns3_version.js:
 
-//   ns3_host    = "http://www.nsnam.org/"   file://$PWD
+//   ns3_host    = "//"                      file://$PWD
 //   ns3_version = "3.14"                    "3.14
 //               = "ns-3-dev @ 12345abcde    "repo @ 12345abcde
 //   ns3_release = "docs/release/3.14/"      "repo/"

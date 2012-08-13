@@ -27,8 +27,8 @@
 #     run by cron jobs.)
 #
 # If both a and b are true, we're building for public urls.
-# (The newer update-docs script (through waf) sets the
-# -p switch explicitly.)
+# (The newer update-docs script (through waf) sets
+# NS3_WWW_URLS=public explicitly.)
 # 
 # The repo version is either a tag name or a commit (short) id.
 #
@@ -110,7 +110,7 @@ if [ $daily -eq 1 ] ; then
 fi
 
 if [ $tag -eq 1 ]; then
-    version="3.14"
+    version="3.20"
     say "-t forcing tagged version = $version"
 fi
 
@@ -145,7 +145,7 @@ if [ $distance -eq 0 ]; then
 
 elif [ $tag -eq 1 ]; then
     distance=0
-    version="3.14"
+    # version previously set
 
 else
     version=`hg log -r tip --template '{node|short}'`
