@@ -110,7 +110,7 @@ if [ $daily -eq 1 ] ; then
 fi
 
 if [ $tag -eq 1 ]; then
-    version="3.20"
+    version="ns-3.14"
     say "-t forcing tagged version = $version"
 fi
 
@@ -139,13 +139,14 @@ outf="doc/ns3_html_theme/static/ns3_version.js"
 # Zero distance means we're at the tag
 distance=`hg log -r tip --template '{latesttagdistance}'`
 
-if [ $distance -eq 0 ]; then
+if [ $distance -eq 1 ]; then
     version=`hg log -r tip --template '{latesttag}'`
     say "at tag $version"
 
 elif [ $tag -eq 1 ]; then
-    distance=0
+    distance=1
     # version previously set
+    vers_href=
 
 else
     version=`hg log -r tip --template '{node|short}'`
@@ -153,9 +154,10 @@ else
     hg summary | grep -q 'commit: (clean)'
     if [ ! $? ] ; then
 	say "beyond latest tag, last commit: $version, dirty"
-	version="$version(+)"
+	dirty="(+)"
     else
 	say "beyond latest tag, last commit: $version, clean"
+	dirty=
     fi
 fi
 
@@ -165,10 +167,18 @@ if [ $PUBLIC -eq 1 ]; then
     # Generate URL relative to server root
     echo "var ns3_host = \"/\";"                             >> $outf
     
-    if [ $distance -eq 0 ]; then
-	echo "var ns3_version = \"Release $version\";"       >> $outf
-	echo "var ns3_release = \"docs/release/$version/\";" >> $outf
+    if [ $distance -eq 1 ]; then
+	# Like "http://www.nsnam.org/ns-3-14"
+	vers_href="http://www.nsnam.org/ns-3-${version#ns-3.}"
+	vers_href="<a href=\\\"$vers_href\\\">$version$dirty</a>"
+	
+	echo "var ns3_version = \"Release $vers_href\";"     >> $outf
+	echo "var ns3_release = \"docs/release/${version#ns-}/\";" >> $outf
     else
+	# Like "http://code.nsnam.org/ns-3-dev/rev/<hash>"
+	vers_href="http://code.nsnam.org/ns-3-dev/rev/$version"
+	version="<a href=\\\"$vers_href\\\">$version$dirty</a>"
+	
 	echo "var ns3_version = \"ns-3-dev @ $version\";"    >> $outf
 	echo "var ns3_release = \"docs/\";" >> $outf
     fi
@@ -180,7 +190,7 @@ else
     echo "// ns3_version.js:  automatically generated"       >  $outf
     echo "//  private urls"                                  >> $outf
     echo "var ns3_host = \"file://$PWD/\";"                  >  $outf
-    echo "var ns3_version = \"$repo @ $version\";"           >> $outf
+    echo "var ns3_version = \"$repo @ $version$dirty\";"     >> $outf
     echo "var ns3_release = \"doc/\";"                       >> $outf
     echo "var ns3_local = \"build/\";"                       >> $outf
     echo "var ns3_doxy  = \"html/\";"                        >> $outf
