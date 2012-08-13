@@ -33,6 +33,8 @@ namespace
   std::string defgroupTraceSourceListStop;
   std::string functionStart;
   std::string functionStop;
+  std::string headingStart;
+  std::string headingStop;
   std::string indentHtmlOnly;
   std::string ingroupConstructs;
   std::string listStart;
@@ -364,6 +366,8 @@ int main (int argc, char *argv[])
       defgroupTraceSourceListStop  = "\n";
       functionStart                = "";
       functionStop                 = "\n\n";
+      headingStart                 = "";
+      headingStop                  = "";
       indentHtmlOnly               = "";
       ingroupConstructs            = "";
       listStart                    = "";
@@ -390,8 +394,10 @@ int main (int argc, char *argv[])
       defgroupGlobalValueListStop  = "";
       defgroupTraceSourceListStart = "\\defgroup TraceSourceList ";
       defgroupTraceSourceListStop  = "";
-      functionStart                = "\\fn ";
+      functionStart                = "\\class ";
       functionStop                 = "";
+      headingStart                 = "<h3>";
+      headingStop                  = "</h3>";
       indentHtmlOnly               = "  ";
       ingroupConstructs            = "\\ingroup constructs\n";
       listStart                    = "<ul>";
@@ -457,12 +463,13 @@ int main (int argc, char *argv[])
 	{
 	  continue;
 	}
-      std::cout << functionStart << "static TypeId " << tid.GetName () << "::GetTypeId (void)" << functionStop << std::endl;
-      std::cout << brief << "This method returns the TypeId associated to " << reference << tid.GetName () << "."
-		<< std::endl << std::endl;
+      std::cout << functionStart << tid.GetName () << std::endl;
+      std::cout << std::endl;
       std::vector<std::string> paths = info.Get (tid);
       if (!paths.empty ())
 	{
+	  std::cout << headingStart << "Config Paths" << headingStop << std::endl;
+	  std::cout << std::endl;
 	  std::cout << "This object is accessible through the following paths with Config::Set and Config::Connect:" 
 		    << std::endl;
 	  std::cout << listStart << std::endl;
@@ -479,7 +486,7 @@ int main (int argc, char *argv[])
 	}
       else
 	{
-	  std::cout << "Attributes defined for this type:" << breakHtmlOnly << std::endl;
+	  std::cout << headingStart << "Attributes" << headingStop << std::endl;
 	  PrintAttributes (tid, std::cout);
 	}
       {
@@ -488,7 +495,7 @@ int main (int argc, char *argv[])
 	  {
 	    if (tmp.GetAttributeN () != 0)
 	      {
-		std::cout << "Attributes defined in parent class " << tmp.GetName () << ":" << breakHtmlOnly << std::endl;
+		std::cout << headingStart << "Attributes defined in parent class " << tmp.GetName () << headingStop << std::endl;
 		PrintAttributes (tmp, std::cout);
 	      }
 	    tmp = tmp.GetParent ();
@@ -500,7 +507,7 @@ int main (int argc, char *argv[])
 	}
       else
 	{
-	  std::cout << "TraceSources defined for this type:" << breakHtmlOnly << std::endl;
+	  std::cout << headingStart << "TraceSources" << headingStop << std::endl;
 	  PrintTraceSources (tid, std::cout);
 	}
       {
@@ -509,7 +516,7 @@ int main (int argc, char *argv[])
 	  {
 	    if (tmp.GetTraceSourceN () != 0)
 	      {
-		std::cout << "TraceSources defined in parent class " << tmp.GetName () << ":" << breakHtmlOnly << std::endl;
+		std::cout << headingStart << "TraceSources defined in parent class " << tmp.GetName () << headingStop << std::endl;
 		PrintTraceSources (tmp, std::cout);
 	      }
 	    tmp = tmp.GetParent ();
