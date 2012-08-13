@@ -22,7 +22,8 @@
 
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/string.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -129,8 +130,8 @@ Bug772ChainTest::CreateDevices ()
   // 3. Setup UDP source and sink
   uint16_t port = 9; // Discard port (RFC 863)
   OnOffHelper onoff (m_proto, Address (InetSocketAddress (interfaces.GetAddress (m_size-1), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (64000)));
   onoff.SetAttribute ("PacketSize", UintegerValue (1200));
   ApplicationContainer app = onoff.Install (m_nodes->Get (0));

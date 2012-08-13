@@ -22,6 +22,7 @@
 #include "ns3/packet-socket-address.h"
 #include "ns3/string.h"
 #include "ns3/names.h"
+#include "ns3/onoff-application.h"
 
 namespace ns3 {
 
@@ -70,6 +71,26 @@ OnOffHelper::InstallPriv (Ptr<Node> node) const
   node->AddApplication (app);
 
   return app;
+}
+
+int64_t
+OnOffHelper::AssignStreams (NodeContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<Node> node;
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      node = (*i);
+      for (uint32_t j = 0; j < node->GetNApplications (); j++)
+        {
+          Ptr<OnOffApplication> onoff = DynamicCast<OnOffApplication> (node->GetApplication (j));
+          if (onoff)
+            {
+              currentStream += onoff->AssignStreams (currentStream);
+            }
+        }
+    }
+  return (currentStream - stream);
 }
 
 } // namespace ns3

@@ -30,13 +30,12 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/data-rate.h"
-#include "ns3/random-variable.h"
 #include "ns3/traced-callback.h"
 
 namespace ns3 {
 
 class Address;
-class RandomVariable;
+class RandomVariableStream;
 class Socket;
 
 /**
@@ -107,6 +106,16 @@ public:
    */
   Ptr<Socket> GetSocket (void) const;
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 protected:
   virtual void DoDispose (void);
 private:
@@ -133,8 +142,8 @@ private:
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_peer;         // Peer address
   bool            m_connected;    // True if connected
-  RandomVariable  m_onTime;       // rng for On Time
-  RandomVariable  m_offTime;      // rng for Off Time
+  Ptr<RandomVariableStream>  m_onTime;       // rng for On Time
+  Ptr<RandomVariableStream>  m_offTime;      // rng for Off Time
   DataRate        m_cbrRate;      // Rate that data is generated
   uint32_t        m_pktSize;      // Size of packets
   uint32_t        m_residualBits; // Number of generated, but not sent, bits

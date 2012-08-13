@@ -27,12 +27,13 @@
 #include "ns3/packet.h"
 #include "ns3/net-device.h"
 #include "ns3/uinteger.h"
-#include "ns3/random-variable.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-raw-socket-factory.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/icmpv6-header.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 
 #include "radvd.h"
 
@@ -48,6 +49,11 @@ TypeId Radvd::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Radvd")
     .SetParent<Application> ()
     .AddConstructor<Radvd> ()
+    .AddAttribute ("AdvertisementJitter",
+                   "Uniform variable to provide jitter between min and max values of AdvInterval",
+                   StringValue("ns3::UniformRandomVariable"),
+                   MakePointerAccessor (&Radvd::m_jitter),
+                   MakePointerChecker<UniformRandomVariable> ());
   ;
   return tid;
 }
@@ -117,6 +123,14 @@ void Radvd::StopApplication ()
 void Radvd::AddConfiguration (Ptr<RadvdInterface> routerInterface)
 {
   m_configurations.push_back (routerInterface);
+}
+
+int64_t 
+Radvd:: AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_jitter->SetStream (stream);
+  return 1;
 }
 
 void Radvd::ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst, bool reschedule)
@@ -221,8 +235,7 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 
   if (reschedule)
     {
-      UniformVariable rnd;
-      uint64_t delay = static_cast<uint64_t> (rnd.GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ()) + 0.5);
+      uint64_t delay = static_cast<uint64_t> (m_jitter->GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ()) + 0.5);
       NS_LOG_INFO ("Reschedule in " << delay);
       Time t = MilliSeconds (delay);
       ScheduleTransmit (t, config, m_eventIds[config->GetInterface ()], Ipv6Address::GetAllNodesMulticast (), reschedule);
@@ -243,7 +256,6 @@ void Radvd::HandleRead (Ptr<Socket> socket)
           Icmpv6RS rsHdr;
           Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
           uint64_t delay = 0;
-          UniformVariable rnd;
           Time t;
 
           packet->RemoveHeader (hdr);
@@ -260,7 +272,7 @@ void Radvd::HandleRead (Ptr<Socket> socket)
               for (RadvdInterfaceListCI it = m_configurations.begin (); it != m_configurations.end (); it++)
                 {
                   /* calculate minimum delay between RA */
-                  delay = static_cast<uint64_t> (rnd.GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 
+                  delay = static_cast<uint64_t> (m_jitter->GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 
                   t = Simulator::Now () + MilliSeconds (delay); /* absolute time of solicited RA */
 
                   /* if our solicited RA is before the next periodic RA, we schedule it */

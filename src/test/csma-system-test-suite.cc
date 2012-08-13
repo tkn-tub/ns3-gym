@@ -41,7 +41,6 @@
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-address.h"
 #include "ns3/pointer.h"
-#include "ns3/random-variable.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
@@ -134,8 +133,8 @@ CsmaBridgeTestCase::DoRun (void)
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer app = onoff.Install (terminals.Get (0));
@@ -250,8 +249,8 @@ CsmaBroadcastTestCase::DoRun (void)
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer app = onoff.Install (c0.Get (0));
@@ -407,8 +406,8 @@ CsmaMulticastTestCase::DoRun (void)
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (multicastGroup, multicastPort)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer srcC = onoff.Install (c0.Get (0));
@@ -529,8 +528,8 @@ CsmaOneSubnetTestCase::DoRun (void)
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (interfaces.GetAddress (1), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer app = onoff.Install (nodes.Get (0));
@@ -647,8 +646,8 @@ CsmaPacketSocketTestCase::DoRun (void)
   socket.SetPhysicalAddress (devs.Get (1)->GetAddress ());
   socket.SetProtocol (2);
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
   ApplicationContainer apps = onoff.Install (nodes.Get (0));
   apps.Start (Seconds (1.0));
@@ -658,7 +657,7 @@ CsmaPacketSocketTestCase::DoRun (void)
   socket.SetPhysicalAddress (devs.Get (0)->GetAddress ());
   socket.SetProtocol (3);
   onoff.SetAttribute ("Remote", AddressValue (socket));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   apps = onoff.Install (nodes.Get (3));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
@@ -763,8 +762,8 @@ CsmaPingTestCase::DoRun (void)
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
   OnOffHelper onoff = OnOffHelper ("ns3::Ipv4RawSocketFactory", dst);
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
@@ -879,8 +878,8 @@ CsmaRawIpSocketTestCase::DoRun (void)
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
   OnOffHelper onoff = OnOffHelper ("ns3::Ipv4RawSocketFactory", dst);
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
+  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onoff.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
@@ -1034,8 +1033,8 @@ CsmaStarTestCase::DoRun (void)
   // Make packets be sent about every DefaultPacketSize / DataRate = 
   // 4096 bits / (5000 bits/second) = 0.82 second.
   OnOffHelper onOffHelper ("ns3::TcpSocketFactory", Address ());
-  onOffHelper.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onOffHelper.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   onOffHelper.SetAttribute ("DataRate", DataRateValue (DataRate (5000)));
 
   ApplicationContainer spokeApps;

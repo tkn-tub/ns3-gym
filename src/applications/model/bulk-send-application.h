@@ -30,7 +30,6 @@
 namespace ns3 {
 
 class Address;
-class RandomVariable;
 class Socket;
 
 /**
