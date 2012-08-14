@@ -161,14 +161,20 @@
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/node.h"
+#include "ns3/node-list.h"
 #include "ns3/core-config.h"
 #include "ns3/arp-l3-protocol.h"
 #include "internet-stack-helper.h"
+#include "ns3/ipv4-global-routing.h"
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv6-list-routing-helper.h"
 #include "ns3/ipv6-static-routing-helper.h"
+#include "ns3/ipv6-extension.h"
+#include "ns3/ipv6-extension-demux.h"
+#include "ns3/ipv6-extension-header.h"
+#include "ns3/global-router-interface.h"
 #include <limits>
 #include <map>
 
@@ -311,6 +317,34 @@ InternetStackHelper::SetIpv4StackInstall (bool enable)
 void InternetStackHelper::SetIpv6StackInstall (bool enable)
 {
   m_ipv6Enabled = enable;
+}
+
+int64_t
+InternetStackHelper::AssignStreams (int64_t stream)
+{
+  int64_t currentStream = stream;
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
+      if (router != 0)
+        {
+          Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
+          if (gr != 0)
+            {
+              currentStream += gr->AssignStreams (currentStream);
+            }
+        }
+      Ptr<Ipv6ExtensionDemux> demux = node->GetObject<Ipv6ExtensionDemux> ();
+      if (demux != 0)
+        {
+          Ptr<Ipv6Extension> fe = demux->GetExtension (Ipv6ExtensionFragment::EXT_NUMBER);
+          NS_ASSERT (fe);  // should always exist in the demux
+          currentStream += fe->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
 }
 
 void
