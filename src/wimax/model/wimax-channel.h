@@ -55,6 +55,17 @@ public:
    * \return the ith attached device
    */
   Ptr<NetDevice> GetDevice (uint32_t i) const;
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  virtual int64_t AssignStreams (int64_t stream) = 0;
+
 private:
   virtual void DoAttach (Ptr<WimaxPhy> phy) = 0;
 
