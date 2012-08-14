@@ -30,6 +30,7 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/node-list.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/animation-interface-helper.h"
@@ -401,6 +402,15 @@ public:
    */
   uint64_t GetTracePktCount ();
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   FILE * m_f; // File handle for output (-1 if none)
@@ -567,6 +577,8 @@ private:
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
   std::string GetXMLOpenClose_meta (std::string metaInfo);
 
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
 };
 
 /**

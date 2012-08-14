@@ -25,7 +25,6 @@
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/node.h"
-#include "ns3/random-variable.h"
 #include "ns3/mobility-model.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -68,6 +67,8 @@ AnimationInterface::AnimationInterface (const std::string fn, uint64_t maxPktsPe
     m_enablePacketMetadata (false), m_startTime (Seconds(0)), m_stopTime (Seconds(3600 * 1000)),
     m_maxPktsPerFile (maxPktsPerFile), m_originalFileName (fn)
 {
+  m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+
   initialized = true;
   StartAnimation ();
 }
@@ -212,7 +213,7 @@ Vector AnimationInterface::UpdatePosition (Ptr <Node> n)
    {
      NS_LOG_UNCOND ( "AnimationInterface WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
      Vector deterministicVector (100,100,0);
-     Vector randomVector (UniformVariable (0, m_topoMaxX - m_topoMinX).GetValue (), UniformVariable (0, m_topoMaxY - m_topoMinY).GetValue (), 0);
+     Vector randomVector (m_uniformRandomVariable->GetValue (0, m_topoMaxX - m_topoMinX), m_uniformRandomVariable->GetValue (0, m_topoMaxY - m_topoMinY), 0);
      if (m_randomPosition)
        {
          m_nodeLocation[n->GetId ()] = randomVector;
@@ -1307,6 +1308,13 @@ uint64_t AnimationInterface::GetTracePktCount ()
   return m_currentPktCount;
 }
 
+int64_t
+AnimationInterface::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
+}
 
 // Helper to output a wireless packet.
 // For now, only the XML interface is supported
