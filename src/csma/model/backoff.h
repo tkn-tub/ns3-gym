@@ -24,7 +24,7 @@ Transmi */
 
 #include <stdint.h>
 #include "ns3/nstime.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -87,13 +87,23 @@ public:
    */
   void IncrNumRetries (void);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
 
   /**
    * Number of times that the transmitter has tried to unsuccessfully transmit the current packet.
    */
   uint32_t m_numBackoffRetries;
-  UniformVariable m_rng;
+  Ptr<UniformRandomVariable> m_rng;
 };
 
 } // namespace ns3
