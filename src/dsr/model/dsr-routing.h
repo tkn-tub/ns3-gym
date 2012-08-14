@@ -53,6 +53,7 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/traced-callback.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/timer.h"
 #include "ns3/net-device.h"
@@ -465,6 +466,16 @@ public:
   // / Handle route discovery timer
   void RouteRequestTimerExpire (Ptr<Packet> packet, std::vector<Ipv4Address> address, uint32_t requestId, uint8_t protocol);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 protected:
   /*
  *    * This function will notify other components connected to the node that a new stack member is now connected
@@ -634,6 +645,9 @@ private:
   std::vector<Ipv4Address> m_clearList;   // / The node that is clear to send packet to
 
   std::vector<Ipv4Address> m_addresses;   // / The bind ipv4 addresses with next hop, src, destination address in sequence
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
 };
 }  /* namespace dsr */
 }  /* namespace ns3 */
