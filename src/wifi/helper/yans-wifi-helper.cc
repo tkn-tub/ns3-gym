@@ -536,4 +536,11 @@ YansWifiPhyHelper::EnableAsciiInternal (
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithContext, stream));
 }
 
+int64_t
+YansWifiPhyHelper::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  return m_channel->AssignStreams (stream);
+}
+
 } // namespace ns3

@@ -84,6 +84,16 @@ public:
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
              WifiMode wifiMode, WifiPreamble preamble) const;
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   YansWifiChannel& operator = (const YansWifiChannel &);
   YansWifiChannel (const YansWifiChannel &);
