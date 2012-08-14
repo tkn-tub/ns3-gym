@@ -102,11 +102,11 @@ Experiment::UpdatePositions (NodeContainer &nodes)
 
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Updating positions");
   NodeContainer::Iterator it = nodes.Begin ();
-  UniformVariable uv (0, m_boundary);
+  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
   for (; it != nodes.End (); it++)
     {
       Ptr<MobilityModel> mp = (*it)->GetObject<MobilityModel> ();
-      mp->SetPosition (Vector (uv.GetValue (), uv.GetValue (), 70.0));
+      mp->SetPosition (Vector (uv->GetValue (0, m_boundary), uv->GetValue (0, m_boundary), 70.0));
     }
 }
 
@@ -150,15 +150,15 @@ Experiment::Run (UanHelper &uan)
   Ptr<ListPositionAllocator> pos = CreateObject<ListPositionAllocator> ();
 
   {
-    UniformVariable urv (0, m_boundary);
+    Ptr<UniformRandomVariable> urv = CreateObject<UniformRandomVariable> ();
     pos->Add (Vector (m_boundary / 2.0, m_boundary / 2.0, m_depth));
     double rsum = 0;
 
     double minr = 2 * m_boundary;
     for (uint32_t i = 0; i < m_numNodes; i++)
       {
-        double x = urv.GetValue ();
-        double y = urv.GetValue ();
+        double x = urv->GetValue (0, m_boundary);
+        double y = urv->GetValue (0, m_boundary);
         double newr = sqrt ((x - m_boundary / 2.0) * (x - m_boundary / 2.0)
                             + (y - m_boundary / 2.0) * (y - m_boundary / 2.0));
         rsum += newr;

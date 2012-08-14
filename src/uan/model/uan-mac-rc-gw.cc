@@ -732,4 +732,12 @@ UanMacRcGw::FindOptA (void)
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " GW: Found optimum a = " << a);
   return a;
 }
+
+int64_t
+UanMacRcGw::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  return 0;
+}
+
 } // namespace ns3

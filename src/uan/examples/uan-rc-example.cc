@@ -196,14 +196,14 @@ Experiment::Run (uint32_t param)
   uint32_t depth = 70;
   Ptr<ListPositionAllocator> pos = CreateObject<ListPositionAllocator> ();
 
-  UniformVariable urv (0,m_maxRange);
-  UniformVariable utheta (0, 2.0*M_PI);
+  Ptr<UniformRandomVariable> urv = CreateObject<UniformRandomVariable> ();
+  Ptr<UniformRandomVariable> utheta = CreateObject<UniformRandomVariable> ();
   pos->Add (Vector (m_maxRange, m_maxRange, depth));
 
   for (uint32_t i=0; i<nNodes; i++)
     {
-      double theta = utheta.GetValue ();
-      double r = urv.GetValue ();
+      double theta = utheta->GetValue (0, 2.0*M_PI);
+      double r = urv->GetValue (0,m_maxRange);
 
       double x = m_maxRange + r*std::cos (theta);
       double y = m_maxRange + r*std::sin (theta);
