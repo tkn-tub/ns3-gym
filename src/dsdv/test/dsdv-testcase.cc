@@ -31,7 +31,6 @@
 #include "ns3/test.h"
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/dsdv-helper.h"
