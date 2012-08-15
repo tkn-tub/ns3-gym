@@ -273,5 +273,21 @@ SteadyStateRandomWaypointMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
 }
+int64_t
+SteadyStateRandomWaypointMobilityModel::DoAssignStreams (int64_t stream)
+{
+  int64_t positionStreamsAllocated = 0;
+  m_speed->SetStream (stream);
+  m_pause->SetStream (stream + 1);
+  m_x1_r->SetStream (stream + 2);
+  m_y1_r->SetStream (stream + 3);
+  m_x2_r->SetStream (stream + 4);
+  m_y2_r->SetStream (stream + 5);
+  m_u_r->SetStream (stream + 6);
+  m_x->SetStream (stream + 7);
+  m_y->SetStream (stream + 8);
+  positionStreamsAllocated = m_position->AssignStreams (stream + 9);
+  return (9 + positionStreamsAllocated);
+}
 
 } // namespace ns3

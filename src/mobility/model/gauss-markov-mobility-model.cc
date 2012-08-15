@@ -218,5 +218,16 @@ GaussMarkovMobilityModel::DoGetVelocity (void) const
   return m_helper.GetVelocity ();
 }
 
+int64_t
+GaussMarkovMobilityModel::DoAssignStreams (int64_t stream)
+{
+  m_rndMeanVelocity->SetStream (stream);
+  m_normalVelocity->SetStream (stream + 1);
+  m_rndMeanDirection->SetStream (stream + 2);
+  m_normalDirection->SetStream (stream + 3);
+  m_rndMeanPitch->SetStream (stream + 4);
+  m_normalPitch->SetStream (stream + 5);
+  return 6;
+}
 
 } // namespace ns3

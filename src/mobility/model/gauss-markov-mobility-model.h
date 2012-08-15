@@ -59,17 +59,17 @@ namespace ns3 {
       "Bounds", BoxValue (Box (0, 150000, 0, 150000, 0, 10000)),
       "TimeStep", TimeValue (Seconds (0.5)),
       "Alpha", DoubleValue (0.85),
-      "MeanVelocity", RandomVariableValue (UniformVariable (800, 1200)),
-      "MeanDirection", RandomVariableValue (UniformVariable (0, 6.283185307)),
-      "MeanPitch", RandomVariableValue (UniformVariable (0.05, 0.05)),
-      "NormalVelocity", RandomVariableValue (NormalVariable (0.0, 0.0, 0.0)),
-      "NormalDirection", RandomVariableValue (NormalVariable (0.0, 0.2, 0.4)),
-      "NormalPitch", RandomVariableValue (NormalVariable (0.0, 0.02, 0.04)));
+      "MeanVelocity", StringValue ("ns3::UniformRandomVariable[Min=800|Max=1200]"),
+      "MeanDirection", StringValue ("ns3::UniformRandomVariable[Min=0|Max=6.283185307]"),
+      "MeanPitch", StringValue ("ns3::UniformRandomVariable[Min=0.05|Max=0.05]"),
+      "NormalVelocity", StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.0|Bound=0.0]"),
+      "NormalDirection", StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.2|Bound=0.4]"),
+      "NormalPitch", StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.02|Bound=0.04]"));
 
     mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator",
-      "X", RandomVariableValue (UniformVariable (0, 150000)),
-      "Y", RandomVariableValue (UniformVariable (0, 150000)),
-      "Z", RandomVariableValue (UniformVariable (0, 10000)));
+      "X", StringValue ("ns3::UniformRandomVariable[Min=0|Max=150000]"),
+      "Y", StringValue ("ns3::UniformRandomVariable[Min=0|Max=150000]"),
+      "Z", StringValue ("ns3::UniformRandomVariable[Min=0|Max=10000]"));
  
     mobility.Install (wifiStaNodes);
  * \endcode
@@ -89,6 +89,7 @@ private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
+  virtual int64_t DoAssignStreams (int64_t);
   ConstantVelocityHelper m_helper;
   Time m_timeStep;
   double m_alpha;

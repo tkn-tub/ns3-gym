@@ -112,6 +112,16 @@ RandomWaypointMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
 }
+int64_t
+RandomWaypointMobilityModel::DoAssignStreams (int64_t stream)
+{
+  int64_t positionStreamsAllocated;
+  m_speed->SetStream (stream);
+  m_pause->SetStream (stream + 1);
+  NS_ASSERT_MSG (m_position, "No position allocator added before using this model");
+  positionStreamsAllocated = m_position->AssignStreams (stream + 2);
+  return (2 + positionStreamsAllocated);
+}
 
 
 } // namespace ns3

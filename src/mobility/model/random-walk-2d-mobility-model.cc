@@ -175,7 +175,13 @@ RandomWalk2dMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
 }
-
+int64_t
+RandomWalk2dMobilityModel::DoAssignStreams (int64_t stream)
+{
+  m_speed->SetStream (stream);
+  m_direction->SetStream (stream + 1);
+  return 2;
+}
 
 
 } // namespace ns3

@@ -270,19 +270,27 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   NetDeviceContainer adhocDevices = wifi.Install (wifiPhy, wifiMac, adhocNodes);
 
   MobilityHelper mobilityAdhoc;
+  int64_t streamIndex = 0; // used to get consistent mobility across scenarios
 
   ObjectFactory pos;
   pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
-  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
-  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
+  pos.Set ("X", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
+  pos.Set ("Y", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
 
   Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
+  streamIndex += taPositionAlloc->AssignStreams (streamIndex);
+
+  std::stringstream ssSpeed;
+  ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << nodeSpeed << "]";
+  std::stringstream ssPause;
+  ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
   mobilityAdhoc.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-                                  "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
-                                  "Pause", RandomVariableValue (ConstantVariable (nodePause)),
+                                  "Speed", StringValue (ssSpeed.str ()),
+                                  "Pause", StringValue (ssPause.str ()),
                                   "PositionAllocator", PointerValue (taPositionAlloc));
   mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
   mobilityAdhoc.Install (adhocNodes);
+  streamIndex += mobilityAdhoc.AssignStreams (adhocNodes, streamIndex);
 
   AodvHelper aodv;
   OlsrHelper olsr;

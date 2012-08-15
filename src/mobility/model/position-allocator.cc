@@ -79,6 +79,11 @@ ListPositionAllocator::GetNext (void) const
     }
   return v;
 }
+int64_t
+ListPositionAllocator::AssignStreams (int64_t stream)
+{
+  return 0;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator);
 
@@ -202,6 +207,11 @@ GridPositionAllocator::GetNext (void) const
   return Vector (x, y, 0.0);
 }
 
+int64_t
+GridPositionAllocator::AssignStreams (int64_t stream)
+{
+  return 0;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePositionAllocator);
 
@@ -251,6 +261,13 @@ RandomRectanglePositionAllocator::GetNext (void) const
   return Vector (x, y, 0.0);
 }
 
+int64_t
+RandomRectanglePositionAllocator::AssignStreams (int64_t stream)
+{
+  m_x->SetStream (stream);
+  m_y->SetStream (stream + 1);
+  return 2;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomBoxPositionAllocator);
 
@@ -311,7 +328,14 @@ RandomBoxPositionAllocator::GetNext (void) const
   return Vector (x, y, z);
 }
 
-
+int64_t
+RandomBoxPositionAllocator::AssignStreams (int64_t stream)
+{
+  m_x->SetStream (stream);
+  m_y->SetStream (stream + 1);
+  m_z->SetStream (stream + 2);
+  return 3;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomDiscPositionAllocator);
 
@@ -384,6 +408,14 @@ RandomDiscPositionAllocator::GetNext (void) const
   return Vector (x, y, 0.0);
 }
 
+int64_t
+RandomDiscPositionAllocator::AssignStreams (int64_t stream)
+{
+  m_theta->SetStream (stream);
+  m_rho->SetStream (stream + 1);
+  return 2;
+}
+
 
 
 NS_OBJECT_ENSURE_REGISTERED (UniformDiscPositionAllocator);
@@ -452,6 +484,13 @@ UniformDiscPositionAllocator::GetNext (void) const
   y += m_y;
   NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
   return Vector (x, y, 0.0);
+}
+
+int64_t
+UniformDiscPositionAllocator::AssignStreams (int64_t stream)
+{
+  m_rv->SetStream (stream);
+  return 1;
 }
 
 

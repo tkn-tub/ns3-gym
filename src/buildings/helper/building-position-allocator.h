@@ -27,6 +27,7 @@
 namespace ns3 {
 
 class Building;
+class UniformRandomVariable;
 
 
 /**
@@ -44,11 +45,13 @@ public:
 
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
+  int64_t AssignStreams (int64_t);
 
 private:
   
   bool m_withReplacement;
   mutable std::vector< Ptr<Building> > m_buildingListWithoutReplacement;
+  Ptr<UniformRandomVariable> m_rand;
 };
 
 
@@ -68,6 +71,7 @@ public:
 
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
+  int64_t AssignStreams (int64_t);
 
 private:
   
@@ -80,6 +84,7 @@ private:
     uint32_t floor;
   };
   mutable std::vector<RoomInfo> m_roomListWithoutReplacement;
+  Ptr<UniformRandomVariable> m_rand;
 };
 
 
@@ -99,11 +104,13 @@ public:
 
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
+  int64_t AssignStreams (int64_t);
 
 private:
 
   NodeContainer m_nodes;
   mutable NodeContainer::Iterator m_nodeIt;
+  Ptr<UniformRandomVariable> m_rand;
 };
 
 

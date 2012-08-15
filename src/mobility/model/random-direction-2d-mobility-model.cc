@@ -155,6 +155,14 @@ RandomDirection2dMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
 }
+int64_t
+RandomDirection2dMobilityModel::DoAssignStreams (int64_t stream)
+{
+  m_direction->SetStream (stream);
+  m_speed->SetStream (stream + 1);
+  m_pause->SetStream (stream + 2);
+  return 3;
+}
 
 
 

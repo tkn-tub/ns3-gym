@@ -1062,6 +1062,10 @@ def register_Ns3MobilityHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::MobilityHelper const &', 'arg0')])
     ## mobility-helper.h (module 'mobility'): ns3::MobilityHelper::MobilityHelper() [constructor]
     cls.add_constructor([])
+    ## mobility-helper.h (module 'mobility'): int64_t ns3::MobilityHelper::AssignStreams(ns3::NodeContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NodeContainer', 'c'), param('int64_t', 'stream')])
     ## mobility-helper.h (module 'mobility'): static void ns3::MobilityHelper::EnableAscii(std::ostream & os, uint32_t nodeid) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
@@ -1823,6 +1827,11 @@ def register_Ns3PositionAllocator_methods(root_module, cls):
     cls.add_constructor([param('ns3::PositionAllocator const &', 'arg0')])
     ## position-allocator.h (module 'mobility'): ns3::PositionAllocator::PositionAllocator() [constructor]
     cls.add_constructor([])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::PositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## position-allocator.h (module 'mobility'): ns3::Vector ns3::PositionAllocator::GetNext() const [member function]
     cls.add_method('GetNext', 
                    'ns3::Vector', 
@@ -1840,6 +1849,11 @@ def register_Ns3RandomBoxPositionAllocator_methods(root_module, cls):
     cls.add_constructor([param('ns3::RandomBoxPositionAllocator const &', 'arg0')])
     ## position-allocator.h (module 'mobility'): ns3::RandomBoxPositionAllocator::RandomBoxPositionAllocator() [constructor]
     cls.add_constructor([])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::RandomBoxPositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## position-allocator.h (module 'mobility'): ns3::Vector ns3::RandomBoxPositionAllocator::GetNext() const [member function]
     cls.add_method('GetNext', 
                    'ns3::Vector', 
@@ -1869,6 +1883,11 @@ def register_Ns3RandomDiscPositionAllocator_methods(root_module, cls):
     cls.add_constructor([param('ns3::RandomDiscPositionAllocator const &', 'arg0')])
     ## position-allocator.h (module 'mobility'): ns3::RandomDiscPositionAllocator::RandomDiscPositionAllocator() [constructor]
     cls.add_constructor([])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::RandomDiscPositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## position-allocator.h (module 'mobility'): ns3::Vector ns3::RandomDiscPositionAllocator::GetNext() const [member function]
     cls.add_method('GetNext', 
                    'ns3::Vector', 
@@ -1902,6 +1921,11 @@ def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
     cls.add_constructor([param('ns3::RandomRectanglePositionAllocator const &', 'arg0')])
     ## position-allocator.h (module 'mobility'): ns3::RandomRectanglePositionAllocator::RandomRectanglePositionAllocator() [constructor]
     cls.add_constructor([])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::RandomRectanglePositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## position-allocator.h (module 'mobility'): ns3::Vector ns3::RandomRectanglePositionAllocator::GetNext() const [member function]
     cls.add_method('GetNext', 
                    'ns3::Vector', 
@@ -2308,6 +2332,11 @@ def register_Ns3UniformDiscPositionAllocator_methods(root_module, cls):
     cls.add_constructor([param('ns3::UniformDiscPositionAllocator const &', 'arg0')])
     ## position-allocator.h (module 'mobility'): ns3::UniformDiscPositionAllocator::UniformDiscPositionAllocator() [constructor]
     cls.add_constructor([])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::UniformDiscPositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## position-allocator.h (module 'mobility'): ns3::Vector ns3::UniformDiscPositionAllocator::GetNext() const [member function]
     cls.add_method('GetNext', 
                    'ns3::Vector', 
@@ -2918,6 +2947,11 @@ def register_Ns3GridPositionAllocator_methods(root_module, cls):
     cls.add_constructor([param('ns3::GridPositionAllocator const &', 'arg0')])
     ## position-allocator.h (module 'mobility'): ns3::GridPositionAllocator::GridPositionAllocator() [constructor]
     cls.add_constructor([])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::GridPositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## position-allocator.h (module 'mobility'): double ns3::GridPositionAllocator::GetDeltaX() const [member function]
     cls.add_method('GetDeltaX', 
                    'double', 
@@ -3153,6 +3187,11 @@ def register_Ns3ListPositionAllocator_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Vector', 'v')])
+    ## position-allocator.h (module 'mobility'): int64_t ns3::ListPositionAllocator::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## position-allocator.h (module 'mobility'): ns3::Vector ns3::ListPositionAllocator::GetNext() const [member function]
     cls.add_method('GetNext', 
                    'ns3::Vector', 
@@ -3208,6 +3247,10 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     cls.add_constructor([param('ns3::MobilityModel const &', 'arg0')])
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel::MobilityModel() [constructor]
     cls.add_constructor([])
+    ## mobility-model.h (module 'mobility'): int64_t ns3::MobilityModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetDistanceFrom(ns3::Ptr<const ns3::MobilityModel> position) const [member function]
     cls.add_method('GetDistanceFrom', 
                    'double', 
@@ -3242,6 +3285,11 @@ def register_Ns3MobilityModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_const=True, visibility='protected')
+    ## mobility-model.h (module 'mobility'): int64_t ns3::MobilityModel::DoAssignStreams(int64_t start) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'start')], 
+                   visibility='private', is_virtual=True)
     ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
@@ -3612,6 +3660,11 @@ def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## random-direction-2d-mobility-model.h (module 'mobility'): int64_t ns3::RandomDirection2dMobilityModel::DoAssignStreams(int64_t arg0) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   visibility='private', is_virtual=True)
     ## random-direction-2d-mobility-model.h (module 'mobility'): void ns3::RandomDirection2dMobilityModel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -3649,6 +3702,11 @@ def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## random-walk-2d-mobility-model.h (module 'mobility'): int64_t ns3::RandomWalk2dMobilityModel::DoAssignStreams(int64_t arg0) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   visibility='private', is_virtual=True)
     ## random-walk-2d-mobility-model.h (module 'mobility'): void ns3::RandomWalk2dMobilityModel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -3691,6 +3749,11 @@ def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## random-waypoint-mobility-model.h (module 'mobility'): int64_t ns3::RandomWaypointMobilityModel::DoAssignStreams(int64_t arg0) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   visibility='private', is_virtual=True)
     ## random-waypoint-mobility-model.h (module 'mobility'): ns3::Vector ns3::RandomWaypointMobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
@@ -3763,6 +3826,11 @@ def register_Ns3SteadyStateRandomWaypointMobilityModel_methods(root_module, cls)
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## steady-state-random-waypoint-mobility-model.h (module 'mobility'): int64_t ns3::SteadyStateRandomWaypointMobilityModel::DoAssignStreams(int64_t arg0) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   visibility='private', is_virtual=True)
     ## steady-state-random-waypoint-mobility-model.h (module 'mobility'): ns3::Vector ns3::SteadyStateRandomWaypointMobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
@@ -4169,6 +4237,11 @@ def register_Ns3GaussMarkovMobilityModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## gauss-markov-mobility-model.h (module 'mobility'): int64_t ns3::GaussMarkovMobilityModel::DoAssignStreams(int64_t arg0) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'arg0')], 
+                   visibility='private', is_virtual=True)
     ## gauss-markov-mobility-model.h (module 'mobility'): void ns3::GaussMarkovMobilityModel::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

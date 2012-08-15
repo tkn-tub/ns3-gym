@@ -245,6 +245,22 @@ MobilityHelper::EnableAsciiAll (std::ostream &os)
 {
   EnableAscii (os, NodeContainer::GetGlobal ());
 }
-
+int64_t
+MobilityHelper::AssignStreams (NodeContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<Node> node;
+  Ptr<MobilityModel> mobility;
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      node = (*i);
+      mobility = node->GetObject<MobilityModel> ();
+      if (mobility)
+        {
+          currentStream += mobility->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
+}
 
 } // namespace ns3

@@ -62,6 +62,7 @@ private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
+  virtual int64_t DoAssignStreams (int64_t);
 
   ConstantVelocityHelper m_helper;
   EventId m_event;
