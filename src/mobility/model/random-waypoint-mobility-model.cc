@@ -19,8 +19,9 @@
  */
 #include <cmath>
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
 #include "random-waypoint-mobility-model.h"
 #include "position-allocator.h"
 
@@ -37,14 +38,14 @@ RandomWaypointMobilityModel::GetTypeId (void)
     .AddConstructor<RandomWaypointMobilityModel> ()
     .AddAttribute ("Speed",
                    "A random variable used to pick the speed of a random waypoint model.",
-                   RandomVariableValue (UniformVariable (0.3, 0.7)),
-                   MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_speed),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.3|Max=0.7]"),
+                   MakePointerAccessor (&RandomWaypointMobilityModel::m_speed),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Pause",
                    "A random variable used to pick the pause of a random waypoint model.",
-                   RandomVariableValue (ConstantVariable (2.0)),
-                   MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_pause),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::ConstantRandomVariable[Constant=2.0]"),
+                   MakePointerAccessor (&RandomWaypointMobilityModel::m_pause),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("PositionAllocator",
                    "The position model used to pick a destination point.",
                    PointerValue (),
@@ -61,7 +62,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
   Vector m_current = m_helper.GetCurrentPosition ();
   NS_ASSERT_MSG (m_position, "No position allocator added before using this model");
   Vector destination = m_position->GetNext ();
-  double speed = m_speed.GetValue ();
+  double speed = m_speed->GetValue ();
   double dx = (destination.x - m_current.x);
   double dy = (destination.y - m_current.y);
   double dz = (destination.z - m_current.z);
@@ -88,7 +89,7 @@ RandomWaypointMobilityModel::DoStartPrivate (void)
 {
   m_helper.Update ();
   m_helper.Pause ();
-  Time pause = Seconds (m_pause.GetValue ());
+  Time pause = Seconds (m_pause->GetValue ());
   m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::BeginWalk, this);
   NotifyCourseChange ();
 }

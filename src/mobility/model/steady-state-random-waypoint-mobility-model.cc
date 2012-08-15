@@ -80,7 +80,16 @@ SteadyStateRandomWaypointMobilityModel::GetTypeId (void)
 
 SteadyStateRandomWaypointMobilityModel::SteadyStateRandomWaypointMobilityModel () :
   alreadyStarted (false)
-{
+{ 
+  m_speed = CreateObject<UniformRandomVariable> ();
+  m_pause = CreateObject<UniformRandomVariable> ();
+  m_x1_r = CreateObject<UniformRandomVariable> ();
+  m_y1_r = CreateObject<UniformRandomVariable> ();
+  m_x2_r = CreateObject<UniformRandomVariable> ();
+  m_y2_r = CreateObject<UniformRandomVariable> ();
+  m_u_r = CreateObject<UniformRandomVariable> ();
+  m_x = CreateObject<UniformRandomVariable> ();
+  m_y = CreateObject<UniformRandomVariable> ();
 }
 
 void
@@ -94,16 +103,23 @@ void
 SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
 {
   alreadyStarted = true;
+  // Configure random variables based on attributes
   NS_ASSERT (m_minSpeed >= 1e-6);
   NS_ASSERT (m_minSpeed <= m_maxSpeed);
-  m_speed = UniformVariable (m_minSpeed, m_maxSpeed);
+  m_speed->SetAttribute ("Min", DoubleValue (m_minSpeed));
+  m_speed->SetAttribute ("Max", DoubleValue (m_maxSpeed));
   NS_ASSERT (m_minX < m_maxX);
   NS_ASSERT (m_minY < m_maxY);
   m_position = CreateObject<RandomRectanglePositionAllocator> ();
-  m_position->SetX (UniformVariable (m_minX, m_maxX));
-  m_position->SetY (UniformVariable (m_minY, m_maxY));
+  m_x->SetAttribute ("Min", DoubleValue (m_minX));
+  m_x->SetAttribute ("Max", DoubleValue (m_maxX));
+  m_y->SetAttribute ("Min", DoubleValue (m_minY));
+  m_y->SetAttribute ("Max", DoubleValue (m_maxY));
+  m_position->SetX (m_x);
+  m_position->SetY (m_y);
   NS_ASSERT (m_minPause <= m_maxPause);
-  m_pause = UniformVariable (m_minPause, m_maxPause);
+  m_pause->SetAttribute ("Min", DoubleValue (m_minPause));
+  m_pause->SetAttribute ("Max", DoubleValue (m_maxPause));
 
   m_helper.Update ();
   m_helper.Pause ();
@@ -130,12 +146,11 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
   double probabilityPaused = expectedPauseTime/(expectedPauseTime + expectedTravelTime);
   NS_ASSERT (probabilityPaused >= 0 && probabilityPaused <= 1);
 
-  UniformVariable u_r;
-  double u = u_r.GetValue (0, 1);
+  double u = m_u_r->GetValue (0, 1);
   if (u < probabilityPaused) // node initially paused
     {
       m_helper.SetPosition (m_position->GetNext ());
-      u = u_r.GetValue (0, 1);
+      u = m_u_r->GetValue (0, 1);
       Time pause;
       if (m_minPause != m_maxPause)
         {
@@ -159,21 +174,20 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
     }
   else // node initially moving
     {
-      UniformVariable x1_r, y1_r, x2_r, y2_r;
       double x1, x2, y1, y2;
       double r = 0;
       double u1 = 1;
       while (u1 >= r)
         {
-          x1 = x1_r.GetValue (0, a);
-          y1 = y1_r.GetValue (0, b);
-          x2 = x2_r.GetValue (0, a);
-          y2 = y2_r.GetValue (0, b);
-          u1 = u_r.GetValue (0, 1);
+          x1 = m_x1_r->GetValue (0, a);
+          y1 = m_y1_r->GetValue (0, b);
+          x2 = m_x2_r->GetValue (0, a);
+          y2 = m_y2_r->GetValue (0, b);
+          u1 = m_u_r->GetValue (0, 1);
           r = std::sqrt (((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1))/(a*a + b*b));
           NS_ASSERT (r <= 1);
         }
-      double u2 = u_r.GetValue (0, 1);
+      double u2 = m_u_r->GetValue (0, 1);
       m_helper.SetPosition (Vector (m_minX + u2*x1 + (1 - u2)*x2, m_minY + u2*y1 + (1 - u2)*y2, 0));
       NS_ASSERT (!m_event.IsRunning ());
       m_event = Simulator::ScheduleNow (&SteadyStateRandomWaypointMobilityModel::SteadyStateBeginWalk, this, 
@@ -191,8 +205,7 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateBeginWalk (const Vector &dest
   NS_ASSERT (m_minY <= m_current.y && m_current.y <= m_maxY);
   NS_ASSERT (m_minX <= destination.x && destination.x <= m_maxX);
   NS_ASSERT (m_minY <= destination.y && destination.y <= m_maxY);
-  UniformVariable u_r;
-  double u = u_r.GetValue (0, 1);
+  double u = m_u_r->GetValue (0, 1);
   double speed = std::pow (m_maxSpeed, u)/std::pow (m_minSpeed, u - 1);
   double dx = (destination.x - m_current.x);
   double dy = (destination.y - m_current.y);
@@ -215,7 +228,7 @@ SteadyStateRandomWaypointMobilityModel::BeginWalk (void)
   NS_ASSERT (m_minX <= m_current.x && m_current.x <= m_maxX);
   NS_ASSERT (m_minY <= m_current.y && m_current.y <= m_maxY);
   Vector destination = m_position->GetNext ();
-  double speed = m_speed.GetValue ();
+  double speed = m_speed->GetValue ();
   double dx = (destination.x - m_current.x);
   double dy = (destination.y - m_current.y);
   double dz = (destination.z - m_current.z);
@@ -234,7 +247,7 @@ SteadyStateRandomWaypointMobilityModel::Start (void)
 {
   m_helper.Update ();
   m_helper.Pause ();
-  Time pause = Seconds (m_pause.GetValue ());
+  Time pause = Seconds (m_pause->GetValue ());
   m_event = Simulator::Schedule (pause, &SteadyStateRandomWaypointMobilityModel::BeginWalk, this);
   NotifyCourseChange ();
 }

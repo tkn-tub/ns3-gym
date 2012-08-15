@@ -41,6 +41,7 @@
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/config.h"
 #include "ns3/pcap-test.h"
+#include "ns3/rng-seed-manager.h"
 #include <sstream>
 
 namespace ns3 {

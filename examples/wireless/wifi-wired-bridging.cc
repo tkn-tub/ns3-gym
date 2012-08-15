@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
       mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
                                  "Mode", StringValue ("Time"),
                                  "Time", StringValue ("2s"),
-                                 "Speed", StringValue ("Constant:1.0"),
+                                 "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
                                  "Bounds", RectangleValue (Rectangle (wifiX, wifiX+5.0,0.0, (nStas+1)*5.0)));
       mobility.Install (sta);
       wifiMac.SetType ("ns3::StaWifiMac",

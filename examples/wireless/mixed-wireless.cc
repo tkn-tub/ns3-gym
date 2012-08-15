@@ -192,8 +192,8 @@ main (int argc, char *argv[])
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
                              "Bounds", RectangleValue (Rectangle (0, 20, 0, 20)),
-                             "Speed", RandomVariableValue (ConstantVariable (2)),
-                             "Pause", RandomVariableValue (ConstantVariable (0.2)));
+                             "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=2]"),
+                             "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
   mobility.Install (backbone);
 
   /////////////////////////////////////////////////////////////////////////// 
@@ -318,8 +318,8 @@ main (int argc, char *argv[])
       mobility.SetPositionAllocator (subnetAlloc);
       mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
                                  "Bounds", RectangleValue (Rectangle (-10, 10, -10, 10)),
-                                 "Speed", RandomVariableValue (ConstantVariable (3)),
-                                 "Pause", RandomVariableValue (ConstantVariable (0.4)));
+                                 "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=3]"),
+                                 "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.4]"));
       mobility.Install (infra);
     }
   /////////////////////////////////////////////////////////////////////////// 

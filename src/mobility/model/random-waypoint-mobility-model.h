@@ -24,7 +24,7 @@
 #include "mobility-model.h"
 #include "position-allocator.h"
 #include "ns3/ptr.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -64,8 +64,8 @@ private:
 
   ConstantVelocityHelper m_helper;
   Ptr<PositionAllocator> m_position;
-  RandomVariable m_speed;
-  RandomVariable m_pause;
+  Ptr<RandomVariableStream> m_speed;
+  Ptr<RandomVariableStream> m_pause;
   EventId m_event;
 };
 

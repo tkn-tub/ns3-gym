@@ -30,7 +30,7 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/box.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -98,12 +98,12 @@ private:
   double m_Velocity;
   double m_Direction;
   double m_Pitch;
-  RandomVariable m_rndMeanVelocity;
-  RandomVariable m_normalVelocity;
-  RandomVariable m_rndMeanDirection;
-  RandomVariable m_normalDirection;
-  RandomVariable m_rndMeanPitch;
-  RandomVariable m_normalPitch;
+  Ptr<RandomVariableStream> m_rndMeanVelocity;
+  Ptr<NormalRandomVariable> m_normalVelocity;
+  Ptr<RandomVariableStream> m_rndMeanDirection;
+  Ptr<NormalRandomVariable> m_normalDirection;
+  Ptr<RandomVariableStream> m_rndMeanPitch;
+  Ptr<NormalRandomVariable> m_normalPitch;
   EventId m_event;
   Box m_bounds;
 };

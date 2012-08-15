@@ -26,6 +26,7 @@
 #include "ns3/config.h"
 #include "ns3/simulator.h"
 #include "ns3/names.h"
+#include "ns3/string.h"
 #include <iostream>
 
 namespace ns3 {
@@ -35,8 +36,8 @@ NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 MobilityHelper::MobilityHelper ()
 {
   m_position = CreateObjectWithAttributes<RandomRectanglePositionAllocator> 
-      ("X", RandomVariableValue (ConstantVariable (0.0)),
-      "Y", RandomVariableValue (ConstantVariable (0.0)));
+      ("X", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"),
+      "Y", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
   m_mobility.SetTypeId ("ns3::ConstantPositionMobilityModel");
 }
 MobilityHelper::~MobilityHelper ()

@@ -24,7 +24,7 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/rectangle.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "mobility-model.h"
 #include "constant-velocity-helper.h"
 
@@ -68,8 +68,8 @@ private:
   enum Mode m_mode;
   double m_modeDistance;
   Time m_modeTime;
-  RandomVariable m_speed;
-  RandomVariable m_direction;
+  Ptr<RandomVariableStream> m_speed;
+  Ptr<RandomVariableStream> m_direction;
   Rectangle m_bounds;
 };
 

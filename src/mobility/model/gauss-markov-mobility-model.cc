@@ -19,9 +19,9 @@
  */
 #include <cmath>
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
 #include "ns3/double.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
 #include "gauss-markov-mobility-model.h"
 #include "position-allocator.h"
 
@@ -53,34 +53,34 @@ GaussMarkovMobilityModel::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("MeanVelocity",
                    "A random variable used to assign the average velocity.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_rndMeanVelocity),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&GaussMarkovMobilityModel::m_rndMeanVelocity),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("MeanDirection",
                    "A random variable used to assign the average direction.",
-                   RandomVariableValue (UniformVariable (0.0, 6.283185307)),
-                   MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_rndMeanDirection),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.283185307]"),
+                   MakePointerAccessor (&GaussMarkovMobilityModel::m_rndMeanDirection),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("MeanPitch",
                    "A random variable used to assign the average pitch.",
-                   RandomVariableValue (ConstantVariable (0.0)),
-                   MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_rndMeanPitch),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"),
+                   MakePointerAccessor (&GaussMarkovMobilityModel::m_rndMeanPitch),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("NormalVelocity",
                    "A gaussian random variable used to calculate the next velocity value.",
-                   RandomVariableValue (NormalVariable (0.0, 1.0, 10.0)), // Defaults to zero mean, and std dev = 1, and bound to +-10 of the mean
-                   MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_normalVelocity),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=1.0|Bound=10.0]"), // Defaults to zero mean, and std dev = 1, and bound to +-10 of the mean
+                   MakePointerAccessor (&GaussMarkovMobilityModel::m_normalVelocity),
+                   MakePointerChecker<NormalRandomVariable> ())
     .AddAttribute ("NormalDirection",
                    "A gaussian random variable used to calculate the next direction value.",
-                   RandomVariableValue (NormalVariable (0.0, 1.0, 10.0)),
-                   MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_normalDirection),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=1.0|Bound=10.0]"),
+                   MakePointerAccessor (&GaussMarkovMobilityModel::m_normalDirection),
+                   MakePointerChecker<NormalRandomVariable> ())
     .AddAttribute ("NormalPitch",
                    "A gaussian random variable used to calculate the next pitch value.",
-                   RandomVariableValue (NormalVariable (0.0, 1.0, 10.0)),
-                   MakeRandomVariableAccessor (&GaussMarkovMobilityModel::m_normalPitch),
-                   MakeRandomVariableChecker ());
+                   StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=1.0|Bound=10.0]"),
+                   MakePointerAccessor (&GaussMarkovMobilityModel::m_normalPitch),
+                   MakePointerChecker<NormalRandomVariable> ());
 
   return tid;
 }
@@ -100,9 +100,9 @@ GaussMarkovMobilityModel::Start (void)
   if (m_meanVelocity == 0.0)
     {
       //Initialize the mean velocity, direction, and pitch variables
-      m_meanVelocity = m_rndMeanVelocity.GetValue ();
-      m_meanDirection = m_rndMeanDirection.GetValue ();
-      m_meanPitch = m_rndMeanPitch.GetValue ();
+      m_meanVelocity = m_rndMeanVelocity->GetValue ();
+      m_meanDirection = m_rndMeanDirection->GetValue ();
+      m_meanPitch = m_rndMeanPitch->GetValue ();
       double cosD = std::cos (m_meanDirection);
       double cosP = std::cos (m_meanPitch);
       double sinD = std::sin (m_meanDirection);
@@ -117,9 +117,9 @@ GaussMarkovMobilityModel::Start (void)
   m_helper.Update ();
 
   //Get the next values from the gaussian distributions for velocity, direction, and pitch
-  double rv = m_normalVelocity.GetValue ();
-  double rd = m_normalDirection.GetValue ();
-  double rp = m_normalPitch.GetValue ();
+  double rv = m_normalVelocity->GetValue ();
+  double rd = m_normalDirection->GetValue ();
+  double rp = m_normalPitch->GetValue ();
 
   //Calculate the NEW velocity, direction, and pitch values using the Gauss-Markov formula:
   //newVal = alpha*oldVal + (1-alpha)*meanVal + sqrt(1-alpha^2)*rv

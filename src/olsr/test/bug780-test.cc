@@ -39,6 +39,7 @@
 #include "ns3/v4ping-helper.h"
 #include "ns3/pcap-file.h"
 #include "ns3/pcap-test.h"
+#include "ns3/rng-seed-manager.h"
 
 #include "bug780-test.h"
 

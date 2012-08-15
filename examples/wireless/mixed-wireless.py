@@ -160,8 +160,8 @@ def main(argv):
     mobility.SetPositionAllocator(positionAlloc)
     mobility.SetMobilityModel("ns3::RandomDirection2dMobilityModel",
                                "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(0, 1000, 0, 1000)),
-                               "Speed", ns.core.RandomVariableValue(ns.core.ConstantVariable(2000)),
-                               "Pause", ns.core.RandomVariableValue(ns.core.ConstantVariable(0.2)))
+                               "Speed", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=2000]"),
+                               "Pause", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"))
     mobility.Install(backbone)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
@@ -277,8 +277,8 @@ def main(argv):
         mobility.SetPositionAllocator(subnetAlloc)
         mobility.SetMobilityModel("ns3::RandomDirection2dMobilityModel",
                                   "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle(-25, 25, -25, 25)),
-                                  "Speed", ns.core.RandomVariableValue(ns.core.ConstantVariable(30)),
-                                  "Pause", ns.core.RandomVariableValue(ns.core.ConstantVariable(0.4)))
+                                  "Speed", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=30]"),
+                                  "Pause", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0.4]"))
         mobility.Install(infra)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
