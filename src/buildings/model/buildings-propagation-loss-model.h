@@ -25,6 +25,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/propagation-loss-model.h"
+#include "ns3/random-variable-stream.h"
 #include <ns3/building.h>
 #include <ns3/buildings-mobility-model.h>
 
@@ -68,7 +69,6 @@ public:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 protected:
-
   double ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const;
   double HeightLoss (Ptr<BuildingsMobilityModel> n) const;
   double InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel> b) const;
@@ -85,9 +85,11 @@ protected:
     ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
     double GetLoss () const;
     Ptr<MobilityModel> GetReceiver (void) const;
+    static int64_t AssignStreams (int64_t stream);
   protected:
     Ptr<MobilityModel> m_receiver;
-    NormalVariable m_randVariable;
+    static Ptr<NormalRandomVariable> m_randVariable;
+
     double m_shadowingValue;
   };
 
@@ -99,6 +101,7 @@ protected:
   double m_shadowingSigmaOutdoor;
   double m_shadowingSigmaIndoor;
 
+  virtual int64_t DoAssignStreams (int64_t stream);
 };
 
 }

@@ -48,5 +48,11 @@ JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return txPowerDbm + m_propagationCache.GetPathData (a, b, 0 /**Spectrum model uid is not used in PropagationLossModel*/)->GetChannelGainDb ();
 }
 
+int64_t
+JakesPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return JakesProcess::AssignStreams (stream);
+}
+
 } // namespace ns3
 

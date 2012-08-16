@@ -59,5 +59,11 @@ Kun2600MhzPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return (txPowerDbm - GetLoss (a, b));
 }
 
+int64_t
+Kun2600MhzPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 
 } // namespace ns3

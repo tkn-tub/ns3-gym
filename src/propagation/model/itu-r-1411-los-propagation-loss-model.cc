@@ -93,4 +93,9 @@ ItuR1411LosPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return (txPowerDbm - GetLoss (a, b));
 }
 
+int64_t
+ItuR1411LosPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
 } // namespace ns3

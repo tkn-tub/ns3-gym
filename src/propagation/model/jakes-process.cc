@@ -19,13 +19,14 @@
  */
 
 #include "jakes-process.h"
-#include "ns3/random-variable.h"
 #include "ns3/simulator.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {
 const double JakesProcess::PI = 3.14159265358979323846;
+
+Ptr<UniformRandomVariable> JakesProcess::m_uniformVariable = CreateObject<UniformRandomVariable> ();
 
 /// Represents a single oscillator
 JakesProcess::Oscillator::Oscillator (std::complex<double> amplitude, double initialPhase, double omega) :
@@ -84,9 +85,9 @@ void
 JakesProcess::ConstructOscillators ()
 {
   // Initial phase is common for all oscillators:
-  double phi = UniformVariable (-PI, PI).GetValue ();
+  double phi = m_uniformVariable->GetValue ();
   // Theta is common for all oscillatoer:
-  double theta = UniformVariable (-PI, PI).GetValue ();
+  double theta = m_uniformVariable->GetValue ();
   for (unsigned int i = 0; i < m_nOscillators; i++)
     {
       unsigned int n = i + 1;
@@ -96,7 +97,7 @@ JakesProcess::ConstructOscillators ()
       /// 1b. Initiate rotation speed:
       double omega = m_omegaDopplerMax * cos (alpha);
       /// 2. Initiate complex amplitude:
-      double psi = UniformVariable (-PI, PI).GetValue ();
+      double psi = m_uniformVariable->GetValue ();
       std::complex<double> amplitude = std::complex<double> (cos (psi), sin (psi)) * 2.0 / sqrt (m_nOscillators);
       /// 3. Construct oscillator:
       m_oscillators.push_back (Oscillator (amplitude, phi, omega)); 
@@ -106,7 +107,10 @@ JakesProcess::ConstructOscillators ()
 JakesProcess::JakesProcess () :
   m_omegaDopplerMax (0),
   m_nOscillators (0)
-{}
+{
+  m_uniformVariable->SetAttribute ("Min", DoubleValue (-1.0 * PI));
+  m_uniformVariable->SetAttribute ("Max", DoubleValue (PI));
+}
 
 JakesProcess::~JakesProcess()
 {
@@ -129,6 +133,13 @@ JakesProcess::GetChannelGainDb () const
 {
   std::complex<double> complexGain = GetComplexGain ();
   return (10 * log10 ((pow (complexGain.real (), 2) + pow (complexGain.imag (), 2)) / 2));
+}
+
+int64_t
+JakesProcess::AssignStreams (int64_t stream)
+{
+  m_uniformVariable->SetStream (stream);
+  return 1;
 }
 
 } // namespace ns3

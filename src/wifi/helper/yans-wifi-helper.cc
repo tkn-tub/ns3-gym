@@ -172,7 +172,6 @@ YansWifiChannelHelper::Create (void) const
   return channel;
 }
 
-
 YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0),
     m_pcapDlt (PcapHelper::DLT_IEEE802_11)

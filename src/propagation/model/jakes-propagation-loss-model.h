@@ -44,6 +44,7 @@ private:
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
 
 private:
   mutable PropagationCache<JakesProcess> m_propagationCache;

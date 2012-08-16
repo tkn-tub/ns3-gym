@@ -146,5 +146,11 @@ OkumuraHataPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return (txPowerDbm - GetLoss (a, b));
 }
 
+int64_t
+OkumuraHataPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 
 } // namespace ns3

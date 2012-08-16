@@ -136,10 +136,6 @@ def register_types(module):
     module.add_enum('', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
-    ## random-variable.h (module 'core'): ns3::RandomVariable [class]
-    module.add_class('RandomVariable', import_from_module='ns.core')
-    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager [class]
-    module.add_class('RngSeedManager', import_from_module='ns.core')
     ## snr-to-block-error-rate-manager.h (module 'wimax'): ns3::SNRToBlockErrorRateManager [class]
     module.add_class('SNRToBlockErrorRateManager')
     ## snr-to-block-error-rate-record.h (module 'wimax'): ns3::SNRToBlockErrorRateRecord [class]
@@ -148,8 +144,6 @@ def register_types(module):
     module.add_class('SSRecord')
     ## send-params.h (module 'wimax'): ns3::SendParams [class]
     module.add_class('SendParams')
-    ## random-variable.h (module 'core'): ns3::SequentialVariable [class]
-    module.add_class('SequentialVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## service-flow.h (module 'wimax'): ns3::ServiceFlow [class]
     module.add_class('ServiceFlow')
     ## service-flow.h (module 'wimax'): ns3::ServiceFlow::Direction [enumeration]
@@ -176,8 +170,6 @@ def register_types(module):
     module.add_class('TlvValue', allow_subclassing=True)
     ## wimax-tlv.h (module 'wimax'): ns3::TosTlvValue [class]
     module.add_class('TosTlvValue', parent=root_module['ns3::TlvValue'])
-    ## random-variable.h (module 'core'): ns3::TriangularVariable [class]
-    module.add_class('TriangularVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## type-id.h (module 'core'): ns3::TypeId [class]
     module.add_class('TypeId', import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
@@ -194,12 +186,8 @@ def register_types(module):
     module.add_class('U8TlvValue', parent=root_module['ns3::TlvValue'])
     ## ul-mac-messages.h (module 'wimax'): ns3::UcdChannelEncodings [class]
     module.add_class('UcdChannelEncodings', allow_subclassing=True)
-    ## random-variable.h (module 'core'): ns3::UniformVariable [class]
-    module.add_class('UniformVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## wimax-tlv.h (module 'wimax'): ns3::VectorTlvValue [class]
     module.add_class('VectorTlvValue', parent=root_module['ns3::TlvValue'])
-    ## random-variable.h (module 'core'): ns3::WeibullVariable [class]
-    module.add_class('WeibullVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## wimax-helper.h (module 'wimax'): ns3::WimaxHelper [class]
     module.add_class('WimaxHelper', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
     ## wimax-helper.h (module 'wimax'): ns3::WimaxHelper::NetDeviceType [enumeration]
@@ -208,10 +196,6 @@ def register_types(module):
     module.add_enum('PhyType', ['SIMPLE_PHY_TYPE_OFDM'], outer_class=root_module['ns3::WimaxHelper'])
     ## wimax-helper.h (module 'wimax'): ns3::WimaxHelper::SchedulerType [enumeration]
     module.add_enum('SchedulerType', ['SCHED_TYPE_SIMPLE', 'SCHED_TYPE_RTPS', 'SCHED_TYPE_MBQOS'], outer_class=root_module['ns3::WimaxHelper'])
-    ## random-variable.h (module 'core'): ns3::ZetaVariable [class]
-    module.add_class('ZetaVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
-    ## random-variable.h (module 'core'): ns3::ZipfVariable [class]
-    module.add_class('ZipfVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## empty.h (module 'core'): ns3::empty [class]
     module.add_class('empty', import_from_module='ns.core')
     ## int64x64-double.h (module 'core'): ns3::int64x64_t [class]
@@ -224,32 +208,16 @@ def register_types(module):
     module.add_class('ClassificationRuleVectorTlvValue', parent=root_module['ns3::VectorTlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::ClassificationRuleVectorTlvValue::ClassificationRuleTlvType [enumeration]
     module.add_enum('ClassificationRuleTlvType', ['Priority', 'ToS', 'Protocol', 'IP_src', 'IP_dst', 'Port_src', 'Port_dst', 'Index'], outer_class=root_module['ns3::ClassificationRuleVectorTlvValue'])
-    ## random-variable.h (module 'core'): ns3::ConstantVariable [class]
-    module.add_class('ConstantVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## wimax-tlv.h (module 'wimax'): ns3::CsParamVectorTlvValue [class]
     module.add_class('CsParamVectorTlvValue', parent=root_module['ns3::VectorTlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::CsParamVectorTlvValue::Type [enumeration]
     module.add_enum('Type', ['Classifier_DSC_Action', 'Packet_Classification_Rule'], outer_class=root_module['ns3::CsParamVectorTlvValue'])
-    ## random-variable.h (module 'core'): ns3::DeterministicVariable [class]
-    module.add_class('DeterministicVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
-    ## random-variable.h (module 'core'): ns3::EmpiricalVariable [class]
-    module.add_class('EmpiricalVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
-    ## random-variable.h (module 'core'): ns3::ErlangVariable [class]
-    module.add_class('ErlangVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
-    ## random-variable.h (module 'core'): ns3::ExponentialVariable [class]
-    module.add_class('ExponentialVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
-    ## random-variable.h (module 'core'): ns3::GammaVariable [class]
-    module.add_class('GammaVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## header.h (module 'network'): ns3::Header [class]
     module.add_class('Header', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
-    ## random-variable.h (module 'core'): ns3::IntEmpiricalVariable [class]
-    module.add_class('IntEmpiricalVariable', import_from_module='ns.core', parent=root_module['ns3::EmpiricalVariable'])
     ## wimax-tlv.h (module 'wimax'): ns3::Ipv4AddressTlvValue [class]
     module.add_class('Ipv4AddressTlvValue', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::Ipv4AddressTlvValue::ipv4Addr [struct]
     module.add_class('ipv4Addr', outer_class=root_module['ns3::Ipv4AddressTlvValue'])
-    ## random-variable.h (module 'core'): ns3::LogNormalVariable [class]
-    module.add_class('LogNormalVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## wimax-mac-header.h (module 'wimax'): ns3::MacHeaderType [class]
     module.add_class('MacHeaderType', parent=root_module['ns3::Header'])
     ## wimax-mac-header.h (module 'wimax'): ns3::MacHeaderType::HeaderType [enumeration]
@@ -258,8 +226,6 @@ def register_types(module):
     module.add_class('ManagementMessageType', parent=root_module['ns3::Header'])
     ## mac-messages.h (module 'wimax'): ns3::ManagementMessageType::MessageType [enumeration]
     module.add_enum('MessageType', ['MESSAGE_TYPE_UCD', 'MESSAGE_TYPE_DCD', 'MESSAGE_TYPE_DL_MAP', 'MESSAGE_TYPE_UL_MAP', 'MESSAGE_TYPE_RNG_REQ', 'MESSAGE_TYPE_RNG_RSP', 'MESSAGE_TYPE_REG_REQ', 'MESSAGE_TYPE_REG_RSP', 'MESSAGE_TYPE_DSA_REQ', 'MESSAGE_TYPE_DSA_RSP', 'MESSAGE_TYPE_DSA_ACK'], outer_class=root_module['ns3::ManagementMessageType'])
-    ## random-variable.h (module 'core'): ns3::NormalVariable [class]
-    module.add_class('NormalVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## object.h (module 'core'): ns3::Object [class]
     module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
@@ -272,8 +238,6 @@ def register_types(module):
     module.add_class('OfdmUcdChannelEncodings', parent=root_module['ns3::UcdChannelEncodings'])
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
     module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable [class]
-    module.add_class('ParetoVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## wimax-tlv.h (module 'wimax'): ns3::PortRangeTlvValue [class]
@@ -506,10 +470,6 @@ def register_types(module):
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
-    ## random-variable.h (module 'core'): ns3::RandomVariableChecker [class]
-    module.add_class('RandomVariableChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
-    ## random-variable.h (module 'core'): ns3::RandomVariableValue [class]
-    module.add_class('RandomVariableValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## simple-ofdm-wimax-phy.h (module 'wimax'): ns3::SimpleOfdmWimaxPhy [class]
     module.add_class('SimpleOfdmWimaxPhy', parent=root_module['ns3::WimaxPhy'])
     ## simple-ofdm-wimax-phy.h (module 'wimax'): ns3::SimpleOfdmWimaxPhy::FrameDurationCode [enumeration]
@@ -567,10 +527,6 @@ def register_types(module):
     module.add_container('std::vector< ns3::Ptr< ns3::WimaxConnection > >', 'ns3::Ptr< ns3::WimaxConnection >', container_type='vector')
     module.add_container('std::vector< ns3::OfdmDlBurstProfile >', 'ns3::OfdmDlBurstProfile', container_type='vector')
     module.add_container('std::list< ns3::OfdmDlMapIe >', 'ns3::OfdmDlMapIe', container_type='list')
-    typehandlers.add_type_alias('ns3::RngSeedManager', 'ns3::SeedManager')
-    typehandlers.add_type_alias('ns3::RngSeedManager*', 'ns3::SeedManager*')
-    typehandlers.add_type_alias('ns3::RngSeedManager&', 'ns3::SeedManager&')
-    module.add_typedef(root_module['ns3::RngSeedManager'], 'SeedManager')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
@@ -648,13 +604,10 @@ def register_methods(root_module):
     register_Ns3PcapFile_methods(root_module, root_module['ns3::PcapFile'])
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
-    register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
-    register_Ns3RngSeedManager_methods(root_module, root_module['ns3::RngSeedManager'])
     register_Ns3SNRToBlockErrorRateManager_methods(root_module, root_module['ns3::SNRToBlockErrorRateManager'])
     register_Ns3SNRToBlockErrorRateRecord_methods(root_module, root_module['ns3::SNRToBlockErrorRateRecord'])
     register_Ns3SSRecord_methods(root_module, root_module['ns3::SSRecord'])
     register_Ns3SendParams_methods(root_module, root_module['ns3::SendParams'])
-    register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3ServiceFlow_methods(root_module, root_module['ns3::ServiceFlow'])
     register_Ns3ServiceFlowRecord_methods(root_module, root_module['ns3::ServiceFlowRecord'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
@@ -663,7 +616,6 @@ def register_methods(root_module):
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TlvValue_methods(root_module, root_module['ns3::TlvValue'])
     register_Ns3TosTlvValue_methods(root_module, root_module['ns3::TosTlvValue'])
-    register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
@@ -671,39 +623,25 @@ def register_methods(root_module):
     register_Ns3U32TlvValue_methods(root_module, root_module['ns3::U32TlvValue'])
     register_Ns3U8TlvValue_methods(root_module, root_module['ns3::U8TlvValue'])
     register_Ns3UcdChannelEncodings_methods(root_module, root_module['ns3::UcdChannelEncodings'])
-    register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
     register_Ns3VectorTlvValue_methods(root_module, root_module['ns3::VectorTlvValue'])
-    register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
     register_Ns3WimaxHelper_methods(root_module, root_module['ns3::WimaxHelper'])
-    register_Ns3ZetaVariable_methods(root_module, root_module['ns3::ZetaVariable'])
-    register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
     register_Ns3SimpleOfdmSendParam_methods(root_module, root_module['ns3::simpleOfdmSendParam'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3ClassificationRuleVectorTlvValue_methods(root_module, root_module['ns3::ClassificationRuleVectorTlvValue'])
-    register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
     register_Ns3CsParamVectorTlvValue_methods(root_module, root_module['ns3::CsParamVectorTlvValue'])
-    register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
-    register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
-    register_Ns3ErlangVariable_methods(root_module, root_module['ns3::ErlangVariable'])
-    register_Ns3ExponentialVariable_methods(root_module, root_module['ns3::ExponentialVariable'])
-    register_Ns3GammaVariable_methods(root_module, root_module['ns3::GammaVariable'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
-    register_Ns3IntEmpiricalVariable_methods(root_module, root_module['ns3::IntEmpiricalVariable'])
     register_Ns3Ipv4AddressTlvValue_methods(root_module, root_module['ns3::Ipv4AddressTlvValue'])
     register_Ns3Ipv4AddressTlvValueIpv4Addr_methods(root_module, root_module['ns3::Ipv4AddressTlvValue::ipv4Addr'])
-    register_Ns3LogNormalVariable_methods(root_module, root_module['ns3::LogNormalVariable'])
     register_Ns3MacHeaderType_methods(root_module, root_module['ns3::MacHeaderType'])
     register_Ns3ManagementMessageType_methods(root_module, root_module['ns3::ManagementMessageType'])
-    register_Ns3NormalVariable_methods(root_module, root_module['ns3::NormalVariable'])
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3OfdmDownlinkFramePrefix_methods(root_module, root_module['ns3::OfdmDownlinkFramePrefix'])
     register_Ns3OfdmSendParams_methods(root_module, root_module['ns3::OfdmSendParams'])
     register_Ns3OfdmUcdChannelEncodings_methods(root_module, root_module['ns3::OfdmUcdChannelEncodings'])
     register_Ns3PacketBurst_methods(root_module, root_module['ns3::PacketBurst'])
-    register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
     register_Ns3PortRangeTlvValue_methods(root_module, root_module['ns3::PortRangeTlvValue'])
     register_Ns3PortRangeTlvValuePortRange_methods(root_module, root_module['ns3::PortRangeTlvValue::PortRange'])
@@ -807,8 +745,6 @@ def register_methods(root_module):
     register_Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::OutputStreamWrapper'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
-    register_Ns3RandomVariableChecker_methods(root_module, root_module['ns3::RandomVariableChecker'])
-    register_Ns3RandomVariableValue_methods(root_module, root_module['ns3::RandomVariableValue'])
     register_Ns3SimpleOfdmWimaxPhy_methods(root_module, root_module['ns3::SimpleOfdmWimaxPhy'])
     register_Ns3TimeChecker_methods(root_module, root_module['ns3::TimeChecker'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
@@ -3168,56 +3104,6 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3RandomVariable_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## random-variable.h (module 'core'): ns3::RandomVariable::RandomVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::RandomVariable::RandomVariable(ns3::RandomVariable const & o) [copy constructor]
-    cls.add_constructor([param('ns3::RandomVariable const &', 'o')])
-    ## random-variable.h (module 'core'): uint32_t ns3::RandomVariable::GetInteger() const [member function]
-    cls.add_method('GetInteger', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h (module 'core'): double ns3::RandomVariable::GetValue() const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3RngSeedManager_methods(root_module, cls):
-    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager::RngSeedManager() [constructor]
-    cls.add_constructor([])
-    ## rng-seed-manager.h (module 'core'): ns3::RngSeedManager::RngSeedManager(ns3::RngSeedManager const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RngSeedManager const &', 'arg0')])
-    ## rng-seed-manager.h (module 'core'): static uint64_t ns3::RngSeedManager::GetNextStreamIndex() [member function]
-    cls.add_method('GetNextStreamIndex', 
-                   'uint64_t', 
-                   [], 
-                   is_static=True)
-    ## rng-seed-manager.h (module 'core'): static uint64_t ns3::RngSeedManager::GetRun() [member function]
-    cls.add_method('GetRun', 
-                   'uint64_t', 
-                   [], 
-                   is_static=True)
-    ## rng-seed-manager.h (module 'core'): static uint32_t ns3::RngSeedManager::GetSeed() [member function]
-    cls.add_method('GetSeed', 
-                   'uint32_t', 
-                   [], 
-                   is_static=True)
-    ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetRun(uint64_t run) [member function]
-    cls.add_method('SetRun', 
-                   'void', 
-                   [param('uint64_t', 'run')], 
-                   is_static=True)
-    ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetSeed(uint32_t seed) [member function]
-    cls.add_method('SetSeed', 
-                   'void', 
-                   [param('uint32_t', 'seed')], 
-                   is_static=True)
-    return
-
 def register_Ns3SNRToBlockErrorRateManager_methods(root_module, cls):
     ## snr-to-block-error-rate-manager.h (module 'wimax'): ns3::SNRToBlockErrorRateManager::SNRToBlockErrorRateManager(ns3::SNRToBlockErrorRateManager const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SNRToBlockErrorRateManager const &', 'arg0')])
@@ -3506,15 +3392,6 @@ def register_Ns3SendParams_methods(root_module, cls):
     cls.add_constructor([param('ns3::SendParams const &', 'arg0')])
     ## send-params.h (module 'wimax'): ns3::SendParams::SendParams() [constructor]
     cls.add_constructor([])
-    return
-
-def register_Ns3SequentialVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::SequentialVariable::SequentialVariable(ns3::SequentialVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SequentialVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::SequentialVariable::SequentialVariable(double f, double l, double i=1, uint32_t c=1) [constructor]
-    cls.add_constructor([param('double', 'f'), param('double', 'l'), param('double', 'i', default_value='1'), param('uint32_t', 'c', default_value='1')])
-    ## random-variable.h (module 'core'): ns3::SequentialVariable::SequentialVariable(double f, double l, ns3::RandomVariable const & i, uint32_t c=1) [constructor]
-    cls.add_constructor([param('double', 'f'), param('double', 'l'), param('ns3::RandomVariable const &', 'i'), param('uint32_t', 'c', default_value='1')])
     return
 
 def register_Ns3ServiceFlow_methods(root_module, cls):
@@ -4329,15 +4206,6 @@ def register_Ns3TosTlvValue_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
-def register_Ns3TriangularVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::TriangularVariable::TriangularVariable(ns3::TriangularVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TriangularVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::TriangularVariable::TriangularVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::TriangularVariable::TriangularVariable(double s, double l, double mean) [constructor]
-    cls.add_constructor([param('double', 's'), param('double', 'l'), param('double', 'mean')])
-    return
-
 def register_Ns3TypeId_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_binary_comparison_operator('<')
@@ -4684,28 +4552,6 @@ def register_Ns3UcdChannelEncodings_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3UniformVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::UniformVariable::UniformVariable(ns3::UniformVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UniformVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::UniformVariable::UniformVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::UniformVariable::UniformVariable(double s, double l) [constructor]
-    cls.add_constructor([param('double', 's'), param('double', 'l')])
-    ## random-variable.h (module 'core'): uint32_t ns3::UniformVariable::GetInteger(uint32_t s, uint32_t l) [member function]
-    cls.add_method('GetInteger', 
-                   'uint32_t', 
-                   [param('uint32_t', 's'), param('uint32_t', 'l')])
-    ## random-variable.h (module 'core'): double ns3::UniformVariable::GetValue() const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h (module 'core'): double ns3::UniformVariable::GetValue(double s, double l) [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [param('double', 's'), param('double', 'l')])
-    return
-
 def register_Ns3VectorTlvValue_methods(root_module, cls):
     ## wimax-tlv.h (module 'wimax'): ns3::VectorTlvValue::VectorTlvValue(ns3::VectorTlvValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::VectorTlvValue const &', 'arg0')])
@@ -4745,19 +4591,6 @@ def register_Ns3VectorTlvValue_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
-    return
-
-def register_Ns3WeibullVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::WeibullVariable::WeibullVariable(ns3::WeibullVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WeibullVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::WeibullVariable::WeibullVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::WeibullVariable::WeibullVariable(double m) [constructor]
-    cls.add_constructor([param('double', 'm')])
-    ## random-variable.h (module 'core'): ns3::WeibullVariable::WeibullVariable(double m, double s) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 's')])
-    ## random-variable.h (module 'core'): ns3::WeibullVariable::WeibullVariable(double m, double s, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
     return
 
 def register_Ns3WimaxHelper_methods(root_module, cls):
@@ -4841,24 +4674,6 @@ def register_Ns3WimaxHelper_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename'), param('bool', 'promiscuous')], 
                    visibility='private', is_virtual=True)
-    return
-
-def register_Ns3ZetaVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::ZetaVariable::ZetaVariable(ns3::ZetaVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ZetaVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::ZetaVariable::ZetaVariable(double alpha) [constructor]
-    cls.add_constructor([param('double', 'alpha')])
-    ## random-variable.h (module 'core'): ns3::ZetaVariable::ZetaVariable() [constructor]
-    cls.add_constructor([])
-    return
-
-def register_Ns3ZipfVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::ZipfVariable::ZipfVariable(ns3::ZipfVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ZipfVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::ZipfVariable::ZipfVariable(long int N, double alpha) [constructor]
-    cls.add_constructor([param('long int', 'N'), param('double', 'alpha')])
-    ## random-variable.h (module 'core'): ns3::ZipfVariable::ZipfVariable() [constructor]
-    cls.add_constructor([])
     return
 
 def register_Ns3Empty_methods(root_module, cls):
@@ -5085,19 +4900,6 @@ def register_Ns3ClassificationRuleVectorTlvValue_methods(root_module, cls):
                    is_virtual=True)
     return
 
-def register_Ns3ConstantVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::ConstantVariable::ConstantVariable(ns3::ConstantVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ConstantVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::ConstantVariable::ConstantVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::ConstantVariable::ConstantVariable(double c) [constructor]
-    cls.add_constructor([param('double', 'c')])
-    ## random-variable.h (module 'core'): void ns3::ConstantVariable::SetConstant(double c) [member function]
-    cls.add_method('SetConstant', 
-                   'void', 
-                   [param('double', 'c')])
-    return
-
 def register_Ns3CsParamVectorTlvValue_methods(root_module, cls):
     ## wimax-tlv.h (module 'wimax'): ns3::CsParamVectorTlvValue::CsParamVectorTlvValue(ns3::CsParamVectorTlvValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::CsParamVectorTlvValue const &', 'arg0')])
@@ -5113,73 +4915,6 @@ def register_Ns3CsParamVectorTlvValue_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start'), param('uint64_t', 'valueLength')], 
                    is_virtual=True)
-    return
-
-def register_Ns3DeterministicVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::DeterministicVariable::DeterministicVariable(ns3::DeterministicVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DeterministicVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::DeterministicVariable::DeterministicVariable(double * d, uint32_t c) [constructor]
-    cls.add_constructor([param('double *', 'd'), param('uint32_t', 'c')])
-    return
-
-def register_Ns3EmpiricalVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::EmpiricalVariable::EmpiricalVariable(ns3::EmpiricalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EmpiricalVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::EmpiricalVariable::EmpiricalVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): void ns3::EmpiricalVariable::CDF(double v, double c) [member function]
-    cls.add_method('CDF', 
-                   'void', 
-                   [param('double', 'v'), param('double', 'c')])
-    return
-
-def register_Ns3ErlangVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::ErlangVariable::ErlangVariable(ns3::ErlangVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ErlangVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::ErlangVariable::ErlangVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::ErlangVariable::ErlangVariable(unsigned int k, double lambda) [constructor]
-    cls.add_constructor([param('unsigned int', 'k'), param('double', 'lambda')])
-    ## random-variable.h (module 'core'): double ns3::ErlangVariable::GetValue() const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h (module 'core'): double ns3::ErlangVariable::GetValue(unsigned int k, double lambda) const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [param('unsigned int', 'k'), param('double', 'lambda')], 
-                   is_const=True)
-    return
-
-def register_Ns3ExponentialVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::ExponentialVariable::ExponentialVariable(ns3::ExponentialVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ExponentialVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::ExponentialVariable::ExponentialVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::ExponentialVariable::ExponentialVariable(double m) [constructor]
-    cls.add_constructor([param('double', 'm')])
-    ## random-variable.h (module 'core'): ns3::ExponentialVariable::ExponentialVariable(double m, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'b')])
-    return
-
-def register_Ns3GammaVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::GammaVariable::GammaVariable(ns3::GammaVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GammaVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::GammaVariable::GammaVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::GammaVariable::GammaVariable(double alpha, double beta) [constructor]
-    cls.add_constructor([param('double', 'alpha'), param('double', 'beta')])
-    ## random-variable.h (module 'core'): double ns3::GammaVariable::GetValue() const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h (module 'core'): double ns3::GammaVariable::GetValue(double alpha, double beta) const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [param('double', 'alpha'), param('double', 'beta')], 
-                   is_const=True)
     return
 
 def register_Ns3Header_methods(root_module, cls):
@@ -5213,13 +4948,6 @@ def register_Ns3Header_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3IntEmpiricalVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::IntEmpiricalVariable::IntEmpiricalVariable(ns3::IntEmpiricalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::IntEmpiricalVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::IntEmpiricalVariable::IntEmpiricalVariable() [constructor]
-    cls.add_constructor([])
     return
 
 def register_Ns3Ipv4AddressTlvValue_methods(root_module, cls):
@@ -5272,13 +5000,6 @@ def register_Ns3Ipv4AddressTlvValueIpv4Addr_methods(root_module, cls):
     cls.add_instance_attribute('Address', 'ns3::Ipv4Address', is_const=False)
     ## wimax-tlv.h (module 'wimax'): ns3::Ipv4AddressTlvValue::ipv4Addr::Mask [variable]
     cls.add_instance_attribute('Mask', 'ns3::Ipv4Mask', is_const=False)
-    return
-
-def register_Ns3LogNormalVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::LogNormalVariable::LogNormalVariable(ns3::LogNormalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LogNormalVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::LogNormalVariable::LogNormalVariable(double mu, double sigma) [constructor]
-    cls.add_constructor([param('double', 'mu'), param('double', 'sigma')])
     return
 
 def register_Ns3MacHeaderType_methods(root_module, cls):
@@ -5385,17 +5106,6 @@ def register_Ns3ManagementMessageType_methods(root_module, cls):
     cls.add_method('SetType', 
                    'void', 
                    [param('uint8_t', 'type')])
-    return
-
-def register_Ns3NormalVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::NormalVariable::NormalVariable(ns3::NormalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::NormalVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::NormalVariable::NormalVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::NormalVariable::NormalVariable(double m, double v) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'v')])
-    ## random-variable.h (module 'core'): ns3::NormalVariable::NormalVariable(double m, double v, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'v'), param('double', 'b')])
     return
 
 def register_Ns3Object_methods(root_module, cls):
@@ -5654,23 +5364,6 @@ def register_Ns3PacketBurst_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
-def register_Ns3ParetoVariable_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable(ns3::ParetoVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ParetoVariable const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable(double m) [constructor]
-    cls.add_constructor([param('double', 'm')])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable(double m, double s) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 's')])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable(double m, double s, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable(std::pair<double,double> params) [constructor]
-    cls.add_constructor([param('std::pair< double, double >', 'params')])
-    ## random-variable.h (module 'core'): ns3::ParetoVariable::ParetoVariable(std::pair<double,double> params, double b) [constructor]
-    cls.add_constructor([param('std::pair< double, double >', 'params'), param('double', 'b')])
-    return
-
 def register_Ns3PcapFileWrapper_methods(root_module, cls):
     ## pcap-file-wrapper.h (module 'network'): static ns3::TypeId ns3::PcapFileWrapper::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -5834,16 +5527,29 @@ def register_Ns3PropagationLossModel_methods(root_module, cls):
     cls.add_method('SetNext', 
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationLossModel >', 'next')])
+    ## propagation-loss-model.h (module 'propagation'): ns3::Ptr<ns3::PropagationLossModel> ns3::PropagationLossModel::GetNext() [member function]
+    cls.add_method('GetNext', 
+                   'ns3::Ptr< ns3::PropagationLossModel >', 
+                   [])
     ## propagation-loss-model.h (module 'propagation'): double ns3::PropagationLossModel::CalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('CalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::PropagationLossModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## propagation-loss-model.h (module 'propagation'): double ns3::PropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::PropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3ProtocolTlvValue_methods(root_module, cls):
@@ -5900,6 +5606,11 @@ def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::RandomPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RandomVariableStream_methods(root_module, cls):
@@ -5958,6 +5669,11 @@ def register_Ns3RangePropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::RangePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RngReq_methods(root_module, cls):
@@ -6561,6 +6277,11 @@ def register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::ThreeLogDistancePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -6933,6 +6654,11 @@ def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::TwoRayGroundPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Ucd_methods(root_module, cls):
@@ -9572,6 +9298,11 @@ def register_Ns3FixedRssLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::FixedRssLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3FragmentationSubheader_methods(root_module, cls):
@@ -9678,6 +9409,11 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::FriisPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3GammaRandomVariable_methods(root_module, cls):
@@ -10108,6 +9844,11 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::LogDistancePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3LogNormalRandomVariable_methods(root_module, cls):
@@ -10209,6 +9950,11 @@ def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::MatrixPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
@@ -10224,6 +9970,11 @@ def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
+    ## propagation-loss-model.h (module 'propagation'): int64_t ns3::NakagamiPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NetDevice_methods(root_module, cls):
@@ -10805,46 +10556,6 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_virtual=True)
-    return
-
-def register_Ns3RandomVariableChecker_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::RandomVariableChecker::RandomVariableChecker() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::RandomVariableChecker::RandomVariableChecker(ns3::RandomVariableChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomVariableChecker const &', 'arg0')])
-    return
-
-def register_Ns3RandomVariableValue_methods(root_module, cls):
-    ## random-variable.h (module 'core'): ns3::RandomVariableValue::RandomVariableValue() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h (module 'core'): ns3::RandomVariableValue::RandomVariableValue(ns3::RandomVariableValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomVariableValue const &', 'arg0')])
-    ## random-variable.h (module 'core'): ns3::RandomVariableValue::RandomVariableValue(ns3::RandomVariable const & value) [constructor]
-    cls.add_constructor([param('ns3::RandomVariable const &', 'value')])
-    ## random-variable.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::RandomVariableValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## random-variable.h (module 'core'): bool ns3::RandomVariableValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## random-variable.h (module 'core'): ns3::RandomVariable ns3::RandomVariableValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::RandomVariable', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h (module 'core'): std::string ns3::RandomVariableValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## random-variable.h (module 'core'): void ns3::RandomVariableValue::Set(ns3::RandomVariable const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::RandomVariable const &', 'value')])
     return
 
 def register_Ns3SimpleOfdmWimaxPhy_methods(root_module, cls):

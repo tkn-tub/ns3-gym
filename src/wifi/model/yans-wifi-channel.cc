@@ -147,6 +147,7 @@ YansWifiChannel::AssignStreams (int64_t stream)
       Ptr<YansWifiPhy> yans = (*i);
       currentStream += yans->AssignStreams (currentStream);
     }
+  currentStream += m_loss->AssignStreams (stream);
   return (currentStream - stream);
 }
 

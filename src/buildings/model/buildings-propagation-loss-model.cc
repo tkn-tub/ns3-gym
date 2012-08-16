@@ -34,6 +34,7 @@
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
 
 namespace ns3 {
+  Ptr<NormalRandomVariable> BuildingsPropagationLossModel::ShadowingLoss::m_randVariable = CreateObject<NormalRandomVariable> ();
 
 NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
 
@@ -44,10 +45,14 @@ BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss ()
 
 
 BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver)
-  : m_receiver (receiver),
-    m_randVariable (mean, sigma * sigma) // NormalVariable class wants mean and variance (sigma is a standard deviation)
+  : m_receiver (receiver)
 {
-  m_shadowingValue = m_randVariable.GetValue ();
+  // NormalRandomVariable class wants mean and variance (sigma is a
+  // standard deviation)
+  m_randVariable->SetAttribute ("Mean", DoubleValue (mean));
+  m_randVariable->SetAttribute ("Variance", DoubleValue (sigma * sigma));
+
+  m_shadowingValue = m_randVariable->GetValue ();
   NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
 }
 
@@ -61,6 +66,13 @@ Ptr<MobilityModel>
 BuildingsPropagationLossModel::ShadowingLoss::GetReceiver () const
 {
   return m_receiver;
+}
+
+int64_t
+BuildingsPropagationLossModel::ShadowingLoss::AssignStreams (int64_t stream)
+{
+  m_randVariable->SetStream (stream);
+  return 1;
 }
 
 TypeId
@@ -212,6 +224,12 @@ double
 BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
   return txPowerDbm - GetLoss (a, b) - GetShadowing (a, b);
+}
+
+int64_t
+BuildingsPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return ShadowingLoss::AssignStreams (stream);
 }
 
 

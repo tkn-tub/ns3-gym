@@ -79,6 +79,7 @@ public:
   void SetShadowing (double shadowing);
 private:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   double m_BSAntennaHeight; // in meter
   double m_SSAntennaHeight; // in meter
   double C;

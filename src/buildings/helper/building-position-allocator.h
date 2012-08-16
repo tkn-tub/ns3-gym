@@ -23,6 +23,7 @@
 #include <ns3/ptr.h>
 #include <ns3/position-allocator.h>
 #include <ns3/node-container.h>
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -45,12 +46,23 @@ public:
 
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
-  int64_t AssignStreams (int64_t);
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   
   bool m_withReplacement;
   mutable std::vector< Ptr<Building> > m_buildingListWithoutReplacement;
+
+  /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;
 };
 
@@ -71,7 +83,16 @@ public:
 
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
-  int64_t AssignStreams (int64_t);
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   
@@ -84,6 +105,8 @@ private:
     uint32_t floor;
   };
   mutable std::vector<RoomInfo> m_roomListWithoutReplacement;
+
+  /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;
 };
 
@@ -104,12 +127,23 @@ public:
 
   // inherited from PositionAllocator
   virtual Vector GetNext (void) const;
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
   int64_t AssignStreams (int64_t);
 
 private:
 
   NodeContainer m_nodes;
   mutable NodeContainer::Iterator m_nodeIt;
+
+  /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_rand;
 };
 

@@ -22,6 +22,7 @@
 
 #include "ns3/object.h"
 #include "ns3/nstime.h"
+#include "ns3/random-variable-stream.h"
 #include <complex>
 
 namespace ns3
@@ -58,6 +59,7 @@ public:
   std::complex<double> GetComplexGain () const;
   /// Get Channel gain [dB]
   double GetChannelGainDb () const;
+  static int64_t AssignStreams (int64_t stream);
 private:
   /// Represents a single oscillator
   struct Oscillator
@@ -86,6 +88,7 @@ private:
   ///\{
   double m_omegaDopplerMax;
   unsigned int m_nOscillators;
+  static Ptr<UniformRandomVariable> m_uniformVariable;
   ///\}
 };
 } // namespace ns3
