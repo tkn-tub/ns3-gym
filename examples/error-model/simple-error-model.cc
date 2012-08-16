@@ -149,8 +149,8 @@ main (int argc, char *argv[])
   //
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default classId
-  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)),
-                                                                       "ErrorRate", DoubleValue (0.001));
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+  em->SetAttribute ("ErrorRate", DoubleValue (0.001));
   d3d2.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
   // Now, let's use the ListErrorModel and explicitly force a loss

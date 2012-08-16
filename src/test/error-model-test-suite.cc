@@ -13,6 +13,7 @@
 #include "ns3/pointer.h"
 #include "ns3/double.h"
 #include "ns3/string.h"
+#include "ns3/rng-seed-manager.h"
 
 using namespace ns3;
 
@@ -79,8 +80,8 @@ void
 ErrorModelSimple::DoRun (void)
 {
   // Set some arbitrary deterministic values
-  SeedManager::SetSeed (7);
-  SeedManager::SetRun (5);
+  RngSeedManager::SetSeed (7);
+  RngSeedManager::SetRun (2);
 
   Ptr<Node> a = CreateObject<Node> ();
   Ptr<Node> b = CreateObject<Node> ();
@@ -92,7 +93,7 @@ ErrorModelSimple::DoRun (void)
 
   output->SetReceiveCallback (MakeCallback (&ErrorModelSimple::Receive, this));
 
-  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
+  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"));
   em->SetAttribute ("ErrorRate", DoubleValue (0.001));
   em->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 

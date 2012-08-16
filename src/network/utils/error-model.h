@@ -57,7 +57,7 @@
 
 #include <list>
 #include "ns3/object.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -88,7 +88,8 @@ class Packet;
  * this:
  * \code 
  * Ptr<ErrorModel> rem = CreateObject<RateErrorModel> ();
- * rem->SetRandomVariable (UniformVariable ());
+ * Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
+ * rem->SetRandomVariable (uv);
  * rem->SetRate (0.001);
  * ...
  * Ptr<Packet> p;
@@ -154,7 +155,7 @@ private:
  * The two parameters that govern the behavior are the rate (or
  * equivalently, the mean duration/spacing between errors), and the
  * unit (which may be per-bit, per-byte, and per-packet).
- * Users can optionally provide a RandomVariable object; the default
+ * Users can optionally provide a RandomVariableStream object; the default
  * is to use a Uniform(0,1) distribution.
 
  * Reset() on this model will do nothing
@@ -197,7 +198,17 @@ public:
   /**
    * \param ranvar A random variable distribution to generate random variates
    */ 
-  void SetRandomVariable (const RandomVariable &ranvar);
+  void SetRandomVariable (Ptr<RandomVariableStream>);
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   virtual bool DoCorrupt (Ptr<Packet> p);
@@ -209,7 +220,7 @@ private:
   enum ErrorUnit m_unit;
   double m_rate;
 
-  RandomVariable m_ranvar;
+  Ptr<RandomVariableStream> m_ranvar;
 };
 
 /**

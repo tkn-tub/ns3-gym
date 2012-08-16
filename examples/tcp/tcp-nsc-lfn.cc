@@ -101,11 +101,10 @@ int main (int argc, char *argv[])
   Ipv4InterfaceContainer ipv4Interfaces = ipv4.Assign (p2pInterfaces);
 
   DoubleValue rate (errRate);
-  RandomVariableValue u01 (UniformVariable (0.0, 1.0));
   Ptr<RateErrorModel> em1 = 
-    CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
+    CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0,Max=1.0]"), "ErrorRate", rate);
   Ptr<RateErrorModel> em2 = 
-    CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
+    CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0,Max=1.0]"), "ErrorRate", rate);
 
   // This enables the specified errRate on both link endpoints.
   p2pInterfaces.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em1));

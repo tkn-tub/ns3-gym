@@ -1816,17 +1816,12 @@ to introduce errors into a ``Channel`` at a given *rate*.
 
 ::
 
-  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> (
-    "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
-    "ErrorRate", DoubleValue (0.00001));
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+  em->SetAttribute ("ErrorRate", DoubleValue (0.00001));
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 
-The above code instantiates a ``RateErrorModel`` Object.  Rather than 
-using the two-step process of instantiating it and then setting Attributes,
-we use the convenience function ``CreateObjectWithAttributes`` which
-allows us to do both at the same time.  We set the "RanVar" 
-``Attribute`` to a random variable that generates a uniform distribution
-from 0 to 1.  We also set the "ErrorRate" ``Attribute``.
+The above code instantiates a ``RateErrorModel`` Object, and
+we set the "ErrorRate" ``Attribute`` to the desired value.
 We then set the resulting instantiated ``RateErrorModel`` as the error
 model used by the point-to-point ``NetDevice``.  This will give us some
 retransmissions and make our plot a little more interesting.

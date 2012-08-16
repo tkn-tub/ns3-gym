@@ -63,6 +63,8 @@
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 
 NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
@@ -154,9 +156,9 @@ TypeId RateErrorModel::GetTypeId (void)
                    MakeDoubleAccessor (&RateErrorModel::m_rate),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RanVar", "The decision variable attached to this error model.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RateErrorModel::m_ranvar),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&RateErrorModel::m_ranvar),
+                   MakePointerChecker<RandomVariableStream> ())
   ;
   return tid;
 }
@@ -201,10 +203,17 @@ RateErrorModel::SetRate (double rate)
 }
 
 void 
-RateErrorModel::SetRandomVariable (const RandomVariable &ranvar)
+RateErrorModel::SetRandomVariable (Ptr<RandomVariableStream> ranvar)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_ranvar = ranvar;
+}
+
+int64_t 
+RateErrorModel::AssignStreams (int64_t stream)
+{
+  m_ranvar->SetStream (stream);
+  return 1;
 }
 
 bool 
@@ -234,7 +243,7 @@ bool
 RateErrorModel::DoCorruptPkt (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return (m_ranvar.GetValue () < m_rate);
+  return (m_ranvar->GetValue () < m_rate);
 }
 
 bool
@@ -243,7 +252,7 @@ RateErrorModel::DoCorruptByte (Ptr<Packet> p)
   NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed byte error
   double per = 1 - pow (1.0 - m_rate, p->GetSize ());
-  return (m_ranvar.GetValue () < per);
+  return (m_ranvar->GetValue () < per);
 }
 
 bool
@@ -252,7 +261,7 @@ RateErrorModel::DoCorruptBit (Ptr<Packet> p)
   NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed bit error
   double per = 1 - pow (1.0 - m_rate, (8 * p->GetSize ()) );
-  return (m_ranvar.GetValue () < per);
+  return (m_ranvar->GetValue () < per);
 }
 
 void 

@@ -26,6 +26,7 @@
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
 #include "ns3/error-model.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/radio-bearer-stats-calculator.h"
 #include "ns3/lte-rlc-header.h"
 #include "ns3/lte-rlc-um.h"
@@ -124,7 +125,7 @@ LteRlcAmE2eTestCase::DoRun (void)
   // LogComponentEnable ("LteRlcUm", level);
   // LogComponentEnable ("LteRlcAm", level);
 
-  SeedManager::SetSeed (m_seed);
+  RngSeedManager::SetSeed (m_seed);
 
   Ptr<LteSimpleHelper> lteSimpleHelper = CreateObject<LteSimpleHelper> ();
   // lteSimpleHelper->EnableLogComponents ();
@@ -154,11 +155,11 @@ LteRlcAmE2eTestCase::DoRun (void)
 
 
   // Error models: downlink and uplink
-  Ptr<RateErrorModel> dlEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
+  Ptr<RateErrorModel> dlEm = CreateObject<RateErrorModel> ();
   dlEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
   dlEm->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
-//   Ptr<RateErrorModel> ueEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", RandomVariableValue (UniformVariable (0.0, 1.0)));
+//   Ptr<RateErrorModel> ueEm = CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"));
 //   ueEm->SetAttribute ("ErrorRate", DoubleValue (m_losses));
 //   ueEm->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
