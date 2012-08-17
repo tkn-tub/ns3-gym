@@ -58,7 +58,8 @@ TcRegressionTest::~TcRegressionTest()
 void
 TcRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
 
   Simulator::Stop (m_time);
@@ -92,6 +93,8 @@ TcRegressionTest::CreateNodes ()
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (c);
+  int64_t streamsUsed = olsr.AssignStreams (c, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, 3, "Should have assigned 2 streams");
 
   // create wifi channel & devices
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();

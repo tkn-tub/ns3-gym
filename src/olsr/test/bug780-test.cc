@@ -72,7 +72,8 @@ Bug780Test::~Bug780Test()
 void
 Bug780Test::DoRun ()
 {
-  SeedManager::SetSeed (123);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (12345);
   CreateNodes ();
 
   Simulator::Stop (m_time);
@@ -124,6 +125,8 @@ Bug780Test::CreateNodes (void)
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (adhocNodes);
+  int64_t streamsUsed = olsr.AssignStreams (adhocNodes, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, nWifis, "Should have assigned 3 streams");
 
   Ipv4AddressHelper addressAdhoc;
   addressAdhoc.SetBase ("10.1.1.0", "255.255.255.0");

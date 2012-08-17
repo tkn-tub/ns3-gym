@@ -53,7 +53,8 @@ HelloRegressionTest::~HelloRegressionTest()
 void
 HelloRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
 
   Simulator::Stop (m_time);
@@ -74,6 +75,8 @@ HelloRegressionTest::CreateNodes ()
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (c);
+  int64_t streamsUsed = olsr.AssignStreams (c, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, 2, "Should have assigned 2 streams");
   // create p2p channel & devices
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
