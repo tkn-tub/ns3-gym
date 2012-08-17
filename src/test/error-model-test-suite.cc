@@ -92,8 +92,12 @@ ErrorModelSimple::DoRun (void)
   BuildSimpleTopology (a, b, input, output, channel);
 
   output->SetReceiveCallback (MakeCallback (&ErrorModelSimple::Receive, this));
+  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
+  // Set this variable to a specific stream 
+  uv->SetStream (50);
 
-  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"));
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+  em->SetRandomVariable (uv);
   em->SetAttribute ("ErrorRate", DoubleValue (0.001));
   em->SetAttribute ("ErrorUnit", StringValue ("ERROR_UNIT_PACKET"));
 
@@ -108,9 +112,9 @@ ErrorModelSimple::DoRun (void)
   Simulator::Destroy ();
 
   // For this combination of values, we expect about 1 packet in 1000 to be
-  // dropped.  For this specific RNG stream, we see 9992 receptions and 8 drops
-  NS_TEST_ASSERT_MSG_EQ (m_count, 9992, "Wrong number of receptions.");
-  NS_TEST_ASSERT_MSG_EQ (m_drops, 8, "Wrong number of drops.");
+  // dropped.  For this specific RNG stream, we see 9991 receptions and 9 drops
+  NS_TEST_ASSERT_MSG_EQ (m_count, 9991, "Wrong number of receptions.");
+  NS_TEST_ASSERT_MSG_EQ (m_drops, 9, "Wrong number of drops.");
 }
 
 // This is the start of an error model test suite.  For starters, this is
