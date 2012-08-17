@@ -114,7 +114,7 @@ OlsrHelper::AssignStreams (NodeContainer c, int64_t stream)
               listOlsr = DynamicCast<olsr::RoutingProtocol> (listProto);
               if (listOlsr)
                 {
-                  currentStream += olsr->AssignStreams (currentStream);
+                  currentStream += listOlsr->AssignStreams (currentStream);
                   break;
                 }
             }
