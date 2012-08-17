@@ -320,11 +320,10 @@ void InternetStackHelper::SetIpv6StackInstall (bool enable)
 }
 
 int64_t
-InternetStackHelper::AssignStreams (int64_t stream)
+InternetStackHelper::AssignStreams (NodeContainer c, int64_t stream)
 {
   int64_t currentStream = stream;
-  NodeList::Iterator listEnd = NodeList::End ();
-  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
       Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
