@@ -19,7 +19,8 @@
  */
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -52,7 +53,8 @@ PeerManagementProtocolRegressionTest::~PeerManagementProtocolRegressionTest ()
 void
 PeerManagementProtocolRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
   CreateDevices ();
 
@@ -95,6 +97,9 @@ PeerManagementProtocolRegressionTest::CreateDevices ()
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
+  // Three nodes, one device per node, two streams (one for mac, one for plugin)
+  int64_t streamsUsed = mesh.AssignStreams (meshDevices, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (3*2), "Stream assignment unexpected value");
   // 3. write PCAP if needed
   wifiPhy.EnablePcapAll (CreateTempDirFilename (PREFIX));
 }

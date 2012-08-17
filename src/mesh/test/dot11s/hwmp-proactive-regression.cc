@@ -20,7 +20,8 @@
 
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -55,7 +56,8 @@ HwmpProactiveRegressionTest::~HwmpProactiveRegressionTest ()
 void
 HwmpProactiveRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -114,6 +116,10 @@ HwmpProactiveRegressionTest::CreateDevices ()
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
+  // Five nodes, one device per node, 3 streams per mac
+  int64_t streamsUsed = mesh.AssignStreams (meshDevices, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (3*5), "Stream assignment unexpected value");
+
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);

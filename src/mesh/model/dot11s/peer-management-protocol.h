@@ -34,6 +34,7 @@
 #include <map>
 namespace ns3 {
 class MeshPointDevice;
+class UniformRandomVariable;
 namespace dot11s {
 class PeerManagementProtocolMac;
 class PeerLink;
@@ -149,7 +150,18 @@ public:
   ///\brief: Report statistics
   void Report (std::ostream &) const;
   void ResetStats ();
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
 private:
+  virtual void DoStart ();
   /**
    * \name Private structures
    * \{
@@ -261,6 +273,8 @@ private:
   };
   struct Statistics m_stats;
   // \}
+  /// Add randomness to beacon shift
+  Ptr<UniformRandomVariable> m_beaconShift;
 };
 
 } // namespace dot11s

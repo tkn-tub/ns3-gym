@@ -50,6 +50,7 @@ public:
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   void UpdateBeacon (MeshWifiBeacon & beacon) const;
+  int64_t AssignStreams (int64_t stream);
   // \}
   ///\name Statistics
   // \{
@@ -57,6 +58,7 @@ public:
   void ResetStats ();
   uint32_t GetLinkMetric (Mac48Address peerAddress);
   // \}
+
 private:
   PeerManagementProtocolMac& operator= (const PeerManagementProtocolMac &);
   PeerManagementProtocolMac (const PeerManagementProtocolMac &);
@@ -118,6 +120,7 @@ private:
     Statistics ();
     void Print (std::ostream & os) const;
   };
+
 private:
   struct Statistics m_stats;
   ///\}

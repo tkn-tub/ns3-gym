@@ -43,6 +43,8 @@ public:
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
   /// Update beacon is empty, because HWMP does not know anything about beacons
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
+  /// AssignStreams is empty, because this model doesn't use random variables
+  int64_t AssignStreams (int64_t stream) { return 0; }
   //\}
   uint16_t GetChannelId () const;
   /// Report statistics
