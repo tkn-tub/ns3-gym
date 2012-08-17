@@ -91,7 +91,8 @@ ChainRegressionTest::~ChainRegressionTest ()
 void
 ChainRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   Config::SetDefault ("ns3::ArpCache::AliveTimeout", TimeValue (m_arpAliveTimeout));
 
   CreateNodes ();
@@ -148,6 +149,9 @@ ChainRegressionTest::CreateDevices ()
   InternetStackHelper internetStack;
   internetStack.SetRoutingHelper (aodv);
   internetStack.Install (*m_nodes);
+  int64_t streamsUsed = aodv.AssignStreams (*m_nodes, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, m_size, "Should have assigned streams");
+
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);

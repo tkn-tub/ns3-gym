@@ -73,7 +73,8 @@ Bug772ChainTest::~Bug772ChainTest ()
 void
 Bug772ChainTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
 
   CreateNodes ();
   CreateDevices ();
@@ -124,6 +125,8 @@ Bug772ChainTest::CreateDevices ()
   InternetStackHelper internetStack;
   internetStack.SetRoutingHelper (aodv);
   internetStack.Install (*m_nodes);
+  int64_t streamsUsed = aodv.AssignStreams (*m_nodes, 0);
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, m_size, "Should have assigned streams");
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
