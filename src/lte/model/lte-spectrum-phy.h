@@ -36,7 +36,7 @@
 #include <ns3/generic-phy.h>
 #include <ns3/packet-burst.h>
 #include <ns3/lte-interference.h>
-#include <ns3/random-variable.h>
+#include "ns3/random-variable-stream.h"
 #include <map>
 
 namespace ns3 {
@@ -210,6 +210,15 @@ public:
   
   friend class LteUePhy;
   
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   void ChangeState (State newState);
@@ -250,8 +259,9 @@ private:
   
   expectedTbs_t m_expectedTbs;
   SpectrumValue m_sinrPerceived;
-  
-  UniformVariable m_random;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_random;
   bool m_pemEnabled; // when true (default) the phy error model is enabled
   
   uint8_t m_transmissionMode; // for UEs: store the transmission mode
