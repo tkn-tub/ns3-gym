@@ -3365,6 +3365,10 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::CsmaHelper const &', 'arg0')])
     ## csma-helper.h (module 'csma'): ns3::CsmaHelper::CsmaHelper() [constructor]
     cls.add_constructor([])
+    ## csma-helper.h (module 'csma'): int64_t ns3::CsmaHelper::AssignStreams(ns3::NetDeviceContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('int64_t', 'stream')])
     ## csma-helper.h (module 'csma'): ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
@@ -3472,6 +3476,10 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## internet-stack-helper.h (module 'internet'): ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
+    ## internet-stack-helper.h (module 'internet'): int64_t ns3::InternetStackHelper::AssignStreams(ns3::NodeContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NodeContainer', 'c'), param('int64_t', 'stream')])
     ## internet-stack-helper.h (module 'internet'): void ns3::InternetStackHelper::Install(std::string nodeName) const [member function]
     cls.add_method('Install', 
                    'void', 

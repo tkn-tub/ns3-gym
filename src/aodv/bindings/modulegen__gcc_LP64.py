@@ -2681,6 +2681,10 @@ def register_Ns3AodvHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::AodvHelper const &', 'arg0')])
     ## aodv-helper.h (module 'aodv'): ns3::AodvHelper::AodvHelper() [constructor]
     cls.add_constructor([])
+    ## aodv-helper.h (module 'aodv'): int64_t ns3::AodvHelper::AssignStreams(ns3::NodeContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NodeContainer', 'c'), param('int64_t', 'stream')])
     ## aodv-helper.h (module 'aodv'): ns3::AodvHelper * ns3::AodvHelper::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::AodvHelper *', 

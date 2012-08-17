@@ -9226,6 +9226,10 @@ def register_Ns3LteHelper_methods(root_module, cls):
     cls.add_method('ActivateEpsBearer', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueDevice'), param('ns3::EpsBearer', 'bearer'), param('ns3::Ptr< ns3::EpcTft >', 'tft')])
+    ## lte-helper.h (module 'lte'): int64_t ns3::LteHelper::AssignStreams(ns3::NetDeviceContainer c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('int64_t', 'stream')])
     ## lte-helper.h (module 'lte'): void ns3::LteHelper::Attach(ns3::NetDeviceContainer ueDevices, ns3::Ptr<ns3::NetDevice> enbDevice) [member function]
     cls.add_method('Attach', 
                    'void', 
