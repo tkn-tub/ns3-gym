@@ -435,9 +435,9 @@ main (int argc, char *argv[])
   cout << "Creating TCP Traffic Flows:" << endl;
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes", UintegerValue (500000));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
-                      RandomVariableValue (ConstantVariable (1)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   Config::SetDefault ("ns3::OnOffApplication::OffTime",
-                      RandomVariableValue (ConstantVariable (0)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (512));
 
   UniformVariable urng;

@@ -24,7 +24,7 @@
 #include "ns3/config.h"
 #include "ns3/enum.h"
 #include "ns3/string.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/double.h"
 #include "ns3/object-vector.h"
 #include "ns3/object-map.h"
@@ -119,9 +119,9 @@ public:
                                       TEST_B, "TestB",
                                       TEST_C, "TestC"))
       .AddAttribute ("TestRandom", "help text",
-                     RandomVariableValue (ConstantVariable (1.0)),
-                     MakeRandomVariableAccessor (&AttributeObjectTest::m_random),
-                     MakeRandomVariableChecker ())
+                     StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
+                     MakePointerAccessor (&AttributeObjectTest::m_random),
+                     MakePointerChecker <RandomVariableStream>())
       .AddAttribute ("TestFloat", "help text",
                      DoubleValue (-1.1),
                      MakeDoubleAccessor (&AttributeObjectTest::m_float),
@@ -227,7 +227,7 @@ private:
   uint8_t m_uint8;
   float m_float;
   enum Test_e m_enum;
-  RandomVariable m_random;
+  Ptr<RandomVariableStream> m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
   std::map <uint32_t, Ptr<Derived> > m_map1;
@@ -643,8 +643,39 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
 }
 
-template <> void
-AttributeTestCase<RandomVariableValue>::DoRun (void)
+// ===========================================================================
+// Test the Attributes of type RandomVariableStream.
+// ===========================================================================
+class RandomVariableStreamAttributeTestCase : public TestCase
+{
+public:
+  RandomVariableStreamAttributeTestCase (std::string description);
+  virtual ~RandomVariableStreamAttributeTestCase () {}
+
+  void InvokeCbValue (int8_t a)
+  {
+    if (!m_cbValue.IsNull ()) {
+        m_cbValue (a);
+      }
+  }
+
+private:
+  virtual void DoRun (void);
+
+  Callback<void,int8_t> m_cbValue;
+
+  void NotifyCallbackValue (int8_t a) { m_gotCbValue = a; }
+
+  int16_t m_gotCbValue;
+};
+
+RandomVariableStreamAttributeTestCase::RandomVariableStreamAttributeTestCase (std::string description)
+  : TestCase (description)
+{
+}
+
+void
+RandomVariableStreamAttributeTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
   bool ok;
@@ -653,16 +684,20 @@ AttributeTestCase<RandomVariableValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
   //
-  // Try to set a UniformVariable
+  // Try to set a UniformRandomVariable
   //
-  ok = p->SetAttributeFailSafe ("TestRandom", RandomVariableValue (UniformVariable (0., 1.)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformVariable");
+  ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformRandomVariable");
 
   //
-  // Try to set a <snicker> ConstantVariable
+  // Try to set a <snicker> ConstantRandomVariable
   //
-  ok = p->SetAttributeFailSafe ("TestRandom", RandomVariableValue (ConstantVariable (10.)));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformVariable");
+  //  ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::ConstantRandomVariable[Constant=10.0]"));
+  //ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::UniformRandomVariable[Min=0.,Max=1.]"));
+
+  ok = p->SetAttributeFailSafe ("TestRandom", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a ConstantRandomVariable");
 }
 
 // ===========================================================================
@@ -1147,7 +1182,7 @@ PointerAttributeTestCase::DoRun (void)
 }
 
 // ===========================================================================
-// Test the Attributes of type CallbackVale.
+// Test the Attributes of type CallbackValue.
 // ===========================================================================
 class CallbackValueTestCase : public TestCase
 {
@@ -1244,7 +1279,7 @@ AttributesTestSuite::AttributesTestSuite ()
   AddTestCase (new AttributeTestCase<UintegerValue> ("Check Attributes of type UintegerValue"));
   AddTestCase (new AttributeTestCase<DoubleValue> ("Check Attributes of type DoubleValue"));
   AddTestCase (new AttributeTestCase<EnumValue> ("Check Attributes of type EnumValue"));
-  AddTestCase (new AttributeTestCase<RandomVariableValue> ("Check Attributes of type RandomVariableValue"));
+  AddTestCase (new RandomVariableStreamAttributeTestCase ("Check Attributes of type RandomVariableStream"));
   AddTestCase (new ObjectVectorAttributeTestCase ("Check Attributes of type ObjectVectorValue"));
   AddTestCase (new ObjectMapAttributeTestCase ("Check Attributes of type ObjectMapValue"));
   AddTestCase (new IntegerTraceSourceAttributeTestCase ("Ensure TracedValue<uint8_t> can be set like IntegerValue"));

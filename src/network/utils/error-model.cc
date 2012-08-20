@@ -59,7 +59,6 @@
 #include "ns3/packet.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/random-variable.h"
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
 #include "ns3/double.h"

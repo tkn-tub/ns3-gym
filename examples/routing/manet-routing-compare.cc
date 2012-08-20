@@ -340,8 +340,8 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   adhocInterfaces = addressAdhoc.Assign (adhocDevices);
 
   OnOffHelper onoff1 ("ns3::UdpSocketFactory",Address ());
-  onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable  (1)));
-  onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+  onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 
   for (int i = 0; i <= nSinks - 1; i++)
     {
@@ -350,9 +350,9 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
       AddressValue remoteAddress (InetSocketAddress (adhocInterfaces.GetAddress (i), port));
       onoff1.SetAttribute ("Remote", remoteAddress);
 
-      UniformVariable var;
+      Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
       ApplicationContainer temp = onoff1.Install (adhocNodes.Get (i + nSinks));
-      temp.Start (Seconds (var.GetValue (100.0,101.0)));
+      temp.Start (Seconds (var->GetValue (100.0,101.0)));
       temp.Stop (Seconds (TotalTime));
     }
 

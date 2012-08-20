@@ -102,8 +102,9 @@ def main(argv):
         #print i, destaddr
         onOffHelper.SetAttribute("Remote", ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port)))
         app = onOffHelper.Install(ns.network.NodeContainer(node))
-        app.Start(ns.core.Seconds(ns.core.UniformVariable(20, 30).GetValue()))
-            
+        urv = ns.core.UniformRandomVariable()
+        app.Start(ns.core.Seconds(urv.GetValue(20, 30)))
+
     #internet.EnablePcapAll("wifi-olsr")
     flowmon_helper = ns.flow_monitor.FlowMonitorHelper()
     #flowmon_helper.SetMonitorAttribute("StartTime", ns.core.TimeValue(ns.core.Seconds(31)))

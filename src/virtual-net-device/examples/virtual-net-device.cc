@@ -71,7 +71,7 @@ class Tunnel
   Ipv4Address m_n3Address;
   Ipv4Address m_n0Address;
   Ipv4Address m_n1Address;
-  UniformVariable m_rng;
+  Ptr<UniformRandomVariable> m_rng;
   Ptr<VirtualNetDevice> m_n0Tap;
   Ptr<VirtualNetDevice> m_n1Tap;
   Ptr<VirtualNetDevice> m_n3Tap;
@@ -96,7 +96,7 @@ class Tunnel
   bool
   N3VirtualSend (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
   {
-    if (m_rng.GetValue () < 0.25)
+    if (m_rng->GetValue () < 0.25)
       {
         NS_LOG_DEBUG ("Send to " << m_n0Address << ": " << *packet);
         m_n3Socket->SendTo (packet, 0, InetSocketAddress (m_n0Address, 667));
@@ -142,6 +142,7 @@ public:
           Ipv4Address n3Addr, Ipv4Address n0Addr, Ipv4Address n1Addr)
     : m_n3Address (n3Addr), m_n0Address (n0Addr), m_n1Address (n1Addr)
   {
+    m_rng = CreateObject<UniformRandomVariable> ();
     m_n3Socket = Socket::CreateSocket (n3, TypeId::LookupByName ("ns3::UdpSocketFactory"));
     m_n3Socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 667));
     m_n3Socket->SetRecvCallback (MakeCallback (&Tunnel::N3SocketRecv, this));

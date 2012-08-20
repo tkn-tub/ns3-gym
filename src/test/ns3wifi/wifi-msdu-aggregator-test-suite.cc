@@ -29,7 +29,6 @@
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/packet-sink.h"
-#include "ns3/random-variable.h"
 
 #include "ns3/wifi-helper.h"
 #include "ns3/qos-wifi-mac-helper.h"

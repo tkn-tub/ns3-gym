@@ -53,7 +53,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/tools-module.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/flow-monitor-helper.h"
@@ -253,12 +253,16 @@ void
 Experiment::SelectSrcDest (NodeContainer c)
 {
   uint32_t totalNodes = c.GetN ();
-  UniformVariable uvSrc (0, totalNodes/2 -1);
-  UniformVariable uvDest (totalNodes/2, totalNodes);
+  Ptr<UniformRandomVariable> uvSrc = CreateObject<UniformRandomVariable> ();
+  uvSrc->SetAttribute ("Min", DoubleValue (0));
+  uvSrc->SetAttribute ("Max", DoubleValue (totalNodes/2 -1));
+  Ptr<UniformRandomVariable> uvDest = CreateObject<UniformRandomVariable> ();
+  uvDest->SetAttribute ("Min", DoubleValue (totalNodes/2));
+  uvDest->SetAttribute ("Max", DoubleValue (totalNodes));
 
   for (uint32_t i=0; i < totalNodes/3; i++)
     {
-      ApplicationSetup (c.Get (uvSrc.RandomVariable::GetInteger ()), c.Get (uvDest.RandomVariable::GetInteger ()),  0, totalTime);
+      ApplicationSetup (c.Get (uvSrc->GetInteger ()), c.Get (uvDest->GetInteger ()),  0, totalTime);
     }
 }
 
@@ -273,21 +277,25 @@ Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
 {
 
   // UniformVariable params: (Xrange, Yrange)
-  UniformVariable uv (0, c.GetN ());
+  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
+  uv->SetAttribute ("Min", DoubleValue (0));
+  uv->SetAttribute ("Max", DoubleValue (c.GetN ()));
 
   // ExponentialVariable params: (mean, upperbound)
-  ExponentialVariable ev (expMean, totalTime);
+  Ptr<ExponentialRandomVariable> ev = CreateObject<ExponentialRandomVariable> ();
+  ev->SetAttribute ("Mean", DoubleValue (expMean));
+  ev->SetAttribute ("Bound", DoubleValue (totalTime));
 
   double start=0.0, stop=totalTime;
   uint32_t destIndex; 
 
   for (uint32_t i=0; i < c.GetN (); i++)
     {
-      stop = start + ev.GetValue ();
+      stop = start + ev->GetValue ();
       NS_LOG_DEBUG ("Start=" << start << " Stop=" << stop);
 
       do {
-          destIndex = (uint32_t) uv.GetValue ();
+          destIndex = (uint32_t) uv->GetValue ();
         } while ( (c.Get (destIndex))->GetId () == sender->GetId ());
 
       ApplicationSetup (sender, c.Get (destIndex),  start, stop);
@@ -420,8 +428,8 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
       //Rectangle (xMin, xMax, yMin, yMax)
       mobil.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
                               "Bounds", RectangleValue (Rectangle (0, 500, 0, 500)),
-                              "Speed", RandomVariableValue (ConstantVariable (10)),
-                              "Pause", RandomVariableValue (ConstantVariable (0.2)));
+                              "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=10]"),
+                              "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
     }
   mobil.Install (c);
 
