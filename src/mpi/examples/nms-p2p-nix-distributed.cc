@@ -391,9 +391,9 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes",
                       UintegerValue (nBytes));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
-                      RandomVariableValue (ConstantVariable (1)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   Config::SetDefault ("ns3::OnOffApplication::OffTime",
-                      RandomVariableValue (ConstantVariable (0)));
+                      StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
 
   if (single)
