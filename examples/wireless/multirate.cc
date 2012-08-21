@@ -276,12 +276,12 @@ void
 Experiment::SendMultiDestinations (Ptr<Node> sender, NodeContainer c)
 {
 
-  // UniformVariable params: (Xrange, Yrange)
+  // UniformRandomVariable params: (Xrange, Yrange)
   Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
   uv->SetAttribute ("Min", DoubleValue (0));
   uv->SetAttribute ("Max", DoubleValue (c.GetN ()));
 
-  // ExponentialVariable params: (mean, upperbound)
+  // ExponentialRandomVariable params: (mean, upperbound)
   Ptr<ExponentialRandomVariable> ev = CreateObject<ExponentialRandomVariable> ();
   ev->SetAttribute ("Mean", DoubleValue (expMean));
   ev->SetAttribute ("Bound", DoubleValue (totalTime));
