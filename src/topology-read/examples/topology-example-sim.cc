@@ -170,9 +170,7 @@ int main (int argc, char *argv[])
   InetSocketAddress dst = InetSocketAddress ( ipv4AddrServer );
 
   OnOffHelper onoff = OnOffHelper ("ns3::Ipv4RawSocketFactory", dst);
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (15000)));
+  onoff.SetConstantRate (DataRate (15000));
   onoff.SetAttribute ("PacketSize", UintegerValue (1200));
 
   NodeContainer clientNodes;

@@ -207,8 +207,7 @@ main (int argc, char *argv[])
   //
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory", InetSocketAddress (interfaces.GetAddress (1), port));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetConstantRate (DataRate ("500kb/s"));
 
   ApplicationContainer apps = onoff.Install (nodesLeft.Get (3));
   apps.Start (Seconds (1.0));

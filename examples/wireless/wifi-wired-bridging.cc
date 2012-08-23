@@ -180,8 +180,7 @@ int main (int argc, char *argv[])
     }
 
   OnOffHelper onoff = OnOffHelper (protocol, dest);
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetConstantRate (DataRate ("500kb/s"));
   ApplicationContainer apps = onoff.Install (staNodes[0].Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (3.0));

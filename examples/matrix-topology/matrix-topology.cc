@@ -252,8 +252,7 @@ int main (int argc, char *argv[])
               Ipv4InterfaceAddress ipv4_int_addr = ipv4->GetAddress (1, 0);
               Ipv4Address ip_addr = ipv4_int_addr.GetLocal ();
               OnOffHelper onoff ("ns3::UdpSocketFactory", InetSocketAddress (ip_addr, port)); // traffic flows from node[i] to node[j]
-              onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-              onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+              onoff.SetConstantRate (DataRate (AppPacketRate));
               ApplicationContainer apps = onoff.Install (nodes.Get (i));  // traffic sources are installed on all nodes
               apps.Start (Seconds (AppStartTime + rn));
               apps.Stop (Seconds (AppStopTime));

@@ -140,8 +140,7 @@ main (int argc, char *argv[])
   // Create a flow from n3 to n1, starting at time 1.1 seconds
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (i1i2.GetAddress (0), port)));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetConstantRate (DataRate ("300b/s"));
 
   ApplicationContainer apps = onoff.Install (c.Get (3));
   apps.Start (Seconds (1.1));

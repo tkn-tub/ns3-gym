@@ -199,9 +199,7 @@ DynamicGlobalRoutingTestCase::DoRun (void)
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      InetSocketAddress (i5i6.GetAddress (1), port));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  onoff.SetAttribute ("DataRate", StringValue ("2kbps"));
+  onoff.SetConstantRate (DataRate ("2kbps"));
   onoff.SetAttribute ("PacketSize", UintegerValue (50));
 
   ApplicationContainer apps = onoff.Install (c.Get (1));
@@ -368,9 +366,7 @@ GlobalRoutingSlash32TestCase::DoRun (void)
   uint16_t port = 9;   // Discard port (RFC 863)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (ifInAddrC.GetLocal (), port)));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));
+  onoff.SetConstantRate (DataRate (6000));
   ApplicationContainer apps = onoff.Install (nA);
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));

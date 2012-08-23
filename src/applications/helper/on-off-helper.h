@@ -32,6 +32,8 @@
 
 namespace ns3 {
 
+class DataRate;
+
 /**
  * \brief A helper to make it easier to instantiate an ns3::OnOffApplication 
  * on a set of nodes.
@@ -58,6 +60,16 @@ public:
    * \param value the value of the application attribute to set
    */
   void SetAttribute (std::string name, const AttributeValue &value);
+
+  /**
+   * Helper function to set a constant rate source.  Equivalent to
+   * setting the attributes OnTime to constant 1000 seconds, OffTime to 
+   * constant 0 seconds, and the DataRate and PacketSize set accordingly
+   *
+   * \param dataRate DataRate object for the sending rate
+   * \param packetSize size in bytes of the packet payloads generated
+   */
+  void SetConstantRate (DataRate dataRate, uint32_t packetSize = 512);
 
   /**
    * Install an ns3::OnOffApplication on each node of the input container

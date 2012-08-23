@@ -143,9 +143,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=250]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (60000000)));
+  onoff.SetConstantRate (DataRate (60000000));
   onoff.SetAttribute ("PacketSize", UintegerValue (2000));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));

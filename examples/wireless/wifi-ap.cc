@@ -170,8 +170,7 @@ int main (int argc, char *argv[])
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=42]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetConstantRate (DataRate ("500kb/s"));
 
   ApplicationContainer apps = onoff.Install (stas.Get (0));
   apps.Start (Seconds (0.5));

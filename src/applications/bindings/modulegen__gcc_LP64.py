@@ -2453,6 +2453,10 @@ def register_Ns3OnOffHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## on-off-helper.h (module 'applications'): void ns3::OnOffHelper::SetConstantRate(ns3::DataRate dataRate, uint32_t packetSize=512) [member function]
+    cls.add_method('SetConstantRate', 
+                   'void', 
+                   [param('ns3::DataRate', 'dataRate'), param('uint32_t', 'packetSize', default_value='512')])
     return
 
 def register_Ns3PacketLossCounter_methods(root_module, cls):

@@ -97,8 +97,7 @@ def main(argv):
 
     onoff = ns.applications.OnOffHelper("ns3::UdpSocketFactory", 
                             ns.network.Address(ns.network.InetSocketAddress(ns.network.Ipv4Address("10.1.1.2"), port)))
-    onoff.SetAttribute("OnTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=1]"))
-    onoff.SetAttribute("OffTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0]"))
+    onoff.SetConstantRate (ns.network.DataRate ("500kb/s"))
 
     app = onoff.Install(ns.network.NodeContainer(terminals.Get(0)))
     # Start the application

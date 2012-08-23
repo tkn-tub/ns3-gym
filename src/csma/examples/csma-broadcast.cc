@@ -92,8 +92,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (Ipv4Address ("255.255.255.255"), port)));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetConstantRate (DataRate ("500kb/s"));
 
   ApplicationContainer app = onoff.Install (c0.Get (0));
   // Start the application

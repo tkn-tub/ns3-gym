@@ -363,8 +363,8 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::UdpSocketFactory", 
                      Address (InetSocketAddress (remoteAddr, port)));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetConstantRate (DataRate ("10kb/s"));
+
   ApplicationContainer apps = onoff.Install (appSource);
   apps.Start (Seconds (3.0));
   apps.Stop (Seconds (20.0));

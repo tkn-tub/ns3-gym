@@ -355,9 +355,7 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
 
   // Equipping the source  node with OnOff Application used for sending 
   OnOffHelper onoff ("ns3::UdpSocketFactory", Address (InetSocketAddress (Ipv4Address ("10.0.0.1"), port)));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (60000000)));
+  onoff.SetConstantRate (DataRate (60000000));
   onoff.SetAttribute ("PacketSize", UintegerValue (packetSize));
   onoff.SetAttribute ("Remote", AddressValue (InetSocketAddress (ipv4AddrServer, port)));
 

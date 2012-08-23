@@ -184,9 +184,7 @@ SpectrumIdealPhyTestCase::DoRun (void)
   socket.SetProtocol (1);
 
   OnOffHelper onoff ("ns3::PacketSocketFactory", Address (socket));
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=250]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (static_cast<uint64_t> (1.2*phyRate))));
+  onoff.SetConstantRate (DataRate (static_cast<uint64_t> (1.2*phyRate)));
   onoff.SetAttribute ("PacketSize", UintegerValue (pktSize));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
