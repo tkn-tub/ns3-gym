@@ -196,7 +196,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   NS_ASSERT (!m_fadingTrace.empty ());
   int now_ms = static_cast<int> (Simulator::Now ().GetMilliSeconds () * m_timeGranularity);
   int lastUpdate_ms = static_cast<int> (m_lastWindowUpdate.GetMilliSeconds () * m_timeGranularity);
-  int index = (*itOff).second + now_ms - lastUpdate_ms;
+  int index = ((*itOff).second + now_ms - lastUpdate_ms) % m_samplesNum;
   int subChannel = 0;
   while (vit != rxPsd->ValuesEnd ())
     {
