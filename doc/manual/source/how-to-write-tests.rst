@@ -77,6 +77,39 @@ Output such as below should be produced:
 
 See src/lte/test/test-lte-antenna.cc for a worked example.
 
+Test macros
+***********
+
+There are a number of macros available for checking test program
+output with expected output.  These macros are defined in 
+``src/core/model/test.h``.
+
+The main set of macros that are used include the following:
+
+::
+
+  NS_TEST_ASSERT_MSG_EQ(actual, limit, msg)
+  NS_TEST_ASSERT_MSG_NE(actual, limit, msg)
+  NS_TEST_ASSERT_MSG_LT(actual, limit, msg)
+  NS_TEST_ASSERT_MSG_GT(actual, limit, msg)
+  NS_TEST_ASSERT_MSG_EQ_TOL(actual, limit, tol, msg)  
+
+The first argument ``actual`` is the value under test, the second value
+``limit`` is the expected value (or the value to test against), and the
+last argument ``msg`` is the error message to print out if the test fails.
+
+The first four macros above test for equality, inequality, less than, or
+greater than, respectively.  The fifth macro above tests for equality,
+but within a certain tolerance.  This variant is useful when testing
+floating point numbers for equality against a limit, where you want to
+avoid a test failure due to rounding errors.
+
+Finally, there are variants of the above where the keyword ``ASSERT``
+is replaced by ``EXPECT``.  These variants are designed specially for
+use in methods (especially callbacks) returning void.  Reserve their
+use for callbacks that you use in your test programs; otherwise,
+use the ``ASSERT`` variants.
+
 How to add an example program to the test suite
 ***********************************************
 
