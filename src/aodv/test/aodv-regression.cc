@@ -133,24 +133,35 @@ void
 ChainRegressionTest::CreateDevices ()
 {
   // 1. Setup WiFi
+  int64_t streamsUsed = 0;
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
   // This test suite output was originally based on YansErrorRateModel
   wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel"); 
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes); 
 
+  // Assign fixed stream numbers to wifi and channel random variables
+  streamsUsed += wifi.AssignStreams (devices, streamsUsed);
+  // Assign 6 streams per device
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
+  // Assign 0 streams per channel for this configuration 
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6), "Stream assignment mismatch");
+
   // 2. Setup TCP/IP & AODV
   AodvHelper aodv; // Use default parameters here
   InternetStackHelper internetStack;
   internetStack.SetRoutingHelper (aodv);
   internetStack.Install (*m_nodes);
-  int64_t streamsUsed = aodv.AssignStreams (*m_nodes, 0);
-  NS_TEST_EXPECT_MSG_EQ (streamsUsed, m_size, "Should have assigned streams");
+  streamsUsed += aodv.AssignStreams (*m_nodes, 0);
+  // AODV uses m_size more streams
+  NS_TEST_EXPECT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + m_size), "Stream assignment mismatch");
 
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
