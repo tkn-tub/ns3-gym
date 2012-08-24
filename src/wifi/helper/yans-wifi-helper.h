@@ -126,6 +126,20 @@ public:
    */
   Ptr<YansWifiChannel> Create (void) const;
 
+  /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by the channel.  Typically this corresponds to random variables
+  * used in the propagation loss models.  Return the number of streams 
+  * (possibly zero) that have been assigned. 
+  *
+  * \param c NetDeviceContainer of the set of net devices for which the 
+  *          WifiNetDevice should be modified to use fixed streams
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this helper
+  */
+  int64_t AssignStreams (Ptr<YansWifiChannel> c, int64_t stream);
+
+
 private:
   std::vector<ObjectFactory> m_propagationLoss;
   ObjectFactory m_propagationDelay;
@@ -229,16 +243,6 @@ public:
    * @param dlt The data link type of the pcap file (and packets) to be used
    */
   void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt);
-
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
-  int64_t AssignStreams (int64_t stream);
 
 private:
   /**

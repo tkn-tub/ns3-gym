@@ -172,6 +172,12 @@ YansWifiChannelHelper::Create (void) const
   return channel;
 }
 
+int64_t 
+YansWifiChannelHelper::AssignStreams (Ptr<YansWifiChannel> c, int64_t stream)
+{
+  return c->AssignStreams (stream);
+}
+
 YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0),
     m_pcapDlt (PcapHelper::DLT_IEEE802_11)
@@ -533,13 +539,6 @@ YansWifiPhyHelper::EnableAsciiInternal (
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
   Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithContext, stream));
-}
-
-int64_t
-YansWifiPhyHelper::AssignStreams (int64_t stream)
-{
-  NS_LOG_FUNCTION (this << stream);
-  return m_channel->AssignStreams (stream);
 }
 
 } // namespace ns3
