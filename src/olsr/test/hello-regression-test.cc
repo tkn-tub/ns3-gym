@@ -75,8 +75,9 @@ HelloRegressionTest::CreateNodes ()
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (c);
+  // Assign OLSR RVs to specific streams
   int64_t streamsUsed = olsr.AssignStreams (c, 0);
-  NS_TEST_EXPECT_MSG_EQ (streamsUsed, 2, "Should have assigned 2 streams");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, 2, "Should have assigned 2 streams");
   // create p2p channel & devices
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
