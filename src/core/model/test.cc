@@ -474,6 +474,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
       // Do not print reports for tests that were not run.
       return;
     }
+  // Report times in seconds, from ms timer
   const double MS_PER_SEC = 1000.;
   double real = test->m_result->clock.GetElapsedReal () / MS_PER_SEC;
   double user = test->m_result->clock.GetElapsedUser () / MS_PER_SEC;
@@ -518,7 +519,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
   else
     {
       *os << Indent (level) << statusString << " " << test->GetName () 
-          << " " << real << "ms" << std::endl;
+          << " " << real << " s" << std::endl;
       if (m_verbose)
         {
           for (uint32_t i = 0; i < test->m_result->failure.size (); i++)
