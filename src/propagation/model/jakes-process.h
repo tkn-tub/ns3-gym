@@ -27,6 +27,8 @@
 
 namespace ns3
 {
+class PropagationLossModel;
+class JakesPropagationLossModel;
 /**
  * \ingroup fading
  *
@@ -56,10 +58,11 @@ public:
   static TypeId GetTypeId (void);
   JakesProcess ();
   virtual ~JakesProcess();
+  virtual void DoDispose ();
   std::complex<double> GetComplexGain () const;
   /// Get Channel gain [dB]
   double GetChannelGainDb () const;
-  static int64_t AssignStreams (int64_t stream);
+  void SetPropagationLossModel (Ptr<const PropagationLossModel>);
 private:
   /// Represents a single oscillator
   struct Oscillator
@@ -75,8 +78,6 @@ private:
     /// Rotation speed of the oscillator \f[\omega_d \cos(\alpha_n)]
     double m_omega;
   };
-  /// PI Constant
-  static const double PI;
 private:
   void SetNOscillators (unsigned int nOscillators);
   void SetDopplerFrequencyHz (double dopplerFrequencyHz);
@@ -88,7 +89,8 @@ private:
   ///\{
   double m_omegaDopplerMax;
   unsigned int m_nOscillators;
-  static Ptr<UniformRandomVariable> m_uniformVariable;
+  Ptr<UniformRandomVariable> m_uniformVariable;
+  Ptr<const JakesPropagationLossModel> m_jakes;
   ///\}
 };
 } // namespace ns3

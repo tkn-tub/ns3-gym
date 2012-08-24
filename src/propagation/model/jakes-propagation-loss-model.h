@@ -39,13 +39,18 @@ public:
   static TypeId GetTypeId ();
   JakesPropagationLossModel ();
   virtual ~JakesPropagationLossModel ();
+  
+  static const double PI;
 
 private:
+  friend class JakesProcess;
   double DoCalcRxPower (double txPowerDbm,
                         Ptr<MobilityModel> a,
                         Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
+  Ptr<UniformRandomVariable> GetUniformRandomVariable () const;
 
+  Ptr<UniformRandomVariable> m_uniformVariable;
 private:
   mutable PropagationCache<JakesProcess> m_propagationCache;
 };
