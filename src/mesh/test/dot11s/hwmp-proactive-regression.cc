@@ -104,21 +104,26 @@ HwmpProactiveRegressionTest::InstallApplications ()
 void
 HwmpProactiveRegressionTest::CreateDevices ()
 {
+  int64_t streamsUsed = 0;
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   // This test suite output was originally based on YansErrorRateModel
   wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::Dot11sStack", "Root", Mac48AddressValue (Mac48Address ("00:00:00:00:00:0d")));
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
-  // Five nodes, one device per node, 3 streams per mac
-  int64_t streamsUsed = mesh.AssignStreams (meshDevices, 0);
-  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (3*5), "Stream assignment unexpected value");
+  // Five devices, 4 streams per device 
+  streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream mismatch");
+  // No streams used here, by default
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream mismatch");
 
   // 3. setup TCP/IP
   InternetStackHelper internetStack;

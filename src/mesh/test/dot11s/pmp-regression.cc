@@ -87,19 +87,23 @@ PeerManagementProtocolRegressionTest::CreateNodes ()
 void
 PeerManagementProtocolRegressionTest::CreateDevices ()
 {
+  int64_t streamsUsed = 0;
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::Dot11sStack");
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
-  // Three nodes, one device per node, two streams (one for mac, one for plugin)
-  int64_t streamsUsed = mesh.AssignStreams (meshDevices, 0);
-  NS_TEST_EXPECT_MSG_EQ (streamsUsed, (3*2), "Stream assignment unexpected value");
+  // Two devices, four streams per device (one for mac, one for phy, 
+  // two for plugins)
+  streamsUsed += mesh.AssignStreams (meshDevices, 0);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
+  wifiChannel.AssignStreams (chan, streamsUsed);
   // 3. write PCAP if needed
   wifiPhy.EnablePcapAll (CreateTempDirFilename (PREFIX));
 }
