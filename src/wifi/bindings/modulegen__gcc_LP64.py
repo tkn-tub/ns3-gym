@@ -3324,6 +3324,10 @@ def register_Ns3PropagationCache__Ns3JakesProcess_methods(root_module, cls):
     cls.add_constructor([param('ns3::PropagationCache< ns3::JakesProcess > const &', 'arg0')])
     ## propagation-cache.h (module 'propagation'): ns3::PropagationCache<ns3::JakesProcess>::PropagationCache() [constructor]
     cls.add_constructor([])
+    ## propagation-cache.h (module 'propagation'): void ns3::PropagationCache<ns3::JakesProcess>::AddPathData(ns3::Ptr<ns3::JakesProcess> data, ns3::Ptr<ns3::MobilityModel const> a, ns3::Ptr<ns3::MobilityModel const> b, uint32_t modelUid) [member function]
+    cls.add_method('AddPathData', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::JakesProcess >', 'data'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b'), param('uint32_t', 'modelUid')])
     ## propagation-cache.h (module 'propagation'): ns3::Ptr<ns3::JakesProcess> ns3::PropagationCache<ns3::JakesProcess>::GetPathData(ns3::Ptr<ns3::MobilityModel const> a, ns3::Ptr<ns3::MobilityModel const> b, uint32_t modelUid) [member function]
     cls.add_method('GetPathData', 
                    'ns3::Ptr< ns3::JakesProcess >', 
@@ -4015,6 +4019,10 @@ def register_Ns3YansWifiChannelHelper_methods(root_module, cls):
     cls.add_method('AddPropagationLoss', 
                    'void', 
                    [param('std::string', 'name'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## yans-wifi-helper.h (module 'wifi'): int64_t ns3::YansWifiChannelHelper::AssignStreams(ns3::Ptr<ns3::YansWifiChannel> c, int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('ns3::Ptr< ns3::YansWifiChannel >', 'c'), param('int64_t', 'stream')])
     ## yans-wifi-helper.h (module 'wifi'): ns3::Ptr<ns3::YansWifiChannel> ns3::YansWifiChannelHelper::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::YansWifiChannel >', 
@@ -4036,10 +4044,6 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::YansWifiPhyHelper const &', 'arg0')])
     ## yans-wifi-helper.h (module 'wifi'): ns3::YansWifiPhyHelper::YansWifiPhyHelper() [constructor]
     cls.add_constructor([])
-    ## yans-wifi-helper.h (module 'wifi'): int64_t ns3::YansWifiPhyHelper::AssignStreams(int64_t stream) [member function]
-    cls.add_method('AssignStreams', 
-                   'int64_t', 
-                   [param('int64_t', 'stream')])
     ## yans-wifi-helper.h (module 'wifi'): static ns3::YansWifiPhyHelper ns3::YansWifiPhyHelper::Default() [member function]
     cls.add_method('Default', 
                    'ns3::YansWifiPhyHelper', 
@@ -9637,11 +9641,11 @@ def register_Ns3JakesProcess_methods(root_module, cls):
     cls.add_constructor([param('ns3::JakesProcess const &', 'arg0')])
     ## jakes-process.h (module 'propagation'): ns3::JakesProcess::JakesProcess() [constructor]
     cls.add_constructor([])
-    ## jakes-process.h (module 'propagation'): static int64_t ns3::JakesProcess::AssignStreams(int64_t stream) [member function]
-    cls.add_method('AssignStreams', 
-                   'int64_t', 
-                   [param('int64_t', 'stream')], 
-                   is_static=True)
+    ## jakes-process.h (module 'propagation'): void ns3::JakesProcess::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## jakes-process.h (module 'propagation'): double ns3::JakesProcess::GetChannelGainDb() const [member function]
     cls.add_method('GetChannelGainDb', 
                    'double', 
@@ -9657,9 +9661,15 @@ def register_Ns3JakesProcess_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## jakes-process.h (module 'propagation'): void ns3::JakesProcess::SetPropagationLossModel(ns3::Ptr<const ns3::PropagationLossModel> arg0) [member function]
+    cls.add_method('SetPropagationLossModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PropagationLossModel const >', 'arg0')])
     return
 
 def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
+    ## jakes-propagation-loss-model.h (module 'propagation'): ns3::JakesPropagationLossModel::PI [variable]
+    cls.add_static_attribute('PI', 'double const', is_const=True)
     ## jakes-propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::JakesPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
