@@ -53,6 +53,7 @@ NS_LOG_COMPONENT_DEFINE ("AnimationInterface");
 namespace ns3 {
 
 #define PURGE_INTERVAL 5
+
 static bool initialized = false;
 std::map <uint32_t, std::string> AnimationInterface::nodeDescriptions;
 std::map <uint32_t, Rgb> AnimationInterface::nodeColors;
@@ -101,6 +102,12 @@ void AnimationInterface::StartNewTraceFile ()
   ++i;
 
 }
+
+std::string AnimationInterface::GetNetAnimVersion ()
+{
+  return "netanim-3.101";
+}
+
 void AnimationInterface::SetStartTime (Time t)
 {
   m_startTime = t;
@@ -1327,6 +1334,7 @@ std::string AnimationInterface::GetPreamble ()
     Description of attributes:\n\
     =========================\n\
     anim\n\
+    * ver = Current version\n\
     topology\n\
     * minX = minimum X coordinate of the canvas\n\
     * minY = minimum Y coordinate of the canvas\n\
@@ -1579,7 +1587,7 @@ void AnimationInterface::SetNodeDescription (NodeContainer nc, std::string descr
 std::string AnimationInterface::GetXMLOpen_anim (uint32_t lp)
 {
   std::ostringstream oss;
-  oss <<"<anim lp = \"" << lp << "\" >\n";
+  oss <<"<anim ver=\"" << GetNetAnimVersion () << "\">\n";
   return oss.str ();
 }
 std::string AnimationInterface::GetXMLOpen_topology (double minX, double minY, double maxX, double maxY)

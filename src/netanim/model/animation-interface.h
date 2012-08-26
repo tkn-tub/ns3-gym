@@ -553,6 +553,7 @@ private:
   void StartNewTraceFile();
 
   std::string GetIpv4Address (Ptr <NetDevice> nd);
+  std::string GetNetAnimVersion ();
 
   // XML helpers
   std::string GetPreamble (void);
