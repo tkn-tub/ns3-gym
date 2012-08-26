@@ -159,9 +159,12 @@ ChainRegressionTest::CreateDevices ()
   InternetStackHelper internetStack;
   internetStack.SetRoutingHelper (aodv);
   internetStack.Install (*m_nodes);
-  streamsUsed += aodv.AssignStreams (*m_nodes, 0);
+  streamsUsed += internetStack.AssignStreams (*m_nodes, streamsUsed);
+  // InternetStack uses m_size more streams
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (devices.GetN () * 6) + m_size, "Stream assignment mismatch");
+  streamsUsed += aodv.AssignStreams (*m_nodes, streamsUsed);
   // AODV uses m_size more streams
-  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + m_size), "Stream assignment mismatch");
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, ((devices.GetN () * 6) + (2*m_size)), "Stream assignment mismatch");
 
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
