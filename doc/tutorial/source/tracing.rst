@@ -1298,7 +1298,7 @@ when the ``main`` function of your script is running, but before
 executing the simulation,  ``Simulator::Run`` will return control back to 
 the ``main`` function.  When this happens, the script enters what can be 
 called "Teardown Time," which is when the structures and objects created 
-during setup and taken apart and released.
+during setup are taken apart and released.
 
 Perhaps the most common mistake made in trying to use the tracing system is 
 assuming that entities constructed dynamically during simulation time are
