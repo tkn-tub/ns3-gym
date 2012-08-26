@@ -58,6 +58,7 @@ class BuildingsPropagationLossModel : public PropagationLossModel
 public:
   static TypeId GetTypeId (void);
 
+  BuildingsPropagationLossModel ();
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
@@ -82,15 +83,12 @@ protected:
   {
   public:
     ShadowingLoss ();
-    ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver);
+    ShadowingLoss (double shadowingValue, Ptr<MobilityModel> receiver);
     double GetLoss () const;
     Ptr<MobilityModel> GetReceiver (void) const;
-    static int64_t AssignStreams (int64_t stream);
   protected:
-    Ptr<MobilityModel> m_receiver;
-    static Ptr<NormalRandomVariable> m_randVariable;
-
     double m_shadowingValue;
+    Ptr<MobilityModel> m_receiver;
   };
 
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
@@ -100,6 +98,7 @@ protected:
   double m_shadowingSigmaExtWalls;
   double m_shadowingSigmaOutdoor;
   double m_shadowingSigmaIndoor;
+  Ptr<NormalRandomVariable> m_randVariable;
 
   virtual int64_t DoAssignStreams (int64_t stream);
 };

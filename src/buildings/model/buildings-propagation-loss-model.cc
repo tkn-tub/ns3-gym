@@ -34,26 +34,17 @@
 NS_LOG_COMPONENT_DEFINE ("BuildingsPropagationLossModel");
 
 namespace ns3 {
-  Ptr<NormalRandomVariable> BuildingsPropagationLossModel::ShadowingLoss::m_randVariable = CreateObject<NormalRandomVariable> ();
 
 NS_OBJECT_ENSURE_REGISTERED (BuildingsPropagationLossModel);
-
 
 BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss ()
 {
 }
 
-
-BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double mean, double sigma, Ptr<MobilityModel> receiver)
-  : m_receiver (receiver)
+BuildingsPropagationLossModel::ShadowingLoss::ShadowingLoss (double shadowingValue, Ptr<MobilityModel> receiver)
+  : m_shadowingValue (shadowingValue), m_receiver (receiver)
 {
-  // NormalRandomVariable class wants mean and variance (sigma is a
-  // standard deviation)
-  m_randVariable->SetAttribute ("Mean", DoubleValue (mean));
-  m_randVariable->SetAttribute ("Variance", DoubleValue (sigma * sigma));
-
-  m_shadowingValue = m_randVariable->GetValue ();
-  NS_LOG_INFO (this << " New Shadowing: sigma " << sigma << " value " << m_shadowingValue);
+  NS_LOG_INFO (this << " New Shadowing value " << m_shadowingValue);
 }
 
 double
@@ -66,13 +57,6 @@ Ptr<MobilityModel>
 BuildingsPropagationLossModel::ShadowingLoss::GetReceiver () const
 {
   return m_receiver;
-}
-
-int64_t
-BuildingsPropagationLossModel::ShadowingLoss::AssignStreams (int64_t stream)
-{
-  m_randVariable->SetStream (stream);
-  return 1;
 }
 
 TypeId
@@ -110,6 +94,10 @@ BuildingsPropagationLossModel::GetTypeId (void)
   return tid;
 }
 
+BuildingsPropagationLossModel::BuildingsPropagationLossModel ()
+{
+  m_randVariable = CreateObject<NormalRandomVariable> ();
+}
 
 double
 BuildingsPropagationLossModel::ExternalWallLoss (Ptr<BuildingsMobilityModel> a) const
@@ -176,7 +164,9 @@ const
         {
           double sigma = EvaluateSigma (a1, b1);
           // side effect: will create new entry          
-          ait->second[b] = ShadowingLoss (0.0, sigma, b);          
+          // sigma is standard deviation, not variance
+          double shadowingValue = m_randVariable->GetValue (0.0, (sigma*sigma));
+          ait->second[b] = ShadowingLoss (shadowingValue, b);          
           return (ait->second[b].GetLoss ());
         }
     }
@@ -184,7 +174,9 @@ const
     {
       double sigma = EvaluateSigma (a1, b1);
       // side effect: will create new entries in both maps
-      m_shadowingLossMap[a][b] = ShadowingLoss (0.0, sigma, b);  
+      // sigma is standard deviation, not variance
+      double shadowingValue = m_randVariable->GetValue (0.0, (sigma*sigma));
+      m_shadowingLossMap[a][b] = ShadowingLoss (shadowingValue, b);  
       return (m_shadowingLossMap[a][b].GetLoss ());       
     }
 }
@@ -229,7 +221,8 @@ BuildingsPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityMod
 int64_t
 BuildingsPropagationLossModel::DoAssignStreams (int64_t stream)
 {
-  return ShadowingLoss::AssignStreams (stream);
+  m_randVariable->SetStream (stream);
+  return 1;
 }
 
 
