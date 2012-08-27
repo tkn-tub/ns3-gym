@@ -319,7 +319,7 @@ Ipv4NixVectorRouting::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Chann
                       continue;
                     }
                   Ptr<Channel> chBridged = ndBridged->GetChannel ();
-                  if (channel == 0)
+                  if (chBridged == 0)
                     {
                       continue;
                     }
