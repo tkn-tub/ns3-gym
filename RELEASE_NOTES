@@ -76,6 +76,7 @@ Bugs fixed
  - bug 1475 - "test.py --list" should sort the output
  - bug 1476 - TestCase::GetName () should not be private
  - bug 1477 - Click doesn't work with raw sockets
+ - bug 1481 - Openflow example doesn't run
  - bug 1486 - Segfaults in nix-vector-routing with bridges
  - bug 1489 - Jakes Log component is missing
  - fixed bug with multiple LCs in UL BSR
