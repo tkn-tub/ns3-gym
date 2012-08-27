@@ -26,7 +26,10 @@ import ns.mobility
 import ns.network
 import ns.olsr
 import ns.wifi
-import ns.visualizer
+try:
+    import ns.visualizer
+except ImportError:
+    pass
 
 DISTANCE = 100 # (m)
 NUM_NODES_SIDE = 3
