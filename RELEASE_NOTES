@@ -72,6 +72,7 @@ Bugs fixed
  - bug 1464 - ConfigStore Save + Load => Could not set default value 
                   for ns3::UdpSocketImpl::IcmpCallback
  - bug 1470 - define default parameter for constructor in .h file
+ - bug 1473 - GetQueue/SetQueue missing from Csma python bindings
  - bug 1475 - "test.py --list" should sort the output
  - bug 1476 - TestCase::GetName () should not be private
  - bug 1477 - Click doesn't work with raw sockets
