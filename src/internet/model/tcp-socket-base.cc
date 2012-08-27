@@ -1236,7 +1236,7 @@ TcpSocketBase::ProcessWait (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   // Extract the flags. PSH and URG are not honoured.
   uint8_t tcpflags = tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG);
 
-  if (packet->GetSize () > 0)
+  if (packet->GetSize () > 0 && tcpflags != TcpHeader::ACK)
     { // Bare data, accept it
       ReceivedData (packet, tcpHeader);
     }

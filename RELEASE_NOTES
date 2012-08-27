@@ -63,6 +63,7 @@ New user-visible features
 Bugs fixed
 ----------
  - bug 101 - random variable initialization
+ - bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
  - bug 1308 - Nix-vector; do not process packets to self
  - bug 1386 - assert if PositionAllocator not provided to 
               RandomWaypointMobilityModel
