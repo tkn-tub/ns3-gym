@@ -73,7 +73,8 @@ Bugs fixed
                   for ns3::UdpSocketImpl::IcmpCallback
  - bug 1475 - "test.py --list" should sort the output
  - bug 1476 - TestCase::GetName () should not be private
- - Bug 1477 - Click doesn't work with raw sockets
+ - bug 1477 - Click doesn't work with raw sockets
+ - bug 1489 - Jakes Log component is missing
  - fixed bug with multiple LCs in UL BSR
  - fixed bug with lena-dual-stripe crashes with --homeUesHomeEnbRatio=2
 
