@@ -115,6 +115,7 @@ RawTextConfigLoad::Strip (std::string value)
 void 
 RawTextConfigLoad::Default (void)
 {
+  m_is->clear ();
   m_is->seekg (0);
   std::string type, name, value;
   *m_is >> type >> name >> value;
@@ -132,6 +133,7 @@ RawTextConfigLoad::Default (void)
 void 
 RawTextConfigLoad::Global (void)
 {
+  m_is->clear ();
   m_is->seekg (0);
   std::string type, name, value;
   *m_is >> type >> name >> value;
