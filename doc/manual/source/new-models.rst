@@ -174,7 +174,7 @@ sort, it makes sense to put it into the ``src/`` directory somewhere,
 particularly for ease of integrating with the build system.
 
 In the case of the error model, it is very related to the packet class, so it
-makes sense to implement this in the ``src/network/model`` directory where |ns3|
+makes sense to implement this in the ``src/network/`` module where |ns3|
 packets are implemented.  
 
 waf and wscript
@@ -393,15 +393,6 @@ test program 1
 
 Object Framework
 ++++++++++++++++
-
-::
-    static const ClassId cid;
-
-    const InterfaceId ErrorModel::iid =
-      MakeInterfaceId ("ErrorModel", Object::iid);
-
-    const ClassId ErrorModel::cid =
-      MakeClassId<ErrorModel> ("ErrorModel", ErrorModel::iid);
 
 Adding-a-sample-script
 **********************
