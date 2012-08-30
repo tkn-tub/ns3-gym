@@ -1389,7 +1389,6 @@ MIESM
 ^^^^^
 
 The specific LSM method adopted is the one based on the usage of a mutual information metric, commonly referred to as the mutual information per per coded bit (MIB or MMIB when a mean of multiples MIBs is involved). Another option would be represented by the Exponential ESM (EESM); however, recent studies demonstrate that MIESM outperforms EESM in terms of accuracy [LozanoCost]_.
-Moreover, from an HARQ perspective, the MIESM has more flexibility in managing the combinations of the HARQ blocks. In fact, by working in the MI field, the formulas for evaluating both the chase combining (CC) and the incremental redundancy (IR) schemes work in the MI field as well, where there is no dependency respect to the MCS. On the contrary, the HARQ model of EESM works in the effective SINR field, which is MCS dependent, and does not allow the combination of HARQ blocks using different MCSs [wimaxEmd]_.
 
 .. _fig-miesm-architecture:
 
@@ -1548,6 +1547,55 @@ According to the considerations above, a model more flexible can be obtained con
 
 
 Therefore the PHY layer implements the MIMO model as the gain perceived by the receiver when using a MIMO scheme respect to the one obtained using SISO one. We note that, these gains referred to a case where there is no correlation between the antennas in MIMO scheme; therefore do not model degradation due to paths correlation.
+
+
+
+
+
+
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
+
+----------
+HARQ Model
+----------
+
+The HARQ scheme implemented is based on a incremental redundancy (IR) solutions combined with multiple stop-and-wait processes for enabling a continuous data flow. The core of the HARQ algorithm has been implemented within the respective schedulers class (i.e., ``RrFfMacScheduler`` and ``PfFfMacScheduler``), while the decodification part of the HARQ has been implemented in the ``LteSpectrumPhy`` class.
+
+At the MAC layer, the HARQ entity residing in the scheduler is in charge of controlling the 8 HARQ processes for generating new packets and managing the retransmissions both for the DL and the UL. The scheduler collects the HARQ feedbacks from eNB and UE PHY layers (respectively UL and DL connection) by means of the FF API ``SchedUlTriggerReq`` and ``SchedUlTriggerReq`` in a FIFO buffer for maintaining the order of arrival. According to the HARQ feedbacks and the RLC buffers status, the scheduler generates a set of DCIs including both retransmissions of HARQ blocks received erroneous and new transmissions giving priority to the former. In allocating the retransmission we adopt this assumption, the scheduler uses a similar allocation configuration of the original block, which means maintaining the same number of RBGs and the same MCS. In case of the RGBs used for the original transmission are available they will be reused, otherwise the closest in frequency are selected in order to maintain similar channel conditions. It is to be noted that, the choice of maintaining in the retransmissions the same MCS of the original block is mandatory, otherwise the PHY would not be able of estimating the error probability of aggregated retransmissions. According to the standard, the UL retransmissions are synchronous and therefore are allocated 7 ms after the original transmission. While for the DL, they are asynchronous ans therefore can be allocated in a more flexible way starting from 7 ms. In detail, they receive highest priority for being transmitted after 7 ms; however, due to resource constraints they might be delayed a bit more. The HARQ processes behavior is depicted in Figure:ref:`fig-harq-processes-scheme`.
+
+
+.. _fig-harq-processes-scheme:
+
+.. figure:: figures/lte-harq-processes-scheme.*
+   :align: center
+
+   HARQ processes behavior in LTE
+
+
+
+At the PHY layer the HARQ is involved in the evaluation of the error distribution process by controlling the information received per process bases and combining it with previous blocks, when necessary in retransmitted ones, by means of the MIESM mutual information scheme presented before. This part of HARQ devoted to manage the decodification of the HARQ blocks has been implemented in the ``LteSpectrumPhy`` class, where it has been also included the messaging algorithm in charge of communicating to the HARQ in the scheduler the result of the decodifications. These messages are encapsulated in the ``dlInfoListElement`` for DL and ``ulInfoListElement`` for UL and sent through the PUCCH and the PHICH respectively in an ideal error free way according to the assumptions in their implementation. A scketch of the iteration bewteen HARQ and LTE protocol stack in represented in Figure:ref:`fig-harq-architecture`.
+
+
+.. _fig-harq-architecture:
+
+.. figure:: figures/lte-harq-architecture.*
+   :align: center
+
+   Interaction between HARQ and LTE protocol stack
+
+
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
+
+
+
 
 
 -----------------------

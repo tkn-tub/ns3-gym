@@ -25,7 +25,9 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
 	$(FIGURES)/lte-subframe-structure.dia \
-	$(FIGURES)/lte-epc-x2-interface.dia
+	$(FIGURES)/lte-epc-x2-interface.dia \
+	$(FIGURES)/lte-harq-architecture.dia \
+	$(FIGURES)/lte-harq-processes-scheme.dia
 
 
 # specify eps figures from which .png and .pdf figures need to be built
