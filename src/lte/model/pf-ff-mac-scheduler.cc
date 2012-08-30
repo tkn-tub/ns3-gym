@@ -1138,7 +1138,7 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
     case UlCqi_s::SRS:
       {
         // get the RNTI from vendor specific parameters
-        uint16_t rnti;
+        uint16_t rnti = 0;
         NS_ASSERT (params.m_vendorSpecificList.size () > 0);
         for (uint16_t i = 0; i < params.m_vendorSpecificList.size (); i++)
           {
