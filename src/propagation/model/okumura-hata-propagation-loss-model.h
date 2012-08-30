@@ -63,6 +63,7 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
+  virtual int64_t DoAssignStreams (int64_t stream);
   
   EnvironmentType m_environment;
   CitySize m_citySize;

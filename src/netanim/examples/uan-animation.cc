@@ -99,11 +99,13 @@ NetAnimExperiment::UpdatePositions (NodeContainer &nodes)
 
   NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Updating positions");
   NodeContainer::Iterator it = nodes.Begin ();
-  UniformVariable uv (0, m_boundary);
+  Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
+  uv->SetAttribute ("Min", DoubleValue (0.0));
+  uv->SetAttribute ("Max", DoubleValue (m_boundary));
   for (; it != nodes.End (); it++)
     {
       Ptr<MobilityModel> mp = (*it)->GetObject<MobilityModel> ();
-      mp->SetPosition (Vector (uv.GetValue (), uv.GetValue (), 70.0));
+      mp->SetPosition (Vector (uv->GetValue (), uv->GetValue (), 70.0));
     }
 }
 
@@ -147,15 +149,17 @@ NetAnimExperiment::Run (UanHelper &uan)
   Ptr<ListPositionAllocator> pos = CreateObject<ListPositionAllocator> ();
 
   {
-    UniformVariable urv (0, m_boundary);
+    Ptr<UniformRandomVariable> urv = CreateObject<UniformRandomVariable> ();
+    urv->SetAttribute ("Min", DoubleValue (0.0));
+    urv->SetAttribute ("Max", DoubleValue (m_boundary));
     pos->Add (Vector (m_boundary / 2.0, m_boundary / 2.0, m_depth));
     double rsum = 0;
 
     double minr = 2 * m_boundary;
     for (uint32_t i = 0; i < m_numNodes; i++)
       {
-        double x = urv.GetValue ();
-        double y = urv.GetValue ();
+        double x = urv->GetValue ();
+        double y = urv->GetValue ();
         double newr = sqrt ((x - m_boundary / 2.0) * (x - m_boundary / 2.0)
                             + (y - m_boundary / 2.0) * (y - m_boundary / 2.0));
         rsum += newr;
@@ -179,8 +183,8 @@ NetAnimExperiment::Run (UanHelper &uan)
     socket.SetProtocol (0);
 
     OnOffHelper app ("ns3::PacketSocketFactory", Address (socket));
-    app.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-    app.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+    app.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+    app.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
     app.SetAttribute ("DataRate", DataRateValue (m_dataRate));
     app.SetAttribute ("PacketSize", UintegerValue (m_packetSize));
 

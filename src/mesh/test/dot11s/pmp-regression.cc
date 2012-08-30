@@ -19,7 +19,8 @@
  */
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -52,7 +53,8 @@ PeerManagementProtocolRegressionTest::~PeerManagementProtocolRegressionTest ()
 void
 PeerManagementProtocolRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
   CreateDevices ();
 
@@ -85,16 +87,23 @@ PeerManagementProtocolRegressionTest::CreateNodes ()
 void
 PeerManagementProtocolRegressionTest::CreateDevices ()
 {
+  int64_t streamsUsed = 0;
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::Dot11sStack");
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
+  // Two devices, four streams per device (one for mac, one for phy, 
+  // two for plugins)
+  streamsUsed += mesh.AssignStreams (meshDevices, 0);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 4), "Stream assignment mismatch");
+  wifiChannel.AssignStreams (chan, streamsUsed);
   // 3. write PCAP if needed
   wifiPhy.EnablePcapAll (CreateTempDirFilename (PREFIX));
 }

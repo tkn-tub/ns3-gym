@@ -49,13 +49,6 @@ TraceFadingLossModel::~TraceFadingLossModel ()
 {
   m_fadingTrace.clear ();
   m_windowOffsetsMap.clear ();
-  std::map <ChannelRealizationId_t, UniformVariable* >::iterator itVar;
-  itVar = m_startVariableMap.begin ();
-  while (itVar!=m_startVariableMap.end ())
-    {
-      delete ((*itVar).second);
-      itVar++;
-    }
   m_startVariableMap.clear ();
 }
 
@@ -167,7 +160,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
           std::map <ChannelRealizationId_t, int >::iterator itOff2;
           for (itOff2 = m_windowOffsetsMap.begin (); itOff2 != m_windowOffsetsMap.end (); itOff2++)
             {
-              std::map <ChannelRealizationId_t, UniformVariable* >::iterator itVar;
+              std::map <ChannelRealizationId_t, Ptr<UniformRandomVariable> >::iterator itVar;
               itVar = m_startVariableMap.find ((*itOff2).first);
               (*itOff2).second = (*itVar).second->GetValue ();
             }
@@ -177,9 +170,11 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
   else
     {
       NS_LOG_LOGIC (this << "insert new channel realization, m_windowOffsetMap.size () = " << m_windowOffsetsMap.size ());
-      UniformVariable* startV = new UniformVariable (1, (m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0);
+      Ptr<UniformRandomVariable> startV = CreateObject<UniformRandomVariable> ();
+      startV->SetAttribute ("Min", DoubleValue (1.0));
+      startV->SetAttribute ("Max", DoubleValue ((m_traceLength.GetSeconds () - m_windowSize.GetSeconds ()) * 1000.0));
       ChannelRealizationId_t mobilityPair = std::make_pair (a,b);
-      m_startVariableMap.insert (std::pair<ChannelRealizationId_t,UniformVariable* > (mobilityPair, startV));
+      m_startVariableMap.insert (std::pair<ChannelRealizationId_t,Ptr<UniformRandomVariable> > (mobilityPair, startV));
       m_windowOffsetsMap.insert (std::pair<ChannelRealizationId_t,int> (mobilityPair, startV->GetValue ()));
     }
 
@@ -223,6 +218,21 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity (
 
   NS_LOG_LOGIC (this << *rxPsd);
   return rxPsd;
+}
+
+int64_t
+TraceFadingLossModel::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  int64_t currentStream = stream;
+  std::map <ChannelRealizationId_t, Ptr<UniformRandomVariable> >::iterator itVar;
+  itVar = m_startVariableMap.begin ();
+  while (itVar!=m_startVariableMap.end ())
+    {
+      (*itVar).second->SetStream (currentStream);
+      currentStream += 1;
+    }
+  return (currentStream - stream);
 }
 
 

@@ -54,7 +54,7 @@ class TypeHeader : public Header
 {
 public:
   /// c-tor
-  TypeHeader (MessageType t);
+  TypeHeader (MessageType t = AODVTYPE_RREQ);
 
   ///\name Header serialization/deserialization
   //\{

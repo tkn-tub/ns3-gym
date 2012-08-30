@@ -188,4 +188,10 @@ Cost231PropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel
   return txPowerDbm + GetLoss (a, b);
 }
 
+int64_t
+Cost231PropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 }

@@ -57,7 +57,7 @@ Alguns pontos importantes para se observar:
 	project will continue to maintain ns-2 while |ns3| is being built,
 	and will study transition and integration mechanisms.
 
-* O |ns3| não é uma extensão do `ns-2 <http://www.isi.edu/nsnam/ns>`_; O |ns3| é um simulador novo. Ambos são escritos em C++, mas o |ns3| é totalmente novo e não suporta as APIs da versão anterior. Algumas funcionalidades do ns-2 já foram portadas para o |ns3|. O projeto continuará mantendo o ns-2 enquanto o |ns3| estiver em fase de desenvolvimento e formas de integração e transição estão em estudo.
+* O |ns3| não é uma extensão do ns-2; O |ns3| é um simulador novo. Ambos são escritos em C++, mas o |ns3| é totalmente novo e não suporta as APIs da versão anterior. Algumas funcionalidades do ns-2 já foram portadas para o |ns3|. O projeto continuará mantendo o ns-2 enquanto o |ns3| estiver em fase de desenvolvimento e formas de integração e transição estão em estudo.
 
 ..
 	* |ns3| is open-source, and the project strives to maintain an 

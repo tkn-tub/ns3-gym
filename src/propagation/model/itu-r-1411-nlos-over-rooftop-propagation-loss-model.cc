@@ -220,5 +220,11 @@ ItuR1411NlosOverRooftopPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   return (txPowerDbm - GetLoss (a, b));
 }
 
+int64_t
+ItuR1411NlosOverRooftopPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 
 } // namespace ns3

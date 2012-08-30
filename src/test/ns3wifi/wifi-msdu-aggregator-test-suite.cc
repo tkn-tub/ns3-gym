@@ -149,10 +149,8 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      InetSocketAddress (staNodeInterface.GetAddress (0),
                                         udpPort));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate ("1Mbps")));
   onoff.SetAttribute ("PacketSize", UintegerValue (100));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetConstantRate (DataRate ("1Mbps"));
   ApplicationContainer sourceApp = onoff.Install (ap.Get (0));
   sourceApp.Start (Seconds (1.0));
   sourceApp.Stop (Seconds (9.0));

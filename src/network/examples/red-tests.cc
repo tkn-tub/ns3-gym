@@ -114,10 +114,8 @@ BuildAppsTest (uint32_t test)
        * onoffhelper is a client that send data to TCP destination
        */
       OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
-      clientHelper1.SetAttribute 
-        ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper1.SetAttribute 
-        ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       clientHelper1.SetAttribute 
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
       clientHelper1.SetAttribute 
@@ -133,10 +131,8 @@ BuildAppsTest (uint32_t test)
 
       // Connection two
       OnOffHelper clientHelper2 ("ns3::TcpSocketFactory", Address ());
-      clientHelper2.SetAttribute 
-        ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper2.SetAttribute 
-        ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       clientHelper2.SetAttribute 
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
       clientHelper2.SetAttribute 
@@ -186,10 +182,8 @@ BuildAppsTest (uint32_t test)
        * onoffhelper is a client that send data to TCP destination
        */
       OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
-      clientHelper1.SetAttribute 
-        ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper1.SetAttribute 
-        ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       clientHelper1.SetAttribute 
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
       clientHelper1.SetAttribute 
@@ -205,10 +199,8 @@ BuildAppsTest (uint32_t test)
 
       // Connection #2
       OnOffHelper clientHelper2 ("ns3::TcpSocketFactory", Address ());
-      clientHelper2.SetAttribute 
-        ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper2.SetAttribute 
-        ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       clientHelper2.SetAttribute 
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
       clientHelper2.SetAttribute 
@@ -224,10 +216,8 @@ BuildAppsTest (uint32_t test)
 
       // Connection #3
       OnOffHelper clientHelper3 ("ns3::TcpSocketFactory", Address ());
-      clientHelper3.SetAttribute 
-        ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper3.SetAttribute 
-        ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper3.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper3.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       clientHelper3.SetAttribute 
         ("DataRate", DataRateValue (DataRate ("10Mb/s")));
       clientHelper3.SetAttribute 
@@ -243,10 +233,8 @@ BuildAppsTest (uint32_t test)
 
       // Connection #4
       OnOffHelper clientHelper4 ("ns3::TcpSocketFactory", Address ());
-      clientHelper4.SetAttribute 
-        ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper4.SetAttribute 
-        ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper4.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper4.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       clientHelper4.SetAttribute 
         ("DataRate", DataRateValue (DataRate ("40b/s")));
       clientHelper4.SetAttribute 

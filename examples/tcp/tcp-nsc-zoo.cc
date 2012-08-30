@@ -126,9 +126,9 @@ int main (int argc, char *argv[])
           Address remoteAddress (InetSocketAddress (ipv4Interfaces.GetAddress (j), servPort));
           OnOffHelper clientHelper ("ns3::TcpSocketFactory", remoteAddress);
           clientHelper.SetAttribute 
-            ("OnTime", RandomVariableValue (ConstantVariable (1)));
+            ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
           clientHelper.SetAttribute 
-            ("OffTime", RandomVariableValue (ConstantVariable (0)));
+            ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
           ApplicationContainer clientApp = clientHelper.Install (n.Get (i));
           clientApp.Start (Seconds (j)); /* delay startup depending on node number */
           clientApp.Stop (Seconds (j + runtime));

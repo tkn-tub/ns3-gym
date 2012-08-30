@@ -148,7 +148,7 @@ do |ns3|, além do que isto poderia ser potencialmente útil a outras pessoas.
 	there is no log message for the no ack case.  You could simply add one, 
 	changing the code from:
 
-Vamos analisar um exemplo, adicionando mais informações de registro ao `socket` TCP do arquivo ``tcp-socket-base.cc``, para isto vamos acrescentando uma nova mensagem de registro na implementação. Observe que em ``TcpSocketBase::ReceivedAck()`` não existem mensagem de registro para casos sem o *ACK*, então vamos adicionar uma da seguinte forma:
+Vamos analisar um exemplo, adicionando mais informações de registro ao `socket` TCP do arquivo ``tcp-socket-base.cc``, para isto vamos acrescentando uma nova mensagem de registro na implementação. Observe que em ``TcpSocketBase::ReceivedAck()`` não existem mensagem de registro para casos sem o ACK, então vamos adicionar uma da seguinte forma:
 
 ::
 
@@ -2491,7 +2491,17 @@ no início do arquivo.
 	interesting behaviors of the congestion window.
 
 
-Nas próximas linhas, temos um código com algumas informações novas. Se nós rastrearmos uma conexão que comporta-se perfeitamente, terminamos com um janela de congestionamento que aumenta monoliticamente. Para observarmos um comportamento interessante, introduzimos erros que causarão perda de pacotes, duplicação de `ACK`s e assim, introduz comportamentos mais interessantes a janela de congestionamento.
+Nas próximas linhas, temos um código com algumas informações novas. Se nós 
+
+rastrearmos uma conexão que comporta-se perfeitamente, terminamos com um
+
+janela de congestionamento que aumenta monoliticamente. Para observarmos um
+
+comportamento interessante, introduzimos erros que causarão perda de pacotes,
+
+duplicação de ACK's e assim, introduz comportamentos mais interessantes a
+
+janela de congestionamento.
 
 
 ..

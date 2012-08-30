@@ -18,8 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "position-allocator.h"
-#include "ns3/random-variable.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"
@@ -77,6 +78,11 @@ ListPositionAllocator::GetNext (void) const
       m_current = m_positions.begin ();
     }
   return v;
+}
+int64_t
+ListPositionAllocator::AssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator);
@@ -201,6 +207,11 @@ GridPositionAllocator::GetNext (void) const
   return Vector (x, y, 0.0);
 }
 
+int64_t
+GridPositionAllocator::AssignStreams (int64_t stream)
+{
+  return 0;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePositionAllocator);
 
@@ -213,14 +224,14 @@ RandomRectanglePositionAllocator::GetTypeId (void)
     .AddConstructor<RandomRectanglePositionAllocator> ()
     .AddAttribute ("X",
                    "A random variable which represents the x coordinate of a position in a random rectangle.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RandomRectanglePositionAllocator::m_x),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&RandomRectanglePositionAllocator::m_x),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Y",
                    "A random variable which represents the y coordinate of a position in a random rectangle.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RandomRectanglePositionAllocator::m_y),
-                   MakeRandomVariableChecker ());
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&RandomRectanglePositionAllocator::m_y),
+                   MakePointerChecker<RandomVariableStream> ());
   return tid;
 }
 
@@ -232,12 +243,12 @@ RandomRectanglePositionAllocator::~RandomRectanglePositionAllocator ()
 }
 
 void
-RandomRectanglePositionAllocator::SetX (RandomVariable x)
+RandomRectanglePositionAllocator::SetX (Ptr<RandomVariableStream> x)
 {
   m_x = x;
 }
 void
-RandomRectanglePositionAllocator::SetY (RandomVariable y)
+RandomRectanglePositionAllocator::SetY (Ptr<RandomVariableStream> y)
 {
   m_y = y;
 }
@@ -245,11 +256,18 @@ RandomRectanglePositionAllocator::SetY (RandomVariable y)
 Vector
 RandomRectanglePositionAllocator::GetNext (void) const
 {
-  double x = m_x.GetValue ();
-  double y = m_y.GetValue ();
+  double x = m_x->GetValue ();
+  double y = m_y->GetValue ();
   return Vector (x, y, 0.0);
 }
 
+int64_t
+RandomRectanglePositionAllocator::AssignStreams (int64_t stream)
+{
+  m_x->SetStream (stream);
+  m_y->SetStream (stream + 1);
+  return 2;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomBoxPositionAllocator);
 
@@ -262,19 +280,19 @@ RandomBoxPositionAllocator::GetTypeId (void)
     .AddConstructor<RandomBoxPositionAllocator> ()
     .AddAttribute ("X",
                    "A random variable which represents the x coordinate of a position in a random box.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RandomBoxPositionAllocator::m_x),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&RandomBoxPositionAllocator::m_x),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Y",
                    "A random variable which represents the y coordinate of a position in a random box.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RandomBoxPositionAllocator::m_y),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&RandomBoxPositionAllocator::m_y),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Z",
                    "A random variable which represents the z coordinate of a position in a random box.",
-                   RandomVariableValue (UniformVariable (0.0, 1.0)),
-                   MakeRandomVariableAccessor (&RandomBoxPositionAllocator::m_z),
-                   MakeRandomVariableChecker ());
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1.0]"),
+                   MakePointerAccessor (&RandomBoxPositionAllocator::m_z),
+                   MakePointerChecker<RandomVariableStream> ());
   return tid;
 }
 
@@ -286,17 +304,17 @@ RandomBoxPositionAllocator::~RandomBoxPositionAllocator ()
 }
 
 void
-RandomBoxPositionAllocator::SetX (RandomVariable x)
+RandomBoxPositionAllocator::SetX (Ptr<RandomVariableStream> x)
 {
   m_x = x;
 }
 void
-RandomBoxPositionAllocator::SetY (RandomVariable y)
+RandomBoxPositionAllocator::SetY (Ptr<RandomVariableStream> y)
 {
   m_y = y;
 }
 void
-RandomBoxPositionAllocator::SetZ (RandomVariable z)
+RandomBoxPositionAllocator::SetZ (Ptr<RandomVariableStream> z)
 {
   m_z = z;
 }
@@ -304,13 +322,20 @@ RandomBoxPositionAllocator::SetZ (RandomVariable z)
 Vector
 RandomBoxPositionAllocator::GetNext (void) const
 {
-  double x = m_x.GetValue ();
-  double y = m_y.GetValue ();
-  double z = m_z.GetValue ();
+  double x = m_x->GetValue ();
+  double y = m_y->GetValue ();
+  double z = m_z->GetValue ();
   return Vector (x, y, z);
 }
 
-
+int64_t
+RandomBoxPositionAllocator::AssignStreams (int64_t stream)
+{
+  m_x->SetStream (stream);
+  m_y->SetStream (stream + 1);
+  m_z->SetStream (stream + 2);
+  return 3;
+}
 
 NS_OBJECT_ENSURE_REGISTERED (RandomDiscPositionAllocator);
 
@@ -323,14 +348,14 @@ RandomDiscPositionAllocator::GetTypeId (void)
     .AddConstructor<RandomDiscPositionAllocator> ()
     .AddAttribute ("Theta",
                    "A random variable which represents the angle (gradients) of a position in a random disc.",
-                   RandomVariableValue (UniformVariable (0.0, 6.2830)),
-                   MakeRandomVariableAccessor (&RandomDiscPositionAllocator::m_theta),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.2830]"),
+                   MakePointerAccessor (&RandomDiscPositionAllocator::m_theta),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Rho",
                    "A random variable which represents the radius of a position in a random disc.",
-                   RandomVariableValue (UniformVariable (0.0, 200.0)),
-                   MakeRandomVariableAccessor (&RandomDiscPositionAllocator::m_rho),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=200.0]"),
+                   MakePointerAccessor (&RandomDiscPositionAllocator::m_rho),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("X",
                    "The x coordinate of the center of the random position disc.",
                    DoubleValue (0.0),
@@ -353,12 +378,12 @@ RandomDiscPositionAllocator::~RandomDiscPositionAllocator ()
 }
 
 void
-RandomDiscPositionAllocator::SetTheta (RandomVariable theta)
+RandomDiscPositionAllocator::SetTheta (Ptr<RandomVariableStream> theta)
 {
   m_theta = theta;
 }
 void
-RandomDiscPositionAllocator::SetRho (RandomVariable rho)
+RandomDiscPositionAllocator::SetRho (Ptr<RandomVariableStream> rho)
 {
   m_rho = rho;
 }
@@ -375,12 +400,20 @@ RandomDiscPositionAllocator::SetY (double y)
 Vector
 RandomDiscPositionAllocator::GetNext (void) const
 {
-  double theta = m_theta.GetValue ();
-  double rho = m_rho.GetValue ();
+  double theta = m_theta->GetValue ();
+  double rho = m_rho->GetValue ();
   double x = m_x + std::cos (theta) * rho;
   double y = m_y + std::sin (theta) * rho;
   NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
   return Vector (x, y, 0.0);
+}
+
+int64_t
+RandomDiscPositionAllocator::AssignStreams (int64_t stream)
+{
+  m_theta->SetStream (stream);
+  m_rho->SetStream (stream + 1);
+  return 2;
 }
 
 
@@ -415,6 +448,7 @@ UniformDiscPositionAllocator::GetTypeId (void)
 
 UniformDiscPositionAllocator::UniformDiscPositionAllocator ()
 {
+  m_rv = CreateObject<UniformRandomVariable> ();
 }
 UniformDiscPositionAllocator::~UniformDiscPositionAllocator ()
 {
@@ -438,12 +472,11 @@ UniformDiscPositionAllocator::SetY (double y)
 Vector
 UniformDiscPositionAllocator::GetNext (void) const
 {
-  UniformVariable r (-m_rho, m_rho);
   double x,y;
   do
     {
-      x = r.GetValue ();
-      y = r.GetValue ();
+      x = m_rv->GetValue (-m_rho, m_rho);
+      y = m_rv->GetValue (-m_rho, m_rho);
     }
   while (sqrt (x*x + y*y) > m_rho);
 
@@ -451,6 +484,13 @@ UniformDiscPositionAllocator::GetNext (void) const
   y += m_y;
   NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
   return Vector (x, y, 0.0);
+}
+
+int64_t
+UniformDiscPositionAllocator::AssignStreams (int64_t stream)
+{
+  m_rv->SetStream (stream);
+  return 1;
 }
 
 

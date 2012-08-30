@@ -160,11 +160,17 @@ int main (int argc, char *argv[])
     {
       SSPosition[i] = CreateObject<RandomWaypointMobilityModel> ();
       SSPosAllocator[i] = CreateObject<RandomRectanglePositionAllocator> ();
-      SSPosAllocator[i]->SetX (UniformVariable ((i / 40) * 2000, (i / 40 + 1) * 2000));
-      SSPosAllocator[i]->SetY (UniformVariable ((i / 40) * 2000, (i / 40 + 1) * 2000));
+      Ptr<UniformRandomVariable> xVar = CreateObject<UniformRandomVariable> ();
+      xVar->SetAttribute ("Min", DoubleValue ((i / 40.0) * 2000));
+      xVar->SetAttribute ("Max", DoubleValue ((i / 40.0 + 1) * 2000));
+      SSPosAllocator[i]->SetX (xVar);
+      Ptr<UniformRandomVariable> yVar = CreateObject<UniformRandomVariable> ();
+      yVar->SetAttribute ("Min", DoubleValue ((i / 40.0) * 2000));
+      yVar->SetAttribute ("Max", DoubleValue ((i / 40.0 + 1) * 2000));
+      SSPosAllocator[i]->SetY (yVar);
       SSPosition[i]->SetAttribute ("PositionAllocator", PointerValue (SSPosAllocator[i]));
-      SSPosition[i]->SetAttribute ("Speed", RandomVariableValue (UniformVariable (10.3, 40.7)));
-      SSPosition[i]->SetAttribute ("Pause", RandomVariableValue (ConstantVariable (0.01)));
+      SSPosition[i]->SetAttribute ("Speed", StringValue ("ns3::UniformRandomVariable[Min=10.3|Max=40.7]"));
+      SSPosition[i]->SetAttribute ("Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.01]"));
 
       ss[i] = ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ();
       ss[i]->SetModulationType (WimaxPhy::MODULATION_TYPE_QAM16_12);

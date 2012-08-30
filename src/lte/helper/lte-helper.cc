@@ -644,6 +644,34 @@ LteHelper::EnableRlcTraces (void)
   EnableUlRlcTraces ();
 }
 
+int64_t
+LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<LteEnbNetDevice> lteEnb = DynamicCast<LteEnbNetDevice> (netDevice);
+      if (lteEnb)
+        {
+          Ptr<LteSpectrumPhy> dlPhy = lteEnb->GetPhy ()->GetDownlinkSpectrumPhy ();
+          Ptr<LteSpectrumPhy> ulPhy = lteEnb->GetPhy ()->GetUplinkSpectrumPhy ();
+          currentStream += dlPhy->AssignStreams (currentStream);
+          currentStream += ulPhy->AssignStreams (currentStream);
+        }
+      Ptr<LteUeNetDevice> lteUe = DynamicCast<LteUeNetDevice> (netDevice);
+      if (lteUe)
+        {
+          Ptr<LteSpectrumPhy> dlPhy = lteUe->GetPhy ()->GetDownlinkSpectrumPhy ();
+          Ptr<LteSpectrumPhy> ulPhy = lteUe->GetPhy ()->GetUplinkSpectrumPhy ();
+          currentStream += dlPhy->AssignStreams (currentStream);
+          currentStream += ulPhy->AssignStreams (currentStream);
+        }
+    }
+  return (currentStream - stream);
+}
+
 uint64_t
 FindImsiFromEnbRlcPath (std::string path)
 {

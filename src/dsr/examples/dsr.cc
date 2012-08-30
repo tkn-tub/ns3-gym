@@ -37,6 +37,7 @@
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/dsr-module.h"
+#include <sstream>
 
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("DsrTest");
@@ -142,13 +143,24 @@ main (int argc, char *argv[])
   MobilityHelper adhocMobility;
   ObjectFactory pos;
   pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
-  pos.Set ("X", RandomVariableValue (UniformVariable (0.0, 300.0)));
-  pos.Set ("Y", RandomVariableValue (UniformVariable (0.0, 1500.0)));
+  pos.Set ("X", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
+  pos.Set ("Y", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
   Ptr<PositionAllocator> taPositionAlloc = pos.Create ()->GetObject<PositionAllocator> ();
 
+  ostringstream speedUniformRandomVariableStream;
+  speedUniformRandomVariableStream << "ns3::UniformRandomVariable[Min=0.0|Max="
+                                   << nodeSpeed
+                                   << "]";
+
+  ostringstream pauseConstantRandomVariableStream;
+  pauseConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant="
+                                   << pauseTime
+                                   << "]";
+
   adhocMobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-                                  "Speed", RandomVariableValue (UniformVariable (0.0, nodeSpeed)),
-                                  "Pause", RandomVariableValue (ConstantVariable (pauseTime)),
+                                  //                                  "Speed", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=nodeSpeed]"),
+                                  "Speed", StringValue (speedUniformRandomVariableStream.str ()),
+                                  "Pause", StringValue (pauseConstantRandomVariableStream.str ()),
                                   "PositionAllocator", PointerValue (taPositionAlloc)
                                   );
   adhocMobility.Install (adhocNodes);
@@ -176,8 +188,8 @@ main (int argc, char *argv[])
       apps_sink.Stop (Seconds (TotalTime));
 
       OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address (InetSocketAddress (allInterfaces.GetAddress (i), port)));
-      onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+      onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
       onoff1.SetAttribute ("PacketSize", UintegerValue (packetSize));
       onoff1.SetAttribute ("DataRate", DataRateValue (DataRate (rate)));
 

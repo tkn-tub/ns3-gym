@@ -321,12 +321,18 @@ def configure(conf):
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile
+    if Options.options.build_profile == "release":
+        env['BUILD_SUFFIX'] = ''
+    else:
+        env['BUILD_SUFFIX'] = '-'+Options.options.build_profile
+    
     env['APPNAME'] = wutils.APPNAME
     env['VERSION'] = wutils.VERSION
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if Options.options.build_profile == 'release': 
             env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
+        if Options.options.build_profile == 'optimized': 
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
 
@@ -576,7 +582,7 @@ def create_suid_program(bld, name):
     program.is_ns3_program = True
     program.module_deps = list()
     program.name = name
-    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
+    program.target = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_SUFFIX)
 
     if bld.env['ENABLE_SUDO']:
         program.create_task("SuidBuild")
@@ -590,7 +596,7 @@ def create_ns3_program(bld, name, dependencies=('core',)):
 
     program.is_ns3_program = True
     program.name = name
-    program.target = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_PROFILE)
+    program.target = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_SUFFIX)
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "# #/.."
@@ -765,8 +771,8 @@ def build(bld):
                 # Add this program to the list if all of its
                 # dependencies will be built.
                 if program_built:
-                    object_name = "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, 
-                                                  obj.name, bld.env.BUILD_PROFILE)
+                    object_name = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, 
+                                                  obj.name, bld.env.BUILD_SUFFIX)
                     bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_name)
 
             # disable the modules themselves
@@ -1066,12 +1072,22 @@ def _doxygen(bld):
         raise SystemExit(1)
     text_out.close()
 
+    _getVersion()
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
+        Logs.error("Doxygen build returned an error.")
         raise SystemExit(1)
 
 
 from waflib import Context, Build
+
+def _getVersion():
+    """update the ns3_version.js file, when building documentation"""
+
+    prog = "doc/ns3_html_theme/get_version.sh"
+    if subprocess.Popen([prog]).wait() :
+        Logs.error(prog + " returned an error")
+        raise SystemExit(1)
 
 class Ns3DoxygenContext(Context.Context):
     """do a full build, generate the introspected doxygen and then the doxygen"""
@@ -1084,7 +1100,37 @@ class Ns3DoxygenContext(Context.Context):
 	bld.execute()
         _doxygen(bld)
 
+from waflib import Context, Build
+class Ns3SphinxContext(Context.Context):
+    """build the Sphinx documentation: manual, tutorial, models"""
+    
+    cmd = 'sphinx'
 
+    def sphinx_build(self, path):
+        print
+        print "[waf] Building sphinx docs for " + path
+        if subprocess.Popen(["make", "SPHINXOPTS=-N", "-k",
+                             "html", "singlehtml", "latexpdf" ],
+                            cwd=path).wait() :
+            Logs.error("Sphinx build of " + path + " returned an error.")
+            raise SystemExit(1)
+
+    def execute(self):
+        _getVersion()
+        for sphinxdir in ["manual", "models", "tutorial", "tutorial-pt-br"] :
+            self.sphinx_build(os.path.join("doc", sphinxdir))
+     
+
+from waflib import Context, Build
+class Ns3DocContext(Context.Context):
+    """build all the documentation: doxygen, manual, tutorial, models"""
+    
+    cmd = 'docs'
+
+    def execute(self):
+        steps = ['doxygen', 'sphinx']
+        Options.commands = steps + Options.commands
+        
     
 def lcov_report(bld):
     env = bld.env

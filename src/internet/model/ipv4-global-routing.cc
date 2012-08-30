@@ -60,6 +60,8 @@ Ipv4GlobalRouting::Ipv4GlobalRouting ()
     m_respondToInterfaceEvents (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  m_rand = CreateObject<UniformRandomVariable> ();
 }
 
 Ipv4GlobalRouting::~Ipv4GlobalRouting ()
@@ -218,7 +220,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
       uint32_t selectIndex;
       if (m_randomEcmpRouting)
         {
-          selectIndex = m_rand.GetInteger (0, allRoutes.size ()-1);
+          selectIndex = m_rand->GetInteger (0, allRoutes.size ()-1);
         }
       else 
         {
@@ -356,6 +358,14 @@ Ipv4GlobalRouting::RemoveRoute (uint32_t index)
       tmp++;
     }
   NS_ASSERT (false);
+}
+
+int64_t
+Ipv4GlobalRouting::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_rand->SetStream (stream);
+  return 1;
 }
 
 void

@@ -88,8 +88,8 @@ main (int argc, char *argv[])
   // Create OnOff applications to send TCP to the hub, one on each spoke node.
   //
   OnOffHelper onOffHelper ("ns3::TcpSocketFactory", Address ());
-  onOffHelper.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onOffHelper.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
   ApplicationContainer spokeApps;
 

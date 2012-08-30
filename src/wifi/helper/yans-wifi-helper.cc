@@ -172,6 +172,11 @@ YansWifiChannelHelper::Create (void) const
   return channel;
 }
 
+int64_t 
+YansWifiChannelHelper::AssignStreams (Ptr<YansWifiChannel> c, int64_t stream)
+{
+  return c->AssignStreams (stream);
+}
 
 YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0),

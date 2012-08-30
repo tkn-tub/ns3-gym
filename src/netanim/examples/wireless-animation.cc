@@ -151,11 +151,14 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop (Seconds (15.0));
-  AnimationInterface::SetNodeDescription (wifiApNode, "AP");
-  AnimationInterface::SetNodeDescription (wifiStaNodes, "STA");
-  AnimationInterface::SetNodeDescription (csmaNodes, "CSMA");
-  AnimationInterface anim ("wireless-animation.xml");
-  anim.EnablePacketMetadata (true);
+  AnimationInterface::SetNodeDescription (wifiApNode, "AP"); // Optional
+  AnimationInterface::SetNodeDescription (wifiStaNodes, "STA"); // Optional
+  AnimationInterface::SetNodeDescription (csmaNodes, "CSMA"); // Optional
+  AnimationInterface::SetNodeColor (wifiApNode, 0, 255, 0); // Optional
+  AnimationInterface::SetNodeColor (wifiStaNodes, 255, 0, 0); // Optional
+  AnimationInterface::SetNodeColor (csmaNodes, 0, 0, 255); // Optional
+  AnimationInterface anim ("wireless-animation.xml"); // Mandatory
+  anim.EnablePacketMetadata (true); // Optional
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

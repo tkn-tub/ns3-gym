@@ -19,13 +19,24 @@
  */
 
 #include "jakes-propagation-loss-model.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Jakes");
 
 namespace ns3
 {
 NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
 
+
+const double JakesPropagationLossModel::PI = 3.14159265358979323846;
+
 JakesPropagationLossModel::JakesPropagationLossModel()
-{}
+{
+  m_uniformVariable = CreateObject<UniformRandomVariable> ();
+  m_uniformVariable->SetAttribute ("Min", DoubleValue (-1.0 * PI));
+  m_uniformVariable->SetAttribute ("Max", DoubleValue (PI));
+}
 
 JakesPropagationLossModel::~JakesPropagationLossModel()
 {}
@@ -45,7 +56,27 @@ JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                           Ptr<MobilityModel> a,
                                           Ptr<MobilityModel> b) const
 {
-  return txPowerDbm + m_propagationCache.GetPathData (a, b, 0 /**Spectrum model uid is not used in PropagationLossModel*/)->GetChannelGainDb ();
+  Ptr<JakesProcess> pathData = m_propagationCache.GetPathData (a, b, 0 /**Spectrum model uid is not used in PropagationLossModel*/);
+  if (pathData == 0)
+    {
+      pathData = CreateObject<JakesProcess> ();
+      pathData->SetPropagationLossModel (this);
+      m_propagationCache.AddPathData (pathData, a, b, 0/**Spectrum model uid is not used in PropagationLossModel*/);
+    }
+  return txPowerDbm + pathData->GetChannelGainDb ();
+}
+
+Ptr<UniformRandomVariable>
+JakesPropagationLossModel::GetUniformRandomVariable () const
+{
+  return m_uniformVariable;
+}
+
+int64_t
+JakesPropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  m_uniformVariable->SetStream (stream);
+  return 1;
 }
 
 } // namespace ns3

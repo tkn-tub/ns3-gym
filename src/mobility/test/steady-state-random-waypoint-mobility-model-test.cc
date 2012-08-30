@@ -24,6 +24,7 @@
 #include "ns3/test.h"
 #include "ns3/config.h"
 #include "ns3/steady-state-random-waypoint-mobility-model.h"
+#include "ns3/rng-seed-manager.h"
 
 namespace ns3 {
 

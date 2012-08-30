@@ -1104,6 +1104,15 @@ EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
 
   PushFront (packet, hdr);
 }
+
+int64_t
+EdcaTxopN::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_rng->AssignStreams (stream);
+  return 1;
+}
+
 void
 EdcaTxopN::DoStart ()
 {

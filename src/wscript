@@ -71,7 +71,6 @@ def configure(conf):
 def _add_test_code(module):
     pass
 
-
 def create_ns3_module(bld, name, dependencies=(), test=False):
     static = bool(bld.env.ENABLE_STATIC_NS3)
     # Create a separate library for this module.
@@ -79,8 +78,8 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
         module = bld.new_task_gen(features=['cxx', 'cxxstlib', 'ns3module'])
     else:
         module = bld.new_task_gen(features=['cxx', 'cxxshlib', 'ns3module'])
-    module.target = '%s/ns%s-%s-%s' % (bld.srcnode.relpath_gen(module.path), wutils.VERSION,
-                                       name, bld.env['BUILD_PROFILE'])
+    module.target = '%s/ns%s-%s%s' % (bld.srcnode.relpath_gen(module.path), wutils.VERSION,
+                                       name, bld.env.BUILD_SUFFIX)
     linkflags = []
     cxxflags = []
     ccflags = []
@@ -375,7 +374,7 @@ class ns3pcfile_task(Task.Task):
         prefix = env.PREFIX
         includedir = Utils.subst_vars('${INCLUDEDIR}/%s%s' % (wutils.APPNAME, wutils.VERSION), env)
         libdir = env.LIBDIR
-        libs = self._self_libs(env, "%s%s-%s-%s" % (wutils.APPNAME, wutils.VERSION, name[4:], env['BUILD_PROFILE']), '${libdir}')
+        libs = self._self_libs(env, "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name[4:], env.BUILD_SUFFIX), '${libdir}')
         for dep in use:
             libs += self._lib(env, dep)
         for dep in env.LIBS:
@@ -387,7 +386,7 @@ class ns3pcfile_task(Task.Task):
                 self._defines(dep) + self._includes(dep)
             if dep.startswith('ns3-'):
                 dep_name = dep[4:]
-                requires.append("libns%s-%s-%s" % (wutils.VERSION, dep_name, env['BUILD_PROFILE']))
+                requires.append("libns%s-%s%s" % (wutils.VERSION, dep_name, env.BUILD_SUFFIX))
         print >> outfile, """\
 prefix=%s
 libdir=%s

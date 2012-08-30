@@ -28,7 +28,7 @@ namespace ns3 {
 Ptr<Socket> 
 Ipv4RawSocketFactoryImpl::CreateSocket (void)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = GetObject<Ipv4> ();
   Ptr<Socket> socket = ipv4->CreateRawSocket ();
   return socket;
 }

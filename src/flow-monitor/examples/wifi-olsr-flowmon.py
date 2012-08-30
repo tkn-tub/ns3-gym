@@ -26,6 +26,10 @@ import ns.mobility
 import ns.network
 import ns.olsr
 import ns.wifi
+try:
+    import ns.visualizer
+except ImportError:
+    pass
 
 DISTANCE = 100 # (m)
 NUM_NODES_SIDE = 3
@@ -70,8 +74,8 @@ def main(argv):
     onOffHelper = ns.applications.OnOffHelper("ns3::UdpSocketFactory",
                                   ns.network.Address(ns.network.InetSocketAddress(ns.network.Ipv4Address("10.0.0.1"), port)))
     onOffHelper.SetAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate("100kbps")))
-    onOffHelper.SetAttribute("OnTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(1)))
-    onOffHelper.SetAttribute("OffTime", ns.core.RandomVariableValue(ns.core.ConstantVariable(0)))
+    onOffHelper.SetAttribute("OnTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=1]"))
+    onOffHelper.SetAttribute("OffTime", ns.core.StringValue ("ns3::ConstantRandomVariable[Constant=0]"))
 
     addresses = []
     nodes = []
@@ -102,8 +106,9 @@ def main(argv):
         #print i, destaddr
         onOffHelper.SetAttribute("Remote", ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port)))
         app = onOffHelper.Install(ns.network.NodeContainer(node))
-        app.Start(ns.core.Seconds(ns.core.UniformVariable(20, 30).GetValue()))
-            
+        urv = ns.core.UniformRandomVariable()
+        app.Start(ns.core.Seconds(urv.GetValue(20, 30)))
+
     #internet.EnablePcapAll("wifi-olsr")
     flowmon_helper = ns.flow_monitor.FlowMonitorHelper()
     #flowmon_helper.SetMonitorAttribute("StartTime", ns.core.TimeValue(ns.core.Seconds(31)))

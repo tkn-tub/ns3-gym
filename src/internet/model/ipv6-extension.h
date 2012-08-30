@@ -31,6 +31,7 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/buffer.h"
 #include "ns3/packet.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/traced-callback.h"
 
@@ -51,6 +52,11 @@ public:
    * \return type identificator
    */
   static TypeId GetTypeId ();
+
+  /**
+   * \brief Constructor.
+   */
+  Ipv6Extension ();
 
   /**
    * \brief Destructor.
@@ -104,11 +110,26 @@ public:
    */
   virtual uint8_t ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint8_t length, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 protected:
   /**
    * \brief Drop trace callback.
    */
   TracedCallback<Ptr<const Packet> > m_dropTrace;
+
+  /**
+   * \brief Provides uniform random variables.
+   */
+  Ptr<UniformRandomVariable> m_uvar;
 
 private:
   /**

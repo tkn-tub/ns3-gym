@@ -63,8 +63,8 @@ private:
   std::list<Box> m_previousBlocks;
   double m_xSize;
   double m_ySize;
-  UniformVariable m_xMinVar;
-  UniformVariable m_yMinVar;
+  Ptr<UniformRandomVariable> m_xMinVar;
+  Ptr<UniformRandomVariable> m_yMinVar;
   
 };
 
@@ -73,11 +73,14 @@ FemtocellBlockAllocator::FemtocellBlockAllocator (Box area, uint32_t nApartments
     m_nApartmentsX (nApartmentsX),
     m_nFloors (nFloors),
     m_xSize (nApartmentsX*10 + 20),
-    m_ySize (70),
-    m_xMinVar (area.xMin, area.xMax - m_xSize),
-    m_yMinVar (area.yMin, area.yMax - m_ySize)
+    m_ySize (70)
 {
- 
+    m_xMinVar = CreateObject<UniformRandomVariable> ();
+    m_xMinVar->SetAttribute ("Min", DoubleValue (area.xMin));
+    m_xMinVar->SetAttribute ("Max", DoubleValue (area.xMax - m_xSize));
+    m_yMinVar = CreateObject<UniformRandomVariable> ();
+    m_yMinVar->SetAttribute ("Min", DoubleValue (area.yMin));
+    m_yMinVar->SetAttribute ("Max", DoubleValue (area.yMax - m_ySize));
 }
 
 void 
@@ -97,9 +100,9 @@ FemtocellBlockAllocator::Create ()
   do 
     {
       NS_ASSERT_MSG (attempt < 100, "Too many failed attemtps to position apartment block. Too many blocks? Too small area?");
-      box.xMin = m_xMinVar.GetValue ();
+      box.xMin = m_xMinVar->GetValue ();
       box.xMax = box.xMin + m_xSize;
-      box.yMin = m_yMinVar.GetValue ();
+      box.yMin = m_yMinVar->GetValue ();
       box.yMax = box.yMin + m_ySize;      
       ++attempt;
     }
@@ -505,9 +508,18 @@ main (int argc, char *argv[])
   // macro Ues 
   NS_LOG_LOGIC ("randomly allocating macro UEs in " << macroUeBox);
   positionAlloc = CreateObject<RandomBoxPositionAllocator> ();
-  positionAlloc->SetAttribute ("X", RandomVariableValue (UniformVariable (macroUeBox.xMin, macroUeBox.xMax)));
-  positionAlloc->SetAttribute ("Y", RandomVariableValue (UniformVariable (macroUeBox.yMin, macroUeBox.yMax)));
-  positionAlloc->SetAttribute ("Z", RandomVariableValue (UniformVariable (macroUeBox.zMin, macroUeBox.zMax)));
+  Ptr<UniformRandomVariable> xVal = CreateObject<UniformRandomVariable> ();
+  xVal->SetAttribute ("Min", DoubleValue (macroUeBox.xMin));
+  xVal->SetAttribute ("Max", DoubleValue (macroUeBox.xMax));
+  positionAlloc->SetAttribute ("X", PointerValue (xVal));
+  Ptr<UniformRandomVariable> yVal = CreateObject<UniformRandomVariable> ();
+  yVal->SetAttribute ("Min", DoubleValue (macroUeBox.yMin));
+  yVal->SetAttribute ("Max", DoubleValue (macroUeBox.yMax));
+  positionAlloc->SetAttribute ("Y", PointerValue (yVal));
+  Ptr<UniformRandomVariable> zVal = CreateObject<UniformRandomVariable> ();
+  zVal->SetAttribute ("Min", DoubleValue (macroUeBox.zMin));
+  zVal->SetAttribute ("Max", DoubleValue (macroUeBox.zMax));
+  positionAlloc->SetAttribute ("Z", PointerValue (zVal));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (macroUes);
   NetDeviceContainer macroUeDevs = lteHelper->InstallUeDevice (macroUes);

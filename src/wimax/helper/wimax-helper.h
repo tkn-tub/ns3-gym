@@ -250,6 +250,29 @@ public:
    */
   static void EnableLogComponents (void);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
+  /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model. Return the number of streams (possibly zero) that
+  * have been assigned. The Install() method should have previously been
+  * called by the user.
+  *
+  * \param c NetDeviceContainer of the set of net devices for which the 
+  *          WimaxNetDevice should be modified to use a fixed stream
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this helper
+  */
+  int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
+
 private:
   static void AsciiRxEvent (Ptr<OutputStreamWrapper> stream, std::string path, Ptr<const Packet> packet, const Mac48Address &source);
   static void AsciiTxEvent (Ptr<OutputStreamWrapper> stream, std::string path, Ptr<const Packet> packet, const Mac48Address &dest);

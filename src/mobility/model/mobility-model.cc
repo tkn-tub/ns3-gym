@@ -98,4 +98,18 @@ MobilityModel::NotifyCourseChange (void) const
   m_courseChangeTrace (this);
 }
 
+int64_t
+MobilityModel::AssignStreams (int64_t start)
+{
+  return DoAssignStreams (start);
+}
+
+// Default implementation does nothing
+int64_t
+MobilityModel::DoAssignStreams (int64_t start)
+{
+  return 0;
+}
+
+
 } // namespace ns3

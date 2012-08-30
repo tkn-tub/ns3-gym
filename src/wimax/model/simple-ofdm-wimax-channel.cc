@@ -202,5 +202,19 @@ SimpleOfdmWimaxChannel::EndSendDummyBlock (Ptr<SimpleOfdmWimaxPhy> rxphy, simple
                        param->GetBurst ());
   delete param;
 }
+
+int64_t
+SimpleOfdmWimaxChannel::AssignStreams (int64_t stream)
+{
+  int64_t currentStream = stream;
+  typedef std::list<Ptr<SimpleOfdmWimaxPhy> > PhyList;
+  for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
+    {
+      Ptr<SimpleOfdmWimaxPhy> simpleOfdm = (*i);
+      currentStream += simpleOfdm->AssignStreams (currentStream);
+    }
+  return (currentStream - stream);
+}
+
 }
 // namespace ns3

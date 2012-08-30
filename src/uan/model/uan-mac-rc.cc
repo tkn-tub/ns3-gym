@@ -28,7 +28,6 @@
 #include "ns3/log.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
 #include "ns3/assert.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -159,6 +158,8 @@ UanMacRc::UanMacRc ()
     m_frameNo (0),
     m_cleared (false)
 {
+  m_ev = CreateObject<ExponentialRandomVariable> ();
+
   UanHeaderCommon ch;
   UanHeaderRcCts ctsh;
   UanHeaderRcCtsGlobal ctsg;
@@ -266,6 +267,13 @@ UanMacRc::GetTypeId (void)
   return tid;
 }
 
+int64_t
+UanMacRc::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_ev->SetStream (stream);
+  return 1;
+}
 
 Address
 UanMacRc::GetAddress (void)
@@ -506,8 +514,9 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
         {
           m_rtsEvent.Cancel ();
         }
-      ExponentialVariable ev (1 / m_retryRate);
-      double timeout = ev.GetValue ();
+
+      m_ev->SetAttribute ("Mean", DoubleValue (1 / m_retryRate));
+      double timeout = m_ev->GetValue ();
       m_rtsEvent = Simulator::Schedule (Seconds (timeout), &UanMacRc::SendRts, this);
     }
 
@@ -631,8 +640,8 @@ UanMacRc::Associate (void)
     }
   m_state = GWPSENT;
   NS_ASSERT (!m_rtsEvent.IsRunning ());
-  ExponentialVariable ev (1.0 / m_retryRate);
-  double timeout = ev.GetValue ();
+  m_ev->SetAttribute ("Mean", DoubleValue (1 / m_retryRate));
+  double timeout = m_ev->GetValue ();
   m_rtsEvent = Simulator::Schedule (Seconds (timeout), &UanMacRc::AssociateTimeout, this);
 }
 
@@ -662,8 +671,8 @@ UanMacRc::AssociateTimeout ()
       m_resList.push_back (res);
     }
   NS_ASSERT (!m_rtsEvent.IsRunning ());
-  ExponentialVariable ev (1.0 / m_retryRate);
-  double timeout = ev.GetValue ();
+  m_ev->SetAttribute ("Mean", DoubleValue (1 / m_retryRate));
+  double timeout = m_ev->GetValue ();
   m_rtsEvent = Simulator::Schedule (Seconds (timeout), &UanMacRc::AssociateTimeout, this);
 }
 
@@ -694,8 +703,8 @@ UanMacRc::SendRts (void)
     }
   m_state = RTSSENT;
   NS_ASSERT (!m_rtsEvent.IsRunning ());
-  ExponentialVariable ev (1.0 / m_retryRate);
-  double timeout = ev.GetValue ();
+  m_ev->SetAttribute ("Mean", DoubleValue (1 / m_retryRate));
+  double timeout = m_ev->GetValue ();
   m_rtsEvent = Simulator::Schedule (Seconds (timeout), &UanMacRc::RtsTimeout, this);
 
 }
@@ -758,8 +767,8 @@ UanMacRc::RtsTimeout (void)
     }
   m_state = RTSSENT;
   NS_ASSERT (!m_rtsEvent.IsRunning ());
-  ExponentialVariable ev (1.0 / m_retryRate);
-  double timeout = ev.GetValue ();
+  m_ev->SetAttribute ("Mean", DoubleValue (1 / m_retryRate));
+  double timeout = m_ev->GetValue ();
   m_rtsEvent = Simulator::Schedule (Seconds (timeout), &UanMacRc::RtsTimeout, this);
 }
 

@@ -22,6 +22,7 @@
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/minstrel-wifi-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3
 {
@@ -207,5 +208,46 @@ MeshHelper::ResetStats (const ns3::Ptr<ns3::NetDevice>& device)
   NS_ASSERT (mp != 0);
   m_stack->ResetStats (mp);
 }
+int64_t
+MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<MeshPointDevice> mpd = DynamicCast<MeshPointDevice> (netDevice);
+      Ptr<WifiNetDevice> wifi;
+      Ptr<MeshWifiInterfaceMac> mac;
+      if (mpd)
+        {
+          // To access, we need the underlying WifiNetDevices
+          std::vector<Ptr<NetDevice> > ifaces = mpd->GetInterfaces ();
+          for (std::vector<Ptr<NetDevice> >::iterator i = ifaces.begin (); i != ifaces.end (); i++)
+            {
+              wifi = DynamicCast<WifiNetDevice> (*i);
+           
+              // Handle any random numbers in the PHY objects.
+              currentStream += wifi->GetPhy ()->AssignStreams (currentStream);
+
+              // Handle any random numbers in the station managers.
+              Ptr<WifiRemoteStationManager> manager = wifi->GetRemoteStationManager ();
+              Ptr<MinstrelWifiManager> minstrel = DynamicCast<MinstrelWifiManager> (manager);
+              if (minstrel)
+                {
+                  currentStream += minstrel->AssignStreams (currentStream);
+                }
+              // Handle any random numbers in the mesh mac and plugins
+              mac = DynamicCast<MeshWifiInterfaceMac> (wifi->GetMac ());
+              if (mac)
+                {
+                  currentStream += mac->AssignStreams (currentStream);
+                }
+            }
+        }
+    }
+  return (currentStream - stream);
+}
+
 } // namespace ns3
 

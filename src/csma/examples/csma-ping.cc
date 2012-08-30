@@ -83,9 +83,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
   OnOffHelper onoff = OnOffHelper ("ns3::Ipv4RawSocketFactory", dst);
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (15000)));
+  onoff.SetConstantRate (DataRate (15000));
   onoff.SetAttribute ("PacketSize", UintegerValue (1200));
 
 

@@ -20,6 +20,8 @@
 #include "random-walk-2d-mobility-model.h"
 #include "ns3/enum.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include <cmath>
@@ -61,14 +63,14 @@ RandomWalk2dMobilityModel::GetTypeId (void)
                                     RandomWalk2dMobilityModel::MODE_TIME, "Time"))
     .AddAttribute ("Direction",
                    "A random variable used to pick the direction (gradients).",
-                   RandomVariableValue (UniformVariable (0.0, 6.283184)),
-                   MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_direction),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.283184]"),
+                   MakePointerAccessor (&RandomWalk2dMobilityModel::m_direction),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Speed",
                    "A random variable used to pick the speed (m/s).",
-                   RandomVariableValue (UniformVariable (2.0, 4.0)),
-                   MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_speed),
-                   MakeRandomVariableChecker ());
+                   StringValue ("ns3::UniformRandomVariable[Min=2.0|Max=4.0]"),
+                   MakePointerAccessor (&RandomWalk2dMobilityModel::m_speed),
+                   MakePointerChecker<RandomVariableStream> ());
   return tid;
 }
 
@@ -83,8 +85,8 @@ void
 RandomWalk2dMobilityModel::DoStartPrivate (void)
 {
   m_helper.Update ();
-  double speed = m_speed.GetValue ();
-  double direction = m_direction.GetValue ();
+  double speed = m_speed->GetValue ();
+  double direction = m_direction->GetValue ();
   Vector vector (std::cos (direction) * speed,
                  std::sin (direction) * speed,
                  0.0);
@@ -173,7 +175,13 @@ RandomWalk2dMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
 }
-
+int64_t
+RandomWalk2dMobilityModel::DoAssignStreams (int64_t stream)
+{
+  m_speed->SetStream (stream);
+  m_direction->SetStream (stream + 1);
+  return 2;
+}
 
 
 } // namespace ns3

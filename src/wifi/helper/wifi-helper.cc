@@ -22,6 +22,10 @@
 #include "wifi-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/regular-wifi-mac.h"
+#include "ns3/dca-txop.h"
+#include "ns3/edca-txop-n.h"
+#include "ns3/minstrel-wifi-manager.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-channel.h"
@@ -31,6 +35,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/config.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/names.h"
 
@@ -161,6 +166,59 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("YansErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
+}
+
+int64_t
+WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
+{
+  int64_t currentStream = stream;
+  Ptr<NetDevice> netDevice;
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      netDevice = (*i);
+      Ptr<WifiNetDevice> wifi = DynamicCast<WifiNetDevice> (netDevice);
+      if (wifi)
+        {
+          // Handle any random numbers in the PHY objects.
+          currentStream += wifi->GetPhy ()->AssignStreams (currentStream);
+
+          // Handle any random numbers in the station managers.
+          Ptr<WifiRemoteStationManager> manager = wifi->GetRemoteStationManager ();
+          Ptr<MinstrelWifiManager> minstrel = DynamicCast<MinstrelWifiManager> (manager);
+          if (minstrel)
+            {
+              currentStream += minstrel->AssignStreams (currentStream);
+            }
+
+          // Handle any random numbers in the MAC objects.
+          Ptr<WifiMac> mac = wifi->GetMac ();
+          Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
+          if (rmac)
+            {
+              PointerValue ptr;
+              rmac->GetAttribute ("DcaTxop", ptr);
+              Ptr<DcaTxop> dcaTxop = ptr.Get<DcaTxop> ();
+              currentStream += dcaTxop->AssignStreams (currentStream);
+
+              rmac->GetAttribute ("VO_EdcaTxopN", ptr);
+              Ptr<EdcaTxopN> vo_edcaTxopN = ptr.Get<EdcaTxopN> ();
+              currentStream += vo_edcaTxopN->AssignStreams (currentStream);
+
+              rmac->GetAttribute ("VI_EdcaTxopN", ptr);
+              Ptr<EdcaTxopN> vi_edcaTxopN = ptr.Get<EdcaTxopN> ();
+              currentStream += vi_edcaTxopN->AssignStreams (currentStream);
+
+              rmac->GetAttribute ("BE_EdcaTxopN", ptr);
+              Ptr<EdcaTxopN> be_edcaTxopN = ptr.Get<EdcaTxopN> ();
+              currentStream += be_edcaTxopN->AssignStreams (currentStream);
+
+              rmac->GetAttribute ("BK_EdcaTxopN", ptr);
+              Ptr<EdcaTxopN> bk_edcaTxopN = ptr.Get<EdcaTxopN> ();
+              currentStream += bk_edcaTxopN->AssignStreams (currentStream);
+            }
+        }
+    }
+  return (currentStream - stream);
 }
 
 } // namespace ns3

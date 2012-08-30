@@ -38,7 +38,6 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
-#include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-routing-table-entry.h"
@@ -125,7 +124,7 @@
 /// Maximum allowed sequence number.
 #define OLSR_MAX_SEQ_NUM        65535
 /// Random number between [0-OLSR_MAXJITTER] used to jitter OLSR packet transmission.
-#define JITTER (Seconds (UniformVariable ().GetValue (0, OLSR_MAXJITTER)))
+#define JITTER (Seconds (m_uniformRandomVariable->GetValue (0, OLSR_MAXJITTER)))
 
 
 #define OLSR_PORT_NUMBER 698
@@ -199,6 +198,8 @@ RoutingProtocol::RoutingProtocol ()
     m_hnaTimer (Timer::CANCEL_ON_DESTROY),
     m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
 {
+  m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+
   m_hnaRoutingTable = Create<Ipv4StaticRouting> ();
 }
 
@@ -3298,6 +3299,14 @@ RoutingProtocol::GetRoutingTableEntries () const
       retval.push_back (iter->second);
     }
   return retval;
+}
+
+int64_t
+RoutingProtocol::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
 }
 
 bool

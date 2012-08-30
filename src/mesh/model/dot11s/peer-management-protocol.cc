@@ -27,7 +27,7 @@
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/wifi-net-device.h"
@@ -85,6 +85,7 @@ PeerManagementProtocol::GetTypeId (void)
 PeerManagementProtocol::PeerManagementProtocol () :
   m_lastAssocId (0), m_lastLocalLinkId (1), m_enableBca (true), m_maxBeaconShift (15)
 {
+  m_beaconShift = CreateObject<UniformRandomVariable> ();
 }
 PeerManagementProtocol::~PeerManagementProtocol ()
 {
@@ -436,14 +437,10 @@ PeerManagementProtocol::CheckBeaconCollisions (uint32_t interface)
 void
 PeerManagementProtocol::ShiftOwnBeacon (uint32_t interface)
 {
-  // If beacon interval is equal to the neighbor's one and one o more beacons received
-  // by my neighbor coincide with my beacon - apply random uniformly distributed shift from
-  // [-m_maxBeaconShift, m_maxBeaconShift] except 0.
-  UniformVariable beaconShift (-m_maxBeaconShift, m_maxBeaconShift);
   int shift = 0;
   do
     {
-      shift = (int) beaconShift.GetValue ();
+      shift = (int) m_beaconShift->GetValue ();
     }
   while (shift == 0);
   // Apply beacon shift parameters:
@@ -579,6 +576,24 @@ PeerManagementProtocol::ResetStats ()
     {
       plugins->second->ResetStats ();
     }
+}
+
+int64_t
+PeerManagementProtocol::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_beaconShift->SetStream (stream);
+  return 1;
+}
+
+void
+PeerManagementProtocol::DoStart ()
+{
+  // If beacon interval is equal to the neighbor's one and one o more beacons received
+  // by my neighbor coincide with my beacon - apply random uniformly distributed shift from
+  // [-m_maxBeaconShift, m_maxBeaconShift] except 0.
+  m_beaconShift->SetAttribute ("Min", DoubleValue (-m_maxBeaconShift));
+  m_beaconShift->SetAttribute ("Max", DoubleValue (m_maxBeaconShift));
 }
 
 void

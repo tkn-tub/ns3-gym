@@ -152,9 +152,11 @@ int main (int argc, char *argv[])
 
 
   uint32_t totalNodes = nodes.GetN ();
-  UniformVariable unifRandom (0, totalNodes - 1);
+  Ptr<UniformRandomVariable> unifRandom = CreateObject<UniformRandomVariable> ();
+  unifRandom->SetAttribute ("Min", DoubleValue (0));
+  unifRandom->SetAttribute ("Max", DoubleValue (totalNodes - 1));
 
-  unsigned int randomServerNumber = unifRandom.GetInteger (0, totalNodes - 1);
+  unsigned int randomServerNumber = unifRandom->GetInteger (0, totalNodes - 1);
 
   Ptr<Node> randomServerNode = nodes.Get (randomServerNumber);
   Ptr<Ipv4> ipv4Server = randomServerNode->GetObject<Ipv4> ();
@@ -168,9 +170,7 @@ int main (int argc, char *argv[])
   InetSocketAddress dst = InetSocketAddress ( ipv4AddrServer );
 
   OnOffHelper onoff = OnOffHelper ("ns3::Ipv4RawSocketFactory", dst);
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (15000)));
+  onoff.SetConstantRate (DataRate (15000));
   onoff.SetAttribute ("PacketSize", UintegerValue (1200));
 
   NodeContainer clientNodes;

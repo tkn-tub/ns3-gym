@@ -130,7 +130,7 @@ int
 Ipv4RawSocketImpl::Close (void)
 {
   NS_LOG_FUNCTION (this);
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   if (ipv4 != 0)
     {
       ipv4->DeleteRawSocket (this);
@@ -199,7 +199,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
       return 0;
     }
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (toAddress);
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   Ipv4Address dst = ad.GetIpv4 ();
   Ipv4Address src = m_src;
   if (ipv4->GetRoutingProtocol ())

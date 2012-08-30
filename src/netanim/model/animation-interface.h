@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George F. Riley<riley@ece.gatech.edu>
- * Modified by: John Abraham <john.abraham@gatech.edu>
+ * Author: John Abraham <john.abraham@gatech.edu>
  */
 
 // Interface between ns3 and the network animator
@@ -30,6 +30,7 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "ns3/node-list.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/animation-interface-helper.h"
@@ -41,6 +42,38 @@
 namespace ns3 {
 
 #define MAX_PKTS_PER_TRACE_FILE 100000
+struct Rgb;
+typedef struct 
+{
+  uint32_t fromNode;
+  uint32_t toNode;
+} P2pLinkNodeIdPair;
+
+typedef struct
+{
+  std::string fromNodeDescription;
+  std::string toNodeDescription;
+  std::string linkDescription;
+} LinkProperties;
+
+struct LinkPairCompare
+{
+  bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second)
+    {
+      //Check if they are the same node pairs but flipped
+      if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
+            ((first.fromNode == second.toNode) && (first.toNode == second.fromNode)) )
+        {
+          return false;
+        }
+      std::ostringstream oss1;
+      oss1 << first.fromNode << first.toNode;
+      std::ostringstream oss2;
+      oss2 << second.fromNode << second.toNode;
+      return oss1.str () < oss2.str ();
+    }
+   
+};
 
 /**
  * \defgroup netanim Netanim
@@ -205,12 +238,136 @@ public:
   static void SetNodeDescription (Ptr <Node> n, std::string descr);
 
   /**
+   * \brief Helper function to update the description for a given node
+   * \param n Ptr to the node
+   * \param descr A string to briefly describe the node
+   *
+   */
+  void UpdateNodeDescription (Ptr <Node> n, std::string descr);
+
+  /**
+   * \brief Helper function to update the description for a given node
+   * \param nodeId Id of the node
+   * \param descr A string to briefly describe the node
+   *
+   */
+  void UpdateNodeDescription (uint32_t nodeId, std::string descr);
+
+ /**
+  * \brief Helper function to show/hide a node
+  * \param nodeId Id of the node
+  * \param show Set to true to show node, set to false to hide
+  *
+  */
+  void ShowNode (uint32_t nodeId, bool show = true);
+
+ /**
+  * \brief Helper function to show/hide a node
+  * \param n Ptr to the node
+  * \param show Set to true to show node, set to false to hide
+  *
+  */
+  void ShowNode (Ptr <Node> n, bool show = true);
+
+  /**
    * \brief Helper function to set a brief description for nodes in a Node Container
    * \param nc NodeContainer containing the nodes
    * \param descr A string to briefly describe the nodes
    *
    */
   static void SetNodeDescription (NodeContainer nc, std::string descr);
+
+  /**
+   * \brief Helper function to set the node color
+   * \param n Ptr to the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  static void SetNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
+
+
+  /**
+   * \brief Helper function to update the node color
+   * \param n Ptr to the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  void UpdateNodeColor (Ptr <Node> n, uint8_t r, uint8_t g, uint8_t b);
+
+  /**
+   * \brief Helper function to update the node color
+   * \param nodeId Id of the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  void UpdateNodeColor (uint32_t nodeId, uint8_t r, uint8_t g, uint8_t b);
+
+
+  /**
+   * \brief Helper function to set the color of nodes in a container
+   * \param n Ptr to the node
+   * \param r Red component value (0-255)
+   * \param g Green component value (0-255)
+   * \param b Blue component value (0-255)
+   *
+   */
+  static void SetNodeColor (NodeContainer nc, uint8_t r, uint8_t g, uint8_t b);
+
+  /**
+   * \brief Helper function to set the description for a link
+   * \param fromNode Node Id of the "from Node" of the p2p link
+   * \param toNode Node Id of the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
+   * \param fromNodeDescription Description at the "from Node" end such as IP address
+   * \param toNodeDescription Description at the "to Node" end such as Ip address
+   *
+   */
+  static void SetLinkDescription (uint32_t fromNode, uint32_t toNode, 
+                                  std::string linkDescription,
+                                  std::string fromNodeDescription = "",
+                                  std::string toNodeDescription = "");
+
+  /**
+   * \brief Helper function to set the description for a link
+   * \param fromNode Ptr to the "from Node" of the p2p link
+   * \param toNode Ptr the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
+   * \param fromNodeDescription Description at the "from Node" end such as IP address
+   * \param toNodeDescription Description at the "to Node" end such as Ip address
+   *
+   */
+  static void SetLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                                  std::string linkDescription,
+                                  std::string fromNodeDescription = "",
+                                  std::string toNodeDescription = "");
+
+
+  /**
+   * \brief Helper function to update the description for a link
+   * \param fromNode Node Id of the "from Node" of the p2p link
+   * \param toNode Node Id of the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
+   *
+   */
+  void UpdateLinkDescription (uint32_t fromNode, uint32_t toNode,
+                              std::string linkDescription);
+
+  /**
+   * \brief Helper function to update the description for a link
+   * \param fromNode Ptr to the "from Node" of the p2p link
+   * \param toNode Ptr to the "to Node" of the p2p link
+   * \param linkDescription Description of the link such as link bandwidth
+   *
+   */
+  void UpdateLinkDescription (Ptr <Node> fromNode, Ptr <Node> toNode,
+                              std::string linkDescription);
+
 
   /**
    * \brief Is AnimationInterface started
@@ -245,6 +402,15 @@ public:
    */
   uint64_t GetTracePktCount ();
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   FILE * m_f; // File handle for output (-1 if none)
@@ -379,10 +545,15 @@ private:
   std::vector<std::string> GetElementsFromContext (std::string context);
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
 
+  static std::map <uint32_t, Rgb> nodeColors;
   static std::map <uint32_t, std::string> nodeDescriptions;
+  static std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> linkProperties;
   uint64_t m_currentPktCount;
 
   void StartNewTraceFile();
+
+  std::string GetIpv4Address (Ptr <NetDevice> nd);
+  std::string GetNetAnimVersion ();
 
   // XML helpers
   std::string GetPreamble (void);
@@ -395,15 +566,32 @@ private:
   std::string GetPacketMetadata (Ptr<const Packet> p);
 
   std::string GetXMLOpen_anim (uint32_t lp);
-  std::string GetXMLOpen_topology (double minX,double minY,double maxX,double maxY);
-  std::string GetXMLOpenClose_node (uint32_t lp,uint32_t id,double locX,double locY);
-  std::string GetXMLOpenClose_link (uint32_t fromLp,uint32_t fromId, uint32_t toLp, uint32_t toId);
-  std::string GetXMLOpen_packet (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
+  std::string GetXMLOpen_topology (double minX, double minY, double maxX, double maxY);
+  std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY);
+  std::string GetXMLOpenClose_node (uint32_t lp, uint32_t id, double locX, double locY, struct Rgb rgb);
+  std::string GetXMLOpenClose_nodeupdate (uint32_t id, bool visible = true);
+  std::string GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId);
+  std::string GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string);
+  std::string GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
-  std::string GetXMLOpen_wpacket (uint32_t fromLp,uint32_t fromId, double fbTx, double lbTx, double range);
+  std::string GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
   std::string GetXMLOpenClose_meta (std::string metaInfo);
 
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
+};
+
+/**
+ * \ingroup netanim
+ * \brief A structure to store red, blue and green components for entities such as nodes
+ *
+ */
+struct Rgb 
+{
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
 };
 
 /**
