@@ -88,20 +88,19 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/WifiArchitecture.dia \
 	$(SRC)/wifi/doc/snir.dia \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
-	$(SRC)/lte/doc/source/figures/ff-mac-saps.dia \
-	$(SRC)/lte/doc/source/figures/ff-example.dia \
-	$(SRC)/lte/doc/source/figures/lte-enb-architecture.dia \
-	$(SRC)/lte/doc/source/figures/lte-ue-architecture.dia \
-	$(SRC)/lte/doc/source/figures/epc-profiling-scenario.dia \
-	$(SRC)/lte/doc/source/figures/eutran-profiling-scenario.dia \
-	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
-	$(SRC)/lte/doc/source/figures/epc-topology.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-ul.dia \
+	$(SRC)/lte/doc/source/figures/epc-profiling-scenario.dia \
+	$(SRC)/lte/doc/source/figures/epc-topology.dia \
+	$(SRC)/lte/doc/source/figures/eutran-profiling-scenario.dia \
+	$(SRC)/lte/doc/source/figures/ff-example.dia \
+	$(SRC)/lte/doc/source/figures/ff-mac-saps.dia \
 	$(SRC)/lte/doc/source/figures/lte-arch-data-rrc-pdcp-rlc.dia \
+	$(SRC)/lte/doc/source/figures/lte-enb-architecture.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
-	$(SRC)/lte/doc/source/figures/MCS_2_test.eps \
-	$(SRC)/lte/doc/source/figures/MCS_12_test.eps \
+	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
+	$(SRC)/lte/doc/source/figures/lte-ue-architecture.dia \
+	$(SRC)/lte/doc/source/figures/lte-subframe-structure.dia \
 	$(SRC)/lte/doc/source/figures/lena-dual-stripe.eps \
 	$(SRC)/lte/doc/source/figures/lte-mcs-index.eps \
 	$(SRC)/lte/doc/source/figures/lenaThrTestCase1.eps \
@@ -152,6 +151,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/helpers.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.pdf \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
+	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
+	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
+	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
+	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
@@ -195,20 +198,19 @@ IMAGES_EPS = \
 	$(FIGURES)/WifiArchitecture.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
-	$(FIGURES)/ff-mac-saps.eps \
-	$(FIGURES)/ff-example.eps \
-	$(FIGURES)/lte-enb-architecture.eps \
-	$(FIGURES)/lte-ue-architecture.eps \
-	$(FIGURES)/epc-profiling-scenario.eps \
-	$(FIGURES)/eutran-profiling-scenario.eps \
-	$(FIGURES)/lte-interference-test-scenario.eps \
-	$(FIGURES)/epc-topology.eps \
 	$(FIGURES)/epc-data-flow-dl.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/epc-profiling-scenario.eps \
+	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/eutran-profiling-scenario.eps \
+	$(FIGURES)/ff-example.eps \
+	$(FIGURES)/ff-mac-saps.eps \
 	$(FIGURES)/lte-arch-data-rrc-pdcp-rlc.eps \
+	$(FIGURES)/lte-enb-architecture.eps \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
-	$(FIGURES)/MCS_2_test.eps \
-	$(FIGURES)/MCS_12_test.eps \
+	$(FIGURES)/lte-interference-test-scenario.eps \
+	$(FIGURES)/lte-ue-architecture.eps \
+	$(FIGURES)/lte-subframe-structure.eps \
 	$(FIGURES)/lena-dual-stripe.eps \
 	$(FIGURES)/lte-mcs-index.eps \
 	$(FIGURES)/lenaThrTestCase1.eps \
@@ -225,7 +227,7 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-dl.eps \
 	$(FIGURES)/lte-rlc-data-txon-ul.eps \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
-        $(FIGURES)/auvmobility-classes.eps \
+	$(FIGURES)/auvmobility-classes.eps \
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -251,6 +253,7 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
+$(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/auvmobility-classes.pdf_width = 10cm
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}

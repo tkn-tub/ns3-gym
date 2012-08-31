@@ -47,17 +47,6 @@ IMAGES_EPS = \
 
 
 # rescale pdf figures as necessary
-$(FIGURES)/testbed.pdf_width = 5in
-$(FIGURES)/emulated-channel.pdf_width = 6in
-$(FIGURES)/node.pdf_width = 5in
-$(FIGURES)/packet.pdf_width = 4in
-$(FIGURES)/buffer.pdf_width = 15cm
-$(FIGURES)/sockets-overview.pdf_width = 10cm
-$(FIGURES)/internet-node-send.pdf_width = 5in
-$(FIGURES)/internet-node-recv.pdf_width = 5in
-$(FIGURES)/routing.pdf_width = 6in
-$(FIGURES)/routing-specialization.pdf_width = 5in
-$(FIGURES)/snir.pdf_width = 3in
 $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
 $(FIGURES)/epc-topology.pdf_width = 4in
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
@@ -69,7 +58,6 @@ $(FIGURES)/lte-rlc-data-txon-dl.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-txon-ul.pdf_width = 10cm
 $(FIGURES)/lte-rlc-data-retx-ul.pdf_width = 10cm
 $(FIGURES)/lte-phy-interference.pdf_width = 12cm
-$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 
 
