@@ -81,12 +81,15 @@ NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE),
-  m_random (0.0, 1.0),
   m_transmissionMode (0)
 {
   NS_LOG_FUNCTION (this);
+  m_random = CreateObject<UniformRandomVariable> ();
+  m_random->SetAttribute ("Min", DoubleValue (0.0));
+  m_random->SetAttribute ("Max", DoubleValue (1.0));
   m_interferenceData = CreateObject<LteInterference> ();
   m_interferenceCtrl = CreateObject<LteInterference> ();
+
   for (uint8_t i = 0; i < 7; i++)
     {
       m_txModeGain.push_back (1.0);
@@ -758,7 +761,7 @@ LteSpectrumPhy::EndRxData ()
       if (m_dataErrorModelEnabled)
         {
           double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
-          (*itTb).second.corrupt = m_random.GetValue () > errorRate ? false : true;
+          (*itTb).second.corrupt = m_random->GetValue () > errorRate ? false : true;
           NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " ErrorRate " << errorRate << " corrupted " << (*itTb).second.corrupt);
        }
       
@@ -840,7 +843,7 @@ LteSpectrumPhy::EndRxDlCtrl ()
     {
       double  errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
       errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
-      error = m_random.GetValue () > errorRate ? false : true;
+      error = m_random->GetValue () > errorRate ? false : true;
       NS_LOG_DEBUG (this << " PCFICH-PDCCH Decodification, errorRate " << errorRate << " error " << error);
     }
 
@@ -923,6 +926,14 @@ LteSpectrumPhy::SetTxModeGain (uint8_t txMode, double gain)
       m_txModeGain.push_back (temp.at (i));
     }
   }
+}
+
+int64_t
+LteSpectrumPhy::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_random->SetStream (stream);
+  return 1;
 }
 
 

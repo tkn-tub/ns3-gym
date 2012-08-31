@@ -53,7 +53,7 @@ private:
   uint32_t        m_pktSize;
   Ipv4Address     m_destAddr;
   uint32_t        m_destPort;
-  RandomVariable  m_interval;
+  Ptr<ConstantRandomVariable> m_interval;
   uint32_t        m_numPkts;
 
   Ptr<Socket>     m_socket;

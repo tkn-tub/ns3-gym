@@ -19,7 +19,8 @@
  */
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
@@ -55,7 +56,8 @@ FlameRegressionTest::~FlameRegressionTest ()
 void
 FlameRegressionTest::DoRun ()
 {
-  SeedManager::SetSeed (12345);
+  RngSeedManager::SetSeed (12345);
+  RngSeedManager::SetRun (7);
   CreateNodes ();
   CreateDevices ();
   InstallApplications ();
@@ -89,18 +91,25 @@ FlameRegressionTest::CreateNodes ()
 void
 FlameRegressionTest::CreateDevices ()
 {
+  int64_t streamsUsed = 0;
   // 1. setup WiFi
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   // This test suite output was originally based on YansErrorRateModel
   wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel"); 
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  wifiPhy.SetChannel (wifiChannel.Create ());
+  Ptr<YansWifiChannel> chan = wifiChannel.Create ();
+  wifiPhy.SetChannel (chan);
   // 2. setup mesh
   MeshHelper mesh = MeshHelper::Default ();
   mesh.SetStackInstaller ("ns3::FlameStack");
   mesh.SetMacType ("RandomStart", TimeValue (Seconds (0.1)));
   mesh.SetNumberOfInterfaces (1);
   NetDeviceContainer meshDevices = mesh.Install (wifiPhy, *m_nodes);
+  // Three devices, two streams per device
+  streamsUsed += mesh.AssignStreams (meshDevices, streamsUsed);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 2), "Stream assignment unexpected value");
+  streamsUsed += wifiChannel.AssignStreams (chan, streamsUsed);
+  NS_TEST_ASSERT_MSG_EQ (streamsUsed, (meshDevices.GetN () * 2), "Stream assignment unexpected value");
   // 3. setup TCP/IP
   InternetStackHelper internetStack;
   internetStack.Install (*m_nodes);

@@ -36,7 +36,7 @@ namespace aodv
 
 NS_OBJECT_ENSURE_REGISTERED (TypeHeader);
 
-TypeHeader::TypeHeader (MessageType t = AODVTYPE_RREQ) :
+TypeHeader::TypeHeader (MessageType t) :
   m_type (t), m_valid (true)
 {
 }

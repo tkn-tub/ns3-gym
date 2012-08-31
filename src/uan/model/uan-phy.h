@@ -88,7 +88,6 @@ public:
   {
     return 10 * log10 (kp);
   }
-
 };
 
 /**
@@ -419,6 +418,16 @@ public:
    * purposes.
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  virtual int64_t AssignStreams (int64_t stream) = 0;
 
 private:
   /**

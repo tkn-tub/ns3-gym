@@ -19,7 +19,7 @@ int main (int argc, char *argv[])
 {
   Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Mode", StringValue ("Time"));
   Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Time", StringValue ("2s"));
-  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Speed", StringValue ("Constant:1.0"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Speed", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Bounds", StringValue ("0|200|0|200"));
 
   CommandLine cmd;
@@ -32,11 +32,11 @@ int main (int argc, char *argv[])
   mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", StringValue ("100.0"),
                                  "Y", StringValue ("100.0"),
-                                 "Rho", StringValue ("Uniform:0:30"));
+                                 "Rho", StringValue ("ns3::UniformRandomVariable[Min=0|Max=30]"));
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
                              "Mode", StringValue ("Time"),
                              "Time", StringValue ("2s"),
-                             "Speed", StringValue ("Constant:1.0"),
+                             "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
                              "Bounds", StringValue ("0|200|0|200"));
   mobility.InstallAll ();
   Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",

@@ -4268,11 +4268,35 @@ def register_Ns3UanPhy_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyRxBegin(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxBegin', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyRxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxDrop', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyRxEnd(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyRxEnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyTransStartTx(ns3::Ptr<ns3::Packet> packet, double txPowerDb, ns3::UanTxMode txMode) [member function]
     cls.add_method('NotifyTransStartTx', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'txPowerDb'), param('ns3::UanTxMode', 'txMode')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyTxBegin(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxBegin', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyTxDrop(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxDrop', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyTxEnd(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NotifyTxEnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::RegisterListener(ns3::UanPhyListener * listener) [member function]
     cls.add_method('RegisterListener', 
                    'void', 

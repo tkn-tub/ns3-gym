@@ -26,7 +26,6 @@
 #include "error-rate-model.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
-#include "ns3/random-variable.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -128,10 +127,10 @@ YansWifiPhy::GetTypeId (void)
 YansWifiPhy::YansWifiPhy ()
   :  m_channelNumber (1),
     m_endRxEvent (),
-    m_random (0.0, 1.0),
     m_channelStartingFrequency (0)
 {
   NS_LOG_FUNCTION (this);
+  m_random = CreateObject<UniformRandomVariable> ();
   m_state = CreateObject<WifiPhyStateHelper> ();
 }
 
@@ -780,7 +779,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
 
   NS_LOG_DEBUG ("mode=" << (event->GetPayloadMode ().GetDataRate ()) <<
                 ", snr=" << snrPer.snr << ", per=" << snrPer.per << ", size=" << packet->GetSize ());
-  if (m_random.GetValue () > snrPer.per)
+  if (m_random->GetValue () > snrPer.per)
     {
       NotifyRxEnd (packet);
       uint32_t dataRate500KbpsUnits = event->GetPayloadMode ().GetDataRate () / 500000;
@@ -796,5 +795,13 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
       NotifyRxDrop (packet);
       m_state->SwitchFromRxEndError (packet, snrPer.snr);
     }
+}
+
+int64_t
+YansWifiPhy::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_random->SetStream (stream);
+  return 1;
 }
 } // namespace ns3

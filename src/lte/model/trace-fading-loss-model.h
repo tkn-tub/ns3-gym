@@ -27,7 +27,7 @@
 #include <ns3/object.h>
 #include <ns3/spectrum-propagation-loss-model.h>
 #include <map>
-#include <ns3/random-variable.h>
+#include "ns3/random-variable-stream.h"
 #include <ns3/nstime.h>
 
 namespace ns3 {
@@ -55,6 +55,16 @@ public:
    * \brief The couple of mobility mnode that form a fading channel realization
    */
   typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel> > ChannelRealizationId_t;
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
   
 private:
@@ -89,7 +99,7 @@ private:
    
   mutable std::map <ChannelRealizationId_t, int > m_windowOffsetsMap;
   
-  mutable std::map <ChannelRealizationId_t, UniformVariable* > m_startVariableMap;
+  mutable std::map <ChannelRealizationId_t, Ptr<UniformRandomVariable> > m_startVariableMap;
   
   /**
    * Vector with fading samples in time domain (for a fixed RB)

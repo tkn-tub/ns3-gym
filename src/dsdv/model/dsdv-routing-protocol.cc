@@ -32,7 +32,6 @@
 
 #include "dsdv-routing-protocol.h"
 #include "ns3/log.h"
-#include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
@@ -188,12 +187,21 @@ RoutingProtocol::GetEnableRAFlag () const
   return EnableRouteAggregation;
 }
 
+int64_t
+RoutingProtocol::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
+}
+
 RoutingProtocol::RoutingProtocol ()
   : m_routingTable (),
     m_advRoutingTable (),
     m_queue (),
     m_periodicUpdateTimer (Timer::CANCEL_ON_DESTROY)
 {
+  m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
 }
 
 RoutingProtocol::~RoutingProtocol ()
@@ -231,7 +239,7 @@ RoutingProtocol::Start ()
   m_scb = MakeCallback (&RoutingProtocol::Send,this);
   m_ecb = MakeCallback (&RoutingProtocol::Drop,this);
   m_periodicUpdateTimer.SetFunction (&RoutingProtocol::SendPeriodicUpdate,this);
-  m_periodicUpdateTimer.Schedule (MicroSeconds (UniformVariable ().GetInteger (0,1000)));
+  m_periodicUpdateTimer.Schedule (MicroSeconds (m_uniformRandomVariable->GetInteger (0,1000)));
 }
 
 Ptr<Ipv4Route>
@@ -270,7 +278,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p,
     }
   if (!removedAddresses.empty ())
     {
-      Simulator::Schedule (MicroSeconds (UniformVariable ().GetInteger (0,1000)),&RoutingProtocol::SendTriggeredUpdate,this);
+      Simulator::Schedule (MicroSeconds (m_uniformRandomVariable->GetInteger (0,1000)),&RoutingProtocol::SendTriggeredUpdate,this);
     }
   if (m_routingTable.LookupRoute (dst,rt))
     {
@@ -754,7 +762,7 @@ RoutingProtocol::RecvDsdv (Ptr<Socket> socket)
     }
   else
     {
-      Simulator::Schedule (MicroSeconds (UniformVariable ().GetInteger (0,1000)),&RoutingProtocol::SendTriggeredUpdate,this);
+      Simulator::Schedule (MicroSeconds (m_uniformRandomVariable->GetInteger (0,1000)),&RoutingProtocol::SendTriggeredUpdate,this);
     }
 }
 
@@ -904,7 +912,7 @@ RoutingProtocol::SendPeriodicUpdate ()
       socket->SendTo (packet, 0, InetSocketAddress (destination, DSDV_PORT));
       NS_LOG_FUNCTION ("PeriodicUpdate Packet UID is : " << packet->GetUid ());
     }
-  m_periodicUpdateTimer.Schedule (m_periodicUpdateInterval + MicroSeconds (25 * UniformVariable ().GetInteger (0,1000)));
+  m_periodicUpdateTimer.Schedule (m_periodicUpdateInterval + MicroSeconds (25 * m_uniformRandomVariable->GetInteger (0,1000)));
 }
 
 void
@@ -1138,7 +1146,7 @@ RoutingProtocol::SendPacketFromQueue (Ipv4Address dst,
       ucb (route,p,header);
       if (m_queue.GetSize () != 0 && m_queue.Find (dst))
         {
-          Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+          Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0,100)),
                                &RoutingProtocol::SendPacketFromQueue,this,dst,route);
         }
     }

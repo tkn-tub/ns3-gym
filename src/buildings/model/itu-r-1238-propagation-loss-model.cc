@@ -111,6 +111,11 @@ ItuR1238PropagationLossModel::DoCalcRxPower (double txPowerDbm,
 }
 
 
+int64_t
+ItuR1238PropagationLossModel::DoAssignStreams (int64_t stream)
+{
+  return 0;
+}
 
 
 } // namespace ns3

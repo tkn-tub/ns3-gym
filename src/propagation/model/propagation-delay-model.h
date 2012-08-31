@@ -23,7 +23,7 @@
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ns3/nstime.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -48,6 +48,22 @@ public:
    * source and destination.
    */
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
+  /**
+   * If this delay model uses objects of type RandomVariableStream,
+   * set the stream numbers to the integers starting with the offset
+   * 'stream'.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+private:
+  /**
+   * Subclasses must implement this; those not using random variables
+   * can return zero
+   */
+  virtual int64_t DoAssignStreams (int64_t stream) = 0;
 };
 
 /**
@@ -67,7 +83,8 @@ public:
   virtual ~RandomPropagationDelayModel ();
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 private:
-  RandomVariable m_variable;
+  virtual int64_t DoAssignStreams (int64_t stream);
+  Ptr<RandomVariableStream> m_variable;
 };
 
 /**
@@ -94,6 +111,7 @@ public:
    */
   double GetSpeed (void) const;
 private:
+  virtual int64_t DoAssignStreams (int64_t stream);
   double m_speed;
 };
 

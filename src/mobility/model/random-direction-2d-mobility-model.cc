@@ -20,8 +20,10 @@
 #include "ns3/simulator.h"
 #include <algorithm>
 #include <cmath>
-#include "random-direction-2d-mobility-model.h"
 #include "ns3/log.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
+#include "random-direction-2d-mobility-model.h"
 
 NS_LOG_COMPONENT_DEFINE ("RandomDirection2dMobilityModel");
 
@@ -44,15 +46,20 @@ RandomDirection2dMobilityModel::GetTypeId (void)
                    MakeRectangleAccessor (&RandomDirection2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
     .AddAttribute ("Speed", "A random variable to control the speed (m/s).",
-                   RandomVariableValue (UniformVariable (1.0, 2.0)),
-                   MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_speed),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::UniformRandomVariable[Min=1.0|Max=2.0]"),
+                   MakePointerAccessor (&RandomDirection2dMobilityModel::m_speed),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddAttribute ("Pause", "A random variable to control the pause (s).",
-                   RandomVariableValue (ConstantVariable (2.0)),
-                   MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_pause),
-                   MakeRandomVariableChecker ())
+                   StringValue ("ns3::ConstantRandomVariable[Constant=2.0]"),
+                   MakePointerAccessor (&RandomDirection2dMobilityModel::m_pause),
+                   MakePointerChecker<RandomVariableStream> ())
   ;
   return tid;
+}
+
+RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
+{
+  m_direction = CreateObject <UniformRandomVariable> ();
 }
 
 void 
@@ -71,7 +78,7 @@ RandomDirection2dMobilityModel::DoStart (void)
 void
 RandomDirection2dMobilityModel::DoStartPrivate (void)
 {
-  double direction = m_direction.GetValue (0, 2 * PI);
+  double direction = m_direction->GetValue (0, 2 * PI);
   SetDirectionAndSpeed (direction);
 }
 
@@ -80,7 +87,7 @@ RandomDirection2dMobilityModel::BeginPause (void)
 {
   m_helper.Update ();
   m_helper.Pause ();
-  Time pause = Seconds (m_pause.GetValue ());
+  Time pause = Seconds (m_pause->GetValue ());
   m_event.Cancel ();
   m_event = Simulator::Schedule (pause, &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
   NotifyCourseChange ();
@@ -92,7 +99,7 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
   NS_LOG_FUNCTION_NOARGS ();
   m_helper.UpdateWithBounds (m_bounds);
   Vector position = m_helper.GetCurrentPosition ();
-  double speed = m_speed.GetValue ();
+  double speed = m_speed->GetValue ();
   const Vector vector (std::cos (direction) * speed,
                        std::sin (direction) * speed,
                        0.0);
@@ -108,7 +115,7 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 void
 RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 {
-  double direction = m_direction.GetValue (0, PI);
+  double direction = m_direction->GetValue (0, PI);
 
   m_helper.UpdateWithBounds (m_bounds);
   Vector position = m_helper.GetCurrentPosition ();
@@ -147,6 +154,14 @@ Vector
 RandomDirection2dMobilityModel::DoGetVelocity (void) const
 {
   return m_helper.GetVelocity ();
+}
+int64_t
+RandomDirection2dMobilityModel::DoAssignStreams (int64_t stream)
+{
+  m_direction->SetStream (stream);
+  m_speed->SetStream (stream + 1);
+  m_pause->SetStream (stream + 2);
+  return 3;
 }
 
 

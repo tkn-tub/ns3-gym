@@ -32,7 +32,6 @@
 #include "ns3/uan-tx-mode.h"
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
-#include "ns3/random-variable.h"
 #include "ns3/energy-source-container.h"
 #include "ns3/acoustic-modem-energy-model.h"
 
@@ -357,6 +356,8 @@ UanPhyGen::UanPhyGen ()
     m_cleared (false),
     m_disabled (false)
 {
+  m_pg = CreateObject<UniformRandomVariable> ();
+
   m_energyCallback.Nullify ();
 }
 
@@ -682,9 +683,7 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode)
       UpdatePowerConsumption (IDLE);
     }
 
-  UniformVariable pg;
-
-  if (pg.GetValue (0, 1) > m_per->CalcPer (m_pktRx, m_minRxSinrDb, txMode))
+  if (m_pg->GetValue (0, 1) > m_per->CalcPer (m_pktRx, m_minRxSinrDb, txMode))
     {
       m_rxOkLogger (pkt, m_minRxSinrDb, txMode);
       NotifyListenersRxGood ();
@@ -864,6 +863,14 @@ UanPhyGen::SetSleepMode (bool sleep)
           m_energyCallback (IDLE);
         }
     }
+}
+
+int64_t
+UanPhyGen::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_pg->SetStream (stream);
+  return 1;
 }
 
 void

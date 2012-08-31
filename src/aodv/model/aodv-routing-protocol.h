@@ -34,6 +34,7 @@
 #include "aodv-neighbor.h"
 #include "aodv-dpd.h"
 #include "ns3/node.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
@@ -89,6 +90,17 @@ public:
   void SetBroadcastEnable (bool f) { EnableBroadcast = f; }
   bool GetBroadcastEnable () const { return EnableBroadcast; }
   //\}
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   ///\name Protocol parameters.
   //\{
@@ -254,6 +266,9 @@ private:
   void RouteRequestTimerExpire (Ipv4Address dst);
   /// Mark link to neighbor node as unidirectional for blacklistTimeout
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
 };
 
 }

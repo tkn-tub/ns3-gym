@@ -70,6 +70,7 @@ namespace ns3 {
  * a pair of integers which describe where in the buffer content
  * the "virtual zero area" starts and ends.
  *
+ * \verbatim
  * ***: unused bytes
  * xxx: bytes "added" at the front of the zero area
  * ...: bytes "added" at the back of the zero area
@@ -84,6 +85,7 @@ namespace ns3 {
  *                        |--------------------^ m_zeroAreaStart
  *                        |---------------------------------^ m_zeroAreaEnd
  *                        |------------------------------------------^ m_end
+ * \endverbatim
  *
  * A simple state invariant is that m_start <= m_zeroStart <= m_zeroEnd <= m_end
  */

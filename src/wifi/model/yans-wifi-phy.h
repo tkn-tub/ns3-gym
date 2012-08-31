@@ -29,7 +29,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "wifi-phy.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
@@ -141,6 +141,16 @@ public:
   virtual Ptr<WifiChannel> GetChannel (void) const;
   virtual void ConfigureStandard (enum WifiPhyStandard standard);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   YansWifiPhy (const YansWifiPhy &o);
   virtual void DoDispose (void);
@@ -213,7 +223,8 @@ private:
   WifiModeList m_deviceRateSet;
 
   EventId m_endRxEvent;
-  UniformVariable m_random;
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_random;
   /// Standard-dependent center frequency of 0-th channel, MHz
   double m_channelStartingFrequency;
   Ptr<WifiPhyStateHelper> m_state;

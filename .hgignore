@@ -20,15 +20,14 @@
 \.pcap$
 \.mob$
 \.routes$
-^doc/manual/build
-^doc/tutorial/build
-^doc/testing/build
-^doc/models/build
+^doc/doxygen.warnings.log$
+^doc/(manual|models|tutorial|tutorial-pt-br)/build
+^doc/(manual|models|tutorial|tutorial-pt-br)/figures/.*\.(eps|pdf|png)$
 ^doc/models/source-temp
-^doc/manual/figures/.*eps
-^doc/manual/figures/.*pdf
-^doc/manual/figures/.*png
+^doc/ns3_html_theme/static/ns3_version.js$
 ^src/.*/doc/build
+^src/.*/doc/source/figures/.*\.(eps|pdf)$
+^src/.*/doc/.*\.png
 ^bindings/python/pybindgen/
 ms_print.*
 massif.*
@@ -36,3 +35,4 @@ massif.*
 \.diff$
 \.tr$
 \#[^\#/]+\#$
+syntax: glob

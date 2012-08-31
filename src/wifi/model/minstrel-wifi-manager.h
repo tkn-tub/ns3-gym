@@ -26,9 +26,7 @@
 #include "wifi-remote-station-manager.h"
 #include "wifi-mode.h"
 #include "ns3/nstime.h"
-#include <vector>
-
-
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -96,6 +94,16 @@ public:
 
   virtual void SetupPhy (Ptr<WifiPhy> phy);
 
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   // overriden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
@@ -157,6 +165,9 @@ private:
   uint32_t m_sampleCol;  ///< number of sample columns
   uint32_t m_pktLen;  ///< packet length used  for calculate mode TxTime
   uint32_t m_nsupported;  ///< modes supported
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;
 };
 
 } // namespace ns3

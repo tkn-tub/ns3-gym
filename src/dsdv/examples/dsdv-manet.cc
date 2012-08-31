@@ -247,12 +247,17 @@ DsdvManetExample::SetupMobility ()
   MobilityHelper mobility;
   ObjectFactory pos;
   pos.SetTypeId ("ns3::RandomRectanglePositionAllocator");
-  pos.Set ("X", RandomVariableValue (UniformVariable (0, 1000)));
-  pos.Set ("Y", RandomVariableValue (UniformVariable (0, 1000)));
+  pos.Set ("X", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000.0]"));
+  pos.Set ("Y", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000.0]"));
+
+  ostringstream speedConstantRandomVariableStream;
+  speedConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant="
+                                   << m_nodeSpeed
+                                   << "]";
 
   Ptr <PositionAllocator> taPositionAlloc = pos.Create ()->GetObject <PositionAllocator> ();
-  mobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel", "Speed", RandomVariableValue (ConstantVariable (m_nodeSpeed)),
-                             "Pause", RandomVariableValue (ConstantVariable (2.0)), "PositionAllocator", PointerValue (taPositionAlloc));
+ mobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel", "Speed", StringValue (speedConstantRandomVariableStream.str ()),
+                             "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=2.0]"), "PositionAllocator", PointerValue (taPositionAlloc));
   mobility.SetPositionAllocator (taPositionAlloc);
   mobility.Install (nodes);
 }
@@ -312,14 +317,14 @@ DsdvManetExample::InstallApplications ()
       for (uint32_t j = 0; j <= m_nSinks - 1; j++ )
         {
           OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address (InetSocketAddress (interfaces.GetAddress (j), port)));
-          onoff1.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-          onoff1.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+          onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+          onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 
           if (j != clientNode)
             {
               ApplicationContainer apps1 = onoff1.Install (nodes.Get (clientNode));
-              UniformVariable var;
-              apps1.Start (Seconds (var.GetValue (m_dataStart, m_dataStart + 1)));
+              Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
+              apps1.Start (Seconds (var->GetValue (m_dataStart, m_dataStart + 1)));
               apps1.Stop (Seconds (m_totalTime));
             }
         }

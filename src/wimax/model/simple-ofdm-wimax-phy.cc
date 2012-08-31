@@ -32,7 +32,6 @@
 #include "wimax-mac-header.h"
 #include "simple-ofdm-wimax-channel.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/random-variable.h"
 #include <string>
 #include <math.h>
 NS_LOG_COMPONENT_DEFINE ("SimpleOfdmWimaxPhy");
@@ -154,6 +153,8 @@ SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy (void)
 
 SimpleOfdmWimaxPhy::SimpleOfdmWimaxPhy (void)
 {
+  m_URNG = CreateObject<UniformRandomVariable> ();
+
   InitSimpleOfdmWimaxPhy ();
   m_snrToBlockErrorRateManager->SetTraceFilePath ((char*) "");
   m_snrToBlockErrorRateManager->LoadTraces ();
@@ -342,7 +343,6 @@ SimpleOfdmWimaxPhy::StartReceive (uint32_t burstSize,
                                   Ptr<PacketBurst> burst)
 {
 
-  UniformVariable URNG;
   uint8_t drop = 0;
   double Nwb = -114 + m_noiseFigure + 10 * log (GetBandwidth () / 1000000000.0) / 2.303;
   double SNR = rxPower - Nwb;
@@ -351,9 +351,9 @@ SimpleOfdmWimaxPhy::StartReceive (uint32_t burstSize,
   double I1 = record->GetI1 ();
   double I2 = record->GetI2 ();
 
-  double blockErrorRate = URNG.GetValue (I1, I2);
+  double blockErrorRate = m_URNG->GetValue (I1, I2);
 
-  double rand = URNG.GetValue (0.0, 1.0);
+  double rand = m_URNG->GetValue (0.0, 1.0);
 
   if (rand < blockErrorRate)
     {
@@ -1089,6 +1089,14 @@ void
 SimpleOfdmWimaxPhy::NotifyRxDrop (Ptr<PacketBurst> burst)
 {
   m_phyRxDropTrace (burst);
+}
+
+int64_t
+SimpleOfdmWimaxPhy::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_URNG->SetStream (stream);
+  return 1;
 }
 
 } // namespace ns3

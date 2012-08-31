@@ -12,7 +12,7 @@ public:
    * \brief set the seed
    * it will duplicate the seed value 6 times
    * \code
-   * SeedManger::SetSeed(15);
+   * RngSeedManger::SetSeed(15);
    * UniformVariable x(2,3);     //these will give the same output everytime
    * ExponentialVariable y(120); //as long as the seed stays the same
    * \endcode
@@ -36,9 +36,9 @@ public:
    * \brief Set the run number of simulation
    *
    * \code
-   * SeedManager::SetSeed(12);
+   * RngSeedManager::SetSeed(12);
    * int N = atol(argv[1]); //read in run number from command line
-   * SeedManager::SetRun(N);
+   * RngSeedManager::SetRun(N);
    * UniformVariable x(0,10);
    * ExponentialVariable y(2902);
    * \endcode

@@ -26,6 +26,7 @@
 #include "ns3/string.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
+#include "ns3/pointer.h"
 #include "ns3/gnuplot.h"
 #include "ns3/simulator.h"
 
@@ -238,7 +239,8 @@ int main (int argc, char *argv[])
 
   {
     Ptr<RandomPropagationLossModel> random = CreateObject<RandomPropagationLossModel> ();
-    random->SetAttribute ("Variable", RandomVariableValue (ExponentialVariable (50.0)));
+    Ptr<ExponentialRandomVariable> expVar = CreateObjectWithAttributes<ExponentialRandomVariable> ("Mean", DoubleValue (50.0));
+    random->SetAttribute ("Variable", PointerValue (expVar));
 
     Gnuplot plot = TestDeterministic (random);
     plot.SetTitle ("ns3::RandomPropagationLossModel with Exponential Distribution");

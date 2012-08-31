@@ -32,6 +32,7 @@ namespace ns3 {
 class MeshPointDevice;
 class Packet;
 class Mac48Address;
+class UniformRandomVariable;
 namespace dot11s {
 class HwmpProtocolMac;
 class HwmpRtable;
@@ -85,8 +86,20 @@ public:
   ///\brief Statistics:
   void Report (std::ostream &) const;
   void ResetStats ();
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  int64_t AssignStreams (int64_t stream);
+
 private:
   friend class HwmpProtocolMac;
+
+  virtual void DoStart ();
 
   HwmpProtocol& operator= (const HwmpProtocol &);
   HwmpProtocol (const HwmpProtocol &);
@@ -267,6 +280,8 @@ private:
   bool m_doFlag;
   bool m_rfFlag;
   ///\}
+  /// Random variable for random start time
+  Ptr<UniformRandomVariable> m_coefficient;
   Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
 };
 } // namespace dot11s

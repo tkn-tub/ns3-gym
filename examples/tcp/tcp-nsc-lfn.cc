@@ -101,11 +101,10 @@ int main (int argc, char *argv[])
   Ipv4InterfaceContainer ipv4Interfaces = ipv4.Assign (p2pInterfaces);
 
   DoubleValue rate (errRate);
-  RandomVariableValue u01 (UniformVariable (0.0, 1.0));
   Ptr<RateErrorModel> em1 = 
-    CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
+    CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0,Max=1.0]"), "ErrorRate", rate);
   Ptr<RateErrorModel> em2 = 
-    CreateObjectWithAttributes<RateErrorModel> ("RanVar", u01, "ErrorRate", rate);
+    CreateObjectWithAttributes<RateErrorModel> ("RanVar", StringValue ("ns3::UniformRandomVariable[Min=0.0,Max=1.0]"), "ErrorRate", rate);
 
   // This enables the specified errRate on both link endpoints.
   p2pInterfaces.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em1));
@@ -125,8 +124,8 @@ int main (int argc, char *argv[])
     {
       Address remoteAddress (InetSocketAddress (ipv4Interfaces.GetAddress (i), servPort));
       OnOffHelper clientHelper ("ns3::TcpSocketFactory", remoteAddress);
-      clientHelper.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-      clientHelper.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+      clientHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      clientHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
       ApplicationContainer clientApp = clientHelper.Install (n.Get (j));
       clientApp.Start (Seconds (1.0 + i));
       clientApp.Stop (Seconds (runtime + 1.0 + i));

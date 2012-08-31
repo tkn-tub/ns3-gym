@@ -20,6 +20,7 @@
 #include "attribute-default-iterator.h"
 #include "ns3/attribute.h"
 #include "ns3/pointer.h"
+#include "ns3/callback.h"
 #include "ns3/global-value.h"
 #include "ns3/string.h"
 #include "ns3/object-ptr-container.h"
@@ -82,7 +83,13 @@ AttributeDefaultIterator::Iterate (void)
               //pointer value, won't take it
               continue;
             }
-          //We take only values, no pointers or vectors
+          Ptr<const CallbackValue> callback = DynamicCast<const CallbackValue> (info.initialValue);
+          if (callback != 0)
+            {
+              //callback value, won't take it
+              continue;
+            }
+          //We take only values, no pointers or vectors or callbacks
           if (!calledStart)
             {
               StartVisitTypeId (tid.GetName ());

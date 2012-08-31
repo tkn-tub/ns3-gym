@@ -30,15 +30,22 @@ RandomStream::~RandomStream ()
 
 
 RealRandomStream::RealRandomStream ()
-  : m_stream (UniformVariable ())
 {
+  m_stream = CreateObject<UniformRandomVariable> ();
 }
+
 uint32_t
 RealRandomStream::GetNext (uint32_t min, uint32_t max)
 {
-  return m_stream.GetInteger (min, max);
+  return m_stream->GetInteger (min, max);
 }
 
+int64_t
+RealRandomStream::AssignStreams (int64_t stream)
+{
+  m_stream->SetStream (stream);
+  return 1;
+}
 
 void
 TestRandomStream::AddNext (uint32_t v)
@@ -53,6 +60,12 @@ TestRandomStream::GetNext (uint32_t min, uint32_t max)
   uint32_t next = m_nexts.front ();
   m_nexts.pop_front ();
   return next;
+}
+
+int64_t
+TestRandomStream::AssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 } // namespace ns3

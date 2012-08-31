@@ -37,6 +37,7 @@
 #include "dsdv-packet-queue.h"
 #include "dsdv-packet.h"
 #include "ns3/node.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-l3-protocol.h"
@@ -84,6 +85,16 @@ public:
   void SetEnableRAFlag (bool f);
   bool GetEnableRAFlag () const;
   // \}
+
+ /**
+  * Assign a fixed random variable stream number to the random variables
+  * used by this model.  Return the number of streams (possibly zero) that
+  * have been assigned.
+  *
+  * \param stream first stream index to use
+  * \return the number of stream indices assigned by this model
+  */
+  int64_t AssignStreams (int64_t stream);
 
 private:
   ///\name Protocol parameters.
@@ -188,6 +199,9 @@ private:
   Timer m_periodicUpdateTimer;
   /// Timer used by the trigger updates in case of Weighted Settling Time is used
   Timer m_triggeredExpireTimer;
+
+  /// Provides uniform random variables.
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
 };
 
 }

@@ -143,7 +143,7 @@ to these other net devices:::
 
 For examples that use the ``Emu`` net device, see
 ``src/emu/examples/emu-udp-echo.cc`` and ``src/emu/examples/emu-ping.cc``
-in the repository `<http://code.nsnam.org/craigdo/ns-3-emu/>`_. 
+in the repository.
 
 Implementation
 **************

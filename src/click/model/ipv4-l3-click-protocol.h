@@ -91,7 +91,6 @@ public:
    *
    * This method is typically called by lower layers
    * to forward packets up the stack to the right protocol.
-   * It is also called from NodeImpl::GetUdp for example.
    */
   Ptr<IpL4Protocol> GetProtocol (int protocolNumber) const;
 
@@ -115,6 +114,16 @@ public:
    */
   void Send (Ptr<Packet> packet, Ipv4Address source,
              Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
+
+  /**
+   * \param packet packet to send
+   * \param ipHeader IP Header
+   * \param route route entry
+   *
+   * Higher-level layers call this method to send a packet with IPv4 Header
+   * (Intend to be used with IpHeaderInclude attribute.)
+   */
+  void SendWithHeader (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route);
 
   /**
    * \param packet packet to send down the stack

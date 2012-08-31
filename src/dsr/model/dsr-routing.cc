@@ -56,7 +56,6 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/random-variable.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/wifi-net-device.h"
@@ -269,6 +268,9 @@ TypeId DsrRouting::GetTypeId ()
 DsrRouting::DsrRouting ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
+
   /*
    * The following Ptr statements created objects for all the options header for DSR, and each of them have
    * distinct option number assigned, when DSR Routing received a packet from higher layer, it will find
@@ -786,7 +788,7 @@ void DsrRouting::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop, uint8_t p
             }
           if (m_maintainBuffer.GetSize () != 0 && m_maintainBuffer.Find (nextHop))
             {
-              Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+              Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0,100)),
                                    &DsrRouting::SendRerrWhenBreaksLinkToNextHop,this,nextHop,protocol);
             }
         }
@@ -1411,7 +1413,7 @@ DsrRouting::Send (Ptr<Packet> packet,
                 }
             }
           // Try to send packet from *previously* queued entries from send buffer if any
-          Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+          Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0,100)),
                                &DsrRouting::SendPacketFromBuffer,this,sourceRoute,nextHop,protocol);
         }
     }
@@ -1544,7 +1546,7 @@ DsrRouting::PriorityScheduler (uint32_t priority, bool continueWithFirst)
             {
               NS_LOG_DEBUG ("Packet sent by Dsr. Calling PriorityScheduler after some time");
               //packet was successfully sent down. call scheduler after some time
-              Simulator::Schedule (MicroSeconds (UniformVariable ().GetInteger (0, 1000)),
+              Simulator::Schedule (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 1000)),
                                    &DsrRouting::PriorityScheduler,this, i, false);
             }
           else
@@ -1683,7 +1685,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
           if (m_sendBuffer.GetSize () != 0 && m_sendBuffer.Find (destination))
             {
               NS_LOG_DEBUG ("Schedule sending the next packet in send buffer");
-              Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+              Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0,100)),
                                    &DsrRouting::SendPacketFromBuffer,this,sourceRoute,nextHop,protocol);
             }
         }
@@ -1783,7 +1785,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
           if (m_errorBuffer.GetSize () != 0 && m_errorBuffer.Find (destination))
             {
               NS_LOG_DEBUG ("Schedule sending the next packet in send buffer");
-              Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+              Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0,100)),
                                    &DsrRouting::SendPacketFromBuffer,this,sourceRoute,nextHop,protocol);
             }
         }
@@ -1941,7 +1943,7 @@ DsrRouting::CancelPacketTimerNextHop (Ipv4Address nextHop, uint8_t protocol)
       if (m_maintainBuffer.GetSize () && m_maintainBuffer.Find (nextHop))
         {
           NS_LOG_INFO ("Cancel the packet timer for next maintenance entry");
-          Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0,100)),
+          Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0,100)),
                                &DsrRouting::CancelPacketTimerNextHop,this,nextHop,protocol);
         }
     }
@@ -2217,6 +2219,14 @@ DsrRouting::PassiveScheduleTimerExpire  (MaintainBuffEntry & mb,
       // The function AllEqual will find the exact entry and delete it if found
       m_maintainBuffer.AllEqual (mb);
     }
+}
+
+int64_t
+DsrRouting::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  m_uniformRandomVariable->SetStream (stream);
+  return 1;
 }
 
 void
@@ -2729,7 +2739,7 @@ DsrRouting::ScheduleInterRequest (Ptr<Packet> packet)
    * This is a forwarding case when sending route requests, a random delay time [0, m_broadcastJitter]
    * used before forwarding as link-layer broadcast
    */
-  Simulator::Schedule (MilliSeconds (UniformVariable ().GetInteger (0, m_broadcastJitter)), &DsrRouting::SendRequest, this,
+  Simulator::Schedule (MilliSeconds (m_uniformRandomVariable->GetInteger (0, m_broadcastJitter)), &DsrRouting::SendRequest, this,
                        packet, m_mainAddress);
 }
 
@@ -2843,7 +2853,7 @@ DsrRouting::ScheduleCachedReply (Ptr<Packet> packet,
                                  double hops)
 {
   NS_LOG_FUNCTION (this << packet << source << destination);
-  Simulator::Schedule (Time (2 * m_nodeTraversalTime * (hops - 1 + UniformVariable ().GetValue (0,1))), &DsrRouting::SendReply, this, packet, source, destination, route);
+  Simulator::Schedule (Time (2 * m_nodeTraversalTime * (hops - 1 + m_uniformRandomVariable->GetValue (0,1))), &DsrRouting::SendReply, this, packet, source, destination, route);
 }
 
 void

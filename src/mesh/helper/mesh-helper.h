@@ -190,6 +190,19 @@ public:
    * \brief Reset statistics.
    */
   void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.  The Install() method of this helper
+   * should have previously been called by the user.
+   *
+   * \param stream first stream index to use
+   * \param c NetDeviceContainer of the set of devices for which the mesh devices
+   *          should be modified to use a fixed stream
+   * \return the number of stream indices assigned by this helper
+   */
+  int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
+
 private:
   /**
    * \internal

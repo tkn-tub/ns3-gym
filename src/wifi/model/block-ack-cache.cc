@@ -31,7 +31,7 @@ BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
 {
   m_winStart = winStart;
   m_winSize = winSize <= 64 ? winSize : 64;
-  m_winEnd = ((m_winStart + m_winSize) % 4096) - 1;
+  m_winEnd = (m_winStart + m_winSize - 1) % 4096;
   memset (m_bitmap, 0, sizeof (m_bitmap));
 }
 
@@ -67,7 +67,7 @@ BlockAckCache::UpdateWithBlockAckReq (uint16_t startingSeq)
           if (startingSeq != m_winStart)
             {
               m_winStart = startingSeq;
-              uint16_t newWinEnd = ((m_winStart + m_winSize) % 4096) - 1;
+              uint16_t newWinEnd = (m_winStart + m_winSize - 1) % 4096;
               ResetPortionOfBitmap ((m_winEnd + 1) % 4096, newWinEnd);
               m_winEnd = newWinEnd;
 
@@ -77,7 +77,7 @@ BlockAckCache::UpdateWithBlockAckReq (uint16_t startingSeq)
       else
         {
           m_winStart = startingSeq;
-          m_winEnd = ((m_winStart + m_winSize) % 4096) - 1;
+          m_winEnd = (m_winStart + m_winSize - 1) % 4096;
           ResetPortionOfBitmap (m_winStart, m_winEnd);
 
           WINSIZE_ASSERT;
@@ -112,7 +112,7 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
   else if (blockAckHeader->IsCompressed ())
     {
       uint32_t i = blockAckHeader->GetStartingSequence ();
-      uint32_t end = ((i + m_winSize) % 4096) - 1;
+      uint32_t end = (i + m_winSize - 1) % 4096;
       for (; i != end; i = (i + 1) % 4096)
         {
           if (m_bitmap[i] == 1)

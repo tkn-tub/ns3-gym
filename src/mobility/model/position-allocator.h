@@ -21,7 +21,7 @@
 #define POSITION_ALLOCATOR_H
 
 #include "ns3/object.h"
-#include "ns3/random-variable.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/vector.h"
 
 namespace ns3 {
@@ -44,6 +44,17 @@ public:
    * This method _must_ be implement in subclasses.
    */
   virtual Vector GetNext (void) const = 0;
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * This method _must_ be implement in subclasses.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t AssignStreams (int64_t stream) = 0;
 };
 
 /**
@@ -64,6 +75,7 @@ public:
    */
   void Add (Vector v);
   virtual Vector GetNext (void) const;
+  virtual int64_t AssignStreams (int64_t stream);
 private:
   std::vector<Vector> m_positions;
   mutable std::vector<Vector>::const_iterator m_current;
@@ -151,6 +163,7 @@ public:
 
 
   virtual Vector GetNext (void) const;
+  virtual int64_t AssignStreams (int64_t stream);
 private:
   mutable uint32_t m_current;
   enum LayoutType m_layoutType;
@@ -172,13 +185,14 @@ public:
   RandomRectanglePositionAllocator ();
   virtual ~RandomRectanglePositionAllocator ();
 
-  void SetX (RandomVariable x);
-  void SetY (RandomVariable y);
+  void SetX (Ptr<RandomVariableStream> x);
+  void SetY (Ptr<RandomVariableStream> y);
 
   virtual Vector GetNext (void) const;
+  virtual int64_t AssignStreams (int64_t stream);
 private:
-  RandomVariable m_x;
-  RandomVariable m_y;
+  Ptr<RandomVariableStream> m_x;
+  Ptr<RandomVariableStream> m_y;
 };
 
 /**
@@ -192,15 +206,16 @@ public:
   RandomBoxPositionAllocator ();
   virtual ~RandomBoxPositionAllocator ();
 
-  void SetX (RandomVariable x);
-  void SetY (RandomVariable y);
-  void SetZ (RandomVariable z);
+  void SetX (Ptr<RandomVariableStream> x);
+  void SetY (Ptr<RandomVariableStream> y);
+  void SetZ (Ptr<RandomVariableStream> z);
 
   virtual Vector GetNext (void) const;
+  virtual int64_t AssignStreams (int64_t stream);
 private:
-  RandomVariable m_x;
-  RandomVariable m_y;
-  RandomVariable m_z;
+  Ptr<RandomVariableStream> m_x;
+  Ptr<RandomVariableStream> m_y;
+  Ptr<RandomVariableStream> m_z;
 };
 
 /**
@@ -215,15 +230,16 @@ public:
   RandomDiscPositionAllocator ();
   virtual ~RandomDiscPositionAllocator ();
 
-  void SetTheta (RandomVariable theta);
-  void SetRho (RandomVariable rho);
+  void SetTheta (Ptr<RandomVariableStream> theta);
+  void SetRho (Ptr<RandomVariableStream> rho);
   void SetX (double x);
   void SetY (double y);
 
   virtual Vector GetNext (void) const;
+  virtual int64_t AssignStreams (int64_t stream);
 private:
-  RandomVariable m_theta;
-  RandomVariable m_rho;
+  Ptr<RandomVariableStream> m_theta;
+  Ptr<RandomVariableStream> m_rho;
   double m_x;
   double m_y;
 };
@@ -269,7 +285,9 @@ public:
   void SetY (double y);
 
   virtual Vector GetNext (void) const;
+  virtual int64_t AssignStreams (int64_t stream);
 private:
+  Ptr<UniformRandomVariable> m_rv;
   double m_rho;
   double m_x;
   double m_y;

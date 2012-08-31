@@ -1014,4 +1014,10 @@ CsmaNetDevice::SupportsSendFrom () const
   return true;
 }
 
+int64_t
+CsmaNetDevice::AssignStreams (int64_t stream)
+{
+  return m_backoff.AssignStreams (stream);
+}
+
 } // namespace ns3

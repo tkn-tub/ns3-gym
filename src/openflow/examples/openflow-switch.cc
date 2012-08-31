@@ -158,8 +158,7 @@ main (int argc, char *argv[])
 
   OnOffHelper onoff ("ns3::UdpSocketFactory",
                      Address (InetSocketAddress (Ipv4Address ("10.1.1.2"), port)));
-  onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1)));
-  onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0)));
+  onoff.SetConstantRate (DataRate ("500kb/s"));
 
   ApplicationContainer app = onoff.Install (terminals.Get (0));
   // Start the application
