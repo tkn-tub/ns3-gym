@@ -22,11 +22,10 @@
  */
 
 
-#include <math.h>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_histogram.h>
 #include <gsl/gsl_sf_zeta.h>
-#include <time.h>
+#include <ctime>
 #include <fstream>
 #include <cmath>
 

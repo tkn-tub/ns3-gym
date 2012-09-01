@@ -112,13 +112,13 @@ BuildingsShadowingTestCase::DoRun (void)
       sumSquared += (loss.at (loss.size () - 1) * loss.at (loss.size () - 1));
     }
   double mean = sum / samples;
-  double sigma = sqrt (sumSquared / samples - (mean * mean));
+  double sigma = std::sqrt (sumSquared / samples - (mean * mean));
   // test whether the distribution falls in the 99% confidence interval, as expected with a nornal distribution
-  double ci = (2.575829303549 * sigma) / sqrt (samples);
+  double ci = (2.575829303549 * sigma) / std::sqrt (samples);
 
   NS_LOG_INFO ("Mean from simulation " << mean << ", sigma " << sigma << ", reference value " << m_sigmaRef << ", CI(99%) " << ci);
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
+  NS_TEST_ASSERT_MSG_EQ_TOL (std::fabs (mean), 0.0, ci, "Wrong shadowing distribution !");
   Simulator::Destroy ();
 }
 

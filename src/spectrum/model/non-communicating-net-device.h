@@ -21,7 +21,7 @@
 #ifndef NON_COMMUNICATING_NET_DEVICE_H
 #define NON_COMMUNICATING_NET_DEVICE_H
 
-#include <string.h>
+#include <cstring>
 #include <ns3/node.h>
 #include <ns3/address.h>
 #include <ns3/net-device.h>

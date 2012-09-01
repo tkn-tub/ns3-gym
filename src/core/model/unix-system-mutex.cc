@@ -19,11 +19,13 @@
  */
 
 #include <pthread.h>
-#include <string.h>
-#include <errno.h>
+#include <cstring>
+#include <cerrno> // for strerror
+
 #include "fatal-error.h"
 #include "system-mutex.h"
 #include "log.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("SystemMutex");
 
@@ -79,7 +81,7 @@ SystemMutexPrivate::Lock (void)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Lock()"
                       "pthread_mutex_lock failed: " << rc << " = \"" <<
-                      strerror (rc) << "\"");
+                      std::strerror (rc) << "\"");
     }
 }
 	
@@ -93,7 +95,7 @@ SystemMutexPrivate::Unlock (void)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Unlock()"
                       "pthread_mutex_unlock failed: " << rc << " = \"" <<
-                      strerror (rc) << "\"");
+                      std::strerror (rc) << "\"");
     }
 }
 

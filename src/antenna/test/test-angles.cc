@@ -147,10 +147,10 @@ AnglesTestSuite::AnglesTestSuite ()
   AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, 1),    Angles (-M_PI_2, M_PI_4)));
   AddTestCase (new OneVectorConstructorTestCase (Vector (0, -1, -1),   Angles (-M_PI_2, 3*M_PI_4)));
 
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, sqrt (2)),  Angles (M_PI_4, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, -sqrt (2)), Angles (M_PI_4, 3*M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (1, -1, sqrt (2)), Angles (-M_PI_4, M_PI_4)));
-  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 1, sqrt (2)), Angles (3*M_PI_4, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, std::sqrt (2)),  Angles (M_PI_4, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, 1, -std::sqrt (2)), Angles (M_PI_4, 3*M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (1, -1, std::sqrt (2)), Angles (-M_PI_4, M_PI_4)));
+  AddTestCase (new OneVectorConstructorTestCase (Vector (-1, 1, std::sqrt (2)), Angles (3*M_PI_4, M_PI_4)));
 
 
 
@@ -182,10 +182,10 @@ AnglesTestSuite::AnglesTestSuite ()
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, 1),    Vector (0, 0, 0), Angles (-M_PI_2, M_PI_4)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -1, -1),   Vector (0, 0, 0), Angles (-M_PI_2, 3*M_PI_4)));
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, sqrt (2)),  Vector (0, 0, 0), Angles (M_PI_4, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, -sqrt (2)), Vector (0, 0, 0), Angles (M_PI_4, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, -1, sqrt (2)), Vector (0, 0, 0), Angles (-M_PI_4, M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 1, sqrt (2)), Vector (0, 0, 0), Angles (3*M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, std::sqrt (2)),  Vector (0, 0, 0), Angles (M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, 1, -std::sqrt (2)), Vector (0, 0, 0), Angles (M_PI_4, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (1, -1, std::sqrt (2)), Vector (0, 0, 0), Angles (-M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (-1, 1, std::sqrt (2)), Vector (0, 0, 0), Angles (3*M_PI_4, M_PI_4)));
 
 
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (3, 2, 2),     Vector (2, 2, 2), Angles (0, M_PI_2)));
@@ -202,8 +202,8 @@ AnglesTestSuite::AnglesTestSuite ()
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (0, -2, -6),    Vector (-1, -2, -5), Angles (0, 3*M_PI_4)));
   AddTestCase (new TwoVectorsConstructorTestCase (Vector (77, 3, 43),    Vector (78, 2, 43), Angles (3*M_PI_4, M_PI_2)));
 
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (24, -2, -6 -sqrt (2)), Vector (23, -3, -6), Angles (M_PI_4, 3*M_PI_4)));
-  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0.5, 11.45, sqrt (2)-1), Vector (-0.5, 12.45, -1), Angles (-M_PI_4, M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (24, -2, -6 -std::sqrt (2)), Vector (23, -3, -6), Angles (M_PI_4, 3*M_PI_4)));
+  AddTestCase (new TwoVectorsConstructorTestCase (Vector (0.5, 11.45, std::sqrt (2)-1), Vector (-0.5, 12.45, -1), Angles (-M_PI_4, M_PI_4)));
 
 
 };

@@ -33,7 +33,8 @@
 #include "simple-ofdm-wimax-channel.h"
 #include "ns3/trace-source-accessor.h"
 #include <string>
-#include <math.h>
+#include <cmath>
+
 NS_LOG_COMPONENT_DEFINE ("SimpleOfdmWimaxPhy");
 namespace ns3 {
 
@@ -344,7 +345,7 @@ SimpleOfdmWimaxPhy::StartReceive (uint32_t burstSize,
 {
 
   uint8_t drop = 0;
-  double Nwb = -114 + m_noiseFigure + 10 * log (GetBandwidth () / 1000000000.0) / 2.303;
+  double Nwb = -114 + m_noiseFigure + 10 * std::log (GetBandwidth () / 1000000000.0) / 2.303;
   double SNR = rxPower - Nwb;
 
   SNRToBlockErrorRateRecord * record = m_snrToBlockErrorRateManager->GetSNRToBlockErrorRateRecord (SNR, modulationType);
@@ -477,8 +478,8 @@ SimpleOfdmWimaxPhy::ConvertBurstToBits (Ptr<const PacketBurst> burst)
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
       Ptr<Packet> packet = *iter;
-      uint8_t *pstart = (uint8_t*) malloc (packet->GetSize ());
-      memset (pstart, 0, packet->GetSize ());
+      uint8_t *pstart = (uint8_t*) std::malloc (packet->GetSize ());
+      std::memset (pstart, 0, packet->GetSize ());
       packet->CopyData (pstart, packet->GetSize ());
       bvec temp (8);
       temp.resize (0, 0);
@@ -492,7 +493,7 @@ SimpleOfdmWimaxPhy::ConvertBurstToBits (Ptr<const PacketBurst> burst)
             }
           j++;
         }
-      free (pstart);
+      std::free (pstart);
     }
 
   return buffer;
@@ -521,7 +522,7 @@ SimpleOfdmWimaxPhy::ConvertBitsToBurst (bvec buffer)
       for (int l = 0; l < 8; l++)
         {
           bool bin = buffer.at (i + l);
-          temp += (uint8_t)(bin * pow (2, (7 - l)));
+          temp += (uint8_t)(bin * std::pow (2, (7 - l)));
         }
 
       *(pstart + j) = temp;
@@ -711,14 +712,14 @@ SimpleOfdmWimaxPhy::DoGetNrSymbols (uint32_t size, WimaxPhy::ModulationType modu
 {
   Time transmissionTime = Seconds ((double)(GetNrBlocks (size, modulationType) * GetFecBlockSize (modulationType))
                                    / DoGetDataRate (modulationType));
-  return (uint64_t) ceil (transmissionTime.GetSeconds () / GetSymbolDuration ().GetSeconds ());
+  return (uint64_t) std::ceil (transmissionTime.GetSeconds () / GetSymbolDuration ().GetSeconds ());
 }
 
 uint64_t
 SimpleOfdmWimaxPhy::DoGetNrBytes (uint32_t symbols, WimaxPhy::ModulationType modulationType) const
 {
   Time transmissionTime = Seconds (symbols * GetSymbolDuration ().GetSeconds ());
-  return (uint64_t) floor ((transmissionTime.GetSeconds () * DoGetDataRate (modulationType)) / 8);
+  return (uint64_t) std::floor ((transmissionTime.GetSeconds () * DoGetDataRate (modulationType)) / 8);
 }
 
 uint32_t

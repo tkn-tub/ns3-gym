@@ -22,17 +22,16 @@
 #include <list>
 #include <utility>
 #include <iostream>
-#include <string.h>
 #include "assert.h"
 #include "ns3/core-config.h"
 #include "fatal-error.h"
 
 #ifdef HAVE_GETENV
-#include <string.h>
+#include <cstring>
 #endif
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 namespace ns3 {
@@ -390,7 +389,7 @@ static void CheckEnvironmentVariables (void)
 {
 #ifdef HAVE_GETENV
   char *envVar = getenv ("NS_LOG");
-  if (envVar == 0 || strlen(envVar) == 0)
+  if (envVar == 0 || std::strlen(envVar) == 0)
     {
       return;
     }

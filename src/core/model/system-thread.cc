@@ -21,7 +21,7 @@
 #include "fatal-error.h"
 #include "system-thread.h"
 #include "log.h"
-#include <string.h>
+#include <cstring>
 
 NS_LOG_COMPONENT_DEFINE ("SystemThread");
 

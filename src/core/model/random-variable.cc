@@ -20,9 +20,8 @@
 //
 
 #include <iostream>
-
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <sys/time.h>                   // for gettimeofday
 #include <unistd.h>
 #include <iostream>
@@ -38,7 +37,6 @@
 #include "rng-stream.h"
 #include "fatal-error.h"
 
-using namespace std;
 
 namespace ns3 {
 
@@ -545,7 +543,7 @@ double ExponentialVariableImpl::GetValue ()
   RngStream *generator = GetStream ();
   while (1)
     {
-      double r = -m_mean*log (generator->RandU01 ());
+      double r = -m_mean*std::log (generator->RandU01 ());
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -706,7 +704,7 @@ double ParetoVariableImpl::GetValue ()
   RngStream *generator = GetStream ();
   while (1)
     {
-      double r = (m_scale * ( 1.0 / pow (generator->RandU01 (), 1.0 / m_shape)));
+      double r = (m_scale * ( 1.0 / std::pow (generator->RandU01 (), 1.0 / m_shape)));
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -838,7 +836,7 @@ double WeibullVariableImpl::GetValue ()
   double exponent = 1.0 / m_alpha;
   while (1)
     {
-      double r = m_mean * pow ( -log (generator->RandU01 ()), exponent);
+      double r = m_mean * std::pow ( -std::log (generator->RandU01 ()), exponent);
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -958,13 +956,13 @@ double NormalVariableImpl::GetValue ()
       double w = v1 * v1 + v2 * v2;
       if (w <= 1.0)
         { // Got good pair
-          double y = sqrt ((-2 * log (w)) / w);
-          m_next = m_mean + v2 * y * sqrt (m_variance);
+          double y = std::sqrt ((-2 * std::log (w)) / w);
+          m_next = m_mean + v2 * y * std::sqrt (m_variance);
           // if next is in bounds, it is valid
-          m_nextValid = fabs (m_next - m_mean) <= m_bound;
-          double x1 = m_mean + v1 * y * sqrt (m_variance);
+          m_nextValid = std::fabs (m_next - m_mean) <= m_bound;
+          double x1 = m_mean + v1 * y * std::sqrt (m_variance);
           // if x1 is in bounds, return it
-          if (fabs (x1 - m_mean) <= m_bound)
+          if (std::fabs (x1 - m_mean) <= m_bound)
             {
               return x1;
             }
@@ -1156,11 +1154,11 @@ void EmpiricalVariableImpl::Validate ()
       ValueCDF& current = emp[i];
       if (current.value < prior.value || current.cdf < prior.cdf)
         { // Error
-          cerr << "Empirical Dist error,"
-               << " current value " << current.value
-               << " prior value "   << prior.value
-               << " current cdf "   << current.cdf
-               << " prior cdf "     << prior.cdf << endl;
+          std::cerr << "Empirical Dist error,"
+                    << " current value " << current.value
+                    << " prior value "   << prior.value
+                    << " current cdf "   << current.cdf
+                    << " prior cdf "     << prior.cdf << std::endl;
           NS_FATAL_ERROR ("Empirical Dist error");
         }
       prior = current;
@@ -1226,7 +1224,7 @@ RandomVariableBase* IntEmpiricalVariableImpl::Copy () const
 double IntEmpiricalVariableImpl::Interpolate (double c1, double c2,
                                               double v1, double v2, double r)
 { // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
-  return ceil (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
+  return std::ceil (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
 }
 
 IntEmpiricalVariable::IntEmpiricalVariable ()
@@ -1375,9 +1373,9 @@ LogNormalVariableImpl::GetValue ()
     }
   while (r2 > 1.0 || r2 == 0);
 
-  normal = u * sqrt (-2.0 * log (r2) / r2);
+  normal = u * std::sqrt (-2.0 * std::log (r2) / r2);
 
-  z =  exp (m_sigma * normal + m_mu);
+  z = std::exp (m_sigma * normal + m_mu);
 
   return z;
 }
@@ -1460,12 +1458,12 @@ GammaVariableImpl::GetValue (double alpha, double beta)
   if (alpha < 1)
     {
       double u = generator->RandU01 ();
-      return GetValue (1.0 + alpha, beta) * pow (u, 1.0 / alpha);
+      return GetValue (1.0 + alpha, beta) * std::pow (u, 1.0 / alpha);
     }
 
   double x, v, u;
   double d = alpha - 1.0 / 3.0;
-  double c = (1.0 / 3.0) / sqrt (d);
+  double c = (1.0 / 3.0) / std::sqrt (d);
 
   while (1)
     {
@@ -1482,7 +1480,7 @@ GammaVariableImpl::GetValue (double alpha, double beta)
         {
           break;
         }
-      if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
+      if (std::log (u) < 0.5 * x * x + d * (1 - v + std::log (v)))
         {
           break;
         }
@@ -1672,11 +1670,11 @@ double TriangularVariableImpl::GetValue ()
   double u = generator->RandU01 ();
   if (u <= (m_mode - m_min) / (m_max - m_min) )
     {
-      return m_min + sqrt (u * (m_max - m_min) * (m_mode - m_min) );
+      return m_min + std::sqrt (u * (m_max - m_min) * (m_mode - m_min) );
     }
   else
     {
-      return m_max - sqrt ( (1 - u) * (m_max - m_min) * (m_max - m_mode) );
+      return m_max - std::sqrt ( (1 - u) * (m_max - m_min) * (m_max - m_mode) );
     }
 }
 
@@ -1745,7 +1743,7 @@ ZipfVariableImpl::ZipfVariableImpl (long n, double alpha)
   // calculate the normalization constant c
   for (int i = 1; i <= n; i++)
     {
-      m_c += (1.0 / pow ((double)i,alpha));
+      m_c += (1.0 / std::pow ((double)i, alpha));
     }
   m_c = 1.0 / m_c;
 }
@@ -1759,7 +1757,7 @@ ZipfVariableImpl::GetValue ()
   double sum_prob = 0,zipf_value = 0;
   for (int i = 1; i <= m_n; i++)
     {
-      sum_prob += m_c / pow ((double)i,m_alpha);
+      sum_prob += m_c / std::pow ((double)i, m_alpha);
       if (sum_prob > u)
         {
           zipf_value = i;
@@ -1815,14 +1813,14 @@ RandomVariableBase* ZetaVariableImpl::Copy () const
 
 ZetaVariableImpl::ZetaVariableImpl ()
   : m_alpha (3.14),
-    m_b (pow (2.0, 2.14))
+    m_b (std::pow (2.0, 2.14))
 {
 }
 
 
 ZetaVariableImpl::ZetaVariableImpl (double alpha)
   : m_alpha (alpha),
-    m_b (pow (2.0, alpha - 1.0))
+    m_b (std::pow (2.0, alpha - 1.0))
 {
 }
 
@@ -1844,8 +1842,8 @@ ZetaVariableImpl::GetValue ()
     {
       u = generator->RandU01 ();
       v = generator->RandU01 ();
-      X = floor (pow (u, -1.0 / (m_alpha - 1.0)));
-      T = pow (1.0 + 1.0 / X, m_alpha - 1.0);
+      X = floor (std::pow (u, -1.0 / (m_alpha - 1.0)));
+      T = std::pow (1.0 + 1.0 / X, m_alpha - 1.0);
       test = v * X * (T - 1.0) / (m_b - 1.0);
     }
   while ( test > (T / m_b) );
@@ -1909,7 +1907,7 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
   value = value.substr (tmp + 1, value.npos);
   if (type == "Constant")
     {
-      istringstream iss (value);
+      std::istringstream iss (value);
       double constant;
       iss >> constant;
       var = ConstantVariable (constant);
@@ -1927,8 +1925,8 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
             {
               NS_FATAL_ERROR ("bad Uniform value: " << value);
             }
-          istringstream issA (value.substr (0, tmp));
-          istringstream issB (value.substr (tmp + 1, value.npos));
+          std::istringstream issA (value.substr (0, tmp));
+          std::istringstream issB (value.substr (tmp + 1, value.npos));
           double a, b;
           issA >> a;
           issB >> b;
@@ -1953,8 +1951,8 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
           tmp2 = sub.find (":");
           if (tmp2 == value.npos)
             {
-              istringstream issA (value.substr (0, tmp));
-              istringstream issB (sub);
+              std::istringstream issA (value.substr (0, tmp));
+              std::istringstream issB (sub);
               double a, b;
               issA >> a;
               issB >> b;
@@ -1962,9 +1960,9 @@ std::istream & operator >> (std::istream &is, RandomVariable &var)
             }
           else
             {
-              istringstream issA (value.substr (0, tmp));
-              istringstream issB (sub.substr (0, tmp2));
-              istringstream issC (sub.substr (tmp2 + 1, value.npos));
+              std::istringstream issA (value.substr (0, tmp));
+              std::istringstream issB (sub.substr (0, tmp2));
+              std::istringstream issC (sub.substr (tmp2 + 1, value.npos));
               double a, b, c;
               issA >> a;
               issB >> b;

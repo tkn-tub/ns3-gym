@@ -32,8 +32,6 @@
 #include "ns3/udp-socket-factory.h"
 #include "packet-sink.h"
 
-using namespace std;
-
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PacketSink");

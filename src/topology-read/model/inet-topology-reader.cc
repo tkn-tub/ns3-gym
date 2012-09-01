@@ -24,9 +24,9 @@
 #include <sstream>
 
 #include "ns3/log.h"
+
 #include "inet-topology-reader.h"
 
-using namespace std;
 
 namespace ns3 {
 
@@ -55,9 +55,9 @@ InetTopologyReader::~InetTopologyReader ()
 NodeContainer
 InetTopologyReader::Read (void)
 {
-  ifstream topgen;
+  std::ifstream topgen;
   topgen.open (GetFileName ().c_str ());
-  map<string, Ptr<Node> > nodeMap;
+  std::map<std::string, Ptr<Node> > nodeMap;
   NodeContainer nodes;
 
   if ( !topgen.is_open () )
@@ -65,9 +65,9 @@ InetTopologyReader::Read (void)
       return nodes;
     }
 
-  string from;
-  string to;
-  string linkAttr;
+  std::string from;
+  std::string to;
+  std::string linkAttr;
 
   int linksNumber = 0;
   int nodesNumber = 0;
@@ -75,8 +75,8 @@ InetTopologyReader::Read (void)
   int totnode = 0;
   int totlink = 0;
 
-  istringstream lineBuffer;
-  string line;
+  std::istringstream lineBuffer;
+  std::string line;
 
   getline (topgen,line);
   lineBuffer.str (line);

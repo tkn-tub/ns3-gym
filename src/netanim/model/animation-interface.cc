@@ -40,7 +40,7 @@
 #include "ns3/uan-mac.h"
 #include "ns3/ipv4.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
@@ -125,7 +125,7 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
       return true;
     }
   NS_LOG_INFO ("Creating new trace file:" << fn.c_str ());
-  m_f = fopen (fn.c_str (), "w");
+  m_f = std::fopen (fn.c_str (), "w");
   if (!m_f)
     {
       NS_FATAL_ERROR ("Unable to open Animation output file");
@@ -607,7 +607,7 @@ void AnimationInterface::StopAnimation ()
         { // Terminate the anim element
           WriteN (GetXMLClose ("anim"));
         }
-          fclose (m_f);
+      std::fclose (m_f);
     }
     m_outputFileSet = false;
 }
@@ -692,7 +692,7 @@ int AnimationInterface::WriteN (const char* data, uint32_t count)
   uint32_t    written = 0;
   while (nLeft)
     {
-      int n = fwrite (p, 1,  nLeft, m_f);
+      int n = std::fwrite (p, 1,  nLeft, m_f);
       if (n <= 0) 
         {
           return written;

@@ -30,7 +30,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
-#include <math.h>
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhy");
 
@@ -264,7 +264,7 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode)
         double numDataBitsPerSymbol = payloadMode.GetDataRate ()  * symbolDurationUs / 1e6;
 
         // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
-        uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
+        uint32_t numSymbols = lrint (std::ceil ((16 + size * 8.0 + 6.0) / numDataBitsPerSymbol));
 
         // Add signal extension for ERP PHY
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
@@ -282,7 +282,7 @@ WifiPhy::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payloadMode)
       NS_LOG_LOGIC (" size=" << size
                              << " mode=" << payloadMode
                              << " rate=" << payloadMode.GetDataRate () );
-      return lrint (ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
+      return lrint (std::ceil ((size * 8.0) / (payloadMode.GetDataRate () / 1.0e6)));
 
     default:
       NS_FATAL_ERROR ("unsupported modulation class");

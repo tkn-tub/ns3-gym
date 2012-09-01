@@ -2613,7 +2613,7 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
       if (m_rreqTable->GetRreqCnt (dst))
         {
           // When the route request count is larger than 0
-          rreqDelay = Time (pow (m_rreqTable->GetRreqCnt (dst), 2) * m_requestPeriod);
+          rreqDelay = Time (std::pow (m_rreqTable->GetRreqCnt (dst), 2) * m_requestPeriod);
         }
       else
         {

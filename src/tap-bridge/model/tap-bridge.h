@@ -19,7 +19,7 @@
 #ifndef TAP_BRIDGE_H
 #define TAP_BRIDGE_H
 
-#include <string.h>
+#include <cstring>
 #include "ns3/address.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"

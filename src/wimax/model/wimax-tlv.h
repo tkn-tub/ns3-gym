@@ -25,7 +25,7 @@
 #define WIMAX_TLV_EXTENDED_LENGTH_MASK 0x80
 
 #include "ns3/ipv4-address.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/uinteger.h"

@@ -20,8 +20,8 @@
 #include "assert.h"
 #include "abort.h"
 #include "system-path.h"
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 #include <vector>
 #include <list>
 
@@ -38,14 +38,14 @@ TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
   // Find exponent of largest absolute value
   //
   {
-    double max = (fabs (x1) > fabs (x2)) ? x1 : x2;
-    (void)frexp (max, &exponent);
+    double max = (std::fabs (x1) > std::fabs (x2)) ? x1 : x2;
+    (void)std::frexp (max, &exponent);
   }
 
   //
   // Form a neighborhood of size  2 * delta
   //
-  delta = ldexp (epsilon, exponent);
+  delta = std::ldexp (epsilon, exponent);
   difference = x1 - x2;
 
   if (difference > delta || difference < -delta)

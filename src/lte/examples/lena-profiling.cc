@@ -59,7 +59,7 @@ main (int argc, char *argv[])
   double nodeHeight = 1.5;
   double roomHeight = 3;
   double roomLength = 8;
-  uint32_t nRooms = ceil (sqrt (nEnbPerFloor));
+  uint32_t nRooms = std::ceil (std::sqrt (nEnbPerFloor));
   uint32_t nEnb;
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();

@@ -52,7 +52,7 @@
  * This code has been ported from ns-2 (queue/errmodel.{cc,h}
  */
 
-#include <math.h>
+#include <cmath>
 
 #include "error-model.h"
 
@@ -250,7 +250,7 @@ RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed byte error
-  double per = 1 - pow (1.0 - m_rate, p->GetSize ());
+  double per = 1 - std::pow (1.0 - m_rate, p->GetSize ());
   return (m_ranvar->GetValue () < per);
 }
 
@@ -259,7 +259,7 @@ RateErrorModel::DoCorruptBit (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION_NOARGS ();
   // compute pkt error rate, assume uniformly distributed bit error
-  double per = 1 - pow (1.0 - m_rate, (8 * p->GetSize ()) );
+  double per = 1 - std::pow (1.0 - m_rate, (8 * p->GetSize ()) );
   return (m_ranvar->GetValue () < per);
 }
 

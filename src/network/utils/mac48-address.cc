@@ -22,7 +22,7 @@
 #include "ns3/assert.h"
 #include <iomanip>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 namespace ns3 {
 
@@ -50,7 +50,7 @@ AsciiToLowCase (char c)
 
 Mac48Address::Mac48Address ()
 {
-  memset (m_address, 0, 6);
+  std::memset (m_address, 0, 6);
 }
 Mac48Address::Mac48Address (const char *str)
 {
@@ -85,12 +85,12 @@ Mac48Address::Mac48Address (const char *str)
 void 
 Mac48Address::CopyFrom (const uint8_t buffer[6])
 {
-  memcpy (m_address, buffer, 6);
+  std::memcpy (m_address, buffer, 6);
 }
 void 
 Mac48Address::CopyTo (uint8_t buffer[6]) const
 {
-  memcpy (buffer, m_address, 6);
+  std::memcpy (buffer, m_address, 6);
 }
 
 bool 

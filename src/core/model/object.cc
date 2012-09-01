@@ -18,6 +18,7 @@
  * Authors: Gustavo Carneiro <gjcarneiro@gmail.com>,
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "object.h"
 #include "object-factory.h"
 #include "assert.h"
@@ -27,8 +28,10 @@
 #include "string.h"
 #include <vector>
 #include <sstream>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+
+
 
 NS_LOG_COMPONENT_DEFINE ("Object");
 
@@ -85,7 +88,7 @@ Object::Object ()
   : m_tid (Object::GetTypeId ()),
     m_disposed (false),
     m_started (false),
-    m_aggregates ((struct Aggregates *) malloc (sizeof (struct Aggregates))),
+    m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
   m_aggregates->n = 1;
@@ -100,7 +103,7 @@ Object::~Object ()
       Object *current = m_aggregates->buffer[i];
       if (current == this)
         {
-          memmove (&m_aggregates->buffer[i], 
+          std::memmove (&m_aggregates->buffer[i], 
                    &m_aggregates->buffer[i+1],
                    sizeof (Object *)*(m_aggregates->n - (i+1)));
           m_aggregates->n--;
@@ -110,7 +113,7 @@ Object::~Object ()
   // delete the aggregate list
   if (m_aggregates->n == 0)
     {
-      free (m_aggregates);
+      std::free (m_aggregates);
     }
   m_aggregates = 0;
 }
@@ -118,7 +121,7 @@ Object::Object (const Object &o)
   : m_tid (o.m_tid),
     m_disposed (false),
     m_started (false),
-    m_aggregates ((struct Aggregates *) malloc (sizeof (struct Aggregates))),
+    m_aggregates ((struct Aggregates *) std::malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
   m_aggregates->n = 1;
@@ -242,11 +245,11 @@ Object::AggregateObject (Ptr<Object> o)
   // first create the new aggregate buffer.
   uint32_t total = m_aggregates->n + other->m_aggregates->n;
   struct Aggregates *aggregates = 
-    (struct Aggregates *)malloc (sizeof(struct Aggregates)+(total-1)*sizeof(Object*));
+    (struct Aggregates *)std::malloc (sizeof(struct Aggregates)+(total-1)*sizeof(Object*));
   aggregates->n = total;
 
   // copy our buffer to the new buffer
-  memcpy (&aggregates->buffer[0], 
+  std::memcpy (&aggregates->buffer[0], 
           &m_aggregates->buffer[0], 
           m_aggregates->n*sizeof(Object*));
 
@@ -287,8 +290,8 @@ Object::AggregateObject (Ptr<Object> o)
     }
 
   // Now that we are done with them, we can free our old aggregate buffers
-  free (a);
-  free (b);
+  std::free (a);
+  std::free (b);
 }
 /**
  * This function must be implemented in the stack that needs to notify

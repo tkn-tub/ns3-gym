@@ -160,7 +160,7 @@ NetAnimExperiment::Run (UanHelper &uan)
       {
         double x = urv->GetValue ();
         double y = urv->GetValue ();
-        double newr = sqrt ((x - m_boundary / 2.0) * (x - m_boundary / 2.0)
+        double newr = std::sqrt ((x - m_boundary / 2.0) * (x - m_boundary / 2.0)
                             + (y - m_boundary / 2.0) * (y - m_boundary / 2.0));
         rsum += newr;
         minr = std::min (minr, newr);

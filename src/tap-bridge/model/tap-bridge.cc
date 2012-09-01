@@ -39,9 +39,9 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <errno.h>
+#include <cerrno>
 #include <limits>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unistd.h>
 
 //
@@ -71,7 +71,7 @@ FdReader::Data TapBridgeFdReader::DoRead (void)
   NS_LOG_FUNCTION_NOARGS ();
 
   uint32_t bufferSize = 65536;
-  uint8_t *buf = (uint8_t *)malloc (bufferSize);
+  uint8_t *buf = (uint8_t *)std::malloc (bufferSize);
   NS_ABORT_MSG_IF (buf == 0, "malloc() failed");
 
   NS_LOG_LOGIC ("Calling read on tap device fd " << m_fd);
@@ -79,7 +79,7 @@ FdReader::Data TapBridgeFdReader::DoRead (void)
   if (len <= 0)
     {
       NS_LOG_INFO ("TapBridgeFdReader::DoRead(): done");
-      free (buf);
+      std::free (buf);
       buf = 0;
       len = 0;
     }
@@ -320,7 +320,7 @@ TapBridge::CreateTap (void)
   // socket for that purpose.
   //
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
-  NS_ABORT_MSG_IF (sock == -1, "TapBridge::CreateTap(): Unix socket creation error, errno = " << strerror (errno));
+  NS_ABORT_MSG_IF (sock == -1, "TapBridge::CreateTap(): Unix socket creation error, errno = " << std::strerror (errno));
 
   //
   // Bind to that socket and let the kernel allocate an endpoint
@@ -329,7 +329,7 @@ TapBridge::CreateTap (void)
   memset (&un, 0, sizeof (un));
   un.sun_family = AF_UNIX;
   int status = bind (sock, (struct sockaddr*)&un, sizeof (sa_family_t));
-  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): Could not bind(): errno = " << strerror (errno));
+  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): Could not bind(): errno = " << std::strerror (errno));
   NS_LOG_INFO ("Created Unix socket");
   NS_LOG_INFO ("sun_family = " << un.sun_family);
   NS_LOG_INFO ("sun_path = " << un.sun_path);
@@ -342,7 +342,7 @@ TapBridge::CreateTap (void)
   //
   socklen_t len = sizeof (un);
   status = getsockname (sock, (struct sockaddr*)&un, &len);
-  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): Could not getsockname(): errno = " << strerror (errno));
+  NS_ABORT_MSG_IF (status == -1, "TapBridge::CreateTap(): Could not getsockname(): errno = " << std::strerror (errno));
 
   //
   // Now encode that socket name (family and path) as a string of hex digits
@@ -531,7 +531,7 @@ TapBridge::CreateTap (void)
       //
       int st;
       pid_t waited = waitpid (pid, &st, 0);
-      NS_ABORT_MSG_IF (waited == -1, "TapBridge::CreateTap(): waitpid() fails, errno = " << strerror (errno));
+      NS_ABORT_MSG_IF (waited == -1, "TapBridge::CreateTap(): waitpid() fails, errno = " << std::strerror (errno));
       NS_ASSERT_MSG (pid == waited, "TapBridge::CreateTap(): pid mismatch");
 
       //
@@ -700,7 +700,7 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, ssize_t len)
   // buffer.
   //
   Ptr<Packet> packet = Create<Packet> (reinterpret_cast<const uint8_t *> (buf), len);
-  free (buf);
+  std::free (buf);
   buf = 0;
 
   //

@@ -22,7 +22,7 @@
 #define ANIMATION_INTERFACE__H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 #include <map>
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"

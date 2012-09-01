@@ -237,7 +237,7 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t t
   Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (model);
 
   // powerTx is expressed in dBm. We must convert it into natural unit.
-  double powerTxW = pow (10., (powerTx - 30) / 10);
+  double powerTxW = std::pow (10., (powerTx - 30) / 10);
 
   double txPowerDensity = (powerTxW / (txBandwidthConfiguration * 180000));
 
@@ -270,8 +270,8 @@ LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, P
   // see "LTE - From theory to practice"
   // Section 22.4.4.2 Thermal Noise and Receiver Noise Figure
   const double kT_dBm_Hz = -174.0;  // dBm/Hz
-  double kT_W_Hz = pow (10.0, (kT_dBm_Hz - 30) / 10.0);
-  double noiseFigureLinear = pow (10.0, noiseFigureDb / 10.0);
+  double kT_W_Hz = std::pow (10.0, (kT_dBm_Hz - 30) / 10.0);
+  double noiseFigureLinear = std::pow (10.0, noiseFigureDb / 10.0);
   double noisePowerSpectralDensity =  kT_W_Hz * noiseFigureLinear;
 
   Ptr<SpectrumValue> noisePsd = Create <SpectrumValue> (spectrumModel);

@@ -21,7 +21,7 @@
 #include "test.h"
 #include "abort.h"
 #include "assert.h"
-#include <math.h>
+#include <cmath>
 #include <iostream>
 
 namespace ns3 {

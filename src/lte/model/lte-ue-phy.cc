@@ -22,7 +22,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
-#include <math.h>
+#include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/double.h>
 #include "lte-ue-phy.h"
@@ -769,7 +769,7 @@ LteUePhy::SetTxModeGain (uint8_t txMode, double gain)
 {
   NS_LOG_FUNCTION (this << gain);
   // convert to linear
-  double gainLin = pow (10.0, (gain / 10.0));
+  double gainLin = std::pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < txMode)
     {
       m_txModeGain.resize (txMode);

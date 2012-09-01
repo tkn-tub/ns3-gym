@@ -385,7 +385,7 @@ RedQueue::InitializeParams (void)
  */
   if (m_qW == 0.0)
     {
-      m_qW = 1.0 - exp (-1.0 / m_ptc);
+      m_qW = 1.0 - std::exp (-1.0 / m_ptc);
     }
   else if (m_qW == -1.0)
     {
@@ -395,11 +395,11 @@ RedQueue::InitializeParams (void)
         {
           rtt = 0.1;
         }
-      m_qW = 1.0 - exp (-1.0 / (10 * rtt * m_ptc));
+      m_qW = 1.0 - std::exp (-1.0 / (10 * rtt * m_ptc));
     }
   else if (m_qW == -2.0)
     {
-      m_qW = 1.0 - exp (-10.0 / m_ptc);
+      m_qW = 1.0 - std::exp (-10.0 / m_ptc);
     }
 
   // TODO: implement adaptive RED
@@ -450,7 +450,7 @@ RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
        * pkts: the number of packets arriving in 50 ms
        */
       double pkts = m_ptc * 0.05;
-      double fraction = pow ((1 - m_qW), pkts);
+      double fraction = std::pow ((1 - m_qW), pkts);
 
       if ((double) qSize < fraction * m_qAvg)
         {
@@ -470,7 +470,7 @@ RedQueue::DropEarly (Ptr<Packet> p, uint32_t qSize)
        * pkts: the number of packets arriving in 50 ms
        */
       double pkts = m_ptc * 0.05;
-      double fraction = pow ((1 - m_qW), pkts);
+      double fraction = std::pow ((1 - m_qW), pkts);
       double ratio = qSize / (fraction * m_qAvg);
 
       if (ratio < 1.0)

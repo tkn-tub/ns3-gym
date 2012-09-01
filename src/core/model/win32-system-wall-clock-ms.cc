@@ -20,7 +20,7 @@
 
 #include "system-wall-clock-ms.h"
 
-#include <time.h>
+#include <ctime>
 
 namespace ns3 {
 
@@ -42,7 +42,7 @@ private:
 void 
 SystemWallClockMsPrivate::Start (void)
 {
-  m_startTime = clock ();
+  m_startTime = std::clock ();
 }
 
 int64_t
@@ -77,7 +77,7 @@ SystemWallClockMsPrivate::End (void)
   static int64_t ticksPerSecond = CLOCKS_PER_SEC;
   static double millisecondsPerTick = 1000. / ticksPerSecond;
 
-  clock_t endTime = clock ();
+  clock_t endTime = std::clock ();
 
   double tmp;
 

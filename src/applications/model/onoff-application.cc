@@ -43,8 +43,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
-using namespace std;
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
@@ -293,7 +291,7 @@ void OnOffApplication::ConnectionSucceeded (Ptr<Socket>)
 void OnOffApplication::ConnectionFailed (Ptr<Socket>)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  cout << "OnOffApplication, Connection Failed" << endl;
+  std::cout << "OnOffApplication, Connection Failed" << std::endl;
 }
 
 } // Namespace ns3

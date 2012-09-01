@@ -1230,7 +1230,7 @@ SubscriberStationNetDevice::ProcessUcd (const Ucd &ucd)
 
     }
   SetCurrentUcd (ucd);
-  m_linkManager->SetRangingCW ((uint8_t) pow ((double) 2, (double) ucd.GetRangingBackoffStart ()) - 1); // initializing ranging CW
+  m_linkManager->SetRangingCW ((uint8_t) std::pow ((double) 2, (double) ucd.GetRangingBackoffStart ()) - 1); // initializing ranging CW
   OfdmUcdChannelEncodings ucdChnlEncodings = ucd.GetChannelEncodings ();
 
   std::vector<OfdmUlBurstProfile> ulBurstProfiles = ucd.GetUlBurstProfiles ();

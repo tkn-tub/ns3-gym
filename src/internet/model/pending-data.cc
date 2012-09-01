@@ -26,11 +26,13 @@
 #include <iostream>
 #include <algorithm>
 
-#include <string.h>
+#include <cstring>
 
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
+
 #include "pending-data.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("PendingData");
 

@@ -22,7 +22,7 @@
 #include "tag.h"
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
-#include <string.h>
+#include <cstring>
 
 NS_LOG_COMPONENT_DEFINE ("PacketTagList");
 
@@ -119,7 +119,7 @@ PacketTagList::Remove (Tag &tag)
       copy->tid = cur->tid;
       copy->count = 1;
       copy->next = 0;
-      memcpy (copy->data, cur->data, PACKET_TAG_MAX_SIZE);
+      std::memcpy (copy->data, cur->data, PACKET_TAG_MAX_SIZE);
       *prevNext = copy;
       prevNext = &copy->next;
     }

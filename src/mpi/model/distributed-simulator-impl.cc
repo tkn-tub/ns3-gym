@@ -29,7 +29,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-#include <math.h>
+#include <cmath>
 
 #ifdef NS3_MPI
 #include <mpi.h>

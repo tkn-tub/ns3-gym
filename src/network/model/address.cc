@@ -20,7 +20,7 @@
 
 #include "ns3/assert.h"
 #include "address.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <iomanip>
 
@@ -38,14 +38,14 @@ Address::Address (uint8_t type, const uint8_t *buffer, uint8_t len)
     m_len (len)
 {
   NS_ASSERT (m_len <= MAX_SIZE);
-  memcpy (m_data, buffer, m_len);
+  std::memcpy (m_data, buffer, m_len);
 }
 Address::Address (const Address & address)
   : m_type (address.m_type),
     m_len (address.m_len)
 {
   NS_ASSERT (m_len <= MAX_SIZE);
-  memcpy (m_data, address.m_data, m_len);
+  std::memcpy (m_data, address.m_data, m_len);
 }
 Address &
 Address::operator = (const Address &address)
@@ -54,7 +54,7 @@ Address::operator = (const Address &address)
   m_type = address.m_type;
   m_len = address.m_len;
   NS_ASSERT (m_len <= MAX_SIZE);
-  memcpy (m_data, address.m_data, m_len);
+  std::memcpy (m_data, address.m_data, m_len);
   return *this;
 }
 
@@ -74,7 +74,7 @@ uint32_t
 Address::CopyTo (uint8_t buffer[MAX_SIZE]) const
 {
   NS_ASSERT (m_len <= MAX_SIZE);
-  memcpy (buffer, m_data, m_len);
+  std::memcpy (buffer, m_data, m_len);
   return m_len;
 }
 uint32_t
@@ -83,7 +83,7 @@ Address::CopyAllTo (uint8_t *buffer, uint8_t len) const
   NS_ASSERT (len >= m_len + 2);
   buffer[0] = m_type;
   buffer[1] = m_len;
-  memcpy (buffer + 2, m_data, m_len);
+  std::memcpy (buffer + 2, m_data, m_len);
   return m_len + 2;
 }
 
@@ -91,7 +91,7 @@ uint32_t
 Address::CopyFrom (const uint8_t *buffer, uint8_t len)
 {
   NS_ASSERT (len <= MAX_SIZE);
-  memcpy (m_data, buffer, len);
+  std::memcpy (m_data, buffer, len);
   m_len = len;
   return m_len;
 }
@@ -103,7 +103,7 @@ Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
   m_len = buffer[1];
 
   NS_ASSERT (len >= m_len + 2);
-  memcpy (m_data, buffer + 2, m_len);
+  std::memcpy (m_data, buffer + 2, m_len);
   return m_len + 2;
 }
 bool 
@@ -173,7 +173,7 @@ bool operator == (const Address &a, const Address &b)
     {
       return false;
     }
-  return memcmp (a.m_data, b.m_data, a.m_len) == 0;
+  return std::memcmp (a.m_data, b.m_data, a.m_len) == 0;
 }
 bool operator != (const Address &a, const Address &b)
 {

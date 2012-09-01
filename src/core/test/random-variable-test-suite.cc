@@ -20,14 +20,13 @@
 //
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
+#include <vector>
 
 #include "ns3/test.h"
 #include "ns3/assert.h"
 #include "ns3/integer.h"
 #include "ns3/random-variable.h"
-
-using namespace std;
 
 namespace ns3 {
 class BasicRandomNumberTestCase : public TestCase
@@ -53,16 +52,16 @@ BasicRandomNumberTestCase::DoRun (void)
   const double desiredMean = 1.0;
   const double desiredStdDev = 1.0;
 
-  double tmp = log (1 + (desiredStdDev / desiredMean) * (desiredStdDev / desiredMean));
-  double sigma = sqrt (tmp);
-  double mu = log (desiredMean) - 0.5 * tmp;
+  double tmp = std::log (1 + (desiredStdDev / desiredMean) * (desiredStdDev / desiredMean));
+  double sigma = std::sqrt (tmp);
+  double mu = std::log (desiredMean) - 0.5 * tmp;
 
   //
   // Test a custom lognormal instance to see if its moments have any relation
   // expected reality.
   //
   LogNormalVariable lognormal (mu, sigma);
-  vector<double> samples;
+  std::vector<double> samples;
   const int NSAMPLES = 10000;
   double sum = 0;
 
@@ -83,12 +82,12 @@ BasicRandomNumberTestCase::DoRun (void)
   // Wander back through the saved stamples and find their standard deviation
   //
   sum = 0;
-  for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
+  for (std::vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
     {
       double tmp = (*iter - obtainedMean);
       sum += tmp * tmp;
     }
-  double obtainedStdDev = sqrt (sum / (NSAMPLES - 1));
+  double obtainedStdDev = std::sqrt (sum / (NSAMPLES - 1));
   NS_TEST_EXPECT_MSG_EQ_TOL (obtainedStdDev, desiredStdDev, 0.1, "Got unexpected standard deviation from LogNormalVariable");
 }
 

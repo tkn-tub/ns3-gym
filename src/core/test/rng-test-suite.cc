@@ -15,10 +15,10 @@
  */
 
 
-#include <math.h>
+#include <cmath>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_histogram.h>
-#include <time.h>
+#include <ctime>
 #include <fstream>
 
 #include "ns3/test.h"
@@ -70,7 +70,7 @@ RngUniformTestCase::~RngUniformTestCase ()
 double
 RngUniformTestCase::ChiSquaredTest (UniformVariable &u)
 {
-  gsl_histogram * h = gsl_histogram_alloc (N_BINS);
+ gsl_histogram * h = gsl_histogram_alloc (N_BINS);
   gsl_histogram_set_ranges_uniform (h, 0., 1.);
 
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)

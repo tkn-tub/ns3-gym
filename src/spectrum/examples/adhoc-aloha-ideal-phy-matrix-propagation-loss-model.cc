@@ -40,9 +40,6 @@
 #include <ns3/applications-module.h>
 #include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
 
-#ifdef __FreeBSD__
-#define log2(x) (log (x)/M_LN2)
-#endif
 
 NS_LOG_COMPONENT_DEFINE ("TestAdhocOfdmAloha");
 
@@ -216,7 +213,7 @@ int main (int argc, char** argv)
       std::cout << "throughput:       " << throughputBps << std::endl;
       std::cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
       std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
-      double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
+      double rxPowerW = txPowerW / (std::pow (10.0, lossDb/10.0));
       double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
       std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
 

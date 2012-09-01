@@ -19,14 +19,13 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 
 #include "wifi-mac-queue.h"
 #include "qos-blocked-destinations.h"
-
-using namespace std;
 
 namespace ns3 {
 

@@ -33,7 +33,7 @@
 #include "enum.h"
 
 
-#include <math.h>
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("RealtimeSimulatorImpl");
 

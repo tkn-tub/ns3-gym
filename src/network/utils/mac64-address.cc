@@ -22,7 +22,7 @@
 #include "ns3/assert.h"
 #include <iomanip>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 namespace ns3 {
 
@@ -48,7 +48,7 @@ AsciiToLowCase (char c)
 
 Mac64Address::Mac64Address ()
 {
-  memset (m_address, 0, 8);
+  std::memset (m_address, 0, 8);
 }
 Mac64Address::Mac64Address (const char *str)
 {
@@ -83,12 +83,12 @@ Mac64Address::Mac64Address (const char *str)
 void 
 Mac64Address::CopyFrom (const uint8_t buffer[8])
 {
-  memcpy (m_address, buffer, 8);
+  std::memcpy (m_address, buffer, 8);
 }
 void 
 Mac64Address::CopyTo (uint8_t buffer[8]) const
 {
-  memcpy (buffer, m_address, 8);
+  std::memcpy (buffer, m_address, 8);
 }
 
 bool 
@@ -143,7 +143,7 @@ bool operator == (const Mac64Address &a, const Mac64Address &b)
   uint8_t adb[8];
   a.CopyTo (ada);
   b.CopyTo (adb);
-  return memcmp (ada, adb, 8) == 0;
+  return std::memcmp (ada, adb, 8) == 0;
 }
 bool operator != (const Mac64Address &a, const Mac64Address &b)
 {

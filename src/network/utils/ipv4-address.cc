@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "ns3/log.h"
 #include "ipv4-address.h"
 #include "ns3/assert.h"
@@ -74,7 +74,7 @@ Ipv4Mask::Ipv4Mask (char const *mask)
 {
   if (*mask == ASCII_SLASH)
     {
-      uint32_t plen = static_cast<uint32_t> (atoi (++mask));
+      uint32_t plen = static_cast<uint32_t> (std::atoi (++mask));
       NS_ASSERT (plen <= 32);
       if (plen > 0)
         {

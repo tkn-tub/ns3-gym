@@ -244,6 +244,7 @@ def build(bld):
         'model/fatal-impl.h',
         'model/system-path.h',
         'model/unused.h',
+        'model/math.h',
         ]
 
     if sys.platform == 'win32':

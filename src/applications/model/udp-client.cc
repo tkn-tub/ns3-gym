@@ -30,8 +30,8 @@
 #include "ns3/uinteger.h"
 #include "udp-client.h"
 #include "seq-ts-header.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 namespace ns3 {
 

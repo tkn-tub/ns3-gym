@@ -19,12 +19,12 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <string>
-#include <string.h> // for strerror
+#include <cstring> // for strerror
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <stdlib.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cerrno>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -51,9 +51,9 @@ static int gVerbose = 0; // Set to true to turn on logging messages.
   std::cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__ << "(): " << msg << std::endl; \
   if (printErrno) \
     { \
-      std::cout << "    errno = " << errno << " (" << strerror (errno) << ")" << std::endl; \
+      std::cout << "    errno = " << errno << " (" << std::strerror (errno) << ")" << std::endl; \
     } \
-  exit (-1); 
+  std::exit (-1); 
 
 #define ABORT_IF(cond, msg, printErrno) \
   if (cond) \

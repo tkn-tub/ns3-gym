@@ -53,7 +53,6 @@
 #include <mpi.h>
 #endif
 
-using namespace std;
 using namespace ns3;
 
 typedef struct timeval TIMER_TYPE;

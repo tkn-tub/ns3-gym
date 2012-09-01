@@ -20,7 +20,7 @@
 #include "ns3/packet.h"
 #include "ns3/test.h"
 #include <string>
-#include <stdarg.h>
+#include <cstdarg>
 
 namespace ns3 {
 

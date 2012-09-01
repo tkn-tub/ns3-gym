@@ -22,7 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include <string>
-#include <stdarg.h>
+#include <cstdarg>
 
 NS_LOG_COMPONENT_DEFINE ("Packet");
 

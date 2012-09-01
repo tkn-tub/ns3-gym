@@ -27,7 +27,7 @@
 #include "ns3/string.h"
 #include "ns3/system-thread.h"
 
-#include <time.h>
+#include <ctime>
 #include <list>
 #include <utility>
 
@@ -99,7 +99,7 @@ ThreadedSimulatorEventsTestCase::SchedulingThread (std::pair<ThreadedSimulatorEv
           struct timespec ts;
           ts.tv_sec = 0;
           ts.tv_nsec = 500;
-          nanosleep(&ts, NULL);
+          nanosleep (&ts, NULL);
         }
     }
 }

@@ -20,7 +20,7 @@
 #include "byte-tag-list.h"
 #include "ns3/log.h"
 #include <vector>
-#include <string.h>
+#include <cstring>
 
 NS_LOG_COMPONENT_DEFINE ("ByteTagList");
 
@@ -173,7 +173,7 @@ ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
            (m_data->count != 1 && m_data->dirty != m_used))
     {
       struct ByteTagListData *newData = Allocate (spaceNeeded);
-      memcpy (&newData->data, &m_data->data, m_used);
+      std::memcpy (&newData->data, &m_data->data, m_used);
       Deallocate (m_data);
       m_data = newData;
     }

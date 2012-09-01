@@ -31,7 +31,7 @@
 #include "assert.h"
 #include "log.h"
 
-#include <math.h>
+#include <cmath>
 #include <fstream>
 #include <list>
 #include <vector>

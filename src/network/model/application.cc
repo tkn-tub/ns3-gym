@@ -26,8 +26,6 @@
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 
-using namespace std;
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Application);

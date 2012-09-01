@@ -24,7 +24,7 @@
 #include "ns3/double.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/simulator.h"
-#include <math.h>
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("RvBatteryModel");
 
@@ -359,7 +359,7 @@ RvBatteryModel::RvModelAFunction (Time t, Time sk, Time sk_1, double beta)
   for (int m = 1; m <= m_numOfTerms; m++)
     {
       double square = beta * beta * m * m;
-      sum += (exp (-square * (firstDelta)) - exp (-square * (secondDelta))) / square;
+      sum += (std::exp (-square * (firstDelta)) - std::exp (-square * (secondDelta))) / square;
     }
   return delta + 2 * sum;
 }

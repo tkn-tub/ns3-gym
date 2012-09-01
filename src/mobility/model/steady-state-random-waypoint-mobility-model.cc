@@ -162,7 +162,7 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateStart (void)
             {
               // there is an error in equation 20 in the Tech. Report MCS-03-04
               // this error is corrected in the TMC 2004 paper and below
-              pause = Seconds (m_maxPause - sqrt ((1 - u)*(m_maxPause*m_maxPause - m_minPause*m_minPause)));
+              pause = Seconds (m_maxPause - std::sqrt ((1 - u)*(m_maxPause*m_maxPause - m_minPause*m_minPause)));
             }
         }
       else // if pause is constant

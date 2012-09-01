@@ -18,7 +18,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include <math.h>
+#include <cmath>
 
 #include "ns3/log.h"
 
@@ -65,7 +65,7 @@ ConstantSpectrumPropagationLossModel::SetLossDb (double lossDb)
 {
   NS_LOG_FUNCTION (this);
   m_lossDb = lossDb;
-  m_lossLinear = pow (10, m_lossDb / 10);
+  m_lossLinear = std::pow (10, m_lossDb / 10);
 }
 
 

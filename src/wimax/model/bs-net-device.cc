@@ -20,6 +20,8 @@
  *                               <amine.ismail@UDcast.com>
  */
 
+#include <cmath>
+
 #include "ns3/simulator.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/node.h"
@@ -524,8 +526,8 @@ BaseStationNetDevice::StartFrame (void)
 {
   //setting DL/UL subframe allocation for this frame
   uint32_t symbolsPerFrame = GetPhy ()->GetSymbolsPerFrame ();
-  SetNrDlSymbols ((symbolsPerFrame / 2) - static_cast<uint32_t> (ceil (GetTtg ()*m_psDuration.GetSeconds ()/m_symbolDuration.GetSeconds ())));
-  SetNrUlSymbols ((symbolsPerFrame / 2) - static_cast<uint32_t> (ceil (GetRtg ()*m_psDuration.GetSeconds ()/m_symbolDuration.GetSeconds ())));
+  SetNrDlSymbols ((symbolsPerFrame / 2) - static_cast<uint32_t> (std::ceil (GetTtg ()*m_psDuration.GetSeconds ()/m_symbolDuration.GetSeconds ())));
+  SetNrUlSymbols ((symbolsPerFrame / 2) - static_cast<uint32_t> (std::ceil (GetRtg ()*m_psDuration.GetSeconds ()/m_symbolDuration.GetSeconds ())));
 
   m_frameStartTime = Simulator::Now ();
 

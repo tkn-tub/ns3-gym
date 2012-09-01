@@ -24,7 +24,7 @@
 #include "string.h"
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 NS_LOG_COMPONENT_DEFINE ("ObjectBase");

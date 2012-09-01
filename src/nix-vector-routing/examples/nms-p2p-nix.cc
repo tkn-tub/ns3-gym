@@ -48,7 +48,6 @@
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
 
-using namespace std;
 using namespace ns3;
 
 typedef struct timeval TIMER_TYPE;
@@ -126,7 +125,7 @@ main (int argc, char *argv[])
 {
   TIMER_TYPE t0, t1, t2;
   TIMER_NOW (t0);
-  cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << endl;
+  std::cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl;
   LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
 
   int nCN = 2, nLANClients = 42;
@@ -140,12 +139,12 @@ main (int argc, char *argv[])
 
   if (nCN < 2) 
     {
-      cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
-           << endl;
+      std::cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
+           << std::endl;
       return 1;
     }
 
-  cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << endl;
+  std::cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << std::endl;
 
   Array2D<NodeContainer> nodes_net0(nCN, 3);
   Array2D<NodeContainer> nodes_net1(nCN, 6);
@@ -190,9 +189,9 @@ main (int argc, char *argv[])
   // Create Campus Networks
   for (int z = 0; z < nCN; ++z) 
     {
-      cout << "Creating Campus Network " << z << ":" << endl;
+      std::cout << "Creating Campus Network " << z << ":" << std::endl;
       // Create Net0
-      cout << "  SubNet [ 0";
+      std::cout << "  SubNet [ 0";
       for (int i = 0; i < 3; ++i) 
         {
           nodes_net0[z][i].Create (1);
@@ -207,7 +206,7 @@ main (int argc, char *argv[])
           ndc0[i] = p2p_1gb5ms.Install (nodes_net0[z][i]);
         }
       // Create Net1
-      cout << " 1";
+      std::cout << " 1";
       for (int i = 0; i < 6; ++i) 
         {
           nodes_net1[z][i].Create (1);
@@ -238,7 +237,7 @@ main (int argc, char *argv[])
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc0_1);
       // Create Net2
-      cout << " 2";
+      std::cout << " 2";
       for (int i = 0; i < 14; ++i) 
         {
           nodes_net2[z][i].Create (1);
@@ -280,7 +279,7 @@ main (int argc, char *argv[])
             }
         }
       // Create Net3
-      cout << " 3 ]" << endl;
+      std::cout << " 3 ]" << std::endl;
       for (int i = 0; i < 9; ++i) 
         {
           nodes_net3[z][i].Create (1);
@@ -316,7 +315,7 @@ main (int argc, char *argv[])
               ifs3LAN[z][i][j] = address.Assign (ndc3LAN[i][j]);
             }
         }
-      cout << "  Connecting Subnets..." << endl;
+      std::cout << "  Connecting Subnets..." << std::endl;
       // Create Lone Routers (Node 4 & 5) 
       nodes_netLR[z].Create (2);
       stack.Install (nodes_netLR[z]);
@@ -368,7 +367,7 @@ main (int argc, char *argv[])
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc3_5b);
       // Assign IP addresses
-      cout << "  Assigning IP addresses..." << endl;
+      std::cout << "  Assigning IP addresses..." << std::endl;
       for (int i = 0; i < 3; ++i) 
         {
           oss.str ("");
@@ -409,7 +408,7 @@ main (int argc, char *argv[])
   // Create Ring Links
   if (nCN > 1) 
     {
-      cout << "Forming Ring Topology..." << endl;
+      std::cout << "Forming Ring Topology..." << std::endl;
       NodeContainer* nodes_ring = new NodeContainer[nCN];
       for (int z = 0; z < nCN-1; ++z) 
         {
@@ -432,7 +431,7 @@ main (int argc, char *argv[])
     }
 
   // Create Traffic Flows
-  cout << "Creating TCP Traffic Flows:" << endl;
+  std::cout << "Creating TCP Traffic Flows:" << std::endl;
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes", UintegerValue (500000));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
                       StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
@@ -451,7 +450,7 @@ main (int argc, char *argv[])
           x = 0;
         }
       // Subnet 2 LANs
-      cout << "  Campus Network " << z << " Flows [ Net2 ";
+      std::cout << "  Campus Network " << z << " Flows [ Net2 ";
       for (int i = 0; i < 7; ++i) 
         {
           for (int j = 0; j < nLANClients; ++j) 
@@ -475,7 +474,7 @@ main (int argc, char *argv[])
             }
         }
       // Subnet 3 LANs
-      cout << "Net3 ]" << endl;
+      std::cout << "Net3 ]" << std::endl;
       for (int i = 0; i < 5; ++i) 
         {
           for (int j = 0; j < nLANClients; ++j) 
@@ -500,41 +499,41 @@ main (int argc, char *argv[])
         }
     }
 
-  cout << "Created " << NodeList::GetNNodes () << " nodes." << endl;
+  std::cout << "Created " << NodeList::GetNNodes () << " nodes." << std::endl;
   TIMER_TYPE routingStart;
   TIMER_NOW (routingStart);
 
   if (nix)
     {
       // Calculate routing tables
-      cout << "Using Nix-vectors..." << endl;
+      std::cout << "Using Nix-vectors..." << std::endl;
     }
   else
     {
       // Calculate routing tables
-      cout << "Populating Global Static Routing Tables..." << endl;
+      std::cout << "Populating Global Static Routing Tables..." << std::endl;
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
     }
 
   TIMER_TYPE routingEnd;
   TIMER_NOW (routingEnd);
-  cout << "Routing tables population took " 
-       << TIMER_DIFF (routingEnd, routingStart) << endl;
+  std::cout << "Routing tables population took " 
+       << TIMER_DIFF (routingEnd, routingStart) << std::endl;
 
   Simulator::ScheduleNow (Progress);
-  cout << "Running simulator..." << endl;
+  std::cout << "Running simulator..." << std::endl;
   TIMER_NOW (t1);
   Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   TIMER_NOW (t2);
-  cout << "Simulator finished." << endl;
+  std::cout << "Simulator finished." << std::endl;
   Simulator::Destroy ();
 
   double d1 = TIMER_DIFF (t1, t0), d2 = TIMER_DIFF (t2, t1);
-  cout << "-----" << endl << "Runtime Stats:" << endl;
-  cout << "Simulator init time: " << d1 << endl;
-  cout << "Simulator run time: " << d2 << endl;
-  cout << "Total elapsed time: " << d1+d2 << endl;
+  std::cout << "-----" << std::endl << "Runtime Stats:" << std::endl;
+  std::cout << "Simulator init time: " << d1 << std::endl;
+  std::cout << "Simulator run time: " << d2 << std::endl;
+  std::cout << "Total elapsed time: " << d1+d2 << std::endl;
 
   delete[] nodes_netLR;
   return 0;

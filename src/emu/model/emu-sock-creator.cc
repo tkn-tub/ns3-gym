@@ -21,8 +21,9 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <stdlib.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cerrno>
+#include <cstring>
 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -49,7 +50,7 @@ static int gVerbose = 0;
   std::cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__ << "(): " << msg << std::endl; \
   if (printErrno) \
     { \
-      std::cout << "    errno = " << errno << " (" << strerror (errno) << ")" << std::endl; \
+      std::cout << "    errno = " << errno << " (" << std::strerror (errno) << ")" << std::endl; \
     } \
   exit (-1); 
 

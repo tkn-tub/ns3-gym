@@ -17,14 +17,16 @@
  *
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
+#include <cstdlib> // for exit
+
 #include "command-line.h"
 #include "log.h"
 #include "config.h"
 #include "global-value.h"
 #include "type-id.h"
 #include "string.h"
-#include <stdlib.h>
-#include <stdarg.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
@@ -227,37 +229,37 @@ CommandLine::HandleArgument (std::string name, std::string value) const
     {
       // method below never returns.
       PrintHelp ();
-      exit (0);
+      std::exit (0);
     } 
   else if (name == "PrintGroups")
     {
       // method below never returns.
       PrintGroups ();
-      exit (0);
+      std::exit (0);
     }
   else if (name == "PrintTypeIds")
     {
       // method below never returns.
       PrintTypeIds ();
-      exit (0);
+      std::exit (0);
     }
   else if (name == "PrintGlobals")
     {
       // method below never returns.
       PrintGlobals ();
-      exit (0);
+      std::exit (0);
     }
   else if (name == "PrintGroup")
     {
       // method below never returns.
       PrintGroup (value);
-      exit (0);
+      std::exit (0);
     }
   else if (name == "PrintAttributes")
     {
       // method below never returns.
       PrintAttributes (value);
-      exit (0);
+      std::exit (0);
     }
   else
     {
@@ -268,7 +270,7 @@ CommandLine::HandleArgument (std::string name, std::string value) const
               if (!(*i)->Parse (value))
                 {
                   std::cerr << "Invalid argument value: "<<name<<"="<<value << std::endl;
-                  exit (1);
+                  std::exit (1);
                 }
               else
                 {
@@ -282,7 +284,7 @@ CommandLine::HandleArgument (std::string name, std::string value) const
     {
       std::cerr << "Invalid command-line arguments: --"<<name<<"="<<value<<std::endl;
       PrintHelp ();
-      exit (1);
+      std::exit (1);
     }
 }
 

@@ -42,7 +42,7 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
 #if (__GNUC__ >= 3)
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <cxxabi.h>
 #include "log.h"
 
@@ -78,7 +78,7 @@ CallbackBase::Demangle (const std::string& mangled)
     }
 
   if (demangled) {
-      free (demangled);
+      std::free (demangled);
     }
   return ret;
 }

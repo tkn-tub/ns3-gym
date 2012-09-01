@@ -51,8 +51,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
 
-using namespace std;
-
 namespace ns3 {
 
 // Constants definitions
@@ -69,12 +67,12 @@ namespace ns3 {
 // Type to maintain line parsed and its values
 struct ParseResult
 {
-  vector<string> tokens; // tokens from a line
-  vector<int> ivals;     // int values for each tokens
-  vector<bool> has_ival; // points if a tokens has an int value
-  vector<double> dvals;  // double values for each tokens
-  vector<bool> has_dval; // points if a tokens has a double value
-  vector<string> svals;  // string value for each token
+  std::vector<std::string> tokens; // tokens from a line
+  std::vector<int> ivals;     // int values for each tokens
+  std::vector<bool> has_ival; // points if a tokens has an int value
+  std::vector<double> dvals;  // double values for each tokens
+  std::vector<bool> has_dval; // points if a tokens has a double value
+  std::vector<std::string> svals;  // string value for each token
 };
 /**
  * \brief Keeps last movement schedule. If new movement occurs during
@@ -102,32 +100,32 @@ struct DestinationPoint
 
 
 // Parses a line of ns2 mobility
-static ParseResult ParseNs2Line (const string& str);
+static ParseResult ParseNs2Line (const std::string& str);
 
 // Put out blank spaces at the start and end of a line
-static string TrimNs2Line (const string& str);
+static std::string TrimNs2Line (const std::string& str);
 
 // Checks if a string represents a number or it has others characters than digits an point.
-static bool IsNumber (const string& s);
+static bool IsNumber (const std::string& s);
 
 // Check if s string represents a numeric value
 template<class T>
-static bool IsVal (const string& str, T& ret);
+static bool IsVal (const std::string& str, T& ret);
 
 // Checks if the value between brackets is a correct nodeId number
-static bool HasNodeIdNumber (string str);
+static bool HasNodeIdNumber (std::string str);
 
 // Gets nodeId number in string format from the string like $node_(4)
-static string GetNodeIdFromToken (string str);
+static std::string GetNodeIdFromToken (std::string str);
 
 // Get node id number in int format
 static int GetNodeIdInt (ParseResult pr);
 
 // Get node id number in string format
-static string GetNodeIdString (ParseResult pr);
+static std::string GetNodeIdString (ParseResult pr);
 
 // Add one coord to a vector position
-static Vector SetOneInitialCoord (Vector actPos, string& coord, double value);
+static Vector SetOneInitialCoord (Vector actPos, std::string& coord, double value);
 
 // Check if this corresponds to a line like this: $node_(0) set X_ 123
 static bool IsSetInitialPos (ParseResult pr);
@@ -143,10 +141,10 @@ static DestinationPoint SetMovement (Ptr<ConstantVelocityMobilityModel> model, V
                                      double xFinalPosition, double yFinalPosition, double speed);
 
 // Set initial position for a node
-static Vector SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, string coord, double coordVal);
+static Vector SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, std::string coord, double coordVal);
 
 // Schedule a set of position for a node
-static Vector SetSchedPosition (Ptr<ConstantVelocityMobilityModel> model, double at, string coord, double coordVal);
+static Vector SetSchedPosition (Ptr<ConstantVelocityMobilityModel> model, double at, std::string coord, double coordVal);
 
 
 Ns2MobilityHelper::Ns2MobilityHelper (std::string filename)
@@ -181,7 +179,7 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
 void
 Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
 {
-  map<int, DestinationPoint> last_pos;    // Stores previous movement scheduled for each node
+  std::map<int, DestinationPoint> last_pos;    // Stores previous movement scheduled for each node
 
   //*****************************************************************
   // Parse the file the first time to get the initial node positions.
@@ -398,15 +396,15 @@ Ns2MobilityHelper::ConfigNodesMovements (const ObjectStore &store) const
 
 
 ParseResult
-ParseNs2Line (const string& str)
+ParseNs2Line (const std::string& str)
 {
   ParseResult ret;
-  istringstream s;
-  string line;
+  std::istringstream s;
+  std::string line;
 
   // ignore comments (#)
   size_t pos_sharp = str.find_first_of ('#');
-  if (pos_sharp != string::npos)
+  if (pos_sharp != std::string::npos)
     {
       line = str.substr (0, pos_sharp);
     }
@@ -428,7 +426,7 @@ ParseNs2Line (const string& str)
 
   while (!s.eof ())
     {
-      string x;
+      std::string x;
       s >> x;
       if (x.length () == 0)
         {
@@ -460,7 +458,7 @@ ParseNs2Line (const string& str)
       // removes " from the last position
       ret.tokens[tokensLength - 1] = ret.tokens[tokensLength - 1].substr (0,lasTokenLength - 1);
 
-      string x;
+      std::string x;
       x = ret.tokens[tokensLength - 1];
 
       if (HasNodeIdNumber (x))
@@ -499,10 +497,10 @@ ParseNs2Line (const string& str)
 }
 
 
-string
-TrimNs2Line (const string& s)
+std::string
+TrimNs2Line (const std::string& s)
 {
-  string ret = s;
+  std::string ret = s;
 
   while (ret.size () > 0 && isblank (ret[0]))
     {
@@ -519,7 +517,7 @@ TrimNs2Line (const string& s)
 
 
 bool
-IsNumber (const string& s)
+IsNumber (const std::string& s)
 {
   char *endp;
   double v = strtod (s.c_str (), &endp); // declared with warn_unused_result
@@ -529,7 +527,7 @@ IsNumber (const string& s)
 
 
 template<class T>
-bool IsVal (const string& str, T& ret)
+bool IsVal (const std::string& str, T& ret)
 {
   if (str.size () == 0)
     {
@@ -537,8 +535,8 @@ bool IsVal (const string& str, T& ret)
     }
   else if (IsNumber (str))
     {
-      string s2 = str;
-      istringstream s (s2);
+      std::string s2 = str;
+      std::istringstream s (s2);
       s >> ret;
       return true;
     }
@@ -550,7 +548,7 @@ bool IsVal (const string& str, T& ret)
 
 
 bool
-HasNodeIdNumber (string str)
+HasNodeIdNumber (std::string str)
 {
 
   // find brackets
@@ -580,8 +578,8 @@ HasNodeIdNumber (string str)
 }
 
 
-string
-GetNodeIdFromToken (string str)
+std::string
+GetNodeIdFromToken (std::string str)
 {
   if (HasNodeIdNumber (str))
     {
@@ -620,7 +618,7 @@ GetNodeIdInt (ParseResult pr)
 }
 
 // Get node id number in string format
-string
+std::string
 GetNodeIdString (ParseResult pr)
 {
   switch (pr.tokens.size ())
@@ -641,7 +639,7 @@ GetNodeIdString (ParseResult pr)
 
 
 Vector
-SetOneInitialCoord (Vector position, string& coord, double value)
+SetOneInitialCoord (Vector position, std::string& coord, double value)
 {
 
   // set the position for the coord.
@@ -716,7 +714,7 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
   if (speed > 0)
     {
       // first calculate the time; time = distance / speed
-      double time = sqrt (pow (xFinalPosition - retval.m_finalPosition.x, 2) + pow (yFinalPosition - retval.m_finalPosition.y, 2)) / speed;
+      double time = std::sqrt (std::pow (xFinalPosition - retval.m_finalPosition.x, 2) + std::pow (yFinalPosition - retval.m_finalPosition.y, 2)) / speed;
       NS_LOG_DEBUG ("at=" << at << " time=" << time);
       if (time == 0)
         {
@@ -744,7 +742,7 @@ SetMovement (Ptr<ConstantVelocityMobilityModel> model, Vector last_pos, double a
 
 
 Vector
-SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, string coord, double coordVal)
+SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, std::string coord, double coordVal)
 {
   model->SetPosition (SetOneInitialCoord (model->GetPosition (), coord, coordVal));
 
@@ -758,7 +756,7 @@ SetInitialPosition (Ptr<ConstantVelocityMobilityModel> model, string coord, doub
 
 // Schedule a set of position for a node
 Vector
-SetSchedPosition (Ptr<ConstantVelocityMobilityModel> model, double at, string coord, double coordVal)
+SetSchedPosition (Ptr<ConstantVelocityMobilityModel> model, double at, std::string coord, double coordVal)
 {
   // update position
   model->SetPosition (SetOneInitialCoord (model->GetPosition (), coord, coordVal));

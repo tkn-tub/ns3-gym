@@ -17,11 +17,13 @@
  */
 
 #include <pthread.h>
-#include <errno.h>
+#include <cerrno> // for ETIMEDOUT
 #include <sys/time.h>
+
 #include "fatal-error.h"
 #include "system-condition.h"
 #include "log.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("SystemCondition");
 

@@ -28,7 +28,7 @@
 #include "assert.h"
 #include "log.h"
 
-#include <math.h>
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("DefaultSimulatorImpl");
 

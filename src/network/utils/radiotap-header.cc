@@ -19,7 +19,7 @@
  */
 
 #include <iomanip>
-#include <math.h>
+#include <cmath>
 #include "ns3/log.h"
 #include "radiotap-header.h"
 

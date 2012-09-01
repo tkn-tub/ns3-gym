@@ -25,7 +25,7 @@
 
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 namespace ns3 {

@@ -17,7 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include <stdarg.h>
+#include <cstdarg>
 #include <iostream>
 #include <sstream>
 #include "ns3/test.h"

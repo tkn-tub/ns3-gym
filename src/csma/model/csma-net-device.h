@@ -21,7 +21,7 @@
 #ifndef CSMA_NET_DEVICE_H
 #define CSMA_NET_DEVICE_H
 
-#include <string.h>
+#include <cstring>
 #include "ns3/node.h"
 #include "ns3/backoff.h"
 #include "ns3/address.h"

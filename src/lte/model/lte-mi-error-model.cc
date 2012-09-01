@@ -323,7 +323,7 @@ LteMiErrorModel::Mib (const SpectrumValue& sinr, const std::vector<int>& map, ui
                 }
             }
         }
-      NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << 10*log10 (sinrLin) << " V, MCS = " << (uint16_t)mcs << ", MI = " << MI);
+      NS_LOG_LOGIC (" RB " << map.at (i) << "Minimum SNR = " << 10 * std::log10 (sinrLin) << " V, MCS = " << (uint16_t)mcs << ", MI = " << MI);
       MIsum += MI;
     }
   MI = MIsum / map.size ();
@@ -477,9 +477,9 @@ LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& 
   if (C!=1)
     {
       double cbler = MappingMiBler (MI, mcs, Kplus);
-      errorRate *= pow (1.0 - cbler, Cplus);
+      errorRate *= std::pow (1.0 - cbler, Cplus);
       cbler = MappingMiBler (MI, mcs, Kminus);
-      errorRate *= pow (1.0 - cbler, Cminus);
+      errorRate *= std::pow (1.0 - cbler, Cminus);
       errorRate = 1.0 - errorRate;
     }
   else

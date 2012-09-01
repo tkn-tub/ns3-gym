@@ -17,9 +17,10 @@
  *
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
+
 #include "ns3/log.h"
 #include "dsss-error-rate-model.h"
-#include <math.h>
+#include <cmath>
 
 NS_LOG_COMPONENT_DEFINE ("DsssErrorRateModel");
 
@@ -33,17 +34,16 @@ const double DsssErrorRateModel::WLAN_SIR_IMPOSSIBLE = 0.1;
 double
 DsssErrorRateModel::DqpskFunction (double x)
 {
-  return ((sqrt (2.0) + 1.0) / sqrt (8.0 * 3.1415926 * sqrt (2.0)))
-         * (1.0 / sqrt (x))
-         * exp ( -(2.0 - sqrt (2.0)) * x);
+  return ((std::sqrt (2.0) + 1.0) / std::sqrt (8.0 * 3.1415926 * std::sqrt (2.0)))
+    * (1.0 / std::sqrt (x)) * std::exp ( -(2.0 - std::sqrt (2.0)) * x);
 }
 
 double
 DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint32_t nbits)
 {
   double EbN0 = sinr * 22000000.0 / 1000000.0; // 1 bit per symbol with 1 MSPS
-  double ber = 0.5 * exp (-EbN0);
-  return pow ((1.0 - ber), nbits);
+  double ber = 0.5 * std::exp (-EbN0);
+  return std::pow ((1.0 - ber), nbits);
 }
 
 double
@@ -51,7 +51,7 @@ DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr,uint32_t nbits)
 {
   double EbN0 = sinr * 22000000.0 / 1000000.0 / 2.0; // 2 bits per symbol, 1 MSPS
   double ber = DqpskFunction (EbN0);
-  return pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), nbits);
 }
 
 double
@@ -61,7 +61,7 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits)
   // symbol error probability
   double EbN0 = sinr * 22000000.0 / 1375000.0 / 4.0;
   double sep = SymbolErrorProb16Cck (4.0 * EbN0 / 2.0);
-  return pow (1.0 - sep,nbits / 4.0);
+  return std::pow (1.0 - sep,nbits / 4.0);
 #else
   NS_LOG_WARN ("Running a 802.11b CCK Matlab model less accurate than GSL model");
   // The matlab model
@@ -81,9 +81,9 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits)
       double a2 =  3.3092430025608586e-003;
       double a3 =  4.1654372361004000e-001;
       double a4 =  1.0288981434358866e+000;
-      ber = a1 * exp (-(pow ((sinr - a2) / a3,a4)));
+      ber = a1 * std::exp (-std::pow ((sinr - a2) / a3, a4));
     }
-  return pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), nbits);
 #endif
 }
 
@@ -94,7 +94,7 @@ DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits)
   // symbol error probability
   double EbN0 = sinr * 22000000.0 / 1375000.0 / 8.0;
   double sep = SymbolErrorProb256Cck (8.0 * EbN0 / 2.0);
-  return pow (1.0 - sep,nbits / 8.0);
+  return std::pow (1.0 - sep, nbits / 8.0);
 #else
   NS_LOG_WARN ("Running a 802.11b CCK Matlab model less accurate than GSL model");
   // The matlab model
@@ -118,7 +118,7 @@ DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits)
       double a6 =  2.2032715128698435e+000;
       ber =  (a1 * sinr * sinr + a2 * sinr + a3) / (sinr * sinr * sinr + a4 * sinr * sinr + a5 * sinr + a6);
     }
-  return pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), nbits);
 #endif
 }
 
@@ -128,8 +128,8 @@ IntegralFunction (double x, void *params)
 {
   double beta = ((FunctionParameters *) params)->beta;
   double n = ((FunctionParameters *) params)->n;
-  double IntegralFunction = pow (2 * gsl_cdf_ugaussian_P (x + beta) - 1, n - 1)
-    * exp (-x * x / 2.0) / sqrt (2.0 * M_PI);
+  double IntegralFunction = std::pow (2 * gsl_cdf_ugaussian_P (x + beta) - 1, n - 1)
+    * std::exp (-x * x / 2.0) / std::sqrt (2.0 * M_PI);
   return IntegralFunction;
 }
 
@@ -140,7 +140,7 @@ DsssErrorRateModel::SymbolErrorProb16Cck (double e2)
   double error;
 
   FunctionParameters params;
-  params.beta = sqrt (2.0 * e2);
+  params.beta = std::sqrt (2.0 * e2);
   params.n = 8.0;
 
   gsl_integration_workspace * w = gsl_integration_workspace_alloc (1000);
@@ -161,7 +161,7 @@ DsssErrorRateModel::SymbolErrorProb16Cck (double e2)
 
 double DsssErrorRateModel::SymbolErrorProb256Cck (double e1)
 {
-  return 1.0 - pow (1.0 - SymbolErrorProb16Cck (e1 / 2.0), 2.0);
+  return 1.0 - std::pow (1.0 - SymbolErrorProb16Cck (e1 / 2.0), 2.0);
 }
 
 #endif

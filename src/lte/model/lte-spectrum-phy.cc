@@ -23,7 +23,7 @@
 
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
-#include <math.h>
+#include <cmath>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
 #include <ns3/antenna-model.h>
@@ -907,7 +907,7 @@ LteSpectrumPhy::SetTxModeGain (uint8_t txMode, double gain)
 {
   NS_LOG_FUNCTION (this << " txmode " << (uint16_t)txMode << " gain " << gain);
   // convert to linear
-  gain = pow (10.0, (gain / 10.0));
+  gain = std::pow (10.0, (gain / 10.0));
   if (m_txModeGain.size () < txMode)
   {
     m_txModeGain.resize (txMode);

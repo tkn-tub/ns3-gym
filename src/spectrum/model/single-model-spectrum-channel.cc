@@ -172,7 +172,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   // beyond range
                   continue;
                 }
-              double pathGainLinear = pow (10.0, (-pathLossDb) / 10.0);
+              double pathGainLinear = std::pow (10.0, (-pathLossDb) / 10.0);
               *(rxParams->psd) *= pathGainLinear;              
 
               if (m_spectrumPropagationLoss)

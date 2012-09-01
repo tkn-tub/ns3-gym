@@ -137,8 +137,8 @@ double
 BuildingsPropagationLossModel::InternalWallsLoss (Ptr<BuildingsMobilityModel> a, Ptr<BuildingsMobilityModel>b) const
 {
   // approximate the number of internal walls with the Manhattan distance in "rooms" units
-  double dx = abs (a->GetRoomNumberX () - b->GetRoomNumberX ());
-  double dy = abs (a->GetRoomNumberY () - b->GetRoomNumberY ());    
+  double dx = std::abs (a->GetRoomNumberX () - b->GetRoomNumberX ());
+  double dy = std::abs (a->GetRoomNumberY () - b->GetRoomNumberY ());    
   return m_lossInternalWall * (dx+dy);
 }
 
@@ -195,7 +195,7 @@ const
         }
       else
         {
-          double sigma = sqrt ((m_shadowingSigmaOutdoor * m_shadowingSigmaOutdoor) + (m_shadowingSigmaExtWalls * m_shadowingSigmaExtWalls));
+          double sigma = std::sqrt ((m_shadowingSigmaOutdoor * m_shadowingSigmaOutdoor) + (m_shadowingSigmaExtWalls * m_shadowingSigmaExtWalls));
           return (sigma);
         }
     }
@@ -206,7 +206,7 @@ const
     }
   else
     {
-      double sigma = sqrt ((m_shadowingSigmaOutdoor * m_shadowingSigmaOutdoor) + (m_shadowingSigmaExtWalls * m_shadowingSigmaExtWalls));
+      double sigma = std::sqrt ((m_shadowingSigmaOutdoor * m_shadowingSigmaOutdoor) + (m_shadowingSigmaExtWalls * m_shadowingSigmaExtWalls));
       return (sigma);
     }
 }

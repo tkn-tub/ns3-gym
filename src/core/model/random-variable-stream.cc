@@ -645,13 +645,13 @@ NormalRandomVariable::GetValue (double mean, double variance, double bound)
       double w = v1 * v1 + v2 * v2;
       if (w <= 1.0)
         { // Got good pair
-          double y = sqrt ((-2 * log (w)) / w);
-          m_next = mean + v2 * y * sqrt (variance);
+          double y = std::sqrt ((-2 * std::log (w)) / w);
+          m_next = mean + v2 * y * std::sqrt (variance);
           // if next is in bounds, it is valid
-          m_nextValid = fabs (m_next - mean) <= bound;
-          double x1 = mean + v1 * y * sqrt (variance);
+          m_nextValid = std::fabs (m_next - mean) <= bound;
+          double x1 = mean + v1 * y * std::sqrt (variance);
           // if x1 is in bounds, return it
-          if (fabs (x1 - mean) <= bound)
+          if (std::fabs (x1 - mean) <= bound)
             {
               return x1;
             }
@@ -863,7 +863,7 @@ GammaRandomVariable::GetValue (double alpha, double beta)
 
   double x, v, u;
   double d = alpha - 1.0 / 3.0;
-  double c = (1.0 / 3.0) / sqrt (d);
+  double c = (1.0 / 3.0) / std::sqrt (d);
 
   while (1)
     {
@@ -890,7 +890,7 @@ GammaRandomVariable::GetValue (double alpha, double beta)
         {
           break;
         }
-      if (log (u) < 0.5 * x * x + d * (1 - v + log (v)))
+      if (std::log (u) < 0.5 * x * x + d * (1 - v + std::log (v)))
         {
           break;
         }
@@ -940,13 +940,13 @@ GammaRandomVariable::GetNormalValue (double mean, double variance, double bound)
       double w = v1 * v1 + v2 * v2;
       if (w <= 1.0)
         { // Got good pair
-          double y = sqrt ((-2 * log (w)) / w);
-          m_next = mean + v2 * y * sqrt (variance);
+          double y = std::sqrt ((-2 * std::log (w)) / w);
+          m_next = mean + v2 * y * std::sqrt (variance);
           // if next is in bounds, it is valid
-          m_nextValid = fabs (m_next - mean) <= bound;
-          double x1 = mean + v1 * y * sqrt (variance);
+          m_nextValid = std::fabs (m_next - mean) <= bound;
+          double x1 = mean + v1 * y * std::sqrt (variance);
           // if x1 is in bounds, return it
-          if (fabs (x1 - mean) <= bound)
+          if (std::fabs (x1 - mean) <= bound)
             {
               return x1;
             }
@@ -1127,11 +1127,11 @@ TriangularRandomVariable::GetValue (double mean, double min, double max)
   // Calculate the triangular random variable.
   if (u <= (mode - min) / (max - min) )
     {
-      return min + sqrt (u * (max - min) * (mode - min) );
+      return min + std::sqrt (u * (max - min) * (mode - min) );
     }
   else
     {
-      return max - sqrt ( (1 - u) * (max - min) * (max - mode) );
+      return max - std::sqrt ( (1 - u) * (max - min) * (max - mode) );
     }
 }
 

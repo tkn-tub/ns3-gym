@@ -42,9 +42,8 @@
 
 #include "sim_errno.h"
 
-NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
 
-using namespace std;
+NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
 
 namespace ns3 {
 

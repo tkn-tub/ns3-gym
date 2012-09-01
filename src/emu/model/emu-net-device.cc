@@ -45,10 +45,10 @@
 #include <netinet/in.h>
 #include <netpacket/packet.h>
 #include <arpa/inet.h>
-#include <errno.h>
+#include <cerrno>
 #include <limits>
-#include <stdlib.h>
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
 #include <unistd.h>
 
 NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
@@ -392,7 +392,7 @@ EmuNetDevice::CreateSocket (void)
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
   if (sock == -1)
     {
-      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Unix socket creation error, errno = " << strerror (errno));
+      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Unix socket creation error, errno = " << std::strerror (errno));
     }
 
   //
@@ -404,7 +404,7 @@ EmuNetDevice::CreateSocket (void)
   int status = bind (sock, (struct sockaddr*)&un, sizeof (sa_family_t));
   if (status == -1)
     {
-      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Could not bind(): errno = " << strerror (errno));
+      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Could not bind(): errno = " << std::strerror (errno));
     }
 
   NS_LOG_INFO ("Created Unix socket");
@@ -421,7 +421,7 @@ EmuNetDevice::CreateSocket (void)
   status = getsockname (sock, (struct sockaddr*)&un, &len);
   if (status == -1)
     {
-      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Could not getsockname(): errno = " << strerror (errno));
+      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Could not getsockname(): errno = " << std::strerror (errno));
     }
 
   //
@@ -466,7 +466,7 @@ EmuNetDevice::CreateSocket (void)
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
       // broken.  In either case, we bail.
       //
-      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Back from execlp(), errno = " << ::strerror (errno));
+      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Back from execlp(), errno = " << std::strerror (errno));
     }
   else
     {
@@ -479,7 +479,7 @@ EmuNetDevice::CreateSocket (void)
       pid_t waited = waitpid (pid, &st, 0);
       if (waited == -1)
         {
-          NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): waitpid() fails, errno = " << strerror (errno));
+          NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): waitpid() fails, errno = " << std::strerror (errno));
         }
       NS_ASSERT_MSG (pid == waited, "EmuNetDevice::CreateSocket(): pid mismatch");
 
@@ -618,7 +618,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   // Create a packet out of the buffer we received and free that buffer.
   //
   Ptr<Packet> packet = Create<Packet> (reinterpret_cast<const uint8_t *> (buf), len);
-  free (buf);
+  std::free (buf);
   buf = 0;
 
   {
@@ -785,7 +785,7 @@ EmuNetDevice::ReadThread (void)
       // buffer into the ns-3 context thread where it will create the packet, copy the buffer and then free it.
       //
       uint32_t bufferSize = 65536;
-      uint8_t *buf = (uint8_t *)malloc (bufferSize);
+      uint8_t *buf = (uint8_t *)std::malloc (bufferSize);
       if (buf == 0)
         {
           NS_FATAL_ERROR ("EmuNetDevice::ReadThread(): malloc packet buffer failed");
@@ -796,7 +796,7 @@ EmuNetDevice::ReadThread (void)
 
       if (len == -1)
         {
-          free (buf);
+          std::free (buf);
           buf = 0;
           return;
         }

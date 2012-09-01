@@ -24,8 +24,8 @@
 #include "ns3/type-id.h"
 #include "ns3/test.h"
 #include "ns3/string.h"
-#include <stdlib.h>
-#include <stdarg.h>
+#include <cstdlib>
+#include <cstdarg>
 
 namespace ns3 {
 

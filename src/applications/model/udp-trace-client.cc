@@ -31,8 +31,8 @@
 #include "ns3/string.h"
 #include "seq-ts-header.h"
 #include "udp-trace-client.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <fstream>
 
 namespace ns3 {

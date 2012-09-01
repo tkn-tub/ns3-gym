@@ -26,7 +26,7 @@
 #include "string.h"
 #include "object.h"
 #include "config.h"
-#include <math.h>
+#include <cmath>
 #include <sstream>
 
 namespace ns3 {
@@ -101,7 +101,7 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
   for (int i = 0; i < Time::LAST; i++)
     {
       int shift = power[i] - power[(int)unit];
-      uint64_t factor = (uint64_t) pow (10, fabs (shift));
+      uint64_t factor = (uint64_t) std::pow (10, std::fabs (shift));
       struct Information *info = &resolution->info[i];
       info->factor = factor;
       if (shift == 0)

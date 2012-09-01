@@ -21,9 +21,9 @@
 #include "fatal-error.h"
 #include "assert.h"
 #include "ns3/core-config.h"
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
+#include <cstdlib>
+#include <cerrno>
+#include <cstring>
 #if defined (HAVE_DIRENT_H) and defined (HAVE_SYS_TYPES_H)
 #define HAVE_OPENDIR
 #include <sys/types.h>

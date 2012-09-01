@@ -3,7 +3,8 @@
 #define INT64X64_CAIRO_H
 
 #include <stdint.h>
-#include <math.h>
+#include <cmath>
+
 #include "cairo-wideint-private.h"
 
 #ifdef __i386__
@@ -24,8 +25,8 @@ public:
   inline int64x64_t (double value)
   {
 #define HPCAIRO_MAX_64 18446744073709551615.0
-    double fhi = floor (value);
-    int64_t hi = lround (fhi);
+    double fhi = std::floor (value);
+    int64_t hi = std::lround (fhi);
     uint64_t lo = (uint64_t)((value - fhi) * HPCAIRO_MAX_64);
     _v.hi = hi;
     _v.lo = lo;

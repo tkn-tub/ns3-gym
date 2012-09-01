@@ -250,7 +250,7 @@ DsdvManetExample::SetupMobility ()
   pos.Set ("X", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000.0]"));
   pos.Set ("Y", StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=1000.0]"));
 
-  ostringstream speedConstantRandomVariableStream;
+  std::ostringstream speedConstantRandomVariableStream;
   speedConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant="
                                    << m_nodeSpeed
                                    << "]";

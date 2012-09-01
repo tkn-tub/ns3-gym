@@ -22,7 +22,7 @@
 #define IPV6_ADDRESS_H
 
 #include <stdint.h>
-#include <string.h>
+#include <cstring>
 
 #include <ostream>
 
@@ -446,17 +446,17 @@ std::istream & operator >> (std::istream &is, Ipv6Prefix &prefix);
 
 inline bool operator == (const Ipv6Address& a, const Ipv6Address& b)
 {
-  return (!memcmp (a.m_address, b.m_address, 16));
+  return (!std::memcmp (a.m_address, b.m_address, 16));
 }
 
 inline bool operator != (const Ipv6Address& a, const Ipv6Address& b)
 {
-  return memcmp (a.m_address, b.m_address, 16);
+  return std::memcmp (a.m_address, b.m_address, 16);
 }
 
 inline bool operator < (const Ipv6Address& a, const Ipv6Address& b)
 {
-  return (memcmp (a.m_address, b.m_address, 16) < 0);
+  return (std::memcmp (a.m_address, b.m_address, 16) < 0);
 }
 
 /**

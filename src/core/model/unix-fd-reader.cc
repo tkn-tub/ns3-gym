@@ -19,8 +19,8 @@
  * Author: Tom Goff <thomas.goff@boeing.com>
  */
 
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -59,18 +59,18 @@ void FdReader::Start (int fd, Callback<void, uint8_t *, ssize_t> readCallback)
   tmp = pipe (m_evpipe);
   if (tmp == -1)
     {
-      NS_FATAL_ERROR ("pipe() failed: " << strerror (errno));
+      NS_FATAL_ERROR ("pipe() failed: " << std::strerror (errno));
     }
 
   // make the read end non-blocking
   tmp = fcntl (m_evpipe[0], F_GETFL);
   if (tmp == -1)
     {
-      NS_FATAL_ERROR ("fcntl() failed: " << strerror (errno));
+      NS_FATAL_ERROR ("fcntl() failed: " << std::strerror (errno));
     }
   if (fcntl (m_evpipe[0], F_SETFL, tmp | O_NONBLOCK) == -1)
     {
-      NS_FATAL_ERROR ("fcntl() failed: " << strerror (errno));
+      NS_FATAL_ERROR ("fcntl() failed: " << std::strerror (errno));
     }
 
   m_fd = fd;
@@ -116,7 +116,7 @@ void FdReader::Stop (void)
       char zero = 0;
       ssize_t len = write (m_evpipe[1], &zero, sizeof (zero));
       if (len != sizeof (zero))
-        NS_LOG_WARN ("incomplete write(): " << strerror (errno));
+        NS_LOG_WARN ("incomplete write(): " << std::strerror (errno));
     }
 
   // join the read thread
@@ -166,7 +166,7 @@ void FdReader::Run (void)
       r = select (nfds, &readfds, NULL, NULL, NULL);
       if (r == -1 && errno != EINTR)
         {
-          NS_FATAL_ERROR ("select() failed: " << strerror (errno));
+          NS_FATAL_ERROR ("select() failed: " << std::strerror (errno));
         }
 
       if (FD_ISSET (m_evpipe[0], &readfds))
@@ -188,7 +188,7 @@ void FdReader::Run (void)
                     }
                   else
                     {
-                      NS_FATAL_ERROR ("read() failed: " << strerror (errno));
+                      NS_FATAL_ERROR ("read() failed: " << std::strerror (errno));
                     }
                 }
             }
