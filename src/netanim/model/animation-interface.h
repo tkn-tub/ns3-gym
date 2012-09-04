@@ -573,6 +573,8 @@ private:
   std::string GetXMLOpenClose_link (uint32_t fromLp, uint32_t fromId, uint32_t toLp, uint32_t toId);
   std::string GetXMLOpenClose_linkupdate (uint32_t fromId, uint32_t toId, std::string);
   std::string GetXMLOpen_packet (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, std::string auxInfo = "");
+  std::string GetXMLOpenClose_p (std::string pktType, uint32_t fId, double fbTx, double lbTx, uint32_t tId, double fbRx, double lbRx,
+                                 std::string metaInfo = "", std::string auxInfo = "");
   std::string GetXMLOpenClose_rx (uint32_t toLp, uint32_t toId, double fbRx, double lbRx);
   std::string GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }

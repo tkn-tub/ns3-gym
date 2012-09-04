@@ -105,7 +105,7 @@ void AnimationInterface::StartNewTraceFile ()
 
 std::string AnimationInterface::GetNetAnimVersion ()
 {
-  return "netanim-3.101";
+  return "netanim-3.102";
 }
 
 void AnimationInterface::SetStartTime (Time t)
@@ -714,9 +714,7 @@ void AnimationInterface::WriteDummyPacket ()
   double lbRx = now.GetSeconds ();
   if (m_xml)
     {
-      oss << GetXMLOpen_packet (0, 0, fbTx, lbTx, "DummyPktIgnoreThis");
-      oss << GetXMLOpenClose_rx (0, 0, fbRx, lbRx);
-      oss << GetXMLClose ("packet");
+      oss << GetXMLOpenClose_p ("p", 0, fbTx, lbTx, 0, fbRx, lbRx, "", "DummyPktIgnoreThis");
     }
   WriteN (oss.str ());
 
@@ -738,11 +736,8 @@ void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
   double lbRx = (now + rxTime).GetSeconds ();
   if (m_xml)
     {
-      oss << GetXMLOpen_packet (0, tx->GetNode ()->GetId (), fbTx, lbTx);
-      oss << GetXMLOpenClose_rx (0, rx->GetNode ()->GetId (), fbRx, lbRx); 
-      if (m_enablePacketMetadata)
-        oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
-      oss << GetXMLClose ("packet");
+      oss << GetXMLOpenClose_p ("p", tx->GetNode ()->GetId (), fbTx, lbTx, rx->GetNode ()->GetId (), 
+                                fbRx, lbRx, m_enablePacketMetadata? GetPacketMetadata (p):"");
       StartNewTraceFile ();
       ++m_currentPktCount;
     }
@@ -1255,7 +1250,7 @@ void AnimationInterface::MobilityCourseChangeTrace (Ptr <const MobilityModel> mo
   RecalcTopoBounds (v);
   std::ostringstream oss; 
   oss << GetXMLOpen_topology (m_topoMinX, m_topoMinY, m_topoMaxX, m_topoMaxY);
-  oss << GetXMLOpenClose_node (0,n->GetId (),v.x,v.y);
+  oss << GetXMLOpenClose_node (0, n->GetId (), v.x, v.y, nodeColors[n->GetId ()]);
   oss << GetXMLClose ("topology");
   WriteN (oss.str ());
   WriteDummyPacket ();
@@ -1395,14 +1390,10 @@ void AnimationInterface::OutputWirelessPacket (Ptr<const Packet> p, AnimPacketIn
     nodeId = pktInfo.m_txNodeId;
 
   double lbTx = pktInfo.firstlastbitDelta + pktInfo.m_fbTx;
-  oss << GetXMLOpen_wpacket (0, nodeId, pktInfo.m_fbTx, lbTx, pktrxInfo.rxRange);
-
   uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
-  oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
-  if (m_enablePacketMetadata)
-    oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
 
-  oss << GetXMLClose ("wpacket");
+  oss << GetXMLOpenClose_p ("wp", nodeId, pktInfo.m_fbTx, lbTx, rxId,
+                            pktrxInfo.m_fbRx, pktrxInfo.m_lbRx, m_enablePacketMetadata? GetPacketMetadata (p):"");
   WriteN (oss.str ());
 }
 
@@ -1413,13 +1404,10 @@ void AnimationInterface::OutputCsmaPacket (Ptr<const Packet> p, AnimPacketInfo &
   std::ostringstream oss;
   NS_ASSERT (pktInfo.m_txnd);
   uint32_t nodeId = pktInfo.m_txnd->GetNode ()->GetId ();
-
-  oss << GetXMLOpen_packet (0, nodeId, pktInfo.m_fbTx, pktInfo.m_lbTx);
   uint32_t rxId = pktrxInfo.m_rxnd->GetNode ()->GetId ();
-  oss << GetXMLOpenClose_rx (0, rxId, pktrxInfo.m_fbRx, pktrxInfo.m_lbRx);
-  if (m_enablePacketMetadata)
-    oss << GetXMLOpenClose_meta (GetPacketMetadata (p));
-  oss << GetXMLClose ("packet");
+
+  oss << GetXMLOpenClose_p ("p", nodeId, pktInfo.m_fbTx, pktInfo.m_lbTx, rxId,
+                            pktrxInfo.m_fbRx, pktrxInfo.m_lbRx, m_enablePacketMetadata? GetPacketMetadata (p):"");
   WriteN (oss.str ());
 }
 
@@ -1712,13 +1700,36 @@ std::string AnimationInterface::GetXMLOpen_packet (uint32_t fromLp, uint32_t fro
 {
   std::ostringstream oss;
   oss << std::setprecision (10);
-  oss << "<packet fromId=\"" << fromId
+  oss << "<p fId=\"" << fromId
       << "\" fbTx=\"" << fbTx
       << "\" lbTx=\"" << lbTx
-      << (auxInfo.empty()?"":"\" aux=\"") << auxInfo.c_str ()
-      << "\">";
+      << (auxInfo.empty()?"":"\" aux=\"") << auxInfo.c_str () << "\">";
   return oss.str ();
 }
+
+
+std::string AnimationInterface::GetXMLOpenClose_p (std::string pktType, uint32_t fId, double fbTx, double lbTx, 
+                                                   uint32_t tId, double fbRx, double lbRx, std::string metaInfo, 
+                                                   std::string auxInfo)
+{
+  std::ostringstream oss;
+  oss << std::setprecision (10);
+  oss << "<" << pktType << " fId=\"" << fId
+      << "\" fbTx=\"" << fbTx
+      << "\" lbTx=\"" << lbTx << "\"";
+  if (!auxInfo.empty ())
+    {
+      oss << " aux=\"" << auxInfo.c_str () << "\"";
+    }
+  if (!metaInfo.empty ())
+    {
+      oss << " meta-info=\"" << metaInfo.c_str () << "\"";
+    }
+  oss << " tId=\"" << tId << "\" fbRx=\"" << fbRx << "\" lbRx=\"" << lbRx << "\">" << std::endl;
+  return oss.str ();
+}
+
+
 
 std::string AnimationInterface::GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range)
 {
