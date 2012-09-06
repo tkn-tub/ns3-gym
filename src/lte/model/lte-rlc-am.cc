@@ -190,6 +190,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
       params.pdu = packet;
       params.rnti = m_rnti;
       params.lcid = m_lcid;
+      params.layer = layer;
 
       m_macSapProvider->TransmitPdu (params);
       return;
@@ -211,6 +212,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
           params.pdu = packet;
           params.rnti = m_rnti;
           params.lcid = m_lcid;
+          params.layer = layer;
 
           m_macSapProvider->TransmitPdu (params);
           return;
