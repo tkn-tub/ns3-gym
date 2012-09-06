@@ -1373,8 +1373,8 @@ std::string AnimationInterface::GetPreamble ()
     * range = Reception range\n\
     * tId = To Node Id\n\
     * fbRx = First bit Rx time\n\
+    * meta-info = Packet meta data\n\
     * lbRx = Last bit Rx time-->\n\
-    * mata-info = Packet meta data\n\
     </information>\n";
 return s;
 }
