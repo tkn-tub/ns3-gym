@@ -1358,22 +1358,23 @@ std::string AnimationInterface::GetPreamble ()
     * g = Green component\n\
     * b = Blue component\n\
     * visible = Node visibility\n\
-    packet\n\
+    p\n\
+    * fId = From Node Id\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
-    rx\n\
-    * toId = To Node Id\n\
+    * tId = To Node Id\n\
     * fbRx = First bit Rx Time\n\
     * lbRx = Last bit Rx\n\
-    wpacket\n\
-    * fromId = From Node Id\n\
+    * meta-info = Packet meta data\n\
+    wp\n\
+    * fId = From Node Id\n\
     * fbTx = First bit transmit time\n\
     * lbTx = Last bit transmit time\n\
     * range = Reception range\n\
-    rx\n\
-    * toId = To Node Id\n\
+    * tId = To Node Id\n\
     * fbRx = First bit Rx time\n\
     * lbRx = Last bit Rx time-->\n\
+    * mata-info = Packet meta data\n\
     </information>\n";
 return s;
 }
