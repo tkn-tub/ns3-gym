@@ -43,7 +43,7 @@ DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint32_t nbits)
 {
   double EbN0 = sinr * 22000000.0 / 1000000.0; // 1 bit per symbol with 1 MSPS
   double ber = 0.5 * std::exp (-EbN0);
-  return std::pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), static_cast<double> (nbits));
 }
 
 double
@@ -51,7 +51,7 @@ DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr,uint32_t nbits)
 {
   double EbN0 = sinr * 22000000.0 / 1000000.0 / 2.0; // 2 bits per symbol, 1 MSPS
   double ber = DqpskFunction (EbN0);
-  return std::pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), static_cast<double> (nbits));
 }
 
 double
@@ -83,7 +83,7 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits)
       double a4 =  1.0288981434358866e+000;
       ber = a1 * std::exp (-std::pow ((sinr - a2) / a3, a4));
     }
-  return std::pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), static_cast<double> (nbits));
 #endif
 }
 
@@ -118,7 +118,7 @@ DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits)
       double a6 =  2.2032715128698435e+000;
       ber =  (a1 * sinr * sinr + a2 * sinr + a3) / (sinr * sinr * sinr + a4 * sinr * sinr + a5 * sinr + a6);
     }
-  return std::pow ((1.0 - ber), nbits);
+  return std::pow ((1.0 - ber), static_cast<double> (nbits));
 #endif
 }
 

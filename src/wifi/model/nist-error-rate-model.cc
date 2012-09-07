@@ -172,7 +172,7 @@ NistErrorRateModel::GetFec16QamBer (double snr, uint32_t nbits,
     }
   double pe = CalculatePe (ber, bValue);
   pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
+  double pms = std::pow (1 - pe, static_cast<double> (nbits));
   return pms;
 }
 double
@@ -186,7 +186,7 @@ NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits,
     }
   double pe = CalculatePe (ber, bValue);
   pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
+  double pms = std::pow (1 - pe, static_cast<double> (nbits));
   return pms;
 }
 double

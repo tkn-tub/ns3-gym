@@ -477,9 +477,9 @@ LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& 
   if (C!=1)
     {
       double cbler = MappingMiBler (MI, mcs, Kplus);
-      errorRate *= std::pow (1.0 - cbler, Cplus);
+      errorRate *= std::pow (1.0 - cbler, static_cast<double> (Cplus));
       cbler = MappingMiBler (MI, mcs, Kminus);
-      errorRate *= std::pow (1.0 - cbler, Cminus);
+      errorRate *= std::pow (1.0 - cbler, static_cast<double> (Cminus));
       errorRate = 1.0 - errorRate;
     }
   else

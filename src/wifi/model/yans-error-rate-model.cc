@@ -83,7 +83,7 @@ YansErrorRateModel::Factorial (uint32_t k) const
 double
 YansErrorRateModel::Binomial (uint32_t k, double p, uint32_t n) const
 {
-  double retval = Factorial (n) / (Factorial (k) * Factorial (n - k)) * std::pow (p, k) * std::pow (1 - p, n - k);
+  double retval = Factorial (n) / (Factorial (k) * Factorial (n - k)) * std::pow (p, static_cast<double> (k)) * std::pow (1 - p, static_cast<double> (n - k));
   return retval;
 }
 double
@@ -168,7 +168,7 @@ YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
   pd = CalculatePd (ber, dFree + 1);
   pmu += adFreePlusOne * pd;
   pmu = std::min (pmu, 1.0);
-  double pms = std::pow (1 - pmu, nbits);
+  double pms = std::pow (1 - pmu, static_cast<double> (nbits));
   return pms;
 }
 
