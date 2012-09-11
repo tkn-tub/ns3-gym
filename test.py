@@ -1111,7 +1111,10 @@ def run_tests():
         print standard_out
 
     if options.list:
-        path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
+        if len(options.constrain):
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % options.constrain)
+        else:
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         list_items = standard_out.split('\n')
         print "\n".join(sorted(list_items))
