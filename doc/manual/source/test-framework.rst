@@ -462,9 +462,6 @@ Performance Tests
 Performance tests are those which exercise a particular part of the system
 and determine if the tests have executed to completion in a reasonable time.
 
-As of ns-3.15, there are no performance tests that are formally part of
-the test framework (contributed tests would be helpful here).
-
 Running Tests
 *************
 
