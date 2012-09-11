@@ -82,7 +82,7 @@ test_runner_name = "test-runner"
 # If the user has constrained us to run certain kinds of tests, we can tell waf
 # to only build
 #
-core_kinds = ["bvt", "core", "system", "unit"]
+core_kinds = ["bvt", "core", "performance", "system", "unit"]
 
 #
 # There are some special cases for test suites that kill valgrind.  This is
@@ -1212,6 +1212,21 @@ def run_tests():
     suite_list = suites.split('\n')
 
     #
+    # Performance tests should only be run when they are requested,
+    # i.e. they are not run by default in test.py.
+    #
+    if options.constrain != 'performance':
+
+        # Get a list of all of the performance tests.
+        path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % "performance")
+        (rc, performance_tests, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        performance_test_list = performance_tests.split('\n')
+
+        # Remove any performance tests from the suites list.
+        for performance_test in performance_test_list:
+            if performance_test in suite_list:
+                suite_list.remove(performance_test)
+
     # We now have a possibly large number of test suites to run, so we want to
     # run them in parallel.  We're going to spin up a number of worker threads
     # that will run our test jobs for us.
@@ -1326,15 +1341,13 @@ def run_tests():
     # This translates into allowing the following options with respect to the 
     # suites
     #
-    #  ./test,py:                                           run all of the examples
+    #  ./test.py:                                           run all of the examples
     #  ./test.py --constrain=unit                           run no examples
     #  ./test.py --constrain=example                        run all of the examples
     #  ./test.py --suite=some-test-suite:                   run no examples
     #  ./test.py --example=some-example:                    run the single example
     #  ./test.py --suite=some-suite --example=some-example: run the single example
     #
-    # XXX could use constrain to separate out examples used for performance 
-    # testing
     #
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
@@ -1545,7 +1558,10 @@ def run_tests():
                 crashed_tests = crashed_tests + 1
                 status = "CRASH"
 
-        print "%s: %s %s" % (status, kind, job.display_name)
+        if options.duration or options.constrain == "performance":
+            print "%s (%.3f): %s %s" % (status, job.elapsed_time, kind, job.display_name)
+        else:
+            print "%s: %s %s" % (status, kind, job.display_name)
 
         if job.is_example or job.is_pyexample:
             #
@@ -1724,6 +1740,9 @@ def main(argv):
     parser.add_option("-c", "--constrain", action="store", type="string", dest="constrain", default="",
                       metavar="KIND",
                       help="constrain the test-runner by kind of test")
+
+    parser.add_option("-d", "--duration", action="store_true", dest="duration", default=False,
+                      help="print the duration of each test suite and example")
 
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",

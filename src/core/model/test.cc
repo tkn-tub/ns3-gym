@@ -727,6 +727,10 @@ TestRunnerImpl::Run (int argc, char *argv[])
     {
       testType = TestSuite::SYSTEM;
     }
+  else if (testTypeString == "performance")
+    {
+      testType = TestSuite::PERFORMANCE;
+    }
   else
     {
       std::cout << "Invalid test type specified: " << testTypeString << std::endl;
