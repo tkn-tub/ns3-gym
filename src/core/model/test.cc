@@ -24,6 +24,7 @@
 #include <cstring>
 #include <vector>
 #include <list>
+#include <map>
 
 
 namespace ns3 {
@@ -102,7 +103,8 @@ private:
   std::string ReplaceXmlSpecialCharacters (std::string xml) const;
   void PrintReport (TestCase *test, std::ostream *os, bool xml, int level);
   void PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
-                          std::list<TestCase *>::const_iterator end) const;
+                          std::list<TestCase *>::const_iterator end,
+                          bool printTestType) const;
   void PrintTestTypeList (void) const;
   void PrintHelp (const char *programName) const;
   std::list<TestCase *> FilterTests (std::string testName, enum TestSuite::Type testType) const;
@@ -547,6 +549,7 @@ TestRunnerImpl::PrintHelp (const char *program_name) const
             << "  --help                 : print these options" << std::endl
             << "  --print-test-name-list : print the list of names of tests available" << std::endl
             << "  --list                 : an alias for --print-test-name-list" << std::endl
+            << "  --print-test-types     : print the type of tests along with their names" << std::endl
             << "  --print-test-type-list : print the list of types of tests available" << std::endl
             << "  --print-temp-dir       : Print name of temporary directory before running the tests" << std::endl
             << "  --test-type=TYPE       : Process only tests of type TYPE" << std::endl
@@ -569,11 +572,25 @@ TestRunnerImpl::PrintHelp (const char *program_name) const
 
 void
 TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
-                                   std::list<TestCase *>::const_iterator end) const
+                                   std::list<TestCase *>::const_iterator end,
+                                   bool printTestType) const
 {
+  std::map<TestSuite::Type, std::string> label;
+
+  label[TestSuite::ALL]         = "all          ";
+  label[TestSuite::BVT]         = "bvt          ";
+  label[TestSuite::UNIT]        = "unit         ";
+  label[TestSuite::SYSTEM]      = "system       ";
+  label[TestSuite::EXAMPLE]     = "example      ";
+  label[TestSuite::PERFORMANCE] = "performance  ";
+
   for (std::list<TestCase *>::const_iterator i = begin; i != end; ++i)
     {
-      TestCase *test = *i;
+      TestSuite * test= dynamic_cast<TestSuite *>(*i);
+      if (printTestType)
+        {
+          std::cout << label[test->GetTestType ()];
+        }
       std::cout << test->GetName () << std::endl;
     }
 }
@@ -624,6 +641,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
   bool printTempDir = false;
   bool printTestTypeList = false;
   bool printTestNameList = false;
+  bool printTestTypeAndName = false;
   char *progname = argv[0];
 
   argv++;
@@ -661,6 +679,10 @@ TestRunnerImpl::Run (int argc, char *argv[])
                strcmp(arg, "--list") == 0)
         {
           printTestNameList = true;
+        }
+      else if (strcmp (arg, "--print-test-types") == 0)
+        {
+          printTestTypeAndName = true;
         }
       else if (strcmp (arg, "--print-test-type-list") == 0)
         {
@@ -750,7 +772,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
     }
   if (printTestNameList)
     {
-      PrintTestNameList (tests.begin (), tests.end ());
+      PrintTestNameList (tests.begin (), tests.end (), printTestTypeAndName);
       return 0;
     }
   if (printTestTypeList)
