@@ -75,7 +75,9 @@ where :math:`\phi_{0}` is the azimuthal orientation of the antenna
  
   n = -\frac{3}{20 \log_{10} \left( \cos \frac{\phi_{3dB}}{4} \right)}
 
-determines the desired 3dB beamwidth :math:`\phi_{3dB}`.
+determines the desired 3dB beamwidth :math:`\phi_{3dB}`. Note that
+this radiation pattern is independent of the inclination angle
+:math:`\theta`. 
 
 A major difference between the model of [Chunjian]_ and the one
 implemented in the class CosineAntennaModel is that only the element
@@ -101,7 +103,8 @@ This model is based on the parabolic approximation of the main lobe radiation pa
 where :math:`\phi_{0}` is the azimuthal orientation of the antenna
 (i.e., its direction of maximum gain), :math:`\phi_{3dB}` is its 3 dB
 beamwidth, and :math:`A_{max}` is the maximum attenuation in dB of the
-antenna. 
+antenna. Note that this radiation pattern is independent of the inclination angle
+:math:`\theta`. 
 
 
 
