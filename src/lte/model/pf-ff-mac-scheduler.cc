@@ -564,7 +564,6 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newEl.m_rnti = (*itMap).first;
       // create the DlDciListElement_s
       DlDciListElement_s newDci;
-      std::vector <struct RlcPduListElement_s> newRlcPduLe;
       newDci.m_rnti = (*itMap).first;
 
       uint16_t lcActives = LcActivePerFlow ((*itMap).first);
@@ -649,6 +648,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               || ((*itBufReq).second.m_rlcRetransmissionQueueSize > 0)
               || ((*itBufReq).second.m_rlcStatusPduSize > 0) ))
             {
+              std::vector <struct RlcPduListElement_s> newRlcPduLe;
               for (uint8_t j = 0; j < nLayer; j++)
                 {
                   RlcPduListElement_s newRlcEl;
@@ -658,6 +658,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   newRlcPduLe.push_back (newRlcEl);
                   UpdateDlRlcBufferInfo (newDci.m_rnti, newRlcEl.m_logicalChannelIdentity, newRlcEl.m_size);
                 }
+              newEl.m_rlcPduList.push_back (newRlcPduLe);
             }
           if ((*itBufReq).first.m_rnti > (*itMap).first)
             {
@@ -670,9 +671,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newEl.m_dci = newDci;
       // ...more parameters -> ingored in this version
 
-      newEl.m_rlcPduList.push_back (newRlcPduLe);
       ret.m_buildDataList.push_back (newEl);
-
       // update UE stats
       std::map <uint16_t, pfsFlowPerf_t>::iterator it;
       it = m_flowStatsDl.find ((*itMap).first);

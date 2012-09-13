@@ -470,9 +470,8 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   int rbgAllocated = 0;
 
   FfMacSchedSapUser::SchedDlConfigIndParameters ret;
-  // round robin assignment to all UE-LC registered starting from the subsequent of the one
-  // served last scheduling trigger
-  //NS_LOG_DEBUG (this << " next to be served " << m_nextRntiDl << " nflows " << nflows);
+  // round robin assignment to all UEs registered starting from the subsequent of the one
+  // served last scheduling trigger event
   if (m_nextRntiDl != 0)
     {
       for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
@@ -535,15 +534,12 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               newDci.m_mcs.push_back ( m_amc->GetMcsFromCqi ((*itCqi).second) );
             }
         }
-      // group the LCs of this RNTI
-      std::vector <struct RlcPduListElement_s> newRlcPduLe;
-//       int totRbg = lcNum * rbgPerFlow;
-//       totRbg = rbgNum / nTbs;
       int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), rbgPerTb * rbgSize) / 8);
       NS_LOG_DEBUG (this << " DL - Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize << " PRBs " <<  rbgAllocated * rbgSize << "..." << (rbgAllocated* rbgSize) + (rbgPerTb * rbgSize) - 1 << " mcs " << (uint16_t) newDci.m_mcs.at (0) << " layers " << nLayer);
       uint16_t rlcPduSize = tbSize / lcNum;
       for (int i = 0; i < lcNum ; i++)
         {
+          std::vector <struct RlcPduListElement_s> newRlcPduLe;
           for (uint8_t j = 0; j < nLayer; j++)
             {
               RlcPduListElement_s newRlcEl;
@@ -553,12 +549,13 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
               newRlcPduLe.push_back (newRlcEl);
             }
-          it++;
-          if (it == m_rlcBufferReq.end ())
-            {
-              // restart from the first
-              it = m_rlcBufferReq.begin ();
-            }
+            newEl.m_rlcPduList.push_back (newRlcPduLe);
+            it++;
+            if (it == m_rlcBufferReq.end ())
+              {
+                // restart from the first
+                it = m_rlcBufferReq.begin ();
+              }      
         }
       uint32_t rbgMask = 0;
       for (int i = 0; i < rbgPerTb; i++)
@@ -577,10 +574,6 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newEl.m_dci = newDci;
       // ...more parameters -> ignored in this version
 
-
-
-
-      newEl.m_rlcPduList.push_back (newRlcPduLe);
       ret.m_buildDataList.push_back (newEl);
       if (rbgAllocated == rbgNum)
         {
