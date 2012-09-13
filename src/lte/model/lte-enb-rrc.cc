@@ -522,6 +522,7 @@ LteEnbRrc::CreateUeInfo (uint64_t imsi)
             {
               m_lastAllocatedRnti = rnti;
               Ptr<UeInfo> ueInfo = CreateObject<UeInfo> (imsi, GetNewSrsConfigurationIndex ());
+              ueInfo->SetTransmissionMode (m_defaultTransmissionMode);
               m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, ueInfo));
               NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueInfo->GetSrsConfigurationIndex ());
               return rnti;
