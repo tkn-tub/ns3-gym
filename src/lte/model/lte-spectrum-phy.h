@@ -70,9 +70,9 @@ typedef std::map<TbId_t, tbInfo_t> expectedTbs_t;
 class LteNetDevice;
 class AntennaModel;
 class LteControlMessage;
-class LteSpectrumSignalParametersDataFrame;
-class LteSpectrumSignalParametersDlCtrlFrame;
-class LteSpectrumSignalParametersUlSrsFrame;
+struct LteSpectrumSignalParametersDataFrame;
+struct LteSpectrumSignalParametersDlCtrlFrame;
+struct LteSpectrumSignalParametersUlSrsFrame;
 
 
 /**

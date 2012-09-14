@@ -155,7 +155,7 @@ DsdvManetExample::ReceivePacket (Ptr <Socket> socket)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " Received one packet!");
   Ptr <Packet> packet;
-  while (packet = socket->Recv ())
+  while ((packet = socket->Recv ()))
     {
       bytesTotal += packet->GetSize ();
       packetsReceived += 1;

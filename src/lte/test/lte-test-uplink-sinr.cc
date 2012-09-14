@@ -156,12 +156,12 @@ LteUplinkDataSinrTestCase::DoRun (void)
   */
 
   // Number of packet bursts (2 data + 4 interferences)
-  int numOfDataPbs = 2;
-  int numOfIntfPbs = 4;
-  int numOfPbs = numOfDataPbs + numOfIntfPbs;
+  const int numOfDataPbs = 2;
+  const int numOfIntfPbs = 4;
+  const int numOfPbs = numOfDataPbs + numOfIntfPbs;
 
   // Number of packets in the packet bursts
-  int numOfPkts = 10;
+  const int numOfPkts = 10;
 
   // Packet bursts
   Ptr<PacketBurst> packetBursts[numOfPbs];

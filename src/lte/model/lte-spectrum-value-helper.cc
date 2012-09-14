@@ -27,6 +27,24 @@
 
 #include "lte-spectrum-value-helper.h"
 
+// just needed to log a std::vector<int> properly...
+namespace std {
+
+ostream&
+operator << (ostream& os, const vector<int>& v)
+{
+  vector<int>::const_iterator it = v.begin ();
+  while (it != v.end ())
+    {
+      os << *it << " " ;
+      ++it;
+    }
+  os << endl;
+  return os;
+}
+
+}
+
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumValueHelper");
 
 namespace ns3 {
@@ -212,21 +230,6 @@ LteSpectrumValueHelper::GetSpectrumModel (uint16_t earfcn, uint8_t txBandwidthCo
   NS_LOG_LOGIC ("returning SpectrumModel::GetUid () == " << ret->GetUid ());
   return ret;
 }
-
-// just needed to log a std::vector<int> properly...
-std::ostream&
-operator << (std::ostream& os, const std::vector<int>& v)
-{
-  std::vector<int>::const_iterator it = v.begin ();
-  while (it != v.end ())
-    {
-      os << *it << " " ;
-      ++it;
-    }
-  os << std::endl;
-  return os;
-}
-
 
 Ptr<SpectrumValue> 
 LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint16_t earfcn, uint8_t txBandwidthConfiguration, double powerTx, std::vector <int> activeRbs)
