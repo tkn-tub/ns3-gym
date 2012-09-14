@@ -773,7 +773,15 @@ def build(bld):
                 if program_built:
                     object_name = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, 
                                                   obj.name, bld.env.BUILD_SUFFIX)
-                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_name)
+
+                    # Get the relative path to the program from the
+                    # launch directory.
+                    launch_dir = os.path.abspath(Context.launch_dir)
+                    object_relative_path = os.path.join(
+                        wutils.relpath(obj.path.abspath(), launch_dir),
+                        object_name)
+
+                    bld.env.append_value('NS3_RUNNABLE_PROGRAMS', object_relative_path)
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:

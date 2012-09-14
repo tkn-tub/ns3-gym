@@ -1044,7 +1044,9 @@ def run_tests():
     #
     make_paths()
 
+    #
     # Get the information from the build status file.
+    #
     build_status_file = os.path.join (NS3_BUILDDIR, 'build-status.py')
     if os.path.exists(build_status_file):
         ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
@@ -1052,6 +1054,15 @@ def run_tests():
     else:
         print >> sys.stderr, 'The build status file was not found.  You must do waf build before running test.py.'
         sys.exit(2)
+
+    #
+    # Make a dictionary that maps the name of a program to its path.
+    #
+    ns3_runnable_programs_dictionary = {}
+    for program in ns3_runnable_programs:
+        # Remove any directory names from path.
+        program_name = os.path.basename(program)
+        ns3_runnable_programs_dictionary[program_name] = program
 
     # Generate the lists of examples to run as smoke tests in order to
     # ensure that they remain buildable and runnable over time.
@@ -1367,7 +1378,7 @@ def run_tests():
                     test_name = os.path.basename(test_name)
 
                     # Don't try to run this example if it isn't runnable.
-                    if test_name in ns3_runnable_programs:
+                    if ns3_runnable_programs_dictionary.has_key(test_name):
                         if eval(do_run):
                             job = Job()
                             job.set_is_example(True)
@@ -1393,22 +1404,21 @@ def run_tests():
     elif len(options.example):
         # Add the proper prefix and suffix to the example name to
         # match what is done in the wscript file.
-        (example_path_without_name, example_name) = os.path.split(options.example)
-        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, example_name, BUILD_PROFILE)
-        example_path = os.path.join(example_path_without_name, example_name)
+        example_name = "%s%s-%s-%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE)
 
         # Don't try to run this example if it isn't runnable.
-        if example_name not in ns3_runnable_programs:
+        if not ns3_runnable_programs_dictionary.has_key(example_name):
             print "Example %s is not runnable." % example_name
         else:
             #
             # If you tell me to run an example, I will try and run the example
             # irrespective of any condition.
             #
+            example_path = ns3_runnable_programs_dictionary[example_name]
             job = Job()
             job.set_is_example(True)
             job.set_is_pyexample(False)
-            job.set_display_name(example_name)
+            job.set_display_name(example_path)
             job.set_tmp_file_name("")
             job.set_cwd(testpy_output_dir)
             job.set_basedir(os.getcwd())
@@ -1755,7 +1765,7 @@ def main(argv):
 
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",
-                      help="specify a single example to run (with relative path)")
+                      help="specify a single example to run (no relative path is needed)")
 
     parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
                       help="If examples use reference data files, get them to re-generate them")
