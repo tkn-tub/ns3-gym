@@ -1028,7 +1028,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
   else if (tcpHeader.GetAckNumber () == m_txBuffer.HeadSequence ())
     { // Case 2: Potentially a duplicated ACK
-      if (tcpHeader.GetAckNumber () < m_nextTxSequence)
+      if (tcpHeader.GetAckNumber () < m_nextTxSequence && packet->GetSize() == 0)
         {
           NS_LOG_LOGIC ("Dupack of " << tcpHeader.GetAckNumber ());
           DupAck (tcpHeader, ++m_dupAckCount);
