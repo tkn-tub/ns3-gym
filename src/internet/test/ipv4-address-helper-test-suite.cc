@@ -21,7 +21,7 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/simulator.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class NetworkAllocatorHelperTestCase : public TestCase
 {
@@ -267,6 +267,3 @@ public:
     AddTestCase (new IpAddressHelperTestCasev4 ());
   }
 } g_ipv4AddressHelperTestSuite;
-
-} // namespace ns3
-

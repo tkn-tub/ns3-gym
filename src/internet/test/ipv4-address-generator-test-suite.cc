@@ -20,7 +20,7 @@
 #include "ns3/ipv4-address-generator.h"
 #include "ns3/simulation-singleton.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class NetworkNumberAllocatorTestCase : public TestCase
 {
@@ -315,6 +315,3 @@ public:
     AddTestCase (new AddressCollisionTestCase ());
   }
 } g_ipv4AddressGeneratorTestSuite;
-
-} // namespace ns3
-

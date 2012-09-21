@@ -24,7 +24,7 @@
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class SequenceNumberTestObj : public Object
 {
@@ -189,6 +189,3 @@ public:
     AddTestCase (new SequenceNumberTestCase ());
   }
 } g_seqNumTests;
-
-}
-

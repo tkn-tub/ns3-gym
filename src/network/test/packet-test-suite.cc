@@ -22,7 +22,7 @@
 #include <string>
 #include <cstdarg>
 
-namespace ns3 {
+using namespace ns3;
 
 //-----------------------------------------------------------------------------
 // Unit tests
@@ -449,6 +449,3 @@ PacketTestSuite::PacketTestSuite ()
 }
 
 static PacketTestSuite g_packetTestSuite;
-
-
-} // namespace ns3

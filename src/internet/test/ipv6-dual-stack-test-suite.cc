@@ -50,7 +50,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6DualStackTestSuite");
 
-namespace ns3 {
+using namespace ns3;
 
 class DualStackTestCase : public TestCase
 {
@@ -309,5 +309,3 @@ public:
     AddTestCase (new DualStackTestCase());
   }
 } g_ipv6DualStackTestSuite;
-
-} // namespace ns3

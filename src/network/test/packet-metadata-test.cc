@@ -250,8 +250,6 @@ HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
 
 }
 
-namespace ns3 {
-
 class PacketMetadataTest : public TestCase {
 public:
   PacketMetadataTest ();
@@ -835,4 +833,3 @@ PacketMetadataTestSuite::PacketMetadataTestSuite ()
 }
 
 PacketMetadataTestSuite g_packetMetadataTest;
-} // namespace ns3

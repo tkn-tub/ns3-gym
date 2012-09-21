@@ -24,7 +24,7 @@
 #include "ns3/map-scheduler.h"
 #include "ns3/calendar-scheduler.h"
 
-namespace ns3 {
+using namespace ns3;
 
 class SimulatorEventsTestCase : public TestCase
 {
@@ -477,5 +477,3 @@ public:
     AddTestCase (new SimulatorEventsTestCase (factory));
   }
 } g_simulatorTestSuite;
-
-} // namespace ns3

@@ -28,7 +28,7 @@
 #include "ns3/simulator.h"
 #include <cstdlib> // for rand()
 
-namespace ns3 {
+using namespace ns3;
 
 class GlobalRouteManagerImplTestCase : public TestCase
 {
@@ -223,5 +223,3 @@ public:
     AddTestCase (new GlobalRouteManagerImplTestCase ());
   }
 } g_globalRoutingManagerImplTestSuite;
-
-} // namespace ns3

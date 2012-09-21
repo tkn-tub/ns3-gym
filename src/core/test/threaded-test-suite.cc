@@ -31,7 +31,7 @@
 #include <list>
 #include <utility>
 
-namespace ns3 {
+using namespace ns3;
 
 #define MAXTHREADS 64
 
@@ -264,5 +264,3 @@ public:
       }
   }
 } g_threadedSimulatorTestSuite;
-
-} // namespace ns3

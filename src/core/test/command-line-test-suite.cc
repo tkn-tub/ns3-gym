@@ -27,7 +27,7 @@
 #include <cstdlib>
 #include <cstdarg>
 
-namespace ns3 {
+using namespace ns3;
 
 // ===========================================================================
 // A test base class that drives Command Line parsing
@@ -226,5 +226,3 @@ CommandLineTestSuite::CommandLineTestSuite ()
 }
 
 static CommandLineTestSuite CommandLineTestSuite;
-
-} // namespace ns3

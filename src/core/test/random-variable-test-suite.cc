@@ -28,7 +28,8 @@
 #include "ns3/integer.h"
 #include "ns3/random-variable.h"
 
-namespace ns3 {
+using namespace ns3;
+
 class BasicRandomNumberTestCase : public TestCase
 {
 public:
@@ -142,5 +143,3 @@ BasicRandomNumberTestSuite::BasicRandomNumberTestSuite ()
 }
 
 static BasicRandomNumberTestSuite BasicRandomNumberTestSuite;
-
-} // namespace ns3
