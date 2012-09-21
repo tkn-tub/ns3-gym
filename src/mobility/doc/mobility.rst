@@ -148,14 +148,36 @@ Valid trace files use the following ns2 statements: ::
    $ns at $time $node set Y_ Y1
    $ns at $time $node set Z_ Z1
 
+In the above, the initial positions are set using the ``set`` statements.
+Also, this ``set`` can be specified for a future time, such as in the
+last three statements above.  
+
+The command ``setdest`` instructs the simulation to start moving the 
+specified node towards the coordinate (x2, y2) at the specified time.
+Note that the node may never get to the destination, but will
+proceed towards the destination at the specified speed until it
+either reaches the destination (where it will pause), is set to 
+a new position (via ``set``), or sent on another course change
+(via ``setdest``).
+
+Note that in ns-3, movement along the Z dimension is not supported.
+
 Some examples of external tools that can export in this format include:
 
 - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/
+
+  - Some installation instructions for BonnMotion can be found here:  http://www.nsnam.org/wiki/index.php/HOWTO_use_ns-3_with_BonnMotion_mobility_generator_and_analysis_tool
+  - Documentation on using BonnMotion with ns-3 is posted here: http://www.ida.liu.se/~rikno/files/mobility_generation.pdf  
+
 - SUMO http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page
 - TraNS http://trans.epfl.ch/
+- the ``setdest`` utility in ns-2, documented here: http://www.winlab.rutgers.edu/~zhibinwu/html/ns2_wireless_scene.htm
 
 A special Ns2MobilityHelper object can be used to parse these files
-and convert the statements into ns-3 mobility events.
+and convert the statements into ns-3 mobility events.  The underlying
+ConstantVelocityMobilityModel is used to model these movements.
+
+See below for additional usage instructions on this helper.
 
 Scope and Limitations
 =====================
@@ -216,6 +238,15 @@ Once the helper is configured, it is typically passed a container, such as:
 
 A MobilityHelper object may be reconfigured and reused for different
 NodeContainers during the configuration of an ns-3 scenario.
+
+Ns2MobilityHelper
+=================
+
+Two example programs are provided demonstrating the use of the
+ns-2 mobility helper:
+
+- ns2-mobility-trace.cc
+- bonnmotion-ns2-example.cc
 
 Use of Random Variables
 =======================
@@ -287,6 +318,7 @@ Examples
 - main-random-walk.cc
 - main-grid-topology.cc
 - ns2-mobility-trace.cc
+- ns2-bonnmotion.cc
 
 Validation
 **********
