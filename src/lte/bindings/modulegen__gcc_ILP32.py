@@ -714,10 +714,6 @@ def register_types(module):
     module.add_class('LteSpectrumSignalParametersUlSrsFrame', parent=root_module['ns3::SpectrumSignalParameters'])
     ## lte-stats-calculator.h (module 'lte'): ns3::LteStatsCalculator [class]
     module.add_class('LteStatsCalculator', parent=root_module['ns3::Object'])
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): ns3::LteTestSinrChunkProcessor [class]
-    module.add_class('LteTestSinrChunkProcessor', parent=root_module['ns3::LteSinrChunkProcessor'])
-    ## lte-test-ue-phy.h (module 'lte'): ns3::LteTestUePhy [class]
-    module.add_class('LteTestUePhy', parent=root_module['ns3::LtePhy'])
     ## lte-ue-mac.h (module 'lte'): ns3::LteUeMac [class]
     module.add_class('LteUeMac', parent=root_module['ns3::Object'])
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy [class]
@@ -1228,8 +1224,6 @@ def register_methods(root_module):
     register_Ns3LteSpectrumSignalParametersDlCtrlFrame_methods(root_module, root_module['ns3::LteSpectrumSignalParametersDlCtrlFrame'])
     register_Ns3LteSpectrumSignalParametersUlSrsFrame_methods(root_module, root_module['ns3::LteSpectrumSignalParametersUlSrsFrame'])
     register_Ns3LteStatsCalculator_methods(root_module, root_module['ns3::LteStatsCalculator'])
-    register_Ns3LteTestSinrChunkProcessor_methods(root_module, root_module['ns3::LteTestSinrChunkProcessor'])
-    register_Ns3LteTestUePhy_methods(root_module, root_module['ns3::LteTestUePhy'])
     register_Ns3LteUeMac_methods(root_module, root_module['ns3::LteUeMac'])
     register_Ns3LteUePhy_methods(root_module, root_module['ns3::LteUePhy'])
     register_Ns3LteUeRrc_methods(root_module, root_module['ns3::LteUeRrc'])
@@ -10753,80 +10747,6 @@ def register_Ns3LteStatsCalculator_methods(root_module, cls):
     cls.add_method('SetUlOutputFilename', 
                    'void', 
                    [param('std::string', 'outputFilename')])
-    return
-
-def register_Ns3LteTestSinrChunkProcessor_methods(root_module, cls):
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): ns3::LteTestSinrChunkProcessor::LteTestSinrChunkProcessor(ns3::LteTestSinrChunkProcessor const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LteTestSinrChunkProcessor const &', 'arg0')])
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): ns3::LteTestSinrChunkProcessor::LteTestSinrChunkProcessor(ns3::Ptr<ns3::LtePhy> p) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::LtePhy >', 'p')])
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): void ns3::LteTestSinrChunkProcessor::End() [member function]
-    cls.add_method('End', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): void ns3::LteTestSinrChunkProcessor::EvaluateSinrChunk(ns3::SpectrumValue const & sinr, ns3::Time duration) [member function]
-    cls.add_method('EvaluateSinrChunk', 
-                   'void', 
-                   [param('ns3::SpectrumValue const &', 'sinr'), param('ns3::Time', 'duration')], 
-                   is_virtual=True)
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): ns3::Ptr<ns3::SpectrumValue> ns3::LteTestSinrChunkProcessor::GetSinr() [member function]
-    cls.add_method('GetSinr', 
-                   'ns3::Ptr< ns3::SpectrumValue >', 
-                   [])
-    ## lte-test-sinr-chunk-processor.h (module 'lte'): void ns3::LteTestSinrChunkProcessor::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    return
-
-def register_Ns3LteTestUePhy_methods(root_module, cls):
-    ## lte-test-ue-phy.h (module 'lte'): ns3::LteTestUePhy::LteTestUePhy(ns3::LteTestUePhy const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LteTestUePhy const &', 'arg0')])
-    ## lte-test-ue-phy.h (module 'lte'): ns3::LteTestUePhy::LteTestUePhy() [constructor]
-    cls.add_constructor([])
-    ## lte-test-ue-phy.h (module 'lte'): ns3::LteTestUePhy::LteTestUePhy(ns3::Ptr<ns3::LteSpectrumPhy> dlPhy, ns3::Ptr<ns3::LteSpectrumPhy> ulPhy) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::LteSpectrumPhy >', 'dlPhy'), param('ns3::Ptr< ns3::LteSpectrumPhy >', 'ulPhy')])
-    ## lte-test-ue-phy.h (module 'lte'): ns3::Ptr<ns3::SpectrumValue> ns3::LteTestUePhy::CreateTxPowerSpectralDensity() [member function]
-    cls.add_method('CreateTxPowerSpectralDensity', 
-                   'ns3::Ptr< ns3::SpectrumValue >', 
-                   [], 
-                   is_virtual=True)
-    ## lte-test-ue-phy.h (module 'lte'): void ns3::LteTestUePhy::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## lte-test-ue-phy.h (module 'lte'): void ns3::LteTestUePhy::DoSendMacPdu(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('DoSendMacPdu', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True)
-    ## lte-test-ue-phy.h (module 'lte'): void ns3::LteTestUePhy::GenerateCtrlCqiReport(ns3::SpectrumValue const & sinr) [member function]
-    cls.add_method('GenerateCtrlCqiReport', 
-                   'void', 
-                   [param('ns3::SpectrumValue const &', 'sinr')], 
-                   is_virtual=True)
-    ## lte-test-ue-phy.h (module 'lte'): void ns3::LteTestUePhy::GenerateDataCqiReport(ns3::SpectrumValue const & sinr) [member function]
-    cls.add_method('GenerateDataCqiReport', 
-                   'void', 
-                   [param('ns3::SpectrumValue const &', 'sinr')], 
-                   is_virtual=True)
-    ## lte-test-ue-phy.h (module 'lte'): ns3::SpectrumValue ns3::LteTestUePhy::GetSinr() [member function]
-    cls.add_method('GetSinr', 
-                   'ns3::SpectrumValue', 
-                   [])
-    ## lte-test-ue-phy.h (module 'lte'): static ns3::TypeId ns3::LteTestUePhy::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## lte-test-ue-phy.h (module 'lte'): void ns3::LteTestUePhy::ReceiveLteControlMessage(ns3::Ptr<ns3::LteControlMessage> msg) [member function]
-    cls.add_method('ReceiveLteControlMessage', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::LteControlMessage >', 'msg')], 
-                   is_virtual=True)
     return
 
 def register_Ns3LteUeMac_methods(root_module, cls):
