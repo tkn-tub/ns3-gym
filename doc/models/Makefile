@@ -153,8 +153,6 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/miesm_scheme.png \
 	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
 	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
-	$(SRC)/lte/doc/source/figures/lte-phy-interference.seqdiag \
-	$(SRC)/lte/doc/source/figures/helpers.seqdiag \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/stats/doc/Stat-framework-arch.png \
 	$(SRC)/stats/doc/Wifi-default.png \
