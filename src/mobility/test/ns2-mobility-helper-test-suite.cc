@@ -54,10 +54,23 @@ namespace ns3 {
 // -----------------------------------------------------------------------------
 // Testing
 // -----------------------------------------------------------------------------
-bool operator== (Vector const & a, Vector const & b)
+bool AreVectorsEqual (Vector const & actual, Vector const & limit, double tol)
 {
-  return (a.x == b.x && a.y == b.y && a.z == b.z);
+  if (actual.x > limit.x + tol || actual.x < limit.x - tol)
+    {
+      return false;
+    }
+  if (actual.y > limit.y + tol || actual.y < limit.y - tol)
+    {
+      return false;
+    }
+  if (actual.z > limit.z + tol || actual.z < limit.z - tol)
+    {
+      return false;
+    }
+  return true;
 }
+
 /**
  * Every test case is supposed to:
  *  1. Generate short mobility trace file
@@ -172,8 +185,9 @@ private:
         Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
         NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (mob, 0, "Can't find mobility for node " << rp.node);
 
-        NS_TEST_EXPECT_MSG_EQ (rp.pos, mob->GetPosition (), "Initial position mismatch for node " << rp.node);
-        NS_TEST_EXPECT_MSG_EQ (rp.vel, mob->GetVelocity (), "Initial velocity mismatch for node " << rp.node);
+        double tol = 0.001;
+        NS_TEST_EXPECT_MSG_EQ (AreVectorsEqual (mob->GetPosition (), rp.pos, tol), true, "Initial position mismatch for node " << rp.node);
+        NS_TEST_EXPECT_MSG_EQ (AreVectorsEqual (mob->GetVelocity (), rp.vel, tol), true, "Initial velocity mismatch for node " << rp.node);
 
         m_nextRefPoint++;
       }
@@ -199,8 +213,10 @@ private:
     ReferencePoint const & ref = m_reference [m_nextRefPoint++];
     NS_TEST_EXPECT_MSG_EQ (time, ref.time, "Time mismatch");
     NS_TEST_EXPECT_MSG_EQ (id, ref.node, "Node ID mismatch at time " << time.GetSeconds () << " s");
-    NS_TEST_EXPECT_MSG_EQ (pos, ref.pos, "Position mismatch at time " << time.GetSeconds () << " s for node " << id);
-    NS_TEST_EXPECT_MSG_EQ (vel, ref.vel, "Velocity mismatch at time " << time.GetSeconds () << " s for node " << id);
+
+    double tol = 0.001;
+    NS_TEST_EXPECT_MSG_EQ (AreVectorsEqual (pos, ref.pos, tol), true, "Position mismatch at time " << time.GetSeconds () << " s for node " << id);
+    NS_TEST_EXPECT_MSG_EQ (AreVectorsEqual (vel, ref.vel, tol), true, "Velocity mismatch at time " << time.GetSeconds () << " s for node " << id);
   }
 
   void DoSetup ()
@@ -475,6 +491,29 @@ public:
     t->AddReferencePoint ("0", 0, Vector (10, 0, 0), Vector (0,  0, 0));
     AddTestCase (t);
 
+    t = new Ns2MobilityHelperTest ("Bug 1316 testcase", Seconds (1000));
+    t->SetTrace ("$node_(0) set X_ 350.00000000000000\n"
+                 "$node_(0) set Y_ 50.00000000000000\n"
+                 "$ns_ at 50.00000000000000  \"$node_(0) setdest 400.00000000000000 50.00000000000000 1.00000000000000\"\n"
+                 "$ns_ at 150.00000000000000 \"$node_(0) setdest 400.00000000000000 150.00000000000000 4.00000000000000\"\n"
+                 "$ns_ at 300.00000000000000 \"$node_(0) setdest 250.00000000000000 150.00000000000000 3.00000000000000\"\n"
+                 "$ns_ at 350.00000000000000 \"$node_(0) setdest 250.00000000000000 50.00000000000000 1.00000000000000\"\n"
+                 "$ns_ at 600.00000000000000 \"$node_(0) setdest 250.00000000000000 1050.00000000000000 2.00000000000000\"\n"
+                 "$ns_ at 900.00000000000000 \"$node_(0) setdest 300.00000000000000 650.00000000000000 2.50000000000000\"\n"
+                 );
+    t->AddReferencePoint ("0", 0.000, Vector (350.000, 50.000, 0.000), Vector (0.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 50.000, Vector (350.000, 50.000, 0.000), Vector (1.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 100.000, Vector (400.000, 50.000, 0.000), Vector (0.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 150.000, Vector (400.000, 50.000, 0.000), Vector (0.000, 4.000, 0.000));
+    t->AddReferencePoint ("0", 175.000, Vector (400.000, 150.000, 0.000), Vector (0.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 300.000, Vector (400.000, 150.000, 0.000), Vector (-3.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 350.000, Vector (250.000, 150.000, 0.000), Vector (0.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 350.000, Vector (250.000, 150.000, 0.000), Vector (0.000, -1.000, 0.000));
+    t->AddReferencePoint ("0", 450.000, Vector (250.000,  50.000, 0.000), Vector (0.000, 0.000, 0.000));
+    t->AddReferencePoint ("0", 600.000, Vector (250.000,  50.000, 0.000), Vector (0.000, 2.000, 0.000));
+    t->AddReferencePoint ("0", 900.000, Vector (250.000,  650.000, 0.000), Vector (2.500, 0.000, 0.000));
+    t->AddReferencePoint ("0", 920.000, Vector (300.000,  650.000, 0.000), Vector (0.000, 0.000, 0.000));
+    AddTestCase (t);
 
   }
 } g_ns2TransmobilityHelperTestSuite;
