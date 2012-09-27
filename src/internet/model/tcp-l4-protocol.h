@@ -119,6 +119,26 @@ public:
                                                  Ipv6Address &dst,
                                                  Ptr<Ipv6Interface> interface);
 
+  /**
+   * \brief Receive an ICMP packet
+   * \param icmpSource The IP address of the source of the packet.
+   * \param icmpTtl The time to live from the IP header
+   * \param icmpType The type of the message from the ICMP header
+   * \param icmpCode The message code from the ICMP header
+   * \param icmpInfo 32-bit integer carrying informational value of varying semantics.
+   * \param payloadSource The IP source address from the IP header of the packet
+   * \param payloadDestination The IP destination address from the IP header of the packet
+   * \param payload Payload of the ICMP packet
+   */
+  virtual void ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv4Address payloadSource,Ipv4Address payloadDestination,
+                            const uint8_t payload[8]);
+  virtual void ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                            Ipv6Address payloadSource,Ipv6Address payloadDestination,
+                            const uint8_t payload[8]);
+
   // From IpL4Protocol
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);

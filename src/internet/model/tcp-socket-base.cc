@@ -75,6 +75,14 @@ TcpSocketBase::GetTypeId (void)
                    UintegerValue (65535),
                    MakeUintegerAccessor (&TcpSocketBase::m_maxWinSize),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("IcmpCallback", "Callback invoked whenever an icmp error is received on this socket.",
+                   CallbackValue (),
+                   MakeCallbackAccessor (&TcpSocketBase::m_icmpCallback),
+                   MakeCallbackChecker ())
+    .AddAttribute ("IcmpCallback6", "Callback invoked whenever an icmpv6 error is received on this socket.",
+                   CallbackValue (),
+                   MakeCallbackAccessor (&TcpSocketBase::m_icmpCallback6),
+                   MakeCallbackChecker ())                   
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rto))
@@ -640,11 +648,13 @@ TcpSocketBase::SetupCallback (void)
   if (m_endPoint != 0)
     {
       m_endPoint->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp, Ptr<TcpSocketBase> (this)));
+      m_endPoint->SetIcmpCallback (MakeCallback (&TcpSocketBase::ForwardIcmp, Ptr<TcpSocketBase> (this)));
       m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy, Ptr<TcpSocketBase> (this)));
     }
   if (m_endPoint6 != 0)
     {
       m_endPoint6->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp6, Ptr<TcpSocketBase> (this)));
+      m_endPoint6->SetIcmpCallback (MakeCallback (&TcpSocketBase::ForwardIcmp6, Ptr<TcpSocketBase> (this)));
       m_endPoint6->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy6, Ptr<TcpSocketBase> (this)));
     }
 
@@ -770,6 +780,32 @@ void
 TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port)
 {
   DoForwardUp (packet, saddr, daddr, port);
+}
+
+void
+TcpSocketBase::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode,
+                            uint32_t icmpInfo)
+{
+  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
+                   (uint32_t)icmpCode << icmpInfo);
+  if (!m_icmpCallback.IsNull ())
+    {
+      m_icmpCallback (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
+}
+
+void
+TcpSocketBase::ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl,
+                            uint8_t icmpType, uint8_t icmpCode,
+                            uint32_t icmpInfo)
+{
+  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
+                   (uint32_t)icmpCode << icmpInfo);
+  if (!m_icmpCallback6.IsNull ())
+    {
+      m_icmpCallback6 (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
+    }
 }
 
 /** The real function to handle the incoming packet from lower layers. This is

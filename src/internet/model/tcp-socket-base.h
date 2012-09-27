@@ -138,6 +138,8 @@ protected:
   void ForwardUp6 (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port);
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port, Ptr<Ipv4Interface> incomingInterface); //Get a pkt from L3
   virtual void DoForwardUp (Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr, uint16_t port); // Ipv6 version
+  void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);
+  void ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo);  
   bool SendPendingData (bool withAck = false); // Send as much as the window allows
   uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck); // Send a data packet
   void SendEmptyPacket (uint8_t flags); // Send a empty packet that carries a flag, e.g. ACK
@@ -211,6 +213,8 @@ protected:
   Ipv6EndPoint*       m_endPoint6;
   Ptr<Node>           m_node;
   Ptr<TcpL4Protocol>  m_tcp;
+  Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
+  Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6;
 
   // Round trip time estimation
   Ptr<RttEstimator> m_rtt;
