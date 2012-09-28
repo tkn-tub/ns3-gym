@@ -378,9 +378,8 @@ RoutingExperiment::Run (int nSinks, double txp, std::string CSVfileName)
   //AsciiTraceHelper ascii;
   //Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (tr_name + ".tr").c_str());
   //wifiPhy.EnableAsciiAll (osw);
-  std::ofstream os;
-  os.open ((tr_name + ".mob").c_str ());
-  MobilityHelper::EnableAsciiAll (os);
+  AsciiTraceHelper ascii;
+  MobilityHelper::EnableAsciiAll (ascii.CreateFileStream (tr_name + ".mob"));
 
   //Ptr<FlowMonitor> flowmon;
   //FlowMonitorHelper flowmonHelper;
