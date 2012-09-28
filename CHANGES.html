@@ -44,6 +44,29 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
+<h1>Changes from ns-3.15 to ns-3.16</h1>
+
+<h2>New API:</h2>
+<ul>
+<li></li>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li>In the MobilityHelper class, the functions EnableAscii () and EnableAsciiAll () were changed to use output stream wrappers rather than standard C++ ostreams. The purpose of this change was make to make them behave analogously to other helpers in ns-3 that generate ascii traces.  Now, the file stream that is open in MobilityHelper is closed nicely upon asserts and program exits.</li>
+</ul>
+
+<h2>Changes to build system:</h2>
+<ul>
+<li></li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+<li></li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.14 to ns-3.15</h1>
 
 <h2>New API:</h2>
