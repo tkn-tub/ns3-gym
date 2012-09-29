@@ -32,10 +32,10 @@ class LteEnbNetDevice;
 
 /**
  * This class implements the Access Stratum (AS) Service Access Point
- * (SAP), i.e., the interface between the EpcUeNas and the LteEnbRrc
- * and the EpcEnbApplication. In particular, this class implements the 
+ * (SAP), i.e., the interface between the EpcUeNas and the LteUeRrc.
+ * In particular, this class implements the  
  * Provider part of the SAP, i.e., the methods exported by the
- * LteEnbRrc and called by the EpcUeNas.
+ * LteUeRrc and called by the EpcUeNas.
  * 
  */
 class LteAsSapProvider
@@ -73,10 +73,10 @@ public:
 
 /**
  * This class implements the Access Stratum (AS) Service Access Point
- * (SAP), i.e., the interface between the EpcUeNas and the LteEnbRrc
- * and the EpcEnbApplication. In particular, this class implements the 
+ * (SAP), i.e., the interface between the EpcUeNas and the LteUeRrc
+ * In particular, this class implements the 
  * User part of the SAP, i.e., the methods exported by the
- * EpcUeNas and called by the LteEnbRrc.
+ * EpcUeNas and called by the LteUeRrc.
  * 
  */
 class LteAsSapUser

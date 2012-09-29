@@ -262,8 +262,8 @@ EpcX2::DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params)
   EpcX2Header x2Header;
   x2Header.SetMessageType (EpcX2Header::InitiatingMessage);
   x2Header.SetProcedureCode (EpcX2Header::HandoverPreparation);
-//   x2Header.SetLengthOfIes (x2HoReqHeader.GetLengthOfIes ());
-//   x2Header.SetNumberOfIes (x2HoReqHeader.GetNumberOfIes ());
+  x2Header.SetLengthOfIes (x2HoReqHeader.GetLengthOfIes ());
+  x2Header.SetNumberOfIes (x2HoReqHeader.GetNumberOfIes ());
 
   NS_LOG_INFO ("X2 header: " << x2Header);
   NS_LOG_INFO ("X2 HandoverRequest header: " << x2HoReqHeader);
