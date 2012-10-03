@@ -48,9 +48,7 @@ public:
    * \return true if the 'eof' bit is set in the underlying iostream, false otherwise.
    */
   bool Eof (void) const;
-  /**
-   * Clear all state bits of the underlying iostream.
-   */
+
   /**
    * Create a new ascii file or open an existing ascii file.
    *

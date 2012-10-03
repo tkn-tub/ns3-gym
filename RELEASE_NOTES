@@ -24,6 +24,8 @@ New user-visible features
 
 Bugs fixed
 ----------
+ - bug  976 - wifi-wired-bridging regression test fails because of 
+              rounding errors in mobility model
  - bug 1284 - ./test.py performance tests do not exist
  - bug 1463 - ./test.py --example should automatically detect the path
  - bug 1485 - Setting global properties in config file (raw text) does
