@@ -446,7 +446,7 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
 {
   SetDataDir (NS_TEST_SOURCEDIR);
   Packet::EnablePrinting ();  // Enable packet metadata for all test cases
-#if 0
+
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 0));
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 1));
   AddTestCase (new Ns3TcpLossTestCase ("Tahoe", 2));
@@ -464,7 +464,7 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 2));
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 3));
   AddTestCase (new Ns3TcpLossTestCase ("NewReno", 4));
-#endif
+
 }
 
 static Ns3TcpLossTestSuite ns3TcpLossTestSuite;
