@@ -138,7 +138,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite ()
   };
 
 
-  double txPowerDbm = 30; // default eNB TX power over whole bandwdith
+  double txPowerDbm = 30; // default eNB TX power over whole bandwidth
   double txPowerLin = std::pow (10, (txPowerDbm - 30)/10);
   double ktDbm = -174;    // reference LTE noise PSD
   double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units

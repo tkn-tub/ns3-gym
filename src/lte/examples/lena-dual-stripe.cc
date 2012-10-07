@@ -281,11 +281,11 @@ static ns3::GlobalValue g_homeEnbDlEarfcn ("homeEnbDlEarfcn",
                                            ns3::UintegerValue (100),
                                            ns3::MakeUintegerChecker<uint16_t> ());
 static ns3::GlobalValue g_macroEnbBandwidth ("macroEnbBandwidth", 
-                                             "bandwdith [num RBs] used by macro eNBs",  
+                                             "bandwidth [num RBs] used by macro eNBs",  
                                              ns3::UintegerValue (25),
                                              ns3::MakeUintegerChecker<uint16_t> ());
 static ns3::GlobalValue g_homeEnbBandwidth ("homeEnbBandwidth", 
-                                            "bandwdith [num RBs] used by HeNBs",  
+                                            "bandwidth [num RBs] used by HeNBs",  
                                             ns3::UintegerValue (25),
                                             ns3::MakeUintegerChecker<uint16_t> ());
 static ns3::GlobalValue g_simTime ("simTime", 

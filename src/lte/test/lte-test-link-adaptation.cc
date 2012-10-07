@@ -111,7 +111,7 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite ()
   };
   int numOfTests = sizeof (snrEfficiencyMcs) / sizeof (SnrEfficiencyMcs);
 
-  double txPowerDbm = 30; // default eNB TX power over whole bandwdith
+  double txPowerDbm = 30; // default eNB TX power over whole bandwidth
   double ktDbm = -174;    // reference LTE noise PSD
   double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   double receiverNoiseFigureDb = 9.0; // default UE noise figure

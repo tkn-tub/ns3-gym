@@ -153,8 +153,8 @@ LteEnbAntennaTestCase::DoRun (void)
   Simulator::Run ();
 
 
-  const double enbTxPowerDbm = 30; // default eNB TX power over whole bandwdith
-  const double ueTxPowerDbm  = 10; // default UE TX power over whole bandwdith
+  const double enbTxPowerDbm = 30; // default eNB TX power over whole bandwidth
+  const double ueTxPowerDbm  = 10; // default UE TX power over whole bandwidth
   const double ktDbm = -174;    // reference LTE noise PSD
   const double noisePowerDbm = ktDbm + 10 * std::log10 (25 * 180000); // corresponds to kT*bandwidth in linear units
   const double ueNoiseFigureDb = 9.0; // default UE noise figure
