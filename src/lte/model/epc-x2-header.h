@@ -55,7 +55,8 @@ public:
 
 
   enum ProcedureCode_t {
-    HandoverPreparation     = 0
+    HandoverPreparation     = 0,
+    UeContextRelease        = 5
   };
 
   enum TypeOfMessage_t {
@@ -156,6 +157,31 @@ private:
   std::vector <EpcX2Sap::ErabNotAdmittedItem>  m_erabsNotAdmittedList;
 };
 
+
+class EpcX2UeContextReleaseHeader : public Header
+{
+public:
+  EpcX2UeContextReleaseHeader ();
+  virtual ~EpcX2UeContextReleaseHeader ();
+  
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+  
+  
+  uint16_t GetOldEnbUeX2apId () const;
+  void SetOldEnbUeX2apId (uint16_t x2apId);
+
+  uint16_t GetNewEnbUeX2apId () const;
+  void SetNewEnbUeX2apId (uint16_t x2apId);
+
+private:
+  uint16_t          m_oldEnbUeX2apId;
+  uint16_t          m_newEnbUeX2apId;
+};
 
 } // namespace ns3
 

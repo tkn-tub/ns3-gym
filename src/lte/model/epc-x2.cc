@@ -189,10 +189,16 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           params.rrcContext     = packet;
 
           NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+          NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
           NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
           NS_LOG_LOGIC ("cellsInfo->m_localCellId = " << cellsInfo->m_localCellId);
           NS_ASSERT_MSG (params.targetCellId == cellsInfo->m_localCellId,
                          "TargetCellId mismatches with localCellId");
+
+          // Map oldEnbUeX2apId to sourceCellId
+          NS_ASSERT_MSG (m_x2Ues.find (params.oldEnbUeX2apId) == m_x2Ues.end (),
+                         "UE already in CellId. enbUeX2apId = " << params.oldEnbUeX2apId << ". CellId = " << params.sourceCellId);
+          m_x2Ues [params.oldEnbUeX2apId] = params.sourceCellId;
 
           m_x2SapUser->RecvHandoverRequest (params);
         }
@@ -224,6 +230,27 @@ EpcX2::RecvFromX2cSocket (Ptr<Socket> socket)
           m_x2SapUser->RecvHandoverRequestAck (params);
         }
     }
+  else // procedureCode == EpcX2Header::HandoverPreparation
+    {
+      if (messageType == EpcX2Header::InitiatingMessage)
+        {
+          NS_LOG_LOGIC ("Recv X2 message: UE CONTEXT RELEASE");
+
+          EpcX2UeContextReleaseHeader x2UeCtxReleaseHeader;
+          packet->RemoveHeader (x2UeCtxReleaseHeader);
+
+          NS_LOG_INFO ("X2 UeContextRelease header: " << x2UeCtxReleaseHeader);
+
+          EpcX2SapUser::UeContextReleaseParams params;
+          params.oldEnbUeX2apId = x2UeCtxReleaseHeader.GetOldEnbUeX2apId ();
+          params.newEnbUeX2apId = x2UeCtxReleaseHeader.GetNewEnbUeX2apId ();
+
+          NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+          NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+
+          m_x2SapUser->RecvUeContextRelease (params);
+        }
+    }
 
 }
 
@@ -247,7 +274,12 @@ EpcX2::DoSendHandoverRequest (EpcX2SapProvider::HandoverRequestParams params)
 
   NS_LOG_LOGIC ("sourceSocket = " << sourceSocket);
   NS_LOG_LOGIC ("targetIpAddr = " << targetIpAddr);
-  
+
+  // Map oldEnbUeX2apId to sourceCellId
+  NS_ASSERT_MSG (m_x2Ues.find (params.oldEnbUeX2apId) == m_x2Ues.end (),
+                 "UE already in CellId. enbUeX2apId = " << params.oldEnbUeX2apId << ". CellId = " << params.sourceCellId);
+  m_x2Ues [params.oldEnbUeX2apId] = params.sourceCellId;
+
   NS_LOG_INFO ("Send X2 message: HANDOVER REQUEST");
 
   // Build the X2 message
@@ -318,6 +350,54 @@ EpcX2::DoSendHandoverRequestAck (EpcX2SapProvider::HandoverRequestAckParams para
   // Build the X2 packet
   Ptr<Packet> packet = (params.rrcContext != 0) ? (params.rrcContext) : (Create <Packet> ());
   packet->AddHeader (x2HoAckHeader);
+  packet->AddHeader (x2Header);
+  NS_LOG_INFO ("packetLen = " << packet->GetSize ());
+
+  // Send the X2 message through the socket
+  localSocket->SendTo (packet, 0, InetSocketAddress (remoteIpAddr, m_x2cUdpPort));
+}
+
+
+void
+EpcX2::DoSendUeContextRelease (EpcX2SapProvider::UeContextReleaseParams params)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
+
+  NS_ASSERT_MSG (m_x2Ues.find (params.oldEnbUeX2apId) != m_x2Ues.end (),
+                 "Missing CellId for enbUeX2apId = " << params.oldEnbUeX2apId);
+  uint16_t sourceCellId = m_x2Ues [params.oldEnbUeX2apId];
+
+  NS_LOG_LOGIC ("sourceCellId = " << sourceCellId);
+  
+  NS_ASSERT_MSG (m_x2InterfaceSockets.find (sourceCellId) != m_x2InterfaceSockets.end (),
+                 "Socket infos not defined for sourceCellId = " << sourceCellId);
+
+  Ptr<Socket> localSocket = m_x2InterfaceSockets [sourceCellId]->m_localSocket;
+  Ipv4Address remoteIpAddr = m_x2InterfaceSockets [sourceCellId]->m_remoteIpAddr;
+
+  NS_LOG_LOGIC ("localSocket = " << localSocket);
+  NS_LOG_LOGIC ("remoteIpAddr = " << remoteIpAddr);
+
+  NS_LOG_INFO ("Send X2 message: UE CONTEXT RELEASE");
+
+  // Build the X2 message
+  EpcX2Header x2Header;
+  x2Header.SetMessageType (EpcX2Header::InitiatingMessage);
+  x2Header.SetProcedureCode (EpcX2Header::UeContextRelease);
+
+  EpcX2UeContextReleaseHeader x2UeCtxReleaseHeader;
+  x2UeCtxReleaseHeader.SetOldEnbUeX2apId (params.oldEnbUeX2apId);
+  x2UeCtxReleaseHeader.SetNewEnbUeX2apId (params.newEnbUeX2apId);
+
+  NS_LOG_INFO ("X2 header: " << x2Header);
+  NS_LOG_INFO ("X2 UeContextRelease header: " << x2UeCtxReleaseHeader);
+
+  // Build the X2 packet
+  Ptr<Packet> packet = Create <Packet> ();
+  packet->AddHeader (x2UeCtxReleaseHeader);
   packet->AddHeader (x2Header);
   NS_LOG_INFO ("packetLen = " << packet->GetSize ());
 
