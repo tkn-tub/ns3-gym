@@ -155,6 +155,9 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   m_enbCphySapProvider = new MemberLteEnbCphySapProvider<LteEnbPhy> (this);
+  m_harqPhyModule = Create <LteHarqPhy> ();
+  m_downlinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
+  m_uplinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
@@ -450,7 +453,7 @@ LteEnbPhy::StartSubFrame (void)
       m_currentSrsOffset = (m_currentSrsOffset + 1) % m_srsPeriodicity;
     }
   NS_LOG_INFO ("-----sub frame " << m_nrSubFrames << "-----");
-  
+  m_harqPhyModule->SubframeIndication (m_nrFrames, m_nrSubFrames);
   
   // update info on TB to be received
   std::list<UlDciLteControlMessage> uldcilist = DequeueUlDci ();
@@ -475,7 +478,15 @@ LteEnbPhy::StartSubFrame (void)
             {
               rbMap.push_back (i);
             }
-          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/);
+          m_uplinkSpectrumPhy->AddExpectedTb ((*dciIt).GetDci ().m_rnti, (*dciIt).GetDci ().m_tbSize, (*dciIt).GetDci ().m_mcs, rbMap, 0 /* always SISO*/, 0 /* no HARQ proc id in UL*/, 0.0 /* MI TBD */, false /* UL*/);
+          if ((*dciIt).GetDci ().m_ndi==1)
+            {
+              NS_LOG_DEBUG (this << " RNTI " << (*dciIt).GetDci ().m_rnti << " NEW TB");
+            }
+          else
+            {
+              NS_LOG_DEBUG (this << " RNTI " << (*dciIt).GetDci ().m_rnti << " HARQ RETX");
+            }
           m_ulRntiRxed.push_back ((*dciIt).GetDci ().m_rnti);
         }
     }
@@ -771,5 +782,19 @@ LteEnbPhy::DoSetSrsConfigurationIndex (uint16_t  rnti, uint16_t srcCi)
   
 }
 
+
+void
+LteEnbPhy::SetHarqPhyModule (Ptr<LteHarqPhy> harq)
+{
+  m_harqPhyModule = harq;
+}
+
+
+void
+LteEnbPhy::ReceiveLteUlHarqFeedback (UlInfoListElement_s mes)
+{
+  NS_LOG_FUNCTION (this);
+  m_enbPhySapUser->UlInfoListElementHarqFeeback (mes);
+}
 
 };

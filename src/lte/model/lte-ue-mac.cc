@@ -179,10 +179,12 @@ LteUeMac::GetTypeId (void)
 LteUeMac::LteUeMac ()
   :  m_bsrPeriodicity (MilliSeconds (1)), // ideal behavior
   m_bsrLast (MilliSeconds (0)),
-  m_freshUlBsr (false)
+  m_freshUlBsr (false),
+  m_harqProcessId (0)
   
 {
   NS_LOG_FUNCTION (this);
+  m_miUlHarqProcessesPacket.resize (HARQ_PERIOD);
   m_macSapProvider = new UeMemberLteMacSapProvider (this);
   m_cmacSapProvider = new UeMemberLteUeCmacSapProvider (this);
   m_uePhySapUser = new UeMemberLteUePhySapUser (this);
@@ -198,6 +200,7 @@ void
 LteUeMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_miUlHarqProcessesPacket.clear ();
   delete m_macSapProvider;
   delete m_cmacSapProvider;
   delete m_uePhySapUser;
@@ -244,11 +247,9 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   NS_ASSERT_MSG (m_rnti == params.rnti, "RNTI mismatch between RLC and MAC");
   LteRadioBearerTag tag (params.rnti, params.lcid, 0 /* UE works in SISO mode*/);
   params.pdu->AddPacketTag (tag);
-//   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-//   pb->AddPacket (params.pdu);
+  // store pdu in HARQ buffer
+  m_miUlHarqProcessesPacket.at (m_harqProcessId) = params.pdu;//->Copy ();
   m_uePhySapProvider->SendMacPdu (params.pdu);
-  // Uplink not implemented yet, so we wait can wait for the PHY SAP
-  // to be defined before we implement the transmission method.
 }
 
 void
@@ -354,39 +355,51 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
     {
       Ptr<UlDciLteControlMessage> msg2 = DynamicCast<UlDciLteControlMessage> (msg);
       UlDciListElement_s dci = msg2->GetDci ();
-      std::map <uint8_t, uint64_t>::iterator itBsr;
-      NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
-      uint16_t activeLcs = 0;
-      for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
+      if (dci.m_ndi==1)
         {
-          if ((*itBsr).second > 0)
+          // New transmission -> retrieve data from RLC
+          std::map <uint8_t, uint64_t>::iterator itBsr;
+          NS_ASSERT_MSG (m_ulBsrReceived.size () <=4, " Too many LCs (max is 4)");
+          uint16_t activeLcs = 0;
+          for (itBsr = m_ulBsrReceived.begin (); itBsr != m_ulBsrReceived.end (); itBsr++)
             {
-              activeLcs++;
-            }
-        }
-      if (activeLcs == 0)
-        {
-          NS_LOG_ERROR (this << " No active flows for this UL-DCI");
-          return;
-        }
-      std::map <uint8_t, LteMacSapUser*>::iterator it;
-      NS_LOG_FUNCTION (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize);
-      for (it = m_macSapUserMap.begin (); it!=m_macSapUserMap.end (); it++)
-        {
-          itBsr = m_ulBsrReceived.find ((*it).first);
-          if (itBsr!=m_ulBsrReceived.end ())
-            {
-              NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
-              (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0);
-              if ((*itBsr).second >=  static_cast<uint64_t> (dci.m_tbSize / activeLcs))
+              if ((*itBsr).second > 0)
                 {
-                  (*itBsr).second -= dci.m_tbSize / activeLcs;
-                }
-              else
-                {
-                  (*itBsr).second = 0;
+                  activeLcs++;
                 }
             }
+          if (activeLcs == 0)
+            {
+              NS_LOG_ERROR (this << " No active flows for this UL-DCI");
+              return;
+            }
+          std::map <uint8_t, LteMacSapUser*>::iterator it;
+          NS_LOG_FUNCTION (this << " UE: UL-CQI notified TxOpportunity of " << dci.m_tbSize);
+          for (it = m_macSapUserMap.begin (); it!=m_macSapUserMap.end (); it++)
+            {
+              itBsr = m_ulBsrReceived.find ((*it).first);
+              if (itBsr!=m_ulBsrReceived.end ())
+                {
+                  NS_LOG_FUNCTION (this << "\t" << dci.m_tbSize / m_macSapUserMap.size () << " bytes to LC " << (uint16_t)(*it).first << " queue " << (*itBsr).second);
+                  (*it).second->NotifyTxOpportunity (dci.m_tbSize / activeLcs, 0, 0); // layer and HARQ ID are not used in UL
+                  if ((*itBsr).second >=  static_cast<uint64_t> (dci.m_tbSize / activeLcs))
+                    {
+                      (*itBsr).second -= dci.m_tbSize / activeLcs;
+                    }
+                  else
+                    {
+                      (*itBsr).second = 0;
+                    }
+                }
+            }
+        }
+      else
+        {
+          // HARQ retransmission -> retrieve data from HARQ buffer
+          NS_LOG_DEBUG (this << " UE MAC RETX HARQ " << (uint16_t)m_harqProcessId);
+          Ptr<Packet> pkt = m_miUlHarqProcessesPacket.at (m_harqProcessId);
+          m_uePhySapProvider->SendMacPdu (pkt);
+          
         }
 
     }
@@ -406,6 +419,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       SendReportBufferStatus ();
       m_bsrLast = Simulator::Now ();
       m_freshUlBsr = false;
+      m_harqProcessId = (m_harqProcessId + 1) % HARQ_PERIOD;
     }
 }
 

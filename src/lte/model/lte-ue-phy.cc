@@ -539,7 +539,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
           for (int k = 0; k < GetRbgSize (); k++)
           {
             dlRb.push_back ((i * GetRbgSize ()) + k);
-            //NS_LOG_DEBUG(this << "DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
+//             NS_LOG_DEBUG(this << " RNTI " << m_rnti << " RBG " << i << " DL-DCI allocated PRB " << (i*GetRbgSize()) + k);
           }
         }
         mask = (mask << 1);
@@ -549,7 +549,13 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
       NS_LOG_DEBUG (this << " UE " << m_rnti << " DL-DCI " << dci.m_rnti << " bitmap "  << dci.m_rbBitmap);
       for (uint8_t i = 0; i < dci.m_tbsSize.size (); i++)
       {
-        m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_tbsSize.at (i), dci.m_mcs.at (i), dlRb, i);
+        double miCumulated = 0.0;
+        if (dci.m_ndi.at (i)!=0)
+          {
+            // TODO : retrieve MI info on retransmissions
+            miCumulated = 0.0;
+          }
+        m_downlinkSpectrumPhy->AddExpectedTb (dci.m_rnti, dci.m_tbsSize.at (i), dci.m_mcs.at (i), dlRb, i, dci.m_harqProcess, miCumulated, true /* DL */);
       }
       
       SetSubChannelsForReception (dlRb);
@@ -633,11 +639,11 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   std::list<Ptr<LteControlMessage> > ctrlMsg = GetControlMessages ();
   // send packets in queue
+  NS_LOG_LOGIC (this << " UE - start TX PUSCH + PUCCH");
   // send the current burts of packets
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      NS_LOG_LOGIC (this << " UE - start TX PUSCH + PUCCH");
       m_uplinkSpectrumPhy->StartTxDataFrame (pb, ctrlMsg, UL_DATA_DURATION);
     }
   else
@@ -833,6 +839,24 @@ LteUePhy::UpdateNoisePsd ()
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_dlEarfcn, m_dlBandwidth, m_noiseFigure);
   m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
 }
+
+
+void
+LteUePhy::ReceiveLteDlHarqFeedback (DlInfoListElement_s m)
+{
+  NS_LOG_FUNCTION (this);
+  // generate feedback to eNB and send it through ideal PUCCH
+  Ptr<DlHarqFeedbackLteControlMessage> msg = Create<DlHarqFeedbackLteControlMessage> ();
+  msg->SetDlHarqFeedback (m);
+  SetControlMessages (msg);
+}
+
+void
+LteUePhy::SetHarqPhyModule (Ptr<LteHarqPhy> harq)
+{
+  m_harqPhyModule = harq;
+}
+
 
 
 } // namespace ns3

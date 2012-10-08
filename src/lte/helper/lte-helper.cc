@@ -308,6 +308,11 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
+  Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
+  dlPhy->SetHarqPhyModule (harq);
+  ulPhy->SetHarqPhyModule (harq);
+  phy->SetHarqPhyModule (harq);
+
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   ulPhy->AddCtrlSinrChunkProcessor (pCtrl); // for evaluating SRS UL-CQI
 
@@ -374,6 +379,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   n->AddDevice (dev);
   ulPhy->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
   ulPhy->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteEnbPhy::ReceiveLteControlMessageList, phy));
+  ulPhy->SetLtePhyUlHarqFeedbackCallback (MakeCallback (&LteEnbPhy::ReceiveLteUlHarqFeedback, phy));
   rrc->SetForwardUpCallback (MakeCallback (&LteEnbNetDevice::Receive, dev));
 
   NS_LOG_LOGIC ("set the propagation model frequencies");
@@ -426,6 +432,11 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
 
+  Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
+  dlPhy->SetHarqPhyModule (harq);
+  ulPhy->SetHarqPhyModule (harq);
+  phy->SetHarqPhyModule (harq);
+
   Ptr<LteCtrlSinrChunkProcessor> pCtrl = Create<LteCtrlSinrChunkProcessor> (phy->GetObject<LtePhy> (), dlPhy);
   dlPhy->AddCtrlSinrChunkProcessor (pCtrl);
 
@@ -474,6 +485,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   n->AddDevice (dev);
   dlPhy->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
   dlPhy->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, phy));
+  dlPhy->SetLtePhyDlHarqFeedbackCallback (MakeCallback (&LteUePhy::ReceiveLteDlHarqFeedback, phy));
   nas->SetForwardUpCallback (MakeCallback (&LteUeNetDevice::Receive, dev));
 
 

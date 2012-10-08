@@ -33,6 +33,7 @@
 #include <ns3/lte-enb-phy-sap.h>
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
+#include <ns3/packet.h>
 
 namespace ns3 {
 
@@ -40,7 +41,7 @@ class DlCqiLteControlMessage;
 class UlCqiLteControlMessage;
 class PdcchMapLteControlMessage;
 
-
+typedef std::vector <std::vector < Ptr<Packet> > > DlHarqProcessesBuffer_t;
 
 /**
  * This class implements the MAC layer of the eNodeB device
@@ -184,18 +185,23 @@ public:
   void DoReceivePhyPdu (Ptr<Packet> p);
 
 private:
-private:
+  void DoUlInfoListElementHarqFeeback (UlInfoListElement_s params);
+  void DoDlInfoListElementHarqFeeback (DlInfoListElement_s params);
   std::map <LteFlowId_t, LteMacSapUser*> m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
   std::vector <FfMacSchedSapProvider::SchedUlCqiInfoReqParameters> m_ulCqiReceived; // UL-CQI received
   std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
 
+  std::vector <DlInfoListElement_s> m_dlInfoListReceived; // DL HARQ feedback received
+
+  std::vector <UlInfoListElement_s> m_ulInfoListReceived; // UL HARQ feedback received
+
 
   /*
   * Map of UE's info element (see 4.3.12 of FF MAC Scheduler API)
   */
-  std::map <uint16_t,UlInfoListElement_s> m_ulInfoListElements; 
+//   std::map <uint16_t,UlInfoListElement_s> m_ulInfoListElements; 
 
 
 
@@ -229,6 +235,9 @@ private:
   TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t> m_ulScheduling;
   
   uint8_t m_macChTtiDelay; // delay of MAC, PHY and channel in terms of TTIs
+
+
+  std::map <uint16_t, DlHarqProcessesBuffer_t> m_miDlHarqProcessesPackets; // Packet under trasmission of the DL HARQ process
   
 
 };

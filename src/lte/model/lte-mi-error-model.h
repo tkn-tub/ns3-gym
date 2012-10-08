@@ -38,6 +38,7 @@
 #include <ns3/ptr.h>
 #include <stdint.h>
 #include <ns3/spectrum-value.h>
+#include <ns3/lte-harq-phy.h>
 
 
 
@@ -48,6 +49,12 @@ namespace ns3 {
   const uint16_t MI_MAP_QPSK_SIZE = 766;
   const uint16_t MI_MAP_16QAM_SIZE = 843;
   const uint16_t MI_MAP_64QAM_SIZE = 725;
+
+struct TbStats_t
+{
+  double error;
+  double mi;
+};
   
 
 
@@ -85,6 +92,19 @@ public:
    * \return the TB error rate
    */  
   static double GetTbError (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs);
+
+  /**
+   * \brief run the error-model algorithm for the specified TB
+   * \param sinr the perceived sinrs in the whole bandwidth
+   * \param map the actives RBs for the TB
+   * \param size the size in bytes of the TB
+   * \param mcs the MCS of the TB
+   * \param cumulatedMi  MI of past transmissions (in case of retx)
+   * \return the TB error rate
+   */
+  static TbStats_t GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, double cumulatedMi);
+
+  static TbStats_t GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, HarqProcessInfoList_t miHistory);
   
   /** 
   * \brief run the error-model algorithm for the specified PCFICH+PDCCH channels

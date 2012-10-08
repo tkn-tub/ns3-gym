@@ -414,9 +414,11 @@ LteEnbRrc::DoRecvConnectionRequest (uint64_t imsi)
   ueRrc->DoRecvConnectionSetup (ueConfig);
   
   // configure MAC (and scheduler)
-  FfMacCschedSapProvider::CschedUeConfigReqParameters req;
-  req.m_rnti = rnti;
-  req.m_transmissionMode = (*it).second->GetTransmissionMode ();
+  LteEnbCmacSapProvider::UeConfig params;
+  params.m_rnti = rnti;
+  params.m_transmissionMode = (*it).second->GetTransmissionMode ();
+  m_cmacSapProvider->UeUpdateConfigurationReq (params);
+  
 
   // configure PHY
   m_cphySapProvider->SetTransmissionMode (rnti, (*it).second->GetTransmissionMode ());
@@ -745,6 +747,7 @@ LteEnbRrc::CreateUeInfo ()
               m_lastAllocatedRnti = rnti;
               Ptr<UeInfo> ueInfo = CreateObject<UeInfo> ();
               ueInfo->SetSrsConfigurationIndex (GetNewSrsConfigurationIndex ());
+              ueInfo->SetTransmissionMode (m_defaultTransmissionMode);
               m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, ueInfo));
               NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueInfo->GetSrsConfigurationIndex ());
               return rnti;

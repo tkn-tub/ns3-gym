@@ -568,12 +568,26 @@ from the index reported in [R1-081483]_.
 The alternative model is based on the physical error model developed for this simulator and explained in the following subsections. This scheme is able to adapt the MCS selection to the actual PHY layer performance according to the specific CQI report. According to their definition, a CQI index is assigned when a single PDSCH TB with the modulation coding scheme and code rate correspondent to that CQI index in table 7.2.3-1 of [TS36213]_ can be received with an error probability less than 0.1. In case of wideband CQIs, the reference TB includes all the RBGs available in order to have a reference based on the whole available resources; while, for subband CQIs, the reference TB is sized as the RBGs.
 
 
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
+
 Round Robin (RR) Scheduler
 --------------------------
 
 The Round Robin (RR) scheduler is probably the simplest scheduler found in the literature. It works by dividing the
-available resources among the active flows, i.e., those logical channels which have a non-empty RLC queue. If the number of RBGs is greater than the number of active flows, all the flows can be allocated in the same subframe. Otherwise, if the number of active flows is greater than the number of RBGs, not all the flows can be scheduled in a given subframe; then, in the next subframe the allocation will start from the last flow that was not allocated.  The MCS to be adopted for each user is done according to the received wideband CQIs. 
+available resources among the active flows, i.e., those logical channels which have a non-empty RLC queue. If the number of RBGs is greater than the number of active flows, all the flows can be allocated in the same subframe. Otherwise, if the number of active flows is greater than the number of RBGs, not all the flows can be scheduled in a given subframe; then, in the next subframe the allocation will start from the last flow that was not allocated.  The MCS to be adopted for each user is done according to the received wideband CQIs.
 
+For what concern the HARQ, RR implements the non adaptive version, which implies that in allocating the retransmission RR uses a similar allocation configuration of the original block, which means maintaining the same RBGs and MCS. UEs that are allocated for HARQ retransmissions are not considered for the transmission of new data in case they have a transmission opportunity in the same TTI.
+
+
+.. only:: latex
+
+    .. raw:: latex
+
+        \clearpage
 
 Proportional Fair (PF) Scheduler
 --------------------------------
@@ -643,6 +657,7 @@ where :math:`|\cdot|` indicates the cardinality of the set; finally,
    \right)}{\tau}
    
 
+*HARQ PF specifications: to be defined*.
 
 Transport Blocks
 ----------------
@@ -1550,9 +1565,6 @@ Therefore the PHY layer implements the MIMO model as the gain perceived by the r
 
 
 
-
-
-
 .. only:: latex
 
     .. raw:: latex
@@ -1563,9 +1575,23 @@ Therefore the PHY layer implements the MIMO model as the gain perceived by the r
 HARQ Model
 ----------
 
-The HARQ scheme implemented is based on a incremental redundancy (IR) solutions combined with multiple stop-and-wait processes for enabling a continuous data flow. The core of the HARQ algorithm has been implemented within the respective schedulers class (i.e., ``RrFfMacScheduler`` and ``PfFfMacScheduler``), while the decodification part of the HARQ has been implemented in the ``LteSpectrumPhy`` class.
+The HARQ scheme implemented is based on a incremental redundancy (IR) solutions combined with multiple stop-and-wait processes for enabling a continuous data flow. In detail, the solution adopted is the *soft combining hybrid IR Full incremental redundancy* (also called IR Type II), which implies that the retransmissions include only new information. The resource allocation algorithm of the HARQ has been implemented within the respective schedulers class (i.e., ``RrFfMacScheduler`` and ``PfFfMacScheduler``, refer to their respective sections for more info), while the decodification part of the HARQ has been implemented in the ``LteSpectrumPhy`` class which will be detailed in this section.
 
-At the MAC layer, the HARQ entity residing in the scheduler is in charge of controlling the 8 HARQ processes for generating new packets and managing the retransmissions both for the DL and the UL. The scheduler collects the HARQ feedbacks from eNB and UE PHY layers (respectively UL and DL connection) by means of the FF API ``SchedUlTriggerReq`` and ``SchedUlTriggerReq`` in a FIFO buffer for maintaining the order of arrival. According to the HARQ feedbacks and the RLC buffers status, the scheduler generates a set of DCIs including both retransmissions of HARQ blocks received erroneous and new transmissions giving priority to the former. In allocating the retransmission we adopt this assumption, the scheduler uses a similar allocation configuration of the original block, which means maintaining the same number of RBGs and the same MCS. In case of the RGBs used for the original transmission are available they will be reused, otherwise the closest in frequency are selected in order to maintain similar channel conditions. It is to be noted that, the choice of maintaining in the retransmissions the same MCS of the original block is mandatory, otherwise the PHY would not be able of estimating the error probability of aggregated retransmissions. According to the standard, the UL retransmissions are synchronous and therefore are allocated 7 ms after the original transmission. While for the DL, they are asynchronous ans therefore can be allocated in a more flexible way starting from 7 ms. In detail, they receive highest priority for being transmitted after 7 ms; however, due to resource constraints they might be delayed a bit more. The HARQ processes behavior is depicted in Figure:ref:`fig-harq-processes-scheme`.
+According to the standard, the UL retransmissions are synchronous and therefore are allocated 7 ms after the original transmission. On the other hand, for the DL, they are asynchronous ans therefore can be allocated in a more flexible way starting from 7 ms and it is a matter of the specific scheduler implementation. The HARQ processes behavior is depicted in Figure:ref:`fig-harq-processes-scheme`.
+
+At the MAC layer, the HARQ entity residing in the scheduler is in charge of controlling the 8 HARQ processes for generating new packets and managing the retransmissions both for the DL and the UL. The scheduler collects the HARQ feedback from eNB and UE PHY layers (respectively UL and DL connection) by means of the FF API primitives ``SchedUlTriggerReq`` and ``SchedUlTriggerReq``, and stores them in a FIFO buffer for maintaining the order of arrival. According to the HARQ feedback and the RLC buffers status, the scheduler generates a set of DCIs including both retransmissions of HARQ blocks received erroneous and new transmissions, in general, giving priority to the former. On this matter, the scheduler has to take into consideration one constraint when allocating the resource for HARQ retransmissions, it must use the same modulation order of the first transmission attempt (i.e., QPSK for MCS :math:`\in [0..9]`, 16QAM for MCS :math:`\in [10..16]` and 64QAM for MCS :math:`\in [17..28]`). This restriction comes from the specification of the rate matcher in the 3GPP standard [TS36212]_, where for generating the different TBs of the redundancy version the algorithm fixes the modulation order.
+
+
+The PHY Error Model model has been extended for considering IR HARQ according to [wimaxEmd]_, where the parameters for the AWGN curves mapping for MIESM mapping in case of retransmissions are given by:
+
+.. math::
+
+    R_{eff} = \frac{X}{\sum\limits_{i=1}^q C_i}
+
+    M_{I eff} = \frac{\sum\limits_{i=1}^q C_i M_i}{\sum\limits_{i=1}^q C_i}
+
+where :math:`X` is the number of original information bits, :math:`C_i` are number of coded bits, :math:`M_i` are the mutual informations per HARQ block received on the total number of :math:`q` retransmissions. Therefore, in order to be able to return the error probability with the error model implemented in the simulator evaluates the :math:`R_{eff}` and the :math:`MI_{I eff}` and return the value of error probability of the ECR of the same modulation with closest rate respect to the :math:`R_{eff}`. In order to consider the effect of HARQ retransmissions a new sets of curves have been integrated respect to the standard one used for the original MCS, especially for covering the cases when the most conservative MCS of a modulation is used. On this matter the curves for 1, 2 and 3 retransmissions have been evaluated for MCS 0, 10 and 17.
+It is to be noted that, the first tranmission has been assumed as containing all the information bits to be coded; therefore :math:`X` is equal to the size of the first TB sent of a an HARQ process.
 
 
 .. _fig-harq-processes-scheme:
@@ -1577,7 +1603,8 @@ At the MAC layer, the HARQ entity residing in the scheduler is in charge of cont
 
 
 
-At the PHY layer the HARQ is involved in the evaluation of the error distribution process by controlling the information received per process bases and combining it with previous blocks, when necessary in retransmitted ones, by means of the MIESM mutual information scheme presented before. This part of HARQ devoted to manage the decodification of the HARQ blocks has been implemented in the ``LteSpectrumPhy`` class, where it has been also included the messaging algorithm in charge of communicating to the HARQ in the scheduler the result of the decodifications. These messages are encapsulated in the ``dlInfoListElement`` for DL and ``ulInfoListElement`` for UL and sent through the PUCCH and the PHICH respectively in an ideal error free way according to the assumptions in their implementation. A scketch of the iteration bewteen HARQ and LTE protocol stack in represented in Figure:ref:`fig-harq-architecture`.
+This part of HARQ devoted to manage the decodification of the HARQ blocks has been implemented in the ``LteSpectrumPhy`` class, where it has been also included the messaging algorithm in charge of communicating to the HARQ in the scheduler the result of the decodifications. These messages are encapsulated in the ``dlInfoListElement`` for DL and ``ulInfoListElement`` for UL and sent through the PUCCH and the PHICH respectively in an ideal error free way according to the assumptions in their implementation. A sketch of the iteration between HARQ and LTE protocol stack in represented in Figure:ref:`fig-harq-architecture`.
+
 
 
 .. _fig-harq-architecture:
@@ -1593,7 +1620,6 @@ At the PHY layer the HARQ is involved in the evaluation of the error distributio
     .. raw:: latex
 
         \clearpage
-
 
 
 

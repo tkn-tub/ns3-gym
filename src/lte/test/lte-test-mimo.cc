@@ -83,15 +83,15 @@ LenaTestMimoSuite::LenaTestMimoSuite ()
 static LenaTestMimoSuite lenaTestMimoSuite;
 
 std::string 
-LenaMimoTestCase::BuildNameString (uint16_t dist)
+LenaMimoTestCase::BuildNameString (uint16_t dist, std::string schedulerType)
 {
   std::ostringstream oss;
-  oss << " UE distance " << dist << " m";
+  oss << " UE distance " << dist << " m" << " Scheduler " << schedulerType;
   return oss.str ();
 }
 
 LenaMimoTestCase::LenaMimoTestCase (uint16_t dist, std::vector<uint32_t> estThrDl, std::string schedulerType)
-  : TestCase (BuildNameString (dist)),              
+  : TestCase (BuildNameString (dist, schedulerType)),              
     m_dist (dist),
     m_estThrDl (estThrDl),
     m_schedulerType (schedulerType)
@@ -105,7 +105,7 @@ LenaMimoTestCase::~LenaMimoTestCase ()
 void
 LenaMimoTestCase::DoRun (void)
 {
-//   Config::SetDefault ("ns3::LteSpectrumPhy::PemEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteAmc::AmcModel", EnumValue (LteAmc::PiroEW2010));
 
 
@@ -115,6 +115,10 @@ LenaMimoTestCase::DoRun (void)
 
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
+  
+//   lteHelper->SetSchedulerAttribute ("HarqEnabled", BooleanValue (false));
   
   
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
@@ -122,7 +126,7 @@ LenaMimoTestCase::DoRun (void)
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lteHelper->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
   
-//   lteHelper->EnableLogComponents ();
+  lteHelper->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -188,7 +192,6 @@ LenaMimoTestCase::DoRun (void)
         {
           NS_FATAL_ERROR ("No RR Scheduler available");
         }
-      
       Simulator::Schedule (Seconds (0.2), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 1);
       Simulator::Schedule (Seconds (0.3), &RrFfMacScheduler::TransmissionModeConfigurationUpdate, rrsched, rnti, 2);
     }

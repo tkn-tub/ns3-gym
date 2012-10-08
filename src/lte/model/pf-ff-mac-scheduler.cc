@@ -29,6 +29,7 @@
 #include <ns3/lte-amc.h>
 #include <ns3/pf-ff-mac-scheduler.h>
 #include <ns3/lte-vendor-specific-parameters.h>
+#include <ns3/boolean.h>
 
 NS_LOG_COMPONENT_DEFINE ("PfFfMacScheduler");
 
@@ -247,6 +248,11 @@ PfFfMacScheduler::GetTypeId (void)
                    UintegerValue (1000),
                    MakeUintegerAccessor (&PfFfMacScheduler::m_cqiTimersThreshold),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("HarqEnabled",
+                  "Activate/Deactivate the HARQ [by default is active].",
+                  BooleanValue (true),
+                  MakeBooleanAccessor (&PfFfMacScheduler::m_harqOn),
+                  MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -564,7 +570,6 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       newEl.m_rnti = (*itMap).first;
       // create the DlDciListElement_s
       DlDciListElement_s newDci;
-      std::vector <struct RlcPduListElement_s> newRlcPduLe;
       newDci.m_rnti = (*itMap).first;
 
       uint16_t lcActives = LcActivePerFlow ((*itMap).first);
@@ -649,6 +654,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               || ((*itBufReq).second.m_rlcRetransmissionQueueSize > 0)
               || ((*itBufReq).second.m_rlcStatusPduSize > 0) ))
             {
+              std::vector <struct RlcPduListElement_s> newRlcPduLe;
               for (uint8_t j = 0; j < nLayer; j++)
                 {
                   RlcPduListElement_s newRlcEl;
@@ -658,21 +664,24 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                   newRlcPduLe.push_back (newRlcEl);
                   UpdateDlRlcBufferInfo (newDci.m_rnti, newRlcEl.m_logicalChannelIdentity, newRlcEl.m_size);
                 }
+              newEl.m_rlcPduList.push_back (newRlcPduLe);
             }
           if ((*itBufReq).first.m_rnti > (*itMap).first)
             {
               break;
             }
         }
-      newDci.m_ndi.push_back (1); // TBD (new data indicator)
-      newDci.m_rv.push_back (0); // TBD (redundancy version)
+      for (uint8_t j = 0; j < nLayer; j++)
+        {
+          newDci.m_ndi.push_back (1); // TBD (new data indicator)
+          newDci.m_rv.push_back (0); // TBD (redundancy version)
+        }
+      newDci.m_harqProcess = 0; // NO HARQ
 
       newEl.m_dci = newDci;
       // ...more parameters -> ingored in this version
 
-      newEl.m_rlcPduList.push_back (newRlcPduLe);
       ret.m_buildDataList.push_back (newEl);
-
       // update UE stats
       std::map <uint16_t, pfsFlowPerf_t>::iterator it;
       it = m_flowStatsDl.find ((*itMap).first);

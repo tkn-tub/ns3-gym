@@ -42,7 +42,7 @@ public:
   LteRlcSpecificLteMacSapUser (LteRlc* rlc);
 
   // Interface implemented from LteMacSapUser
-  virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer);
+  virtual void NotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId);
   virtual void NotifyHarqDeliveryFailure ();
   virtual void ReceivePdu (Ptr<Packet> p);
 
@@ -61,9 +61,9 @@ LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser ()
 }
 
 void
-LteRlcSpecificLteMacSapUser::NotifyTxOpportunity (uint32_t bytes, uint8_t layer)
+LteRlcSpecificLteMacSapUser::NotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
-  m_rlc->DoNotifyTxOpportunity (bytes, layer);
+  m_rlc->DoNotifyTxOpportunity (bytes, layer, harqId);
 }
 
 void
@@ -210,7 +210,7 @@ LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 }
 
 void
-LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
+LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId)
 {
   NS_LOG_FUNCTION (this << bytes);
   LteMacSapProvider::TransmitPduParameters params;
@@ -218,6 +218,7 @@ LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer)
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.layer = layer;
+  params.harqProcessId = harqId;
 
   // RLC Performance evaluation
   RlcTag tag (Simulator::Now());

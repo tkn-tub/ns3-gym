@@ -213,7 +213,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  LogComponentDisableAll (LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  //   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
+//     LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   //   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
 //     LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
 //

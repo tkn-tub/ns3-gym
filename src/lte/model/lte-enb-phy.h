@@ -27,6 +27,7 @@
 #include <ns3/lte-enb-phy-sap.h>
 #include <ns3/lte-enb-cphy-sap.h>
 #include <ns3/lte-phy.h>
+#include <ns3/lte-harq-phy.h>
 
 #include <map>
 #include <set>
@@ -230,6 +231,13 @@ public:
   virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
   virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
 
+  /**
+  * \brief PhySpectrum generated a new UL HARQ feedback
+  */
+  virtual void ReceiveLteUlHarqFeedback (UlInfoListElement_s mes);
+
+  void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
+
 
 private:
 
@@ -274,6 +282,8 @@ private:
   std::map <uint16_t,uint16_t> m_srsCounter;
   std::vector <uint16_t> m_srsUeOffset;
   uint16_t m_currentSrsOffset;
+
+  Ptr<LteHarqPhy> m_harqPhyModule;
   
 };
 

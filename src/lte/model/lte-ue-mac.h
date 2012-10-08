@@ -30,7 +30,8 @@
 #include <ns3/lte-ue-cmac-sap.h>
 #include <ns3/lte-ue-phy-sap.h>
 #include <ns3/nstime.h>
-
+#include <vector>
+#include <ns3/packet.h>
 
 namespace ns3 {
 
@@ -106,6 +107,9 @@ private:
   Time m_bsrLast;
   
   bool m_freshUlBsr; // true when a BSR has been received in the last TTI
+
+  uint8_t m_harqProcessId;
+  std::vector < Ptr<Packet> > m_miUlHarqProcessesPacket; // Packets under trasmission of the UL HARQ processes
 
 
   uint16_t m_rnti;

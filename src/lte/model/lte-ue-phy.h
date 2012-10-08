@@ -39,6 +39,7 @@ namespace ns3 {
 class PacketBurst;
 class LteNetDevice;
 class LteEnbPhy;
+class LteHarqPhy;
 
 /**
  * \ingroup lte
@@ -196,7 +197,17 @@ public:
   */
   void SendSrs ();
   
-  
+    /**
+  * \brief PhySpectrum generated a new DL HARQ feedback
+  */
+  virtual void ReceiveLteDlHarqFeedback (DlInfoListElement_s mes);
+
+  /**
+  * \brief Set the HARQ PHY module
+  */
+  void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
+
+
 
 
 private:
@@ -253,6 +264,8 @@ private:
   
   uint16_t m_srsPeriodicity;
   uint16_t m_srsCounter;
+
+  Ptr<LteHarqPhy> m_harqPhyModule;
 
 };
 

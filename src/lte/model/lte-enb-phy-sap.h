@@ -103,6 +103,21 @@ public:
    */
   virtual void UlCqiReport (FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) = 0;
 
+  /**
+   * Notify the HARQ on the UL tranmission status
+   *
+   * \param params
+   */
+  virtual void UlInfoListElementHarqFeeback (UlInfoListElement_s params) = 0;
+
+
+  /**
+   * Notify the HARQ on the DL tranmission status
+   *
+   * \param params
+   */
+  virtual void DlInfoListElementHarqFeeback (DlInfoListElement_s params) = 0;
+
 };
 
 

@@ -492,6 +492,126 @@ LteMiErrorModel::GetTbError (const SpectrumValue& sinr, const std::vector<int>& 
   return errorRate;
 }
 
+
+TbStats_t
+LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, double mi)
+{
+  NS_LOG_FUNCTION (sinr << &map << (uint32_t) size << (uint32_t) mcs);
+
+  double MI = Mib(sinr, map, mcs) + mi;
+  // estimate CB size (according to sec 5.1.2 of TS 36.212)
+  uint16_t Z = 6144; // max size of a codeblock (including CRC)
+  uint32_t B = size * 8;
+//   B = 1234;
+  uint32_t L = 0;
+  uint32_t C = 0; // no. of codeblocks
+  uint32_t Cplus = 0; // no. of codeblocks with size K+
+  uint32_t Kplus = 0; // no. of codeblocks with size K+
+  uint32_t Cminus = 0; // no. of codeblocks with size K+
+  uint32_t Kminus = 0; // no. of codeblocks with size K+
+  uint32_t B1 = 0;
+  uint32_t deltaK = 0;
+  if (B <= Z)
+    {
+      // only one codeblock
+      L = 0;
+      C = 1;
+      B1 = B;
+    }
+  else
+    {
+      L = 24;
+      C = ceil ((double)B / ((double)(Z-L)));
+      B1 = B + C * L;
+    }
+  // first segmentation: K+ = minimum K in table such that C * K >= B1
+//   uint i = 0;
+//   while (B1 > cbSizeTable[i] * C)
+//     {
+// //       NS_LOG_INFO (" K+ " << cbSizeTable[i] << " means " << cbSizeTable[i] * C);
+//       i++;
+//     }
+//   uint16_t KplusId = i;
+//   Kplus = cbSizeTable[i];
+
+  // implement a modified binary search
+  int min = 0;
+  int max = 187;
+  int mid = 0;
+  do
+    {
+      mid = (min+max) / 2;
+      if (B1 > cbSizeTable[mid]*C)
+        {
+          if (B1 < cbSizeTable[mid+1]*C)
+            {
+              break;
+            }
+          else
+            {
+              min = mid + 1;
+            }
+        }
+      else
+        {
+          if (B1 > cbSizeTable[mid-1]*C)
+            {
+              break;
+            }
+          else
+            {
+              max = mid - 1;
+            }
+        }
+  } while ((cbSizeTable[mid]*C != B1) && (min < max));
+  // adjust binary search to the largest integer value of K containing B1
+  if (B1 > cbSizeTable[mid]*C)
+    {
+      mid ++;
+    }
+
+  uint16_t KplusId = mid;
+  Kplus = cbSizeTable[mid];
+
+
+  if (C==1)
+    {
+      Cplus = 1;
+      Cminus = 0;
+      Kminus = 0;
+    }
+  else
+    {
+      // second segmentation size: K- = maximum K in table such that K < K+
+      Kminus = cbSizeTable[KplusId-1 > 0 ? KplusId-1 : 0];
+      deltaK = Kplus - Kminus;
+      Cminus = floor ((((double) C * Kplus) - (double)B1) / (double)deltaK);
+      Cplus = C - Cminus;
+    }
+  NS_LOG_INFO ("--------------------LteMiErrorModel: TB size of " << B << " needs of " << B1 << " bits reparted in " << C << " CBs as "<< Cplus << " block(s) of " << Kplus << " and " << Cminus << " of " << Kminus);
+
+  double errorRate = 1.0;
+  if (C!=1)
+    {
+      double cbler = MappingMiBler (MI, mcs, Kplus);
+      errorRate *= pow (1.0 - cbler, Cplus);
+      cbler = MappingMiBler (MI, mcs, Kminus);
+      errorRate *= pow (1.0 - cbler, Cminus);
+      errorRate = 1.0 - errorRate;
+    }
+  else
+    {
+      errorRate = MappingMiBler (MI, mcs, Kplus);
+    }
+
+  NS_LOG_LOGIC (" Error rate " << errorRate);
+  TbStats_t ret;
+  ret.error = errorRate;
+  ret.mi = MI;
+  return ret;
+}
+
+
 double
 LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
 {
@@ -577,6 +697,148 @@ LteMiErrorModel::GetPcfichPdcchError (const SpectrumValue& sinr)
   
   return (errorRate);
 }
+
+
+
+
+TbStats_t
+LteMiErrorModel::GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, HarqProcessInfoList_t miHistory)
+{
+  NS_LOG_FUNCTION (sinr << &map << (uint32_t) size << (uint32_t) mcs);
+
+  double tbMi = Mib(sinr, map, mcs);
+  double MI = 0.0;
+  double Reff = 0.0;
+  if (miHistory.size ()>0)
+    {
+      // evaluate R_eff and MI_eff
+      uint16_t codeBitsSum = 0;
+      double miSum = 0.0;
+      for (uint16_t i = 0; i < miHistory.size (); i++)
+        {
+          codeBitsSum += miHistory.at (i).m_codeBits;
+          miSum += (miHistory.at (i).m_mi*miHistory.at (i).m_codeBits);
+        }
+      Reff = miHistory.at (0).m_infoBits / codeBitsSum; // information bits are the size of the first TB
+      MI = miSum / (double)codeBitsSum;      
+    }
+  else
+    {
+      MI = tbMi;
+    }
+  NS_LOG_DEBUG (" MI " << MI << " Reff " << Reff);
+  // estimate CB size (according to sec 5.1.2 of TS 36.212)
+  uint16_t Z = 6144; // max size of a codeblock (including CRC)
+  uint32_t B = size * 8;
+//   B = 1234;
+  uint32_t L = 0;
+  uint32_t C = 0; // no. of codeblocks
+  uint32_t Cplus = 0; // no. of codeblocks with size K+
+  uint32_t Kplus = 0; // no. of codeblocks with size K+
+  uint32_t Cminus = 0; // no. of codeblocks with size K+
+  uint32_t Kminus = 0; // no. of codeblocks with size K+
+  uint32_t B1 = 0;
+  uint32_t deltaK = 0;
+  if (B <= Z)
+    {
+      // only one codeblock
+      L = 0;
+      C = 1;
+      B1 = B;
+    }
+  else
+    {
+      L = 24;
+      C = ceil ((double)B / ((double)(Z-L)));
+      B1 = B + C * L;
+    }
+  // first segmentation: K+ = minimum K in table such that C * K >= B1
+//   uint i = 0;
+//   while (B1 > cbSizeTable[i] * C)
+//     {
+// //       NS_LOG_INFO (" K+ " << cbSizeTable[i] << " means " << cbSizeTable[i] * C);
+//       i++;
+//     }
+//   uint16_t KplusId = i;
+//   Kplus = cbSizeTable[i];
+
+  // implement a modified binary search
+  int min = 0;
+  int max = 187;
+  int mid = 0;
+  do
+    {
+      mid = (min+max) / 2;
+      if (B1 > cbSizeTable[mid]*C)
+        {
+          if (B1 < cbSizeTable[mid+1]*C)
+            {
+              break;
+            }
+          else
+            {
+              min = mid + 1;
+            }
+        }
+      else
+        {
+          if (B1 > cbSizeTable[mid-1]*C)
+            {
+              break;
+            }
+          else
+            {
+              max = mid - 1;
+            }
+        }
+  } while ((cbSizeTable[mid]*C != B1) && (min < max));
+  // adjust binary search to the largest integer value of K containing B1
+  if (B1 > cbSizeTable[mid]*C)
+    {
+      mid ++;
+    }
+
+  uint16_t KplusId = mid;
+  Kplus = cbSizeTable[mid];
+
+
+  if (C==1)
+    {
+      Cplus = 1;
+      Cminus = 0;
+      Kminus = 0;
+    }
+  else
+    {
+      // second segmentation size: K- = maximum K in table such that K < K+
+      Kminus = cbSizeTable[KplusId-1 > 0 ? KplusId-1 : 0];
+      deltaK = Kplus - Kminus;
+      Cminus = floor ((((double) C * Kplus) - (double)B1) / (double)deltaK);
+      Cplus = C - Cminus;
+    }
+  NS_LOG_INFO ("--------------------LteMiErrorModel: TB size of " << B << " needs of " << B1 << " bits reparted in " << C << " CBs as "<< Cplus << " block(s) of " << Kplus << " and " << Cminus << " of " << Kminus);
+
+  double errorRate = 1.0;
+  if (C!=1)
+    {
+      double cbler = MappingMiBler (MI, mcs, Kplus);
+      errorRate *= pow (1.0 - cbler, Cplus);
+      cbler = MappingMiBler (MI, mcs, Kminus);
+      errorRate *= pow (1.0 - cbler, Cminus);
+      errorRate = 1.0 - errorRate;
+    }
+  else
+    {
+      errorRate = MappingMiBler (MI, mcs, Kplus);
+    }
+
+  NS_LOG_LOGIC (" Error rate " << errorRate);
+  TbStats_t ret;
+  ret.error = errorRate;
+  ret.mi = tbMi;
+  return ret;
+}
+
 
   
 
