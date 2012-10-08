@@ -54,7 +54,7 @@ main (int argc, char *argv[])
 
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
-  double simTime = 4.0;
+  double simTime = 6.0;
   double distance = 60.0;
 
   // Command line arguments
@@ -146,7 +146,7 @@ main (int argc, char *argv[])
 
   // X2-based Handover
   lteHelper->HandoverRequest (Seconds (2.0), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
-
+  
   
   // Uncomment to enable PCAP tracing
   //p2ph.EnablePcapAll("lena-x2-handover");

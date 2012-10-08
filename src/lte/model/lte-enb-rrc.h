@@ -356,10 +356,10 @@ private:
    */
   uint8_t SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint32_t teid);
 
-
+  // X2 SAP methods
   void DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params);
   void DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params);
-
+  void DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params);
 
   LtePdcpSapProvider* GetLtePdcpSapProvider (uint16_t rnti, uint8_t lcid);
 

@@ -616,7 +616,7 @@ LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
   NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
 
   EpcX2SapProvider::HandoverRequestParams params;
-  params.oldEnbUeX2apId = rnti;
+  params.oldEnbUeX2apId = 100 + rnti;
   params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
   params.sourceCellId   = m_cellId;
   params.targetCellId   = cellId;
@@ -648,11 +648,11 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
-  
-  // this crashes, apparently EpcX2 is not correctly filling in the params yet
-  //  uint8_t rrcData [100];
-  // params.rrcContext->CopyData (rrcData, params.rrcContext->GetSize ());
-  // NS_LOG_LOGIC ("rrcContext   = " << rrcData);
+
+  // RRC message 
+  uint8_t rrcData [100];
+  params.rrcContext->CopyData (rrcData, params.rrcContext->GetSize ());
+  NS_LOG_LOGIC ("rrcContext   = " << rrcData);
 
   uint16_t rnti = AddUe ();
 
@@ -667,7 +667,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
 
   EpcX2SapProvider::HandoverRequestAckParams ackParams;
   ackParams.oldEnbUeX2apId = params.oldEnbUeX2apId;
-  ackParams.newEnbUeX2apId = params.oldEnbUeX2apId + 100;
+  ackParams.newEnbUeX2apId = params.oldEnbUeX2apId + 1;
   ackParams.sourceCellId = params.sourceCellId;
   ackParams.targetCellId = params.targetCellId;
 
@@ -677,6 +677,21 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams params)
   NS_LOG_LOGIC ("targetCellId = " << ackParams.targetCellId);
 
   m_x2SapProvider->SendHandoverRequestAck (ackParams);
+
+
+  // TODO: This is just an example how to send the UE CONTEXT RELEASE msg
+  //
+  // Send UE CONTEXT RELEASE from target eNB to source eNB
+  //
+  EpcX2SapProvider::UeContextReleaseParams ueCtxReleaseParams;
+  ueCtxReleaseParams.oldEnbUeX2apId = ackParams.oldEnbUeX2apId;
+  ueCtxReleaseParams.newEnbUeX2apId = ackParams.newEnbUeX2apId;
+  Simulator::Schedule (Seconds (2.0),
+                       &EpcX2SapProvider::SendUeContextRelease,
+                       m_x2SapProvider,
+                       ueCtxReleaseParams);
+
+
 }
 
 void
@@ -690,6 +705,17 @@ LteEnbRrc::DoRecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams para
   NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
   NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
   NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+}
+
+void
+LteEnbRrc::DoRecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
+{
+  NS_LOG_FUNCTION (this);
+  
+  NS_LOG_LOGIC ("Recv X2 message: UE CONTEXT RELEASE");
+  
+  NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+  NS_LOG_LOGIC ("newEnbUeX2apId = " << params.newEnbUeX2apId);
 }
 
 

@@ -128,6 +128,16 @@ public:
     Ptr<Packet>         rrcContext;
   };
 
+  /**
+   * \brief Parameters of the UE CONTEXT RELEASE message.
+   *
+   * See section 9.1.1.5 for further info about the parameters
+   */
+  struct UeContextReleaseParams
+  {
+    uint16_t            oldEnbUeX2apId;
+    uint16_t            newEnbUeX2apId;
+  };
 };
 
 
@@ -151,7 +161,7 @@ public:
 // TODO
 //   virtual void SendSnStatusTransfer (const struct SnStatusTransfer& params) = 0;
 // 
-//   virtual void SendUeContextRelease (const struct UeContextRelease& params) = 0;
+  virtual void SendUeContextRelease (UeContextReleaseParams params) = 0;
 };
 
 
@@ -175,7 +185,7 @@ public:
 // TODO
 //   virtual void RecvSnStatusTransfer (const struct SnStatusTransfer& params) = 0;
 // 
-//   virtual void RecvUeContextRelease (const struct UeContextRelease& params) = 0;
+  virtual void RecvUeContextRelease (UeContextReleaseParams params) = 0;
 };
 
 ///////////////////////////////////////
@@ -193,6 +203,8 @@ public:
   virtual void SendHandoverRequest (HandoverRequestParams params);
 
   virtual void SendHandoverRequestAck (HandoverRequestAckParams params);
+
+  virtual void SendUeContextRelease (UeContextReleaseParams params);
   
 private:
   EpcX2SpecificEpcX2SapProvider ();
@@ -224,6 +236,13 @@ EpcX2SpecificEpcX2SapProvider<C>::SendHandoverRequestAck (HandoverRequestAckPara
   m_x2->DoSendHandoverRequestAck (params);
 }
 
+template <class C>
+void
+EpcX2SpecificEpcX2SapProvider<C>::SendUeContextRelease (UeContextReleaseParams params)
+{
+  m_x2->DoSendUeContextRelease (params);
+}
+
 ///////////////////////////////////////
 
 template <class C>
@@ -239,6 +258,8 @@ public:
   virtual void RecvHandoverRequest (HandoverRequestParams params);
 
   virtual void RecvHandoverRequestAck (HandoverRequestAckParams params);
+  
+  virtual void RecvUeContextRelease (UeContextReleaseParams params);
   
 private:
   EpcX2SpecificEpcX2SapUser ();
@@ -268,6 +289,13 @@ void
 EpcX2SpecificEpcX2SapUser<C>::RecvHandoverRequestAck (HandoverRequestAckParams params)
 {
   m_rrc->DoRecvHandoverRequestAck (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapUser<C>::RecvUeContextRelease (UeContextReleaseParams params)
+{
+  m_rrc->DoRecvUeContextRelease (params);
 }
 
 
