@@ -758,7 +758,7 @@ LteSpectrumPhy::EndRxData ()
   
   while (itTb!=m_expectedTbs.end ())
     {
-      if (m_dataErrorModelEnabled)
+      if ((m_dataErrorModelEnabled)&&(m_rxPacketBurstList.size ()>0)) // avoid to check for errors when there is no actual data transmitted
         {
           double errorRate = LteMiErrorModel::GetTbError (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs);
           (*itTb).second.corrupt = m_random->GetValue () > errorRate ? false : true;
