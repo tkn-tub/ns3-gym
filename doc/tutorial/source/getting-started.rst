@@ -541,7 +541,7 @@ produces the following output.
 
 *What do I do if I don't see the output?*
 
-If you don't see ``waf`` messages indicating that the build was 
+If you see ``waf`` messages indicating that the build was 
 completed successfully, but do not see the "Hello Simulator" output, 
 chances are that you have switched your build mode to "optimized" in 
 the "Building with Waf" section, but have missed the change back to 
