@@ -35,7 +35,19 @@
 // is no CQI for this element
 #define NO_SINR -5000
 
+
+#define HARQ_PROC_NUM 8
+
 namespace ns3 {
+  
+  
+typedef std::vector < uint8_t > DlHarqProcessesStatus_t;
+typedef std::vector < DlDciListElement_s > DlHarqProcessesDciBuffer_t;
+typedef std::vector < std::vector <struct RlcPduListElement_s> > RlcPduList_t; // vector of the LCs and layers per UE
+typedef std::vector < RlcPduList_t > DlHarqRlcPduListBuffer_t; // vector of the 8 HARQ processes per UE
+
+typedef std::vector < UlDciListElement_s > UlHarqProcessesDciBuffer_t;
+typedef std::vector < uint8_t > UlHarqProcessesStatus_t;
 
 
 struct pfsFlowPerf_t
@@ -143,6 +155,15 @@ private:
   
   void UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_t size);
   void UpdateUlRlcBufferInfo (uint16_t rnti, uint16_t size);
+  
+  /**
+  * \brief Update and return a new process Id for the RNTI specified
+  * 
+  * \param rnti the RNTI of the UE to be updated
+  * \return the process id  value
+  */
+  uint8_t UpdateHarqProcessId (uint16_t rnti);
+  
   Ptr<LteAmc> m_amc;
 
   /*
@@ -224,6 +245,21 @@ private:
   * m_harqOn when false inhibit te HARQ mechanisms (by default active)
   */
   bool m_harqOn;
+  std::map <uint16_t, uint8_t> m_dlHarqCurrentProcessId;
+  //HARQ status
+  // 0: process Id available
+  // x>0: process Id equal to `x` trasmission count
+  std::map <uint16_t, DlHarqProcessesStatus_t> m_dlHarqProcessesStatus;
+  std::map <uint16_t, DlHarqProcessesDciBuffer_t> m_dlHarqProcessesDciBuffer;
+  std::map <uint16_t, DlHarqRlcPduListBuffer_t> m_dlHarqProcessesRlcPduListBuffer;
+  std::vector <DlInfoListElement_s> m_dlInfoListBuffered; // HARQ retx buffered
+  
+  std::map <uint16_t, uint8_t> m_ulHarqCurrentProcessId;
+  //HARQ status
+  // 0: process Id available
+  // x>0: process Id equal to `x` trasmission count
+  std::map <uint16_t, UlHarqProcessesStatus_t> m_ulHarqProcessesStatus;
+  std::map <uint16_t, UlHarqProcessesDciBuffer_t> m_ulHarqProcessesDciBuffer;
   
 };
 

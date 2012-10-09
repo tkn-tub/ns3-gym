@@ -890,15 +890,18 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               newRlcEl.m_size = rlcPduSize;
               UpdateDlRlcBufferInfo ((*it).m_rnti, newRlcEl.m_logicalChannelIdentity, rlcPduSize);
               newRlcPduLe.push_back (newRlcEl);
-              // store RLC PDU list for HARQ
-              std::map <uint16_t, DlHarqRlcPduListBuffer_t>::iterator itRlcPdu =  m_dlHarqProcessesRlcPduListBuffer.find ((*it).m_rnti);
-              if (itRlcPdu==m_dlHarqProcessesRlcPduListBuffer.end ())
+              if (m_harqOn == true)
                 {
-                  NS_FATAL_ERROR ("Unable to find RlcPdcList in HARQ buffer for RNTI " << (*it).m_rnti);
+                  // store RLC PDU list for HARQ
+                  std::map <uint16_t, DlHarqRlcPduListBuffer_t>::iterator itRlcPdu =  m_dlHarqProcessesRlcPduListBuffer.find ((*it).m_rnti);
+                  if (itRlcPdu==m_dlHarqProcessesRlcPduListBuffer.end ())
+                    {
+                      NS_FATAL_ERROR ("Unable to find RlcPdcList in HARQ buffer for RNTI " << (*it).m_rnti);
+                    }
+    //                 NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 4" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
+                  (*itRlcPdu).second.at (j).at (newDci.m_harqProcess).push_back (newRlcEl);
+    //               NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 3" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
                 }
-//                 NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 4" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
-              (*itRlcPdu).second.at (j).at (newDci.m_harqProcess).push_back (newRlcEl);
-//               NS_ASSERT_MSG ((*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () <= 1, " MIMO ERR 3" <<(*itRlcPdu).second.at (j).at (newDci.m_harqProcess).size () );
 
             }
             newEl.m_rlcPduList.push_back (newRlcPduLe);
@@ -1268,18 +1271,22 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_pdcchPowerOffset = 0; // not used
       ret.m_dciList.push_back (uldci);
       // store DCI for HARQ_PERIOD
-      itProcId = m_ulHarqCurrentProcessId.find (uldci.m_rnti);
-      if (itProcId==m_ulHarqCurrentProcessId.end ())
+      uint8_t harqId = 0;
+      if (m_harqOn==true)
         {
-          NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << uldci.m_rnti);
+          itProcId = m_ulHarqCurrentProcessId.find (uldci.m_rnti);
+          if (itProcId==m_ulHarqCurrentProcessId.end ())
+            {
+              NS_FATAL_ERROR ("No info find in HARQ buffer for UE " << uldci.m_rnti);
+            }
+          harqId = (*itProcId).second;
+          std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itDci = m_ulHarqProcessesDciBuffer.find (uldci.m_rnti);
+          if (itDci==m_ulHarqProcessesDciBuffer.end ())
+            {
+              NS_FATAL_ERROR ("Unable to find RNTI entry in UL DCI HARQ buffer for RNTI " << uldci.m_rnti);
+            }
+          (*itDci).second.at (harqId) = uldci;
         }
-      uint8_t harqId = (*itProcId).second;
-      std::map <uint16_t, UlHarqProcessesDciBuffer_t>::iterator itDci = m_ulHarqProcessesDciBuffer.find (uldci.m_rnti);
-      if (itDci==m_ulHarqProcessesDciBuffer.end ())
-        {
-          NS_FATAL_ERROR ("Unable to find RNTI entry in UL DCI HARQ buffer for RNTI " << uldci.m_rnti);
-        }
-      (*itDci).second.at (harqId) = uldci;
       NS_LOG_DEBUG (this << " UL Allocation - UE " << (*it).first << " startPRB " << (uint32_t)uldci.m_rbStart << " nPRB " << (uint32_t)uldci.m_rbLen << " CQI " << cqi << " MCS " << (uint32_t)uldci.m_mcs << " TBsize " << uldci.m_tbSize << " harqId " << (uint16_t)harqId);
       
       it++;
