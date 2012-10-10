@@ -15,6 +15,7 @@ cpp_examples = [
     ("lena-dual-stripe --epc=1 --useUdp=0 --simTime=0.01", "True", "True"),
     ("lena-dual-stripe --epc=1 --fadingTrace=../../src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad --simTime=0.01", "True", "True"),
     ("lena-dual-stripe --nBlocks=1  --nMacroEnbSites=0 --macroUeDensity=0 --homeEnbDeploymentRatio=1 --homeEnbActivationRatio=1 --homeUesHomeEnbRatio=2 --macroEnbTxPowerDbm=0 --simTime=0.01", "True", "True"),
+    ("lena-dual-stripe --nMacroEnbSites=0 --macroUeDensity=0 --nBlocks=1 --nApartmentsX=4 --nMacroEnbSitesX=0 --homeEnbDeploymentRatio=1 --homeEnbActivationRatio=1 --macroEnbTxPowerDbm=0 --epcDl=1 --epcUl=0 --epc=1 --numBearersPerUe=4 --homeUesHomeEnbRatio=15 --simTime=0.01", "True", "True"),
     ("lena-fading", "True", "True"),
     ("lena-gtpu-tunnel", "True", "True"),
     ("lena-intercell-interference", "True", "True"),
