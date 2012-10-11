@@ -521,7 +521,6 @@ private:
   Vector UpdatePosition (Ptr <Node> n, Vector v);
   void WriteDummyPacket ();
   bool NodeHasMoved (Ptr <Node> n, Vector newLocation);
-  void AddMargin ();
 
   void PurgePendingWifi ();
   void PurgePendingWimax ();

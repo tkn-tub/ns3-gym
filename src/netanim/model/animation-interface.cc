@@ -397,7 +397,6 @@ void AnimationInterface::StartAnimation (bool restart)
       }
     }
 
-  AddMargin ();
   if (m_xml)
     { // output the xml headers
       std::ostringstream oss;
@@ -621,20 +620,6 @@ int AnimationInterface::WriteN (const std::string& st)
   return WriteN (st.c_str (), st.length ());
 }
 
-// Private methods
-void AnimationInterface::AddMargin ()
-{
-  // Compute width/height, and add a small margin
-  double w = m_topoMaxX - m_topoMinX;
-  double h = m_topoMaxY - m_topoMinY;
-  m_topoMinX -= w * 0.05;
-  m_topoMinY -= h * 0.05;
-  m_topoMaxX = m_topoMinX + w * 1.5;
-  m_topoMaxY = m_topoMinY + h * 1.5;
-  NS_LOG_INFO ("Added Canvas Margin:" << m_topoMinX << "," <<
-               m_topoMinY << "," << m_topoMaxX << "," << m_topoMaxY);                 
-}
-
 std::vector <Ptr <Node> >  AnimationInterface::RecalcTopoBounds ()
 {
   std::vector < Ptr <Node> > MovedNodes;
@@ -668,20 +653,11 @@ std::vector <Ptr <Node> >  AnimationInterface::RecalcTopoBounds ()
 
 void AnimationInterface::RecalcTopoBounds (Vector v)
 {
-  double oldminX = m_topoMinX;
-  double oldminY = m_topoMinY;
-  double oldmaxX = m_topoMaxX;
-  double oldmaxY = m_topoMaxY;
   m_topoMinX = std::min (m_topoMinX, v.x);
   m_topoMinY = std::min (m_topoMinY, v.y);
   m_topoMaxX = std::max (m_topoMaxX, v.x);
   m_topoMaxY = std::max (m_topoMaxY, v.y);
   
-  if ((m_topoMinX != oldminX) || (m_topoMinY != oldminY) ||
-      (m_topoMaxX != oldmaxX) || (m_topoMaxY != oldmaxY))
-    {
-      AddMargin ();
-    } 
 }
 
 int AnimationInterface::WriteN (const char* data, uint32_t count)
