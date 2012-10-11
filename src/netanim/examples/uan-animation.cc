@@ -255,7 +255,7 @@ main (int argc, char **argv)
 {
 
   LogComponentEnable ("UanCwExample", LOG_LEVEL_ALL);
-  LogComponentEnable ("AnimationInterface", LOG_LEVEL_ALL);
+  //LogComponentEnable ("AnimationInterface", LOG_LEVEL_ALL);
 
   NetAnimExperiment exp;
 

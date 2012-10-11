@@ -473,7 +473,8 @@ void AnimationInterface::StartAnimation (bool restart)
             }
           else
             {
-              //NS_FATAL_ERROR ("Net animation currently only supports point-to-point links.");
+              NS_LOG_INFO ("Link:" << GetIpv4Address (dev) << " Channel Type:" << channelType);
+              WriteNonP2pLinkProperties (n->GetId (), GetIpv4Address (dev), channelType); 
             }
         }
     }
@@ -688,14 +689,20 @@ void AnimationInterface::WriteDummyPacket ()
   double lbTx = now.GetSeconds ();
   double fbRx = now.GetSeconds ();
   double lbRx = now.GetSeconds ();
-  if (m_xml)
-    {
-      oss << GetXMLOpenClose_p ("p", 0, fbTx, lbTx, 0, fbRx, lbRx, "", "DummyPktIgnoreThis");
-    }
+  oss << GetXMLOpenClose_p ("p", 0, fbTx, lbTx, 0, fbRx, lbRx, "", "DummyPktIgnoreThis");
   WriteN (oss.str ());
 
 
 }
+
+
+void AnimationInterface::WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType)
+{
+  std::ostringstream oss;
+  oss << GetXMLOpenClose_NonP2pLinkProperties (id, ipv4Address, channelType);
+  WriteN (oss.str ());
+}
+
 void AnimationInterface::DevTxTrace (std::string context, Ptr<const Packet> p,
                                      Ptr<NetDevice> tx, Ptr<NetDevice> rx,
                                      Time txTime, Time rxTime)
@@ -1738,6 +1745,19 @@ std::string AnimationInterface::GetXMLOpenClose_meta (std::string metaInfo)
       << metaInfo << "\" />" << std::endl;
   return oss.str ();      
 }
+
+
+std::string AnimationInterface::GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType)
+{
+  std::ostringstream oss;
+  oss << "<nonp2plinkproperties id=\""
+      << id << "\""
+      << " ipv4Address=\"" << ipv4Address << "\""
+      << " channelType=\"" << channelType << "\""
+      << "/>" << std::endl;
+  return oss.str ();
+}
+
 
 std::vector<std::string> AnimationInterface::GetElementsFromContext (std::string context)
 {

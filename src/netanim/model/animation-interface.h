@@ -552,6 +552,8 @@ private:
   void StartNewTraceFile();
 
   std::string GetIpv4Address (Ptr <NetDevice> nd);
+  void WriteNonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+
   std::string GetNetAnimVersion ();
 
   // XML helpers
@@ -578,6 +580,8 @@ private:
   std::string GetXMLOpen_wpacket (uint32_t fromLp, uint32_t fromId, double fbTx, double lbTx, double range);
   std::string GetXMLClose (std::string name) {return "</" + name + ">\n"; }
   std::string GetXMLOpenClose_meta (std::string metaInfo);
+  std::string GetXMLOpenClose_NonP2pLinkProperties (uint32_t id, std::string ipv4Address, std::string channelType);
+
 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;  
