@@ -532,6 +532,10 @@ Ipv4L3Protocol::SendWithHeader (Ptr<Packet> packet,
                                 Ptr<Ipv4Route> route)
 {
   NS_LOG_FUNCTION (this << packet << ipHeader << route);
+  if (Node::ChecksumEnabled ())
+    {
+      ipHeader.EnableChecksum ();
+    }
   SendRealOut (route, packet, ipHeader);
 }
 
