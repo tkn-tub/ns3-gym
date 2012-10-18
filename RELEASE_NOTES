@@ -24,6 +24,8 @@ New user-visible features
 
 Bugs fixed
 ----------
+ - bug 1479 - When the Ipv4RawSocket "IpHeaderInclude" Attribute set true,
+              Ip Checksum error
  - bug  976 - wifi-wired-bridging regression test fails because of 
               rounding errors in mobility model
  - bug 1284 - ./test.py performance tests do not exist

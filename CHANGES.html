@@ -63,7 +63,7 @@ us a note on ns-developers mailing list.</p>
 
 <h2>Changed behavior:</h2>
 <ul>
-<li></li>
+<li>Sending a packet through Ipv4RawSocket now supports checksum in the Ipv4Header. It is still not possible to manually put in arbitrary checksum as the checksum is automatically calculated at Ipv4L3Protocol. The user has to enable checksum globally for this to work. Simply calling Ipv4Header::EnableChecksum() for a single Ipv4Header will not work.</li>
 </ul>
 
 <hr>
